@@ -1,0 +1,3 @@
+data/db/mysql/*
+data/db/redis/*
+data/vmail/*

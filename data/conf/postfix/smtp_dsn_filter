@@ -1,0 +1,6 @@
+/^4(\.\d+\.\d+ TLS is required, but host \S+ refused to start TLS: .+)/
+        5$1
+/^4(\.\d+\.\d+ TLS is required, but was not offered by host .+)/
+        5$1
+/^4.7.5(.*)/
+        5.7.5$1
