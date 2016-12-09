@@ -6,7 +6,7 @@
 NAME="rspamd-mailcow"
 
 build() {
-    docker build -t rspamd data/Dockerfiles/rspamd/.
+    docker build --no-cache -t rspamd data/Dockerfiles/rspamd/.
 }
 
 echo "Stopping and removing containers with name tag ${NAME}..."
@@ -16,7 +16,7 @@ if [[ ! -z $(docker ps -af "name=${NAME}" -q) ]]; then
 fi
 
 if [[ ! -z "$(docker images -q rspamd)" ]]; then
-    read -r -p "Found image locally. Rebuild/pull anyway? [y/N] " response
+    read -r -p "Found image locally. Delete local and rebuild without cache anyway? [y/N] " response
     response=${response,,}
     if [[ $response =~ ^(yes|y)$ ]]; then
         docker rmi rspamd

@@ -11,7 +11,7 @@ if [[ ! -z $(docker ps -af "name=${NAME}" -q) ]]; then
 fi
 
 if [[ ! -z "$(docker images -q php:${PHPVERS})" ]]; then
-    read -r -p "Found image locally. Rebuild/pull anyway? [y/N] " response
+    read -r -p "Found image locally. Delete local image and repull? [y/N] " response
     response=${response,,}
     if [[ $response =~ ^(yes|y)$ ]]; then
         docker rmi php:${PHPVERS}

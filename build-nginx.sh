@@ -12,7 +12,7 @@ if [[ ! -z $(docker ps -af "name=${NAME}" -q) ]]; then
 fi
 
 if [[ ! -z "$(docker images -q nginx:${NGINXVERS})" ]]; then
-    read -r -p "Found image locally. Rebuild/pull anyway? [y/N] " response
+    read -r -p "Found image locally. Delete local image and repull? [y/N] " response
     response=${response,,}    # tolower
     if [[ $response =~ ^(yes|y)$ ]]; then
         docker rmi nginx:${NGINXVERS}

@@ -12,11 +12,11 @@ if [[ ! -z $(docker ps -af "name=${NAME}" -q) ]]; then
 fi
 
 build() {
-	docker build -t sogo data/Dockerfiles/sogo/.
+	docker build --no-cache -t sogo data/Dockerfiles/sogo/.
 }
 
 if [[ ! -z "$(docker images -q sogo)" ]]; then
-    read -r -p "Found image locally. Rebuild anyway? [y/N] " response
+    read -r -p "Found image locally. Delete local and rebuild without cache anyway? [y/N] " response
     response=${response,,}    # tolower
     if [[ $response =~ ^(yes|y)$ ]]; then
         docker rmi sogo

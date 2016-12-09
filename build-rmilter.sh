@@ -12,11 +12,11 @@ if [[ ! -z $(docker ps -af "name=${NAME}" -q) ]]; then
 fi
 
 build() {
-	docker build -t rmilter data/Dockerfiles/rmilter/.
+	docker build --no-cache -t rmilter data/Dockerfiles/rmilter/.
 }
 
 if [[ ! -z "$(docker images -q rmilter)" ]]; then
-	read -r -p "Found image locally. Rebuild anyway? [y/N] " response
+    read -r -p "Found image locally. Delete local and rebuild without cache anyway? [y/N] " response
 	response=${response,,}
 	if [[ $response =~ ^(yes|y)$ ]]; then
 		docker rmi rmilter
