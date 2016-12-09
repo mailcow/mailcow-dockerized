@@ -1,4 +1,4 @@
-# mailcow dockerized
+# mailcow-dockerized
 
 ## Configuration
 
@@ -18,7 +18,7 @@ The default username for mailcow is `admin` with password `moohoo`.
 ./build-$name.sh 
 ```
 
-**/!\** Any previous container with the same name will be stopped and removed.
+**:exclamation:** Any previous container with the same name will be stopped and removed.
 No persistent data is deleted at any time.
 If an image exists, you will be asked wether or not to repull/rebuild it.
 
@@ -26,7 +26,7 @@ If an image exists, you will be asked wether or not to repull/rebuild it.
 
 Connect to MySQL database:
 ```
-./build-mysql.sh client
+./build-mysql.sh --client
 ```
 
 Init schema (will also be installed when running `./build-mysql.sh` without parameters):
