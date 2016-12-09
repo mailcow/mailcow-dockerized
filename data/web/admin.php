@@ -206,7 +206,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 <div class="panel-body">
 	<?php
 	$dnstxt_folder	= scandir($GLOBALS["MC_DKIM_TXTS"]);
-	$dnstxt_files	= array_diff($dnstxt_folder, array('.', '..'));
+	$dnstxt_files	= array_diff($dnstxt_folder, array('.', '..', '.dkim_pub_keys'));
 	foreach($dnstxt_files as $file) {
 		$str = file_get_contents($GLOBALS["MC_DKIM_TXTS"]."/".$file);
 		$str = preg_replace('/\r|\t|\n/', '', $str);

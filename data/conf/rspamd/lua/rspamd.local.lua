@@ -7,3 +7,8 @@ rspamd_config.MAILCOW_AUTH = {
 	end
 }
 
+rspamd_config.MAILCOW_MOO = function (task)
+	return true
+end
+
+rspamd_config:add_map('http://nginx:8081/settings.php', "settings map", process_map)

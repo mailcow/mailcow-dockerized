@@ -22,12 +22,12 @@ fi
 sed -i "s#database_name.*#database_name = \"${DBNAME}\";#" data/web/inc/vars.inc.php
 sed -i "s#database_user.*#database_user = \"${DBUSER}\";#" data/web/inc/vars.inc.php
 sed -i "s#database_pass.*#database_pass = \"${DBPASS}\";#" data/web/inc/vars.inc.php
-sed -i "s#database_user.*#database_user = \"${DBUSER}\";#" data/conf/nginx/vars.inc.php
 
 docker run \
 	-p 443:443 \
 	--name ${NAME} \
 	-v ${PWD}/data/web:/web:ro \
+	-v ${PWD}/data/conf/rspamd/dynmaps:/dynmaps:ro \
 	-v ${PWD}/data/assets/ssl/:/etc/ssl/mail/:ro \
 	-v ${PWD}/data/conf/nginx/:/etc/nginx/conf.d/:ro \
 	--network=${DOCKER_NETWORK} \

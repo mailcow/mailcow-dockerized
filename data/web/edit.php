@@ -277,8 +277,8 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					</div>
 				</form>
 				<?php
-				$dnstxt_folder = scandir($GLOBALS["MC_DKIM_TXTS"]);
-				$dnstxt_files = array_diff($dnstxt_folder, array('.', '..'));
+				$dnstxt_folder	= scandir($GLOBALS["MC_DKIM_TXTS"]);
+				$dnstxt_files	= array_diff($dnstxt_folder, array('.', '..', '.dkim_pub_keys'));
 				foreach($dnstxt_files as $file) {
 					if (explode("_", $file)[1] == $domain) {
 						$str = file_get_contents($GLOBALS["MC_DKIM_TXTS"]."/".$file);

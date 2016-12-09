@@ -112,6 +112,13 @@ table[data-sortable].sortable-theme-bootstrap.sortable-theme-bootstrap-striped t
 .sort-table:hover {
   border-bottom-color: #00B7DC !important;
 }
+.striped:nth-child(odd) {
+    background-color: #fff;
+}
+.striped:nth-child(even) {
+    background-color: #fafafa;
+	border:1px solid white;
+}
 </style>
 <?php
 if (preg_match("/mailbox.php/i", $_SERVER['REQUEST_URI'])):
