@@ -1,5 +1,5 @@
 data/db/mysql/*
 !data/db/mysql/.mysql_data
 data/db/redis/*
-!data/db/mysql/.redis_data
+!data/db/redis/.redis_data
 data/vmail/*
