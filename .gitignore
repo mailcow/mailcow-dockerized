@@ -3,3 +3,7 @@ data/db/mysql/*
 data/db/redis/*
 !data/db/redis/.redis_data
 data/vmail/*
+data/dkim/keys/*
+!data/dkim/keys/.dkim_priv_keys
+data/dkim/txt/*
+!data/dkim/txt/.dkim_pub_keys
