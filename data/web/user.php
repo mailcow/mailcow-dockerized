@@ -143,6 +143,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 						data-slider-max="30"
 						data-slider-step="0.5"
 						data-slider-range="true"
+						data-slider-tooltip='always'
 						data-slider-id="slider1"
 						data-slider-value="[<?=get_spam_score($_SESSION['mailcow_cc_username']);?>]"
 						data-slider-step="1" />
@@ -189,11 +190,11 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 					<form class="form-inline" method="post">
 					<div class="col-xs-6"><code><?=$whitelistRow['value'];?></code></div>
 					<div class="col-xs-6">
-						<input type="hidden" name="wlid" value="<?=$whitelistRow['prefid'];?>">
+						<input type="hidden" name="prefid" value="<?=$whitelistRow['prefid'];?>">
 						<?php
 						if ($whitelistRow['username'] != array_pop(explode('@', $username))):
 						?>
-							<input type="hidden" id="trigger_delete_whitelist" name="trigger_delete_whitelist">
+							<input type="hidden" name="trigger_set_policy_list">
 							<a href="#n" onclick="$(this).closest('form').submit()"><?=$lang['user']['spamfilter_table_remove'];?></a>
 						<?php
 						else:
@@ -213,10 +214,11 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 				<div class="row">
 					<form class="form-inline" method="post">
 					<div class="col-xs-6">
-						<input type="text" class="form-control input-sm" name="whitelist_from" id="whitelist_from" placeholder="*@example.org" required>
+						<input type="text" class="form-control input-sm" name="object_from" id="object_from" placeholder="*@example.org" required>
+						<input type="hidden" name="object_list" value="wl">
 					</div>
 					<div class="col-xs-6">
-						<button type="submit" id="trigger_set_whitelist" name="trigger_set_whitelist" class="btn btn-xs btn-default"><?=$lang['user']['spamfilter_table_add'];?></button>
+						<button type="submit" id="trigger_set_policy_list" name="trigger_set_policy_list" class="btn btn-xs btn-default"><?=$lang['user']['spamfilter_table_add'];?></button>
 					</div>
 					</form>
 				</div>
@@ -253,11 +255,11 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 					<form class="form-inline" method="post">
 					<div class="col-xs-6"><code><?=$blacklistRow['value'];?></code></div>
 					<div class="col-xs-6">
-						<input type="hidden" name="blid" value="<?=$blacklistRow['prefid'];?>">
+						<input type="hidden" name="prefid" value="<?=$blacklistRow['prefid'];?>">
 						<?php
 						if ($blacklistRow['username'] != array_pop(explode('@', $username))):
 						?>
-							<input type="hidden" id="trigger_delete_blacklist" name="trigger_delete_blacklist">
+							<input type="hidden" name="trigger_set_policy_list">
 							<a href="#n" onclick="$(this).closest('form').submit()"><?=$lang['user']['spamfilter_table_remove'];?></a>
 						<?php
 						else:
@@ -276,10 +278,11 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 				<div class="row">
 					<form class="form-inline" method="post">
 					<div class="col-xs-6">
-						<input type="text" class="form-control input-sm" name="blacklist_from" id="blacklist_from" placeholder="*@example.org" required>
+						<input type="text" class="form-control input-sm" name="object_from" id="object_from" placeholder="*@example.org" required>
+						<input type="hidden" name="object_list" value="bl">
 					</div>
 					<div class="col-xs-6">
-						<button type="submit" id="trigger_set_blacklist" name="trigger_set_blacklist" class="btn btn-xs btn-default"><?=$lang['user']['spamfilter_table_add'];?></button>
+						<button type="submit" id="trigger_set_policy_list" name="trigger_set_policy_list" class="btn btn-xs btn-default"><?=$lang['user']['spamfilter_table_add'];?></button>
 					</div>
 					</form>
 				</div>

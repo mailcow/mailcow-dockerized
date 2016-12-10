@@ -2176,206 +2176,6 @@ function get_spam_score($username) {
 		}
 	}
 }
-function set_whitelist($postarray) {
-	global $lang;
-	global $pdo;
-	$username	= $_SESSION['mailcow_cc_username'];
-	$whitelist_from	= trim(strtolower($postarray['whitelist_from']));
-	$whitelist_from = preg_replace("/\.\*/", "*", $whitelist_from);
-	if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => sprintf($lang['danger']['username_invalid'])
-		);
-		return false;
-	}
-	if (!ctype_alnum(str_replace(array('@', '.', '-', '*'), '', $whitelist_from))) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => sprintf($lang['danger']['whitelist_from_invalid'])
-		);
-		return false;
-	}
-	try {
-		$stmt = $pdo->prepare("SELECT `object` FROM `filterconf`
-			WHERE `option` = 'whitelist_from'
-				AND `object` = :username
-				AND `value` = :whitelist_from");
-		$stmt->execute(array(':username' => $username, ':whitelist_from' => $whitelist_from));
-		$num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-	}
-	catch(PDOException $e) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => 'MySQL: '.$e
-		);
-		return false;
-	}
-	if ($num_results != 0) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => sprintf($lang['danger']['whitelist_exists'])
-		);
-		return false;
-	}
-	try {
-		$stmt = $pdo->prepare("INSERT INTO `filterconf` (`object`, `option` ,`value`)
-			VALUES (:username, 'whitelist_from', :whitelist_from)");
-		$stmt->execute(array(
-			':username' => $username,
-			':whitelist_from' => $whitelist_from
-		));
-	}
-	catch (PDOException $e) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => 'MySQL: '.$e
-		);
-		return false;
-	}
-	$_SESSION['return'] = array(
-		'type' => 'success',
-		'msg' => sprintf($lang['success']['mailbox_modified'], $username)
-	);
-}
-function delete_whitelist($postarray) {
-	global $lang;
-	global $pdo;
-	$username	= $_SESSION['mailcow_cc_username'];
-	$prefid		= $postarray['wlid'];
-	if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => sprintf($lang['danger']['username_invalid'])
-		);
-		return false;
-	}
-	if (!is_numeric($prefid)) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => sprintf($lang['danger']['whitelist_from_invalid'])
-		);
-		return false;
-	}
-	try {
-		$stmt = $pdo->prepare("DELETE FROM `filterconf` WHERE `object` = :username AND `prefid` = :prefid");
-		$stmt->execute(array(
-			':username' => $username,
-			':prefid' => $prefid
-		));
-	}
-	catch (PDOException $e) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => 'MySQL: '.$e
-		);
-		return false;
-	}
-	$_SESSION['return'] = array(
-		'type' => 'success',
-		'msg' => sprintf($lang['success']['mailbox_modified'], $username)
-	);
-}
-function set_blacklist($postarray) {
-	global $lang;
-	global $pdo;
-	$username		= $_SESSION['mailcow_cc_username'];
-	$blacklist_from	= trim(strtolower($postarray['blacklist_from']));
-	$blacklist_from = preg_replace("/\.\*/", "*", $blacklist_from);
-	if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => sprintf($lang['danger']['username_invalid'])
-		);
-		return false;
-	}
-	if (!ctype_alnum(str_replace(array('@', '.', '-', '*'), '', $blacklist_from))) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => sprintf($lang['danger']['blacklist_from_invalid'])
-		);
-		return false;
-	}
-	try {
-		$stmt = $pdo->prepare("SELECT `object` FROM `filterconf`
-			WHERE `option` = 'blacklist_from'
-				AND `object` = :username
-				AND `value` = :blacklist_from");
-		$stmt->execute(array(':username' => $username, ':blacklist_from' => $blacklist_from));
-		$num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-	}
-	catch(PDOException $e) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => 'MySQL: '.$e
-		);
-		return false;
-	}
-	if ($num_results != 0) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => sprintf($lang['danger']['blacklist_exists'])
-		);
-		return false;
-	}
-	try {
-		$stmt = $pdo->prepare("INSERT INTO `filterconf` (`object`, `option` ,`value`)
-			VALUES (:username, 'blacklist_from', :blacklist_from)");
-		$stmt->execute(array(
-			':username' => $username,
-			':blacklist_from' => $blacklist_from
-		));
-	}
-	catch (PDOException $e) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => 'MySQL: '.$e
-		);
-		return false;
-	}
-	$_SESSION['return'] = array(
-		'type' => 'success',
-		'msg' => sprintf($lang['success']['mailbox_modified'], $username)
-	);
-}
-function delete_blacklist($postarray) {
-	global $lang;
-	global $pdo;
-	$username	= $_SESSION['mailcow_cc_username'];
-	$prefid		= $postarray['blid'];
-	if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => sprintf($lang['danger']['username_invalid'])
-		);
-		return false;
-	}
-	if (!is_numeric($prefid)) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => sprintf($lang['danger']['blacklist_from_invalid'])
-		);
-		return false;
-	}
-	try {
-		$stmt = $pdo->prepare("DELETE FROM `filterconf` WHERE `object` = :username AND `prefid` = :prefid");
-		$stmt->execute(array(
-			':username' => $username,
-			':prefid' => $prefid
-		));
-	}
-	catch (PDOException $e) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => 'MySQL: '.$e
-		);
-		return false;
-	}
-	$_SESSION['return'] = array(
-		'type' => 'success',
-		'msg' => sprintf($lang['success']['mailbox_modified'], $username)
-	);
-}
 function set_spam_score($postarray) {
 	global $lang;
 	global $pdo;
@@ -2427,6 +2227,107 @@ function set_spam_score($postarray) {
 	$_SESSION['return'] = array(
 		'type' => 'success',
 		'msg' => sprintf($lang['success']['mailbox_modified'], $username)
+	);
+}
+function set_policy_list($postarray) {
+	global $lang;
+	global $pdo;
+
+	(isset($postarray['domain'])) ? $object = $postarray['domain'] : $object = $_SESSION['mailcow_cc_username'];
+	($postarray['object_list'] == "bl") ? $object_list = "blacklist_from" : $object_list = "whitelist_from";
+	$object_from = preg_replace('/\.+/', '.', rtrim(preg_replace("/\.\*/", "*", trim(strtolower($postarray['object_from']))), '.'));
+	if (!filter_var($object, FILTER_VALIDATE_EMAIL) && !is_valid_domain_name($object)) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['username_invalid'])
+		);
+		return false;
+	}
+	if (is_valid_domain_name($object)) {
+		if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $object)) {
+			$_SESSION['return'] = array(
+				'type' => 'danger',
+				'msg' => sprintf($lang['danger']['access_denied'])
+			);
+			return false;
+		}
+	}
+	if (isset($postarray['prefid'])) {
+		if (!is_numeric($postarray['prefid'])) {
+			$_SESSION['return'] = array(
+				'type' => 'danger',
+				'msg' => sprintf($lang['danger']['access_denied'])
+			);
+			return false;
+		}
+		try {
+			$stmt = $pdo->prepare("DELETE FROM `filterconf` WHERE `object` = :object AND `prefid` = :prefid");
+			$stmt->execute(array(
+				':object' => $object,
+				':prefid' => $postarray['prefid']
+			));
+		}
+		catch (PDOException $e) {
+			$_SESSION['return'] = array(
+				'type' => 'danger',
+				'msg' => 'MySQL: '.$e
+			);
+			return false;
+		}
+		$_SESSION['return'] = array(
+			'type' => 'success',
+			'msg' => sprintf($lang['success']['mailbox_modified'], $object)
+		);
+		return true;
+	}
+	if (!ctype_alnum(str_replace(array('@', '.', '-', '*'), '', $object_from))) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['policy_list_from_invalid'])
+		);
+		return false;
+	}
+	try {
+		$stmt = $pdo->prepare("SELECT `object` FROM `filterconf`
+			WHERE (`option` = 'whitelist_from'  OR `option` = 'blacklist_from')
+				AND `object` = :object
+				AND `value` = :object_from");
+		$stmt->execute(array(':object' => $object, ':object_from' => $object_from));
+		$num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+	}
+	catch(PDOException $e) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => 'MySQL: '.$e
+		);
+		return false;
+	}
+	if ($num_results != 0) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['policy_list_from_exists'])
+		);
+		return false;
+	}
+	try {
+		$stmt = $pdo->prepare("INSERT INTO `filterconf` (`object`, `option` ,`value`)
+			VALUES (:object, :object_list, :object_from)");
+		$stmt->execute(array(
+			':object' => $object,
+			':object_list' => $object_list,
+			':object_from' => $object_from
+		));
+	}
+	catch (PDOException $e) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => 'MySQL: '.$e
+		);
+		return false;
+	}
+	$_SESSION['return'] = array(
+		'type' => 'success',
+		'msg' => sprintf($lang['success']['mailbox_modified'], $object)
 	);
 }
 function set_tls_policy($postarray) {

@@ -51,17 +51,8 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "user
 	if (isset($_POST["trigger_set_spam_score"])) {
 		set_spam_score($_POST);
 	}
-	if (isset($_POST["trigger_set_whitelist"])) {
-		set_whitelist($_POST);
-	}
-	if (isset($_POST["trigger_delete_whitelist"])) {
-		delete_whitelist($_POST);
-	}
-	if (isset($_POST["trigger_set_blacklist"])) {
-		set_blacklist($_POST);
-	}
-	if (isset($_POST["trigger_delete_blacklist"])) {
-		delete_blacklist($_POST);
+	if (isset($_POST["trigger_set_policy_list"])) {
+		set_policy_list($_POST);
 	}
 	if (isset($_POST["trigger_set_tls_policy"])) {
 		set_tls_policy($_POST);
