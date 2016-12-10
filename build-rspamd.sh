@@ -36,3 +36,5 @@ docker run \
 	--name ${NAME} \
 	-d rspamd
 
+/bin/bash ./fix-permissions.sh
+

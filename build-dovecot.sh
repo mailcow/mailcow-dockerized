@@ -1,7 +1,6 @@
 #!/bin/bash
 
-. mailcow.conf
-./build-network.sh
+source mailcow.conf
 
 NAME="dovecot-mailcow"
 
@@ -48,5 +47,4 @@ docker run \
 	-h ${MAILCOW_HOSTNAME} \
 	-d dovecot
 
-echo "Fixing permissions..."
-chown -R 5000:5000 data/vmail
+/bin/bash ./fix-permissions.sh

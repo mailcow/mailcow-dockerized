@@ -160,7 +160,7 @@ function dkim_table($action, $item) {
 		case "add":
 			$domain = preg_replace('/[^A-Za-z0-9._\-]/', '_', $item['dkim']['domain']);
 			$selector = preg_replace('/[^A-Za-z0-9._\-]/', '_', $item['dkim']['selector']);
-			$key_length	= $item['dkim']['key_size'];
+			$key_length	= intval($item['dkim']['key_size']);
             if (!ctype_alnum($selector) || !is_valid_domain_name($domain) || !is_numeric($key_length)) {
                 $_SESSION['return'] = array(
                     'type' => 'danger',
@@ -178,13 +178,22 @@ function dkim_table($action, $item) {
                 break;
             }
 
-			// Should be done native in PHP soon
-			$privKey = shell_exec("openssl genrsa -out /tmp/dkim-private.pem " . escapeshellarg($key_length)  . " -outform PEM && cat /tmp/dkim-private.pem");
-			$pubKey = shell_exec('openssl rsa -in /tmp/dkim-private.pem -pubout -outform PEM 2>/dev/null | sed -e "1d" -e "\$d" | tr -d "\n"');
-			shell_exec('rm /tmp/dkim-private.pem');
-
+			$config = array(
+				"digest_alg" => "sha256",
+				"private_key_bits" => $key_length,
+				"private_key_type" => OPENSSL_KEYTYPE_RSA,
+			);
+			$keypair_ressource = openssl_pkey_new($config);
+			$key_details = openssl_pkey_get_details($keypair_ressource);
+			$pubKey = implode(array_slice(
+					array_filter(
+						explode(PHP_EOL, $key_details['key'])
+					), 1, -1)
+				);
+			// Save public key to file
 			file_put_contents($GLOBALS['MC_DKIM_TXTS'] . '/' . $selector . '_' . $domain, $pubKey);
-			file_put_contents($GLOBALS['MC_DKIM_KEYS'] . '/' . $domain . '.' . $selector, $privKey);
+			// Save private key to file
+			openssl_pkey_export_to_file($keypair_ressource, $GLOBALS['MC_DKIM_KEYS'] . '/' . $domain . '.' . $selector);
 
 			$_SESSION['return'] = array(
 				'type' => 'success',

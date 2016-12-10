@@ -1,10 +1,12 @@
 # mailcow-dockerized
 
-## Configuration
+## Installation
 
-1. Open mailcow.conf and change stuff, do not touch versions, do not use special chars in passwords for now.
+1. Open mailcow.conf and change stuff, do not use special chars in passwords. This will be fixed soon.
 
-2. ./build-all.sh
+2. Run ./build-all.sh
+
+3. Set a rspamd controller password (see section "rspamd")
 
 Done.
 
@@ -21,6 +23,12 @@ The default username for mailcow is `admin` with password `moohoo`.
 **:exclamation:** Any previous container with the same name will be stopped and removed.
 No persistent data is deleted at any time.
 If an image exists, you will be asked wether or not to repull/rebuild it.
+
+### Logs
+
+You can use docker logs $name for almost all containers. Only rmilter does not log to stdout. You can check rspamd logs for rmilter reponses.
+
+When a process dies, the container dies, too. Except for Postfix' container.
 
 ### MySQL
 
@@ -50,23 +58,28 @@ Connect to redis database:
 
 Use rspamadm:
 ```
-docker exec -it rspamd-mailcow /bin/bash -c "rspamadm --help"
+docker exec -it rspamd-mailcow rspamadm --help
 ```
 
 Use rspamc:
 ```
-docker exec -it rspamd-mailcow /bin/bash -c "rspamc --help"
+docker exec -it rspamd-mailcow rspamc --help
 ```
 
 Set rspamd controller password:
 ```
-docker exec -it rspamd-mailcow /bin/bash -c "rspamadm pw"
+# Generate hash
+docker exec -it rspamd-mailcow rspamadm pw
 ```
-Copy given hash to data/conf/rspamd/override.d/worker-controller.inc:
+
+Replace given hash in data/conf/rspamd/override.d/worker-controller.inc:
 ```
-...
 enable_password = "myhash";
-....
+```
+
+Restart rspamd:
+```
+docker restart rspamd-mailcow
 ```
 
 ### Remove persistent data

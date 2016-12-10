@@ -38,3 +38,5 @@ docker run \
 echo "Installaing SOGo web resource files..."
 docker exec -it ${NAME} /bin/bash -c 'apt-key adv --keyserver keys.gnupg.net --recv-key 0x810273C4 && apt-get update && apt-get -y --force-yes install apt-transport-https'
 docker exec -it ${NAME} /bin/bash -c 'echo "deb http://packages.inverse.ca/SOGo/nightly/3/debian/ jessie jessie" > /etc/apt/sources.list.d/sogo.list && apt-get update && apt-get -y --force-yes install sogo'
+
+/bin/bash ./fix-permissions.sh
