@@ -51,7 +51,7 @@ Reset mailcow admin to `admin:moohoo`:
 
 Connect to redis database:
 ```
-./build-mysql.sh client
+./build-mysql.sh --client
 ```
 
 ### rspamd
