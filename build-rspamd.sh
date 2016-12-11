@@ -8,6 +8,12 @@ build() {
     docker build --no-cache -t rspamd data/Dockerfiles/rspamd/.
 }
 
+PDNS_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' pdns-mailcow 2> /dev/null)
+if [[ ! ${PDNS_IP} =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+	echo "Cannot determine Powerdns Recursor ip address. Is the container running?"
+	exit 1
+fi
+
 echo "Stopping and removing containers with name tag ${NAME}..."
 if [[ ! -z $(docker ps -af "name=${NAME}" -q) ]]; then
     docker stop $(docker ps -af "name=${NAME}" -q)
@@ -29,6 +35,8 @@ docker run \
 	-v ${PWD}/data/conf/rspamd/lua/:/etc/rspamd/lua/ \
 	-v ${PWD}/data/dkim/txt/:/etc/rspamd/dkim/txt/:ro \
 	-v ${PWD}/data/dkim/keys/:/etc/rspamd/dkim/keys/:ro \
+	--dns=${PDNS_IP} \
+    --dns-search=${DOCKER_NETWORK} \
 	--network=${DOCKER_NETWORK} \
 	--network-alias rspamd \
 	-h rspamd \

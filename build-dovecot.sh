@@ -5,7 +5,7 @@ source mailcow.conf
 NAME="dovecot-mailcow"
 
 build() {
-	docker build --no-cache -t dovecot data/Dockerfiles/dovecot/.
+	docker build --no-cache -t dovecot:local data/Dockerfiles/dovecot/.
 }
 
 if [[  ${1} == "--reconf" ]]; then
@@ -23,7 +23,7 @@ if [[ ! -z "$(docker images -q dovecot)" ]]; then
     read -r -p "Found image locally. Delete local and rebuild without cache anyway? [y/N] " response
     response=${response,,}
     if [[ $response =~ ^(yes|y)$ ]]; then
-        docker rmi dovecot
+        docker rmi dovecot:local
         build
     fi
 else
@@ -45,6 +45,6 @@ docker run \
 	--network=${DOCKER_NETWORK} \
 	--network-alias dovecot \
 	-h ${MAILCOW_HOSTNAME} \
-	-d dovecot
+	-d dovecot:local
 
 /bin/bash ./fix-permissions.sh

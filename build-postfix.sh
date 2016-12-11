@@ -4,6 +4,12 @@
 
 NAME="postfix-mailcow"
 
+PDNS_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' pdns-mailcow 2> /dev/null)
+if [[ ! ${PDNS_IP} =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    echo "Cannot determine Powerdns Recursor ip address. Is the container running?"
+    exit 1
+fi
+
 build() {
 	docker build --no-cache -t postfix data/Dockerfiles/postfix/.
 }
@@ -45,6 +51,8 @@ docker run \
 	-p ${SUBMISSION_PORT}:587 \
 	-v ${PWD}/data/conf/postfix:/opt/postfix/conf:ro \
 	-v ${PWD}/data/assets/ssl:/etc/ssl/mail/:ro \
+	--dns=${PDNS_IP} \
+	--dns-search=${DOCKER_NETWORK} \
 	--name ${NAME} \
 	--network=${DOCKER_NETWORK} \
 	--network-alias postfix \
