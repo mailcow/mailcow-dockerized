@@ -3,17 +3,33 @@
 mailcow dockerized comes with 11 containers linked in a mailcow network:
 Dovecot, Memcached, Redis, MariaDB, PowerDNS Recursor, PHP-FPM, Postfix, Nginx, Rmilter, Rspamd and SOGo.
 
-The DNS resolver is DNSSEC enabled and forwards local hostnames to Docker.
+All configurations were written with security in mind.
+
+Exposed ports:
+| Service               | External bindings                            | Internal bindings              |
+| -------------------   |:---------------------------------------------|:-------------------------------|
+| Postfix               | 25/tcp, 465/tcp, 587/tcp                     | 588/tcp                        |
+| Dovecot               | 110/tcp, 143/tcp, 993/tcp, 995/tcp, 4190/tcp | 24/tcp, 10001/tcp              |
+| Nginx                 | 443/tcp                                      | 80/tcp, 8081/tcp               |
+| PowerDNS Recursor     | 53/udp                                       |                                |
+| Rspamd                | -                                            | 11333/tcp, 11334/tcp           |
+| MariaDB               | -                                            | 3306/tcp                       |
+| Rmilter               | -                                            | 9000/tcp                       |
+| PHP FPM               | -                                            | 9000/tcp                       |
+| SOGo                  | -                                            | 9000/tcp                       |
+| Redis                 | -                                            | 6379/tcp                       |
+| Memcached             | -                                            | 11211/tcp                      |
+
+All containers share a network "mailcow-network" (name can be changed, but remove all containers and rebuild them after changing).
 
 ## Installation
 
 You need Docker. Most systems can install Docker by running the following command:
-
 ```
 wget -qO- https://get.docker.com/ | sh
 ```
 
-1. Open mailcow.conf and change stuff, do not use special chars in passwords. This will be fixed soon.
+1. Open mailcow.conf and change stuff, do not use special chars in passwords in this file (will be fixed soon).
 
 2. Run ./build-all.sh
 
@@ -44,21 +60,24 @@ docker restart rspamd-mailcow
 Open https://${MAILCOW_HOSTNAME}/rspamd in a browser.
 
 ### SSL (or: How to use Let's Encrypt)
-mailcow dockerized comes with a self-signed certificate.
+mailcow dockerized comes with a self-signed certificate. Certificates and DH parameters are saved as `data/assets/ssl/{dhparams.pem,mail.{crt,key}}`.
 
-First you should renew the DH parameters. Assuming you are in the mailcow root folder:
+First you should renew the DH parameters. 
+Soem say you should use 4096, but be prepared for a long waiting period when generating such a file.
+
+Assuming you are in the mailcow root folder:
 ```
 openssl dhparam -out ./data/assets/ssl/dhparams.pem 2048
 ```
 
 Get the certbot client:
 ```
-wget https://dl.eff.org/certbot-auto && chmod +x certbot-auto
+wget https://dl.eff.org/certbot-auto -O /usr/local/sbin/certbot && chmod +x /usr/local/sbin/certbot
 ```
 
 Please disable applications blocking port 80 and run certbot:
 ```
-./certbot-auto certonly \
+certbot-auto certonly \
 	--standalone \
 	--standalone-supported-challenges http-01 \
 	-d ${MAILCOW_HOSTNAME} \
@@ -66,12 +85,12 @@ Please disable applications blocking port 80 and run certbot:
 	--agree-tos
 ```
 
-Link certificates to assets directory. Assuming you are still in the mailcow root folder:
+Create hard links to the full path of the new certificates. Assuming you are still in the mailcow root folder:
 ```
 mv data/assets/ssl/mail.{crt,crt_old}
 mv data/assets/ssl/mail.{key,key_old}
-ln -s /etc/letsencrypt/live/${MAILCOW_HOSTNAME}/fullchain.pem data/assets/ssl/mail.crt
-ln -s /etc/letsencrypt/live/${MAILCOW_HOSTNAME}/privkey.pem data/assets/ssl/mail.key
+ln $(readlink -f /etc/letsencrypt/live/${MAILCOW_HOSTNAME}/fullchain.pem) data/assets/ssl/mail.crt
+ln $(readlink -f /etc/letsencrypt/live/${MAILCOW_HOSTNAME}/privkey.pem) data/assets/ssl/mail.key
 ```
 
 Restart containers which use the certificate:
@@ -81,7 +100,7 @@ docker restart dovecot-mailcow
 docker restart nginx-mailcow
 ```
 
-When renewing certificates, run the last two steps as post-hook in certbot.
+When renewing certificates, run the last two steps (link + restart) as post-hook in certbot.
 
 ## Special usage
 ### build-*.files
@@ -90,7 +109,6 @@ When renewing certificates, run the last two steps as post-hook in certbot.
 ```
 ./build-$name.sh 
 ```
-
 **:exclamation:** Any previous container with the same name will be stopped and removed.
 No persistent data is deleted at any time.
 If an image exists, you will be asked wether or not to repull/rebuild it.
@@ -149,7 +167,6 @@ docker exec -it rspamd-mailcow rspamc --help
 ### Remove persistent data
 
 MariaDB:
-
 ```
 docker stop mariadb-mailcow
 docker rm mariadb-mailcow
@@ -158,7 +175,6 @@ rm -rf data/db/mysql/*
 ```
 
 Redis:
-
 ```
 # If you feel hardcore:
 docker stop redis-mailcow
