@@ -184,6 +184,13 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 						'msg' => 'MySQL: '.$e
 					);
 				}
+				if (count($rows) == 0):
+				?>
+					<div class="row">
+						<div class="col-sm-12"><i><?=$lang['user']['spamfilter_table_empty'];?></i></div>
+					</div>
+				<?php
+				endif;
 				while ($whitelistRow = array_shift($rows)):
 				?>
 				<div class="row striped">

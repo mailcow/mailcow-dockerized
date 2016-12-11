@@ -1,7 +1,6 @@
 #!/bin/bash
 
 . mailcow.conf
-./build-network.sh
 
 NAME="sogo-mailcow"
 

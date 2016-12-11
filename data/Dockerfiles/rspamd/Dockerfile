@@ -1,6 +1,8 @@
 FROM debian:jessie
 MAINTAINER Andre Peters <andre.peters@debinux.de>
 
+ENV DEBIAN_FRONTEND noninteractive
+
 RUN apt-get update \
 	&& apt-get install -y wget \
 	&& wget -O- https://rspamd.com/apt-stable/gpg.key | apt-key add - \

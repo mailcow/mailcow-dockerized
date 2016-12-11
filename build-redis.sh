@@ -1,7 +1,6 @@
 #!/bin/bash
 
 . mailcow.conf
-./build-network.sh
 
 NAME="redis-mailcow"
 
@@ -12,6 +11,9 @@ client() {
 if [[  ${1} == "--client" ]]; then
     client
 	exit 0
+elif [[ ! -z ${1} ]]; then
+    echo "Unknown parameter"
+    exit 1
 fi
 
 echo "Stopping and removing containers with name tag ${NAME}..."

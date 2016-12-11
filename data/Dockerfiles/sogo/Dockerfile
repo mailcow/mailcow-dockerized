@@ -1,6 +1,8 @@
 FROM debian:jessie
 MAINTAINER Andre Peters <andre.peters@debinux.de>
 
+ENV DEBIAN_FRONTEND noninteractive
+
 RUN apt-get update \
 	&& apt-get -y --force-yes install apt-transport-https \
 	&& apt-key adv --keyserver keys.gnupg.net --recv-key 0x810273C4 \

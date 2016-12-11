@@ -30,28 +30,33 @@ You can use docker logs $name for almost all containers. Only rmilter does not l
 
 When a process dies, the container dies, too. Except for Postfix' container.
 
-### MySQL
+### MariaDB
 
-Connect to MySQL database:
+Connect to MariaDB database:
 ```
-./build-mysql.sh --client
+./build-sql.sh --client
 ```
 
-Init schema (will also be installed when running `./build-mysql.sh` without parameters):
+Init schema (will also be installed when running `./build-sql.sh` without parameters):
 ```
-./build-mysql.sh --init-schema
+./build-sql.sh --init-schema
 ```
 
 Reset mailcow admin to `admin:moohoo`:
 ```
-./build-mysql.sh --reset-admin
+./build-sql.sh --reset-admin
+```
+
+Dump database to file backup_${DBNAME}_${DATE}.sql:
+```
+./build-sql.sh --dump
 ```
 
 ### Redis
 
 Connect to redis database:
 ```
-./build-mysql.sh --client
+./build-sql.sh --client
 ```
 
 ### rspamd
@@ -84,13 +89,13 @@ docker restart rspamd-mailcow
 
 ### Remove persistent data
 
-MySQL:
+MariaDB:
 
 ```
-docker stop mysql-mailcow
-docker rm mysql-mailcow
+docker stop mariadb-mailcow
+docker rm mariadb-mailcow
 rm -rf data/db/mysql/*
-./build-mysql.sh
+./build-sql.sh
 ```
 
 Redis:
