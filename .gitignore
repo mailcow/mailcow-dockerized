@@ -7,4 +7,4 @@ data/dkim/keys/*
 !data/dkim/keys/.dkim_priv_keys
 data/dkim/txt/*
 !data/dkim/txt/.dkim_pub_keys
-backup*sql
+backup*

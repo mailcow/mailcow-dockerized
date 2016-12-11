@@ -12,7 +12,7 @@ Exposed ports:
 | Postfix               | 25/tcp, 465/tcp, 587/tcp                     | 588/tcp                        |
 | Dovecot               | 110/tcp, 143/tcp, 993/tcp, 995/tcp, 4190/tcp | 24/tcp, 10001/tcp              |
 | Nginx                 | 443/tcp                                      | 80/tcp, 8081/tcp               |
-| PowerDNS Recursor     | 53/udp                                       |                                |
+| PowerDNS Recursor     | 53/udp                                       | -                              |
 | Rspamd                | -                                            | 11333/tcp, 11334/tcp           |
 | MariaDB               | -                                            | 3306/tcp                       |
 | Rmilter               | -                                            | 9000/tcp                       |
@@ -25,14 +25,12 @@ All containers share a network "mailcow-network" (name can be changed, but remov
 
 ## Installation
 
-You need Docker. Most systems can install Docker by running the following command:
-```
-wget -qO- https://get.docker.com/ | sh
-```
+1. You need Docker. Most systems can install Docker by running `wget -qO- https://get.docker.com/ | sh`
 
-1. Open mailcow.conf and change stuff, do not use special chars in passwords in this file (will be fixed soon).
+2. Clone this repository and configure `mailcow.conf`, do not use special chars in passwords in this file (will be fixed soon).
+It is almost always enough to just change the hostname.
 
-2. Run ./build-all.sh
+3. Run `./build-all.sh` - select `Y` when asked to reset the admin password.
 
 Done.
 
