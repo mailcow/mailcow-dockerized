@@ -6,6 +6,7 @@ Dovecot, Memcached, Redis, MariaDB, PowerDNS Recursor, PHP-FPM, Postfix, Nginx, 
 All configurations were written with security in mind.
 
 Exposed ports:
+
 | Service               | External bindings                            | Internal bindings              |
 |:----------------------|:---------------------------------------------|:-------------------------------|
 | Postfix               | 25/tcp, 465/tcp, 587/tcp                     | 588/tcp                        |
