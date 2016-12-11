@@ -7,7 +7,7 @@ All configurations were written with security in mind.
 
 Exposed ports:
 | Service               | External bindings                            | Internal bindings              |
-| -------------------   |:---------------------------------------------|:-------------------------------|
+| ---------------------:|:---------------------------------------------|:-------------------------------|
 | Postfix               | 25/tcp, 465/tcp, 587/tcp                     | 588/tcp                        |
 | Dovecot               | 110/tcp, 143/tcp, 993/tcp, 995/tcp, 4190/tcp | 24/tcp, 10001/tcp              |
 | Nginx                 | 443/tcp                                      | 80/tcp, 8081/tcp               |
