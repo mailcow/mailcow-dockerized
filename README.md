@@ -3,7 +3,15 @@
 mailcow dockerized comes with 11 containers linked in a mailcow network:
 Dovecot, Memcached, Redis, MariaDB, PowerDNS Recursor, PHP-FPM, Postfix, Nginx, Rmilter, Rspamd and SOGo.
 
+The DNS resolver is DNSSEC enabled and forwards local hostnames to Docker.
+
 ## Installation
+
+You need Docker. Most systems can install Docker by running the following command:
+
+```
+wget -qO- https://get.docker.com/ | sh
+```
 
 1. Open mailcow.conf and change stuff, do not use special chars in passwords. This will be fixed soon.
 

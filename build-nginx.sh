@@ -24,6 +24,7 @@ sed -i "s#database_pass.*#database_pass = \"${DBPASS}\";#" data/web/inc/vars.inc
 
 docker run \
 	-p 443:443 \
+    --expose 8081 \
 	--name ${NAME} \
 	-v ${PWD}/data/web:/web:ro \
 	-v ${PWD}/data/conf/rspamd/dynmaps:/dynmaps:ro \
