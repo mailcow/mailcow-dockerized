@@ -7,6 +7,7 @@ NAME="mariadb-mailcow"
 reconf() {
 	echo "Installing database schema (this will not overwrite existing data)"
 	echo "It may take a while for MariaDB to warm up, please wait..."
+	echo docker exec ${NAME} mysql -u${DBUSER} -p${DBPASS} ${DBNAME}
 	until docker exec ${NAME} /bin/bash -c "mysql -u'${DBUSER}' -p'${DBPASS}' ${DBNAME} < /assets/init.sql"; do
 		echo "Trying again in 2 seconds..."
 		sleep 2

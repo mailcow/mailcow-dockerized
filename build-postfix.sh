@@ -36,14 +36,9 @@ else
     build
 fi
 
-sed -i "/myhostname/c\myhostname=${MAILCOW_HOSTNAME}" data/conf/postfix/main.cf
 sed -i "/^user/c\user = ${DBUSER}" data/conf/postfix/sql/*
 sed -i "/^password/c\password = ${DBPASS}" data/conf/postfix/sql/*
 sed -i "/^dbname/c\dbname = ${DBNAME}" data/conf/postfix/sql/*
-
-if [[ -z $(cat data/conf/postfix/main.cf | grep ${DOCKER_SUBNET}) ]]; then
-	sed -i -e "s_^mynetworks.*_& ${DOCKER_SUBNET}_" data/conf/postfix/main.cf
-fi
 
 docker run \
 	-p ${SMTP_PORT}:25 \
