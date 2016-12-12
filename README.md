@@ -5,14 +5,14 @@ Dovecot, Memcached, Redis, MariaDB, PowerDNS Recursor, PHP-FPM, Postfix, Nginx, 
 
 All configurations were written with security in mind.
 
-Exposed ports:
+### Exposed ports:
 
 | Service               | External bindings                            | Internal bindings              |
 |:----------------------|:---------------------------------------------|:-------------------------------|
 | Postfix               | 25/tcp, 465/tcp, 587/tcp                     | 588/tcp                        |
 | Dovecot               | 110/tcp, 143/tcp, 993/tcp, 995/tcp, 4190/tcp | 24/tcp, 10001/tcp              |
 | Nginx                 | 443/tcp                                      | 80/tcp, 8081/tcp               |
-| PowerDNS Recursor     | 53/udp                                       | -                              |
+| PowerDNS Recursor     | -                                            | 53/udp                         |
 | Rspamd                | -                                            | 11333/tcp, 11334/tcp           |
 | MariaDB               | -                                            | 3306/tcp                       |
 | Rmilter               | -                                            | 9000/tcp                       |
@@ -20,6 +20,7 @@ Exposed ports:
 | SOGo                  | -                                            | 9000/tcp                       |
 | Redis                 | -                                            | 6379/tcp                       |
 | Memcached             | -                                            | 11211/tcp                      |
+
 
 All containers share a network "mailcow-network" (name can be changed, but remove all containers and rebuild them after changing).
 
