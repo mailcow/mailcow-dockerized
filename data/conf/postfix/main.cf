@@ -1,4 +1,3 @@
-myhostname=demo.example.org
 biff = no
 append_dot_mydomain = no
 smtpd_tls_cert_file = /etc/ssl/mail/mail.crt
@@ -9,9 +8,8 @@ smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
 smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination
 alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
-myhostname=demo.example.org
 relayhost =
-mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128 172.55.0.0/16 172.18.0.0/16
+mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
 mailbox_size_limit = 0
 recipient_delimiter = +
 inet_interfaces = all
