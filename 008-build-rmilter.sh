@@ -26,9 +26,8 @@ else
 fi
 
 docker run \
-	-v ${PWD}/data/conf/rmilter/:/etc/rmilter.conf.d/ \
+	-v ${PWD}/data/conf/rmilter/:/etc/rmilter.conf.d/:ro \
 	--network=${DOCKER_NETWORK} \
-	--network-alias rmilter \
 	-h rmilter \
 	--name ${NAME} \
 	-d rmilter

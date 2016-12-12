@@ -34,6 +34,5 @@ docker run \
 	-v ${PWD}/data/db/redis/:/data/ \
 	--network=${DOCKER_NETWORK} \
 	-h redis \
-	--network-alias redis \
 	--name=${NAME} \
 	-d redis:${REDISVERS} --appendonly yes

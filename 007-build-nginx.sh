@@ -31,7 +31,6 @@ docker run \
 	-v ${PWD}/data/assets/ssl/:/etc/ssl/mail/:ro \
 	-v ${PWD}/data/conf/nginx/:/etc/nginx/conf.d/:ro \
 	--network=${DOCKER_NETWORK} \
-	--network-alias nginx \
 	-h nginx \
 	-d nginx:${NGINXVERS}
 

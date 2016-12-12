@@ -7,22 +7,22 @@ All configurations were written with security in mind.
 
 ### Exposed ports:
 
-| Service               | External bindings                            | Internal bindings              |
-|:----------------------|:---------------------------------------------|:-------------------------------|
-| Postfix               | 25/tcp, 465/tcp, 587/tcp                     | 588/tcp                        |
-| Dovecot               | 110/tcp, 143/tcp, 993/tcp, 995/tcp, 4190/tcp | 24/tcp, 10001/tcp              |
-| Nginx                 | 443/tcp                                      | 80/tcp, 8081/tcp               |
-| PowerDNS Recursor     | -                                            | 53/udp                         |
-| Rspamd                | -                                            | 11333/tcp, 11334/tcp           |
-| MariaDB               | -                                            | 3306/tcp                       |
-| Rmilter               | -                                            | 9000/tcp                       |
-| PHP FPM               | -                                            | 9000/tcp                       |
-| SOGo                  | -                                            | 9000/tcp                       |
-| Redis                 | -                                            | 6379/tcp                       |
-| Memcached             | -                                            | 11211/tcp                      |
+| Service      | Hostname, Alias                | External bindings                            | Internal bindings              |
+|:-------------|:-------------------------------|:---------------------------------------------|:-------------------------------|
+| Postfix      | ${MAILCOW_HOSTNAME}, postfix   | 25/tcp, 465/tcp, 587/tcp                     | 588/tcp                        |
+| Dovecot      | ${MAILCOW_HOSTNAME}, dovecot   | 110/tcp, 143/tcp, 993/tcp, 995/tcp, 4190/tcp | 24/tcp, 10001/tcp              |
+| Nginx        | nginx                          | 443/tcp                                      | 80/tcp, 8081/tcp               |
+| PowerDNS     | pdns                           | -                                            | 53/udp                         |
+| Rspamd       | rspamd                         | -                                            | 11333/tcp, 11334/tcp           |
+| MariaDB      | mysql                          | -                                            | 3306/tcp                       |
+| Rmilter      | rmilter                        | -                                            | 9000/tcp                       |
+| PHP FPM      | phpfpm                         | -                                            | 9000/tcp                       |
+| SOGo         | sogo                           | -                                            | 9000/tcp                       |
+| Redis        | redis                          | -                                            | 6379/tcp                       |
+| Memcached    | memcached                      | -                                            | 11211/tcp                      |
 
-
-All containers share a network "mailcow-network" (name can be changed, but remove all containers and rebuild them after changing).
+All containers share a network ${MAILCOW_NETWORK} (name can be changed, but remove all containers and rebuild them after changing).
+IPs are dynamic and taken from subnet ${DOCKER_SUBNET}.
 
 ## Installation
 
@@ -59,16 +59,8 @@ docker restart rspamd-mailcow
 
 Open https://${MAILCOW_HOSTNAME}/rspamd in a browser.
 
-### SSL (or: How to use Let's Encrypt)
-mailcow dockerized comes with a self-signed certificate. Certificates and DH parameters are saved as `data/assets/ssl/{dhparams.pem,mail.{crt,key}}`.
-
-First you should renew the DH parameters. 
-Soem say you should use 4096, but be prepared for a long waiting period when generating such a file.
-
-Assuming you are in the mailcow root folder:
-```
-openssl dhparam -out ./data/assets/ssl/dhparams.pem 2048
-```
+### SSL (and: How to use Let's Encrypt)
+mailcow dockerized generates a CA named "mailcow" with a self-signed server certificate in `data/assets/ssl` via `000-build-certs.sh`.
 
 Get the certbot client:
 ```
@@ -87,8 +79,8 @@ certbot-auto certonly \
 
 Create hard links to the full path of the new certificates. Assuming you are still in the mailcow root folder:
 ```
-mv data/assets/ssl/mail.{crt,crt_old}
-mv data/assets/ssl/mail.{key,key_old}
+mv data/assets/ssl/cert.{pem,pem.backup}
+mv data/assets/ssl/key.{pem,pem.backup}
 ln $(readlink -f /etc/letsencrypt/live/${MAILCOW_HOSTNAME}/fullchain.pem) data/assets/ssl/mail.crt
 ln $(readlink -f /etc/letsencrypt/live/${MAILCOW_HOSTNAME}/privkey.pem) data/assets/ssl/mail.key
 ```
@@ -113,11 +105,11 @@ When renewing certificates, run the last two steps (link + restart) as post-hook
 No persistent data is deleted at any time.
 If an image exists, you will be asked wether or not to repull/rebuild it.
 
+Build files are numbered "nnn" for dependencies.
+
 ### Logs
 
-You can use docker logs $name for almost all containers. Only rmilter does not log to stdout. You can check rspamd logs for rmilter reponses.
-
-When a process dies, the container dies, too. Except for Postfix' container.
+You can use docker logs $name for almost all containers. Only rmilter does not log to stdout. You can check rspamd logs for rmilter responses.
 
 ### MariaDB
 

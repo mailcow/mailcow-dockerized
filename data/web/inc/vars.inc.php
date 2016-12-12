@@ -31,6 +31,4 @@ $DEFAULT_LANG = "en";
 // See https://bootswatch.com/
 $DEFAULT_THEME = "lumen";
 
-$HASHING = "SSHA256";
-
 ?>

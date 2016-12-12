@@ -22,10 +22,12 @@ docker run \
 	-v ${PWD}/data/conf/rspamd/dynmaps:/dynmaps:ro \
     -v ${PWD}/data/dkim/:/shared/dkim/ \
 	-d --network=${DOCKER_NETWORK} \
-	--name ${NAME} --network-alias phpfpm -h phpfpm php:${PHPVERS}
+	--name ${NAME} \
+	-h phpfpm \
+	php:${PHPVERS}
 
 echo "Installing intl and mysql pdo extension..."
-docker exec ${NAME} /bin/bash -c "apt-get update && apt-get install -y zlib1g-dev libicu-dev g++ libidn11-dev dovecot-core"
+docker exec ${NAME} /bin/bash -c "apt-get update && apt-get install -y zlib1g-dev libicu-dev g++ libidn11-dev"
 docker exec ${NAME} docker-php-ext-configure intl pdo pdo_mysql
 docker exec ${NAME} docker-php-ext-install intl pdo pdo_mysql
 echo "Restarting container..."

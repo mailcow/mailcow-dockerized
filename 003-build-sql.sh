@@ -83,12 +83,11 @@ fi
 
 docker run \
 	-v ${PWD}/data/db/mysql/:/var/lib/mysql/ \
-	-v ${PWD}/data/conf/mysql/:/etc/mysql/conf.d/ \
-	-v ${PWD}/data/assets/mysql:/assets \
+	-v ${PWD}/data/conf/mysql/:/etc/mysql/conf.d/:ro \
+	-v ${PWD}/data/assets/mysql:/assets:ro \
 	--name=${NAME} \
 	--network=${DOCKER_NETWORK} \
 	-h mysql \
-	--network-alias mysql \
 	-e MYSQL_ROOT_PASSWORD=${DBROOT} \
 	-e MYSQL_DATABASE=${DBNAME} \
 	-e MYSQL_USER=${DBUSER} \

@@ -25,12 +25,9 @@ else
 	build
 fi
 
-sed -i "s#allow-from.*#allow-from=127.0.0.0/8 ${DOCKER_SUBNET}#" data/conf/pdns/recursor.conf
-
 docker run \
 	-v ${PWD}/data/conf/pdns/:/etc/powerdns/ \
 	--network=${DOCKER_NETWORK} \
-	--network-alias pdns \
 	-h pdns \
 	--name ${NAME} \
 	-d pdns

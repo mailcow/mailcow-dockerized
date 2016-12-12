@@ -1,12 +1,7 @@
 <?php
 function hash_password($password) {
 	$salt_str = bin2hex(openssl_random_pseudo_bytes(8));
-	if ($GLOBALS['HASHING'] == "SHA512-CRYPT") {
-		return "{SHA512-CRYPT}".crypt($password, '$6$'.$salt_str.'$');
-	}
-	else {
-		return "{SSHA256}".base64_encode(hash('sha256', $password.$salt_str, true).$salt_str);
-	}
+	return "{SSHA256}".base64_encode(hash('sha256', $password.$salt_str, true).$salt_str);
 }
 function hasDomainAccess($username, $role, $domain) {
 	global $pdo;
@@ -36,6 +31,23 @@ function hasDomainAccess($username, $role, $domain) {
 		return true;
 	}
 	return false;
+}
+function verify_ssha256($password, $hash) {
+	// Remove tag if any
+	$hash = ltrim($hash, '{SSHA256}');
+	// Decode hash
+	$dhash = base64_decode($hash);
+	// Get first 32 bytes of binary which equals a SHA256 hash
+	$ohash = substr($dhash, 0, 32);
+	// Remove SHA256 hash from decoded hash to get original salt string
+	$osalt = str_replace($ohash, '', $dhash);
+	// Check single salted SHA256 hash against extracted hash
+	if (hash('sha256', $password . $osalt, true) == $ohash) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 function doveadm_authenticate($hash, $algorithm, $password) {
 	$descr = array(0 => array('pipe', 'r'), 1 => array('pipe', 'w'), 2 => array('pipe', 'w'));
@@ -76,7 +88,7 @@ function check_login($user, $pass) {
 	$stmt->execute(array(':user' => $user));
 	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	foreach ($rows as $row) {
-		if (doveadm_authenticate($row['password'], $GLOBALS['HASHING'], $pass) !== false) {
+		if (verify_ssha256($row['password'], $pass) !== false) {
 			unset($_SESSION['ldelay']);
 			return "admin";
 		}
@@ -88,7 +100,7 @@ function check_login($user, $pass) {
 	$stmt->execute(array(':user' => $user));
 	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	foreach ($rows as $row) {
-		if (doveadm_authenticate($row['password'], $GLOBALS['HASHING'], $pass) !== false) {
+		if (doveadm_authenticate($row['password'], $pass) !== false) {
 			unset($_SESSION['ldelay']);
 			return "domainadmin";
 		}
@@ -99,7 +111,7 @@ function check_login($user, $pass) {
 	$stmt->execute(array(':user' => $user));
 	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	foreach ($rows as $row) {
-		if (doveadm_authenticate($row['password'], $GLOBALS['HASHING'], $pass) !== false) {
+		if (doveadm_authenticate($row['password'], $pass) !== false) {
 			unset($_SESSION['ldelay']);
 			return "user";
 		}

@@ -21,6 +21,5 @@ fi
 docker run \
 	--network=${DOCKER_NETWORK} \
 	-h memcached \
-	--network-alias memcached \
 	--name=${NAME} \
 	-d memcached
