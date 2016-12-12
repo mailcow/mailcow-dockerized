@@ -107,7 +107,7 @@ When renewing certificates, run the last two steps (link + restart) as post-hook
 
 (Re)build a container:
 ```
-./build-$name.sh 
+./n-build-$name.sh 
 ```
 **:exclamation:** Any previous container with the same name will be stopped and removed.
 No persistent data is deleted at any time.
@@ -123,34 +123,34 @@ When a process dies, the container dies, too. Except for Postfix' container.
 
 Connect to MariaDB database:
 ```
-./build-sql.sh --client
+./n-build-sql.sh --client
 ```
 
-Init schema (will also be installed when running `./build-sql.sh` without parameters):
+Init schema (will also be installed when running `./n-build-sql.sh` without parameters):
 ```
-./build-sql.sh --init-schema
+./n-build-sql.sh --init-schema
 ```
 
 Reset mailcow admin to `admin:moohoo`:
 ```
-./build-sql.sh --reset-admin
+./n-build-sql.sh --reset-admin
 ```
 
 Dump database to file backup_${DBNAME}_${DATE}.sql:
 ```
-./build-sql.sh --dump
+./n-build-sql.sh --dump
 ```
 
 Restore database from a file:
 ```
-./build-sql.sh --restore filename
+./n-build-sql.sh --restore filename
 ```
 
 ### Redis
 
 Connect to redis database:
 ```
-./build-redis.sh --client
+./n-build-redis.sh --client
 ```
 
 ### Rspamd examples
@@ -172,7 +172,7 @@ MariaDB:
 docker stop mariadb-mailcow
 docker rm mariadb-mailcow
 rm -rf data/db/mysql/*
-./build-sql.sh
+./n-build-sql.sh
 ```
 
 Redis:
@@ -181,9 +181,9 @@ Redis:
 docker stop redis-mailcow
 docker rm redus-mailcow
 rm -rf data/db/redis/*
-./build-redis.sh
+./n-build-redis.sh
 
 ## It is almost always enough to just flush all keys:
-./build-redis client
+./n-build-redis client
 # FLUSHALL [ENTER]
 ```

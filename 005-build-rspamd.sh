@@ -27,6 +27,8 @@ if [[ ! -z "$(docker images -q rspamd)" ]]; then
         docker rmi rspamd
 		build
     fi
+else
+	build
 fi
 
 docker run \

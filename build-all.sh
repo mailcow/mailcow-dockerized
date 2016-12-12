@@ -2,13 +2,9 @@
 
 /bin/bash port-check.sh
 [[ $? != 0 ]] && exit 1
-/bin/bash build-network.sh
-/bin/bash build-pdns.sh
 
-[[ $? != 0 ]] && exit 1
-for buildx in $(ls build-*.sh | grep -vE "all|network|pdns"); do
+for build in $(ls *build*.sh | grep -v all); do
     echo "Starting build file ${buildx} ..."
 	/bin/bash ${buildx}
 done
-
 /bin/bash fix-permissions.sh
