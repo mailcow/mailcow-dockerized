@@ -7,19 +7,19 @@ All configurations were written with security in mind.
 
 ### Exposed ports:
 
-| Service      | Hostname, Alias                | External bindings                            | Internal bindings              |
-|:-------------|:-------------------------------|:---------------------------------------------|:-------------------------------|
-| Postfix      | ${MAILCOW_HOSTNAME}, postfix   | 25/tcp, 465/tcp, 587/tcp                     | 588/tcp                        |
-| Dovecot      | ${MAILCOW_HOSTNAME}, dovecot   | 110/tcp, 143/tcp, 993/tcp, 995/tcp, 4190/tcp | 24/tcp, 10001/tcp              |
-| Nginx        | nginx                          | 443/tcp                                      | 80/tcp, 8081/tcp               |
-| PowerDNS     | pdns                           | -                                            | 53/udp                         |
-| Rspamd       | rspamd                         | -                                            | 11333/tcp, 11334/tcp           |
-| MariaDB      | mysql                          | -                                            | 3306/tcp                       |
-| Rmilter      | rmilter                        | -                                            | 9000/tcp                       |
-| PHP FPM      | phpfpm                         | -                                            | 9000/tcp                       |
-| SOGo         | sogo                           | -                                            | 9000/tcp                       |
-| Redis        | redis                          | -                                            | 6379/tcp                       |
-| Memcached    | memcached                      | -                                            | 11211/tcp                      |
+| Name              | Service      | Hostname, Alias                | External bindings                            | Internal bindings              |
+|:------------------|:-------------|:-------------------------------|:---------------------------------------------|:-------------------------------|
+| postfix-mailcow   | Postfix      | ${MAILCOW_HOSTNAME}, postfix   | 25/tcp, 465/tcp, 587/tcp                     | 588/tcp                        |
+| dovecot-mailcow   | Dovecot      | ${MAILCOW_HOSTNAME}, dovecot   | 110/tcp, 143/tcp, 993/tcp, 995/tcp, 4190/tcp | 24/tcp, 10001/tcp              |
+| nginx-mailcow     | Nginx        | nginx                          | 443/tcp                                      | 80/tcp, 8081/tcp               |
+| pdns-mailcow      | PowerDNS     | pdns                           | -                                            | 53/udp                         |
+| rspamd-mailcow    | Rspamd       | rspamd                         | -                                            | 11333/tcp, 11334/tcp           |
+| mariadb-mailcow   | MariaDB      | mysql                          | -                                            | 3306/tcp                       |
+| rmilter-mailcow   | Rmilter      | rmilter                        | -                                            | 9000/tcp                       |
+| phpfpm-mailcow    | PHP FPM      | phpfpm                         | -                                            | 9000/tcp                       |
+| sogo-mailcow      | SOGo         | sogo                           | -                                            | 9000/tcp                       |
+| redis-mailcow     | Redis        | redis                          | -                                            | 6379/tcp                       |
+| memcached-mailcow | Memcached    | memcached                      | -                                            | 11211/tcp                      |
 
 All containers share a network ${MAILCOW_NETWORK} (name can be changed, but remove all containers and rebuild them after changing).
 IPs are dynamic and taken from subnet ${DOCKER_SUBNET}.
