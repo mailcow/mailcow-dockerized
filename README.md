@@ -144,12 +144,13 @@ Dump database to file backup_${DBNAME}_${DATE}.sql:
 Restore database from a file:
 ```
 ./build-sql.sh --restore filename
+```
 
 ### Redis
 
 Connect to redis database:
 ```
-./build-sql.sh --client
+./build-redis.sh --client
 ```
 
 ### Rspamd examples
