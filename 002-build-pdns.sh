@@ -14,5 +14,6 @@ docker run \
 	-v ${PWD}/data/conf/pdns/:/etc/powerdns/ \
 	--network=${DOCKER_NETWORK} \
 	-h pdns \
+	--network-alias=pdns \
 	--name ${NAME} \
 	-d andryyy/mailcow-dockerized:pdns

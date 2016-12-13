@@ -32,6 +32,7 @@ docker run \
 	-v ${PWD}/data/conf/nginx/:/etc/nginx/conf.d/:ro \
 	--network=${DOCKER_NETWORK} \
 	-h nginx \
+	--network-alias=nginx \
 	-d nginx:${NGINXVERS}
 
 echo "Installaing SOGo web resource files..."

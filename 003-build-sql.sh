@@ -88,6 +88,7 @@ docker run \
 	--name=${NAME} \
 	--network=${DOCKER_NETWORK} \
 	-h mysql \
+	--network-alias=mysql \
 	-e MYSQL_ROOT_PASSWORD=${DBROOT} \
 	-e MYSQL_DATABASE=${DBNAME} \
 	-e MYSQL_USER=${DBUSER} \

@@ -23,6 +23,7 @@ docker run \
     -v ${PWD}/data/dkim/:/shared/dkim/ \
 	-d --network=${DOCKER_NETWORK} \
 	--name ${NAME} \
+	--network-alias=phpfpm \
 	-h phpfpm \
 	php:${PHPVERS}
 
