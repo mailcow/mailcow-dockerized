@@ -4,30 +4,10 @@ source mailcow.conf
 
 NAME="dovecot-mailcow"
 
-build() {
-	docker build --no-cache -t dovecot:local data/Dockerfiles/dovecot/.
-}
-
-if [[  ${1} == "--reconf" ]]; then
-    reconf
-    exit 0
-fi
-
 echo "Stopping and removing containers with name tag ${NAME}..."
 if [[ ! -z $(docker ps -af "name=${NAME}" -q) ]]; then
     docker stop $(docker ps -af "name=${NAME}" -q)
     docker rm $(docker ps -af "name=${NAME}" -q)
-fi
-
-if [[ ! -z "$(docker images -q dovecot)" ]]; then
-    read -r -p "Found image locally. Delete local and rebuild without cache anyway? [y/N] " response
-    response=${response,,}
-    if [[ $response =~ ^(yes|y)$ ]]; then
-        docker rmi dovecot:local
-        build
-    fi
-else
-    build
 fi
 
 sed -i "/^connect/c\connect = \"host=mysql dbname=${DBNAME} user=${DBUSER} password=${DBPASS}\"" data/conf/dovecot/sql/*

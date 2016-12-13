@@ -10,21 +10,6 @@ if [[ ! -z $(docker ps -af "name=${NAME}" -q) ]]; then
     docker rm $(docker ps -af "name=${NAME}" -q)
 fi
 
-build() {
-	docker build --no-cache -t sogo data/Dockerfiles/sogo/.
-}
-
-if [[ ! -z "$(docker images -q sogo)" ]]; then
-    read -r -p "Found image locally. Delete local and rebuild without cache anyway? [y/N] " response
-    response=${response,,}    # tolower
-    if [[ $response =~ ^(yes|y)$ ]]; then
-        docker rmi sogo
-        build
-	fi
-else
-	build
-fi
-
 sed -i "s#OCSEMailAlarmsFolderURL.*#OCSEMailAlarmsFolderURL = \"mysql://${DBUSER}:${DBPASS}@mysql:3306/${DBNAME}/sogo_alarms_folder\";#" data/conf/sogo/sogo.conf
 sed -i "s#OCSFolderInfoURL.*#OCSFolderInfoURL = \"mysql://${DBUSER}:${DBPASS}@mysql:3306/${DBNAME}/sogo_folder_info\";#" data/conf/sogo/sogo.conf
 sed -i "s#OCSSessionsFolderURL.*#OCSSessionsFolderURL = \"mysql://${DBUSER}:${DBPASS}@mysql:3306/${DBNAME}/sogo_sessions_folder\";#" data/conf/sogo/sogo.conf
@@ -38,4 +23,4 @@ docker run \
 	--network=${DOCKER_NETWORK} \
 	--network-alias sogo \
 	-h sogo \
-	-d -t sogo
+	-d -t andryyy/mailcow-dockerized:sogo
