@@ -14,6 +14,6 @@ docker run \
 	-v ${PWD}/data/conf/rmilter/:/etc/rmilter.conf.d/:ro \
 	--network=${DOCKER_NETWORK} \
 	-h rmilter \
-	--network-alias=rmilter
+	--network-alias=rmilter \
 	--name ${NAME} \
 	-d andryyy/mailcow-dockerized:rmilter

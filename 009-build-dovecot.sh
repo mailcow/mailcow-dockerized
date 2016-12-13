@@ -25,6 +25,6 @@ docker run \
 	--network=${DOCKER_NETWORK} \
 	--network-alias dovecot \
 	-h ${MAILCOW_HOSTNAME} \
-	-d dovecot:local
+	-d andryyy/mailcow-dockerized:dovecot
 
 /bin/bash ./fix-permissions.sh
