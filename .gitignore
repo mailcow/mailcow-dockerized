@@ -5,6 +5,7 @@ data/assets/ssl/*
 data/db/redis/*
 !data/db/redis/.redis_data
 data/vmail/*
+!data/vmail/.empty
 data/dkim/keys/*
 !data/dkim/keys/.dkim_priv_keys
 data/dkim/txt/*
