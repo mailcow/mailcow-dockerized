@@ -145,7 +145,7 @@ Connect to redis database:
 ./n-build-redis.sh --client
 ```
 
-### Rspamd examples
+### Some examples
 
 Use rspamadm:
 ```
@@ -155,6 +155,11 @@ docker exec -it rspamd-mailcow rspamadm --help
 Use rspamc:
 ```
 docker exec -it rspamd-mailcow rspamc --help
+```
+
+Use doveadm:
+```
+docker exec -it dovecot-mailcow doveadm
 ```
 
 ### Remove persistent data
