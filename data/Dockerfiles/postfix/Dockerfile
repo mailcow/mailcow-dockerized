@@ -22,4 +22,4 @@ RUN useradd -g vmail -u 5000 vmail -d /var/vmail
 
 EXPOSE 588
 
-CMD /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
+CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
