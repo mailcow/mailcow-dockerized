@@ -78,9 +78,6 @@ function check_login($user, $pass) {
 	if (!filter_var($user, FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $user))) {
 		return false;
 	}
-	if (!strpos(shell_exec("file --mime-encoding /usr/bin/doveadm"), "binary")) {
-		return false;
-	}
 	$user = strtolower(trim($user));
 	$stmt = $pdo->prepare("SELECT `password` FROM `admin`
 			WHERE `superadmin` = '1'
