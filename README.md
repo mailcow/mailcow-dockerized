@@ -24,6 +24,14 @@ All configurations were written with security in mind.
 All containers share a network ${MAILCOW_NETWORK} (name can be changed, but remove all containers and rebuild them after changing).
 IPs are dynamic and taken from subnet ${DOCKER_SUBNET}.
 
+FAQ:
+
+- rspamd learns mail as spam or ham when you move a message in or out of the junk folder to any mailbox besides trash.
+- rspamd auto-learns mail when a high or low score is detected (see https://rspamd.com/doc/configuration/statistic.html#autolearning)
+- You can upgrade SOGo by rebuilding the SOGo and Nginx container.
+- Only Postfix and Rspamd use the PowerDNS resolver for DNSSEC. 
+- Linking to existing redis and memcached containers will be possible soon
+
 ## Installation
 
 1. You need Docker. Most systems can install Docker by running `wget -qO- https://get.docker.com/ | sh`
