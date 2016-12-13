@@ -42,7 +42,7 @@ docker run \
 	--dns=${PDNS_IP} \
 	--dns-search=${DOCKER_NETWORK} \
 	--network=${DOCKER_NETWORK} \
-	--network-alias=rspamd
+	--network-alias=rspamd \
 	-h rspamd \
 	--name ${NAME} \
 	-d rspamd
