@@ -1,7 +1,7 @@
 <?php
 function hash_password($password) {
 	$salt_str = bin2hex(openssl_random_pseudo_bytes(8));
-	return "{SSHA256}".base64_encode(hash('sha256', $password.$salt_str, true).$salt_str);
+	return "{SSHA256}".base64_encode(hash('sha256', $password . $salt_str, true) . $salt_str);
 }
 function hasDomainAccess($username, $role, $domain) {
 	global $pdo;
@@ -32,7 +32,7 @@ function hasDomainAccess($username, $role, $domain) {
 	}
 	return false;
 }
-function verify_ssha256($password, $hash) {
+function verify_ssha256($hash, $password) {
 	// Remove tag if any
 	$hash = ltrim($hash, '{SSHA256}');
 	// Decode hash
@@ -100,7 +100,7 @@ function check_login($user, $pass) {
 	$stmt->execute(array(':user' => $user));
 	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	foreach ($rows as $row) {
-		if (doveadm_authenticate($row['password'], $pass) !== false) {
+		if (verify_ssha256($row['password'], $pass) !== false) {
 			unset($_SESSION['ldelay']);
 			return "domainadmin";
 		}
@@ -111,7 +111,7 @@ function check_login($user, $pass) {
 	$stmt->execute(array(':user' => $user));
 	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	foreach ($rows as $row) {
-		if (doveadm_authenticate($row['password'], $pass) !== false) {
+		if (verify_ssha256($row['password'], $pass) !== false) {
 			unset($_SESSION['ldelay']);
 			return "user";
 		}
