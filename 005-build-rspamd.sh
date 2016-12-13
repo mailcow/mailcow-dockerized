@@ -31,15 +31,18 @@ else
 	build
 fi
 
+# Needs network-alias because of different dns
+
 docker run \
-	-v ${PWD}/data/conf/rspamd/override.d/:/etc/rspamd/override.d/ro \
-	-v ${PWD}/data/conf/rspamd/local.d/:/etc/rspamd/local.d/ro \
+	-v ${PWD}/data/conf/rspamd/override.d/:/etc/rspamd/override.d:ro \
+	-v ${PWD}/data/conf/rspamd/local.d/:/etc/rspamd/local.d:ro \
 	-v ${PWD}/data/conf/rspamd/lua/:/etc/rspamd/lua/:ro \
 	-v ${PWD}/data/dkim/txt/:/etc/rspamd/dkim/txt/:ro \
 	-v ${PWD}/data/dkim/keys/:/etc/rspamd/dkim/keys/:ro \
 	--dns=${PDNS_IP} \
 	--dns-search=${DOCKER_NETWORK} \
 	--network=${DOCKER_NETWORK} \
+	--network-alias=rspamd
 	-h rspamd \
 	--name ${NAME} \
 	-d rspamd
