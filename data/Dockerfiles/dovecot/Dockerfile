@@ -14,6 +14,7 @@ RUN apt-get update \
 		dovecot-pop3d \
 		dovecot-dev \
 		wget \
+		curl \
 		build-essential \
 		autotools-dev \
 		automake

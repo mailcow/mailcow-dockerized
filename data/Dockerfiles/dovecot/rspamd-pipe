@@ -1,6 +1,8 @@
 #!/bin/bash
-if [[ ${1} == "learn_spam" ]]; then
+if [[ ${2} == "learn_spam" ]]; then
 /usr/bin/curl --data-binary @- http://rspamd:11334/learnspam < /dev/stdin
-elif [[ ${1} == "learn_ham" ]]; then
+elif [[ ${2} == "learn_ham" ]]; then
 /usr/bin/curl --data-binary @- http://rspamd:11334/learnham < /dev/stdin
 fi
+# Always return 0 to satisfy Dovecot...
+exit 0
