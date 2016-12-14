@@ -10,7 +10,9 @@ RUN apt-get update \
 	&& apt-get update \
 	&& apt-get -y --force-yes install sogo sogo-activesync
 
-echo "<?xml version="1.0" encoding="UTF-8"?> \n\
+
+RUN mkdir -p /var/lib/sogo/GNUstep/Defaults/
+RUN echo "<?xml version="1.0" encoding="UTF-8"?> \n\
 <!DOCTYPE plist PUBLIC "-//GNUstep//DTD plist 0.9//EN" "http://www.gnustep.org/plist-0_9.xml">\n\
 <plist version="0.9">\n\
 <dict>\n\
