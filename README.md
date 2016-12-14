@@ -28,7 +28,7 @@ IPs are dynamic except for PowerDNS resolver which has a static ip address 172.2
 
 - rspamd learns mail as spam or ham when you move a message in or out of the junk folder to any mailbox besides trash.
 - rspamd auto-learns mail when a high or low score is detected (see https://rspamd.com/doc/configuration/statistic.html#autolearning)
-- You can upgrade SOGo by running `docker pull andryyy/mailcow-dockerized:sogo && docker pull andryyy/mailcow-dockerized:nginx` and rebuilding of the SOGo and Nginx container.
+- You can upgrade SOGo by running `docker-compose up -d sogo-mailcow nginx-mailcow`.
 - Only Postfix and Rspamd use the PowerDNS resolver for DNSSEC. 
 - Linking to existing redis and memcached containers will be possible soon
 
