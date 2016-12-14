@@ -32,6 +32,31 @@ function hasDomainAccess($username, $role, $domain) {
 	}
 	return false;
 }
+function init_db_schema() {
+	global $pdo;
+	try {
+		$stmt = $pdo->prepare("SELECT `username` FROM `admin`");
+		$stmt->execute();
+	}
+	catch (Exception $e) {
+		$lines = file('/web/inc/init.sql');
+		$data = '';
+		foreach ($lines as $line) {
+			if (substr($line, 0, 2) == '--' || $line == '') {
+				continue;
+			}
+			$data .= $line;
+			if (substr(trim($line), -1, 1) == ';') {
+				$pdo->query($data);
+				$data = '';
+			}
+		}
+		$_SESSION['return'] = array(
+			'type' => 'success',
+			'msg' => 'Database initialization completed.'
+		);
+	}
+}
 function verify_ssha256($hash, $password) {
 	// Remove tag if any
 	$hash = ltrim($hash, '{SSHA256}');

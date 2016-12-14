@@ -21,10 +21,10 @@ All configurations were written with security in mind.
 | redis-mailcow     | Redis        | redis                          | -                                            | 6379/tcp                       |
 | memcached-mailcow | Memcached    | memcached                      | -                                            | 11211/tcp                      |
 
-All containers share a network ${MAILCOW_NETWORK} (name can be changed, but remove all containers and rebuild them after changing).
-IPs are dynamic and taken from subnet ${DOCKER_SUBNET}.
+All containers share a network "mailcow-network" with the subnet 172.22.1.0/24 - if you want to change it, set it in the composer file.
+IPs are dynamic except for PowerDNS resolver which has a static ip address 172.22.1.2.
 
-FAQ:
+### **FAQ**
 
 - rspamd learns mail as spam or ham when you move a message in or out of the junk folder to any mailbox besides trash.
 - rspamd auto-learns mail when a high or low score is detected (see https://rspamd.com/doc/configuration/statistic.html#autolearning)
@@ -34,16 +34,15 @@ FAQ:
 
 ## Installation
 
-1. You need Docker. Most systems can install Docker by running `wget -qO- https://get.docker.com/ | sh`
+1. You need Docker and Docker Compose. Most systems can install Docker by running `wget -qO- https://get.docker.com/ | sh` - see [this link](https://docs.docker.com/compose/install/) for installing Docker Compose.
 
 2. Clone this repository and configure `mailcow.conf`, do not use special chars in passwords in this file (will be fixed soon).
-It is almost always enough to just change the hostname.
 
-3. Run `./build-all.sh` - select `Y` when asked to reset the admin password.
+3. `docker-compose up -d` - leave the `-d` out for a wall of logs in case of debugging.
 
 Done.
 
-You can now access https://${MAILCOW_HOSTNAME} with the default credentials `admin` + password `moohoo`.
+You can now access https://${MAILCOW_HOSTNAME} with the default credentials `admin` + password `moohoo`. The database will be initialized when you first visit the UI.
 
 ## Configuration after installation
 
@@ -102,7 +101,8 @@ docker restart nginx-mailcow
 
 When renewing certificates, run the last two steps (link + restart) as post-hook in certbot.
 
-## Special usage
+## More useful commands and examples (todo: move to wiki soon)
+
 ### build-*.files
 
 (Re)build a container:
@@ -123,49 +123,50 @@ You can use docker logs $name for almost all containers. Only rmilter does not l
 
 Connect to MariaDB database:
 ```
-./n-build-sql.sh --client
+source mailcow.conf
+docker exec -it mariadb-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME}
 ```
 
-Init schema (will also be installed when running `./n-build-sql.sh` without parameters):
+Init schema (will be auto-installed by mailcow UI, but just in case...):
 ```
-./n-build-sql.sh --init-schema
+source mailcow.conf
+docker exec -it mariadb-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME} < data/web/inc/init.sql
 ```
 
 Reset mailcow admin to `admin:moohoo`:
 ```
-./n-build-sql.sh --reset-admin
+source mailcow.conf
+docker exec -it mariadb-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME} -e "DROP TABLE admin; DROP TABLE domain_admins"
+# Open mailcow UI to auto-init the db
 ```
 
-Dump database to file backup_${DBNAME}_${DATE}.sql:
+Backup and restore database:
 ```
-./n-build-sql.sh --dump
-```
-
-Restore database from a file:
-```
-./n-build-sql.sh --restore filename
+source mailcow.conf
+# Create
+DATE=$(date +"%Y%m%d_%H%M%S")
+docker exec -it mariadb-mailcow /bin/bash mysqldump --default-character-set=utf8mb4 -u${DBUSER} -p${DBPASS} ${DBNAME} > backup_${DBNAME}_${DATE}.sql
+# Restore
+docker exec -i mariadb-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME} < ${1}
 ```
 
 ### Redis
 
-Connect to redis database:
+Connect to redis key store:
 ```
-./n-build-redis.sh --client
+docker exec -it redis-mailcow /bin/bash -c "redis-cli"
 ```
 
-### Some examples
-
-Use rspamadm:
+### Use rspamadm:
 ```
 docker exec -it rspamd-mailcow rspamadm --help
 ```
 
-Use rspamc:
+### Use rspamc:
 ```
 docker exec -it rspamd-mailcow rspamc --help
 ```
-
-Use doveadm:
+### Use doveadm:
 ```
 docker exec -it dovecot-mailcow doveadm
 ```

@@ -22,7 +22,6 @@ $opt = [
     PDO::ATTR_EMULATE_PREPARES   => false,
 ];
 $pdo = new PDO($dsn, $database_user, $database_pass, $opt);
-
 $_SESSION['mailcow_locale'] = strtolower(trim($DEFAULT_LANG));
 setcookie('language', $DEFAULT_LANG);
 if (isset($_COOKIE['language'])) {
@@ -69,3 +68,4 @@ require_once 'lang/lang.en.php';
 include 'lang/lang.'.$_SESSION['mailcow_locale'].'.php';
 require_once 'inc/functions.inc.php';
 require_once 'inc/triggers.inc.php';
+init_db_schema();
