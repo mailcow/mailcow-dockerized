@@ -9,9 +9,9 @@ This file will be reset on upgrades.
 // SQL database connection variables
 $database_type = "mysql";
 $database_host = "mysql";
-$database_user = "mailcow";
-$database_pass = "mysafepasswd";
-$database_name = "mailcow";
+$database_user = getenv('DBUSER');
+$database_pass = getenv('DBPASS');
+$database_name = getenv('DBNAME');
 
 // Where to go after adding and editing objects
 // Can be "form" or "previous"
@@ -30,5 +30,4 @@ $DEFAULT_LANG = "en";
 // simplex, slate, spacelab, superhero, united, yeti
 // See https://bootswatch.com/
 $DEFAULT_THEME = "lumen";
-
 ?>

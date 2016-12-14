@@ -70,6 +70,10 @@ services:
         - ./data/web:/web:ro
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
         - ./data/dkim/:/shared/dkim/
+      environment:
+        - DBNAME=${DBNAME}
+        - DBUSER=${DBUSER}
+        - DBPASS=${DBPASS}
       restart: always
       networks:
         mailcow-network:
