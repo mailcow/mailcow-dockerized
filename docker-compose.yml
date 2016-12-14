@@ -80,6 +80,7 @@ services:
       image: andryyy/mailcow-dockerized:sogo
       depends_on:
         - pdns-mailcow
+        - mariadb-mailcow
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}

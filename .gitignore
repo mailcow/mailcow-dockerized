@@ -1,6 +1,4 @@
 data/db/mysql/*
-data/assets/ssl/*
-!data/assets/ssl/.empty
 !data/db/mysql/.mysql_data
 data/db/redis/*
 !data/db/redis/.redis_data
