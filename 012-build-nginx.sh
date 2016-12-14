@@ -10,14 +10,6 @@ if [[ ! -z $(docker ps -af "name=${NAME}" -q) ]]; then
     docker rm $(docker ps -af "name=${NAME}" -q)
 fi
 
-if [[ ! -z "$(docker images -q nginx:${NGINXVERS})" ]]; then
-    read -r -p "Found image locally. Delete local image and repull? [y/N] " response
-    response=${response,,}    # tolower
-    if [[ $response =~ ^(yes|y)$ ]]; then
-        docker rmi nginx:${NGINXVERS}
-    fi
-fi
-
 sed -i "s#database_name.*#database_name = \"${DBNAME}\";#" data/web/inc/vars.inc.php
 sed -i "s#database_user.*#database_user = \"${DBUSER}\";#" data/web/inc/vars.inc.php
 sed -i "s#database_pass.*#database_pass = \"${DBPASS}\";#" data/web/inc/vars.inc.php
@@ -33,10 +25,6 @@ docker run \
 	--network=${DOCKER_NETWORK} \
 	-h nginx \
 	--network-alias=nginx \
-	-d nginx:${NGINXVERS}
-
-echo "Installaing SOGo web resource files..."
-docker exec -it ${NAME} /bin/bash -c 'apt-key adv --keyserver keys.gnupg.net --recv-key 0x810273C4 && apt-get update && apt-get -y --force-yes install apt-transport-https'
-docker exec -it ${NAME} /bin/bash -c 'echo "deb http://packages.inverse.ca/SOGo/nightly/3/debian/ jessie jessie" > /etc/apt/sources.list.d/sogo.list && apt-get update && apt-get -y --force-yes install sogo'
+	-d andryyy/mailcow-dockerized:nginx
 
 /bin/bash ./fix-permissions.sh
