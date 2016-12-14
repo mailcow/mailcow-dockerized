@@ -67,7 +67,9 @@ docker restart rspamd-mailcow
 Open https://${MAILCOW_HOSTNAME}/rspamd in a browser.
 
 ### SSL (and: How to use Let's Encrypt)
-mailcow dockerized generates a CA named "mailcow" with a self-signed server certificate in `data/assets/ssl` via `000-build-certs.sh`.
+mailcow dockerized comes with a snakeoil CA "mailcow" and a server certificate in `data/assets/ssl`. Please use your own trusted certificates.
+
+**Use Let's Encrypt?**
 
 Get the certbot client:
 ```

@@ -163,7 +163,7 @@ services:
         - mariadb-mailcow
         - sogo-mailcow
         - php-fpm-mailcow
-      image: nginx
+      image: andryyy/mailcow-dockerized:nginx
       volumes:
         - ./data/web:/web:ro
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
