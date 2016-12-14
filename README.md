@@ -51,7 +51,7 @@ If you want to use Rspamds web UI, you need to set a Rspamd controller password:
 
 ```
 # Generate hash
-docker exec -it rspamd-mailcow rspamadm pw
+docker-compose exec rspamd-mailcow rspamadm pw
 ```
 
 Replace given hash in data/conf/rspamd/override.d/worker-controller.inc:
@@ -126,19 +126,19 @@ You can use docker logs $name for almost all containers. Only rmilter does not l
 Connect to MariaDB database:
 ```
 source mailcow.conf
-docker exec -it mariadb-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME}
+docker-compose exec mariadb-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME}
 ```
 
 Init schema (will be auto-installed by mailcow UI, but just in case...):
 ```
 source mailcow.conf
-docker exec -it mariadb-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME} < data/web/inc/init.sql
+docker-compose exec mariadb-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME} < data/web/inc/init.sql
 ```
 
 Reset mailcow admin to `admin:moohoo`:
 ```
 source mailcow.conf
-docker exec -it mariadb-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME} -e "DROP TABLE admin; DROP TABLE domain_admins"
+docker-compose exec mariadb-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME} -e "DROP TABLE admin; DROP TABLE domain_admins"
 # Open mailcow UI to auto-init the db
 ```
 
@@ -147,7 +147,7 @@ Backup and restore database:
 source mailcow.conf
 # Create
 DATE=$(date +"%Y%m%d_%H%M%S")
-docker exec -it mariadb-mailcow /bin/bash mysqldump --default-character-set=utf8mb4 -u${DBUSER} -p${DBPASS} ${DBNAME} > backup_${DBNAME}_${DATE}.sql
+docker-compose exec mariadb-mailcow mysqldump --default-character-set=utf8mb4 -u${DBUSER} -p${DBPASS} ${DBNAME} > backup_${DBNAME}_${DATE}.sql
 # Restore
 docker exec -i mariadb-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME} < ${1}
 ```
@@ -156,21 +156,21 @@ docker exec -i mariadb-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME} < ${1}
 
 Connect to redis key store:
 ```
-docker exec -it redis-mailcow /bin/bash -c "redis-cli"
+docker-compose exec redis-mailcow redis-cli
 ```
 
 ### Use rspamadm:
 ```
-docker exec -it rspamd-mailcow rspamadm --help
+docker-compose exec rspamd-mailcow rspamadm --help
 ```
 
 ### Use rspamc:
 ```
-docker exec -it rspamd-mailcow rspamc --help
+docker-compose exec rspamd-mailcow rspamc --help
 ```
 ### Use doveadm:
 ```
-docker exec -it dovecot-mailcow doveadm
+docker-compose exec dovecot-mailcow doveadm
 ```
 
 ### Remove persistent data
