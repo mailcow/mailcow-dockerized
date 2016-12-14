@@ -10,11 +10,13 @@ RUN apt-get update \
 	&& apt-get update \
 	&& apt-get -y --force-yes install sogo sogo-activesync
 
-ADD gnustep_defaults.sh /tmp/gnustep_defaults.sh
-RUN chmod +x /tmp/gnustep_defaults.sh && /tmp/gnustep_defaults.sh
+USER sogo
+
+COPY ./docker-entrypoint.sh /
 
 USER sogo
 
+ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["/usr/sbin/sogod"]
 
 EXPOSE 20000
