@@ -10,12 +10,22 @@ RUN apt-get update \
 	&& apt-get update \
 	&& apt-get -y --force-yes install sogo sogo-activesync
 
-RUN defaults write sogod SOGoUserSources '({type = sql;id = directory;viewURL = mysql://${DBUSER}:${DBPASS}@${DBHOST}:3306/${DBNAME}/sogo_view;canAuthenticate = YES;isAddressBook = YES;displayName = \"GAL\";MailFieldNames = (aliases, ad_aliases, senderacl);userPasswordAlgorithm = ssha256;})'
-RUN defaults write sogod SOGoProfileURL 'mysql://${DBUSER}:${DBPASS}@${DBHOST}:3306/${DBNAME}/sogo_user_profile'
-RUN defaults write sogod OCSFolderInfoURL 'mysql://${DBUSER}:${DBPASS}@${DBHOST}:3306/${DBNAME}/sogo_folder_info'
-RUN defaults write sogod OCSEMailAlarmsFolderURL 'mysql://${DBUSER}:${DBPASS}@${DBHOST}:3306/${DBNAME}/sogo_alarms_folder'
-RUN defaults write sogod OCSSessionsFolderURL 'mysql://${DBUSER}:${DBPASS}@${DBHOST}:3306/${DBNAME}/sogo_sessions_folder'
-
+echo "<?xml version="1.0" encoding="UTF-8"?> \n\
+<!DOCTYPE plist PUBLIC "-//GNUstep//DTD plist 0.9//EN" "http://www.gnustep.org/plist-0_9.xml">\n\
+<plist version="0.9">\n\
+<dict>\n\
+    <key>OCSEMailAlarmsFolderURL</key>\n\
+    <string>mysql://${DBUSER}:${DBPASS}@${DBHOST}:3306/${DBNAME}/sogo_alarms_folder</string>\n\
+    <key>OCSFolderInfoURL</key>\n\
+    <string>mysql://${DBUSER}:${DBPASS}@${DBHOST}:3306/${DBNAME}/sogo_folder_info</string>\n\
+    <key>OCSSessionsFolderURL</key>\n\
+    <string>mysql://${DBUSER}:${DBPASS}@${DBHOST}:3306/${DBNAME}/sogo_sessions_folder</string>\n\
+    <key>SOGoProfileURL</key>\n\
+    <string>mysql://${DBUSER}:${DBPASS}@${DBHOST}:3306/${DBNAME}/sogo_user_profile</string>\n\
+    <key>SOGoUserSources</key>\n\
+    <string>\(\{type = sql;id = directory;viewURL = mysql://${DBUSER}:${DBPASS}@${DBHOST}:3306/${DBNAME}/sogo_view;canAuthenticate = YES;isAddressBook = YES;displayName = \&quot;GAL\&quot;;MailFieldNames = (aliases, ad_aliases, senderacl);userPasswordAlgorithm = ssha256;\}\)</string>\n\
+</dict>\n\
+</plist>" > /var/lib/sogo/GNUstep/Defaults/sogod.plist
 
 USER sogo
 
