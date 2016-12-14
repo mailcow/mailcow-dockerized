@@ -10,17 +10,13 @@ if [[ ! -z $(docker ps -af "name=${NAME}" -q) ]]; then
     docker rm $(docker ps -af "name=${NAME}" -q)
 fi
 
-sed -i "s#OCSEMailAlarmsFolderURL.*#OCSEMailAlarmsFolderURL = \"mysql://${DBUSER}:${DBPASS}@mysql:3306/${DBNAME}/sogo_alarms_folder\";#" data/conf/sogo/sogo.conf
-sed -i "s#OCSFolderInfoURL.*#OCSFolderInfoURL = \"mysql://${DBUSER}:${DBPASS}@mysql:3306/${DBNAME}/sogo_folder_info\";#" data/conf/sogo/sogo.conf
-sed -i "s#OCSSessionsFolderURL.*#OCSSessionsFolderURL = \"mysql://${DBUSER}:${DBPASS}@mysql:3306/${DBNAME}/sogo_sessions_folder\";#" data/conf/sogo/sogo.conf
-sed -i "s#SOGoProfileURL.*#SOGoProfileURL = \"mysql://${DBUSER}:${DBPASS}@mysql:3306/${DBNAME}/sogo_user_profile\";#" data/conf/sogo/sogo.conf
-sed -i "s#viewURL.*#viewURL = \"mysql://${DBUSER}:${DBPASS}@mysql:3306/${DBNAME}/sogo_view\";#" data/conf/sogo/sogo.conf
-sed -i "s#WOWorkersCount.*#WOWorkersCount = \"${SOGOCHILDS}\";#" data/conf/sogo/sogo.conf
-
 docker run \
 	-v ${PWD}/data/conf/sogo/:/etc/sogo/ \
 	--name ${NAME} \
 	--network=${DOCKER_NETWORK} \
 	--network-alias sogo \
 	-h sogo \
+	-e DBNAME=${DBNAME} \
+	-e DBUSER=${DBUSER} \
+	-e DBPASS=${DBPASS} \
 	-d -t andryyy/mailcow-dockerized:sogo
