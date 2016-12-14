@@ -61,7 +61,7 @@ enable_password = "myhash";
 
 Restart rspamd:
 ```
-docker restart rspamd-mailcow
+docker-compose restart rspamd-mailcow
 ```
 
 Open https://${MAILCOW_HOSTNAME}/rspamd in a browser.
@@ -96,9 +96,9 @@ ln $(readlink -f /etc/letsencrypt/live/${MAILCOW_HOSTNAME}/privkey.pem) data/ass
 
 Restart containers which use the certificate:
 ```
-docker restart postfix-mailcow
-docker restart dovecot-mailcow
-docker restart nginx-mailcow
+docker-compose restart postfix-mailcow
+docker-compose restart dovecot-mailcow
+docker-compose restart nginx-mailcow
 ```
 
 When renewing certificates, run the last two steps (link + restart) as post-hook in certbot.
@@ -119,7 +119,7 @@ Build files are numbered "nnn" for dependencies.
 
 ### Logs
 
-You can use docker logs $name for almost all containers. Only rmilter does not log to stdout. You can check rspamd logs for rmilter responses.
+You can use `docker-compose logs $service-name` for almost all containers. Only rmilter does not log to stdout. You can check rspamd logs for rmilter responses.
 
 ### MariaDB
 
