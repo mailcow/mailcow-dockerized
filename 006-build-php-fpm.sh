@@ -25,11 +25,4 @@ docker run \
 	--name ${NAME} \
 	--network-alias=phpfpm \
 	-h phpfpm \
-	php:${PHPVERS}
-
-echo "Installing intl and mysql pdo extension..."
-docker exec ${NAME} /bin/bash -c "apt-get update && apt-get install -y zlib1g-dev libicu-dev g++ libidn11-dev"
-docker exec ${NAME} docker-php-ext-configure intl pdo pdo_mysql
-docker exec ${NAME} docker-php-ext-install intl pdo pdo_mysql
-echo "Restarting container..."
-docker restart ${NAME}
+	andryyy/mailcow-dockerized:phpfpm
