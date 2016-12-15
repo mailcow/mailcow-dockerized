@@ -50,8 +50,8 @@ services:
         - ./data/conf/rspamd/override.d/:/etc/rspamd/override.d:ro
         - ./data/conf/rspamd/local.d/:/etc/rspamd/local.d:ro
         - ./data/conf/rspamd/lua/:/etc/rspamd/lua/:ro
-        - ./data/dkim/txt/:/etc/rspamd/dkim/txt/:ro
-        - ./data/dkim/keys/:/etc/rspamd/dkim/keys/:ro
+      volumes_from:
+        - data-container-dkim
       restart: always
       dns: 
         - 172.22.1.2
@@ -69,7 +69,8 @@ services:
       volumes:
         - ./data/web:/web:ro
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
-        - ./data/dkim/:/shared/dkim/
+      volumes_from:
+        - data-container-dkim
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -114,9 +115,14 @@ services:
       depends_on:
         - pdns-mailcow
       volumes:
-        - ./data/conf/dovecot:/etc/dovecot:ro
-        - ./data/vmail:/var/vmail
+        - ./data/conf/dovecot:/etc/dovecot
         - ./data/assets/ssl:/etc/ssl/mail/:ro
+      volumes_from:
+        - data-container-vmail
+      environment:
+        - DBNAME=${DBNAME}
+        - DBUSER=${DBUSER}
+        - DBPASS=${DBPASS}
       ports:
         - "${IMAP_PORT}:143"
         - "${IMAPS_PORT}:993"
@@ -135,8 +141,12 @@ services:
       depends_on:
         - pdns-mailcow
       volumes:
-        - ./data/conf/postfix:/opt/postfix/conf:ro
+        - ./data/conf/postfix:/opt/postfix/conf
         - ./data/assets/ssl:/etc/ssl/mail/:ro
+      environment:
+        - DBNAME=${DBNAME}
+        - DBUSER=${DBUSER}
+        - DBPASS=${DBPASS}
       ports:
         - "${SMTP_PORT}:25"
         - "${SMTPS_PORT}:465"
@@ -180,6 +190,20 @@ services:
         mailcow-network:
           aliases:
             - nginx
+
+    data-container-dkim:
+      build: ./data/Dockerfiles/data-container-dkim
+      depends_on:
+        - pdns-mailcow
+      networks:
+        mailcow-network:
+
+    data-container-vmail:
+      build: ./data/Dockerfiles/data-container-vmail
+      depends_on:
+        - pdns-mailcow
+      networks:
+        mailcow-network:
 
 networks:
   mailcow-network:
