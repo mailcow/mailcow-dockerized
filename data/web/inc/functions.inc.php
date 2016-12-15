@@ -162,15 +162,14 @@ function dkim_table($action, $item) {
 	switch ($action) {
 		case "delete":
 			$domain = preg_replace('/[^A-Za-z0-9._\-]/', '_', $item['dkim']['domain']);
-			$selector = preg_replace('/[^A-Za-z0-9._\-]/', '_', $item['dkim']['selector']);
-			if (!ctype_alnum($selector) || !is_valid_domain_name($domain)) {
+			if (!is_valid_domain_name($domain)) {
 				$_SESSION['return'] = array(
 					'type' => 'danger',
 					'msg' => sprintf($lang['danger']['dkim_domain_or_sel_invalid'])
 				);
 				break;
 			}
-			exec('rm ' . escapeshellarg($GLOBALS['MC_DKIM_TXTS'] . '/' . $selector . '_' . $domain), $out, $return);
+			exec('rm ' . escapeshellarg($GLOBALS['MC_DKIM_TXTS'] . '/' . $domain . '.dkim'), $out, $return);
 			if ($return != "0") {
 				$_SESSION['return'] = array(
 					'type' => 'danger',
@@ -178,7 +177,7 @@ function dkim_table($action, $item) {
 				);
 				break;
 			}
-			exec('rm ' . escapeshellarg($GLOBALS['MC_DKIM_KEYS'] . '/' . $domain . '.' . $selector), $out, $return);
+			exec('rm ' . escapeshellarg($GLOBALS['MC_DKIM_KEYS'] . '/' . $domain . '.dkim'), $out, $return);
             if ($return != "0") {
                 $_SESSION['return'] = array(
                     'type' => 'danger',
@@ -193,9 +192,8 @@ function dkim_table($action, $item) {
 			break;
 		case "add":
 			$domain = preg_replace('/[^A-Za-z0-9._\-]/', '_', $item['dkim']['domain']);
-			$selector = preg_replace('/[^A-Za-z0-9._\-]/', '_', $item['dkim']['selector']);
 			$key_length	= intval($item['dkim']['key_size']);
-            if (!ctype_alnum($selector) || !is_valid_domain_name($domain) || !is_numeric($key_length)) {
+            if (!is_valid_domain_name($domain) || !is_numeric($key_length)) {
                 $_SESSION['return'] = array(
                     'type' => 'danger',
                     'msg' => sprintf($lang['danger']['dkim_domain_or_sel_invalid'])
@@ -203,8 +201,7 @@ function dkim_table($action, $item) {
                 break;
             }
 
-            if (file_exists($GLOBALS['MC_DKIM_TXTS'] . '/' . $selector . '_' . $domain) ||
-				file_exists($GLOBALS['MC_DKIM_KEYS'] . '/' . $domain . '.' . $selector)) {
+            if (!empty(glob($GLOBALS['MC_DKIM_TXTS'] . '/' . $domain . '.dkim'))) {
                 $_SESSION['return'] = array(
                     'type' => 'danger',
                     'msg' => sprintf($lang['danger']['dkim_domain_or_sel_invalid'])
@@ -225,9 +222,9 @@ function dkim_table($action, $item) {
 					), 1, -1)
 				);
 			// Save public key to file
-			file_put_contents($GLOBALS['MC_DKIM_TXTS'] . '/' . $selector . '_' . $domain, $pubKey);
+			file_put_contents($GLOBALS['MC_DKIM_TXTS'] . '/' . $domain . '.dkim', $pubKey);
 			// Save private key to file
-			openssl_pkey_export_to_file($keypair_ressource, $GLOBALS['MC_DKIM_KEYS'] . '/' . $domain . '.' . $selector);
+			openssl_pkey_export_to_file($keypair_ressource, $GLOBALS['MC_DKIM_KEYS'] . '/' . $domain . '.dkim');
 
 			$_SESSION['return'] = array(
 				'type' => 'success',

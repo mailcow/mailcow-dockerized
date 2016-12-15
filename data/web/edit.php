@@ -277,35 +277,25 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					</div>
 				</form>
 				<?php
-				$dnstxt_folder	= scandir($GLOBALS["MC_DKIM_TXTS"]);
-				$dnstxt_files	= array_diff($dnstxt_folder, array('.', '..', '.dkim_pub_keys'));
-				foreach($dnstxt_files as $file) {
-					if (explode("_", $file)[1] == $domain) {
-						$str = file_get_contents($GLOBALS["MC_DKIM_TXTS"]."/".$file);
-						$str = preg_replace('/\r|\t|\n/', '', $str);
-						preg_match('/\(.*\)/im', $str, $matches);
-						if(isset($matches[0])) {
-							$str = str_replace(array(' ', '"', '(', ')'), '', $matches[0]);
-						}
+				if (file_exists($GLOBALS["MC_DKIM_TXTS"]. "/" . $domain . "." . "dkim")) {
+					$pubKey = file_get_contents($GLOBALS["MC_DKIM_TXTS"]. "/" . $domain . "." . "dkim");
 				?>
-						<div class="row">
-							<div class="col-xs-2">
-								<p class="text-right"><?=$lang['edit']['dkim_signature'];?></p>
-							</div>
-							<div class="col-xs-10">
-								<div class="col-md-2"><b><?=$lang['edit']['dkim_txt_name'];?></b></div>
-								<div class="col-md-10">
-									<pre><?=htmlspecialchars(explode("_", $file)[0]);?>._domainkey</pre>
-								</div>
-								<div class="col-md-2"><b><?=$lang['edit']['dkim_txt_value'];?></b></div>
-								<div class="col-md-10">
-									<pre>v=DKIM1;k=rsa;t=s;s=email;p=<?=htmlspecialchars($str);?></pre>
-									<?=$lang['edit']['dkim_record_info'];?>
-								</div>
-							</div>
+					<div class="row">
+						<div class="col-xs-2">
+							<p>Domain: <strong><?=htmlspecialchars($domain);?></strong> (dkim._domainkey)</p>
 						</div>
+						<div class="col-xs-9">
+							<pre>v=DKIM1;k=rsa;t=s;s=email;p=<?=$pubKey;?></pre>
+						</div>
+						<div class="col-xs-1">
+							<form class="form-inline" role="form" method="post">
+							<a href="#" onclick="$(this).closest('form').submit()"><span class="glyphicon glyphicon-remove-circle"></span></a>
+							<input type="hidden" name="delete_dkim_record" value="<?=htmlspecialchars($file);?>">
+							<input type="hidden" name="dkim[domain]" value="<?=$domain;?>">
+							</form>
+						</div>
+					</div>
 				<?php
-					}
 				}
 			}
 			else {

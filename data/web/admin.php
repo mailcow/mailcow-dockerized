@@ -205,31 +205,24 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 <div id="collapseDKIM" class="panel-collapse">
 <div class="panel-body">
 	<?php
-	$dnstxt_folder	= scandir($GLOBALS["MC_DKIM_TXTS"]);
-	$dnstxt_files	= array_diff($dnstxt_folder, array('.', '..', '.dkim_pub_keys'));
+	$dnstxt_folder = scandir($GLOBALS["MC_DKIM_TXTS"]);
+	$dnstxt_files = array_diff($dnstxt_folder, array('.', '..'));
 	foreach($dnstxt_files as $file) {
-		$str = file_get_contents($GLOBALS["MC_DKIM_TXTS"]."/".$file);
-		$str = preg_replace('/\r|\t|\n/', '', $str);
-		preg_match('/\(.*\)/im', $str, $matches);
-		$domain = explode("_", $file)[1];
-		$selector = explode("_", $file)[0];
-		if(isset($matches[0])) {
-			$str = str_replace(array(' ', '"', '(', ')'), '', $matches[0]);
-		}
+		$pubKey = file_get_contents($GLOBALS["MC_DKIM_TXTS"]."/".$file);
+		$domain = substr($file, 0, -5);
 	?>
 		<div class="row">
 			<div class="col-xs-2">
-				<p>Domain: <strong><?=htmlspecialchars($domain);?></strong> (<?=htmlspecialchars($selector);?>._domainkey)</p>
+				<p>Domain: <strong><?=htmlspecialchars($domain);?></strong> (dkim._domainkey)</p>
 			</div>
 			<div class="col-xs-9">
-				<pre>v=DKIM1;k=rsa;t=s;s=email;p=<?=$str;?></pre>
+				<pre>v=DKIM1;k=rsa;t=s;s=email;p=<?=$pubKey;?></pre>
 			</div>
 			<div class="col-xs-1">
 				<form class="form-inline" role="form" method="post">
 				<a href="#" onclick="$(this).closest('form').submit()"><span class="glyphicon glyphicon-remove-circle"></span></a>
 				<input type="hidden" name="delete_dkim_record" value="<?=htmlspecialchars($file);?>">
                 <input type="hidden" name="dkim[domain]" value="<?=$domain;?>">
-                <input type="hidden" name="dkim[selector]" value="<?=$selector;?>">
 				</form>
 			</div>
 		</div>
@@ -241,10 +234,6 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 		<div class="form-group">
 			<label for="dkim_domain">Domain</label>
 			<input class="form-control" id="dkim_domain" name="dkim[domain]" placeholder="example.org" required>
-		</div>
-		<div class="form-group">
-			<label for="dkim_selector">Selector</label>
-			<input class="form-control" id="dkim_selector" name="dkim[selector]" value="default" required>
 		</div>
 		<div class="form-group">
 			<select class="form-control" id="dkim_key_size" name="dkim[key_size]" title="<?=$lang['admin']['dkim_key_length'];?>" required>

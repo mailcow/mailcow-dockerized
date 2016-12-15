@@ -19,8 +19,8 @@ $database_name = getenv('DBNAME');
 $FORM_ACTION = "previous";
 
 // File locations should not be changed
-$MC_DKIM_TXTS = "/shared/dkim/txt";
-$MC_DKIM_KEYS = "/shared/dkim/keys";
+$MC_DKIM_TXTS = "/data/dkim/txt";
+$MC_DKIM_KEYS = "/data/dkim/keys";
 
 // Change default language, "en", "pt", "de" or "nl"
 $DEFAULT_LANG = "en";
