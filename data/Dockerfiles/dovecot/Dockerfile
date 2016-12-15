@@ -27,7 +27,8 @@ RUN wget http://hg.dovecot.org/dovecot-antispam-plugin/archive/tip.tar.gz -O - |
 	&& make \
 	&& make install
 
-ADD rspamd-pipe /usr/local/bin/rspamd-pipe
+COPY ./rspamd-pipe /usr/local/bin/rspamd-pipe
+COPY ./docker-entrypoint.sh /
 
 RUN chmod +x /usr/local/bin/rspamd-pipe
 RUN groupadd -g 5000 vmail
@@ -35,4 +36,5 @@ RUN useradd -g vmail -u 5000 vmail -d /var/vmail
 
 EXPOSE 24 10001
 
+ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["/usr/sbin/dovecot", "-F"]
