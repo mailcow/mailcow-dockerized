@@ -69,7 +69,7 @@ Open https://${MAILCOW_HOSTNAME}/rspamd in a browser.
 ### SSL (and: How to use Let's Encrypt)
 mailcow dockerized comes with a snakeoil CA "mailcow" and a server certificate in `data/assets/ssl`. Please use your own trusted certificates.
 
-**Use Let's Encrypt?**
+**Use Let's Encrypt**
 
 Get the certbot client:
 ```
@@ -90,8 +90,8 @@ Create hard links to the full path of the new certificates. Assuming you are sti
 ```
 mv data/assets/ssl/cert.{pem,pem.backup}
 mv data/assets/ssl/key.{pem,pem.backup}
-ln $(readlink -f /etc/letsencrypt/live/${MAILCOW_HOSTNAME}/fullchain.pem) data/assets/ssl/mail.crt
-ln $(readlink -f /etc/letsencrypt/live/${MAILCOW_HOSTNAME}/privkey.pem) data/assets/ssl/mail.key
+ln $(readlink -f /etc/letsencrypt/live/${MAILCOW_HOSTNAME}/fullchain.pem) data/assets/ssl/cert.pem
+ln $(readlink -f /etc/letsencrypt/live/${MAILCOW_HOSTNAME}/privkey.pem) data/assets/ssl/key.pem
 ```
 
 Restart containers which use the certificate:
@@ -104,18 +104,6 @@ docker-compose restart nginx-mailcow
 When renewing certificates, run the last two steps (link + restart) as post-hook in certbot.
 
 ## More useful commands and examples (todo: move to wiki soon)
-
-### build-*.files
-
-(Re)build a container:
-```
-./n-build-$name.sh 
-```
-**:exclamation:** Any previous container with the same name will be stopped and removed.
-No persistent data is deleted at any time.
-If an image exists, you will be asked wether or not to repull/rebuild it.
-
-Build files are numbered "nnn" for dependencies.
 
 ### Logs
 
