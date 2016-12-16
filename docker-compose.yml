@@ -55,7 +55,6 @@ services:
       restart: always
       dns: 
         - 172.22.1.2
-        - 127.0.0.11
       dns_search: mailcow-network
       networks:
         mailcow-network:
@@ -155,7 +154,6 @@ services:
       hostname: ${MAILCOW_HOSTNAME}
       dns: 
         - 172.22.1.2
-        - 127.0.0.11
       dns_search: mailcow-network
       networks:
         mailcow-network:
