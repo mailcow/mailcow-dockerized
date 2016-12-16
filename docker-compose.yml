@@ -19,6 +19,9 @@ services:
       volumes:
         - ./data/db/mysql/:/var/lib/mysql/
         - ./data/conf/mysql/:/etc/mysql/conf.d/:ro
+      dns:
+        - 172.22.1.2
+      dns_search: mailcow-network
       environment:
         - MYSQL_ROOT_PASSWORD=${DBROOT}
         - MYSQL_DATABASE=${DBNAME}
@@ -37,6 +40,9 @@ services:
       volumes:
         - ./data/db/redis/:/data/
       restart: always
+      dns:
+        - 172.22.1.2
+      dns_search: mailcow-network
       networks:
         mailcow-network:
           aliases:
@@ -70,6 +76,9 @@ services:
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
       volumes_from:
         - data-container-dkim
+      dns:
+        - 172.22.1.2
+      dns_search: mailcow-network
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -89,6 +98,9 @@ services:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
+      dns:
+        - 172.22.1.2
+      dns_search: mailcow-network
       volumes:
         - ./data/conf/sogo/:/etc/sogo/
       restart: always
@@ -104,6 +116,9 @@ services:
       volumes:
         - ./data/conf/rmilter/:/etc/rmilter.conf.d/:ro
       restart: always
+      dns:
+        - 172.22.1.2
+      dns_search: mailcow-network
       networks:
         mailcow-network:
           aliases:
@@ -128,6 +143,9 @@ services:
         - "${POP_PORT}:110"
         - "${POPS_PORT}:995"
         - "${SIEVE_PORT}:4190"
+      dns:
+        - 172.22.1.2
+      dns_search: mailcow-network
       restart: always
       hostname: ${MAILCOW_HOSTNAME}
       networks:
@@ -165,6 +183,9 @@ services:
       depends_on:
         - pdns-mailcow
       restart: always
+      dns:
+        - 172.22.1.2
+      dns_search: mailcow-network
       networks:
         mailcow-network:
           aliases:
@@ -181,6 +202,9 @@ services:
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
         - ./data/assets/ssl/:/etc/ssl/mail/:ro
         - ./data/conf/nginx/:/etc/nginx/conf.d/:ro
+      dns:
+        - 172.22.1.2
+      dns_search: mailcow-network
       ports:
         - "443:443"
       restart: always
