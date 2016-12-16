@@ -55,7 +55,7 @@ while ($row = array_shift($rows)) {
 		WHERE `mailbox`.`username` = :object");
 	$stmt->execute(array(':object' => $row['object']));
 	$rows_aliases_2 = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	while ($row_aliases_2 = array_shift($rows_aliases_2)) {
+	while ($row_aliases_2 = array_filter(array_shift($rows_aliases_2))) {
 ?>
 		rcpt = "<?=$row_aliases_2['aliases'];?>";
 <?php
@@ -126,7 +126,7 @@ while ($row = array_shift($rows)) {
 		WHERE `mailbox`.`username` = :object");
 	$stmt->execute(array(':object' => $row['object']));
 	$rows_aliases_wl_2 = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	while ($row_aliases_wl_2 = array_shift($rows_aliases_wl_2)) {
+	while ($row_aliases_wl_2 = array_filter(array_shift($rows_aliases_wl_2))) {
 ?>
 		rcpt = "<?=$row_aliases_wl_2['aliases'];?>";
 <?php
@@ -192,7 +192,7 @@ while ($row = array_shift($rows)) {
 		WHERE `mailbox`.`username` = :object");
 	$stmt->execute(array(':object' => $row['object']));
 	$rows_aliases_wl_2 = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	while ($row_aliases_wl_2 = array_shift($rows_aliases_wl_2)) {
+	while ($row_aliases_wl_2 = array_filter(array_shift($rows_aliases_wl_2))) {
 ?>
 		rcpt = "<?=$row_aliases_wl_2['aliases'];?>";
 <?php

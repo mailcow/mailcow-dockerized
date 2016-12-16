@@ -12,6 +12,8 @@ RUN apt-get update \
 	&& apt-get --no-install-recommends -y --force-yes install rspamd
 
 RUN echo '.include $LOCAL_CONFDIR/local.d/rspamd.conf.local' > /etc/rspamd/rspamd.conf.local
+# "Hardcoded" - we need them
+RUN echo 'settings = "http://nginx:8081/settings.php";' > /etc/rspamd/modules.d/settings.conf
 
 CMD ["/usr/bin/rspamd","-f", "-u", "_rspamd", "-g", "_rspamd"]
 
