@@ -165,21 +165,22 @@ docker-compose exec dovecot-mailcow doveadm
 
 MariaDB:
 ```
-docker stop mariadb-mailcow
-docker rm mariadb-mailcow
+docker-compose down
 rm -rf data/db/mysql/*
-./n-build-sql.sh
+docker-compose up
 ```
 
 Redis:
 ```
-# If you feel hardcore:
-docker stop redis-mailcow
-docker rm redus-mailcow
-rm -rf data/db/redis/*
-./n-build-redis.sh
-
 ## It is almost always enough to just flush all keys:
-./n-build-redis client
-# FLUSHALL [ENTER]
+docker-compose exec redis-mailcow redis-cli FLUSHALL
+```
+
+### Scale it
+
+You can scale services for mailcow:
+```
+docker-compose scale rspamd-mailcow=2
+docker-compose scale rmilter-mailcow=3
+# ...
 ```
