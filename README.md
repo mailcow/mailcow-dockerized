@@ -5,32 +5,34 @@ Dovecot, Memcached, Redis, MariaDB, PowerDNS Recursor, PHP-FPM, Postfix, Nginx, 
 
 All configurations were written with security in mind.
 
-### Exposed ports:
+### Containers and volumes
 
-| Name              | Service      | Hostname, Alias                | External bindings                            | Internal bindings              |
-|:------------------|:-------------|:-------------------------------|:---------------------------------------------|:-------------------------------|
-| postfix-mailcow   | Postfix      | ${MAILCOW_HOSTNAME}, postfix   | 25/tcp, 465/tcp, 587/tcp                     | 588/tcp                        |
-| dovecot-mailcow   | Dovecot      | ${MAILCOW_HOSTNAME}, dovecot   | 110/tcp, 143/tcp, 993/tcp, 995/tcp, 4190/tcp | 24/tcp, 10001/tcp              |
-| nginx-mailcow     | Nginx        | nginx                          | 443/tcp                                      | 80/tcp, 8081/tcp               |
-| pdns-mailcow      | PowerDNS     | pdns                           | -                                            | 53/udp                         |
-| rspamd-mailcow    | Rspamd       | rspamd                         | -                                            | 11333/tcp, 11334/tcp           |
-| mariadb-mailcow   | MariaDB      | mysql                          | -                                            | 3306/tcp                       |
-| rmilter-mailcow   | Rmilter      | rmilter                        | -                                            | 9000/tcp                       |
-| phpfpm-mailcow    | PHP FPM      | phpfpm                         | -                                            | 9000/tcp                       |
-| sogo-mailcow      | SOGo         | sogo                           | -                                            | 9000/tcp                       |
-| redis-mailcow     | Redis        | redis                          | -                                            | 6379/tcp                       |
-| memcached-mailcow | Memcached    | memcached                      | -                                            | 11211/tcp                      |
+| Type      | Object name       | Network names                | External binding                             | Internal binding     | Volumes                                                                                                                                                                          |
+|-----------|-------------------|------------------------------|----------------------------------------------|----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Container | postfix-mailcow   | ${MAILCOW_HOSTNAME}, postfix | 25/tcp, 465/tcp, 587/tcp                     | 588/tcp              | ./data/conf/postfix:/opt/postfix/conf, ./data/assets/ssl:/etc/ssl/mail/:ro                                                                                                       |
+| Container | dovecot-mailcow   | ${MAILCOW_HOSTNAME}, dovecot | 110/tcp, 143/tcp, 993/tcp, 995/tcp, 4190/tcp | 24/tcp, 10001/tcp    | vmail-vol-1:/var/vmail, ./data/conf/dovecot:/etc/dovecot, ./data/assets/ssl:/etc/ssl/mail/:ro                                                                                    |
+| Container | nginx-mailcow     | nginx                        | 443/tcp                                      | 80/tcp, 8081/tcp     | Mounts from sogo-mailcow, ./data/web:/web:ro, ./data/conf/rspamd/dynmaps:/dynmaps:ro, ./data/assets/ssl/:/etc/ssl/mail/:ro, ./data/conf/nginx/:/etc/nginx/conf.d/:ro             |
+| Container | pdns-mailcow      | pdns                         | -                                            | 53/udp               | ./data/conf/pdns/:/etc/powerdns/                                                                                                                                                 |
+| Container | rspamd-mailcow    | rspamd                       | -                                            | 11333/tcp, 11334/tcp | dkim-vol-1:/data/dkim, ./data/conf/rspamd/override.d/:/etc/rspamd/override.d:ro, ./data/conf/rspamd/local.d/:/etc/rspamd/local.d:ro, ./data/conf/rspamd/lua/:/etc/rspamd/lua/:ro |
+| Container | mariadb-mailcow   | mysql                        | -                                            | 3306/tcp             | mysql-vol-1:/var/lib/mysql/, ./data/conf/mysql/:/etc/mysql/conf.d/:ro                                                                                                            |
+| Container | rmilter-mailcow   | rmilter                      | -                                            | 9000/tcp             | ./data/conf/rmilter/:/etc/rmilter.conf.d/:ro                                                                                                                                     |
+| Container | phpfpm-mailcow    | phpfpm                       | -                                            | 9000/tcp             | dkim-vol-1:/data/dkim, ./data/web:/web:ro, ./data/conf/rspamd/dynmaps:/dynmaps:ro                                                                                                |
+| Container | sogo-mailcow      | sogo                         | -                                            | 20000/tcp            | ./data/conf/sogo/:/etc/sogo/,exposes /usr/lib/GNUstep/SOGo/WebServerResources/                                                                                                   |
+| Container | redis-mailcow     | redis                        | -                                            | 6379/tcp             | redis-vol-1:/data/                                                                                                                                                               |
+| Container | memcached-mailcow | memcached                    | -                                            | 11211/tcp            | -                                                                                                                                                                                |
+| Volume    | vmail-vol-1       | -                            | -                                            | -                    | Mounts to dovecot                                                                                                                                                                |
+| Volume    | dkim-vol-1        | -                            | -                                            | -                    | Mounts to rspamd + phpfpm                                                                                                                                                        |
+| Volume    | redis-vol-1       | -                            | -                                            | -                    | Mounts to redis                                                                                                                                                                  |
+| Volume    | mysql-vol-1       | -                            | -                                            | -                    | Mounts to mysql                                                                                                                                                                  |
 
 All containers share a network "mailcow-network" with the subnet 172.22.1.0/24 - if you want to change it, set it in the composer file.
-IPs are dynamic except for PowerDNS resolver which has a static ip address 172.22.1.2.
+IPs are dynamic except for PowerDNS resolver which has a static ip address 172.22.1.254.
 
 ### **FAQ**
 
 - rspamd learns mail as spam or ham when you move a message in or out of the junk folder to any mailbox besides trash.
 - rspamd auto-learns mail when a high or low score is detected (see https://rspamd.com/doc/configuration/statistic.html#autolearning)
-- You can upgrade SOGo by running `docker-compose up -d sogo-mailcow nginx-mailcow`.
-- Only Postfix and Rspamd use the PowerDNS resolver for DNSSEC. 
-- Linking to existing redis and memcached containers will be possible soon
+- You can upgrade containers by running `docker-compose pull && docker-compose up -d`.
 
 ## Installation
 

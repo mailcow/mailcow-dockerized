@@ -8,7 +8,7 @@ services:
       restart: always
       networks:
         mailcow-network:
-          ipv4_address: 172.22.1.2
+          ipv4_address: 172.22.1.254
           aliases:
             - pdns
 
@@ -17,10 +17,10 @@ services:
       depends_on:
         - pdns-mailcow
       volumes:
-        - ./data/db/mysql/:/var/lib/mysql/
+        - mysql-vol-1:/var/lib/mysql/
         - ./data/conf/mysql/:/etc/mysql/conf.d/:ro
       dns:
-        - 172.22.1.2
+        - 172.22.1.254
       dns_search: mailcow-network
       environment:
         - MYSQL_ROOT_PASSWORD=${DBROOT}
@@ -38,10 +38,10 @@ services:
       depends_on:
         - pdns-mailcow
       volumes:
-        - ./data/db/redis/:/data/
+        - redis-vol-1:/data/
       restart: always
       dns:
-        - 172.22.1.2
+        - 172.22.1.254
       dns_search: mailcow-network
       networks:
         mailcow-network:
@@ -56,11 +56,10 @@ services:
         - ./data/conf/rspamd/override.d/:/etc/rspamd/override.d:ro
         - ./data/conf/rspamd/local.d/:/etc/rspamd/local.d:ro
         - ./data/conf/rspamd/lua/:/etc/rspamd/lua/:ro
-      volumes_from:
-        - data-container-dkim
+        - dkim-vol-1:/data/dkim
       restart: always
       dns: 
-        - 172.22.1.2
+        - 172.22.1.254
       dns_search: mailcow-network
       networks:
         mailcow-network:
@@ -74,10 +73,9 @@ services:
       volumes:
         - ./data/web:/web:ro
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
-      volumes_from:
-        - data-container-dkim
+        - dkim-vol-1:/data/dkim
       dns:
-        - 172.22.1.2
+        - 172.22.1.254
       dns_search: mailcow-network
       environment:
         - DBNAME=${DBNAME}
@@ -99,7 +97,7 @@ services:
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
       dns:
-        - 172.22.1.2
+        - 172.22.1.254
       dns_search: mailcow-network
       volumes:
         - ./data/conf/sogo/:/etc/sogo/
@@ -118,7 +116,7 @@ services:
         - ./data/conf/rmilter/:/etc/rmilter.conf.d/:ro
       restart: always
       dns:
-        - 172.22.1.2
+        - 172.22.1.254
       dns_search: mailcow-network
       networks:
         mailcow-network:
@@ -132,8 +130,7 @@ services:
       volumes:
         - ./data/conf/dovecot:/etc/dovecot
         - ./data/assets/ssl:/etc/ssl/mail/:ro
-      volumes_from:
-        - data-container-vmail
+        - vmail-vol-1:/var/vmail
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -145,7 +142,7 @@ services:
         - "${POPS_PORT}:995"
         - "${SIEVE_PORT}:4190"
       dns:
-        - 172.22.1.2
+        - 172.22.1.254
       dns_search: mailcow-network
       restart: always
       hostname: ${MAILCOW_HOSTNAME}
@@ -172,7 +169,7 @@ services:
       restart: always
       hostname: ${MAILCOW_HOSTNAME}
       dns: 
-        - 172.22.1.2
+        - 172.22.1.254
       dns_search: mailcow-network
       networks:
         mailcow-network:
@@ -185,7 +182,7 @@ services:
         - pdns-mailcow
       restart: always
       dns:
-        - 172.22.1.2
+        - 172.22.1.254
       dns_search: mailcow-network
       networks:
         mailcow-network:
@@ -207,7 +204,7 @@ services:
         - ./data/assets/ssl/:/etc/ssl/mail/:ro
         - ./data/conf/nginx/:/etc/nginx/conf.d/:ro
       dns:
-        - 172.22.1.2
+        - 172.22.1.254
       dns_search: mailcow-network
       ports:
         - "443:443"
@@ -216,20 +213,6 @@ services:
         mailcow-network:
           aliases:
             - nginx
-
-    data-container-dkim:
-      build: ./data/Dockerfiles/data-container-dkim
-      depends_on:
-        - pdns-mailcow
-      networks:
-        mailcow-network:
-
-    data-container-vmail:
-      build: ./data/Dockerfiles/data-container-vmail
-      depends_on:
-        - pdns-mailcow
-      networks:
-        mailcow-network:
 
 networks:
   mailcow-network:
@@ -240,3 +223,8 @@ networks:
         - subnet: 172.22.1.0/24
           gateway: 172.22.1.1
 
+volumes:
+  vmail-vol-1:
+  mysql-vol-1:
+  dkim-vol-1:
+  redis-vol-1:

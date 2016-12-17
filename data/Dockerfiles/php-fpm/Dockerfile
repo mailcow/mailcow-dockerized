@@ -9,7 +9,9 @@ RUN apt-get update \
 RUN docker-php-ext-configure intl
 RUN docker-php-ext-install intl pdo pdo_mysql
 
-WORKDIR /var/www/html
+COPY ./docker-entrypoint.sh /
 
 EXPOSE 9000
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["php-fpm"]
