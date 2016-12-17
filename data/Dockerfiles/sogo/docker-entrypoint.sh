@@ -7,4 +7,4 @@ defaults write sogod OCSFolderInfoURL "mysql://${DBUSER}:${DBPASS}@mysql:3306/${
 defaults write sogod OCSEMailAlarmsFolderURL "mysql://${DBUSER}:${DBPASS}@mysql:3306/${DBNAME}/sogo_alarms_folder"
 defaults write sogod OCSSessionsFolderURL "mysql://${DBUSER}:${DBPASS}@mysql:3306/${DBNAME}/sogo_sessions_folder"
 
-exec "$@"
+exec gosu sogo "$@"
