@@ -103,6 +103,7 @@ services:
       dns_search: mailcow-network
       volumes:
         - ./data/conf/sogo/:/etc/sogo/
+        - /usr/lib/GNUstep/SOGo/WebServerResources/
       restart: always
       networks:
         mailcow-network:
@@ -196,7 +197,10 @@ services:
         - mariadb-mailcow
         - sogo-mailcow
         - php-fpm-mailcow
-      image: andryyy/mailcow-dockerized:nginx
+        - rspamd-mailcow
+      image: nginx:mainline
+      volumes_from:
+        - sogo-mailcow
       volumes:
         - ./data/web:/web:ro
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
