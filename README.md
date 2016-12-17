@@ -1,7 +1,12 @@
-# mailcow-dockerized
+# mailcow-dockerized 🐮 🐋 
 
-mailcow dockerized comes with 11 containers linked in a mailcow network:
+mailcow dockerized comes with 11 containers linked in a bridged docker network ("mailcow-network"):
 Dovecot, Memcached, Redis, MariaDB, PowerDNS Recursor, PHP-FPM, Postfix, Nginx, Rmilter, Rspamd and SOGo.
+
+4 volumes to keep dynamic data. Feel free to use a 3rd-party driver to host your mail directory (vmail) in the cloud or whatever else.
+vmail-vol-1, dkim-vol-1, redis-vol-1, mysql-vol-1
+
+Important configuration files are mounted into the related containers and can be changed. Services should be restarted after they were changed (`docker-compose restart x-mailcow`).
 
 All configurations were written with security in mind.
 
@@ -17,13 +22,13 @@ All configurations were written with security in mind.
 | Container | mariadb-mailcow   | mysql                        | -                                            | 3306/tcp             | mysql-vol-1:/var/lib/mysql/, ./data/conf/mysql/:/etc/mysql/conf.d/:ro                                                                                                            |
 | Container | rmilter-mailcow   | rmilter                      | -                                            | 9000/tcp             | ./data/conf/rmilter/:/etc/rmilter.conf.d/:ro                                                                                                                                     |
 | Container | phpfpm-mailcow    | phpfpm                       | -                                            | 9000/tcp             | dkim-vol-1:/data/dkim, ./data/web:/web:ro, ./data/conf/rspamd/dynmaps:/dynmaps:ro                                                                                                |
-| Container | sogo-mailcow      | sogo                         | -                                            | 20000/tcp            | ./data/conf/sogo/:/etc/sogo/,exposes /usr/lib/GNUstep/SOGo/WebServerResources/                                                                                                   |
+| Container | sogo-mailcow      | sogo                         | -                                            | 20000/tcp            | ./data/conf/sogo/:/etc/sogo/, /usr/lib/GNUstep/SOGo/WebServerResources/                                                                                                          |
 | Container | redis-mailcow     | redis                        | -                                            | 6379/tcp             | redis-vol-1:/data/                                                                                                                                                               |
 | Container | memcached-mailcow | memcached                    | -                                            | 11211/tcp            | -                                                                                                                                                                                |
-| Volume    | vmail-vol-1       | -                            | -                                            | -                    | Mounts to dovecot                                                                                                                                                                |
-| Volume    | dkim-vol-1        | -                            | -                                            | -                    | Mounts to rspamd + phpfpm                                                                                                                                                        |
-| Volume    | redis-vol-1       | -                            | -                                            | -                    | Mounts to redis                                                                                                                                                                  |
-| Volume    | mysql-vol-1       | -                            | -                                            | -                    | Mounts to mysql                                                                                                                                                                  |
+| Volume    | vmail-vol-1       | -                            | -                                            | -                    | Mounts to dovecot-mailcow                                                                                                                                                        |
+| Volume    | dkim-vol-1        | -                            | -                                            | -                    | Mounts to rspamd-mailcow + phpfpm-mailcow                                                                                                                                        |
+| Volume    | redis-vol-1       | -                            | -                                            | -                    | Mounts to redis-mailcow                                                                                                                                                          |
+| Volume    | mysql-vol-1       | -                            | -                                            | -                    | Mounts to mysql-mailcow                                                                                                                                                          |
 
 All containers share a network "mailcow-network" with the subnet 172.22.1.0/24 - if you want to change it, set it in the composer file.
 IPs are dynamic except for PowerDNS resolver which has a static ip address 172.22.1.254.
