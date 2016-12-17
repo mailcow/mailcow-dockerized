@@ -1,7 +1,12 @@
-# mailcow-dockerized
+# mailcow-dockerized 🐮 🐋
 
 mailcow dockerized comes with 11 containers linked in a mailcow network:
-Dovecot, Memcached, Redis, MariaDB, PowerDNS Recursor, PHP-FPM, Postfix, Nginx, Rmilter, Rspamd and SOGo.
+Dovecot, Memcached, Redis, MySQL, PowerDNS Recursor, PHP-FPM, Postfix, Nginx, Rmilter, Rspamd and SOGo.
+
+4 volumes to keep dynamic data. Feel free to use a 3rd-party driver to host your mail directory (vmail) in the cloud or whatever else:
+ vmail-vol-1, dkim-vol-1, redis-vol-1, mysql-vol-1
+
+Important configuration files are mounted into the related containers from the host (`./data/conf`) and can be changed. Services should be restarted after they were changed (docker-compose restart x-mailcow).
 
 All configurations were written with security in mind.
 
@@ -14,7 +19,7 @@ All configurations were written with security in mind.
 | Container | nginx-mailcow     | nginx                        | 443/tcp                                      | 80/tcp, 8081/tcp     | Mounts from sogo-mailcow, ./data/web:/web:ro, ./data/conf/rspamd/dynmaps:/dynmaps:ro, ./data/assets/ssl/:/etc/ssl/mail/:ro, ./data/conf/nginx/:/etc/nginx/conf.d/:ro             |
 | Container | pdns-mailcow      | pdns                         | -                                            | 53/udp               | ./data/conf/pdns/:/etc/powerdns/                                                                                                                                                 |
 | Container | rspamd-mailcow    | rspamd                       | -                                            | 11333/tcp, 11334/tcp | dkim-vol-1:/data/dkim, ./data/conf/rspamd/override.d/:/etc/rspamd/override.d:ro, ./data/conf/rspamd/local.d/:/etc/rspamd/local.d:ro, ./data/conf/rspamd/lua/:/etc/rspamd/lua/:ro |
-| Container | mariadb-mailcow   | mysql                        | -                                            | 3306/tcp             | mysql-vol-1:/var/lib/mysql/, ./data/conf/mysql/:/etc/mysql/conf.d/:ro                                                                                                            |
+| Container | mysql-mailcow     | mysql                        | -                                            | 3306/tcp             | mysql-vol-1:/var/lib/mysql/, ./data/conf/mysql/:/etc/mysql/conf.d/:ro                                                                                                            |
 | Container | rmilter-mailcow   | rmilter                      | -                                            | 9000/tcp             | ./data/conf/rmilter/:/etc/rmilter.conf.d/:ro                                                                                                                                     |
 | Container | phpfpm-mailcow    | phpfpm                       | -                                            | 9000/tcp             | dkim-vol-1:/data/dkim, ./data/web:/web:ro, ./data/conf/rspamd/dynmaps:/dynmaps:ro                                                                                                |
 | Container | sogo-mailcow      | sogo                         | -                                            | 20000/tcp            | ./data/conf/sogo/:/etc/sogo/,exposes /usr/lib/GNUstep/SOGo/WebServerResources/                                                                                                   |
@@ -111,24 +116,24 @@ When renewing certificates, run the last two steps (link + restart) as post-hook
 
 You can use `docker-compose logs $service-name` for almost all containers. Only rmilter does not log to stdout. You can check rspamd logs for rmilter responses.
 
-### MariaDB
+### MySQL
 
-Connect to MariaDB database:
+Connect to MySQL database:
 ```
 source mailcow.conf
-docker-compose exec mariadb-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME}
+docker-compose exec mysql-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME}
 ```
 
 Init schema (will be auto-installed by mailcow UI, but just in case...):
 ```
 source mailcow.conf
-docker-compose exec mariadb-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME} < data/web/inc/init.sql
+docker-compose exec mysql-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME} < data/web/inc/init.sql
 ```
 
 Reset mailcow admin to `admin:moohoo`:
 ```
 source mailcow.conf
-docker-compose exec mariadb-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME} -e "DROP TABLE admin; DROP TABLE domain_admins"
+docker-compose exec mysql-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME} -e "DROP TABLE admin; DROP TABLE domain_admins"
 # Open mailcow UI to auto-init the db
 ```
 
@@ -137,9 +142,14 @@ Backup and restore database:
 source mailcow.conf
 # Create
 DATE=$(date +"%Y%m%d_%H%M%S")
-docker-compose exec mariadb-mailcow mysqldump --default-character-set=utf8mb4 -u${DBUSER} -p${DBPASS} ${DBNAME} > backup_${DBNAME}_${DATE}.sql
+docker-compose exec mysql-mailcow mysqldump --default-character-set=utf8mb4 -u${DBUSER} -p${DBPASS} ${DBNAME} > backup_${DBNAME}_${DATE}.sql
 # Restore
-docker exec -i mariadb-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME} < ${1}
+docker-compose exec mysql-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME} < ${1}
+```
+
+### Backup maildir (simple tar):
+```
+docker run --rm -it -v $(docker inspect --format '{{ range .Mounts }}{{ if eq .Destination "/var/vmail" }}{{ .Name }}{{ end }}{{ end }}' $(docker-compose ps -q dovecot-mailcow)):/vmail -v ${PWD}:/backup debian:jessie tar cvf /backup/backup_vmail.tar /vmail
 ```
 
 ### Redis
@@ -165,18 +175,7 @@ docker-compose exec dovecot-mailcow doveadm
 
 ### Remove persistent data
 
-MariaDB:
-```
-docker-compose down
-rm -rf data/db/mysql/*
-docker-compose up
-```
-
-Redis:
-```
-## It is almost always enough to just flush all keys:
-docker-compose exec redis-mailcow redis-cli FLUSHALL
-```
+Remove mysql-vol-1 to get rid fo MySQL data. To the same for redis-vol-1 to remove Redis data.
 
 ### Scale it
 

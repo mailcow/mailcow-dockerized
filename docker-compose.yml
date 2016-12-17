@@ -12,8 +12,8 @@ services:
           aliases:
             - pdns
 
-    mariadb-mailcow:
-      image: mariadb:latest
+    mysql-mailcow:
+      image: mysql:latest
       depends_on:
         - pdns-mailcow
       volumes:
@@ -91,7 +91,7 @@ services:
       image: andryyy/mailcow-dockerized:sogo
       depends_on:
         - pdns-mailcow
-        - mariadb-mailcow
+        - mysql-mailcow
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -191,7 +191,7 @@ services:
 
     nginx-mailcow:
       depends_on:
-        - mariadb-mailcow
+        - mysql-mailcow
         - sogo-mailcow
         - php-fpm-mailcow
         - rspamd-mailcow
