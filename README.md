@@ -175,7 +175,7 @@ docker-compose exec dovecot-mailcow doveadm
 
 ### Remove persistent data
 
-Remove mysql-vol-1 to get rid fo MySQL data. To the same for redis-vol-1 to remove Redis data.
+Remove volume mysql-vol-1 to get rid fo MySQL data. Do the same for volume redis-vol-1 to remove Redis data.
 
 ### Scale it
 
