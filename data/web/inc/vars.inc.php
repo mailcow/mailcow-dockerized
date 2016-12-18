@@ -12,6 +12,7 @@ $database_host = "mysql";
 $database_user = getenv('DBUSER');
 $database_pass = getenv('DBPASS');
 $database_name = getenv('DBNAME');
+date_default_timezone_set(getenv('TZ'));
 
 // Where to go after adding and editing objects
 // Can be "form" or "previous"
