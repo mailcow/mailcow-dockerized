@@ -16,7 +16,7 @@ services:
       image: mysql:latest
       depends_on:
         - pdns-mailcow
-      command: mysqld --default-time-zone=${TZ}
+      command: mysqld
       volumes:
         - mysql-vol-1:/var/lib/mysql/
         - ./data/conf/mysql/:/etc/mysql/conf.d/:ro

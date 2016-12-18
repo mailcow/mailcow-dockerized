@@ -85,7 +85,8 @@ wget https://dl.eff.org/certbot-auto -O /usr/local/sbin/certbot && chmod +x /usr
 
 Please disable applications blocking port 80 and run certbot:
 ```
-certbot-auto certonly \
+source mailcow.conf
+certbot certonly \
 	--standalone \
 	--standalone-supported-challenges http-01 \
 	-d ${MAILCOW_HOSTNAME} \
