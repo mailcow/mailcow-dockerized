@@ -124,12 +124,6 @@ source mailcow.conf
 docker-compose exec mysql-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME}
 ```
 
-Init schema (will be auto-installed by mailcow UI, but just in case...):
-```
-source mailcow.conf
-docker-compose exec mysql-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME} < data/web/inc/init.sql
-```
-
 Reset mailcow admin to `admin:moohoo`:
 ```
 source mailcow.conf
@@ -137,14 +131,12 @@ docker-compose exec mysql-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME} -e "DR
 # Open mailcow UI to auto-init the db
 ```
 
-Backup and restore database:
+Backup database:
 ```
 source mailcow.conf
 # Create
 DATE=$(date +"%Y%m%d_%H%M%S")
 docker-compose exec mysql-mailcow mysqldump --default-character-set=utf8mb4 -u${DBUSER} -p${DBPASS} ${DBNAME} > backup_${DBNAME}_${DATE}.sql
-# Restore
-docker-compose exec mysql-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME} < ${1}
 ```
 
 ### Backup maildir (simple tar):
