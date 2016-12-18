@@ -5,7 +5,7 @@ ENV DEBIAN_FRONTEND noninteractive
 
 ENV GOSU_VERSION 1.9
 RUN set -x \
-    && apt-get update && apt-get install -y --no-install-recommends ca-certificates wget cron && rm -rf /var/lib/apt/lists/* \
+    && apt-get update && apt-get install -y --no-install-recommends apt-transport-https ca-certificates wget rsyslog supervisor && rm -rf /var/lib/apt/lists/* \
     && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
     && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
     && wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc" \
@@ -16,16 +16,17 @@ RUN set -x \
     && chmod +x /usr/local/bin/gosu \
     && gosu nobody true
 
-RUN apt-get update \
-	&& apt-get -y --force-yes install apt-transport-https \
-	&& apt-key adv --keyserver keys.gnupg.net --recv-key 0x810273C4 \
+RUN apt-key adv --keyserver keys.gnupg.net --recv-key 0x810273C4 \
 	&& echo "deb http://packages.inverse.ca/SOGo/nightly/3/debian/ jessie jessie" > /etc/apt/sources.list.d/sogo.list \
 	&& apt-get update \
-	&& apt-get -y --force-yes install sogo sogo-activesync
+	&& apt-get -y --force-yes install sogo sogo-activesync 
 
 COPY ./docker-entrypoint.sh /
-
-ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["/usr/sbin/sogod"]
+COPY ./sogo-cron.sh /
+COPY supervisord.conf /etc/supervisor/supervisord.conf
 
 EXPOSE 20000
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
+

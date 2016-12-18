@@ -8,10 +8,6 @@ ${AS_SOGO} defaults write sogod SOGoProfileURL "mysql://${DBUSER}:${DBPASS}@mysq
 ${AS_SOGO} defaults write sogod OCSFolderInfoURL "mysql://${DBUSER}:${DBPASS}@mysql:3306/${DBNAME}/sogo_folder_info"
 ${AS_SOGO} defaults write sogod OCSEMailAlarmsFolderURL "mysql://${DBUSER}:${DBPASS}@mysql:3306/${DBNAME}/sogo_alarms_folder"
 ${AS_SOGO} defaults write sogod OCSSessionsFolderURL "mysql://${DBUSER}:${DBPASS}@mysql:3306/${DBNAME}/sogo_sessions_folder"
+${AS_SOGO} defaults write sogod SOGoTimeZone "${TZ}"
 
-echo '* * * * *      sogo    /usr/sbin/sogo-tool expire-sessions 60' > /etc/cron.d/sogo
-echo '* * * * *      sogo    /usr/sbin/sogo-ealarms-notify' >> /etc/cron.d/sogo
-
-cron
-
-exec ${AS_SOGO} "$@"
+exec "$@"
