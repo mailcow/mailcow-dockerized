@@ -16,6 +16,7 @@ services:
       image: mysql:latest
       depends_on:
         - pdns-mailcow
+      command: mysqld --default-time-zone=${TZ}
       volumes:
         - mysql-vol-1:/var/lib/mysql/
         - ./data/conf/mysql/:/etc/mysql/conf.d/:ro
@@ -96,6 +97,7 @@ services:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
+        - TZ=${TZ}
       dns:
         - 172.22.1.254
       dns_search: mailcow-network
