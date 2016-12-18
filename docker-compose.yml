@@ -13,7 +13,7 @@ services:
             - pdns
 
     mysql-mailcow:
-      image: mysql:latest
+      image: mariadb:10.1
       depends_on:
         - pdns-mailcow
       command: mysqld
