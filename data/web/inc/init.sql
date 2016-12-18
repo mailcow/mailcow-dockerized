@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS `admin` (
   `modified` datetime NOT NULL DEFAULT '2016-01-01 00:00:00',
   `active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `alias` (
   `address` varchar(255) NOT NULL,
@@ -17,19 +17,19 @@ CREATE TABLE IF NOT EXISTS `alias` (
   `active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`address`),
   KEY `domain` (`domain`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `sender_acl` (
   `logged_in_as` varchar(255) NOT NULL,
   `send_as` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `spamalias` (
   `address` varchar(255) NOT NULL,
   `goto` text NOT NULL,
   `validity` int(11) NOT NULL,
   PRIMARY KEY (`address`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `alias_domain` (
   `alias_domain` varchar(255) NOT NULL,
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `alias_domain` (
   PRIMARY KEY (`alias_domain`),
   KEY `active` (`active`),
   KEY `target_domain` (`target_domain`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `domain` (
   `domain` varchar(255) NOT NULL,
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS `domain` (
   `modified` datetime NOT NULL DEFAULT '2016-01-01 00:00:00',
   `active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`domain`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `domain_admins` (
   `username` varchar(255) NOT NULL,
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS `domain_admins` (
   `created` datetime NOT NULL DEFAULT '2016-01-01 00:00:00',
   `active` tinyint(1) NOT NULL DEFAULT '1',
   KEY `username` (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `mailbox` (
   `username` varchar(255) NOT NULL,
@@ -81,14 +81,14 @@ CREATE TABLE IF NOT EXISTS `mailbox` (
   `active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`username`),
   KEY `domain` (`domain`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `quota2` (
   `username` varchar(100) NOT NULL,
   `bytes` bigint(20) NOT NULL DEFAULT '0',
   `messages` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `filterconf` (
   `object` varchar(100) NOT NULL DEFAULT '',
@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS `filterconf` (
   `prefid` int(11) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`prefid`),
   KEY `object` (`object`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP VIEW IF EXISTS grouped_mail_aliases;
 DROP VIEW IF EXISTS grouped_sender_acl;
@@ -135,7 +135,7 @@ CREATE TABLE IF NOT EXISTS sogo_acl (
 	c_role      varchar(80)  NOT NULL,
 	KEY sogo_acl_c_folder_id_idx (c_folder_id),
 	KEY sogo_acl_c_uid_idx (c_uid)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS sogo_alarms_folder (
 	c_path          varchar(255) NOT NULL,
@@ -144,7 +144,7 @@ CREATE TABLE IF NOT EXISTS sogo_alarms_folder (
 	c_recurrence_id int(11)      DEFAULT NULL,
 	c_alarm_number  int(11)      NOT NULL,
 	c_alarm_date    int(11)      NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS sogo_cache_folder (
 	c_uid          varchar(255) NOT NULL,
@@ -157,7 +157,7 @@ CREATE TABLE IF NOT EXISTS sogo_cache_folder (
 	c_deleted      tinyint(4)   NOT NULL DEFAULT '0',
 	c_content      longtext,
 	PRIMARY KEY (c_uid,c_path)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS sogo_folder_info (
 	c_folder_id      bigint(20)    unsigned NOT NULL AUTO_INCREMENT,
@@ -173,7 +173,7 @@ CREATE TABLE IF NOT EXISTS sogo_folder_info (
 	c_folder_type    varchar(255)  NOT NULL,
 	PRIMARY KEY (c_path),
 	UNIQUE KEY c_folder_id (c_folder_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS sogo_quick_appointment (
 	c_folder_id      int(11)       NOT NULL,
@@ -201,7 +201,7 @@ CREATE TABLE IF NOT EXISTS sogo_quick_appointment (
 	c_nextalarm      int(11)       DEFAULT NULL,
 	c_description    text,
 	PRIMARY KEY (c_folder_id,c_name)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS sogo_quick_contact (
 	c_folder_id       int(11)      NOT NULL,
@@ -218,7 +218,7 @@ CREATE TABLE IF NOT EXISTS sogo_quick_contact (
 	c_categories      varchar(255) DEFAULT NULL,
 	c_component       varchar(10)  NOT NULL,
 	PRIMARY KEY (c_folder_id,c_name)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS sogo_sessions_folder (
 	c_id           varchar(255) NOT NULL,
@@ -226,7 +226,7 @@ CREATE TABLE IF NOT EXISTS sogo_sessions_folder (
 	c_creationdate int(11)      NOT NULL,
 	c_lastseen     int(11)      NOT NULL,
 	PRIMARY KEY (c_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS sogo_store (
 	c_folder_id    int(11)      NOT NULL,
@@ -237,14 +237,14 @@ CREATE TABLE IF NOT EXISTS sogo_store (
 	c_version      int(11)      NOT NULL,
 	c_deleted      int(11)      DEFAULT NULL,
 	PRIMARY KEY (c_folder_id,c_name)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS sogo_user_profile (
 	c_uid      varchar(255) NOT NULL,
 	c_defaults text,
 	c_settings text,
 	PRIMARY KEY (c_uid)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO admin (username, password, superadmin, created, modified, active) VALUES ('admin', '{SSHA256}K8eVJ6YsZbQCfuJvSUbaQRLr0HPLz5rC9IAp0PAFl0tmNDBkMDc0NDAyOTAxN2Rk', 1, NOW(), NOW(), 1);
 INSERT INTO domain_admins (username, domain, created, active) VALUES ('admin', 'ALL', NOW(), 1);
