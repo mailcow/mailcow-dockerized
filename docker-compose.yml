@@ -82,6 +82,7 @@ services:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
+        - TZ=${TZ}
       restart: always
       networks:
         mailcow-network:
