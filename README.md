@@ -2,6 +2,15 @@
 
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JWBSYHF4SMC68)
 
+https://github.com/andryyy/mailcow-dockerized#about-mailcow-dockerized
+	https://github.com/andryyy/mailcow-dockerized#container-and-volume-overview
+	https://github.com/andryyy/mailcow-dockerized#network
+	https://github.com/andryyy/mailcow-dockerized#faq
+
+https://github.com/andryyy/mailcow-dockerized#installation
+https://github.com/andryyy/mailcow-dockerized#first-steps
+
+
 ## About mailcow: dockerized
 mailcow dockerized comes with **11 containers** linked in a mailcow network:
 - Dovecot
@@ -51,7 +60,7 @@ All configurations were written with security in mind.
 All containers share a network "mailcow-network" with the subnet 172.22.1.0/24 - if you want to change it, set it in the composer file.
 IPs are dynamic except for PowerDNS resolver which has a static ip address 172.22.1.254.
 
-**FAQ**
+### FAQ
 
 - rspamd learns mail as spam or ham when you move a message in or out of the junk folder to any mailbox besides trash.
 - rspamd auto-learns mail when a high or low score is detected (see https://rspamd.com/doc/configuration/statistic.html#autolearning)
@@ -69,7 +78,7 @@ Done.
 
 You can now access https://${MAILCOW_HOSTNAME} with the default credentials `admin` + password `moohoo`. The database will be initialized when you first visit the UI.
 
-## Configuration after installation
+## First steps
 ### Rspamd UI access
 At first you may want to setup Rspamds web interface which provides some useful features and information.
 
@@ -131,10 +140,74 @@ docker-compose restart nginx-mailcow
 ```
 When renewing certificates, run the last two steps (link + restart) as post-hook in a script.
 
-## Other useful commands and examples
+### Adjust service configurations
+The most important configuration files are mounted from the host into the related containers:
+```
+data/conf/
+├── dovecot
+│   ├── dovecot.conf
+│   ├── sieve_after
+│   └── sql
+│       ├── dovecot-dict-sql.conf
+│       └── dovecot-mysql.conf
+├── mysql
+│   └── my.cnf
+├── nginx
+│   ├── dynmaps.conf
+│   └── site.conf
+├── pdns
+│   ├── pdns_custom.lua
+│   └── recursor.conf
+├── postfix
+│   ├── main.cf
+│   ├── master.cf
+│   ├── postscreen_access.cidr
+│   ├── smtp_dsn_filter
+│   └── sql
+|		...
+├── rmilter
+│   └── rmilter.conf
+├── rspamd
+│   ├── dynmaps
+│   │   ├── settings.php
+│   │   └── vars.inc.php -> ../../../web/inc/vars.inc.php
+│   ├── local.d
+│   │   ├── dkim.conf
+│   │   ├── metrics.conf
+│   │   ├── options.inc
+│   │   ├── redis.conf
+│   │   ├── rspamd.conf.local
+│   │   └── statistic.conf
+│   ├── lua
+│   │   └── rspamd.local.lua
+│   └── override.d
+│       ├── logging.inc
+│       ├── worker-controller.inc
+│       └── worker-normal.inc
+└── sogo
+    └── sogo.conf
+```
+Just change the according configuration file on the host and restart the related service with docker-compose: `docker-compose restart service-mailcow`
+
+## Useful commands and examples
 
 All commands need to be run from within `/path/to/git/clone/mailcow-dockerized`.
 
+### Update images and restart containers
+As easy as:
+```
+docker-compose pull
+docker-compose up -d
+```
+### Override used images with custom Dockerfiles
+Make your changes in `data/Dockerfiles/service` and build the image locally:
+```
+docker build data/Dockerfiles/service -t andryyy/mailcow-dockerized:service
+```
+Now auto-recreate modified containers:
+```
+docker-compose up -d
+```
 ### Get bash-completion for docker-compose
 For the tab-tab... :-)
 ```
