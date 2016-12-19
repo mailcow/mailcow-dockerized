@@ -8,6 +8,9 @@ ${AS_SOGO} defaults write sogod SOGoProfileURL "mysql://${DBUSER}:${DBPASS}@mysq
 ${AS_SOGO} defaults write sogod OCSFolderInfoURL "mysql://${DBUSER}:${DBPASS}@mysql:3306/${DBNAME}/sogo_folder_info"
 ${AS_SOGO} defaults write sogod OCSEMailAlarmsFolderURL "mysql://${DBUSER}:${DBPASS}@mysql:3306/${DBNAME}/sogo_alarms_folder"
 ${AS_SOGO} defaults write sogod OCSSessionsFolderURL "mysql://${DBUSER}:${DBPASS}@mysql:3306/${DBNAME}/sogo_sessions_folder"
+${AS_SOGO} defaults write sogod OCSCacheFolderURL "mysql://${DBUSER}:${DBPASS}@mysql:3306/${DBNAME}/sogo_cache_folder"
+${AS_SOGO} defaults write sogod OCSStoreURL "mysql://${DBUSER}:${DBPASS}@mysql:3306/${DBNAME}/sogo_store"
+${AS_SOGO} defaults write sogod OCSAclURL "mysql://${DBUSER}:${DBPASS}@mysql:3306/${DBNAME}/sogo_acl"
 ${AS_SOGO} defaults write sogod SOGoTimeZone "${TZ}"
 
 exec "$@"
