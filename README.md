@@ -137,7 +137,7 @@ Backup database:
 source mailcow.conf
 # Create
 DATE=$(date +"%Y%m%d_%H%M%S")
-docker-compose exec mysql-mailcow mysqldump --default-character-set=utf8 -u${DBUSER} -p${DBPASS} ${DBNAME} > backup_${DBNAME}_${DATE}.sql
+docker-compose exec mysql-mailcow mysqldump --default-character-set=utf8mb4 -u${DBUSER} -p${DBPASS} ${DBNAME} > backup_${DBNAME}_${DATE}.sql
 ```
 
 ### Backup maildir (simple tar):
