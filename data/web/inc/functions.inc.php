@@ -55,6 +55,10 @@ function init_db_schema() {
 		$num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
 		if ($num_results == 0) {
 			$pdo->query("CREATE INDEX sogo_acl_c_folder_id_idx ON sogo_acl(c_folder_id)");
+		}
+		$stmt = $pdo->query("SHOW INDEX FROM sogo_acl WHERE KEY_NAME = 'sogo_acl_c_uid_idx'");
+		$num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+		if ($num_results == 0) {
 			$pdo->query("CREATE INDEX sogo_acl_c_uid_idx ON sogo_acl(c_uid)");
 		}
 		$_SESSION['return'] = array(
