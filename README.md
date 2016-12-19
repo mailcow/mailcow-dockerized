@@ -24,6 +24,8 @@ mailcow dockerized comes with **11 containers** linked in a mailcow network:
 
 All configurations were written with security in mind.
 
+*[Looking for a farm to host your cow?](https://www.servercow.de)* 
+
 ### Container and volume overview
 
 | Type      | Object name       | Network names                | External binding                             | Internal binding     | Volumes                                                                                                                                                                                       |
