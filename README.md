@@ -3,14 +3,14 @@
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JWBSYHF4SMC68)
 
 * [About mailcow: dockerized](#about-mailcow-dockerized)
-+ [Container and volume overview](#container-and-volume-overview)
-+ [Network](#network)
-+ [FAQ](#faq)
+  + [Container and volume overview](#container-and-volume-overview)
+  + [Network](#network)
+  + [FAQ](#faq)
 * [Installation](#installation)
 * [First steps](#first-steps)
-+ [Rspamd UI access](#rspamd-ui-access)
-+ [SSL (and: How to use Let's Encrypt)](#ssl-and-how-to-use-lets-encrypt)
-+ [Adjust service configurations](#adjust-service-configurations)
+  + [Rspamd UI access](#rspamd-ui-access)
+  + [SSL (and: How to use Let's Encrypt)](#ssl-and-how-to-use-lets-encrypt)
+  + [Adjust service configurations](#adjust-service-configurations)
 * [Useful commands and examples](#useful-commands-and-examples)
 
 
