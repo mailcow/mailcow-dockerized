@@ -5,7 +5,7 @@ ENV DEBIAN_FRONTEND noninteractive
 
 ENV GOSU_VERSION 1.9
 RUN set -x \
-    && apt-get update && apt-get install -y --no-install-recommends apt-transport-https ca-certificates wget rsyslog supervisor && rm -rf /var/lib/apt/lists/* \
+    && apt-get update && apt-get install -y --no-install-recommends apt-transport-https ca-certificates wget rsyslog supervisor mysql-client && rm -rf /var/lib/apt/lists/* \
     && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
     && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
     && wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc" \

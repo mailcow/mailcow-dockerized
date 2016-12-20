@@ -328,6 +328,12 @@ function mailbox_add_domain($postarray) {
 			':modified' => date('Y-m-d H:i:s'),
 			':relay_all_recipients' => $relay_all_recipients
 		));
+		/*
+		PoC for a restart with supervisord unix socket
+		* $sock = stream_socket_client("unix:///var/run/controller/supervisord.sock", $errno, $errstr, 30);
+		* fwrite($sock, "GET ?processname=sogo&action=restart HTTP/1.0\r\nAccept: */*\r\n\r\n");
+		* fclose($sock);
+		*/
 		$_SESSION['return'] = array(
 			'type' => 'success',
 			'msg' => sprintf($lang['success']['domain_added'], htmlspecialchars($domain))
