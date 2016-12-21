@@ -1,1 +1,3 @@
 rebuild-images.sh
+data/conf/sogo/sieve.creds
+data/conf/dovecot/dovecot-master.passwd

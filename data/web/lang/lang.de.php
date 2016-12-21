@@ -283,6 +283,7 @@ $lang['add']['select_domain'] = 'Bitte zuerst eine Domain auswählen';
 $lang['add']['password'] = 'Passwort:';
 $lang['add']['password_repeat'] = 'Passwort (Wiederholung):';
 $lang['add']['previous'] = 'Vorherige Seite';
+$lang['add']['restart_sogo_hint'] = 'Der SOGo Container muss nach dem Hinzufügen einer neuen Domain neugestartet werden!';
 
 $lang['login']['title'] = 'Anmeldung';
 $lang['login']['administration'] = 'Administration';

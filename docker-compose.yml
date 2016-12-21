@@ -134,6 +134,8 @@ services:
         - ./data/conf/dovecot:/etc/dovecot
         - ./data/assets/ssl:/etc/ssl/mail/:ro
         - vmail-vol-1:/var/vmail
+      volumes_from:
+        - sogo-mailcow
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
