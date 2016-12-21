@@ -1,7 +1,7 @@
 <?php
+require_once "inc/vars.inc.php";
 if (empty($mailcow_hostname)) { exit(); }
 header("Content-Type: application/xml");
-require_once "inc/vars.inc.php";
 ?>
 <?='<?xml version="1.0"?>';?>
 <clientConfig version="1.1">
