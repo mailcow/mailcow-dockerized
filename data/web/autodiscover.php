@@ -5,17 +5,17 @@ $config = array(
      'useEASforOutlook' => 'yes',
      'autodiscoverType' => 'activesync',
      'imap' => array(
-       'server' => 'MAILCOW_HOST.MAILCOW_DOMAIN',
+       'server' => $mailcow_hostname,
        'port' => '993',
        'ssl' => 'on',
      ),
      'smtp' => array(
-       'server' => 'MAILCOW_HOST.MAILCOW_DOMAIN',
+       'server' => $mailcow_hostname,
        'port' => '465',
        'ssl' => 'on'
      ),
      'activesync' => array(
-       'url' => 'https://MAILCOW_HOST.MAILCOW_DOMAIN/Microsoft-Server-ActiveSync'
+       'url' => 'https://' . $mailcow_hostname . '/Microsoft-Server-ActiveSync'
      )
 );
 // If useEASforOutlook == no, the autodiscoverType option will be replaced to imap.

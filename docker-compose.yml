@@ -82,6 +82,7 @@ services:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
+        - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
         - TZ=${TZ}
       restart: always
       networks:

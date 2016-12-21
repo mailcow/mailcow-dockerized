@@ -12,6 +12,9 @@ $database_host = "mysql";
 $database_user = getenv('DBUSER');
 $database_pass = getenv('DBPASS');
 $database_name = getenv('DBNAME');
+
+// Other variables
+$mailcow_hostname = getenv('MAILCOW_HOSTNAME');
 date_default_timezone_set(getenv('TZ'));
 
 // Where to go after adding and editing objects
