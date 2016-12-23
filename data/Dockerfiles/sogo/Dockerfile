@@ -3,15 +3,15 @@ MAINTAINER Andre Peters <andre.peters@servercow.de>
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV LC_ALL C
+ENV GOSU_VERSION 1.9
 
 RUN dpkg-divert --local --rename --add /sbin/initctl \
     && ln -sf /bin/true /sbin/initctl \
     && dpkg-divert --local --rename --add /usr/bin/ischroot \
     && ln -sf /bin/true /usr/bin/ischroot
 
-ENV GOSU_VERSION 1.9
-RUN set -x \
-    && apt-get update && apt-get install -y --no-install-recommends apt-transport-https ca-certificates wget rsyslog supervisor mysql-client && rm -rf /var/lib/apt/lists/* \
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends apt-transport-https ca-certificates wget syslog-ng syslog-ng-core supervisor mysql-client cron \
     && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
     && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
     && wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc" \
@@ -27,8 +27,12 @@ RUN apt-key adv --keyserver keys.gnupg.net --recv-key 0x810273C4 \
 	&& apt-get update \
 	&& apt-get -y --force-yes install sogo sogo-activesync 
 
+RUN sed -i -E 's/^(\s*)system\(\);/\1unix-stream("\/dev\/log");/' /etc/syslog-ng/syslog-ng.conf
+RUN echo '* * * * *   sogo   /usr/sbin/sogo-ealarms-notify' > /etc/cron.d/sogo
+RUN echo '* * * * *   sogo   /usr/sbin/sogo-tool expire-sessions 60' >> /etc/cron.d/sogo
+RUN echo '0 0 * * *   sogo   /usr/sbin/sogo-tool update-autoreply -p /etc/sogo/sieve.creds' >> /etc/cron.d/sogo
+
 COPY ./docker-entrypoint.sh /
-COPY ./sogo-cron.sh /
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 
 EXPOSE 20000

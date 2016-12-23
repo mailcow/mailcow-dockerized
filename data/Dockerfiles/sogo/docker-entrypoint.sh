@@ -1,7 +1,7 @@
 #!/bin/bash
-set -e
 
-until mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} -e ""; do
+# Wait for MySQL to warm-up
+while ! mysqladmin ping --host mysql --silent; do
 	sleep 1
 done
 
@@ -88,7 +88,6 @@ done < <(mysql --host mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain
 echo '    </dict>
 </dict>
 </plist>' >> /var/lib/sogo/GNUstep/Defaults/sogod.plist
-
 
 # Fix permissions
 chown sogo:sogo -R /var/lib/sogo/

@@ -12,12 +12,14 @@ RUN dpkg-divert --local --rename --add /sbin/initctl \
 RUN apt-key adv --fetch-keys http://rspamd.com/apt-stable/gpg.key \
 	&& echo "deb http://rspamd.com/apt-stable/ xenial main" > /etc/apt/sources.list.d/rspamd.list \
 	&& apt-get update \
-	&& apt-get --no-install-recommends -y --force-yes install rmilter
+	&& apt-get --no-install-recommends -y --force-yes install rmilter cron syslog-ng syslog-ng-core supervisor
 
-CMD ["/usr/sbin/rmilter","-n", "-c", "/etc/rmilter.conf.d/rmilter.conf"]
-
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-USER _rmilter
+COPY supervisord.conf /etc/supervisor/supervisord.conf
 
 EXPOSE 9000
+
+RUN sed -i -E 's/^(\s*)system\(\);/\1unix-stream("\/dev\/log");/' /etc/syslog-ng/syslog-ng.conf
+
+CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
+
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
