@@ -2,6 +2,12 @@ FROM ubuntu:xenial
 MAINTAINER Andre Peters <andre.peters@servercow.de>
 
 ENV DEBIAN_FRONTEND noninteractive
+ENV LC_ALL C
+
+RUN dpkg-divert --local --rename --add /sbin/initctl \
+    && ln -sf /bin/true /sbin/initctl \
+    && dpkg-divert --local --rename --add /usr/bin/ischroot \
+    && ln -sf /bin/true /usr/bin/ischroot
 
 ENV GOSU_VERSION 1.9
 RUN set -x \
@@ -30,3 +36,4 @@ EXPOSE 20000
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

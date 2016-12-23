@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+until mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} -e ""; do
+	sleep 1
+done
+
 mkdir -p /var/lib/sogo/GNUstep/Defaults/
 
 # Generate plist header with timezone data
