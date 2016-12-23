@@ -19,6 +19,7 @@ COPY supervisord.conf /etc/supervisor/supervisord.conf
 EXPOSE 9000
 
 RUN sed -i -E 's/^(\s*)system\(\);/\1unix-stream("\/dev\/log");/' /etc/syslog-ng/syslog-ng.conf
+RUN touch /var/log/mail.log && chmod 640 /var/log/mail.log && chown root:adm /var/log/mail.log
 
 CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 
