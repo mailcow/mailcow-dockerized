@@ -1,3 +1,26 @@
+<?php
+if ($_SESSION['mailcow_cc_role'] == "admin"):
+?>
+<div id="RestartSOGo" class="modal fade" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal">&times;</button>
+			<h4 class="modal-title">Restart SOGo</h4>
+		</div>
+		<div class="modal-body">
+			<p>Some tasks, e.g. adding a domain, require you to restart SOGo to catch changes made in the mailcow UI.</p>
+			<hr />
+			<button class="btn btn-md btn-primary" id="triggerRestartSogo">Restart SOGo</button>
+			<br /><br />
+			<div id="statusTriggerRestartSogo"></div>
+		</div>
+		</div>
+	</div>
+</div>
+<?php
+endif;
+?>
 <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/js/bootstrap-switch.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.0.2/bootstrap-slider.min.js"></script>
@@ -59,6 +82,34 @@ $(document).ready(function() {
 	// Init Bootstrap Selectpicker
 	$('select').selectpicker();
 
+	// Trigger SOGo restart
+	$('#triggerRestartSogo').click(function(){
+		$(this).prop("disabled",true);
+		$('#statusTriggerRestartSogo').text('Stopping SOGo workers, this may take a while... ');
+		$.ajax({
+			method: 'get',
+			url: 'call_sogo_ctrl.php',
+			data: {
+				'ajax': true,
+				'ACTION': 'stop'
+			},
+			success: function(data) {
+				$('#statusTriggerRestartSogo').append(data);
+				$('#statusTriggerRestartSogo').append('<br />Starting SOGo... ');
+				$.ajax({
+					method: 'get',
+					url: 'call_sogo_ctrl.php',
+					data: {
+						'ajax': true,
+						'ACTION': 'start'
+					},
+					success: function(data) {
+						$('#statusTriggerRestartSogo').append(data);
+					}
+				});
+			}
+		});
+	});
 });
 </script>
 <?php

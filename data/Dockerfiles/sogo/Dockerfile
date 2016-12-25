@@ -32,12 +32,12 @@ RUN echo '* * * * *   sogo   /usr/sbin/sogo-ealarms-notify' > /etc/cron.d/sogo
 RUN echo '* * * * *   sogo   /usr/sbin/sogo-tool expire-sessions 60' >> /etc/cron.d/sogo
 RUN echo '0 0 * * *   sogo   /usr/sbin/sogo-tool update-autoreply -p /etc/sogo/sieve.creds' >> /etc/cron.d/sogo
 
-COPY ./docker-entrypoint.sh /
+COPY ./reconf-domains.sh /
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 
 EXPOSE 20000
+EXPOSE 9191
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

@@ -9,7 +9,7 @@ $(document).ready(function() {
 	$("#numRowsDomain").text(rowCountDomain);
 	$("#numRowsMailbox").text(rowCountMailbox);
 	$("#numRowsAlias").text(rowCountAlias);
-	
+
 	// Filter table function
 	$.fn.extend({
 		filterTable: function(){

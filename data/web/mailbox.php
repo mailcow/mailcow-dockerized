@@ -150,7 +150,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 					<tfoot>
 						<tr id="no-data">
 							<td colspan="8" style="text-align: center; font-style: normal; border-top: 1px solid #e7e7e7;">
-								<a href="/add.php?domain" class="btn btn-xs btn-primary"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_domain'];?></a>
+								<a href="/add.php?domain"><?=$lang['mailbox']['add_domain'];?></a>
 							</td>
 						</tr>
 					</tfoot>
@@ -238,7 +238,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 					<tfoot>
 						<tr id="no-data">
 							<td colspan="8" style="text-align: center; border-top: 1px solid #e7e7e7;">
-								<a href="/add.php?aliasdomain" class="btn btn-xs btn-primary"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_domain_alias'];?></a>
+								<a href="/add.php?aliasdomain"><?=$lang['mailbox']['add_domain_alias'];?></a>
 							</td>
 						</tr>
 					</tfoot>
@@ -368,7 +368,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 					<tfoot>
 						<tr id="no-data">
 							<td colspan="8" style="text-align: center; border-top: 1px solid #e7e7e7;">
-								<a href="/add.php?mailbox" class="btn btn-xs btn-primary"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_mailbox'];?></a>
+								<a href="/add.php?mailbox"><?=$lang['mailbox']['add_mailbox'];?></a>
 							</td>
 						</tr>
 					</tfoot>
@@ -479,7 +479,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 					<tfoot>
 						<tr id="no-data">
 							<td colspan="8" style="text-align: center; border-top: 1px solid #e7e7e7;">
-								<a href="/add.php?alias" class="btn btn-xs btn-primary"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_alias'];?></a>
+								<a href="/add.php?alias"><?=$lang['mailbox']['add_alias'];?></a>
 							</td>
 						</tr>
 					</tfoot>

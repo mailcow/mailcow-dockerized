@@ -199,6 +199,13 @@ endif;
 						?>
 					</ul>
 				</li>
+				<?php
+				if ($_SESSION['mailcow_cc_role'] == "admin"):
+				?>
+				<li><a href data-toggle="modal" data-target="#RestartSOGo"><span style="font-size:12px" class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Restart SOGo</a></li>
+				<?php
+				endif;
+				?>
 					<?php
 				}
 				if (isset($_SESSION['mailcow_cc_username'])):
