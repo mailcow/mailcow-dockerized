@@ -22,7 +22,7 @@ cat << EOF > mailcow.conf
 # example.org is _not_ a valid hostname, use a fqdn here.
 # Default admin user is "admin"
 # Default password is "moohoo"
-MAILCOW_HOSTNAME="${MAILCOW_HOSTNAME}"
+MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
 
 # ------------------------------
 # SQL database configuration
@@ -49,5 +49,5 @@ POPS_PORT=995
 SIEVE_PORT=4190
 
 # Your timezone
-TZ="${TZ}"
+TZ=${TZ}
 EOF
