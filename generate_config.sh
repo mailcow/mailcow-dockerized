@@ -14,6 +14,18 @@ fi
 
 read -p "Hostname (FQDN): " -ei "mx.example.org" MAILCOW_HOSTNAME
 read -p "Timezone: " -ei "Europe/Berlin" TZ
+read -p "WebUI Default Language: " -ei "en/pt/de/nl" MAILCOW_LANGUAGE
+
+cat << EOF > data/web/inc/vars.local.inc.php
+<?php
+error_reporting(0);
+/*
+PLEASE USE THIS  FILE TO OVERWRITE "vars.inc.php" SETTINGS AND MAKE THEM PERSISTENT!
+*/
+
+// Change default language, "en", "pt", "de" or "nl"
+$DEFAULT_LANG = "${MAILCOW_LANGUAGE}";
+EOF
 
 cat << EOF > mailcow.conf
 # ------------------------------
