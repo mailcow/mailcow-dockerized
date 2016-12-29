@@ -1,33 +1,46 @@
+#!/bin/bash
+
+if [[ -f mailcow.conf ]]; then
+  read -r -p "A config file exists and will be overwritten, are you sure you want to contine? [y/N] " response
+  case $response in
+    [yY][eE][sS]|[yY])
+      mv mailcow.conf mailcow.conf_backup
+      ;;
+    *)
+      exit 1
+    ;;
+  esac
+fi
+
+echo -ne "\e[1mHostname:\e[0m "
+read -ei "mx.example.org" MAILCOW_HOSTNAME
+echo -ne "\e[1mTimezone:\e[0m "
+read -ei "Europe/Berlin" TZ
+
+cat << EOF > mailcow.conf
 # ------------------------------
 # mailcow web ui configuration
 # ------------------------------
 # example.org is _not_ a valid hostname, use a fqdn here.
 # Default admin user is "admin"
 # Default password is "moohoo"
-
-MAILCOW_HOSTNAME=mail.example.org
-
+MAILCOW_HOSTNAME="${MAILCOW_HOSTNAME}"
 
 # ------------------------------
 # SQL database configuration
 # ------------------------------
-
 DBNAME=mailcow
 DBUSER=mailcow
 
 # Please use long, random alphanumeric strings (A-Za-z0-9)
-# Run data/assets/passwd/generate_passwords.sh to generate safe passwords
-
-DBPASS=mysafepasswd
-DBROOT=myothersafepasswd
-
+DBPASS=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
+DBROOT=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
 
 # ------------------------------
 # Misc configuration
 # ------------------------------
 # You should leave that alone
 # Can also be 11.22.33.44:25 or 0.0.0.0:465 etc. for specific bindings
-
 SMTP_PORT=25
 SMTPS_PORT=465
 SUBMISSION_PORT=587
@@ -36,6 +49,7 @@ IMAPS_PORT=993
 POP_PORT=110
 POPS_PORT=995
 SIEVE_PORT=4190
-HTTPS_PORT=443
 
-TZ="Europe/Berlin"
+# Your timezone
+TZ="${TZ}"
+EOF

@@ -1,3 +1,5 @@
 rebuild-images.sh
 data/conf/sogo/sieve.creds
 data/conf/dovecot/dovecot-master.passwd
+mailcow.conf
+mailcow.conf_backup
