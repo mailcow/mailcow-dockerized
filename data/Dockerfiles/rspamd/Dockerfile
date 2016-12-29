@@ -12,7 +12,7 @@ RUN dpkg-divert --local --rename --add /sbin/initctl \
 RUN apt-key adv --fetch-keys http://rspamd.com/apt-stable/gpg.key \
     && echo "deb http://rspamd.com/apt-stable/ xenial main" > /etc/apt/sources.list.d/rspamd.list \
     && apt-get update \
-    && apt-get --no-install-recommends -y --force-yes install rspamd
+    && apt-get -y install rspamd ca-certificates
 
 RUN echo '.include $LOCAL_CONFDIR/local.d/rspamd.conf.local' > /etc/rspamd/rspamd.conf.local
 # "Hardcoded" - we need them
