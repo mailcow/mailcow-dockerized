@@ -70,9 +70,7 @@ while ($row = array_shift($rows)) {
 		}
 <?php
 }
-?>
-	}
-<?php
+
 /*
 // Start whitelist
 */
