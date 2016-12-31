@@ -119,6 +119,30 @@ table[data-sortable].sortable-theme-bootstrap.sortable-theme-bootstrap-striped t
     background-color: #fafafa;
 	border:1px solid white;
 }
+.glyphicon-spin {
+    -webkit-animation: spin 1000ms infinite linear;
+    animation: spin 1000ms infinite linear;
+}
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
+}
+@keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
+}
 </style>
 <?php
 if (preg_match("/mailbox.php/i", $_SERVER['REQUEST_URI'])):

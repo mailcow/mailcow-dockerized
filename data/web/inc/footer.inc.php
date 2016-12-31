@@ -85,6 +85,7 @@ $(document).ready(function() {
 	// Trigger SOGo restart
 	$('#triggerRestartSogo').click(function(){
 		$(this).prop("disabled",true);
+		$(this).html('<span class="glyphicon glyphicon-refresh glyphicon-spin"></span> ');
 		$('#statusTriggerRestartSogo').text('Stopping SOGo workers, this may take a while... ');
 		$.ajax({
 			method: 'get',
@@ -105,6 +106,7 @@ $(document).ready(function() {
 					},
 					success: function(data) {
 						$('#statusTriggerRestartSogo').append(data);
+						$('#triggerRestartSogo').html('<span class="glyphicon glyphicon-ok"></span> ');
 					}
 				});
 			}
