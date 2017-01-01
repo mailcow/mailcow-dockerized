@@ -1,7 +1,7 @@
 version: '2'
 
 services:
-    pdns-mailcow:
+    pdns:
       image: andryyy/mailcow-dockerized:pdns
       volumes:
         - ./data/conf/pdns/:/etc/powerdns/
@@ -9,13 +9,11 @@ services:
       networks:
         mailcow-network:
           ipv4_address: 172.22.1.254
-          aliases:
-            - pdns
 
-    mysql-mailcow:
+    mysql:
       image: mariadb:10.1
       depends_on:
-        - pdns-mailcow
+        - pdns
       command: mysqld
       volumes:
         - mysql-vol-1:/var/lib/mysql/
@@ -31,13 +29,11 @@ services:
       restart: always
       networks:
         mailcow-network:
-          aliases:
-            - mysql
 
-    redis-mailcow:
+    redis:
       image: redis
       depends_on:
-        - pdns-mailcow
+        - pdns
       volumes:
         - redis-vol-1:/data/
       restart: always
@@ -46,13 +42,11 @@ services:
       dns_search: mailcow-network
       networks:
         mailcow-network:
-          aliases:
-            - redis
 
-    rspamd-mailcow:
+    rspamd:
       image: andryyy/mailcow-dockerized:rspamd
       depends_on:
-        - pdns-mailcow
+        - pdns
       volumes:
         - ./data/conf/rspamd/override.d/:/etc/rspamd/override.d:ro
         - ./data/conf/rspamd/local.d/:/etc/rspamd/local.d:ro
@@ -64,13 +58,11 @@ services:
       dns_search: mailcow-network
       networks:
         mailcow-network:
-          aliases:
-            - rspamd
 
-    php-fpm-mailcow:
+    phpfpm:
       image: andryyy/mailcow-dockerized:phpfpm
       depends_on:
-        - pdns-mailcow
+        - pdns
       volumes:
         - ./data/web:/web:ro
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
@@ -87,14 +79,12 @@ services:
       restart: always
       networks:
         mailcow-network:
-          aliases:
-            - phpfpm
 
-    sogo-mailcow:
+    sogo:
       image: andryyy/mailcow-dockerized:sogo
       depends_on:
-        - pdns-mailcow
-        - mysql-mailcow
+        - pdns
+        - mysql
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -105,17 +95,14 @@ services:
       dns_search: mailcow-network
       volumes:
         - ./data/conf/sogo/:/etc/sogo/
-        - /usr/lib/GNUstep/SOGo/WebServerResources/
       restart: always
       networks:
         mailcow-network:
-          aliases:
-            - sogo
 
-    rmilter-mailcow:
+    rmilter:
       image: andryyy/mailcow-dockerized:rmilter
       depends_on:
-        - pdns-mailcow
+        - pdns
       volumes:
         - ./data/conf/rmilter/:/etc/rmilter.conf.d/:ro
       restart: always
@@ -124,19 +111,17 @@ services:
       dns_search: mailcow-network
       networks:
         mailcow-network:
-          aliases:
-            - rmilter
 
-    dovecot-mailcow:
+    dovecot:
       image: andryyy/mailcow-dockerized:dovecot
       depends_on:
-        - pdns-mailcow
+        - pdns
       volumes:
         - ./data/conf/dovecot:/etc/dovecot
         - ./data/assets/ssl:/etc/ssl/mail/:ro
         - vmail-vol-1:/var/vmail
       volumes_from:
-        - sogo-mailcow
+        - sogo
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -154,13 +139,11 @@ services:
       hostname: ${MAILCOW_HOSTNAME}
       networks:
         mailcow-network:
-          aliases:
-            - dovecot
 
-    postfix-mailcow:
+    postfix:
       image: andryyy/mailcow-dockerized:postfix
       depends_on:
-        - pdns-mailcow
+        - pdns
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
         - ./data/assets/ssl:/etc/ssl/mail/:ro
@@ -179,31 +162,27 @@ services:
       dns_search: mailcow-network
       networks:
         mailcow-network:
-          aliases:
-            - postfix
 
-    memcached-mailcow:
+    memcached:
       image: memcached
       depends_on:
-        - pdns-mailcow
+        - pdns
       restart: always
       dns:
         - 172.22.1.254
       dns_search: mailcow-network
       networks:
         mailcow-network:
-          aliases:
-            - memcached
 
-    nginx-mailcow:
+    nginx:
       depends_on:
-        - mysql-mailcow
-        - sogo-mailcow
-        - php-fpm-mailcow
-        - rspamd-mailcow
+        - mysql
+        - sogo
+        - phpfpm
+        - rspamd
       image: nginx:mainline
       volumes_from:
-        - sogo-mailcow
+        - sogo
       volumes:
         - ./data/web:/web:ro
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
@@ -217,8 +196,6 @@ services:
       restart: always
       networks:
         mailcow-network:
-          aliases:
-            - nginx
 
 networks:
   mailcow-network:
