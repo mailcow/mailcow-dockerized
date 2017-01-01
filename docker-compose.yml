@@ -127,11 +127,11 @@ services:
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
       ports:
-        - "${IMAP_PORT}:143"
-        - "${IMAPS_PORT}:993"
-        - "${POP_PORT}:110"
-        - "${POPS_PORT}:995"
-        - "${SIEVE_PORT}:4190"
+        - "143:143"
+        - "993:993"
+        - "110:110"
+        - "995:995"
+        - "4190:4190"
       dns:
         - 172.22.1.254
       dns_search: mailcow-network
@@ -152,9 +152,9 @@ services:
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
       ports:
-        - "${SMTP_PORT}:25"
-        - "${SMTPS_PORT}:465"
-        - "${SUBMISSION_PORT}:587"
+        - "25:25"
+        - "465:465"
+        - "587:587"
       restart: always
       hostname: ${MAILCOW_HOSTNAME}
       dns: 
