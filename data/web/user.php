@@ -26,13 +26,13 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 		<div class="form-group">
 			<label class="control-label col-sm-3" for="user_new_pass"><?=$lang['user']['new_password'];?></label>
 			<div class="col-sm-5">
-			<input type="password" class="form-control" pattern="(?=.*[A-Za-z])(?=.*[0-9])\w{6,}" name="user_new_pass" id="user_new_pass" autocomplete="off" disabled="disabled">
+			<input type="password" class="form-control" pattern=".{6,}" name="user_new_pass" id="user_new_pass" autocomplete="off" disabled="disabled" required>
 			</div>
 		</div>
 		<div class="form-group">
 			<label class="control-label col-sm-3" for="user_new_pass2"><?=$lang['user']['new_password_repeat'];?></label>
 			<div class="col-sm-5">
-			<input type="password" class="form-control" pattern="(?=.*[A-Za-z])(?=.*[0-9])\w{6,}" name="user_new_pass2" id="user_new_pass2" disabled="disabled" autocomplete="off">
+			<input type="password" class="form-control" pattern=".{6,}" name="user_new_pass2" id="user_new_pass2" disabled="disabled" autocomplete="off" required>
 			<p class="help-block"><?=$lang['user']['new_password_description'];?></p>
 			</div>
 		</div>
