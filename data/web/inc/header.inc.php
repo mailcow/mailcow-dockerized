@@ -226,7 +226,7 @@ endif;
 				<?php
 				if ($_SESSION['mailcow_cc_role'] == "admin"):
 				?>
-				<li><a href data-toggle="modal" data-target="#RestartSOGo"><span style="font-size:12px" class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Restart SOGo</a></li>
+				<li><a href data-toggle="modal" data-target="#RestartSOGo"><span style="font-size:12px" class="glyphicon glyphicon-refresh" aria-hidden="true"></span> <?=$lang['header']['restart_sogo'];?></a></li>
 				<?php
 				endif;
 				?>

@@ -6,12 +6,12 @@ if ($_SESSION['mailcow_cc_role'] == "admin"):
 		<div class="modal-content">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal">&times;</button>
-			<h4 class="modal-title">Restart SOGo</h4>
+			<h4 class="modal-title"><?=$lang['footer']['restart_sogo'];?></h4>
 		</div>
 		<div class="modal-body">
-			<p>Some tasks, e.g. adding a domain, require you to restart SOGo to catch changes made in the mailcow UI.</p>
+			<p><?=$lang['footer']['restart_sogo_info'];?></p>
 			<hr />
-			<button class="btn btn-md btn-primary" id="triggerRestartSogo">Restart SOGo</button>
+			<button class="btn btn-md btn-primary" id="triggerRestartSogo"><?=$lang['footer']['restart_now'];?></button>
 			<br /><br />
 			<div id="statusTriggerRestartSogo"></div>
 		</div>
