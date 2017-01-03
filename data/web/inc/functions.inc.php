@@ -8,11 +8,12 @@ function hasDomainAccess($username, $role, $domain) {
 	if (!filter_var($username, FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $username))) {
 		return false;
 	}
-
 	if (!is_valid_domain_name($domain)) {
 		return false;
 	}
-
+	if ($role != 'admin' && $role != 'domainadmin' && $role != 'user') {
+		return false;
+	}
 	try {
 		$stmt = $pdo->prepare("SELECT `domain` FROM `domain_admins`
 			WHERE (
@@ -2192,6 +2193,9 @@ function delete_domain_admin($postarray) {
 function get_spam_score($username) {
 	global $pdo;
 	$default = "5, 15";
+	if ($_SESSION['mailcow_cc_role'] != "user") {
+		return false;
+	}
 	if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
 		return $default;
 	}
@@ -2235,6 +2239,13 @@ function get_spam_score($username) {
 function set_spam_score($postarray) {
 	global $lang;
 	global $pdo;
+	if ($_SESSION['mailcow_cc_role'] != "user") {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['access_denied'])
+		);
+		return false;
+	}
 	$username		= $_SESSION['mailcow_cc_username'];
 	$lowspamlevel	= explode(',', $postarray['score'])[0];
 	$highspamlevel	= explode(',', $postarray['score'])[1];
@@ -2288,7 +2299,15 @@ function set_spam_score($postarray) {
 function set_policy_list($postarray) {
 	global $lang;
 	global $pdo;
-
+	if ($_SESSION['mailcow_cc_role'] != "admin" &&
+		$_SESSION['mailcow_cc_role'] != "domainadmin" &&
+		$_SESSION['mailcow_cc_role'] != "user") {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['access_denied'])
+		);
+		return false;
+	}
 	(isset($postarray['domain'])) ? $object = $postarray['domain'] : $object = $_SESSION['mailcow_cc_username'];
 	($postarray['object_list'] == "bl") ? $object_list = "blacklist_from" : $object_list = "whitelist_from";
 	$object_from = preg_replace('/\.+/', '.', rtrim(preg_replace("/\.\*/", "*", trim(strtolower($postarray['object_from']))), '.'));
@@ -2389,6 +2408,13 @@ function set_policy_list($postarray) {
 function set_tls_policy($postarray) {
 	global $lang;
 	global $pdo;
+	if ($_SESSION['mailcow_cc_role'] != "user") {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['access_denied'])
+		);
+		return false;
+	}
 	isset($postarray['tls_in']) ? $tls_in = '1' : $tls_in = '0';
 	isset($postarray['tls_out']) ? $tls_out = '1' : $tls_out = '0';
 	$username = $_SESSION['mailcow_cc_username'];
@@ -2422,6 +2448,9 @@ function set_tls_policy($postarray) {
 function get_tls_policy($username) {
 	global $lang;
 	global $pdo;
+	if ($_SESSION['mailcow_cc_role'] != "user") {
+		return false;
+	}
 	if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
 		$_SESSION['return'] = array(
 			'type' => 'danger',
