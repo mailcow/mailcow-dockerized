@@ -7,7 +7,7 @@
 $lang['footer']['loading'] = "Please wait...";
 $lang['header']['restart_sogo'] = 'Restart SOGo';
 $lang['footer']['restart_sogo'] = 'Restart SOGo';
-$lang['footer']['restart_now'] = 'Jetzt neustarten';
+$lang['footer']['restart_now'] = 'Restart now';
 $lang['footer']['restart_sogo_info'] = 'Some tasks, e.g. adding a domain, require you to restart SOGo to catch changes made in the mailcow UI.<br /><br /><b>Important:</b> A graceful restart may take a while to finish, please wait for it to finish.';$lang['dkim']['confirm'] = "Are you sure?";
 $lang['danger']['dkim_not_found'] = "DKIM record not found";
 $lang['danger']['dkim_remove_failed'] = "Cannot remove selected DKIM record";

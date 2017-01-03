@@ -7,7 +7,7 @@
 $lang['footer']['loading'] = 'Einen Moment bitte...';
 $lang['header']['restart_sogo'] = 'SOGo neustarten';
 $lang['footer']['restart_sogo'] = 'SOGo neustarten';
-$lang['footer']['restart_now'] = 'Restart now';
+$lang['footer']['restart_now'] = 'Jetzt neustarten';
 $lang['footer']['restart_sogo_info'] = 'Einige Änderungen an Domains benötigen einen Neustart SOGos. Hier können Sie SOGo neustarten.<br /><br /><b>Wichtig:</b> Ein korrekter Neustart SOGos kann eine Weile in Anspruch nehmen, bitte warten Sie, bis der Prozess vollständig beendet wurde.';
 $lang['dkim']['confirm'] = 'Sind Sie sicher?';
 $lang['danger']['dkim_not_found'] = 'DKIM-Record nicht gefunden';
