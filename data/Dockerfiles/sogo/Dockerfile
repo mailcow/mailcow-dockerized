@@ -38,8 +38,6 @@ COPY supervisord.conf /etc/supervisor/supervisord.conf
 EXPOSE 20000
 EXPOSE 9191
 
-VOLUME /usr/lib/GNUstep/SOGo/WebServerResources/
-
 CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
