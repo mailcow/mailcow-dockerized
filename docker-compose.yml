@@ -214,6 +214,7 @@ services:
       dns_search: mailcow-network
       ports:
         - "443:443"
+        - "80:80"
       restart: always
       networks:
         mailcow-network:
