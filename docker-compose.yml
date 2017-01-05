@@ -58,6 +58,7 @@ services:
         - ./data/conf/rspamd/local.d/:/etc/rspamd/local.d:ro
         - ./data/conf/rspamd/lua/:/etc/rspamd/lua/:ro
         - dkim-vol-1:/data/dkim
+        - rspamd-vol-1:/var/lib/rspamd
       restart: always
       dns: 
         - 172.22.1.254
@@ -234,3 +235,4 @@ volumes:
   mysql-vol-1:
   dkim-vol-1:
   redis-vol-1:
+  rspamd-vol-1:
