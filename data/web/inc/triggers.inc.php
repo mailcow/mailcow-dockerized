@@ -51,6 +51,9 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "user
 	if (isset($_POST["trigger_set_spam_score"])) {
 		set_spam_score($_POST);
 	}
+	if (isset($_POST["trigger_set_tagging_options"])) {
+		tagging_options('set', $_POST);
+	}
 	if (isset($_POST["trigger_set_policy_list"])) {
 		set_policy_list($_POST);
 	}

@@ -70,6 +70,7 @@ services:
 
     php-fpm-mailcow:
       image: andryyy/mailcow-dockerized:phpfpm
+      command: "php-fpm -d date.timezone=${TZ}"
       depends_on:
         - pdns-mailcow
       volumes:
@@ -84,7 +85,6 @@ services:
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
-        - TZ=${TZ}
       restart: always
       networks:
         mailcow-network:

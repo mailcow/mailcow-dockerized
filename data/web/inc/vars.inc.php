@@ -15,7 +15,6 @@ $database_name = getenv('DBNAME');
 
 // Other variables
 $mailcow_hostname = getenv('MAILCOW_HOSTNAME');
-date_default_timezone_set(getenv('TZ'));
 
 // Where to go after adding and editing objects
 // Can be "form" or "previous"

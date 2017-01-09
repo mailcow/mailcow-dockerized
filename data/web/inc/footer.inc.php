@@ -1,5 +1,5 @@
 <?php
-if ($_SESSION['mailcow_cc_role'] == "admin"):
+if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admin"):
 ?>
 <div id="RestartSOGo" class="modal fade" role="dialog">
 	<div class="modal-dialog">
@@ -75,8 +75,8 @@ $(document).ready(function() {
 	});
 
 	// IE fix to hide scrollbars when table body is empty
-	$('tbody').filter(function (index) { 
-		return $(this).children().length < 1; 
+	$('tbody').filter(function (index) {
+		return $(this).children().length < 1;
 	}).remove();
 
 	// Init Bootstrap Selectpicker
