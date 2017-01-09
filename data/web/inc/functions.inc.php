@@ -52,6 +52,7 @@ function init_db_schema() {
 				$data = '';
 			}
 		}
+    // Create index if not exists
 		$stmt = $pdo->query("SHOW INDEX FROM sogo_acl WHERE KEY_NAME = 'sogo_acl_c_folder_id_idx'");
 		$num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
 		if ($num_results == 0) {
@@ -67,6 +68,22 @@ function init_db_schema() {
 			'msg' => 'Database initialization completed.'
 		);
 	}
+  // Add newly added columns
+  $stmt = $pdo->query("SHOW COLUMNS FROM `mailbox` LIKE 'kind'");
+  $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+  if ($num_results == 0) {
+    $pdo->query("ALTER TABLE `mailbox` ADD `kind` varchar(100) NOT NULL DEFAULT ''");
+  }
+  $stmt = $pdo->query("SHOW COLUMNS FROM `mailbox` LIKE 'multiple_bookings'");
+  $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+  if ($num_results == 0) {
+    $pdo->query("ALTER TABLE `mailbox` ADD `multiple_bookings` tinyint(1) NOT NULL DEFAULT '0'");
+  }
+  $stmt = $pdo->query("SHOW COLUMNS FROM `mailbox` LIKE 'wants_tagged_subject'");
+  $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+  if ($num_results == 0) {
+    $pdo->query("ALTER TABLE `mailbox` ADD `wants_tagged_subject` tinyint(1) NOT NULL DEFAULT '0'");
+  }
 }
 function verify_ssha256($hash, $password) {
 	// Remove tag if any
@@ -2629,6 +2646,101 @@ function get_sender_acl_handles($mailbox, $which) {
 			break;
 	}
 	return false;
+}
+function tagging_options($action, $data = null) {
+	global $lang;
+	global $pdo;
+  $username	= $_SESSION['mailcow_cc_username'];
+  if ($action == "get") {
+    if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
+      return false;
+    }
+    try {
+      $stmt = $pdo->prepare("SELECT `wants_tagged_subject` FROM `mailbox` WHERE `username` = :username");
+      $stmt->execute(array(':username' => $username));
+      $SelectData = $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    catch(PDOException $e) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => 'MySQL: '.$e
+      );
+      return false;
+    }
+    return $SelectData['wants_tagged_subject'];
+  }
+  elseif ($action == "set") {
+    ($data['tagged_mail_handler'] == "subject") ? $wants_tagged_subject = '1' : $wants_tagged_subject = '0';
+    if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['username_invalid'])
+      );
+      return false;
+    }
+    try {
+      $stmt = $pdo->prepare("UPDATE `mailbox` SET `wants_tagged_subject` = :wants_tagged_subject WHERE `username` = :username");
+      $stmt->execute(array(':username' => $username, ':wants_tagged_subject' => $wants_tagged_subject));
+      $SelectData = $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    catch(PDOException $e) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => 'MySQL: '.$e
+      );
+      return false;
+    }
+    $_SESSION['return'] = array(
+      'type' => 'success',
+      'msg' => sprintf($lang['success']['mailbox_modified'], $username)
+    );
+  }
+  return false;
+}
+function user_object_info($action, $data = null) {
+	global $lang;
+	global $pdo;
+  $username	= $_SESSION['mailcow_cc_username'];
+  if ($action == "get") {
+    if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
+      return false;
+    }
+    try {
+      $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(`address` SEPARATOR ', '), '&#10008;') AS `aliases` FROM `alias` WHERE `goto` = :username_goto AND `address` NOT LIKE '@%' AND `address` != :username_address");
+      $stmt->execute(array(':username_goto' => $username, ':username_address' => $username));
+      $run = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      while ($row = array_shift($run)) {
+        $data['aliases'] = $row['aliases'];
+      }
+      $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(`send_as` SEPARATOR ', '), '&#10008;') AS `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `send_as` NOT LIKE '@%';");
+      $stmt->execute(array(':username' => $username));
+      $run = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      while ($row = array_shift($run)) {
+        $data['aliases_also_send_as'] = $row['send_as'];
+      }
+      $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(`send_as` SEPARATOR ', '), '&#10008;') AS `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `send_as` LIKE '@%';");
+      $stmt->execute(array(':username' => $username));
+      $run = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      while ($row = array_shift($run)) {
+        $data['aliases_send_as_all'] = $row['send_as'];
+      }
+      $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(`address` SEPARATOR ', '), '&#10008;') as `address` FROM `alias` WHERE `goto` = :username AND `address` LIKE '@%';");
+      $stmt->execute(array(':username' => $username));
+      $run = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      while ($row = array_shift($run)) {
+        $data['is_catch_all'] = $row['address'];
+      }
+      return $data;
+    }
+    catch(PDOException $e) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => 'MySQL: '.$e
+      );
+      return false;
+    }
+  }
+  return false;
 }
 function is_valid_domain_name($domain_name) { 
 	if (empty($domain_name)) {
