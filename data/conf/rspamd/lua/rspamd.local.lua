@@ -48,7 +48,7 @@ rspamd_config.ADD_DELIMITER_TAG = {
         })
         end
       else
-        rspamd_logger.infox("Add X-Move-Tag header")
+        rspamd_logger.infox("Add X-Moo-Tag header")
         task:set_rmilter_reply({
           add_headers = {['X-Moo-Tag'] = 'YES'}
         })

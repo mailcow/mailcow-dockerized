@@ -7,6 +7,6 @@ require "envelope";
 if header :contains "X-Spam-Flag" "YES" {
   fileinto "Junk";
 }
-if envelope :detail :matches "to" "*" {
+if allof (envelope :detail :matches "to" "*", header :contains "X-Moo-Tag" "YES") {
   fileinto :create "INBOX/${1}";
 }
