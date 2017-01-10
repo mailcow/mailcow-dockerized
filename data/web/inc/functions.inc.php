@@ -314,6 +314,10 @@ function mailbox_add_domain($postarray) {
 			WHERE `domain` = :domain");
 		$stmt->execute(array(':domain' => $domain));
 		$num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+		$stmt = $pdo->prepare("SELECT `alias_domain` FROM `alias_domain`
+			WHERE `alias_domain` = :domain");
+		$stmt->execute(array(':domain' => $domain));
+		$num_results = $num_results + count($stmt->fetchAll(PDO::FETCH_ASSOC));
 	}
 	catch(PDOException $e) {
 		$_SESSION['return'] = array(
