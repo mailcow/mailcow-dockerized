@@ -17,6 +17,6 @@ if [[ $(stat -c %U /var/vmail/) != "vmail" ]] ; then chown -R vmail:vmail /var/v
 RAND_USER=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 16 | head -n 1)
 RAND_PASS=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 24 | head -n 1)
 echo ${RAND_USER}:$(doveadm pw -s SHA1 -p ${RAND_PASS}) > /etc/dovecot/dovecot-master.passwd
-echo ${RAND_USER}:${RAND_PASS} > /etc/sogo/sieve.creds
+[ -d /etc/sogo ] && echo ${RAND_USER}:${RAND_PASS} > /etc/sogo/sieve.creds
 
 exec "$@"
