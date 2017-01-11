@@ -16,7 +16,7 @@ services:
       image: mariadb:10.1
       depends_on:
         - pdns-mailcow
-      command: mysqld
+      command: mysqld --default-time-zone="${TZ}"
       volumes:
         - mysql-vol-1:/var/lib/mysql/
         - ./data/conf/mysql/:/etc/mysql/conf.d/:ro
