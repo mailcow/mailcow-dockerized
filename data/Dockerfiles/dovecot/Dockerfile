@@ -22,7 +22,7 @@ RUN apt-get -y install dovecot-common \
 	syslog-ng \
 	syslog-ng-core \
 	ca-certificates \
-  supervisor \
+	supervisor \
 	wget \
 	curl \
 	build-essential \

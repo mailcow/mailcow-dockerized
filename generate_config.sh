@@ -39,6 +39,7 @@ DBROOT=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
 # ------------------------------
 # You should leave that alone
 # Can also be 11.22.33.44:25 or 0.0.0.0:465 etc. for specific bindings
+HTTPS_PORT=443
 SMTP_PORT=25
 SMTPS_PORT=465
 SUBMISSION_PORT=587
