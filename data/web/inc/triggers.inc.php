@@ -60,6 +60,15 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "user
 	if (isset($_POST["trigger_set_tls_policy"])) {
 		set_tls_policy($_POST);
 	}
+	if (isset($_POST["trigger_add_syncjob"])) {
+		set_syncjob($_POST, "add");
+	}
+	if (isset($_POST["trigger_edit_syncjob"])) {
+		set_syncjob($_POST, "edit");
+	}
+	if (isset($_POST["trigger_delete_syncjob"])) {
+		set_syncjob($_POST, "delete");
+	}
 	if (isset($_POST["trigger_set_time_limited_aliases"])) {
 		set_time_limited_aliases($_POST);
 	}

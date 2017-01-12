@@ -111,7 +111,9 @@ $lang['user']['alias_valid_until'] = 'Gültig bis';
 $lang['user']['alias_remove_all'] = 'Alle entfernen';
 $lang['user']['alias_time_left'] = 'Zeit verbleibend';
 $lang['user']['alias_full_date'] = 'd.m.Y, H:i:s T';
+$lang['user']['syncjob_full_date'] = 'd.m.Y, H:i:s T';
 $lang['user']['alias_select_validity'] = 'Bitte Gültigkeit auswählen';
+$lang['user']['sync_jobs'] = 'Sync Jobs';
 $lang['user']['hour'] = 'Stunde';
 $lang['user']['hours'] = 'Stunden';
 $lang['user']['day'] = 'Tag';
@@ -150,6 +152,18 @@ $lang['user']['tag_in_subject'] = 'In Betreff';
 $lang['user']['tag_help_explain'] = 'Als Unterordner: Es wird ein Ordner mit dem Namen des Tags unterhalb der Inbox erstellt ("INBOX/Facebook").<br />
 In Betreff: Der Name des Tags wird dem Betreff angefügt, etwa "[Facebook] Meine Neuigkeiten".';
 $lang['user']['tag_help_example'] = 'Beispiel für eine getaggte E-Mail-Adresse: ich<b>+Facebook</b>@example.org';
+
+$lang['user']['encryption'] = 'Verschlüsselung';
+$lang['user']['username'] = 'Benutzername';
+$lang['user']['password'] = 'Password';
+$lang['user']['last_run'] = 'Letzte Ausführung';
+$lang['user']['excludes'] = 'Ausschlüsse';
+$lang['user']['interval'] = 'Intervall';
+$lang['user']['active'] = 'Aktiv';
+$lang['user']['action'] = 'Aktion';
+$lang['user']['edit'] = 'Bearbeiten';
+$lang['user']['remove'] = 'Entfernen';
+$lang['user']['create_syncjob'] = 'Neuen Sync-Job erstellen';
 
 $lang['start']['dashboard'] = '%s - Dashboard';
 $lang['start']['start_rc'] = 'Roundcube öffnen';
@@ -219,14 +233,22 @@ $lang['delete']['remove_domain_warning'] = '<b>Warnung:</b> Sie entfernen die Do
 $lang['delete']['remove_domainalias_warning'] = '<b>Warnung:</b> Sie entfernen die Alias-Domain <b>%s</b>!';
 $lang['delete']['remove_domainadmin_warning'] = '<b>Warnung:</b> Sie entfernen den Domain-Administrator <b>%s</b>!';
 $lang['delete']['remove_alias_warning'] = '<b>Warnung:</b> Sie entfernen die Alias-Adresse <b>%s</b>!';
+$lang['delete']['remove_syncjob_warning'] = '<b>Warnung:</b> Sie entfernen einen Sync-Job des Benutzers <b>%s</b>!';
 $lang['delete']['remove_mailbox_warning'] = '<b>Warnung:</b> Sie entfernen die Mailbox <b>%s</b>!';
 $lang['delete']['remove_mailbox_details'] = 'Die Mailbox wird <b>vollständig und permanent</b> entfernt!';
 $lang['delete']['remove_domain_details'] = 'Diese Aktion entfernt ebenfalls Domain-Aliasse.<br /><br /><b>Eine Domain muss leer sein, um entfernt zu werden.</b>';
+$lang['delete']['remove_syncjob_details'] = 'Objekte dieses Sync-Jobs werden nicht mehr vom entfernten Server abgeholt.';
 $lang['delete']['remove_alias_details'] = 'Benutzer werden keine Nachrichten mehr von dieser Adresse erhalten und versenden koennen!</b>';
 $lang['delete']['remove_button'] = 'Entfernen';
 $lang['delete']['previous'] = 'Vorherige Seite';
 
+$lang['edit']['syncjob'] = 'Sync-Job bearbeiten';
 $lang['edit']['save'] = 'Änderungen speichern';
+$lang['edit']['username'] = 'Benutzername';
+$lang['edit']['hostname'] = 'Servername';
+$lang['edit']['encryption'] = 'Verschlüsselungsmethode';
+$lang['edit']['mins_interval'] = 'Intervall (min)';
+$lang['edit']['exclude'] = 'Elemente ausschließen (Regex)';
 $lang['edit']['archive'] = 'Archiv-Zugriff';
 $lang['edit']['max_mailboxes'] = 'Max. Mailboxanzahl:';
 $lang['edit']['title'] = 'Objekt bearbeiten';
@@ -264,6 +286,15 @@ $lang['edit']['dkim_txt_value'] = 'TXT-Record Wert:';
 $lang['edit']['previous'] = 'Vorherige Seite';
 $lang['edit']['unchanged_if_empty'] = 'Unverändert, wenn leer';
 $lang['edit']['dont_check_sender_acl'] = 'Absender für Domain %s nicht prüfen';
+
+$lang['add']['syncjob'] = 'Sync-Job erstellen';
+$lang['add']['syncjob_hint'] = 'Passwörter werden unverschlüsselt abgelegt!';
+$lang['add']['hostname'] = 'Servername';
+$lang['add']['username'] = 'Benutzername';
+$lang['add']['enc_method'] = 'Verschlüsselungsmethode';
+$lang['add']['mins_interval'] = 'Abrufintervall (Minuten)';
+$lang['add']['exclude'] = 'Elemente ausschließen (Regex)';
+$lang['add']['delete2duplicates'] = 'Lösche Duplikate im Ziel';
 
 $lang['add']['title'] = 'Objekt anlegen';
 $lang['add']['domain'] = 'Domain';

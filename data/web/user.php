@@ -9,7 +9,6 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 ?>
 <div class="container">
 <h3><?=$lang['user']['mailbox_settings'];?></h3>
-<p class="help-block"><?=$lang['user']['did_you_know'];?></p>
 
 <div class="panel panel-default">
 <div class="panel-heading"><?=$lang['user']['mailbox_details'];?></div>
@@ -26,13 +25,13 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
       <div class="form-group">
         <label class="control-label col-sm-3" for="user_new_pass"><?=$lang['user']['new_password'];?></label>
         <div class="col-sm-5">
-        <input type="password" class="form-control" pattern=".{6,}" name="user_new_pass" id="user_new_pass" autocomplete="off" disabled="disabled" required>
+        <input type="password" class="form-control" name="user_new_pass" id="user_new_pass" autocomplete="off" disabled="disabled" required>
         </div>
       </div>
       <div class="form-group">
         <label class="control-label col-sm-3" for="user_new_pass2"><?=$lang['user']['new_password_repeat'];?></label>
         <div class="col-sm-5">
-        <input type="password" class="form-control" pattern=".{6,}" name="user_new_pass2" id="user_new_pass2" disabled="disabled" autocomplete="off" required>
+        <input type="password" class="form-control" name="user_new_pass2" id="user_new_pass2" disabled="disabled" autocomplete="off" required>
         <p class="help-block"><?=$lang['user']['new_password_description'];?></p>
         </div>
       </div>
@@ -102,6 +101,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 	<li role="presentation" class="active"><a href="#SpamAliases" aria-controls="SpamAliases" role="tab" data-toggle="tab"><?=$lang['user']['spam_aliases'];?></a></li>
 	<li role="presentation"><a href="#Spamfilter" aria-controls="Spamfilter" role="tab" data-toggle="tab"><?=$lang['user']['spamfilter'];?></a></li>
 	<li role="presentation"><a href="#TLSPolicy" aria-controls="TLSPolicy" role="tab" data-toggle="tab"><?=$lang['user']['tls_policy'];?></a></li>
+	<li role="presentation"><a href="#Syncjobs" aria-controls="Syncjobs" role="tab" data-toggle="tab"><?=$lang['user']['sync_jobs'];?></a></li>
 </ul>
 <hr>
 
@@ -364,8 +364,96 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 			</div>
 		</form>
 	</div>
+	<div role="tabpanel" class="tab-pane" id="Syncjobs">
+		<table class="table table-striped sortable-theme-bootstrap" data-sortable id="timelimitedaliases">
+			<thead>
+			<tr>
+				<th class="sort-table" style="min-width: 96px;">Server:Port</th>
+				<th class="sort-table" style="min-width: 96px;"><?=$lang['user']['encryption'];?></th>
+				<th class="sort-table" style="min-width: 96px;"><?=$lang['user']['username'];?></th>
+				<th class="sort-table" style="min-width: 35px;"><?=$lang['user']['excludes'];?></th>
+				<th class="sort-table" style="min-width: 35px;"><?=$lang['user']['interval'];?></th>
+				<th class="sort-table" style="min-width: 35px;"><?=$lang['user']['last_run'];?></th>
+				<th class="sort-table" style="min-width: 35px;">Log</th>
+				<th class="sort-table" style="max-width: 35px;"><?=$lang['user']['active'];?></th>
+				<th style="text-align: right; min-width: 200px;" data-sortable="false"><?=$lang['user']['action'];?></th>
+			</tr>
+			</thead>
+			<tbody>
+			<?php
+			try {
+				$stmt = $pdo->prepare("SELECT *, CONCAT(LEFT(`password1`, 3), '…') as `password1_short`
+						FROM `imapsync`
+							WHERE `user2` = :username");
+				$stmt->execute(array(':username' => $username));
+				$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			}
+			catch(PDOException $e) {
+				$_SESSION['return'] = array(
+					'type' => 'danger',
+					'msg' => 'MySQL: '.$e
+				);
+			}
+			if(!empty($rows)):
+			while ($row = array_shift($rows)):
+			?>
+				<tr id="data">
+				<td><?=htmlspecialchars($row['host1'] . ':' . $row['port1']);?></td>
+				<td><?=htmlspecialchars($row['enc1']);?></td>
+				<td><?=htmlspecialchars($row['user1']);?></td>
+				<td><?=($row['exclude'] == '') ? '&#10008;' : $row['exclude'];?></td>
+				<td><?=htmlspecialchars($row['mins_interval']);?> min</td>
+				<td><?=(empty($row['last_run'])) ? '&#10008;' : htmlspecialchars(date($lang['user']['syncjob_full_date'], strtotime($row['last_run'])));?></td>
+				<td>
+        <?php
+        if (empty($row['returned_text'])) {
+          echo '&#10008;';
+        }
+        else {
+        ?>
+          <a href="#logModal" data-toggle="modal" data-log-text="<?=htmlspecialchars($row['returned_text']);?>">Open logs</a>
+        <?php
+        }
+        ?>
+        </td>
+				<td><?=($row['active'] == '1') ? '&#10004;' : '&#10008;';?></td>
+        <td style="text-align: right;">
+          <div class="btn-group">
+            <a href="/edit.php?syncjob=<?=urlencode($row['id']);?>" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> <?=$lang['user']['edit'];?></a>
+            <a href="/delete.php?syncjob=<?=urlencode($row['id']);?>" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> <?=$lang['user']['remove'];?></a>
+          </div>
+        </td>
+				</tr>
+			<?php
+			endwhile;
+			else:
+			?>
+				<tr id="no-data"><td colspan="9" style="text-align: center; font-style: italic;"><?=$lang['user']['no_record'];?></td></tr>
+			<?php
+			endif;	
+			?>
+			</tbody>
+      <tfoot>
+        <tr id="no-data">
+          <td colspan="9" style="text-align: center; font-style: normal; border-top: 1px solid #e7e7e7;">
+            <a href="/add.php?syncjob"><?=$lang['user']['create_syncjob'];?></a>
+          </td>
+        </tr>
+      </tfoot>
+		</table>
+		</div>
+	</div>
 </div>
 <br />
+<div class="modal fade" id="logModal" tabindex="-1" role="dialog" aria-labelledby="logTextLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <span id="logText"></span>
+      </div>
+    </div>
+  </div>
+</div>
 </div> <!-- /container -->
 <script src="js/sorttable.js"></script>
 <script src="js/user.js"></script>

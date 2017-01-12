@@ -25,4 +25,10 @@ $(document).ready(function() {
 	$.fn.bootstrapSwitch.defaults.onColor = 'success';
 	$("[name='tls_out']").bootstrapSwitch();
 	$("[name='tls_in']").bootstrapSwitch();
+
+  // Log modal
+  $('#logModal').on('show.bs.modal', function(e) {
+  var logText = $(e.relatedTarget).data('log-text');
+  $(e.currentTarget).find('#logText').html('<pre>' + logText + '</pre>');
+  });
 });

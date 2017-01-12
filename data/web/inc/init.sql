@@ -102,6 +102,26 @@ CREATE TABLE IF NOT EXISTS `filterconf` (
 	KEY `object` (`object`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
+CREATE TABLE IF NOT EXISTS `imapsync` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user2` varchar(255) NOT NULL,
+  `host1` varchar(255) NOT NULL,
+  `authmech1` ENUM('PLAIN','LOGIN','CRAM-MD5') DEFAULT 'PLAIN',
+  `user1` varchar(255) NOT NULL,
+  `password1` varchar(255) NOT NULL,
+  `exclude` VARCHAR(500) NOT NULL DEFAULT '',
+  `mins_interval` VARCHAR(50) NOT NULL,
+  `port1` SMALLINT NOT NULL,
+  `enc1` ENUM('TLS','SSL','PLAIN') DEFAULT 'TLS',
+  `delete2duplicates` TINYINT(1) NOT NULL DEFAULT '1',
+  `returned_text` TEXT,
+  `last_run` TIMESTAMP NULL DEFAULT NULL,
+  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `active` TINYINT(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
 DROP VIEW IF EXISTS grouped_mail_aliases;
 DROP VIEW IF EXISTS grouped_sender_acl;
 DROP VIEW IF EXISTS grouped_domain_alias_address;

@@ -1,6 +1,6 @@
 <?php
 require_once("inc/prerequisites.inc.php");
-$AuthUsers = array("admin", "domainadmin");
+$AuthUsers = array("admin", "domainadmin", "user");
 if (!isset($_SESSION['mailcow_cc_role']) OR !in_array($_SESSION['mailcow_cc_role'], $AuthUsers)) {
 	header('Location: /');
 	exit();
@@ -500,6 +500,104 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<button type="submit" name="trigger_mailbox_action" value="editmailbox" class="btn btn-success btn-sm"><?=$lang['edit']['save'];?></button>
+						</div>
+					</div>
+				</form>
+			<?php
+			}
+			else {
+			?>
+				<div class="alert alert-info" role="alert"><?=$lang['info']['no_action'];?></div>
+			<?php
+			}
+	}
+	else {
+	?>
+		<div class="alert alert-info" role="alert"><?=$lang['info']['no_action'];?></div>
+	<?php
+	}
+}
+if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "user")) {
+	if (isset($_GET['syncjob']) &&
+    is_numeric($_GET["syncjob"]) &&
+    filter_var($_SESSION['mailcow_cc_username'], FILTER_VALIDATE_EMAIL)) {
+			$id = $_GET["syncjob"];
+      $username = $_SESSION['mailcow_cc_username'];
+			try {
+				$stmt = $pdo->prepare("SELECT * FROM `imapsync` WHERE `user2` = :username AND id = :id");
+				$stmt->execute(array(
+					':username' => $username,
+					':id' => $id
+				));
+				$result = $stmt->fetch(PDO::FETCH_ASSOC);
+			}
+			catch(PDOException $e) {
+				$_SESSION['return'] = array(
+					'type' => 'danger',
+					'msg' => 'MySQL: '.$e
+				);
+      }
+      if ($result && !empty($result)) {
+			?>
+				<h4><?=$lang['edit']['syncjob'];?></h4>
+				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
+				<input type="hidden" name="id" value="<?=htmlspecialchars($result['id']);?>">
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="host1"><?=$lang['edit']['hostname'];?></label>
+						<div class="col-sm-10">
+						<input type="text" class="form-control" name="host1" id="host1" value="<?=htmlspecialchars($result['host1'], ENT_QUOTES, 'UTF-8');?>">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="port1">Port</label>
+						<div class="col-sm-10">
+						<input type="number" class="form-control" name="port1" id="port1" min="1" max="65535" value="<?=htmlspecialchars($result['port1'], ENT_QUOTES, 'UTF-8');?>">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="user1"><?=$lang['edit']['username'];?></label>
+						<div class="col-sm-10">
+						<input type="text" class="form-control" name="user1" id="user1" value="<?=htmlspecialchars($result['user1'], ENT_QUOTES, 'UTF-8');?>">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="password1"><?=$lang['edit']['password'];?></label>
+						<div class="col-sm-10">
+						<input type="text" class="form-control" name="password1" id="password1" value="<?=htmlspecialchars($result['password1'], ENT_QUOTES, 'UTF-8');?>">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="enc1"><?=$lang['edit']['encryption'];?>:</label>
+						<div class="col-sm-10">
+							<select id="enc1" name="enc1">
+								<option <?=($result['enc1'] == "TLS") ? "selected" : null;?>>TLS</option>
+								<option <?=($result['enc1'] == "SSL") ? "selected" : null;?>>SSL</option>
+								<option <?=($result['enc1'] == "PLAIN") ? "selected" : null;?>>PLAIN</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="mins_interval"><?=$lang['edit']['mins_interval'];?></label>
+						<div class="col-sm-10">
+              <input type="number" class="form-control" name="mins_interval" min="10" max="3600" value="<?=htmlspecialchars($result['mins_interval'], ENT_QUOTES, 'UTF-8');?>" required>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="exclude"><?=$lang['edit']['exclude'];?></label>
+						<div class="col-sm-10">
+						<input type="text" class="form-control" name="exclude" id="exclude" value="<?=htmlspecialchars($result['exclude'], ENT_QUOTES, 'UTF-8');?>">
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<div class="checkbox">
+							<label><input type="checkbox" name="active" <?=($result['active']=="1") ? "checked" : "";?>> <?=$lang['edit']['active'];?></label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<button type="submit" name="trigger_edit_syncjob" value="1" class="btn btn-success btn-sm"><?=$lang['edit']['save'];?></button>
 						</div>
 					</div>
 				</form>

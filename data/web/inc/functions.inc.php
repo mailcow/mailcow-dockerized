@@ -84,6 +84,30 @@ function init_db_schema() {
   if ($num_results == 0) {
     $pdo->query("ALTER TABLE `mailbox` ADD `wants_tagged_subject` tinyint(1) NOT NULL DEFAULT '0'");
   }
+  $stmt = $pdo->query("SELECT * FROM information_schema.TABLES WHERE TABLE_NAME = 'imapsync'");
+  $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+
+  if ($num_results == 0) {
+    $pdo->query("CREATE TABLE IF NOT EXISTS `imapsync` (
+      `id` int NOT NULL AUTO_INCREMENT,
+      `user2` VARCHAR(255) NOT NULL,
+      `host1` VARCHAR(255) NOT NULL,
+      `authmech1` ENUM('PLAIN','LOGIN','CRAM-MD5') DEFAULT 'PLAIN',
+      `user1` VARCHAR(255) NOT NULL,
+      `exclude` VARCHAR(500) NOT NULL DEFAULT '',
+      `password1` VARCHAR(255) NOT NULL,
+      `mins_interval` VARCHAR(50) NOT NULL,
+      `port1` SMALLINT NOT NULL,
+      `enc1` ENUM('TLS','SSL','PLAIN') DEFAULT 'TLS',
+      `delete2duplicates` TINYINT(1) NOT NULL DEFAULT '1',
+      `returned_text` TEXT,
+      `last_run` TIMESTAMP NULL DEFAULT NULL,
+      `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      `modified` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      `active` TINYINT(1) NOT NULL DEFAULT '0',
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+  }
 }
 function verify_ssha256($hash, $password) {
 	// Remove tag if any
@@ -2465,6 +2489,247 @@ function set_tls_policy($postarray) {
 		'type' => 'success',
 		'msg' => sprintf($lang['success']['mailbox_modified'], $username)
 	);
+}
+function set_syncjob($postarray, $action) {
+	global $lang;
+	global $pdo;
+  $username = $_SESSION['mailcow_cc_username'];
+  if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
+    $_SESSION['return'] = array(
+      'type' => 'danger',
+      'msg' => sprintf($lang['danger']['access_denied'])
+    );
+    return false;
+  }
+  if ($_SESSION['mailcow_cc_role'] != "user") {
+    $_SESSION['return'] = array(
+      'type' => 'danger',
+      'msg' => sprintf($lang['danger']['access_denied'])
+    );
+    return false;
+  }
+  // DELETE
+  if ($action == "delete") {
+    $id = $postarray['id'];
+    if (!is_numeric($id)) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['access_denied'])
+      );
+      return false;
+    }
+    try {
+      $stmt = $pdo->prepare("DELETE FROM `imapsync` WHERE `user2` = :username AND `id`= :id");
+      $stmt->execute(array(
+        ':username' => $username,
+        ':id' => $id,
+      ));
+    }
+    catch (PDOException $e) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => 'MySQL: '.$e
+      );
+      return false;
+    }
+    $_SESSION['return'] = array(
+      'type' => 'success',
+      'msg' => sprintf($lang['success']['mailbox_modified'], htmlspecialchars($username))
+    );
+    return true;
+  }
+  elseif ($action == "add") {
+    isset($postarray['active']) ? $active = '1' : $active = '0';
+    isset($postarray['delete2duplicates']) ? $delete2duplicates = '1' : $delete2duplicates = '0';
+    $port1            = $postarray['port1'];
+    $host1            = $postarray['host1'];
+    $password1        = $postarray['password1'];
+    $exclude          = $postarray['exclude'];
+    $user1            = $postarray['user1'];
+    $mins_interval    = $postarray['mins_interval'];
+    $enc1             = $postarray['enc1'];
+
+    if (!filter_var($port1, FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 65535)))) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['access_denied'])
+      );
+      return false;
+    }
+    if (!filter_var($mins_interval, FILTER_VALIDATE_INT, array('options' => array('min_range' => 10, 'max_range' => 3600)))) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['access_denied'])
+      );
+      return false;
+    }
+    if (!is_valid_domain_name($host1)) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['access_denied'])
+      );
+      return false;
+    }
+    if ($enc1 != "TLS" && $enc1 != "SSL" && $enc1 != "PLAIN") {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['access_denied'])
+      );
+      return false;
+    }
+    if (@preg_match("/" . $exclude . "/", null) === false) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['access_denied'])
+      );
+      return false;
+    }
+    try {
+      $stmt = $pdo->prepare("SELECT `user2`, `user1` FROM `imapsync`
+        WHERE `user2` = :user2 AND `user1` = :user1");
+      $stmt->execute(array(':user1' => $user1, ':user2' => $username));
+      $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+    }
+    catch(PDOException $e) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => 'MySQL: '.$e
+      );
+      return false;
+    }
+    if ($num_results != 0) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['object_exists'], htmlspecialchars($host1 . ' / ' . $user1))
+      );
+      return false;
+    }
+    try {
+      $stmt = $pdo->prepare("INSERT INTO `imapsync` (`user2`, `exclude`, `host1`, `authmech1`, `user1`, `password1`, `mins_interval`, `port1`, `enc1`, `delete2duplicates`, `active`)
+        VALUES (:user2, :exclude, :host1, :authmech1, :user1, :password1, :mins_interval, :port1, :enc1, :delete2duplicates, :active)");
+      $stmt->execute(array(
+        ':user2' => $username,
+        ':exclude' => $exclude,
+        ':host1' => $host1,
+        ':authmech1' => 'PLAIN',
+        ':user1' => $user1,
+        ':password1' => $password1,
+        ':mins_interval' => $mins_interval,
+        ':port1' => $port1,
+        ':enc1' => $enc1,
+        ':delete2duplicates' => $delete2duplicates,
+        ':active' => $active,
+      ));
+    }
+    catch(PDOException $e) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => 'MySQL: '.$e
+      );
+      return false;
+    }
+    $_SESSION['return'] = array(
+      'type' => 'success',
+      'msg' => sprintf($lang['success']['mailbox_modified'], $username)
+    );
+    return true;
+  }
+  elseif ($action == "edit") {
+    isset($postarray['active']) ? $active = '1' : $active = '0';
+    isset($postarray['delete2duplicates']) ? $delete2duplicates = '1' : $delete2duplicates = '0';
+    $id               = $postarray['id'];
+    $port1            = $postarray['port1'];
+    $host1            = $postarray['host1'];
+    $password1        = $postarray['password1'];
+    $exclude          = $postarray['exclude'];
+    $user1            = $postarray['user1'];
+    $mins_interval    = $postarray['mins_interval'];
+    $enc1             = $postarray['enc1'];
+    if (!filter_var($port1, FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 65535)))) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['access_denied'])
+      );
+      return false;
+    }
+    if (!filter_var($mins_interval, FILTER_VALIDATE_INT, array('options' => array('min_range' => 10, 'max_range' => 3600)))) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['access_denied'])
+      );
+      return false;
+    }
+    if (!is_valid_domain_name($host1)) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['access_denied'])
+      );
+      return false;
+    }
+    if ($enc1 != "TLS" && $enc1 != "SSL" && $enc1 != "PLAIN") {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['access_denied'])
+      );
+      return false;
+    }
+    if (@preg_match("/" . $exclude . "/", null) === false) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['access_denied'])
+      );
+      return false;
+    }
+    try {
+      $stmt = $pdo->prepare("SELECT `user2` FROM `imapsync`
+        WHERE `user2` = :user2 AND `id` = :id");
+      $stmt->execute(array(':user2' => $username, ':id' => $id));
+      $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+    }
+    catch(PDOException $e) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => 'MySQL: '.$e
+      );
+      return false;
+    }
+    if (empty($num_results)) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['access_denied'])
+      );
+      return false;
+    }
+    try {
+      $stmt = $pdo->prepare("UPDATE `imapsync` set `exclude` = :exclude, `host1` = :host1, `user1` = :user1, `password1` = :password1, `mins_interval` = :mins_interval, `port1` = :port1, `enc1` = :enc1, `delete2duplicates` = :delete2duplicates, `active` = :active
+        WHERE `user2` = :user2 AND `id` = :id");
+      $stmt->execute(array(
+        ':user2' => $username,
+        ':id' => $id,
+        ':exclude' => $exclude,
+        ':host1' => $host1,
+        ':user1' => $user1,
+        ':password1' => $password1,
+        ':mins_interval' => $mins_interval,
+        ':port1' => $port1,
+        ':enc1' => $enc1,
+        ':delete2duplicates' => $delete2duplicates,
+        ':active' => $active,
+      ));
+    }
+    catch(PDOException $e) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => 'MySQL: '.$e
+      );
+      return false;
+    }
+    $_SESSION['return'] = array(
+      'type' => 'success',
+      'msg' => sprintf($lang['success']['mailbox_modified'], $username)
+    );
+    return true;
+  }
 }
 function get_tls_policy($username) {
 	global $lang;

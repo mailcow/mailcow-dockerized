@@ -1,6 +1,6 @@
 <?php
 require_once("inc/prerequisites.inc.php");
-$AuthUsers = array("admin", "domainadmin");
+$AuthUsers = array("admin", "domainadmin", "user");
 if (!isset($_SESSION['mailcow_cc_role']) OR !in_array($_SESSION['mailcow_cc_role'], $AuthUsers)) {
 	header('Location: /');
 	exit();
@@ -131,6 +131,50 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 						<div class="form-group">
 							<div class="col-sm-offset-1 col-sm-10">
 								<button type="submit" name="trigger_mailbox_action" value="deletemailbox" class="btn btn-default btn-sm"><?=$lang['delete']['remove_button'];?></button>
+							</div>
+						</div>
+					</form>
+				<?php
+				}
+				else {
+				?>
+					<div class="alert alert-info" role="alert"><?=$lang['info']['no_action'];?></div>
+				<?php
+				}
+		}
+		else {
+		?>
+			<div class="alert alert-info" role="alert"><?=$lang['info']['no_action'];?></div>
+		<?php
+		}
+}
+elseif (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "user")) {
+		// DELETE SYNCJOB
+		if (isset($_GET["syncjob"]) &&
+			is_numeric($_GET["syncjob"]) &&
+      filter_var($_SESSION['mailcow_cc_username'], FILTER_VALIDATE_EMAIL)) {
+        try {
+          $stmt = $pdo->prepare("SELECT `user2` FROM `imapsync`
+              WHERE `id` = :id AND user2 = :user2");
+          $stmt->execute(array(':id' => $_GET["syncjob"], ':user2' => $_SESSION['mailcow_cc_username']));
+          $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+        }
+        catch(PDOException $e) {
+          $_SESSION['return'] = array(
+            'type' => 'danger',
+            'msg' => 'MySQL: '.$e
+          );
+        }
+				if ($num_results != 0 && !empty($num_results)) {
+				?>
+					<div class="alert alert-warning" role="alert"><?=sprintf($lang['delete']['remove_syncjob_warning'], htmlspecialchars($_SESSION['mailcow_cc_username']));?></div>
+					<p><?=$lang['delete']['remove_syncjob_details'];?></p>
+					<form class="form-horizontal" role="form" method="post" action="/user.php">
+					<input type="hidden" name="username" value="<?=htmlspecialchars($mailbox);?>">
+						<div class="form-group">
+							<div class="col-sm-offset-1 col-sm-10">
+								<input type="hidden" name="id" value="<?=$_GET["syncjob"];?>">
+								<button type="submit" name="trigger_delete_syncjob" value="1" class="btn btn-default btn-sm"><?=$lang['delete']['remove_button'];?></button>
 							</div>
 						</div>
 					</form>

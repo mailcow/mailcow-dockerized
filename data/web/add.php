@@ -1,6 +1,6 @@
 <?php
 require_once("inc/prerequisites.inc.php");
-$AuthUsers = array("admin", "domainadmin");
+$AuthUsers = array("admin", "domainadmin", "user");
 if (!isset($_SESSION['mailcow_cc_role']) OR !in_array($_SESSION['mailcow_cc_role'], $AuthUsers)) {
 	header('Location: /');
 	exit();
@@ -259,6 +259,82 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 	<?php
 	}
 }
+if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "user")) {
+  if (isset($_GET['syncjob'])) {
+?>
+				<h4><?=$lang['add']['syncjob'];?></h4>
+				<p><?=$lang['add']['syncjob_hint'];?></p>
+				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="host1"><?=$lang['add']['hostname'];?></label>
+						<div class="col-sm-10">
+						<input type="text" class="form-control" name="host1" id="host1" required>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="port1">Port</label>
+						<div class="col-sm-10">
+						<input type="number" class="form-control" name="port1" id="port1" min="1" max="65535" value="143" required>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="user1"><?=$lang['add']['username'];?></label>
+						<div class="col-sm-10">
+						<input type="text" class="form-control" name="user1" id="user1" required>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="password1"><?=$lang['add']['password'];?></label>
+						<div class="col-sm-10">
+						<input type="text" class="form-control" name="password1" id="password1" required>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="enc1"><?=$lang['add']['enc_method'];?></label>
+						<div class="col-sm-10">
+							<select name="enc1" id="enc1" title="<?=$lang['add']['select'];?>" required>
+                <option selected>TLS</option>
+                <option>SSL</option>
+                <option>PLAIN</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="mins_interval"><?=$lang['add']['mins_interval'];?></label>
+						<div class="col-sm-10">
+              <input type="number" class="form-control" name="mins_interval" min="10" max="3600" value="20" required>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="exclude"><?=$lang['add']['exclude'];?></label>
+						<div class="col-sm-10">
+						<input type="text" class="form-control" name="exclude" id="exclude" value="(?i)spam|(?i)junk">
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<div class="checkbox">
+							<label><input type="checkbox" name="delete2duplicates" checked> <?=$lang['add']['delete2duplicates'];?></label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<div class="checkbox">
+							<label><input type="checkbox" name="active" checked> <?=$lang['add']['active'];?></label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<button type="submit" name="trigger_add_syncjob" value="1" class="btn btn-success "><?=$lang['add']['save'];?></button>
+						</div>
+					</div>
+				</form>
+	<?php
+	}
+}
+
 else {
 ?>
 				<div class="alert alert-danger" role="alert"><?=$lang['danger']['access_denied'];?></div>
