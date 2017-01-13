@@ -1,7 +1,7 @@
 version: '2'
 
 services:
-    pdns:
+    pdns-mailcow:
       image: andryyy/mailcow-dockerized:pdns
       volumes:
         - ./data/conf/pdns/:/etc/powerdns/
@@ -10,10 +10,10 @@ services:
         mailcow-network:
           ipv4_address: 172.22.1.254
 
-    mysql:
+    mysql-mailcow:
       image: mariadb:10.1
       depends_on:
-        - pdns
+        - pdns-mailcow
       command: mysqld --default-time-zone="${TZ}"
       volumes:
         - mysql-vol-1:/var/lib/mysql/
@@ -30,10 +30,10 @@ services:
       networks:
         mailcow-network:
 
-    redis:
+    redis-mailcow:
       image: redis
       depends_on:
-        - pdns
+        - pdns-mailcow
       volumes:
         - redis-vol-1:/data/
       restart: always
@@ -43,10 +43,10 @@ services:
       networks:
         mailcow-network:
 
-    rspamd:
+    rspamd-mailcow:
       image: andryyy/mailcow-dockerized:rspamd
       depends_on:
-        - pdns
+        - pdns-mailcow
       volumes:
         - ./data/conf/rspamd/override.d/:/etc/rspamd/override.d:ro
         - ./data/conf/rspamd/local.d/:/etc/rspamd/local.d:ro
@@ -60,11 +60,11 @@ services:
       networks:
         mailcow-network:
 
-    phpfpm:
+    phpfpm-mailcow:
       image: andryyy/mailcow-dockerized:phpfpm
       command: "php-fpm -d date.timezone=${TZ}"
       depends_on:
-        - pdns
+        - pdns-mailcow
       volumes:
         - ./data/web:/web:ro
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
@@ -81,11 +81,11 @@ services:
       networks:
         mailcow-network:
 
-    sogo:
+    sogo-mailcow:
       image: andryyy/mailcow-dockerized:sogo
       depends_on:
-        - pdns
-        - mysql
+        - pdns-mailcow
+        - mysql-mailcow
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -101,10 +101,10 @@ services:
       networks:
         mailcow-network:
 
-    rmilter:
+    rmilter-mailcow:
       image: andryyy/mailcow-dockerized:rmilter
       depends_on:
-        - pdns
+        - pdns-mailcow
       volumes:
         - ./data/conf/rmilter/:/etc/rmilter.conf.d/:ro
       restart: always
@@ -114,16 +114,16 @@ services:
       networks:
         mailcow-network:
 
-    dovecot:
+    dovecot-mailcow:
       image: andryyy/mailcow-dockerized:dovecot
       depends_on:
-        - pdns
+        - pdns-mailcow
       volumes:
         - ./data/conf/dovecot:/etc/dovecot
         - ./data/assets/ssl:/etc/ssl/mail/:ro
         - vmail-vol-1:/var/vmail
       volumes_from:
-        - sogo
+        - sogo-mailcow
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -142,10 +142,10 @@ services:
       networks:
         mailcow-network:
 
-    postfix:
+    postfix-mailcow:
       image: andryyy/mailcow-dockerized:postfix
       depends_on:
-        - pdns
+        - pdns-mailcow
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
         - ./data/assets/ssl:/etc/ssl/mail/:ro
@@ -165,10 +165,10 @@ services:
       networks:
         mailcow-network:
 
-    memcached:
+    memcached-mailcow:
       image: memcached
       depends_on:
-        - pdns
+        - pdns-mailcow
       restart: always
       dns:
         - 172.22.1.254
@@ -176,18 +176,18 @@ services:
       networks:
         mailcow-network:
 
-    nginx:
+    nginx-mailcow:
       depends_on:
-        - mysql
-        - sogo
-        - phpfpm
-        - rspamd
+        - mysql-mailcow
+        - sogo-mailcow
+        - phpfpm-mailcow
+        - rspamd-mailcow
       image: nginx:mainline
       command: /bin/bash -c "envsubst < /etc/nginx/conf.d/listen.template > /etc/nginx/conf.d/listen.active && nginx -g 'daemon off;'"
       environment:
         - HTTPS_PORT=${HTTPS_PORT}
       volumes_from:
-        - sogo
+        - sogo-mailcow
       volumes:
         - ./data/web:/web:ro
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
