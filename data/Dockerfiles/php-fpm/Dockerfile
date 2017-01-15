@@ -11,6 +11,13 @@ RUN docker-php-ext-install intl pdo pdo_mysql xmlrpc
 
 COPY ./docker-entrypoint.sh /
 
+RUN usermod -a -G adm www-data
+
+COPY postfix-logwatch /postfix-logwatch
+COPY postfix-logwatch.conf /postfix-logwatch.conf
+RUN chmod 777 /postfix-logwatch
+RUN chmod 666 /postfix-logwatch.conf
+
 EXPOSE 9000
 
 ENTRYPOINT ["/docker-entrypoint.sh"]

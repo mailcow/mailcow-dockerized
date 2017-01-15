@@ -2751,4 +2751,20 @@ function is_valid_domain_name($domain_name) {
 		   && preg_match("/^.{1,253}$/", $domain_name)
 		   && preg_match("/^[^\.]{1,63}(\.[^\.]{1,63})*$/", $domain_name));
 }
+function sys_info($what) {
+	switch ($what) {
+
+		case "pflog":
+			return shell_exec("/postfix-logwatch -f /postfix-logwatch.conf /var/postfix-log/mail.log");
+			break;
+
+		case "mailq":
+//			return shell_exec("mailq");
+			break;
+		
+		case "maillog":
+			return shell_exec("tail -1000 /var/postfix-log/mail.log");
+			break;
+	}
+}
 ?>

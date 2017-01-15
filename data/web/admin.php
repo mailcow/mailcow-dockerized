@@ -247,6 +247,29 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 </div>
 </div>
 
+<h4><span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span> <?=$lang['admin']['maintenance'];?></h4>
+<div class="panel-group" id="accordion_maint">
+	<div class="panel panel-default">
+		<div style="cursor:pointer;" class="panel-heading" data-toggle="collapse" data-parent="#accordion_maint" data-target="#collapseSysinfo">
+			<span class="accordion-toggle"><?=$lang['admin']['sys_info'];?></span>
+			<a type="submit" class="btn btn-default" href="/"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Refresh</a>
+		</div>
+		<div id="collapseSysinfo" class="panel-collapse collapse">
+			<div class="panel-body">
+				<legend><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Postfix Details</legend>
+<!--					<legend>Postqueue</legend>-->
+<!--					<pre>--><?php //echo sys_info("mailq");?><!--</pre>-->
+
+				<legend>Postfix-Logwatch</legend>
+				<textarea rows="20" style="font-family:monospace;font-size:9pt;width:100%;"><?php echo sys_info("pflog");?></textarea>
+
+				<legend>Mail Log</legend>
+				<textarea rows="20" style="font-family:monospace;font-size:9pt;width:100%;"><?php echo sys_info("maillog");?></textarea>
+			</div>
+		</div>
+	</div>
+</div>
+
 </div> <!-- /container -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js" integrity="sha384-YWP9O4NjmcGo4oEJFXvvYSEzuHIvey+LbXkBNJ1Kd0yfugEZN9NCQNpRYBVC1RvA" crossorigin="anonymous"></script>

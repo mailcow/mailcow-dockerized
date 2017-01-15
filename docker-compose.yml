@@ -77,6 +77,7 @@ services:
         - ./data/web:/web:ro
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
         - dkim-vol-1:/data/dkim
+        - var-vol-1:/var/postfix-log/
       dns:
         - 172.22.1.254
       dns_search: mailcow-network
@@ -165,6 +166,7 @@ services:
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
         - ./data/assets/ssl:/etc/ssl/mail/:ro
+        - var-vol-1:/var/log/
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -236,3 +238,4 @@ volumes:
   dkim-vol-1:
   redis-vol-1:
   rspamd-vol-1:
+  var-vol-1:
