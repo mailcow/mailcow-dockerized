@@ -51,29 +51,35 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
   </form>
   <hr>
   <?php // Get user information about aliases
-  $get_user_object_info = user_object_info('get');?>
+  $user_get_alias_details = user_get_alias_details($username);?>
   <div class="row">
     <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['aliases'];?>:</div>
     <div class="col-md-9 col-xs-7">
-    <p><?=$get_user_object_info['aliases'];?></p>
+    <p><?=$user_get_alias_details['aliases'];?></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['domain_aliases'];?>:</div>
+    <div class="col-md-9 col-xs-7">
+    <p><?=$user_get_alias_details['ad_alias'];?></p>
     </div>
   </div>
   <div class="row">
     <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['aliases_also_send_as'];?>:</div>
     <div class="col-md-9 col-xs-7">
-    <p><?=$get_user_object_info['aliases_also_send_as'];?></p>
+    <p><?=$user_get_alias_details['aliases_also_send_as'];?></p>
     </div>
   </div>
   <div class="row">
     <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['aliases_send_as_all'];?>:</div>
     <div class="col-md-9 col-xs-7">
-    <p><?=$get_user_object_info['aliases_send_as_all'];?></p>
+    <p><?=$user_get_alias_details['aliases_send_as_all'];?></p>
     </div>
   </div>
   <div class="row">
     <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['is_catch_all'];?>:</div>
     <div class="col-md-9 col-xs-7">
-    <p><?=$get_user_object_info['is_catch_all'];?></p>
+    <p><?=$user_get_alias_details['is_catch_all'];?></p>
     </div>
   </div>
   <hr>
@@ -107,16 +113,16 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 
 <div class="tab-content">
 	<div role="tabpanel" class="tab-pane active" id="SpamAliases">
-		<form class="form-horizontal" role="form" method="post">
-		<div class="table-responsive">
-		<table class="table table-striped sortable-theme-bootstrap" data-sortable id="timelimitedaliases">
-			<thead>
-			<tr>
-				<th class="sort-table" style="min-width: 96px;"><?=$lang['user']['alias'];?></th>
-				<th class="sort-table" style="min-width: 135px;"><?=$lang['user']['alias_valid_until'];?></th>
-			</tr>
-			</thead>
-			<tbody>
+		<div class="row">
+			<div class="col-xs-5">
+				<p><b><?=$lang['user']['alias'];?></b></p>
+			</div>
+			<div class="col-xs-4">
+				<p><b><?=$lang['user']['alias_valid_until'];?></b></p>
+			</div>
+			<div class="col-xs-3">
+        <p><b><?=$lang['user']['action'];?></b></p>
+			</div>
 			<?php
 			try {
 				$stmt = $pdo->prepare("SELECT `address`,
@@ -137,21 +143,31 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 			if(!empty($rows)):
 			while ($row = array_shift($rows)):
 			?>
-				<tr id="data">
-				<td><?=htmlspecialchars($row['address']);?></td>
-				<td><?=htmlspecialchars(date($lang['user']['alias_full_date'], $row['validity']));?></td>
-				</tr>
+			<div class="col-xs-5">
+				<p><?=htmlspecialchars($row['address']);?></p>
+			</div>
+			<div class="col-xs-4">
+				<p><?=htmlspecialchars(date($lang['user']['alias_full_date'], $row['validity']));?></p>
+			</div>
+			<div class="col-xs-3">
+				<form class="form-inline" role="form" method="post">
+          <a href="#" onclick="$(this).closest('form').submit()" data-toggle="tooltip" data-placement="left" title="<?=$lang['user']['delete_now'];?>"><span class="glyphicon glyphicon-remove"></span></a>
+          <input type="hidden" name="trigger_set_time_limited_aliases" value="delete">
+          <input type="hidden" name="item" value="<?=htmlspecialchars($row['address']);?>">
+				</form>
+			</div>
 			<?php
 			endwhile;
 			else:
 			?>
-				<tr id="no-data"><td colspan="2" style="text-align: center; font-style: italic;"><?=$lang['user']['no_record'];?></td></tr>
+      <div class="col-xs-12">
+        <center><i><?=$lang['user']['no_record'];?></i></center>
+      </div>
 			<?php
 			endif;	
 			?>
-			</tbody>
-		</table>
 		</div>
+    <form class="form-horizontal" role="form" method="post">
 		<div class="form-group">
 			<div class="col-sm-9">
 				<select id="validity" name="validity" title="<?=$lang['user']['alias_select_validity'];?>">
@@ -166,7 +182,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 		</div>
 		<div class="form-group">
 			<div class="col-sm-12">
-				<button style="border-color:#f5f5f5;background:none;color:red" type="submit" name="trigger_set_time_limited_aliases" value="delete" class="btn btn-sm">
+				<button style="border-color:#f5f5f5;background:none;color:red" type="submit" name="trigger_set_time_limited_aliases" value="deleteall" class="btn btn-sm">
 					<span class="glyphicon glyphicon-remove" aria-hidden="true"></span> <?=$lang['user']['alias_remove_all'];?>
 				</button>
 				<button style="border-color:#f5f5f5;background:none;color:grey" type="submit" name="trigger_set_time_limited_aliases" value="extend" class="btn btn-sm">
@@ -365,13 +381,14 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 		</form>
 	</div>
 	<div role="tabpanel" class="tab-pane" id="Syncjobs">
+		<div class="table-responsive">
 		<table class="table table-striped sortable-theme-bootstrap" data-sortable id="timelimitedaliases">
 			<thead>
 			<tr>
 				<th class="sort-table" style="min-width: 96px;">Server:Port</th>
 				<th class="sort-table" style="min-width: 96px;"><?=$lang['user']['encryption'];?></th>
 				<th class="sort-table" style="min-width: 96px;"><?=$lang['user']['username'];?></th>
-				<th class="sort-table" style="min-width: 35px;"><?=$lang['user']['excludes'];?></th>
+				<th class="sort-table" style="min-width: 96px;"><?=$lang['user']['excludes'];?></th>
 				<th class="sort-table" style="min-width: 35px;"><?=$lang['user']['interval'];?></th>
 				<th class="sort-table" style="min-width: 35px;"><?=$lang['user']['last_run'];?></th>
 				<th class="sort-table" style="min-width: 35px;">Log</th>
@@ -401,9 +418,9 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 				<td><?=htmlspecialchars($row['host1'] . ':' . $row['port1']);?></td>
 				<td><?=htmlspecialchars($row['enc1']);?></td>
 				<td><?=htmlspecialchars($row['user1']);?></td>
-				<td><?=($row['exclude'] == '') ? '&#10008;' : $row['exclude'];?></td>
+				<td><?=($row['exclude'] == '') ? '&#10008;' : '<code>' . $row['exclude'] . '</code>';?></td>
 				<td><?=htmlspecialchars($row['mins_interval']);?> min</td>
-				<td><?=(empty($row['last_run'])) ? '&#10008;' : htmlspecialchars(date($lang['user']['syncjob_full_date'], strtotime($row['last_run'])));?></td>
+				<td><?=(empty($row['last_run'])) ? '&#10008;' : htmlspecialchars(date($lang['user']['syncjob_full_date'], strtotime($row['last_run'] . ' UTC')));?></td>
 				<td>
         <?php
         if (empty($row['returned_text'])) {
@@ -442,11 +459,12 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
       </tfoot>
 		</table>
 		</div>
+		</div>
 	</div>
 </div>
 <br />
 <div class="modal fade" id="logModal" tabindex="-1" role="dialog" aria-labelledby="logTextLabel">
-  <div class="modal-dialog modal-lg" role="document">
+  <div class="modal-dialog" style="width:90%" role="document">
     <div class="modal-content">
       <div class="modal-body">
         <span id="logText"></span>

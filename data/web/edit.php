@@ -517,7 +517,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 	<?php
 	}
 }
-if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "user")) {
+elseif (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "user")) {
 	if (isset($_GET['syncjob']) &&
     is_numeric($_GET["syncjob"]) &&
     filter_var($_SESSION['mailcow_cc_username'], FILTER_VALIDATE_EMAIL)) {
@@ -580,6 +580,18 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "use
 						<label class="control-label col-sm-2" for="mins_interval"><?=$lang['edit']['mins_interval'];?></label>
 						<div class="col-sm-10">
               <input type="number" class="form-control" name="mins_interval" min="10" max="3600" value="<?=htmlspecialchars($result['mins_interval'], ENT_QUOTES, 'UTF-8');?>" required>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="subfolder2"><?=$lang['edit']['subfolder2'];?></label>
+						<div class="col-sm-10">
+						<input type="text" class="form-control" name="subfolder2" id="subfolder2" value="<?=htmlspecialchars($result['subfolder2'], ENT_QUOTES, 'UTF-8');?>">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="maxage"><?=$lang['edit']['maxage'];?></label>
+						<div class="col-sm-10">
+						<input type="number" class="form-control" name="maxage" id="maxage" value="<?=htmlspecialchars($result['maxage'], ENT_QUOTES, 'UTF-8');?>">
 						</div>
 					</div>
 					<div class="form-group">

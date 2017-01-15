@@ -15,6 +15,9 @@ $(document).ready(function() {
 		}
 	});
 
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  })
 	// Show generate button after time selection
 	$('#trigger_set_time_limited_aliases').hide(); 
 	$('#validity').change(function(){
@@ -29,6 +32,6 @@ $(document).ready(function() {
   // Log modal
   $('#logModal').on('show.bs.modal', function(e) {
   var logText = $(e.relatedTarget).data('log-text');
-  $(e.currentTarget).find('#logText').html('<pre>' + logText + '</pre>');
+  $(e.currentTarget).find('#logText').html('<pre style="background:none;font-size:11px;line-height:1.1;border:0px">' + logText + '</pre>');
   });
 });

@@ -232,9 +232,13 @@ endif;
 				?>
 					<?php
 				}
-				if (isset($_SESSION['mailcow_cc_username'])):
+				if (!isset($_SESSION["dual-login"]) && isset($_SESSION['mailcow_cc_username'])):
 				?>
 					<li><a style="border-left:1px solid #E7E7E7" href="#" onclick="logout.submit()"><?=sprintf($lang['header']['logged_in_as_logout'], $_SESSION['mailcow_cc_username']);?></a></li>
+				<?php
+				elseif (isset($_SESSION["dual-login"])):
+				?>
+					<li><a style="border-left:1px solid #E7E7E7" href="#" onclick="logout.submit()"><?=sprintf($lang['header']['logged_in_as_logout_dual'], $_SESSION['mailcow_cc_username'], $_SESSION["dual-login"]["username"]);?></a></li>
 				<?php
 				endif;
 				?>

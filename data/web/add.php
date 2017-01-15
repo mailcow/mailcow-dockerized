@@ -259,7 +259,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 	<?php
 	}
 }
-if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "user")) {
+elseif (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "user")) {
   if (isset($_GET['syncjob'])) {
 ?>
 				<h4><?=$lang['add']['syncjob'];?></h4>
@@ -303,6 +303,18 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "use
 						<label class="control-label col-sm-2" for="mins_interval"><?=$lang['add']['mins_interval'];?></label>
 						<div class="col-sm-10">
               <input type="number" class="form-control" name="mins_interval" min="10" max="3600" value="20" required>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="subfolder2"><?=$lang['edit']['subfolder2'];?></label>
+						<div class="col-sm-10">
+						<input type="text" class="form-control" name="subfolder2" id="subfolder2" value="External">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="maxage"><?=$lang['edit']['maxage'];?></label>
+						<div class="col-sm-10">
+						<input type="number" class="form-control" name="maxage" id="maxage" min="0" max="32000" value="0">
 						</div>
 					</div>
 					<div class="form-group">

@@ -3,10 +3,17 @@
 //ini_set("session.cookie_httponly", 1);
 session_start();
 if (isset($_POST["logout"])) {
-	session_unset();
-	session_destroy();
-	session_write_close();
-	setcookie(session_name(),'',0,'/');
+  if (isset($_SESSION["dual-login"])) {
+    $_SESSION["mailcow_cc_username"] = $_SESSION["dual-login"]["username"];
+    $_SESSION["mailcow_cc_role"] = $_SESSION["dual-login"]["role"];
+    unset($_SESSION["dual-login"]);
+  }
+  else {
+    session_unset();
+    session_destroy();
+    session_write_close();
+    setcookie(session_name(),'',0,'/');
+  }
 }
 
 require_once 'inc/vars.inc.php';
@@ -75,4 +82,4 @@ require_once 'lang/lang.en.php';
 include 'lang/lang.'.$_SESSION['mailcow_locale'].'.php';
 require_once 'inc/functions.inc.php';
 require_once 'inc/triggers.inc.php';
-init_db_schema();
+(!isset($_SESSION['mailcow_cc_username'])) ? init_db_schema() : null;
