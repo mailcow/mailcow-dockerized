@@ -9,12 +9,14 @@ services:
       networks:
         mailcow-network:
           ipv4_address: 172.22.1.254
+          aliases:
+            - pdns
 
     mysql-mailcow:
       image: mariadb:10.1
       depends_on:
         - pdns-mailcow
-      command: mysqld --default-time-zone="${TZ}"
+      command: mysqld
       volumes:
         - mysql-vol-1:/var/lib/mysql/
         - ./data/conf/mysql/:/etc/mysql/conf.d/:ro
@@ -29,6 +31,8 @@ services:
       restart: always
       networks:
         mailcow-network:
+          aliases:
+            - mysql
 
     redis-mailcow:
       image: redis
@@ -42,6 +46,8 @@ services:
       dns_search: mailcow-network
       networks:
         mailcow-network:
+          aliases:
+            - redis
 
     rspamd-mailcow:
       image: andryyy/mailcow-dockerized:rspamd
@@ -59,6 +65,8 @@ services:
       dns_search: mailcow-network
       networks:
         mailcow-network:
+          aliases:
+            - rspamd
 
     phpfpm-mailcow:
       image: andryyy/mailcow-dockerized:phpfpm
@@ -80,6 +88,8 @@ services:
       restart: always
       networks:
         mailcow-network:
+          aliases:
+            - phpfpm
 
     sogo-mailcow:
       image: andryyy/mailcow-dockerized:sogo
@@ -100,6 +110,8 @@ services:
       restart: always
       networks:
         mailcow-network:
+          aliases:
+            - sogo
 
     rmilter-mailcow:
       image: andryyy/mailcow-dockerized:rmilter
@@ -113,6 +125,8 @@ services:
       dns_search: mailcow-network
       networks:
         mailcow-network:
+          aliases:
+            - rmilter
 
     dovecot-mailcow:
       image: andryyy/mailcow-dockerized:dovecot
@@ -141,6 +155,8 @@ services:
       hostname: ${MAILCOW_HOSTNAME}
       networks:
         mailcow-network:
+          aliases:
+            - dovecot
 
     postfix-mailcow:
       image: andryyy/mailcow-dockerized:postfix
@@ -164,6 +180,8 @@ services:
       dns_search: mailcow-network
       networks:
         mailcow-network:
+          aliases:
+            - postfix
 
     memcached-mailcow:
       image: memcached
@@ -175,6 +193,8 @@ services:
       dns_search: mailcow-network
       networks:
         mailcow-network:
+          aliases:
+            - memcached
 
     nginx-mailcow:
       depends_on:
@@ -201,6 +221,8 @@ services:
       restart: always
       networks:
         mailcow-network:
+          aliases:
+            - nginx
 
 networks:
   mailcow-network:
