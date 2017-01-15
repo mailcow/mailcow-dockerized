@@ -55,6 +55,7 @@ RUN apt-get -y install dovecot-common \
 RUN sed -i -E 's/^(\s*)system\(\);/\1unix-stream("\/dev\/log");/' /etc/syslog-ng/syslog-ng.conf
 RUN cpanm Data::Uniqid Mail::IMAPClient String::Util
 RUN echo '* * * * *   root   /usr/local/bin/imapsync_cron.pl' > /etc/cron.d/imapsync
+RUN echo '30 3 * * *   vmail  /usr/bin/doveadm quota recalc -A' > /etc/cron.d/dovecot-sync
 
 WORKDIR /tmp
 

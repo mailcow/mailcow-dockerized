@@ -21,7 +21,7 @@ open my $file, '<', "/etc/sogo/sieve.creds";
 my $creds = <$file>; 
 close $file;
 my ($master_user, $master_pass) = split /:/, $creds;
-my $sth = $dbh->prepare("SELECT id, user1, user2, host1, authmech1, password1, exclude, port1, enc1, delete2duplicates FROM imapsync WHERE active = 1 AND (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(last_run) > mins_interval * 60 OR last_run IS NULL)");
+my $sth = $dbh->prepare("SELECT id, user1, user2, host1, authmech1, password1, exclude, port1, enc1, delete2duplicates, maxage, subfolder2 FROM imapsync WHERE active = 1 AND (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(last_run) > mins_interval * 60 OR last_run IS NULL)");
 $sth->execute();
 my $row;
 
@@ -37,29 +37,29 @@ while ($row = $sth->fetchrow_arrayref()) {
   $port1              = @$row[7];
   $enc1               = @$row[8];
   $delete2duplicates  = @$row[9];
-  $user_w_master      = $user2 . '*' . trim($master_user);
+  $maxage             = @$row[10];
+  $subfolder2         = @$row[11];
 
-  if ($enc1 eq "TLS") {
-    $enc1 = "--tls1";
-  }
-  elsif ($enc1 eq "SSL") {
-    $enc1 = "--ssl1";
-  }
-  else {
-    $enc1 = "";
-  }
+  if ($enc1 eq "TLS") { $enc1 = "--tls1"; } elsif ($enc1 eq "SSL") { $enc1 = "--ssl1"; } else { undef $enc1; }
 
-  if ($exclude eq "") {
-    $exclude = "nothing^";
-  }
+  run [ "/usr/local/bin/imapsync",
+	"--timeout1", "10",
+	"--tmpdir", "/tmp",
+	"--subscribeall",
+	($exclude			eq ""	? () : ("--exclude", $exclude)),
+	($subfolder2		eq ""	? () : ('--subfolder2', $subfolder2)),
+	($maxage			eq "0"	? () : ('--maxage', $maxage)),
+	($delete2duplicates	ne "1"	? () : ('--delete2duplicates')),
+	(!defined($enc1)			? () : ($enc1)),
+	"--host1", $host1,
+	"--user1", $user1,
+	"--password1", $password1,
+	"--port1", $port1,
+	"--host2", "localhost",
+	"--user2", $user2 . '*' . trim($master_user),
+	"--password2", trim($master_pass),
+	'--no-modulesversion'], ">", \my $stdout;
 
-  if ($delete2duplicates eq "1") {
-    $delete2duplicates = "--delete2duplicates";
-  }
-  else {
-    $delete2duplicates = "";
-  }
-  run [ "/usr/local/bin/imapsync", ,"--timeout1", "10", "--tmpdir", "/tmp", "--subscribe", "--exclude", $exclude, "--host1", $host1, "--user1", $user1, "--password1", $password1, "--port1", $port1, $enc1, $delete2duplicates, "--host2", "localhost", "--user2", $user_w_master, "--password2", trim($master_pass), '--no-modulesversion'], ">", \my $stdout;
   $update = $dbh->prepare("UPDATE imapsync SET returned_text = ?, last_run = NOW() WHERE id = ?");
   $update->bind_param( 1, ${stdout} );
   $update->bind_param( 2, ${id} );
