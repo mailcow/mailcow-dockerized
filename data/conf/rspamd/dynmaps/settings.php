@@ -188,22 +188,22 @@ while ($row = array_shift($rows)) {
 	}
 	$stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `goto` = :object_goto AND `address` NOT LIKE '@%' AND `address` != :object_address");
 	$stmt->execute(array(':object_goto' => $row['object'], ':object_address' => $row['object']));
-	$rows_aliases_wl_1 = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  array_filter($rows_aliases_wl_1);
-	while ($row_aliases_wl_1 = array_shift($rows_aliases_wl_1)) {
+	$rows_aliases_bl_1 = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  array_filter($rows_aliases_bl_1);
+	while ($row_aliases_bl_1 = array_shift($rows_aliases_bl_1)) {
 ?>
-		rcpt = "<?=$row_aliases_wl_1['address'];?>";
+		rcpt = "<?=$row_aliases_bl_1['address'];?>";
 <?php
 	}
 	$stmt = $pdo->prepare("SELECT CONCAT(`local_part`, '@', `alias_domain`.`alias_domain`) AS `aliases` FROM `mailbox` 
 		LEFT OUTER JOIN `alias_domain` on `mailbox`.`domain` = `alias_domain`.`target_domain`
 		WHERE `mailbox`.`username` = :object");
 	$stmt->execute(array(':object' => $row['object']));
-	$rows_aliases_wl_2 = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  array_filter($rows_aliases_wl_2);
-	while ($row_aliases_wl_2 = array_shift($rows_aliases_wl_2)) {
+	$rows_aliases_bl_2 = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  array_filter($rows_aliases_bl_2);
+	while ($row_aliases_bl_2 = array_shift($rows_aliases_bl_2)) {
 ?>
-		rcpt = "<?=$row_aliases_wl_2['aliases'];?>";
+		rcpt = "<?=$row_aliases_bl_2['aliases'];?>";
 <?php
 	}
 ?>
