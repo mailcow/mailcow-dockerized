@@ -1,12 +1,14 @@
 <?php
-ini_set('error_reporting', 0);
 /*
 The match section performs AND operation on different matches: for example, if you have from and rcpt in the same rule,
 then the rule matches only when from AND rcpt match. For similar matches, the OR rule applies: if you have multiple rcpt matches,
 then any of these will trigger the rule. If a rule is triggered then no more rules are matched.
 */
+ini_set('error_reporting', 'E_ALL');
+
 header('Content-Type: text/plain');
 require_once "vars.inc.php";
+
 $dsn = $database_type . ':host=' . $database_host . ';dbname=' . $database_name;
 $opt = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
@@ -55,7 +57,8 @@ while ($row = array_shift($rows)) {
 		WHERE `mailbox`.`username` = :object");
 	$stmt->execute(array(':object' => $row['object']));
 	$rows_aliases_2 = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	while ($row_aliases_2 = array_filter(array_shift($rows_aliases_2))) {
+  array_filter($rows_aliases_2);
+	while ($row_aliases_2 = array_shift($rows_aliases_2)) {
 ?>
 		rcpt = "<?=$row_aliases_2['aliases'];?>";
 <?php
@@ -81,7 +84,6 @@ while ($row = array_shift($rows)) {
 	$username_sane = preg_replace("/[^a-zA-Z0-9]+/", "", $row['object']);
 ?>
 	whitelist_<?=$username_sane;?> {
-		priority = high;
 <?php
 	$stmt = $pdo->prepare("SELECT GROUP_CONCAT(REPLACE(`value`, '*', '.*') SEPARATOR '|') AS `value` FROM `filterconf`
 		WHERE `object`= :object
@@ -94,26 +96,30 @@ while ($row = array_shift($rows)) {
 <?php
 	if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
 ?>
-		rcpt = "/.*@<?=$username_userpref['username'];?>/";
+		priority = medium;
+		rcpt = "/.*@<?=$row['object'];?>/";
 <?php
 		$stmt = $pdo->prepare("SELECT `alias_domain` FROM `alias_domain`
 			WHERE `target_domain` = :object");
 		$stmt->execute(array(':object' => $row['object']));
 		$rows_domain_aliases = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    array_filter($rows_domain_aliases);
 		while ($row_domain_aliases = array_shift($rows_domain_aliases)) {
 ?>
-		rcpt = "<?=$row_domain_aliases['alias_domain'];?>";
+		rcpt = "/.*@<?=$row_domain_aliases['alias_domain'];?>/";
 <?php
 		}
 	}
 	else {
 ?>
+		priority = high;
 		rcpt = "<?=$row['object'];?>";
 <?php
 	}
 	$stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `goto` = :object_goto AND `address` NOT LIKE '@%' AND `address` != :object_address");
 	$stmt->execute(array(':object_goto' => $row['object'], ':object_address' => $row['object']));
 	$rows_aliases_wl_1 = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  array_filter($rows_aliases_wl_1);
 	while ($row_aliases_wl_1 = array_shift($rows_aliases_wl_1)) {
 ?>
 		rcpt = "<?=$row_aliases_wl_1['address'];?>";
@@ -124,7 +130,8 @@ while ($row = array_shift($rows)) {
 		WHERE `mailbox`.`username` = :object");
 	$stmt->execute(array(':object' => $row['object']));
 	$rows_aliases_wl_2 = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	while ($row_aliases_wl_2 = array_filter(array_shift($rows_aliases_wl_2))) {
+  array_filter($rows_aliases_wl_2);
+	while ($row_aliases_wl_2 = array_shift($rows_aliases_wl_2)) {
 ?>
 		rcpt = "<?=$row_aliases_wl_2['aliases'];?>";
 <?php
@@ -147,7 +154,6 @@ while ($row = array_shift($rows)) {
 	$username_sane = preg_replace("/[^a-zA-Z0-9]+/", "", $row['object']);
 ?>
 	blacklist_<?=$username_sane;?> {
-		priority = medium;
 <?php
 	$stmt = $pdo->prepare("SELECT GROUP_CONCAT(REPLACE(`value`, '*', '.*') SEPARATOR '|') AS `value` FROM `filterconf`
 		WHERE `object`= :object
@@ -160,26 +166,30 @@ while ($row = array_shift($rows)) {
 <?php
 	if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
 ?>
-		rcpt = "/.*@<?=$username_userpref['username'];?>/";
+		priority = medium;
+		rcpt = "/.*@<?=$row['object'];?>/";
 <?php
 		$stmt = $pdo->prepare("SELECT `alias_domain` FROM `alias_domain`
 			WHERE `target_domain` = :object");
 		$stmt->execute(array(':object' => $row['object']));
 		$rows_domain_aliases = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    array_filter($rows_domain_aliases);
 		while ($row_domain_aliases = array_shift($rows_domain_aliases)) {
 ?>
-		rcpt = "<?=$row_domain_aliases['alias_domain'];?>";
+		rcpt = "/.*@<?=$row_domain_aliases['alias_domain'];?>/";
 <?php
 		}
 	}
 	else {
 ?>
+		priority = high;
 		rcpt = "<?=$row['object'];?>";
 <?php
 	}
 	$stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `goto` = :object_goto AND `address` NOT LIKE '@%' AND `address` != :object_address");
 	$stmt->execute(array(':object_goto' => $row['object'], ':object_address' => $row['object']));
 	$rows_aliases_wl_1 = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  array_filter($rows_aliases_wl_1);
 	while ($row_aliases_wl_1 = array_shift($rows_aliases_wl_1)) {
 ?>
 		rcpt = "<?=$row_aliases_wl_1['address'];?>";
@@ -190,7 +200,8 @@ while ($row = array_shift($rows)) {
 		WHERE `mailbox`.`username` = :object");
 	$stmt->execute(array(':object' => $row['object']));
 	$rows_aliases_wl_2 = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	while ($row_aliases_wl_2 = array_filter(array_shift($rows_aliases_wl_2))) {
+  array_filter($rows_aliases_wl_2);
+	while ($row_aliases_wl_2 = array_shift($rows_aliases_wl_2)) {
 ?>
 		rcpt = "<?=$row_aliases_wl_2['aliases'];?>";
 <?php
