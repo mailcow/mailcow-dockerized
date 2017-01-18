@@ -1,22 +1,24 @@
 #!/bin/bash
 
+# Wait for MySQL to warm-up
+while ! mysqladmin ping --host mysql --silent; do
+	sleep 1
+done
+
+
 # Recreate view
 
 mysql --host mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "DROP VIEW IF EXISTS sogo_view"
 
 mysql --host mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
-CREATE VIEW sogo_view (c_uid, domain, c_name, c_password, c_cn, mail, aliases, ad_aliases, senderacl, home) AS
-SELECT mailbox.username, mailbox.domain, mailbox.username, mailbox.password, mailbox.name, mailbox.username, IFNULL(ga.aliases, ''), IFNULL(gda.ad_alias, ''), IFNULL(gs.send_as, ''), CONCAT('/var/vmail/', maildir) FROM mailbox
+CREATE VIEW sogo_view (c_uid, domain, c_name, c_password, c_cn, mail, aliases, ad_aliases, senderacl, home, kind, multiple_bookings) AS
+SELECT mailbox.username, mailbox.domain, mailbox.username, mailbox.password, mailbox.name, mailbox.username, IFNULL(ga.aliases, ''), IFNULL(gda.ad_alias, ''), IFNULL(gs.send_as, ''), CONCAT('/var/vmail/', maildir), mailbox.kind, mailbox.multiple_bookings FROM mailbox
 LEFT OUTER JOIN grouped_mail_aliases ga ON ga.username = mailbox.username
 LEFT OUTER JOIN grouped_sender_acl gs ON gs.username = mailbox.username
 LEFT OUTER JOIN grouped_domain_alias_address gda ON gda.username = mailbox.username
 WHERE mailbox.active = '1';
 EOF
 
-# Wait for MySQL to warm-up
-while ! mysqladmin ping --host mysql --silent; do
-	sleep 1
-done
 
 mkdir -p /var/lib/sogo/GNUstep/Defaults/
 
@@ -69,8 +71,6 @@ while read line
                     <string>kind</string>
                     <key>MultipleBookingsFieldName</key>
                     <string>multiple_bookings</string>
-                    <key>IMAPLoginFieldName</key>
-                    <string>c_uid</string>
                     <key>canAuthenticate</key>
                     <string>YES</string>
                     <key>displayName</key>
