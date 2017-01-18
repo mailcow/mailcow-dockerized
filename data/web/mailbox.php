@@ -1,7 +1,7 @@
 <?php
 require_once "inc/prerequisites.inc.php";
 
-if ($_SESSION['mailcow_cc_role'] == "admin" || $_SESSION['mailcow_cc_role'] == "domainadmin") {
+if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "admin" || $_SESSION['mailcow_cc_role'] == "domainadmin")) {
 require_once "inc/header.inc.php";
 $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 ?>
@@ -91,7 +91,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             endforeach;
             else:
 							?>
-              <tr id="no-data"><td colspan="8" style="text-align: center; font-style: italic;"><?=$lang['mailbox']['no_record'];?></td></tr>
+              <tr id="no-data"><td colspan="8" style="text-align: center; font-style: italic;"><?=$lang['mailbox']['no_record_single'];?></td></tr>
             <?php
             endif;
             ?>

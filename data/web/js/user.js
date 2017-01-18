@@ -14,10 +14,6 @@ $(document).ready(function() {
 			$(".passFields").slideUp();
 		}
 	});
-
-  $(function () {
-    $('[data-toggle="tooltip"]').tooltip()
-  })
 	// Show generate button after time selection
 	$('#trigger_set_time_limited_aliases').hide(); 
 	$('#validity').change(function(){

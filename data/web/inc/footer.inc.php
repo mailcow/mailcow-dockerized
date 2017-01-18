@@ -21,6 +21,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
 <?php
 endif;
 ?>
+<div style="margin-bottom:100px"></div>
 <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/js/bootstrap-switch.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.0.2/bootstrap-slider.min.js"></script>
@@ -33,6 +34,9 @@ function setLang(sel) {
 }
 
 $(document).ready(function() {
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  })
 	// Hide alerts after n seconds
 	$("#alert-fade").fadeTo(7000, 500).slideUp(500, function(){
 		$("#alert-fade").alert('close');

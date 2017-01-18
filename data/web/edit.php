@@ -20,34 +20,8 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 		if (isset($_GET["alias"]) &&
 			!empty($_GET["alias"])) {
 				$alias = $_GET["alias"];
-				$domain = substr(strrchr($alias, "@"), 1);
-				try {
-					$stmt = $pdo->prepare("SELECT * FROM `alias`
-						WHERE `address`= :address 
-						AND `goto` != :goto
-						AND (
-							`domain` IN (
-								SELECT `domain` FROM `domain_admins`
-									WHERE `active`='1'
-									AND `username`= :username
-							)
-							OR 'admin'= :admin
-						)");
-					$stmt->execute(array(
-						':address' => $alias,
-						':goto' => $alias,
-						':username' => $_SESSION['mailcow_cc_username'],
-						':admin' => $_SESSION['mailcow_cc_role']
-					));
-					$result = $stmt->fetch(PDO::FETCH_ASSOC);
-				}
-				catch(PDOException $e) {
-					$_SESSION['return'] = array(
-						'type' => 'danger',
-						'msg' => 'MySQL: '.$e
-					);
-				}
-				if ($result !== false) {
+        $result = mailbox_get_alias_details($alias);
+				if (!empty($result)) {
 				?>
 					<h4><?=$lang['edit']['alias'];?></h4>
 					<br />
@@ -62,7 +36,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 						<div class="form-group">
 							<div class="col-sm-offset-2 col-sm-10">
 								<div class="checkbox">
-								<label><input type="checkbox" name="active" <?php if (isset($result['active']) && $result['active']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['active'];?></label>
+								<label><input type="checkbox" name="active" <?php if (isset($result['active_int']) && $result['active_int']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['active'];?></label>
 								</div>
 							</div>
 						</div>
@@ -86,68 +60,34 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 			$_GET["domainadmin"] != 'admin' &&
 			$_SESSION['mailcow_cc_role'] == "admin") {
 				$domain_admin = $_GET["domainadmin"];
-				try {
-					$stmt = $pdo->prepare("SELECT * FROM `domain_admins` WHERE `username`= :domain_admin");
-					$stmt->execute(array(
-						':domain_admin' => $domain_admin
-					));
-					$result = $stmt->fetch(PDO::FETCH_ASSOC);
-				}
-				catch(PDOException $e) {
-					$_SESSION['return'] = array(
-						'type' => 'danger',
-						'msg' => 'MySQL: '.$e
-					);
-				}
-				if ($result !== false) {
+        $result = get_domain_admin_details($domain_admin);
+				if (!empty($result)) {
 				?>
 				<h4><?=$lang['edit']['domain_admin'];?></h4>
 				<br />
 				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
 				<input type="hidden" name="username" value="<?=htmlspecialchars($domain_admin);?>">
 					<div class="form-group">
+						<label class="control-label col-sm-2" for="username"><?=$lang['edit']['username'];?></label>
+						<div class="col-sm-10">
+              <input class="form-control" type="text" disabled value="<?=htmlspecialchars($domain_admin);?>" />
+						</div>
+					</div>
+					<div class="form-group">
 						<label class="control-label col-sm-2" for="domain"><?=$lang['edit']['domains'];?></label>
 						<div class="col-sm-10">
 							<select id="domain" name="domain[]" multiple>
 							<?php
-							try {
-								$stmt = $pdo->prepare("SELECT `domain` FROM `domain`
-									WHERE `domain` IN (
-										SELECT `domain` FROM `domain_admins`
-											WHERE `username`= :domain_admin)");
-								$stmt->execute(array(':domain_admin' => $domain_admin));
-								$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-							}
-							catch(PDOException $e) {
-								$_SESSION['return'] = array(
-									'type' => 'danger',
-									'msg' => 'MySQL: '.$e
-								);
-							}
-							while ($row_selected = array_shift($rows)):
+							foreach ($result['selected_domains'] as $domain):
 							?>
-								<option selected><?=htmlspecialchars($row_selected['domain']);?></option>
+								<option selected><?=htmlspecialchars($domain);?></option>
 							<?php
-							endwhile;
-							try {
-								$stmt = $pdo->prepare("SELECT `domain` FROM `domain`
-									WHERE `domain` NOT IN (
-										SELECT `domain` FROM `domain_admins`
-											WHERE `username`= :domain_admin)");
-								$stmt->execute(array(':domain_admin' => $domain_admin));
-								$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-							}
-							catch(PDOException $e) {
-								$_SESSION['return'] = array(
-									'type' => 'danger',
-									'msg' => 'MySQL: '.$e
-								);
-							}
-							while ($row_unselected = array_shift($rows)):
+							endforeach;
+							foreach ($result['unselected_domains'] as $domain):
 							?>
-								<option><?=htmlspecialchars($row_unselected['domain']);?></option>
+								<option><?=htmlspecialchars($domain);?></option>
 							<?php
-							endwhile;
+							endforeach;
 							?>
 							</select>
 						</div>
@@ -167,7 +107,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">
-							<label><input type="checkbox" name="active" <?php if (isset($result['active']) && $result['active']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['active'];?></label>
+							<label><input type="checkbox" name="active" <?php if (isset($result['active_int']) && $result['active_int']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['active'];?></label>
 							</div>
 						</div>
 					</div>
@@ -189,29 +129,8 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 		is_valid_domain_name($_GET["domain"]) &&
 		!empty($_GET["domain"])) {
 			$domain = $_GET["domain"];
-			try {
-				$stmt = $pdo->prepare("SELECT * FROM `domain` WHERE `domain`='".$domain."'
-				AND (
-					`domain` IN (
-						SELECT `domain` from `domain_admins`
-							WHERE `active`='1'
-							AND `username` = :username
-					)
-					OR 'admin'= :admin
-				)");
-				$stmt->execute(array(
-					':username' => $_SESSION['mailcow_cc_username'],
-					':admin' => $_SESSION['mailcow_cc_role']
-				));
-				$result = $stmt->fetch(PDO::FETCH_ASSOC);
-			}
-			catch(PDOException $e) {
-				$_SESSION['return'] = array(
-					'type' => 'danger',
-					'msg' => 'MySQL: '.$e
-				);
-			}
-			if ($result !== false) {
+      $result = mailbox_get_domain_details($domain);
+			if (!empty($result)) {
 			?>
 				<h4><?=$lang['edit']['domain'];?></h4>
 				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
@@ -228,34 +147,34 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="aliases"><?=$lang['edit']['max_aliases'];?></label>
 						<div class="col-sm-10">
-							<input type="number" class="form-control" name="aliases" id="aliases" value="<?=intval($result['aliases']);?>">
+							<input type="number" class="form-control" name="aliases" id="aliases" value="<?=intval($result['max_num_aliases_for_domain']);?>">
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="mailboxes"><?=$lang['edit']['max_mailboxes'];?></label>
 						<div class="col-sm-10">
-							<input type="number" class="form-control" name="mailboxes" id="mailboxes" value="<?=intval($result['mailboxes']);?>">
+							<input type="number" class="form-control" name="mailboxes" id="mailboxes" value="<?=intval($result['max_num_mboxes_for_domain']);?>">
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="maxquota"><?=$lang['edit']['max_quota'];?></label>
 						<div class="col-sm-10">
-							<input type="number" class="form-control" name="maxquota" id="maxquota" value="<?=intval($result['maxquota']);?>">
+							<input type="number" class="form-control" name="maxquota" id="maxquota" value="<?=intval($result['max_quota_for_mbox_mib']);?>">
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="quota"><?=$lang['edit']['domain_quota'];?></label>
 						<div class="col-sm-10">
-							<input type="number" class="form-control" name="quota" id="quota" value="<?=intval($result['quota']);?>">
+							<input type="number" class="form-control" name="quota" id="quota" value="<?=intval($result['max_quota_for_domain_mib']);?>">
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="control-label col-sm-2"><?=$lang['edit']['backup_mx_options'];?></label>
 						<div class="col-sm-10">
 							<div class="checkbox">
-								<label><input type="checkbox" name="backupmx" <?php if (isset($result['backupmx']) && $result['backupmx']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['relay_domain'];?></label>
+								<label><input type="checkbox" name="backupmx" <?=(isset($result['backupmx_int']) && $result['backupmx_int']=="1") ? "checked" : null;?>> <?=$lang['edit']['relay_domain'];?></label>
 								<br />
-								<label><input type="checkbox" name="relay_all_recipients" <?php if (isset($result['relay_all_recipients']) && $result['relay_all_recipients']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['relay_all'];?></label>
+								<label><input type="checkbox" name="relay_all_recipients" <?=(isset($result['relay_all_recipients']) && $result['relay_all_recipients']=="1") ? "checked" : null;?>> <?=$lang['edit']['relay_all'];?></label>
 								<p><?=$lang['edit']['relay_all_info'];?></p>
 							</div>
 						</div>
@@ -266,7 +185,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">
-								<label><input type="checkbox" name="active" <?php if (isset($result['active']) && $result['active']=="1") { echo "checked "; }; if ($_SESSION['mailcow_cc_role']=="domainadmin") { echo "disabled"; }; ?>> <?=$lang['edit']['active'];?></label>
+								<label><input type="checkbox" name="active" <?=(isset($result['active_int']) && $result['active_int']=="1") ? "checked" : null;?> <?=($_SESSION['mailcow_cc_role'] == "admin") ? null : "disabled";?>> <?=$lang['edit']['active'];?></label>
 							</div>
 						</div>
 					</div>
@@ -277,26 +196,137 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					</div>
 				</form>
 				<?php
-				if (file_exists($GLOBALS["MC_DKIM_TXTS"]. "/" . $domain . "." . "dkim")) {
-					$pubKey = file_get_contents($GLOBALS["MC_DKIM_TXTS"]. "/" . $domain . "." . "dkim");
+				if ($pubkey = dkim_table('get', $result['domain_name'])) {
 				?>
-					<div class="row">
-						<div class="col-xs-2">
-							<p>Domain: <strong><?=htmlspecialchars($domain);?></strong> (dkim._domainkey)</p>
-						</div>
-						<div class="col-xs-9">
-							<pre>v=DKIM1;k=rsa;t=s;s=email;p=<?=$pubKey;?></pre>
-						</div>
-						<div class="col-xs-1">
-							<form class="form-inline" role="form" method="post">
-							<a href="#" onclick="$(this).closest('form').submit()"><span class="glyphicon glyphicon-remove-circle"></span></a>
-							<input type="hidden" name="delete_dkim_record" value="<?=htmlspecialchars($file);?>">
-							<input type="hidden" name="dkim[domain]" value="<?=$domain;?>">
-							</form>
-						</div>
-					</div>
+        <hr>
+        <div class="row">
+          <div class="col-xs-2">
+            <p>Domain: <strong><?=htmlspecialchars($result['domain_name']);?></strong> (dkim._domainkey)</p>
+          </div>
+          <div class="col-xs-10">
+            <pre><?=$pubkey;?></pre>
+          </div>
+        </div>
 				<?php
 				}
+        ?>
+		<hr>
+		<div class="row">
+			<div class="col-sm-6">
+				<h4><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span> <?=$lang['user']['spamfilter_wl'];?></h4>
+				<p><?=$lang['user']['spamfilter_wl_desc'];?></p>
+				<div class="row">
+					<div class="col-sm-6"><b><?=$lang['user']['spamfilter_table_rule'];?></b></div>
+					<div class="col-sm-6"><b><?=$lang['user']['spamfilter_table_action'];?></b></div>
+				</div>
+				<?php
+        $get_policy_list = get_policy_list($domain);
+				if (empty($get_policy_list['whitelist'])):
+				?>
+					<div class="row">
+						<div class="col-sm-12"><i><?=$lang['user']['spamfilter_table_empty'];?></i></div>
+					</div>
+				<?php
+				else:
+          foreach($get_policy_list['whitelist'] as $wl):
+          ?>
+          <div class="row striped">
+            <form class="form-inline" method="post">
+            <div class="col-xs-6"><code><?=$wl['value'];?></code></div>
+            <div class="col-xs-6">
+              <?php
+              if ($wl['object'] == $domain):
+              ?>
+                <input type="hidden" name="delete_prefid" value="<?=$wl['prefid'];?>">
+                <input type="hidden" name="trigger_set_policy_list">
+                <input type="hidden" name="domain" value="<?=$domain;?>">
+                <a href="#" onclick="$(this).closest('form').submit()" data-toggle="tooltip" data-placement="left" title="<?=$lang['user']['delete_now'];?>"><span class="glyphicon glyphicon-remove"></span></a>
+              <?php
+              else:
+              ?>
+                <span style="cursor:not-allowed"><?=$lang['user']['spamfilter_table_domain_policy'];?></span>
+              <?php
+              endif;
+              ?>
+            </div>
+            </form>
+          </div>
+          <?php
+          endforeach;
+        endif;
+				?>
+				<hr style="margin:5px 0px 7px 0px">
+				<div class="row">
+					<form class="form-inline" method="post">
+					<div class="col-xs-6">
+						<input type="text" class="form-control input-sm" name="object_from" id="object_from" placeholder="*@example.org" required>
+						<input type="hidden" name="object_list" value="wl">
+						<input type="hidden" name="domain" value="<?=$domain;?>">
+					</div>
+					<div class="col-xs-6">
+						<button type="submit" id="trigger_set_policy_list" name="trigger_set_policy_list" class="btn btn-xs btn-default"><?=$lang['user']['spamfilter_table_add'];?></button>
+					</div>
+					</form>
+				</div>
+			</div>
+			<div class="col-sm-6">
+				<h4><span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span> <?=$lang['user']['spamfilter_bl'];?></h4>
+				<p><?=$lang['user']['spamfilter_bl_desc'];?></p>
+				<div class="row">
+					<div class="col-sm-6"><b><?=$lang['user']['spamfilter_table_rule'];?></b></div>
+					<div class="col-sm-6"><b><?=$lang['user']['spamfilter_table_action'];?></b></div>
+				</div>
+				<?php
+				if (empty($get_policy_list['blacklist'])):
+				?>
+					<div class="row">
+						<div class="col-sm-12"><i><?=$lang['user']['spamfilter_table_empty'];?></i></div>
+					</div>
+				<?php
+				else:
+          foreach($get_policy_list['blacklist'] as $bl):
+          ?>
+          <div class="row striped">
+            <form class="form-inline" method="post">
+            <div class="col-xs-6"><code><?=$bl['value'];?></code></div>
+            <div class="col-xs-6">
+              <input type="hidden" name="delete_prefid" value="<?=$bl['prefid'];?>">
+              <?php
+              if ($bl['object'] == $domain):
+              ?>
+                <input type="hidden" name="trigger_set_policy_list">
+                <input type="hidden" name="domain" value="<?=$domain;?>">
+                <a href="#" onclick="$(this).closest('form').submit()" data-toggle="tooltip" data-placement="left" title="<?=$lang['user']['delete_now'];?>"><span class="glyphicon glyphicon-remove"></span></a>
+              <?php
+              else:
+              ?>
+                <span style="cursor:not-allowed"><?=$lang['user']['spamfilter_table_domain_policy'];?></span>
+              <?php
+              endif;
+              ?>
+            </div>
+            </form>
+          </div>
+          <?php
+          endforeach;
+        endif;
+				?>
+				<hr style="margin:5px 0px 7px 0px">
+				<div class="row">
+					<form class="form-inline" method="post">
+					<div class="col-xs-6">
+						<input type="text" class="form-control input-sm" name="object_from" id="object_from" placeholder="*@example.org" required>
+						<input type="hidden" name="object_list" value="bl">
+						<input type="hidden" name="domain" value="<?=$domain;?>">
+					</div>
+					<div class="col-xs-6">
+						<button type="submit" id="trigger_set_policy_list" name="trigger_set_policy_list" class="btn btn-xs btn-default"><?=$lang['user']['spamfilter_table_add'];?></button>
+					</div>
+					</form>
+				</div>
+			</div>
+		</div>
+        <?php
 			}
 			else {
 			?>
@@ -308,31 +338,8 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 		is_valid_domain_name($_GET["aliasdomain"]) &&
 		!empty($_GET["aliasdomain"])) {
 			$alias_domain = $_GET["aliasdomain"];
-			try {
-				$stmt = $pdo->prepare("SELECT * FROM `alias_domain`
-					WHERE `alias_domain`= :alias_domain 
-					AND (
-						`target_domain` IN (
-							SELECT `domain` FROM `domain_admins`
-								WHERE `active`='1'
-								AND `username`= :username
-						)
-						OR 'admin'= :admin
-					)");
-				$stmt->execute(array(
-					':alias_domain' => $alias_domain,
-					':username' => $_SESSION['mailcow_cc_username'],
-					':admin' => $_SESSION['mailcow_cc_role']
-				));
-				$result = $stmt->fetch(PDO::FETCH_ASSOC);
-			}
-			catch(PDOException $e) {
-				$_SESSION['return'] = array(
-					'type' => 'danger',
-					'msg' => 'MySQL: '.$e
-				);
-			}
-			if ($result !== false) {
+      $result = mailbox_get_alias_domain_details($alias_domain);
+      if (!empty($result)) {
 			?>
 				<h4><?=$lang['edit']['edit_alias_domain'];?></h4>
 				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
@@ -346,7 +353,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">
-								<label><input type="checkbox" name="active" <?= (isset($result['active']) && $result['active']=="1") ?  "checked" : null ?>> <?=$lang['edit']['active'];?></label>
+								<label><input type="checkbox" name="active" <?=(isset($result['active_int']) && $result['active_int']=="1") ?  "checked" : null ?>> <?=$lang['edit']['active'];?></label>
 							</div>
 						</div>
 					</div>
@@ -357,35 +364,17 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					</div>
 				</form>
 				<?php
-				$dnstxt_folder = scandir($GLOBALS["MC_DKIM_TXTS"]);
-				$dnstxt_files = array_diff($dnstxt_folder, array('.', '..'));
-				foreach($dnstxt_files as $file) {
-					if (explode("_", $file)[1] == $domain) {
-						$str = file_get_contents($GLOBALS["MC_DKIM_TXTS"]."/".$file);
-						$str = preg_replace('/\r|\t|\n/', '', $str);
-						preg_match('/\(.*\)/im', $str, $matches);
-						if(isset($matches[0])) {
-							$str = str_replace(array(' ', '"', '(', ')'), '', $matches[0]);
-						}
+				if ($pubkey = dkim_table('get', $result['alias_domain'])) {
 				?>
-						<div class="row">
-							<div class="col-xs-2">
-								<p class="text-right"><?=$lang['edit']['dkim_signature'];?></p>
-							</div>
-							<div class="col-xs-10">
-								<div class="col-md-2"><b><?=$lang['edit']['dkim_txt_name'];?></b></div>
-								<div class="col-md-10">
-									<pre><?=htmlspecialchars(explode("_", $file)[0]);?>._domainkey</pre>
-								</div>
-								<div class="col-md-2"><b><?=$lang['edit']['dkim_txt_value'];?></b></div>
-								<div class="col-md-10">
-									<pre><?=htmlspecialchars($str);?></pre>
-									<?=$lang['edit']['dkim_record_info'];?>
-								</div>
-							</div>
+					<div class="row">
+						<div class="col-xs-2">
+							<p>Domain: <strong><?=htmlspecialchars($result['alias_domain']);?></strong> (dkim._domainkey)</p>
 						</div>
+						<div class="col-xs-10">
+							<pre><?=$pubkey;?></pre>
+						</div>
+					</div>
 				<?php
-					}
 				}
 			}
 			else {
@@ -396,22 +385,10 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 	}
 	elseif (isset($_GET['mailbox']) && filter_var($_GET["mailbox"], FILTER_VALIDATE_EMAIL) && !empty($_GET["mailbox"])) {
 			$mailbox = $_GET["mailbox"];
-			try {
-				$stmt = $pdo->prepare("SELECT `username`, `domain`, `name`, `quota`, `active` FROM `mailbox` WHERE `username` = :username1");
-				$stmt->execute(array(
-					':username1' => $mailbox,
-				));
-				$result = $stmt->fetch(PDO::FETCH_ASSOC);
-			}
-			catch(PDOException $e) {
-				$_SESSION['return'] = array(
-					'type' => 'danger',
-					'msg' => 'MySQL: '.$e
-				);
-			}
-			if ($result !== false && hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $result['domain'])) {
-				$left_m = remaining_specs($result['domain'], $_GET['mailbox'])['left_m'];
-			?>
+      $result = mailbox_get_mailbox_details($mailbox);
+      if (!empty($result)) {
+        $left_m = remaining_specs($result['domain'], $_GET['mailbox'])['left_m'];
+        ?>
 				<h4><?=$lang['edit']['mailbox'];?></h4>
 				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
 				<input type="hidden" name="username" value="<?=htmlspecialchars($result['username']);?>">
@@ -426,55 +403,59 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 							<br /><span id="quotaBadge" class="badge">max. <?=intval($left_m)?> MiB</span>
 						</label>
 						<div class="col-sm-10">
-							<input type="number" name="quota" id="quota" id="destroyable" style="width:100%" min="1" max="<?=intval($left_m);?>" value="<?=intval($result['quota']) / 1048576;?>" class="form-control">
+							<input type="number" name="quota" id="quota" id="destroyable" style="width:100%" min="1" max="<?=intval($left_m);?>" value="<?=intval($result['quota_bytes']) / 1048576;?>" class="form-control">
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="sender_acl"><?=$lang['edit']['sender_acl'];?>:</label>
 						<div class="col-sm-10">
-							<select style="width:100%" id="sender_acl" name="sender_acl[]" size="10" multiple>
+							<select data-width="50%" style="width:100%" id="sender_acl" name="sender_acl[]" size="10" multiple>
 							<?php
-							$rows = get_sender_acl_handles($mailbox, "preselected");
-							while ($row_goto_from_alias = array_shift($rows)):
-							?>
-								<option disabled selected><?=htmlspecialchars($row_goto_from_alias['address']);?></option>
-							<?php
-							endwhile;
+							$sender_acl_handles = get_sender_acl_handles($mailbox);
 
-							// All manual selected
-							$rows = get_sender_acl_handles($mailbox, "selected");
-							while ($row_selected_sender_acl = array_shift($rows)):
-									if (!filter_var($row_selected_sender_acl['send_as'], FILTER_VALIDATE_EMAIL)):
-									?>
-										<option data-divider="true"></option>
-											<option value="<?=htmlspecialchars($row_selected_sender_acl['send_as']);?>" selected><?=htmlspecialchars(sprintf($lang['edit']['dont_check_sender_acl'], str_replace('@', '', $row_selected_sender_acl['send_as'])));?></option>
-										<option data-divider="true"></option>
-									<?php
-									else:
-									?>
-										<option selected><?=htmlspecialchars($row_selected_sender_acl['send_as']);?></option>
-									<?php
-									endif;
-							endwhile;
-							
-							// Unselected domains
-							$rows = get_sender_acl_handles($mailbox, "unselected-domains");
-							while ($row_unselected_sender_acl = array_shift($rows)):
-							?>
-								<option data-divider="true"></option>
-									<option value="@<?=htmlspecialchars($row_unselected_sender_acl['domain']);?>"><?=htmlspecialchars(sprintf($lang['edit']['dont_check_sender_acl'], $row_unselected_sender_acl['domain']));?></option>
-								<option data-divider="true"></option>
-							<?php
-							endwhile;
+              foreach ($sender_acl_handles['sender_acl_domains']['ro'] as $domain):
+                ?>
+                <option data-subtext="Admin" value="<?=htmlspecialchars($domain);?>" disabled selected><?=htmlspecialchars(sprintf($lang['edit']['dont_check_sender_acl'], $domain));?></option>
+                <?php
+              endforeach;
 
-							// Unselected addresses
-							$rows = get_sender_acl_handles($mailbox, "unselected-addresses");
-							while ($row_unselected_sender_acl = array_shift($rows)):
-							?>
-								<option><?=htmlspecialchars($row_unselected_sender_acl['address']);?></option>
-							<?php
-							endwhile;
-							?>
+              foreach ($sender_acl_handles['sender_acl_addresses']['ro'] as $domain):
+                ?>
+              <option data-subtext="Admin" disabled selected><?=htmlspecialchars($alias);?></option>
+                <?php
+              endforeach;
+
+              foreach ($sender_acl_handles['fixed_sender_aliases'] as $alias):
+                ?>
+								<option data-subtext="Alias" disabled selected><?=htmlspecialchars($alias);?></option>
+                <?php
+              endforeach;
+
+              foreach ($sender_acl_handles['sender_acl_domains']['rw'] as $domain):
+                ?>
+                <option value="<?=htmlspecialchars($domain);?>" selected><?=htmlspecialchars(sprintf($lang['edit']['dont_check_sender_acl'], $domain));?></option>
+                <?php
+              endforeach;
+
+              foreach ($sender_acl_handles['sender_acl_domains']['selectable'] as $domain):
+                ?>
+                <option value="<?=htmlspecialchars($domain);?>"><?=htmlspecialchars(sprintf($lang['edit']['dont_check_sender_acl'], $domain));?></option>
+                <?php
+              endforeach;
+
+              foreach ($sender_acl_handles['sender_acl_addresses']['rw'] as $address):
+                ?>
+                  <option selected><?=htmlspecialchars($address);?></option>
+                <?php
+              endforeach;
+
+              foreach ($sender_acl_handles['sender_acl_addresses']['selectable'] as $address):
+                ?>
+                  <option><?=htmlspecialchars($address);?></option>
+                <?php
+              endforeach;
+
+              ?>
 							</select>
 						</div>
 					</div>
@@ -493,7 +474,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">
-							<label><input type="checkbox" name="active" <?=($result['active']=="1") ? "checked" : "";?>> <?=$lang['edit']['active'];?></label>
+							<label><input type="checkbox" name="active" <?=($result['active_int']=="1") ? "checked" : null;?>> <?=$lang['edit']['active'];?></label>
 							</div>
 						</div>
 					</div>
@@ -519,25 +500,10 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 }
 elseif (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "user")) {
 	if (isset($_GET['syncjob']) &&
-    is_numeric($_GET["syncjob"]) &&
-    filter_var($_SESSION['mailcow_cc_username'], FILTER_VALIDATE_EMAIL)) {
+    is_numeric($_GET['syncjob'])) {
 			$id = $_GET["syncjob"];
-      $username = $_SESSION['mailcow_cc_username'];
-			try {
-				$stmt = $pdo->prepare("SELECT * FROM `imapsync` WHERE `user2` = :username AND id = :id");
-				$stmt->execute(array(
-					':username' => $username,
-					':id' => $id
-				));
-				$result = $stmt->fetch(PDO::FETCH_ASSOC);
-			}
-			catch(PDOException $e) {
-				$_SESSION['return'] = array(
-					'type' => 'danger',
-					'msg' => 'MySQL: '.$e
-				);
-      }
-      if ($result && !empty($result)) {
+      $result = get_syncjob_details($id);
+      if (!empty($result)) {
 			?>
 				<h4><?=$lang['edit']['syncjob'];?></h4>
 				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">

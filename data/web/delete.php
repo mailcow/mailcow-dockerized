@@ -66,20 +66,9 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 			isset($_GET["aliasdomain"]) &&
 			is_valid_domain_name($_GET["aliasdomain"]) && 
 			!empty($_GET["aliasdomain"])) {
-				$alias_domain = strtolower(trim($_GET["aliasdomain"]));
-				try {
-					$stmt = $pdo->prepare("SELECT `target_domain` FROM `alias_domain`
-							WHERE `alias_domain`= :alias_domain");
-					$stmt->execute(array(':alias_domain' => $alias_domain));
-					$DomainData = $stmt->fetch(PDO::FETCH_ASSOC);
-				}
-				catch(PDOException $e) {
-					$_SESSION['return'] = array(
-						'type' => 'danger',
-						'msg' => 'MySQL: '.$e
-					);
-				}
-				if (hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $DomainData['target_domain'])) {
+        $alias_domain = $_GET["aliasdomain"];
+        $result = mailbox_get_alias_domain_details($alias_domain);
+				if (!empty($result)) {
 				?>
 					<div class="alert alert-warning" role="alert"><?=sprintf($lang['delete']['remove_domainalias_warning'], htmlspecialchars($_GET["aliasdomain"]));?></div>
 					<form class="form-horizontal" role="form" method="post" action="/mailbox.php">
@@ -102,7 +91,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 		elseif (isset($_GET["domainadmin"]) &&
 			ctype_alnum(str_replace(array('_', '.', '-'), '', $_GET["domainadmin"])) &&
 			!empty($_GET["domainadmin"]) &&
-			$_SESSION['mailcow_cc_role'] == "admin") {
+        $_SESSION['mailcow_cc_role'] == "admin") {
 				$domain_admin = $_GET["domainadmin"];
 				?>
 				<div class="alert alert-warning" role="alert"><?=sprintf($lang['delete']['remove_domainadmin_warning'], htmlspecialchars($_GET["domainadmin"]));?></div>
@@ -121,8 +110,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 			filter_var($_GET["mailbox"], FILTER_VALIDATE_EMAIL) &&
 			!empty($_GET["mailbox"])) {
 				$mailbox = $_GET["mailbox"];
-				$domain = substr(strrchr($mailbox, "@"), 1);
-				if (hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
+				if (hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $mailbox)) {
 				?>
 					<div class="alert alert-warning" role="alert"><?=sprintf($lang['delete']['remove_mailbox_warning'], htmlspecialchars($_GET["mailbox"]));?></div>
 					<p><?=$lang['delete']['remove_mailbox_details'];?></p>
@@ -153,21 +141,11 @@ elseif (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == 
 		if (isset($_GET["syncjob"]) &&
 			is_numeric($_GET["syncjob"]) &&
       filter_var($_SESSION['mailcow_cc_username'], FILTER_VALIDATE_EMAIL)) {
-        try {
-          $stmt = $pdo->prepare("SELECT `user2` FROM `imapsync`
-              WHERE `id` = :id AND user2 = :user2");
-          $stmt->execute(array(':id' => $_GET["syncjob"], ':user2' => $_SESSION['mailcow_cc_username']));
-          $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-        }
-        catch(PDOException $e) {
-          $_SESSION['return'] = array(
-            'type' => 'danger',
-            'msg' => 'MySQL: '.$e
-          );
-        }
-				if ($num_results != 0 && !empty($num_results)) {
+        $id = $_GET["syncjob"];
+        $result = get_syncjob_details($id);
+        if (!empty($result)) {
 				?>
-					<div class="alert alert-warning" role="alert"><?=sprintf($lang['delete']['remove_syncjob_warning'], htmlspecialchars($_SESSION['mailcow_cc_username']));?></div>
+					<div class="alert alert-warning" role="alert"><?=sprintf($lang['delete']['remove_syncjob_warning'], htmlspecialchars($result['user2']));?></div>
 					<p><?=$lang['delete']['remove_syncjob_details'];?></p>
 					<form class="form-horizontal" role="form" method="post" action="/user.php">
 					<input type="hidden" name="username" value="<?=htmlspecialchars($mailbox);?>">

@@ -95,6 +95,9 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 			break;
 		}
 	}
+	if (isset($_POST["trigger_set_policy_list"])) {
+		set_policy_list($_POST);
+	}
 	if (isset($_POST["trigger_mailbox_action"])) {
 		switch ($_POST["trigger_mailbox_action"]) {
 			case "adddomain":

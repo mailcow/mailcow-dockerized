@@ -1,6 +1,5 @@
 <?php
 require_once("inc/prerequisites.inc.php");
-
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user') {
 	require_once("inc/header.inc.php");
 	$_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
@@ -124,40 +123,25 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
         <p><b><?=$lang['user']['action'];?></b></p>
 			</div>
 			<?php
-			try {
-				$stmt = $pdo->prepare("SELECT `address`,
-					`goto`,
-					`validity`
-						FROM `spamalias`
-							WHERE `goto` = :username
-								AND `validity` >= :unixnow");
-				$stmt->execute(array(':username' => $username, ':unixnow' => time()));
-				$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-			}
-			catch(PDOException $e) {
-				$_SESSION['return'] = array(
-					'type' => 'danger',
-					'msg' => 'MySQL: '.$e
-				);
-			}
-			if(!empty($rows)):
-			while ($row = array_shift($rows)):
-			?>
-			<div class="col-xs-5">
-				<p><?=htmlspecialchars($row['address']);?></p>
-			</div>
-			<div class="col-xs-4">
-				<p><?=htmlspecialchars(date($lang['user']['alias_full_date'], $row['validity']));?></p>
-			</div>
-			<div class="col-xs-3">
-				<form class="form-inline" role="form" method="post">
-          <a href="#" onclick="$(this).closest('form').submit()" data-toggle="tooltip" data-placement="left" title="<?=$lang['user']['delete_now'];?>"><span class="glyphicon glyphicon-remove"></span></a>
-          <input type="hidden" name="trigger_set_time_limited_aliases" value="delete">
-          <input type="hidden" name="item" value="<?=htmlspecialchars($row['address']);?>">
-				</form>
-			</div>
-			<?php
-			endwhile;
+      $get_time_limited_aliases = get_time_limited_aliases($username);
+      if (!empty($get_time_limited_aliases)):
+        foreach ($get_time_limited_aliases as $row):
+        ?>
+        <div class="col-xs-5">
+          <p><?=htmlspecialchars($row['address']);?></p>
+        </div>
+        <div class="col-xs-4">
+          <p><?=htmlspecialchars(date($lang['user']['alias_full_date'], $row['validity']));?></p>
+        </div>
+        <div class="col-xs-3">
+          <form class="form-inline" role="form" method="post">
+            <a href="#" onclick="$(this).closest('form').submit()" data-toggle="tooltip" data-placement="left" title="<?=$lang['user']['delete_now'];?>"><span class="glyphicon glyphicon-remove"></span></a>
+            <input type="hidden" name="trigger_set_time_limited_aliases" value="delete">
+            <input type="hidden" name="item" value="<?=htmlspecialchars($row['address']);?>">
+          </form>
+        </div>
+        <?php
+        endforeach;
 			else:
 			?>
       <div class="col-xs-12">
@@ -233,49 +217,39 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 					<div class="col-sm-6"><b><?=$lang['user']['spamfilter_table_action'];?></b></div>
 				</div>
 				<?php
-				try {
-					$stmt = $pdo->prepare("SELECT `value`, `prefid` FROM `filterconf` WHERE `option`='whitelist_from' AND `object`= :username");
-					$stmt->execute(array(':username' => $username));
-					$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-				}
-				catch(PDOException $e) {
-					$_SESSION['return'] = array(
-						'type' => 'danger',
-						'msg' => 'MySQL: '.$e
-					);
-				}
-				if (count($rows) == 0):
+        $get_policy_list = get_policy_list($username);
+				if (empty($get_policy_list['whitelist'])):
 				?>
 					<div class="row">
 						<div class="col-sm-12"><i><?=$lang['user']['spamfilter_table_empty'];?></i></div>
 					</div>
 				<?php
-				endif;
-				while ($whitelistRow = array_shift($rows)):
-				?>
-				<div class="row striped">
-					<form class="form-inline" method="post">
-					<div class="col-xs-6"><code><?=$whitelistRow['value'];?></code></div>
-					<div class="col-xs-6">
-						<input type="hidden" name="prefid" value="<?=$whitelistRow['prefid'];?>">
-						<?php
-						if ($whitelistRow['username'] != array_pop(explode('@', $username))):
-						?>
-							<input type="hidden" name="trigger_set_policy_list">
-							<a href="#n" onclick="$(this).closest('form').submit()"><?=$lang['user']['spamfilter_table_remove'];?></a>
-						<?php
-						else:
-						?>
-							<span style="cursor:not-allowed"><?=$lang['user']['spamfilter_table_domain_policy'];?></span>
-						<?php
-						endif;
-						?>
-					</div>
-					</form>
-				</div>
-
-				<?php
-				endwhile;
+				else:
+          foreach($get_policy_list['whitelist'] as $wl):
+          ?>
+          <div class="row striped">
+            <form class="form-inline" method="post">
+            <div class="col-xs-6"><code><?=$wl['value'];?></code></div>
+            <div class="col-xs-6">
+              <input type="hidden" name="delete_prefid" value="<?=$wl['prefid'];?>">
+              <?php
+              if (filter_var($wl['object'], FILTER_VALIDATE_EMAIL)):
+              ?>
+                <input type="hidden" name="trigger_set_policy_list">
+                <a href="#" onclick="$(this).closest('form').submit()" data-toggle="tooltip" data-placement="left" title="<?=$lang['user']['delete_now'];?>"><span class="glyphicon glyphicon-remove"></span></a>
+              <?php
+              else:
+              ?>
+                <span style="cursor:not-allowed"><?=$lang['user']['spamfilter_table_domain_policy'];?></span>
+              <?php
+              endif;
+              ?>
+            </div>
+            </form>
+          </div>
+          <?php
+          endforeach;
+        endif;
 				?>
 				<hr style="margin:5px 0px 7px 0px">
 				<div class="row">
@@ -298,48 +272,38 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 					<div class="col-sm-6"><b><?=$lang['user']['spamfilter_table_action'];?></b></div>
 				</div>
 				<?php
-				try {
-					$stmt = $pdo->prepare("SELECT `value`, `prefid` FROM `filterconf` WHERE `option`='blacklist_from' AND `object`= :username");
-					$stmt->execute(array(':username' => $username));
-					$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-				}
-				catch(PDOException $e) {
-					$_SESSION['return'] = array(
-						'type' => 'danger',
-						'msg' => 'MySQL: '.$e
-					);
-				}
-				if (count($rows) == 0):
+				if (empty($get_policy_list['blacklist'])):
 				?>
 					<div class="row">
 						<div class="col-sm-12"><i><?=$lang['user']['spamfilter_table_empty'];?></i></div>
 					</div>
 				<?php
-				endif;
-				while ($blacklistRow = array_shift($rows)):
-				?>
-				<div class="row striped">
-					<form class="form-inline" method="post">
-					<div class="col-xs-6"><code><?=$blacklistRow['value'];?></code></div>
-					<div class="col-xs-6">
-						<input type="hidden" name="prefid" value="<?=$blacklistRow['prefid'];?>">
-						<?php
-						if ($blacklistRow['username'] != array_pop(explode('@', $username))):
-						?>
-							<input type="hidden" name="trigger_set_policy_list">
-							<a href="#n" onclick="$(this).closest('form').submit()"><?=$lang['user']['spamfilter_table_remove'];?></a>
-						<?php
-						else:
-						?>
-							<span style="cursor:not-allowed"><?=$lang['user']['spamfilter_table_domain_policy'];?></span>
-						<?php
-						endif;
-						?>
-					</div>
-					</form>
-				</div>
-				<?php
-				endwhile;
+				else:
+          foreach($get_policy_list['blacklist'] as $bl):
+          ?>
+          <div class="row striped">
+            <form class="form-inline" method="post">
+            <div class="col-xs-6"><code><?=$bl['value'];?></code></div>
+            <div class="col-xs-6">
+              <?php
+              if (filter_var($bl['object'], FILTER_VALIDATE_EMAIL)):
+              ?>
+                <input type="hidden" name="delete_prefid" value="<?=$bl['prefid'];?>">
+                <input type="hidden" name="trigger_set_policy_list">
+                <a href="#" onclick="$(this).closest('form').submit()" data-toggle="tooltip" data-placement="left" title="<?=$lang['user']['delete_now'];?>"><span class="glyphicon glyphicon-remove"></span></a>
+              <?php
+              else:
+              ?>
+                <span style="cursor:not-allowed"><?=$lang['user']['spamfilter_table_domain_policy'];?></span>
+              <?php
+              endif;
+              ?>
+            </div>
+            </form>
+          </div>
+          <?php
+          endforeach;
+        endif;
 				?>
 				<hr style="margin:5px 0px 7px 0px">
 				<div class="row">
@@ -398,21 +362,9 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 			</thead>
 			<tbody>
 			<?php
-			try {
-				$stmt = $pdo->prepare("SELECT *, CONCAT(LEFT(`password1`, 3), '…') as `password1_short`
-						FROM `imapsync`
-							WHERE `user2` = :username");
-				$stmt->execute(array(':username' => $username));
-				$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-			}
-			catch(PDOException $e) {
-				$_SESSION['return'] = array(
-					'type' => 'danger',
-					'msg' => 'MySQL: '.$e
-				);
-			}
-			if(!empty($rows)):
-			while ($row = array_shift($rows)):
+      $get_syncjobs = get_syncjobs($username);
+			if (!empty($get_syncjobs)):
+			foreach ($get_syncjobs as $row):
 			?>
 				<tr id="data">
 				<td><?=htmlspecialchars($row['host1'] . ':' . $row['port1']);?></td>
@@ -442,7 +394,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
         </td>
 				</tr>
 			<?php
-			endwhile;
+			endforeach;
 			else:
 			?>
 				<tr id="no-data"><td colspan="9" style="text-align: center; font-style: italic;"><?=$lang['user']['no_record'];?></td></tr>
@@ -462,7 +414,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 		</div>
 	</div>
 </div>
-<br />
+<div style="margin-bottom:200px;"></div>
 <div class="modal fade" id="logModal" tabindex="-1" role="dialog" aria-labelledby="logTextLabel">
   <div class="modal-dialog" style="width:90%" role="document">
     <div class="modal-content">
