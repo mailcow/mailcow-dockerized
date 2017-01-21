@@ -11,7 +11,14 @@ RUN dpkg-divert --local --rename --add /sbin/initctl \
     && ln -sf /bin/true /usr/bin/ischroot
 
 RUN apt-get update \
-	&& apt-get install -y --no-install-recommends apt-transport-https ca-certificates wget syslog-ng syslog-ng-core supervisor mysql-client cron \
+	&& apt-get install -y --no-install-recommends apt-transport-https \
+		ca-certificates \
+		wget \
+		syslog-ng \
+		syslog-ng-core \
+		supervisor \
+		mysql-client \
+		cron \
     && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
     && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
     && wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc" \
@@ -35,8 +42,9 @@ RUN echo '0 0 * * *   sogo   /usr/sbin/sogo-tool update-autoreply -p /etc/sogo/s
 COPY ./reconf-domains.sh /
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 
-EXPOSE 20000
-EXPOSE 9191
+#EXPOSE 20000
+#EXPOSE 9191
+#EXPOSE 9192
 
 CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 

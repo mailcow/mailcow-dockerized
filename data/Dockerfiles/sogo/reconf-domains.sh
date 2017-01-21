@@ -1,10 +1,7 @@
 #!/bin/bash
 
 # Wait for MySQL to warm-up
-while ! mysqladmin ping --host mysql --silent; do
-	sleep 1
-done
-
+while mysqladmin ping --host mysql --silent; do
 
 # Recreate view
 
@@ -99,4 +96,6 @@ echo '    </dict>
 chown sogo:sogo -R /var/lib/sogo/
 chmod 600 /var/lib/sogo/GNUstep/Defaults/sogod.plist
 
-sleep infinite
+sleep 99999
+
+done;
