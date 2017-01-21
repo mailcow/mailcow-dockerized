@@ -39,64 +39,64 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
       }
     }
   }
-	if (isset($_POST["trigger_set_admin"])) {
+  
+	if (isset($_POST["set_admin_account"])) {
 		set_admin_account($_POST);
 	}
-	if (isset($_POST["delete_dkim_record"])) {
-		dkim_table("delete", $_POST);
+	if (isset($_POST["dkim_delete_key"])) {
+		dkim_delete_key($_POST);
 	}
-	if (isset($_POST["add_dkim_record"])) {
-		dkim_table("add", $_POST);
+	if (isset($_POST["dkim_add_key"])) {
+		dkim_add_key($_POST);
 	}
-	if (isset($_POST["trigger_add_domain_admin"])) {
+	if (isset($_POST["add_domain_admin"])) {
 		add_domain_admin($_POST);
 	}
-	if (isset($_POST["trigger_delete_domain_admin"])) {
+	if (isset($_POST["delete_domain_admin"])) {
 		delete_domain_admin($_POST);
 	}
-	if (isset($_POST["trigger_edit_domain_admin"])) {
+	if (isset($_POST["edit_domain_admin"])) {
 		edit_domain_admin($_POST);
 	}
 }
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "user") {
-	if (isset($_POST["trigger_set_user_account"])) {
-		set_user_account($_POST);
+	if (isset($_POST["edit_user_account"])) {
+		edit_user_account($_POST);
 	}
-	if (isset($_POST["trigger_set_spam_score"])) {
-		set_spam_score($_POST);
+	if (isset($_POST["edit_spam_score"])) {
+		edit_spam_score($_POST);
 	}
-	if (isset($_POST["trigger_set_tagging_options"])) {
-		tagging_options('set', $_POST);
+	if (isset($_POST["edit_delimiter_action"])) {
+		edit_delimiter_action($_POST);
 	}
-	if (isset($_POST["trigger_set_policy_list"])) {
-		set_policy_list($_POST);
+	if (isset($_POST["add_policy_list_item"])) {
+		add_policy_list_item($_POST);
 	}
-	if (isset($_POST["trigger_set_tls_policy"])) {
-		set_tls_policy($_POST);
+	if (isset($_POST["delete_policy_list_item"])) {
+		delete_policy_list_item($_POST);
 	}
-	if (isset($_POST["trigger_add_syncjob"])) {
-		set_syncjob($_POST, "add");
+	if (isset($_POST["edit_tls_policy"])) {
+		edit_tls_policy($_POST);
 	}
-	if (isset($_POST["trigger_edit_syncjob"])) {
-		set_syncjob($_POST, "edit");
+	if (isset($_POST["add_syncjob"])) {
+		add_syncjob($_POST);
 	}
-	if (isset($_POST["trigger_delete_syncjob"])) {
-		set_syncjob($_POST, "delete");
+	if (isset($_POST["edit_syncjob"])) {
+		edit_syncjob($_POST);
+	}
+	if (isset($_POST["delete_syncjob"])) {
+		delete_syncjob($_POST);
 	}
 	if (isset($_POST["trigger_set_time_limited_aliases"])) {
 		set_time_limited_aliases($_POST);
 	}
 }
 if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "admin" || $_SESSION['mailcow_cc_role'] == "domainadmin")) {
-	if (isset($_GET["js"])) {
-		switch ($_GET["js"]) {
-			case "remaining_specs":
-				remaining_specs($_GET['domain'], $_GET['object'], "y");
-			break;
-		}
+	if (isset($_POST["trigger_add_policy_list_item"])) {
+		add_policy_list_item($_POST);
 	}
-	if (isset($_POST["trigger_set_policy_list"])) {
-		set_policy_list($_POST);
+	if (isset($_POST["trigger_delete_policy_list_item"])) {
+		delete_policy_list_item($_POST);
 	}
 	if (isset($_POST["trigger_mailbox_action"])) {
 		switch ($_POST["trigger_mailbox_action"]) {

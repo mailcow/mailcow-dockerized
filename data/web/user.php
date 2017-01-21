@@ -44,7 +44,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
     </div>
     <div class="form-group">
       <div class="col-sm-offset-3 col-sm-9">
-        <button type="submit" name="trigger_set_user_account" class="btn btn-success btn-default"><?=$lang['user']['save_changes'];?></button>
+        <button type="submit" name="edit_user_account" class="btn btn-success btn-default"><?=$lang['user']['save_changes'];?></button>
       </div>
     </div>
   </form>
@@ -84,11 +84,11 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
   <hr>
   <?php // Show tagging options ?>
   <form class="form-horizontal" role="form" method="post">
-  <?php $get_tagging_options = tagging_options('get');?>
+  <?php $get_tagging_options = get_delimiter_action()['wants_tagged_subject'];?>
   <div class="row">
     <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['tag_handling'];?>:</div>
     <div class="col-md-9 col-xs-7">
-    <input type="hidden" name="trigger_set_tagging_options" value="1">
+    <input type="hidden" name="edit_delimiter_action" value="1">
     <select name="tagged_mail_handler" class="selectpicker" onchange="this.form.submit()">
       <option value="subfolder" <?=($get_tagging_options == "0") ? 'selected' : null; ?>><?=$lang['user']['tag_in_subfolder'];?></option>
       <option value="subject" <?=($get_tagging_options == "1") ? 'selected' : null; ?>><?=$lang['user']['tag_in_subject'];?></option>
@@ -189,7 +189,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 						data-slider-range="true"
 						data-slider-tooltip='always'
 						data-slider-id="slider1"
-						data-slider-value="[<?=get_spam_score($_SESSION['mailcow_cc_username']);?>]"
+						data-slider-value="[<?=get_spam_score($username);?>]"
 						data-slider-step="1" />
 					<br /><br />
 					<ul>
@@ -203,7 +203,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 			</div>
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
-					<button type="submit" id="trigger_set_spam_score" name="trigger_set_spam_score" class="btn btn-success"><?=$lang['user']['save_changes'];?></button>
+					<button type="submit" id="edit_spam_score" name="edit_spam_score" class="btn btn-success"><?=$lang['user']['save_changes'];?></button>
 				</div>
 			</div>
 		</form>
@@ -235,7 +235,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
               <?php
               if (filter_var($wl['object'], FILTER_VALIDATE_EMAIL)):
               ?>
-                <input type="hidden" name="trigger_set_policy_list">
+                <input type="hidden" name="delete_policy_list_item">
                 <a href="#" onclick="$(this).closest('form').submit()" data-toggle="tooltip" data-placement="left" title="<?=$lang['user']['delete_now'];?>"><span class="glyphicon glyphicon-remove"></span></a>
               <?php
               else:
@@ -259,7 +259,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 						<input type="hidden" name="object_list" value="wl">
 					</div>
 					<div class="col-xs-6">
-						<button type="submit" id="trigger_set_policy_list" name="trigger_set_policy_list" class="btn btn-xs btn-default"><?=$lang['user']['spamfilter_table_add'];?></button>
+						<button type="submit" id="add_policy_list_item" name="add_policy_list_item" class="btn btn-xs btn-default"><?=$lang['user']['spamfilter_table_add'];?></button>
 					</div>
 					</form>
 				</div>
@@ -289,7 +289,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
               if (filter_var($bl['object'], FILTER_VALIDATE_EMAIL)):
               ?>
                 <input type="hidden" name="delete_prefid" value="<?=$bl['prefid'];?>">
-                <input type="hidden" name="trigger_set_policy_list">
+                <input type="hidden" name="delete_policy_list_item">
                 <a href="#" onclick="$(this).closest('form').submit()" data-toggle="tooltip" data-placement="left" title="<?=$lang['user']['delete_now'];?>"><span class="glyphicon glyphicon-remove"></span></a>
               <?php
               else:
@@ -313,7 +313,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 						<input type="hidden" name="object_list" value="bl">
 					</div>
 					<div class="col-xs-6">
-						<button type="submit" id="trigger_set_policy_list" name="trigger_set_policy_list" class="btn btn-xs btn-default"><?=$lang['user']['spamfilter_table_add'];?></button>
+						<button type="submit" id="add_policy_list_item" name="add_policy_list_item" class="btn btn-xs btn-default"><?=$lang['user']['spamfilter_table_add'];?></button>
 					</div>
 					</form>
 				</div>
@@ -339,7 +339,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 			</div>
 			<div class="form-group">
 				<div class="col-sm-12">
-					<button type="submit" id="trigger_set_tls_policy" name="trigger_set_tls_policy" class="btn btn-default"><?=$lang['user']['save_changes'];?></button>
+					<button type="submit" id="edit_tls_policy" name="edit_tls_policy" class="btn btn-default"><?=$lang['user']['save_changes'];?></button>
 				</div>
 			</div>
 		</form>

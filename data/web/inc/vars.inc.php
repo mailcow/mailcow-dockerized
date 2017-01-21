@@ -1,6 +1,5 @@
 <?php
-error_reporting(E_ALL);
-//error_reporting(E_ERROR | E_WARNING);
+error_reporting(E_ERROR | E_WARNING);
 
 /*
 PLEASE USE THE FILE "vars.local.inc.php" TO OVERWRITE SETTINGS AND MAKE THEM PERSISTENT!

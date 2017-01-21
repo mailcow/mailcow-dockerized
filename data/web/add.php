@@ -339,7 +339,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == 
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
-							<button type="submit" name="trigger_add_syncjob" value="1" class="btn btn-success "><?=$lang['add']['save'];?></button>
+							<button type="submit" name="add_syncjob" value="1" class="btn btn-success "><?=$lang['add']['save'];?></button>
 						</div>
 					</div>
 				</form>

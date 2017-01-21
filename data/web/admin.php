@@ -49,7 +49,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 				</div>
 				<div class="form-group">
 					<div class="col-sm-offset-2 col-sm-10">
-						<button type="submit" name="trigger_set_admin" class="btn btn-default"><?=$lang['admin']['save'];?></button>
+						<button type="submit" name="set_admin_account" class="btn btn-default"><?=$lang['admin']['save'];?></button>
 					</div>
 				</div>
 			</form>
@@ -162,7 +162,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
-							<button type="submit" name="trigger_add_domain_admin" class="btn btn-default"><?=$lang['admin']['add'];?></button>
+							<button type="submit" name="add_domain_admin" class="btn btn-default"><?=$lang['admin']['add'];?></button>
 						</div>
 					</div>
 				</form>
@@ -180,93 +180,110 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
   <p style="margin-bottom:40px"><?=$lang['admin']['dkim_key_hint'];?></p>
 	<?php
 	foreach(mailbox_get_domains() as $domain) {
-    if ($pubkey = dkim_table('get', $domain)) {
+      if (!empty($dkim = dkim_get_key_details($domain))) {
     ?>
       <div class="row">
         <div class="col-xs-3">
-          <p>Domain: <strong><?=htmlspecialchars($domain);?></strong><br /><span class="label label-success"><?=$lang['admin']['dkim_key_valid'];?></span></p>
+          <p>Domain: <strong><?=htmlspecialchars($domain);?></strong><br />
+            <span class="label label-success"><?=$lang['admin']['dkim_key_valid'];?></span>
+            <span class="label label-info"><?=$dkim['length'];?> bit</span>
+          </p>
         </div>
         <div class="col-xs-8">
-          <pre><?=$pubkey;?></pre>
+            <pre><?=$dkim['dkim_txt'];?></pre>
         </div>
         <div class="col-xs-1">
           <form class="form-inline" method="post">
-            <input type="hidden" name="dkim[domain]" value="<?=$domain;?>">
-            <input type="hidden" name="delete_dkim_record" value="1">
-            <a href="#" onclick="$(this).closest('form').submit()"><span class="glyphicon glyphicon-remove-circle"></span></a>
+            <input type="hidden" name="domain" value="<?=$domain;?>">
+            <input type="hidden" name="dkim_delete_key" value="1">
+              <a href="#" onclick="$(this).closest('form').submit()" data-toggle="tooltip" data-placement="top" title="<?=$lang['user']['delete_now'];?>"><span class="glyphicon glyphicon-remove"></span></a>
           </form>
         </div>
       </div>
     <?php
     }
+    else {
+    ?>
+    <div class="row">
+      <div class="col-xs-3">
+        <p>Domain: <strong><?=htmlspecialchars($domain);?></strong><br /><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
+      </div>
+      <div class="col-xs-8"><pre>-</pre></div>
+      <div class="col-xs-1">&nbsp;</div>
+    </div>
+    <?php
+    }
     foreach(mailbox_get_alias_domains($domain) as $alias_domain) {
-      if ($pubkey = dkim_table('get', $alias_domain)) {
+      if (!empty($dkim = dkim_get_key_details($alias_domain))) {
       ?>
         <div class="row">
           <div class="col-xs-offset-1 col-xs-2">
-            <p><small>↳ Alias-Domain: <strong><?=htmlspecialchars($alias_domain);?></strong><br /></small><span class="label label-success"><?=$lang['admin']['dkim_key_valid'];?></span></p>
+            <p><small>↳ Alias-Domain: <strong><?=htmlspecialchars($alias_domain);?></strong><br /></small>
+              <span class="label label-success"><?=$lang['admin']['dkim_key_valid'];?></span>
+              <span class="label label-info"><?=$dkim['length'];?> bit</span>
+          </p>
           </div>
           <div class="col-xs-8">
-            <pre><?=$pubkey;?></pre>
+            <pre><?=$dkim['dkim_txt'];?></pre>
           </div>
           <div class="col-xs-1">
             <form class="form-inline" method="post">
-              <input type="hidden" name="dkim[domain]" value="<?=$alias_domain;?>">
-              <input type="hidden" name="delete_dkim_record" value="1">
-              <a href="#" onclick="$(this).closest('form').submit()"><span class="glyphicon glyphicon-remove-circle"></span></a>
+              <input type="hidden" name="domain" value="<?=$alias_domain;?>">
+              <input type="hidden" name="dkim_delete_key" value="1">
+              <a href="#" onclick="$(this).closest('form').submit()" data-toggle="tooltip" data-placement="top" title="<?=$lang['user']['delete_now'];?>"><span class="glyphicon glyphicon-remove"></span></a>
             </form>
           </div>
         </div>
       <?php
       }
+      else {
+      ?>
+      <div class="row">
+        <div class="col-xs-2 col-xs-offset-1">
+          <p><small>↳ Alias-Domain: <strong><?=htmlspecialchars($alias_domain);?></strong><br /></small><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
+        </div>
+      <div class="col-xs-8"><pre>-</pre></div>
+      <div class="col-xs-1">&nbsp;</div>
+      </div>
+      <?php
+      }
     }
 	}
-  ?><hr><?php
-  foreach(dkim_table('keys-without-domain', null) as $key_wo_domain) {
-    if ($pubkey = dkim_table('get', $key_wo_domain)) {
+  foreach(dkim_get_blind_keys() as $blind) {
+    if (!empty($dkim = dkim_get_key_details($blind))) {
     ?>
       <div class="row">
         <div class="col-xs-3">
-          <p>Domain: <strong><?=htmlspecialchars($key_wo_domain);?></strong><br /><span class="label label-warning"><?=$lang['admin']['dkim_key_unused'];?></span></p>
+          <p>Domain: <strong><?=htmlspecialchars($blind);?></strong><br /><span class="label label-warning"><?=$lang['admin']['dkim_key_unused'];?></span></p>
         </div>
           <div class="col-xs-8">
-            <pre><?=$pubkey;?></pre>
+            <pre><?=$dkim['dkim_txt'];?></pre>
           </div>
           <div class="col-xs-1">
             <form class="form-inline" method="post">
-              <input type="hidden" name="dkim[domain]" value="<?=$key_wo_domain;?>">
-              <input type="hidden" name="delete_dkim_record" value="1">
-              <a href="#" onclick="$(this).closest('form').submit()"><span class="glyphicon glyphicon-remove-circle"></span></a>
+              <input type="hidden" name="domain" value="<?=$blind;?>">
+              <input type="hidden" name="dkim_delete_key" value="1">
+              <a href="#" onclick="$(this).closest('form').submit()" data-toggle="tooltip" data-placement="top" title="<?=$lang['user']['delete_now'];?>"><span class="glyphicon glyphicon-remove"></span></a>
             </form>
           </div>
       </div>
     <?php
     }
   }
-  ?><hr><?php
-  foreach(dkim_table('domains-without-key', null) as $domain_wo_key) {
   ?>
-    <div class="row">
-      <div class="col-xs-12">
-        <p>(Alias-)Domain: <strong><?=htmlspecialchars($domain_wo_key);?></strong><br /><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
-      </div>
-    </div>
-  <?php
-  }
-	?>
 	<legend style="margin-top:40px"><?=$lang['admin']['dkim_add_key'];?></legend>
 	<form class="form-inline" role="form" method="post">
 		<div class="form-group">
-			<label for="dkim_domain">Domain</label>
-			<input class="form-control" id="dkim_domain" name="dkim[domain]" placeholder="example.org" required>
+			<label for="domain">Domain</label>
+			<input class="form-control" id="domain" name="domain" placeholder="example.org" required>
 		</div>
 		<div class="form-group">
-			<select data-width="200px" class="form-control" id="dkim_key_size" name="dkim[key_size]" title="<?=$lang['admin']['dkim_key_length'];?>" required>
+			<select data-width="200px" class="form-control" id="key_size" name="key_size" title="<?=$lang['admin']['dkim_key_length'];?>" required>
 				<option data-subtext="bits">1024</option>
 				<option data-subtext="bits">2048</option>
 			</select>
 		</div>
-		<button type="submit" name="add_dkim_record" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
+		<button type="submit" name="dkim_add_key" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
 	</form>
 </div>
 </div>

@@ -159,13 +159,13 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="maxquota"><?=$lang['edit']['max_quota'];?></label>
 						<div class="col-sm-10">
-							<input type="number" class="form-control" name="maxquota" id="maxquota" value="<?=intval($result['max_quota_for_mbox_mib']);?>">
+							<input type="number" class="form-control" name="maxquota" id="maxquota" value="<?=intval($result['max_new_mailbox_quota'] / 1048576);?>">
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="quota"><?=$lang['edit']['domain_quota'];?></label>
 						<div class="col-sm-10">
-							<input type="number" class="form-control" name="quota" id="quota" value="<?=intval($result['max_quota_for_domain_mib']);?>">
+							<input type="number" class="form-control" name="quota" id="quota" value="<?=intval($result['max_quota_for_domain'] / 1048576);?>">
 						</div>
 					</div>
 					<div class="form-group">
@@ -196,7 +196,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					</div>
 				</form>
 				<?php
-				if ($pubkey = dkim_table('get', $result['domain_name'])) {
+        if (!empty($dkim = dkim_get_key_details($domain))) {
 				?>
         <hr>
         <div class="row">
@@ -204,7 +204,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
             <p>Domain: <strong><?=htmlspecialchars($result['domain_name']);?></strong> (dkim._domainkey)</p>
           </div>
           <div class="col-xs-10">
-            <pre><?=$pubkey;?></pre>
+            <pre><?=$dkim['dkim_txt'];?></pre>
           </div>
         </div>
 				<?php
@@ -238,7 +238,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
               if ($wl['object'] == $domain):
               ?>
                 <input type="hidden" name="delete_prefid" value="<?=$wl['prefid'];?>">
-                <input type="hidden" name="trigger_set_policy_list">
+                <input type="hidden" name="trigger_delete_policy_list_item">
                 <input type="hidden" name="domain" value="<?=$domain;?>">
                 <a href="#" onclick="$(this).closest('form').submit()" data-toggle="tooltip" data-placement="left" title="<?=$lang['user']['delete_now'];?>"><span class="glyphicon glyphicon-remove"></span></a>
               <?php
@@ -264,7 +264,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 						<input type="hidden" name="domain" value="<?=$domain;?>">
 					</div>
 					<div class="col-xs-6">
-						<button type="submit" id="trigger_set_policy_list" name="trigger_set_policy_list" class="btn btn-xs btn-default"><?=$lang['user']['spamfilter_table_add'];?></button>
+						<button type="submit" id="trigger_add_policy_list_item" name="trigger_add_policy_list_item" class="btn btn-xs btn-default"><?=$lang['user']['spamfilter_table_add'];?></button>
 					</div>
 					</form>
 				</div>
@@ -294,7 +294,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
               <?php
               if ($bl['object'] == $domain):
               ?>
-                <input type="hidden" name="trigger_set_policy_list">
+                <input type="hidden" name="trigger_delete_policy_list_item">
                 <input type="hidden" name="domain" value="<?=$domain;?>">
                 <a href="#" onclick="$(this).closest('form').submit()" data-toggle="tooltip" data-placement="left" title="<?=$lang['user']['delete_now'];?>"><span class="glyphicon glyphicon-remove"></span></a>
               <?php
@@ -320,7 +320,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 						<input type="hidden" name="domain" value="<?=$domain;?>">
 					</div>
 					<div class="col-xs-6">
-						<button type="submit" id="trigger_set_policy_list" name="trigger_set_policy_list" class="btn btn-xs btn-default"><?=$lang['user']['spamfilter_table_add'];?></button>
+						<button type="submit" id="trigger_add_policy_list_item" name="trigger_add_policy_list_item" class="btn btn-xs btn-default"><?=$lang['user']['spamfilter_table_add'];?></button>
 					</div>
 					</form>
 				</div>
@@ -364,16 +364,17 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					</div>
 				</form>
 				<?php
-				if ($pubkey = dkim_table('get', $result['alias_domain'])) {
+        if (!empty($dkim = dkim_get_key_details($alias_domain))) {
 				?>
-					<div class="row">
-						<div class="col-xs-2">
-							<p>Domain: <strong><?=htmlspecialchars($result['alias_domain']);?></strong> (dkim._domainkey)</p>
-						</div>
-						<div class="col-xs-10">
-							<pre><?=$pubkey;?></pre>
-						</div>
-					</div>
+        <hr>
+        <div class="row">
+          <div class="col-xs-2">
+            <p>Domain: <strong><?=htmlspecialchars($result['alias_domain']);?></strong> (dkim._domainkey)</p>
+          </div>
+          <div class="col-xs-10">
+          <pre><?=$dkim['dkim_txt'];?></pre>
+          </div>
+        </div>
 				<?php
 				}
 			}
@@ -387,7 +388,6 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 			$mailbox = $_GET["mailbox"];
       $result = mailbox_get_mailbox_details($mailbox);
       if (!empty($result)) {
-        $left_m = remaining_specs($result['domain'], $_GET['mailbox'])['left_m'];
         ?>
 				<h4><?=$lang['edit']['mailbox'];?></h4>
 				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
@@ -400,10 +400,10 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					</div>
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="quota"><?=$lang['edit']['quota_mb'];?>:
-							<br /><span id="quotaBadge" class="badge">max. <?=intval($left_m)?> MiB</span>
+							<br /><span id="quotaBadge" class="badge">max. <?=intval($result['max_new_quota'] / 1048576)?> MiB</span>
 						</label>
 						<div class="col-sm-10">
-							<input type="number" name="quota" id="quota" id="destroyable" style="width:100%" min="1" max="<?=intval($left_m);?>" value="<?=intval($result['quota_bytes']) / 1048576;?>" class="form-control">
+							<input type="number" name="quota" id="quota" id="destroyable" style="width:100%" min="1" max="<?=intval($result['max_new_quota'] / 1048576);?>" value="<?=intval($result['quota']) / 1048576;?>" class="form-control">
 						</div>
 					</div>
 					<div class="form-group">
@@ -411,7 +411,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 						<div class="col-sm-10">
 							<select data-width="50%" style="width:100%" id="sender_acl" name="sender_acl[]" size="10" multiple>
 							<?php
-							$sender_acl_handles = get_sender_acl_handles($mailbox);
+							$sender_acl_handles = mailbox_get_sender_acl_handles($mailbox);
 
               foreach ($sender_acl_handles['sender_acl_domains']['ro'] as $domain):
                 ?>

@@ -58,8 +58,8 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 							<td><?=htmlspecialchars($domaindata['domain_name']);?></td>
 							<td><?=$domaindata['aliases_in_domain'];?> / <?=$domaindata['max_num_aliases_for_domain'];?></td>
 							<td><?=$domaindata['mboxes_in_domain'];?> / <?=$domaindata['max_num_mboxes_for_domain'];?></td>
-							<td><?=$domaindata['max_quota_for_mbox'];?></td>
-							<td><?=$domaindata['quota_used_in_domain'];?> / <?=$domaindata['max_quota_for_domain'];?></td>
+							<td><?=formatBytes($domaindata['max_quota_for_mbox']);?></td>
+							<td><?=formatBytes($domaindata['quota_used_in_domain'], 2);?> / <?=formatBytes($domaindata['max_quota_for_domain'], 2);?></td>
 							<?php
 							if ($_SESSION['mailcow_cc_role'] == "admin"):
 							?>
@@ -222,7 +222,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 							<td><?=($mailboxdata['is_relayed'] == "0") ? htmlspecialchars($mailboxdata['username']) : '<span data-toggle="tooltip" title="Relayed"><i class="glyphicon glyphicon-forward"></i>' . htmlspecialchars($mailboxdata['username']) . '</span>';?></td>
 							<td><?=htmlspecialchars($mailboxdata['name'], ENT_QUOTES, 'UTF-8');?></td>
 							<td><?=htmlspecialchars($mailboxdata['domain']);?></td>
-							<td><?=$mailboxdata['quota_used'];?> / <?=$mailboxdata['quota'];?></td>
+							<td><?=formatBytes($mailboxdata['quota_used'], 2);?> / <?=formatBytes($mailboxdata['quota'], 2);?></td>
 							<td style="min-width:120px;">
 								<div class="progress">
 									<div class="progress-bar progress-bar-<?=$mailboxdata['percent_class'];?>" role="progressbar" aria-valuenow="<?=$mailboxdata['percent_in_use'];?>" aria-valuemin="0" aria-valuemax="100" style="min-width:2em;width: <?=$mailboxdata['percent_in_use'];?>%;">
@@ -293,7 +293,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 					</thead>
 					<tbody>
 					<?php
-          foreach (mailbox_get_domains() as $domain) {
+          foreach (array_merge(mailbox_get_domains(), mailbox_get_alias_domains()) as $domain) {
             $aliases = mailbox_get_aliases($domain);
             if (!empty($aliases)) {
               foreach ($aliases as $alias) {

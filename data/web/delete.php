@@ -99,7 +99,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 				<input type="hidden" name="username" value="<?=htmlspecialchars($domain_admin);?>">
 					<div class="form-group">
 						<div class="col-sm-offset-1 col-sm-10">
-							<button type="submit" name="trigger_delete_domain_admin" class="btn btn-default btn-sm"><?=$lang['delete']['remove_button'];?></button>
+							<button type="submit" name="delete_domain_admin" class="btn btn-default btn-sm"><?=$lang['delete']['remove_button'];?></button>
 						</div>
 					</div>
 				</form>
@@ -152,7 +152,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == 
 						<div class="form-group">
 							<div class="col-sm-offset-1 col-sm-10">
 								<input type="hidden" name="id" value="<?=$_GET["syncjob"];?>">
-								<button type="submit" name="trigger_delete_syncjob" value="1" class="btn btn-default btn-sm"><?=$lang['delete']['remove_button'];?></button>
+								<button type="submit" name="delete_syncjob" value="1" class="btn btn-default btn-sm"><?=$lang['delete']['remove_button'];?></button>
 							</div>
 						</div>
 					</form>
