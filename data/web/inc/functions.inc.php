@@ -2,6 +2,7 @@
 require_once 'dkim.inc.php';
 require_once 'mailbox.inc.php';
 require_once 'domainadmin.inc.php';
+require_once 'admin.inc.php';
 function hash_password($password) {
 	$salt_str = bin2hex(openssl_random_pseudo_bytes(8));
 	return "{SSHA256}".base64_encode(hash('sha256', $password . $salt_str, true) . $salt_str);
@@ -433,13 +434,45 @@ function set_time_limited_aliases($postarray) {
 				'msg' => sprintf($lang['success']['mailbox_modified'], htmlspecialchars($username))
 			);
 		break;
-		case "extend":
+		case "extendall":
 			try {
-				$stmt = $pdo->prepare("UPDATE `spamalias` SET `validity` = (`validity` + 3600)
-					WHERE `goto` = :username 
-						AND `validity` >= :validity");
+				$stmt = $pdo->prepare("UPDATE `spamalias` SET `validity` = (`validity` + 3600) WHERE
+          `goto` = :username AND
+					`validity` >= :validity");
 				$stmt->execute(array(
 					':username' => $username,
+					':validity' => time(),
+				));
+			}
+			catch (PDOException $e) {
+				$_SESSION['return'] = array(
+					'type' => 'danger',
+					'msg' => 'MySQL: '.$e
+				);
+				return false;
+			}
+			$_SESSION['return'] = array(
+				'type' => 'success',
+				'msg' => sprintf($lang['success']['mailbox_modified'], htmlspecialchars($username))
+			);
+		break;
+		case "extend":
+			if (empty($postarray['item']) || !filter_var($postarray['item'], FILTER_VALIDATE_EMAIL)) {
+				$_SESSION['return'] = array(
+					'type' => 'danger',
+					'msg' => sprintf($lang['danger']['access_denied'])
+				);
+				return false;
+			}
+      $item	= $postarray['item'];
+			try {
+				$stmt = $pdo->prepare("UPDATE `spamalias` SET `validity` = (`validity` + 3600) WHERE 
+          `goto` = :username AND
+					`address` = :item AND
+					`validity` >= :validity");
+				$stmt->execute(array(
+					':username' => $username,
+					':item' => $item,
 					':validity' => time(),
 				));
 			}

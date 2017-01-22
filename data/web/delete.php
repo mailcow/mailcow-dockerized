@@ -30,7 +30,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 				<input type="hidden" name="domain" value="<?php echo htmlspecialchars($domain) ?>">
 					<div class="form-group">
 						<div class="col-sm-offset-1 col-sm-10">
-							<button type="submit" name="trigger_mailbox_action" value="deletedomain" class="btn btn-default btn-sm"><?=$lang['delete']['remove_button'];?></button>
+							<button type="submit" name="mailbox_delete_domain" class="btn btn-default btn-sm"><?=$lang['delete']['remove_button'];?></button>
 						</div>
 					</div>
 				</form>
@@ -49,7 +49,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					<input type="hidden" name="address" value="<?php echo htmlspecialchars($_GET["alias"]) ?>">
 						<div class="form-group">
 							<div class="col-sm-offset-1 col-sm-10">
-								<button type="submit" name="trigger_mailbox_action" value="deletealias" class="btn btn-default btn-sm"><?=$lang['delete']['remove_button'];?></button>
+								<button type="submit" name="mailbox_delete_alias" class="btn btn-default btn-sm"><?=$lang['delete']['remove_button'];?></button>
 							</div>
 						</div>
 					</form>
@@ -75,7 +75,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					<input type="hidden" name="alias_domain" value="<?php echo htmlspecialchars($alias_domain) ?>">
 						<div class="form-group">
 							<div class="col-sm-offset-1 col-sm-10">
-								<button type="submit" name="trigger_mailbox_action" value="deletealiasdomain" class="btn btn-default btn-sm"><?=$lang['delete']['remove_button'];?></button>
+								<button type="submit" name="mailbox_delete_alias_domain" class="btn btn-default btn-sm"><?=$lang['delete']['remove_button'];?></button>
 							</div>
 						</div>
 					</form>
@@ -118,7 +118,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					<input type="hidden" name="username" value="<?=htmlspecialchars($mailbox);?>">
 						<div class="form-group">
 							<div class="col-sm-offset-1 col-sm-10">
-								<button type="submit" name="trigger_mailbox_action" value="deletemailbox" class="btn btn-default btn-sm"><?=$lang['delete']['remove_button'];?></button>
+								<button type="submit" name="mailbox_delete_mailbox" class="btn btn-default btn-sm"><?=$lang['delete']['remove_button'];?></button>
 							</div>
 						</div>
 					</form>

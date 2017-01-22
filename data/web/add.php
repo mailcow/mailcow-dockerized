@@ -77,7 +77,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
-							<button type="submit" name="trigger_mailbox_action" value="adddomain" class="btn btn-success"><?=$lang['add']['save'];?></button>
+							<button type="submit" name="mailbox_add_domain" class="btn btn-success"><?=$lang['add']['save'];?></button>
 						</div>
 					</div>
 					<p><span class="glyphicon glyphicon-exclamation-sign text-danger"></span> <?=$lang['add']['restart_sogo_hint'];?></p>
@@ -112,7 +112,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
-							<button type="submit" name="trigger_mailbox_action" value="addalias" class="btn btn-success "><?=$lang['add']['save'];?></button>
+							<button type="submit" name="mailbox_add_alias" class="btn btn-success "><?=$lang['add']['save'];?></button>
 						</div>
 					</div>
 				</form>
@@ -167,7 +167,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
-							<button type="submit" name="trigger_mailbox_action" value="addaliasdomain" class="btn btn-success "><?=$lang['add']['save'];?></button>
+							<button type="submit" name="mailbox_add_alias_domain" class="btn btn-success "><?=$lang['add']['save'];?></button>
 						</div>
 					</div>
 				</form>
@@ -247,7 +247,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
-							<button type="submit" name="trigger_mailbox_action" value="addmailbox" class="btn btn-success "><?=$lang['add']['save'];?></button>
+							<button type="submit" name="mailbox_add_mailbox" class="btn btn-success "><?=$lang['add']['save'];?></button>
 						</div>
 					</div>
 				</form>

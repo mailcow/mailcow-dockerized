@@ -113,33 +113,43 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 <div class="tab-content">
 	<div role="tabpanel" class="tab-pane active" id="SpamAliases">
 		<div class="row">
-			<div class="col-xs-5">
+			<div class="col-xs-6">
 				<p><b><?=$lang['user']['alias'];?></b></p>
 			</div>
-			<div class="col-xs-4">
+			<div class="col-xs-2">
 				<p><b><?=$lang['user']['alias_valid_until'];?></b></p>
 			</div>
-			<div class="col-xs-3">
+			<div class="col-xs-2">
         <p><b><?=$lang['user']['action'];?></b></p>
 			</div>
+    </div>
 			<?php
       $get_time_limited_aliases = get_time_limited_aliases($username);
       if (!empty($get_time_limited_aliases)):
         foreach ($get_time_limited_aliases as $row):
         ?>
-        <div class="col-xs-5">
-          <p><?=htmlspecialchars($row['address']);?></p>
-        </div>
-        <div class="col-xs-4">
-          <p><?=htmlspecialchars(date($lang['user']['alias_full_date'], $row['validity']));?></p>
-        </div>
-        <div class="col-xs-3">
-          <form class="form-inline" role="form" method="post">
-            <a href="#" onclick="$(this).closest('form').submit()" data-toggle="tooltip" data-placement="left" title="<?=$lang['user']['delete_now'];?>"><span class="glyphicon glyphicon-remove"></span></a>
-            <input type="hidden" name="trigger_set_time_limited_aliases" value="delete">
-            <input type="hidden" name="item" value="<?=htmlspecialchars($row['address']);?>">
-          </form>
-        </div>
+		<div class="row">
+      <div class="col-xs-6">
+        <p><?=htmlspecialchars($row['address']);?></p>
+      </div>
+      <div class="col-xs-2">
+        <p><?=htmlspecialchars(date($lang['user']['alias_full_date'], $row['validity']));?></p>
+      </div>
+      <div class="col-xs-1">
+        <form class="form-inline" role="form" method="post">
+          <a class="text-danger" href="#" onclick="$(this).closest('form').submit()"><span class="glyphicon glyphicon-remove"></span></a>
+          <input type="hidden" name="set_time_limited_aliases" value="delete">
+          <input type="hidden" name="item" value="<?=htmlspecialchars($row['address']);?>">
+        </form>
+      </div>
+      <div class="col-xs-1">
+        <form class="form-inline" role="form" method="post">
+          <a href="#" onclick="$(this).closest('form').submit()"><span class="glyphicon glyphicon-time"></span> + 1h</a>
+          <input type="hidden" name="set_time_limited_aliases" value="extend">
+          <input type="hidden" name="item" value="<?=htmlspecialchars($row['address']);?>">
+        </form>
+      </div>
+    </div>
         <?php
         endforeach;
 			else:
@@ -150,7 +160,6 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 			<?php
 			endif;	
 			?>
-		</div>
     <form class="form-horizontal" role="form" method="post">
 		<div class="form-group">
 			<div class="col-sm-9">
@@ -161,16 +170,16 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 					<option value="168">1 <?=$lang['user']['week'];?></option>
 					<option value="672">4 <?=$lang['user']['weeks'];?></option>
 				</select>
-				<button type="submit" id="trigger_set_time_limited_aliases" name="trigger_set_time_limited_aliases" value="generate" class="btn btn-success"><?=$lang['user']['alias_create_random'];?></button>
+				<button type="submit" name="set_time_limited_aliases" value="generate" class="btn btn-success"><?=$lang['user']['alias_create_random'];?></button>
 			</div>
 		</div>
 		<div class="form-group">
 			<div class="col-sm-12">
-				<button style="border-color:#f5f5f5;background:none;color:red" type="submit" name="trigger_set_time_limited_aliases" value="deleteall" class="btn btn-sm">
+				<button type="submit" name="set_time_limited_aliases" value="deleteall" class="btn-danger btn btn-sm">
 					<span class="glyphicon glyphicon-remove" aria-hidden="true"></span> <?=$lang['user']['alias_remove_all'];?>
 				</button>
-				<button style="border-color:#f5f5f5;background:none;color:grey" type="submit" name="trigger_set_time_limited_aliases" value="extend" class="btn btn-sm">
-					<span class="glyphicon glyphicon-hourglass" aria-hidden="true"></span> <?=$lang['user']['alias_extend_all'];?>
+				<button type="submit" name="set_time_limited_aliases" value="extendall" class="btn-default btn btn-sm">
+					<span class="glyphicon glyphicon-time" aria-hidden="true"></span> <?=$lang['user']['alias_extend_all'];?>
 				</button>
 			</div>
 		</div>

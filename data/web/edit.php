@@ -42,7 +42,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 						</div>
 						<div class="form-group">
 							<div class="col-sm-offset-2 col-sm-10">
-								<button type="submit" name="trigger_mailbox_action" value="editalias" class="btn btn-success btn-sm"><?=$lang['edit']['save'];?></button>
+								<button type="submit" name="mailbox_edit_alias" class="btn btn-success btn-sm"><?=$lang['edit']['save'];?></button>
 							</div>
 						</div>
 					</form>
@@ -191,7 +191,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
-							<button type="submit" name="trigger_mailbox_action" value="editdomain" class="btn btn-success btn-sm"><?=$lang['edit']['save'];?></button>
+							<button type="submit" name="mailbox_edit_domain" class="btn btn-success btn-sm"><?=$lang['edit']['save'];?></button>
 						</div>
 					</div>
 				</form>
@@ -238,7 +238,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
               if ($wl['object'] == $domain):
               ?>
                 <input type="hidden" name="delete_prefid" value="<?=$wl['prefid'];?>">
-                <input type="hidden" name="trigger_delete_policy_list_item">
+                <input type="hidden" name="delete_policy_list_item">
                 <input type="hidden" name="domain" value="<?=$domain;?>">
                 <a href="#" onclick="$(this).closest('form').submit()" data-toggle="tooltip" data-placement="left" title="<?=$lang['user']['delete_now'];?>"><span class="glyphicon glyphicon-remove"></span></a>
               <?php
@@ -264,7 +264,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 						<input type="hidden" name="domain" value="<?=$domain;?>">
 					</div>
 					<div class="col-xs-6">
-						<button type="submit" id="trigger_add_policy_list_item" name="trigger_add_policy_list_item" class="btn btn-xs btn-default"><?=$lang['user']['spamfilter_table_add'];?></button>
+						<button type="submit" name="add_policy_list_item" class="btn btn-xs btn-default"><?=$lang['user']['spamfilter_table_add'];?></button>
 					</div>
 					</form>
 				</div>
@@ -294,7 +294,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
               <?php
               if ($bl['object'] == $domain):
               ?>
-                <input type="hidden" name="trigger_delete_policy_list_item">
+                <input type="hidden" name="delete_policy_list_item">
                 <input type="hidden" name="domain" value="<?=$domain;?>">
                 <a href="#" onclick="$(this).closest('form').submit()" data-toggle="tooltip" data-placement="left" title="<?=$lang['user']['delete_now'];?>"><span class="glyphicon glyphicon-remove"></span></a>
               <?php
@@ -320,7 +320,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 						<input type="hidden" name="domain" value="<?=$domain;?>">
 					</div>
 					<div class="col-xs-6">
-						<button type="submit" id="trigger_add_policy_list_item" name="trigger_add_policy_list_item" class="btn btn-xs btn-default"><?=$lang['user']['spamfilter_table_add'];?></button>
+						<button type="submit" name="add_policy_list_item" class="btn btn-xs btn-default"><?=$lang['user']['spamfilter_table_add'];?></button>
 					</div>
 					</form>
 				</div>
@@ -359,7 +359,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
-							<button type="submit" name="trigger_mailbox_action" value="editaliasdomain" class="btn btn-success btn-sm"><?=$lang['edit']['save'];?></button>
+							<button type="submit" name="mailbox_edit_alias_domain" class="btn btn-success btn-sm"><?=$lang['edit']['save'];?></button>
 						</div>
 					</div>
 				</form>
@@ -480,7 +480,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
-							<button type="submit" name="trigger_mailbox_action" value="editmailbox" class="btn btn-success btn-sm"><?=$lang['edit']['save'];?></button>
+							<button type="submit" name="mailbox_edit_mailbox" class="btn btn-success btn-sm"><?=$lang['edit']['save'];?></button>
 						</div>
 					</div>
 				</form>

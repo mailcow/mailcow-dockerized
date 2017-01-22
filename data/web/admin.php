@@ -13,25 +13,12 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 		<div class="panel-heading"><?=$lang['admin']['admin_details'];?></div>
 		<div class="panel-body">
 			<form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
-			<?php
-			try {
-			$stmt = $pdo->prepare("SELECT `username` FROM `admin`
-				WHERE `superadmin`='1' and active='1'");
-			$stmt->execute();
-			$AdminData = $stmt->fetch(PDO::FETCH_ASSOC);
-			}
-			catch(PDOException $e) {
-				$_SESSION['return'] = array(
-					'type' => 'danger',
-					'msg' => 'MySQL: '.$e
-				);
-			}
-			?>
-				<input type="hidden" name="admin_user_now" value="<?=htmlspecialchars($AdminData['username']);?>">
+			<?php $admindetails = get_admin_details(); ?>
+				<input type="hidden" name="admin_user_now" value="<?=htmlspecialchars($admindetails['username']);?>">
 				<div class="form-group">
 					<label class="control-label col-sm-2" for="admin_user"><?=$lang['admin']['admin'];?>:</label>
 					<div class="col-sm-10">
-						<input type="text" class="form-control" name="admin_user" id="admin_user" value="<?=htmlspecialchars($AdminData['username']);?>" required>
+						<input type="text" class="form-control" name="admin_user" id="admin_user" value="<?=htmlspecialchars($admindetails['username']);?>" required>
 						&rdsh; <kbd>a-z A-Z - _ .</kbd>
 					</div>
 				</div>
@@ -124,18 +111,8 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 						<div class="col-sm-10">
 							<select title="<?=$lang['admin']['search_domain_da'];?>" style="width:100%" name="domain[]" size="5" multiple>
 							<?php
-							try {
-								$stmt = $pdo->query("SELECT domain FROM domain");
-								$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-							}
-							catch(PDOException $e) {
-								$_SESSION['return'] = array(
-									'type' => 'danger',
-									'msg' => 'MySQL: '.$e
-								);
-							}
-							while ($row = array_shift($rows)) {
-								echo "<option>".htmlspecialchars($row['domain'])."</option>";
+							foreach (mailbox_get_domains() as $domain) {
+								echo "<option>".htmlspecialchars($domain)."</option>";
 							}
 							?>
 							</select>

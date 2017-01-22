@@ -671,9 +671,14 @@ function mailbox_edit_alias_domain($postarray) {
 	}
 
 	try {
-		$stmt = $pdo->prepare("UPDATE `alias_domain` SET `alias_domain` = :alias_domain, `active` = :active WHERE `alias_domain` = :alias_domain_now");
+		$stmt = $pdo->prepare("UPDATE `alias_domain` SET
+      `alias_domain` = :alias_domain,
+      `active` = :active,
+      `modified` = :modified,
+        WHERE `alias_domain` = :alias_domain_now");
 		$stmt->execute(array(
 			':alias_domain' => $alias_domain,
+      ':modified' => date('Y-m-d H:i:s'),
 			':alias_domain_now' => $alias_domain_now,
 			':active' => $active
 		));
@@ -747,11 +752,16 @@ function mailbox_edit_alias($postarray) {
 	}
 
 	try {
-		$stmt = $pdo->prepare("UPDATE `alias` SET `goto` = :goto, `active`= :active WHERE `address` = :address");
+		$stmt = $pdo->prepare("UPDATE `alias` SET
+      `goto` = :goto,
+      `active`= :active,
+      `modified` = :modified,
+        WHERE `address` = :address");
 		$stmt->execute(array(
 			':goto' => $goto,
 			':active' => $active,
-			':address' => $address
+			':address' => $address,
+      ':modified' => date('Y-m-d H:i:s'),
 		));
 		$_SESSION['return'] = array(
 			'type' => 'success',
@@ -903,6 +913,7 @@ function mailbox_edit_domain($postarray) {
       `active` = :active,
       `quota` = :quota,
       `maxquota` = :maxquota,
+      `modified` = :modified,
       `mailboxes` = :mailboxes,
       `aliases` = :aliases,
       `description` = :description
@@ -913,6 +924,7 @@ function mailbox_edit_domain($postarray) {
         ':active' => $active,
         ':quota' => $quota,
         ':maxquota' => $maxquota,
+        ':modified' => date('Y-m-d H:i:s'),
         ':mailboxes' => $mailboxes,
         ':aliases' => $aliases,
         ':modified' => date('Y-m-d H:i:s'),
@@ -1856,9 +1868,13 @@ function mailbox_delete_mailbox($postarray) {
 				unset($goto_exploded[$key]);
 			}
 			$gotos_rebuild = implode(',', $goto_exploded);
-			$stmt = $pdo->prepare("UPDATE `alias` SET `goto` = :goto WHERE `address` = :address");
+			$stmt = $pdo->prepare("UPDATE `alias` SET
+        `goto` = :goto,
+        `modified` = :modified,
+          WHERE `address` = :address");
 			$stmt->execute(array(
 				':goto' => $gotos_rebuild,
+        ':modified' => date('Y-m-d H:i:s'),
 				':address' => $gotos['address']
 			));
 		}

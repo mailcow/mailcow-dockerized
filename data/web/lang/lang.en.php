@@ -146,7 +146,7 @@ $lang['user']['tls_policy_warning'] = '<strong>Warning:</strong> If you decide t
 $lang['user']['tls_policy'] = 'Encryption policy';
 $lang['user']['tls_enforce_in'] = 'Enforce TLS incoming';
 $lang['user']['tls_enforce_out'] = 'Enforce TLS outgoing';
-$lang['user']['no_record'] = 'No Record';
+$lang['user']['no_record'] = 'No record';
 
 $lang['user']['misc_settings'] = 'Other profile settings';
 $lang['user']['misc_delete_profile'] = 'Other profile settings';
@@ -227,8 +227,8 @@ $lang['mailbox']['msg_num'] = 'Message #';
 $lang['mailbox']['remove'] = 'Remove';
 $lang['mailbox']['edit'] = 'Edit';
 $lang['mailbox']['archive'] = 'Archive';
-$lang['mailbox']['no_record'] = 'No Record for object %s';
-$lang['mailbox']['no_record_single'] = 'No Record';
+$lang['mailbox']['no_record'] = 'No record for object %s';
+$lang['mailbox']['no_record_single'] = 'No record';
 $lang['mailbox']['add_domain'] = 'Add domain';
 $lang['mailbox']['add_domain_alias'] = 'Add domain alias';
 $lang['mailbox']['add_mailbox'] = 'Add mailbox';
@@ -420,5 +420,5 @@ $lang['admin']['invalid_max_msg_size'] = 'Invalid max. message size';
 $lang['admin']['site_not_found'] = 'Cannot locate mailcow site configuration';
 $lang['admin']['public_folder_empty'] = 'Public folder name must not be empty';
 $lang['admin']['set_rr_failed'] = 'Cannot set Postfix restrictions';
-$lang['admin']['no_record'] = 'No Record';
+$lang['admin']['no_record'] = 'No record';
 ?>
