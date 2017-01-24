@@ -58,6 +58,7 @@ services:
         - ./data/conf/rspamd/local.d/:/etc/rspamd/local.d:ro
         - ./data/conf/rspamd/lua/:/etc/rspamd/lua/:ro
         - dkim-vol-1:/data/dkim
+        - rspamd-vol-1:/var/lib/rspamd
       restart: always
       dns: 
         - 172.22.1.254
@@ -69,6 +70,7 @@ services:
 
     php-fpm-mailcow:
       image: andryyy/mailcow-dockerized:phpfpm
+      command: "php-fpm -d date.timezone=${TZ}"
       depends_on:
         - pdns-mailcow
       volumes:
@@ -83,7 +85,6 @@ services:
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
-        - TZ=${TZ}
       restart: always
       networks:
         mailcow-network:
@@ -234,3 +235,4 @@ volumes:
   mysql-vol-1:
   dkim-vol-1:
   redis-vol-1:
+  rspamd-vol-1:

@@ -1,17 +1,17 @@
 <?php
-if ($_SESSION['mailcow_cc_role'] == "admin"):
+if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admin"):
 ?>
 <div id="RestartSOGo" class="modal fade" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal">&times;</button>
-			<h4 class="modal-title">Restart SOGo</h4>
+			<h4 class="modal-title"><?=$lang['footer']['restart_sogo'];?></h4>
 		</div>
 		<div class="modal-body">
-			<p>Some tasks, e.g. adding a domain, require you to restart SOGo to catch changes made in the mailcow UI.</p>
+			<p><?=$lang['footer']['restart_sogo_info'];?></p>
 			<hr />
-			<button class="btn btn-md btn-primary" id="triggerRestartSogo">Restart SOGo</button>
+			<button class="btn btn-md btn-primary" id="triggerRestartSogo"><?=$lang['footer']['restart_now'];?></button>
 			<br /><br />
 			<div id="statusTriggerRestartSogo"></div>
 		</div>
@@ -75,8 +75,8 @@ $(document).ready(function() {
 	});
 
 	// IE fix to hide scrollbars when table body is empty
-	$('tbody').filter(function (index) { 
-		return $(this).children().length < 1; 
+	$('tbody').filter(function (index) {
+		return $(this).children().length < 1;
 	}).remove();
 
 	// Init Bootstrap Selectpicker
@@ -85,6 +85,7 @@ $(document).ready(function() {
 	// Trigger SOGo restart
 	$('#triggerRestartSogo').click(function(){
 		$(this).prop("disabled",true);
+		$(this).html('<span class="glyphicon glyphicon-refresh glyphicon-spin"></span> ');
 		$('#statusTriggerRestartSogo').text('Stopping SOGo workers, this may take a while... ');
 		$.ajax({
 			method: 'get',
@@ -105,6 +106,7 @@ $(document).ready(function() {
 					},
 					success: function(data) {
 						$('#statusTriggerRestartSogo').append(data);
+						$('#triggerRestartSogo').html('<span class="glyphicon glyphicon-ok"></span> ');
 					}
 				});
 			}

@@ -5,7 +5,10 @@
 //
 */
 $lang['footer']['loading'] = "Please wait...";
-$lang['getmail']['no_status'] = "No previous status found.";
+$lang['header']['restart_sogo'] = 'Restart SOGo';
+$lang['footer']['restart_sogo'] = 'Restart SOGo';
+$lang['footer']['restart_now'] = 'Restart now';
+$lang['footer']['restart_sogo_info'] = 'Some tasks, e.g. adding a domain, require you to restart SOGo to catch changes made in the mailcow UI.<br /><br /><b>Important:</b> A graceful restart may take a while to complete, please wait for it to finish.';
 $lang['dkim']['confirm'] = "Are you sure?";
 $lang['danger']['dkim_not_found'] = "DKIM record not found";
 $lang['danger']['dkim_remove_failed'] = "Cannot remove selected DKIM record";
@@ -100,6 +103,10 @@ $lang['user']['new_password_description'] = 'Requirement: 6 characters long, let
 $lang['user']['did_you_know'] = '<b>Did you know?</b> You can use tags in your email address ("me+<b>privat</b>@example.com") to move messages to a folder automatically (example: "privat").';
 $lang['user']['spam_aliases'] = 'Temporary email aliases';
 $lang['user']['alias'] = 'Alias';
+$lang['user']['aliases'] = 'Aliases';
+$lang['user']['is_catch_all'] = 'Catch-all for domain/s';
+$lang['user']['aliases_also_send_as'] = 'Also allowed to send as';
+$lang['user']['aliases_send_as_all'] = 'Do not check sender access for following domains';
 $lang['user']['alias_create_random'] = 'Generate random alias';
 $lang['user']['alias_extend_all'] = 'Extend aliases by 1 hour';
 $lang['user']['alias_valid_until'] = 'Valid until';
@@ -138,6 +145,14 @@ $lang['user']['no_record'] = 'No Record';
 
 $lang['user']['misc_settings'] = 'Other profile settings';
 $lang['user']['misc_delete_profile'] = 'Other profile settings';
+
+$lang['user']['tag_handling'] = 'Set handling for tagged mail';
+$lang['user']['tag_in_subfolder'] = 'In subfolder';
+$lang['user']['tag_in_subject'] = 'In subject';
+$lang['user']['tag_help_explain'] = 'In subfolder: a new subfolder named after the tag will be created below INBOX ("INBOX/Facebook").<br />
+In subject: the tags name will be prepended to the mails subject, example: "[Facebook] Meine Neuigkeiten".';
+$lang['user']['tag_help_example'] = 'Example for a tagged email address: ich<b>+Facebook</b>@example.org';
+
 $lang['start']['dashboard'] = '%s - dashboard';
 $lang['start']['start_rc'] = 'Open Roundcube';
 $lang['start']['start_sogo'] = 'Open SOGo';

@@ -5,7 +5,10 @@
 //
 */
 $lang['footer']['loading'] = 'Einen Moment bitte...';
-$lang['getmail']['no_status'] = 'Keinen letzten Vorgang festgestellt.';
+$lang['header']['restart_sogo'] = 'SOGo neustarten';
+$lang['footer']['restart_sogo'] = 'SOGo neustarten';
+$lang['footer']['restart_now'] = 'Jetzt neustarten';
+$lang['footer']['restart_sogo_info'] = 'Einige Änderungen an Domains benötigen einen Neustart SOGos. Hier können Sie SOGo neustarten.<br /><br /><b>Wichtig:</b> Ein korrekter Neustart SOGos kann eine Weile in Anspruch nehmen, bitte warten Sie, bis der Prozess vollständig beendet wurde.';
 $lang['dkim']['confirm'] = 'Sind Sie sicher?';
 $lang['danger']['dkim_not_found'] = 'DKIM-Record nicht gefunden';
 $lang['danger']['dkim_remove_failed'] = 'Kann DKIM-Record nicht entfernen';
@@ -99,6 +102,8 @@ $lang['user']['did_you_know'] = '<b>Wussten Sie schon?</b> Sie können Ihre E-Ma
 $lang['user']['spam_aliases'] = 'Temporäre E-Mail Aliasse';
 $lang['user']['alias'] = 'Alias';
 $lang['user']['aliases'] = 'Aliasse';
+$lang['user']['is_catch_all'] = 'Ist Catch-All Adresse für Domain(s)';
+$lang['user']['aliases_also_send_as'] = 'Darf außerdem versenden als';
 $lang['user']['aliases_send_as_all'] = 'Absender für folgende Domains nicht prüfen';
 $lang['user']['alias_create_random'] = 'Zufälligen Alias generieren';
 $lang['user']['alias_extend_all'] = 'Gültigkeit +1h';
@@ -138,6 +143,14 @@ $lang['user']['no_record'] = 'Kein Eintrag';
 
 $lang['user']['misc_settings'] = 'Sonstige Kontoeinstellungen';
 $lang['user']['misc_delete_profile'] = 'Sonstige Kontoeinstellungen';
+
+$lang['user']['tag_handling'] = 'Umgang mit getaggten E-Mails steuern';
+$lang['user']['tag_in_subfolder'] = 'In Unterordner';
+$lang['user']['tag_in_subject'] = 'In Betreff';
+$lang['user']['tag_help_explain'] = 'Als Unterordner: Es wird ein Ordner mit dem Namen des Tags unterhalb der Inbox erstellt ("INBOX/Facebook").<br />
+In Betreff: Der Name des Tags wird dem Betreff angefügt, etwa "[Facebook] Meine Neuigkeiten".';
+$lang['user']['tag_help_example'] = 'Beispiel für eine getaggte E-Mail-Adresse: ich<b>+Facebook</b>@example.org';
+
 $lang['start']['dashboard'] = '%s - Dashboard';
 $lang['start']['start_rc'] = 'Roundcube öffnen';
 $lang['start']['start_sogo'] = 'SOGo öffnen';

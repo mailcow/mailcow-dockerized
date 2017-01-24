@@ -13,6 +13,7 @@ RUN apt-get update
 RUN apt-get install -y --no-install-recommends supervisor \
 	postfix \
 	sasl2-bin \
+	libsasl2-modules \
 	postfix \
 	postfix-mysql \
 	postfix-pcre \

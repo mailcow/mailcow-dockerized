@@ -14,42 +14,86 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 <div class="panel panel-default">
 <div class="panel-heading"><?=$lang['user']['mailbox_details'];?></div>
 <div class="panel-body">
-<form class="form-horizontal" role="form" method="post" autocomplete="off">
-	<div class="form-group">
-		<div class="col-sm-offset-3 col-sm-10">
-			<div class="checkbox">
-				<label><input type="checkbox" name="togglePwNew" id="togglePwNew"> <?=$lang['user']['change_password'];?></label>
-			</div>
-		</div>
-	</div>
-	<div class="passFields">
-		<div class="form-group">
-			<label class="control-label col-sm-3" for="user_new_pass"><?=$lang['user']['new_password'];?></label>
-			<div class="col-sm-5">
-			<input type="password" class="form-control" pattern="(?=.*[A-Za-z])(?=.*[0-9])\w{6,}" name="user_new_pass" id="user_new_pass" autocomplete="off" disabled="disabled">
-			</div>
-		</div>
-		<div class="form-group">
-			<label class="control-label col-sm-3" for="user_new_pass2"><?=$lang['user']['new_password_repeat'];?></label>
-			<div class="col-sm-5">
-			<input type="password" class="form-control" pattern="(?=.*[A-Za-z])(?=.*[0-9])\w{6,}" name="user_new_pass2" id="user_new_pass2" disabled="disabled" autocomplete="off">
-			<p class="help-block"><?=$lang['user']['new_password_description'];?></p>
-			</div>
-		</div>
-		<hr>
-	</div>
-	<div class="form-group">
-		<label class="control-label col-sm-3" for="user_old_pass"><?=$lang['user']['password_now'];?></label>
-		<div class="col-sm-5">
-		<input type="password" class="form-control" name="user_old_pass" id="user_old_pass" autocomplete="off" required>
-		</div>
-	</div>
-	<div class="form-group">
-		<div class="col-sm-offset-3 col-sm-9">
-			<button type="submit" name="trigger_set_user_account" class="btn btn-success btn-default"><?=$lang['user']['save_changes'];?></button>
-		</div>
-	</div>
-</form>
+  <form class="form-horizontal" role="form" method="post" autocomplete="off">
+    <div class="form-group">
+      <div class="col-sm-offset-3 col-sm-10">
+        <div class="checkbox">
+          <label><input type="checkbox" name="togglePwNew" id="togglePwNew"> <?=$lang['user']['change_password'];?></label>
+        </div>
+      </div>
+    </div>
+    <div class="passFields">
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="user_new_pass"><?=$lang['user']['new_password'];?></label>
+        <div class="col-sm-5">
+        <input type="password" class="form-control" pattern=".{6,}" name="user_new_pass" id="user_new_pass" autocomplete="off" disabled="disabled" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="user_new_pass2"><?=$lang['user']['new_password_repeat'];?></label>
+        <div class="col-sm-5">
+        <input type="password" class="form-control" pattern=".{6,}" name="user_new_pass2" id="user_new_pass2" disabled="disabled" autocomplete="off" required>
+        <p class="help-block"><?=$lang['user']['new_password_description'];?></p>
+        </div>
+      </div>
+      <hr>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-3" for="user_old_pass"><?=$lang['user']['password_now'];?></label>
+      <div class="col-sm-5">
+      <input type="password" class="form-control" name="user_old_pass" id="user_old_pass" autocomplete="off" required>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-3 col-sm-9">
+        <button type="submit" name="trigger_set_user_account" class="btn btn-success btn-default"><?=$lang['user']['save_changes'];?></button>
+      </div>
+    </div>
+  </form>
+  <hr>
+  <?php // Get user information about aliases
+  $get_user_object_info = user_object_info('get');?>
+  <div class="row">
+    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['aliases'];?>:</div>
+    <div class="col-md-9 col-xs-7">
+    <p><?=$get_user_object_info['aliases'];?></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['aliases_also_send_as'];?>:</div>
+    <div class="col-md-9 col-xs-7">
+    <p><?=$get_user_object_info['aliases_also_send_as'];?></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['aliases_send_as_all'];?>:</div>
+    <div class="col-md-9 col-xs-7">
+    <p><?=$get_user_object_info['aliases_send_as_all'];?></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['is_catch_all'];?>:</div>
+    <div class="col-md-9 col-xs-7">
+    <p><?=$get_user_object_info['is_catch_all'];?></p>
+    </div>
+  </div>
+  <hr>
+  <?php // Show tagging options ?>
+  <form class="form-horizontal" role="form" method="post">
+  <?php $get_tagging_options = tagging_options('get');?>
+  <div class="row">
+    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['tag_handling'];?>:</div>
+    <div class="col-md-9 col-xs-7">
+    <input type="hidden" name="trigger_set_tagging_options" value="1">
+    <select name="tagged_mail_handler" class="selectpicker" onchange="this.form.submit()">
+      <option value="subfolder" <?=($get_tagging_options == "0") ? 'selected' : null; ?>><?=$lang['user']['tag_in_subfolder'];?></option>
+      <option value="subject" <?=($get_tagging_options == "1") ? 'selected' : null; ?>><?=$lang['user']['tag_in_subject'];?></option>
+    </select>
+    <p class="help-block"><?=$lang['user']['tag_help_explain'];?></p>
+    <p class="help-block"><?=$lang['user']['tag_help_example'];?></p>
+    </div>
+  </div>
+  </form>
 </div>
 </div>
 
@@ -321,8 +365,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 		</form>
 	</div>
 </div>
-
-
+<br />
 </div> <!-- /container -->
 <script src="js/sorttable.js"></script>
 <script src="js/user.js"></script>
