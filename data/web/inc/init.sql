@@ -127,6 +127,19 @@ CREATE TABLE IF NOT EXISTS `imapsync` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
+CREATE TABLE IF NOT EXISTS `tfa` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(255) NOT NULL,
+  `authmech` ENUM('yubi_otp', 'u2f', 'hotp', 'totp'),
+  `secret` VARCHAR(255) DEFAULT NULL,
+  `keyHandle` VARCHAR(255) DEFAULT NULL,
+  `publicKey` VARCHAR(255) DEFAULT NULL,
+  `counter` INT NOT NULL DEFAULT '0',
+  `certificate` TEXT,
+  `active` TINYINT(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
 DROP VIEW IF EXISTS grouped_mail_aliases;
 DROP VIEW IF EXISTS grouped_sender_acl;
 DROP VIEW IF EXISTS grouped_domain_alias_address;
@@ -148,7 +161,7 @@ SELECT username, IFNULL(GROUP_CONCAT(local_part, '@', alias_domain SEPARATOR ' '
 LEFT OUTER JOIN alias_domain on target_domain=domain GROUP BY username;
 
 CREATE TABLE IF NOT EXISTS sogo_acl (
-	c_folder_id INTeger NOT NULL,
+	c_folder_id INTEGER NOT NULL,
 	c_object character varying(255) NOT NULL,
 	c_uid character varying(255) NOT NULL,
 	c_role character varying(80) NOT NULL

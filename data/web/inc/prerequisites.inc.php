@@ -17,11 +17,21 @@ if (isset($_POST["logout"])) {
 }
 
 require_once 'inc/vars.inc.php';
-
 if (file_exists('./inc/vars.local.inc.php')) {
 	include_once 'inc/vars.local.inc.php';
 }
 
+// Yubi OTP API
+if (!empty($YUBI_API['ID']) && !empty($YUBI_API['KEY'])) {
+  require_once 'inc/lib/Yubico.php';
+  $yubi = new Auth_Yubico($YUBI_API['ID'], $YUBI_API['KEY']);
+}
+// U2F API
+require_once 'inc/lib/U2F.php';
+$scheme = isset($_SERVER['HTTPS']) ? "https://" : "http://";
+$u2f = new u2flib_server\U2F($scheme . $_SERVER['HTTP_HOST']);
+
+// PDO
 $dsn = "$database_type:host=$database_host;dbname=$database_name";
 $opt = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
@@ -36,6 +46,7 @@ catch (PDOException $e) {
 <center style='font-family: "Lucida Sans Unicode", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;'>🐮 Connection failed, database may be in warm-up state, please try again later.<br /><br />The following error was reported:<br/>  <?=$e->getMessage();?></center>
 <?php
 }
+
 $_SESSION['mailcow_locale'] = strtolower(trim($DEFAULT_LANG));
 setcookie('language', $DEFAULT_LANG);
 if (isset($_COOKIE['language'])) {

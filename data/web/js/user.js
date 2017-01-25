@@ -15,9 +15,9 @@ $(document).ready(function() {
 		}
 	});
 	// Show generate button after time selection
-	$('#trigger_set_time_limited_aliases').hide(); 
+	$('#generate_tla').hide(); 
 	$('#validity').change(function(){
-		$('#trigger_set_time_limited_aliases').show(); 
+		$('#generate_tla').show(); 
 	});
 
 	// Init Bootstrap Switch

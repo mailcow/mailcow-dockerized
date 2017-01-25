@@ -66,11 +66,11 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 				<h4><?=$lang['edit']['domain_admin'];?></h4>
 				<br />
 				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
-				<input type="hidden" name="username" value="<?=htmlspecialchars($domain_admin);?>">
+				<input type="hidden" name="username_now" value="<?=htmlspecialchars($domain_admin);?>">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="username"><?=$lang['edit']['username'];?></label>
 						<div class="col-sm-10">
-              <input class="form-control" type="text" disabled value="<?=htmlspecialchars($domain_admin);?>" />
+              <input class="form-control" type="text" name="username" value="<?=htmlspecialchars($domain_admin);?>" />
 						</div>
 					</div>
 					<div class="form-group">
@@ -113,7 +113,14 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
-							<button type="submit" name="trigger_edit_domain_admin" class="btn btn-success btn-sm"><?=$lang['edit']['save'];?></button>
+							<div class="checkbox">
+							<label><input type="checkbox" name="delete_tfa"> <?=$lang['tfa']['delete_tfa'];?></label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<button type="submit" name="edit_domain_admin" class="btn btn-success btn-sm"><?=$lang['edit']['save'];?></button>
 						</div>
 					</div>
 				</form>
@@ -575,7 +582,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == 
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
-							<button type="submit" name="trigger_edit_syncjob" value="1" class="btn btn-success btn-sm"><?=$lang['edit']['save'];?></button>
+							<button type="submit" name="edit_syncjob" value="1" class="btn btn-success btn-sm"><?=$lang['edit']['save'];?></button>
 						</div>
 					</div>
 				</form>

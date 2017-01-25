@@ -68,11 +68,11 @@
 								<li <?=(preg_match("/mailbox/i", $_SERVER['REQUEST_URI'])) ? 'class="active"' : ''?>><a href="/mailbox.php"><?=$lang['header']['mailboxes'];?></a></li>
 							<?php
 							}
-							if ($_SESSION['mailcow_cc_role'] == "user") {
+							if ($_SESSION['mailcow_cc_role'] != "admin") {
 							?>
 								<li <?=(preg_match("/user/i", $_SERVER['REQUEST_URI'])) ? 'class="active"' : ''?>><a href="/user.php"><?=$lang['header']['user_settings'];?></a></li>
 							<?php
-							}
+              }
 						}
 						?>
 					</ul>

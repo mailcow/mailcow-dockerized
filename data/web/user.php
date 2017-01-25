@@ -1,53 +1,67 @@
 <?php
 require_once("inc/prerequisites.inc.php");
-if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user') {
+if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'domainadmin') {
+
+  /*
+  / DOMAIN ADMIN
+  */
+
+	require_once("inc/header.inc.php");
+	$_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
+	$username = $_SESSION['mailcow_cc_username'];
+?>
+<div class="container">
+  <h3><?=$lang['user']['user_settings'];?></h3>
+  <div class="panel panel-default">
+  <div class="panel-heading"><?=$lang['user']['user_settings'];?></div>
+  <div class="panel-body">
+    <div class="row">
+      <div class="col-sm-offset-3 col-sm-9">
+        <p><a href="#pwChangeModal" data-toggle="modal">[<?=$lang['user']['change_password'];?>]</a></p>
+      </div>
+    </div>
+    <hr>
+    <div class="row">
+      <div class="col-md-3 col-xs-5 text-right"><?=$lang['tfa']['tfa'];?></div>
+      <div class="col-md-9 col-xs-7">
+      <p><?=get_tfa()['pretty'];?></p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-3 col-xs-5 text-right"><?=$lang['tfa']['set_tfa'];?></div>
+      <div class="col-md-9 col-xs-7">
+        <select id="selectTFA" class="selectpicker" title="<?=$lang['tfa']['select'];?>">
+          <option value="yubi_otp"><?=$lang['tfa']['yubi_otp'];?></option>
+          <option value="none"><?=$lang['tfa']['none'];?></option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+<?php
+}
+elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user') {
+
+  /*
+  / USER
+  */
+
 	require_once("inc/header.inc.php");
 	$_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 	$username = $_SESSION['mailcow_cc_username'];
 	$get_tls_policy = get_tls_policy($_SESSION['mailcow_cc_username']);
 ?>
 <div class="container">
-<h3><?=$lang['user']['mailbox_settings'];?></h3>
+<h3><?=$lang['user']['user_settings'];?></h3>
 
 <div class="panel panel-default">
 <div class="panel-heading"><?=$lang['user']['mailbox_details'];?></div>
 <div class="panel-body">
-  <form class="form-horizontal" role="form" method="post" autocomplete="off">
-    <div class="form-group">
-      <div class="col-sm-offset-3 col-sm-10">
-        <div class="checkbox">
-          <label><input type="checkbox" name="togglePwNew" id="togglePwNew"> <?=$lang['user']['change_password'];?></label>
-        </div>
-      </div>
+  <div class="row">
+    <div class="col-sm-offset-3 col-sm-9">
+      <p><a href="#pwChangeModal" data-toggle="modal">[<?=$lang['user']['change_password'];?>]</a></p>
     </div>
-    <div class="passFields">
-      <div class="form-group">
-        <label class="control-label col-sm-3" for="user_new_pass"><?=$lang['user']['new_password'];?></label>
-        <div class="col-sm-5">
-        <input type="password" class="form-control" name="user_new_pass" id="user_new_pass" autocomplete="off" disabled="disabled" required>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="control-label col-sm-3" for="user_new_pass2"><?=$lang['user']['new_password_repeat'];?></label>
-        <div class="col-sm-5">
-        <input type="password" class="form-control" name="user_new_pass2" id="user_new_pass2" disabled="disabled" autocomplete="off" required>
-        <p class="help-block"><?=$lang['user']['new_password_description'];?></p>
-        </div>
-      </div>
-      <hr>
-    </div>
-    <div class="form-group">
-      <label class="control-label col-sm-3" for="user_old_pass"><?=$lang['user']['password_now'];?></label>
-      <div class="col-sm-5">
-      <input type="password" class="form-control" name="user_old_pass" id="user_old_pass" autocomplete="off" required>
-      </div>
-    </div>
-    <div class="form-group">
-      <div class="col-sm-offset-3 col-sm-9">
-        <button type="submit" name="edit_user_account" class="btn btn-success btn-default"><?=$lang['user']['save_changes'];?></button>
-      </div>
-    </div>
-  </form>
+  </div>
   <hr>
   <?php // Get user information about aliases
   $user_get_alias_details = user_get_alias_details($username);?>
@@ -170,7 +184,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 					<option value="168">1 <?=$lang['user']['week'];?></option>
 					<option value="672">4 <?=$lang['user']['weeks'];?></option>
 				</select>
-				<button type="submit" name="set_time_limited_aliases" value="generate" class="btn btn-success"><?=$lang['user']['alias_create_random'];?></button>
+				<button type="submit" name="set_time_limited_aliases" id="generate_tla" value="generate" class="btn btn-success"><?=$lang['user']['alias_create_random'];?></button>
 			</div>
 		</div>
 		<div class="form-group">
@@ -423,7 +437,16 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
 		</div>
 	</div>
 </div>
-<div style="margin-bottom:200px;"></div>
+
+<?php
+}
+if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "user" || $_SESSION['mailcow_cc_role'] == "domainadmin")) {
+
+  /*
+  / USER OR DOMAIN ADMIN
+  */
+
+?>
 <div class="modal fade" id="logModal" tabindex="-1" role="dialog" aria-labelledby="logTextLabel">
   <div class="modal-dialog" style="width:90%" role="document">
     <div class="modal-content">
@@ -433,12 +456,50 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user
     </div>
   </div>
 </div>
+
+<div style="margin-bottom:200px;"></div>
+<div class="modal fade" id="pwChangeModal" tabindex="-1" role="dialog" aria-labelledby="pwChangeModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <form class="form-horizontal" role="form" method="post" autocomplete="off">
+          <div class="form-group">
+            <label class="control-label col-sm-3" for="user_new_pass"><?=$lang['user']['new_password'];?></label>
+            <div class="col-sm-5">
+            <input type="password" class="form-control" name="user_new_pass" id="user_new_pass" autocomplete="off" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-3" for="user_new_pass2"><?=$lang['user']['new_password_repeat'];?></label>
+            <div class="col-sm-5">
+            <input type="password" class="form-control" name="user_new_pass2" id="user_new_pass2" autocomplete="off" required>
+            <p class="help-block"><?=$lang['user']['new_password_description'];?></p>
+            </div>
+          </div>
+          <hr>
+          <div class="form-group">
+            <label class="control-label col-sm-3" for="user_old_pass"><?=$lang['user']['password_now'];?></label>
+            <div class="col-sm-5">
+            <input type="password" class="form-control" name="user_old_pass" id="user_old_pass" autocomplete="off" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+              <button type="submit" name="edit_<?=($_SESSION['mailcow_cc_role'] == "domainadmin") ? "domain_admin" : "user_account";?>" class="btn btn-sm btn-success"><?=$lang['user']['change_password'];?></button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 </div> <!-- /container -->
 <script src="js/sorttable.js"></script>
 <script src="js/user.js"></script>
 <?php
 require_once("inc/footer.inc.php");
-} else {
+}
+else {
 	header('Location: /');
 	exit();
 }
