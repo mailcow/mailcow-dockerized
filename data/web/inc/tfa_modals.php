@@ -30,7 +30,8 @@
           <div class="form-group">
             <input type="password" class="form-control" name="confirm_password" id="confirm_password" placeholder="<?=$lang['user']['password_now'];?>" autocomplete="off" required>
           </div>
-          <p>Please enter your current password and use your U2F USB stick to confirm your identity.</p>
+          <hr>
+          <p><?=$lang['tfa']['waiting_usb_register'];?></p>
           <div class="alert alert-danger" style="display:none" id="u2f_return_code"></div>
           <input type="hidden" name="token" id="u2f_register_data"/>
           <input type="hidden" name="tfa_method" value="u2f">
@@ -88,7 +89,7 @@ if (isset($_SESSION['pending_tfa_method'])):
         case "u2f":
       ?>
         <form role="form" method="post" id="u2f_auth_form">
-          <p>Please use your U2F USB stick to confirm your identity now.</p>
+          <p><?=$lang['tfa']['waiting_usb_auth'];?></p>
           <div class="alert alert-danger" style="display:none" id="u2f_return_code"></div>
           <input type="hidden" name="token" id="u2f_auth_data"/>
           <input type="hidden" name="tfa_method" value="u2f">

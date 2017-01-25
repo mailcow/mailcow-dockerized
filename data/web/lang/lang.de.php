@@ -364,6 +364,8 @@ $lang['tfa']['confirm'] = "Bestätigen";
 $lang['tfa']['otp'] = "Einmalpasswort";
 $lang['tfa']['trash_login'] = "Login verwerfen";
 $lang['tfa']['select'] = "Bitte auswählen";
+$lang['tfa']['waiting_usb_auth'] = "<i>Warte auf USB-Gerät...</i><br /><br />Bitte jetzt den vorgesehenen Taster des U2F USB-Gerätes berühren.";
+$lang['tfa']['waiting_usb_register'] = "<i>Warte auf USB-Gerät...</i><br /><br />Bitte zuerst das obere Passwortfeld ausfüllen und erst dann den vorgesehenen Taster des U2F USB-Gerätes berühren.";
 
 $lang['admin']['search_domain_da'] = 'Domains durchsuchen';
 $lang['admin']['restrictions'] = 'Postifx Restriktionen';

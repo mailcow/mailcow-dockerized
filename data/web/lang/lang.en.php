@@ -368,6 +368,8 @@ $lang['tfa']['confirm'] = "Confirm";
 $lang['tfa']['otp'] = "One-time password";
 $lang['tfa']['trash_login'] = "Trash login";
 $lang['tfa']['select'] = "Please select";
+$lang['tfa']['waiting_usb_auth'] = "<i>Waiting for USB device...</i><br /><br />Please tap the button on your U2F USB device now.";
+$lang['tfa']['waiting_usb_register'] = "<i>Waiting for USB device...</i><br /><br />Please enter your password above and confirm your U2F registration by tapping the button on your U2F USB device.";
 
 $lang['admin']['search_domain_da'] = 'Search domains';
 $lang['admin']['restrictions'] = 'Postifx Restrictions';
