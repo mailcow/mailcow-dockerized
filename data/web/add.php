@@ -188,30 +188,13 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 						<div class="col-sm-10">
 							<select id="addSelectDomain" name="domain" id="domain" title="<?=$lang['add']['select'];?>" required>
 							<?php
-							try {
-								$stmt = $pdo->prepare("SELECT `domain` FROM `domain`
-										WHERE `domain` IN (
-											SELECT `domain` FROM `domain_admins`
-													WHERE `username`= :username
-													AND `active`='1'
-											)
-											OR 'admin' = :admin");
-								$stmt->execute(array(':username' => $_SESSION['mailcow_cc_username'], ':admin' => $_SESSION['mailcow_cc_role']));
-								$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-							}
-							catch(PDOException $e) {
-								$_SESSION['return'] = array(
-									'type' => 'danger',
-									'msg' => 'MySQL: '.$e
-								);
-							}
-							while ($row = array_shift($rows)) {
-								echo "<option>".htmlspecialchars($row['domain'])."</option>";
+              foreach (mailbox_get_domains() as $domain) {
+								echo "<option>".htmlspecialchars($domain)."</option>";
 							}
 							?>
 							</select>
 						</div>
-					</div>
+					</div> 
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="name"><?=$lang['add']['full_name'];?></label>
 						<div class="col-sm-10">
@@ -248,6 +231,60 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<button type="submit" name="mailbox_add_mailbox" class="btn btn-success "><?=$lang['add']['save'];?></button>
+						</div>
+					</div>
+				</form>
+	<?php
+	}
+	elseif (isset($_GET['resource'])) {
+	?>
+				<h4><?=$lang['add']['resource'];?></h4>
+				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="description"><?=$lang['add']['description'];?></label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" name="description" id="description" required>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="domain"><?=$lang['add']['domain'];?>:</label>
+						<div class="col-sm-10">
+							<select name="domain" id="domain" title="<?=$lang['add']['select'];?>" required>
+							<?php
+              foreach (mailbox_get_domains() as $domain) {
+								echo "<option>".htmlspecialchars($domain)."</option>";
+							}
+							?>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="domain"><?=$lang['add']['kind'];?>:</label>
+						<div class="col-sm-10">
+							<select name="kind" id="kind" title="<?=$lang['add']['select'];?>" required>
+								<option value="location">Location</option>
+								<option value="group">Group</option>
+								<option value="thing">Thing</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<div class="checkbox">
+							<label><input type="checkbox" name="active" checked> <?=$lang['add']['active'];?></label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<div class="checkbox">
+							<label><input type="checkbox" name="multiple_bookings" checked> <?=$lang['add']['multiple_bookings'];?></label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<button type="submit" name="mailbox_add_resource" class="btn btn-success "><?=$lang['add']['save'];?></button>
 						</div>
 					</div>
 				</form>

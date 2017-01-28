@@ -205,7 +205,7 @@ CREATE TABLE IF NOT EXISTS sogo_folder_info (
 	UNIQUE KEY c_folder_id (c_folder_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
-CREATE TABLE IF NOT EXISTS sogo_quick_appoINTment (
+CREATE TABLE IF NOT EXISTS sogo_quick_appointment (
 	c_folder_id INTeger NOT NULL,
 	c_name character varying(255) NOT NULL,
 	c_uid character varying(255) NOT NULL,
@@ -230,7 +230,7 @@ CREATE TABLE IF NOT EXISTS sogo_quick_appoINTment (
 	c_component character varying(10) NOT NULL,
 	c_nextalarm INTeger,
 	c_description TEXT,
-	CONSTRAINT sogo_quick_appoINTment_pkey PRIMARY KEY (c_folder_id, c_name)
+	CONSTRAINT sogo_quick_appointment_pkey PRIMARY KEY (c_folder_id, c_name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 CREATE TABLE IF NOT EXISTS sogo_quick_contact (

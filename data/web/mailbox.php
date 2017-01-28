@@ -118,73 +118,6 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 		<div class="col-md-12">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title"><?=$lang['mailbox']['domain_aliases'];?> <span class="badge" id="numRowsDomainAlias"></span></h3>
-					<div class="pull-right">
-						<span class="clickable filter" data-toggle="tooltip" title="<?=$lang['mailbox']['filter_table'];?>" data-container="body">
-							<i class="glyphicon glyphicon-filter"></i>
-						</span>
-						<a href="/add.php?aliasdomain"><span class="glyphicon glyphicon-plus"></span></a>
-					</div>
-				</div>
-				<div class="panel-body">
-					<input type="text" class="form-control" id="domainaliastable-filter" data-action="filter" data-filters="#domainaliastable" placeholder="Filter" />
-				</div>
-				<div class="table-responsive">
-				<table class="table table-striped sortable-theme-bootstrap" data-sortable id="domainaliastable">
-					<thead>
-						<tr>
-							<th class="sort-table" style="min-width: 67px;"><?=$lang['mailbox']['alias'];?></th>
-							<th class="sort-table" style="min-width: 127px;"><?=$lang['mailbox']['target_domain'];?></th>
-							<th class="sort-table" style="min-width: 76px;"><?=$lang['mailbox']['active'];?></th>
-							<th style="text-align: right; min-width: 200px;" data-sortable="false"><?=$lang['mailbox']['action'];?></th>
-						</tr>
-					</thead>
-					<tbody>
-					<?php
-          foreach (mailbox_get_domains() as $domain) {
-            $alias_domains = mailbox_get_alias_domains($domain);
-            if (!empty($alias_domains)) {
-              foreach ($alias_domains as $alias_domain) {
-                $aliasdomaindata = mailbox_get_alias_domain_details($alias_domain);
-                ?>
-                <tr id="data">
-                  <td><?=htmlspecialchars($aliasdomaindata['alias_domain']);?></td>
-                  <td><?=htmlspecialchars($aliasdomaindata['target_domain']);?></td>
-                  <td><?=$aliasdomaindata['active'];?></td>
-                  <td style="text-align: right;">
-                    <div class="btn-group">
-                      <a href="/edit.php?aliasdomain=<?=urlencode($aliasdomaindata['alias_domain']);?>" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> <?=$lang['mailbox']['edit'];?></a>
-                      <a href="/delete.php?aliasdomain=<?=urlencode($aliasdomaindata['alias_domain']);?>" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> <?=$lang['mailbox']['remove'];?></a>
-                    </div>
-                  </td>
-                </tr>
-                <?php
-              }
-            }
-            else {
-	        ?>
-                  <tr id="no-data"><td colspan="8" style="text-align: center; font-style: italic;"><?=sprintf($lang['mailbox']['no_record'], $domain);?></td></tr>
-	        <?php
-            }
-          }
-          ?>
-					</tbody>
-					<tfoot>
-						<tr id="no-data">
-							<td colspan="8" style="text-align: center; border-top: 1px solid #e7e7e7;">
-								<a href="/add.php?aliasdomain"><?=$lang['mailbox']['add_domain_alias'];?></a>
-							</td>
-						</tr>
-					</tfoot>
-				</table>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-md-12">
-			<div class="panel panel-default">
-				<div class="panel-heading">
 					<h3 class="panel-title"><?=$lang['mailbox']['mailboxes'];?> <span class="badge" id="numRowsMailbox"></span></h3>
 					<div class="pull-right">
 						<span class="clickable filter" data-toggle="tooltip" title="<?=$lang['mailbox']['filter_table'];?>" data-container="body">
@@ -265,6 +198,145 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 			</div>
 		</div>
 	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Resources <span class="badge" id="numRowsResource"></span></h3>
+					<div class="pull-right">
+						<span class="clickable filter" data-toggle="tooltip" title="<?=$lang['mailbox']['filter_table'];?>" data-container="body">
+							<i class="glyphicon glyphicon-filter"></i>
+						</span>
+						<a href="/add.php?resource"><span class="glyphicon glyphicon-plus"></span></a>
+					</div>
+				</div>
+				<div class="panel-body">
+					<input type="text" class="form-control" id="resourcetable-filter" data-action="filter" data-filters="#resourcetable" placeholder="Filter" />
+				</div>
+				<div class="table-responsive">
+				<table class="table table-striped sortable-theme-bootstrap" data-sortable id="resourcetable">
+					<thead>
+						<tr>
+							<th class="sort-table" style="min-width: 98px;"><?=$lang['mailbox']['description'];?></th>
+							<th class="sort-table" style="min-width: 98px;"><?=$lang['mailbox']['kind'];?></th>
+							<th class="sort-table" style="min-width: 86px;"><?=$lang['mailbox']['domain'];?></th>
+							<th class="sort-table" style="min-width: 98px;"><?=$lang['mailbox']['multiple_bookings'];?></th>
+							<th class="sort-table" style="min-width: 76px;"><?=$lang['mailbox']['active'];?></th>
+							<th style="text-align: right; min-width: 200px;" data-sortable="false"><?=$lang['mailbox']['action'];?></th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php
+            foreach (mailbox_get_domains() as $domain) {
+              $resources = mailbox_get_resources($domain);
+              if (!empty($resources)) {
+                foreach ($resources as $resource) {
+                  $resourcedata = mailbox_get_resource_details($resource);
+						?>
+						<tr id="data">
+							<td><?=htmlspecialchars($resourcedata['description'], ENT_QUOTES, 'UTF-8');?></td>
+							<td><?=$resourcedata['kind'];?></td>
+							<td><?=htmlspecialchars($resourcedata['domain']);?></td>
+							<td><?=$resourcedata['multiple_bookings'];?></td>
+							<td><?=$resourcedata['active'];?></td>
+							<td style="text-align: right;">
+								<div class="btn-group">
+									<a href="/edit.php?resource=<?=urlencode($resourcedata['name']);?>" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> <?=$lang['mailbox']['edit'];?></a>
+									<a href="/delete.php?resource=<?=urlencode($resourcedata['name']);?>" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> <?=$lang['mailbox']['remove'];?></a>
+								</div>
+							</td>
+						</tr>
+						<?php
+                }
+              }
+              else {
+                  ?>
+                  <tr id="no-data"><td colspan="8" style="text-align: center; font-style: italic;"><?=sprintf($lang['mailbox']['no_record'], $domain);?></td></tr>
+                  <?php
+              }
+            }
+						?>
+					</tbody>
+					<tfoot>
+						<tr id="no-data">
+							<td colspan="8" style="text-align: center; border-top: 1px solid #e7e7e7;">
+								<a href="/add.php?resource"><?=$lang['mailbox']['add_resource'];?></a>
+							</td>
+						</tr>
+					</tfoot>
+				</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title"><?=$lang['mailbox']['domain_aliases'];?> <span class="badge" id="numRowsDomainAlias"></span></h3>
+					<div class="pull-right">
+						<span class="clickable filter" data-toggle="tooltip" title="<?=$lang['mailbox']['filter_table'];?>" data-container="body">
+							<i class="glyphicon glyphicon-filter"></i>
+						</span>
+						<a href="/add.php?aliasdomain"><span class="glyphicon glyphicon-plus"></span></a>
+					</div>
+				</div>
+				<div class="panel-body">
+					<input type="text" class="form-control" id="domainaliastable-filter" data-action="filter" data-filters="#domainaliastable" placeholder="Filter" />
+				</div>
+				<div class="table-responsive">
+				<table class="table table-striped sortable-theme-bootstrap" data-sortable id="domainaliastable">
+					<thead>
+						<tr>
+							<th class="sort-table" style="min-width: 67px;"><?=$lang['mailbox']['alias'];?></th>
+							<th class="sort-table" style="min-width: 127px;"><?=$lang['mailbox']['target_domain'];?></th>
+							<th class="sort-table" style="min-width: 76px;"><?=$lang['mailbox']['active'];?></th>
+							<th style="text-align: right; min-width: 200px;" data-sortable="false"><?=$lang['mailbox']['action'];?></th>
+						</tr>
+					</thead>
+					<tbody>
+					<?php
+          foreach (mailbox_get_domains() as $domain) {
+            $alias_domains = mailbox_get_alias_domains($domain);
+            if (!empty($alias_domains)) {
+              foreach ($alias_domains as $alias_domain) {
+                $aliasdomaindata = mailbox_get_alias_domain_details($alias_domain);
+                ?>
+                <tr id="data">
+                  <td><?=htmlspecialchars($aliasdomaindata['alias_domain']);?></td>
+                  <td><?=htmlspecialchars($aliasdomaindata['target_domain']);?></td>
+                  <td><?=$aliasdomaindata['active'];?></td>
+                  <td style="text-align: right;">
+                    <div class="btn-group">
+                      <a href="/edit.php?aliasdomain=<?=urlencode($aliasdomaindata['alias_domain']);?>" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> <?=$lang['mailbox']['edit'];?></a>
+                      <a href="/delete.php?aliasdomain=<?=urlencode($aliasdomaindata['alias_domain']);?>" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> <?=$lang['mailbox']['remove'];?></a>
+                    </div>
+                  </td>
+                </tr>
+                <?php
+              }
+            }
+            else {
+	        ?>
+                  <tr id="no-data"><td colspan="8" style="text-align: center; font-style: italic;"><?=sprintf($lang['mailbox']['no_record'], $domain);?></td></tr>
+	        <?php
+            }
+          }
+          ?>
+					</tbody>
+					<tfoot>
+						<tr id="no-data">
+							<td colspan="8" style="text-align: center; border-top: 1px solid #e7e7e7;">
+								<a href="/add.php?aliasdomain"><?=$lang['mailbox']['add_domain_alias'];?></a>
+							</td>
+						</tr>
+					</tfoot>
+				</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<div class="row">
 		<div class="col-md-12">
 			<div class="panel panel-default">

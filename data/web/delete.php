@@ -112,13 +112,38 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 				$mailbox = $_GET["mailbox"];
 				if (hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $mailbox)) {
 				?>
-					<div class="alert alert-warning" role="alert"><?=sprintf($lang['delete']['remove_mailbox_warning'], htmlspecialchars($_GET["mailbox"]));?></div>
+					<div class="alert alert-warning" role="alert"><?=sprintf($lang['delete']['remove_mailbox_warning'], htmlspecialchars($mailbox));?></div>
 					<p><?=$lang['delete']['remove_mailbox_details'];?></p>
 					<form class="form-horizontal" role="form" method="post" action="/mailbox.php">
 					<input type="hidden" name="username" value="<?=htmlspecialchars($mailbox);?>">
 						<div class="form-group">
 							<div class="col-sm-offset-1 col-sm-10">
 								<button type="submit" name="mailbox_delete_mailbox" class="btn btn-default btn-sm"><?=$lang['delete']['remove_button'];?></button>
+							</div>
+						</div>
+					</form>
+				<?php
+				}
+				else {
+				?>
+					<div class="alert alert-info" role="alert"><?=$lang['info']['no_action'];?></div>
+				<?php
+				}
+		}
+		// DELETE RESOURCE
+		elseif (isset($_GET["resource"]) &&
+			filter_var($_GET["resource"], FILTER_VALIDATE_EMAIL) &&
+			!empty($_GET["resource"])) {
+				$resource = $_GET["resource"];
+				if (hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $resource)) {
+				?>
+					<div class="alert alert-warning" role="alert"><?=sprintf($lang['delete']['remove_resource_warning'], htmlspecialchars($resource));?></div>
+					<p><?=$lang['delete']['remove_resource_details'];?></p>
+					<form class="form-horizontal" role="form" method="post" action="/mailbox.php">
+					<input type="hidden" name="name" value="<?=htmlspecialchars($resource);?>">
+						<div class="form-group">
+							<div class="col-sm-offset-1 col-sm-10">
+								<button type="submit" name="mailbox_delete_resource" class="btn btn-default btn-sm"><?=$lang['delete']['remove_button'];?></button>
 							</div>
 						</div>
 					</form>

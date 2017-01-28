@@ -203,8 +203,9 @@ function check_login($user, $pass) {
 		}
 	}
 	$stmt = $pdo->prepare("SELECT `password` FROM `mailbox`
-			WHERE `active`='1'
-			AND `username` = :user");
+			WHERE `kind` NOT REGEXP 'location|thing|group'
+        AND `active`='1'
+        AND `username` = :user");
 	$stmt->execute(array(':user' => $user));
 	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	foreach ($rows as $row) {
@@ -555,7 +556,8 @@ function edit_user_account($postarray) {
 	}
 
 	$stmt = $pdo->prepare("SELECT `password` FROM `mailbox`
-			WHERE `username` = :user");
+			WHERE `kind` NOT REGEXP 'location|thing|group'
+        AND `username` = :user");
 	$stmt->execute(array(':user' => $username));
 	$row = $stmt->fetch(PDO::FETCH_ASSOC);
   if (!verify_ssha256($row['password'], $password_old)) {
@@ -1842,7 +1844,7 @@ function set_tfa($postarray) {
 		case "u2f":
       try {
         $reg = $u2f->doRegister(json_decode($_SESSION['regReq']), json_decode($postarray['token']));
-        $stmt = $pdo->prepare("INSERT INTO `tfa` (`username`, `authmech`, `keyHandle`, `publicKey`, `certificate`, `counter`) values (?, 'u2f', ?, ?, ?, ?)");
+        $stmt = $pdo->prepare("INSERT INTO `tfa` (`username`, `authmech`, `keyHandle`, `publicKey`, `certificate`, `counter`) VALUES (?, 'u2f', ?, ?, ?, ?)");
         $stmt->execute(array($username, $reg->keyHandle, $reg->publicKey, $reg->certificate, $reg->counter));
         $_SESSION['return'] = array(
           'type' => 'success',
@@ -2573,6 +2575,19 @@ function mailbox_add_alias($postarray) {
 			$goto_local_part	= strstr($goto, '@', true);
 			$goto				= $goto_local_part.'@'.$goto_domain;
 
+			$stmt = $pdo->prepare("SELECT `username` FROM `mailbox`
+				WHERE `kind` REGEXP 'location|thing|group'
+          AND `username`= :goto");
+			$stmt->execute(array(':goto' => $goto));
+			$num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+      if ($num_results != 0) {
+				$_SESSION['return'] = array(
+					'type' => 'danger',
+					'msg' => sprintf($lang['danger']['goto_invalid'])
+				);
+				return false;
+      }
+
 			if (!filter_var($goto, FILTER_VALIDATE_EMAIL) === true) {
 				$_SESSION['return'] = array(
 					'type' => 'danger',
@@ -2806,7 +2821,8 @@ function mailbox_add_mailbox($postarray) {
 			COUNT(*) as count,
 			COALESCE(ROUND(SUM(`quota`)/1048576), 0) as `quota`
 				FROM `mailbox`
-					WHERE `domain` = :domain");
+					WHERE `kind` NOT REGEXP 'location|thing|group'
+            AND `domain` = :domain");
 		$stmt->execute(array(':domain' => $domain));
 		$MailboxData = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -2950,7 +2966,147 @@ function mailbox_add_mailbox($postarray) {
 		);
 	}
 	catch (PDOException $e) {
-    mailbox_delete_mailbox(array('address' => $username));
+    mailbox_delete_mailbox(array('username' => $username));
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => 'MySQL: '.$e
+		);
+		return false;
+	}
+}
+function mailbox_add_resource($postarray) {
+  // Array elements
+  // active             int
+  // domain             string
+  // description        string
+  // multiple_bookings  int
+  // kind               string
+
+	global $pdo;
+	global $lang;
+	$domain             = idn_to_ascii(strtolower(trim($postarray['domain'])));
+  $description        = $postarray['description'];
+  $local_part         = preg_replace('/[^\da-z]/i', '', preg_quote($description, '/'));
+  $name               = $local_part . '@' . $domain;
+  $kind               = $postarray['kind'];
+	isset($postarray['active']) ? $active = '1' : $active = '0';
+	isset($postarray['multiple_bookings']) ? $multiple_bookings = '1' : $multiple_bookings = '0';
+
+	if (!filter_var($name, FILTER_VALIDATE_EMAIL)) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['resource_invalid'])
+		);
+		return false;
+	}
+
+	if (empty($description)) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['description_invalid'])
+		);
+		return false;
+  }
+  
+	if ($kind != 'location' && $kind != 'group' && $kind != 'thing') {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['resource_invalid'])
+		);
+		return false;
+	}
+
+	if (!is_valid_domain_name($domain)) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['domain_invalid'])
+		);
+		return false;
+	}
+
+	if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['access_denied'])
+		);
+		return false;
+	}
+
+	try {
+		$stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `username` = :name");
+		$stmt->execute(array(':name' => $name));
+		$num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+    if ($num_results != 0) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['object_exists'], htmlspecialchars($name))
+      );
+      return false;
+    }
+
+		$stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE address= :name");
+		$stmt->execute(array(':name' => $name));
+		$num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+    if ($num_results != 0) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['is_alias'], htmlspecialchars($name))
+      );
+      return false;
+    }
+
+		$stmt = $pdo->prepare("SELECT `address` FROM `spamalias` WHERE `address`= :name");
+		$stmt->execute(array(':name' => $name));
+		$num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+    if ($num_results != 0) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['is_spam_alias'], htmlspecialchars($name))
+      );
+      return false;
+    }
+
+		$stmt = $pdo->prepare("SELECT `domain` FROM `domain` WHERE `domain`= :domain");
+		$stmt->execute(array(':domain' => $domain));
+		$num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+    if ($num_results == 0) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['domain_not_found'], $domain)
+      );
+      return false;
+    }
+  }
+	catch(PDOException $e) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => 'MySQL: '.$e
+		);
+		return false;
+	}
+
+	try {
+		$stmt = $pdo->prepare("INSERT INTO `mailbox` (`username`, `password`, `name`, `maildir`, `quota`, `local_part`, `domain`, `created`, `modified`, `active`, `multiple_bookings`, `kind`) 
+			VALUES (:name, 'RESOURCE', :description, 'RESOURCE', 0, :local_part, :domain, :created, :modified, :active, :multiple_bookings, :kind)");
+		$stmt->execute(array(
+			':name' => $name,
+			':description' => $description,
+			':local_part' => $local_part,
+			':domain' => $domain,
+			':created' => date('Y-m-d H:i:s'),
+			':modified' => date('Y-m-d H:i:s'),
+			':active' => $active,
+			':kind' => $kind,
+			':multiple_bookings' => $multiple_bookings
+		));
+
+		$_SESSION['return'] = array(
+			'type' => 'success',
+			'msg' => sprintf($lang['success']['resource_added'], htmlspecialchars($name))
+		);
+	}
+	catch (PDOException $e) {
+    mailbox_delete_resource(array('name' => $name));
 		$_SESSION['return'] = array(
 			'type' => 'danger',
 			'msg' => 'MySQL: '.$e
@@ -3200,7 +3356,8 @@ function mailbox_edit_domain($postarray) {
           MAX(COALESCE(ROUND(`quota`/1048576), 0)) AS `maxquota`,
           COALESCE(ROUND(SUM(`quota`)/1048576), 0) AS `quota`
             FROM `mailbox`
-              WHERE domain= :domain");
+              WHERE `kind` NOT REGEXP 'location|thing|group'
+                AND domain = :domain");
       $stmt->execute(array(':domain' => $domain));
       $MailboxData = $stmt->fetch(PDO::FETCH_ASSOC);
       // GET ALIAS DATA
@@ -3562,6 +3719,78 @@ function mailbox_edit_mailbox($postarray) {
 		return false;
 	}
 }
+function mailbox_edit_resource($postarray) {
+	global $lang;
+	global $pdo;
+
+	isset($postarray['active']) ? $active = '1' : $active = '0';
+	isset($postarray['multiple_bookings']) ? $multiple_bookings = '1' : $multiple_bookings = '0';
+	$name               = $postarray['name'];
+	$kind               = $postarray['kind'];
+	$description        = $postarray['description'];
+
+	if (!filter_var($name, FILTER_VALIDATE_EMAIL)) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['resource_invalid'])
+		);
+		return false;
+	}
+
+	if (empty($description)) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['description_invalid'])
+		);
+		return false;
+  }
+
+	if ($kind != 'location' && $kind != 'group' && $kind != 'thing') {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['resource_invalid'])
+		);
+		return false;
+	}
+
+  if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $name)) {
+    $_SESSION['return'] = array(
+      'type' => 'danger',
+      'msg' => sprintf($lang['danger']['access_denied'])
+    );
+    return false;
+  }
+
+	try {
+		$stmt = $pdo->prepare("UPDATE `mailbox` SET
+				`modified` = :modified,
+				`active` = :active,
+				`name`= :description,
+				`kind`= :kind,
+				`multiple_bookings`= :multiple_bookings
+          WHERE `username` = :name");
+		$stmt->execute(array(
+			':active' => $active,
+			':modified' => date('Y-m-d H:i:s'),
+			':description' => $description,
+			':multiple_bookings' => $multiple_bookings,
+			':kind' => $kind,
+			':name' => $name
+		));
+		$_SESSION['return'] = array(
+			'type' => 'success',
+			'msg' => sprintf($lang['success']['resource_modified'], $name)
+		);
+		return true;
+	}
+	catch (PDOException $e) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => 'MySQL: '.$e
+		);
+		return false;
+	}
+}
 function mailbox_get_mailboxes($domain = null) {
 	global $lang;
 	global $pdo;
@@ -3575,7 +3804,7 @@ function mailbox_get_mailboxes($domain = null) {
 	}
   elseif (isset($domain) && hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
     try {
-      $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `domain` != 'ALL' AND `domain` = :domain");
+      $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `kind` NOT REGEXP 'location|thing|group' AND `domain` != 'ALL' AND `domain` = :domain");
       $stmt->execute(array(
         ':domain' => $domain,
       ));
@@ -3594,7 +3823,7 @@ function mailbox_get_mailboxes($domain = null) {
   }
   else {
     try {
-      $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `domain` IN (SELECT `domain` FROM `domain_admins` WHERE `active` = '1' AND `username` = :username) OR 'admin' = :role");
+      $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `kind` NOT REGEXP 'location|thing|group' AND `domain` IN (SELECT `domain` FROM `domain_admins` WHERE `active` = '1' AND `username` = :username) OR 'admin' = :role");
       $stmt->execute(array(
         ':username' => $_SESSION['mailcow_cc_username'],
         ':role' => $_SESSION['mailcow_cc_role'],
@@ -3613,6 +3842,58 @@ function mailbox_get_mailboxes($domain = null) {
     }
   }
   return $mailboxes;
+}
+function mailbox_get_resources($domain = null) {
+	global $lang;
+	global $pdo;
+  $resources = array();
+	if (isset($domain) && !hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['access_denied'])
+		);
+		return false;
+	}
+  elseif (isset($domain) && hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
+    try {
+      $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `kind` REGEXP 'location|thing|group' AND `domain` != 'ALL' AND `domain` = :domain");
+      $stmt->execute(array(
+        ':domain' => $domain,
+      ));
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      while($row = array_shift($rows)) {
+        $resources[] = $row['username'];
+      }
+    }
+    catch (PDOException $e) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => 'MySQL: '.$e
+      );
+      return false;
+    }
+  }
+  else {
+    try {
+      $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `kind` REGEXP 'location|thing|group' AND `domain` IN (SELECT `domain` FROM `domain_admins` WHERE `active` = '1' AND `username` = :username) OR 'admin' = :role");
+      $stmt->execute(array(
+        ':username' => $_SESSION['mailcow_cc_username'],
+        ':role' => $_SESSION['mailcow_cc_role'],
+      ));
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      while($row = array_shift($rows)) {
+        $resources[] = $row['username'];
+      }
+    }
+    catch (PDOException $e) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => 'MySQL: '.$e
+      );
+      return false;
+    }
+  }
+  return $resources;
 }
 function mailbox_get_alias_domains($domain = null) {
   // Get all domains assigned to mailcow_cc_username or domain, if set
@@ -3853,7 +4134,7 @@ function mailbox_get_domain_details($domain) {
       ':domain' => $domain,
     ));
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    $stmt = $pdo->prepare("SELECT COUNT(*) AS `count`, COALESCE(SUM(`quota`), 0) as `in_use` FROM `mailbox` WHERE `domain` = :domain");
+    $stmt = $pdo->prepare("SELECT COUNT(*) AS `count`, COALESCE(SUM(`quota`), 0) as `in_use` FROM `mailbox` WHERE `kind` NOT REGEXP 'location|thing|group' AND `domain` = :domain");
     $stmt->execute(array(':domain' => $row['domain']));
     $MailboxDataDomain	= $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -3901,6 +4182,13 @@ function mailbox_get_domain_details($domain) {
 function mailbox_get_mailbox_details($mailbox) {
 	global $lang;
 	global $pdo;
+  if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $mailbox)) {
+    $_SESSION['return'] = array(
+      'type' => 'danger',
+      'msg' => sprintf($lang['danger']['access_denied'])
+    );
+    return false;
+  }
   $mailboxdata = array();
   try {
     $stmt = $pdo->prepare("SELECT
@@ -3914,7 +4202,7 @@ function mailbox_get_mailbox_details($mailbox) {
         `quota2`.`bytes`,
         `quota2`.`messages`
           FROM `mailbox`, `quota2`, `domain`
-            WHERE `mailbox`.`username` = `quota2`.`username` AND `domain`.`domain` = `mailbox`.`domain` AND `mailbox`.`username` = :mailbox");
+            WHERE `mailbox`.`kind` NOT REGEXP 'location|thing|group' AND `mailbox`.`username` = `quota2`.`username` AND `domain`.`domain` = `mailbox`.`domain` AND `mailbox`.`username` = :mailbox");
     $stmt->execute(array(
       ':mailbox' => $mailbox,
     ));
@@ -3924,7 +4212,7 @@ function mailbox_get_mailbox_details($mailbox) {
     $stmt->execute(array(':domain' => $row['domain']));
     $DomainQuota  = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $stmt = $pdo->prepare("SELECT COUNT(*) AS `count`, COALESCE(SUM(`quota`), 0) as `in_use` FROM `mailbox` WHERE `domain` = :domain AND `username` != :username");
+    $stmt = $pdo->prepare("SELECT COALESCE(SUM(`quota`), 0) as `in_use` FROM `mailbox` WHERE `kind` NOT REGEXP 'location|thing|group' AND `domain` = :domain AND `username` != :username");
     $stmt->execute(array(':domain' => $row['domain'], ':username' => $row['username']));
     $MailboxUsage	= $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -3960,8 +4248,54 @@ function mailbox_get_mailbox_details($mailbox) {
     );
     return false;
   }
-  if (!isset($mailboxdata['domain']) ||
-    (isset($mailboxdata['domain']) && !hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $mailboxdata['domain']))) {
+  return $mailboxdata;
+}
+function mailbox_get_resource_details($resource) {
+	global $lang;
+	global $pdo;
+  $resourcedata = array();
+  if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $resource)) {
+    $_SESSION['return'] = array(
+      'type' => 'danger',
+      'msg' => sprintf($lang['danger']['access_denied'])
+    );
+    return false;
+  }
+  try {
+    $stmt = $pdo->prepare("SELECT
+        `username`,
+        `name`,
+        `kind`,
+        `multiple_bookings` AS `multiple_bookings_int`,
+        `local_part`,
+        `active` AS `active_int`,
+        CASE `multiple_bookings` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `multiple_bookings`,
+        CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`,
+        `domain`
+          FROM `mailbox` WHERE `kind` REGEXP 'location|thing|group' AND `username` = :resource");
+    $stmt->execute(array(
+      ':resource' => $resource,
+    ));
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    $resourcedata['name'] = $row['username'];
+    $resourcedata['kind'] = $row['kind'];
+    $resourcedata['multiple_bookings'] = $row['multiple_bookings'];
+    $resourcedata['multiple_bookings_int'] = $row['multiple_bookings'];
+    $resourcedata['description'] = $row['name'];
+    $resourcedata['active'] = $row['active'];
+    $resourcedata['active_int'] = $row['active_int'];
+    $resourcedata['domain'] = $row['domain'];
+    $resourcedata['local_part'] = $row['local_part'];
+  }
+  catch (PDOException $e) {
+    $_SESSION['return'] = array(
+      'type' => 'danger',
+      'msg' => 'MySQL: '.$e
+    );
+    return false;
+  }
+  if (!isset($resourcedata['domain']) ||
+    (isset($resourcedata['domain']) && !hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $resourcedata['domain']))) {
     $_SESSION['return'] = array(
       'type' => 'danger',
       'msg' => sprintf($lang['danger']['access_denied'])
@@ -3969,7 +4303,7 @@ function mailbox_get_mailbox_details($mailbox) {
     return false;
   }
   
-  return $mailboxdata;
+  return $resourcedata;
 }
 function mailbox_delete_domain($postarray) {
 	global $lang;
@@ -3989,8 +4323,7 @@ function mailbox_delete_domain($postarray) {
 		);
 		return false;
 	}
-	$domain	= strtolower(trim($domain));
-
+	$domain	= idn_to_ascii(strtolower(trim($domain)));
 
 	try {
 		$stmt = $pdo->prepare("SELECT `username` FROM `mailbox`
@@ -4113,6 +4446,7 @@ function mailbox_delete_alias($postarray) {
 function mailbox_delete_alias_domain($postarray) {
 	global $lang;
 	global $pdo;
+  $alias_domain = $postarray['alias_domain'];
 	if (!is_valid_domain_name($postarray['alias_domain'])) {
 		$_SESSION['return'] = array(
 			'type' => 'danger',
@@ -4120,7 +4454,6 @@ function mailbox_delete_alias_domain($postarray) {
 		);
 		return false;
 	}
-	$alias_domain = $postarray['alias_domain'];
 	try {
 		$stmt = $pdo->prepare("SELECT `target_domain` FROM `alias_domain`
 			WHERE `alias_domain`= :alias_domain");
@@ -4169,7 +4502,7 @@ function mailbox_delete_mailbox($postarray) {
 	global $lang;
 	global $pdo;
 	$username	= $postarray['username'];
-  $domain = mailbox_get_mailbox_details($username)['domain'];
+
 	if (!filter_var($postarray['username'], FILTER_VALIDATE_EMAIL)) {
 		$_SESSION['return'] = array(
 			'type' => 'danger',
@@ -4177,7 +4510,8 @@ function mailbox_delete_mailbox($postarray) {
 		);
 		return false;
 	}
-	if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
+
+	if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
 		$_SESSION['return'] = array(
 			'type' => 'danger',
 			'msg' => sprintf($lang['danger']['access_denied'])
@@ -4214,6 +4548,34 @@ function mailbox_delete_mailbox($postarray) {
 		$stmt->execute(array(
 			':username' => $username
 		));
+    $stmt = $pdo->prepare("DELETE FROM `sogo_user_profile` WHERE `c_uid` = :username");
+    $stmt->execute(array(
+      ':username' => $username
+    ));
+    $stmt = $pdo->prepare("DELETE FROM `sogo_cache_folder` WHERE `c_uid` = :username");
+    $stmt->execute(array(
+      ':username' => $username
+    ));
+    $stmt = $pdo->prepare("DELETE FROM `sogo_acl` WHERE `c_object` LIKE '%/" . $username . "/%' OR `c_uid` = :username");
+    $stmt->execute(array(
+      ':username' => $username
+    ));
+    $stmt = $pdo->prepare("DELETE FROM `sogo_store` WHERE `c_folder_id` IN (SELECT `c_folder_id` FROM `sogo_folder_info` WHERE `c_path2` = :username)");
+    $stmt->execute(array(
+      ':username' => $username
+    ));
+    $stmt = $pdo->prepare("DELETE FROM `sogo_quick_contact` WHERE `c_folder_id` IN (SELECT `c_folder_id` FROM `sogo_folder_info` WHERE `c_path2` = :username)");
+    $stmt->execute(array(
+      ':username' => $username
+    ));
+    $stmt = $pdo->prepare("DELETE FROM `sogo_quick_appointment` WHERE `c_folder_id` IN (SELECT `c_folder_id` FROM `sogo_folder_info` WHERE `c_path2` = :username)");
+    $stmt->execute(array(
+      ':username' => $username
+    ));
+    $stmt = $pdo->prepare("DELETE FROM `sogo_folder_info` WHERE `c_path2` = :username");
+    $stmt->execute(array(
+      ':username' => $username
+    ));
 		$stmt = $pdo->prepare("SELECT `address`, `goto` FROM `alias`
 				WHERE `goto` LIKE :username");
 		$stmt->execute(array(':username' => '%'.$username.'%'));
@@ -4245,6 +4607,44 @@ function mailbox_delete_mailbox($postarray) {
 	$_SESSION['return'] = array(
 		'type' => 'success',
 		'msg' => sprintf($lang['success']['mailbox_removed'], htmlspecialchars($username))
+	);
+}
+function mailbox_delete_resource($postarray) {
+	global $lang;
+	global $pdo;
+	$name	= $postarray['name'];
+	if (!filter_var($postarray['name'], FILTER_VALIDATE_EMAIL)) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['access_denied'])
+		);
+		return false;
+	}
+
+	if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $name)) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['access_denied'])
+		);
+		return false;
+	}
+
+	try {
+		$stmt = $pdo->prepare("DELETE FROM `mailbox` WHERE `username` = :name");
+		$stmt->execute(array(
+			':name' => $name
+		));
+	}
+	catch (PDOException $e) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => 'MySQL: '.$e
+		);
+		return false;
+	}
+	$_SESSION['return'] = array(
+		'type' => 'success',
+		'msg' => sprintf($lang['success']['resource_removed'], htmlspecialchars($name))
 	);
 }
 function mailbox_get_sender_acl_handles($mailbox) {
@@ -4369,7 +4769,7 @@ function get_u2f_registrations($username) {
 function add_u2f_registration($username, $reg) {
   global $pdo;
   global $lang;
-  $ins = $pdo->prepare("INSERT INTO `tfa` (`username`, `authmech`, `keyHandle`, `publicKey`, `certificate`, `counter`) values (?, 'u2f', ?, ?, ?, ?)");
+  $ins = $pdo->prepare("INSERT INTO `tfa` (`username`, `authmech`, `keyHandle`, `publicKey`, `certificate`, `counter`) VALUES (?, 'u2f', ?, ?, ?, ?)");
   $ins->execute(array($username, $reg->keyHandle, $reg->publicKey, $reg->certificate, $reg->counter));
 	$_SESSION['return'] = array(
 		'type' => 'success',

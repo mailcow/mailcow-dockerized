@@ -392,90 +392,130 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 			}
 	}
 	elseif (isset($_GET['mailbox']) && filter_var($_GET["mailbox"], FILTER_VALIDATE_EMAIL) && !empty($_GET["mailbox"])) {
-			$mailbox = $_GET["mailbox"];
-      $result = mailbox_get_mailbox_details($mailbox);
+    $mailbox = $_GET["mailbox"];
+    $result = mailbox_get_mailbox_details($mailbox);
+    if (!empty($result)) {
+      ?>
+      <h4><?=$lang['edit']['mailbox'];?></h4>
+      <form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
+      <input type="hidden" name="username" value="<?=htmlspecialchars($result['username']);?>">
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="name"><?=$lang['edit']['full_name'];?>:</label>
+          <div class="col-sm-10">
+          <input type="text" class="form-control" name="name" id="name" value="<?=htmlspecialchars($result['name'], ENT_QUOTES, 'UTF-8');?>">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="quota"><?=$lang['edit']['quota_mb'];?>:
+            <br /><span id="quotaBadge" class="badge">max. <?=intval($result['max_new_quota'] / 1048576)?> MiB</span>
+          </label>
+          <div class="col-sm-10">
+            <input type="number" name="quota" id="quota" id="destroyable" style="width:100%" min="1" max="<?=intval($result['max_new_quota'] / 1048576);?>" value="<?=intval($result['quota']) / 1048576;?>" class="form-control">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="sender_acl"><?=$lang['edit']['sender_acl'];?>:</label>
+          <div class="col-sm-10">
+            <select data-width="50%" style="width:100%" id="sender_acl" name="sender_acl[]" size="10" multiple>
+            <?php
+            $sender_acl_handles = mailbox_get_sender_acl_handles($mailbox);
+
+            foreach ($sender_acl_handles['sender_acl_domains']['ro'] as $domain):
+              ?>
+              <option data-subtext="Admin" value="<?=htmlspecialchars($domain);?>" disabled selected><?=htmlspecialchars(sprintf($lang['edit']['dont_check_sender_acl'], $domain));?></option>
+              <?php
+            endforeach;
+
+            foreach ($sender_acl_handles['sender_acl_addresses']['ro'] as $domain):
+              ?>
+            <option data-subtext="Admin" disabled selected><?=htmlspecialchars($alias);?></option>
+              <?php
+            endforeach;
+
+            foreach ($sender_acl_handles['fixed_sender_aliases'] as $alias):
+              ?>
+              <option data-subtext="Alias" disabled selected><?=htmlspecialchars($alias);?></option>
+              <?php
+            endforeach;
+
+            foreach ($sender_acl_handles['sender_acl_domains']['rw'] as $domain):
+              ?>
+              <option value="<?=htmlspecialchars($domain);?>" selected><?=htmlspecialchars(sprintf($lang['edit']['dont_check_sender_acl'], $domain));?></option>
+              <?php
+            endforeach;
+
+            foreach ($sender_acl_handles['sender_acl_domains']['selectable'] as $domain):
+              ?>
+              <option value="<?=htmlspecialchars($domain);?>"><?=htmlspecialchars(sprintf($lang['edit']['dont_check_sender_acl'], $domain));?></option>
+              <?php
+            endforeach;
+
+            foreach ($sender_acl_handles['sender_acl_addresses']['rw'] as $address):
+              ?>
+                <option selected><?=htmlspecialchars($address);?></option>
+              <?php
+            endforeach;
+
+            foreach ($sender_acl_handles['sender_acl_addresses']['selectable'] as $address):
+              ?>
+                <option><?=htmlspecialchars($address);?></option>
+              <?php
+            endforeach;
+
+            ?>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="password"><?=$lang['edit']['password'];?></label>
+          <div class="col-sm-10">
+          <input type="password" class="form-control" name="password" id="password" placeholder="<?=$lang['edit']['unchanged_if_empty'];?>">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="password2"><?=$lang['edit']['password_repeat'];?></label>
+          <div class="col-sm-10">
+          <input type="password" class="form-control" name="password2" id="password2">
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <div class="checkbox">
+            <label><input type="checkbox" name="active" <?=($result['active_int']=="1") ? "checked" : null;?>> <?=$lang['edit']['active'];?></label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" name="mailbox_edit_mailbox" class="btn btn-success btn-sm"><?=$lang['edit']['save'];?></button>
+          </div>
+        </div>
+      </form>
+    <?php
+    }
+  }
+	elseif (isset($_GET['resource']) && filter_var($_GET["resource"], FILTER_VALIDATE_EMAIL) && !empty($_GET["resource"])) {
+			$resource = $_GET["resource"];
+      $result = mailbox_get_resource_details($resource);
       if (!empty($result)) {
         ?>
-				<h4><?=$lang['edit']['mailbox'];?></h4>
+				<h4><?=$lang['edit']['resource'];?></h4>
 				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
-				<input type="hidden" name="username" value="<?=htmlspecialchars($result['username']);?>">
+          <input type="hidden" name="name" value="<?=htmlspecialchars($result['name']);?>">
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="name"><?=$lang['edit']['full_name'];?>:</label>
+						<label class="control-label col-sm-2" for="description"><?=$lang['add']['description'];?></label>
 						<div class="col-sm-10">
-						<input type="text" class="form-control" name="name" id="name" value="<?=htmlspecialchars($result['name'], ENT_QUOTES, 'UTF-8');?>">
+							<input type="text" class="form-control" name="description" id="description" value="<?=$result['description'];?>" required>
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="quota"><?=$lang['edit']['quota_mb'];?>:
-							<br /><span id="quotaBadge" class="badge">max. <?=intval($result['max_new_quota'] / 1048576)?> MiB</span>
-						</label>
+						<label class="control-label col-sm-2" for="domain"><?=$lang['edit']['kind'];?>:</label>
 						<div class="col-sm-10">
-							<input type="number" name="quota" id="quota" id="destroyable" style="width:100%" min="1" max="<?=intval($result['max_new_quota'] / 1048576);?>" value="<?=intval($result['quota']) / 1048576;?>" class="form-control">
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="sender_acl"><?=$lang['edit']['sender_acl'];?>:</label>
-						<div class="col-sm-10">
-							<select data-width="50%" style="width:100%" id="sender_acl" name="sender_acl[]" size="10" multiple>
-							<?php
-							$sender_acl_handles = mailbox_get_sender_acl_handles($mailbox);
-
-              foreach ($sender_acl_handles['sender_acl_domains']['ro'] as $domain):
-                ?>
-                <option data-subtext="Admin" value="<?=htmlspecialchars($domain);?>" disabled selected><?=htmlspecialchars(sprintf($lang['edit']['dont_check_sender_acl'], $domain));?></option>
-                <?php
-              endforeach;
-
-              foreach ($sender_acl_handles['sender_acl_addresses']['ro'] as $domain):
-                ?>
-              <option data-subtext="Admin" disabled selected><?=htmlspecialchars($alias);?></option>
-                <?php
-              endforeach;
-
-              foreach ($sender_acl_handles['fixed_sender_aliases'] as $alias):
-                ?>
-								<option data-subtext="Alias" disabled selected><?=htmlspecialchars($alias);?></option>
-                <?php
-              endforeach;
-
-              foreach ($sender_acl_handles['sender_acl_domains']['rw'] as $domain):
-                ?>
-                <option value="<?=htmlspecialchars($domain);?>" selected><?=htmlspecialchars(sprintf($lang['edit']['dont_check_sender_acl'], $domain));?></option>
-                <?php
-              endforeach;
-
-              foreach ($sender_acl_handles['sender_acl_domains']['selectable'] as $domain):
-                ?>
-                <option value="<?=htmlspecialchars($domain);?>"><?=htmlspecialchars(sprintf($lang['edit']['dont_check_sender_acl'], $domain));?></option>
-                <?php
-              endforeach;
-
-              foreach ($sender_acl_handles['sender_acl_addresses']['rw'] as $address):
-                ?>
-                  <option selected><?=htmlspecialchars($address);?></option>
-                <?php
-              endforeach;
-
-              foreach ($sender_acl_handles['sender_acl_addresses']['selectable'] as $address):
-                ?>
-                  <option><?=htmlspecialchars($address);?></option>
-                <?php
-              endforeach;
-
-              ?>
+							<select name="kind" id="kind" title="<?=$lang['edit']['select'];?>" required>
+								<option value="location" <?=($result['kind'] == "location") ? "selected" : null;?>>Location</option>
+								<option value="group" <?=($result['kind'] == "group") ? "selected" : null;?>>Group</option>
+								<option value="thing" <?=($result['kind'] == "thing") ? "selected" : null;?>>Thing</option>
 							</select>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="password"><?=$lang['edit']['password'];?></label>
-						<div class="col-sm-10">
-						<input type="password" class="form-control" name="password" id="password" placeholder="<?=$lang['edit']['unchanged_if_empty'];?>">
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="password2"><?=$lang['edit']['password_repeat'];?></label>
-						<div class="col-sm-10">
-						<input type="password" class="form-control" name="password2" id="password2">
 						</div>
 					</div>
 					<div class="form-group">
@@ -487,7 +527,14 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
-							<button type="submit" name="mailbox_edit_mailbox" class="btn btn-success btn-sm"><?=$lang['edit']['save'];?></button>
+							<div class="checkbox">
+							<label><input type="checkbox" name="multiple_bookings" <?=($result['multiple_bookings_int']=="1") ? "checked" : null;?>> <?=$lang['edit']['multiple_bookings'];?></label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<button type="submit" name="mailbox_edit_resource" class="btn btn-success btn-sm"><?=$lang['edit']['save'];?></button>
 						</div>
 					</div>
 				</form>
