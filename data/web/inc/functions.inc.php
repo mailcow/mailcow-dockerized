@@ -4609,6 +4609,46 @@ function mailbox_delete_mailbox($postarray) {
 		'msg' => sprintf($lang['success']['mailbox_removed'], htmlspecialchars($username))
 	);
 }
+function mailbox_reset_eas($username) {
+	global $lang;
+	global $pdo;
+
+  (isset($postarray['username'])) ? $username = $postarray['username'] : $username = $_SESSION['mailcow_cc_username'];
+
+	if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['access_denied'])
+		);
+		return false;
+	}
+
+	if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['access_denied'])
+		);
+		return false;
+	}
+
+	try {
+    $stmt = $pdo->prepare("DELETE FROM `sogo_cache_folder` WHERE `c_uid` = :username");
+    $stmt->execute(array(
+      ':username' => $username
+    ));
+	}
+	catch (PDOException $e) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => 'MySQL: '.$e
+		);
+		return false;
+	}
+	$_SESSION['return'] = array(
+		'type' => 'success',
+		'msg' => sprintf($lang['success']['eas_reset'], htmlspecialchars($username))
+	);
+}
 function mailbox_delete_resource($postarray) {
 	global $lang;
 	global $pdo;
@@ -4630,10 +4670,38 @@ function mailbox_delete_resource($postarray) {
 	}
 
 	try {
-		$stmt = $pdo->prepare("DELETE FROM `mailbox` WHERE `username` = :name");
+		$stmt = $pdo->prepare("DELETE FROM `mailbox` WHERE `username` = :username");
 		$stmt->execute(array(
-			':name' => $name
+			':username' => $name
 		));
+    $stmt = $pdo->prepare("DELETE FROM `sogo_user_profile` WHERE `c_uid` = :username");
+    $stmt->execute(array(
+      ':username' => $name
+    ));
+    $stmt = $pdo->prepare("DELETE FROM `sogo_cache_folder` WHERE `c_uid` = :username");
+    $stmt->execute(array(
+      ':username' => $name
+    ));
+    $stmt = $pdo->prepare("DELETE FROM `sogo_acl` WHERE `c_object` LIKE '%/" . $name . "/%' OR `c_uid` = :username");
+    $stmt->execute(array(
+      ':username' => $name
+    ));
+    $stmt = $pdo->prepare("DELETE FROM `sogo_store` WHERE `c_folder_id` IN (SELECT `c_folder_id` FROM `sogo_folder_info` WHERE `c_path2` = :username)");
+    $stmt->execute(array(
+      ':username' => $name
+    ));
+    $stmt = $pdo->prepare("DELETE FROM `sogo_quick_contact` WHERE `c_folder_id` IN (SELECT `c_folder_id` FROM `sogo_folder_info` WHERE `c_path2` = :username)");
+    $stmt->execute(array(
+      ':username' => $name
+    ));
+    $stmt = $pdo->prepare("DELETE FROM `sogo_quick_appointment` WHERE `c_folder_id` IN (SELECT `c_folder_id` FROM `sogo_folder_info` WHERE `c_path2` = :username)");
+    $stmt->execute(array(
+      ':username' => $name
+    ));
+    $stmt = $pdo->prepare("DELETE FROM `sogo_folder_info` WHERE `c_path2` = :username");
+    $stmt->execute(array(
+      ':username' => $name
+    ));
 	}
 	catch (PDOException $e) {
 		$_SESSION['return'] = array(

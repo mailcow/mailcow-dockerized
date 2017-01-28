@@ -112,6 +112,16 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
     </div>
   </div>
   </form>
+  <?php // Rest EAS devices ?>
+  <form class="form-horizontal" role="form" method="post">
+  <div class="row">
+    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['eas_reset'];?>:</div>
+    <div class="col-md-9 col-xs-7">
+    <button type="submit" name="mailbox_reset_eas" id="mailbox_reset_eas" value="1" class="btn btn-xs btn-default"><?=$lang['user']['eas_reset_now'];?></button>
+    <p class="help-block"><?=$lang['user']['eas_reset_help'];?></p>
+    </div>
+  </div>
+  </form>
 </div>
 </div>
 

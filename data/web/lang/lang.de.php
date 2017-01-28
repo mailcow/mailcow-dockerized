@@ -78,6 +78,7 @@ $lang['success']['alias_removed'] = 'Alias-Adresse %s wurde entfernt';
 $lang['success']['alias_domain_removed'] = 'Alias-Domain %s wurde entfernt';
 $lang['success']['domain_admin_removed'] = 'Domain-Administrator %s wurde entfernt';
 $lang['success']['mailbox_removed'] = 'Mailbox %s wurde entfernt';
+$lang['success']['eas_reset'] = "ActiveSync Gerät des Benutzers %s wurden zurückgesetzt";
 $lang['success']['resource_removed'] = 'Ressource %s wurde entfernt';
 $lang['danger']['max_quota_in_use'] = 'Mailbox Speicherplatzlimit muss größer oder gleich %d MiB sein';
 $lang['danger']['domain_quota_m_in_use'] = 'Domain Speicherplatzlimit muss größer oder gleich %d MiB sein';
@@ -156,6 +157,9 @@ $lang['user']['tag_in_subject'] = 'In Betreff';
 $lang['user']['tag_help_explain'] = 'Als Unterordner: Es wird ein Ordner mit dem Namen des Tags unterhalb der Inbox erstellt ("INBOX/Facebook").<br />
 In Betreff: Der Name des Tags wird dem Betreff angefügt, etwa "[Facebook] Meine Neuigkeiten".';
 $lang['user']['tag_help_example'] = 'Beispiel für eine getaggte E-Mail-Adresse: ich<b>+Facebook</b>@example.org';
+$lang['user']['eas_reset'] = 'ActiveSync Geräte-Cache zurücksetzen';
+$lang['user']['eas_reset_now'] = 'Jetzt zurücksetzen';
+$lang['user']['eas_reset_help'] = 'In vielen Fällen kann ein ActiveSync Profil durch das Zurücksetzen des Caches repariert werden.<br /><b>Vorsicht:</b> Alle Elemente werden erneut heruntergeladen!';
 
 $lang['user']['encryption'] = 'Verschlüsselung';
 $lang['user']['username'] = 'Benutzername';

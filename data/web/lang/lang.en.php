@@ -80,6 +80,7 @@ $lang['success']['alias_removed'] = "Alias-Adresse %s has been removed";
 $lang['success']['alias_domain_removed'] = "Alias domain %s has been removed";
 $lang['success']['domain_admin_removed'] = "Domain administrator %s has been removed";
 $lang['success']['mailbox_removed'] = "Mailbox %s has been removed";
+$lang['success']['eas_reset'] = "ActiveSync devices for user %s were reset";
 $lang['success']['resource_removed'] = "Resource %s has been removed";
 $lang['danger']['max_quota_in_use'] = "Mailbox quota must be greater or equal to %d MiB";
 $lang['danger']['domain_quota_m_in_use'] = "Domain quota must be greater or equal to %s MiB";
@@ -158,6 +159,9 @@ $lang['user']['tag_in_subject'] = 'In subject';
 $lang['user']['tag_help_explain'] = 'In subfolder: a new subfolder named after the tag will be created below INBOX ("INBOX/Facebook").<br />
 In subject: the tags name will be prepended to the mails subject, example: "[Facebook] Meine Neuigkeiten".';
 $lang['user']['tag_help_example'] = 'Example for a tagged email address: ich<b>+Facebook</b>@example.org';
+$lang['user']['eas_reset'] = 'Reset ActiveSync device cache';
+$lang['user']['eas_reset_now'] = 'Reset now';
+$lang['user']['eas_reset_help'] = 'In many cases a device cache reset will help to recover a broken ActiveSync profile.<br /><b>Attention:</b> All elements will be redownloaded!';
 
 $lang['user']['encryption'] = 'Encyrption';
 $lang['user']['username'] = 'Username';

@@ -77,6 +77,9 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "user
 	if (isset($_POST["edit_user_account"])) {
 		edit_user_account($_POST);
 	}
+	if (isset($_POST["mailbox_reset_eas"])) {
+		mailbox_reset_eas($_POST);
+	}
 	if (isset($_POST["edit_spam_score"])) {
 		edit_spam_score($_POST);
 	}
