@@ -1806,6 +1806,13 @@ function set_tfa($postarray) {
   
 	switch ($postarray["tfa_method"]) {
 		case "yubi_otp":
+      if (!$yubi) {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => sprintf($lang['danger']['access_denied'])
+        );
+        return false;
+      }
 			if (!ctype_alnum($postarray["otp_token"]) || strlen($postarray["otp_token"]) != 44) {
 				$_SESSION['return'] = array(
 					'type' => 'danger',
