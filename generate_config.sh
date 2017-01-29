@@ -12,8 +12,13 @@ if [[ -f mailcow.conf ]]; then
   esac
 fi
 
-read -p "Hostname (FQDN): " -ei "mx.example.org" MAILCOW_HOSTNAME
-read -p "Timezone: " -ei "Europe/Berlin" TZ
+if [ -z "$MAILCOW_HOSTNAME" ]; then
+  read -p "Hostname (FQDN): " -ei "mx.example.org" MAILCOW_HOSTNAME
+fi
+
+if [ -z "$TZ" ]; then
+  read -p "Timezone: " -ei "Europe/Berlin" TZ
+fi
 
 cat << EOF > mailcow.conf
 # ------------------------------
