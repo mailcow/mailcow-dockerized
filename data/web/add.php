@@ -57,13 +57,6 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 						<input type="number" class="form-control" name="quota" id="quota" value="10240">
 						</div>
 					</div>
-          <hr>
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="virtual_transport">Use relay transport</label>
-						<div class="col-sm-10">
-						<input type="test" class="form-control" name="virtual_transport" id="virtual_transport" placeholder="smtp.gmail.com">
-						</div>
-					</div>
 					<div class="form-group">
 						<label class="control-label col-sm-2"><?=$lang['add']['backup_mx_options'];?></label>
 						<div class="col-sm-10">
