@@ -202,7 +202,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 		<div class="col-md-12">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title">Resources <span class="badge" id="numRowsResource"></span></h3>
+					<h3 class="panel-title"><?=$lang['mailbox']['resources'];?> <span class="badge" id="numRowsResource"></span></h3>
 					<div class="pull-right">
 						<span class="clickable filter" data-toggle="tooltip" title="<?=$lang['mailbox']['filter_table'];?>" data-container="body">
 							<i class="glyphicon glyphicon-filter"></i>

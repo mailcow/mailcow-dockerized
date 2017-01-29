@@ -211,6 +211,7 @@ $lang['mailbox']['aliases'] = 'Aliasse';
 $lang['mailbox']['multiple_bookings'] = 'Mehrfachbuchen';
 $lang['mailbox']['kind'] = 'Art';
 $lang['mailbox']['description'] = 'Beschreibung';
+$lang['mailbox']['resources'] = 'Ressourcen';
 $lang['mailbox']['resource_name'] = 'Ressourcenname';
 $lang['mailbox']['domains'] = 'Domains';
 $lang['mailbox']['mailboxes'] = 'Mailboxen';

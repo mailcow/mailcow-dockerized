@@ -216,6 +216,7 @@ $lang['mailbox']['resource_name'] = 'Resource name';
 $lang['mailbox']['aliases'] = 'Aliases';
 $lang['mailbox']['domains'] = 'Domains';
 $lang['mailbox']['mailboxes'] = 'Mailboxes';
+$lang['mailbox']['resources'] = 'Resources';
 $lang['mailbox']['mailbox_quota'] = 'Max. size of a mailbox';
 $lang['mailbox']['domain_quota'] = 'Quota';
 $lang['mailbox']['active'] = 'Active';
