@@ -115,10 +115,10 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 	if (isset($_POST["set_tfa"])) {
 		set_tfa($_POST);
 	}
-	if (isset($_POST["trigger_add_policy_list_item"])) {
+	if (isset($_POST["add_policy_list_item"])) {
 		add_policy_list_item($_POST);
 	}
-	if (isset($_POST["trigger_delete_policy_list_item"])) {
+	if (isset($_POST["delete_policy_list_item"])) {
 		delete_policy_list_item($_POST);
 	}
 	if (isset($_POST["mailbox_add_domain"])) {
@@ -150,9 +150,6 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 	}
 	if (isset($_POST["mailbox_edit_resource"])) {
 		mailbox_edit_resource($_POST);
-	}
-	if (isset($_POST["trigger_delete_policy_list_item"])) {
-		delete_policy_list_item($_POST);
 	}
 	if (isset($_POST["mailbox_delete_domain"])) {
 		mailbox_delete_domain($_POST);
