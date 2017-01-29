@@ -57,6 +57,13 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 						<input type="number" class="form-control" name="quota" id="quota" value="10240">
 						</div>
 					</div>
+          <hr>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="virtual_transport">Use relay transport</label>
+						<div class="col-sm-10">
+						<input type="test" class="form-control" name="virtual_transport" id="virtual_transport" placeholder="smtp.gmail.com">
+						</div>
+					</div>
 					<div class="form-group">
 						<label class="control-label col-sm-2"><?=$lang['add']['backup_mx_options'];?></label>
 						<div class="col-sm-10">
@@ -132,29 +139,12 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="target_domain"><?=$lang['add']['target_domain'];?></label>
 						<div class="col-sm-10">
-							<select name="target_domain" id="target_domain" title="<?=$lang['add']['select'];?>">
-								<?php
-								try {
-									$stmt = $pdo->prepare("SELECT `domain` FROM `domain`
-											WHERE `domain` IN (
-													SELECT `domain` FROM `domain_admins`
-															WHERE `username`= :username
-															AND `active`='1'
-													)
-											OR 'admin' = :admin");
-									$stmt->execute(array(':username' => $_SESSION['mailcow_cc_username'], ':admin' => $_SESSION['mailcow_cc_role']));
-									$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-								}
-								catch(PDOException $e) {
-									$_SESSION['return'] = array(
-										'type' => 'danger',
-										'msg' => 'MySQL: '.$e
-									);
-								}
-								while ($row = array_shift($rows)) {
-										echo "<option>".htmlspecialchars($row['domain'])."</option>";
-								}
-								?>
+							<select name="target_domain" id="target_domain" title="<?=$lang['add']['select'];?>" required>
+							<?php
+              foreach (mailbox_get_domains() as $domain) {
+								echo "<option>".htmlspecialchars($domain)."</option>";
+							}
+							?>
 							</select>
 						</div>
 					</div>
