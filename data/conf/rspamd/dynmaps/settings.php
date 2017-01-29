@@ -4,7 +4,7 @@ The match section performs AND operation on different matches: for example, if y
 then the rule matches only when from AND rcpt match. For similar matches, the OR rule applies: if you have multiple rcpt matches,
 then any of these will trigger the rule. If a rule is triggered then no more rules are matched.
 */
-ini_set('error_reporting', 'E_ALL');
+ini_set('error_reporting', '0');
 
 header('Content-Type: text/plain');
 require_once "vars.inc.php";
@@ -35,9 +35,9 @@ while ($row = array_shift($rows)) {
 	$spamscore = $stmt->fetchAll(PDO::FETCH_COLUMN|PDO::FETCH_GROUP);
 
 	$stmt = $pdo->prepare("SELECT GROUP_CONCAT(REPLACE(`value`, '*', '.*') SEPARATOR '|') AS `value` FROM `filterconf`
-		WHERE `object`= :object
+		WHERE (`object`= :object OR `object`= :object_domain)
 			AND (`option` = 'blacklist_from' OR `option` = 'whitelist_from')");
-	$stmt->execute(array(':object' => $row['object']));
+	$stmt->execute(array(':object' => $row['object'], ':object_domain' => substr(strrchr($row['object'], "@"), 1)));
 	$grouped_lists = $stmt->fetchAll(PDO::FETCH_COLUMN);
 	$value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
 ?>
@@ -59,9 +59,11 @@ while ($row = array_shift($rows)) {
 	$rows_aliases_2 = $stmt->fetchAll(PDO::FETCH_ASSOC);
   array_filter($rows_aliases_2);
 	while ($row_aliases_2 = array_shift($rows_aliases_2)) {
+    if (!empty($row_aliases_2['aliases'])) {
 ?>
 		rcpt = "<?=$row_aliases_2['aliases'];?>";
 <?php
+    }
 	}
 ?>
 		apply "default" {
@@ -71,6 +73,7 @@ while ($row = array_shift($rows)) {
 				"add header" = <?=$spamscore['lowspamlevel'][0];?>;
 			}
 		}
+	}
 <?php
 }
 
@@ -132,9 +135,11 @@ while ($row = array_shift($rows)) {
 	$rows_aliases_wl_2 = $stmt->fetchAll(PDO::FETCH_ASSOC);
   array_filter($rows_aliases_wl_2);
 	while ($row_aliases_wl_2 = array_shift($rows_aliases_wl_2)) {
+    if (!empty($row_aliases_wl_2['aliases'])) {
 ?>
 		rcpt = "<?=$row_aliases_wl_2['aliases'];?>";
 <?php
+    }
 	}
 ?>
 		apply "default" {
@@ -202,9 +207,11 @@ while ($row = array_shift($rows)) {
 	$rows_aliases_bl_2 = $stmt->fetchAll(PDO::FETCH_ASSOC);
   array_filter($rows_aliases_bl_2);
 	while ($row_aliases_bl_2 = array_shift($rows_aliases_bl_2)) {
+    if (!empty($row_aliases_bl_2['aliases'])) {
 ?>
 		rcpt = "<?=$row_aliases_bl_2['aliases'];?>";
 <?php
+    }
 	}
 ?>
 		apply "default" {
