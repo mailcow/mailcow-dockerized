@@ -1,0 +1,79 @@
+ul[id*="sortable"] { word-wrap: break-word; list-style-type: none; float: left; padding: 0 15px 0 0; width: 48%; cursor:move}
+ul[id$="sortable-active"] li {cursor:move; }
+ul[id$="sortable-inactive"] li {cursor:move }
+.list-heading { cursor:default !important}
+.ui-state-disabled { cursor:no-drop; color:#ccc; }
+.ui-state-highlight {background: #F5F5F5 !important; height: 41px !important; cursor:move }
+table[data-sortable] {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+table[data-sortable] th {
+  vertical-align: bottom;
+  font-weight: bold;
+}
+table[data-sortable] th, table[data-sortable] td {
+  text-align: left;
+  padding: 10px;
+}
+table[data-sortable] th:not([data-sortable="false"]) {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-touch-callout: none;
+  cursor: pointer;
+}
+table[data-sortable] th:after {
+  content: "";
+  visibility: hidden;
+  display: inline-block;
+  vertical-align: inherit;
+  height: 0;
+  width: 0;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent;
+  margin-right: 1px;
+  margin-left: 10px;
+  float: right;
+}
+table[data-sortable] th[data-sortable="false"]:after {
+  display: none;
+}
+table[data-sortable] th[data-sorted="true"]:after {
+  visibility: visible;
+}
+table[data-sortable] th[data-sorted-direction="descending"]:after {
+  border-top-color: inherit;
+  margin-top: 8px;
+}
+table[data-sortable] th[data-sorted-direction="ascending"]:after {
+  border-bottom-color: inherit;
+  margin-top: 3px;
+}
+table[data-sortable].sortable-theme-bootstrap thead th {
+  border-bottom: 2px solid #e0e0e0;
+}
+table[data-sortable].sortable-theme-bootstrap th[data-sorted="true"] {
+  color: #3a87ad;
+  background: #d9edf7;
+  border-bottom-color: #bce8f1;
+}
+table[data-sortable].sortable-theme-bootstrap th[data-sorted="true"][data-sorted-direction="descending"]:after {
+  border-top-color: #3a87ad;
+}
+table[data-sortable].sortable-theme-bootstrap th[data-sorted="true"][data-sorted-direction="ascending"]:after {
+  border-bottom-color: #3a87ad;
+}
+table[data-sortable].sortable-theme-bootstrap.sortable-theme-bootstrap-striped tbody > tr:nth-child(odd) > td {
+  background-color: #f9f9f9;
+}
+#data td, #no-data td {
+	vertical-align: middle;
+}
+.sort-table:hover {
+  border-bottom-color: #00B7DC !important;
+}

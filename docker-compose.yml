@@ -135,9 +135,8 @@ services:
       volumes:
         - ./data/conf/dovecot:/etc/dovecot
         - ./data/assets/ssl:/etc/ssl/mail/:ro
+        - ./data/conf/sogo/:/etc/sogo/
         - vmail-vol-1:/var/vmail
-      volumes_from:
-        - sogo-mailcow
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -203,18 +202,19 @@ services:
         - php-fpm-mailcow
         - rspamd-mailcow
       image: nginx:mainline
-      volumes_from:
-        - sogo-mailcow
+      command: /bin/bash -c "envsubst < /etc/nginx/conf.d/listen.template > /etc/nginx/conf.d/listen.active && nginx -g 'daemon off;'"
+      environment:
+        - HTTPS_PORT=${HTTPS_PORT}
       volumes:
         - ./data/web:/web:ro
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
         - ./data/assets/ssl/:/etc/ssl/mail/:ro
-        - ./data/conf/nginx/:/etc/nginx/conf.d/:ro
+        - ./data/conf/nginx/:/etc/nginx/conf.d/:rw
       dns:
         - 172.22.1.254
       dns_search: mailcow-network
       ports:
-        - "443:443"
+        - "${HTTPS_PORT}:${HTTPS_PORT}"
       restart: always
       networks:
         mailcow-network:
@@ -228,7 +228,6 @@ networks:
       driver: default
       config:
         - subnet: 172.22.1.0/24
-          gateway: 172.22.1.1
 
 volumes:
   vmail-vol-1:

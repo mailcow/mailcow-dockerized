@@ -1,11 +1,17 @@
 #!/bin/bash
 set -e
 
-# Set config parameters, escape " in db password
+# Hard-code env vars to imapsync due to cron not passing them to the perl script
+sed -i "/^\$DBUSER/c\\\$DBUSER='${DBUSER}';" /usr/local/bin/imapsync_cron.pl
+sed -i "/^\$DBPASS/c\\\$DBPASS='${DBPASS}';" /usr/local/bin/imapsync_cron.pl
+sed -i "/^\$DBNAME/c\\\$DBNAME='${DBNAME}';" /usr/local/bin/imapsync_cron.pl
+
+# Set Dovecot config parameters, escape " in db password
 DBPASS=$(echo ${DBPASS} | sed 's/"/\\"/g')
 sed -i "/^connect/c\connect = \"host=mysql dbname=${DBNAME} user=${DBUSER} password=${DBPASS}\"" /etc/dovecot/sql/*
 
 [[ ! -d /var/vmail/sieve ]] && mkdir -p /var/vmail/sieve
+[[ ! -d /etc/sogo ]] && mkdir -p /etc/sogo
 cat /etc/dovecot/sieve_after > /var/vmail/sieve/global.sieve
 sievec /var/vmail/sieve/global.sieve
 chown -R vmail:vmail /var/vmail/sieve

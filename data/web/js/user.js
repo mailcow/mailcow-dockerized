@@ -14,15 +14,20 @@ $(document).ready(function() {
 			$(".passFields").slideUp();
 		}
 	});
-
 	// Show generate button after time selection
-	$('#trigger_set_time_limited_aliases').hide(); 
+	$('#generate_tla').hide(); 
 	$('#validity').change(function(){
-		$('#trigger_set_time_limited_aliases').show(); 
+		$('#generate_tla').show(); 
 	});
 
 	// Init Bootstrap Switch
 	$.fn.bootstrapSwitch.defaults.onColor = 'success';
 	$("[name='tls_out']").bootstrapSwitch();
 	$("[name='tls_in']").bootstrapSwitch();
+
+  // Log modal
+  $('#logModal').on('show.bs.modal', function(e) {
+  var logText = $(e.relatedTarget).data('log-text');
+  $(e.currentTarget).find('#logText').html('<pre style="background:none;font-size:11px;line-height:1.1;border:0px">' + logText + '</pre>');
+  });
 });

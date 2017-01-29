@@ -1,5 +1,6 @@
 <?php
-error_reporting(0);
+error_reporting(E_ERROR | E_WARNING);
+//error_reporting(E_ALL);
 
 /*
 PLEASE USE THE FILE "vars.local.inc.php" TO OVERWRITE SETTINGS AND MAKE THEM PERSISTENT!
@@ -33,4 +34,9 @@ $DEFAULT_LANG = "en";
 // simplex, slate, spacelab, superhero, united, yeti
 // See https://bootswatch.com/
 $DEFAULT_THEME = "lumen";
+
+// If you want to use Yubico TFA methods, setup an ID and a key here: https://upgrade.yubico.com/getapikey/
+// Remember to override this value using vars.local.inc.php, do not change it here.
+$YUBI_API['ID'] = "";
+$YUBI_API['KEY'] = "";
 ?>

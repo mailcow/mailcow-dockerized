@@ -5,10 +5,12 @@ $(document).ready(function() {
 	var rowCountDomain = $('#domaintable >tbody >#data').length;
 	var rowCountMailbox = $('#mailboxtable >tbody >#data').length;
 	var rowCountAlias = $('#aliastable >tbody >#data').length;
+	var rowCountResource = $('#resourcetable >tbody >#data').length;
 	$("#numRowsDomainAlias").text(rowCountDomainAlias);
 	$("#numRowsDomain").text(rowCountDomain);
 	$("#numRowsMailbox").text(rowCountMailbox);
 	$("#numRowsAlias").text(rowCountAlias);
+	$("#numRowsResource").text(rowCountResource);
 
 	// Filter table function
 	$.fn.extend({

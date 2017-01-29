@@ -3,18 +3,35 @@
 //ini_set("session.cookie_httponly", 1);
 session_start();
 if (isset($_POST["logout"])) {
-	session_unset();
-	session_destroy();
-	session_write_close();
-	setcookie(session_name(),'',0,'/');
+  if (isset($_SESSION["dual-login"])) {
+    $_SESSION["mailcow_cc_username"] = $_SESSION["dual-login"]["username"];
+    $_SESSION["mailcow_cc_role"] = $_SESSION["dual-login"]["role"];
+    unset($_SESSION["dual-login"]);
+  }
+  else {
+    session_unset();
+    session_destroy();
+    session_write_close();
+    setcookie(session_name(),'',0,'/');
+  }
 }
 
 require_once 'inc/vars.inc.php';
-
 if (file_exists('./inc/vars.local.inc.php')) {
 	include_once 'inc/vars.local.inc.php';
 }
 
+// Yubi OTP API
+if (!empty($YUBI_API['ID']) && !empty($YUBI_API['KEY'])) {
+  require_once 'inc/lib/Yubico.php';
+  $yubi = new Auth_Yubico($YUBI_API['ID'], $YUBI_API['KEY']);
+}
+// U2F API
+require_once 'inc/lib/U2F.php';
+$scheme = isset($_SERVER['HTTPS']) ? "https://" : "http://";
+$u2f = new u2flib_server\U2F($scheme . $_SERVER['HTTP_HOST']);
+
+// PDO
 $dsn = "$database_type:host=$database_host;dbname=$database_name";
 $opt = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
@@ -29,6 +46,7 @@ catch (PDOException $e) {
 <center style='font-family: "Lucida Sans Unicode", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;'>🐮 Connection failed, database may be in warm-up state, please try again later.<br /><br />The following error was reported:<br/>  <?=$e->getMessage();?></center>
 <?php
 }
+
 $_SESSION['mailcow_locale'] = strtolower(trim($DEFAULT_LANG));
 setcookie('language', $DEFAULT_LANG);
 if (isset($_COOKIE['language'])) {
@@ -75,4 +93,4 @@ require_once 'lang/lang.en.php';
 include 'lang/lang.'.$_SESSION['mailcow_locale'].'.php';
 require_once 'inc/functions.inc.php';
 require_once 'inc/triggers.inc.php';
-init_db_schema();
+(!isset($_SESSION['mailcow_cc_username'])) ? init_db_schema() : null;

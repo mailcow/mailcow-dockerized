@@ -1,0 +1,46 @@
+#maxmsgsize { min-width: 80px; }
+#slider1 .slider-selection {
+	background: #FFD700;
+}
+#slider1 .slider-track-high {
+	background: #FF4500;
+}
+#slider1 .slider-track-low {
+	background: #66CD00;
+}
+.striped:nth-child(odd) {
+    background-color: #fff;
+}
+.striped:nth-child(even) {
+    background-color: #fafafa;
+	border:1px solid white;
+}
+.btn {
+   text-transform: none;
+}
+.glyphicon-spin {
+    font-size:12px;
+    -webkit-animation: spin 2000ms infinite linear;
+    animation: spin 2000ms infinite linear;
+}
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
+}
+@keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
+}
+pre{white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space:-o-pre-wrap;word-wrap:break-word;}
