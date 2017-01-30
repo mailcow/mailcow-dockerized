@@ -1,4 +1,4 @@
-version: '2'
+version: '2.1'
 
 services:
     pdns-mailcow:
@@ -60,7 +60,7 @@ services:
         - dkim-vol-1:/data/dkim
         - rspamd-vol-1:/var/lib/rspamd
       restart: always
-      dns: 
+      dns:
         - 172.22.1.254
       dns_search: mailcow-network
       networks:
@@ -142,11 +142,11 @@ services:
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
       ports:
-        - "${IMAP_PORT}:143"
-        - "${IMAPS_PORT}:993"
-        - "${POP_PORT}:110"
-        - "${POPS_PORT}:995"
-        - "${SIEVE_PORT}:4190"
+        - "${IMAP_PORT:-143}:143"
+        - "${IMAPS_PORT:-993}:993"
+        - "${POP_PORT-110}:110"
+        - "${POPS_PORT:-995}:995"
+        - "${SIEVE_PORT:-4190}:4190"
       dns:
         - 172.22.1.254
       dns_search: mailcow-network
@@ -169,12 +169,12 @@ services:
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
       ports:
-        - "${SMTP_PORT}:25"
-        - "${SMTPS_PORT}:465"
-        - "${SUBMISSION_PORT}:587"
+        - "${SMTP_PORT:-25}:25"
+        - "${SMTPS_PORT:-465}:465"
+        - "${SUBMISSION_PORT:-587}:587"
       restart: always
       hostname: ${MAILCOW_HOSTNAME}
-      dns: 
+      dns:
         - 172.22.1.254
       dns_search: mailcow-network
       networks:
@@ -204,7 +204,7 @@ services:
       image: nginx:mainline
       command: /bin/bash -c "envsubst < /etc/nginx/conf.d/listen.template > /etc/nginx/conf.d/listen.active && nginx -g 'daemon off;'"
       environment:
-        - HTTPS_PORT=${HTTPS_PORT}
+        - HTTPS_PORT=${HTTPS_PORT:-443}
       volumes:
         - ./data/web:/web:ro
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
@@ -214,7 +214,7 @@ services:
         - 172.22.1.254
       dns_search: mailcow-network
       ports:
-        - "${HTTPS_PORT}:${HTTPS_PORT}"
+        - "${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
       restart: always
       networks:
         mailcow-network:
