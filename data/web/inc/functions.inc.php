@@ -3274,7 +3274,7 @@ function mailbox_edit_alias($postarray) {
 		$stmt = $pdo->prepare("UPDATE `alias` SET
       `goto` = :goto,
       `active`= :active,
-      `modified` = :modified,
+      `modified` = :modified
         WHERE `address` = :address");
 		$stmt->execute(array(
 			':goto' => $goto,
