@@ -276,6 +276,6 @@ CREATE TABLE IF NOT EXISTS sogo_user_profile (
 	PRIMARY KEY (c_uid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
-INSERT INTO `admin` (username, password, superadmin, created, modified, active) SELECT 'admin', '{SSHA256}K8eVJ6YsZbQCfuJvSUbaQRLr0HPLz5rC9IAp0PAFl0tmNDBkMDc0NDAyOTAxN2Rk', 1, NOW(), NOW(), 1 FROM `admin` WHERE NOT EXISTS (SELECT * FROM `admin`);
+INSERT INTO `admin` (username, password, superadmin, created, modified, active) SELECT 'admin', '{SSHA256}K8eVJ6YsZbQCfuJvSUbaQRLr0HPLz5rC9IAp0PAFl0tmNDBkMDc0NDAyOTAxN2Rk', 1, NOW(), NOW(), 1 WHERE NOT EXISTS (SELECT * FROM `admin`);
 DELETE FROM `domain_admins`;
 INSERT INTO `domain_admins` (username, domain, created, active) SELECT `username`, 'ALL', NOW(), 1 FROM `admin` WHERE superadmin='1' AND `username` NOT IN (SELECT `username` FROM `domain_admins`);
