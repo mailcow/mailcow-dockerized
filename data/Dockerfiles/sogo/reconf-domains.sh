@@ -8,10 +8,9 @@ while mysqladmin ping --host mysql --silent; do
 mysql --host mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "DROP VIEW IF EXISTS sogo_view"
 
 mysql --host mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
-CREATE VIEW sogo_view (c_uid, domain, c_name, c_password, c_cn, mail, aliases, ad_aliases, senderacl, home, kind, multiple_bookings) AS
+CREATE VIEW sogo_view (c_uid, domain, c_name, c_password, c_cn, mail, aliases, ad_aliases, home, kind, multiple_bookings) AS
 SELECT mailbox.username, mailbox.domain, mailbox.username, mailbox.password, mailbox.name, mailbox.username, IFNULL(ga.aliases, ''), IFNULL(gda.ad_alias, ''), IFNULL(gs.send_as, ''), CONCAT('/var/vmail/', maildir), mailbox.kind, mailbox.multiple_bookings FROM mailbox
 LEFT OUTER JOIN grouped_mail_aliases ga ON ga.username = mailbox.username
-LEFT OUTER JOIN grouped_sender_acl gs ON gs.username = mailbox.username
 LEFT OUTER JOIN grouped_domain_alias_address gda ON gda.username = mailbox.username
 WHERE mailbox.active = '1';
 EOF
@@ -50,11 +49,10 @@ EOF
 # Generate multi-domain setup
 while read line
 	do
-	DOMAIN_SANE=$(echo ${line} | tr '-' 'b' | tr '.' 'p' | tr -cd '[[:alnum:]]')
 	echo "        <key>${line}</key>
         <dict>
             <key>SOGoMailDomain</key>
-            <string>${DOMAIN_SANE}</string>
+            <string>${line</string>
             <key>SOGoUserSources</key>
             <array>
                 <dict>
@@ -62,7 +60,6 @@ while read line
                     <array>
                         <string>aliases</string>
                         <string>ad_aliases</string>
-                        <string>senderacl</string>
                     </array>
                     <key>KindFieldName</key>
                     <string>kind</string>
