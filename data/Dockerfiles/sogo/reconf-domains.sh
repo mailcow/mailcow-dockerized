@@ -9,7 +9,7 @@ mysql --host mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "DROP VIEW IF EXISTS so
 
 mysql --host mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
 CREATE VIEW sogo_view (c_uid, domain, c_name, c_password, c_cn, mail, aliases, ad_aliases, home, kind, multiple_bookings) AS
-SELECT mailbox.username, mailbox.domain, mailbox.username, mailbox.password, mailbox.name, mailbox.username, IFNULL(ga.aliases, ''), IFNULL(gda.ad_alias, ''), IFNULL(gs.send_as, ''), CONCAT('/var/vmail/', maildir), mailbox.kind, mailbox.multiple_bookings FROM mailbox
+SELECT mailbox.username, mailbox.domain, mailbox.username, mailbox.password, mailbox.name, mailbox.username, IFNULL(ga.aliases, ''), IFNULL(gda.ad_alias, ''), CONCAT('/var/vmail/', maildir), mailbox.kind, mailbox.multiple_bookings FROM mailbox
 LEFT OUTER JOIN grouped_mail_aliases ga ON ga.username = mailbox.username
 LEFT OUTER JOIN grouped_domain_alias_address gda ON gda.username = mailbox.username
 WHERE mailbox.active = '1';
@@ -52,7 +52,7 @@ while read line
 	echo "        <key>${line}</key>
         <dict>
             <key>SOGoMailDomain</key>
-            <string>${line</string>
+            <string>${line}</string>
             <key>SOGoUserSources</key>
             <array>
                 <dict>
@@ -95,4 +95,4 @@ chmod 600 /var/lib/sogo/GNUstep/Defaults/sogod.plist
 
 sleep 99999
 
-done;
+done
