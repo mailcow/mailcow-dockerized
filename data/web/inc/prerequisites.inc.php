@@ -59,6 +59,10 @@ if (isset($_COOKIE['language'])) {
 			$_SESSION['mailcow_locale'] = 'en';
 			setcookie('language', 'en');
 		break;
+		case "es":
+			$_SESSION['mailcow_locale'] = 'es';
+			setcookie('language', 'es');
+		break;
 		case "nl":
 			$_SESSION['mailcow_locale'] = 'nl';
 			setcookie('language', 'nl');
@@ -78,6 +82,10 @@ if (isset($_GET['lang'])) {
 		case "en":
 			$_SESSION['mailcow_locale'] = 'en';
 			setcookie('language', 'en');
+		break;
+		case "es":
+			$_SESSION['mailcow_locale'] = 'es';
+			setcookie('language', 'es');
 		break;
 		case "nl":
 			$_SESSION['mailcow_locale'] = 'nl';
