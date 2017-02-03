@@ -3393,8 +3393,6 @@ function mailbox_edit_domain($postarray) {
     }
 
     if ($MailboxData['maxquota'] > $maxquota) {
-      echo $MailboxData['maxquota'];
-      die();
       $_SESSION['return'] = array(
         'type' => 'danger',
         'msg' => sprintf($lang['danger']['max_quota_in_use'], $MailboxData['maxquota'])
