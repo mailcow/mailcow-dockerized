@@ -3433,7 +3433,6 @@ function mailbox_edit_domain($postarray) {
       `active` = :active,
       `quota` = :quota,
       `maxquota` = :maxquota,
-      `modified` = :modified,
       `mailboxes` = :mailboxes,
       `aliases` = :aliases,
       `description` = :description
@@ -3444,7 +3443,6 @@ function mailbox_edit_domain($postarray) {
         ':active' => $active,
         ':quota' => $quota,
         ':maxquota' => $maxquota,
-        ':modified' => date('Y-m-d H:i:s'),
         ':mailboxes' => $mailboxes,
         ':aliases' => $aliases,
         ':modified' => date('Y-m-d H:i:s'),
