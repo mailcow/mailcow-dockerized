@@ -4816,7 +4816,8 @@ function mailbox_get_sender_acl_handles($mailbox) {
       ':logged_in_as' => $mailbox,
       ':goto' => $mailbox
     ));
-    while ($row = array_shift($rows)) {
+    $rows_mbox = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    while ($row = array_shift($rows_mbox)) {
       if (filter_var($row['address'], FILTER_VALIDATE_EMAIL) && hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $row['address'])) {
         $data['sender_acl_addresses']['selectable'][] = $row['address'];
       }
