@@ -4787,22 +4787,6 @@ function mailbox_get_sender_acl_handles($mailbox) {
     while ($row_domain = array_shift($rows_domain)) {
       if (is_valid_domain_name($row_domain['domain']) && hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $row_domain['domain'])) {
         $data['sender_acl_domains']['selectable'][] = $row_domain['domain'];
-        $stmt = $pdo->prepare("SELECT `alias_domain` FROM `alias_domain`
-          WHERE `target_domain` = :target_domain
-            AND `alias_domain` NOT IN (
-            SELECT REPLACE(`send_as`, '@', '') FROM `sender_acl` 
-              WHERE `logged_in_as` = :logged_in_as
-                AND `send_as` LIKE '@%')");
-        $stmt->execute(array(
-          ':target_domain' => $row_domain['domain'],
-          ':logged_in_as' => $mailbox,
-        ));
-        $rows_ad = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        while ($row_ad = array_shift($rows_ad)) {
-          if (is_valid_domain_name($row_ad['alias_domain']) && hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $row_ad['alias_domain'])) {
-            $data['sender_acl_domains']['selectable'][] = $row_ad['alias_domain'];
-          }
-        }
       }
     }
 
