@@ -5,6 +5,18 @@
       <div class="modal-body">
       <form role="form" method="post">
         <div class="form-group">
+          <input type="text" class="form-control" name="key_id" id="key_id" placeholder="<?=$lang['tfa']['key_id'];?>" autocomplete="off" required>
+        </div>
+        <hr>
+        <p class="help-block"><?=$lang['tfa']['api_register'];?></p>
+        <div class="form-group">
+          <input type="text" class="form-control" name="yubico_id" id="yubico_id" placeholder="Yubico API ID" autocomplete="off" required>
+        </div>
+        <div class="form-group">
+          <input type="text" class="form-control" name="yubico_key" id="yubico_key" placeholder="Yubico API Key" autocomplete="off" required>
+        </div>
+        <hr>
+        <div class="form-group">
           <input type="password" class="form-control" name="confirm_password" id="confirm_password" placeholder="<?=$lang['user']['password_now'];?>" autocomplete="off" required>
         </div>
         <div class="form-group">
@@ -27,6 +39,9 @@
       <div class="modal-header"><b><?=$lang['tfa']['u2f'];?></b></div>
       <div class="modal-body">
         <form role="form" method="post" id="u2f_reg_form">
+          <div class="form-group">
+            <input type="text" class="form-control" name="key_id" id="key_id" placeholder="<?=$lang['tfa']['key_id'];?>" autocomplete="off" required>
+          </div>
           <div class="form-group">
             <input type="password" class="form-control" name="confirm_password" id="confirm_password" placeholder="<?=$lang['user']['password_now'];?>" autocomplete="off" required>
           </div>

@@ -114,7 +114,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">
-							<label><input type="checkbox" name="delete_tfa"> <?=$lang['tfa']['delete_tfa'];?></label>
+							<label><input type="checkbox" name="disable_tfa"> <?=$lang['tfa']['disable_tfa'];?></label>
 							</div>
 						</div>
 					</div>

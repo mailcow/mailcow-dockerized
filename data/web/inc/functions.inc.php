@@ -63,6 +63,7 @@ function hasMailboxObjectAccess($username, $role, $object) {
 	return false;
 }
 function init_db_schema() {
+  // This will be much better in future releases...
 	global $pdo;
 	try {
 		$stmt = $pdo->prepare("SELECT NULL FROM `admin`, `imapsync`, `tfa`");
@@ -101,7 +102,7 @@ function init_db_schema() {
   $stmt = $pdo->query("SHOW COLUMNS FROM `mailbox` LIKE 'kind'");
   $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
   if ($num_results == 0) {
-    $pdo->query("ALTER TABLE `mailbox` ADD `kind` varchar(100) NOT NULL DEFAULT ''");
+    $pdo->query("ALTER TABLE `mailbox` ADD `kind` VARCHAR(100) NOT NULL DEFAULT ''");
   }
   $stmt = $pdo->query("SHOW COLUMNS FROM `mailbox` LIKE 'multiple_bookings'");
   $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -112,6 +113,11 @@ function init_db_schema() {
   $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
   if ($num_results == 0) {
     $pdo->query("ALTER TABLE `mailbox` ADD `wants_tagged_subject` tinyint(1) NOT NULL DEFAULT '0'");
+  }
+  $stmt = $pdo->query("SHOW COLUMNS FROM `tfa` LIKE 'key_id'");
+  $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+  if ($num_results == 0) {
+    $pdo->query("ALTER TABLE `tfa` ADD `key_id` VARCHAR(255) DEFAULT 'unidentified'");
   }
 }
 function verify_ssha256($hash, $password) {
@@ -198,6 +204,8 @@ function check_login($user, $pass) {
       }
       else {
         unset($_SESSION['ldelay']);
+        $stmt = $pdo->prepare("UPDATE `tfa` SET `active`='1' WHERE `username` = :user");
+        $stmt->execute(array(':user' => $user));
         return "domainadmin";
       }
 		}
@@ -1806,6 +1814,10 @@ function set_tfa($postarray) {
   
 	switch ($postarray["tfa_method"]) {
 		case "yubi_otp":
+      (!isset($postarray["key_id"])) ? $key_id = 'unidentified' : $key_id = $postarray["key_id"];
+      $yubico_id = $postarray['yubico_id'];
+      $yubico_key = $postarray['yubico_key'];
+      $yubi = new Auth_Yubico($yubico_id, $yubico_key);
       if (!$yubi) {
         $_SESSION['return'] = array(
           'type' => 'danger',
@@ -1824,16 +1836,21 @@ function set_tfa($postarray) {
       if (PEAR::isError($yauth)) {
 				$_SESSION['return'] = array(
 					'type' => 'danger',
-					'msg' => 'Yubico Authentication error: ' . $yauth->getMessage()
+					'msg' => 'Yubico API: ' . $yauth->getMessage()
 				);
 				return false;
       }
 			try {
-				$stmt = $pdo->prepare("DELETE FROM `tfa` WHERE `authmech` = 'yubi_otp' AND `username` = :username");
-				$stmt->execute(array(':username' => $username));
-				$stmt = $pdo->prepare("INSERT INTO `tfa` (`username`, `authmech`, `active`) VALUES
-					(:username, 'yubi_otp', 1)");
-				$stmt->execute(array(':username' => $username));
+        // We could also do a modhex translation here
+        $yubico_modhex_id = substr($postarray["otp_token"], 0, 12);
+        $stmt = $pdo->prepare("DELETE FROM `tfa` 
+          WHERE `username` = :username
+            AND (`authmech` != 'yubi_otp')
+            OR (`authmech` = 'yubi_otp' AND `secret` LIKE :modhex)");
+				$stmt->execute(array(':username' => $username, ':modhex' => '%' . $yubico_modhex_id));
+				$stmt = $pdo->prepare("INSERT INTO `tfa` (`key_id`, `username`, `authmech`, `active`, `secret`) VALUES
+					(:key_id, :username, 'yubi_otp', '1', :secret)");
+				$stmt->execute(array(':key_id' => $key_id, ':username' => $username, ':secret' => $yubico_id . ':' . $yubico_key . ':' . $yubico_modhex_id));
 			}
 			catch (PDOException $e) {
 				$_SESSION['return'] = array(
@@ -1850,9 +1867,12 @@ function set_tfa($postarray) {
 
 		case "u2f":
       try {
+        (!isset($postarray["key_id"])) ? $key_id = 'unidentified' : $key_id = $postarray["key_id"];
         $reg = $u2f->doRegister(json_decode($_SESSION['regReq']), json_decode($postarray['token']));
-        $stmt = $pdo->prepare("INSERT INTO `tfa` (`username`, `authmech`, `keyHandle`, `publicKey`, `certificate`, `counter`) VALUES (?, 'u2f', ?, ?, ?, ?)");
-        $stmt->execute(array($username, $reg->keyHandle, $reg->publicKey, $reg->certificate, $reg->counter));
+        $stmt = $pdo->prepare("DELETE FROM `tfa` WHERE `username` = :username AND `authmech` != 'u2f'");
+				$stmt->execute(array(':username' => $username));
+        $stmt = $pdo->prepare("INSERT INTO `tfa` (`username`, `key_id`, `authmech`, `keyHandle`, `publicKey`, `certificate`, `counter`, `active`) VALUES (?, ?, 'u2f', ?, ?, ?, ?, '1')");
+        $stmt->execute(array($username, $key_id, $reg->keyHandle, $reg->publicKey, $reg->certificate, $reg->counter));
         $_SESSION['return'] = array(
           'type' => 'success',
           'msg' => sprintf($lang['success']['object_modified'], $username)
@@ -1887,6 +1907,55 @@ function set_tfa($postarray) {
 		break;
 	}
 }
+function unset_tfa_key($postarray) {
+  // Can only unset own keys
+  // Needs at least one key left
+  global $pdo;
+  global $lang;
+  $id = intval($postarray['id']);
+  if ($_SESSION['mailcow_cc_role'] != "domainadmin" &&
+    $_SESSION['mailcow_cc_role'] != "admin") {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['access_denied'])
+      );
+      return false;
+  }
+  $username = $_SESSION['mailcow_cc_username'];
+  try {
+    if (!is_numeric($id)) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['access_denied'])
+      );
+      return false;
+    }
+    $stmt = $pdo->prepare("SELECT COUNT(*) AS `keys` FROM `tfa`
+      WHERE `username` = :username AND `active` = '1'");
+    $stmt->execute(array(':username' => $username));
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($row['keys'] == "1") {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['last_key'])
+      );
+      return false;
+    }
+    $stmt = $pdo->prepare("DELETE FROM `tfa` WHERE `username` = :username AND `id` = :id");
+    $stmt->execute(array(':username' => $username, ':id' => $id));
+    $_SESSION['return'] = array(
+      'type' => 'success',
+      'msg' => sprintf($lang['success']['object_modified'], $username)
+    );
+  }
+  catch (PDOException $e) {
+    $_SESSION['return'] = array(
+      'type' => 'danger',
+      'msg' => 'MySQL: '.$e
+    );
+    return false;
+  }
+}
 function get_tfa($username = null) {
 	global $pdo;
   if (isset($_SESSION['mailcow_cc_username'])) {
@@ -1896,8 +1965,8 @@ function get_tfa($username = null) {
     return false;
   }
 
-  $stmt = $pdo->prepare("SELECT `authmech` FROM `tfa`
-      WHERE `username` = :username");
+  $stmt = $pdo->prepare("SELECT * FROM `tfa`
+      WHERE `username` = :username AND `active` = '1'");
   $stmt->execute(array(':username' => $username));
   $row = $stmt->fetch(PDO::FETCH_ASSOC);
   
@@ -1905,11 +1974,27 @@ function get_tfa($username = null) {
 		case "yubi_otp":
       $data['name'] = "yubi_otp";
       $data['pretty'] = "Yubico OTP";
+      $stmt = $pdo->prepare("SELECT `id`, `key_id`, RIGHT(`secret`, 12) AS 'modhex' FROM `tfa` WHERE `authmech` = 'yubi_otp' AND `username` = :username");
+      $stmt->execute(array(
+        ':username' => $username,
+      ));
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      while($row = array_shift($rows)) {
+        $data['additional'][] = $row;
+      }
       return $data;
     break;
 		case "u2f":
       $data['name'] = "u2f";
       $data['pretty'] = "Fido U2F";
+      $stmt = $pdo->prepare("SELECT `id`, `key_id` FROM `tfa` WHERE `authmech` = 'u2f' AND `username` = :username");
+      $stmt->execute(array(
+        ':username' => $username,
+      ));
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      while($row = array_shift($rows)) {
+        $data['additional'][] = $row;
+      }
       return $data;
     break;
 		case "hotp":
@@ -1935,7 +2020,7 @@ function verify_tfa_login($username, $token) {
 	global $yubi;
 
   $stmt = $pdo->prepare("SELECT `authmech` FROM `tfa`
-      WHERE `username` = :username");
+      WHERE `username` = :username AND `active` = '1'");
   $stmt->execute(array(':username' => $username));
   $row = $stmt->fetch(PDO::FETCH_ASSOC);
   
@@ -1944,6 +2029,16 @@ function verify_tfa_login($username, $token) {
 			if (!ctype_alnum($token) || strlen($token) != 44) {
         return false;
       }
+      $yubico_modhex_id = substr($token, 0, 12);
+      $stmt = $pdo->prepare("SELECT `secret` FROM `tfa`
+          WHERE `username` = :username
+          AND `authmech` = 'yubi_otp'
+          AND `active`='1'
+          AND `secret` LIKE :modhex");
+      $stmt->execute(array(':username' => $username, ':modhex' => '%' . $yubico_modhex_id));
+      $row = $stmt->fetch(PDO::FETCH_ASSOC);
+      $yubico_auth = explode(':', $row['secret']);
+      $yubi = new Auth_Yubico($yubico_auth[0], $yubico_auth[1]);
       $yauth = $yubi->verify($token);
       if (PEAR::isError($yauth)) {
 				$_SESSION['return'] = array(
@@ -2089,8 +2184,8 @@ function edit_domain_admin($postarray) {
           ':modified' => date('Y-m-d H:i:s'),
           ':active' => $active
         ));
-        if (isset($postarray['delete_tfa'])) {
-          $stmt = $pdo->prepare("DELETE FROM `tfa` WHERE `username` = :username");
+        if (isset($postarray['disable_tfa'])) {
+          $stmt = $pdo->prepare("UPDATE `tfa` SET `active` = '0' WHERE `username` = :username");
           $stmt->execute(array(':username' => $username_now));
         }
         else {
@@ -2115,8 +2210,8 @@ function edit_domain_admin($postarray) {
           ':modified' => date('Y-m-d H:i:s'),
           ':active' => $active
         ));
-        if (isset($postarray['delete_tfa'])) {
-          $stmt = $pdo->prepare("DELETE FROM `tfa` WHERE `username` = :username");
+        if (isset($postarray['disable_tfa'])) {
+          $stmt = $pdo->prepare("UPDATE `tfa` SET `active` = '0' WHERE `username` = :username");
           $stmt->execute(array(':username' => $username));
         }
         else {
@@ -4818,23 +4913,8 @@ function mailbox_get_sender_acl_handles($mailbox) {
 }
 function get_u2f_registrations($username) {
   global $pdo;
-  $sel = $pdo->prepare("SELECT * FROM `tfa` WHERE `username` = ?");
+  $sel = $pdo->prepare("SELECT * FROM `tfa` WHERE `authmech` = 'u2f' AND `username` = ? AND `active` = '1'");
   $sel->execute(array($username));
   return $sel->fetchAll(PDO::FETCH_OBJ);
-}
-function add_u2f_registration($username, $reg) {
-  global $pdo;
-  global $lang;
-  $ins = $pdo->prepare("INSERT INTO `tfa` (`username`, `authmech`, `keyHandle`, `publicKey`, `certificate`, `counter`) VALUES (?, 'u2f', ?, ?, ?, ?)");
-  $ins->execute(array($username, $reg->keyHandle, $reg->publicKey, $reg->certificate, $reg->counter));
-	$_SESSION['return'] = array(
-		'type' => 'success',
-		'msg' => sprintf($lang['success']['object_modified'], $username)
-	);
-}
-function edit_u2f_registration($reg) {
-  global $pdo;
-  $upd = $pdo->prepare("update tfa set counter = ? where id = ?");
-  $upd->execute(array($reg->counter, $reg->id));
 }
 ?>

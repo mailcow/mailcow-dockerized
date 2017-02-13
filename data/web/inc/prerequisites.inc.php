@@ -22,10 +22,8 @@ if (file_exists('./inc/vars.local.inc.php')) {
 }
 
 // Yubi OTP API
-if (!empty($YUBI_API['ID']) && !empty($YUBI_API['KEY'])) {
-  require_once 'inc/lib/Yubico.php';
-  $yubi = new Auth_Yubico($YUBI_API['ID'], $YUBI_API['KEY']);
-}
+require_once 'inc/lib/Yubico.php';
+
 // U2F API
 require_once 'inc/lib/U2F.php';
 $scheme = isset($_SERVER['HTTPS']) ? "https://" : "http://";

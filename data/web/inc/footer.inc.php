@@ -74,6 +74,7 @@ $(document).ready(function() {
   <?php endif; ?>
 
   // Set TFA modals
+
   $('#selectTFA').change(function () {
     if ($(this).val() == "yubi_otp") {
       $('#YubiOTPModal').modal('show');
