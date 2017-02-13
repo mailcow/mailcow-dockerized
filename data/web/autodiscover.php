@@ -25,7 +25,9 @@ if ($config['useEASforOutlook'] == 'no') {
 	}
 }
 require_once 'inc/vars.inc.php';
-include_once 'inc/vars.local.inc.php';
+if(file_exists('inc/vars.local.inc.php')) {
+	include_once 'inc/vars.local.inc.php';
+}
 require_once 'inc/functions.inc.php';
 
 $dsn = "$database_type:host=$database_host;dbname=$database_name";
