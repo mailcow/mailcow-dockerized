@@ -1,4 +1,5 @@
 <?php
+ini_set('error_reporting', '0');
 $config = array(
      'useEASforOutlook' => 'yes',
      'autodiscoverType' => 'activesync',
