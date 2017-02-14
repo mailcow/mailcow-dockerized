@@ -1,8 +1,6 @@
 <?php
 require_once 'inc/vars.inc.php';
-if(file_exists('inc/vars.local.inc.php')) {
-	include_once 'inc/vars.local.inc.php';
-}
+
 ini_set('error_reporting', '0');
 $config = array(
      'useEASforOutlook' => 'yes',
@@ -21,6 +19,10 @@ $config = array(
        'url' => 'https://'.$mailcow_hostname.'/Microsoft-Server-ActiveSync'
      )
 );
+
+if(file_exists('inc/vars.local.inc.php')) {
+	include_once 'inc/vars.local.inc.php';
+}
 
 /* ---------- DO NOT MODIFY ANYTHING BEYOND THIS LINE. IGNORE AT YOUR OWN RISK. ---------- */
 
