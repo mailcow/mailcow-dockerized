@@ -14,4 +14,9 @@ $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 while ($row = array_shift($rows)) {
   echo strtolower(trim($row['username'])) . PHP_EOL;
 }
+$stmt = $pdo->query("SELECT CONCAT(mailbox.local_part, '@', alias_domain.alias_domain) as `tag_ad` FROM `mailbox` INNER JOIN `alias_domain` ON mailbox.domain = alias_domain.target_domain WHERE mailbox.wants_tagged_subject='1';");
+$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+while ($row = array_shift($rows)) {
+  echo strtolower(trim($row['tag_ad'])) . PHP_EOL;
+}
 ?>

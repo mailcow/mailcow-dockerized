@@ -1912,7 +1912,7 @@ function unset_tfa_key($postarray) {
   // Needs at least one key left
   global $pdo;
   global $lang;
-  $id = intval($postarray['id']);
+  $id = intval($postarray['unset_tfa_key']);
   if ($_SESSION['mailcow_cc_role'] != "domainadmin" &&
     $_SESSION['mailcow_cc_role'] != "admin") {
       $_SESSION['return'] = array(
