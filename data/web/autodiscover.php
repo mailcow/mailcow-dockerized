@@ -1,9 +1,7 @@
 <?php
 require_once 'inc/vars.inc.php';
-if(file_exists('inc/vars.local.inc.php')) {
-	include_once 'inc/vars.local.inc.php';
-}
 ini_set('error_reporting', '0');
+
 $config = array(
      'useEASforOutlook' => 'yes',
      'autodiscoverType' => 'activesync',
@@ -23,6 +21,9 @@ $config = array(
 );
 
 /* ---------- DO NOT MODIFY ANYTHING BEYOND THIS LINE. IGNORE AT YOUR OWN RISK. ---------- */
+if(file_exists('inc/vars.local.inc.php')) {
+	include_once 'inc/vars.local.inc.php';
+}
 
 if ($config['useEASforOutlook'] == 'no') {
 	if (strpos($_SERVER['HTTP_USER_AGENT'], 'Outlook')) {
