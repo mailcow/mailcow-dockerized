@@ -1,6 +1,4 @@
-<?php
 require_once 'inc/vars.inc.php';
-
 ini_set('error_reporting', '0');
 $config = array(
      'useEASforOutlook' => 'yes',
@@ -31,7 +29,7 @@ if ($config['useEASforOutlook'] == 'no') {
 		$config['autodiscoverType'] = 'imap';
 	}
 }
-require_once 'inc/functions.inc.php';
+
 $dsn = "$database_type:host=$database_host;dbname=$database_name";
 $opt = [
 		PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,

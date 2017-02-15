@@ -115,6 +115,9 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 	if (isset($_POST["set_tfa"])) {
 		set_tfa($_POST);
 	}
+	if (isset($_POST["unset_tfa_key"])) {
+		unset_tfa_key($_POST);
+	}
 	if (isset($_POST["add_policy_list_item"])) {
 		add_policy_list_item($_POST);
 	}

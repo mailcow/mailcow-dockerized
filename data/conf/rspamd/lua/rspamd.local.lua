@@ -27,10 +27,24 @@ rspamd_config.ADD_DELIMITER_TAG = {
   callback = function(task)
     local util = require("rspamd_util")
     local rspamd_logger = require "rspamd_logger"
-    local user_tagged = task:get_recipients(1)[1]['user']
+
+    local user_env_tagged = task:get_recipients(1)[1]['user']
+    local user_to_tagged = task:get_recipients(2)[1]['user']
+
     local domain = task:get_recipients(1)[1]['domain']
-    local user, tag = user_tagged:match("([^+]+)+(.*)")
+
+    local user_env, tag_env = user_env_tagged:match("([^+]+)+(.*)")
+    local user_to, tag_to = user_to_tagged:match("([^+]+)+(.*)")
+
     local authdomain = auth_domain_map:get_key(domain)
+
+    if tag_env then
+      tag = tag_env
+      user = user_env
+    elseif tag_to then
+      tag = tag_to
+      user = user_env
+    end
 
     if tag and authdomain then
       rspamd_logger.infox("Domain %s is part of mailcow, start reading tag settings", domain)
@@ -40,12 +54,12 @@ rspamd_config.ADD_DELIMITER_TAG = {
         rspamd_logger.infox("User wants subject modified for tagged mail")
         local sbj = task:get_header('Subject')
         if tag then
-        rspamd_logger.infox("Found tag %1, will modify subject header", tag)
-        new_sbj = '=?UTF-8?B?' .. tostring(util.encode_base64('[' .. tag .. '] ' .. sbj)) .. '?='
-        task:set_rmilter_reply({
-          remove_headers = {['Subject'] = 1},
-          add_headers = {['Subject'] = new_sbj}
-        })
+          rspamd_logger.infox("Found tag %1, will modify subject header", tag)
+          new_sbj = '=?UTF-8?B?' .. tostring(util.encode_base64('[' .. tag .. '] ' .. sbj)) .. '?='
+          task:set_rmilter_reply({
+            remove_headers = {['Subject'] = 1},
+            add_headers = {['Subject'] = new_sbj}
+          })
         end
       else
         rspamd_logger.infox("Add X-Moo-Tag header")

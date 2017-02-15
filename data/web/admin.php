@@ -4,6 +4,7 @@ require_once("inc/prerequisites.inc.php");
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admin") {
 require_once("inc/header.inc.php");
 $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
+$tfa_data = get_tfa();
 ?>
 <div class="container">
   <h4><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <?=$lang['admin']['access'];?></h4>
@@ -43,12 +44,26 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
         <div class="row">
           <div class="col-sm-3 col-xs-5 text-right"><?=$lang['tfa']['tfa'];?>:</div>
           <div class="col-sm-9 col-xs-7">
-            <p><?=get_tfa()['pretty'];?></p>
+            <p id="tfa_pretty"><?=$tfa_data['pretty'];?></p>
+              <div id="tfa_additional">
+                <?php if($tfa_data['additional']):
+                foreach ($tfa_data['additional'] as $key_info): ?>
+                <form style="display:inline;" method="post">
+                  <input type="hidden" name="unset_tfa_key" value="<?=$key_info['id'];?>" />
+                  <div style="padding:4px;margin:4px" class="label label-<?=($_SESSION['tfa_id'] == $key_info['id']) ? 'success' : 'default'; ?>">
+                  <?=$key_info['key_id'];?>
+                  <a href="#" style="font-weight:bold;color:white" onClick="$(this).closest('form').submit()">[<?=strtolower($lang['admin']['remove']);?>]</a>
+                  </div>
+                </form>
+                <?php endforeach;
+                endif;?>
+              </div>
+              <br />
           </div>
         </div>
         <div class="row">
-          <div class="col-md-3 col-xs-5 text-right"><?=$lang['tfa']['set_tfa'];?>:</div>
-          <div class="col-md-9 col-xs-7">
+          <div class="col-sm-3 col-xs-5 text-right"><?=$lang['tfa']['set_tfa'];?>:</div>
+          <div class="col-sm-9 col-xs-7">
             <select data-width="auto" id="selectTFA" class="selectpicker" title="<?=$lang['tfa']['select'];?>">
               <option value="yubi_otp"><?=$lang['tfa']['yubi_otp'];?></option>
               <option value="u2f"><?=$lang['tfa']['u2f'];?></option>

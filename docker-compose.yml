@@ -3,6 +3,9 @@ version: '2.1'
 services:
     pdns-mailcow:
       image: andryyy/mailcow-dockerized:pdns
+      depends_on:
+        mysql-mailcow:
+          condition: service_healthy
       volumes:
         - ./data/conf/pdns/:/etc/powerdns/
       restart: always
@@ -14,9 +17,11 @@ services:
 
     mysql-mailcow:
       image: mariadb:10.1
-      depends_on:
-        - pdns-mailcow
-      command: mysqld
+      healthcheck:
+        test: ["CMD", "mysqladmin", "ping", "--host", "localhost", "--silent"]
+        interval: 10s
+        timeout: 30s
+        retries: 5
       volumes:
         - mysql-vol-1:/var/lib/mysql/
         - ./data/conf/mysql/:/etc/mysql/conf.d/:ro
@@ -52,7 +57,7 @@ services:
     rspamd-mailcow:
       image: andryyy/mailcow-dockerized:rspamd
       depends_on:
-        - pdns-mailcow
+        - nginx-mailcow
       volumes:
         - ./data/conf/rspamd/override.d/:/etc/rspamd/override.d:ro
         - ./data/conf/rspamd/local.d/:/etc/rspamd/local.d:ro
@@ -65,6 +70,7 @@ services:
       dns_search: mailcow-network
       networks:
         mailcow-network:
+          ipv4_address: 172.22.1.253
           aliases:
             - rspamd
 
@@ -95,7 +101,6 @@ services:
       image: andryyy/mailcow-dockerized:sogo
       depends_on:
         - pdns-mailcow
-        - mysql-mailcow
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -110,6 +115,7 @@ services:
       restart: always
       networks:
         mailcow-network:
+          ipv4_address: 172.22.1.252
           aliases:
             - sogo
 
@@ -197,10 +203,8 @@ services:
 
     nginx-mailcow:
       depends_on:
-        - mysql-mailcow
         - sogo-mailcow
         - php-fpm-mailcow
-        - rspamd-mailcow
       image: nginx:mainline
       command: /bin/bash -c "envsubst < /etc/nginx/conf.d/listen.template > /etc/nginx/conf.d/listen.active && nginx -g 'daemon off;'"
       environment:

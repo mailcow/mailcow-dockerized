@@ -35,8 +35,4 @@ $DEFAULT_LANG = "en";
 // See https://bootswatch.com/
 $DEFAULT_THEME = "lumen";
 
-// If you want to use Yubico TFA methods, setup an ID and a key here: https://upgrade.yubico.com/getapikey/
-// Remember to override this value using vars.local.inc.php, do not change it here.
-$YUBI_API['ID'] = "";
-$YUBI_API['KEY'] = "";
 ?>
