@@ -2030,7 +2030,7 @@ function verify_tfa_login($username, $token) {
         return false;
       }
       $yubico_modhex_id = substr($token, 0, 12);
-      $stmt = $pdo->prepare("SELECT `secret` FROM `tfa`
+      $stmt = $pdo->prepare("SELECT `id`, `secret` FROM `tfa`
           WHERE `username` = :username
           AND `authmech` = 'yubi_otp'
           AND `active`='1'
@@ -2048,6 +2048,7 @@ function verify_tfa_login($username, $token) {
 				return false;
       }
       else {
+        $_SESSION['tfa_id'] = $row['id'];
         return true;
       }
     return false;
@@ -2058,6 +2059,7 @@ function verify_tfa_login($username, $token) {
       $reg = $u2f->doAuthenticate(json_decode($_SESSION['authReq']), get_u2f_registrations($username), json_decode($token));
       $stmt = $pdo->prepare("UPDATE `tfa` SET `counter` = ? WHERE `id` = ?");
       $stmt->execute(array($reg->counter, $reg->id));
+      $_SESSION['tfa_id'] = $reg->id;
       $_SESSION['authReq'] = null;
       return true;
     }

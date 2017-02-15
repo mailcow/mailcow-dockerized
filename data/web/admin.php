@@ -50,7 +50,10 @@ $tfa_data = get_tfa();
                 foreach ($tfa_data['additional'] as $key_info): ?>
                 <form style="display:inline;" method="post">
                   <input type="hidden" name="unset_tfa_key" value="<?=$key_info['id'];?>" />
-                  <div class="label label-default">🔑 <?=$key_info['key_id'];?> <a href="#" style="font-weight:bold;color:white" onClick="$(this).closest('form').submit()">[<?=strtolower($lang['admin']['remove']);?>]</a></div>
+                  <div style="padding:4px;margin:4px" class="label label-<?=($_SESSION['tfa_id'] == $key_info['id']) ? 'success' : 'default'; ?>">
+                  <?=$key_info['key_id'];?>
+                  <a href="#" style="font-weight:bold;color:white" onClick="$(this).closest('form').submit()">[<?=strtolower($lang['admin']['remove']);?>]</a>
+                  </div>
                 </form>
                 <?php endforeach;
                 endif;?>
