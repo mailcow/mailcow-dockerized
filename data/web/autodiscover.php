@@ -1,4 +1,7 @@
+<?php
 require_once 'inc/vars.inc.php';
+require_once 'inc/functions.inc.php';
+
 ini_set('error_reporting', '0');
 $config = array(
      'useEASforOutlook' => 'yes',
