@@ -222,6 +222,7 @@ services:
       restart: always
       networks:
         mailcow-network:
+          ipv4_address: 172.22.1.251
           aliases:
             - nginx
 
