@@ -138,6 +138,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 							<th class="sort-table" style="min-width: 86px;"><?=$lang['mailbox']['domain'];?></th>
 							<th class="sort-table" style="min-width: 75px;"><?=$lang['mailbox']['quota'];?></th>
 							<th class="sort-table" style="min-width: 99px;"><?=$lang['mailbox']['in_use'];?></th>
+							<th class="sort-table" style="min-width: 100px;"><?=$lang['mailbox']['temp_aliases'];?></th>
 							<th class="sort-table" style="min-width: 100px;"><?=$lang['mailbox']['msg_num'];?></th>
 							<th class="sort-table" style="min-width: 76px;"><?=$lang['mailbox']['active'];?></th>
 							<th style="text-align: right; min-width: 200px;" data-sortable="false"><?=$lang['mailbox']['action'];?></th>
@@ -150,6 +151,23 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               if (!empty($mailboxes)) {
                 foreach ($mailboxes as $mailbox) {
                   $mailboxdata = mailbox_get_mailbox_details($mailbox);
+									try {
+										$stmt = $pdo->prepare("SELECT IFNULL(COUNT(`address`), 0) AS `spamalias`
+														FROM `spamalias`
+															WHERE `goto` = :username
+																AND `validity` >= :unixnow");
+										$stmt->execute(array(
+											':username' => $mailboxdata['username'],
+											':unixnow' => time()
+										));
+										$temp_alias = $stmt->fetchAll(PDO::FETCH_ASSOC);
+									} catch (PDOException $e) {
+										$_SESSION['return'] = array(
+											'type' => 'danger',
+											'msg' => 'MySQL: '.$e
+										);
+										return false;
+									}
 						?>
 						<tr id="data">
 							<td><?=($mailboxdata['is_relayed'] == "0") ? htmlspecialchars($mailboxdata['username']) : '<span data-toggle="tooltip" title="Relayed"><i class="glyphicon glyphicon-forward"></i>' . htmlspecialchars($mailboxdata['username']) . '</span>';?></td>
@@ -163,6 +181,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 									</div>
 								</div>
 							</td>
+							<td><?=$temp_alias[0]['spamalias'];?></td>
 							<td><?=$mailboxdata['messages'];?></td>
 							<td><?=$mailboxdata['active'];?></td>
 							<td style="text-align: right;">
