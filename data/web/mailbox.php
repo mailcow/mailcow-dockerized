@@ -153,9 +153,9 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   $mailboxdata = mailbox_get_mailbox_details($mailbox);
                   try {
                     $stmt = $pdo->prepare("SELECT IFNULL(COUNT(`address`), 0) AS `spamalias`
-                      FROM `spamalias`
-                      WHERE `goto` = :username
-                      AND `validity` >= :unixnow");
+                        FROM `spamalias`
+                          WHERE `goto` = :username
+                            AND `validity` >= :unixnow");
                     $stmt->execute(array(
                       ':username' => $mailboxdata['username'],
                       ':unixnow' => time()
