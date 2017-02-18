@@ -151,24 +151,24 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               if (!empty($mailboxes)) {
                 foreach ($mailboxes as $mailbox) {
                   $mailboxdata = mailbox_get_mailbox_details($mailbox);
-									try {
-										$stmt = $pdo->prepare("SELECT IFNULL(COUNT(`address`), 0) AS `spamalias`
-														FROM `spamalias`
-															WHERE `goto` = :username
-																AND `validity` >= :unixnow");
-										$stmt->execute(array(
-											':username' => $mailboxdata['username'],
-											':unixnow' => time()
-										));
-										$temp_alias = $stmt->fetchAll(PDO::FETCH_ASSOC);
-									} catch (PDOException $e) {
-										$_SESSION['return'] = array(
-											'type' => 'danger',
-											'msg' => 'MySQL: '.$e
-										);
-										return false;
-									}
-						?>
+                  try {
+                    $stmt = $pdo->prepare("SELECT IFNULL(COUNT(`address`), 0) AS `spamalias`
+                      FROM `spamalias`
+                      WHERE `goto` = :username
+                      AND `validity` >= :unixnow");
+                    $stmt->execute(array(
+                      ':username' => $mailboxdata['username'],
+                      ':unixnow' => time()
+                    ));
+                    $temp_alias = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                  } catch (PDOException $e) {
+                    $_SESSION['return'] = array(
+                      'type' => 'danger',
+                      'msg' => 'MySQL: '.$e
+                    );
+                    return false;
+                  }
+                  ?>
 						<tr id="data">
 							<td><?=($mailboxdata['is_relayed'] == "0") ? htmlspecialchars($mailboxdata['username']) : '<span data-toggle="tooltip" title="Relayed"><i class="glyphicon glyphicon-forward"></i>' . htmlspecialchars($mailboxdata['username']) . '</span>';?></td>
 							<td><?=htmlspecialchars($mailboxdata['name'], ENT_QUOTES, 'UTF-8');?></td>
