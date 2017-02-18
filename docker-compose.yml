@@ -15,6 +15,19 @@ services:
           aliases:
             - pdns
 
+    portainer-mailcow:
+      image: portainer/portainer
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+      restart: always
+      dns:
+        - 172.22.1.254
+      dns_search: mailcow-network
+      networks:
+        mailcow-network:
+          aliases:
+            - portainer
+
     mysql-mailcow:
       image: mariadb:10.1
       healthcheck:
