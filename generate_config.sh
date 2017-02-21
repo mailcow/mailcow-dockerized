@@ -16,8 +16,11 @@ if [ -z "$MAILCOW_HOSTNAME" ]; then
   read -p "Hostname (FQDN): " -ei "mx.example.org" MAILCOW_HOSTNAME
 fi
 
+[[ -a /etc/timezone ]] && TZ=$(cat /etc/timezone)
 if [ -z "$TZ" ]; then
   read -p "Timezone: " -ei "Europe/Berlin" TZ
+else
+  read -p "Timezone: " -ei ${TZ} TZ
 fi
 
 cat << EOF > mailcow.conf

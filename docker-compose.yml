@@ -201,6 +201,19 @@ services:
           aliases:
             - memcached
 
+#    clamav-mailcow:
+#      build: ./data/Dockerfiles/clamav
+#      depends_on:
+#        - pdns-mailcow
+#      restart: always
+#      dns:
+#        - 172.22.1.250
+#      dns_search: mailcow-network
+#      networks:
+#        mailcow-network:
+#          aliases:
+#            - clamav
+
     nginx-mailcow:
       depends_on:
         - sogo-mailcow
