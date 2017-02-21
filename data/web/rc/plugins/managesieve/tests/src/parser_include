@@ -1,7 +1,0 @@
-require ["include"];
-include "script.sieve";
-# rule:[two]
-if true
-{
-	include :optional "second.sieve";
-}

@@ -1,9 +1,0 @@
-<?php
-
-// HTTP Basic Authentication Plugin options
-// ----------------------------------------
-// Default mail host to log-in using user/password from HTTP Authentication.
-// This is useful if the users are free to choose arbitrary mail hosts (or
-// from a list), but have one host they usually want to log into.
-// Unlike $config['default_host'] this must be a string!
-$config['http_authentication_host'] = '';
