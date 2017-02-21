@@ -1,0 +1,7 @@
+require ["imap4flags"];
+# rule:[imapflags]
+if header :matches "Subject" "^Test$"
+{
+	setflag "\\Seen";
+	addflag ["\\Answered","\\Deleted"];
+}

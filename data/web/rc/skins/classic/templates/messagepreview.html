@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+<script type="text/javascript" src="/splitter.js"></script>
+<script type="text/javascript" src="/functions.js"></script>
+</head>
+<body class="iframe">
+
+<div class="messageheaderbox">
+  <div id="messagelinks">
+    <roundcube:if condition="env:optional_format=='text'" />
+      <roundcube:button command="change-format" prop="text" image="/images/icons/text.png" width="15" height="15" title="changeformattext" id="changeformattext" />
+    <roundcube:endif />
+    <roundcube:if condition="env:optional_format=='html'" />
+      <roundcube:button command="change-format" prop="html" image="/images/icons/html.png" width="15" height="15" title="changeformathtml" id="changeformathtml" />
+    <roundcube:endif />
+    <roundcube:if condition="!env:message_context">
+      <roundcube:button command="extwin" image="/images/icons/extwin.png" width="15" height="15" title="openinextwin" id="openextwinlink" />
+    <roundcube:endif />
+  </div>
+<roundcube:object name="messageHeaders" class="headers-table" cellspacing="0" cellpadding="2" addicon="/images/icons/silhouette.png" summary="Message headers" />
+<roundcube:object name="messageFullHeaders" id="full-headers" />
+<roundcube:object name="messageAttachments" id="attachment-list" maxlength="50" />
+</div>
+
+<roundcube:object name="messageObjects" id="message-objects" />
+<roundcube:object name="messageBody" id="messagebody" />
+
+<div id="attachmentmenu" class="popupmenu">
+  <ul class="toolbarmenu">
+    <roundcube:button command="open-attachment" id="attachmenuopen" type="link-menuitem" label="open" class="openlink" classAct="openlink active" innerclass="openlink" />
+    <roundcube:button command="download-attachment" id="attachmenudownload" type="link-menuitem" label="download" class="downloadlink" classAct="downloadlink active" innerclass="downloadlink" />
+    <roundcube:container name="attachmentmenu" id="attachmentmenu" />
+  </ul>
+</div>
+
+<script type="text/javascript">
+rcube_init_mail_ui();
+</script>
+
+</body>
+</html>

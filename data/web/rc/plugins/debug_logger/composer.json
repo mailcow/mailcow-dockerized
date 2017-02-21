@@ -1,0 +1,24 @@
+{
+    "name": "roundcube/debug_logger",
+    "type": "roundcube-plugin",
+    "description": "Enhanced logging for debugging purposes. It is not recommened to be enabled on production systems without testing because of the somewhat increased memory, cpu and disk i/o overhead.",
+    "license": "GPLv2",
+    "version": "1.0",
+    "authors": [
+        {
+            "name": "Ziba Scott",
+            "email": "ziba@umich.edu",
+            "role": "Lead"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "http://plugins.roundcube.net"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "roundcube/plugin-installer": ">=0.1.3"
+    }
+}

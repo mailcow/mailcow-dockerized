@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+SRC_DIR=`pwd`
+BIN_DIR=`dirname $0`
+VENDOR_DIR=$BIN_DIR/'../'
+DIRS=""
+for vendor in $VENDOR_DIR/*; do
+    if [ -d "$vendor" ]; then
+        for package in $vendor/*; do
+            if [ -d "$package" ]; then
+                DIRS="${DIRS}:${package}"
+            fi
+        done
+    fi
+done
+php -d include_path=".$DIRS" $@

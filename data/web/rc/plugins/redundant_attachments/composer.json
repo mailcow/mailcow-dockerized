@@ -1,0 +1,30 @@
+{
+    "name": "roundcube/redundant_attachments",
+    "type": "roundcube-plugin",
+    "description": "This plugin provides a redundant storage for temporary uploaded attachment files. They are stored in both the database backend as well as on the local file system. It provides also memcache store as a fallback.",
+    "license": "GPLv2",
+    "version": "1.1",
+    "authors": [
+        {
+            "name": "Aleksander Machniak",
+            "email": "alec@alec.pl",
+            "role": "Lead"
+        },
+        {
+            "name": "Thomas Bruederli",
+            "email": "roundcube@gmail.com",
+            "role": "Lead"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "http://plugins.roundcube.net"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "roundcube/plugin-installer": ">=0.1.3",
+        "roundcube/filesystem_attachments": ">=1.0.0"
+    }
+}

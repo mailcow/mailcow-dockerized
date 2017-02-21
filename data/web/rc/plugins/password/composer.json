@@ -1,0 +1,24 @@
+{
+    "name": "roundcube/password",
+    "type": "roundcube-plugin",
+    "description": "Password Change for Roundcube. Plugin adds a possibility to change user password using many methods (drivers) via Settings/Password tab.",
+    "license": "GPLv3+",
+    "version": "4.2",
+    "authors": [
+        {
+            "name": "Aleksander Machniak",
+            "email": "alec@alec.pl",
+            "role": "Lead"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "http://plugins.roundcube.net"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "roundcube/plugin-installer": ">=0.1.3"
+    }
+}

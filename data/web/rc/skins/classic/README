@@ -1,0 +1,23 @@
+ROUNDCUBE WEBMAIL DEFAULT SKIN
+==============================
+
+This skin package contains the current development theme of the Roundcube
+Webmail software. It can be used, modified and redistributed according to
+the terms described in the LICENSE section.
+
+For information about building or modifiying Roundcube skins please visit
+https://github.com/roundcube/roundcubemail/wiki/Skins
+
+The theme uses icons originally designed by Stephen Horlander and Kevin Gerich
+for Mozilla.org. In case of redistribution giving credit to these artwork
+creators is mandatory.
+
+
+LICENSE
+-------
+The contents of this folder are subject to the Creative Commons
+Attribution-ShareAlike License. It is allowed to copy, distribute,
+transmit and to adapt the work by keeping credits to the original
+autors in the README file.
+See http://creativecommons.org/licenses/by-sa/3.0/ for details.
+

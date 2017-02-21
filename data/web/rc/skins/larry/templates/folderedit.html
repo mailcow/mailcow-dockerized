@@ -1,0 +1,25 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+</head>
+<body class="iframe">
+
+<h1 class="boxtitle"><roundcube:label name="folderproperties" /></h1>
+
+<div class="boxcontent">
+<roundcube:object name="folderdetails" class="propform" />
+</div>
+
+<div class="footerleft formbuttons">
+	<roundcube:button command="save" type="input" class="button mainaction" label="save" />
+	<roundcube:if condition="!strlen(request:_mbox)" />
+	<input type="button" value="<roundcube:label name="cancel" />" class="button" onclick="history.back()" />&nbsp;
+	<roundcube:endif />
+</div>
+
+<roundcube:include file="/includes/footer.html" />
+
+</body>
+</html>

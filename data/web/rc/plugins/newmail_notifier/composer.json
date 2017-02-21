@@ -1,0 +1,24 @@
+{
+    "name": "roundcube/newmail_notifier",
+    "type": "roundcube-plugin",
+    "description": "Supports three methods of notification: 1. Basic - focus browser window and change favicon 2. Sound - play wav file 3. Desktop - display desktop notification (using HTML5 Notification API feature).",
+    "license": "GPLv3+",
+    "version": "0.8",
+    "authors": [
+        {
+            "name": "Aleksander Machniak",
+            "email": "alec@alec.pl",
+            "role": "Lead"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "http://plugins.roundcube.net"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "roundcube/plugin-installer": ">=0.1.3"
+    }
+}

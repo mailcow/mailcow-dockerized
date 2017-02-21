@@ -1,0 +1,44 @@
+<script type="text/javascript">
+var UI = new rcube_mail_ui();
+</script>
+
+<div id="header">
+<div id="topline" role="banner" aria-labelledby="aria-label-topnav">
+	<h2 id="aria-label-topnav" class="voice"><roundcube:label name="arialabeltopnav" /></h2>
+	<div class="topleft">
+		<roundcube:container name="topline-left" id="topline-left" />
+		<roundcube:if condition="template:name != 'error'" />
+			<roundcube:button name="about" type="link" label="about" class="about-link" onclick="UI.show_about(this);return false" condition="!env:extwin" />
+		<roundcube:endif />
+		<roundcube:if condition="config:support_url" />
+		<a href="<roundcube:var name='config:support_url' />" target="_blank" class="support-link" id="supportlink"><roundcube:label name="support" /></a>
+		<roundcube:endif />
+	</div>
+	<roundcube:container name="topline-center" id="topline-center" />
+	<div class="topright">
+	<roundcube:container name="topline-right" id="topline-right" />
+	<roundcube:if condition="!env:extwin &amp;&amp; !env:framed" />
+		<span class="username"><roundcube:object name="username" /></span>
+		<roundcube:button command="logout" label="logout" class="button-logout" />
+	<roundcube:elseif condition="env:extwin" />
+		<roundcube:button name="close" type="link" label="close" class="closelink" onclick="self.close()" />
+	<roundcube:endif />
+	</div>
+</div>
+<roundcube:if condition="!env:extwin &amp;&amp; !env:framed" />
+<div id="topnav">
+	<h2 id="aria-label-tasknav" class="voice"><roundcube:label name="arialabeltasknav" /></h2>
+	<div id="taskbar" class="topright" role="navigation" aria-labelledby="aria-label-tasknav">
+		<roundcube:button command="mail" label="mail" class="button-mail" classSel="button-mail button-selected" innerClass="button-inner" />
+		<roundcube:button command="addressbook" label="contacts" class="button-addressbook" classSel="button-addressbook button-selected" innerClass="button-inner" />
+		<roundcube:container name="taskbar" id="taskbar" />
+		<roundcube:button command="settings" label="settings" class="button-settings" classSel="button-settings button-selected" innerClass="button-inner" />
+		<roundcube:button command="logout" label="logout" class="button-logout" classSel="button-logout" innerClass="button-inner" />
+		<span class="minmodetoggle" role="presentation"></span>
+	</div>
+	<roundcube:object name="logo" src="/images/roundcube_logo.png" id="toplogo" alt="Logo" onclick="if(window.rcmail)rcmail.command('switch-task','mail')" />
+</div>
+<roundcube:endif />
+
+<br style="clear:both" />
+</div>

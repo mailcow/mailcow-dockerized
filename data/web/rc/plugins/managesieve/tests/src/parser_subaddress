@@ -1,0 +1,11 @@
+require ["envelope","fileinto","subaddress"];
+if envelope :user "To" "postmaster"
+{
+	fileinto "postmaster";
+	stop;
+}
+if envelope :detail :is "To" "mta-filters"
+{
+	fileinto "mta-filters";
+	stop;
+}

@@ -1,0 +1,9 @@
+<link rel="index" href="$__comm_path" />
+<link rel="shortcut icon" href="/images/favicon.ico"/>
+<link rel="stylesheet" type="text/css" href="/common.css" />
+<roundcube:if condition="in_array(env:task, array('mail', 'addressbook', 'settings'))" />
+<link rel="stylesheet" type="text/css" href="/<roundcube:var name="env:task" />.css" />
+<roundcube:endif />
+<roundcube:if condition="browser:safari" />
+<link rel="stylesheet" type="text/css" href="/safari.css" />
+<roundcube:endif />

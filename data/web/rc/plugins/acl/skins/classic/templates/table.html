@@ -1,0 +1,46 @@
+<!--[if lte IE 6]>
+    <style type="text/css">
+    #aclmanager { height: expression(Math.min(302, parseInt(document.documentElement.clientHeight))+'px'); }
+    </style>
+<![endif]-->
+
+<div id="aclmanager">
+<div id="aclcontainer" class="boxlistcontent" style="top:0">
+    <roundcube:object name="acltable" id="acltable" class="records-table" />
+</div>
+<div class="boxfooter">
+    <roundcube:button command="acl-create" id="aclcreatelink" type="link" title="acl.newuser" class="buttonPas addgroup" classAct="button addgroup" content=" " />
+    <roundcube:button name="aclmenulink" id="aclmenulink" type="link" title="acl.actions" class="button groupactions" onclick="show_aclmenu(); return false" content=" " />
+</div>
+</div>
+
+<div id="aclmenu" class="popupmenu selectable">
+    <ul>
+        <li><roundcube:button command="acl-edit" label="edit" classAct="active" /></li>
+        <li><roundcube:button command="acl-delete" label="delete" classAct="active" /></li>
+        <roundcube:if condition="!in_array('acl_advanced_mode', (array)config:dont_override)" />
+            <li><roundcube:button name="acl-switch" id="acl-switch" label="acl.advanced" onclick="rcmail.command('acl-mode-switch')" class="active" /></li>
+        <roundcube:endif />
+    </ul>
+</div>
+
+<div id="aclform" style="padding:10px 0">
+    <fieldset class="thinbordered"><legend><roundcube:label name="acl.identifier" /></legend>
+        <roundcube:object name="acluser" class="toolbarmenu" id="acluser" size="35" />
+    </fieldset>
+    <fieldset class="thinbordered"><legend><roundcube:label name="acl.myrights" /></legend>
+        <roundcube:object name="aclrights" class="toolbarmenu" />
+    </fieldset>
+</div>
+
+<script type="text/javascript">
+function show_aclmenu()
+{
+    if (!rcmail_ui) {
+        rcube_init_mail_ui();
+        rcmail_ui.popups.aclmenu = {id:'aclmenu', above:1, obj: $('#aclmenu')};
+    }
+
+    rcmail_ui.show_popup('aclmenu');
+}
+</script>

@@ -1,0 +1,113 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015, roundcube.net
+# This file is distributed under the same license as the Roundcube Webmail Help package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Roundcube Webmail Help 1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-06-07 16:59\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../en_US/_plugins/managesieve/settings-filters.rst:9
+# cdb4a7c71e5343edb8015510da83a0b8
+msgid "Filters"
+msgstr ""
+
+#: ../../en_US/_plugins/managesieve/settings-filters.rst:11
+# 94cde05fc3f049e8911dffacfb9af0e5
+msgid "Incoming mail is automatically processed by the server and handled/organized according to defined criteria. For example you can tell the server to move the message to specified folder, redirect it to another account, send a reply, discard, delete, etc."
+msgstr ""
+
+#: ../../en_US/_plugins/managesieve/settings-filters.rst:15
+# c33e9a7b05f24fe59464ff2f1c9e10a5
+msgid "Filtering is based on `Sieve <https://www.rfc-editor.org/info/rfc5228>`_ language, which means that under the hood all filters are stored as a Sieve script on the server. This interface allows you to define rules in easy way without the need to know the language."
+msgstr ""
+
+#: ../../en_US/_plugins/managesieve/settings-filters.rst:19
+# 95eb7e571ec44698a474407092b6b79c
+msgid "Each filter definition has a name and set of rules and actions. Usually the number of definitions is unlimited and they can be grouped into sets (scripts) for convenience."
+msgstr ""
+
+#: ../../en_US/_plugins/managesieve/settings-filters.rst:25
+# aa2da905741247b9971687cd4fdb6a21
+msgid "Filter sets"
+msgstr ""
+
+#: ../../en_US/_plugins/managesieve/settings-filters.rst:27
+# dc9dbc4144034676a720caaf4379e4e3
+msgid "Filter definitions can be grouped into sets. These can be activated or disactivated. Depending on server configuration there can be none, one or more active sets at the same time. They need to have a unique name."
+msgstr ""
+
+#: ../../en_US/_plugins/managesieve/settings-filters.rst:31
+# 03f58cdba04c4282b867c792572a55e6
+msgid "New sets can be created as empty or as a copy of an existing set. It is also possible to import them from a text file containing Sieve script. Sets in form of a script can be also downloaded e.g. for backup or migration purposes."
+msgstr ""
+
+#: ../../en_US/_plugins/managesieve/settings-filters.rst:37
+# 9144e63ba44b476dadfcc84e33e72b86
+msgid "Filter definition"
+msgstr ""
+
+#: ../../en_US/_plugins/managesieve/settings-filters.rst:39
+# 602e3696b4bd4db5960351b5af0e72fd
+msgid "Every filter can be active or inactive, which is convenient if you want to disable some actions temporarily."
+msgstr ""
+
+#: ../../en_US/_plugins/managesieve/settings-filters.rst:42
+# 0f01b114450f4439b210f3831d66c534
+msgid "Because filters are executed in specified order (from top to bottom as you see them on the list) you can use drag-and-drop technique to rearange filters on the list."
+msgstr ""
+
+#: ../../en_US/_plugins/managesieve/settings-filters.rst:45
+# 0a30f2aa835e430c9f9de2e446f4c311
+msgid "Every filter definition contains at least one rule and one action. Depending on server capabilities a rule can be based e.g. on message headers, body, date or size."
+msgstr ""
+
+#: ../../en_US/_plugins/managesieve/settings-filters.rst:48
+# d3b9c2df232c4cd891ec6ba4751e02cf
+msgid "A set of actions also depends on server capabilities. Most servers support:"
+msgstr ""
+
+#: ../../en_US/_plugins/managesieve/settings-filters.rst:50
+# 1ee77f36a88746e0809e903838314e5a
+msgid "moving/copying messages to specified folder"
+msgstr ""
+
+#: ../../en_US/_plugins/managesieve/settings-filters.rst:51
+# c2669d203d104753830a170af2ceffde
+msgid "redirecting/copying messages to another account"
+msgstr ""
+
+#: ../../en_US/_plugins/managesieve/settings-filters.rst:52
+# b04abf50eb1948518caff0c9f6d32ad4
+msgid "discarding messages with specified error message"
+msgstr ""
+
+#: ../../en_US/_plugins/managesieve/settings-filters.rst:53
+# 439873796de6457985088a206b449c5b
+msgid "replying (vacation)"
+msgstr ""
+
+#: ../../en_US/_plugins/managesieve/settings-filters.rst:54
+# 5b7bce17840647bdba48ffa944b30ec5
+msgid "deleting (ignoring) messages"
+msgstr ""
+
+#: ../../en_US/_plugins/managesieve/settings-filters.rst:55
+# a12f2f2bebe74c668b637be66352ddb7
+msgid "setting flags (e.g. marking as Read)"
+msgstr ""
+
+#: ../../en_US/_plugins/managesieve/settings-filters.rst:57
+# a19231cf44e64eeca67da4cd31b0303a
+msgid "Note: Some actions stop filtering process, some do not. Use *Stop evaluating rules* and *Keep message in Inbox* actions to have more control on this."
+msgstr ""
+

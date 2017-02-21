@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+  This is the RNG file for validating Console_CommandLine xml definitions.
+
+  Author  : David JEAN LOUIS
+  Licence : MIT License
+  Version : CVS: $Id$
+-->
+
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" 
+         datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+
+  <!-- structure -->
+  <start>
+      <ref name="ref_command"/>
+  </start>
+
+  <!-- Command node -->
+  <define name="ref_command_subcommand_common">
+    <interleave>
+      <optional>
+        <element name="name">
+          <text/>
+        </element>
+      </optional>
+      <optional>
+        <element name="description">
+          <text/>
+        </element>
+      </optional>
+      <optional>
+        <element name="version">
+          <text/>
+        </element>
+      </optional>
+      <optional>
+        <element name="add_help_option">
+          <ref name="ref_bool_choices"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="add_version_option">
+          <ref name="ref_bool_choices"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="force_posix">
+          <ref name="ref_bool_choices"/>
+        </element>
+      </optional>
+      <optional>
+        <ref name="ref_messages_common"/>
+      </optional>
+      <zeroOrMore>
+        <ref name="ref_option"/>
+      </zeroOrMore>
+      <zeroOrMore>
+        <ref name="ref_argument"/>
+      </zeroOrMore>
+      <zeroOrMore>
+        <ref name="ref_subcommand"/>
+      </zeroOrMore>
+    </interleave>
+  </define>
+
+  <!-- command element -->
+
+  <define name="ref_command">
+    <element name="command">
+      <interleave>
+        <ref name="ref_command_subcommand_common"/>
+      </interleave>
+    </element>
+  </define>
+
+  <!-- subcommand element -->
+
+  <define name="ref_subcommand">
+    <element name="command">
+      <interleave>
+        <ref name="ref_command_subcommand_common"/>
+        <optional>
+          <element name="aliases">
+            <zeroOrMore>
+              <element name="alias">
+                <text/>
+              </element>
+            </zeroOrMore>
+          </element>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+
+  <!-- custom messages common element -->
+
+  <define name="ref_messages_common">
+    <element name="messages">
+      <oneOrMore>
+        <element name="message">
+          <attribute name="name">
+            <data type="string"/>
+          </attribute>
+          <text/>
+        </element>
+      </oneOrMore>
+    </element>
+  </define>
+
+  <!-- options and arguments common elements -->
+
+  <define name="ref_option_argument_common">
+    <interleave>
+      <optional>
+        <element name="description">
+          <text/>
+        </element>
+      </optional>
+      <optional>
+        <element name="help_name">
+          <text/>
+        </element>
+      </optional>
+      <optional>
+        <element name="default">
+          <text/>
+        </element>
+      </optional>
+      <optional>
+        <ref name="ref_messages_common"/>
+      </optional>
+    </interleave>
+  </define>
+
+  <!-- Option node -->
+  <define name="ref_option">
+    <element name="option">
+      <attribute name="name">
+        <data type="string"/>
+      </attribute>
+      <interleave>
+        <optional>
+          <element name="short_name">
+            <text/>
+          </element>
+        </optional>
+        <optional>
+          <element name="long_name">
+            <text/>
+          </element>
+        </optional>
+        <ref name="ref_option_argument_common"/>
+        <optional>
+          <element name="action">
+            <text/>
+          </element>
+        </optional>
+        <optional>
+          <element name="choices">
+            <zeroOrMore>
+              <element name="choice">
+                <text/>
+              </element>
+            </zeroOrMore>
+          </element>
+        </optional>
+        <optional>
+          <element name="add_list_option">
+            <ref name="ref_bool_choices"/>
+          </element>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+
+  <!-- Argument node -->
+  <define name="ref_argument">
+    <element name="argument">
+      <attribute name="name">
+        <data type="string"/>
+      </attribute>
+      <interleave>
+        <ref name="ref_option_argument_common"/>
+        <optional>
+          <element name="multiple">
+            <ref name="ref_bool_choices"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="optional">
+            <ref name="ref_bool_choices"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="choices">
+            <zeroOrMore>
+              <element name="choice">
+                <text/>
+              </element>
+            </zeroOrMore>
+           </element>
+         </optional>
+      </interleave>
+    </element>
+  </define>
+
+  <!-- boolean choices -->
+  <define name="ref_bool_choices">
+    <choice>
+      <data type="token">
+        <param name="pattern">[Tt][Rr][Uu][Ee]</param>
+      </data>
+      <data type="token">
+        <param name="pattern">[On][Nn]</param>
+      </data>
+      <data type="token">
+        <param name="pattern">[Yy][Ee][Ss]</param>
+      </data>
+      <value>1</value>
+      <data type="token">
+        <param name="pattern">[Ff][Aa][Ll][Ss][Ee]</param>
+      </data>
+      <data type="token">
+        <param name="pattern">[Of][Ff][Ff]</param>
+      </data>
+      <data type="token">
+        <param name="pattern">[Nn][Oo]</param>
+      </data>
+      <value>0</value>
+    </choice>
+  </define>
+
+</grammar>

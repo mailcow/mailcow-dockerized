@@ -1,0 +1,12 @@
+require ["vacation-seconds"];
+# rule:[test-vacation]
+if header :contains "Subject" "vacation"
+{
+	vacation :seconds 0 text:
+# test
+test test /* test */
+test
+.
+;
+	stop;
+}

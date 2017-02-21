@@ -1,0 +1,226 @@
+/*** Style for Enigma plugin ***/
+
+/***** Messages displaying *****/
+
+#enigma-message,
+/* fixes border-top */
+#messagebody div #enigma-message
+{
+  margin: 0;
+  margin-bottom: 5px;
+  min-height: 20px;
+  padding: 10px 10px 6px 46px;
+}
+
+div.enigmaerror,
+/* fixes border-top */
+#messagebody div.enigmaerror
+{
+  background: url(enigma_error.png) 6px 1px no-repeat;
+  background-color: #EF9398;
+  border: 1px solid #DC5757;
+}
+
+div.enigmanotice,
+/* fixes border-top */
+#messagebody div.enigmanotice
+{
+  background: url(enigma.png) 6px 1px no-repeat;
+  background-color: #A6EF7B;
+  border: 1px solid #76C83F;
+}
+
+div.enigmawarning,
+/* fixes border-top */
+#messagebody div.enigmawarning
+{
+  background: url(enigma.png) 6px 1px no-repeat;
+  background-color: #F7FDCB;
+  border: 1px solid #C2D071;
+}
+
+#enigma-message a
+{
+  color: #666666;
+  padding-left: 10px;
+}
+
+#enigma-message a:hover
+{
+  color: #333333;
+}
+
+p.enigmaattachment
+{
+  margin: 0.5em 1em;
+  border: 1px solid #999;
+  border-radius: 4px;
+  width: auto;
+}
+
+p.enigmaattachment a
+{
+  display: block;
+  background: url(key_add.png) 10px center no-repeat;
+  padding: 1em 0.5em 1em 50px;
+}
+
+
+/***** E-mail Compose Page *****/
+
+#messagetoolbar a.button.enigma {
+  text-indent: -5000px;
+  background: url(enigma.png) 0 0 no-repeat;
+}
+
+/***** Keys/Certs Management *****/
+
+#mainscreen.enigma
+{
+  top: 80px;
+}
+
+div.enigmascreen
+{
+  position: absolute;
+  top: 40px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.enigma #quicksearchbar
+{
+  top: 10px;
+  right: 0;
+}
+
+#enigmacontent-box
+{
+  position: absolute;
+  top: 0px;
+  left: 290px;
+  right: 0px;
+  bottom: 0px;
+  border: 1px solid #999999;
+  overflow: hidden;
+}
+
+#enigmakeyslist
+{
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border: 1px solid #999999;
+  background-color: #F9F9F9;
+  overflow: hidden;
+}
+
+#keylistcountbar
+{
+  margin-top: 4px;
+  margin-left: 4px;
+}
+
+#keys-table
+{
+  width: 100%;
+  table-layout: fixed;
+}
+
+#keys-table td
+{
+  cursor: default;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+}
+
+#key-details table td.title
+{
+  font-weight: bold;
+  text-align: right;
+}
+
+#key-details table {
+  width: 100%;
+}
+
+#key-details table td,
+#key-details table th {
+  border: 0;
+}
+
+#keyimportform fieldset div {
+  color: #666;
+  padding: 5px 0px;
+}
+
+#keycreateform td > label {
+  display: block;
+}
+
+#keystoolbar
+{
+  position: absolute;
+  top: 0;
+  left: 10px;
+  height: 35px;
+}
+
+#keystoolbar a
+{
+  padding-right: 10px;
+}
+
+#keystoolbar a.button,
+#keystoolbar a.buttonPas,
+#keystoolbar span.separator {
+  display: block;
+  float: left;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  margin: 0 5px;
+  overflow: hidden;
+  background: url(keys_toolbar.png) 0 0 no-repeat transparent;
+  opacity: 0.99; /* this is needed to make buttons appear correctly in Chrome */
+}
+
+#keystoolbar a.buttonPas {
+  opacity: 0.35;
+}
+
+#keystoolbar a.createSel {
+  background-position: 0 -32px;
+}
+
+#keystoolbar a.create {
+  background-position: 0 0;
+}
+
+#keystoolbar a.importSel {
+  background-position: -64px -32px;
+}
+
+#keystoolbar a.import {
+  background-position: -64px 0;
+}
+
+#keystoolbar a.exportSel {
+  background-position: -96px -32px;
+}
+
+#keystoolbar a.export {
+  background-position: -96px 0;
+}
+
+#keystoolbar a.keymenu {
+  background-position: -128px 0;
+  width: 36px;
+}
+
+#keystoolbar span.separator {
+  width: 5px;
+  background-position: -166px 0;
+}

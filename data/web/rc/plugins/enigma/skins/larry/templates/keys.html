@@ -1,0 +1,91 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+</head>
+<roundcube:if condition="env:extwin" /><body class="noscroll extwin"><roundcube:else /><body class="noscroll"><roundcube:endif />
+
+<roundcube:include file="/includes/header.html" />
+
+<div id="mainscreen" class="enigma">
+    <h1 class="voice"><roundcube:label name="settings" /> : <roundcube:label name="enigma.enigmakeys" /></h1>
+
+    <!-- toolbar -->
+    <h2 id="aria-label-toolbar" class="voice"><roundcube:label name="arialabeltoolbar" /></h2>
+    <div id="keystoolbar" class="toolbar" role="toolbar" aria-labelledby="aria-label-toolbar">
+        <roundcube:button command="plugin.enigma-key-import" type="link" class="button import disabled" classAct="button import" classSel="button import pressed" label="import" title="enigma.importkeys" />
+        <span class="dropbutton">
+            <roundcube:button command="plugin.enigma-key-export" type="link" class="button export disabled" classAct="button export" classSel="button export pressed" label="export" title="enigma.exportkeys" />
+            <a href="#export" class="dropbuttontip" id="exportmenulink" onclick="return UI.toggle_popup('exportmenu',event)" aria-haspopup="true" aria-expanded="false" aria-owns="exportmenu-menu" tabindex="0"><roundcube:label name="enigma.arialabelkeyexportoptions" /></a>
+        </span>
+    </div>
+
+    <div id="exportmenu" class="popupmenu" aria-hidden="true">
+        <h3 id="aria-label-exportmenu" class="voice"><roundcube:label name="enigma.arialabelkeyexportoptions" /></h3>
+        <ul id="exportmenu-menu" class="toolbarmenu" role="menu" aria-labelledby="aria-label-exportmenu">
+            <roundcube:button type="link-menuitem" command="plugin.enigma-key-export" label="exportall" prop="sub" class="exportalllink" classAct="exportalllink active" />
+            <roundcube:button type="link-menuitem" command="plugin.enigma-key-export-selected" label="exportsel" prop="sub" class="exportsellink" classAct="exportsellink active" />
+        </ul>
+    </div>
+
+    <div id="quicksearchbar" class="searchbox" role="search" aria-labelledby="aria-label-searchform">
+        <h2 id="aria-label-searchform" class="voice"><roundcube:label name="enigma.arialabelkeysearchform" /></h2>
+        <label for="quicksearchbox" class="voice"><roundcube:label name="arialabelmailquicksearchbox" /></label>
+        <roundcube:object name="searchform" id="quicksearchbox" />
+        <a id="searchmenulink" class="iconbutton searchicon" > </a>
+        <roundcube:button command="reset-search" id="searchreset" class="iconbutton reset" title="resetsearch" label="resetsearch" />
+    </div>
+
+    <roundcube:include file="/includes/settingstabs.html" />
+
+    <div id="settings-right" role="main" aria-labelledby="aria-label-enigmakeyslist">
+        <div id="enigmakeyslist" class="uibox listbox" role="navigation" aria-labelledby="enigmakeyslist-header">
+            <div id="enigmakeyslist-header" class="boxtitle"><roundcube:label name="enigma.enigmakeys" /></div>
+            <div class="scroller withfooter">
+                <roundcube:object name="keyslist" id="keys-table" class="listing" role="listbox" cellspacing="0" noheader="true" />
+            </div>
+            <div class="boxpagenav">
+                <roundcube:button command="firstpage" type="link" class="icon firstpage disabled" classAct="icon firstpage" title="firstpage" label="first" />
+                <roundcube:button command="previouspage" type="link" class="icon prevpage disabled" classAct="icon prevpage" title="previouspage" label="previous" />
+                <roundcube:button command="nextpage" type="link" class="icon nextpage disabled" classAct="icon nextpage" title="nextpage" label="next" />
+                <roundcube:button command="lastpage" type="link" class="icon lastpage disabled" classAct="icon lastpage" title="lastpage" label="last" />
+            </div>
+            <div class="boxfooter">
+                <roundcube:button command="plugin.enigma-key-create" type="link" title="enigma.createkeys" class="listbutton add disabled" classAct="listbutton add" innerClass="inner" label="enigma.keyadd" /><roundcube:button name="moreactions" id="keyoptionslink" type="link" title="enigma.keyactions" class="listbutton groupactions" onclick="return UI.toggle_popup('keyoptions',event)" innerClass="inner" label="enigma.arialabelkeyoptions" aria-haspopup="true" aria-expanded="false" aria-owns="keyoptionsmenu" />
+                <span class="countdisplay" aria-live="polite" aria-relevant="text">
+                <span class="voice"><roundcube:label name="enigma.enigmakeys" /></span>
+                    <roundcube:object name="countdisplay" />
+                </span>
+            </div>
+        </div>
+
+        <div id="enigmacontent-box" class="uibox">
+            <div class="iframebox">
+                <roundcube:object name="keyframe" id="keyframe" width="100%" height="100%" frameborder="0" src="/watermark.html" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="keyoptions" class="popupmenu">
+    <ul class="toolbarmenu">
+        <li><roundcube:button class="deletelink" command="plugin.enigma-key-delete" label="enigma.keyremove" target="_blank" classAct="deletelink active" /></li>
+<!--
+        <li><roundcube:button class="disablelink" command="enigma.key-disable" label="enigma.keydisable" target="_blank" classAct="disablelink active" /></li>
+        <li><roundcube:button class="revokelink" command="enigma.key-revoke" label="enigma.keyrevoke" classAct="revokelink active" /></li>
+        <li class="separator_below"><roundcube:button class="sendlink" command="enigma.key-send" label="enigma.keysend" classAct="sendlink active" /></li>
+        <li><roundcube:button class="chpasslink" command="enigma.key-chpass" label="enigma.keychpass" classAct="chpasslink active" /></li>
+-->
+    </ul>
+</div>
+
+<roundcube:include file="/includes/footer.html" />
+
+<script type="text/javascript">
+    new rcube_splitter({ id:'enigmakeyssplitter', p1:'#enigmakeyslist', p2:'#enigmacontent-box',
+            orientation:'v', relative:true, start:266, min:180, size:12 }).init();
+</script>
+
+</body>
+</html>

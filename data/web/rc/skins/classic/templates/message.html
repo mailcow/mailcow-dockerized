@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+<script type="text/javascript" src="/splitter.js"></script>
+<script type="text/javascript" src="/functions.js"></script>
+<style type="text/css">
+#mailboxlist-container { width: <roundcube:exp expression="!empty(cookie:mailviewsplitterv) ? cookie:mailviewsplitterv-5 : 170" />px; }
+#messageframe { left: <roundcube:exp expression="!empty(cookie:mailviewsplitterv) ? cookie:mailviewsplitterv+5 : 180" />px; }
+</style>
+</head>
+<roundcube:if condition="env:extwin" />
+<body class="extwin">
+<roundcube:object name="message" id="message" />
+<roundcube:else />
+<body>
+
+<roundcube:include file="/includes/taskbar.html" />
+<roundcube:include file="/includes/header.html" />
+<roundcube:endif />
+
+<roundcube:include file="/includes/messagetoolbar.html" />
+
+<div id="mainscreen">
+<roundcube:if condition="!env:extwin" />
+<div id="mailleftcontainer">
+<div id="mailboxlist-container">
+<div id="mailboxlist-title" class="boxtitle"><roundcube:label name="mailboxlist" /></div>
+<div class="boxlistcontent">
+    <roundcube:object name="mailboxlist" id="mailboxlist" class="treelist folderlist" folder_filter="mail" />
+</div>
+<div class="boxfooter"></div>
+</div>
+</div>
+<roundcube:else />
+<roundcube:object name="mailboxlist" folder_filter="mail" type="js" />
+<roundcube:endif />
+
+<div id="messageframe">
+<div class="boxlistcontent" style="top:0; overflow-x:auto">
+  <div id="messagelinks">
+    <roundcube:if condition="env:optional_format=='text'" />
+      <roundcube:button command="change-format" prop="text" image="/images/icons/text.png" width="15" height="15" title="changeformattext" id="changeformattext" />
+    <roundcube:endif />
+    <roundcube:if condition="env:optional_format=='html'" />
+      <roundcube:button command="change-format" prop="html" image="/images/icons/html.png" width="15" height="15" title="changeformathtml" id="changeformathtml" />
+    <roundcube:endif />
+  </div>
+<roundcube:object name="messageHeaders" class="headers-table" cellspacing="0" cellpadding="2" addicon="/images/icons/silhouette.png" summary="Message headers" />
+<roundcube:object name="messageFullHeaders" id="full-headers" />
+<roundcube:object name="messageAttachments" id="attachment-list" maxlength="50" />
+<roundcube:object name="messageObjects" id="message-objects" />
+<roundcube:object name="messageBody" id="messagebody" />
+</div>
+<div class="boxfooter">
+<div id="countcontrols" class="pagenav">
+  <roundcube:button command="lastmessage" type="link" class="buttonPas lastpage" classAct="button lastpage" classSel="button lastpageSel" title="lastmessage" content=" " />
+  <roundcube:button command="nextmessage" type="link" class="buttonPas nextpage" classAct="button nextpage" classSel="button nextpageSel" title="nextmessage" content=" " />
+  <roundcube:object name="messageCountDisplay" style="padding:0 .5em; float:right" />
+  <roundcube:button command="previousmessage" type="link" class="buttonPas prevpage" classAct="button prevpage" classSel="button prevpageSel" title="previousmessage" content=" " />
+  <roundcube:button command="firstmessage" type="link" class="buttonPas firstpage" classAct="button firstpage" classSel="button firstpageSel" title="firstmessage" content=" " />
+</div>
+</div>
+</div>
+
+</div>
+
+<roundcube:if condition="!env:extwin" />
+<script type="text/javascript">
+    var mailviewsplitv = new rcube_splitter({id:'mailviewsplitterv', p1: 'mailboxlist-container', p2: 'messageframe', orientation: 'v', relative: true, start: 165});
+    rcmail.add_onload('mailviewsplitv.init()');
+</script>
+<roundcube:endif />
+
+<div id="attachmentmenu" class="popupmenu">
+  <ul class="toolbarmenu">
+    <li><roundcube:button command="open-attachment" id="attachmenuopen" type="link" label="open" class="openlink" classAct="openlink active" innerclass="openlink" /></li>
+    <li><roundcube:button command="download-attachment" id="attachmenudownload" type="link" label="download" class="downloadlink" classAct="downloadlink active" innerclass="downloadlink" /></li>
+    <roundcube:container name="attachmentmenu" id="attachmentmenu" />
+  </ul>
+</div>
+
+<script type="text/javascript">
+rcube_init_mail_ui();
+</script>
+
+</body>
+</html>

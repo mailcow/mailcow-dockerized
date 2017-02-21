@@ -1,0 +1,56 @@
+{
+    "authors": [
+        {
+            "email": "jan@horde.org",
+            "name": "Jan Schneider",
+            "role": "Lead"
+        },
+        {
+            "email": "richard@php.net",
+            "name": "Richard Heyes",
+            "role": "Lead"
+        },
+        {
+            "email": "damlists@cnba.uba.ar",
+            "name": "Damian Fernandez Sosa",
+            "role": "Lead"
+        },
+        {
+            "email": "amistry@am-productions.biz",
+            "name": "Anish Mistry",
+            "role": "Lead"
+        }
+    ],
+    "autoload": {
+        "classmap": [
+            "./"
+        ]
+    },
+    "description": "This is a fork of http://pear.php.net/package/Net_Sieve",
+    "license": "BSD",
+    "name": "roundcube/net_sieve",
+    "support": {
+        "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=Net_Sieve",
+        "source": "https://github.com/roundcube/Net_Sieve"
+    },
+    "type": "library",
+    "repositories": [
+        {
+            "type": "pear",
+            "url": "https://pear.php.net/"
+        }
+    ],
+    "require": {
+        "pear/pear-core-minimal": "*",
+        "pear-pear.php.net/net_socket": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "*"
+    },
+    "suggest": {
+        "pear/auth_sasl": "Install optionally via your project's composer.json"
+    },
+     "config": {
+        "secure-http": false
+    }
+}

@@ -1,0 +1,38 @@
+<?php
+
+// Help content iframe source
+// %l will be replaced by the language code resolved using the 'help_language_map' option
+// If you are serving roundcube via https, then change this URL to https also.
+$config['help_source'] = 'http://docs.roundcube.net/doc/help/1.1/%l/';
+
+// Map task/action combinations to deep-links
+// Use '<task>/<action>' or only '<task>' strings as keys
+// The values will be appended to the 'help_source' URL
+$config['help_index_map'] = array(
+    'login'                => 'login.html',
+    'mail'                 => 'mail/index.html',
+    'mail/compose'         => 'mail/compose.html',
+    'addressbook'          => 'addressbook/index.html',
+    'settings'             => 'settings/index.html',
+    'settings/preferences' => 'settings/preferences.html',
+    'settings/folders'     => 'settings/folders.html',
+    'settings/identities'  => 'settings/identities.html',
+);
+
+// Map to translate Roundcube language codes into help document languages
+// The '*' entry will be used as default
+$config['help_language_map'] = array('*' => 'en_US');
+
+// Enter an absolute URL to a page displaying information about this webmail
+// Alternatively, create a HTML file under <this-plugin-dir>/content/about.html
+$config['help_about_url'] = null;
+
+// Enter an absolute URL to a page displaying information about this webmail
+// Alternatively, put your license text to <this-plugin-dir>/content/license.html
+$config['help_license_url'] = null;
+
+// Determine whether to open the help in a new window
+$config['help_open_extwin'] = false;
+
+// URL to additional information about CSRF protection
+$config['help_csrf_info'] = null;

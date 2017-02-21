@@ -1,0 +1,21 @@
+require ["comparator-i;ascii-numeric","date","fileinto","relational"];
+# rule:[date]
+if allof (date :originalzone :value "ge" :comparator "i;ascii-numeric" "date" "hour" "09")
+{
+	fileinto "urgent";
+}
+# rule:[date-weekday]
+if date :is "received" "weekday" "0"
+{
+	fileinto "weekend";
+}
+# rule:[date-zone]
+if date :zone "-0500" :value "gt" :comparator "i;ascii-numeric" "received" "iso8601" "2007-02-26T09:00:00-05:00"
+{
+	stop;
+}
+# rule:[currentdate]
+if anyof (currentdate :is "weekday" "0", currentdate :value "lt" :comparator "i;ascii-numeric" "hour" "09", currentdate :value "ge" :comparator "i;ascii-numeric" "date" "2007-06-30")
+{
+	stop;
+}

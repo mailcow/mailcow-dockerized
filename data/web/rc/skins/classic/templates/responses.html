@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+<script type="text/javascript" src="/functions.js"></script>
+<script type="text/javascript" src="/splitter.js"></script>
+<style type="text/css">
+#identities-list { width: <roundcube:exp expression="!empty(cookie:identviewsplitter) ? cookie:identviewsplitter-5 : 295" />px; }
+#identity-box { left: <roundcube:exp expression="!empty(cookie:identviewsplitter) ? cookie:identviewsplitter+5 : 305" />px; }
+</style>
+
+</head>
+<body>
+
+<roundcube:include file="/includes/taskbar.html" />
+<roundcube:include file="/includes/header.html" />
+<roundcube:include file="/includes/settingstabs.html" />
+
+<div id="mainscreen">
+
+<div id="identities-list">
+<div id="identity-title" class="boxtitle"><roundcube:label name="responses" /></div>
+<div class="boxlistcontent">
+<roundcube:object name="responsesList" id="identities-table" class="records-table" cellspacing="0" summary="Responses list" noheader="true" editIcon="" />
+</div>
+<div class="boxfooter">
+<roundcube:button command="add" type="link" title="addresponse" class="buttonPas addgroup" classAct="button addgroup" content=" " /><roundcube:button command="delete" type="link" title="delete" class="buttonPas delgroup" classAct="button delgroup" content=" " />
+</div>
+</div>
+
+<script type="text/javascript">
+  var identviewsplit = new rcube_splitter({id:'identviewsplitter', p1: 'identities-list', p2: 'identity-box', orientation: 'v', relative: true, start: 300 });
+  rcmail.add_onload('identviewsplit.init()');
+</script>
+
+<div id="identity-box">
+  <roundcube:object name="responseframe" id="identity-frame" width="100%" height="100%" frameborder="0" src="/watermark.html" />
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1891 @@
+/***** Roundcube|Mail mail task styles *****/
+
+
+#messagetoolbar
+{
+  position: absolute;
+  top: 47px;
+  left: 205px;
+  right: 10px;
+  height: 35px;
+  min-width: 650px;
+  white-space: nowrap;
+/*  border: 1px solid #cccccc; */
+}
+
+.extwin #messagetoolbar
+{
+  top: 5px;
+  left: 20px;
+}
+
+#messagetoolbar a,
+#messagetoolbar select
+{
+  display: block;
+  float: left;
+  padding-right: 10px;
+}
+
+#messagetoolbar a.button,
+#messagetoolbar a.buttonPas {
+  display: block;
+  float: left;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  margin: 0 5px;
+  overflow: hidden;
+  background: url(images/mail_toolbar.png?v=2271.13035) 0 0 no-repeat transparent;
+  opacity: 0.99; /* this is needed to make buttons appear correctly in Chrome */
+}
+
+#messagetoolbar a.buttonPas {
+  opacity: 0.35;
+}
+
+#messagetoolbar a.button.selected {
+  background-color: #ddd;
+  margin-left: 4px;
+  margin-right: 4px;
+  margin-top: -1px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+}
+
+#messagetoolbar a.checkmailSel {
+  background-position: 0 -32px;
+}
+
+#messagetoolbar a.back {
+  background-position: -32px 0;
+}
+
+#messagetoolbar a.backSel {
+  background-position: -32px -32px;
+}
+
+#messagetoolbar a.compose {
+  background-position: -64px 0;
+}
+
+#messagetoolbar a.composeSel {
+  background-position: -64px -32px;
+}
+
+#messagetoolbar a.reply {
+  background-position: -96px 0;
+}
+
+#messagetoolbar a.replySel {
+  background-position: -96px -32px;
+}
+
+#messagetoolbar a.replyAll {
+  background-position: -128px 0;
+}
+
+#messagetoolbar a.replyAllSel {
+  background-position: -128px -32px;
+}
+
+#messagetoolbar a.forward {
+  background-position: -160px 0;
+}
+
+#messagetoolbar a.forwardSel {
+  background-position: -160px -32px;
+}
+
+#messagetoolbar a.delete {
+  background-position: -192px 0;
+}
+
+#messagetoolbar a.deleteSel {
+  background-position: -192px -32px;
+}
+
+#messagetoolbar a.print {
+  background-position: -256px 0;
+}
+
+#messagetoolbar a.printSel {
+  background-position: -256px -32px;
+}
+
+#messagetoolbar a.markmessage {
+  background-position: -288px 0;
+}
+
+#messagetoolbar a.messagemenu {
+  background-position: -320px 0;
+  width: 34px;
+}
+
+#messagetoolbar a.spellcheck {
+  background-position: -418px 0;
+}
+
+#messagetoolbar a.spellcheckSel {
+  background-position: -418px -32px;
+}
+
+#messagetoolbar a.attach {
+  background-position: -386px 0;
+}
+
+#messagetoolbar a.attachSel {
+  background-position: -386px -32px;
+}
+
+#messagetoolbar a.insertsig {
+  background-position: -482px 0;
+}
+
+#messagetoolbar a.insertsigSel {
+  background-position: -482px -32px;
+}
+
+#messagetoolbar a.savedraft {
+  background-position: -354px 0;
+}
+
+#messagetoolbar a.savedraftSel {
+  background-position: -354px -32px;
+}
+
+#messagetoolbar a.send {
+  background-position: -450px 0;
+}
+
+#messagetoolbar a.sendSel {
+  background-position: -450px -32px;
+}
+
+#messagetoolbar a.move {
+  background-position: -580px 0;
+}
+
+#messagetoolbar a.moveSel {
+  background-position: -580px -32px;
+}
+
+#messagetoolbar a.download {
+  background-position: -514px 0;
+}
+
+#messagetoolbar a.downloadSel {
+  background-position: -514px -32px;
+}
+
+#messagetoolbar a.responses {
+  background-position: -548px 0;
+}
+
+#messagetoolbar a.encrypt {
+  background-position: -612px 0;
+}
+
+#messagetoolbar a.encryptSel {
+  background-position: -612px -32px;
+}
+
+#messagemenu li a.active:hover,
+#attachmentmenu li a.active:hover,
+#markmessagemenu li a.active:hover
+{
+  color: #fff;
+  background-color: #c00;
+}
+
+#messagemenu li a,
+#attachmentmenu li a
+{
+  background: url(images/messageactions.png?v=8c64.2615) no-repeat 7px 0;
+  background-position: 7px 20px;
+}
+
+#messagemenu li a.printlink
+{
+  background-position: 7px 1px;
+}
+
+#messagemenu li a.downloadlink,
+#attachmentmenu li a.downloadlink
+{
+  background-position: 7px -17px;
+}
+
+#attachmentmenu li a.renamelink
+{
+  background-position: 6px -69px;
+}
+
+#messagemenu li a.sourcelink
+{
+  background-position: 7px -34px;
+}
+
+#messagemenu li a.openlink,
+#attachmentmenu li a.openlink
+{
+  background-position: 7px -52px;
+}
+
+#messagemenu li a.editlink
+{
+  background-position: 6px -70px;
+}
+
+#messagemenu li a.movelink
+{
+  background-position: 6px -160px;
+}
+
+#messagemenu li a.copylink
+{
+  background-position: 6px -142px;
+}
+
+#markmessagemenu li a,
+#compose-attachments li a.delete,
+#compose-attachments li a.cancelupload
+{
+  background: url(images/messageicons.png?v=c493.2511) no-repeat;
+}
+
+#markmessagemenu li a.readlink
+{
+  background-position: 7px -51px;
+}
+
+#markmessagemenu li a.unreadlink
+{
+  background-position: 7px -119px;
+}
+
+#markmessagemenu li a.flaggedlink
+{
+  background-position: 7px -153px;
+}
+
+#markmessagemenu li a.unflaggedlink
+{
+  background-position: 7px -136px;
+}
+
+#searchfilter
+{
+  white-space: nowrap;
+  position: absolute;
+  right: 198px;
+  vertical-align: middle;
+}
+
+#searchfilter label
+{
+  font-size: 11px;
+}
+
+#mailleftcontainer
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 160px;
+}
+
+#mailrightcontainer
+{
+  position: absolute;
+  top: 0;
+  left: 170px;
+  bottom: 0;
+  right: 0;
+  min-width: 600px;
+}
+
+#mailrightcontent
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+#messagepartcontainer
+{
+  position: absolute;
+  top: 0;
+  left: 170px;
+  right: 0;
+  bottom: 0;
+}
+
+#messagepartheader
+{
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 160px;
+  border: 1px solid #999999;
+  background-color: #F9F9F9;
+  overflow: hidden;
+}
+
+#messagepartheader table
+{
+  width: 100%;
+  table-layout: fixed;
+}
+
+#messagepartheader table td
+{
+  text-overflow: ellipsis;
+}
+
+#messagepartheader table td.title
+{
+  width: 60px;
+}
+
+#mailcontframe
+{
+  position: absolute;
+  width: 100%;
+  top: 0;
+  bottom: 0;
+  border: 1px solid #999999;
+  background-color: #F9F9F9;
+  overflow: hidden;
+}
+
+#mailpreviewframe
+{
+  position: absolute;
+  right: 0;
+  top: 205px;
+  bottom: 0px;
+  border: 1px solid #999999;
+  background-color: #F9F9F9;
+  display: none;
+}
+
+#messagecontframe
+{
+  position: relative;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  width: 100%;
+  height: 100%;
+  min-height: 100%; /* Chrome 14 bug */
+}
+
+#messagepartframe
+{
+  width: 100%;
+  height: 100%;
+  min-height: 100%; /* Chrome 14 bug */
+  border: 1px solid #999999;
+  background-color: #fff;
+}
+
+
+/** mailbox list styles */
+
+#mailboxlist-container
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  bottom: 0;
+  border: 1px solid #999;
+  background-color: #F9F9F9;
+}
+
+#mailboxlist
+{
+  position:relative;
+  height: auto;
+  margin: 0px;
+  padding: 0px;
+  list-style-image: none;
+  list-style-type: none;
+  overflow: hidden;
+  white-space: nowrap;
+  background-color: #FFF;
+}
+
+#mailboxlist li.unread
+{
+  font-weight: bold;
+}
+
+#mailboxlist li.recent > a
+{
+  color: #0066FF;
+}
+
+#listcontrols
+{
+  position: relative;
+  white-space: nowrap;
+  line-height: 22px;
+  padding: 0 4px;
+  width: auto;
+  min-width: 300px;
+}
+
+#listcontrols a,
+#listcontrols span
+{
+  display: block;
+  float: left;
+  font-size: 11px;
+}
+
+#listcontrols span input
+{
+  vertical-align: middle;
+}
+
+#listcontrols a.button,
+#listcontrols a.buttonPas
+{
+  display: block;
+  float: left;
+  width: 15px;
+  height: 15px;
+  padding: 0;
+  margin-top: 4px;
+  margin-right: 2px;
+  overflow: hidden;
+  background: url(images/mail_footer.png?v=1c4b.774) 0 0 no-repeat transparent;
+  opacity: 0.99; /* this is needed to make buttons appear correctly in Chrome */
+}
+
+#listcontrols a.buttonPas
+{
+  opacity: 0.35;
+}
+
+#listcontrols a.all {
+  background-position: -30px 0;
+}
+
+#listcontrols a.allsel {
+  background-position: -30px -15px;
+}
+
+#listcontrols a.page {
+  background-position: -135px 0;
+}
+
+#listcontrols a.pagesel {
+  background-position: -135px -15px;
+}
+
+#listcontrols a.unread {
+  background-position: -45px 0;
+}
+
+#listcontrols a.unreadsel {
+  background-position: -45px -15px;
+}
+
+#listcontrols a.invert {
+  background-position: -60px 0;
+}
+
+#listcontrols a.invertsel {
+  background-position: -60px -15px;
+}
+
+#listcontrols a.none {
+  background-position: -75px 0;
+}
+
+#listcontrols a.nonesel {
+  background-position: -75px -15px;
+}
+
+#listcontrols a.expand-all {
+  background-position: -90px 0;
+}
+
+#listcontrols a.expand-allsel {
+  background-position: -90px -15px;
+}
+
+#listcontrols a.collapse-all {
+  background-position: -105px 0;
+}
+
+#listcontrols a.collapse-allsel {
+  background-position: -105px -15px;
+}
+
+#listcontrols a.expand-unread {
+  background-position: -120px 0;
+}
+
+#listcontrols a.expand-unreadsel {
+  background-position: -120px -15px;
+}
+
+#countcontrols
+{
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  white-space: nowrap;
+  font-size: 11px;
+  line-height: 14px;
+}
+
+#countcontrols a.button,
+#countcontrols a.buttonPas
+{
+  float: right;
+}
+
+
+/** message list styles */
+
+body.messagelist
+{
+  margin: 0px;
+  background-color: #F9F9F9;
+}
+
+table.messagelist
+{
+  width: 100%;
+  display: table;
+  table-layout: fixed;
+  border-spacing: 0;
+  z-index: 1;
+}
+
+table.messagelist.fixedcopy
+{
+  z-index: 2;
+}
+
+.messagelist thead tr th,
+.messagelist thead tr td
+{
+  height: 20px;
+  padding: 0 4px 0 2px;
+  vertical-align: middle;
+  border-bottom: 1px solid #999999;
+  color: #333333;
+  background: url(images/listheader.gif?v=ab42.314) top left repeat-x #CCC;
+  font-size: 11px;
+  font-weight: bold;
+  text-align: left;
+}
+
+.messagelist thead tr > .sortedASC,
+.messagelist thead tr > .sortedDESC
+{
+  background-position: 0 -26px;
+}
+
+.messagelist thead tr > .sortedASC a
+{
+  background: url(images/icons/sort.gif?v=92aa.144) right 0 no-repeat;
+}
+
+.messagelist thead tr > .sortedDESC a
+{
+  background: url(images/icons/sort.gif?v=92aa.144) right -14px no-repeat;
+}
+
+.messagelist thead tr a
+{
+  display: block;
+  width: auto !important;
+  width: 100%;
+  color: #333333;
+  text-decoration: none;
+}
+
+.messagelist thead tr > .size.sortedASC a,
+.messagelist thead tr > .size.sortedDESC a
+{
+  padding-right: 18px;
+}
+
+.messagelist thead tr > .subject
+{
+  padding-left: 18px;
+  width: 99%;
+}
+
+.messagelist tbody tr th,
+.messagelist tbody tr td
+{
+  height: 20px;
+  padding: 0;
+  font-size: 11px;
+  overflow: hidden;
+  vertical-align: middle;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  border-bottom: 1px solid #EBEBEB;
+  cursor: default;
+  outline: none;
+}
+
+.messagelist tbody tr td a
+{
+  color: #000;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: inherit;
+}
+
+.messagelist td img
+{
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.messagelist tbody tr td.flag,
+.messagelist tbody tr td.status,
+.messagelist tbody tr td.subject span.status
+{
+  cursor: pointer;
+}
+
+.messagelist tr .flag span,
+.messagelist tr .status span,
+.messagelist tr .attachment span,
+.messagelist tr .priority span
+{
+  display: block;
+  width: 15px;
+  text-indent: -5000px;
+  overflow: hidden;
+}
+
+.messagelist tr td div.collapsed,
+.messagelist tr td div.expanded,
+.messagelist tr > .threads .listmenu,
+.messagelist tr .attachment span.attachment,
+.messagelist tr .attachment span.report,
+.messagelist tr .attachment span.encrypted,
+.messagelist tr > .priority span.priority,
+.messagelist tr > .priority span.prio1,
+.messagelist tr > .priority span.prio2,
+.messagelist tr > .priority span.prio3,
+.messagelist tr > .priority span.prio4,
+.messagelist tr > .priority span.prio5,
+.messagelist tr .flag span.flagged,
+.messagelist tr .flag span.unflagged,
+.messagelist tr:hover .flag span.unflagged,
+.messagelist tr > .status span.status,
+.messagelist tr > .status span.msgicon,
+.messagelist tr > .status span.deleted,
+.messagelist tr > .status span.unread,
+.messagelist tr > .status span.unreadchildren,
+.messagelist tr > .subject span.msgicon,
+.messagelist tr > .subject span.deleted,
+.messagelist tr > .subject span.unread,
+.messagelist tr > .subject span.replied,
+.messagelist tr > .subject span.forwarded,
+.messagelist tr > .subject span.unreadchildren
+{
+  display: inline-block;
+  vertical-align: middle;
+  height: 17px;
+  width: 15px;
+  background: url(images/messageicons.png?v=c493.2511) center no-repeat;
+}
+
+.messagelist tr .attachment span.attachment
+{
+  background-position: 0 -170px;
+}
+
+.messagelist tr .attachment span.report
+{
+  background-position: 0 -255px;
+}
+
+.messagelist tr .attachment span.encrypted
+{
+  background-position: 0 -418px;
+}
+
+.messagelist tr > .priority span.priority
+{
+  background-position: 0 -309px;
+}
+
+.messagelist tr > .priority span.prio5
+{
+  background-position: 0 -358px;
+}
+
+.messagelist tr > .priority span.prio4
+{
+  background-position: 0 -340px;
+}
+
+.messagelist tr > .priority span.prio3
+{
+  background-position: 0 -324px;
+}
+
+.messagelist tr > .priority span.prio2
+{
+  background-position: 0 -309px;
+}
+
+.messagelist tr > .priority span.prio1
+{
+  background-position: 0 -290px;
+}
+
+.messagelist tr .flag span.flagged
+{
+  background-position: 0 -153px;
+}
+
+.messagelist tr:hover .flag span.unflagged
+{
+  background-position: 0 -136px;
+}
+
+.messagelist tr.flaggedroot .flag span,
+.messagelist tr.flaggedroot .flag span.unflagged
+{
+  background-position: 0 -136px;
+}
+
+.messagelist tr > .subject span.msgicon,
+.messagelist tr > .subject span.unreadchildren
+{
+  background-position: 0 -51px;
+  margin: 0 2px;
+}
+
+.messagelist tr > .subject span.replied
+{
+  background-position: 0 -85px;
+}
+
+.messagelist tr > .subject span.forwarded
+{
+  background-position: 0 -68px;
+}
+
+.messagelist tr > .subject span.replied.forwarded
+{
+  background-position: 0 -102px;
+}
+
+.messagelist tr > .status span.msgicon,
+.messagelist tr .flag span.unflagged,
+.messagelist tr > .status span.unreadchildren
+{
+  background-position: 0 18px; /* no icon */
+}
+
+.messagelist tr > .status span.msgicon:hover
+{
+  background-position: 0 -272px;
+}
+
+.messagelist tr > .status span.deleted,
+.messagelist tr > .subject span.deleted
+{
+  background-position: 0 -187px;
+}
+
+.messagelist tr > .status span.status,
+.messagelist tr > .status span.unread,
+.messagelist tr > .subject span.unread
+{
+  background-position: 0 -119px;
+}
+
+.messagelist tr td div.collapsed
+{
+  background-position: 0 -221px;
+  cursor: pointer;
+}
+
+.messagelist tr td div.expanded
+{
+  background-position: 0 -204px;
+  cursor: pointer;
+}
+
+.messagelist tr > .threads .listmenu
+{
+  background-position: 0 -238px;
+  cursor: pointer;
+  overflow: hidden;
+  text-indent: -5000px;
+  display: block;
+}
+
+.messagelist tbody tr td.subject
+{
+  width: 99%;
+}
+
+.messagelist tbody tr td.subject a
+{
+  cursor: default;
+  vertical-align: middle; /* #1487091 */
+}
+
+/* thread parent message with unread children */
+.messagelist tbody tr.unroot td.subject a
+{
+  text-decoration: underline;
+}
+
+.messagelist tr > .attachment,
+.messagelist tr > .threads,
+.messagelist tr > .status,
+.messagelist tr > .flag,
+.messagelist tr > .priority
+{
+  width: 17px;
+  padding: 0 0 0 2px;
+}
+
+.messagelist tr > .size
+{
+  width: 60px;
+  text-align: right;
+  padding: 0 2px;
+}
+
+.messagelist tr > .fromto,
+.messagelist tr > .from,
+.messagelist tr > .to,
+.messagelist tr > .cc,
+.messagelist tr > .replyto
+{
+  width: 180px;
+  padding: 0 2px;
+}
+
+.messagelist tr > .date
+{
+  width: 135px;
+  padding: 0 2px;
+}
+
+.messagelist tr > .folder
+{
+  width: 135px;
+}
+
+.messagelist tr > .hidden
+{
+  display: none;
+}
+
+.messagelist tr.message
+{
+  background-color: #FFF;
+}
+
+.messagelist tr.unread
+{
+  font-weight: bold;
+  background-color: #FFFFFF;
+}
+
+.messagelist tr.flagged td,
+.messagelist tr.flagged td a
+{
+  color: #CC0000;
+}
+
+/* This padding-left minus the focused padding left should be half of the focused border-left */
+.messagelist thead tr th:first-child,
+.messagelist thead tr td:first-child,
+.messagelist tbody tr td:first-child {
+	border-left: 0;
+	padding-left: 6px;
+}
+
+/* because of border-collapse, we make the left border twice what we want it to be - half will be hidden to the left */
+.messagelist tbody tr.focused > td:first-child {
+	border-left: 2px solid #d4d4d4;
+	padding-left: 4px;
+}
+
+.messagelist tbody tr.selected.focused > td:first-child {
+	border-left: 2px solid #ccc;
+	padding-left: 5px;
+}
+
+.messagelist tr.selected td
+{
+  color: #FFFFFF;
+  background-color: #929292;
+}
+
+.messagelist.focus tr.selected td
+{
+  background-color: #CC3333;
+}
+
+.messagelist tr.selected td a
+{
+  color: #FFFFFF;
+}
+
+.messagelist tr.deleted td,
+.messagelist tr.deleted td a
+{
+  color: #CCCCCC;
+}
+
+#listmenu
+{
+  padding: 6px;
+  max-height: none;
+}
+
+#listmenu legend
+{
+  color: #999999;
+}
+
+#listmenu fieldset
+{
+  border: 1px solid #999999;
+  margin: 0 5px;
+  float: left;
+}
+
+#listmenu div
+{
+  padding: 8px 0 3px 0;
+  text-align: center;
+  clear: both;
+}
+
+/***** tree indicators *****/
+
+td span.branch div
+{
+  float: left;
+  height: 16px;
+}
+
+td span.branch div.tree
+{
+  height: 17px;
+  width: 15px;
+  background: url(images/tree.gif?v=9b73.92) 0px 0px no-repeat;
+}
+
+td span.branch div.l1
+{
+  background-position: 0px 0px; /* L */
+}
+
+td span.branch div.l2
+{
+  background-position: -30px 0px; /* | */
+}
+
+td span.branch div.l3
+{
+  background-position: -15px 0px; /* |- */
+}
+
+
+/** message view styles */
+
+#messageframe
+{
+  position: absolute;
+  top: 0;
+  left: 180px;
+  right: 0;
+  bottom: 0;
+  border: 1px solid #999;
+  background-color: #FFF;
+  overflow: auto;
+  z-index: 1;
+}
+
+.extwin #messageframe
+{
+	left: 0;
+}
+
+div.messageheaderbox
+{
+  margin: -14px 8px 0px 8px;
+  border: 1px solid #ccc;
+}
+
+table.headers-table
+{
+  width: 100%;
+  background-color: #EBEBEB;
+}
+
+#messagebody #full-headers,
+#messagebody table.headers-table
+{
+  width: auto;
+  margin: 6px 8px;
+  background-color: #F4F4F4;
+}
+
+#messagebody.mailvelope {
+  padding: 10px 8px;
+}
+
+#messagebody table.headers-table
+{
+  margin: 16px 6px 6px 6px;
+}
+
+div.message-partheaders + div.message-part
+{
+  border-top: 0;
+  padding-top: 4px;
+}
+
+table.headers-table tr td
+{
+  font-size: 11px;
+  border-bottom:1px solid #FFFFFF;
+}
+
+table.headers-table tr td.header-title
+{
+  width: 1%;
+  color: #666666;
+  font-weight: bold;
+  text-align: right;
+  white-space: nowrap;
+  padding: 0 4px 0 8px;
+}
+
+table.headers-table tr td.header
+{
+  width: 99%;
+}
+
+table.headers-table tr td.subject
+{
+  font-weight: bold;
+}
+
+table.headers-table tr td.header span
+{
+  white-space: nowrap;
+}
+
+#attachment-list
+{
+  margin: 0;
+  padding: 0 4px 0 8px;
+  min-height: 16px;
+  list-style-image: none;
+  list-style-type: none;
+  background: url(images/icons/attachment.png?v=ee4e.516) 4px 2px no-repeat #DFDFDF;
+}
+
+#messageframe #attachment-list
+{
+  border-bottom: 1px solid #ccc;
+}
+
+.messageheaderbox #attachment-list
+{
+  border-top: 1px solid #ccc;
+}
+
+#attachment-list:after
+{
+  content: ".";
+  display: block;
+  height: 0;
+  font-size: 0;
+  clear: both;
+  visibility: hidden;
+}
+
+#attachment-list li
+{
+  float: left;
+  height: 18px;
+  font-size: 11px;
+  padding: 2px 0px 0px 15px;
+  white-space: nowrap;
+}
+
+#attachment-list li a
+{
+  text-decoration: none;
+}
+
+#attachment-list li a:hover
+{
+  text-decoration: underline;
+}
+
+#attachment-list li a.drop {
+  background: url(images/icons/down_small.gif?v=f368.105) no-repeat center 6px;
+  width: 12px;
+  height: 16px;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 3px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+#messagebody
+{
+  position:relative;
+  padding-bottom: 10px;
+  background-color: #FFFFFF;
+}
+
+div.message-part,
+div.message-htmlpart
+{
+  padding: 10px 8px;
+  border-top: 1px solid #ccc;
+/*  overflow: hidden; */
+}
+
+#messagebody div:first-child
+{
+  border-top: 0;
+}
+
+div.message-part a,
+div.message-htmlpart a
+{
+  color: #0000CC;
+}
+
+div.message-part div.pre
+{
+  margin: 0px;
+  padding: 0px;
+  font-family: monospace;
+  font-size: 12px;
+}
+
+div.message-part span.sig
+{
+  color: #666666;
+}
+
+div.message-part blockquote
+{
+  color: blue;
+  border-left: 2px solid blue;
+  border-right: 2px solid blue;
+  background-color: #F6F6F6;
+  margin: 2px 0;
+  padding: 0 0.4em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+div.message-part blockquote blockquote
+{
+  color: green;
+  border-left: 2px solid green;
+  border-right: 2px solid green;
+}
+
+div.message-part blockquote blockquote blockquote
+{
+  color: #990000;
+  border-left: 2px solid #bb0000;
+  border-right: 2px solid #bb0000;
+}
+
+#messagebody span.part-notice
+{
+  display: block;
+}
+
+#message-objects div,
+#messagebody span.part-notice
+{
+  margin: 8px;
+  min-height: 20px;
+  padding: 10px 10px 6px 46px;
+}
+
+#message-objects div a,
+#messagebody span.part-notice a
+{
+  color: #666666;
+  padding-left: 10px;
+}
+
+#message-objects div a:hover,
+#messagebody span.part-notice a:hover
+{
+  color: #333333;
+}
+
+#messagebody fieldset.image-attachment {
+  border: 0;
+  border-top: 1px solid #ccc;
+  margin: 1em 1em 0 1em;
+}
+
+#messagebody fieldset.image-attachment p > img
+{
+  max-width: 80%;
+}
+
+#messagebody legend.image-filename
+{
+  color: #999;
+  font-size: 0.9em;
+}
+
+#messagebody p.image-attachment
+{
+  margin: 0 1em;
+  padding: 1em;
+  border-top: 1px solid #ccc;
+}
+
+#messagebody p.image-attachment a.image-link
+{
+  float: left;
+  margin-right: 2em;
+  min-width: 160px;
+  min-height: 60px;
+  text-align: center;
+}
+
+#messagebody p.image-attachment .image-filename
+{
+  display: block;
+  font-weight: bold;
+  line-height: 1.6em;
+}
+
+#messagebody p.image-attachment .image-filesize
+{
+  font-size: 11px;
+  padding-right: 1em;
+}
+
+#messagebody p.image-attachment .attachment-links a
+{
+  margin-right: 0.6em;
+  color: #cc0000;
+  font-size: 11px;
+  text-decoration: none;
+}
+
+#messagebody p.image-attachment .attachment-links a:hover
+{
+  text-decoration: underline;
+}
+
+#messagelinks
+{
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  height: 16px;
+  text-align: right;
+}
+
+#messageframe #messagelinks
+{
+  top: 2px;
+  right: 2px;
+}
+
+#compose-headers #openextwinlink
+{
+  position: absolute;
+  height: 15px;
+  top: 4px;
+  right: 2px;
+}
+
+#full-headers
+{
+  color: #666666;
+  text-align: center;
+  padding: 2px 6px;
+  border-bottom: 1px solid #ccc;
+  background-color: #EBEBEB;
+}
+
+.messageheaderbox #full-headers
+{
+  border-bottom: 0;
+}
+
+div.more-headers
+{
+  cursor: pointer;
+  height: 8px;
+  border-bottom: 0;
+}
+
+div.show-headers
+{
+  background: url(images/icons/down_small.gif?v=f368.105) no-repeat center;
+}
+
+div.hide-headers
+{
+  background: url(images/icons/up_small.gif?v=c56c.106) no-repeat center;
+}
+
+#headers-source
+{
+  margin: 2px 0;
+  padding: 0.5em;
+  height: 145px;
+  background: white;
+  overflow: auto;
+  font-size: 11px;
+  border: 1px solid #CCC;
+  display: none;
+  text-align: left;
+  color: #333;
+}
+
+
+/** message compose styles */
+
+#compose-container
+{
+  position: absolute;
+  top: 0;
+  left: 205px;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+}
+
+#compose-div
+{
+  position: absolute;
+  top: 85px;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  margin: 0;
+}
+
+#compose-body-div
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 175px;
+  border: 1px solid #999;
+}
+
+#compose-body-div .mce-tinymce {
+  border: 0 !important;
+}
+
+#compose-div .boxlistcontent
+{
+  bottom: 23px;
+}
+
+#compose-body
+{
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: 0;
+  font-size: 9pt;
+  font-family: monospace;
+  resize: none;
+  border: none;
+  outline: none;
+}
+
+#compose-headers
+{
+  width: 100%;
+}
+
+#compose-headers td.editfield
+{
+  padding-right: 8px;
+  width: 95%;
+}
+
+#compose-headers td.top
+{
+  vertical-align: top;
+}
+
+#compose-headers td.title,
+#compose-subject td.title
+{
+  width: 80px !important;
+  font-size: 11px;
+  font-weight: bold;
+  padding-right: 10px;
+  white-space: nowrap;
+  color: #666;
+}
+
+#compose-headers td textarea,
+#compose-headers td input
+{
+  resize: none;
+  width: 100%;
+  border: 1px solid #999;
+}
+
+#compose-headers td textarea
+{
+  height: 32px;
+}
+
+input.from_address
+{
+  width: 80% !important;
+}
+
+#compose-cc,
+#compose-bcc,
+#compose-replyto,
+#compose-followupto
+{
+  display: none;
+}
+
+#compose-editorfooter
+{
+  position: absolute;
+  right: 5px;
+  bottom: 0;
+  text-align: right;
+  line-height: 20px;
+}
+
+#compose-editorfooter label
+{
+  font-size: 11px;
+  font-weight: bold;
+  color: #666;
+}
+
+#compose-buttons
+{
+  position: absolute;
+  left: 5px;
+  bottom: 1px;
+  width: auto;
+}
+
+#compose-contacts
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 195px;
+  border: 1px solid #999;
+  background-color: #F9F9F9;
+}
+
+#compose-attachments
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 1px solid #999;
+  background-color: #F9F9F9;
+}
+
+#compose-attachments.droptarget.hover
+{
+  background-color: #F0F0EE;
+  box-shadow: 0 0 5px 0 #999;
+  -moz-box-shadow: 0 0 5px 0 #999;
+  -o-box-shadow: 0 0 5px 0 #999;
+}
+
+#compose-attachments ul
+{
+  margin: 0px;
+  padding: 0px;
+  background-color: #FFF;
+  list-style-image: none;
+  list-style-type: none;
+}
+
+#compose-attachments ul li
+{
+  position: relative;
+  height: 18px;
+  line-height: 16px;
+  font-size: 11px;
+  padding: 2px 16px 1px 2px;
+  border-bottom: 1px solid #EBEBEB;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+}
+
+#compose-attachments li a.delete,
+#compose-attachments li a.cancelupload
+{
+  text-indent: -5000px;
+  width: 17px;
+  height: 16px;
+  padding-bottom: 2px;
+  display: inline-block;
+  text-decoration: none;
+  vertical-align: middle;
+  background-position: 0px -392px;
+}
+
+#compose-attachments li img
+{
+  vertical-align: middle;
+}
+
+#compose-attachments li span
+{
+  line-height: 18px;
+  vertical-align: middle;
+}
+
+#compose-attachments li a.drop {
+  background: url(images/icons/down_small.gif?v=f368.105) no-repeat center 8px;
+  width: 16px;
+  height: 22px;
+  cursor: pointer;
+  display: block;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+#upload-form,
+#attachment-form
+{
+  padding: 6px;
+}
+
+#upload-form div,
+#attachment-form div
+{
+  padding: 2px;
+}
+
+#upload-form div.buttons,
+#attachment-form div.buttons
+{
+  margin-top: 4px;
+}
+
+#quota
+{
+  position: absolute;
+  top: 3px;
+  right: 8px;
+  width: 100px;
+}
+
+#quotaimg
+{
+  position: absolute;
+  top: 3px;
+  right: 6px;
+  z-index: 101;
+}
+
+/* addressbook in compose - copy from addressbook.css */
+
+#directorylist
+{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background-color: #FFFFFF;
+}
+
+#directorylist li
+{
+  display: block;
+  font-size: 11px;
+  background: url(images/icons/folders.png?v=7c4f.5218) 5px -108px no-repeat;
+  border-bottom: 1px solid #EBEBEB;
+  white-space: nowrap;
+}
+
+#directorylist li a
+{
+  cursor: default;
+  display: block;
+  padding-left: 25px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  text-decoration: none;
+  white-space: nowrap;
+  height: 15px;
+}
+
+#directorylist li.selected
+{
+  background-color: #929292;
+  border-bottom: 1px solid #898989;
+}
+
+#directorylist li.selected a
+{
+  color: #FFF;
+  font-weight: bold;
+}
+
+#contacts-table
+{
+  width: 100%;
+  table-layout: fixed;
+}
+
+#contacts-table tbody td
+{
+  cursor: default;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+}
+
+#contacts-table td span.email
+{
+  display: inline;
+  color: #ccc;
+  font-style: italic;
+  margin-left: 0.5em;
+}
+
+#abookcountbar
+{
+  margin-top: 4px;
+  margin-left: 4px;
+  position: absolute;
+  margin-right: 5px;
+  right: 0;
+  top: 0;
+}
+
+#abookactions
+{
+  position: absolute;
+  text-underline: none;
+}
+
+#abookactions a
+{
+  font-weight: bold;
+  line-height: 22px;
+  height: 22px;
+  width: auto;
+  margin: 0;
+  padding-left: 5px;
+  padding-right: 5px;
+  text-shadow: 1px 1px white;
+  background: url(images/icons/groupactions.png?v=6760.604) no-repeat right -70px;
+}
+
+#abookactions a.disabled
+{
+  color: #999;
+}
+
+#compose-contacts .searchbox
+{
+  top: 2px;
+  left: 7px;
+}
+
+#compose-contacts #directorylist
+{
+  width: 100%;
+  top: 23px;
+  position: absolute;
+  border-top: 1px solid #eee;
+}
+
+#compose-contacts #contacts-table
+{
+  top: 45px;
+  position: absolute;
+}
+
+/**** Styles for widescreen (3-column) view ****/
+
+.widescreen #mailview-top {
+  bottom: 0;
+  width: 400px;
+  height: auto;
+}
+
+.widescreen #mailview-bottom {
+  left: 412px;
+  top:0;
+  border: 1px solid #a3a3a3;
+}
+
+#messagelistheader,
+.widescreen #messagelistfooter #countcontrols,
+.widescreen .messagelist > thead,
+.widescreen .messagelist .branch,
+.widescreen table.fixedcopy {
+  display: none;
+}
+
+#messagelistcontainer {
+  top: 0;
+}
+
+.widescreen #messagelistcontainer {
+  top: 21px;
+  overflow-x: hidden;
+}
+
+.widescreen #mailpreviewframe {
+  top: 0;
+}
+
+.widescreen #messagelistheader {
+  display: block;
+  top: 0;
+  white-space: nowrap;
+  border-top: 0;
+  border-bottom: 1px solid #999;
+  height: 20px;
+}
+
+.widescreen #messagelistheader .listmenu {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 16px;
+  width: 15px;
+  background: url(images/messageicons.png?v=c493.2511) 4px -236px no-repeat;
+  cursor: pointer;
+  overflow: hidden;
+  text-indent: -5000px;
+  padding: 2px 4px;
+}
+
+.widescreen .messagelist td {
+  border-left: 0;
+  vertical-align: top;
+  padding: 3px 1px 1px !important;
+}
+
+.widescreen .messagelist td.subject {
+  width: 99%;
+  white-space: wrap;
+  position: relative; /* for span.date positioning in Firefox */
+}
+
+.widescreen .messagelist td.threads {
+  width: 14px;
+  vertical-align: middle;
+}
+
+.widescreen .messagelist td.flags {
+  width: 20px;
+}
+
+.widescreen .messagelist td.subject span {
+  line-height: 16px;
+}
+
+.widescreen .messagelist td.subject span.date {
+  right: 2px;
+  top: 3px;
+  position: absolute;
+  color: #666;
+}
+
+.widescreen .messagelist td.subject span.fromto {
+  padding-left: 18px;
+  display: block;
+  margin-right: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #666;
+}
+
+.widescreen .messagelist tr.flagged td.subject span.date,
+.widescreen .messagelist tr.flagged td.subject span.fromto {
+  color: #ff0000;
+}
+
+.widescreen .messagelist tr.selected td.subject span.date,
+.widescreen .messagelist tr.selected td.subject span.fromto {
+  color: #fff;
+}
+
+.widescreen .messagelist tr.deleted td.subject span.date,
+.widescreen .messagelist tr.deleted td.subject span.fromto {
+  color: #ccc;
+}
+
+.widescreen .messagelist td.subject span.subject {
+  clear: both;
+  display: block;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.widescreen .messagelist td.flags span {
+  width: 20px;
+  height: 18px;
+  display: block;
+}
+
+.widescreen .messagelist td.flags span.flag {
+  cursor: pointer;
+}
+
+.widescreen .messagelist tr td.subject span.msgicon,
+.widescreen .messagelist tr td.subject span.unreadchildren {
+  width: 18px;
+  margin: 0;
+}

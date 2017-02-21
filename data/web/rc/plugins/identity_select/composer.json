@@ -1,0 +1,24 @@
+{
+    "name": "roundcube/identity_select",
+    "type": "roundcube-plugin",
+    "description": "On reply to a message user identity selection is based on\n\t\tcontent of standard headers like From, To, Cc and Return-Path.\n\t\tHere you can add header(s) set by your SMTP server (e.g.\n\t\tDelivered-To, Envelope-To, X-Envelope-To, X-RCPT-TO) to make\n\t\tidentity selection more accurate.",
+    "license": "GPLv3+",
+    "version": "1.1",
+    "authors": [
+        {
+            "name": "Aleksander Machniak",
+            "email": "alec@alec.pl",
+            "role": "Lead"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "http://plugins.roundcube.net"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "roundcube/plugin-installer": ">=0.1.3"
+    }
+}

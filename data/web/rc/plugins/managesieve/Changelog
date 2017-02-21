@@ -1,0 +1,363 @@
+- Fix handling of scripts with nested rules (#5540)
+
+* version 8.8 [2016-11-27]
+-----------------------------------------------------------
+- Fix parsing of vacation date-time with non-default date_format (#5372)
+- Fix regression where js error is thrown if server does not support 'duplicate' extension
+- Add option to automatically set vacation :from address (#5428)
+- Support per-host managesieve_conn_options (#5136)
+- Added (optional) RAW script editor (#5414)
+
+* version 8.7 [2016-07-19]
+-----------------------------------------------------------
+- Support 'string' test from variables extension [RFC 5229] (#5248)
+- Support 'duplicate' extension [RFC 7352]
+- Unhide advanced rule controls if there are inputs with errors
+- Display warning message when filter form contains errors
+
+* version 8.6 [2016-04-06]
+-----------------------------------------------------------
+- Refactored script parser to be 100x faster (on big scripts)
+
+* version 8.5 [2015-11-15]
+-----------------------------------------------------------
+- Add support for :from parameter in vacation action (patch from Michele Locati)
+
+* version 8.4 [2015-04-20]
+-----------------------------------------------------------
+- Add option to prepopulate vacation addresses on form init (#1490030)
+- Add option to define default vacation interval
+- Fix missing position indicator in Larry skin when dragging a filter
+- Fix incorrect filter data after filter delete (#1490356)
+
+* version 8.3 [2015-03-12]
+-----------------------------------------------------------
+- Fix PHP fatal error when visiting Vacation interface and there's no sieve script yet
+- Fix handling of header test with one-element array as header name
+- Fix missing host:port in connection error message
+
+* version 8.2 [2015-01-14]
+-----------------------------------------------------------
+- Fix bug where actions without if/elseif/else in sieve scripts were skipped
+- Support "not allof" test as a negation of all sub-tests
+- Fix bug where vacation rule was saved to wrong script if managesieve_kolab_master=true
+- Improve procedure of script selection to write a vacation rule
+
+* version 8.1 [2014-12-09]
+-----------------------------------------------------------
+- Added simple API to manage vacation rule
+- Fix missing css/js scripts in filter form in mail task
+- Fix default vacation status (#1490019)
+- Make possible to set vacation start/end date and time
+- Fix compatibility with contextmenu plugin
+
+* version 8.0 [2014-07-16]
+-----------------------------------------------------------
+- Fix bug where non-existing (or unsubscribed) folder wasn't listed in folder selector (#1489956)
+- Added optional separate interface for out-of-office management (#1488266)
+- Fix disabled "create filter" action
+- Fix enotify/notify extension handling
+- Improved UI accessibility
+- Added option to specify connection socket parameters - managesieve_conn_options
+- Support vacation date rules without date extension (#1489978)
+
+* version 7.2 [2014-02-14]
+-----------------------------------------------------------
+- Nicely handle server-side modification of script names (#1489412)
+- Add Filters tab/section using plugin API hook
+- Fix issue where folder selector wasn't visible on new filter form
+- Fix issue where multi-select fields were not visible in new filter action rows (#1489600)
+- Fix issue in displaying filter form when managesieve_kolab_master=true
+  and sieve variables extension is supported by the server (#1489599)
+- Fix wrong action folder selection if managesieve_domains is not empty (#1489617)
+- Fix filter creation from an email when preview frame is disabled (#1489647)
+
+* version 7.1 [2013-11-22]
+-----------------------------------------------------------
+- lib/Net_Sieve.php moved to Roundcube /lib directory
+- Added managesieve_domains option to limit redirect destinations
+- Fix bug where at least one additional address of vacation message was required (#1489345)
+- Fix so i;ascii-numeric comparator is not forced as default for :count and :value operators
+- Fix date/currentdate related form issues and comparators handling (#1489346)
+- Fix a bug where deleted filter was not removed from the list
+
+* version 7.0 [2013-09-09]
+-----------------------------------------------------------
+- Add vacation-seconds extension support (RFC 6131)
+- Several script parser code improvements
+- Support string list arguments in filter form (#1489018)
+- Support date, currendate and index tests - RFC5260 (#1488120)
+- Split plugin file into two files
+- Fix handling of &, <, > characters in scripts/filter names (#1489208)
+- Support 'keep' action (#1489226)
+- Add common headers to header selector (#1489271)
+
+* version 6.2 [2013-02-17]
+-----------------------------------------------------------
+- Support tls:// prefix in managesieve_host option
+- Removed depracated functions usage
+- Don't trim whitespace in folder names (#1488955)
+
+* version 6.1 [2012-12-21]
+-----------------------------------------------------------
+- Fixed filter activation/deactivation confirmation message (#1488765)
+- Moved rcube_* classes to <plugin>/lib/Roundcube for compat. with Roundcube Framework autoloader
+- Fixed filter selection after filter deletion (#1488832)
+- Fixed compatibility with jQueryUI-1.9
+- Don't force 'stop' action on last rule in a script
+
+* version 6.0 [2012-10-03]
+-----------------------------------------------------------
+- Fixed issue with DBMail bug [http://pear.php.net/bugs/bug.php?id=19077] (#1488594)
+- Added support for enotify/notify (RFC5435, RFC5436, draft-ietf-sieve-notify-00)
+- Change default port to 4190 (IANA-allocated), add port auto-detection (#1488713)
+- Added request size limits detection and script corruption prevention (#1488648)
+- Fix so scripts listed in managesieve_filename_exceptions aren't displayed on the list (#1488724)
+
+* version 5.2 [2012-07-24]
+-----------------------------------------------------------
+- Added GUI for variables setting - RFC5229 (patch from Paweł Słowik)
+- Fixed scrollbars in Larry's iframes
+- Fix performance issue in message_headers_output hook handling
+
+* version 5.1 [2012-06-21]
+-----------------------------------------------------------
+- Fixed filter popup width (for non-english localizations)
+- Fixed tokenizer infinite loop on invalid script content
+- Larry skin support
+- Fixed custom header name validity check, made RFC2822-compliant
+
+* version 5.0 [2012-01-05]
+-----------------------------------------------------------
+- Fixed setting test type to :is when none is specified
+- Fixed javascript error in IE8
+- Fixed possible ID duplication when adding filter rules very fast (#1488288)
+- Fixed bug where drag layer wasn't removed when dragging was ended over sets list
+
+* version 5.0-rc1 [2011-11-17]
+-----------------------------------------------------------
+- Fixed sorting of scripts, scripts including aware of the sort order
+- Fixed import of rules with unsupported tests
+- Added 'address' and 'envelope' tests support
+- Added 'body' extension support (RFC5173)
+- Added 'subaddress' extension support (RFC5233)
+- Added comparators support
+- Changed Sender/Recipient labels to From/To
+- Fixed importing rule names from Ingo
+- Fixed handling of extensions disabled in config
+
+* version 5.0-beta [2011-10-17]
+-----------------------------------------------------------
+- Added possibility to create a filter based on selected message "in-place"
+- Fixed import from Horde-INGO (#1488064)
+- Add managesieve_script_name option for default name of the script (#1487956)
+- Fixed handling of enabled magic_quotes_gpc setting
+- Fixed PHP warning on connection error when submitting filter form
+- Fixed bug where new action row with flags wasn't handled properly
+- Added managesieve_connect hook for plugins
+- Fixed doubled Filter tab on page refresh
+- Added filters set selector in filter form when invoked in mail task
+- Improved script parser, added support for include and variables extensions
+- Added Kolab's KEP:14 support (http://wiki.kolab.org/User:Greve/Drafts/KEP:14)
+- Use smaller action/rule buttons
+- UI redesign: added possibility to move filter to any place using drag&drop
+  (instead of up/down buttons), added filter sets list object, added more
+  'loading' messages
+- Added option to hide some scripts (managesieve_filename_exceptions)
+
+* version 4.3 [2011-07-28]
+-----------------------------------------------------------
+- Fixed handling of error in Net_Sieve::listScripts()
+- Fixed handling of REFERRAL responses (http://pear.php.net/bugs/bug.php?id=17107)
+- Fixed bug where wrong folders hierarchy was displayed on folders listing
+
+* version 4.2 [2011-05-24]
+-----------------------------------------------------------
+- Moved elsif replacement code to handle only imports from other formats
+- Fixed mod_mailbox() usage for newer Roundcube versions
+- Fixed regex extension (error: regex require missing)
+
+* version 4.1 [2011-03-07]
+-----------------------------------------------------------
+- Fix fileinto target is always INBOX (#1487776)
+- Fix escaping of backslash character in quoted strings (#1487780)
+- Fix handling of non-safe characters (double-quote, backslash)
+  or UTF-8 characters (dovecot's implementation bug workaround)
+  in script names
+- Fix saving of a script using flags extension on servers with imap4flags support (#1487825)
+
+* version 4.0 [2011-02-10]
+-----------------------------------------------------------
+- Fix STARTTLS for timsieved < 2.3.10
+- Added :regex and :matches support (#1487746)
+- Added setflag/addflag/removeflag support (#1487449)
+- Added support for vacation :subject field (#1487120)
+- rcube_sieve_script class moved to separate file
+- Moved javascript code from skin templates into managesieve.js file
+
+* version 3.0 [2011-02-01]
+-----------------------------------------------------------
+- Added support for SASL proxy authentication (#1486691)
+- Fixed parsing of scripts with \r\n line separator
+- Apply forgotten changes for form errors handling
+- Fix multi-line strings parsing (#1487685)
+- Added tests for script parser
+- Rewritten script parser
+- Fix double request when clicking on Filters tab using Firefox
+
+* version 2.10 [2010-10-10]
+-----------------------------------------------------------
+- Fixed import from Avelsieve
+- Use localized size units (#1486976)
+- Added support for relational operators and i;ascii-numeric comparator
+- Added popups with form errors
+
+* version 2.9 [2010-08-02]
+-----------------------------------------------------------
+- Fixed vacation parameters parsing (#1486883)
+
+* version 2.8 [2010-07-08]
+-----------------------------------------------------------
+- Added managesieve_auth_type option (#1486731)
+
+* version 2.7 [2010-07-06]
+-----------------------------------------------------------
+- Update Net_Sieve to version 1.3.0 (fixes LOGIN athentication)
+- Added support for copying and copy sending of messages (COPY extension)
+
+* version 2.6 [2010-06-03]
+-----------------------------------------------------------
+- Support %n and %d variables in managesieve_host option
+
+* version 2.5 [2010-05-04]
+-----------------------------------------------------------
+- Fix filters set label after activation
+- Fix filters set activation, add possibility to deactivate sets (#1486699)
+- Fix download button state when sets list is empty
+- Fix errors when sets list is empty
+
+* version 2.4 [2010-04-01]
+-----------------------------------------------------------
+- Fixed bug in DIGEST-MD5 authentication (http://pear.php.net/bugs/bug.php?id=17285)
+- Fixed disabling rules with many tests
+- Small css unification with core
+- Scripts import/export
+
+* version 2.3 [2010-03-18]
+-----------------------------------------------------------
+- Added import from Horde-INGO
+- Support for more than one match using if+stop instead of if+elsif structures (#1486078)
+- Support for selectively disabling rules within a single sieve script (#1485882)
+- Added vertical splitter
+
+* version 2.2 [2010-02-06]
+-----------------------------------------------------------
+- Fix handling of "<>" characters in filter names (#1486477)
+
+* version 2.1 [2010-01-12]
+-----------------------------------------------------------
+- Fix "require" structure generation when many modules are used
+- Fix problem with '<' and '>' characters in header tests
+
+* version 2.0 [2009-11-02]
+-----------------------------------------------------------
+- Added 'managesieve_debug' option
+- Added multi-script support
+- Small css improvements + sprite image buttons
+- PEAR::NetSieve 1.2.0b1
+
+* version 1.7 [2009-09-20]
+-----------------------------------------------------------
+- Support multiple managesieve hosts using %h variable
+  in managesieve_host option
+- Fix first rule deleting (#1486140) 
+
+* version 1.6 [2009-09-08]
+-----------------------------------------------------------
+- Fix warning when importing squirrelmail rules
+- Fix handling of "true" as "anyof (true)" test
+
+* version 1.5 [2009-09-04]
+-----------------------------------------------------------
+- Added es_ES, ua_UA localizations
+- Added 'managesieve_mbox_encoding' option
+
+* version 1.4 [2009-07-29]
+-----------------------------------------------------------
+- Updated PEAR::Net_Sieve to 1.1.7
+
+* version 1.3 [2009-07-24]
+-----------------------------------------------------------
+- support more languages
+- support config.inc.php file
+
+* version 1.2 [2009-06-28]
+-----------------------------------------------------------
+- Support IMAP namespaces in fileinto (#1485943)
+- Added it_IT localization
+
+* version 1.1 [2009-05-27]
+-----------------------------------------------------------
+- Added new icons
+- Added support for headers lists (coma-separated) in rules
+- Added de_CH localization
+
+* version 1.0 [2009-05-21]
+-----------------------------------------------------------
+- Rewritten using plugin API
+- Added hu_HU localization (Tamas Tevesz)
+
+* version beta7 (svn-r2300) [2009-03-01]
+-----------------------------------------------------------
+- Added SquirrelMail script auto-import (Jonathan Ernst)
+- Added 'vacation' support (Jonathan Ernst & alec)
+- Added 'stop' support (Jonathan Ernst)
+- Added option for extensions disabling (Jonathan Ernst & alec)
+- Added fi_FI, nl_NL, bg_BG localization
+- Small style fixes
+
+* version 0.2-stable1 (svn-r2205) [2009-01-03]
+-----------------------------------------------------------
+- Fix moving down filter row
+- Fixes for compressed js files in stable release package
+- Created patch for svn version r2205
+
+* version 0.2-stable [2008-12-31]
+-----------------------------------------------------------
+- Added ru_RU, fr_FR, zh_CN translation
+- Fixes for Roundcube 0.2-stable
+
+* version 0.2-beta [2008-09-21]
+-----------------------------------------------------------
+- Small css fixes for IE
+- Fixes for Roundcube 0.2-beta
+
+* version beta6 [2008-08-08]
+-----------------------------------------------------------
+- Added de_DE translation
+- Fix for Roundcube r1634
+
+* version beta5 [2008-06-10]
+-----------------------------------------------------------
+- Fixed 'exists' operators
+- Fixed 'not*' operators for custom headers
+- Fixed filters deleting
+
+* version beta4 [2008-06-09]
+-----------------------------------------------------------
+- Fix for Roundcube r1490
+
+* version beta3 [2008-05-22]
+-----------------------------------------------------------
+- Fixed textarea error class setting
+- Added pagetitle setting
+- Added option 'managesieve_replace_delimiter'
+- Fixed errors on IE (still need some css fixes)
+
+* version beta2 [2008-05-20]
+-----------------------------------------------------------
+- Use 'if' only for first filter and 'elsif' for the rest
+
+* version beta1 [2008-05-15]
+-----------------------------------------------------------
+- Initial version for Roundcube r1388.

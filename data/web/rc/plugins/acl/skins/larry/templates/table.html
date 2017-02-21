@@ -1,0 +1,30 @@
+<div id="aclcontainer" class="uibox listbox">
+<div id="acllist-content" class="scroller withfooter">
+    <h2 class="voice" id="aria-label-acltable"><roundcube:label name="acl.ariasummaryacltable" /></h2>
+    <roundcube:object name="acltable" id="acltable" class="records-table" aria-labelledby="aria-label-acltable" role="listbox" />
+</div>
+<div id="acllist-footer" class="boxfooter">
+    <roundcube:button command="acl-create" id="aclcreatelink" type="link" title="acl.newuser" class="listbutton add disabled" classAct="listbutton add" innerClass="inner" content="+" /><roundcube:button name="aclmenulink" id="aclmenulink" type="link" title="acl.actions" class="listbutton groupactions" onclick="return UI.toggle_popup('aclmenu', event)" innerClass="inner" content="&#9881;" aria-haspopup="true" aria-expanded="false" aria-owns="aclmenu-menu" />
+</div>
+</div>
+
+<div id="aclmenu" class="popupmenu" aria-hidden="true" data-align="bottom">
+    <h3 id="aria-label-aclactions" class="voice"><roundcube:label name="acl.arialabelaclactions" /></h3>
+    <ul id="aclmenu-menu" class="toolbarmenu selectable iconized" role="menu" aria-labelledby="aria-label-aclactions">
+        <li role="menuitem"><roundcube:button command="acl-edit" label="edit" class="icon" classAct="icon active" innerclass="icon edit" /></li>
+        <li role="menuitem"><roundcube:button command="acl-delete" label="delete" class="icon" classAct="icon active" innerclass="icon delete" /></li>
+        <roundcube:if condition="!in_array('acl_advanced_mode', (array)config:dont_override)" />
+            <li role="menuitem"><roundcube:button name="acl-switch" id="acl-switch" label="acl.advanced" onclick="rcmail.command('acl-mode-switch');return false" class="active" /></li>
+        <roundcube:endif />
+    </ul>
+</div>
+
+<div id="aclform" class="propform" aria-labelledby="aria-label-aclform" role="form">
+    <h3 id="aria-label-aclform" class="voice"><roundcube:label name="acl.arialabelaclform" /></h3>
+    <fieldset class="thinbordered"><legend><roundcube:label name="acl.identifier" /></legend>
+        <roundcube:object name="acluser" id="acluser" size="35" class="proplist" />
+    </fieldset>
+    <fieldset class="thinbordered"><legend><roundcube:label name="acl.myrights" /></legend>
+        <roundcube:object name="aclrights" class="proplist" />
+    </fieldset>
+</div>

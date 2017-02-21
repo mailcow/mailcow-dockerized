@@ -1,0 +1,39 @@
+{
+	"name": "kolab/net_ldap3",
+	"description": "A successor of the PEAR:Net_LDAP2 module providing advanced functionality for accessing LDAP directories",
+	"type": "library",
+	"version": "1.0.5",
+	"keywords": ["pear", "ldap", "vlv"],
+	"homepage": "http://git.kolab.org/pear/Net_LDAP3/",
+	"license": "GPL-3.0+",
+	"authors": [
+		{
+			"name": "Jeroen van Meeuwen",
+			"email": "vanmeeuwen@kolabsys.com",
+			"role": "Lead"
+		},
+		{
+			"name": "Aleksander Machniak",
+			"email": "machniak@kolabsys.com",
+			"role": "Developer"
+		},
+		{
+			"name": "Thomas Bruederli",
+			"email": "roundcube@gmail.com",
+			"role": "Developer"
+		}
+	],
+	"repositories": [
+		{
+			"type": "pear",
+			"url": "https://pear.php.net/"
+		}
+	],
+	"require": {
+		"php": ">=5.3.3",
+		"pear-pear/net_ldap2": ">=2.0.12"
+	},
+	"autoload": {
+		"classmap": ["lib/"]
+	}
+}

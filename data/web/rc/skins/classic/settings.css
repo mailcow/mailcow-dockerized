@@ -1,0 +1,281 @@
+/***** Roundcube|Mail settings task styles *****/
+
+#rcmfd_timezone
+{
+  width: 300px;
+}
+
+#folder-manager.droptarget
+{
+  border: 1px solid #CC3333;
+  background-color: #FFFFA6;
+}
+
+#folderlist-title a.iconbutton.search {
+  background: url(images/icons/glass.png?v=dcbc.302) no-repeat 0 0;
+  cursor: pointer;
+  position: absolute;
+  right: 4px;
+  top: 2px;
+  width: 16px;
+  text-indent: 50000px;
+}
+
+.listsearchbox select {
+  width: 100%;
+  margin: 1px 0;
+}
+
+#identities-table,
+#sections-table
+{
+  width: 100%;
+  table-layout: fixed;
+}
+
+#identities-table tbody tr td,
+#sections-table tbody tr td
+{
+  cursor: default;
+}
+
+#identities-table tbody tr.readonly td
+{
+  font-style: italic;
+}
+
+#subscription-table li.root
+{
+  font-size: 5%;
+  line-height: 5px;
+  height: 5px;
+  padding: 2px;
+}
+
+#subscription-table li input {
+  position: absolute;
+  right: 0;
+  top: 2px;
+}
+
+#subscription-table li a {
+  padding-right: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#folder-box,
+#prefs-box,
+#identity-box
+{
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  border: 1px solid #999999;
+  overflow: hidden;
+  background-color: #F2F2F2;
+}
+
+#identity-details table td.title,
+#response-details table td.title,
+#folder-details table td.title
+{
+  font-weight: bold;
+  text-align: right;
+  width: 1%;
+  white-space: nowrap;
+}
+
+#response-details table td.title
+{
+  text-align: left;
+  vertical-align: top;
+  width: 140px;
+  padding-top: 5px;
+}
+
+#bottomboxes
+{
+  position: absolute;
+  width: 600px;
+  height: 95px;
+  left: 0;
+  bottom: 0;
+}
+
+#identities-list,
+#folder-manager,
+#sectionslist
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  border: 1px solid #999999;
+  background-color: #F9F9F9;
+  overflow: hidden;
+}
+
+body.iframe,
+#prefs-frame,
+#folder-frame,
+#identity-frame
+{
+  background-color: #F2F2F2;
+  border: none;
+  min-height: 100%; /* Chrome 14 bug */
+}
+
+#prefs-title,
+#folder-title,
+#identity-title
+{
+  /* fixes issue where tabs were overlapping box title when scrolling */
+  z-index: 10;
+}
+
+#formfooter
+{
+  width: 100%;
+}
+
+#formfooter .footerleft
+{
+  padding: 0 2px 10px;
+  white-space: nowrap;
+  float: left;
+}
+
+#formfooter .footerright
+{
+  padding: 0 2px 10px;
+  white-space: nowrap;
+  text-align: right;
+  float: right;
+}
+
+#formfooter .footerindent
+{
+  padding: 10px 0;
+  margin-left: 155px;
+}
+
+#quota
+{
+  position: absolute;
+  top: 3px;
+  right: 8px;
+  width: 100px;
+}
+
+#quotaimg
+{
+  position: absolute;
+  top: 3px;
+  right: 6px;
+  z-index: 101;
+}
+
+#rcmfd_signature
+{
+  font-family: monospace;
+}
+
+div.readtext
+{
+  width: 42em;
+  padding: 20px;
+}
+
+#license
+{
+  min-height: 200px;
+  padding-bottom: 2em;
+  background: url(images/watermark.gif?v=4094.9288) no-repeat center;
+}
+
+#license .sysname
+{
+  font-size: 18px;
+  font-weight: bold;
+}
+
+#license .copyright
+{
+  font-weight: bold;
+}
+
+#license .license,
+#license .links
+{
+  margin-top: 1.5em;
+}
+
+.skinselection
+{
+  display: block;
+  white-space: nowrap;
+  margin: 0.3em 0;
+}
+
+.skinselection span
+{
+  display: inline-block;
+  vertical-align: middle;
+  padding-right: 1em;
+}
+
+.skinselection .skinname
+{
+  font-weight: bold;
+}
+
+.skinselection .skinlicense,
+.skinselection .skinlicense a
+{
+  color: #999;
+  font-style: italic;
+  text-decoration: none;
+}
+
+.skinselection .skinlicense a:hover
+{
+  text-decoration: underline;
+}
+
+img.skinthumbnail
+{
+  width: 64px;
+  height: 64px;
+  border: 1px solid #999;
+  background: #fff;
+}
+
+#pluginlist
+{
+  border: 1px solid #999;
+  width: 100%;
+}
+
+#pluginlist td.version
+{
+  text-align: center;
+}
+
+div.crop
+{
+  overflow: auto;
+}
+
+#rcmfd_signature
+{
+  width: 99%;
+  min-width: 390px;
+}
+
+#rcmfd_signature_toolbar1 td,
+#rcmfd_signature_toolbar2 td
+{
+  width: auto;
+}

@@ -1,0 +1,172 @@
+--- jquery-ui.css.orig	2016-08-15 11:56:45.000000000 +0200
++++ jquery-ui.css	2016-08-15 11:46:38.000000000 +0200
+@@ -227,6 +227,15 @@
+ .ui-menu .ui-state-active {
+ 	margin: -1px;
+ }
++.ui-menu .ui-menu-item .ui-state-active {
++	background: #c33;
++	border-color: #a22;
++	color: #fff;
++	display: block;
++}
++.ui-menu .ui-menu-item a {
++	display: block;
++}
+ 
+ /* icon support */
+ .ui-menu-icons {
+@@ -403,6 +412,9 @@
+ 	width: 17em;
+ 	padding: .2em .2em 0;
+ 	display: none;
++	box-shadow: 1px 1px 18px #999;
++	-moz-box-shadow: 1px 1px 12px #999;
++	-webkit-box-shadow: #999 1px 1px 12px;
+ }
+ .ui-datepicker .ui-datepicker-header {
+ 	position: relative;
+@@ -476,6 +488,11 @@
+ 	text-align: right;
+ 	text-decoration: none;
+ }
++.ui-datepicker td.ui-datepicker-current-day .ui-state-active {
++	background:#c33;
++	border-color:#a22;
++	color:#fff;
++}
+ .ui-datepicker .ui-datepicker-buttonpane {
+ 	background-image: none;
+ 	margin: .7em 0 0 0;
+@@ -487,7 +504,7 @@
+ .ui-datepicker .ui-datepicker-buttonpane button {
+ 	float: right;
+ 	margin: .5em .2em .4em;
+-	cursor: pointer;
++	cursor: default;
+ 	padding: .2em .6em .3em .6em;
+ 	width: auto;
+ 	overflow: visible;
+@@ -580,6 +597,9 @@
+ 	left: 0;
+ 	padding: .2em;
+ 	outline: 0;
++	-webkit-box-shadow: #999 1px 1px 12px;
++	-moz-box-shadow: 1px 1px 12px #999;
++	box-shadow: 1px 1px 18px #999;
+ }
+ .ui-dialog .ui-dialog-titlebar {
+ 	padding: .4em 1em;
+@@ -602,6 +622,9 @@
+ 	padding: 1px;
+ 	height: 20px;
+ }
++.no-close .ui-dialog-titlebar-close {
++	display: none !important;
++}
+ .ui-dialog .ui-dialog-content {
+ 	position: relative;
+ 	border: 0;
+@@ -621,7 +644,7 @@
+ }
+ .ui-dialog .ui-dialog-buttonpane button {
+ 	margin: .5em .4em .5em 0;
+-	cursor: pointer;
++	cursor: default;
+ }
+ .ui-dialog .ui-resizable-n {
+ 	height: 2px;
+@@ -843,20 +866,29 @@
+ 	float: left;
+ 	position: relative;
+ 	top: 0;
+-	margin: 1px .2em 0 0;
++	margin: 0;
+ 	border-bottom-width: 0;
+ 	padding: 0;
+ 	white-space: nowrap;
++	-webkit-border-top-left-radius: 2px;
++	-moz-border-radius-topleft: 2px;
++	border-top-left-radius: 2px;
++	-webkit-border-top-right-radius: 2px;
++	-moz-border-radius-topright: 2px;
++	border-top-right-radius: 2px;
+ }
+ .ui-tabs .ui-tabs-nav .ui-tabs-anchor {
+ 	float: left;
+-	padding: .5em 1em;
++	padding: .3em 1em;
+ 	text-decoration: none;
+ }
+ .ui-tabs .ui-tabs-nav li.ui-tabs-active {
+ 	margin-bottom: -1px;
+ 	padding-bottom: 1px;
+ }
++.ui-dialog .ui-tabs-nav li.ui-tabs-active {
++	background: #fff;
++}
+ .ui-tabs .ui-tabs-nav li.ui-tabs-active .ui-tabs-anchor,
+ .ui-tabs .ui-tabs-nav li.ui-state-disabled .ui-tabs-anchor,
+ .ui-tabs .ui-tabs-nav li.ui-tabs-loading .ui-tabs-anchor {
+@@ -910,9 +942,11 @@
+ }
+ .ui-widget-header {
+ 	border: 1px solid #dddddd;
+-	background: #e9e9e9;
+-	color: #333333;
+ 	font-weight: bold;
++	border-width: 0 0 1px 0;
++	background: #f4f4f4 url("images/listheader.png") 50% 50% repeat;
++	color: #333333;
++	margin: -0.2em -0.2em 0 -0.2em;
+ }
+ .ui-widget-header a {
+ 	color: #333333;
+@@ -957,6 +991,15 @@
+ 	font-weight: normal;
+ 	color: #2b2b2b;
+ }
++.ui-state-focus,
++.ui-widget-content .ui-state-focus {
++	border: 1px solid #c33;
++	color: #a00;
++}
++.ui-tabs-nav .ui-state-focus {
++	border: 1px solid #a4a4a4;
++	color: #000;
++}
+ .ui-state-hover a,
+ .ui-state-hover a:hover,
+ .ui-state-hover a:link,
+@@ -981,9 +1024,10 @@
+ .ui-button:active,
+ .ui-button.ui-state-active:hover {
+ 	border: 1px solid #003eff;
+-	background: #007fff;
+ 	font-weight: normal;
+-	color: #ffffff;
++	background: #c33;
++	border-color: #a22;
++	color: #fff;
+ }
+ .ui-icon-background,
+ .ui-state-active .ui-icon-background {
+@@ -993,7 +1037,6 @@
+ .ui-state-active a,
+ .ui-state-active a:link,
+ .ui-state-active a:visited {
+-	color: #ffffff;
+ 	text-decoration: none;
+ }
+ 
+@@ -1040,8 +1083,8 @@
+ .ui-priority-secondary,
+ .ui-widget-content .ui-priority-secondary,
+ .ui-widget-header .ui-priority-secondary {
+-	opacity: .7;
+-	filter:Alpha(Opacity=70); /* support: IE8 */
++	opacity: .6;
++	filter:Alpha(Opacity=60);
+ 	font-weight: normal;
+ }
+ .ui-state-disabled,

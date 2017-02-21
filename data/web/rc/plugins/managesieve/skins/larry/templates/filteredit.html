@@ -1,0 +1,32 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+</head>
+<body class="iframe<roundcube:exp expression="env:task != 'mail' ? ' floatingbuttons' : ' mail'" />">
+
+<roundcube:if condition="env:task != 'mail'" />
+<div id="filter-title" class="boxtitle"><roundcube:label name="managesieve.filterdef" /></div>
+<roundcube:endif />
+
+<div id="filter-form" class="boxcontent">
+<roundcube:object name="filterform" />
+
+<roundcube:if condition="env:task != 'mail'" />
+<div id="footer">
+<div class="footerleft formbuttons floating">
+<roundcube:button command="plugin.managesieve-save" type="input" class="button mainaction" label="save" />
+<label for="disabled">
+<input type="checkbox" id="disabled" name="_disabled" value="1" />
+<roundcube:label name="managesieve.filterdisabled" />
+</label>
+</div>
+</div>
+<roundcube:endif />
+
+</form>
+</div>
+
+</body>
+</html>

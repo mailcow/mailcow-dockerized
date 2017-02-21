@@ -1,0 +1,3 @@
+require ["variables"];
+set "EDITOR" "Roundcube";
+set "EDITOR_VERSION" "123";

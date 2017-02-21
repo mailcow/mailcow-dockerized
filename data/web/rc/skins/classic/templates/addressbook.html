@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+<script type="text/javascript" src="/splitter.js"></script>
+<script type="text/javascript" src="/functions.js"></script>
+<style type="text/css">
+#addresslist { width: <roundcube:exp expression="!empty(cookie:addressviewsplitter) ? cookie:addressviewsplitter-5 : 245" />px; }
+#contacts-box { left: <roundcube:exp expression="!empty(cookie:addressviewsplitter) ? cookie:addressviewsplitter+5 : 255" />px; }
+#directorylistbox { width: <roundcube:exp expression="!empty(cookie:addressviewsplitterd) ? cookie:addressviewsplitterd-5 : 195" />px; }
+#addressscreen { left: <roundcube:exp expression="!empty(cookie:addressviewsplitterd) ? cookie:addressviewsplitterd+5 : 205" />px; }
+</style>
+
+</head>
+<body>
+
+<roundcube:include file="/includes/taskbar.html" />
+<roundcube:include file="/includes/header.html" />
+
+<div id="abooktoolbar">
+<roundcube:button command="add" type="link" class="buttonPas addcontact" classAct="button addcontact" classSel="button addcontactSel" title="newcontact" content=" " />
+<roundcube:button command="compose" type="link" class="buttonPas compose" classAct="button compose" classSel="button composeSel" title="composeto" content=" " />
+<roundcube:button command="print" type="link" class="buttonPas print" classAct="button print" classSel="button printSel" label="print" title="printcontact" content=" " />
+<roundcube:button command="delete" type="link" class="buttonPas delete" classAct="button delete" classSel="button deleteSel" title="deletecontact" content=" " />
+<span class="toolbarseparator">&nbsp;</span>
+<roundcube:button command="import" type="link" class="buttonPas import" classAct="button import" classSel="button importSel" title="importcontacts" content=" " />
+<span class="dropbutton">
+<roundcube:button command="export" type="link" class="buttonPas export" classAct="button export" classSel="button exportSel" title="exportvcards" content=" " />
+<span id="exportmenulink" onclick="rcmail_ui.show_popup('exportmenu');return false"></span>
+</span>
+<roundcube:button command="advanced-search" type="link" class="buttonPas search" classAct="button search" classSel="button searchSel" title="advsearch" content=" " />
+<roundcube:container name="toolbar" id="abooktoolbar" />
+</div>
+
+<div id="quicksearchbar">
+<roundcube:button name="searchmenulink" id="searchmenulink" image="/images/icons/glass_roll.png" onclick="rcmail_ui.show_popup('searchmenu');return false" title="searchmod" width="16" height="16" />
+<roundcube:object name="searchform" id="quicksearchbox" />
+<roundcube:button command="reset-search" id="searchreset" image="/images/icons/reset.gif" title="resetsearch" width="13" height="13" />
+</div>
+
+<div id="exportmenu" class="popupmenu">
+    <ul>
+        <li><roundcube:button command="export" label="exportall" prop="sub" classAct="exportalllink active" class="exportalllink" /></li>
+        <li><roundcube:button command="export-selected" label="exportsel" prop="sub" classAct="exportsellink active" class="exportsellink" /></li>
+    </ul>
+</div>
+
+<div id="searchmenu" class="popupmenu">
+  <ul class="toolbarmenu">
+    <li><label><input type="checkbox" name="s_mods[]" value="name" id="s_mod_name" onclick="rcmail_ui.set_searchmod(this)" /> <span><roundcube:label name="name" /></span></label></li>
+    <li><label><input type="checkbox" name="s_mods[]" value="firstname" id="s_mod_firstname" onclick="rcmail_ui.set_searchmod(this)" /> <span><roundcube:label name="firstname" /></span></label></li>
+    <li><label><input type="checkbox" name="s_mods[]" value="surname" id="s_mod_surname" onclick="rcmail_ui.set_searchmod(this)" /> <span><roundcube:label name="surname" /></span></label></li>
+    <li><label><input type="checkbox" name="s_mods[]" value="email" id="s_mod_email" onclick="rcmail_ui.set_searchmod(this)" /> <span><roundcube:label name="email" /></span></label></li>
+    <li><label><input type="checkbox" name="s_mods[]" value="*" id="s_mod_all" onclick="rcmail_ui.set_searchmod(this)" /> <span><roundcube:label name="allfields" /></span></label></li>
+  </ul>
+</div>
+
+<div id="mainscreen">
+
+<div id="directorylistbox">
+<div id="directorylist-title" class="boxtitle"><roundcube:label name="groups" /></div>
+<div id="directorylist-content" class="boxlistcontent">
+  <roundcube:object name="directorylist" id="directorylist" class="treelist" />
+  <roundcube:object name="savedsearchlist" id="savedsearchlist" class="treelist" />
+</div>
+<div id="directorylist-footer" class="boxfooter">
+  <roundcube:button command="group-create" type="link" title="newgroup" class="buttonPas addgroup" classAct="button addgroup" content=" " />
+  <roundcube:button name="groupmenulink" id="groupmenulink" type="link" title="moreactions" class="button groupactions" onclick="rcmail_ui.show_popup('groupmenu');return false" content=" " />
+</div>
+</div>
+
+<div id="addressscreen">
+
+<div id="addresslist">
+<roundcube:object name="addresslisttitle" label="contacts" tag="div" class="boxtitle" />
+<div class="boxlistcontent">
+<roundcube:object name="addresslist" id="contacts-table" class="records-table" cellspacing="0" summary="Contacts list" noheader="true" />
+</div>
+<div class="boxfooter">
+<div id="abookcountbar" class="pagenav">
+  <roundcube:button command="firstpage" type="link" class="buttonPas firstpage" classAct="button firstpage" classSel="button firstpageSel" title="firstpage" content=" " />
+  <roundcube:button command="previouspage" type="link" class="buttonPas prevpage" classAct="button prevpage" classSel="button prevpageSel" title="previouspage" content=" " />
+  <roundcube:object name="recordsCountDisplay" style="padding:0 .5em; float:left" />
+  <roundcube:button command="nextpage" type="link" class="buttonPas nextpage" classAct="button nextpage" classSel="button nextpageSel" title="nextpage" content=" " />
+  <roundcube:button command="lastpage" type="link" class="buttonPas lastpage" classAct="button lastpage" classSel="button lastpageSel" title="lastpage" content=" " />
+</div>
+</div>
+</div>
+
+<script type="text/javascript">
+  var addrviewsplit = new rcube_splitter({id:'addressviewsplitter', p1: 'addresslist', p2: 'contacts-box', orientation: 'v', relative: true, start: 250});
+  rcmail.add_onload('addrviewsplit.init()');
+
+  var addrviewsplitd = new rcube_splitter({id:'addressviewsplitterd', p1: 'directorylistbox', p2: 'addressscreen', orientation: 'v', relative: true, start: 200});
+  rcmail.add_onload('addrviewsplitd.init()');
+</script>
+
+<div id="contacts-box">
+<roundcube:object name="addressframe" id="contact-frame" width="100%" height="100%" frameborder="0" src="/watermark.html" />
+</div>
+
+</div>
+</div>
+
+<div id="groupoptionsmenu" class="popupmenu">
+  <ul>
+    <li><roundcube:button command="group-rename" label="grouprename" classAct="active" /></li>
+    <li><roundcube:button command="group-delete" label="groupdelete" classAct="active" /></li>
+    <li><roundcube:button command="group-remove-selected" label="groupremoveselected" classAct="active" /></li>
+    <li class="separator_above"><roundcube:button command="search-create" label="searchsave" classAct="active" /></li>
+    <li><roundcube:button command="search-delete" label="searchdelete" classAct="active" /></li>
+    <roundcube:container name="groupoptions" id="groupoptionsmenu" />
+  </ul>
+</div>
+
+<div id="dragmenu" class="popupmenu">
+  <ul>
+    <li><roundcube:button command="move" onclick="return rcmail.drag_menu_action('move')" label="move" classAct="active" /></li>
+    <li><roundcube:button command="copy" onclick="return rcmail.drag_menu_action('copy')" label="copy" classAct="active" /></li>
+  </ul>
+</div>
+
+<script type="text/javascript">
+rcube_init_mail_ui();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,28 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+</head>
+<body class="noscroll">
+
+<roundcube:include file="/includes/header.html" />
+
+<div id="mainscreen" class="offset">
+
+<roundcube:if condition="env:task == 'settings'" />
+	<roundcube:include file="/includes/settingstabs.html" />
+<roundcube:endif />
+
+<div id="pluginbody" class="uibox contentbox">
+<roundcube:object name="plugin.body" />
+</div>
+
+</div>
+
+<roundcube:object name="plugin.footer" />
+
+<roundcube:include file="/includes/footer.html" />
+
+</body>
+</html>

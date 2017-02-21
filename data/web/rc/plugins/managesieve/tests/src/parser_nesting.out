@@ -1,0 +1,9 @@
+# Sieve Filter
+# Erzeugt von Ingo (http://www.horde.org/ingo/) (30.09.2016, 16:02)
+
+# rule:[Ausgeschlossene Adressen]
+if address :is ["From","Sender","Resent-From"] "noreply@example.org"
+{
+	discard;
+	stop;
+}

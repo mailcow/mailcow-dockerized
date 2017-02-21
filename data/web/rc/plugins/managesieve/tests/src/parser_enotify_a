@@ -1,0 +1,19 @@
+require ["enotify","variables"];
+# rule:[notify1]
+if header :contains "from" "boss@example.org"
+{
+	notify :importance "1" :message "This is probably very important" "mailto:alm@example.com";
+	stop;
+}
+# rule:[subject]
+if header :matches "Subject" "*"
+{
+	set "subject" "${1}";
+}
+# rule:[from notify2]
+if header :matches "From" "*"
+{
+	set "from" "${1}";
+	notify :importance "3" :message "${from}: ${subject}" "mailto:alm@example.com";
+}
+

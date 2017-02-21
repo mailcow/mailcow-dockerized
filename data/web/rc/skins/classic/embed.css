@@ -1,0 +1,39 @@
+/**
+ * Roundcube webmail "embedded" stylesheets
+ *
+ * Copyright (c) 2013, The Roundcube Dev Team
+ *
+ * The contents are subject to the Creative Commons Attribution-ShareAlike
+ * License. It is allowed to copy, distribute, transmit and to adapt the work
+ * by keeping credits to the original autors in the README file.
+ * See http://creativecommons.org/licenses/by-sa/3.0/ for details.
+ */
+
+.rcmail-inline-message {
+  font-family: sans-serif;
+  font-size: 14px;
+  color: #000;
+  margin-bottom: .8em;
+  min-height: 30px;
+  padding: 10px 10px 6px 46px;
+  background: url(images/display/icons.png?v=e866.4201) 6px 3px no-repeat #F7FDCB;
+  border: 1px solid #C2D071;
+}
+
+.rcmail-inline-warning {
+  background-position: 6px -92px;
+}
+
+.rcmail-inline-message > button {
+  margin-left: 1em;
+  vertical-align: baseline;
+}
+
+.rcmail-inline-message em {
+  font-size: 90%;
+  color: #666;
+}
+
+.rcmail-inline-buttons {
+  margin-bottom: 0;
+}

@@ -1,0 +1,112 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+</head>
+<roundcube:if condition="env:extwin" /><body class="noscroll extwin"><roundcube:else /><body class="noscroll"><roundcube:endif />
+
+<roundcube:include file="/includes/header.html" />
+
+<div id="mainscreen">
+
+<h1 class="voice"><roundcube:object name="messageHeaders" valueOf="subject" /></h1>
+
+<!-- toolbar -->
+<h2 id="aria-label-toolbar" class="voice"><roundcube:label name="arialabeltoolbar" /></h2>
+<div id="messagetoolbar" class="toolbar fullwidth" role="toolbar" aria-labelledby="aria-label-toolbar">
+<roundcube:if condition="!env:extwin" />
+	<roundcube:button command="list" type="link" class="button back disabled" classAct="button back" classSel="button back pressed" label="back" />
+<roundcube:endif />
+	<roundcube:include file="/includes/mailtoolbar.html" />
+</div>
+
+<roundcube:if condition="!env:extwin" />
+
+<div id="mainscreencontent">
+
+<div id="mailview-left">
+
+<!-- folders list -->
+<div id="mailboxcontainer" class="uibox listbox" role="navigation" aria-labelledby="aria-label-folderlist">
+<h2 id="aria-label-folderlist" class="voice"><roundcube:label name="arialabelfolderlist" /></h2>
+<div class="scroller">
+<roundcube:object name="mailboxlist" id="mailboxlist" class="treelist listing folderlist" folder_filter="mail" unreadwrap="%s" />
+</div>
+</div>
+
+</div>
+
+<div id="mailview-right" class="uibox" role="main">
+<roundcube:else />
+<roundcube:object name="mailboxlist" folder_filter="mail" type="js" />
+
+<div id="mailview-right" class="offset fullwidth uibox" role="main">
+<roundcube:endif />
+
+<div id="messageheader">
+<span class="moreheaderstoggle"></span>
+
+<!-- record navigation -->
+<div id="countcontrols" class="pagenav" role="navigation" aria-labelledby="aria-label-countcontrols">
+	<h2 id="aria-label-countcontrols" class="voice"><roundcube:label name="arialabelmessagenav" /></h2>
+	<roundcube:object name="messageCountDisplay" class="countdisplay" />
+	<roundcube:button command="previousmessage" type="link" class="button prevpage disabled" classAct="button prevpage" classSel="button prevpage pressed" innerClass="inner" title="previousmessage" label="previous" />
+	<roundcube:button command="nextmessage" type="link" class="button nextpage disabled" classAct="button nextpage" classSel="button nextpage pressed" innerClass="inner" title="nextmessage" label="next" />
+</div>
+
+<roundcube:if condition="env:optional_format=='text'" />
+<div id="formatcontrols">
+	<span class="buttongroup">
+		<roundcube:button command="change-format" prop="html" type="link" class="button first changeformat html selected" innerClass="icon" title="changeformathtml" /><roundcube:button command="change-format" prop="text" type="link" class="button last changeformat text" classSel="button last changeformat text pressed" innerClass="icon" title="changeformattext" />
+	</span>
+</div>
+<roundcube:elseif condition="env:optional_format=='html'" />
+<div id="formatcontrols">
+	<span class="buttongroup">
+		<roundcube:button command="change-format" prop="html" type="link" class="button first changeformat html" classSel="button first changeformat html pressed" innerClass="icon" title="changeformathtml" /><roundcube:button command="change-format" prop="text" type="link" class="button last changeformat text selected" innerClass="icon" title="changeformattext" />
+	</span>
+</div>
+<roundcube:endif />
+
+<h2 class="subject"><span onmouseover="rcube_webmail.long_subject_title(this)"><span class="voice"><roundcube:label name="subject" />: </span><roundcube:object name="messageHeaders" valueOf="subject" /></span></h2>
+<div class="message-headers">
+<roundcube:object name="messageHeaders" class="headers-table" addicon="/images/addcontact.png" exclude="subject" max="20" />
+</div>
+<roundcube:object name="messageFullHeaders" id="full-headers" />
+
+<div id="contactphoto"><roundcube:object name="contactphoto" /></div>
+</div>
+
+<div id="messagecontent">
+<div class="rightcol" role="region" aria-labelledby="aria-label-messageattachments">
+<h2 id="aria-label-messageattachments" class="voice"><roundcube:label name="attachments" /></h2>
+<roundcube:object name="messageAttachments" id="attachment-list" class="attachmentslist" />
+</div>
+<div class="leftcol" role="region" aria-labelledby="aria-label-messagebody">
+<h2 id="aria-label-messagebody" class="voice"><roundcube:label name="arialabelmessagebody" /></h2>
+<roundcube:object name="messageObjects" id="message-objects" />
+<roundcube:object name="messageBody" id="messagebody" headertableclass="message-partheaders headers-table" />
+</div>
+</div>
+
+</div><!-- end mailview-right -->
+
+<roundcube:if condition="!env:extwin" />
+</div><!-- end mainscreencontent -->
+<roundcube:endif />
+
+</div><!-- end mainscreen -->
+
+<div id="attachmentmenu" class="popupmenu" aria-hidden="true">
+	<ul class="toolbarmenu" id="attachmentoptionsmenu" role="menu">
+		<roundcube:button command="open-attachment" id="attachmenuopen" type="link-menuitem" label="open" class="icon" classAct="icon active" innerclass="icon extwin" />
+		<roundcube:button command="download-attachment" id="attachmenudownload" type="link-menuitem" label="download" class="icon" classAct="icon active" innerclass="icon download" />
+		<roundcube:container name="attachmentmenu" id="attachmentoptionsmenu" />
+	</ul>
+</div>
+
+<roundcube:include file="/includes/footer.html" />
+
+</body>
+</html>

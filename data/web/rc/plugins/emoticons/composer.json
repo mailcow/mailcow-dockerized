@@ -1,0 +1,29 @@
+{
+    "name": "roundcube/emoticons",
+    "type": "roundcube-plugin",
+    "description": "Plugin that adds emoticons support.",
+    "license": "GPLv3+",
+    "version": "2.0",
+    "authors": [
+        {
+            "name": "Thomas Bruederli",
+            "email": "roundcube@gmail.com",
+            "role": "Lead"
+        },
+        {
+            "name": "Aleksander Machniak",
+            "email": "alec@alec.pl",
+            "role": "Developer"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "http://plugins.roundcube.net"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "roundcube/plugin-installer": ">=0.1.3"
+    }
+}

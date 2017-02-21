@@ -1,0 +1,24 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+</head>
+<body class="iframe raweditor">
+
+<div id="filtersetraw-title" class="boxtitle"><roundcube:label name="managesieve.filterseteditraw" /></div>
+
+<div id="filter-form" class="boxcontent">
+<roundcube:object name="filterseteditraw" />
+
+<div id="footer">
+<div class="footerleft formbuttons">
+<roundcube:button command="plugin.managesieve-save" type="input" class="button mainaction" label="save" />
+</div>
+</div>
+
+</form>
+</div>
+
+</body>
+</html>

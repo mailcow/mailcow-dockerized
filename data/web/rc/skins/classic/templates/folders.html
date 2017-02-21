@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+<script type="text/javascript" src="/functions.js"></script>
+<script type="text/javascript" src="/splitter.js"></script>
+<style type="text/css">
+#folder-manager { width: <roundcube:exp expression="!empty(cookie:folderviewsplitter) ? cookie:folderviewsplitter-5 : 295" />px; }
+#folder-box { left: <roundcube:exp expression="!empty(cookie:folderviewsplitter) ? cookie:folderviewsplitter+5 : 305" />px; }
+</style>
+</head>
+<body>
+
+<roundcube:include file="/includes/taskbar.html" />
+<roundcube:include file="/includes/header.html" />
+<roundcube:include file="/includes/settingstabs.html" />
+
+<div id="mainscreen">
+
+<div id="folder-manager">
+<div id="folderlist-title" class="boxtitle">
+    <roundcube:label name="folders" />
+    <a href="#folders" class="iconbutton search" title="<roundcube:label name='findfolders' />" tabindex="0"><roundcube:label name='findfolders' /></a>
+</div>
+<div class="listsearchbox">
+    <roundcube:object name="folderfilter" id="folderlist-filter" />
+    <div class="searchbox" role="search">
+        <input type="text" name="q" id="foldersearch" placeholder="<roundcube:label name='findfolders' />" />
+        <a class="iconbutton searchicon"></a>
+        <roundcube:button command="reset-foldersearch" id="folderlistsearch-reset" class="iconbutton reset" title="resetsearch" width="13" height="13" />
+    </div>
+</div>
+<div id="folderlist-content" class="boxlistcontent">
+    <roundcube:object name="foldersubscription" form="subscriptionform" id="subscription-table"
+        summary="Folder subscription table" class="treelist folderlist" />
+</div>
+<div id="folderlist-footer" class="boxfooter">
+    <roundcube:button command="create-folder" type="link" title="createfolder" class="buttonPas addgroup" classAct="button addgroup" content=" " />
+    <roundcube:button name="mailboxmenulink" id="mailboxmenulink" type="link" title="folderactions" class="button groupactions" onclick="rcmail_ui.show_popup('mailboxmenu');return false" content=" " />
+
+    <roundcube:if condition="env:quota" />
+    <img id="quotaimg" src="/images/quota.png" alt="" width="102" height="16" />
+    <div id="quota">
+        <roundcube:object name="quotaDisplay" display="image" width="100" height="14" id="quotadisplay" />
+    </div>
+    <roundcube:endif />
+</div>
+</div>
+
+<script type="text/javascript">
+    var folderviewsplit = new rcube_splitter({id:'folderviewsplitter', p1: 'folder-manager', p2: 'folder-box', orientation: 'v', relative: true, start: 300 });
+    rcmail.add_onload('folderviewsplit.init()');
+</script>
+
+<div id="folder-box">
+    <roundcube:object name="folderframe" id="folder-frame" width="100%" height="100%" frameborder="0" src="/watermark.html" />
+</div>
+
+</div>
+
+<div id="mailboxoptionsmenu" class="popupmenu">
+  <ul>
+    <li><roundcube:button command="delete-folder" label="delete" classAct="active" /></li>
+    <li><roundcube:button command="purge" type="link" label="empty" classAct="active" /></li>
+    <roundcube:container name="mailboxoptions" id="mailboxoptionsmenu" />
+  </ul>
+</div>
+
+<script type="text/javascript">
+rcube_init_mail_ui();
+</script>
+
+</body>
+</html>

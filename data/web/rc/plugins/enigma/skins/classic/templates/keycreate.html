@@ -1,0 +1,22 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+</head>
+<body class="iframe">
+
+<div id="keyimport-title" class="boxtitle"><roundcube:label name="enigma.createkeys" /></div>
+
+<div id="import-form" class="boxcontent">
+    <roundcube:object name="keyform" id="keycreateform" class="propform" size="40" textareacols="40" textarearows="6" />
+
+    <div id="formfooter">
+        <div class="footerleft">
+            <roundcube:button command="plugin.enigma-key-save" type="input" class="button mainaction" label="save" />
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

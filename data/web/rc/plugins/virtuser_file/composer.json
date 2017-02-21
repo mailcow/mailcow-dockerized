@@ -1,0 +1,24 @@
+{
+    "name": "roundcube/virtuser_file",
+    "type": "roundcube-plugin",
+    "description": "Plugin adds possibility to resolve user email/login according to lookup tables in files.",
+    "license": "GPLv3+",
+    "version": "1.0",
+    "authors": [
+        {
+            "name": "Aleksander Machniak",
+            "email": "alec@alec.pl",
+            "role": "Lead"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "http://plugins.roundcube.net"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "roundcube/plugin-installer": ">=0.1.3"
+    }
+}

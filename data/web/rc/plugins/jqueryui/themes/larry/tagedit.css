@@ -1,0 +1,105 @@
+/**
+ * Styles of the tagedit inputsforms
+ */
+.tagedit-list {
+	width: 100%;
+	margin: 0;
+	padding: 4px 4px 0 5px;
+	overflow: auto;
+	min-height: 26px;
+	background: #fff;
+	border: 1px solid #b2b2b2;
+	border-radius: 4px;
+	box-shadow: inset 0 0 2px 1px rgba(0,0,0, 0.1);
+	-moz-box-shadow: inset 0 0 2px 1px rgba(0,0,0, 0.1);
+	-webkit-box-shadow: inset 0 0 2px 1px rgba(0,0,0, 0.1);
+	-o-box-shadow: inset 0 0 2px 1px rgba(0,0,0, 0.1);
+}
+.tagedit-list li.tagedit-listelement {
+	list-style-type: none;
+	float: left;
+	margin: 0 4px 4px 0;
+	padding: 0;
+}
+
+/* New Item input */
+.tagedit-list li.tagedit-listelement-new input {
+	border: 0;
+	height: 100%;
+	padding: 4px 1px;
+	width: 15px;
+	background: #fff;
+	border-radius: 0;
+	box-shadow: none;
+	-moz-box-shadow: none;
+	-webkit-box-shadow: none;
+	-o-box-shadow: none;
+}
+.tagedit-list li.tagedit-listelement-new input:focus {
+	box-shadow: none;
+	-moz-box-shadow: none;
+	-webkit-box-shadow: none;
+	-o-box-shadow: none;
+	outline: none;
+}
+.tagedit-list li.tagedit-listelement-new input.tagedit-input-disabled {
+	display: none;
+}
+
+/* Item that is put to the List */
+.tagedit span.tag-element,
+.tagedit-list li.tagedit-listelement-old {
+	padding: 3px 6px 1px 6px;
+	background: #ddeef5;
+	background: -moz-linear-gradient(top, #edf6fa 0%, #d6e9f3 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#edf6fa), color-stop(100%,#d6e9f3));
+	background: -o-linear-gradient(top, #edf6fa 0%, #d6e9f3 100%);
+	background: -ms-linear-gradient(top, #edf6fa 0%, #d6e9f3 100%);
+	background: linear-gradient(top, #edf6fa 0%, #d6e9f3 100%);
+	border: 1px solid #c2dae5;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	color: #0d5165;
+	line-height: 1.3em;
+}
+
+.tagedit-list li.tagedit-listelement-focus {
+	border-color: #4787b1;
+	-moz-box-shadow: 0 0 3px 1px rgba(71,135,177, 0.8);
+	-webkit-box-shadow: 0 0 3px 1px rgba(71,135,177, 0.8);
+	-o-box-shadow: 0 0 3px 1px rgba(71,135,177, 0.8);
+	box-shadow: 0 0 3px 1px rgba(71,135,177, 0.8);
+}
+
+.tagedit span.tag-element {
+	margin-right: 0.6em;
+	padding: 2px 6px;
+/*	cursor: pointer; */
+}
+
+.tagedit span.tag-element.inherit {
+	color: #666;
+	background: #f2f2f2;
+	border-color: #ddd;
+}
+
+.tagedit-list li.tagedit-listelement-old a.tagedit-close,
+.tagedit-list li.tagedit-listelement-old a.tagedit-break,
+.tagedit-list li.tagedit-listelement-old a.tagedit-delete,
+.tagedit-list li.tagedit-listelement-old a.tagedit-save {
+	text-indent: -2000px;
+	display: inline-block;
+	position: relative;
+	top: -1px;
+	width: 16px;
+	height: 16px;
+	margin: 0 -4px 0 6px;
+	background: url('data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAAOCAYAAAD0f5bSAAAAgUlEQVQoz2NgQAKzdxwWAOIEIG5AwiC+AAM2AJQIAOL3QPwfCwaJB6BrSMChGB0nwDQYwATP3nn4f+Ge4ygKQXyQOJKYAUjTepjAm09fwBimEUTDxJA0rWdANxWmaMXB0xiGwDADurthGkEAmwbqaCLFeWQFBOlBTlbkkp2MSE2wAA8R50rWvqeRAAAAAElFTkSuQmCC') left 1px no-repeat;
+	cursor: pointer;
+}
+
+.tagedit-list li.tagedit-listelement-old span {
+	display: inline-block;
+	height: 15px;
+}

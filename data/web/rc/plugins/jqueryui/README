@@ -1,0 +1,31 @@
++-------------------------------------------------------------------------+
+|
+|  Author:  Cor Bosman (roundcube@wa.ter.net)
+|  Plugin:  jqueryui
+|  Version: 1.12.0
+|  Purpose: Add jquery-ui to roundcube for every plugin to use
+|
++-------------------------------------------------------------------------+
+
+jqueryui adds the complete jquery-ui library including the smoothness
+theme to roundcube. This allows other plugins to use jquery-ui without
+having to load their own version. The benefit of using 1 central jquery-ui
+is that we wont run into problems of conflicting jquery libraries being
+loaded. All plugins that want to use jquery-ui should use this plugin as
+a requirement.
+
+It is possible for plugin authors to override the default smoothness theme.
+To do this, go to the jquery-ui website, and use the download feature to
+download your own theme. In the advanced settings, provide a scope class to
+your theme and add that class to all your UI elements. Finally, load the
+downloaded css files in your own plugin.
+
+Some jquery-ui modules provide localization. One example is the datepicker module.
+If you want to load localization for a specific module, then set up config.inc.php.
+Check the config.inc.php.dist file on how to set this up for the datepicker module.
+
+As of version 1.8.6 this plugin also supports other themes. If you're a theme
+developer and would like a different default theme to be used for your RC theme
+then let me know and we can set things up.
+
+This also provides some common UI modules e.g. miniColors extension.

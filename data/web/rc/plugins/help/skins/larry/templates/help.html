@@ -1,0 +1,31 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+</head>
+<roundcube:if condition="env:extwin" /><body class="extwin"><roundcube:else /><body><roundcube:endif />
+
+<roundcube:include file="/includes/header.html" />
+
+<div id="mainscreen">
+
+<div id="helptoolbar" class="toolbar">
+<roundcube:object name="tablink" action="index" type="link" label="help.help" title="help.help" class="button help" />
+<roundcube:object name="tablink" action="about" type="link" label="help.about" title="help.about" class="button about" />
+<roundcube:object name="tablink" action="license" type="link" label="help.license" title="help.license" class="button license" />
+<roundcube:container name="helptabs" id="helptabsbar" />
+</div>
+
+<div id="pluginbody" class="uibox offset">
+	<div class="iframebox help_<roundcube:var name='env:action' />">
+		<roundcube:object name="helpcontent" id="helpcontentframe" style="width:100%; height:100%" frameborder="0" src="/watermark.html" />
+	</div>
+</div>
+
+</div>
+
+<roundcube:include file="/includes/footer.html" />
+
+</body>
+</html>

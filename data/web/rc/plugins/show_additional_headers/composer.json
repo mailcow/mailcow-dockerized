@@ -1,0 +1,24 @@
+{
+    "name": "roundcube/show_additional_headers",
+    "type": "roundcube-plugin",
+    "description": "Proof-of-concept plugin which will fetch additional headers and display them in the message view.",
+    "license": "GPLv3+",
+    "version": "2.0",
+    "authors": [
+        {
+            "name": "Thomas Bruederli",
+            "email": "roundcube@gmail.com",
+            "role": "Lead"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "http://plugins.roundcube.net"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "roundcube/plugin-installer": ">=0.1.3"
+    }
+}

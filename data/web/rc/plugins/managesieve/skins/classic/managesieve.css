@@ -1,0 +1,481 @@
+#filtersetslistbox
+{
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 195px;
+  border: 1px solid #999999;
+  background-color: #F9F9F9;
+  overflow: hidden;
+}
+
+#filtersscreen
+{
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 205px;
+}
+
+#filterslistbox
+{
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border: 1px solid #999999;
+  overflow: auto;
+}
+
+#filterslist,
+#filtersetslist
+{
+  width: 100%;
+  table-layout: fixed;
+}
+
+#filterslist tbody td,
+#filtersetslist tbody td
+{
+  cursor: default;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+}
+
+#filterslist tbody tr.disabled td,
+#filtersetslist tbody tr.disabled td
+{
+  color: #999999;
+	text-decoration: line-through;
+}
+
+#filtersetslist tbody td
+{
+  font-weight: bold;
+}
+/*
+#filtersetslist tr.selected
+{
+  background-color: #929292;
+  border-bottom: 1px solid #898989;
+  color: #FFF;
+  font-weight: bold;
+}
+*/
+
+#filterslist tbody tr.filtermoveup td
+{
+  border-top: 2px dotted #555;
+  padding-top: 0px;
+}
+
+#filterslist tbody tr.filtermovedown td
+{
+  border-bottom: 2px dotted #555;
+  padding-bottom: 1px;
+}
+
+#filter-box
+{
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  border: 1px solid #999999;
+  overflow: hidden;
+}
+
+#filter-frame
+{
+  border: none;
+}
+
+body.iframe
+{
+  min-width: 620px;
+  width: expression(Math.max(620, document.documentElement.clientWidth)+'px');
+  background-color: #F2F2F2;
+}
+
+#filter-form
+{
+  min-width: 550px;
+  width: expression(Math.max(550, document.documentElement.clientWidth)+'px');
+  white-space: nowrap;
+  padding: 20px 10px 10px 10px;
+}
+
+#filter-form legend, #filter-form label
+{
+  color: #666666;
+}
+
+#rules, #actions
+{
+  margin-top: 5px;
+  padding: 0;
+  border-collapse: collapse;
+}
+
+div.rulerow, div.actionrow
+{
+  width: auto;
+  padding: 2px;
+  white-space: nowrap;
+  border: 1px solid #F2F2F2;
+}
+
+div.rulerow:hover, div.actionrow:hover
+{
+  padding: 2px;
+  white-space: nowrap;
+  background: #F9F9F9;
+  border: 1px solid silver;
+}
+
+div.rulerow table, div.actionrow table
+{
+  padding: 0px;
+  min-width: 600px;
+  width: expression(Math.max(600, document.documentElement.clientWidth)+'px');
+}
+
+td
+{
+  vertical-align: top;
+}
+
+td.advbutton
+{
+  width: 1%;
+}
+
+td.advbutton a
+{
+  display: block;
+  padding-top: 14px;
+  height: 6px;
+  width: 12px;
+  text-decoration: none;
+}
+
+td.advbutton a.show
+{
+  background: url(images/down_small.gif?v=8629.106) center no-repeat;
+}
+
+td.advbutton a.hide
+{
+  background: url(images/up_small.gif?v=c56c.106) center no-repeat;
+}
+
+td.rowbuttons
+{
+  text-align: right;
+  white-space: nowrap;
+  width: 1%;
+}
+
+td.rowactions
+{
+  white-space: nowrap;
+  width: 1%;
+  padding-top: 2px;
+}
+
+td.rowtargets
+{
+  white-space: nowrap;
+  width: 98%;
+  padding-left: 3px;
+  padding-top: 2px;
+}
+
+td.rowtargets > div
+{
+  vertical-align: top;
+  margin-top: 2px;
+}
+
+td.rowtargets div.adv
+{
+  padding-top: 3px;
+}
+
+td.rowtargets div.adv span.label
+{
+  display: inline-block;
+  padding-right: 10px;
+  min-width: 65px;
+}
+
+td.rowtargets div a
+{
+  margin-left: 10px;
+}
+
+td.rowtargets div.adv input
+{
+  margin-bottom: 1px;
+}
+
+html.mozilla #filter-form select
+{
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+input.disabled, input.disabled:hover
+{
+  color: #999999;
+}
+
+input.error, textarea.error
+{
+  background-color: #FFFF88;
+}
+
+input.box,
+input.radio
+{
+  border: 0;
+  margin-top: 0;
+}
+
+select.operator_selector
+{
+  width: 200px;
+  vertical-align: top;
+}
+
+td.rowtargets span,
+td.rowtargets label,
+span.label
+{
+  color: #666666;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+td.rowtargets label
+{
+  color: black;
+}
+
+#footer
+{
+  padding-top: 5px;
+  width: 100%;
+}
+
+#footer .footerleft
+{
+  padding-left: 2px;
+  white-space: nowrap;
+  float: left;
+}
+
+#footer .footerright
+{
+  padding-right: 2px;
+  white-space: nowrap;
+  text-align: right;
+  float: right;
+}
+
+.itemlist
+{
+  line-height: 25px;
+}
+
+.itemlist input
+{
+  vertical-align: middle;
+}
+
+span.sieve.error
+{
+  color: red;
+}
+
+a.button.add
+{
+  background: url(images/add.png?v=a165.280) no-repeat;
+  width: 30px;
+  height: 20px;
+  margin-right: 4px;
+  display: inline-block;
+}
+
+a.button.del
+{
+  background: url(images/del.png?v=3c27.247) no-repeat;
+  width: 30px;
+  height: 20px;
+  display: inline-block;
+}
+
+a.button.disabled
+{
+  opacity: 0.35;
+  filter: alpha(opacity=35);
+  cursor: default;
+}
+
+#filter-form select,
+#filter-form input,
+#filter-form textarea
+{
+  font-size: 11px;
+  vertical-align: middle;
+}
+
+/* smart multi-row input field */
+.listarea
+{
+  border: 1px solid #666;
+  margin: 0;
+  padding: 1px;
+  display: inline-block;
+  max-height: 67px;
+  overflow-y: auto;
+  vertical-align: middle;
+}
+
+td.rowtargets > span.listarea
+{
+  vertical-align: top;
+  margin-top: 2px;
+}
+
+.listelement
+{
+  display: block;
+  white-space: nowrap;
+  background-color: #fff;
+  border-top: 1px solid #e2e2e2;
+  height: 16px;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  line-height: 16px;
+}
+
+.listarea.error .listelement
+{
+  background-color: #FFFFC4;
+}
+
+.listelement:first-child
+{
+  border-top: none;
+}
+
+#filter-form .listelement input
+{
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  outline: none;
+  vertical-align: top;
+  height: 16px;
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 16px;
+  background-color: transparent;
+}
+
+.listelement input:focus
+{
+  box-shadow: none;
+}
+
+.listelement .reset
+{
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background: url(images/erase.png?v=3052.453) -1px 0 no-repeat #eee;
+  cursor: pointer;
+}
+
+
+/* fixes for popup window */
+
+body.iframe.mail
+{
+  margin: 0;
+  padding: 0;
+}
+
+body.iframe.mail #filter-form
+{
+  padding: 10px 5px 5px 5px;
+}
+
+#vacationform .listarea {
+  max-height: 75px;
+}
+
+#vacationform .listelement,
+#vacationform .listelement .reset {
+  height: 18px;
+}
+
+#vacationform .listelement .reset {
+  background-position: -1px 1px;
+}
+
+#vacationform .listelement input {
+  vertical-align: top;
+  border: 0;
+}
+
+#vacationform input.button {
+  margin-left: 10px;
+}
+
+/* RAW editor and CodeMirror overrides */
+
+.raweditor textarea {
+  border: none;
+  border-radius: 0;
+  max-width: none !important;
+  box-shadow: none;
+  font-family: monospace;
+  width: 99%;
+  min-height: 300px;
+}
+
+.raweditor textarea,
+.raweditor .CodeMirror {
+  position: absolute;
+  top: 34px;
+  bottom: 45px;
+  right: 0;
+  left: 0;
+  height: auto;
+  background-color: #fdfdfd;
+  border-bottom: 1px solid #eee;
+}
+
+.raweditor .CodeMirror-linebackground.line-error {
+  background-color: #f00;
+  opacity: 0.4;
+}
+
+.raweditor .errorGutter {
+  width: 0.8em;
+}
+
+.raweditor #footer {
+  position: absolute;
+  bottom: 5px;
+}
+
+body.iframe.raweditor {
+  min-width: 100px;
+  overflow: hidden;
+}

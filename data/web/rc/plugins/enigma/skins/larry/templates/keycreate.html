@@ -1,0 +1,22 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+</head>
+<body class="iframe">
+
+<h1 class="boxtitle"><roundcube:label name="enigma.createkeys" /></h1>
+
+<div id="key-details" class="boxcontent">
+    <roundcube:object name="keyform" id="keycreateform" class="propform" size="40" textareacols="40" textarearows="6" />
+</div>
+
+<div class="footerleft formbuttons">
+    <roundcube:button command="plugin.enigma-key-save" type="input" class="button mainaction" label="save" />
+</div>
+
+<roundcube:include file="/includes/footer.html" />
+
+</body>
+</html>

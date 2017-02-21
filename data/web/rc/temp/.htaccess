@@ -1,0 +1,7 @@
+# deny webserver access to this directory
+<ifModule mod_authz_core.c>
+    Require all denied
+</ifModule>
+<ifModule !mod_authz_core.c>
+    Deny from all
+</ifModule>

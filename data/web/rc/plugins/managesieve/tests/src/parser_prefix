@@ -1,0 +1,5 @@
+# this is a comment
+# and the second line
+
+require ["variables"];
+set "b" "c";

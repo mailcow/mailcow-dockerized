@@ -18,10 +18,10 @@ $(document).ready(function() {
 			return this.each(function(){
 				$(this).on('keyup', function(e){
 					var $this = $(this),
-                        search = $this.val().toLowerCase(),
-                        target = $this.attr('data-filters'),
-                        $target = $(target),
-                        $rows = $target.find('tbody #data');
+            search = $this.val().toLowerCase(),
+            target = $this.attr('data-filters'),
+            $target = $(target),
+            $rows = $target.find('tbody #data');
 					$target.find('tbody .filterTable_no_results').remove();
 					if(search == '') {
 						$target.find('tbody #no-data').show();

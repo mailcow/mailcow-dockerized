@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+<script type="text/javascript" src="/functions.js"></script>
+</head>
+<body class="iframe">
+
+<div id="contact-title" class="boxtitle"><roundcube:label name="addcontact" /></div>
+<div id="contact-details" class="boxcontent">
+<roundcube:form name="editform" method="post">
+  <roundcube:if condition="strlen(env:sourcename)" />
+    <div id="sourcename"><roundcube:label name="addressbook" />: <roundcube:object name="sourceselector" class="hint" id="sourceselect" /></div>
+  <roundcube:endif />
+  <div id="contactphoto">
+    <roundcube:object name="contactphoto" id="contactpic" placeholder="/images/contactpic.png" />
+    <div class="formlinks">
+      <roundcube:button command="upload-photo" id="uploadformlink" type="link" label="addphoto" class="disabled" classAct="active" onclick="rcmail_ui.show_popup('uploadform', true);return false" condition="env:photocol" /><br/>
+      <roundcube:button command="delete-photo" type="link" label="delete" class="disabled" classAct="active" condition="env:photocol" />
+    </div>
+  </div>
+  <roundcube:object name="contactedithead" id="contacthead" size="16" form="editform" />
+  <div style="clear:both"></div>
+  <div id="contacttabs">
+    <roundcube:object name="contacteditform" size="40" textareacols="60" deleteIcon="/images/icons/delete.png" form="editform" />
+  </div>
+  <p>
+    <input type="button" value="<roundcube:label name="cancel" />" class="button" onclick="history.back()" />&nbsp;
+    <roundcube:button command="save" type="input" class="button mainaction" label="save" />
+  </p>
+</form>
+</div>
+
+<roundcube:object name="photoUploadForm" id="upload-form" size="30" class="popupmenu" />
+<roundcube:object name="fileDropArea" id="contactpic" />
+
+<script type="text/javascript">
+rcube_init_tabs('contacttabs');
+rcube_init_mail_ui();
+</script>
+
+</body>
+</html>

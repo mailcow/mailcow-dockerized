@@ -1,0 +1,48 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+</head>
+<body class="iframe">
+
+<h1 class="boxtitle"><roundcube:object name="steptitle" /></h1>
+
+<roundcube:form name="editform" method="post" id="contact-details" class="boxcontent">
+	<roundcube:if condition="strlen(env:sourcename)" />
+		<div id="sourcename"><roundcube:label name="addressbook" />: <roundcube:var name="env:sourcename" condition="env:action!='add'" /><roundcube:object name="sourceselector" id="sourceselect" condition="env:action=='add'" /></div>
+	<roundcube:endif />
+
+	<fieldset id="contactphoto">
+		<legend class="voice"><roundcube:label name="contactphoto" /></legend>
+		<roundcube:object name="contactphoto" id="contactpic" placeholder="/images/contactpic.png" />
+		<roundcube:if condition="env:photocol" />
+		<roundcube:object name="fileDropArea" id="contactpic" />
+		<div class="formlinks">
+			<roundcube:button command="upload-photo" id="uploadformlink" type="link" label="replacephoto" class="iconlink upload disabled" classAct="iconlink upload active" onclick="rcmail.upload_input('upload-form')" condition="env:photocol" /><br/>
+			<roundcube:button command="delete-photo" type="link" label="delete" class="iconlink delete disabled" classAct="iconlink delete active" condition="env:photocol" />
+		</div>
+		<roundcube:endif />
+	</fieldset>
+
+	<roundcube:object name="contactedithead" id="contacthead" size="16" form="editform" />
+	<br style="clear:both" />
+
+	<div id="contacttabs" class="tabbed">
+		<roundcube:object name="contacteditform" size="40" textareacols="60" form="editform" />
+	</div>
+
+</form>
+
+<div class="footerleft formbuttons">
+	<roundcube:button command="save" type="input" class="button mainaction" label="save" />
+	<roundcube:button command="show" type="input" class="button" label="cancel" condition="env:action=='edit'" />
+	<roundcube:button name="cancel" type="input" class="button" label="cancel" onclick="history.back()" condition="env:action=='add'" />
+</div>
+
+<roundcube:object name="photoUploadForm" id="upload-form" mode="smart" />
+
+<roundcube:include file="/includes/footer.html" />
+
+</body>
+</html>

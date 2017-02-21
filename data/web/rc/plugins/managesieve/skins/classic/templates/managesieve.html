@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+<script type="text/javascript" src="/functions.js"></script>
+<script type="text/javascript" src="/splitter.js"></script>
+
+<style type="text/css">
+#filterslistbox { width: <roundcube:exp expression="!empty(cookie:sieveviewsplitter) ? cookie:sieveviewsplitter-5 : 210" />px; }
+#filter-box { left: <roundcube:exp expression="!empty(cookie:sieveviewsplitter) ? cookie:sieveviewsplitter+5 : 220" />px; }
+#filtersetslistbox { width: <roundcube:exp expression="!empty(cookie:sieveviewsplitter2) ? cookie:sieveviewsplitter2-5 : 175" />px; }
+#filtersscreen { left: <roundcube:exp expression="!empty(cookie:sieveviewsplitter2) ? cookie:sieveviewsplitter2+5 : 185" />px; }
+</style>
+
+</head>
+<body>
+
+<roundcube:include file="/includes/taskbar.html" />
+<roundcube:include file="/includes/header.html" />
+<roundcube:include file="/includes/settingstabs.html" />
+
+<div id="mainscreen">
+
+<div id="filtersetslistbox">
+<div id="filtersetslist-title" class="boxtitle"><roundcube:label name="managesieve.filtersets" /></div>
+<div class="boxlistcontent">
+  <roundcube:object name="filtersetslist" id="filtersetslist" class="records-table" cellspacing="0" summary="Filters list" type="list" noheader="true" />
+</div>
+<div class="boxfooter">
+  <roundcube:button command="plugin.managesieve-setadd" type="link" title="managesieve.filtersetadd" class="buttonPas addfilterset" classAct="button addfilterset" content=" " />
+  <roundcube:button name="filtersetmenulink" id="filtersetmenulink" type="link" title="moreactions" class="button groupactions" onclick="rcmail_ui.show_popup('filtersetmenu', undefined, {above:1});return false" content=" " />
+</div>
+</div>
+
+<div id="filtersscreen">
+<div id="filterslistbox">
+<div class="boxtitle"><roundcube:label name="managesieve.filters" /></div>
+<div class="boxlistcontent">
+  <roundcube:object name="filterslist" id="filterslist" class="records-table" cellspacing="0" summary="Filters list" noheader="true" />
+</div>
+<div class="boxfooter">
+  <roundcube:button command="plugin.managesieve-add" type="link" title="managesieve.filteradd" class="buttonPas addfilter" classAct="button addfilter" content=" " />
+  <roundcube:button name="filtermenulink" id="filtermenulink" type="link" title="moreactions" class="button groupactions" onclick="rcmail_ui.show_popup('filtermenu', undefined, {above:1});return false" content=" " />
+</div>
+</div>
+
+<script type="text/javascript">
+  var sieveviewsplit2 = new rcube_splitter({id:'sieveviewsplitter2', p1: 'filtersetslistbox', p2: 'filtersscreen', orientation: 'v', relative: true, start: 200});
+  rcmail.add_onload('sieveviewsplit2.init()');
+
+  var sieveviewsplit = new rcube_splitter({id:'sieveviewsplitter', p1: 'filterslistbox', p2: 'filter-box', orientation: 'v', relative: true, start: 215});
+  rcmail.add_onload('sieveviewsplit.init()');
+</script>
+
+<div id="filter-box">
+  <roundcube:object name="filterframe" id="filter-frame" width="100%" height="100%" frameborder="0" src="/watermark.html" />
+</div>
+
+</div>
+</div>
+
+<div id="filtersetmenu" class="popupmenu">
+  <ul>
+    <li><roundcube:button command="plugin.managesieve-setact" label="managesieve.enable" classAct="active" /></li>
+    <li><roundcube:button command="plugin.managesieve-setdel" label="delete" classAct="active" /></li>
+    <li class="separator_above"><roundcube:button command="plugin.managesieve-setget" label="download" classAct="active" /></li>
+    <roundcube:if condition="env:raw_sieve_editor != false" />
+    <li><roundcube:button command="plugin.managesieve-seteditraw" label="managesieve.filterseteditraw" classAct="active" /></li>
+    <roundcube:endif />
+    <roundcube:container name="filtersetoptions" id="filtersetmenu" />
+  </ul>
+</div>
+
+<div id="filtermenu" class="popupmenu">
+  <ul>
+    <li><roundcube:button command="plugin.managesieve-act" label="managesieve.enable" classAct="active" /></li>
+    <li><roundcube:button command="plugin.managesieve-del" label="delete" classAct="active" /></li>
+    <roundcube:container name="filteroptions" id="filtermenu" />
+  </ul>
+</div>
+
+<script type="text/javascript">
+rcube_init_mail_ui();
+</script>
+
+</body>
+</html>

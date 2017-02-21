@@ -1,0 +1,32 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+</head>
+<body class="noscroll">
+
+<roundcube:include file="/includes/header.html" />
+
+<div id="mainscreen" class="offset">
+
+<h1 class="voice"><roundcube:label name="settings" /> : <roundcube:label name="managesieve.vacation" /></h1>
+
+<roundcube:include file="/includes/settingstabs.html" />
+
+<div id="managesieve-vacation" class="uibox contentbox" role="main" aria-labelledby="aria-label-vacationform">
+  <div>
+    <h2 class="boxtitle" id="aria-label-vacationform"><roundcube:label name="managesieve.vacation" /></h2>
+    <roundcube:object name="vacationform" id="vacationform" class="propform boxcontent tabbed" />
+  </div>
+  <div class="footerleft formbuttons">
+    <roundcube:button command="plugin.managesieve-save" type="input" class="button mainaction" label="save" />
+  </div>
+</div>
+
+</div>
+
+<roundcube:include file="/includes/footer.html" />
+
+</body>
+</html>

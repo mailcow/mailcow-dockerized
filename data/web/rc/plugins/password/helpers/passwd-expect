@@ -1,0 +1,267 @@
+#
+# This scripts changes a password on the local system or a remote host.
+# Connections to the remote (this can also be localhost) are made by ssh, rsh,
+# telnet or rlogin.
+
+# @author  Gaudenz Steinlin <gaudenz@soziologie.ch>
+
+# For sudo support alter sudoers (using visudo) so that it contains the
+# following information (replace 'apache' if your webserver runs under another
+# user):
+# -----
+# # Needed for Horde's passwd module
+# Runas_Alias     REGULARUSERS = ALL, !root
+# apache ALL=(REGULARUSERS) NOPASSWD:/usr/bin/passwd
+# -----
+
+# @stdin              The username, oldpassword, newpassword (in this order)
+#                     will be taken from stdin
+# @param -prompt      regexp for the shell prompt
+# @param -password    regexp password prompt
+# @param -oldpassword regexp for the old password
+# @param -newpassword regexp for the new password
+# @param -verify      regexp for verifying the password
+# @param -success     regexp for success changing the password
+# @param -login       regexp for the telnet prompt for the loginname
+# @param -host        hostname to be connected
+# @param -timeout     timeout for each step
+# @param -log         file for writing error messages
+# @param -output      file for loging the output
+# @param -telnet      use telnet
+# @param -ssh         use ssh (default)
+# @param -rlogin      use rlogin
+# @param -slogin      use slogin
+# @param -sudo        use sudo
+# @param -program     command for changing passwords
+#
+# @return             0 on success, 1 on failure
+#
+
+
+# default values
+set host               "localhost"
+set login              "ssh"
+set program            "passwd"
+set prompt_string      "(%|\\\$|>)"
+set fingerprint_string "The authenticity of host.* can't be established.*\nRSA key fingerprint is.*\nAre you sure you want to continue connecting.*"
+set password_string    "(P|p)assword.*"
+set oldpassword_string "((O|o)ld|login|\\\(current\\\) UNIX) (P|p)assword.*"
+set newpassword_string "(N|n)ew.* (P|p)assword.*"
+set badoldpassword_string "(Authentication token manipulation error).*"
+set badpassword_string "((passwd|BAD PASSWORD).*|(passwd|Bad:).*\r)"
+set verify_string      "((R|r)e-*enter.*(P|p)assword|Retype new( UNIX)? password|(V|v)erification|(V|v)erify|(A|a)gain).*"
+set success_string     "((P|p)assword.* changed|successfully)"
+set login_string       "(((L|l)ogin|(U|u)sername).*)"
+set timeout            20
+set log                "/tmp/passwd.out"
+set output             false
+set output_file        "/tmp/passwd.log"
+
+# read input from stdin
+fconfigure stdin -blocking 1
+
+gets stdin user
+gets stdin password(old)
+gets stdin password(new)
+
+# alternative: read input from command line
+#if {$argc < 3} {
+#    send_user "Too few arguments: Usage $argv0 username oldpass newpass"
+#    exit 1
+#}
+#set user [lindex $argv 0]
+#set password(old) [lindex $argv 1]
+#set password(new) [lindex $argv 2]
+
+# no output to the user
+log_user 0
+
+# read in other options
+for {set i 0} {$i<$argc} {incr i} {
+    set arg [lindex $argv $i]
+    switch -- $arg "-prompt" {
+        incr i
+        set prompt_string [lindex $argv $i]
+        continue
+    } "-password" {
+        incr i
+        set password_string [lindex $argv $i]
+        continue
+    } "-oldpassword" {
+        incr i
+        set oldpassword_string [lindex $argv $i]
+        continue
+    } "-newpassword" {
+        incr i
+        set newpassword_string [lindex $argv $i]
+        continue
+    } "-verify" {
+        incr i
+        set verify_string [lindex $argv $i]
+        continue
+    } "-success" {
+        incr i
+        set success_string [lindex $argv $i]
+        continue
+    } "-login" {
+        incr i
+        set login_string [lindex $argv $i]
+        continue
+    } "-host" {
+        incr i
+        set host [lindex $argv $i]
+        continue
+    } "-timeout" {
+        incr i
+        set timeout [lindex $argv $i]
+        continue
+    } "-log" {
+        incr i
+        set log [lindex $argv $i]
+        continue
+    } "-output" {
+        incr i
+        set output_file [lindex $argv $i]
+        set output true
+        continue
+    } "-telnet" {
+        set login "telnet"
+        continue
+    } "-ssh" {
+        set login "ssh"
+        continue
+    } "-ssh-exec" {
+        set login "ssh-exec"
+        continue
+    } "-rlogin" {
+        set login "rlogin"
+        continue
+    } "-slogin" {
+        set login "slogin"
+        continue
+    } "-sudo" {
+        set login "sudo"
+        continue
+    } "-program" {
+        incr i
+        set program [lindex $argv $i]
+        continue
+    }
+}
+
+# log session
+if {$output} {
+   log_file $output_file
+}
+
+set err [open $log "w" "0600"]
+
+# start remote session
+if {[string match $login "rlogin"]} {
+   set pid [spawn rlogin $host -l $user]
+} elseif {[string match $login "slogin"]} {
+   set pid [spawn slogin $host -l $user]
+} elseif {[string match $login "ssh"]} {
+   set pid [spawn ssh $host -l $user]
+} elseif {[string match $login "ssh-exec"]} {
+   set pid [spawn ssh $host -l $user $program]
+} elseif {[string match $login "sudo"]} {
+   set pid [spawn sudo -u $user $program]
+} elseif {[string match $login "telnet"]} {
+   set pid [spawn telnet $host]
+   expect -re $login_string {
+     sleep .5
+     send "$user\r"
+   }
+} else {
+   puts $err "Invalid login mode. Valid modes: rlogin, slogin, ssh, telnet, sudo\n"
+   close $err
+   exit 1
+}
+
+set old_password_notentered true
+
+if {![string match $login "sudo"]} {
+  # log in
+  expect {
+    -re $fingerprint_string {sleep .5
+                             send yes\r
+                             exp_continue}
+    -re $password_string    {sleep .5
+                             send $password(old)\r}
+    timeout                 {puts $err "Could not login to system (no password prompt)\n"
+                             close $err
+                             exit 1}
+  }
+
+  # start password changing program
+  expect {
+    -re $prompt_string      {sleep .5
+                             send $program\r}
+    # The following is for when passwd is the login shell or ssh-exec is used
+    -re $oldpassword_string {sleep .5
+                             send $password(old)\r
+                             set old_password_notentered false}
+    timeout                 {puts $err  "Could not login to system (bad old password?)\n"
+                             close $err
+                             exit 1}
+  }
+}
+
+# send old password
+if {$old_password_notentered} {
+  expect {
+    -re $oldpassword_string {sleep .5
+                             send $password(old)\r}
+    timeout                 {puts $err "Could not start passwd program (no old password prompt)\n"
+                             close $err
+                             exit 1}
+  }
+}
+
+# send new password
+expect {
+  -re $newpassword_string {sleep .5
+                           send $password(new)\r}
+  -re $badoldpassword_string {puts $err "Old password is incorrect\n"
+                           close $err
+                           exit 1}
+  timeout                 {puts "Could not change password (bad old password?)\n"
+                           close $err
+                           exit 1}
+}
+
+# send new password again
+expect {
+  -re $badpassword_string {puts $err "$expect_out(0,string)"
+                           close $err
+                           send \003
+                           sleep .5
+                           exit 1}
+  -re $verify_string      {sleep .5
+                           send $password(new)\r}
+  timeout                 {puts $err "New password not valid (too short, bad password, too similar, ...)\n"
+                           close $err
+                           send \003
+                           sleep .5
+                           exit 1}
+}
+
+# check response
+expect {
+  -re $success_string {sleep .5
+                       send exit\r}
+  -re $badpassword_string {puts $err "$expect_out(0,string)"
+                           close $err
+                           exit 1}
+  timeout             {puts $err "Could not change password.\n"
+                       close $err
+                       exit 1}
+}
+
+# exit succsessfully
+expect {
+  eof {close $err
+       exit 0}
+}
+close $err

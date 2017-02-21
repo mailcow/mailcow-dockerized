@@ -1,0 +1,14 @@
+/* Roundcube Zipdownload plugin styles for skin "Larry" */
+
+a.zipdownload {
+	display: inline-block;
+	margin-top: .5em;
+	padding: 3px 5px 4px 5px;
+}
+
+@media screen and (max-width: 800px) {
+	a.zipdownload {
+		margin-top: .15em;
+		margin-bottom: .2em;
+	}
+}
