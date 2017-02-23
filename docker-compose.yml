@@ -1,19 +1,35 @@
 version: '2.1'
 
 services:
-    pdns-mailcow:
-      image: andryyy/mailcow-dockerized:pdns
+    # Replaced by better and smaller bind9
+    #pdns-mailcow:
+    #  image: andryyy/mailcow-dockerized:pdns
+    #  depends_on:
+    #    mysql-mailcow:
+    #      condition: service_healthy
+    #  volumes:
+    #    - ./data/conf/pdns/:/etc/powerdns/
+    #  restart: always
+    #  networks:
+    #    mailcow-network:
+    #      ipv4_address: 172.22.1.254
+    #      aliases:
+    #        - pdns
+
+    bind9-mailcow:
+      image: resystit/bind9
+      command: "named -c /etc/bind/named.conf -g -u named -4"
       depends_on:
         mysql-mailcow:
           condition: service_healthy
       volumes:
-        - ./data/conf/pdns/:/etc/powerdns/
+        - ./data/conf/bind9/named.conf:/etc/bind/named.conf
       restart: always
       networks:
         mailcow-network:
           ipv4_address: 172.22.1.254
           aliases:
-            - pdns
+            - bind9
 
     mysql-mailcow:
       image: mariadb:10.1
@@ -42,7 +58,7 @@ services:
     redis-mailcow:
       image: redis
       depends_on:
-        - pdns-mailcow
+        - bind9-mailcow
       volumes:
         - redis-vol-1:/data/
       restart: always
@@ -78,7 +94,7 @@ services:
       image: andryyy/mailcow-dockerized:phpfpm
       command: "php-fpm -d date.timezone=${TZ}"
       depends_on:
-        - pdns-mailcow
+        - bind9-mailcow
       volumes:
         - ./data/web:/web:ro
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
@@ -100,7 +116,7 @@ services:
     sogo-mailcow:
       image: andryyy/mailcow-dockerized:sogo
       depends_on:
-        - pdns-mailcow
+        - bind9-mailcow
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -122,7 +138,7 @@ services:
     rmilter-mailcow:
       image: andryyy/mailcow-dockerized:rmilter
       depends_on:
-        - pdns-mailcow
+        - bind9-mailcow
       volumes:
         - ./data/conf/rmilter/:/etc/rmilter.conf.d/:ro
       restart: always
@@ -137,7 +153,7 @@ services:
     dovecot-mailcow:
       image: andryyy/mailcow-dockerized:dovecot
       depends_on:
-        - pdns-mailcow
+        - bind9-mailcow
       volumes:
         - ./data/conf/dovecot:/etc/dovecot
         - ./data/assets/ssl:/etc/ssl/mail/:ro
@@ -166,7 +182,7 @@ services:
     postfix-mailcow:
       image: andryyy/mailcow-dockerized:postfix
       depends_on:
-        - pdns-mailcow
+        - bind9-mailcow
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
         - ./data/assets/ssl:/etc/ssl/mail/:ro
@@ -191,7 +207,7 @@ services:
     memcached-mailcow:
       image: memcached
       depends_on:
-        - pdns-mailcow
+        - bind9-mailcow
       restart: always
       dns:
         - 172.22.1.254
@@ -204,7 +220,7 @@ services:
 #    clamav-mailcow:
 #      build: ./data/Dockerfiles/clamav
 #      depends_on:
-#        - pdns-mailcow
+#        - bind9-mailcow
 #      restart: always
 #      dns:
 #        - 172.22.1.250
@@ -231,7 +247,7 @@ services:
         - 172.22.1.254
       dns_search: mailcow-network
       ports:
-        - "${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
+        - "${HTTPS_BIND}:${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
       restart: always
       networks:
         mailcow-network:
