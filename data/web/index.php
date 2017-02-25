@@ -50,7 +50,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 						</div>
 						<div class="form-group">
 							<div class="checkbox">
- 								<label><input data-toggle="tooltip" title="Remember username for 5 days" type="checkbox" name="remember_user"> Remember me</label>
+ 								<label><input data-toggle="tooltip" title="<?=$lang['login']['remember_me_tooltip'];?>" type="checkbox" name="remember_user"> <?=$lang['login']['remember_me'];?></label>
  							</div>
  						</div>
  						<div class="form-group">
