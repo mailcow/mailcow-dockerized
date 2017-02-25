@@ -374,6 +374,8 @@ $lang['login']['reset_password'] = 'Reset my password';
 $lang['login']['login'] = 'Login';
 $lang['login']['previous'] = "Previous page";
 $lang['login']['delayed'] = 'Login was delayed by %s seconds.';
+$lang['login']['remember_me'] = "Remember me";
+$lang['login']['remember_me_tooltip'] = "Remember username for 5 days";
 
 $lang['tfa']['tfa'] = "Two-factor authentication";
 $lang['tfa']['set_tfa'] = "Set two-factor authentication method";
