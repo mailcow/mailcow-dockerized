@@ -24,6 +24,7 @@
 <link rel="icon" href="/favicon.png" type="image/png">
 </head>
 <body style="padding-top:70px">
+<?php if(basename($_SERVER["SCRIPT_FILENAME"]) !== "index.php"): ?>
 <nav class="navbar navbar-default navbar-fixed-top"  role="navigation">
 	<div class="container-fluid">
 		<div class="navbar-header">
@@ -101,4 +102,5 @@
 		</div><!--/.nav-collapse -->
 	</div><!--/.container-fluid -->
 </nav>
+<?php endif; ?>
 <form action="/" method="post" id="logout"><input type="hidden" name="logout"></form>
