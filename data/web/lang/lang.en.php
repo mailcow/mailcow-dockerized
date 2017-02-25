@@ -374,6 +374,8 @@ $lang['login']['reset_password'] = 'Reset my password';
 $lang['login']['login'] = 'Login';
 $lang['login']['previous'] = "Previous page";
 $lang['login']['delayed'] = 'Login was delayed by %s seconds.';
+$lang['login']['domain_admin'] = "Domain administrator";
+$lang['login']['mailbox_user'] = "Mailbox user";
 $lang['login']['remember_me'] = "Remember me";
 $lang['login']['remember_me_tooltip'] = "Remember username for 5 days";
 
@@ -385,7 +387,7 @@ $lang['tfa']['api_register'] = 'mailcow uses the Yubico Cloud API. Please get an
 $lang['tfa']['u2f'] = "U2F authentication";
 $lang['tfa']['hotp'] = "HOTP authentication";
 $lang['tfa']['totp'] = "TOTP authentication";
-$lang['tfa']['none'] = "Deaktiviert";
+$lang['tfa']['none'] = "Deactivate";
 $lang['tfa']['delete_tfa'] = "Disable TFA";
 $lang['tfa']['disable_tfa'] = "Disable TFA until next successful login";
 $lang['tfa']['confirm_tfa'] = "Please confirm your one-time password in the below field";
