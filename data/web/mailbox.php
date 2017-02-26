@@ -189,7 +189,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             }
 					} else {
 					?>
-						<tr id="no-data"><td colspan="999" style="text-align: center; font-style: italic;">Add a domain first</td></tr>
+						<tr id="no-data"><td colspan="999" style="text-align: center; font-style: italic;"><?=$lang['mailbox']['add_domain_record_first'];?></td></tr>
 						<?php
 					}
 						?>
@@ -266,7 +266,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             }
 					} else {
 						?>
-						<tr id="no-data"><td colspan="999" style="text-align: center; font-style: italic;">Add a domain first</td></tr>
+						<tr id="no-data"><td colspan="999" style="text-align: center; font-style: italic;"><?=$lang['mailbox']['add_domain_record_first'];?></td></tr>
 						<?php
 					}
 						?>
@@ -339,7 +339,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
           }
 				} else {
           ?>
-						<tr id="no-data"><td colspan="999" style="text-align: center; font-style: italic;">Add a domain first</td></tr>
+						<tr id="no-data"><td colspan="999" style="text-align: center; font-style: italic;"><?=$lang['mailbox']['add_domain_record_first'];?></td></tr>
 					<?php
 				}
 					?>
@@ -423,7 +423,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
           }
 				} else {
 						?>
-						<tr id="no-data"><td colspan="999" style="text-align: center; font-style: italic;">Add a domain first</td></tr>
+						<tr id="no-data"><td colspan="999" style="text-align: center; font-style: italic;"><?=$lang['mailbox']['add_domain_record_first'];?></td></tr>
 						<?php
 				}
 						?>
