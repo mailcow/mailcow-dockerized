@@ -43,6 +43,7 @@ catch (PDOException $e) {
 ?>
 <center style='font-family: "Lucida Sans Unicode", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;'>🐮 Connection failed, database may be in warm-up state, please try again later.<br /><br />The following error was reported:<br/>  <?=$e->getMessage();?></center>
 <?php
+exit;
 }
 
 $_SESSION['mailcow_locale'] = strtolower(trim($DEFAULT_LANG));
