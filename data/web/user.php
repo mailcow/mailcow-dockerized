@@ -402,7 +402,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 				<th class="sort-table" style="min-width: 35px;"><?=$lang['user']['interval'];?></th>
 				<th class="sort-table" style="min-width: 35px;"><?=$lang['user']['last_run'];?></th>
 				<th class="sort-table" style="min-width: 35px;">Log</th>
-				<th class="sort-table" style="max-width: 35px;"><?=$lang['user']['active'];?></th>
+				<th class="sort-table" style="max-width: 95px;"><?=$lang['user']['active'];?></th>
 				<th style="text-align: right; min-width: 200px;" data-sortable="false"><?=$lang['user']['action'];?></th>
 			</tr>
 			</thead>
