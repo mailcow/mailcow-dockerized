@@ -146,6 +146,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 					</thead>
 					<tbody>
 						<?php
+					if (!empty($domains)) {
             foreach (mailbox_get_domains() as $domain) {
               $mailboxes = mailbox_get_mailboxes($domain);
               if (!empty($mailboxes)) {
@@ -186,6 +187,11 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <?php
               }
             }
+					} else {
+					?>
+						<tr id="no-data"><td colspan="999" style="text-align: center; font-style: italic;">Add a domain first</td></tr>
+						<?php
+					}
 						?>
 					</tbody>
 					<tfoot>
@@ -229,6 +235,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 					</thead>
 					<tbody>
 						<?php
+					if (!empty($domains)) {
             foreach (mailbox_get_domains() as $domain) {
               $resources = mailbox_get_resources($domain);
               if (!empty($resources)) {
@@ -257,6 +264,11 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <?php
               }
             }
+					} else {
+						?>
+						<tr id="no-data"><td colspan="999" style="text-align: center; font-style: italic;">Add a domain first</td></tr>
+						<?php
+					}
 						?>
 					</tbody>
 					<tfoot>
@@ -298,6 +310,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 					</thead>
 					<tbody>
 					<?php
+				if (!empty($domains)) {
           foreach (mailbox_get_domains() as $domain) {
             $alias_domains = mailbox_get_alias_domains($domain);
             if (!empty($alias_domains)) {
@@ -324,7 +337,12 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 	        <?php
             }
           }
+				} else {
           ?>
+						<tr id="no-data"><td colspan="999" style="text-align: center; font-style: italic;">Add a domain first</td></tr>
+					<?php
+				}
+					?>
 					</tbody>
 					<tfoot>
 						<tr id="no-data">
@@ -367,6 +385,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 					</thead>
 					<tbody>
 					<?php
+				if (!empty($domains)) {
           foreach (array_merge(mailbox_get_domains(), mailbox_get_alias_domains()) as $domain) {
             $aliases = mailbox_get_aliases($domain);
             if (!empty($aliases)) {
@@ -394,14 +413,19 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 							</td>
 						</tr>
 						<?php
-                }
-              }
-              else {
-                  ?>
-                  <tr id="no-data"><td colspan="999" style="text-align: center; font-style: italic;"><?=sprintf($lang['mailbox']['no_record'], $domain);?></td></tr>
-                  <?php
-              }
-            }
+							}
+						}
+						else {
+								?>
+								<tr id="no-data"><td colspan="999" style="text-align: center; font-style: italic;"><?=sprintf($lang['mailbox']['no_record'], $domain);?></td></tr>
+								<?php
+						}
+          }
+				} else {
+						?>
+						<tr id="no-data"><td colspan="999" style="text-align: center; font-style: italic;">Add a domain first</td></tr>
+						<?php
+				}
 						?>
 					</tbody>
 					<tfoot>
