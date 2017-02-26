@@ -246,6 +246,7 @@ $lang['mailbox']['add_domain_alias'] = 'Add domain alias';
 $lang['mailbox']['add_mailbox'] = 'Add mailbox';
 $lang['mailbox']['add_resource'] = 'Add resource';
 $lang['mailbox']['add_alias'] = 'Add alias';
+$lang['mailbox']['add_domain_record_first'] = 'Please add a domain first';
 
 $lang['info']['no_action'] = 'No action applicable';
 
