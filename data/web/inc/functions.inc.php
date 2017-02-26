@@ -1725,6 +1725,7 @@ function get_domain_admins() {
 }
 function get_domain_admin_details($domain_admin) {
 	global $pdo;
+
 	global $lang;
   $domainadmindata = array();
 	if (isset($domain_admin) && $_SESSION['mailcow_cc_role'] != "admin") {
@@ -4349,8 +4350,8 @@ function mailbox_get_mailbox_details($mailbox) {
     $stmt->execute(array(':domain' => $row['domain'], ':username' => $mailbox));
     $MailboxUsage	= $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $stmt = $pdo->prepare("SELECT IFNULL(COUNT(`address`), 0) AS `sa_count` FROM `spamalias` WHERE `address` = :address");
-    $stmt->execute(array(':address' => $mailbox));
+    $stmt = $pdo->prepare("SELECT IFNULL(COUNT(`address`), 0) AS `sa_count` FROM `spamalias` WHERE `goto` = :address AND `validity` >= :unixnow");
+    $stmt->execute(array(':address' => $mailbox, ':unixnow' => time()));
     $SpamaliasUsage	= $stmt->fetch(PDO::FETCH_ASSOC);
 
     $mailboxdata['max_new_quota'] = ($DomainQuota['quota'] * 1048576) - $MailboxUsage['in_use'];
