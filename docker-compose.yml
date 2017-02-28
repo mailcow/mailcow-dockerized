@@ -242,12 +242,14 @@ services:
         - sogo-mailcow
         - php-fpm-mailcow
       image: nginx:mainline
-      command: /bin/bash -c "envsubst < /etc/nginx/conf.d/listen_plain.template > /etc/nginx/conf.d/listen_plain.active &&
-        envsubst < /etc/nginx/conf.d/listen_ssl.template > /etc/nginx/conf.d/listen_ssl.active &&
+      command: /bin/bash -c "envsubst < /etc/nginx/conf.d/templates/listen_plain.template > /etc/nginx/conf.d/listen_plain.active &&
+        envsubst < /etc/nginx/conf.d/templates/listen_ssl.template > /etc/nginx/conf.d/listen_ssl.active &&
+        envsubst < /etc/nginx/conf.d/templates/server_name.template > /etc/nginx/conf.d/server_name.active &&
         nginx -g 'daemon off;'"
       environment:
         - HTTPS_PORT=${HTTPS_PORT:-443}
         - HTTP_PORT=${HTTP_PORT:-80}
+        - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
       volumes:
         - ./data/web:/web:ro
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
