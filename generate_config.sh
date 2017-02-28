@@ -43,8 +43,12 @@ DBPASS=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
 DBROOT=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
 
 # ------------------------------
-# HTTPS Bindings
+# HTTP/S Bindings
 # ------------------------------
+
+# You should use HTTPS, but in case of SSL offloaded reverse proxies:
+HTTP_PORT=8080
+HTTP_BIND=0.0.0.0
 
 HTTPS_PORT=443
 HTTPS_BIND=0.0.0.0
