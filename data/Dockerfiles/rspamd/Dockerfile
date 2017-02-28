@@ -15,8 +15,9 @@ RUN apt-key adv --fetch-keys http://rspamd.com/apt-stable/gpg.key \
     && apt-get -y install rspamd ca-certificates python-pip
 
 RUN echo '.include $LOCAL_CONFDIR/local.d/rspamd.conf.local' > /etc/rspamd/rspamd.conf.local
-# "Hardcoded" - we need them
-RUN echo 'settings = "http://nginx:8081/settings.php";' > /etc/rspamd/modules.d/settings.conf
+
+ADD settings.conf /etc/rspamd/modules.d/settings.conf
+ADD antivirus.conf /etc/rspamd/modules.d/antivirus.conf
 
 RUN pip install -U oletools
 
