@@ -263,18 +263,17 @@ Running `docker-compose down -v` will **destroy all mailcow: dockerized volumes*
 # Reset admin password
 Reset mailcow admin to `admin:moohoo`:
 
-1. Drop admin table
+1\. Drop admin table
+```
+source mailcow.conf
+docker-compose exec mysql-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME} -e "DROP TABLE admin;"
+```
 
-    ```
-    source mailcow.conf
-    docker-compose exec mysql-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME} -e "DROP TABLE admin;"
-    ```
-
-    2. Open mailcow UI to auto-init the db
+2\. Open mailcow UI to auto-init the db
 
 # Rspamd
 
-**Learn spam and ham***
+**Learn spam and ham**
 
 Rspamd learns mail as spam or ham when you move a message in or out of the junk folder to any mailbox besides trash.
 This is archived by using the Dovecot plugin "antispam" and a simple parser script.
@@ -372,8 +371,9 @@ docker-compose restart service-mailcow
 
 Mailbox users can tag their mail address like in `me+facebook@example.org` and choose between to setups to handle this tag:
 
-1. Move this message to a subfolder "facebook" (will be created lower case if not existing)
-2. Prepend the tag to the subject: "[facebook] Subject"
+1\. Move this message to a subfolder "facebook" (will be created lower case if not existing)
+
+2\. Prepend the tag to the subject: "[facebook] Subject"
 
 # Two-factor authentication
 
@@ -406,5 +406,3 @@ Most systems use either a public or a local caching DNS resolver.
 That's a very bad idea when it comes to filter spam using DNS-based blackhole lists (DNSBL) or similar technics.
 Most if not all providers apply a rate limit based on the DNS resolver that is used to query their service.
 Using a public resolver like Googles 4x8, OpenDNS or any other shared DNS resolver like your ISPs will hit that limit very soon.
-
-
