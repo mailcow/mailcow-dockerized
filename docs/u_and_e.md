@@ -283,7 +283,7 @@ Rspamd also auto-learns mail when a high or low score is detected (see https://r
 
 The bayes statistics are written to Redis as keys `BAYES_HAM` and `BAYES_SPAM`.
 
-You can also use Rspamds web ui to learn ham and/or spam.
+You can also use Rspamd's web ui to learn ham and/or spam.
 
 **CLI tools**
 

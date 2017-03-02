@@ -46,7 +46,7 @@ docker-compose restart postfix-mailcow dovecot-mailcow nginx-mailcow
 ```
 When renewing certificates, run the last two steps (link + restart) as post-hook in a script.
 
-# Rspamd UI access
+# Rspamd Web UI
 At first you may want to setup Rspamds web interface which provides some useful features and information.
 
 1. Generate a Rspamd controller password hash:
@@ -68,7 +68,7 @@ Open https://${MAILCOW_HOSTNAME}/rspamd in a browser and login!
 # Optional: Reverse proxy
 
 You don't need to change the Nginx site that comes with mailcow: dockerized.
-mailcow: dockerized trusts the default gateway IP 172.22.1.1 as proxy. This is very important to control access to Rspamds web ui.
+mailcow: dockerized trusts the default gateway IP 172.22.1.1 as proxy. This is very important to control access to Rspamd's web UI.
 
 Make sure you change HTTP_BIND and HTTPS_BIND to a local address and set the ports accordingly, for example:
 ```
