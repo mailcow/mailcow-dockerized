@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="None">
+  
+  <link rel="shortcut icon" href="./img/favicon.ico">
+  <title>Overview - mailcow: dockerized</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="./css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="./css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="./css/highlight.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Overview";
+    var mkdocs_page_input_path = "index.md";
+    var mkdocs_page_url = "/";
+  </script>
+  
+  <script src="./js/jquery-2.1.1.min.js"></script>
+  <script src="./js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="./js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="." class="icon icon-home"> mailcow: dockerized</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+          
+            <li>
+    <li class="toctree-l1 current">
+        <a class="current" href=".">Overview</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#mailcow-dockerized-">mailcow: dockerized - 🐮 + 🐋 = 💕</a></li>
+                
+            
+            </ul>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="install/">Installation</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="first_steps/">First Steps</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="u_and_e/">Usage & Examples</a>
+        
+    </li>
+<li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href=".">mailcow: dockerized</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Overview</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/andryyy/mailcow-dockerized/edit/master/docs/index.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="mailcow-dockerized-">mailcow: dockerized - 🐮 + 🐋 = 💕</h1>
+<p><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=JWBSYHF4SMC68"><img alt="Donate" src="https://img.shields.io/badge/Donate-PayPal-green.svg" /></a></p>
+<p>mailcow dockerized comes with <strong>11 containers</strong> linked in <strong>one bridged network</strong>.</p>
+<ul>
+<li>Dovecot</li>
+<li>Memcached</li>
+<li>Redis</li>
+<li>MySQL</li>
+<li>Bind9 (Resolver) (formerly PDNS Recursor)</li>
+<li>PHP-FPM</li>
+<li>Postfix</li>
+<li>Nginx</li>
+<li>Rmilter</li>
+<li>Rspamd</li>
+<li>SOGo</li>
+</ul>
+<p><strong>6 volumes</strong> to keep dynamic data - take care of them!</p>
+<ul>
+<li>vmail-vol-1</li>
+<li>dkim-vol-1</li>
+<li>redis-vol-1</li>
+<li>mysql-vol-1</li>
+<li>rspamd-vol-1</li>
+<li>postfix-vol-1</li>
+</ul>
+<p>The integrated <strong>mailcow UI</strong> allows administrative work on your mail server instance as well as separated domain administrator and mailbox user access:</p>
+<ul>
+<li>DKIM key management</li>
+<li>Black- and whitelists per domain and per user</li>
+<li>Spam score managment per-user (reject spam, mark spam, greylist)</li>
+<li>Allow mailbox users to create temporary spam aliases</li>
+<li>Prepend mail tags to subject or move mail to subfolder (per-user)</li>
+<li>Allow mailbox users to toggle incoming and outgoing TLS enforcement</li>
+<li>Allow users to reset SOGo ActiveSync device caches</li>
+<li>imapsync to migrate or pull remote mailboxes regularly</li>
+<li>TFA: Yubi OTP and U2F USB (Google Chrome and derivates only)</li>
+<li>Add domains, mailboxes, aliases, domain aliases and SOGo resources</li>
+</ul>
+<p><em><a href="https://www.servercow.de">Looking for a farm to host your cow?</a></em> </p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="install/" class="btn btn-neutral float-right" title="Installation">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+    
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/andryyy/mailcow-dockerized/" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+      
+        <span style="margin-left: 15px"><a href="install/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script src="./js/theme.js"></script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 0.16.1
+Build Date UTC : 2017-03-02 10:21:46
+-->

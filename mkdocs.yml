@@ -1,9 +1,0 @@
-site_name: "mailcow: dockerized"
-repo_url: https://github.com/andryyy/mailcow-dockerized/
-remote_branch: master
-theme: readthedocs
-pages:
-    - 'Overview': 'index.md'
-    - 'Installation': 'install.md'
-    - 'First Steps': 'first_steps.md'
-    - 'Usage & Examples': 'u_and_e.md'
