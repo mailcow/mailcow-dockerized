@@ -285,7 +285,9 @@ See [Rspamd documentation](https://rspamd.com/doc/index.html)
 # Adjust service configurations
 The most important configuration files are mounted from the host into the related containers:
 ```
-data/conf/
+data/conf
+├── bind9
+│   └── named.conf
 ├── dovecot
 │   ├── dovecot.conf
 │   ├── dovecot-master.passwd
@@ -297,10 +299,14 @@ data/conf/
 │   └── my.cnf
 ├── nginx
 │   ├── dynmaps.conf
-│   ├── listen.template
-│   └── site.conf
-├── bind9
-│   └── named.conf
+│   ├── site.conf
+│   └── templates
+│       ├── listen_plain.template
+│       ├── listen_ssl.template
+│       └── server_name.template
+├── pdns
+│   ├── pdns_custom.lua
+│   └── recursor.conf
 ├── postfix
 │   ├── main.cf
 │   ├── master.cf
@@ -342,6 +348,7 @@ data/conf/
 └── sogo
     ├── sieve.creds
     └── sogo.conf
+
 ```
 Just change the according configuration file on the host and restart the related service: `docker-compose restart service-mailcow`
 # Tagging
