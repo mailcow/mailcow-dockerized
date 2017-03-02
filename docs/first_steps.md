@@ -1,13 +1,3 @@
-# Change default language
-
-Change `data/conf/sogo/sogo.conf` and replace English by your language.
-
-Create a file `data/web/inc/vars.local.inc.php` and add "DEFAULT_LANG" with either "en", "pt", "de" or "nl":
-```
-<?php
-$DEFAULT_LANG = "de";
-```
-
 # SSL (and: How to use Let's Encrypt)
 
 mailcow dockerized comes with a snakeoil CA "mailcow" and a server certificate in `data/assets/ssl`. Please use your own trusted certificates.
@@ -18,7 +8,7 @@ mailcow uses 3 domain names that should be covered by your new certificate:
 - autodiscover.*example.org*
 - autoconfig.*example.org*
 
-## Obtain multi-SAN certificate by Let's Encrypt
+**Obtain multi-SAN certificate by Let's Encrypt** 
 
 This is just an example of how to obtain certificates with certbot. There are several methods!
 
@@ -74,3 +64,64 @@ docker-compose restart rspamd-mailcow
 ```
 
 Open https://${MAILCOW_HOSTNAME}/rspamd in a browser and login!
+
+# Optional: Reverse proxy
+
+You don't need to change the Nginx site that comes with mailcow: dockerized.
+mailcow: dockerized trusts the default gateway IP 172.22.1.1 as proxy. This is very important to control access to Rspamds web ui.
+
+Make sure you change HTTP_BIND and HTTPS_BIND to a local address and set the ports accordingly, for example:
+```
+HTTP_BIND=127.0.0.1
+HTTP_PORT=8080
+HTTPS_PORT=127.0.0.1
+HTTPS_PORT=8443
+```
+
+Configure your local webserver as reverse proxy:
+
+**Apache 2.4**
+```
+<VirtualHost *:443>
+	ServerName mail.example.org
+	ServerAlias autodiscover.example.org
+	ServerAlias autoconfig.example.org
+
+	[...]
+	# You should proxy to a plain HTTP session to offload SSL processing
+	ProxyPass / http://127.0.0.1:8080
+	ProxyPassReverse / http://127.0.0.1:8080
+	ProxyPreserveHost On
+	your-ssl-configuration-here
+	[...]
+
+	# If you plan to proxy to a HTTPS host:
+	#SSLProxyEngine On
+	
+	# If you plan to proxy to an untrusted HTTPS host:
+	#SSLProxyVerify none
+	#SSLProxyCheckPeerCN off
+	#SSLProxyCheckPeerName off
+	#SSLProxyCheckPeerExpire off
+</VirtualHost>
+```
+
+**Nginx**
+```
+server {
+	listen 443;
+	server_name mail.example.org autodiscover.example.org autoconfig.example.org;
+
+	[...]
+	your-ssl-configuration-here
+	location / {
+		proxy_pass http://127.0.0.1:8080;
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+	}
+	[...]
+}
+```
+

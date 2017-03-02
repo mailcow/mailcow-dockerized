@@ -10,7 +10,6 @@ Save as `data/conf/postfix/mailcow_anonymize_headers.pcre`:
 /^\s*X-Mailer/          IGNORE
 /^\s*X-Originating-IP/  IGNORE
 /^\s*X-Forward/         IGNORE
-/^\s*Mime-Version:/     IGNORE
 ```
 
 Add this to `data/conf/postfix/main.cf`:
@@ -52,6 +51,16 @@ curl -L https://raw.githubusercontent.com/docker/compose/$(docker-compose versio
 Edit a domain as (domain) administrator to add an item to the filter table.
 
 Beware that a mailbox user can login to mailcow and override a domain policy filter item. 
+
+# Change default language
+
+Change `data/conf/sogo/sogo.conf` and replace "English" by your prefered language.
+
+Create a file `data/web/inc/vars.local.inc.php` and add "DEFAULT_LANG" with either "en", "pt", "de" or "nl":
+```
+<?php
+$DEFAULT_LANG = "de";
+```
 
 # Change UI theme
 

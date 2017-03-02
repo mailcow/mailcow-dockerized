@@ -2,22 +2,35 @@
 
 1. You need Docker.
 
-    - Most systems can install Docker by running `wget -qO- https://get.docker.com/ | sh`
+Most systems can install Docker by running `wget -qO- https://get.docker.com/ | sh`.
 
-2. You need Docker Compose.
+2. You need Docker Compose
+Learn [how to install Docker Compose](https://docs.docker.com/compose/install/).
 
-    - Learn [how to install Docker Compose](https://docs.docker.com/compose/install/)
 
-3. Clone the master branch of the repository and run `./generate_config.sh` to generate a file "mailcow.conf". You will be asked for a hostname and a timezone:
+3. Clone the master branch of the repository
+```
+git clone https://github.com/andryyy/mailcow-dockerized && cd mailcow-dockerized
+```
 
-    - `git clone https://github.com/andryyy/mailcow-dockerized && cd mailcow-dockerized`
-	- `./generate_config.sh`
-	- Open and check "mailcow.conf" if you need or want to make changes to ports (for example changing the default HTTPS port)
+4. Generate a configuration file. Use a FQDN (`host.domain.tld`) as hostname when asked.
+```
+./generate_config.sh
+```
 
-4. Run the composer file.
-    - `docker-compose up -d`
+5. Change configuration if you want or need to.
+```
+nano mailcow.conf
+```
 
-Done.
+If you plan to use a reverse proxy, you can, for example, bind HTTPS to 127.0.0.1 on port 8443 and HTTP to 127.0.0.1 on port 8080.
+
+6. Run the composer file.
+```
+docker-compose up -d
+```
+
+Done!
 
 You can now access **https://${MAILCOW_HOSTNAME}** with the default credentials `admin` + password `moohoo`.
 
