@@ -1,4 +1,4 @@
-# Anonymize headers for smtp relayed
+# Anonymize headers
 
 Save as `data/conf/postfix/mailcow_anonymize_headers.pcre`:
 
@@ -14,14 +14,13 @@ Save as `data/conf/postfix/mailcow_anonymize_headers.pcre`:
 ```
 
 Add this to `data/conf/postfix/main.cf`:
-
 ```
 smtp_header_checks = pcre:/opt/postfix/conf/mailcow_anonymize_headers.pcre
 ```
 
 # Backup and restore maildir (simple tar file)
 
-### **Backup**
+**Backup**
 
 This line backups the vmail directory to a file backup_vmail.tar.gz in the mailcow root directory:
 ```
@@ -34,26 +33,27 @@ docker run --rm -it -v $(docker inspect --format '{{ range .Mounts }}{{ if eq .D
 You can change the path by adjusting ${PWD} (which equals to the current directory) to any path you have write-access to.
 Set the filename `backup_vmail.tar.gz` to any custom name, but leave the path as it is. Example: `[...] tar cvfz /backup/my_own_filename_.tar.gz`
 
-### **Restore**
-
+**Restore**
 ```
 cd /path/to/mailcow-dockerized
 source mailcow.conf
 DATE=$(date +"%Y%m%d_%H%M%S")
 docker run --rm -it -v $(docker inspect --format '{{ range .Mounts }}{{ if eq .Destination "/var/vmail" }}{{ .Name }}{{ end }}{{ end }}' $(docker-compose ps -q dovecot-mailcow)):/vmail -v ${PWD}:/backup debian:jessie tar xvfz /backup/backup_vmail.tar.gz
 ```
+
+# Docker Compose Bash completion
 For the tab-tab... :-)
 
 ```
 curl -L https://raw.githubusercontent.com/docker/compose/$(docker-compose version --short)/contrib/completion/bash/docker-compose -o /etc/bash_completion.d/docker-compose
 ```
-# Black- and Whitelist
+# Black and Whitelist
 
 Edit a domain as (domain) administrator to add an item to the filter table.
 
 Beware that a mailbox user can login to mailcow and override a domain policy filter item. 
 
-# Change default theme
+# Change UI theme
 
 mailcow uses [Bootstrap](http://getbootstrap.com/), a HTML, CSS, and JS framework.
 
@@ -76,7 +76,7 @@ Now auto-recreate modified containers:
 docker-compose up -d
 ```
 
-# Do not check sender addresses for any domain
+# Disable sender addresses verification
 
 This option is not best-practice and should only be implemented when there is no other option available to archive whatever you are trying to do.
 
@@ -97,10 +97,10 @@ docker-compose exec postfix-mailcow postmap /opt/postfix/conf/check_sasl_access
 ``` 
 
 Restart the Postfix container.
+
 # Install Roundcube
 
 Download Roundcube 1.3.x (beta at the time of Feb 2017) to the web htdocs directory and extract it (here `rc/`):
-
 ```
 cd data/web/rc
 wget -O - https://github.com/roundcube/roundcubemail/releases/download/1.3-beta/roundcubemail-1.3-beta-complete.tar.gz | tar xfvz -
@@ -151,7 +151,7 @@ Point your browser to `https://myserver/rc/installer` and follow the instruction
 Initialize the database and leave the installer.
 **Delete the directory `data/web/rc/installer` after a successful installation!**
 
-## Enable password changing
+**Enable change password function in Roundcube**
 
 Open `data/web/rc/config.inc.php` and enable the password plugin:
 
@@ -183,26 +183,15 @@ $config['password_algorithm_prefix'] = '{SSHA256}';
 $config['password_query'] = "UPDATE mailbox SET password = %P WHERE username = %u";
 ```
 
-# Learn spam and ham
-
-Rspamd learns mail as spam or ham when you move a message in or out of the junk folder to any mailbox besides trash.
-This is archived by using the Dovecot plugin "antispam" and a simple parser script.
-
-Rspamd also auto-learns mail when a high or low score is detected (see https://rspamd.com/doc/configuration/statistic.html#autolearning)
-
-The bayes statistics are written to Redis as keys `BAYES_HAM` and `BAYES_SPAM`.
-
-You can also use Rspamds web ui to learn ham and/or spam.
-
 # MySQL
 
-### Connect to the MySQL database:
+**Connect to the MySQL database**
 ```
 source mailcow.conf
 docker-compose exec mysql-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME}
 ```
 
-### Backup the database:
+**Backup the database**
 ```
 cd /path/to/mailcow-dockerized
 source mailcow.conf
@@ -210,7 +199,7 @@ DATE=$(date +"%Y%m%d_%H%M%S")
 docker-compose exec mysql-mailcow mysqldump --default-character-set=utf8mb4 -u${DBUSER} -p${DBPASS} ${DBNAME} > backup_${DBNAME}_${DATE}.sql
 ```
 
-### Restore the database:
+**Restore the database**
 ```
 cd /path/to/mailcow-dockerized
 source mailcow.conf
@@ -246,7 +235,7 @@ Restart the stack, changed containers will be updated:
 
 # Redis
 
-## Connect to redis key store:
+**Connect to redis key store**
 
 ```
 docker-compose exec redis-mailcow redis-cli
@@ -260,7 +249,10 @@ docker-compose exec redis-mailcow redis-cli
 - Remove volume `dkim-vol-1` to remove all DKIM keys.
 - Remove volume `rspamd-vol-1` to remove all Rspamd data.
 
-Running `docker-compose down -v` will **destroy all mailcow: dockerized volumes** and delete any related containers.Reset mailcow admin to `admin:moohoo`:
+Running `docker-compose down -v` will **destroy all mailcow: dockerized volumes** and delete any related containers.
+
+# Reset admin password
+Reset mailcow admin to `admin:moohoo`:
 
 1. Drop admin table
 
@@ -273,7 +265,18 @@ docker-compose exec mysql-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME} -e "DR
 
 # Rspamd
 
-## Rspamd CLI tools
+**Learn spam and ham***
+
+Rspamd learns mail as spam or ham when you move a message in or out of the junk folder to any mailbox besides trash.
+This is archived by using the Dovecot plugin "antispam" and a simple parser script.
+
+Rspamd also auto-learns mail when a high or low score is detected (see https://rspamd.com/doc/configuration/statistic.html#autolearning)
+
+The bayes statistics are written to Redis as keys `BAYES_HAM` and `BAYES_SPAM`.
+
+You can also use Rspamds web ui to learn ham and/or spam.
+
+**CLI tools**
 
 ```
 docker-compose exec rspamd-mailcow rspamc --help
@@ -350,18 +353,24 @@ data/conf
     └── sogo.conf
 
 ```
-Just change the according configuration file on the host and restart the related service: `docker-compose restart service-mailcow`
+
+Just change the according configuration file on the host and restart the related service:
+```
+docker-compose restart service-mailcow
+```
+
 # Tagging
 
 Mailbox users can tag their mail address like in `me+facebook@example.org` and choose between to setups to handle this tag:
 
 1. Move this message to a subfolder "facebook" (will be created lower case if not existing)
 2. Prepend the tag to the subject: "[facebook] Subject"
+
 # Two-factor authentication
 
 So far two methods for TFA are impelemented. Both work with the fantastic [Yubikey](https://www.yubico.com). 
 
-While Yubi OTP needs an active internet connection and an API ID/key, U2F will work with any FIDO U2F USB key out of the box.
+While Yubi OTP needs an active internet connection and an API ID and key, U2F will work with any FIDO U2F USB key out of the box, but can only be used when mailcow is accessed over HTTPS.
 
 Both methods support mulitple YubiKeys.
 
@@ -369,16 +378,18 @@ As administrator you are able to temporary disable a domain adminsitrators TFA l
 
 The key used to login will be displayed in green, while other keys remain grey.
 
-## Yubi OTP
+**Yubi OTP**
 
 The Yubi API ID and Key will be checked against the Yubico Cloud API. When setting up TFA you will be asked for your personal API account for this key.
 The API ID, API key and the first 12 characters (your YubiKeys ID in modhex) are stored in the MySQL table as secret.
 
-## U2F
+**U2F**
 
 Only Google Chrome (+derivates) and Opera support U2F authentication to this day natively.
 For Firefox you will need to install the "U2F Support Add-on" as provided on [mozilla.org](https://addons.mozilla.org/en-US/firefox/addon/u2f-support-add-on/).
-U2F works without an internet connection.# Why does mailcow come with a DNS resolver?
+U2F works without an internet connection.
+
+# Why Bind?
 
 For DNS blacklist lookups and DNSSEC.
 
