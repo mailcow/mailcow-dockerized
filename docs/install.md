@@ -61,9 +61,9 @@ docker-compose up -d --remove-orphans
 docker-compose restart
 ```
 
-## Use dev branch (not recommended)
+## Development branch (not recommended)
 
-When you checkout the dev branch, you will most likely end up using the "master" images with code base of "dev".
+When you checkout the "dev" git branch, you will most likely end up using the "master" images with code base of "dev".
 If there were critical changes to the images in dev, mailcow will not work.
 
 But you can still build the images by yourself:
