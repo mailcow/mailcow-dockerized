@@ -33,17 +33,19 @@ certbot certonly \
         --agree-tos
 ```
 
-3. Create hard links to the full path of the new certificates. Assuming you are still in the mailcow root folder:
+4. Create hard links to the full path of the new certificates. Assuming you are still in the mailcow root folder:
 ```
 mv data/assets/ssl/cert.{pem,pem.backup}
 mv data/assets/ssl/key.{pem,pem.backup}
 ln $(readlink -f /etc/letsencrypt/live/${MAILCOW_HOSTNAME}/fullchain.pem) data/assets/ssl/cert.pem
 ln $(readlink -f /etc/letsencrypt/live/${MAILCOW_HOSTNAME}/privkey.pem) data/assets/ssl/key.pem
 ```
-4. Restart containers which use the certificate:
+
+5. Restart affected containers:
 ```
 docker-compose restart postfix-mailcow dovecot-mailcow nginx-mailcow
 ```
+
 When renewing certificates, run the last two steps (link + restart) as post-hook in a script.
 
 # Rspamd Web UI
@@ -70,13 +72,15 @@ Open https://${MAILCOW_HOSTNAME}/rspamd in a browser and login!
 You don't need to change the Nginx site that comes with mailcow: dockerized.
 mailcow: dockerized trusts the default gateway IP 172.22.1.1 as proxy. This is very important to control access to Rspamd's web UI.
 
-Make sure you change HTTP_BIND and HTTPS_BIND to a local address and set the ports accordingly, for example:
+Make sure you change HTTP_BIND and HTTPS_BIND in `mailcow.conf` to a local address and set the ports accordingly, for example:
 ```
 HTTP_BIND=127.0.0.1
 HTTP_PORT=8080
 HTTPS_PORT=127.0.0.1
 HTTPS_PORT=8443
 ```
+
+Recreate affected containers by running `docker-compose up -d`.
 
 Configure your local webserver as reverse proxy:
 
