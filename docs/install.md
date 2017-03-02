@@ -6,8 +6,7 @@
 
 2. You need Docker Compose.
 
-    - Learn [how to install Docker Compose](https://docs.docker.com/compose/install/) - or:
-	- `curl -L "https://github.com/docker/compose/releases/download/composer_version/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose`
+    - Learn [how to install Docker Compose](https://docs.docker.com/compose/install/)
 
 3. Clone the master branch of the repository and run `./generate_config.sh` to generate a file "mailcow.conf". You will be asked for a hostname and a timezone:
 
