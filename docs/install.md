@@ -2,33 +2,38 @@
 
 1. You need Docker.
 
-Most systems can install Docker by running `wget -qO- https://get.docker.com/ | sh`.
+    Most systems can install Docker by running `wget -qO- https://get.docker.com/ | sh`.
 
 2. You need Docker Compose
-Learn [how to install Docker Compose](https://docs.docker.com/compose/install/).
+
+    Learn [how to install Docker Compose](https://docs.docker.com/compose/install/).
 
 
 3. Clone the master branch of the repository
-```
-git clone https://github.com/andryyy/mailcow-dockerized && cd mailcow-dockerized
-```
+
+    ```
+    git clone https://github.com/andryyy/mailcow-dockerized && cd mailcow-dockerized
+    ```
 
 4. Generate a configuration file. Use a FQDN (`host.domain.tld`) as hostname when asked.
-```
-./generate_config.sh
-```
+
+    ```
+    ./generate_config.sh
+    ```
 
 5. Change configuration if you want or need to.
-```
-nano mailcow.conf
-```
+
+    ```
+    nano mailcow.conf
+    ```
 
 If you plan to use a reverse proxy, you can, for example, bind HTTPS to 127.0.0.1 on port 8443 and HTTP to 127.0.0.1 on port 8080.
 
 6. Run the composer file.
-```
-docker-compose up -d
-```
+
+    ```
+    docker-compose up -d
+    ```
 
 Done!
 

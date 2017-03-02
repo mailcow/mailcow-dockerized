@@ -265,12 +265,12 @@ Reset mailcow admin to `admin:moohoo`:
 
 1. Drop admin table
 
-```
-source mailcow.conf
-docker-compose exec mysql-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME} -e "DROP TABLE admin;"
-```
+    ```
+    source mailcow.conf
+    docker-compose exec mysql-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME} -e "DROP TABLE admin;"
+    ```
 
-2. Open mailcow UI to auto-init the db
+    2. Open mailcow UI to auto-init the db
 
 # Rspamd
 
