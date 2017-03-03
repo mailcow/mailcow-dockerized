@@ -4,10 +4,10 @@ The match section performs AND operation on different matches: for example, if y
 then the rule matches only when from AND rcpt match. For similar matches, the OR rule applies: if you have multiple rcpt matches,
 then any of these will trigger the rule. If a rule is triggered then no more rules are matched.
 */
-ini_set('error_reporting', '0');
-
 header('Content-Type: text/plain');
 require_once "vars.inc.php";
+
+ini_set('error_reporting', 0);
 
 $dsn = $database_type . ':host=' . $database_host . ';dbname=' . $database_name;
 $opt = [
@@ -38,10 +38,17 @@ while ($row = array_shift($rows)) {
 		WHERE (`object`= :object OR `object`= :object_domain)
 			AND (`option` = 'blacklist_from' OR `option` = 'whitelist_from')");
 	$stmt->execute(array(':object' => $row['object'], ':object_domain' => substr(strrchr($row['object'], "@"), 1)));
-	$grouped_lists = $stmt->fetchAll(PDO::FETCH_COLUMN);
-	$value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
+	$grouped_lists = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	array_filter($grouped_lists);
+    while ($grouped_list = array_shift($grouped_lists)) {
+        $value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_list['value'])));
+        if (!empty($value_sane)) {
 ?>
 		from = "/^((?!<?=$value_sane;?>).)*$/";
+<?php
+        }
+    }
+?>
 		rcpt = "<?=$row['object'];?>";
 <?php
 	$stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `goto` = :object_goto AND `address` NOT LIKE '@%' AND `address` != :object_address");
@@ -57,7 +64,7 @@ while ($row = array_shift($rows)) {
 		WHERE `mailbox`.`username` = :object");
 	$stmt->execute(array(':object' => $row['object']));
 	$rows_aliases_2 = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  array_filter($rows_aliases_2);
+	array_filter($rows_aliases_2);
 	while ($row_aliases_2 = array_shift($rows_aliases_2)) {
     if (!empty($row_aliases_2['aliases'])) {
 ?>
@@ -106,7 +113,7 @@ while ($row = array_shift($rows)) {
 			WHERE `target_domain` = :object");
 		$stmt->execute(array(':object' => $row['object']));
 		$rows_domain_aliases = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    array_filter($rows_domain_aliases);
+		array_filter($rows_domain_aliases);
 		while ($row_domain_aliases = array_shift($rows_domain_aliases)) {
 ?>
 		rcpt = "/.*@<?=$row_domain_aliases['alias_domain'];?>/";
@@ -122,7 +129,7 @@ while ($row = array_shift($rows)) {
 	$stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `goto` = :object_goto AND `address` NOT LIKE '@%' AND `address` != :object_address");
 	$stmt->execute(array(':object_goto' => $row['object'], ':object_address' => $row['object']));
 	$rows_aliases_wl_1 = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  array_filter($rows_aliases_wl_1);
+	array_filter($rows_aliases_wl_1);
 	while ($row_aliases_wl_1 = array_shift($rows_aliases_wl_1)) {
 ?>
 		rcpt = "<?=$row_aliases_wl_1['address'];?>";
@@ -133,7 +140,7 @@ while ($row = array_shift($rows)) {
 		WHERE `mailbox`.`username` = :object");
 	$stmt->execute(array(':object' => $row['object']));
 	$rows_aliases_wl_2 = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  array_filter($rows_aliases_wl_2);
+	array_filter($rows_aliases_wl_2);
 	while ($row_aliases_wl_2 = array_shift($rows_aliases_wl_2)) {
     if (!empty($row_aliases_wl_2['aliases'])) {
 ?>
@@ -178,7 +185,7 @@ while ($row = array_shift($rows)) {
 			WHERE `target_domain` = :object");
 		$stmt->execute(array(':object' => $row['object']));
 		$rows_domain_aliases = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    array_filter($rows_domain_aliases);
+		array_filter($rows_domain_aliases);
 		while ($row_domain_aliases = array_shift($rows_domain_aliases)) {
 ?>
 		rcpt = "/.*@<?=$row_domain_aliases['alias_domain'];?>/";
@@ -194,7 +201,7 @@ while ($row = array_shift($rows)) {
 	$stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `goto` = :object_goto AND `address` NOT LIKE '@%' AND `address` != :object_address");
 	$stmt->execute(array(':object_goto' => $row['object'], ':object_address' => $row['object']));
 	$rows_aliases_bl_1 = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  array_filter($rows_aliases_bl_1);
+	array_filter($rows_aliases_bl_1);
 	while ($row_aliases_bl_1 = array_shift($rows_aliases_bl_1)) {
 ?>
 		rcpt = "<?=$row_aliases_bl_1['address'];?>";
@@ -205,7 +212,7 @@ while ($row = array_shift($rows)) {
 		WHERE `mailbox`.`username` = :object");
 	$stmt->execute(array(':object' => $row['object']));
 	$rows_aliases_bl_2 = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  array_filter($rows_aliases_bl_2);
+	array_filter($rows_aliases_bl_2);
 	while ($row_aliases_bl_2 = array_shift($rows_aliases_bl_2)) {
     if (!empty($row_aliases_bl_2['aliases'])) {
 ?>
