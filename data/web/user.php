@@ -31,7 +31,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'doma
               foreach ($tfa_data['additional'] as $key_info): ?>
                 <form style="display:inline;" method="post">
                 <input type="hidden" name="unset_tfa_key" value="<?=$key_info['id'];?>" />
-                <div class="label label-default">🔑 <?=$key_info['key_id'];?> <a href="#" style="font-weight:bold;color:white" onClick="$(this).closest('form').submit()">[<?=strtolower($lang['admin']['remove']);?>]</a></div>
+                <div class="label label-default">?? <?=$key_info['key_id'];?> <a href="#" style="font-weight:bold;color:white" onClick="$(this).closest('form').submit()">[<?=strtolower($lang['admin']['remove']);?>]</a></div>
               </form>
               <?php endforeach;
               endif;?>
@@ -63,6 +63,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 	$_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 	$username = $_SESSION['mailcow_cc_username'];
 	$get_tls_policy = get_tls_policy($_SESSION['mailcow_cc_username']);
+  $mailboxdata = mailbox_get_mailbox_details($username);
 ?>
 <div class="container">
 <h3><?=$lang['user']['user_settings'];?></h3>
@@ -106,6 +107,18 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
     <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['is_catch_all'];?>:</div>
     <div class="col-md-9 col-xs-7">
     <p><?=$user_get_alias_details['is_catch_all'];?></p>
+    </div>
+  </div>
+  <hr>
+  <div class="row">
+    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['in_use'];?>:</div>
+    <div class="col-md-5 col-xs-7">
+      <div class="progress">
+        <div class="progress-bar progress-bar-<?=$mailboxdata['percent_class'];?>" role="progressbar" aria-valuenow="<?=$mailboxdata['percent_in_use'];?>" aria-valuemin="0" aria-valuemax="100" style="min-width:2em;width: <?=$mailboxdata['percent_in_use'];?>%;">
+          <?=$mailboxdata['percent_in_use'];?>%
+        </div>
+      </div>
+      <p><?=formatBytes($mailboxdata['quota_used'], 2);?> / <?=formatBytes($mailboxdata['quota'], 2);?>, <?=$mailboxdata['messages'];?> <?=$lang['user']['messages'];?></p>
     </div>
   </div>
   <hr>
