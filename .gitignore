@@ -7,3 +7,4 @@ data/conf/nginx/listen_ssl.active
 data/conf/nginx/listen_plain.active
 data/conf/nginx/server_name.active
 data/web/inc/vars.local.inc.php
+site/
