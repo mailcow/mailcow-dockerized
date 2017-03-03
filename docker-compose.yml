@@ -59,8 +59,8 @@ services:
       image: andryyy/mailcow-dockerized:rspamd
       build: ./data/Dockerfiles/rspamd
       depends_on:
-        - nginx-mailcow
-        - php-fpm-mailcow
+        nginx-mailcow:
+          condition: service_healthy
       volumes:
         - ./data/conf/rspamd/override.d/:/etc/rspamd/override.d:ro
         - ./data/conf/rspamd/local.d/:/etc/rspamd/local.d:ro
@@ -213,7 +213,13 @@ services:
     nginx-mailcow:
       depends_on:
         - sogo-mailcow
+        - php-fpm-mailcow
       image: nginx:mainline
+      healthcheck:
+        test: ["CMD", "ping", "php-fpm-mailcow", "-c", "10"]
+        interval: 10s
+        timeout: 30s
+        retries: 5
       command: /bin/bash -c "envsubst < /etc/nginx/conf.d/templates/listen_plain.template > /etc/nginx/conf.d/listen_plain.active &&
         envsubst < /etc/nginx/conf.d/templates/listen_ssl.template > /etc/nginx/conf.d/listen_ssl.active &&
         envsubst < /etc/nginx/conf.d/templates/server_name.template > /etc/nginx/conf.d/server_name.active &&

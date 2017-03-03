@@ -18,13 +18,11 @@ RUN echo '.include $LOCAL_CONFDIR/local.d/rspamd.conf.local' > /etc/rspamd/rspam
 
 ADD settings.conf /etc/rspamd/modules.d/settings.conf
 ADD antivirus.conf /etc/rspamd/modules.d/antivirus.conf
-ADD wait-for-it.sh /wait-for-it.sh
 
 RUN pip install -U oletools
 RUN timeout 30 /usr/bin/rspamd -f -u _rspamd -g _rspamd; exit 0
-RUN chmod +x /wait-for-it.sh
 
-CMD ["/wait-for-it.sh", "nginx:8081", "--", "/usr/bin/rspamd", "-f", "-u", "_rspamd", "-g", "_rspamd"]
+CMD ["/usr/bin/rspamd", "-f", "-u", "_rspamd", "-g", "_rspamd"]
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
