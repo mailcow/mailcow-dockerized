@@ -18,10 +18,11 @@ RUN echo '.include $LOCAL_CONFDIR/local.d/rspamd.conf.local' > /etc/rspamd/rspam
 
 ADD settings.conf /etc/rspamd/modules.d/settings.conf
 ADD antivirus.conf /etc/rspamd/modules.d/antivirus.conf
-ADD docker-entrypoint.sh /usr/local/bin
+ADD docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 RUN pip install -U oletools
 RUN timeout 30 /usr/bin/rspamd -f -u _rspamd -g _rspamd; exit 0
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
