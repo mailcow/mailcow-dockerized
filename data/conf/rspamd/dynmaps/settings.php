@@ -16,6 +16,13 @@ $opt = [
     PDO::ATTR_EMULATE_PREPARES   => false,
 ];
 $pdo = new PDO($dsn, $database_user, $database_pass, $opt);
+try {
+  $stmt = $pdo->query("SELECT * FROM `filterconf`");
+}
+catch (PDOException $e) {
+  echo 'settings { }';
+  exit;
+}
 ?>
 settings {
 <?php
