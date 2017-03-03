@@ -22,7 +22,7 @@ ADD wait-for-it.sh /wait-for-it.sh
 
 RUN pip install -U oletools
 RUN timeout 30 /usr/bin/rspamd -f -u _rspamd -g _rspamd; exit 0
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /wait-for-it.sh
 
 CMD ["/wait-for-it.sh", "nginx:8081", "--", "/usr/bin/rspamd", "-f", "-u", "_rspamd", "-g", "_rspamd"]
 
