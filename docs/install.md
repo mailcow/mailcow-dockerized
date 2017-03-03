@@ -4,6 +4,10 @@ You need Docker and Docker Compose.
 
 1\. Learn how to install [Docker](https://docs.docker.com/engine/installation/linux/) and [Docker Compose](https://docs.docker.com/compose/install/).
 
+Most systems can safely install Docker by running `curl -sSL https://get.docker.com/ | sh`
+
+Please use the latest Docker engine available and do not use the engine that ships with your distros repository.
+
 2\. Clone the master branch of the repository
 ```
 git clone https://github.com/andryyy/mailcow-dockerized && cd mailcow-dockerized
