@@ -12,18 +12,20 @@ RUN dpkg-divert --local --rename --add /sbin/initctl \
 RUN apt-key adv --fetch-keys http://rspamd.com/apt-stable/gpg.key \
     && echo "deb http://rspamd.com/apt-stable/ xenial main" > /etc/apt/sources.list.d/rspamd.list \
     && apt-get update \
-    && apt-get -y install rspamd ca-certificates python-pip coreutils
+    && apt-get -y install rspamd ca-certificates python-pip coreutils curl
 
 RUN echo '.include $LOCAL_CONFDIR/local.d/rspamd.conf.local' > /etc/rspamd/rspamd.conf.local
 
 ADD settings.conf /etc/rspamd/modules.d/settings.conf
 ADD antivirus.conf /etc/rspamd/modules.d/antivirus.conf
+ADD docker-entrypoint.sh /usr/local/bin
 
 RUN pip install -U oletools
-
 RUN timeout 30 /usr/bin/rspamd -f -u _rspamd -g _rspamd; exit 0
 
-CMD ["/usr/bin/rspamd","-f", "-u", "_rspamd", "-g", "_rspamd"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+
+CMD ["/usr/bin/rspamd", "-f", "-u", "_rspamd", "-g", "_rspamd"]
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
