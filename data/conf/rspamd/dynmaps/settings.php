@@ -15,14 +15,15 @@ $opt = [
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     PDO::ATTR_EMULATE_PREPARES   => false,
 ];
-$pdo = new PDO($dsn, $database_user, $database_pass, $opt);
 try {
+  $pdo = new PDO($dsn, $database_user, $database_pass, $opt);
   $stmt = $pdo->query("SELECT * FROM `filterconf`");
 }
 catch (PDOException $e) {
   echo 'settings { }';
   exit;
 }
+
 ?>
 settings {
 <?php
