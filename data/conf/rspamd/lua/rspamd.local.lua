@@ -25,6 +25,10 @@ local auth_domain_map = rspamd_config:add_map({
 
 rspamd_config.ADD_DELIMITER_TAG = {
   callback = function(task)
+	tag = nil
+	local tag_env = nil
+	local tag_to = nil
+
     local util = require("rspamd_util")
     local rspamd_logger = require "rspamd_logger"
 
