@@ -11,13 +11,13 @@ rspamd_config.MAILCOW_MOO = function (task)
 	return true
 end
 
-local modify_subject_map = rspamd_config:add_map({
+modify_subject_map = rspamd_config:add_map({
   url = 'http://172.22.1.251:8081/tags.php',
   type = 'map',
   description = 'Map of users to use subject tags for'
 })
 
-local auth_domain_map = rspamd_config:add_map({
+auth_domain_map = rspamd_config:add_map({
   url = 'http://172.22.1.251:8081/authoritative.php',
   type = 'map',
   description = 'Map of domains we are authoritative for'
