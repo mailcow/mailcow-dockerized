@@ -1,21 +1,6 @@
 version: '2.1'
 
 services:
-    # Replaced by better and smaller bind9
-    #pdns-mailcow:
-    #  image: andryyy/mailcow-dockerized:pdns
-    #  depends_on:
-    #    mysql-mailcow:
-    #      condition: service_healthy
-    #  volumes:
-    #    - ./data/conf/pdns/:/etc/powerdns/
-    #  restart: always
-    #  networks:
-    #    mailcow-network:
-    #      ipv4_address: 172.22.1.254
-    #      aliases:
-    #        - pdns
-
     bind9-mailcow:
       image: resystit/bind9
       command: "named -c /etc/bind/named.conf -g -u named -4"
@@ -75,6 +60,7 @@ services:
       build: ./data/Dockerfiles/rspamd
       depends_on:
         - nginx-mailcow
+        - php-fpm-mailcow
       volumes:
         - ./data/conf/rspamd/override.d/:/etc/rspamd/override.d:ro
         - ./data/conf/rspamd/local.d/:/etc/rspamd/local.d:ro
@@ -224,23 +210,9 @@ services:
           aliases:
             - memcached
 
-#    clamav-mailcow:
-#      build: ./data/Dockerfiles/clamav
-#      depends_on:
-#        - bind9-mailcow
-#      restart: always
-#      dns:
-#        - 172.22.1.250
-#      dns_search: mailcow-network
-#      networks:
-#        mailcow-network:
-#          aliases:
-#            - clamav
-
     nginx-mailcow:
       depends_on:
         - sogo-mailcow
-        - php-fpm-mailcow
       image: nginx:mainline
       command: /bin/bash -c "envsubst < /etc/nginx/conf.d/templates/listen_plain.template > /etc/nginx/conf.d/listen_plain.active &&
         envsubst < /etc/nginx/conf.d/templates/listen_ssl.template > /etc/nginx/conf.d/listen_ssl.active &&
