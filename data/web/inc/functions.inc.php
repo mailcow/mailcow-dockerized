@@ -253,6 +253,8 @@ function edit_admin_account($postarray) {
 	}
 	$username       = $postarray['admin_user'];
 	$username_now   = $_SESSION['mailcow_cc_username'];
+  $password       = $postarray['admin_pass'];
+  $password2      = $postarray['admin_pass2'];
 
 	if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $username)) || empty ($username)) {
 		$_SESSION['return'] = array(
@@ -262,15 +264,22 @@ function edit_admin_account($postarray) {
 		return false;
 	}
 
-	if (!empty($postarray['admin_pass']) && !empty($postarray['admin_pass2'])) {
-		if ($postarray['admin_pass'] != $postarray['admin_pass2']) {
+	if (!empty($password) && !empty($password2)) {
+    if (!preg_match('/' . $GLOBALS['PASSWD_REGEP'] . '/', $password)) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['password_complexity'])
+      );
+      return false;
+    }
+		if ($password != $password2) {
 			$_SESSION['return'] = array(
 				'type' => 'danger',
 				'msg' => sprintf($lang['danger']['password_mismatch'])
 			);
 			return false;
 		}
-		$password_hashed = hash_password($postarray['admin_pass']);
+		$password_hashed = hash_password($password);
 		try {
 			$stmt = $pdo->prepare("UPDATE `admin` SET 
 				`modified` = :modified,
@@ -585,9 +594,7 @@ function edit_user_account($postarray) {
 				);
 				return false;
 			}
-			if (strlen($password_new) < "6" ||
-				!preg_match('/[A-Za-z]/', $password_new) ||
-				!preg_match('/[0-9]/', $password_new)) {
+			if (!preg_match('/' . $GLOBALS['PASSWD_REGEP'] . '/', $password_new)) {
 					$_SESSION['return'] = array(
 						'type' => 'danger',
 						'msg' => sprintf($lang['danger']['password_complexity'])
@@ -1459,8 +1466,11 @@ function user_get_alias_details($username) {
   }
   try {
     $data['address'] = $username;
-    $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(`address` SEPARATOR ', '), '&#10008;') AS `aliases` FROM `alias` WHERE `goto` = :username_goto AND `address` NOT LIKE '@%' AND `address` != :username_address");
-    $stmt->execute(array(':username_goto' => $username, ':username_address' => $username));
+    $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(`address` SEPARATOR ', '), '&#10008;') AS `aliases` FROM `alias`
+      WHERE `goto` LIKE :username_goto
+      AND `address` NOT LIKE '@%'
+      AND `address` != :username_address");
+    $stmt->execute(array(':username_goto' => '%' . $username . '%', ':username_address' => $username));
     $run = $stmt->fetchAll(PDO::FETCH_ASSOC);
     while ($row = array_shift($run)) {
       $data['aliases'] = $row['aliases'];
@@ -1485,8 +1495,8 @@ function user_get_alias_details($username) {
     while ($row = array_shift($run)) {
       $data['aliases_send_as_all'] = $row['send_as'];
     }
-    $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(`address` SEPARATOR ', '), '&#10008;') as `address` FROM `alias` WHERE `goto` = :username AND `address` LIKE '@%';");
-    $stmt->execute(array(':username' => $username));
+    $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(`address` SEPARATOR ', '), '&#10008;') as `address` FROM `alias` WHERE `goto` LIKE :username AND `address` LIKE '@%';");
+    $stmt->execute(array(':username' => '%' . $username . '%'));
     $run = $stmt->fetchAll(PDO::FETCH_ASSOC);
     while ($row = array_shift($run)) {
       $data['is_catch_all'] = $row['address'];
@@ -1515,7 +1525,7 @@ function add_domain_admin($postarray) {
 	global $pdo;
 	$username		= strtolower(trim($postarray['username']));
 	$password		= $postarray['password'];
-	$password2		= $postarray['password2'];
+	$password2  = $postarray['password2'];
 	isset($postarray['active']) ? $active = '1' : $active = '0';
 	if ($_SESSION['mailcow_cc_role'] != "admin") {
 		$_SESSION['return'] = array(
@@ -1571,6 +1581,13 @@ function add_domain_admin($postarray) {
 		}
 	}
 	if (!empty($password) && !empty($password2)) {
+    if (!preg_match('/' . $GLOBALS['PASSWD_REGEP'] . '/', $password)) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['password_complexity'])
+      );
+      return false;
+    }
 		if ($password != $password2) {
 			$_SESSION['return'] = array(
 				'type' => 'danger',
@@ -1711,6 +1728,7 @@ function get_domain_admins() {
 }
 function get_domain_admin_details($domain_admin) {
 	global $pdo;
+
 	global $lang;
   $domainadmindata = array();
 	if (isset($domain_admin) && $_SESSION['mailcow_cc_role'] != "admin") {
@@ -2169,6 +2187,13 @@ function edit_domain_admin($postarray) {
     }
 
     if (!empty($password) && !empty($password2)) {
+      if (!preg_match('/' . $GLOBALS['PASSWD_REGEP'] . '/', $password)) {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => sprintf($lang['danger']['password_complexity'])
+        );
+        return false;
+      }
       if ($password != $password2) {
         $_SESSION['return'] = array(
           'type' => 'danger',
@@ -2262,14 +2287,12 @@ function edit_domain_admin($postarray) {
         );
         return false;
       }
-      if (strlen($password_new) < "6" ||
-        !preg_match('/[A-Za-z]/', $password_new) ||
-        !preg_match('/[0-9]/', $password_new)) {
-          $_SESSION['return'] = array(
-            'type' => 'danger',
-            'msg' => sprintf($lang['danger']['password_complexity'])
-          );
-          return false;
+      if (!preg_match('/' . $GLOBALS['PASSWD_REGEP'] . '/', $password_new)) {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => sprintf($lang['danger']['password_complexity'])
+        );
+        return false;
       }
       $password_hashed = hash_password($password_new);
       try {
@@ -2991,6 +3014,13 @@ function mailbox_add_mailbox($postarray) {
 	}
 
 	if (!empty($password) && !empty($password2)) {
+    if (!preg_match('/' . $GLOBALS['PASSWD_REGEP'] . '/', $password)) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['password_complexity'])
+      );
+      return false;
+    }
 		if ($password != $password2) {
 			$_SESSION['return'] = array(
 				'type' => 'danger',
@@ -3735,6 +3765,13 @@ function mailbox_edit_mailbox($postarray) {
     }
   }
 	if (!empty($password) && !empty($password2)) {
+    if (!preg_match('/' . $GLOBALS['PASSWD_REGEP'] . '/', $password)) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['password_complexity'])
+      );
+      return false;
+    }
 		if ($password != $password2) {
 			$_SESSION['return'] = array(
 				'type' => 'danger',
@@ -4313,8 +4350,12 @@ function mailbox_get_mailbox_details($mailbox) {
     $DomainQuota  = $stmt->fetch(PDO::FETCH_ASSOC);
 
     $stmt = $pdo->prepare("SELECT COALESCE(SUM(`quota`), 0) as `in_use` FROM `mailbox` WHERE `kind` NOT REGEXP 'location|thing|group' AND `domain` = :domain AND `username` != :username");
-    $stmt->execute(array(':domain' => $row['domain'], ':username' => $row['username']));
+    $stmt->execute(array(':domain' => $row['domain'], ':username' => $mailbox));
     $MailboxUsage	= $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $stmt = $pdo->prepare("SELECT IFNULL(COUNT(`address`), 0) AS `sa_count` FROM `spamalias` WHERE `goto` = :address AND `validity` >= :unixnow");
+    $stmt->execute(array(':address' => $mailbox, ':unixnow' => time()));
+    $SpamaliasUsage	= $stmt->fetch(PDO::FETCH_ASSOC);
 
     $mailboxdata['max_new_quota'] = ($DomainQuota['quota'] * 1048576) - $MailboxUsage['in_use'];
     if ($mailboxdata['max_new_quota'] > ($DomainQuota['maxquota'] * 1048576)) {
@@ -4331,6 +4372,7 @@ function mailbox_get_mailbox_details($mailbox) {
     $mailboxdata['quota_used'] = intval($row['bytes']);
     $mailboxdata['percent_in_use'] = round((intval($row['bytes']) / intval($row['quota'])) * 100);
     $mailboxdata['messages'] = $row['messages'];
+    $mailboxdata['spam_aliases'] = $SpamaliasUsage['sa_count'];
     if ($mailboxdata['percent_in_use'] >= 90) {
       $mailboxdata['percent_class'] = "danger";
     }

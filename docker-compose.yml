@@ -1,19 +1,20 @@
 version: '2.1'
 
 services:
-    pdns-mailcow:
-      image: andryyy/mailcow-dockerized:pdns
+    bind9-mailcow:
+      image: resystit/bind9
+      command: "named -c /etc/bind/named.conf -g -u named -4"
       depends_on:
         mysql-mailcow:
           condition: service_healthy
       volumes:
-        - ./data/conf/pdns/:/etc/powerdns/
+        - ./data/conf/bind9/named.conf:/etc/bind/named.conf
       restart: always
       networks:
         mailcow-network:
           ipv4_address: 172.22.1.254
           aliases:
-            - pdns
+            - bind9
 
     mysql-mailcow:
       image: mariadb:10.1
@@ -42,7 +43,7 @@ services:
     redis-mailcow:
       image: redis
       depends_on:
-        - pdns-mailcow
+        - bind9-mailcow
       volumes:
         - redis-vol-1:/data/
       restart: always
@@ -56,8 +57,10 @@ services:
 
     rspamd-mailcow:
       image: andryyy/mailcow-dockerized:rspamd
+      build: ./data/Dockerfiles/rspamd
       depends_on:
-        - nginx-mailcow
+        nginx-mailcow:
+          condition: service_healthy
       volumes:
         - ./data/conf/rspamd/override.d/:/etc/rspamd/override.d:ro
         - ./data/conf/rspamd/local.d/:/etc/rspamd/local.d:ro
@@ -76,9 +79,10 @@ services:
 
     php-fpm-mailcow:
       image: andryyy/mailcow-dockerized:phpfpm
+      build: ./data/Dockerfiles/php-fpm
       command: "php-fpm -d date.timezone=${TZ}"
       depends_on:
-        - pdns-mailcow
+        - bind9-mailcow
       volumes:
         - ./data/web:/web:ro
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
@@ -99,8 +103,9 @@ services:
 
     sogo-mailcow:
       image: andryyy/mailcow-dockerized:sogo
+      build: ./data/Dockerfiles/sogo
       depends_on:
-        - pdns-mailcow
+        - bind9-mailcow
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -121,8 +126,9 @@ services:
 
     rmilter-mailcow:
       image: andryyy/mailcow-dockerized:rmilter
+      build: ./data/Dockerfiles/rmilter
       depends_on:
-        - pdns-mailcow
+        - bind9-mailcow
       volumes:
         - ./data/conf/rmilter/:/etc/rmilter.conf.d/:ro
       restart: always
@@ -136,8 +142,9 @@ services:
 
     dovecot-mailcow:
       image: andryyy/mailcow-dockerized:dovecot
+      build: ./data/Dockerfiles/dovecot
       depends_on:
-        - pdns-mailcow
+        - bind9-mailcow
       volumes:
         - ./data/conf/dovecot:/etc/dovecot
         - ./data/assets/ssl:/etc/ssl/mail/:ro
@@ -165,11 +172,13 @@ services:
 
     postfix-mailcow:
       image: andryyy/mailcow-dockerized:postfix
+      build: ./data/Dockerfiles/postfix
       depends_on:
-        - pdns-mailcow
+        - bind9-mailcow
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
         - ./data/assets/ssl:/etc/ssl/mail/:ro
+        - postfix-vol-1:/var/spool/postfix
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -191,7 +200,7 @@ services:
     memcached-mailcow:
       image: memcached
       depends_on:
-        - pdns-mailcow
+        - bind9-mailcow
       restart: always
       dns:
         - 172.22.1.254
@@ -206,9 +215,19 @@ services:
         - sogo-mailcow
         - php-fpm-mailcow
       image: nginx:mainline
-      command: /bin/bash -c "envsubst < /etc/nginx/conf.d/listen.template > /etc/nginx/conf.d/listen.active && nginx -g 'daemon off;'"
+      healthcheck:
+        test: ["CMD", "ping", "php-fpm-mailcow", "-c", "10"]
+        interval: 10s
+        timeout: 30s
+        retries: 5
+      command: /bin/bash -c "envsubst < /etc/nginx/conf.d/templates/listen_plain.template > /etc/nginx/conf.d/listen_plain.active &&
+        envsubst < /etc/nginx/conf.d/templates/listen_ssl.template > /etc/nginx/conf.d/listen_ssl.active &&
+        envsubst < /etc/nginx/conf.d/templates/server_name.template > /etc/nginx/conf.d/server_name.active &&
+        nginx -g 'daemon off;'"
       environment:
         - HTTPS_PORT=${HTTPS_PORT:-443}
+        - HTTP_PORT=${HTTP_PORT:-80}
+        - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
       volumes:
         - ./data/web:/web:ro
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
@@ -218,10 +237,12 @@ services:
         - 172.22.1.254
       dns_search: mailcow-network
       ports:
-        - "${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
+        - "${HTTPS_BIND:-0.0.0.0}:${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
+        - "${HTTP_BIND:-127.0.0.1}:${HTTP_PORT:-80}:${HTTP_PORT:-80}"
       restart: always
       networks:
         mailcow-network:
+          ipv4_address: 172.22.1.251
           aliases:
             - nginx
 
@@ -239,3 +260,4 @@ volumes:
   dkim-vol-1:
   redis-vol-1:
   rspamd-vol-1:
+  postfix-vol-1:

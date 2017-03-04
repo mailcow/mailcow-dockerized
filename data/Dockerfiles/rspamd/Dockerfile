@@ -12,13 +12,17 @@ RUN dpkg-divert --local --rename --add /sbin/initctl \
 RUN apt-key adv --fetch-keys http://rspamd.com/apt-stable/gpg.key \
     && echo "deb http://rspamd.com/apt-stable/ xenial main" > /etc/apt/sources.list.d/rspamd.list \
     && apt-get update \
-    && apt-get -y install rspamd ca-certificates
+    && apt-get -y install rspamd ca-certificates python-pip
 
 RUN echo '.include $LOCAL_CONFDIR/local.d/rspamd.conf.local' > /etc/rspamd/rspamd.conf.local
-# "Hardcoded" - we need them
-RUN echo 'settings = "http://nginx:8081/settings.php";' > /etc/rspamd/modules.d/settings.conf
 
-CMD ["/usr/bin/rspamd","-f", "-u", "_rspamd", "-g", "_rspamd"]
+ADD settings.conf /etc/rspamd/modules.d/settings.conf
+ADD antivirus.conf /etc/rspamd/modules.d/antivirus.conf
+
+RUN pip install -U oletools
+
+# Give Nginx/PHP time to restart
+CMD /bin/sleep 30; /usr/bin/rspamd -f -u _rspamd -g _rspamd
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 

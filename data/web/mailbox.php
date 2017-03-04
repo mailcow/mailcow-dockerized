@@ -91,7 +91,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             endforeach;
             else:
 							?>
-              <tr id="no-data"><td colspan="8" style="text-align: center; font-style: italic;"><?=$lang['mailbox']['no_record_single'];?></td></tr>
+              <tr id="no-data"><td colspan="999" style="text-align: center; font-style: italic;"><?=$lang['mailbox']['no_record_single'];?></td></tr>
             <?php
             endif;
             ?>
@@ -101,7 +101,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 						?>
 					<tfoot>
 						<tr id="no-data">
-							<td colspan="8" style="text-align: center; font-style: normal; border-top: 1px solid #e7e7e7;">
+							<td colspan="999" style="text-align: center; font-style: normal; border-top: 1px solid #e7e7e7;">
 								<a href="/add.php?domain"><?=$lang['mailbox']['add_domain'];?></a>
 							</td>
 						</tr>
@@ -137,6 +137,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 							<th class="sort-table" style="min-width: 98px;"><?=$lang['mailbox']['fname'];?></th>
 							<th class="sort-table" style="min-width: 86px;"><?=$lang['mailbox']['domain'];?></th>
 							<th class="sort-table" style="min-width: 75px;"><?=$lang['mailbox']['quota'];?></th>
+							<th class="sort-table" style="min-width: 75px;"><?=$lang['mailbox']['spam_aliases'];?></th>
 							<th class="sort-table" style="min-width: 99px;"><?=$lang['mailbox']['in_use'];?></th>
 							<th class="sort-table" style="min-width: 100px;"><?=$lang['mailbox']['msg_num'];?></th>
 							<th class="sort-table" style="min-width: 76px;"><?=$lang['mailbox']['active'];?></th>
@@ -145,6 +146,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 					</thead>
 					<tbody>
 						<?php
+					if (!empty($domains)) {
             foreach (mailbox_get_domains() as $domain) {
               $mailboxes = mailbox_get_mailboxes($domain);
               if (!empty($mailboxes)) {
@@ -156,6 +158,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 							<td><?=htmlspecialchars($mailboxdata['name'], ENT_QUOTES, 'UTF-8');?></td>
 							<td><?=htmlspecialchars($mailboxdata['domain']);?></td>
 							<td><?=formatBytes($mailboxdata['quota_used'], 2);?> / <?=formatBytes($mailboxdata['quota'], 2);?></td>
+							<td><?=$mailboxdata['spam_aliases'];?></td>
 							<td style="min-width:120px;">
 								<div class="progress">
 									<div class="progress-bar progress-bar-<?=$mailboxdata['percent_class'];?>" role="progressbar" aria-valuenow="<?=$mailboxdata['percent_in_use'];?>" aria-valuemin="0" aria-valuemax="100" style="min-width:2em;width: <?=$mailboxdata['percent_in_use'];?>%;">
@@ -180,15 +183,20 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               }
               else {
                   ?>
-                  <tr id="no-data"><td colspan="8" style="text-align: center; font-style: italic;"><?=sprintf($lang['mailbox']['no_record'], $domain);?></td></tr>
+                  <tr id="no-data"><td colspan="999" style="text-align: center; font-style: italic;"><?=sprintf($lang['mailbox']['no_record'], $domain);?></td></tr>
                   <?php
               }
             }
+					} else {
+					?>
+						<tr id="no-data"><td colspan="999" style="text-align: center; font-style: italic;"><?=$lang['mailbox']['add_domain_record_first'];?></td></tr>
+						<?php
+					}
 						?>
 					</tbody>
 					<tfoot>
 						<tr id="no-data">
-							<td colspan="8" style="text-align: center; border-top: 1px solid #e7e7e7;">
+							<td colspan="999" style="text-align: center; border-top: 1px solid #e7e7e7;">
 								<a href="/add.php?mailbox"><?=$lang['mailbox']['add_mailbox'];?></a>
 							</td>
 						</tr>
@@ -227,6 +235,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 					</thead>
 					<tbody>
 						<?php
+					if (!empty($domains)) {
             foreach (mailbox_get_domains() as $domain) {
               $resources = mailbox_get_resources($domain);
               if (!empty($resources)) {
@@ -251,15 +260,20 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               }
               else {
                   ?>
-                  <tr id="no-data"><td colspan="8" style="text-align: center; font-style: italic;"><?=sprintf($lang['mailbox']['no_record'], $domain);?></td></tr>
+                  <tr id="no-data"><td colspan="999" style="text-align: center; font-style: italic;"><?=sprintf($lang['mailbox']['no_record'], $domain);?></td></tr>
                   <?php
               }
             }
+					} else {
+						?>
+						<tr id="no-data"><td colspan="999" style="text-align: center; font-style: italic;"><?=$lang['mailbox']['add_domain_record_first'];?></td></tr>
+						<?php
+					}
 						?>
 					</tbody>
 					<tfoot>
 						<tr id="no-data">
-							<td colspan="8" style="text-align: center; border-top: 1px solid #e7e7e7;">
+							<td colspan="999" style="text-align: center; border-top: 1px solid #e7e7e7;">
 								<a href="/add.php?resource"><?=$lang['mailbox']['add_resource'];?></a>
 							</td>
 						</tr>
@@ -296,6 +310,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 					</thead>
 					<tbody>
 					<?php
+				if (!empty($domains)) {
           foreach (mailbox_get_domains() as $domain) {
             $alias_domains = mailbox_get_alias_domains($domain);
             if (!empty($alias_domains)) {
@@ -318,15 +333,20 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             }
             else {
 	        ?>
-                  <tr id="no-data"><td colspan="8" style="text-align: center; font-style: italic;"><?=sprintf($lang['mailbox']['no_record'], $domain);?></td></tr>
+                  <tr id="no-data"><td colspan="999" style="text-align: center; font-style: italic;"><?=sprintf($lang['mailbox']['no_record'], $domain);?></td></tr>
 	        <?php
             }
           }
+				} else {
           ?>
+						<tr id="no-data"><td colspan="999" style="text-align: center; font-style: italic;"><?=$lang['mailbox']['add_domain_record_first'];?></td></tr>
+					<?php
+				}
+					?>
 					</tbody>
 					<tfoot>
 						<tr id="no-data">
-							<td colspan="8" style="text-align: center; border-top: 1px solid #e7e7e7;">
+							<td colspan="999" style="text-align: center; border-top: 1px solid #e7e7e7;">
 								<a href="/add.php?aliasdomain"><?=$lang['mailbox']['add_domain_alias'];?></a>
 							</td>
 						</tr>
@@ -365,6 +385,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 					</thead>
 					<tbody>
 					<?php
+				if (!empty($domains)) {
           foreach (array_merge(mailbox_get_domains(), mailbox_get_alias_domains()) as $domain) {
             $aliases = mailbox_get_aliases($domain);
             if (!empty($aliases)) {
@@ -392,19 +413,24 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 							</td>
 						</tr>
 						<?php
-                }
-              }
-              else {
-                  ?>
-                  <tr id="no-data"><td colspan="8" style="text-align: center; font-style: italic;"><?=sprintf($lang['mailbox']['no_record'], $domain);?></td></tr>
-                  <?php
-              }
-            }
+							}
+						}
+						else {
+								?>
+								<tr id="no-data"><td colspan="999" style="text-align: center; font-style: italic;"><?=sprintf($lang['mailbox']['no_record'], $domain);?></td></tr>
+								<?php
+						}
+          }
+				} else {
+						?>
+						<tr id="no-data"><td colspan="999" style="text-align: center; font-style: italic;"><?=$lang['mailbox']['add_domain_record_first'];?></td></tr>
+						<?php
+				}
 						?>
 					</tbody>
 					<tfoot>
 						<tr id="no-data">
-							<td colspan="8" style="text-align: center; border-top: 1px solid #e7e7e7;">
+							<td colspan="999" style="text-align: center; border-top: 1px solid #e7e7e7;">
 								<a href="/add.php?alias"><?=$lang['mailbox']['add_alias'];?></a>
 							</td>
 						</tr>

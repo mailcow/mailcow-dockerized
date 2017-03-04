@@ -416,7 +416,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
         <div class="form-group">
           <label class="control-label col-sm-2" for="sender_acl"><?=$lang['edit']['sender_acl'];?>:</label>
           <div class="col-sm-10">
-            <select data-width="50%" style="width:100%" id="sender_acl" name="sender_acl[]" size="10" multiple>
+            <select data-width="100%" style="width:100%" id="sender_acl" name="sender_acl[]" size="10" multiple>
             <?php
             $sender_acl_handles = mailbox_get_sender_acl_handles($mailbox);
 

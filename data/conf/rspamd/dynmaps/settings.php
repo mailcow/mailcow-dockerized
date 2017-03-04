@@ -4,6 +4,11 @@ The match section performs AND operation on different matches: for example, if y
 then the rule matches only when from AND rcpt match. For similar matches, the OR rule applies: if you have multiple rcpt matches,
 then any of these will trigger the rule. If a rule is triggered then no more rules are matched.
 */
+function parse_email($email) {
+  if(!filter_var($email, FILTER_VALIDATE_EMAIL)) return false;
+  $a = strrpos($email, '@');
+  return array('local' => substr($email, 0, $a), 'domain' => substr($email, $a));
+}
 header('Content-Type: text/plain');
 require_once "vars.inc.php";
 
@@ -15,7 +20,15 @@ $opt = [
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     PDO::ATTR_EMULATE_PREPARES   => false,
 ];
-$pdo = new PDO($dsn, $database_user, $database_pass, $opt);
+try {
+  $pdo = new PDO($dsn, $database_user, $database_pass, $opt);
+  $stmt = $pdo->query("SELECT * FROM `filterconf`");
+}
+catch (PDOException $e) {
+  echo 'settings { }';
+  exit;
+}
+
 ?>
 settings {
 <?php
@@ -48,13 +61,27 @@ while ($row = array_shift($rows)) {
 <?php
         }
     }
+    $local = parse_email($row['object'])['local'];
+    $domain = parse_email($row['object'])['domain'];
+    if (!empty($local) && !empty($local)) {
+?>
+		rcpt = "/<?=$local;?>\+.*<?=$domain;?>/";
+<?php
+    }
 ?>
 		rcpt = "<?=$row['object'];?>";
 <?php
-	$stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `goto` = :object_goto AND `address` NOT LIKE '@%' AND `address` != :object_address");
-	$stmt->execute(array(':object_goto' => $row['object'], ':object_address' => $row['object']));
+	$stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `goto` LIKE :object_goto AND `address` NOT LIKE '@%' AND `address` != :object_address");
+	$stmt->execute(array(':object_goto' => '%' . $row['object'] . '%', ':object_address' => $row['object']));
 	$rows_aliases_1 = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	while ($row_aliases_1 = array_shift($rows_aliases_1)) {
+    $local = parse_email($row_aliases_1['address'])['local'];
+    $domain = parse_email($row_aliases_1['address'])['domain'];
+    if (!empty($local) && !empty($local)) {
+?>
+		rcpt = "/<?=$local;?>\+.*<?=$domain;?>/";
+<?php
+    }
 ?>
 		rcpt = "<?=$row_aliases_1['address'];?>";
 <?php
@@ -67,6 +94,13 @@ while ($row = array_shift($rows)) {
 	array_filter($rows_aliases_2);
 	while ($row_aliases_2 = array_shift($rows_aliases_2)) {
     if (!empty($row_aliases_2['aliases'])) {
+      $local = parse_email($row_aliases_2['aliases'])['local'];
+      $domain = parse_email($row_aliases_2['aliases'])['domain'];
+      if (!empty($local) && !empty($local)) {
+?>
+		rcpt = "/<?=$local;?>\+.*<?=$domain;?>/";
+<?php
+      }
 ?>
 		rcpt = "<?=$row_aliases_2['aliases'];?>";
 <?php
@@ -123,14 +157,30 @@ while ($row = array_shift($rows)) {
 	else {
 ?>
 		priority = high;
+<?php
+    $local = parse_email($row['object'])['local'];
+    $domain = parse_email($row['object'])['domain'];
+    if (!empty($local) && !empty($local)) {
+?>
+		rcpt = "/<?=$local;?>\+.*<?=$domain;?>/";
+<?php
+    }
+?>
 		rcpt = "<?=$row['object'];?>";
 <?php
 	}
-	$stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `goto` = :object_goto AND `address` NOT LIKE '@%' AND `address` != :object_address");
-	$stmt->execute(array(':object_goto' => $row['object'], ':object_address' => $row['object']));
+	$stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `goto` LIKE :object_goto AND `address` NOT LIKE '@%' AND `address` != :object_address");
+	$stmt->execute(array(':object_goto' => '%' . $row['object'] . '%', ':object_address' => $row['object']));
 	$rows_aliases_wl_1 = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	array_filter($rows_aliases_wl_1);
 	while ($row_aliases_wl_1 = array_shift($rows_aliases_wl_1)) {
+      $local = parse_email($row_aliases_wl_1['address'])['local'];
+      $domain = parse_email($row_aliases_wl_1['address'])['domain'];
+      if (!empty($local) && !empty($local)) {
+?>
+		rcpt = "/<?=$local;?>\+.*<?=$domain;?>/";
+<?php
+      }
 ?>
 		rcpt = "<?=$row_aliases_wl_1['address'];?>";
 <?php
@@ -143,6 +193,13 @@ while ($row = array_shift($rows)) {
 	array_filter($rows_aliases_wl_2);
 	while ($row_aliases_wl_2 = array_shift($rows_aliases_wl_2)) {
     if (!empty($row_aliases_wl_2['aliases'])) {
+      $local = parse_email($row_aliases_wl_2['aliases'])['local'];
+      $domain = parse_email($row_aliases_wl_2['aliases'])['domain'];
+      if (!empty($local) && !empty($local)) {
+?>
+		rcpt = "/<?=$local;?>\+.*<?=$domain;?>/";
+<?php
+      }
 ?>
 		rcpt = "<?=$row_aliases_wl_2['aliases'];?>";
 <?php
@@ -195,14 +252,30 @@ while ($row = array_shift($rows)) {
 	else {
 ?>
 		priority = high;
+<?php
+    $local = parse_email($row['object'])['local'];
+    $domain = parse_email($row['object'])['domain'];
+    if (!empty($local) && !empty($local)) {
+?>
+		rcpt = "/<?=$local;?>\+.*<?=$domain;?>/";
+<?php
+    }
+?>
 		rcpt = "<?=$row['object'];?>";
 <?php
 	}
-	$stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `goto` = :object_goto AND `address` NOT LIKE '@%' AND `address` != :object_address");
-	$stmt->execute(array(':object_goto' => $row['object'], ':object_address' => $row['object']));
+	$stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `goto` LIKE :object_goto AND `address` NOT LIKE '@%' AND `address` != :object_address");
+	$stmt->execute(array(':object_goto' => '%' . $row['object'] . '%', ':object_address' => $row['object']));
 	$rows_aliases_bl_1 = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	array_filter($rows_aliases_bl_1);
 	while ($row_aliases_bl_1 = array_shift($rows_aliases_bl_1)) {
+      $local = parse_email($row_aliases_bl_1['address'])['local'];
+      $domain = parse_email($row_aliases_bl_1['address'])['domain'];
+      if (!empty($local) && !empty($local)) {
+?>
+		rcpt = "/<?=$local;?>\+.*<?=$domain;?>/";
+<?php
+      }
 ?>
 		rcpt = "<?=$row_aliases_bl_1['address'];?>";
 <?php
@@ -215,6 +288,13 @@ while ($row = array_shift($rows)) {
 	array_filter($rows_aliases_bl_2);
 	while ($row_aliases_bl_2 = array_shift($rows_aliases_bl_2)) {
     if (!empty($row_aliases_bl_2['aliases'])) {
+      $local = parse_email($row_aliases_bl_2['aliases'])['local'];
+      $domain = parse_email($row_aliases_bl_2['aliases'])['domain'];
+      if (!empty($local) && !empty($local)) {
+?>
+		rcpt = "/<?=$local;?>\+.*<?=$domain;?>/";
+<?php
+      }
 ?>
 		rcpt = "<?=$row_aliases_bl_2['aliases'];?>";
 <?php

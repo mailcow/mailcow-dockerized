@@ -35,4 +35,6 @@ $DEFAULT_LANG = "en";
 // See https://bootswatch.com/
 $DEFAULT_THEME = "lumen";
 
+// Password complexity as regular expression
+$PASSWD_REGEP = '.{4,}';
 ?>
