@@ -1,5 +1,5 @@
 FROM ubuntu:xenial
-MAINTAINER Andre Peters <andre.peters@debinux.de>
+MAINTAINER Andre Peters <andre.peters@servercow.de>
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV LC_ALL C
