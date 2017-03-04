@@ -4877,11 +4877,22 @@ function mailbox_get_sender_acl_handles($mailbox) {
   $data['fixed_sender_aliases']                   = array();
   
   try {
-    $stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `goto` = :goto AND `address` NOT LIKE '@%'");
-    $stmt->execute(array(':goto' => $mailbox));
+    // Fixed addresses
+    $stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `goto` LIKE :goto AND `address` NOT LIKE '@%'");
+    $stmt->execute(array(':goto' => '%' . $mailbox . '%'));
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
     while ($row = array_shift($rows)) {
       $data['fixed_sender_aliases'][] = $row['address'];
+    }
+    $stmt = $pdo->prepare("SELECT CONCAT(`local_part`, '@', `alias_domain`.`alias_domain`) AS `alias_domain_alias` FROM `mailbox`, `alias_domain`
+      WHERE `alias_domain`.`target_domain` = `mailbox`.`domain`
+      AND `mailbox`.`username` = :username");
+    $stmt->execute(array(':username' => $mailbox));
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    while ($row = array_shift($rows)) {
+      if (!empty($row['alias_domain_alias'])) {
+        $data['fixed_sender_aliases'][] = $row['alias_domain_alias'];
+      }
     }
 
     // Return array $data['sender_acl_domains/addresses']['ro'] with read-only objects
