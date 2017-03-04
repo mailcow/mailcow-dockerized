@@ -3599,7 +3599,7 @@ function mailbox_edit_mailbox($postarray) {
 		);
 		return false;
 	}
-	$quota_m      = $postarray['quota'];
+	$quota_m      = intval($postarray['quota']);
 	$quota_b      = $quota_m*1048576;
 	$username     = $postarray['username'];
 	$name         = $postarray['name'];
