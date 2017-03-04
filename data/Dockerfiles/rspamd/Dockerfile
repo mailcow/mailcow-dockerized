@@ -21,7 +21,8 @@ ADD antivirus.conf /etc/rspamd/modules.d/antivirus.conf
 
 RUN pip install -U oletools
 
-CMD ["/usr/bin/rspamd", "-f", "-u", "_rspamd", "-g", "_rspamd"]
+# Give Nginx/PHP time to restart
+CMD /bin/sleep 30; /usr/bin/rspamd -f -u _rspamd -g _rspamd
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
