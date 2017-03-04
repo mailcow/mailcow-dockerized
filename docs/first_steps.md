@@ -87,6 +87,7 @@ HTTPS_PORT=8443
 Recreate affected containers by running `docker-compose up -d`.
 
 2\. Configure your local webserver as reverse proxy:
+
 **Apache 2.4**
 ```
 <VirtualHost *:443>
