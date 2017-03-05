@@ -1470,7 +1470,7 @@ function user_get_alias_details($username) {
       WHERE `goto` LIKE :username_goto
       AND `address` NOT LIKE '@%'
       AND `address` != :username_address");
-    $stmt->execute(array(':username_goto' => '%' . $username . '%', ':username_address' => $username));
+    $stmt->execute(array(':username_goto' => '(^|,)'.$username.'($|,)', ':username_address' => $username));
     $run = $stmt->fetchAll(PDO::FETCH_ASSOC);
     while ($row = array_shift($run)) {
       $data['aliases'] = $row['aliases'];
@@ -4719,8 +4719,8 @@ function mailbox_delete_mailbox($postarray) {
       ':username' => $username
     ));
 		$stmt = $pdo->prepare("SELECT `address`, `goto` FROM `alias`
-				WHERE `goto` LIKE :username");
-		$stmt->execute(array(':username' => '%'.$username.'%'));
+				WHERE `goto` REGEXP :username");
+		$stmt->execute(array(':username' => '(^|,)'.$username.'($|,)'));
 		$GotoData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		foreach ($GotoData as $gotos) {
 			$goto_exploded = explode(',', $gotos['goto']);
@@ -4879,7 +4879,7 @@ function mailbox_get_sender_acl_handles($mailbox) {
   try {
     // Fixed addresses
     $stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `goto` LIKE :goto AND `address` NOT LIKE '@%'");
-    $stmt->execute(array(':goto' => '%' . $mailbox . '%'));
+    $stmt->execute(array(':goto' => '(^|,)'.$mailbox.'($|,)'));
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
     while ($row = array_shift($rows)) {
       $data['fixed_sender_aliases'][] = $row['address'];
