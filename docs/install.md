@@ -41,8 +41,11 @@ There is no update routine. You need to refresh your pulled repository clone and
 stash all local changes, pull changes from the remote master branch and apply your stash on top of it:
 
 ```
+# Stash local changes
 git stash
+# Re-pull master
 git pull
+# Apply stash and remove it
 git stash pop
 ```
 
