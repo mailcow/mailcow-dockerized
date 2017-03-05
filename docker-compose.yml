@@ -58,6 +58,7 @@ services:
     rspamd-mailcow:
       image: andryyy/mailcow-dockerized:rspamd
       build: ./data/Dockerfiles/rspamd
+      command: "sleep 25; /usr/bin/rspamd -f -u _rspamd -g _rspamd"
       depends_on:
         nginx-mailcow:
           condition: service_healthy
