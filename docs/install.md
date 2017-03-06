@@ -28,7 +28,7 @@ If you plan to use a reverse proxy, you can, for example, bind HTTPS to 127.0.0.
 
 curl -L "https://github.com/docker/compose/releases/download/1.11.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose
 
-5\. Run the composer file. It will pull images and build containers.
+6\. Run the composer file. It will pull images and build containers.
 ```
 docker-compose up -d
 ```
