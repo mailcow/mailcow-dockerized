@@ -4,7 +4,18 @@ You need Docker and Docker Compose.
 
 1\. Learn how to install [Docker](https://docs.docker.com/engine/installation/linux/) and [Docker Compose](https://docs.docker.com/compose/install/).
 
-Most systems can safely install Docker by running `curl -sSL https://get.docker.com/ | sh`
+Quick installation for most operation systems:
+
+- Docker
+```
+curl -sSL https://get.docker.com/ | sh
+``` 
+
+- Docker-Compose
+```
+curl -L https://github.com/docker/compose/releases/download/$(curl -Ls https://www.servercow.de/docker-compose/latest.php)/docker-compose-$(uname -s)-$(uname -m) > /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+```
 
 Please use the latest Docker engine available and do not use the engine that ships with your distros repository.
 
