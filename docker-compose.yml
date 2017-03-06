@@ -56,7 +56,7 @@ services:
             - redis
 
     rspamd-mailcow:
-      image: andryyy/mailcow-dockerized:rspamd
+      image: mailcow/rspamd
       build: ./data/Dockerfiles/rspamd
       command: > 
         /bin/bash -c "
@@ -83,7 +83,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: andryyy/mailcow-dockerized:phpfpm
+      image: mailcow/phpfpm
       build: ./data/Dockerfiles/php-fpm
       command: "php-fpm -d date.timezone=${TZ}"
       depends_on:
@@ -107,7 +107,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: andryyy/mailcow-dockerized:sogo
+      image: mailcow/sogo
       build: ./data/Dockerfiles/sogo
       depends_on:
         - bind9-mailcow
@@ -130,7 +130,7 @@ services:
             - sogo
 
     rmilter-mailcow:
-      image: andryyy/mailcow-dockerized:rmilter
+      image: mailcow/rmilter
       build: ./data/Dockerfiles/rmilter
       depends_on:
         - bind9-mailcow
@@ -146,7 +146,7 @@ services:
             - rmilter
 
     dovecot-mailcow:
-      image: andryyy/mailcow-dockerized:dovecot
+      image: mailcow/dovecot
       build: ./data/Dockerfiles/dovecot
       depends_on:
         - bind9-mailcow
@@ -176,7 +176,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: andryyy/mailcow-dockerized:postfix
+      image: mailcow/postfix
       build: ./data/Dockerfiles/postfix
       depends_on:
         - bind9-mailcow
