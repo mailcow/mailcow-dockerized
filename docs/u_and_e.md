@@ -162,7 +162,7 @@ Initialize the database and leave the installer.
 
 **Enable change password function in Roundcube**
 
-Open `data/web/rc/config.inc.php` and enable the password plugin:
+Open `data/web/rc/config/config.inc.php` and enable the password plugin:
 
 ```
 ...
