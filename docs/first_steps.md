@@ -97,8 +97,8 @@ Recreate affected containers by running `docker-compose up -d`.
 
     [...]
     # You should proxy to a plain HTTP session to offload SSL processing
-    ProxyPass / http://127.0.0.1:8080
-    ProxyPassReverse / http://127.0.0.1:8080
+    ProxyPass / http://127.0.0.1:8080/
+    ProxyPassReverse / http://127.0.0.1:8080/
     ProxyPreserveHost On
     your-ssl-configuration-here
     [...]
