@@ -1,4 +1,4 @@
-From ubuntu:xenial
+FROM ubuntu:xenial
 MAINTAINER Andre Peters <andre.peters@servercow.de>
 
 ENV DEBIAN_FRONTEND noninteractive

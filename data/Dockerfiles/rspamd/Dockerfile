@@ -16,8 +16,8 @@ RUN apt-key adv --fetch-keys http://rspamd.com/apt-stable/gpg.key \
 
 RUN echo '.include $LOCAL_CONFDIR/local.d/rspamd.conf.local' > /etc/rspamd/rspamd.conf.local
 
-ADD settings.conf /etc/rspamd/modules.d/settings.conf
-ADD antivirus.conf /etc/rspamd/modules.d/antivirus.conf
+COPY settings.conf /etc/rspamd/modules.d/settings.conf
+COPY antivirus.conf /etc/rspamd/modules.d/antivirus.conf
 
 RUN pip install -U oletools
 
