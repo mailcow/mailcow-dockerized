@@ -41,6 +41,7 @@ docker run --rm -it -v $(docker inspect --format '{{ range .Mounts }}{{ if eq .D
 ```
 
 ## Docker Compose Bash completion
+
 For the tab-tab... :-)
 
 ```
@@ -51,6 +52,7 @@ curl -L https://raw.githubusercontent.com/docker/compose/$(docker-compose versio
 Edit a domain as (domain) administrator to add an item to the filter table.
 
 Beware that a mailbox user can login to mailcow and override a domain policy filter item. 
+<<<<<<< HEAD
 
 ## Change default language
 
@@ -61,7 +63,6 @@ Create a file `data/web/inc/vars.local.inc.php` and add "DEFAULT_LANG" with eith
 <?php
 $DEFAULT_LANG = "de";
 ```
-
 ## Change UI theme
 
 mailcow uses [Bootstrap](http://getbootstrap.com/), a HTML, CSS, and JS framework.
@@ -163,7 +164,7 @@ Initialize the database and leave the installer.
 
 ### Enable change password function in Roundcube
 
-Open `data/web/rc/config.inc.php` and enable the password plugin:
+Open `data/web/rc/config/config.inc.php` and enable the password plugin:
 
 ```
 ...
@@ -296,7 +297,9 @@ docker-compose exec rspamd-mailcow rspamadm --help
 See [Rspamd documentation](https://rspamd.com/doc/index.html)
 
 ## Adjust service configurations
+
 The most important configuration files are mounted from the host into the related containers:
+
 ```
 data/conf
 ├── bind9
@@ -398,6 +401,7 @@ The API ID, API key and the first 12 characters (your YubiKeys ID in modhex) are
 
 Only Google Chrome (+derivates) and Opera support U2F authentication to this day natively.
 For Firefox you will need to install the "U2F Support Add-on" as provided on [mozilla.org](https://addons.mozilla.org/en-US/firefox/addon/u2f-support-add-on/).
+
 U2F works without an internet connection.
 
 ## Why Bind?
