@@ -55,7 +55,7 @@ Beware that a mailbox user can login to mailcow and override a domain policy fil
 
 ## Change default language
 
-Change `data/conf/sogo/sogo.conf` and replace "English" by your prefered language.
+Change `data/conf/sogo/sogo.conf` and replace "English" by your preferred language.
 
 Create a file `data/web/inc/vars.local.inc.php` and add "DEFAULT_LANG" with either "en", "pt", "de" or "nl":
 ```
@@ -381,13 +381,13 @@ Mailbox users can tag their mail address like in `me+facebook@example.org` and c
 
 ## Two-factor authentication
 
-So far two methods for TFA are impelemented. Both work with the fantastic [Yubikey](https://www.yubico.com). 
+So far two methods for TFA are implemented. Both work with the fantastic [Yubikey](https://www.yubico.com).
 
 While Yubi OTP needs an active internet connection and an API ID and key, U2F will work with any FIDO U2F USB key out of the box, but can only be used when mailcow is accessed over HTTPS.
 
-Both methods support mulitple YubiKeys.
+Both methods support multiple YubiKeys.
 
-As administrator you are able to temporary disable a domain adminsitrators TFA login until they successfully logged in.
+As administrator you are able to temporary disable a domain administrators TFA login until they successfully logged in.
 
 The key used to login will be displayed in green, while other keys remain grey.
 
