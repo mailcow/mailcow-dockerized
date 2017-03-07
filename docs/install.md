@@ -1,4 +1,4 @@
-# Install mailcow
+## Install mailcow
 
 You need Docker and Docker Compose.
 
@@ -46,7 +46,7 @@ You can now access **https://${MAILCOW_HOSTNAME}** with the default credentials 
 
 The database will be initialized right after a connection to MySQL can be established.
 
-# Update mailcow
+## Update mailcow
 
 There is no update routine. You need to refresh your pulled repository clone and apply your local changes (if any). Actually there are many ways to merge local changes. Here is one to
 stash all local changes, pull changes from the remote master branch and apply your stash on top of it. You will most likely see warnings about non-commited changes; you can ignore them:

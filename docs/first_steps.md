@@ -1,4 +1,4 @@
-# SSL (and: How to use Let's Encrypt)
+## SSL (and: How to use Let's Encrypt)
 
 mailcow dockerized comes with a snakeoil CA "mailcow" and a server certificate in `data/assets/ssl`. Please use your own trusted certificates.
 
@@ -8,7 +8,7 @@ mailcow uses 3 domain names that should be covered by your new certificate:
 - autodiscover.**example.org**
 - autoconfig.**example.org**
 
-**Obtain multi-SAN certificate by Let's Encrypt** 
+### Obtain multi-SAN certificate by Let's Encrypt
 
 This is just an example of how to obtain certificates with certbot. There are several methods!
 
@@ -51,7 +51,7 @@ docker-compose restart postfix-mailcow dovecot-mailcow nginx-mailcow
 
 When renewing certificates, run the last two steps (link + restart) as post-hook in a script.
 
-# Rspamd Web UI
+## Rspamd Web UI
 At first you may want to setup Rspamds web interface which provides some useful features and information.
 
 1\. Generate a Rspamd controller password hash:
@@ -71,7 +71,7 @@ docker-compose restart rspamd-mailcow
 
 Open https://${MAILCOW_HOSTNAME}/rspamd in a browser and login!
 
-# Optional: Reverse proxy
+## Optional: Reverse proxy
 
 You don't need to change the Nginx site that comes with mailcow: dockerized.
 mailcow: dockerized trusts the default gateway IP 172.22.1.1 as proxy. This is very important to control access to Rspamd's web UI.
@@ -88,7 +88,7 @@ Recreate affected containers by running `docker-compose up -d`.
 
 2\. Configure your local webserver as reverse proxy:
 
-**Apache 2.4**
+### Apache 2.4
 ```
 <VirtualHost *:443>
     ServerName mail.example.org
@@ -114,7 +114,7 @@ Recreate affected containers by running `docker-compose up -d`.
 </VirtualHost>
 ```
 
-**Nginx**
+### Nginx
 ```
 server {
     listen 443;
@@ -133,7 +133,7 @@ server {
 }
 ```
 
-# Sender and receiver model
+## Sender and receiver model
 
 When a mailbox is created, a user is allowed to send mail from and receive mail for his own mailbox address.
 
@@ -162,7 +162,7 @@ Administrators and domain administrators can edit mailboxes to allow specific us
 
 You can choose between mailbox users or completely disable the sender check for domains.
 
-**SOGo "mail from" addresses**
+### SOGo "mail from" addresses
 
 Mailbox users can, obviously, select their own mailbox address, as well as all alias addresses and aliases that exist through alias domains.
 

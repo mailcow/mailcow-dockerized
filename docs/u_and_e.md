@@ -1,4 +1,4 @@
-# Anonymize headers
+## Anonymize headers
 
 Save as `data/conf/postfix/mailcow_anonymize_headers.pcre`:
 
@@ -17,9 +17,9 @@ Add this to `data/conf/postfix/main.cf`:
 smtp_header_checks = pcre:/opt/postfix/conf/mailcow_anonymize_headers.pcre
 ```
 
-# Backup and restore maildir (simple tar file)
+## Backup and restore maildir (simple tar file)
 
-**Backup**
+### Backup
 
 This line backups the vmail directory to a file backup_vmail.tar.gz in the mailcow root directory:
 ```
@@ -32,7 +32,7 @@ docker run --rm -it -v $(docker inspect --format '{{ range .Mounts }}{{ if eq .D
 You can change the path by adjusting ${PWD} (which equals to the current directory) to any path you have write-access to.
 Set the filename `backup_vmail.tar.gz` to any custom name, but leave the path as it is. Example: `[...] tar cvfz /backup/my_own_filename_.tar.gz`
 
-**Restore**
+### Restore
 ```
 cd /path/to/mailcow-dockerized
 source mailcow.conf
@@ -40,19 +40,19 @@ DATE=$(date +"%Y%m%d_%H%M%S")
 docker run --rm -it -v $(docker inspect --format '{{ range .Mounts }}{{ if eq .Destination "/var/vmail" }}{{ .Name }}{{ end }}{{ end }}' $(docker-compose ps -q dovecot-mailcow)):/vmail -v ${PWD}:/backup debian:jessie tar xvfz /backup/backup_vmail.tar.gz
 ```
 
-# Docker Compose Bash completion
+## Docker Compose Bash completion
 For the tab-tab... :-)
 
 ```
 curl -L https://raw.githubusercontent.com/docker/compose/$(docker-compose version --short)/contrib/completion/bash/docker-compose -o /etc/bash_completion.d/docker-compose
 ```
-# Black and Whitelist
+## Black and Whitelist
 
 Edit a domain as (domain) administrator to add an item to the filter table.
 
 Beware that a mailbox user can login to mailcow and override a domain policy filter item. 
 
-# Change default language
+## Change default language
 
 Change `data/conf/sogo/sogo.conf` and replace "English" by your prefered language.
 
@@ -62,7 +62,7 @@ Create a file `data/web/inc/vars.local.inc.php` and add "DEFAULT_LANG" with eith
 $DEFAULT_LANG = "de";
 ```
 
-# Change UI theme
+## Change UI theme
 
 mailcow uses [Bootstrap](http://getbootstrap.com/), a HTML, CSS, and JS framework.
 
@@ -71,7 +71,7 @@ Open or create the file `data/web/inc/vars.local.inc.php` and change `DEFAULT_TH
 <?php
 $DEFAULT_THEME = "paper";
 ```
-# Customize Dockerfiles
+## Customize Dockerfiles
 
 Make your changes in `data/Dockerfiles/$service` and build the image locally:
 
@@ -85,7 +85,7 @@ Now auto-recreate modified containers:
 docker-compose up -d
 ```
 
-# Disable sender addresses verification
+## Disable sender addresses verification
 
 This option is not best-practice and should only be implemented when there is no other option available to archive whatever you are trying to do.
 
@@ -107,7 +107,7 @@ docker-compose exec postfix-mailcow postmap /opt/postfix/conf/check_sasl_access
 
 Restart the Postfix container.
 
-# Install Roundcube
+## Install Roundcube
 
 Download Roundcube 1.3.x (beta at the time of Feb 2017) to the web htdocs directory and extract it (here `rc/`):
 ```
@@ -158,9 +158,10 @@ $config['smtp_conn_options'] = array(
 
 Point your browser to `https://myserver/rc/installer` and follow the instructions.
 Initialize the database and leave the installer.
+
 **Delete the directory `data/web/rc/installer` after a successful installation!**
 
-**Enable change password function in Roundcube**
+### Enable change password function in Roundcube
 
 Open `data/web/rc/config.inc.php` and enable the password plugin:
 
@@ -192,15 +193,15 @@ $config['password_algorithm_prefix'] = '{SSHA256}';
 $config['password_query'] = "UPDATE mailbox SET password = %P WHERE username = %u";
 ```
 
-# MySQL
+## MySQL
 
-**Connect to the MySQL database**
+### Connect
 ```
 source mailcow.conf
 docker-compose exec mysql-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME}
 ```
 
-**Backup the database**
+### Backup
 ```
 cd /path/to/mailcow-dockerized
 source mailcow.conf
@@ -208,21 +209,22 @@ DATE=$(date +"%Y%m%d_%H%M%S")
 docker-compose exec mysql-mailcow mysqldump --default-character-set=utf8mb4 -u${DBUSER} -p${DBPASS} ${DBNAME} > backup_${DBNAME}_${DATE}.sql
 ```
 
-**Restore the database**
+### Restore
 ```
 cd /path/to/mailcow-dockerized
 source mailcow.conf
 docker-compose exec mysql-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME} < backup_file.sql
 ```
 
-# Read logs
+## Debugging
+
 You can use `docker-compose logs $service-name` for all containers.
 
 Run `docker-compose logs` for all logs at once.
 
 Follow the log output by running docker-compose with `logs -f`.
 
-# Redirect port 80 to 443
+## Redirect port 80 to 443
 
 Since February the 28th 2017 mailcow does come with port 80 and 443 enabled.
 
@@ -242,15 +244,15 @@ Restart the stack, changed containers will be updated:
 
 `docker-compose up -d`
 
-# Redis
+## Redis
 
-**Connect to redis key store**
+### Client
 
 ```
 docker-compose exec redis-mailcow redis-cli
 ```
 
-# Remove persistent data
+## Remove persistent data
 
 - Remove volume `mysql-vol-1` to remove all MySQL data.
 - Remove volume `redis-vol-1` to remove all Redis data.
@@ -260,7 +262,7 @@ docker-compose exec redis-mailcow redis-cli
 
 Running `docker-compose down -v` will **destroy all mailcow: dockerized volumes** and delete any related containers.
 
-# Reset admin password
+## Reset admin password
 Reset mailcow admin to `admin:moohoo`:
 
 1\. Drop admin table
@@ -271,9 +273,9 @@ docker-compose exec mysql-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME} -e "DR
 
 2\. Open mailcow UI to auto-init the db
 
-# Rspamd
+## Rspamd
 
-**Learn spam and ham**
+### Learn spam and ham
 
 Rspamd learns mail as spam or ham when you move a message in or out of the junk folder to any mailbox besides trash.
 This is archived by using the Dovecot plugin "antispam" and a simple parser script.
@@ -284,7 +286,7 @@ The bayes statistics are written to Redis as keys `BAYES_HAM` and `BAYES_SPAM`.
 
 You can also use Rspamd's web ui to learn ham and/or spam.
 
-**CLI tools**
+### CLI tools
 
 ```
 docker-compose exec rspamd-mailcow rspamc --help
@@ -293,7 +295,7 @@ docker-compose exec rspamd-mailcow rspamadm --help
 
 See [Rspamd documentation](https://rspamd.com/doc/index.html)
 
-# Adjust service configurations
+## Adjust service configurations
 The most important configuration files are mounted from the host into the related containers:
 ```
 data/conf
@@ -367,7 +369,7 @@ Just change the according configuration file on the host and restart the related
 docker-compose restart service-mailcow
 ```
 
-# Tagging
+## Tagging
 
 Mailbox users can tag their mail address like in `me+facebook@example.org` and choose between to setups to handle this tag:
 
@@ -375,7 +377,7 @@ Mailbox users can tag their mail address like in `me+facebook@example.org` and c
 
 2\. Prepend the tag to the subject: "[facebook] Subject"
 
-# Two-factor authentication
+## Two-factor authentication
 
 So far two methods for TFA are impelemented. Both work with the fantastic [Yubikey](https://www.yubico.com). 
 
@@ -387,18 +389,18 @@ As administrator you are able to temporary disable a domain adminsitrators TFA l
 
 The key used to login will be displayed in green, while other keys remain grey.
 
-**Yubi OTP**
+### Yubi OTP
 
 The Yubi API ID and Key will be checked against the Yubico Cloud API. When setting up TFA you will be asked for your personal API account for this key.
 The API ID, API key and the first 12 characters (your YubiKeys ID in modhex) are stored in the MySQL table as secret.
 
-**U2F**
+### U2F
 
 Only Google Chrome (+derivates) and Opera support U2F authentication to this day natively.
 For Firefox you will need to install the "U2F Support Add-on" as provided on [mozilla.org](https://addons.mozilla.org/en-US/firefox/addon/u2f-support-add-on/).
 U2F works without an internet connection.
 
-# Why Bind?
+## Why Bind?
 
 For DNS blacklist lookups and DNSSEC.
 

@@ -2,6 +2,12 @@
 
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JWBSYHF4SMC68)
 
+## Screenshots
+
+You can find screenshots [on Imgur](http://imgur.com/a/oewYt).
+
+## Overview
+
 mailcow dockerized comes with **11 containers** linked in **one bridged network**.
 
 - Dovecot
