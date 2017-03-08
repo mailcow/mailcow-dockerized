@@ -30,8 +30,6 @@ cat <<EOF > /var/lib/sogo/GNUstep/Defaults/sogod.plist
     <string>mysql://${DBUSER}:${DBPASS}@mysql:3306/${DBNAME}/sogo_cache_folder</string>
     <key>OCSEMailAlarmsFolderURL</key>
     <string>mysql://${DBUSER}:${DBPASS}@mysql:3306/${DBNAME}/sogo_alarms_folder</string>
-    <key>DomainFieldName</key>
-    <string>domain</string>
     <key>OCSFolderInfoURL</key>
     <string>mysql://${DBUSER}:${DBPASS}@mysql:3306/${DBNAME}/sogo_folder_info</string>
     <key>OCSSessionsFolderURL</key>
@@ -63,6 +61,8 @@ while read line
                     </array>
                     <key>KindFieldName</key>
                     <string>kind</string>
+                    <key>DomainFieldName</key>
+                    <string>domain</string>
                     <key>MultipleBookingsFieldName</key>
                     <string>multiple_bookings</string>
                     <key>canAuthenticate</key>
