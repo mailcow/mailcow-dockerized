@@ -19,8 +19,6 @@ fi
 [[ -a /etc/timezone ]] && TZ=$(cat /etc/timezone)
 if [ -z "$TZ" ]; then
   read -p "Timezone: " -ei "Europe/Berlin" TZ
-else
-  read -p "Timezone: " -ei ${TZ} TZ
 fi
 
 cat << EOF > mailcow.conf
