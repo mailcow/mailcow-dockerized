@@ -1,5 +1,0 @@
-user = mailcow
-password = mysafepasswd
-hosts = mysql
-dbname = mailcow
-query          = SELECT alias_domain from alias_domain WHERE alias_domain='%s' AND active='1' UNION SELECT domain FROM domain WHERE domain='%s' AND active = '1' AND backupmx = '0'

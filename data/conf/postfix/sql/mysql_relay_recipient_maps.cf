@@ -1,5 +1,0 @@
-user = mailcow
-password = mysafepasswd
-hosts = mysql
-dbname = mailcow
-query = SELECT DISTINCT CASE WHEN '%d' IN (SELECT domain FROM domain WHERE relay_all_recipients=1 AND domain='%d' AND backupmx=1) THEN '%s' ELSE (SELECT goto FROM alias WHERE address='%s' AND active='1') END AS result;

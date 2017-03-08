@@ -6,6 +6,8 @@ sed -i "/^\$DBUSER/c\\\$DBUSER='${DBUSER}';" /usr/local/bin/imapsync_cron.pl
 sed -i "/^\$DBPASS/c\\\$DBPASS='${DBPASS}';" /usr/local/bin/imapsync_cron.pl
 sed -i "/^\$DBNAME/c\\\$DBNAME='${DBNAME}';" /usr/local/bin/imapsync_cron.pl
 
+[[ ! -d /etc/dovecot/sql/ ]] && mkdir -p /etc/dovecot/sql/
+
 # Set Dovecot sql config parameters, escape " in db password
 DBPASS=$(echo ${DBPASS} | sed 's/"/\\"/g')
 
