@@ -26,8 +26,7 @@ require_once 'inc/lib/Yubico.php';
 
 // U2F API
 require_once 'inc/lib/U2F.php';
-$scheme = isset($_SERVER['HTTPS']) ? "https://" : "http://";
-$u2f = new u2flib_server\U2F($scheme . $_SERVER['HTTP_HOST']);
+$u2f = new u2flib_server\U2F('https://' . $_SERVER['HTTP_HOST']);
 
 // PDO
 $dsn = "$database_type:host=$database_host;dbname=$database_name";
