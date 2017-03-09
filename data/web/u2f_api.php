@@ -3,7 +3,7 @@ require_once('inc/prerequisites.inc.php');
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
 
-$u2f = new u2flib_server\U2F('https://' . $_SERVER['HTTP_HOST']);
+$u2f = new u2flib_server\U2F('https://' . $_SERVER['SERVER_NAME']);
 
 function getRegs($username) {
   global $pdo;
