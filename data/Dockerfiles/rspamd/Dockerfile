@@ -9,8 +9,8 @@ RUN dpkg-divert --local --rename --add /sbin/initctl \
     && dpkg-divert --local --rename --add /usr/bin/ischroot \
     && ln -sf /bin/true /usr/bin/ischroot
 
-RUN apt-key adv --fetch-keys http://rspamd.com/apt-stable/gpg.key \
-    && echo "deb http://rspamd.com/apt-stable/ xenial main" > /etc/apt/sources.list.d/rspamd.list \
+RUN apt-key adv --fetch-keys http://rspamd.com/apt/gpg.key \
+    && echo "deb http://rspamd.com/apt/ xenial main" > /etc/apt/sources.list.d/rspamd.list \
     && apt-get update \
     && apt-get -y install rspamd ca-certificates python-pip
 
