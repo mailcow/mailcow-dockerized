@@ -33,7 +33,7 @@ rspamd_config:register_post_filter(function(task)
   local rcpt = user .. '@' .. domain
   local authdomain = auth_domain_map:get_key(domain)
 
-  if tagged_rcpt[1].options[1] then
+  if tagged_rcpt then
     local tag = tagged_rcpt[1].options[1]
     rspamd_logger.infox("found tag: %s", tag)
     local action = task:get_metric_action('default')

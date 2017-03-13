@@ -35,8 +35,9 @@ nano mailcow.conf
 ```
 If you plan to use a reverse proxy, you can, for example, bind HTTPS to 127.0.0.1 on port 8443 and HTTP to 127.0.0.1 on port 8080.
 
-5\. Run the composer file. It will pull images and build containers.
+5\. Pull the images and run the composer file. The paramter `-d` will start mailcow: dockerized detached:
 ```
+docker-compose pull
 docker-compose up -d
 ```
 
