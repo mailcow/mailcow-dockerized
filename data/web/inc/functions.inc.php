@@ -3320,7 +3320,7 @@ function mailbox_edit_alias_domain($postarray) {
 		$stmt = $pdo->prepare("UPDATE `alias_domain` SET
       `alias_domain` = :alias_domain,
       `active` = :active,
-      `modified` = :modified,
+      `modified` = :modified
         WHERE `alias_domain` = :alias_domain_now");
 		$stmt->execute(array(
 			':alias_domain' => $alias_domain,
