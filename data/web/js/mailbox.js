@@ -51,4 +51,16 @@ $(document).ready(function() {
 			$panel.find('.panel-body input').focus();
 		}
 	});
+	$('.container').on('click', '.panel-heading .panel-title', function(e){
+		var $this = $(this),
+			$panel = $this.parents('.panel');
+		$panel.find('.table-responsive').slideToggle("fast");
+	});
+	$('.panel-heading .panel-title').addClass('clickable');
+	$('.panel .table-responsive').each(function() {
+		if ($(this).height() > 550) {
+			// If one is too large initially hide all
+			$('.panel .table-responsive').slideUp("fast");
+		}
+	})
 });
