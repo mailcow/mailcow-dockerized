@@ -13,19 +13,28 @@ if (isset($_POST["verify_tfa_login"])) {
 if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
 	$login_user = strtolower(trim($_POST["login_user"]));
 	$as = check_login($login_user, $_POST["pass_user"]);
-	if ($as == "admin") {
+	if ($as == "admin" && "domainadmin" == $_POST["login_role"]) {
 		$_SESSION['mailcow_cc_username'] = $login_user;
 		$_SESSION['mailcow_cc_role'] = "admin";
+		if(isset($_POST["remember_user"]) && $_POST["remember_user"]) {
+ 			setcookie("admin", $login_user, time() + (86400 * 5));
+ 		}
 		header("Location: /admin.php");
 	}
-	elseif ($as == "domainadmin") {
+	elseif ($as == "domainadmin" && "domainadmin" == $_POST["login_role"]) {
 		$_SESSION['mailcow_cc_username'] = $login_user;
 		$_SESSION['mailcow_cc_role'] = "domainadmin";
+		if(isset($_POST["remember_user"]) && $_POST["remember_user"]) {
+ 			setcookie("admin", $login_user, time() + (86400 * 5));
+ 		}
 		header("Location: /mailbox.php");
 	}
-	elseif ($as == "user") {
+	elseif ($as == "user" && "mailboxuser" == $_POST["login_role"]) {
 		$_SESSION['mailcow_cc_username'] = $login_user;
 		$_SESSION['mailcow_cc_role'] = "user";
+		if(isset($_POST["remember_user"]) && $_POST["remember_user"]) {
+ 			setcookie("user", $login_user, time() + (86400 * 5));
+		}
 		header("Location: /user.php");
 	}
 	elseif ($as != "pending") {

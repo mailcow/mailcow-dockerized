@@ -24,22 +24,37 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 				<div class="panel-body">
 				  <center><img style="max-width:250px" src="/img/cow_mailcow.svg" alt="mailcow"></center>
 					<legend>mailcow UI</legend>
+					<ul class="nav nav-tabs">
+						<li class="active"><a data-toggle="tab" href="" id="domainadmin" aria-expanded="true">Domain administrator</a></li>
+						<li class=""><a data-toggle="tab" href="" id="mailboxuser" aria-expanded="false">Mailbox user</a></li>
+					</ul>
+ 						<br>
 						<form method="post" autofill="off">
 						<div class="form-group">
 							<label class="sr-only" for="login_user"><?=$lang['login']['username'];?></label>
 							<div class="input-group">
 								<div class="input-group-addon"><i class="glyphicon glyphicon-user"></i></div>
-								<input name="login_user" autocorrect="off" autocapitalize="none" type="name" id="login_user" class="form-control" placeholder="<?=$lang['login']['username'];?>" required="" autofocus="">
+								<input type="hidden" id="admin_un_cache" value="<?=$AdminLogin?>">
+								<input type="hidden" id="user_un_cache" value="<?=$UserLogin?>">
+								<input name="login_user" value="<?=$AdminLogin?>" autocorrect="off" autocapitalize="none" type="name" id="login_user" class="form-control" placeholder="<?=$lang['login']['username'];?>" required="" autofocus="">
 							</div>
 						</div>
 						<div class="form-group">
 							<label class="sr-only" for="pass_user"><?=$lang['login']['password'];?></label>
 							<div class="input-group">
 								<div class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></div>
+								<input type="hidden" id="admin_pw_cache">
+								<input type="hidden" id="user_pw_cache">
 								<input name="pass_user" type="password" id="pass_user" class="form-control" placeholder="<?=$lang['login']['password'];?>" required="">
 							</div>
 						</div>
 						<div class="form-group">
+							<div class="checkbox">
+ 								<label><input data-toggle="tooltip" title="<?=$lang['login']['remember_me_tooltip'];?>" type="checkbox" name="remember_user"> <?=$lang['login']['remember_me'];?></label>
+ 							</div>
+ 						</div>
+ 						<div class="form-group">
+							<input type="hidden" id="login_role" name="login_role" value="domainadmin">
 							<button type="submit" class="btn btn-success" value="Login"><?=$lang['login']['login'];?></button>
 							<div class="btn-group pull-right">
 								<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

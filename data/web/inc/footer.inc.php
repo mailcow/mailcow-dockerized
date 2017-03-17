@@ -29,11 +29,29 @@ endif;
 <script src="/js/bootstrap-select.min.js"></script>
 <script src="/js/u2f-api.js"></script>
 <script>
-// Select language and reopen active URL without POST
-function setLang(sel) {
-	$.post( "<?=$_SERVER['REQUEST_URI'];?>", {lang: sel} );
-	window.location.href = window.location.pathname + window.location.search;
-}
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+});
+	
+$('.nav-tabs > li > #domainadmin').click(function(event){
+	if(document.getElementById('admin_un_cache').value != document.getElementById('login_user').value) {
+		$('#user_un_cache').val(document.getElementById('login_user').value);
+		$('#login_user').val(document.getElementById('admin_un_cache').value);
+		$('#user_pw_cache').val(document.getElementById('pass_user').value);
+		$('#pass_user').val(document.getElementById('admin_pw_cache').value);
+	}
+	$('#login_role').val(event.target.id);
+});
+
+$('.nav-tabs > li > #mailboxuser').click(function(event){
+	if(document.getElementById('user_un_cache').value != document.getElementById('login_user').value) {
+		$('#admin_un_cache').val(document.getElementById('login_user').value);
+		$('#login_user').val(document.getElementById('user_un_cache').value);
+		$('#admin_pw_cache').val(document.getElementById('pass_user').value);
+		$('#pass_user').val(document.getElementById('user_pw_cache').value);
+	}
+	$('#login_role').val(event.target.id);
+});
 
 $(document).ready(function() {
   // Confirm TFA modal
