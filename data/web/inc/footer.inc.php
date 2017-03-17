@@ -1,4 +1,5 @@
 <?php
+include("inc/tfa_modals.php");
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admin"):
 ?>
 <div id="RestartSOGo" class="modal fade" role="dialog">
@@ -21,10 +22,12 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
 <?php
 endif;
 ?>
+<div style="margin-bottom:100px"></div>
 <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/js/bootstrap-switch.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.0.2/bootstrap-slider.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.9.4/js/bootstrap-select.js"></script>
+<script src="/js/bootstrap-switch.min.js"></script>
+<script src="/js/bootstrap-slider.min.js"></script>
+<script src="/js/bootstrap-select.min.js"></script>
+<script src="/js/u2f-api.js"></script>
 <script>
 // Select language and reopen active URL without POST
 function setLang(sel) {
@@ -33,6 +36,94 @@ function setLang(sel) {
 }
 
 $(document).ready(function() {
+  // Confirm TFA modal
+  <?php if (isset($_SESSION['pending_tfa_method'])):?>
+  $('#ConfirmTFAModal').modal({
+    backdrop: 'static',
+    keyboard: false
+  }); 
+  $('#ConfirmTFAModal').on('shown.bs.modal', function(){
+      $(this).find('#token').focus();
+      // If U2F
+      if(document.getElementById("u2f_auth_data") !== null) {
+        $.ajax({
+          type: "GET",
+          cache: false,
+          dataType: 'script',
+          url: "json_api.php",
+          data: {
+            'action':'get_u2f_auth_challenge',
+            'object':'<?=(isset($_SESSION['pending_mailcow_cc_username'])) ? $_SESSION['pending_mailcow_cc_username'] : null;?>',
+          },
+          success: function(data){
+            data;
+          }
+        });
+        setTimeout(function() {
+          console.log("sign: ", req);
+          u2f.sign(req, function(data) {
+            var form = document.getElementById('u2f_auth_form');
+            var auth = document.getElementById('u2f_auth_data');
+            console.log("Authenticate callback", data);
+            auth.value = JSON.stringify(data);
+            form.submit();
+          });
+        }, 1000);
+      }
+  });
+  <?php endif; ?>
+
+  // Set TFA modals
+
+  $('#selectTFA').change(function () {
+    if ($(this).val() == "yubi_otp") {
+      $('#YubiOTPModal').modal('show');
+      $("option:selected").prop("selected", false);
+    }
+    if ($(this).val() == "u2f") {
+      $('#U2FModal').modal('show');
+      $("option:selected").prop("selected", false);
+      $.ajax({
+        type: "GET",
+        cache: false,
+        dataType: 'script',
+        url: "json_api.php",
+        data: {
+          'action':'get_u2f_reg_challenge',
+          'object':'<?=(isset($_SESSION['mailcow_cc_username'])) ? $_SESSION['mailcow_cc_username'] : null;?>',
+        },
+        success: function(data){
+          data;
+        }
+      });
+      setTimeout(function() {
+        console.log("Register: ", req);
+        u2f.register([req], sigs, function(data) {
+          var form  = document.getElementById('u2f_reg_form');
+          var reg   = document.getElementById('u2f_register_data');
+          console.log("Register callback", data);
+          if (data.errorCode && data.errorCode != 0) {
+            var u2f_return_code = document.getElementById('u2f_return_code');
+            u2f_return_code.style.display = u2f_return_code.style.display === 'none' ? '' : null;
+            if (data.errorCode == "4") { data.errorCode = "4 - The presented device is not eligible for this request. For a registration request this may mean that the token is already registered, and for a sign request it may mean that the token does not know the presented key handle"; }
+            u2f_return_code.innerHTML = 'Error code: ' + data.errorCode;
+            return;
+          }
+          reg.value = JSON.stringify(data);
+          form.submit();
+        });
+      }, 1000);
+    }
+    if ($(this).val() == "none") {
+      $('#DisableTFAModal').modal('show');
+      $("option:selected").prop("selected", false);
+    }
+  });
+
+  // Activate tooltips
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  })
 	// Hide alerts after n seconds
 	$("#alert-fade").fadeTo(7000, 500).slideUp(500, function(){
 		$("#alert-fade").alert('close');

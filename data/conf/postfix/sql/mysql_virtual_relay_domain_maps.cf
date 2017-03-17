@@ -1,5 +1,0 @@
-user = mailcow
-password = mysafepasswd
-hosts = mysql
-dbname = mailcow
-query = SELECT domain FROM domain WHERE domain='%s' AND backupmx = '1' AND active = '1'

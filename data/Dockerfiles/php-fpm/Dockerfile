@@ -8,6 +8,7 @@ RUN apt-get update \
 
 RUN docker-php-ext-configure intl
 RUN docker-php-ext-install intl pdo pdo_mysql xmlrpc
+RUN pear install channel://pear.php.net/Net_IDNA2-0.1.1 Auth_SASL Net_IMAP NET_SMTP Net_IDNA2 Mail_mime
 
 COPY ./docker-entrypoint.sh /
 

@@ -1,5 +1,6 @@
 <?php
-error_reporting(0);
+error_reporting(E_ERROR | E_WARNING);
+//error_reporting(E_ALL);
 
 /*
 PLEASE USE THE FILE "vars.local.inc.php" TO OVERWRITE SETTINGS AND MAKE THEM PERSISTENT!
@@ -33,4 +34,7 @@ $DEFAULT_LANG = "en";
 // simplex, slate, spacelab, superhero, united, yeti
 // See https://bootswatch.com/
 $DEFAULT_THEME = "lumen";
+
+// Password complexity as regular expression
+$PASSWD_REGEP = '.{4,}';
 ?>

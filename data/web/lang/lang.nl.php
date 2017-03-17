@@ -4,7 +4,10 @@
 //  Dutch language file
 */
 $lang['footer']['loading'] = "Even geduld a.u.b. ...";
-$lang['getmail']['no_status'] = "Geen vorige status gevonden.";
+$lang['header']['restart_sogo'] = 'SOGo herstarten';
+$lang['footer']['restart_sogo'] = 'SOGo herstarten';
+$lang['footer']['restart_now'] = 'Nu opnieuw starten';
+$lang['footer']['restart_sogo_info'] = 'Sommige taken, zoals het toevoegen van een domein, vereisen een herstart van SOGo om de veranderingen door te voeren.<br /><br /><b>Belangrijk:</b> Het opnieuw opstarten kan een poos duren, wacht a.u.b. totdat dit volledig voltooid is.';
 $lang['dkim']['confirm'] = "Weet u het zeker?";
 $lang['danger']['dkim_not_found'] = "DKIM record niet gevonden.";
 $lang['danger']['dkim_remove_failed'] = "Kan geselecteerde DKIM record niet verwijderen.";
@@ -21,8 +24,8 @@ $lang['danger']['object_is_not_numeric'] = "%s is niet numeriek.";
 $lang['success']['domain_added'] = "Domein toegevoegd: %s.";
 $lang['danger']['alias_empty'] = "Aliasadres mag niet leeg blijven.";
 $lang['danger']['goto_empty'] = "Doeladres mag niet leeg blijven.";
-$lang['danger']['blacklist_exists'] = "Deze invoer staat op de zwarte lijst.";
-$lang['danger']['blacklist_from_invalid'] = "Zwarte lijst invoer heeft een ongeldig format.";
+$lang['danger']['policy_list_from_exists'] = "Deze invoer bestaat al.";
+$lang['danger']['policy_list_from_invalid'] = "Deze invoer heeft een ongeldig format.";
 $lang['danger']['whitelist_exists'] = "Deze invoer staat op de witte lijst.";
 $lang['danger']['whitelist_from_invalid'] = "Witte lijst invoer heeft een ongeldig format.";
 $lang['danger']['alias_invalid'] = "Aliasadres is ongeldig.";
@@ -90,10 +93,10 @@ $lang['user']['user_settings'] = 'Gebruikersinstellingen';
 $lang['user']['mailbox_settings'] = 'Postvakinstellingen';
 $lang['user']['mailbox_details'] = 'Postvakdetails';
 $lang['user']['change_password'] = 'Verander wachtwoord';
-$lang['user']['new_password'] = 'Nieuw wachtwoord:';
+$lang['user']['new_password'] = 'Nieuw wachtwoord';
 $lang['user']['save_changes'] = 'Wijzigingen opslaan';
-$lang['user']['password_now'] = 'Huidig wachtwoord (bevestig wijzigingen):';
-$lang['user']['new_password_repeat'] = 'Bevestig wachtwoord (herhalen):';
+$lang['user']['password_now'] = 'Huidig wachtwoord (bevestig wijzigingen)';
+$lang['user']['new_password_repeat'] = 'Bevestig wachtwoord (herhalen)';
 $lang['user']['new_password_description'] = 'Vereisten: 6 karakters lang, letters en nummers.';
 $lang['user']['did_you_know'] = '<b>Wist u dat?</b> U kunt tags in het e-mailadres gebruiken ("me+<b>prive</b>@voorbeeld.nl") om berichten automatisch naar een bijbehorende map te sturen (voorbeeld: "prive").';
 $lang['user']['spam_aliases'] = 'Tijdelijk e-mailadres';
@@ -120,6 +123,7 @@ $lang['user']['spamfilter_table_rule'] = 'Regel';
 $lang['user']['spamfilter_table_action'] = 'Handeling';
 $lang['user']['spamfilter_table_empty'] = 'Geen gegevens om weer te geven.';
 $lang['user']['spamfilter_table_remove'] = 'verwijder';
+$lang['user']['spamfilter_table_add'] = 'Voeg item toe';
 $lang['user']['spamfilter_default_score'] = 'Spamscore:';
 $lang['user']['spamfilter_green'] = 'Groen: Dit bericht is geen spam.';
 $lang['user']['spamfilter_yellow'] = 'Geel: Dit bericht is mogelijk spam, zal worden gelabeled en verplaatst worden naar de Junk-map.';
@@ -135,7 +139,13 @@ $lang['user']['no_record'] = 'Geen vermelding.';
 
 $lang['user']['misc_settings'] = 'Andere profielinstellingen';
 $lang['user']['misc_delete_profile'] = 'Andere profielinstellingen';
-$lang['start']['dashboard'] = '%s - dashboard';
+$lang['user']['tag_handling'] = 'Omgaan met e-mail tags';
+$lang['user']['tag_in_subfolder'] = 'In onderliggende map';
+$lang['user']['tag_in_subject'] = 'In onderwerp';
+$lang['user']['tag_help_explain'] = 'In onderliggende map: maakt onder INBOX een nieuwe map aan met de naam van de tag (bijv.: "INBOX/Facebook").<br />
+In onderwerp: de tag wordt vóór het oorspronkelijke e-mail onderwerp geplaatst (bijv.: "[Facebook] Mijn nieuws").';
+$lang['user']['tag_help_example'] = 'Voorbeeld van een e-mailadres met tag: ik<b>+Facebook</b>@voorbeeld.org';
+$lang['start']['dashboard'] = '%s - startpagina';
 $lang['start']['start_rc'] = 'Open Roundcube';
 $lang['start']['start_sogo'] = 'Open SOGo';
 $lang['start']['mailcow_apps_detail'] = 'Gebruik een mailcow app om toegang te hebben tot uw e-mails, kalender, contactpersonen en meer.';
@@ -280,6 +290,7 @@ $lang['add']['select_domain'] = 'Selecteer eerst een domein';
 $lang['add']['password'] = 'Wachtwoord:';
 $lang['add']['password_repeat'] = 'Bevestig wachtwoord (herhalen):';
 $lang['add']['previous'] = 'Vorige pagina';
+$lang['add']['restart_sogo_hint'] = 'SOGo dient opnieuw te worden gestart nadat een domein is toegevoegd!';
 
 $lang['login']['title'] = 'Aanmelden';
 $lang['login']['administration'] = 'Beheer';

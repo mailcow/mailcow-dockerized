@@ -12,8 +12,16 @@ if [[ -f mailcow.conf ]]; then
   esac
 fi
 
-read -p "Hostname (FQDN): " -ei "mx.example.org" MAILCOW_HOSTNAME
-read -p "Timezone: " -ei "Europe/Berlin" TZ
+if [ -z "$MAILCOW_HOSTNAME" ]; then
+  read -p "Hostname (FQDN): " -ei "mx.example.org" MAILCOW_HOSTNAME
+fi
+
+[[ -a /etc/timezone ]] && TZ=$(cat /etc/timezone)
+if [ -z "$TZ" ]; then
+  read -p "Timezone: " -ei "Europe/Berlin" TZ
+else
+  read -p "Timezone: " -ei ${TZ} TZ
+fi
 
 cat << EOF > mailcow.conf
 # ------------------------------
@@ -35,10 +43,23 @@ DBPASS=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
 DBROOT=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
 
 # ------------------------------
-# Misc configuration
+# HTTP/S Bindings
+# ------------------------------
+
+# You should use HTTPS, but in case of SSL offloaded reverse proxies:
+HTTP_PORT=80
+HTTP_BIND=0.0.0.0
+
+HTTPS_PORT=443
+HTTPS_BIND=0.0.0.0
+
+# ------------------------------
+# Other bindings
 # ------------------------------
 # You should leave that alone
-# Can also be 11.22.33.44:25 or 0.0.0.0:465 etc. for specific bindings
+# Format: 11.22.33.44:25 or 0.0.0.0:465 etc.
+# Do _not_ use IP:PORT in HTTPS_BIND or HTTPS_PORT
+
 SMTP_PORT=25
 SMTPS_PORT=465
 SUBMISSION_PORT=587

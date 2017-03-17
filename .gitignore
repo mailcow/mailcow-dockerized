@@ -3,4 +3,10 @@ data/conf/sogo/sieve.creds
 data/conf/dovecot/dovecot-master.passwd
 mailcow.conf
 mailcow.conf_backup
-data/conf/nginx/listen.active
+data/conf/nginx/listen*active
+data/conf/nginx/server_name*active
+data/conf/postfix/sql
+data/conf/dovecot/sql
+data/web/inc/vars.local.inc.php
+site/
+data/assets/ssl

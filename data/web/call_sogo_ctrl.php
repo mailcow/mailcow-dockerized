@@ -6,7 +6,7 @@ if (!isset($_SESSION['mailcow_cc_role']) OR !in_array($_SESSION['mailcow_cc_role
 	exit();
 }
 if ($_GET['ACTION'] == "start") {
-	$request = xmlrpc_encode_request("supervisor.startProcessGroup", 'sogo-group', array('encoding'=>'utf-8'));
+	$request = xmlrpc_encode_request("supervisor.startProcess", 'reconf-domains', array('encoding'=>'utf-8'));
 	$context = stream_context_create(array('http' => array(
 	'method' => "POST",
 	'header' => "Content-Length: " . strlen($request),
@@ -18,11 +18,25 @@ if ($_GET['ACTION'] == "start") {
 		echo '<b><span class="pull-right text-warning">' . $response['faultString'] . '</span></b>';
 	}
 	else {
-		echo '<b><span class="pull-right text-success">OK</span></b>';
+    sleep(4);
+    $request = xmlrpc_encode_request("supervisor.startProcess", 'sogo', array('encoding'=>'utf-8'));
+    $context = stream_context_create(array('http' => array(
+    'method' => "POST",
+    'header' => "Content-Length: " . strlen($request),
+    'content' => $request
+    )));
+    $file = @file_get_contents("http://sogo:9191/RPC2", false, $context) or die("Cannot connect to $remote_server:$listener_port");
+    $response = xmlrpc_decode($file);
+    if (isset($response['faultString'])) {
+      echo '<b><span class="pull-right text-warning">' . $response['faultString'] . '</span></b>';
+    }
+    else {
+      echo '<b><span class="pull-right text-success">OK</span></b>';
+    }
 	}
 }
 elseif ($_GET['ACTION'] == "stop") {
-	$request = xmlrpc_encode_request("supervisor.stopProcessGroup", 'sogo-group', array('encoding'=>'utf-8'));
+	$request = xmlrpc_encode_request("supervisor.stopProcess", 'sogo', array('encoding'=>'utf-8'));
 	$context = stream_context_create(array('http' => array(
 	'method' => "POST",
 	'header' => "Content-Length: " . strlen($request),
@@ -34,7 +48,21 @@ elseif ($_GET['ACTION'] == "stop") {
 		echo '<b><span class="pull-right text-warning">' . $response['faultString'] . '</span></b>';
 	}
 	else {
-		echo '<b><span class="pull-right text-success">OK</span></b>';
+    sleep(1);
+    $request = xmlrpc_encode_request("supervisor.stopProcess", 'reconf-domains', array('encoding'=>'utf-8'));
+    $context = stream_context_create(array('http' => array(
+    'method' => "POST",
+    'header' => "Content-Length: " . strlen($request),
+    'content' => $request
+    )));
+    $file = @file_get_contents("http://sogo:9191/RPC2", false, $context) or die("Cannot connect to $remote_server:$listener_port");
+    $response = xmlrpc_decode($file);
+    if (isset($response['faultString'])) {
+      echo '<b><span class="pull-right text-warning">' . $response['faultString'] . '</span></b>';
+    }
+    else {
+      echo '<b><span class="pull-right text-success">OK</span></b>';
+    }
 	}
 }
 ?>

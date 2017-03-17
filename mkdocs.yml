@@ -1,0 +1,25 @@
+site_name: "mailcow: dockerized"
+repo_url: https://github.com/andryyy/mailcow-dockerized
+remote_branch: gh-pages
+theme: material
+extra:
+  social:
+    - type: 'github'
+      link: 'https://github.com/andryyy/mailcow-dockerized'
+  palette:
+    primary: 'indigo'
+    accent: 'yellow'
+  logo: 'images/logo.svg'
+
+markdown_extensions:
+  - admonition
+  - codehilite(guess_lang=true)
+  - footnotes
+  - meta
+  - toc(permalink=true)
+
+pages:
+    - 'This is mailcow': 'index.md'
+    - 'Installation': 'install.md'
+    - 'First Steps': 'first_steps.md'
+    - 'Usage & Examples': 'u_and_e.md'

@@ -5,10 +5,12 @@ $(document).ready(function() {
 	var rowCountDomain = $('#domaintable >tbody >#data').length;
 	var rowCountMailbox = $('#mailboxtable >tbody >#data').length;
 	var rowCountAlias = $('#aliastable >tbody >#data').length;
+	var rowCountResource = $('#resourcetable >tbody >#data').length;
 	$("#numRowsDomainAlias").text(rowCountDomainAlias);
 	$("#numRowsDomain").text(rowCountDomain);
 	$("#numRowsMailbox").text(rowCountMailbox);
 	$("#numRowsAlias").text(rowCountAlias);
+	$("#numRowsResource").text(rowCountResource);
 
 	// Filter table function
 	$.fn.extend({
@@ -16,10 +18,10 @@ $(document).ready(function() {
 			return this.each(function(){
 				$(this).on('keyup', function(e){
 					var $this = $(this),
-                        search = $this.val().toLowerCase(),
-                        target = $this.attr('data-filters'),
-                        $target = $(target),
-                        $rows = $target.find('tbody #data');
+            search = $this.val().toLowerCase(),
+            target = $this.attr('data-filters'),
+            $target = $(target),
+            $rows = $target.find('tbody #data');
 					$target.find('tbody .filterTable_no_results').remove();
 					if(search == '') {
 						$target.find('tbody #no-data').show();
