@@ -29,7 +29,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 							<label class="sr-only" for="login_user"><?=$lang['login']['username'];?></label>
 							<div class="input-group">
 								<div class="input-group-addon"><i class="glyphicon glyphicon-user"></i></div>
-								<input name="login_user" autocorrect="off" autocapitalize="none" type="name" id="login_user" class="form-control" placeholder="<?=$lang['login']['username'];?>" required="" autofocus="">
+								<input name="login_user" autocorrect="off" autocapitalize="none" type="text" id="login_user" class="form-control" placeholder="<?=$lang['login']['username'];?>" required="" autofocus="">
 							</div>
 						</div>
 						<div class="form-group">
