@@ -37,4 +37,18 @@ $DEFAULT_THEME = "lumen";
 
 // Password complexity as regular expression
 $PASSWD_REGEP = '.{4,}';
+
+// mailcow Apps - buttons on login screen
+$MAILCOW_APPS = array(
+  array(
+    'name' => 'SOGo',
+    'link' => '/SOGo/'
+  ),
+  // array(
+    // 'name' => 'Roundcube',
+    // 'link' => '/rc/'
+  // ),
+);
+
+
 ?>
