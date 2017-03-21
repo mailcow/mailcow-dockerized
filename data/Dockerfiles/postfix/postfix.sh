@@ -81,7 +81,7 @@ user = ${DBUSER}
 password = ${DBPASS}
 hosts = mysql
 dbname = ${DBNAME}
-query = SELECT goto FROM alias WHERE address='%s' AND active='1' AND domain IN(SELECT domain FROM domain WHERE domain='%d' AND active='1') UNION SELECT logged_in_as FROM sender_acl WHERE send_as='@%d' OR send_as='%s' OR send_as IN ( SELECT CONCAT ('@',target_domain) FROM alias_domain WHERE alias_domain = '%d') OR send_as IN ( SELECT CONCAT ('%u','@',target_domain) FROM alias_domain WHERE alias_domain = '%d' ) AND logged_in_as NOT IN (SELECT goto FROM alias WHERE address='%s') UNION SELECT username FROM mailbox,alias_domain WHERE alias_domain.alias_domain = '%d' AND mailbox.username = CONCAT('%u','@',alias_domain.target_domain) AND mailbox.active ='1' AND alias_domain.active='1'
+query = SELECT goto FROM alias WHERE address='%s' AND active='1' AND (domain IN (SELECT domain FROM domain WHERE domain='%d' AND active='1') OR domain in (SELECT target_domain FROM alias_domain WHERE alias_domain='%d' AND active='1')) UNION SELECT logged_in_as FROM sender_acl WHERE send_as='@%d' OR send_as='%s' OR send_as IN ( SELECT CONCAT ('@',target_domain) FROM alias_domain WHERE alias_domain = '%d') OR send_as IN ( SELECT CONCAT ('%u','@',target_domain) FROM alias_domain WHERE alias_domain = '%d' ) AND logged_in_as NOT IN (SELECT goto FROM alias WHERE address='%s') UNION SELECT username FROM mailbox,alias_domain WHERE alias_domain.alias_domain = '%d' AND mailbox.username = CONCAT('%u','@',alias_domain.target_domain) AND mailbox.active ='1' AND alias_domain.active='1'
 EOF
 
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_spamalias_maps.cf
