@@ -45,6 +45,7 @@ rspamd_config:register_symbol({
       if action ~= 'no action' and action ~= 'greylist' then
         rspamd_logger.infox("skipping tag handler for action: %s", action)
         task:set_metric_action('default', action)
+        return true
       end
 
       if authdomain then
