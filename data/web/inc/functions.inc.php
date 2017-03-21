@@ -4422,7 +4422,7 @@ function mailbox_get_resource_details($resource) {
     $resourcedata['name'] = $row['username'];
     $resourcedata['kind'] = $row['kind'];
     $resourcedata['multiple_bookings'] = $row['multiple_bookings'];
-    $resourcedata['multiple_bookings_int'] = $row['multiple_bookings'];
+    $resourcedata['multiple_bookings_int'] = $row['multiple_bookings_int'];
     $resourcedata['description'] = $row['name'];
     $resourcedata['active'] = $row['active'];
     $resourcedata['active_int'] = $row['active_int'];
