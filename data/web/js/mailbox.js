@@ -27,10 +27,17 @@ $(document).ready(function() {
         item.mailboxes = item.mboxes_in_domain + " / " + item.max_num_mboxes_for_domain;
         item.quota = humanFileSize(item.quota_used_in_domain) + " / " + humanFileSize(item.max_quota_for_domain);
         item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
+        if (role == "admin") {
         item.action = '<div class="btn-group">' +
           '<a href="/edit.php?domain=' + item.domain_name + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
           '<a href="/delete.php?domain=' + item.domain_name + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
 					'</div>';
+        }
+        else {
+        item.action = '<div class="btn-group">' +
+          '<a href="/edit.php?domain=' + item.domain_name + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+					'</div>';
+        }
       });
       $('#domain_table').footable({
         "columns": [
@@ -73,10 +80,19 @@ $(document).ready(function() {
       $.each(data, function (i, item) {
         item.quota = humanFileSize(item.quota_used) + " / " + humanFileSize(item.quota);
         item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
+        if (role == "admin") {
+        item.action = '<div class="btn-group">' +
+          '<a href="/edit.php?mailbox=' + item.username + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+          '<a href="/delete.php?mailbox=' + item.username + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+          '<a href="/index.php?duallogin=' + item.username + '" class="btn btn-xs btn-success"><span class="glyphicon glyphicon-user"></span> Login</a>' +
+					'</div>';
+        }
+        else {
         item.action = '<div class="btn-group">' +
           '<a href="/edit.php?mailbox=' + item.username + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
           '<a href="/delete.php?mailbox=' + item.username + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
 					'</div>';
+        }
         item.in_use = '<div class="progress">' +
 				  '<div class="progress-bar progress-bar-' + item.percent_class + ' role="progressbar" aria-valuenow="' + item.percent_in_use + '" aria-valuemin="0" aria-valuemax="100" ' +
           'style="min-width:2em;width:' + item.percent_in_use + '%">' + item.percent_in_use + '%' + '</div></div>';
@@ -90,9 +106,9 @@ $(document).ready(function() {
           {"name":"quota","title":lang.domain_quota},
           {"name":"spam_aliases","filterable": false,"title":lang.spam_aliases,"breakpoints":"xs sm"},
           {"name":"in_use","filterable": false,"type":"html","title":lang.in_use},
-          {"name":"messages","filterable": false,"style":{"maxWidth":"120px","width":"120px"},"title":lang.msg_num,"breakpoints":"xs sm"},
+          {"name":"messages","filterable": false,"style":{"width":"90px"},"title":lang.msg_num,"breakpoints":"xs sm"},
           {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active},
-          {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
+          {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","width":"290px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
         ],
         "empty": lang.empty,
         "rows": data,

@@ -108,6 +108,8 @@ table.footable>tbody>tr.footable-empty>td {
 <?php
 $lang_mailbox = json_encode($lang['mailbox']);
 echo "var lang = ". $lang_mailbox . ";\n";
+$role = ($_SESSION['mailcow_cc_role'] == "admin") ? 'admin' : 'domainadmin';
+echo "var role = '". $role . "';\n";
 ?>
 </script>
 <script src="js/footable.min.js"></script>
