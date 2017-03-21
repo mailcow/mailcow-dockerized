@@ -18,6 +18,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
           }
         }
+        else {
+          echo '{}';
+        }
         break;
       case "mailbox_table_data":
         $domains = mailbox_get_domains();
@@ -36,6 +39,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           else {
             echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
           }
+        }
+        else {
+          echo '{}';
         }
         break;
       case "resource_table_data":
@@ -56,6 +62,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
           }
         }
+        else {
+          echo '{}';
+        }
         break;
       case "domain_alias_table_data":
         $domains = mailbox_get_domains();
@@ -75,6 +84,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
           }
         }
+        else {
+          echo '{}';
+        }
         break;
       case "alias_table_data":
         $domains = array_merge(mailbox_get_domains(), mailbox_get_alias_domains());
@@ -93,6 +105,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           else {
             echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
           }
+        }
+        else {
+          echo '{}';
         }
         break;
       case "get_mailbox_details":
