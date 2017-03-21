@@ -13,6 +13,12 @@ table.footable>tbody>tr.footable-empty>td {
 .pagination a {
   text-decoration: none !important;
 }
+.panel panel-default {
+  overflow: visible !important;
+}
+.table-responsive {
+  overflow: visible !important;
+}
 </style>
 <div class="container">
 	<div class="row">
