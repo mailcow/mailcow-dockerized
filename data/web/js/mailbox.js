@@ -29,13 +29,13 @@ $(document).ready(function() {
         item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
         if (role == "admin") {
         item.action = '<div class="btn-group">' +
-          '<a href="/edit.php?domain=' + item.domain_name + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-          '<a href="/delete.php?domain=' + item.domain_name + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+          '<a href="/edit.php?domain=' + encodeURI(item.domain_name) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+          '<a href="/delete.php?domain=' + encodeURI(item.domain_name) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
 					'</div>';
         }
         else {
         item.action = '<div class="btn-group">' +
-          '<a href="/edit.php?domain=' + item.domain_name + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+          '<a href="/edit.php?domain=' + encodeURI(item.domain_name) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
 					'</div>';
         }
       });
@@ -82,15 +82,15 @@ $(document).ready(function() {
         item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
         if (role == "admin") {
         item.action = '<div class="btn-group">' +
-          '<a href="/edit.php?mailbox=' + item.username + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-          '<a href="/delete.php?mailbox=' + item.username + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
-          '<a href="/index.php?duallogin=' + item.username + '" class="btn btn-xs btn-success"><span class="glyphicon glyphicon-user"></span> Login</a>' +
+          '<a href="/edit.php?mailbox=' + encodeURI(item.username) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+          '<a href="/delete.php?mailbox=' + encodeURI(item.username) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+          '<a href="/index.php?duallogin=' + encodeURI(item.username) + '" class="btn btn-xs btn-success"><span class="glyphicon glyphicon-user"></span> Login</a>' +
 					'</div>';
         }
         else {
         item.action = '<div class="btn-group">' +
-          '<a href="/edit.php?mailbox=' + item.username + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-          '<a href="/delete.php?mailbox=' + item.username + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+          '<a href="/edit.php?mailbox=' + encodeURI(item.username) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+          '<a href="/delete.php?mailbox=' + encodeURI(item.username) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
 					'</div>';
         }
         item.in_use = '<div class="progress">' +
@@ -139,8 +139,8 @@ $(document).ready(function() {
     success: function (data) {
       $.each(data, function (i, item) {
         item.action = '<div class="btn-group">' +
-          '<a href="/edit.php?resource=' + item.name + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-          '<a href="/delete.php?resource=' + item.name + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+          '<a href="/edit.php?resource=' + encodeURI(item.name) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+          '<a href="/delete.php?resource=' + encodeURI(item.name) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
 					'</div>';
       });
       $('#resources_table').footable({
@@ -181,8 +181,8 @@ $(document).ready(function() {
     success: function (data) {
       $.each(data, function (i, item) {
         item.action = '<div class="btn-group">' +
-          '<a href="/edit.php?aliasdomain=' + item.alias_domain + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-          '<a href="/delete.php?aliasdomain=' + item.alias_domain + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+          '<a href="/edit.php?aliasdomain=' + encodeURI(item.alias_domain) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+          '<a href="/delete.php?aliasdomain=' + encodeURI(item.alias_domain) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
 					'</div>';
       });
       $('#aliasdomain_table').footable({
@@ -224,8 +224,8 @@ $(document).ready(function() {
           item.address = '<div class="label label-default">Catch-All</div> ' + item.address;
         }
         item.action = '<div class="btn-group">' +
-          '<a href="/edit.php?alias=' + item.address + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-          '<a href="/delete.php?alias=' + item.address + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+          '<a href="/edit.php?alias=' + encodeURI(item.address) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+          '<a href="/delete.php?alias=' + encodeURI(item.address) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
 					'</div>';
       });
       $('#alias_table').footable({
