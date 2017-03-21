@@ -19,7 +19,7 @@ $(document).ready(function() {
     url: '/json_api.php?action=domain_table_data',
     jsonp: false,
     error: function () {
-      alert('Cannot receive history');
+      alert('Cannot draw domain table');
     },
     success: function (data) {
       $.each(data, function (i, item) {
@@ -38,10 +38,10 @@ $(document).ready(function() {
           {"name":"aliases","title":lang.aliases,"breakpoints":"xs sm"},
           {"name":"mailboxes","title":lang.mailboxes},
           {"name":"quota","title":lang.domain_quota},
-          {"name":"max_quota_for_mbox","title":lang.mailbox_quota},
-          {"name":"backupmx","title":lang.backup_mx,"breakpoints":"xs sm"},
-          {"name":"active","style":{"maxWidth":"50px","width":"70px"},"title":lang.active},
-          {"name":"action","sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
+          {"name":"max_quota_for_mbox","title":lang.mailbox_quota,"breakpoints":"xs sm"},
+          {"name":"backupmx","filterable": false,"style":{"maxWidth":"120px","width":"120px"},"title":lang.backup_mx,"breakpoints":"xs sm"},
+          {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active},
+          {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
         ],
         "rows": data,
         "empty": lang.empty,
@@ -53,7 +53,7 @@ $(document).ready(function() {
         "filtering": {
           "enabled": true,
           "position": "left",
-          "placeholder": lang.search
+          "placeholder": lang.filter_table
         },
         "sorting": {
           "enabled": true
@@ -67,7 +67,7 @@ $(document).ready(function() {
     url: '/json_api.php?action=mailbox_table_data',
     jsonp: false,
     error: function () {
-      alert('Cannot receive history');
+      alert('Cannot draw mailbox table');
     },
     success: function (data) {
       $.each(data, function (i, item) {
@@ -86,13 +86,13 @@ $(document).ready(function() {
         "columns": [
           {"sorted": true,"name":"username","title":lang.username,"style":{"width":"250px"}},
           {"name":"name","title":lang.fname,"breakpoints":"xs sm"},
-          {"name":"domain","title":lang.domain},
+          {"name":"domain","title":lang.domain,"breakpoints":"xs sm"},
           {"name":"quota","title":lang.domain_quota},
-          {"name":"spam_aliases","title":lang.spam_aliases},
-          {"name":"in_use","type":"html","title":lang.in_use},
-          {"name":"messages","title":lang.msg_num,"breakpoints":"xs sm"},
-          {"name":"active","style":{"maxWidth":"50px","width":"70px"},"title":lang.active},
-          {"name":"action","sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
+          {"name":"spam_aliases","filterable": false,"title":lang.spam_aliases,"breakpoints":"xs sm"},
+          {"name":"in_use","filterable": false,"type":"html","title":lang.in_use},
+          {"name":"messages","filterable": false,"style":{"maxWidth":"120px","width":"120px"},"title":lang.msg_num,"breakpoints":"xs sm"},
+          {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active},
+          {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
         ],
         "empty": lang.empty,
         "rows": data,
@@ -104,7 +104,7 @@ $(document).ready(function() {
         "filtering": {
           "enabled": true,
           "position": "left",
-          "placeholder": lang.search
+          "placeholder": lang.filter_table
         },
         "sorting": {
           "enabled": true
@@ -118,7 +118,7 @@ $(document).ready(function() {
     url: '/json_api.php?action=resource_table_data',
     jsonp: false,
     error: function () {
-      alert('Cannot receive history');
+      alert('Cannot draw resource table');
     },
     success: function (data) {
       $.each(data, function (i, item) {
@@ -130,12 +130,11 @@ $(document).ready(function() {
       $('#resources_table').footable({
         "columns": [
           {"sorted": true,"name":"description","title":lang.description,"style":{"width":"250px"}},
-          {"name":"kind","title":lang.kind,"breakpoints":"xs sm"},
-          {"name":"domain","title":lang.domain},
-          {"name":"multiple_bookings","title":lang.multiple_bookings},
-          {"name":"domain","title":lang.domain},
-          {"name":"active","style":{"maxWidth":"50px","width":"70px"},"title":lang.active},
-          {"name":"action","sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
+          {"name":"kind","title":lang.kind},
+          {"name":"domain","title":lang.domain,"breakpoints":"xs sm"},
+          {"name":"multiple_bookings","filterable": false,"style":{"maxWidth":"120px","width":"120px"},"title":lang.multiple_bookings,"breakpoints":"xs sm"},
+          {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active},
+          {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
         ],
         "empty": lang.empty,
         "rows": data,
@@ -147,7 +146,7 @@ $(document).ready(function() {
         "filtering": {
           "enabled": true,
           "position": "left",
-          "placeholder": lang.search
+          "placeholder": lang.filter_table
         },
         "sorting": {
           "enabled": true
@@ -161,7 +160,7 @@ $(document).ready(function() {
     url: '/json_api.php?action=domain_alias_table_data',
     jsonp: false,
     error: function () {
-      alert('Cannot receive history');
+      alert('Cannot draw alias domain table');
     },
     success: function (data) {
       $.each(data, function (i, item) {
@@ -173,9 +172,9 @@ $(document).ready(function() {
       $('#aliasdomain_table').footable({
         "columns": [
           {"sorted": true,"name":"alias_domain","title":lang.alias,"style":{"width":"250px"}},
-          {"name":"target_domain","title":lang.target_domain,"breakpoints":"xs sm"},
-          {"name":"active","style":{"maxWidth":"50px","width":"70px"},"title":lang.active},
-          {"name":"action","sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
+          {"name":"target_domain","title":lang.target_domain},
+          {"name":"active","filterable": false,"style":{"maxWidth":"50px","width":"70px"},"title":lang.active},
+          {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
         ],
         "empty": lang.empty,
         "rows": data,
@@ -187,7 +186,7 @@ $(document).ready(function() {
         "filtering": {
           "enabled": true,
           "position": "left",
-          "placeholder": lang.search
+          "placeholder": lang.filter_table
         },
         "sorting": {
           "enabled": true
@@ -201,7 +200,7 @@ $(document).ready(function() {
     url: '/json_api.php?action=alias_table_data',
     jsonp: false,
     error: function () {
-      alert('Cannot receive history');
+      alert('Cannot draw alias table');
     },
     success: function (data) {
       $.each(data, function (i, item) {
@@ -217,9 +216,9 @@ $(document).ready(function() {
         "columns": [
           {"sorted": true,"name":"address","title":lang.alias,"style":{"width":"250px"}},
           {"name":"goto","title":lang.target_address},
-          {"name":"domain","title":lang.domain},
-          {"name":"active","style":{"maxWidth":"50px","width":"70px"},"title":lang.active},
-          {"name":"action","sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
+          {"name":"domain","title":lang.domain,"breakpoints":"xs sm"},
+          {"name":"active","filterable": false,"style":{"maxWidth":"50px","width":"70px"},"title":lang.active},
+          {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
         ],
         "empty": lang.empty,
         "rows": data,
@@ -231,7 +230,7 @@ $(document).ready(function() {
         "filtering": {
           "enabled": true,
           "position": "left",
-          "placeholder": lang.search
+          "placeholder": lang.filter_table
         },
         "sorting": {
           "enabled": true
