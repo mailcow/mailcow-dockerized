@@ -1,1 +1,2 @@
 # rspamd.conf.local
+history_redis {}
