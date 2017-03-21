@@ -261,9 +261,6 @@ networks:
 
 volumes:
   vmail-vol-1:
-    driver: nfs
-    driver_opts:
-      share: io.servercow.de:/nfs_test
   mysql-vol-1:
   dkim-vol-1:
   redis-vol-1:
