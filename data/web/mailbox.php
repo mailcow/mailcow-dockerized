@@ -5,6 +5,15 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 require_once "inc/header.inc.php";
 $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 ?>
+<style>
+table.footable>tbody>tr.footable-empty>td {
+  font-size:15px !important;
+  font-style:italic;
+}
+.pagination a {
+  text-decoration: none !important;
+}
+</style>
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
@@ -36,9 +45,9 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 						<a href="/add.php?mailbox"><span class="glyphicon glyphicon-plus"></span></a>
 					</div>
 				</div>
-          <div class="table-responsive">
-            <table id="mailbox_table" class="table table-striped"></table>
-          </div>
+        <div class="table-responsive">
+          <table id="mailbox_table" class="table table-striped"></table>
+        </div>
 			</div>
 		</div>
 	</div>
@@ -51,11 +60,9 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 						<a href="/add.php?resource"><span class="glyphicon glyphicon-plus"></span></a>
 					</div>
 				</div>
-				<div class="panel-body">
-          <div class="table-responsive">
-            <table id="resources_table" class="table table-striped"></table>
-          </div>
-				</div>
+        <div class="table-responsive">
+          <table id="resources_table" class="table table-striped"></table>
+        </div>
 			</div>
 		</div>
 	</div>
@@ -68,11 +75,9 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 						<a href="/add.php?aliasdomain"><span class="glyphicon glyphicon-plus"></span></a>
 					</div>
 				</div>
-				<div class="panel-body">
-          <div class="table-responsive">
-            <table id="aliasdomain_table" class="table table-striped"></table>
-          </div>
-				</div>
+        <div class="table-responsive">
+          <table id="aliasdomain_table" class="table table-striped"></table>
+        </div>
 			</div>
 		</div>
 	</div>
@@ -86,28 +91,18 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 						<a href="/add.php?alias"><span class="glyphicon glyphicon-plus"></span></a>
 					</div>
 				</div>
-				<div class="panel-body">
-          <div class="table-responsive">
-            <table id="alias_table" class="table table-striped"></table>
-          </div>
-				</div>
+        <div class="table-responsive">
+          <table id="alias_table" class="table table-striped"></table>
+        </div>
 			</div>
 		</div>
 	</div>
 </div> <!-- /container -->
-<script>
-var lang_domain = '<?=$lang['mailbox']['domain'];?>';
-var lang_aliases = '<?=$lang['mailbox']['aliases'];?>';
-var lang_mailboxes = '<?=$lang['mailbox']['mailboxes'];?>';
-var lang_mailbox_quota = '<?=$lang['mailbox']['mailbox_quota'];?>';
-var lang_domain_quota = '<?=$lang['mailbox']['domain_quota'];?>';
-var lang_backup_mx = '<?=$lang['mailbox']['backup_mx'];?>';
-var lang_active = '<?=$lang['mailbox']['active'];?>';
-var lang_username = '<?=$lang['mailbox']['username'];?>';
-var lang_fname = '<?=$lang['mailbox']['fname'];?>';
-var lang_spam_aliases = '<?=$lang['mailbox']['spam_aliases'];?>';
-var lang_in_use = '<?=$lang['mailbox']['in_use'];?>';
-var lang_msg_num = '<?=$lang['mailbox']['msg_num'];?>';
+<script type='text/javascript'>
+<?php
+$lang_mailbox = json_encode($lang['mailbox']);
+echo "var lang = ". $lang_mailbox . ";\n";
+?>
 </script>
 <script src="js/footable.min.js"></script>
 <script src="js/mailbox.js"></script>

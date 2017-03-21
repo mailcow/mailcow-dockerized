@@ -28,22 +28,23 @@ $(document).ready(function() {
         item.quota = humanFileSize(item.quota_used_in_domain) + " / " + humanFileSize(item.max_quota_for_domain);
         item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
         item.action = '<div class="btn-group">' +
-          '<a href="/edit.php?domain=' + item.domain_name + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> Edit</a>' +
-          '<a href="/delete.php?domain=' + item.domain_name + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> Remove</a>' +
+          '<a href="/edit.php?domain=' + item.domain_name + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+          '<a href="/delete.php?domain=' + item.domain_name + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
 					'</div>';
       });
       $('#domain_table').footable({
         "columns": [
-          {"sorted": true,"name":"domain_name","title":lang_domain},
-          {"name":"aliases","title":lang_aliases,"breakpoints":"xs sm"},
-          {"name":"mailboxes","title":lang_mailboxes},
-          {"name":"quota","title":lang_domain_quota},
-          {"name":"max_quota_for_mbox","title":lang_mailbox_quota},
-          {"name":"backupmx","title":lang_backup_mx,"breakpoints":"xs sm"},
-          {"name":"active","title":lang_active,"breakpoints":"xs sm"},
-          {"name":"action","type":"html","title":lang_action,"breakpoints":"xs sm"}
+          {"sorted": true,"name":"domain_name","title":lang.domain,"style":{"width":"250px"}},
+          {"name":"aliases","title":lang.aliases,"breakpoints":"xs sm"},
+          {"name":"mailboxes","title":lang.mailboxes},
+          {"name":"quota","title":lang.domain_quota},
+          {"name":"max_quota_for_mbox","title":lang.mailbox_quota},
+          {"name":"backupmx","title":lang.backup_mx,"breakpoints":"xs sm"},
+          {"name":"active","style":{"maxWidth":"50px","width":"70px"},"title":lang.active},
+          {"name":"action","sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
         ],
         "rows": data,
+        "empty": lang.empty,
         "paging": {
           "enabled": true,
           "limit": 5,
@@ -51,7 +52,8 @@ $(document).ready(function() {
         },
         "filtering": {
           "enabled": true,
-          "position": "left"
+          "position": "left",
+          "placeholder": lang.search
         },
         "sorting": {
           "enabled": true
@@ -72,8 +74,8 @@ $(document).ready(function() {
         item.quota = humanFileSize(item.quota_used) + " / " + humanFileSize(item.quota);
         item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
         item.action = '<div class="btn-group">' +
-          '<a href="/edit.php?mailbox=' + item.username + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> Edit</a>' +
-          '<a href="/delete.php?mailbox=' + item.username + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> Remove</a>' +
+          '<a href="/edit.php?mailbox=' + item.username + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+          '<a href="/delete.php?mailbox=' + item.username + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
 					'</div>';
         item.in_use = '<div class="progress">' +
 				  '<div class="progress-bar progress-bar-' + item.percent_class + ' role="progressbar" aria-valuenow="' + item.percent_in_use + '" aria-valuemin="0" aria-valuemax="100" ' +
@@ -82,16 +84,17 @@ $(document).ready(function() {
       });
       $('#mailbox_table').footable({
         "columns": [
-          {"sorted": true,"name":"username","title":lang_username},
-          {"name":"name","title":lang_fname,"breakpoints":"xs sm"},
-          {"name":"domain","title":lang_domain},
-          {"name":"quota","title":lang_domain_quota},
-          {"name":"spam_aliases","title":lang_spam_aliases},
-          {"name":"in_use","type":"html","title":lang_in_use},
-          {"name":"messages","title":lang_msg_num,"breakpoints":"xs sm"},
-          {"name":"active","title":lang_active,"breakpoints":"xs sm"},
-          {"name":"action","type":"html","title":lang_action,"breakpoints":"xs sm"}
+          {"sorted": true,"name":"username","title":lang.username,"style":{"width":"250px"}},
+          {"name":"name","title":lang.fname,"breakpoints":"xs sm"},
+          {"name":"domain","title":lang.domain},
+          {"name":"quota","title":lang.domain_quota},
+          {"name":"spam_aliases","title":lang.spam_aliases},
+          {"name":"in_use","type":"html","title":lang.in_use},
+          {"name":"messages","title":lang.msg_num,"breakpoints":"xs sm"},
+          {"name":"active","style":{"maxWidth":"50px","width":"70px"},"title":lang.active},
+          {"name":"action","sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
         ],
+        "empty": lang.empty,
         "rows": data,
         "paging": {
           "enabled": true,
@@ -100,7 +103,8 @@ $(document).ready(function() {
         },
         "filtering": {
           "enabled": true,
-          "position": "left"
+          "position": "left",
+          "placeholder": lang.search
         },
         "sorting": {
           "enabled": true
@@ -109,4 +113,130 @@ $(document).ready(function() {
     }
   });
 
+  $.ajax({
+    dataType: 'json',
+    url: '/json_api.php?action=resource_table_data',
+    jsonp: false,
+    error: function () {
+      alert('Cannot receive history');
+    },
+    success: function (data) {
+      $.each(data, function (i, item) {
+        item.action = '<div class="btn-group">' +
+          '<a href="/edit.php?resource=' + item.name + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+          '<a href="/delete.php?resource=' + item.name + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+					'</div>';
+      });
+      $('#resources_table').footable({
+        "columns": [
+          {"sorted": true,"name":"description","title":lang.description,"style":{"width":"250px"}},
+          {"name":"kind","title":lang.kind,"breakpoints":"xs sm"},
+          {"name":"domain","title":lang.domain},
+          {"name":"multiple_bookings","title":lang.multiple_bookings},
+          {"name":"domain","title":lang.domain},
+          {"name":"active","style":{"maxWidth":"50px","width":"70px"},"title":lang.active},
+          {"name":"action","sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
+        ],
+        "empty": lang.empty,
+        "rows": data,
+        "paging": {
+          "enabled": true,
+          "limit": 5,
+          "size": 25
+        },
+        "filtering": {
+          "enabled": true,
+          "position": "left",
+          "placeholder": lang.search
+        },
+        "sorting": {
+          "enabled": true
+        }
+      });
+    }
+  });
+
+  $.ajax({
+    dataType: 'json',
+    url: '/json_api.php?action=domain_alias_table_data',
+    jsonp: false,
+    error: function () {
+      alert('Cannot receive history');
+    },
+    success: function (data) {
+      $.each(data, function (i, item) {
+        item.action = '<div class="btn-group">' +
+          '<a href="/edit.php?aliasdomain=' + item.alias_domain + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+          '<a href="/delete.php?aliasdomain=' + item.alias_domain + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+					'</div>';
+      });
+      $('#aliasdomain_table').footable({
+        "columns": [
+          {"sorted": true,"name":"alias_domain","title":lang.alias,"style":{"width":"250px"}},
+          {"name":"target_domain","title":lang.target_domain,"breakpoints":"xs sm"},
+          {"name":"active","style":{"maxWidth":"50px","width":"70px"},"title":lang.active},
+          {"name":"action","sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
+        ],
+        "empty": lang.empty,
+        "rows": data,
+        "paging": {
+          "enabled": true,
+          "limit": 5,
+          "size": 25
+        },
+        "filtering": {
+          "enabled": true,
+          "position": "left",
+          "placeholder": lang.search
+        },
+        "sorting": {
+          "enabled": true
+        }
+      });
+    }
+  });
+
+  $.ajax({
+    dataType: 'json',
+    url: '/json_api.php?action=alias_table_data',
+    jsonp: false,
+    error: function () {
+      alert('Cannot receive history');
+    },
+    success: function (data) {
+      $.each(data, function (i, item) {
+        if (item.is_catch_all == 1) {
+          item.address = '<div class="label label-default">Catch-All</div> ' + item.address;
+        }
+        item.action = '<div class="btn-group">' +
+          '<a href="/edit.php?alias=' + item.address + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+          '<a href="/delete.php?alias=' + item.address + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+					'</div>';
+      });
+      $('#alias_table').footable({
+        "columns": [
+          {"sorted": true,"name":"address","title":lang.alias,"style":{"width":"250px"}},
+          {"name":"goto","title":lang.target_address},
+          {"name":"domain","title":lang.domain},
+          {"name":"active","style":{"maxWidth":"50px","width":"70px"},"title":lang.active},
+          {"name":"action","sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
+        ],
+        "empty": lang.empty,
+        "rows": data,
+        "paging": {
+          "enabled": true,
+          "limit": 5,
+          "size": 5
+        },
+        "filtering": {
+          "enabled": true,
+          "position": "left",
+          "placeholder": lang.search
+        },
+        "sorting": {
+          "enabled": true
+        }
+      });
+    }
+  });
 });

@@ -1,1 +1,1 @@
-server_name logs.servercow.de autodiscover.* autoconfig.*;
+server_name mail.develcow.de autodiscover.* autoconfig.*;
