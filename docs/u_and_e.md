@@ -74,9 +74,9 @@ Simply create a file `data/conf/postfix/check_sender_access` and enter the follo
 user-to-allow-everything@example.com OK
 ```
 
-Open `data/conf/postfix/main.cf` and find `smtpd_sender_restrictions`. Prepend `check_sasl_access hash:/opt/postfix/conf/check_sender_access` like this:
+Open `data/conf/postfix/main.cf` and find `smtpd_sender_restrictions`. Prepend `check_sender_access hash:/opt/postfix/conf/check_sender_access` like this:
 ```
-smtpd_sender_restrictions = check_sasl_access hash:/opt/postfix/conf/check_sender_access reject_authenticated_sender [...]
+smtpd_sender_restrictions = check_sender_access hash:/opt/postfix/conf/check_sender_access reject_authenticated_sender [...]
 ```
 
 Run postmap on check_sender_access:
