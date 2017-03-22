@@ -19,6 +19,12 @@ table.footable>tbody>tr.footable-empty>td {
 .table-responsive {
   overflow: visible !important;
 }
+.footer-add-item {
+  text-align:center;
+  font-style: italic;
+  display:block;
+  padding: 10px;
+}
 </style>
 <div class="container">
 	<div class="row">
@@ -36,9 +42,10 @@ table.footable>tbody>tr.footable-empty>td {
 				?>
 				</div>
 				</div>
-          <div class="table-responsive">
-            <table id="domain_table" class="table table-striped"></table>
-          </div>
+        <div class="table-responsive">
+          <table id="domain_table" class="table table-striped"></table>
+        </div>
+        <span class="footer-add-item"><a href="/add.php?domain"><?=$lang['mailbox']['add_domain'];?></a></span>
 			</div>
 		</div>
 	</div>
@@ -54,6 +61,7 @@ table.footable>tbody>tr.footable-empty>td {
         <div class="table-responsive">
           <table id="mailbox_table" class="table table-striped"></table>
         </div>
+        <span class="footer-add-item"><a href="/add.php?mailbox"><?=$lang['mailbox']['add_mailbox'];?></a></span>
 			</div>
 		</div>
 	</div>
@@ -69,7 +77,7 @@ table.footable>tbody>tr.footable-empty>td {
         <div class="table-responsive">
           <table id="resources_table" class="table table-striped"></table>
         </div>
-			</div>
+        <span class="footer-add-item"><a href="/add.php?resource"><?=$lang['mailbox']['add_resource'];?></a></span>			</div>
 		</div>
 	</div>
 	<div class="row">
@@ -84,7 +92,7 @@ table.footable>tbody>tr.footable-empty>td {
         <div class="table-responsive">
           <table id="aliasdomain_table" class="table table-striped"></table>
         </div>
-			</div>
+        <span class="footer-add-item"><a href="/add.php?aliasdomain"><?=$lang['mailbox']['add_domain_alias'];?></a></span>			</div>
 		</div>
 	</div>
 
@@ -100,7 +108,7 @@ table.footable>tbody>tr.footable-empty>td {
         <div class="table-responsive">
           <table id="alias_table" class="table table-striped"></table>
         </div>
-			</div>
+        <span class="footer-add-item"><a href="/add.php?alias"><?=$lang['mailbox']['add_alias'];?></a></span>			</div>
 		</div>
 	</div>
 </div> <!-- /container -->
@@ -110,6 +118,7 @@ $lang_mailbox = json_encode($lang['mailbox']);
 echo "var lang = ". $lang_mailbox . ";\n";
 $role = ($_SESSION['mailcow_cc_role'] == "admin") ? 'admin' : 'domainadmin';
 echo "var role = '". $role . "';\n";
+echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
 ?>
 </script>
 <script src="js/footable.min.js"></script>

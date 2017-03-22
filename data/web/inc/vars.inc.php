@@ -26,7 +26,7 @@ $FORM_ACTION = "previous";
 $MC_DKIM_TXTS = "/data/dkim/txt";
 $MC_DKIM_KEYS = "/data/dkim/keys";
 
-// Change default language, "en", "pt", "de" or "nl"
+// Change default language, "en", "es" "pt", "de", "ru" or "nl"
 $DEFAULT_LANG = "en";
 
 // Change theme (default: lumen)
@@ -49,6 +49,9 @@ $MAILCOW_APPS = array(
     // 'link' => '/rc/'
   // ),
 );
+
+// Rows until pagination begins
+$PAGINATION_SIZE = 10;
 
 
 ?>
