@@ -79,10 +79,10 @@ Open `data/conf/postfix/main.cf` and find `smtpd_sender_restrictions`. Prepend `
 smtpd_sender_restrictions = check_sasl_access hash:/opt/postfix/conf/check_sender_access reject_authenticated_sender [...]
 ```
 
-Run postmap on check_sasl_access:
+Run postmap on check_sender_access:
 
 ```
-docker-compose exec postfix-mailcow postmap /opt/postfix/conf/check_sasl_access
+docker-compose exec postfix-mailcow postmap /opt/postfix/conf/check_sender_access
 ``` 
 
 Restart the Postfix container.
@@ -265,6 +265,22 @@ Rspamd also auto-learns mail when a high or low score is detected (see https://r
 The bayes statistics are written to Redis as keys `BAYES_HAM` and `BAYES_SPAM`.
 
 You can also use Rspamd's web ui to learn ham and/or spam.
+
+### Learn ham or spam from existing directory
+
+You can use a one-liner to learn mail in plain-text (uncompressed) format:
+```
+# Ham
+for file in /my/folder/cur/*; do docker exec -i $(docker-compose ps -q rspamd-mailcow) rspamc learn_ham < $file; done
+# Spam
+for file in /my/folder/.Junk/cur/*; do docker exec -i $(docker-compose ps -q rspamd-mailcow) rspamc learn_spam < $file; done
+```
+
+Consider attaching a local folder as new volume to `rspamd-mailcow` in `docker-compose.yml` and learn given files inside the container. This can be used as workaround to parse compressed data with zcat. Example:
+
+```
+for file in /data/old_mail/.Junk/cur/*; do rspamc learn_spam < zcat $file; done
+```
 
 ### CLI tools
 

@@ -64,6 +64,8 @@ docker-compose exec rspamd-mailcow rspamadm pw
 enable_password = "myhash";
 ```
 
+You can use `password = "myhash";` instead of `enable_password` to disable write-access in the web UI.
+
 3\. Restart rspamd:
 ```
 docker-compose restart rspamd-mailcow
