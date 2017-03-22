@@ -215,7 +215,7 @@ Open `data/conf/nginx/site.conf` and add a new "catch-all" site at the top of th
 ```
 server {
 	listen 80 default_server;
-	server_name _;
+	include /etc/nginx/conf.d/server_name.active;
 	return 301 https://$host$request_uri;
 }
 ```
