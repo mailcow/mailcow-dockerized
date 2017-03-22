@@ -69,6 +69,10 @@ if (isset($_COOKIE['language'])) {
 			$_SESSION['mailcow_locale'] = 'pt';
 			setcookie('language', 'pt');
 		break;
+    case "ru":
+			$_SESSION['mailcow_locale'] = 'ru';
+			setcookie('language', 'ru');
+		break;
 	}
 }
 if (isset($_GET['lang'])) {
@@ -92,6 +96,10 @@ if (isset($_GET['lang'])) {
 		case "pt":
 			$_SESSION['mailcow_locale'] = 'pt';
 			setcookie('language', 'pt');
+		break;
+		case "ru":
+			$_SESSION['mailcow_locale'] = 'ru';
+			setcookie('language', 'ru');
 		break;
 	}
 }

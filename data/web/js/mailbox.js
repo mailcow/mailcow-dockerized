@@ -1,5 +1,4 @@
 $(document).ready(function() {
-	// Show element counter for tables
 	$('[data-toggle="tooltip"]').tooltip();
   function humanFileSize(bytes) {
     if(Math.abs(bytes) < 1024) {
@@ -55,7 +54,7 @@ $(document).ready(function() {
         "paging": {
           "enabled": true,
           "limit": 5,
-          "size": 25
+          "size": pagination_size
         },
         "filtering": {
           "enabled": true,
@@ -115,7 +114,7 @@ $(document).ready(function() {
         "paging": {
           "enabled": true,
           "limit": 5,
-          "size": 25
+          "size": pagination_size
         },
         "filtering": {
           "enabled": true,
@@ -157,7 +156,7 @@ $(document).ready(function() {
         "paging": {
           "enabled": true,
           "limit": 5,
-          "size": 25
+          "size": pagination_size
         },
         "filtering": {
           "enabled": true,
@@ -197,7 +196,7 @@ $(document).ready(function() {
         "paging": {
           "enabled": true,
           "limit": 5,
-          "size": 25
+          "size": pagination_size
         },
         "filtering": {
           "enabled": true,
