@@ -1,20 +1,19 @@
-## Add mailcow app buttons
+## mailcow UI configuration
 
-Open `data/web/inc/vars.local.inc.php` and add your apps to an array. Default configuration:
+Several configuration parameters of the mailcow UI can be changed by creating a file `data/web/inc/vars.local.inc.php` which overrides defaults settings found in `data/web/inc/vars.inc.php`.
 
+The local configuration file is persistent over updates of mailcow. Try not to change values inside `data/web/inc/vars.inc.php`, but use them as template for the local override.
 
-```
-$MAILCOW_APPS = array(
-  array(
-    'name' => 'SOGo',
-    'link' => '/SOGo/'
-  ),
-  // array(
-    // 'name' => 'Roundcube',
-    // 'link' => '/rc/'
-  // ),
-);
-```
+mailcow UI configuration parameters can be to...
+
+- ...change the default language*
+- ...change the default bootstrap theme
+- ...set a password complexity regex
+- ...add mailcow app buttons to the login screen
+- ...set a pagination trigger
+- ...set action after submitting forms (stay in form, return to previous page)
+
+\* To change SOGos default language, you will need to edit `data/conf/sogo/sogo.conf` and replace "English" by your preferred language.
 
 ## Backup and restore maildir (simple tar file)
 
@@ -52,24 +51,6 @@ Edit a domain as (domain) administrator to add an item to the filter table.
 
 Beware that a mailbox user can login to mailcow and override a domain policy filter item. 
 
-## Change default language
-
-Change `data/conf/sogo/sogo.conf` and replace "English" by your preferred language.
-
-Create a file `data/web/inc/vars.local.inc.php` and add "DEFAULT_LANG" with either "en", "pt", "de" or "nl":
-```
-<?php
-$DEFAULT_LANG = "de";
-```
-## Change UI theme
-
-mailcow uses [Bootstrap](http://getbootstrap.com/), a HTML, CSS, and JS framework.
-
-Open or create the file `data/web/inc/vars.local.inc.php` and change `DEFAULT_THEME` to either cerulean, cosmo, custom, cyborg, darkly, flatly, journal, paper, readable, sandstone, simplex, slate, spacelab, superhero, united or yeti (see https://bootswatch.com/):
-```
-<?php
-$DEFAULT_THEME = "paper";
-```
 ## Customize Dockerfiles
 
 Make your changes in `data/Dockerfiles/$service` and build the image locally:
