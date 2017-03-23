@@ -89,9 +89,9 @@ Restart the Postfix container.
 
 ## Install Roundcube
 
-Download Roundcube 1.3.x (beta at the time of Feb 2017) to the web htdocs directory and extract it (here `rc/`):
+Download Roundcube 1.3.x (beta at the time of Feb 2017) to the web htdocs directory and extract it:
 ```
-cd data/web/rc
+cd data/web
 wget -O - https://github.com/roundcube/roundcubemail/releases/download/1.3-beta/roundcubemail-1.3-beta-complete.tar.gz | tar xfvz -
 # Change folder name
 mv roundcubemail-1.3* rc
