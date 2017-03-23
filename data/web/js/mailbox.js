@@ -240,7 +240,7 @@ $(document).ready(function() {
         "paging": {
           "enabled": true,
           "limit": 5,
-          "size": 5
+          "size": pagination_size
         },
         "filtering": {
           "enabled": true,
