@@ -137,6 +137,11 @@ $config['smtp_conn_options'] = array(
 ```
 
 Point your browser to `https://myserver/rc/installer` and follow the instructions.
+You should see a message
+
+`To enable it again, set $config['enable_installer'] = true; in RCUBE_CONFIG_DIR/config.inc.php`
+So please in data/web/rc/config/config.inc.php change this value from false to true and refresh the page.
+
 Initialize the database and leave the installer.
 
 **Delete the directory `data/web/rc/installer` after a successful installation!**
