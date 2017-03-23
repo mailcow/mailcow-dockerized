@@ -67,6 +67,21 @@ Pull new images (if any) and recreate changed containers:
 docker-compose pull
 docker-compose up -d --remove-orphans
 ```
+In case this procedure does not work (for many reason like you're unable to fix the CONFLICTS or any other reasons) you can simply 
+
+copy mailcow.conf somewhere outside the mailcow-dockerized
+stop docker: docker-compose down 
+delete the cloned directory 
+clone again the repo (git clone https://github.com/andryyy/mailcow-dockerized && cd mailcow-dockerized)
+copy back your previous mailcow.conf into mailcow-dockerizd folder (pay attention to this step - the folder must have the same name of the previous one)
+docker-compose pull
+docker-compose up -d
+
+
+*If you forgot to stop Docker before deleting the cloned directoy you can use these following command
+docker stop $(docker ps -a -q)
+docker rm $(docker ps -a -q)
+docker rmi $(docker images -a -q)
 
 Clean-up dangling (unused) images and volumes:
 
