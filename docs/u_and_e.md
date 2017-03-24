@@ -69,20 +69,20 @@ docker-compose up -d
 
 This option is not best-practice and should only be implemented when there is no other option available to archive whatever you are trying to do.
 
-Simply create a file `data/conf/postfix/check_sender_access` and enter the following content:
+Simply create a file `data/conf/postfix/check_sasl_access` and enter the following content. This user must exist in your installation and needs to authenticate before sending mail.
 ```
 user-to-allow-everything@example.com OK
 ```
 
-Open `data/conf/postfix/main.cf` and find `smtpd_sender_restrictions`. Prepend `check_sasl_access hash:/opt/postfix/conf/check_sender_access` like this:
+Open `data/conf/postfix/main.cf` and find `smtpd_sender_restrictions`. Prepend `check_sasl_access hash:/opt/postfix/conf/check_sasl_access` like this:
 ```
-smtpd_sender_restrictions = check_sasl_access hash:/opt/postfix/conf/check_sender_access reject_authenticated_sender [...]
+smtpd_sender_restrictions = check_sasl_access hash:/opt/postfix/conf/check_sasl_access reject_authenticated_sender_login_mismatch [...]
 ```
 
-Run postmap on check_sender_access:
+Run postmap on check_sasl_access:
 
 ```
-docker-compose exec postfix-mailcow postmap /opt/postfix/conf/check_sender_access
+docker-compose exec postfix-mailcow postmap /opt/postfix/conf/check_sasl_access
 ``` 
 
 Restart the Postfix container.
@@ -215,7 +215,7 @@ Open `data/conf/nginx/site.conf` and add a new "catch-all" site at the top of th
 ```
 server {
 	listen 80 default_server;
-	server_name _;
+	include /etc/nginx/conf.d/server_name.active;
 	return 301 https://$host$request_uri;
 }
 ```
