@@ -93,9 +93,10 @@ $tfa_data = get_tfa();
               </thead>
               <tbody>
                 <?php
-                foreach (get_domain_admins() as $domain_admin) {
-                  $da_data = get_domain_admin_details($domain_admin); 
-                  if (!empty($da_data)):
+                $gda = get_domain_admins();
+                if (!empty($gda)):
+                foreach ($gda as $domain_admin) {
+                  $da_data = get_domain_admin_details($domain_admin);
                 ?>
                 <tr id="data">
                   <td><?=htmlspecialchars(strtolower($domain_admin));?></td>
@@ -118,12 +119,14 @@ $tfa_data = get_tfa();
                 </tr>
 
                 <?php
-                else:
-                ?>
-                  <tr id="no-data"><td colspan="4" style="text-align: center; font-style: italic;"><?=$lang['admin']['no_record'];?></td></tr>
-                <?php
-                endif;
                 }
+                ?>
+                <?php
+                  else:
+                ?>
+                  <tr id="no-data"><td colspan="5" style="text-align: center; font-style: italic;"><?=$lang['admin']['no_record'];?></td></tr>
+                <?php
+                  endif;
                 ?>
               </tbody>
             </table>
