@@ -23,6 +23,29 @@
 <?=(preg_match("/mailbox.php/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/mailbox.css">' : null;?>
 <link rel="shortcut icon" href="/favicon.png" type="image/png">
 <link rel="icon" href="/favicon.png" type="image/png">
+<?php if($curpage=="mailbox.php"): ?>
+<style>
+table.footable>tbody>tr.footable-empty>td {
+  font-size:15px !important;
+  font-style:italic;
+}
+.pagination a {
+  text-decoration: none !important;
+}
+.panel panel-default {
+  overflow: visible !important;
+}
+.table-responsive {
+  overflow: visible !important;
+}
+.footer-add-item {
+  text-align:center;
+  font-style: italic;
+  display:block;
+  padding: 10px;
+}
+</style>	
+<?php endif; ?>
 </head>
 <body style="padding-top:70px">
 <nav class="navbar navbar-default navbar-fixed-top"  role="navigation">
