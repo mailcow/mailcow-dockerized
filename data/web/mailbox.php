@@ -1,31 +1,11 @@
 <?php
 require_once "inc/prerequisites.inc.php";
 
+$curpage = "mailbox.php";
 if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "admin" || $_SESSION['mailcow_cc_role'] == "domainadmin")) {
 require_once "inc/header.inc.php";
 $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 ?>
-<style>
-table.footable>tbody>tr.footable-empty>td {
-  font-size:15px !important;
-  font-style:italic;
-}
-.pagination a {
-  text-decoration: none !important;
-}
-.panel panel-default {
-  overflow: visible !important;
-}
-.table-responsive {
-  overflow: visible !important;
-}
-.footer-add-item {
-  text-align:center;
-  font-style: italic;
-  display:block;
-  padding: 10px;
-}
-</style>
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
