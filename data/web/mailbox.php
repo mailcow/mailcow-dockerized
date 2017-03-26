@@ -1,7 +1,5 @@
 <?php
 require_once "inc/prerequisites.inc.php";
-
-$curpage = "mailbox.php";
 if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "admin" || $_SESSION['mailcow_cc_role'] == "domainadmin")) {
 require_once "inc/header.inc.php";
 $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
