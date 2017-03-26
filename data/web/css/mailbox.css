@@ -17,3 +17,22 @@
 .table>thead>tr>th {
   vertical-align: top !important;
 }
+table.footable>tbody>tr.footable-empty>td {
+  font-size:15px !important;
+  font-style:italic;
+}
+.pagination a {
+  text-decoration: none !important;
+}
+.panel panel-default {
+  overflow: visible !important;
+}
+.table-responsive {
+  overflow: visible !important;
+}
+.footer-add-item {
+  text-align:center;
+  font-style: italic;
+  display:block;
+  padding: 10px;
+}
