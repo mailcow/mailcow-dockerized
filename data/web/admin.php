@@ -81,14 +81,14 @@ $tfa_data = get_tfa();
         <div class="panel-body">
           <form method="post">
             <div class="table-responsive">
-            <table class="table table-striped sortable-theme-bootstrap" data-sortable id="domainadminstable">
+            <table class="table table-striped" id="domainadminstable">
               <thead>
               <tr>
-                <th class="sort-table" style="min-width: 100px;"><?=$lang['admin']['username'];?></th>
-                <th class="sort-table" style="min-width: 166px;"><?=$lang['admin']['admin_domains'];?></th>
-                <th class="sort-table" style="min-width: 76px;"><?=$lang['admin']['active'];?></th>
-                <th class="sort-table" style="min-width: 76px;"><?=$lang['tfa']['tfa'];?></th>
-                <th style="text-align: right; min-width: 200px;" data-sortable="false"><?=$lang['admin']['action'];?></th>
+                <th style="min-width: 100px;"><?=$lang['admin']['username'];?></th>
+                <th style="min-width: 166px;"><?=$lang['admin']['admin_domains'];?></th>
+                <th style="min-width: 76px;"><?=$lang['admin']['active'];?></th>
+                <th style="min-width: 76px;"><?=$lang['tfa']['tfa'];?></th>
+                <th style="text-align: right; min-width: 200px;"><?=$lang['admin']['action'];?></th>
               </tr>
               </thead>
               <tbody>
@@ -299,8 +299,14 @@ $tfa_data = get_tfa();
   </div>
   </div>
 </div> <!-- /container -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js" integrity="sha384-YWP9O4NjmcGo4oEJFXvvYSEzuHIvey+LbXkBNJ1Kd0yfugEZN9NCQNpRYBVC1RvA" crossorigin="anonymous"></script>
-<script src="js/sorttable.js"></script>
+<script type='text/javascript'>
+<?php
+$lang_admin = json_encode($lang['admin']);
+echo "var lang = ". $lang_admin . ";\n";
+echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
+?>
+</script>
+<script src="js/footable.min.js"></script>
 <script src="js/admin.js"></script>
 <?php
 require_once("inc/footer.inc.php");
