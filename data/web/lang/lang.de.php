@@ -36,6 +36,7 @@ $lang['danger']['object_exists'] = 'Objekt %s existiert bereits';
 $lang['danger']['domain_exists'] = 'Domain %s existiert bereits';
 $lang['danger']['alias_goto_identical'] = 'Alias- und Ziel-Adresse dürfen nicht identisch sein';
 $lang['danger']['aliasd_targetd_identical'] = 'Alias-Domain darf nicht gleich Ziel-Domain sein';
+$lang['danger']['maxquota_empty'] = 'Max. Speicherplatz pro Mailbox darf nicht 0 sein.';
 $lang['success']['alias_added'] = 'Alias-Adresse(n) wurden angelegt';
 $lang['success']['alias_modified'] = 'Änderungen an Alias %s wurden gespeichert';
 $lang['success']['aliasd_modified'] = 'Änderungen an Alias-Domain %s wurden gespeichert';
@@ -70,6 +71,7 @@ $lang['danger']['is_spam_alias'] = '%s lautet bereits eine Spam-Alias-Adresse';
 $lang['danger']['quota_not_0_not_numeric'] = 'Speicherplatz muss numerisch und >= 0 sein';
 $lang['danger']['domain_not_found'] = 'Domain "%s" nicht gefunden.';
 $lang['danger']['max_mailbox_exceeded'] = 'Anzahl an Mailboxen überschritten (%d von %d)';
+$lang['danger']['max_alias_exceeded'] = 'Anzahl an Alias-Adressen überschritten';
 $lang['danger']['mailbox_quota_exceeded'] = 'Speicherplatz überschreitet das Limit (max. %d MiB)';
 $lang['danger']['mailbox_quota_left_exceeded'] = 'Nicht genügend Speicherplatz vorhanden (Speicherplatz anwendbar: %d MiB)';
 $lang['success']['mailbox_added'] = 'Mailbox %s wurde angelegt';
@@ -246,6 +248,7 @@ $lang['mailbox']['add_domain_alias'] = 'Domain-Alias hinzufügen';
 $lang['mailbox']['add_mailbox'] = 'Mailbox hinzufügen';
 $lang['mailbox']['add_resource'] = 'Ressource hinzufügen';
 $lang['mailbox']['add_alias'] = 'Alias hinzufügen';
+$lang['mailbox']['empty'] = 'Keine Einträge vorhanden';
 
 $lang['info']['no_action'] = 'Keine Aktion anwendbar';
 
@@ -448,4 +451,6 @@ $lang['admin']['site_not_found'] = 'Kann mailcow Site-Konfiguration nicht finden
 $lang['admin']['public_folder_empty'] = 'Public folder name must not be empty'; // NEEDS TRANSLATION
 $lang['admin']['set_rr_failed'] = 'Kann Postfix Restriktionen nicht setzen';
 $lang['admin']['no_record'] = 'Kein Eintrag';
+$lang['admin']['filter_table'] = 'Tabelle Filtern';
+$lang['admin']['empty'] = 'Keine Einträge vorhanden';
 ?>

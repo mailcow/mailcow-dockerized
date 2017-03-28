@@ -405,7 +405,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 	</div>
 	<div role="tabpanel" class="tab-pane" id="Syncjobs">
 		<div class="table-responsive">
-		<table class="table table-striped sortable-theme-bootstrap" data-sortable id="timelimitedaliases">
+		<table class="table table-striped" id="timelimitedaliases">
 			<thead>
 			<tr>
 				<th class="sort-table" style="min-width: 96px;">Server:Port</th>
@@ -416,7 +416,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 				<th class="sort-table" style="min-width: 35px;"><?=$lang['user']['last_run'];?></th>
 				<th class="sort-table" style="min-width: 35px;">Log</th>
 				<th class="sort-table" style="max-width: 95px;"><?=$lang['user']['active'];?></th>
-				<th style="text-align: right; min-width: 200px;" data-sortable="false"><?=$lang['user']['action'];?></th>
+				<th style="text-align: right; min-width: 200px;"><?=$lang['user']['action'];?></th>
 			</tr>
 			</thead>
 			<tbody>

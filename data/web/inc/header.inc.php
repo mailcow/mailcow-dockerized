@@ -16,10 +16,8 @@
 <link rel="stylesheet" href="/css/bootstrap-slider.min.css">
 <link rel="stylesheet" href="/css/bootstrap-switch.min.css">
 <link rel="stylesheet" href="/css/footable.bootstrap.min.css">
-<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700&subset=latin,latin-ext">
 <link rel="stylesheet" href="/inc/languages.min.css">
 <link rel="stylesheet" href="/css/mailcow.css">
-<link rel="stylesheet" href="/css/tables.css">
 <?=(preg_match("/mailbox.php/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/mailbox.css">' : null;?>
 <link rel="shortcut icon" href="/favicon.png" type="image/png">
 <link rel="icon" href="/favicon.png" type="image/png">

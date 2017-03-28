@@ -1,19 +1,19 @@
-.panel-heading div {
-	margin-top: -18px;
-	font-size: 15px;
+table.footable>tbody>tr.footable-empty>td {
+  font-size:15px !important;
+  font-style:italic;
 }
-.panel-heading div span {
-	margin-left:5px;
+.pagination a {
+  text-decoration: none !important;
 }
-.panel-body {
-	display: none;
+.panel panel-default {
+  overflow: visible !important;
 }
-.clickable {
-	cursor: pointer;
+.table-responsive {
+  overflow: visible !important;
 }
-.progress {
-	margin-bottom: 0px;
-}
-.table>thead>tr>th {
-  vertical-align: top !important;
+.footer-add-item {
+  text-align:center;
+  font-style: italic;
+  display:block;
+  padding: 10px;
 }
