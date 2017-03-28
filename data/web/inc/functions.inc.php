@@ -1757,6 +1757,7 @@ function get_domain_admin_details($domain_admin) {
   try {
     $stmt = $pdo->prepare("SELECT
       `tfa`.`active` AS `tfa_active_int`,
+      CASE `tfa`.`active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `tfa_active`,
       `domain_admins`.`username`,
       `domain_admins`.`created`,
       `domain_admins`.`active` AS `active_int`,
@@ -1768,11 +1769,15 @@ function get_domain_admin_details($domain_admin) {
       ':domain_admin' => $domain_admin
     ));
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (empty($row)) { 
+      return false;
+    }
     $domainadmindata['username'] = $row['username'];
+    $domainadmindata['tfa_active'] = $row['tfa_active'];
     $domainadmindata['active'] = $row['active'];
-    $domainadmindata['active_int'] = $row['active_int'];
     $domainadmindata['tfa_active_int'] = $row['tfa_active_int'];
-    $domainadmindata['created'] = $row['created'];
+    $domainadmindata['active_int'] = $row['active_int'];
+    $domainadmindata['modified'] = $row['created'];
     // GET SELECTED
     $stmt = $pdo->prepare("SELECT `domain` FROM `domain`
       WHERE `domain` IN (
@@ -1792,6 +1797,9 @@ function get_domain_admin_details($domain_admin) {
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
     while($row = array_shift($rows)) {
       $domainadmindata['unselected_domains'][] = $row['domain'];
+    }
+    if (!isset($domainadmindata['unselected_domains'])) {
+      $domainadmindata['unselected_domains'] = "";
     }
   }
   catch(PDOException $e) {
@@ -2134,6 +2142,14 @@ function edit_domain_admin($postarray) {
       }
     }
 
+    if (empty($postarray['domain'])) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['domain_invalid'])
+      );
+      return false;
+    }
+
     if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $username))) {
       $_SESSION['return'] = array(
         'type' => 'danger',
@@ -2164,7 +2180,7 @@ function edit_domain_admin($postarray) {
       return false;
     }
 
-    if(isset($postarray['domain'])) {
+    if (isset($postarray['domain'])) {
       foreach ($postarray['domain'] as $domain) {
         try {
           $stmt = $pdo->prepare("INSERT INTO `domain_admins` (`username`, `domain`, `created`, `active`)
@@ -2519,6 +2535,14 @@ function mailbox_add_domain($postarray) {
 		return false;
 	}
 
+	if ($maxquota == "0" || empty($maxquota)) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['maxquota_empty'])
+		);
+		return false;
+	}
+
 	isset($postarray['active'])               ? $active = '1'                 : $active = '0';
 	isset($postarray['relay_all_recipients'])	? $relay_all_recipients = '1'   : $relay_all_recipients = '0';
 	isset($postarray['backupmx'])             ? $backupmx = '1'               : $backupmx = '0';
@@ -2623,6 +2647,18 @@ function mailbox_add_alias($postarray) {
 		return false;
 	}
 
+  $stmt = $pdo->prepare("SELECT `address` FROM `alias`
+    WHERE `address`= :address");
+  $stmt->execute(array(':address' => $address));
+  $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+  if ($num_results != 0) {
+    $_SESSION['return'] = array(
+      'type' => 'danger',
+      'msg' => sprintf($lang['danger']['is_alias_or_mailbox'], htmlspecialchars($address))
+    );
+    return false;
+  }
+
 	foreach ($addresses as $address) {
 		if (empty($address)) {
 			continue;
@@ -2632,6 +2668,15 @@ function mailbox_add_alias($postarray) {
 		$local_part   = strstr($address, '@', true);
 		$address      = $local_part.'@'.$domain;
 
+    $domaindata = mailbox_get_domain_details($domain);
+    if ($domaindata['aliases_left'] == 0) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['max_alias_exceeded'])
+      );
+      return false;
+    }
+      
 		try {
 			$stmt = $pdo->prepare("SELECT `domain` FROM `domain`
 				WHERE `domain`= :domain1 OR `domain` = (SELECT `target_domain` FROM `alias_domain` WHERE `alias_domain` = :domain2)");
@@ -3432,7 +3477,7 @@ function mailbox_edit_domain($postarray) {
   // aliases                float
   // mailboxes              float
   // maxquota               float
-  // quota                  float     (Byte)
+  // quota                  float (Byte)
   // active                 int
 
 	global $lang;
@@ -3515,6 +3560,14 @@ function mailbox_edit_domain($postarray) {
       $_SESSION['return'] = array(
         'type' => 'danger',
         'msg' => sprintf($lang['danger']['mailbox_quota_exceeds_domain_quota'])
+      );
+      return false;
+    }
+
+    if ($maxquota == "0" || empty($maxquota)) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['maxquota_empty'])
       );
       return false;
     }
@@ -4271,6 +4324,10 @@ function mailbox_get_domain_details($domain) {
       ':domain' => $domain,
     ));
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (empty($row)) { 
+      return false;
+    }
+
     $stmt = $pdo->prepare("SELECT COUNT(*) AS `count`, COALESCE(SUM(`quota`), 0) as `in_use` FROM `mailbox` WHERE `kind` NOT REGEXP 'location|thing|group' AND `domain` = :domain");
     $stmt->execute(array(':domain' => $row['domain']));
     $MailboxDataDomain	= $stmt->fetch(PDO::FETCH_ASSOC);
@@ -4303,8 +4360,9 @@ function mailbox_get_domain_details($domain) {
     $stmt->execute(array(
       ':domain' => $domain,
     ));
-    $AliasData = $stmt->fetch(PDO::FETCH_ASSOC);
-    (isset($AliasData['alias_count'])) ? $domaindata['aliases_in_domain'] = $AliasData['alias_count'] : $domaindata['aliases_in_domain'] = "0";
+    $AliasDataDomain = $stmt->fetch(PDO::FETCH_ASSOC);
+    (isset($AliasDataDomain['alias_count'])) ? $domaindata['aliases_in_domain'] = $AliasDataDomain['alias_count'] : $domaindata['aliases_in_domain'] = "0";
+    $domaindata['aliases_left'] = $row['aliases']	- $AliasDataDomain['alias_count'];
   }
   catch (PDOException $e) {
     $_SESSION['return'] = array(
