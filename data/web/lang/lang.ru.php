@@ -313,6 +313,7 @@ $lang['edit']['resource'] = "Ресурс";
 $lang['add']['syncjob'] = "Добавить задание синхронизации";
 $lang['add']['syncjob_hint'] = "Помните, что пароли должны быть сохранены как обычный текст!";
 $lang['add']['hostname'] = "Имя хоста";
+$lang['add']['port'] = "Порт";
 $lang['add']['username'] = "Логин";
 $lang['add']['enc_method'] = "Метод шифрования";
 $lang['add']['mins_interval'] = "Интервал опроса (в минутах)";
