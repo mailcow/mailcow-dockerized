@@ -279,6 +279,7 @@ $lang['add']['select_domain'] = 'Selecione um domínio antes';
 $lang['add']['password'] = 'Senha:';
 $lang['add']['password_repeat'] = 'Confirmar a senha (repetir):';
 $lang['add']['previous'] = 'Voltar';
+$lang['add']['port'] = 'Port';
 $lang['login']['title'] = 'Entrar';
 $lang['login']['administration'] = 'Administração';
 $lang['login']['administration_details'] = 'Utilize o login de Administrador para efetuar tarefas de administração.';
