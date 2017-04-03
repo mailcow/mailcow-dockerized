@@ -1,33 +1,30 @@
-FROM ubuntu:xenial
+FROM debian:stretch-slim
+#ubuntu:xenial
 MAINTAINER Andre Peters <andre.peters@servercow.de>
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV LC_ALL C
+ENV DOVECOT_VERSION 2.2.28
+ENV PIGEONHOLE_VERSION 0.4.17
 
-RUN dpkg-divert --local --rename --add /sbin/initctl \
-    && ln -sf /bin/true /sbin/initctl \
-    && dpkg-divert --local --rename --add /usr/bin/ischroot \
-    && ln -sf /bin/true /usr/bin/ischroot
-
-RUN apt-get update
-RUN apt-get -y install dovecot-common \
-	dovecot-core \
-	dovecot-imapd \
-	dovecot-lmtpd \
-	dovecot-managesieved \
-	dovecot-sieve \
-	dovecot-mysql \
-	dovecot-pop3d \
-	dovecot-dev \
+RUN apt-get update \
+	&& apt-get -y install libpam-dev \
+	default-libmysqlclient-dev \
+	lzma-dev \
+	liblz-dev \
+	libbz2-dev \
+	liblz4-dev \
+	liblzma-dev \
+	build-essential \
+	autotools-dev \
+	automake \
 	syslog-ng \
 	syslog-ng-core \
 	ca-certificates \
 	supervisor \
 	wget \
 	curl \
-	build-essential \
-	autotools-dev \
-	automake \
+	libssl-dev \
 	libauthen-ntlm-perl \
 	libcrypt-ssleay-perl \
 	libdigest-hmac-perl \
@@ -52,36 +49,57 @@ RUN apt-get -y install dovecot-common \
 	make \
 	cpanminus
 
+
+RUN wget https://www.dovecot.org/releases/2.2/dovecot-$DOVECOT_VERSION.tar.gz -O - | tar xvz  \
+	&& cd dovecot-$DOVECOT_VERSION \
+	&& ./configure --with-mysql --with-lzma --with-lz4 --with-ssl=openssl --with-notify=inotify --with-storages=mdbox,sdbox,maildir,mbox,imapc,pop3c --with-bzlib --with-zlib \
+	&& make -j3 \
+	&& make install \
+	&& make clean
+
+RUN wget https://pigeonhole.dovecot.org/releases/2.2/dovecot-2.2-pigeonhole-$PIGEONHOLE_VERSION.tar.gz -O - | tar xvz  \
+	&& cd dovecot-2.2-pigeonhole-$PIGEONHOLE_VERSION \
+	&& ./configure \
+	&& make -j3 \
+	&& make install \
+	&& make clean
+
 RUN sed -i -E 's/^(\s*)system\(\);/\1unix-stream("\/dev\/log");/' /etc/syslog-ng/syslog-ng.conf
 RUN cpanm Data::Uniqid Mail::IMAPClient String::Util
 RUN echo '* * * * *   root   /usr/local/bin/imapsync_cron.pl' > /etc/cron.d/imapsync
 RUN echo '30 3 * * *   vmail  /usr/bin/doveadm quota recalc -A' > /etc/cron.d/dovecot-sync
 
-WORKDIR /tmp
-
-RUN wget http://hg.dovecot.org/dovecot-antispam-plugin/archive/tip.tar.gz -O - | tar xvz  \
-	&& cd /tmp/dovecot-antispam* \
-	&& ./autogen.sh \
-	&& ./configure --prefix=/usr \
-	&& make \
-	&& make install
-
 COPY ./imapsync /usr/local/bin/imapsync
 COPY ./postlogin.sh /usr/local/bin/postlogin.sh
 COPY ./imapsync_cron.pl /usr/local/bin/imapsync_cron.pl
-COPY ./rspamd-pipe /usr/local/bin/rspamd-pipe
+COPY ./report-spam.sieve /usr/local/lib/dovecot/sieve/report-spam.sieve
+COPY ./report-ham.sieve /usr/local/lib/dovecot/sieve/report-ham.sieve
+COPY ./rspamd-pipe-ham /usr/local/lib/dovecot/sieve/rspamd-pipe-ham
+COPY ./rspamd-pipe-spam /usr/local/lib/dovecot/sieve/rspamd-pipe-spam
 COPY ./docker-entrypoint.sh /
 COPY ./supervisord.conf /etc/supervisor/supervisord.conf
 
-RUN chmod +x /usr/local/bin/rspamd-pipe
-RUN chmod +x /usr/local/bin/imapsync_cron.pl
+RUN chmod +x /usr/local/lib/dovecot/sieve/rspamd-pipe-ham \
+	/usr/local/lib/dovecot/sieve/rspamd-pipe-spam \
+	/usr/local/bin/imapsync_cron.pl \
+	/usr/local/bin/postlogin.sh \
+	/usr/local/bin/imapsync
 
-RUN groupadd -g 5000 vmail
-RUN useradd -g vmail -u 5000 vmail -d /var/vmail
+RUN groupadd -g 5000 vmail \
+	&& groupadd -g 142 dovecot \
+    && groupadd -g 143 dovenull \
+	&& useradd -g vmail -u 5000 vmail -d /var/vmail \
+	&& useradd -c "Dovecot unprivileged user" -d /dev/null -u 142 -g dovecot -s /bin/false dovecot \
+	&& useradd -c "Dovecot login user" -d /dev/null -u 143 -g dovenull -s /bin/false dovenull
 
 EXPOSE 24 10001
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN apt-get clean \
+	&& rm -rf /var/lib/apt/lists/* \
+	/tmp/* \
+	/var/tmp/* \
+	/dovecot-2.2-pigeonhole-$PIGEONHOLE_VERSION \
+	/dovecot-$DOVECOT_VERSION
