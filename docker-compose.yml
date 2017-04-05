@@ -186,6 +186,7 @@ services:
         - ./data/conf/postfix:/opt/postfix/conf
         - ./data/assets/ssl:/etc/ssl/mail/:ro
         - postfix-vol-1:/var/spool/postfix
+        - crypt-vol-1:/var/lib/zeyple
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
