@@ -325,6 +325,7 @@ $lang['edit']['resource'] = 'Resource';
 $lang['add']['syncjob'] = 'Add sync job';
 $lang['add']['syncjob_hint'] = 'Be aware that passwords need to be saved plain-text!';
 $lang['add']['hostname'] = 'Hostname';
+$lang['add']['port'] = 'Port';
 $lang['add']['username'] = 'Username';
 $lang['add']['enc_method'] = 'Encryption method';
 $lang['add']['mins_interval'] = 'Polling interval (minutes)';

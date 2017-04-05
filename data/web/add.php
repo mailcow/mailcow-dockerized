@@ -292,7 +292,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == 
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="port1">Port</label>
+						<label class="control-label col-sm-2" for="port1"><?=$lang['add']['port'];?></label>
 						<div class="col-sm-10">
 						<input type="number" class="form-control" name="port1" id="port1" min="1" max="65535" value="143" required>
 						</div>

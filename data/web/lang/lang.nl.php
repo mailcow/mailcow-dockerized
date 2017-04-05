@@ -259,6 +259,7 @@ $lang['edit']['previous'] = 'Vorige pagina';
 $lang['edit']['unchanged_if_empty'] = 'Leeg laten indien niet veranderd.';
 $lang['edit']['dont_check_sender_acl'] = 'Geen zenderverificatie uitvoeren voor domein %s.';
 
+$lang['add']['port'] = 'Port';
 $lang['add']['title'] = 'Object toevoegen';
 $lang['add']['domain'] = 'Domein';
 $lang['add']['active'] = 'Actief';
