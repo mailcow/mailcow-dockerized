@@ -6,7 +6,7 @@ sed -i "/^\$DBUSER/c\\\$DBUSER='${DBUSER}';" /usr/local/bin/imapsync_cron.pl
 sed -i "/^\$DBPASS/c\\\$DBPASS='${DBPASS}';" /usr/local/bin/imapsync_cron.pl
 sed -i "/^\$DBNAME/c\\\$DBNAME='${DBNAME}';" /usr/local/bin/imapsync_cron.pl
 
-# Create SQL dict directory for Dovecot
+# Create missing directories
 [[ ! -d /usr/local/etc/dovecot/sql/ ]] && mkdir -p /usr/local/etc/dovecot/sql/
 [[ ! -d /var/vmail/sieve ]] && mkdir -p /var/vmail/sieve
 [[ ! -d /etc/sogo ]] && mkdir -p /etc/sogo
@@ -44,14 +44,6 @@ EOF
 # Create global sieve_after script
 cat /usr/local/etc/dovecot/sieve_after > /var/vmail/sieve/global.sieve
 
-# Compile sieve scripts
-sievec /var/vmail/sieve/global.sieve
-sievec /usr/local/lib/dovecot/sieve/report-spam.sieve
-sievec /usr/local/lib/dovecot/sieve/report-ham.sieve
-
-# Fix sieve permission
-chown -R vmail:vmail /var/vmail/sieve
-
 # Check permissions of vmail directory.
 # Do not do this every start-up, it may take a very long time. So we use a stat check here.
 if [[ $(stat -c %U /var/vmail/) != "vmail" ]] ; then chown -R vmail:vmail /var/vmail ; fi
@@ -62,11 +54,22 @@ RAND_PASS=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 24 | head -n 1)
 echo ${RAND_USER}:$(doveadm pw -s SHA1 -p ${RAND_PASS}) > /usr/local/etc/dovecot/dovecot-master.passwd
 echo ${RAND_USER}:${RAND_PASS} > /etc/sogo/sieve.creds
 
+# 401 is user dovecot
 if [[ ! -f /mail_crypt/ecprivkey.pem || ! -f /mail_crypt/ecpubkey.pem ]]; then
 	openssl ecparam -name prime256v1 -genkey | openssl pkey -out /mail_crypt/ecprivkey.pem
 	openssl pkey -in /mail_crypt/ecprivkey.pem -pubout -out /mail_crypt/ecpubkey.pem
-	chown -R dovecot -R /mail_crypt/
-	chattr + /mail_crypt/ecpubkey.pem /mail_crypt/ecprivkey.pem
+	chown 401 /mail_crypt/ecprivkey.pem /mail_crypt/ecpubkey.pem
+else
+	chown 401 /mail_crypt/ecprivkey.pem /mail_crypt/ecpubkey.pem
 fi
+
+# Compile sieve scripts
+sievec /var/vmail/sieve/global.sieve
+sievec /usr/local/lib/dovecot/sieve/report-spam.sieve
+sievec /usr/local/lib/dovecot/sieve/report-ham.sieve
+
+# Fix permissions
+chown -R vmail:vmail /var/vmail/sieve
+
 
 exec "$@"
