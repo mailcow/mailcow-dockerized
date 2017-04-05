@@ -17,7 +17,7 @@ user = ${DBUSER}
 password = ${DBPASS}
 hosts = mysql
 dbname = ${DBNAME}
-query = SELECT IF( EXISTS( SELECT 'TLS_ACTIVE' FROM alias LEFT OUTER JOIN mailbox ON mailbox.username = alias.address WHERE (address='%s' OR address IN (SELECT CONCAT('%u', '@', target_domain) FROM alias_domain WHERE alias_domain='%d')) AND mailbox.tls_enforce_in = '1' AND mailbox.active = '1'), 'reject_plaintext_session', 'DUNNO') AS 'tls_enforce_in';
+query = SELECT IF( EXISTS( SELECT 'TLS_ACTIVE' FROM alias LEFT OUTER JOIN mailbox ON mailbox.username = alias.goto WHERE (address='%s' OR address IN (SELECT CONCAT('%u', '@', target_domain) FROM alias_domain WHERE alias_domain='%d')) AND mailbox.tls_enforce_in = '1' AND mailbox.active = '1'), 'reject_plaintext_session', NULL) AS 'tls_enforce_in';
 EOF
 
 cat <<EOF > /opt/postfix/conf/sql/mysql_tls_enforce_out_policy.cf
@@ -25,7 +25,7 @@ user = ${DBUSER}
 password = ${DBPASS}
 hosts = mysql
 dbname = ${DBNAME}
-query = SELECT IF( EXISTS( SELECT 'TLS_ACTIVE' FROM alias LEFT OUTER JOIN mailbox ON mailbox.username = alias.address WHERE (address='%s' OR address IN (SELECT CONCAT('%u', '@', target_domain) FROM alias_domain WHERE alias_domain='%d')) AND mailbox.tls_enforce_out = '1' AND mailbox.active = '1'), 'smtp_enforced_tls:', 'DUNNO') AS 'tls_enforce_out';
+query = SELECT IF( EXISTS( SELECT 'TLS_ACTIVE' FROM alias LEFT OUTER JOIN mailbox ON mailbox.username = alias.goto WHERE (address='%s' OR address IN (SELECT CONCAT('%u', '@', target_domain) FROM alias_domain WHERE alias_domain='%d')) AND mailbox.tls_enforce_out = '1' AND mailbox.active = '1'), 'smtp_enforced_tls:', NULL) AS 'tls_enforce_out';
 EOF
 
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_alias_domain_catchall_maps.cf
@@ -92,11 +92,21 @@ dbname = ${DBNAME}
 query = SELECT goto FROM spamalias WHERE address='%s' AND validity >= UNIX_TIMESTAMP()
 EOF
 
+# Reset GPG key permissions
+mkdir -p /var/lib/zeyple/keys
+chmod 700 /var/lib/zeyple/keys
+chown -R 600:600 /var/lib/zeyple/keys
+
+# Fix Postfix permissions
+chgrp -R postdrop /var/spool/postfix/public
+chgrp -R postdrop /var/spool/postfix/maildrop
+postfix set-permissions
 postconf -c /opt/postfix/conf
 if [[ $? != 0 ]]; then
 	echo "Postfix configuration error, refusing to start."
 	exit 1
 else
 	postfix -c /opt/postfix/conf start
+	supervisorctl restart postfix-maillog
 	sleep 126144000
 fi

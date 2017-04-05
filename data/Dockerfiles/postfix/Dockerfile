@@ -1,4 +1,4 @@
-FROM ubuntu:xenial
+FROM debian:testing-slim
 MAINTAINER Andre Peters <andre.peters@servercow.de>
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -19,10 +19,19 @@ RUN apt-get install -y --no-install-recommends supervisor \
 	postfix-pcre \
 	syslog-ng \
 	syslog-ng-core \
-	ca-certificates
+	ca-certificates \
+	gnupg \
+	python-gpgme \
+	sudo \
+	dirmngr
 
+RUN addgroup --system --gid 600 zeyple
+RUN adduser --system --home /var/lib/zeyple --no-create-home --uid 600 --gid 600 --disabled-login zeyple
+RUN touch /var/log/zeyple.log && chown zeyple: /var/log/zeyple.log
 RUN sed -i -E 's/^(\s*)system\(\);/\1unix-stream("\/dev\/log");/' /etc/syslog-ng/syslog-ng.conf
 
+COPY zeyple.py /usr/local/bin/zeyple.py
+COPY zeyple.conf /etc/zeyple.conf
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 COPY postfix.sh /opt/postfix.sh
 
