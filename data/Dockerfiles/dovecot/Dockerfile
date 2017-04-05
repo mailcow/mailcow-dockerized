@@ -86,11 +86,11 @@ RUN chmod +x /usr/local/lib/dovecot/sieve/rspamd-pipe-ham \
 	/usr/local/bin/imapsync
 
 RUN groupadd -g 5000 vmail \
-	&& groupadd -g 142 dovecot \
-    && groupadd -g 143 dovenull \
+	&& groupadd -g 401 dovecot \
+    && groupadd -g 402 dovenull \
 	&& useradd -g vmail -u 5000 vmail -d /var/vmail \
-	&& useradd -c "Dovecot unprivileged user" -d /dev/null -u 142 -g dovecot -s /bin/false dovecot \
-	&& useradd -c "Dovecot login user" -d /dev/null -u 143 -g dovenull -s /bin/false dovenull
+	&& useradd -c "Dovecot unprivileged user" -d /dev/null -u 401 -g dovecot -s /bin/false dovecot \
+	&& useradd -c "Dovecot login user" -d /dev/null -u 402 -g dovenull -s /bin/false dovenull
 
 EXPOSE 24 10001
 
