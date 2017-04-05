@@ -240,7 +240,7 @@ MariaDB [(none)]> show databases;
 4 rows in set (0.00 sec)
 ```
 
-**2\. Reset one or more users
+**2\. Reset one or more users**
 
 Both "password" and "authentication_string" exist. Currently "password" is used, but better set both.
 
