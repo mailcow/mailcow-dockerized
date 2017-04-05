@@ -4972,4 +4972,20 @@ function get_u2f_registrations($username) {
   $sel->execute(array($username));
   return $sel->fetchAll(PDO::FETCH_OBJ);
 }
+function sys_info($what) {
+	switch ($what) {
+
+		case "pflog":
+			return shell_exec("/postfix-logwatch -f /postfix-logwatch.conf /var/postfix-log/mail.log");
+			break;
+
+		case "mailq":
+//			return shell_exec("mailq");
+			break;
+		
+		case "maillog":
+			return shell_exec("tail -1000 /var/postfix-log/mail.log");
+			break;
+	}
+}
 ?>

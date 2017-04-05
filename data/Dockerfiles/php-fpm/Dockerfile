@@ -12,6 +12,13 @@ RUN pear install channel://pear.php.net/Net_IDNA2-0.1.1 Auth_SASL Net_IMAP NET_S
 
 COPY ./docker-entrypoint.sh /
 
+RUN usermod -a -G adm www-data
+
+COPY postfix-logwatch /postfix-logwatch
+COPY postfix-logwatch.conf /postfix-logwatch.conf
+RUN chmod 777 /postfix-logwatch
+RUN chmod 666 /postfix-logwatch.conf
+
 EXPOSE 9000
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
