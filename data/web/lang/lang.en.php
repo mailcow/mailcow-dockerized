@@ -149,7 +149,7 @@ $lang['user']['spamfilter_default_score'] = 'Default values:';
 $lang['user']['spamfilter_hint'] = 'The first value describes the "low spam score", the second represents the "high spam score".';
 $lang['user']['spamfilter_table_domain_policy'] = "n/a (domain policy)";
 
-$lang['user']['tls_policy_warning'] = '<strong>Warning:</strong> If you decide to enforce encrypted mail transfer, you may lose emails.<br />Messages to not satisfy the policy will be bounced with a hard fail by the mail system.';
+$lang['user']['tls_policy_warning'] = '<strong>Warning:</strong> If you decide to enforce encrypted mail transfer, you may lose emails.<br />Messages to not satisfy the policy will be bounced with a hard fail by the mail system.<br />This option applies to your primary email address (login name), all addresses derived from alias domains as well as alias addresses <b>with only this single mailbox</b> as target.';
 $lang['user']['tls_policy'] = 'Encryption policy';
 $lang['user']['tls_enforce_in'] = 'Enforce TLS incoming';
 $lang['user']['tls_enforce_out'] = 'Enforce TLS outgoing';
