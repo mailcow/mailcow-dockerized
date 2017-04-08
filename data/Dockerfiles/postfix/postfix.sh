@@ -101,7 +101,10 @@ chown -R 600:600 /var/lib/zeyple/keys
 chgrp -R postdrop /var/spool/postfix/public
 chgrp -R postdrop /var/spool/postfix/maildrop
 postfix set-permissions
+
+# Check Postfix configuration
 postconf -c /opt/postfix/conf
+
 if [[ $? != 0 ]]; then
 	echo "Postfix configuration error, refusing to start."
 	exit 1
