@@ -2,6 +2,7 @@ FROM php:7.1-fpm
 MAINTAINER Andre Peters <andre.peters@servercow.de>
 
 ENV DEBIAN_FRONTEND noninteractive
+ENV DBHOST mysql
 
 RUN apt-get update \
         && apt-get install -y zlib1g-dev libicu-dev g++ libidn11-dev libxml2-dev

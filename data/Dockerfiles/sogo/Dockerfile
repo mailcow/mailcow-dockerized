@@ -4,6 +4,7 @@ MAINTAINER Andre Peters <andre.peters@servercow.de>
 ENV DEBIAN_FRONTEND noninteractive
 ENV LC_ALL C
 ENV GOSU_VERSION 1.9
+ENV DBHOST mysql
 
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends apt-transport-https gnupg \

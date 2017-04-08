@@ -3,6 +3,7 @@ MAINTAINER Andre Peters <andre.peters@servercow.de>
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV LC_ALL C
+ENV DBHOST mysql
 
 RUN dpkg-divert --local --rename --add /sbin/initctl \
 	&& ln -sf /bin/true /sbin/initctl \
