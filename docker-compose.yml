@@ -26,7 +26,6 @@ services:
       volumes:
         - mysql-vol-1:/var/lib/mysql/
         - ./data/conf/mysql/:/etc/mysql/conf.d/:ro
-        - ./data/assets/reset_mysql.sh:/reset_mysql.sh
       dns:
         - 172.22.1.254
       dns_search: mailcow-network
