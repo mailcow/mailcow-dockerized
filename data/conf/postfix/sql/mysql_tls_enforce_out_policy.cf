@@ -1,5 +1,0 @@
-user = mailcow
-password = mysafepasswd
-hosts = mysql
-dbname = mailcow
-query = SELECT IF( EXISTS( SELECT 'TLS_ACTIVE' FROM alias LEFT OUTER JOIN mailbox ON mailbox.username = alias.address WHERE (address='%s' OR address IN (SELECT CONCAT('%u', '@', target_domain) FROM alias_domain WHERE alias_domain='%d')) AND mailbox.tls_enforce_out = '1' AND mailbox.active = '1'), 'smtp_enforced_tls:', 'DUNNO') AS 'tls_enforce_out';

@@ -26,7 +26,7 @@ $FORM_ACTION = "previous";
 $MC_DKIM_TXTS = "/data/dkim/txt";
 $MC_DKIM_KEYS = "/data/dkim/keys";
 
-// Change default language, "en", "pt", "de" or "nl"
+// Change default language, "en", "es" "pt", "de", "ru" or "nl"
 $DEFAULT_LANG = "en";
 
 // Change theme (default: lumen)
@@ -37,4 +37,21 @@ $DEFAULT_THEME = "lumen";
 
 // Password complexity as regular expression
 $PASSWD_REGEP = '.{4,}';
+
+// mailcow Apps - buttons on login screen
+$MAILCOW_APPS = array(
+  array(
+    'name' => 'SOGo',
+    'link' => '/SOGo/'
+  ),
+  // array(
+    // 'name' => 'Roundcube',
+    // 'link' => '/rc/'
+  // ),
+);
+
+// Rows until pagination begins
+$PAGINATION_SIZE = 10;
+
+
 ?>

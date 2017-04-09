@@ -299,7 +299,7 @@ $lang['add']['password'] = 'Constraseña:';
 $lang['add']['password_repeat'] = 'Confirmación de contraseña (repetir):';
 $lang['add']['previous'] = 'Página anterior';
 $lang['add']['restart_sogo_hint'] = '¡Necesitas reiniciar el contenedor del servicio SOGo antes de agregar un nuevo dominio!';
-
+$lang['add']['port'] = 'Port';
 $lang['login']['title'] = 'Inicio de sesión';
 $lang['login']['administration'] = 'Administración';
 $lang['login']['administration_details'] = 'Por favor utiliza tu inicio de sesión de Administrador para realizar tareas administrativas.';

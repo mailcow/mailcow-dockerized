@@ -1467,7 +1467,7 @@ function user_get_alias_details($username) {
   try {
     $data['address'] = $username;
     $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(`address` SEPARATOR ', '), '&#10008;') AS `aliases` FROM `alias`
-      WHERE `goto` LIKE :username_goto
+      WHERE `goto` REGEXP :username_goto
       AND `address` NOT LIKE '@%'
       AND `address` != :username_address");
     $stmt->execute(array(':username_goto' => '(^|,)'.$username.'($|,)', ':username_address' => $username));
@@ -1495,8 +1495,8 @@ function user_get_alias_details($username) {
     while ($row = array_shift($run)) {
       $data['aliases_send_as_all'] = $row['send_as'];
     }
-    $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(`address` SEPARATOR ', '), '&#10008;') as `address` FROM `alias` WHERE `goto` LIKE :username AND `address` LIKE '@%';");
-    $stmt->execute(array(':username' => '%' . $username . '%'));
+    $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(`address` SEPARATOR ', '), '&#10008;') as `address` FROM `alias` WHERE `goto` REGEXP :username AND `address` LIKE '@%';");
+    $stmt->execute(array(':username' => '(^|,)'.$username.'($|,)'));
     $run = $stmt->fetchAll(PDO::FETCH_ASSOC);
     while ($row = array_shift($run)) {
       $data['is_catch_all'] = $row['address'];
@@ -3320,7 +3320,7 @@ function mailbox_edit_alias_domain($postarray) {
 		$stmt = $pdo->prepare("UPDATE `alias_domain` SET
       `alias_domain` = :alias_domain,
       `active` = :active,
-      `modified` = :modified,
+      `modified` = :modified
         WHERE `alias_domain` = :alias_domain_now");
 		$stmt->execute(array(
 			':alias_domain' => $alias_domain,
@@ -4422,7 +4422,7 @@ function mailbox_get_resource_details($resource) {
     $resourcedata['name'] = $row['username'];
     $resourcedata['kind'] = $row['kind'];
     $resourcedata['multiple_bookings'] = $row['multiple_bookings'];
-    $resourcedata['multiple_bookings_int'] = $row['multiple_bookings'];
+    $resourcedata['multiple_bookings_int'] = $row['multiple_bookings_int'];
     $resourcedata['description'] = $row['name'];
     $resourcedata['active'] = $row['active'];
     $resourcedata['active_int'] = $row['active_int'];
@@ -4878,7 +4878,7 @@ function mailbox_get_sender_acl_handles($mailbox) {
   
   try {
     // Fixed addresses
-    $stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `goto` LIKE :goto AND `address` NOT LIKE '@%'");
+    $stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `goto` REGEXP :goto AND `address` NOT LIKE '@%'");
     $stmt->execute(array(':goto' => '(^|,)'.$mailbox.'($|,)'));
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
     while ($row = array_shift($rows)) {

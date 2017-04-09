@@ -23,40 +23,57 @@ auth_domain_map = rspamd_config:add_map({
   description = 'Map of domains we are authoritative for'
 })
 
-rspamd_config.ADD_DELIMITER_TAG = {
+rspamd_config:register_symbol({
+  name = 'TAG_MOO',
+  type = 'postfilter',
   callback = function(task)
-    local tag = nil
     local util = require("rspamd_util")
     local rspamd_logger = require "rspamd_logger"
-    local user_tagged = task:get_recipients(2)[1]['user']
-    local domain = task:get_recipients(1)[1]['domain']
-    local user, tag = user_tagged:match("([^+]+)+(.*)")
+
+    local tagged_rcpt = task:get_symbol("TAGGED_RCPT")
+    local user = task:get_recipients(0)[1]['user']
+    local domain = task:get_recipients(0)[1]['domain']
+    local rcpt = user .. '@' .. domain
     local authdomain = auth_domain_map:get_key(domain)
 
-    if tag and authdomain then
-      rspamd_logger.infox("domain: %1, tag: %2", domain, tag)
-      local user_untagged = user .. '@' .. domain
-      rspamd_logger.infox("querying tag settings for user %1", user_untagged)
-      if modify_subject_map:get_key(user_untagged) then
-        rspamd_logger.infox("found user in map for subject rewrite")
-        local sbj = task:get_header('Subject')
-        new_sbj = '=?UTF-8?B?' .. tostring(util.encode_base64('[' .. tag .. '] ' .. sbj)) .. '?='
-        task:set_rmilter_reply({
-          remove_headers = {['Subject'] = 1},
-          add_headers = {['Subject'] = new_sbj}
-        })
-      else
-        rspamd_logger.infox("add X-Moo-Tag header")
-        task:set_rmilter_reply({
-          add_headers = {['X-Moo-Tag'] = 'YES'}
-        })
+    if tagged_rcpt then
+      local tag = tagged_rcpt[1].options[1]
+      rspamd_logger.infox("found tag: %s", tag)
+      local action = task:get_metric_action('default')
+      rspamd_logger.infox("metric action now: %s", action)
+
+      if action ~= 'no action' and action ~= 'greylist' then
+        rspamd_logger.infox("skipping tag handler for action: %s", action)
+        task:set_metric_action('default', action)
+        return true
       end
-    else
-      rspamd_logger.infox("skip delimiter handling for untagged message or authenticated user")
+
+      if authdomain then
+        rspamd_logger.infox("found mailcow domain %s", domain)
+        rspamd_logger.infox("querying tag settings for user %s", rcpt)
+
+        if modify_subject_map:get_key(rcpt) then
+          rspamd_logger.infox("user wants subject modified for tagged mail")
+          local sbj = task:get_header('Subject')
+          new_sbj = '=?UTF-8?B?' .. tostring(util.encode_base64('[' .. tag .. '] ' .. sbj)) .. '?='
+          task:set_rmilter_reply({
+            remove_headers = {['Subject'] = 1},
+            add_headers = {['Subject'] = new_sbj}
+          })
+        else
+          rspamd_logger.infox("Add X-Moo-Tag header")
+          task:set_rmilter_reply({
+            add_headers = {['X-Moo-Tag'] = 'YES'}
+          })
+        end
+      else
+        rspamd_logger.infox("skip delimiter handling for unknown domain")
+      end
+      return false
     end
-    return false
-  end
-}
+  end,
+  priority = 10
+})
 
 rspamd_config.MRAPTOR = {
   callback = function(task)

@@ -26,8 +26,7 @@ require_once 'inc/lib/Yubico.php';
 
 // U2F API
 require_once 'inc/lib/U2F.php';
-$scheme = isset($_SERVER['HTTPS']) ? "https://" : "http://";
-$u2f = new u2flib_server\U2F($scheme . $_SERVER['HTTP_HOST']);
+$u2f = new u2flib_server\U2F('https://' . $_SERVER['SERVER_NAME']);
 
 // PDO
 $dsn = "$database_type:host=$database_host;dbname=$database_name";
@@ -70,6 +69,10 @@ if (isset($_COOKIE['language'])) {
 			$_SESSION['mailcow_locale'] = 'pt';
 			setcookie('language', 'pt');
 		break;
+    case "ru":
+			$_SESSION['mailcow_locale'] = 'ru';
+			setcookie('language', 'ru');
+		break;
 	}
 }
 if (isset($_GET['lang'])) {
@@ -93,6 +96,10 @@ if (isset($_GET['lang'])) {
 		case "pt":
 			$_SESSION['mailcow_locale'] = 'pt';
 			setcookie('language', 'pt');
+		break;
+		case "ru":
+			$_SESSION['mailcow_locale'] = 'ru';
+			setcookie('language', 'ru');
 		break;
 	}
 }

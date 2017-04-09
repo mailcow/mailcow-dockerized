@@ -29,7 +29,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 							<label class="sr-only" for="login_user"><?=$lang['login']['username'];?></label>
 							<div class="input-group">
 								<div class="input-group-addon"><i class="glyphicon glyphicon-user"></i></div>
-								<input name="login_user" autocorrect="off" autocapitalize="none" type="name" id="login_user" class="form-control" placeholder="<?=$lang['login']['username'];?>" required="" autofocus="">
+								<input name="login_user" autocorrect="off" autocapitalize="none" type="text" id="login_user" class="form-control" placeholder="<?=$lang['login']['username'];?>" required="" autofocus="">
 							</div>
 						</div>
 						<div class="form-group">
@@ -51,6 +51,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 									<li <?=($_SESSION['mailcow_locale'] == 'es') ? 'class="active"' : ''?>><a href="?<?= http_build_query(array_merge($_GET, array("lang" => "es"))) ?>"><span class="lang-xs lang-lbl-full" lang="es"></span></a></li>
 									<li <?=($_SESSION['mailcow_locale'] == 'nl') ? 'class="active"' : ''?>><a href="?<?= http_build_query(array_merge($_GET, array("lang" => "nl"))) ?>"><span class="lang-xs lang-lbl-full" lang="nl"></span></a></li>
 									<li <?=($_SESSION['mailcow_locale'] == 'pt') ? 'class="active"' : ''?>><a href="?<?= http_build_query(array_merge($_GET, array("lang" => "pt"))) ?>"><span class="lang-xs lang-lbl-full" lang="pt"></span></a></li>
+									<li <?=($_SESSION['mailcow_locale'] == 'ru') ? 'class="active"' : ''?>><a href="?<?= http_build_query(array_merge($_GET, array("lang" => "ru"))) ?>"><span class="lang-xs lang-lbl-full" lang="ru"></span></a></li>
 								</ul>
 							</div>
 						</div>
@@ -63,7 +64,11 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 						endif;
 						?>
 					<legend>mailcow Apps</legend>
-					<a href="/SOGo/" role="button" class="btn btn-lg btn-default"><?=$lang['start']['start_sogo'];?></a>
+          <?php
+          foreach ($MAILCOW_APPS as $app) {
+            echo '<a href="' . $app['link'] . '" role="button" class="btn btn-lg btn-default">' . $app['name'] . '</a>&nbsp;';
+          }
+          ?>
 				</div>
 			</div>
 		</div>

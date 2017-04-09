@@ -1,3 +1,20 @@
+## mailcow UI configuration
+
+Several configuration parameters of the mailcow UI can be changed by creating a file `data/web/inc/vars.local.inc.php` which overrides defaults settings found in `data/web/inc/vars.inc.php`.
+
+The local configuration file is persistent over updates of mailcow. Try not to change values inside `data/web/inc/vars.inc.php`, but use them as template for the local override.
+
+mailcow UI configuration parameters can be to...
+
+- ...change the default language*
+- ...change the default bootstrap theme
+- ...set a password complexity regex
+- ...add mailcow app buttons to the login screen
+- ...set a pagination trigger
+- ...set action after submitting forms (stay in form, return to previous page)
+
+\* To change SOGos default language, you will need to edit `data/conf/sogo/sogo.conf` and replace "English" by your preferred language.
+
 ## Anonymize headers
 
 Save as `data/conf/postfix/mailcow_anonymize_headers.pcre`:
@@ -53,24 +70,6 @@ Edit a domain as (domain) administrator to add an item to the filter table.
 
 Beware that a mailbox user can login to mailcow and override a domain policy filter item. 
 
-## Change default language
-
-Change `data/conf/sogo/sogo.conf` and replace "English" by your preferred language.
-
-Create a file `data/web/inc/vars.local.inc.php` and add "DEFAULT_LANG" with either "en", "pt", "de" or "nl":
-```
-<?php
-$DEFAULT_LANG = "de";
-```
-## Change UI theme
-
-mailcow uses [Bootstrap](http://getbootstrap.com/), a HTML, CSS, and JS framework.
-
-Open or create the file `data/web/inc/vars.local.inc.php` and change `DEFAULT_THEME` to either cerulean, cosmo, custom, cyborg, darkly, flatly, journal, paper, readable, sandstone, simplex, slate, spacelab, superhero, united or yeti (see https://bootswatch.com/):
-```
-<?php
-$DEFAULT_THEME = "paper";
-```
 ## Customize Dockerfiles
 
 Make your changes in `data/Dockerfiles/$service` and build the image locally:
@@ -89,14 +88,14 @@ docker-compose up -d
 
 This option is not best-practice and should only be implemented when there is no other option available to archive whatever you are trying to do.
 
-Simply create a file `data/conf/postfix/check_sender_access` and enter the following content:
+Simply create a file `data/conf/postfix/check_sasl_access` and enter the following content. This user must exist in your installation and needs to authenticate before sending mail.
 ```
 user-to-allow-everything@example.com OK
 ```
 
-Open `data/conf/postfix/main.cf` and find `smtpd_sender_restrictions`. Prepend `check_sasl_access hash:/opt/postfix/conf/check_sender_access` like this:
+Open `data/conf/postfix/main.cf` and find `smtpd_sender_restrictions`. Prepend `check_sasl_access hash:/opt/postfix/conf/check_sasl_access` like this:
 ```
-smtpd_sender_restrictions = check_sasl_access hash:/opt/postfix/conf/check_sender_access reject_authenticated_sender [...]
+smtpd_sender_restrictions = check_sasl_access hash:/opt/postfix/conf/check_sasl_access reject_authenticated_sender_login_mismatch [...]
 ```
 
 Run postmap on check_sasl_access:
@@ -235,7 +234,7 @@ Open `data/conf/nginx/site.conf` and add a new "catch-all" site at the top of th
 ```
 server {
 	listen 80 default_server;
-	server_name _;
+	include /etc/nginx/conf.d/server_name.active;
 	return 301 https://$host$request_uri;
 }
 ```
@@ -285,6 +284,22 @@ Rspamd also auto-learns mail when a high or low score is detected (see https://r
 The bayes statistics are written to Redis as keys `BAYES_HAM` and `BAYES_SPAM`.
 
 You can also use Rspamd's web ui to learn ham and/or spam.
+
+### Learn ham or spam from existing directory
+
+You can use a one-liner to learn mail in plain-text (uncompressed) format:
+```
+# Ham
+for file in /my/folder/cur/*; do docker exec -i $(docker-compose ps -q rspamd-mailcow) rspamc learn_ham < $file; done
+# Spam
+for file in /my/folder/.Junk/cur/*; do docker exec -i $(docker-compose ps -q rspamd-mailcow) rspamc learn_spam < $file; done
+```
+
+Consider attaching a local folder as new volume to `rspamd-mailcow` in `docker-compose.yml` and learn given files inside the container. This can be used as workaround to parse compressed data with zcat. Example:
+
+```
+for file in /data/old_mail/.Junk/cur/*; do rspamc learn_spam < zcat $file; done
+```
 
 ### CLI tools
 

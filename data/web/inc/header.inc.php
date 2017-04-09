@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="/css/bootstrap-select.min.css">
 <link rel="stylesheet" href="/css/bootstrap-slider.min.css">
 <link rel="stylesheet" href="/css/bootstrap-switch.min.css">
+<link rel="stylesheet" href="/css/footable.bootstrap.min.css">
 <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700&subset=latin,latin-ext">
 <link rel="stylesheet" href="/inc/languages.min.css">
 <link rel="stylesheet" href="/css/mailcow.css">
@@ -48,6 +49,7 @@
 						<li <?=($_SESSION['mailcow_locale'] == 'es') ? 'class="active"' : ''?>> <a href="?<?= http_build_query(array_merge($_GET, array("lang" => "es"))) ?>"><span class="lang-xs lang-lbl-full" lang="es"></span></a></li>
 						<li <?=($_SESSION['mailcow_locale'] == 'nl') ? 'class="active"' : ''?>> <a href="?<?= http_build_query(array_merge($_GET, array("lang" => "nl"))) ?>"><span class="lang-xs lang-lbl-full" lang="nl"></span></a></li>
 						<li <?=($_SESSION['mailcow_locale'] == 'pt') ? 'class="active"' : ''?>> <a href="?<?= http_build_query(array_merge($_GET, array("lang" => "pt"))) ?>"><span class="lang-xs lang-lbl-full" lang="pt"></span></a></li>
+						<li <?=($_SESSION['mailcow_locale'] == 'ru') ? 'class="active"' : ''?>> <a href="?<?= http_build_query(array_merge($_GET, array("lang" => "ru"))) ?>"><span class="lang-xs lang-lbl-full" lang="ru"></span></a></li>
 					</ul>
 				</li>
 				<?php

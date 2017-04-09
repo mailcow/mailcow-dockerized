@@ -318,6 +318,7 @@ $lang['edit']['resource'] = 'Ressource';
 $lang['add']['syncjob'] = 'Sync-Job erstellen';
 $lang['add']['syncjob_hint'] = 'Passwörter werden unverschlüsselt abgelegt!';
 $lang['add']['hostname'] = 'Servername';
+$lang['add']['port'] = 'Port';
 $lang['add']['username'] = 'Benutzername';
 $lang['add']['enc_method'] = 'Verschlüsselungsmethode';
 $lang['add']['maxage'] = 'Maximum age of messages that will be polled from remote (0 = ignore age)';

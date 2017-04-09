@@ -6,7 +6,7 @@ header("Content-Type: application/xml");
 <?='<?xml version="1.0"?>';?>
 <clientConfig version="1.1">
     <emailProvider id="<?=$mailcow_hostname;?>">
-
+      <domain>%EMAILDOMAIN%</domain>
       <displayName>A mailcow mail server</displayName>
       <displayShortName>mail server</displayShortName>
 
