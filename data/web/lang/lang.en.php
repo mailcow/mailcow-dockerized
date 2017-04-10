@@ -333,6 +333,9 @@ $lang['add']['maxage'] = 'Maximum age of messages that will be polled from remot
 $lang['add']['subfolder2'] = 'Sync into subfolder on destination';
 $lang['add']['exclude'] = 'Exclude objects (regex)';
 $lang['add']['delete2duplicates'] = 'Delete duplicates on destination';
+$lang['add']['delete1'] = 'Delete from source when completed';
+$lang['edit']['delete2duplicates'] = 'Delete duplicates on destination';
+$lang['edit']['delete1'] = 'Delete from source when completed';
 
 $lang['add']['title'] = 'Add object';
 $lang['add']['domain'] = 'Domain';

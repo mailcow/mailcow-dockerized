@@ -109,6 +109,11 @@ function init_db_schema() {
   if ($num_results == 0) {
     $pdo->query("ALTER TABLE `mailbox` ADD `multiple_bookings` tinyint(1) NOT NULL DEFAULT '0'");
   }
+  $stmt = $pdo->query("SHOW COLUMNS FROM `imapsync` LIKE 'delete1'");
+  $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+  if ($num_results == 0) {
+    $pdo->query("ALTER TABLE `imapsync` ADD `delete1` tinyint(1) NOT NULL DEFAULT '0'");
+  }
   $stmt = $pdo->query("SHOW COLUMNS FROM `mailbox` LIKE 'wants_tagged_subject'");
   $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
   if ($num_results == 0) {
@@ -1075,6 +1080,7 @@ function add_syncjob($postarray) {
   }
   isset($postarray['active']) ? $active = '1' : $active = '0';
   isset($postarray['delete2duplicates']) ? $delete2duplicates = '1' : $delete2duplicates = '0';
+  isset($postarray['delete1']) ? $delete1 = '1' : $delete1 = '0';
   $port1            = $postarray['port1'];
   $host1            = $postarray['host1'];
   $password1        = $postarray['password1'];
@@ -1147,12 +1153,13 @@ function add_syncjob($postarray) {
     return false;
   }
   try {
-    $stmt = $pdo->prepare("INSERT INTO `imapsync` (`user2`, `exclude`, `maxage`, `subfolder2`, `host1`, `authmech1`, `user1`, `password1`, `mins_interval`, `port1`, `enc1`, `delete2duplicates`, `active`)
-      VALUES (:user2, :exclude, :maxage, :subfolder2, :host1, :authmech1, :user1, :password1, :mins_interval, :port1, :enc1, :delete2duplicates, :active)");
+    $stmt = $pdo->prepare("INSERT INTO `imapsync` (`user2`, `exclude`, `delete1`, `maxage`, `subfolder2`, `host1`, `authmech1`, `user1`, `password1`, `mins_interval`, `port1`, `enc1`, `delete2duplicates`, `active`)
+      VALUES (:user2, :exclude, :maxage, :delete1, :subfolder2, :host1, :authmech1, :user1, :password1, :mins_interval, :port1, :enc1, :delete2duplicates, :active)");
     $stmt->execute(array(
       ':user2' => $username,
       ':exclude' => $exclude,
       ':maxage' => $maxage,
+      ':delete1' => $delete1,
       ':subfolder2' => $subfolder2,
       ':host1' => $host1,
       ':authmech1' => 'PLAIN',
@@ -1200,6 +1207,7 @@ function edit_syncjob($postarray) {
   }
   isset($postarray['active']) ? $active = '1' : $active = '0';
   isset($postarray['delete2duplicates']) ? $delete2duplicates = '1' : $delete2duplicates = '0';
+  isset($postarray['delete1']) ? $delete1 = '1' : $delete1 = '0';
   $id               = $postarray['id'];
   $port1            = $postarray['port1'];
   $host1            = $postarray['host1'];
@@ -1273,10 +1281,11 @@ function edit_syncjob($postarray) {
     return false;
   }
   try {
-    $stmt = $pdo->prepare("UPDATE `imapsync` set `maxage` = :maxage, `subfolder2` = :subfolder2, `exclude` = :exclude, `host1` = :host1, `user1` = :user1, `password1` = :password1, `mins_interval` = :mins_interval, `port1` = :port1, `enc1` = :enc1, `delete2duplicates` = :delete2duplicates, `active` = :active
+    $stmt = $pdo->prepare("UPDATE `imapsync` set `delete1` = :delete1, `maxage` = :maxage, `subfolder2` = :subfolder2, `exclude` = :exclude, `host1` = :host1, `user1` = :user1, `password1` = :password1, `mins_interval` = :mins_interval, `port1` = :port1, `enc1` = :enc1, `delete2duplicates` = :delete2duplicates, `active` = :active
       WHERE `user2` = :user2 AND `id` = :id");
     $stmt->execute(array(
       ':user2' => $username,
+      ':delete1' => $delete1,
       ':id' => $id,
       ':exclude' => $exclude,
       ':maxage' => $maxage,

@@ -329,6 +329,9 @@ $lang['add']['subfolder2'] = 'Sync into subfolder on destination';
 $lang['add']['mins_interval'] = 'Abrufintervall (Minuten)';
 $lang['add']['exclude'] = 'Elemente ausschließen (Regex)';
 $lang['add']['delete2duplicates'] = 'Lösche Duplikate im Ziel';
+$lang['add']['delete1'] = 'Lösche Nachricht nach Übertragung vom Quell-Server';
+$lang['edit']['delete2duplicates'] = 'Lösche Duplikate im Ziel';
+$lang['edit']['delete1'] = 'Lösche Nachricht nach Übertragung vom Quell-Server';
 
 $lang['add']['title'] = 'Objekt anlegen';
 $lang['add']['domain'] = 'Domain';

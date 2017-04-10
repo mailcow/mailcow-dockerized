@@ -321,6 +321,7 @@ $lang['add']['maxage'] = 'Maximum age of messages that will be polled from remot
 $lang['add']['subfolder2'] = "Синхронизировать в подпапку по назначению";
 $lang['add']['exclude'] = "Исключить объекты (regex)";
 $lang['add']['delete2duplicates'] = "Удалить дубликаты в получателях";
+$lang['edit']['delete2duplicates'] = "Удалить дубликаты в получателях";
 $lang['add']['title'] = "Добавить объект";
 $lang['add']['domain'] = "Домен";
 $lang['add']['active'] = "Активный";
