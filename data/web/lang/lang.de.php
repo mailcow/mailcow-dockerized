@@ -321,8 +321,8 @@ $lang['add']['hostname'] = 'Servername';
 $lang['add']['port'] = 'Port';
 $lang['add']['username'] = 'Benutzername';
 $lang['add']['enc_method'] = 'Verschlüsselungsmethode';
-$lang['add']['maxage'] = 'Maximum age of messages that will be polled from remote (0 = ignore age)';
-$lang['add']['subfolder2'] = 'Sync into subfolder on destination';
+$lang['add']['maxage'] = 'Maximales Alter von Nachrichten, welche vom Remote abgefragt werden (0 = Alter ignorieren)';
+$lang['add']['subfolder2'] = 'Synchronisation in Unterordner am Ziel';
 $lang['add']['mins_interval'] = 'Abrufintervall (Minuten)';
 $lang['add']['exclude'] = 'Elemente ausschließen (Regex)';
 $lang['add']['delete2duplicates'] = 'Lösche Duplikate im Ziel';
@@ -376,8 +376,8 @@ $lang['login']['login'] = 'Anmelden';
 $lang['login']['previous'] = 'Vorherige Seite';
 $lang['login']['delayed'] = 'Login wurde zur Sicherheit um %s Sekunde/n verzögert.';
 
-$lang['tfa']['tfa'] = "Two-Factor Authentication";
-$lang['tfa']['set_tfa'] = "Konfiguriere Two-Factor Authentication Methode";
+$lang['tfa']['tfa'] = "Zwei-Faktor-Authentifizierung";
+$lang['tfa']['set_tfa'] = "Konfiguriere Zwei-Faktor-Authentifizierungsmethode";
 $lang['tfa']['yubi_otp'] = "Yubico OTP Authentifizierung";
 $lang['tfa']['key_id'] = "Ein Name für diesen YubiKey";
 $lang['tfa']['api_register'] = 'mailcow verwendet die Yubico Cloud API. Ein API-Key für den Yubico Stick kann <a href="https://upgrade.yubico.com/getapikey/" target="_blank">hier</a> bezogen werden.';
@@ -385,9 +385,9 @@ $lang['tfa']['u2f'] = "U2F Authentifizierung";
 $lang['tfa']['hotp'] = "HOTP Authentifizierung";
 $lang['tfa']['totp'] = "TOTP Authentifizierung";
 $lang['tfa']['none'] = "Deaktiviert";
-$lang['tfa']['delete_tfa'] = "Deaktiviere TFA";
-$lang['tfa']['disable_tfa'] = "Deaktiviere TFA bis zur nächsten erfolgreichen Anmeldung";
-$lang['tfa']['confirm_tfa'] = "Please confirm your one-time password in the below field";
+$lang['tfa']['delete_tfa'] = "Deaktiviere 2FA";
+$lang['tfa']['disable_tfa'] = "Deaktiviere 2FA bis zur nächsten erfolgreichen Anmeldung";
+$lang['tfa']['confirm_tfa'] = "Bitte bestätigen Sie Ihr Einmal-Passwort im unteren Feld";
 $lang['tfa']['confirm'] = "Bestätigen";
 $lang['tfa']['otp'] = "Einmalpasswort";
 $lang['tfa']['trash_login'] = "Login verwerfen";
@@ -396,9 +396,9 @@ $lang['tfa']['waiting_usb_auth'] = "<i>Warte auf USB-Gerät...</i><br /><br />Bi
 $lang['tfa']['waiting_usb_register'] = "<i>Warte auf USB-Gerät...</i><br /><br />Bitte zuerst das obere Passwortfeld ausfüllen und erst dann den vorgesehenen Taster des U2F USB-Gerätes berühren.";
 
 $lang['admin']['search_domain_da'] = 'Domains durchsuchen';
-$lang['admin']['restrictions'] = 'Postifx Restriktionen';
-$lang['admin']['rr'] = 'Postifx Recipient Restriktionen';
-$lang['admin']['sr'] = 'Postifx Sender Restriktionen';
+$lang['admin']['restrictions'] = 'Postfix Restriktionen';
+$lang['admin']['rr'] = 'Postfix Empfänger Restriktionen';
+$lang['admin']['sr'] = 'Postfix Sender Restriktionen';
 $lang['admin']['reset_defaults'] = 'Standard wiederherstellen';
 $lang['admin']['r_inactive'] = 'Inaktive Restriktionen';
 $lang['admin']['r_active'] = 'Aktive Restriktionen';
@@ -444,9 +444,9 @@ $lang['admin']['unchanged_if_empty'] = 'Unverändert, wenn leer';
 $lang['admin']['yes'] = '&#10004;';
 $lang['admin']['no'] = '&#10008;';
 $lang['admin']['access'] = 'Zugang';
-$lang['admin']['invalid_max_msg_size'] = 'Invalid max. message size'; // NEEDS TRANSLATION
-$lang['admin']['site_not_found'] = 'Kann mailcow Site-Konfiguration nicht finden';
-$lang['admin']['public_folder_empty'] = 'Public folder name must not be empty'; // NEEDS TRANSLATION
+$lang['admin']['invalid_max_msg_size'] = 'Maximale Nachrichtengröße ungültig'; // NEEDS TRANSLATION
+$lang['admin']['site_not_found'] = 'Kann mailcow Seitenkonfiguration nicht finden';
+$lang['admin']['public_folder_empty'] = 'Öffentlicher Ordner-Name darf nicht leer sein'; // NEEDS TRANSLATION
 $lang['admin']['set_rr_failed'] = 'Kann Postfix Restriktionen nicht setzen';
 $lang['admin']['no_record'] = 'Kein Eintrag';
 ?>

@@ -400,11 +400,11 @@ $lang['tfa']['waiting_usb_auth'] = "<i>Waiting for USB device...</i><br /><br />
 $lang['tfa']['waiting_usb_register'] = "<i>Waiting for USB device...</i><br /><br />Please enter your password above and confirm your U2F registration by tapping the button on your U2F USB device.";
 
 $lang['admin']['search_domain_da'] = 'Search domains';
-$lang['admin']['restrictions'] = 'Postifx Restrictions';
-$lang['admin']['rr'] = 'Postifx Recipient Restrictions';
-$lang['admin']['sr'] = 'Postifx Sender Restrictions';
+$lang['admin']['restrictions'] = 'Postfix Restrictions';
+$lang['admin']['rr'] = 'Postfix Recipient Restrictions';
+$lang['admin']['sr'] = 'Postfix Sender Restrictions';
 $lang['admin']['reset_defaults'] = 'Reset to defaults';
-$lang['admin']['sr'] = 'Postifx Sender Restrictions';
+$lang['admin']['sr'] = 'Postfix Sender Restrictions';
 $lang['admin']['r_inactive'] = 'Inactive restrictions';
 $lang['admin']['r_active'] = 'Active restrictions';
 $lang['admin']['r_info'] = 'Greyed out/disabled elements on the list of active restrictions are not known as valid restrictions to mailcow and cannot be moved. Unknown restrictions will be set in order of appearance anyway. <br />You can add new elements in <code>inc/vars.local.inc.php</code> to be able to toggle them.';
