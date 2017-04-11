@@ -15,7 +15,7 @@ $(document).ready(function() {
   
   $.ajax({
     dataType: 'json',
-    url: '/json_api.php?action=domain_table_data',
+    url: '/api/v1/domain/all',
     jsonp: false,
     error: function () {
       alert('Cannot draw domain table');
@@ -70,7 +70,7 @@ $(document).ready(function() {
 
   $.ajax({
     dataType: 'json',
-    url: '/json_api.php?action=mailbox_table_data',
+    url: '/api/v1/mailbox/all',
     jsonp: false,
     error: function () {
       alert('Cannot draw mailbox table');
@@ -102,12 +102,12 @@ $(document).ready(function() {
           {"sorted": true,"name":"username","title":lang.username,"style":{"width":"250px"}},
           {"name":"name","title":lang.fname,"breakpoints":"xs sm"},
           {"name":"domain","title":lang.domain,"breakpoints":"xs sm"},
-          {"name":"quota","title":lang.domain_quota},
-          {"name":"spam_aliases","filterable": false,"title":lang.spam_aliases,"breakpoints":"xs sm"},
-          {"name":"in_use","filterable": false,"type":"html","title":lang.in_use},
-          {"name":"messages","filterable": false,"style":{"width":"90px"},"title":lang.msg_num,"breakpoints":"xs sm"},
-          {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active},
-          {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","width":"290px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
+          {"name":"quota","style":{"whiteSpace":"nowrap"},"title":lang.domain_quota},
+          {"name":"spam_aliases","filterable": false,"title":lang.spam_aliases,"breakpoints":"xs sm md"},
+          {"name":"in_use","filterable": false,"style":{"whiteSpace":"nowrap"},"type":"html","title":lang.in_use},
+          {"name":"messages","filterable": false,"style":{"whiteSpace":"nowrap"},"title":lang.msg_num,"breakpoints":"xs sm md"},
+          {"name":"active","filterable": false,"style":{"whiteSpace":"nowrap"},"title":lang.active},
+          {"name":"action","filterable": false,"sortable": false,"style":{"whiteSpace":"nowrap","text-align":"right","width":"290px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
         ],
         "empty": lang.empty,
         "rows": data,
@@ -130,7 +130,7 @@ $(document).ready(function() {
 
   $.ajax({
     dataType: 'json',
-    url: '/json_api.php?action=resource_table_data',
+    url: '/api/v1/resource/all',
     jsonp: false,
     error: function () {
       alert('Cannot draw resource table');
@@ -172,7 +172,7 @@ $(document).ready(function() {
 
   $.ajax({
     dataType: 'json',
-    url: '/json_api.php?action=domain_alias_table_data',
+    url: '/api/v1/alias-domain/all',
     jsonp: false,
     error: function () {
       alert('Cannot draw alias domain table');
@@ -212,7 +212,7 @@ $(document).ready(function() {
 
   $.ajax({
     dataType: 'json',
-    url: '/json_api.php?action=alias_table_data',
+    url: '/api/v1/alias/all',
     jsonp: false,
     error: function () {
       alert('Cannot draw alias table');

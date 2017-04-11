@@ -151,10 +151,11 @@ services:
       depends_on:
         - bind9-mailcow
       volumes:
-        - ./data/conf/dovecot:/etc/dovecot
+        - ./data/conf/dovecot:/usr/local/etc/dovecot
         - ./data/assets/ssl:/etc/ssl/mail/:ro
         - ./data/conf/sogo/:/etc/sogo/
         - vmail-vol-1:/var/vmail
+        - crypt-vol-1:/mail_crypt/
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -184,6 +185,7 @@ services:
         - ./data/conf/postfix:/opt/postfix/conf
         - ./data/assets/ssl:/etc/ssl/mail/:ro
         - postfix-vol-1:/var/spool/postfix
+        - crypt-vol-1:/var/lib/zeyple
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -266,3 +268,4 @@ volumes:
   redis-vol-1:
   rspamd-vol-1:
   postfix-vol-1:
+  crypt-vol-1:

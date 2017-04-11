@@ -1,5 +1,7 @@
 ## Install mailcow
 
+**WARNING**: Please use Ubuntu 16.04 instead of Debian 8 or [switch to the kernel 4.9 from jessie backports](https://packages.debian.org/jessie-backports/linux-image-amd64) because there is a bug (kernel panic) with the kernel 3.16 when running docker containers with healthchecks! Full details here: [github.com/docker/docker/issues/30402](https://github.com/docker/docker/issues/30402) and [forum.mailcow.email/t/solved-mailcow-docker-causes-kernel-panic-edit/448](https://forum.mailcow.email/t/solved-mailcow-docker-causes-kernel-panic-edit/448)
+
 You need Docker and Docker Compose.
 
 1\. Learn how to install [Docker](https://docs.docker.com/engine/installation/linux/) and [Docker Compose](https://docs.docker.com/compose/install/).
@@ -34,6 +36,8 @@ git clone https://github.com/andryyy/mailcow-dockerized && cd mailcow-dockerized
 nano mailcow.conf
 ```
 If you plan to use a reverse proxy, you can, for example, bind HTTPS to 127.0.0.1 on port 8443 and HTTP to 127.0.0.1 on port 8080.
+
+You may need to stop an existing pre-installed MTA which blocks port 25/tcp. See [this chapter](https://andryyy.github.io/mailcow-dockerized/first_steps/#install-a-local-mta) to learn how to reconfigure Postfix to run besides mailcow after a successful installation.
 
 5\. Pull the images and run the composer file. The paramter `-d` will start mailcow: dockerized detached:
 ```
