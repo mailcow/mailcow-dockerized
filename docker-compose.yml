@@ -253,6 +253,22 @@ services:
           aliases:
             - nginx
 
+    clamav-mailcow:
+      image: mailcow/clamav
+      depends_on:
+        - bind9-mailcow
+      build: ./data/Dockerfiles/clamav
+      volumes:
+        - clamav-vol-1:/var/lib/clamav
+      restart: always
+      dns:
+        - 172.22.1.254
+      dns_search: mailcow-network
+      networks:
+        mailcow-network:
+          aliases:
+            - clamav
+
 networks:
   mailcow-network:
     driver: bridge
@@ -269,3 +285,4 @@ volumes:
   rspamd-vol-1:
   postfix-vol-1:
   crypt-vol-1:
+  clamav-vol-1:
