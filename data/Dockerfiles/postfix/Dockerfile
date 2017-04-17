@@ -23,6 +23,7 @@ RUN apt-get install -y --no-install-recommends supervisor \
 	gnupg \
 	python-gpgme \
 	sudo \
+	curl \
 	dirmngr
 
 RUN addgroup --system --gid 600 zeyple
