@@ -124,6 +124,9 @@ function init_db_schema() {
   if ($num_results == 0) {
     $pdo->query("ALTER TABLE `tfa` ADD `key_id` VARCHAR(255) DEFAULT 'unidentified'");
   }
+  
+  // Add newly added tables
+  $stmt = $pdo->query("CREATE TABLE IF NOT EXISTS `forwarding_hosts` (`host` VARCHAR(255) NOT NULL, PRIMARY KEY (`host`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC");
 }
 function verify_ssha256($hash, $password) {
 	// Remove tag if any
@@ -5038,5 +5041,69 @@ function get_u2f_registrations($username) {
   $sel = $pdo->prepare("SELECT * FROM `tfa` WHERE `authmech` = 'u2f' AND `username` = ? AND `active` = '1'");
   $sel->execute(array($username));
   return $sel->fetchAll(PDO::FETCH_OBJ);
+}
+function get_forwarding_hosts() {
+	global $pdo;
+  $sel = $pdo->prepare("SELECT host FROM `forwarding_hosts`");
+  $sel->execute();
+  return $sel->fetchAll(PDO::FETCH_COLUMN);
+}
+function add_forwarding_host($postarray) {
+	global $pdo;
+	global $lang;
+	if ($_SESSION['mailcow_cc_role'] != "admin") {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['access_denied'])
+		);
+		return false;
+	}
+	$host = $postarray['hostname'];
+	try {
+		$stmt = $pdo->prepare("INSERT INTO `forwarding_hosts` (`host`) VALUES (:host)");
+		$stmt->execute(array(
+			':host' => $host,
+		));
+	}
+	catch (PDOException $e) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => 'MySQL: '.$e
+		);
+		return false;
+	}
+	$_SESSION['return'] = array(
+		'type' => 'success',
+		'msg' => sprintf($lang['success']['forwarding_host_added'], htmlspecialchars($host))
+	);
+}
+function delete_forwarding_host($postarray) {
+	global $pdo;
+	global $lang;
+	if ($_SESSION['mailcow_cc_role'] != "admin") {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['access_denied'])
+		);
+		return false;
+	}
+	$host = $postarray['forwardinghost'];
+	try {
+		$stmt = $pdo->prepare("DELETE FROM `forwarding_hosts` WHERE `host` = :host");
+		$stmt->execute(array(
+			':host' => $host,
+		));
+	}
+	catch (PDOException $e) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => 'MySQL: '.$e
+		);
+		return false;
+	}
+	$_SESSION['return'] = array(
+		'type' => 'success',
+		'msg' => sprintf($lang['success']['forwarding_host_removed'], htmlspecialchars($host))
+	);
 }
 ?>

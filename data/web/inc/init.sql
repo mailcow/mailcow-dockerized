@@ -140,6 +140,11 @@ CREATE TABLE IF NOT EXISTS `tfa` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
+CREATE TABLE IF NOT EXISTS `forwarding_hosts` (
+  `host` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`host`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
 DROP VIEW IF EXISTS grouped_mail_aliases;
 DROP VIEW IF EXISTS grouped_sender_acl;
 DROP VIEW IF EXISTS grouped_domain_alias_address;

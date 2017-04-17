@@ -468,4 +468,10 @@ $lang['admin']['set_rr_failed'] = 'Cannot set Postfix restrictions';
 $lang['admin']['no_record'] = 'No record';
 $lang['admin']['filter_table'] = 'Filter table';
 $lang['admin']['empty'] = 'No results';
+$lang['admin']['forwarding_hosts'] = 'Forwarding Hosts';
+$lang['admin']['forwarding_hosts_hint'] = 'Specify any networks (in CIDR notation) from which you unconditionally want to accept incoming messages. These hosts are then not checked against DNSBLs or subjected to greylisting. Spam received from them is never rejected and always filed into the Junk folder. The most common use for this is to specify mail servers on which you have set up a forwarding rule.';
+$lang['admin']['add_forwarding_host'] = 'Add Forwarding Host';
+$lang['delete']['remove_forwardinghost_warning'] = '<b>Warning:</b> You are about to remove the forwarding host <b>%s</b>!';
+$lang['success']['forwarding_host_removed'] = "Forwarding host %s has been removed";
+$lang['success']['forwarding_host_added'] = "Forwarding host %s has been added";
 ?>
