@@ -8,8 +8,10 @@ if [ "$EUID" -ne 0 ]
 	exit 1
 fi
 
-# move into mailcow-dockerized base directory
-cd ../../
+# Find script directory and move to base directory of mailcow-dockerized
+# so docker-compose is executed from the right location
+DIR=$(echo $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd ) | sed 's/mailcow-dockerized.*/mailcow-dockerized/')
+cd $DIR
 
 if [[ ${1} == "reset" ]]; then
 	# Reset modified values to their defaults
@@ -62,7 +64,7 @@ else
 	sed -i "s/relayhost\ \=.*/relayhost\ \=\ \[${1}\]\:${2}/" data/conf/postfix/main.cf
 	if grep -q "smtp_sasl_password_maps" data/conf/postfix/main.cf
 	then
-		sed -i "s/^smtp\_sasl\_password\_maps.*/smtp_sasl\_password\_maps\ \=\ hash\:\/opt\/postfix\/conf\/smarthost\_passwd/" data/conf/postfix/main.cf
+		sed -i "s/^smtp\_sasl\_password\_maps.*/smtp\_sasl\_password\_maps\ \=\ hash\:\/opt\/postfix\/conf\/smarthost\_passwd/" data/conf/postfix/main.cf
 	else
 		echo "smtp_sasl_password_maps = hash:/opt/postfix/conf/smarthost_passwd" >>  data/conf/postfix/main.cf
 	fi
@@ -72,10 +74,12 @@ else
 	else
 		echo "smtp_sasl_auth_enable = yes" >>  data/conf/postfix/main.cf
 	fi
-	docker-compose exec postfix-mailcow postconf -e "smtp_sasl_password_maps = hash:/opt/postfix/conf/smarthost_passwd"
-	# We can use anonymous and plain-text authentication, too (be warned)
-	docker-compose exec postfix-mailcow postconf -e "smtp_sasl_security_options = "
-	docker-compose exec postfix-mailcow postconf -e "smtp_sasl_auth_enable = yes"
+	if grep -q "smtp_sasl_security_options" data/conf/postfix/main.cf
+	then
+		sed -i "s/^smtp\_sasl\_security\_options.*/smtp\_sasl\_security\_options\ \=/" data/conf/postfix/main.cf
+	else
+		echo "smtp_sasl_security_options =" >>  data/conf/postfix/main.cf
+	fi
 	if [[ ! -z ${3} ]]; then
 		echo ${1} ${3}:${4} > data/conf/postfix/smarthost_passwd
 		docker-compose exec postfix-mailcow postmap /opt/postfix/conf/smarthost_passwd
