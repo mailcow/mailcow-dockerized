@@ -103,6 +103,8 @@ Recreate affected containers by running `docker-compose up -d`.
     ProxyPass / http://127.0.0.1:8080/
     ProxyPassReverse / http://127.0.0.1:8080/
     ProxyPreserveHost Off
+    RequestHeader set X-Forwarded-Proto "https"
+    RequestHeader set X-Forwarded-Port "443"
     your-ssl-configuration-here
     [...]
 
@@ -127,13 +129,26 @@ server {
     your-ssl-configuration-here
     location / {
         proxy_pass http://127.0.0.1:8080/;
-        proxy_redirect http://127.0.0.1:8080/ $scheme://$host:$server_port/;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Port $server_port;
     }
     [...]
 }
+```
+
+### HAProxy
+```
+frontend https-in
+  bind :::443 v4v6 ssl crt mailcow.pem
+  default_backend mailcow
+
+backend mailcow
+  option forwardfor
+  http-request set-header X-Forwarded-Proto https
+  http-request set-header X-Forwarded-Port %[dst_port]
+  server mailcow 127.0.0.1:8080 check
 ```
 
 ## Optional: Setup a relayhost
