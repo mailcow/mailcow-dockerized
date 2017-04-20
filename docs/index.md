@@ -1,6 +1,8 @@
 # mailcow: dockerized - 🐮 + 🐋 = 💕
 
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JWBSYHF4SMC68)
+[![Servercow](https://www.servercow.de/img/cow_globe_200.svg)](https://www.servercow.de)
+
+If you want to support mailcow, consider hosting mailcow on a Servercow virtual machine @ Servercow!
 
 ## Screenshots
 
@@ -30,6 +32,7 @@ mailcow dockerized comes with **11 containers** linked in **one bridged network*
 - mysql-vol-1
 - rspamd-vol-1
 - postfix-vol-1
+- crypt-vol-1
 
 The integrated **mailcow UI** allows administrative work on your mail server instance as well as separated domain administrator and mailbox user access:
 
