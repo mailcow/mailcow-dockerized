@@ -75,7 +75,7 @@ Beware that a mailbox user can login to mailcow and override a domain policy fil
 Make your changes in `data/Dockerfiles/$service` and build the image locally:
 
 ```
-docker build data/Dockerfiles/service -t andryyy/mailcow-dockerized:$service
+docker build data/Dockerfiles/service -t mailcow/$service
 ```
 
 Now auto-recreate modified containers:
@@ -311,13 +311,10 @@ Running `docker-compose down -v` will **destroy all mailcow: dockerized volumes*
 ## Reset admin password
 Reset mailcow admin to `admin:moohoo`:
 
-1\. Drop admin table
 ```
-source mailcow.conf
-docker-compose exec mysql-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME} -e "DROP TABLE admin;"
+cd mailcow_path
+bash reset_admin.sh
 ```
-
-2\. Open mailcow UI to auto-init the db
 
 ## Rspamd
 
