@@ -102,9 +102,14 @@ Recreate affected containers by running `docker-compose up -d`.
     # You should proxy to a plain HTTP session to offload SSL processing
     ProxyPass / http://127.0.0.1:8080/
     ProxyPreserveHost Off
-    RequestHeader set X-Forwarded-Host "mail.example.org"
-    RequestHeader set X-Forwarded-Proto "https"
-    RequestHeader set X-Forwarded-Port "443"
+    ProxyAddHeaders Off
+    RewriteEngine on
+    RewriteRule ^(.*) - [E=HOST_HEADER:%{HTTP_HOST},E=CLIENT_IP:%{REMOTE_ADDR},E=PORT_NUMBER:%{SERVER_PORT},L]
+    RequestHeader append X-Forwarded-For "%{CLIENT_IP}e"
+    RequestHeader set X-Forwarded-Host "%{HOST_HEADER}e"
+    RequestHeader set X-Forwarded-Proto "https" env=HTTPS
+    RequestHeader set X-Forwarded-Proto "http" env=!HTTPS
+    RequestHeader set X-Forwarded-Port "%{PORT_NUMBER}e"
     your-ssl-configuration-here
     [...]
 
@@ -148,7 +153,8 @@ frontend https-in
 backend mailcow
   option forwardfor
   http-request set-header X-Forwarded-Host %[req.hdr(Host)]
-  http-request set-header X-Forwarded-Proto https
+  http-request set-header X-Forwarded-Proto https if { ssl_fc }
+  http-request set-header X-Forwarded-Proto http if !{ ssl_fc }
   http-request set-header X-Forwarded-Port %[dst_port]
   server mailcow 127.0.0.1:8080 check
 ```
