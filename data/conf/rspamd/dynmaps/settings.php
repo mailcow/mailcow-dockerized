@@ -207,8 +207,11 @@ while ($row = array_shift($rows)) {
 	}
 ?>
 		apply "default" {
-			MAILCOW_MOO = -999.0;
+			MAILCOW_WHITE = -999.0;
 		}
+		symbols [
+			"MAILCOW_WHITE"
+		]
 	}
 <?php
 }
@@ -302,8 +305,11 @@ while ($row = array_shift($rows)) {
 	}
 ?>
 		apply "default" {
-			MAILCOW_MOO = 999.0;
+			MAILCOW_BLACK = 999.0;
 		}
+		symbols [
+			"MAILCOW_BLACK"
+		]
 	}
 <?php
 }
