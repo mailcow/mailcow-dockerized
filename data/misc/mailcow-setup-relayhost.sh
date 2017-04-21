@@ -10,7 +10,7 @@ fi
 
 # Find script directory and move to base directory of mailcow-dockerized
 # so docker-compose is executed from the right location
-DIR=$(echo $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd ) | sed 's/mailcow-dockerized.*/mailcow-dockerized/')
+DIR=$(echo $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd ) | sed 's/data\/misc.*//')
 cd $DIR
 
 if [[ ${1} == "reset" ]]; then
