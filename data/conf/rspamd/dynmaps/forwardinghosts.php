@@ -7,13 +7,16 @@ ini_set('error_reporting', 0);
 function in_net($addr, $net)
 {
 	$net = explode('/', $net);
-	$mask = $net[1];
+	if (count($net) > 1)
+		$mask = $net[1];
 	$net = inet_pton($net[0]);
 	$addr = inet_pton($addr);
 
 	$length = strlen($net); // 4 for IPv4, 16 for IPv6
 	if (strlen($net) != strlen($addr))
 		return FALSE;
+	if (!isset($mask))
+		$mask = $length * 8;
 
 	$addr_bin = '';
 	$net_bin = '';
@@ -34,7 +37,7 @@ $opt = [
 ];
 try {
   $pdo = new PDO($dsn, $database_user, $database_pass, $opt);
-  $stmt = $pdo->query("SELECT * FROM `forwarding_hosts`");
+  $stmt = $pdo->query("SELECT host FROM `forwarding_hosts`");
   $networks = $stmt->fetchAll(PDO::FETCH_COLUMN);
   foreach ($networks as $network)
   {
@@ -47,7 +50,7 @@ try {
   echo '200 dunno';
 }
 catch (PDOException $e) {
-  echo 'settings { }';
+  echo '200 dunno';
   exit;
 }
 ?>
