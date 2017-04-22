@@ -31,8 +31,6 @@ catch (PDOException $e) {
 
 ?>
 settings {
-	whitelist_forwarding_hosts {
-		priority = high;
 <?php
 try {
 	$stmt = $pdo->query("SELECT `host` FROM `forwarding_hosts`");
@@ -42,6 +40,12 @@ catch (PDOException $e) {
 	$rows = array();
 }
 
+if ($rows)
+{
+?>
+	whitelist_forwarding_hosts {
+		priority = high;
+<?php
 foreach ($rows as $host) {
 	echo "\t\t" . 'ip = "' . $host . '";' . "\n";
 }
@@ -56,6 +60,7 @@ foreach ($rows as $host) {
 		]
 	}
 <?php
+}
 $stmt = $pdo->query("SELECT DISTINCT `object` FROM `filterconf` WHERE `option` = 'highspamlevel' OR `option` = 'lowspamlevel'");
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
