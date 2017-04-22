@@ -98,6 +98,8 @@ function init_db_schema() {
 			'msg' => 'Database initialization completed.'
 		);
 	}
+  // Add newly added tables
+  $stmt = $pdo->query("CREATE TABLE IF NOT EXISTS `forwarding_hosts` (`host` VARCHAR(255) NOT NULL, PRIMARY KEY (`host`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC");
   // Add newly added columns
   $stmt = $pdo->query("SHOW COLUMNS FROM `mailbox` LIKE 'kind'");
   $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -124,9 +126,11 @@ function init_db_schema() {
   if ($num_results == 0) {
     $pdo->query("ALTER TABLE `tfa` ADD `key_id` VARCHAR(255) DEFAULT 'unidentified'");
   }
-  
-  // Add newly added tables
-  $stmt = $pdo->query("CREATE TABLE IF NOT EXISTS `forwarding_hosts` (`host` VARCHAR(255) NOT NULL, PRIMARY KEY (`host`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC");
+  $stmt = $pdo->query("SHOW COLUMNS FROM `forwarding_hosts` LIKE 'source'");
+  $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+  if ($num_results == 0) {
+    $pdo->query("ALTER TABLE `forwarding_hosts` ADD `source` VARCHAR(255) DEFAULT ''");
+  }
 }
 function verify_ssha256($hash, $password) {
 	// Remove tag if any
@@ -5044,11 +5048,12 @@ function get_u2f_registrations($username) {
 }
 function get_forwarding_hosts() {
 	global $pdo;
-  $sel = $pdo->prepare("SELECT host FROM `forwarding_hosts`");
+  $sel = $pdo->prepare("SELECT host, source FROM `forwarding_hosts`");
   $sel->execute();
-  return $sel->fetchAll(PDO::FETCH_COLUMN);
+  return $sel->fetchAll(PDO::FETCH_OBJ);
 }
 function add_forwarding_host($postarray) {
+	require_once 'spf.inc.php';
 	global $pdo;
 	global $lang;
 	if ($_SESSION['mailcow_cc_role'] != "admin") {
@@ -5058,23 +5063,47 @@ function add_forwarding_host($postarray) {
 		);
 		return false;
 	}
+	$source = $postarray['hostname'];
 	$host = $postarray['hostname'];
-	try {
-		$stmt = $pdo->prepare("INSERT INTO `forwarding_hosts` (`host`) VALUES (:host)");
-		$stmt->execute(array(
-			':host' => $host,
-		));
+	$hosts = array();
+	if (preg_match('/^[0-9a-fA-F:\/]+$/', $host)) { // IPv6 address
+		$hosts = array($host);
 	}
-	catch (PDOException $e) {
+	elseif (preg_match('/^[0-9\.\/]+$/', $host)) { // IPv4 address
+		$hosts = array($host);
+	}
+	else {
+		$hosts = get_outgoing_hosts_best_guess($host);
+	}
+	if (!$hosts)
+	{
 		$_SESSION['return'] = array(
 			'type' => 'danger',
-			'msg' => 'MySQL: '.$e
+			'msg' => 'Invalid host specified: '. htmlspecialchars($host)
 		);
 		return false;
 	}
+	foreach ($hosts as $host) {
+		if ($source == $host)
+			$source = '';
+		try {
+			$stmt = $pdo->prepare("INSERT IGNORE INTO `forwarding_hosts` (`host`, `source`) VALUES (:host, :source)");
+			$stmt->execute(array(
+				':host' => $host,
+				':source' => $source,
+			));
+		}
+		catch (PDOException $e) {
+			$_SESSION['return'] = array(
+				'type' => 'danger',
+				'msg' => 'MySQL: '.$e
+			);
+			return false;
+		}
+	}
 	$_SESSION['return'] = array(
 		'type' => 'success',
-		'msg' => sprintf($lang['success']['forwarding_host_added'], htmlspecialchars($host))
+		'msg' => sprintf($lang['success']['forwarding_host_added'], htmlspecialchars(implode(', ', $hosts)))
 	);
 }
 function delete_forwarding_host($postarray) {

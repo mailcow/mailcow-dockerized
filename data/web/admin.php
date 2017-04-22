@@ -313,7 +313,8 @@ $tfa_data = get_tfa();
           <table class="table table-striped" id="forwardinghoststable">
             <thead>
             <tr>
-              <th style="min-width: 100px;"><?=$lang['edit']['hostname'];?></th>
+              <th style="min-width: 100px;"><?=$lang['edit']['host'];?></th>
+              <th style="min-width: 100px;"><?=$lang['edit']['source'];?></th>
               <th style="text-align: right; min-width: 200px;"><?=$lang['admin']['action'];?></th>
             </tr>
             </thead>
@@ -321,20 +322,23 @@ $tfa_data = get_tfa();
               <?php
               $forwarding_hosts = get_forwarding_hosts();
               if ($forwarding_hosts) {
-              foreach ($forwarding_hosts as $host) {
-              ?>
-              <tr id="data">
-                <td><?=htmlspecialchars(strtolower($host));?></td>
-                <td style="text-align: right;">
-                  <div class="btn-group">
-                    <a href="delete.php?forwardinghost=<?=$host;?>" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> <?=$lang['admin']['remove'];?></a>
-                  </div>
-                </td>
-                </td>
-              </tr>
+                foreach ($forwarding_hosts as $host) {
+                  $source = $host->source;
+                  $host = $host->host;
+                ?>
+                <tr id="data">
+                  <td><?=htmlspecialchars(strtolower($host));?></td>
+                  <td><?=htmlspecialchars(strtolower($source));?></td>
+                  <td style="text-align: right;">
+                    <div class="btn-group">
+                      <a href="delete.php?forwardinghost=<?=$host;?>" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> <?=$lang['admin']['remove'];?></a>
+                    </div>
+                  </td>
+                  </td>
+                </tr>
 
-              <?php
-              }
+                <?php
+                }
               } else {
               ?>
                 <tr id="no-data"><td colspan="4" style="text-align: center; font-style: italic;"><?=$lang['admin']['no_record'];?></td></tr>
@@ -347,9 +351,10 @@ $tfa_data = get_tfa();
         </form>
         <small>
         <legend><?=$lang['admin']['add_forwarding_host'];?></legend>
+        <p style="margin-bottom:10px"><?=$lang['admin']['forwarding_hosts_add_hint'];?></p>
         <form class="form-horizontal" role="form" method="post">
           <div class="form-group">
-            <label class="control-label col-sm-2" for="hostname"><?=$lang['edit']['hostname'];?>:</label>
+            <label class="control-label col-sm-2" for="hostname"><?=$lang['edit']['host'];?>:</label>
             <div class="col-sm-10">
               <input type="text" class="form-control" name="hostname" id="hostname" required>
             </div>

@@ -105,7 +105,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 				</form>
 				<?php
 		}
-		// DELETE DOMAIN ADMIN
+		// DELETE FORWARDING HOST
 		elseif (isset($_GET["forwardinghost"]) &&
 			!empty($_GET["forwardinghost"]) &&
         $_SESSION['mailcow_cc_role'] == "admin") {
