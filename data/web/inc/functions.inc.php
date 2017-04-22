@@ -62,76 +62,6 @@ function hasMailboxObjectAccess($username, $role, $object) {
 	}
 	return false;
 }
-function init_db_schema() {
-  // This will be much better in future releases...
-	global $pdo;
-	try {
-		$stmt = $pdo->prepare("SELECT NULL FROM `admin`, `imapsync`, `tfa`");
-		$stmt->execute();
-	}
-	catch (Exception $e) {
-		$lines = file('/web/inc/init.sql');
-		$data = '';
-		foreach ($lines as $line) {
-			if (substr($line, 0, 2) == '--' || $line == '') {
-				continue;
-			}
-			$data .= $line;
-			if (substr(trim($line), -1, 1) == ';') {
-				$pdo->query($data);
-				$data = '';
-			}
-		}
-    // Create index if not exists
-		$stmt = $pdo->query("SHOW INDEX FROM sogo_acl WHERE KEY_NAME = 'sogo_acl_c_folder_id_idx'");
-		$num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-		if ($num_results == 0) {
-			$pdo->query("CREATE INDEX sogo_acl_c_folder_id_idx ON sogo_acl(c_folder_id)");
-		}
-		$stmt = $pdo->query("SHOW INDEX FROM sogo_acl WHERE KEY_NAME = 'sogo_acl_c_uid_idx'");
-		$num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-		if ($num_results == 0) {
-			$pdo->query("CREATE INDEX sogo_acl_c_uid_idx ON sogo_acl(c_uid)");
-		}
-		$_SESSION['return'] = array(
-			'type' => 'success',
-			'msg' => 'Database initialization completed.'
-		);
-	}
-  // Add newly added tables
-  $stmt = $pdo->query("CREATE TABLE IF NOT EXISTS `forwarding_hosts` (`host` VARCHAR(255) NOT NULL, PRIMARY KEY (`host`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC");
-  // Add newly added columns
-  $stmt = $pdo->query("SHOW COLUMNS FROM `mailbox` LIKE 'kind'");
-  $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-  if ($num_results == 0) {
-    $pdo->query("ALTER TABLE `mailbox` ADD `kind` VARCHAR(100) NOT NULL DEFAULT ''");
-  }
-  $stmt = $pdo->query("SHOW COLUMNS FROM `mailbox` LIKE 'multiple_bookings'");
-  $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-  if ($num_results == 0) {
-    $pdo->query("ALTER TABLE `mailbox` ADD `multiple_bookings` tinyint(1) NOT NULL DEFAULT '0'");
-  }
-  $stmt = $pdo->query("SHOW COLUMNS FROM `imapsync` LIKE 'delete1'");
-  $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-  if ($num_results == 0) {
-    $pdo->query("ALTER TABLE `imapsync` ADD `delete1` tinyint(1) NOT NULL DEFAULT '0'");
-  }
-  $stmt = $pdo->query("SHOW COLUMNS FROM `mailbox` LIKE 'wants_tagged_subject'");
-  $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-  if ($num_results == 0) {
-    $pdo->query("ALTER TABLE `mailbox` ADD `wants_tagged_subject` tinyint(1) NOT NULL DEFAULT '0'");
-  }
-  $stmt = $pdo->query("SHOW COLUMNS FROM `tfa` LIKE 'key_id'");
-  $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-  if ($num_results == 0) {
-    $pdo->query("ALTER TABLE `tfa` ADD `key_id` VARCHAR(255) DEFAULT 'unidentified'");
-  }
-  $stmt = $pdo->query("SHOW COLUMNS FROM `forwarding_hosts` LIKE 'source'");
-  $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-  if ($num_results == 0) {
-    $pdo->query("ALTER TABLE `forwarding_hosts` ADD `source` VARCHAR(255) DEFAULT ''");
-  }
-}
 function verify_ssha256($hash, $password) {
 	// Remove tag if any
 	$hash = ltrim($hash, '{SSHA256}');
@@ -294,13 +224,11 @@ function edit_admin_account($postarray) {
 		$password_hashed = hash_password($password);
 		try {
 			$stmt = $pdo->prepare("UPDATE `admin` SET 
-				`modified` = :modified,
 				`password` = :password_hashed,
 				`username` = :username1
 					WHERE `username` = :username2");
 			$stmt->execute(array(
 				':password_hashed' => $password_hashed,
-				':modified' => date('Y-m-d H:i:s'),
 				':username1' => $username,
 				':username2' => $username_now
 			));
@@ -316,12 +244,10 @@ function edit_admin_account($postarray) {
 	else {
 		try {
 			$stmt = $pdo->prepare("UPDATE `admin` SET 
-				`modified` = :modified,
 				`username` = :username1
 					WHERE `username` = :username2");
 			$stmt->execute(array(
 				':username1' => $username,
-				':modified' => date('Y-m-d H:i:s'),
 				':username2' => $username_now
 			));
 		}
@@ -615,10 +541,9 @@ function edit_user_account($postarray) {
 			}
 			$password_hashed = hash_password($password_new);
 			try {
-				$stmt = $pdo->prepare("UPDATE `mailbox` SET `modified` = :modified, `password` = :password_hashed WHERE `username` = :username");
+				$stmt = $pdo->prepare("UPDATE `mailbox` SET `password` = :password_hashed WHERE `username` = :username");
 				$stmt->execute(array(
 					':password_hashed' => $password_hashed,
-					':modified' => date('Y-m-d H:i:s'),
 					':username' => $username
 				));
 			}
@@ -1640,13 +1565,11 @@ function add_domain_admin($postarray) {
 			}
 		}
 		try {
-			$stmt = $pdo->prepare("INSERT INTO `admin` (`username`, `password`, `superadmin`, `created`, `modified`, `active`)
-				VALUES (:username, :password_hashed, '0', :created, :modified, :active)");
+			$stmt = $pdo->prepare("INSERT INTO `admin` (`username`, `password`, `superadmin`, `active`)
+				VALUES (:username, :password_hashed, '0', :active)");
 			$stmt->execute(array(
 				':username' => $username,
 				':password_hashed' => $password_hashed,
-				':created' => date('Y-m-d H:i:s'),
-				':modified' => date('Y-m-d H:i:s'),
 				':active' => $active
 			));
 		}
@@ -2235,12 +2158,11 @@ function edit_domain_admin($postarray) {
       }
       $password_hashed = hash_password($password);
       try {
-        $stmt = $pdo->prepare("UPDATE `admin` SET `username` = :username1, `modified` = :modified, `active` = :active, `password` = :password_hashed WHERE `username` = :username2");
+        $stmt = $pdo->prepare("UPDATE `admin` SET `username` = :username1, `active` = :active, `password` = :password_hashed WHERE `username` = :username2");
         $stmt->execute(array(
           ':password_hashed' => $password_hashed,
           ':username1' => $username,
           ':username2' => $username_now,
-          ':modified' => date('Y-m-d H:i:s'),
           ':active' => $active
         ));
         if (isset($postarray['disable_tfa'])) {
@@ -2262,11 +2184,10 @@ function edit_domain_admin($postarray) {
     }
     else {
       try {
-        $stmt = $pdo->prepare("UPDATE `admin` SET `username` = :username1, `modified` = :modified, `active` = :active WHERE `username` = :username2");
+        $stmt = $pdo->prepare("UPDATE `admin` SET `username` = :username1, `active` = :active WHERE `username` = :username2");
         $stmt->execute(array(
           ':username1' => $username,
           ':username2' => $username_now,
-          ':modified' => date('Y-m-d H:i:s'),
           ':active' => $active
         ));
         if (isset($postarray['disable_tfa'])) {
@@ -2328,10 +2249,9 @@ function edit_domain_admin($postarray) {
       }
       $password_hashed = hash_password($password_new);
       try {
-        $stmt = $pdo->prepare("UPDATE `admin` SET `modified` = :modified, `password` = :password_hashed WHERE `username` = :username");
+        $stmt = $pdo->prepare("UPDATE `admin` SET `password` = :password_hashed WHERE `username` = :username");
         $stmt->execute(array(
           ':password_hashed' => $password_hashed,
-          ':modified' => date('Y-m-d H:i:s'),
           ':username' => $username
         ));
       }
@@ -2363,7 +2283,7 @@ function get_admin_details() {
     return false;
   }
   try {
-    $stmt = $pdo->prepare("SELECT `username`, `modified`, `created` FROM `admin`WHERE `superadmin`='1' AND active='1'");
+    $stmt = $pdo->prepare("SELECT `username`, `modified`, `created` FROM `admin` WHERE `superadmin`='1' AND active='1'");
     $stmt->execute();
     $data = $stmt->fetch(PDO::FETCH_ASSOC);
   }
@@ -2608,8 +2528,8 @@ function mailbox_add_domain($postarray) {
 	}
 
 	try {
-		$stmt = $pdo->prepare("INSERT INTO `domain` (`domain`, `description`, `aliases`, `mailboxes`, `maxquota`, `quota`, `transport`, `backupmx`, `created`, `modified`, `active`, `relay_all_recipients`)
-			VALUES (:domain, :description, :aliases, :mailboxes, :maxquota, :quota, 'virtual', :backupmx, :created, :modified, :active, :relay_all_recipients)");
+		$stmt = $pdo->prepare("INSERT INTO `domain` (`domain`, `description`, `aliases`, `mailboxes`, `maxquota`, `quota`, `transport`, `backupmx`, `active`, `relay_all_recipients`)
+			VALUES (:domain, :description, :aliases, :mailboxes, :maxquota, :quota, 'virtual', :backupmx, :active, :relay_all_recipients)");
 		$stmt->execute(array(
 			':domain' => $domain,
 			':description' => $description,
@@ -2619,8 +2539,6 @@ function mailbox_add_domain($postarray) {
 			':quota' => $quota,
 			':backupmx' => $backupmx,
 			':active' => $active,
-			':created' => date('Y-m-d H:i:s'),
-			':modified' => date('Y-m-d H:i:s'),
 			':relay_all_recipients' => $relay_all_recipients
 		));
 		$_SESSION['return'] = array(
@@ -2796,16 +2714,14 @@ function mailbox_add_alias($postarray) {
 		$goto = implode(",", $gotos);
 
 		try {
-			$stmt = $pdo->prepare("INSERT INTO `alias` (`address`, `goto`, `domain`, `created`, `modified`, `active`)
-				VALUES (:address, :goto, :domain, :created, :modified, :active)");
+			$stmt = $pdo->prepare("INSERT INTO `alias` (`address`, `goto`, `domain`, `active`)
+				VALUES (:address, :goto, :domain, :active)");
 
 			if (!filter_var($address, FILTER_VALIDATE_EMAIL) === true) {
 				$stmt->execute(array(
 					':address' => '@'.$domain,
 					':goto' => $goto,
 					':domain' => $domain,
-					':created' => date('Y-m-d H:i:s'),
-					':modified' => date('Y-m-d H:i:s'),
 					':active' => $active
 				));
 			}
@@ -2814,8 +2730,6 @@ function mailbox_add_alias($postarray) {
 					':address' => $address,
 					':goto' => $goto,
 					':domain' => $domain,
-					':created' => date('Y-m-d H:i:s'),
-					':modified' => date('Y-m-d H:i:s'),
 					':active' => $active
 				));
 			}
@@ -2916,13 +2830,11 @@ function mailbox_add_alias_domain($postarray) {
 	}
 
 	try {
-		$stmt = $pdo->prepare("INSERT INTO `alias_domain` (`alias_domain`, `target_domain`, `created`, `modified`, `active`)
-			VALUES (:alias_domain, :target_domain, :created, :modified, :active)");
+		$stmt = $pdo->prepare("INSERT INTO `alias_domain` (`alias_domain`, `target_domain`, `active`)
+			VALUES (:alias_domain, :target_domain, :active)");
 		$stmt->execute(array(
 			':alias_domain' => $alias_domain,
 			':target_domain' => $target_domain,
-			':created' => date('Y-m-d H:i:s'),
-			':modified' => date('Y-m-d H:i:s'),
 			':active' => $active
 		));
 		$_SESSION['return'] = array(
@@ -3125,8 +3037,8 @@ function mailbox_add_mailbox($postarray) {
 	}
 
 	try {
-		$stmt = $pdo->prepare("INSERT INTO `mailbox` (`username`, `password`, `name`, `maildir`, `quota`, `local_part`, `domain`, `created`, `modified`, `active`) 
-			VALUES (:username, :password_hashed, :name, :maildir, :quota_b, :local_part, :domain, :created, :modified, :active)");
+		$stmt = $pdo->prepare("INSERT INTO `mailbox` (`username`, `password`, `name`, `maildir`, `quota`, `local_part`, `domain`, `active`) 
+			VALUES (:username, :password_hashed, :name, :maildir, :quota_b, :local_part, :domain, :active)");
 		$stmt->execute(array(
 			':username' => $username,
 			':password_hashed' => $password_hashed,
@@ -3135,8 +3047,6 @@ function mailbox_add_mailbox($postarray) {
 			':quota_b' => $quota_b,
 			':local_part' => $local_part,
 			':domain' => $domain,
-			':created' => date('Y-m-d H:i:s'),
-			':modified' => date('Y-m-d H:i:s'),
 			':active' => $active
 		));
 
@@ -3144,14 +3054,12 @@ function mailbox_add_mailbox($postarray) {
 			VALUES (:username, '0', '0')");
 		$stmt->execute(array(':username' => $username));
 
-		$stmt = $pdo->prepare("INSERT INTO `alias` (`address`, `goto`, `domain`, `created`, `modified`, `active`)
-			VALUES (:username1, :username2, :domain, :created, :modified, :active)");
+		$stmt = $pdo->prepare("INSERT INTO `alias` (`address`, `goto`, `domain`, `active`)
+			VALUES (:username1, :username2, :domain, :active)");
 		$stmt->execute(array(
 			':username1' => $username,
 			':username2' => $username,
 			':domain' => $domain,
-			':created' => date('Y-m-d H:i:s'),
-			':modified' => date('Y-m-d H:i:s'),
 			':active' => $active
 		));
 
@@ -3281,15 +3189,13 @@ function mailbox_add_resource($postarray) {
 	}
 
 	try {
-		$stmt = $pdo->prepare("INSERT INTO `mailbox` (`username`, `password`, `name`, `maildir`, `quota`, `local_part`, `domain`, `created`, `modified`, `active`, `multiple_bookings`, `kind`) 
-			VALUES (:name, 'RESOURCE', :description, 'RESOURCE', 0, :local_part, :domain, :created, :modified, :active, :multiple_bookings, :kind)");
+		$stmt = $pdo->prepare("INSERT INTO `mailbox` (`username`, `password`, `name`, `maildir`, `quota`, `local_part`, `domain`, `active`, `multiple_bookings`, `kind`) 
+			VALUES (:name, 'RESOURCE', :description, 'RESOURCE', 0, :local_part, :domain, :active, :multiple_bookings, :kind)");
 		$stmt->execute(array(
 			':name' => $name,
 			':description' => $description,
 			':local_part' => $local_part,
 			':domain' => $domain,
-			':created' => date('Y-m-d H:i:s'),
-			':modified' => date('Y-m-d H:i:s'),
 			':active' => $active,
 			':kind' => $kind,
 			':multiple_bookings' => $multiple_bookings
@@ -3380,12 +3286,10 @@ function mailbox_edit_alias_domain($postarray) {
 	try {
 		$stmt = $pdo->prepare("UPDATE `alias_domain` SET
       `alias_domain` = :alias_domain,
-      `active` = :active,
-      `modified` = :modified
+      `active` = :active
         WHERE `alias_domain` = :alias_domain_now");
 		$stmt->execute(array(
 			':alias_domain' => $alias_domain,
-      ':modified' => date('Y-m-d H:i:s'),
 			':alias_domain_now' => $alias_domain_now,
 			':active' => $active
 		));
@@ -3461,14 +3365,12 @@ function mailbox_edit_alias($postarray) {
 	try {
 		$stmt = $pdo->prepare("UPDATE `alias` SET
       `goto` = :goto,
-      `active`= :active,
-      `modified` = :modified
+      `active`= :active
         WHERE `address` = :address");
 		$stmt->execute(array(
 			':goto' => $goto,
 			':active' => $active,
-			':address' => $address,
-      ':modified' => date('Y-m-d H:i:s'),
+			':address' => $address
 		));
 		$_SESSION['return'] = array(
 			'type' => 'success',
@@ -3513,11 +3415,9 @@ function mailbox_edit_domain($postarray) {
     isset($postarray['active']) ? $active = '1' : $active = '0';
     try {
       $stmt = $pdo->prepare("UPDATE `domain` SET 
-      `modified`= :modified,
       `description` = :description
         WHERE `domain` = :domain");
       $stmt->execute(array(
-        ':modified' => date('Y-m-d H:i:s'),
         ':description' => $description,
         ':domain' => $domain
       ));
@@ -3621,7 +3521,6 @@ function mailbox_edit_domain($postarray) {
     }
     try {
       $stmt = $pdo->prepare("UPDATE `domain` SET 
-      `modified`= :modified,
       `relay_all_recipients` = :relay_all_recipients,
       `backupmx` = :backupmx,
       `active` = :active,
@@ -3639,7 +3538,6 @@ function mailbox_edit_domain($postarray) {
         ':maxquota' => $maxquota,
         ':mailboxes' => $mailboxes,
         ':aliases' => $aliases,
-        ':modified' => date('Y-m-d H:i:s'),
         ':description' => $description,
         ':domain' => $domain
       ));
@@ -3851,23 +3749,19 @@ function mailbox_edit_mailbox($postarray) {
 		$password_hashed = hash_password($password);
 		try {
 			$stmt = $pdo->prepare("UPDATE `alias` SET
-					`modified` = :modified,
 					`active` = :active
 						WHERE `address` = :address");
 			$stmt->execute(array(
 				':address' => $username,
-				':modified' => date('Y-m-d H:i:s'),
 				':active' => $active
 			));
 			$stmt = $pdo->prepare("UPDATE `mailbox` SET
-					`modified` = :modified,
 					`active` = :active,
 					`password` = :password_hashed,
 					`name`= :name,
 					`quota` = :quota_b
 						WHERE `username` = :username");
 			$stmt->execute(array(
-				':modified' => date('Y-m-d H:i:s'),
 				':password_hashed' => $password_hashed,
 				':active' => $active,
 				':name' => $name,
@@ -3890,23 +3784,19 @@ function mailbox_edit_mailbox($postarray) {
 	}
 	try {
 		$stmt = $pdo->prepare("UPDATE `alias` SET
-				`modified` = :modified,
 				`active` = :active
 					WHERE `address` = :address");
 		$stmt->execute(array(
 			':address' => $username,
-			':modified' => date('Y-m-d H:i:s'),
 			':active' => $active
 		));
 		$stmt = $pdo->prepare("UPDATE `mailbox` SET
-				`modified` = :modified,
 				`active` = :active,
 				`name`= :name,
 				`quota` = :quota_b
 					WHERE `username` = :username");
 		$stmt->execute(array(
 			':active' => $active,
-			':modified' => date('Y-m-d H:i:s'),
 			':name' => $name,
 			':quota_b' => $quota_b,
 			':username' => $username
@@ -3969,7 +3859,6 @@ function mailbox_edit_resource($postarray) {
 
 	try {
 		$stmt = $pdo->prepare("UPDATE `mailbox` SET
-				`modified` = :modified,
 				`active` = :active,
 				`name`= :description,
 				`kind`= :kind,
@@ -3977,7 +3866,6 @@ function mailbox_edit_resource($postarray) {
           WHERE `username` = :name");
 		$stmt->execute(array(
 			':active' => $active,
-			':modified' => date('Y-m-d H:i:s'),
 			':description' => $description,
 			':multiple_bookings' => $multiple_bookings,
 			':kind' => $kind,
@@ -4803,12 +4691,10 @@ function mailbox_delete_mailbox($postarray) {
 			}
 			$gotos_rebuild = implode(',', $goto_exploded);
 			$stmt = $pdo->prepare("UPDATE `alias` SET
-        `goto` = :goto,
-        `modified` = :modified,
+        `goto` = :goto
           WHERE `address` = :address");
 			$stmt->execute(array(
 				':goto' => $gotos_rebuild,
-        ':modified' => date('Y-m-d H:i:s'),
 				':address' => $gotos['address']
 			));
 		}
