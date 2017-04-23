@@ -183,11 +183,11 @@ $tfa_data = get_tfa();
   </div>
 
   <h4><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> <?=$lang['admin']['configuration'];?></h4>
+
   <div class="panel-group" id="accordion_access">
-  
+
   <div class="panel panel-default">
   <div class="panel-heading"><?=$lang['admin']['dkim_keys'];?></div>
-  <div id="collapseDKIM" class="panel-collapse">
   <div class="panel-body">
     <p style="margin-bottom:40px"><?=$lang['admin']['dkim_key_hint'];?></p>
     <?php
@@ -299,76 +299,70 @@ $tfa_data = get_tfa();
     </form>
   </div>
   </div>
-  </div>
   
   <div class="panel panel-default">
-  <div style="cursor:pointer;" class="panel-heading" data-toggle="collapse" data-parent="#accordion_access" data-target="#collapseForwardingHosts">
-    <span class="accordion-toggle"><?=$lang['admin']['forwarding_hosts'];?></span>
-  </div>
-    <div id="collapseForwardingHosts" class="panel-collapse collapse">
-      <div class="panel-body">
-        <p style="margin-bottom:40px"><?=$lang['admin']['forwarding_hosts_hint'];?></p>
-        <form method="post">
-          <div class="table-responsive">
-          <table class="table table-striped" id="forwardinghoststable">
-            <thead>
-            <tr>
-              <th style="min-width: 100px;"><?=$lang['edit']['host'];?></th>
-              <th style="min-width: 100px;"><?=$lang['edit']['source'];?></th>
-              <th style="text-align: right; min-width: 200px;"><?=$lang['admin']['action'];?></th>
-            </tr>
-            </thead>
-            <tbody>
-              <?php
-              $forwarding_hosts = get_forwarding_hosts();
-              if ($forwarding_hosts) {
-                foreach ($forwarding_hosts as $host) {
-                  $source = $host->source;
-                  $host = $host->host;
-                ?>
-                <tr id="data">
-                  <td><?=htmlspecialchars(strtolower($host));?></td>
-                  <td><?=htmlspecialchars(strtolower($source));?></td>
-                  <td style="text-align: right;">
-                    <div class="btn-group">
-                      <a href="delete.php?forwardinghost=<?=$host;?>" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> <?=$lang['admin']['remove'];?></a>
-                    </div>
-                  </td>
-                  </td>
-                </tr>
-
-                <?php
-                }
-              } else {
+    <div class="panel-heading"><?=$lang['admin']['forwarding_hosts'];?></div>
+    <div class="panel-body">
+      <p style="margin-bottom:40px"><?=$lang['admin']['forwarding_hosts_hint'];?></p>
+      <form method="post">
+        <div class="table-responsive">
+        <table class="table table-striped" id="forwardinghoststable">
+          <thead>
+          <tr>
+            <th style="min-width: 100px;"><?=$lang['edit']['host'];?></th>
+            <th style="min-width: 100px;"><?=$lang['edit']['source'];?></th>
+            <th style="text-align: right; min-width: 200px;"><?=$lang['admin']['action'];?></th>
+          </tr>
+          </thead>
+          <tbody>
+            <?php
+            $forwarding_hosts = get_forwarding_hosts();
+            if ($forwarding_hosts) {
+              foreach ($forwarding_hosts as $host) {
+                $source = $host->source;
+                $host = $host->host;
               ?>
-                <tr id="no-data"><td colspan="4" style="text-align: center; font-style: italic;"><?=$lang['admin']['no_record'];?></td></tr>
+              <tr id="data">
+                <td><?=htmlspecialchars(strtolower($host));?></td>
+                <td><?=htmlspecialchars(strtolower($source));?></td>
+                <td style="text-align: right;">
+                  <div class="btn-group">
+                    <a href="delete.php?forwardinghost=<?=$host;?>" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> <?=$lang['admin']['remove'];?></a>
+                  </div>
+                </td>
+                </td>
+              </tr>
+
               <?php
               }
-              ?>
-            </tbody>
-          </table>
+            } else {
+            ?>
+              <tr id="no-data"><td colspan="4" style="text-align: center; font-style: italic;"><?=$lang['admin']['no_record'];?></td></tr>
+            <?php
+            }
+            ?>
+          </tbody>
+        </table>
+        </div>
+      </form>
+      <legend><?=$lang['admin']['add_forwarding_host'];?></legend>
+      <p class="help-block"><?=$lang['admin']['forwarding_hosts_add_hint'];?></p>
+      <form class="form-horizontal" role="form" method="post">
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="hostname"><?=$lang['edit']['host'];?>:</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" name="hostname" id="hostname" required>
           </div>
-        </form>
-        <small>
-        <legend><?=$lang['admin']['add_forwarding_host'];?></legend>
-        <p style="margin-bottom:10px"><?=$lang['admin']['forwarding_hosts_add_hint'];?></p>
-        <form class="form-horizontal" role="form" method="post">
-          <div class="form-group">
-            <label class="control-label col-sm-2" for="hostname"><?=$lang['edit']['host'];?>:</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" name="hostname" id="hostname" required>
-            </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" name="add_forwarding_host" class="btn btn-default"><?=$lang['admin']['add'];?></button>
           </div>
-          <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-              <button type="submit" name="add_forwarding_host" class="btn btn-default"><?=$lang['admin']['add'];?></button>
-            </div>
-          </div>
-        </form>
-        </small>
-      </div>
+        </div>
+      </form>
     </div>
-    </div>
+  </div>
+
   </div>
 
 </div> <!-- /container -->
