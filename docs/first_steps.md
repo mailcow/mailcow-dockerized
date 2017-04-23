@@ -17,9 +17,9 @@ This is just an example of how to obtain certificates with certbot. There are se
 wget https://dl.eff.org/certbot-auto -O /usr/local/sbin/certbot && chmod +x /usr/local/sbin/certbot
 ```
 
-2\. Make sure you set `HTTP_BIND=0.0.0.0` and `HTTP_PORT=80` in `mailcow.conf` or setup a reverse proxy to enable connections to port 80. If you changed HTTP_BIND, then restart Nginx:
+2\. Make sure you set `HTTP_BIND=0.0.0.0` and `HTTP_PORT=80` in `mailcow.conf` or setup a reverse proxy to enable connections to port 80. If you changed HTTP_BIND, then rebuild Nginx:
 ``` bash
-docker-compose restart nginx-mailcow
+docker-compose up -d
 ```
 
 3\. Request the certificate with the webroot method:
