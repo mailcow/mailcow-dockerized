@@ -105,6 +105,23 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 				</form>
 				<?php
 		}
+		// DELETE FORWARDING HOST
+		elseif (isset($_GET["forwardinghost"]) &&
+			!empty($_GET["forwardinghost"]) &&
+        $_SESSION['mailcow_cc_role'] == "admin") {
+				$host = $_GET["forwardinghost"];
+				?>
+				<div class="alert alert-warning" role="alert"><?=sprintf($lang['delete']['remove_forwardinghost_warning'], htmlspecialchars($_GET["forwardinghost"]));?></div>
+				<form class="form-horizontal" role="form" method="post" action="/admin.php">
+				<input type="hidden" name="forwardinghost" value="<?=htmlspecialchars($host);?>">
+					<div class="form-group">
+						<div class="col-sm-offset-1 col-sm-10">
+							<button type="submit" name="delete_forwarding_host" class="btn btn-default btn-sm"><?=$lang['delete']['remove_button'];?></button>
+						</div>
+					</div>
+				</form>
+				<?php
+		}
 		// DELETE MAILBOX
 		elseif (isset($_GET["mailbox"]) &&
 			filter_var($_GET["mailbox"], FILTER_VALIDATE_EMAIL) &&

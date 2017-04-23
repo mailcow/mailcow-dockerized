@@ -75,7 +75,7 @@ Beware that a mailbox user can login to mailcow and override a domain policy fil
 Make your changes in `data/Dockerfiles/$service` and build the image locally:
 
 ```
-docker build data/Dockerfiles/service -t andryyy/mailcow-dockerized:$service
+docker build data/Dockerfiles/service -t mailcow/$service
 ```
 
 Now auto-recreate modified containers:
@@ -311,13 +311,10 @@ Running `docker-compose down -v` will **destroy all mailcow: dockerized volumes*
 ## Reset admin password
 Reset mailcow admin to `admin:moohoo`:
 
-1\. Drop admin table
 ```
-source mailcow.conf
-docker-compose exec mysql-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME} -e "DROP TABLE admin;"
+cd mailcow_path
+bash reset_admin.sh
 ```
-
-2\. Open mailcow UI to auto-init the db
 
 ## Rspamd
 
@@ -520,6 +517,14 @@ map $http_upgrade $connection_upgrade {
 ```
 
 Now you can simply navigate to https://${MAILCOW_HOSTNAME}/portainer/ to view your Portainer container monitoring page. You’ll then be prompted to specify a new password for the **admin** account. After specifying your password, you’ll then be able to connect to the Portainer UI.
+
+## Change autodiscover setup type
+
+This disables ActiveSync in the autodiscover service for Outlook and configures it with IMAP and SMTP instead:
+
+Open `data/web/autodiscover.php` and set `'useEASforOutlook' => 'yes'` to `'useEASforOutlook' => 'no'`.
+
+To always use IMAP and SMTP instead of EAS, set `'autodiscoverType' => 'imap'`.
 
 ## Why Bind?
 
