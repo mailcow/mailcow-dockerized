@@ -4932,4 +4932,93 @@ function get_u2f_registrations($username) {
   $sel->execute(array($username));
   return $sel->fetchAll(PDO::FETCH_OBJ);
 }
+function get_forwarding_hosts() {
+	global $pdo;
+  $sel = $pdo->prepare("SELECT host, source FROM `forwarding_hosts`");
+  $sel->execute();
+  return $sel->fetchAll(PDO::FETCH_OBJ);
+}
+function add_forwarding_host($postarray) {
+	require_once 'spf.inc.php';
+	global $pdo;
+	global $lang;
+	if ($_SESSION['mailcow_cc_role'] != "admin") {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['access_denied'])
+		);
+		return false;
+	}
+	$source = $postarray['hostname'];
+	$host = $postarray['hostname'];
+	$hosts = array();
+	if (preg_match('/^[0-9a-fA-F:\/]+$/', $host)) { // IPv6 address
+		$hosts = array($host);
+	}
+	elseif (preg_match('/^[0-9\.\/]+$/', $host)) { // IPv4 address
+		$hosts = array($host);
+	}
+	else {
+		$hosts = get_outgoing_hosts_best_guess($host);
+	}
+	if (!$hosts)
+	{
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => 'Invalid host specified: '. htmlspecialchars($host)
+		);
+		return false;
+	}
+	foreach ($hosts as $host) {
+		if ($source == $host)
+			$source = '';
+		try {
+			$stmt = $pdo->prepare("INSERT IGNORE INTO `forwarding_hosts` (`host`, `source`) VALUES (:host, :source)");
+			$stmt->execute(array(
+				':host' => $host,
+				':source' => $source,
+			));
+		}
+		catch (PDOException $e) {
+			$_SESSION['return'] = array(
+				'type' => 'danger',
+				'msg' => 'MySQL: '.$e
+			);
+			return false;
+		}
+	}
+	$_SESSION['return'] = array(
+		'type' => 'success',
+		'msg' => sprintf($lang['success']['forwarding_host_added'], htmlspecialchars(implode(', ', $hosts)))
+	);
+}
+function delete_forwarding_host($postarray) {
+	global $pdo;
+	global $lang;
+	if ($_SESSION['mailcow_cc_role'] != "admin") {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['access_denied'])
+		);
+		return false;
+	}
+	$host = $postarray['forwardinghost'];
+	try {
+		$stmt = $pdo->prepare("DELETE FROM `forwarding_hosts` WHERE `host` = :host");
+		$stmt->execute(array(
+			':host' => $host,
+		));
+	}
+	catch (PDOException $e) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => 'MySQL: '.$e
+		);
+		return false;
+	}
+	$_SESSION['return'] = array(
+		'type' => 'success',
+		'msg' => sprintf($lang['success']['forwarding_host_removed'], htmlspecialchars($host))
+	);
+}
 ?>

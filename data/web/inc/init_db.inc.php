@@ -263,6 +263,18 @@ function init_db_schema() {
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
+      "forwarding_hosts" => array(
+        "cols" => array(
+          "host" => "VARCHAR(255) NOT NULL",
+          "source" => "VARCHAR(255) NOT NULL"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("host")
+          ),
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
       "sogo_acl" => array(
         "cols" => array(
           "c_folder_id" => "INT NOT NULL",
