@@ -219,13 +219,16 @@ $(document).ready(function() {
     },
     success: function (data) {
       $.each(data, function (i, item) {
-        if (item.is_catch_all == 1) {
-          item.address = '<div class="label label-default">Catch-All</div> ' + item.address;
-        }
         item.action = '<div class="btn-group">' +
           '<a href="/edit.php?alias=' + encodeURI(item.address) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
           '<a href="/delete.php?alias=' + encodeURI(item.address) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
 					'</div>';
+        if (item.is_catch_all == 1) {
+          item.address = '<div class="label label-default">Catch-All</div> ' + item.address;
+        }
+        if (item.in_primary_domain !== "") {
+          item.domain = "↳ " + item.domain + " (" + item.in_primary_domain + ")";
+        }
       });
       $('#alias_table').footable({
         "columns": [
