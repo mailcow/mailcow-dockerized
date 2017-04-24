@@ -2603,7 +2603,7 @@ function mailbox_add_alias($postarray) {
 		$address      = $local_part.'@'.$domain;
 
     $domaindata = mailbox_get_domain_details($domain);
-    if ($domaindata['aliases_left'] == 0) {
+    if (is_array($domaindata) && ['aliases_left'] == 0) {
       $_SESSION['return'] = array(
         'type' => 'danger',
         'msg' => sprintf($lang['danger']['max_alias_exceeded'])
@@ -4094,6 +4094,17 @@ function mailbox_get_alias_details($address) {
       ':address' => $address,
     ));
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    $stmt = $pdo->prepare("SELECT `target_domain` FROM `alias_domain` WHERE `alias_domain` = :domain");
+    $stmt->execute(array(
+      ':domain' => $row['domain'],
+    ));
+    $row_alias_domain = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (isset($row_alias_domain['target_domain']) && !empty($row_alias_domain['target_domain'])) {
+      $aliasdata['in_primary_domain'] = $row_alias_domain['target_domain'];
+    }
+    else {
+      $aliasdata['in_primary_domain'] = "";
+    }
     $aliasdata['domain'] = $row['domain'];
     $aliasdata['goto'] = $row['goto'];
     $aliasdata['address'] = $row['address'];
@@ -4210,6 +4221,15 @@ function mailbox_get_domain_details($domain) {
 	}
 
   try {
+    $stmt = $pdo->prepare("SELECT `target_domain` FROM `alias_domain` WHERE `alias_domain` =  :domain");
+    $stmt->execute(array(
+      ':domain' => $domain
+    ));
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!empty($row)) { 
+      $domain = $row['target_domain'];
+    }
+
     $stmt = $pdo->prepare("SELECT 
         `domain`,
         `description`,
@@ -4225,14 +4245,18 @@ function mailbox_get_domain_details($domain) {
         CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`
           FROM `domain` WHERE `domain`= :domain");
     $stmt->execute(array(
-      ':domain' => $domain,
+      ':domain' => $domain
     ));
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     if (empty($row)) { 
       return false;
     }
 
-    $stmt = $pdo->prepare("SELECT COUNT(*) AS `count`, COALESCE(SUM(`quota`), 0) as `in_use` FROM `mailbox` WHERE `kind` NOT REGEXP 'location|thing|group' AND `domain` = :domain");
+    $stmt = $pdo->prepare("SELECT COUNT(*) AS `count`,
+      COALESCE(SUM(`quota`), 0) AS `in_use`
+        FROM `mailbox`
+          WHERE `kind` NOT REGEXP 'location|thing|group'
+            AND `domain` = :domain");
     $stmt->execute(array(':domain' => $row['domain']));
     $MailboxDataDomain	= $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -4257,12 +4281,13 @@ function mailbox_get_domain_details($domain) {
     $domaindata['relay_all_recipients_int'] = $row['relay_all_recipients_int'];
 
     $stmt = $pdo->prepare("SELECT COUNT(*) AS `alias_count` FROM `alias`
-      WHERE `domain`= :domain
+      WHERE (`domain`= :domain OR `domain` = (SELECT `alias_domain` FROM `alias_domain` WHERE `target_domain` = :domain2))
         AND `address` NOT IN (
           SELECT `username` FROM `mailbox`
         )");
     $stmt->execute(array(
       ':domain' => $domain,
+      ':domain2' => $domain
     ));
     $AliasDataDomain = $stmt->fetch(PDO::FETCH_ASSOC);
     (isset($AliasDataDomain['alias_count'])) ? $domaindata['aliases_in_domain'] = $AliasDataDomain['alias_count'] : $domaindata['aliases_in_domain'] = "0";
