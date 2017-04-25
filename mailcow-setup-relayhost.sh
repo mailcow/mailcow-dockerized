@@ -19,11 +19,11 @@ if [[ -z ${1} ]]; then
     echo "Usage:"
 	echo
 	echo "Setup a relayhost:"
-	echo "./${0} relayhost port (username) (password)"
+	echo "${0} relayhost port (username) (password)"
     echo "Username and password are optional parameters."
 	echo
 	echo "Reset to defaults:"
-	echo "./${0} reset"
+	echo "${0} reset"
     exit 1
 fi
 
