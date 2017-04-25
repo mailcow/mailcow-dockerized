@@ -24,7 +24,7 @@ $(document).ready(function() {
       $.each(data, function (i, item) {
         item.aliases = item.aliases_in_domain + " / " + item.max_num_aliases_for_domain;
         item.mailboxes = item.mboxes_in_domain + " / " + item.max_num_mboxes_for_domain;
-        item.quota = humanFileSize(item.quota_used_in_domain) + " / " + humanFileSize(item.max_quota_for_domain);
+        item.quota = item.quota_used_in_domain + "/" + item.max_quota_for_domain;
         item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
         if (role == "admin") {
         item.action = '<div class="btn-group">' +
@@ -43,7 +43,15 @@ $(document).ready(function() {
           {"sorted": true,"name":"domain_name","title":lang.domain,"style":{"width":"250px"}},
           {"name":"aliases","title":lang.aliases,"breakpoints":"xs sm"},
           {"name":"mailboxes","title":lang.mailboxes},
-          {"name":"quota","title":lang.domain_quota},
+          {"name":"quota","style":{"whiteSpace":"nowrap"},"title":lang.domain_quota,"formatter": function(value){
+            res = value.split("/");
+            return humanFileSize(res[0]) + " / " + humanFileSize(res[1]);
+          },
+          "sortValue": function(value){
+            res = value.split("/");
+            return res[0];
+          },
+          },
           {"name":"max_quota_for_mbox","title":lang.mailbox_quota,"breakpoints":"xs sm"},
           {"name":"backupmx","filterable": false,"style":{"maxWidth":"120px","width":"120px"},"title":lang.backup_mx,"breakpoints":"xs sm"},
           {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active},
@@ -77,7 +85,7 @@ $(document).ready(function() {
     },
     success: function (data) {
       $.each(data, function (i, item) {
-        item.quota = humanFileSize(item.quota_used) + " / " + humanFileSize(item.quota);
+        item.quota = item.quota_used + "/" + item.quota;
         item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
         if (role == "admin") {
         item.action = '<div class="btn-group">' +
@@ -102,7 +110,15 @@ $(document).ready(function() {
           {"sorted": true,"name":"username","title":lang.username,"style":{"width":"250px"}},
           {"name":"name","title":lang.fname,"breakpoints":"xs sm"},
           {"name":"domain","title":lang.domain,"breakpoints":"xs sm"},
-          {"name":"quota","style":{"whiteSpace":"nowrap"},"title":lang.domain_quota},
+          {"name":"quota","style":{"whiteSpace":"nowrap"},"title":lang.domain_quota,"formatter": function(value){
+            res = value.split("/");
+            return humanFileSize(res[0]) + " / " + humanFileSize(res[1]);
+          },
+          "sortValue": function(value){
+            res = value.split("/");
+            return res[0];
+          },
+          },
           {"name":"spam_aliases","filterable": false,"title":lang.spam_aliases,"breakpoints":"xs sm md"},
           {"name":"in_use","filterable": false,"style":{"whiteSpace":"nowrap"},"type":"html","title":lang.in_use},
           {"name":"messages","filterable": false,"style":{"whiteSpace":"nowrap"},"title":lang.msg_num,"breakpoints":"xs sm md"},
