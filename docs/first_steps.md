@@ -164,7 +164,7 @@ docker-compose exec postfix-mailcow postfix reload
 
 There is a helper script `mailcow-setup-relayhost.sh` you can run to setup a relayhost.
 
-```
+``` bash
 Usage:
 
 Setup a relayhost:
