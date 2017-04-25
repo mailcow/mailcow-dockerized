@@ -10,9 +10,11 @@ You can find screenshots [on Imgur](http://imgur.com/a/oewYt).
 
 ## Overview
 
-mailcow dockerized comes with **11 containers** linked in **one bridged network**.
+mailcow dockerized comes with **12 containers** linked in **one bridged network**.
+Each container represents a single application.
 
 - Dovecot
+- ClamAV
 - Memcached
 - Redis
 - MySQL
@@ -24,7 +26,7 @@ mailcow dockerized comes with **11 containers** linked in **one bridged network*
 - Rspamd
 - SOGo
 
-**6 volumes** to keep dynamic data - take care of them!
+**7 volumes** to keep dynamic data - take care of them!
 
 - vmail-vol-1
 - dkim-vol-1
@@ -46,6 +48,6 @@ The integrated **mailcow UI** allows administrative work on your mail server ins
 - imapsync to migrate or pull remote mailboxes regularly
 - TFA: Yubi OTP and U2F USB (Google Chrome and derivates only)
 - Add domains, mailboxes, aliases, domain aliases and SOGo resources
-
+- Add whitelisted hosts to forward mail to mailcow
 
 *[Looking for a farm to host your cow?](https://www.servercow.de)* 
