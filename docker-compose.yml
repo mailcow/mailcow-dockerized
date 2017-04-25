@@ -55,16 +55,17 @@ services:
           aliases:
             - redis
 
-#    clamd-mailcow:
-#      image: mailcow/clamd
-#      restart: always
-#      dns:
-#        - 172.22.1.254
-#      dns_search: mailcow-network
-#      networks:
-#        mailcow-network:
-#          aliases:
-#            - clamd
+    clamd-mailcow:
+      image: mailcow/clamd
+      build: ./data/Dockerfiles/clamav
+      restart: always
+      dns:
+        - 172.22.1.254
+      dns_search: mailcow-network
+      networks:
+        mailcow-network:
+          aliases:
+            - clamd
 
     rspamd-mailcow:
       image: mailcow/rspamd
