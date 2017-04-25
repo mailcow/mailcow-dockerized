@@ -103,15 +103,8 @@ Recreate affected containers by running `docker-compose up -d`.
     [...]
     # You should proxy to a plain HTTP session to offload SSL processing
     ProxyPass / http://127.0.0.1:8080/
+    ProxyPassReverse / http://127.0.0.1:8080/
     ProxyPreserveHost Off
-    ProxyAddHeaders Off
-    RewriteEngine on
-    RewriteRule ^(.*) - [E=HOST_HEADER:%{HTTP_HOST},E=CLIENT_IP:%{REMOTE_ADDR},E=PORT_NUMBER:%{SERVER_PORT},L]
-    RequestHeader append X-Forwarded-For "%{CLIENT_IP}e"
-    RequestHeader set X-Forwarded-Host "%{HOST_HEADER}e"
-    RequestHeader set X-Forwarded-Proto "https" env=HTTPS
-    RequestHeader set X-Forwarded-Proto "http" env=!HTTPS
-    RequestHeader set X-Forwarded-Port "%{PORT_NUMBER}e"
     your-ssl-configuration-here
     [...]
 
@@ -136,29 +129,13 @@ server {
     your-ssl-configuration-here
     location / {
         proxy_pass http://127.0.0.1:8080/;
+        proxy_redirect http://127.0.0.1:8080/ $scheme://$host:$server_port/;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Host $host:$server_port;
         proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Forwarded-Port $server_port;
     }
     [...]
 }
-```
-
-### HAProxy
-```
-frontend https-in
-  bind :::443 v4v6 ssl crt mailcow.pem
-  default_backend mailcow
-
-backend mailcow
-  option forwardfor
-  http-request set-header X-Forwarded-Host %[req.hdr(Host)]
-  http-request set-header X-Forwarded-Proto https if { ssl_fc }
-  http-request set-header X-Forwarded-Proto http if !{ ssl_fc }
-  http-request set-header X-Forwarded-Port %[dst_port]
-  server mailcow 127.0.0.1:8080 check
 ```
 
 ## Optional: Setup a relayhost
@@ -181,6 +158,21 @@ docker-compose exec postfix-mailcow postmap /opt/postfix/conf/smarthost_passwd
 docker-compose exec postfix-mailcow chown root:postfix /opt/postfix/conf/smarthost_passwd /opt/postfix/conf/smarthost_passwd.db
 docker-compose exec postfix-mailcow chmod 660 /opt/postfix/conf/smarthost_passwd /opt/postfix/conf/smarthost_passwd.db
 docker-compose exec postfix-mailcow postfix reload
+```
+
+### Helper script
+
+There is a helper script `mailcow-setup-relayhost.sh` you can run to setup a relayhost.
+
+```
+Usage:
+
+Setup a relayhost:
+./mailcow-setup-relayhost.sh relayhost port (username) (password)
+Username and password are optional parameters.
+
+Reset to defaults:
+./mailcow-setup-relayhost.sh reset
 ```
 
 ## Optional: Log to Syslog
