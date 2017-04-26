@@ -12,10 +12,10 @@ $(document).ready(function() {
     } while(Math.abs(bytes) >= 1024 && u < units.length - 1);
     return bytes.toFixed(1)+' '+units[u];
   }
-  
+
   $.ajax({
     dataType: 'json',
-    url: '/api/v1/domain/all',
+    url: '/api/v1/get/domain/all',
     jsonp: false,
     error: function () {
       alert('Cannot draw domain table');
@@ -78,7 +78,7 @@ $(document).ready(function() {
 
   $.ajax({
     dataType: 'json',
-    url: '/api/v1/mailbox/all',
+    url: '/api/v1/get/mailbox/all',
     jsonp: false,
     error: function () {
       alert('Cannot draw mailbox table');
@@ -146,7 +146,7 @@ $(document).ready(function() {
 
   $.ajax({
     dataType: 'json',
-    url: '/api/v1/resource/all',
+    url: '/api/v1/get/resource/all',
     jsonp: false,
     error: function () {
       alert('Cannot draw resource table');
@@ -188,7 +188,7 @@ $(document).ready(function() {
 
   $.ajax({
     dataType: 'json',
-    url: '/api/v1/alias-domain/all',
+    url: '/api/v1/get/alias-domain/all',
     jsonp: false,
     error: function () {
       alert('Cannot draw alias domain table');
@@ -228,7 +228,7 @@ $(document).ready(function() {
 
   $.ajax({
     dataType: 'json',
-    url: '/api/v1/alias/all',
+    url: '/api/v1/get/alias/all',
     jsonp: false,
     error: function () {
       alert('Cannot draw alias table');
@@ -239,6 +239,7 @@ $(document).ready(function() {
           '<a href="/edit.php?alias=' + encodeURI(item.address) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
           '<a href="/delete.php?alias=' + encodeURI(item.address) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
 					'</div>';
+        item.chkbox = '<input type="checkbox" class="alias_item" name="sel_aliases" value="' + item.address + '" />';
         if (item.is_catch_all == 1) {
           item.address = '<div class="label label-default">Catch-All</div> ' + item.address;
         }
@@ -246,8 +247,9 @@ $(document).ready(function() {
           item.domain = "↳ " + item.domain + " (" + item.in_primary_domain + ")";
         }
       });
-      $('#alias_table').footable({
+      ft_aliases = FooTable.init("#alias_table", {
         "columns": [
+          {"name":"chkbox","title":"","style":{"maxWidth":"40px","width":"40px"},"filterable": false,"sortable": false,"type":"html"},
           {"sorted": true,"name":"address","title":lang.alias,"style":{"width":"250px"}},
           {"name":"goto","title":lang.target_address},
           {"name":"domain","title":lang.domain,"breakpoints":"xs sm"},
@@ -269,6 +271,68 @@ $(document).ready(function() {
         "sorting": {
           "enabled": true
         }
+      }, function aliases_table_hook() {
+        var selected_aliases = {};
+        $('input[name=sel_aliases]').change(function() {
+          selected_aliases = {};
+          $('input[name=sel_aliases]:checked').each(function(i) {
+            selected_aliases[i] = ($(this).val());
+          });
+        });
+        $("#select_all_aliases").click(function(e) {
+          e.preventDefault();
+          var alias_chkbxs = $("input[name=sel_aliases]");
+          alias_chkbxs.prop("checked", !alias_chkbxs.prop("checked")).change();
+        });
+        $("#activate_selected_alias").click(function(e) {
+          e.preventDefault();
+          if (Object.keys(selected_aliases).length !== 0) {
+            $.ajax({
+              type: "POST",
+              dataType: "json",
+              data: { "address": JSON.stringify(selected_aliases), "active": "1" },
+              url: '/api/v1/edit/alias/post',
+              jsonp: false,
+              complete: function (data) {
+                location.reload();
+              }
+            });
+          }
+        });
+        $("#deactivate_selected_alias").click(function(e) {
+          e.preventDefault();
+          if (Object.keys(selected_aliases).length !== 0) {
+            $.ajax({
+              type: "POST",
+              dataType: "json",
+              data: { "address": JSON.stringify(selected_aliases), "active": "0" },
+              url: '/api/v1/edit/alias/post',
+              jsonp: false,
+              complete: function (data) {
+                location.reload();
+              }
+            });
+          }
+        });
+        $("#delete_selected_alias").click(function(e) {
+          e.preventDefault();
+          if (Object.keys(selected_aliases).length !== 0) {
+            $.ajax({
+              type: "POST",
+              dataType: "json",
+              data: { "address": JSON.stringify(selected_aliases) },
+              url: '/api/v1/delete/alias/post',
+              jsonp: false,
+              complete: function (data) {
+                location.reload();
+              }
+            });
+          }
+        });
+        $("tr").on('click',function(event) {
+          var checkbox = $(this).find(':checkbox');
+          checkbox.trigger('click');
+        });
       });
     }
   });

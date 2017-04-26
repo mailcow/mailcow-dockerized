@@ -3308,82 +3308,95 @@ function mailbox_edit_alias_domain($postarray) {
 	);
 }
 function mailbox_edit_alias($postarray) {
-  // Array elements
-  // address            string
-  // goto               string    (separated by " ", "," ";" "\n") - email address or domain
-  // active             int
+  // We can edit multiple addresses at once, but only set one "goto" and/or "active" attribute for all
+  // address    string or array containing strings | email | required
+  // goto       string | separated by " ", "," ";" "\n", email or domain | optional
+  // active     set (active) or unset (inactive)
 	global $lang;
 	global $pdo;
-	$address      = $postarray['address'];
-	$domain       = idn_to_ascii(substr(strstr($address, '@'), 1));
-	$local_part   = strstr($address, '@', true);
-	if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => sprintf($lang['danger']['access_denied'])
-		);
-		return false;
-	}
-	if (empty($postarray['goto'])) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => sprintf($lang['danger']['goto_empty'])
-		);
-		return false;
-	}
-	$gotos = array_map('trim', preg_split( "/( |,|;|\n)/", $postarray['goto']));
-	foreach ($gotos as &$goto) {
-		if (empty($goto)) {
-			continue;
-		}
-		if (!filter_var($goto, FILTER_VALIDATE_EMAIL)) {
-			$_SESSION['return'] = array(
-				'type' => 'danger',
-				'msg' =>sprintf($lang['danger']['goto_invalid'])
-			);
-			return false;
-		}
-		if ($goto == $address) {
-			$_SESSION['return'] = array(
-				'type' => 'danger',
-				'msg' => sprintf($lang['danger']['alias_goto_identical'])
-			);
-			return false;
-		}
-	}
-	$gotos = array_filter($gotos);
-	$goto = implode(",", $gotos);
+  if (!is_array($postarray['address'])) {
+    $address_array = array();
+    $address_array[] = $postarray['address'];
+  }
+  else {
+    $address_array = $postarray['address'];
+  }
+	if (isset($postarray['goto']) || !empty($postarray['goto'])) {
+    $gotos = array_map('trim', preg_split( "/( |,|;|\n)/", $postarray['goto']));
+    foreach ($gotos as &$goto) {
+      if (empty($goto)) {
+        continue;
+      }
+      if (!filter_var($goto, FILTER_VALIDATE_EMAIL)) {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' =>sprintf($lang['danger']['goto_invalid'])
+        );
+        return false;
+      }
+      if ($goto == $address) {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => sprintf($lang['danger']['alias_goto_identical'])
+        );
+        return false;
+      }
+    }
+    $gotos = array_filter($gotos);
+    $goto = implode(",", $gotos);
+  }
 	isset($postarray['active']) ? $active = '1' : $active = '0';
-	if ((!filter_var($address, FILTER_VALIDATE_EMAIL) === true) && !empty($local_part)) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => sprintf($lang['danger']['alias_invalid'])
-		);
-		return false;
+  foreach ($address_array as $address) {
+    $domain       = idn_to_ascii(substr(strstr($address, '@'), 1));
+    $local_part   = strstr($address, '@', true);
+    if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['access_denied'])
+      );
+      return false;
+    }
+    if ((!filter_var($address, FILTER_VALIDATE_EMAIL) === true) && !empty($local_part)) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['alias_invalid'])
+      );
+      return false;
+    }
+    try {
+      if (isset($goto) && !empty($goto)) {
+        $stmt = $pdo->prepare("UPDATE `alias` SET
+          `goto` = :goto,
+          `active`= :active
+            WHERE `address` = :address");
+        $stmt->execute(array(
+          ':goto' => $goto,
+          ':active' => $active,
+          ':address' => $address
+        ));
+      }
+      else {
+        $stmt = $pdo->prepare("UPDATE `alias` SET
+          `active`= :active
+            WHERE `address` = :address");
+        $stmt->execute(array(
+          ':active' => $active,
+          ':address' => $address
+        ));
+      }
+    }
+    catch (PDOException $e) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => 'MySQL: '.$e
+      );
+      return false;
+    }
 	}
-
-	try {
-		$stmt = $pdo->prepare("UPDATE `alias` SET
-      `goto` = :goto,
-      `active`= :active
-        WHERE `address` = :address");
-		$stmt->execute(array(
-			':goto' => $goto,
-			':active' => $active,
-			':address' => $address
-		));
-		$_SESSION['return'] = array(
-			'type' => 'success',
-		'msg' => sprintf($lang['success']['alias_modified'], htmlspecialchars($address))
-		);
-	}
-	catch (PDOException $e) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => 'MySQL: '.$e
-		);
-		return false;
-	}
+  $_SESSION['return'] = array(
+    'type' => 'success',
+    'msg' => sprintf($lang['success']['alias_modified'], htmlspecialchars(implode(', ', $address_array)))
+  );
 }
 function mailbox_edit_domain($postarray) {
   // Array elements
@@ -4527,48 +4540,57 @@ function mailbox_delete_domain($postarray) {
 	return true;
 }
 function mailbox_delete_alias($postarray) {
+  // $postarray['address'] can be a single element or an array
 	global $lang;
 	global $pdo;
-	$address		= $postarray['address'];
-	$local_part		= strstr($address, '@', true);
-  $domain = mailbox_get_alias_details($address)['domain'];
-	try {
-		$stmt = $pdo->prepare("SELECT `goto` FROM `alias` WHERE `address` = :address");
-		$stmt->execute(array(':address' => $address));
-		$gotos = $stmt->fetch(PDO::FETCH_ASSOC);
-	}
-	catch(PDOException $e) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => 'MySQL: '.$e
-		);
-		return false;
-	}
-	$goto_array = explode(',', $gotos['goto']);
+  if (!is_array($postarray['address'])) {
+    $address_array = array();
+    $address_array[] = $postarray['address'];
+  }
+  else {
+    $address_array = $postarray['address'];
+  }
+  foreach ($address_array as $address) {
+    $local_part		= strstr($address, '@', true);
+    $domain = mailbox_get_alias_details($address)['domain'];
+    try {
+      $stmt = $pdo->prepare("SELECT `goto` FROM `alias` WHERE `address` = :address");
+      $stmt->execute(array(':address' => $address));
+      $gotos = $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    catch(PDOException $e) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => 'MySQL: '.$e
+      );
+      return false;
+    }
+    $goto_array = explode(',', $gotos['goto']);
 
-	if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => sprintf($lang['danger']['access_denied'])
-		);
-		return false;
-	}
-	try {
-		$stmt = $pdo->prepare("DELETE FROM `alias` WHERE `address` = :address AND `address` NOT IN (SELECT `username` FROM `mailbox`)");
-		$stmt->execute(array(
-			':address' => $address
-		));
-	}
-	catch (PDOException $e) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => 'MySQL: '.$e
-		);
-		return false;
-	}
+    if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['access_denied'])
+      );
+      return false;
+    }
+    try {
+      $stmt = $pdo->prepare("DELETE FROM `alias` WHERE `address` = :address AND `address` NOT IN (SELECT `username` FROM `mailbox`)");
+      $stmt->execute(array(
+        ':address' => $address
+      ));
+    }
+    catch (PDOException $e) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => 'MySQL: '.$e
+      );
+      return false;
+    }
+  }
 	$_SESSION['return'] = array(
 		'type' => 'success',
-		'msg' => sprintf($lang['success']['alias_removed'], htmlspecialchars($address))
+		'msg' => sprintf($lang['success']['alias_removed'], htmlspecialchars(implode(', ', $address_array)))
 	);
 
 }

@@ -50,3 +50,8 @@ pre{white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-s
   -ms-user-select: none;      
   user-select: none;
 }
+/* Fix modal moving content left */
+body.modal-open {
+  overflow: inherit;
+  padding-right: inherit !important;
+}

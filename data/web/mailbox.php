@@ -89,6 +89,14 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 				</div>
         <div class="table-responsive">
           <table id="alias_table" class="table table-striped"></table>
+          <div class="mass-actions">
+              <span id="select_all_aliases" class="mass-select-all">Toggle all</span>
+              <br /><span>(
+                <a id="delete_selected_alias" href="#" class="mass-each-action">delete</a> |
+                <a id="activate_selected_alias" href="#" class="mass-each-action">activate</a> |
+                <a id="deactivate_selected_alias" href="#" class="mass-each-action">deactivate</a>)
+              </span>
+          </div>
         </div>
         <span class="footer-add-item"><a href="/add.php?alias"><?=$lang['mailbox']['add_alias'];?></a></span>			</div>
 		</div>
