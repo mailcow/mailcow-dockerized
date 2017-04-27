@@ -237,6 +237,7 @@ $(document).ready(function() {
       $.each(data, function (i, item) {
         item.action = '<div class="btn-group">' +
           '<a href="/edit.php?alias=' + encodeURI(item.address) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+          '<a href="/remove.php?alias=' + encodeURI(item.address) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-pencil"></span> ' + lang.remove + '</a>' +
 					'</div>';
         item.chkbox = '<input type="checkbox" class="alias_item" name="sel_aliases" value="' + item.address + '" />';
         if (item.is_catch_all == 1) {

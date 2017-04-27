@@ -12,8 +12,6 @@ table.footable>tbody>tr.footable-empty>td {
   overflow: visible !important;
 }
 .footer-add-item {
-  text-align:center;
-  font-style: italic;
   display:block;
   padding: 10px;
   background: #F5F5F5;
@@ -28,7 +26,7 @@ table.footable>tbody>tr.footable-empty>td {
 }
 .mass-select-all {
   cursor:pointer;
-  color:grey;
+  color:#555;
 }
 #alias_table {
   cursor:pointer;
