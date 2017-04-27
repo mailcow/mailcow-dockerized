@@ -329,9 +329,14 @@ $(document).ready(function() {
             });
           }
         });
-        $("tr").on('click',function(event) {
-          var checkbox = $(this).find(':checkbox');
-          checkbox.trigger('click');
+        $("tr").on('click',function(e) {
+          if (e.target.type == "checkbox") {
+            e.stopPropagation();
+          } else {
+            var $checkbox = $(this).find(':checkbox');
+            var checkbox = $(this).find(':checkbox');
+            checkbox.trigger('click');
+          }
         });
       });
     }

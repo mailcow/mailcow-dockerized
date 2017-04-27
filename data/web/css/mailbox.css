@@ -18,15 +18,17 @@ table.footable>tbody>tr.footable-empty>td {
   padding: 10px;
 }
 .mass-each-action {
-  font-style: italic;
   padding: 0 3px 0 3px;
   user-select: none;
 }
 .mass-actions {
   user-select: none;
-  padding:10px;
+  margin-top:-5px;
 }
 .mass-select-all {
   cursor:pointer;
   color:grey;
+}
+#alias_table {
+  cursor:pointer;
 }
