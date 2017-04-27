@@ -271,74 +271,82 @@ $(document).ready(function() {
         "sorting": {
           "enabled": true
         }
-      }, function aliases_table_hook() {
-        var selected_aliases = {};
-        $('input[name=sel_aliases]').change(function() {
-          selected_aliases = {};
-          $('input[name=sel_aliases]:checked').each(function(i) {
-            selected_aliases[i] = ($(this).val());
-          });
-        });
-        $("#select_all_aliases").click(function(e) {
-          e.preventDefault();
-          var alias_chkbxs = $("input[name=sel_aliases]");
-          alias_chkbxs.prop("checked", !alias_chkbxs.prop("checked")).change();
-        });
-        $("#activate_selected_alias").click(function(e) {
-          e.preventDefault();
-          if (Object.keys(selected_aliases).length !== 0) {
-            $.ajax({
-              type: "POST",
-              dataType: "json",
-              data: { "address": JSON.stringify(selected_aliases), "active": "1" },
-              url: '/api/v1/edit/alias/post',
-              jsonp: false,
-              complete: function (data) {
-                location.reload();
-              }
-            });
-          }
-        });
-        $("#deactivate_selected_alias").click(function(e) {
-          e.preventDefault();
-          if (Object.keys(selected_aliases).length !== 0) {
-            $.ajax({
-              type: "POST",
-              dataType: "json",
-              data: { "address": JSON.stringify(selected_aliases), "active": "0" },
-              url: '/api/v1/edit/alias/post',
-              jsonp: false,
-              complete: function (data) {
-                location.reload();
-              }
-            });
-          }
-        });
-        $("#delete_selected_alias").click(function(e) {
-          e.preventDefault();
-          if (Object.keys(selected_aliases).length !== 0) {
-            $.ajax({
-              type: "POST",
-              dataType: "json",
-              data: { "address": JSON.stringify(selected_aliases) },
-              url: '/api/v1/delete/alias/post',
-              jsonp: false,
-              complete: function (data) {
-                location.reload();
-              }
-            });
-          }
-        });
-        $("tr").on('click',function(e) {
-          if (e.target.type == "checkbox") {
-            e.stopPropagation();
-          } else {
-            var $checkbox = $(this).find(':checkbox');
-            var checkbox = $(this).find(':checkbox');
-            checkbox.trigger('click');
-          }
+      });
+
+      var selected_aliases = {};
+
+      $(document).on('click', 'tr', function(e) {
+        if (e.target.type == "checkbox") {
+          e.stopPropagation();
+        } else {
+          var $checkbox = $(this).find(':checkbox');
+          var checkbox = $(this).find(':checkbox');
+          checkbox.trigger('click');
+        }
+      });
+      
+      $(document).on('change', 'input[name=sel_aliases]', function() {
+        selected_aliases = {};
+        $('input[name=sel_aliases]:checked').each(function(i) {
+          selected_aliases[i] = ($(this).val());
         });
       });
+
+      $(document).on('click', '#select_all_aliases', function(e) {
+        e.preventDefault();
+        var alias_chkbxs = $("input[name=sel_aliases]:visible");
+        alias_chkbxs.prop("checked", !alias_chkbxs.prop("checked")).change();
+      });
+
+      $(document).on('click', '#activate_selected_alias', function(e) {
+        e.preventDefault();
+        if (Object.keys(selected_aliases).length !== 0) {
+          $.ajax({
+            type: "POST",
+            dataType: "json",
+            data: { "address": JSON.stringify(selected_aliases), "active": "1" },
+            url: '/api/v1/edit/alias/post',
+            jsonp: false,
+            complete: function (data) {
+              location.reload();
+            }
+          });
+        }
+      });
+
+      $(document).on('click', '#deactivate_selected_alias', function(e) {
+        e.preventDefault();
+        if (Object.keys(selected_aliases).length !== 0) {
+          $.ajax({
+            type: "POST",
+            dataType: "json",
+            data: { "address": JSON.stringify(selected_aliases), "active": "0" },
+            url: '/api/v1/edit/alias/post',
+            jsonp: false,
+            complete: function (data) {
+              location.reload();
+            }
+          });
+        }
+      });
+
+      $(document).on('click', '#delete_selected_alias', function(e) {
+        e.preventDefault();
+        if (Object.keys(selected_aliases).length !== 0) {
+          $.ajax({
+            type: "POST",
+            dataType: "json",
+            data: { "address": JSON.stringify(selected_aliases) },
+            url: '/api/v1/delete/alias/post',
+            jsonp: false,
+            complete: function (data) {
+              location.reload();
+            }
+          });
+        }
+      });
+
     }
+
   });
 });
