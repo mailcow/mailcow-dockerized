@@ -237,7 +237,7 @@ $(document).ready(function() {
       $.each(data, function (i, item) {
         item.action = '<div class="btn-group">' +
           '<a href="/edit.php?alias=' + encodeURI(item.address) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-          '<a href="/remove.php?alias=' + encodeURI(item.address) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-pencil"></span> ' + lang.remove + '</a>' +
+          '<a href="/delete.php?alias=' + encodeURI(item.address) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-pencil"></span> ' + lang.remove + '</a>' +
 					'</div>';
         item.chkbox = '<input type="checkbox" class="alias_item" name="sel_aliases" value="' + item.address + '" />';
         if (item.is_catch_all == 1) {
@@ -273,7 +273,7 @@ $(document).ready(function() {
         }
       });
 
-      var selected_aliases = {};
+      var selected_aliases = [];
 
       $(document).on('click', 'tr', function(e) {
         if (e.target.type == "checkbox") {
@@ -283,23 +283,25 @@ $(document).ready(function() {
           checkbox.trigger('click');
         }
       });
-      
-      $(document).on('change', 'input[name=sel_aliases]', function() {
-        selected_aliases = {};
-        $('input[name=sel_aliases]:checked').each(function(i) {
-          selected_aliases[i] = ($(this).val());
-        });
+
+      $(document).on('change', 'input[name=sel_aliases]:checkbox', function() {
+        if ($(this).is(':checked')) {
+          selected_aliases.push($(this).val());
+        }
+        else {
+          selected_aliases.splice($.inArray($(this).val(), selected_aliases),1);
+        }
       });
 
       $(document).on('click', '#select_all_aliases', function(e) {
         e.preventDefault();
-        var alias_chkbxs = $("input[name=sel_aliases]:visible");
+        var alias_chkbxs = $("input[name=sel_aliases]");
         alias_chkbxs.prop("checked", !alias_chkbxs.prop("checked")).change();
       });
 
       $(document).on('click', '#activate_selected_alias', function(e) {
         e.preventDefault();
-        if (Object.keys(selected_aliases).length !== 0) {
+        if (selected_aliases.length !== 0) {
           $.ajax({
             type: "POST",
             dataType: "json",
