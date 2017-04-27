@@ -16,6 +16,7 @@ table.footable>tbody>tr.footable-empty>td {
   font-style: italic;
   display:block;
   padding: 10px;
+  background: #F5F5F5;
 }
 .mass-each-action {
   padding: 0 3px 0 3px;
@@ -23,7 +24,7 @@ table.footable>tbody>tr.footable-empty>td {
 }
 .mass-actions {
   user-select: none;
-  margin-top:-5px;
+  padding:10px;
 }
 .mass-select-all {
   cursor:pointer;

@@ -101,16 +101,15 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             <div class="table-responsive">
               <table id="alias_table" class="table table-striped"></table>
             </div>
+            <div class="mass-actions">
+              <span id="select_all_aliases" class="mass-select-all"><?=$lang['mailbox']['toggle_all'];?></span>
+              <span>&ndash; <?=$lang['mailbox']['quick_actions'];?>: 
+                <a id="delete_selected_alias" href="#" class="mass-each-action"><?=$lang['mailbox']['remove'];?></a> |
+                <a id="activate_selected_alias" href="#" class="mass-each-action"><?=$lang['mailbox']['activate'];?></a> |
+                <a id="deactivate_selected_alias" href="#" class="mass-each-action"><?=$lang['mailbox']['deactivate'];?></a>
+              </span>
+            </div>
             <span class="footer-add-item"><a href="/add.php?alias"><?=$lang['mailbox']['add_alias'];?></a></span>
-          </div>
-          <hr>
-          <div class="mass-actions">
-            <span id="select_all_aliases" class="mass-select-all">Toggle all</span>
-            <span>&ndash; Quick actions: 
-              <a id="delete_selected_alias" href="#" class="mass-each-action">delete</a> |
-              <a id="activate_selected_alias" href="#" class="mass-each-action">activate</a> |
-              <a id="deactivate_selected_alias" href="#" class="mass-each-action">deactivate</a>
-            </span>
           </div>
         </div>
 

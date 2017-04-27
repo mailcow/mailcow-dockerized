@@ -237,7 +237,6 @@ $(document).ready(function() {
       $.each(data, function (i, item) {
         item.action = '<div class="btn-group">' +
           '<a href="/edit.php?alias=' + encodeURI(item.address) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-          '<a href="/delete.php?alias=' + encodeURI(item.address) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
 					'</div>';
         item.chkbox = '<input type="checkbox" class="alias_item" name="sel_aliases" value="' + item.address + '" />';
         if (item.is_catch_all == 1) {
@@ -279,7 +278,6 @@ $(document).ready(function() {
         if (e.target.type == "checkbox") {
           e.stopPropagation();
         } else {
-          var $checkbox = $(this).find(':checkbox');
           var checkbox = $(this).find(':checkbox');
           checkbox.trigger('click');
         }
@@ -333,16 +331,32 @@ $(document).ready(function() {
       $(document).on('click', '#delete_selected_alias', function(e) {
         e.preventDefault();
         if (Object.keys(selected_aliases).length !== 0) {
-          $.ajax({
-            type: "POST",
-            dataType: "json",
-            data: { "address": JSON.stringify(selected_aliases) },
-            url: '/api/v1/delete/alias/post',
-            jsonp: false,
-            complete: function (data) {
-              location.reload();
+          $(document).on('show.bs.modal','#ConfirmDeleteModal', function () {
+            $("#ItemsToDelete").empty();
+            for (var i in selected_aliases) {
+              $("#ItemsToDelete").append("<li>" + selected_aliases[i] + "</li>");
             }
-          });
+          })
+          $('#ConfirmDeleteModal').modal({
+            backdrop: 'static',
+            keyboard: false
+          })
+          .one('click', '#IsConfirmed', function(e) {
+            $.ajax({
+              type: "POST",
+              dataType: "json",
+              data: { "address": JSON.stringify(selected_aliases) },
+              url: '/api/v1/delete/alias/post',
+              jsonp: false,
+              complete: function (data) {
+                location.reload();
+              }
+            });
+          })
+          .one('click', '#isCanceled', function(e) {
+            $('#ConfirmDeleteModal').modal('hide');
+          });;
+
         }
       });
 

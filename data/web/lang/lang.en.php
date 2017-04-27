@@ -9,6 +9,12 @@ $lang['header']['restart_sogo'] = 'Restart SOGo';
 $lang['footer']['restart_sogo'] = 'Restart SOGo';
 $lang['footer']['restart_now'] = 'Restart now';
 $lang['footer']['restart_sogo_info'] = 'Some tasks, e.g. adding a domain, require you to restart SOGo to catch changes made in the mailcow UI.<br /><br /><b>Important:</b> A graceful restart may take a while to complete, please wait for it to finish.';
+
+$lang['footer']['confirm_delete'] = 'Confirm deletion';
+$lang['footer']['delete_these_items'] = 'Are you sure you want to delete the following items?';
+$lang['footer']['delete_now'] = 'Delete now';
+$lang['footer']['cancel'] = 'Cancel';
+
 $lang['dkim']['confirm'] = "Are you sure?";
 $lang['danger']['dkim_not_found'] = "DKIM key not found";
 $lang['danger']['dkim_remove_failed'] = "Cannot remove selected DKIM key";
@@ -252,6 +258,10 @@ $lang['mailbox']['add_resource'] = 'Add resource';
 $lang['mailbox']['add_alias'] = 'Add alias';
 $lang['mailbox']['add_domain_record_first'] = 'Please add a domain first';
 $lang['mailbox']['empty'] = 'No results';
+$lang['mailbox']['toggle_all'] = 'Toggle all';
+$lang['mailbox']['quick_actions'] = 'Quick actions';
+$lang['mailbox']['activate'] = 'Activate';
+$lang['mailbox']['deactivate'] = 'Deactivate';
 
 $lang['info']['no_action'] = 'No action applicable';
 

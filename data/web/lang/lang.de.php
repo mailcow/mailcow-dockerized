@@ -9,6 +9,12 @@ $lang['header']['restart_sogo'] = 'SOGo neustarten';
 $lang['footer']['restart_sogo'] = 'SOGo neustarten';
 $lang['footer']['restart_now'] = 'Jetzt neustarten';
 $lang['footer']['restart_sogo_info'] = 'Einige Änderungen an Domains benötigen einen Neustart SOGos. Hier können Sie SOGo neustarten.<br /><br /><b>Wichtig:</b> Ein korrekter Neustart SOGos kann eine Weile in Anspruch nehmen, bitte warten Sie, bis der Prozess vollständig beendet wurde.';
+
+$lang['footer']['confirm_delete'] = 'Löschen bestätigen';
+$lang['footer']['delete_these_items'] = 'Sind Sie sicher, dass die folgenden Elemente entfernt werden sollen?';
+$lang['footer']['delete_now'] = 'Jetzt löschen';
+$lang['footer']['cancel'] = 'Abbrechen';
+
 $lang['dkim']['confirm'] = 'Sind Sie sicher?';
 $lang['danger']['dkim_not_found'] = 'DKIM-Key nicht gefunden';
 $lang['danger']['dkim_remove_failed'] = 'Kann DKIM-Key nicht entfernen';
@@ -249,9 +255,12 @@ $lang['mailbox']['add_mailbox'] = 'Mailbox hinzufügen';
 $lang['mailbox']['add_resource'] = 'Ressource hinzufügen';
 $lang['mailbox']['add_alias'] = 'Alias hinzufügen';
 $lang['mailbox']['empty'] = 'Keine Einträge vorhanden';
+$lang['mailbox']['toggle_all'] = 'Alle';
+$lang['mailbox']['quick_actions'] = 'Aktionen';
+$lang['mailbox']['activate'] = 'Aktivieren';
+$lang['mailbox']['deactivate'] = 'Deaktivieren';
 
 $lang['info']['no_action'] = 'Keine Aktion anwendbar';
-
 $lang['delete']['title'] = 'Objekt entfernen';
 $lang['delete']['remove_domain_warning'] = '<b>Warnung:</b> Sie entfernen die Domain <b>%s</b>!';
 $lang['delete']['remove_domainalias_warning'] = '<b>Warnung:</b> Sie entfernen die Alias-Domain <b>%s</b>!';
