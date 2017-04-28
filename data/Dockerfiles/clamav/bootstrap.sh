@@ -15,7 +15,7 @@ latest_exit=0
 
 # define shutdown helper
 function shutdown() {
-    trap "" SUBS
+    trap "" EXIT
 
     for single in $pidlist; do
         if ! kill -0 $pidlist 2>/dev/null; then
@@ -28,7 +28,7 @@ function shutdown() {
 }
 
 # run shutdown
-trap terminate SUBS
+trap terminate EXIT
 wait
 
 # return received result
