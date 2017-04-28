@@ -2678,7 +2678,7 @@ function mailbox_add_alias($postarray) {
 		$address      = $local_part.'@'.$domain;
 
     $domaindata = mailbox_get_domain_details($domain);
-    if ($domaindata['aliases_left'] == 0) {
+    if (is_array($domaindata) && $domaindata['aliases_left'] == 0) {
       $_SESSION['return'] = array(
         'type' => 'danger',
         'msg' => sprintf($lang['danger']['max_alias_exceeded'])
