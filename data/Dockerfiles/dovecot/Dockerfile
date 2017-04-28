@@ -6,6 +6,7 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV LC_ALL C
 ENV DOVECOT_VERSION 2.2.28
 ENV PIGEONHOLE_VERSION 0.4.17
+ENV DBHOST mysql
 
 RUN apt-get update \
 	&& apt-get -y install libpam-dev \
@@ -47,6 +48,7 @@ RUN apt-get update \
 	libdbd-mysql-perl \
 	libipc-run-perl \
 	make \
+    gawk \
 	cpanminus
 
 
