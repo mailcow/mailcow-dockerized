@@ -93,9 +93,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
         <div role="tabpanel" class="tab-pane" id="tab-mbox-aliases">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <div class="pull-right">
-                <a href="/add.php?alias"><span class="glyphicon glyphicon-plus"></span></a>
-              </div>
+              <a class="pull-right" href="/add.php?alias"><span class="glyphicon glyphicon-plus"></span></a>
               <h3 class="panel-title"><?=$lang['mailbox']['aliases'];?></h3>
             </div>
             <div class="table-responsive">
@@ -107,11 +105,11 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               </p>
             </div>
             <div class="footer-add-item">
+              <a class="pull-right" href="/add.php?alias"><span class="glyphicon glyphicon-plus"></span></a>
               <b><?=$lang['mailbox']['quick_actions'];?>:</b>
               <a id="delete_selected_alias" href="#" class="mass-each-action"><?=$lang['mailbox']['remove'];?></a> |
               <a id="activate_selected_alias" href="#" class="mass-each-action"><?=$lang['mailbox']['activate'];?></a> |
               <a id="deactivate_selected_alias" href="#" class="mass-each-action"><?=$lang['mailbox']['deactivate'];?></a>
-              <a class="pull-right" href="/add.php?alias"><?=$lang['mailbox']['add_alias'];?></a>
             </div>
           </div>
         </div>
