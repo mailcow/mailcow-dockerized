@@ -12,8 +12,25 @@ table.footable>tbody>tr.footable-empty>td {
   overflow: visible !important;
 }
 .footer-add-item {
-  text-align:center;
-  font-style: italic;
   display:block;
   padding: 10px;
+  background: #F5F5F5;
+}
+.mass-each-action {
+  padding: 0 3px 0 3px;
+  user-select: none;
+}
+.mass-actions {
+  user-select: none;
+  padding:10px;
+}
+.mass-select-all {
+  cursor:pointer;
+  color:#555;
+}
+#alias_table {
+  cursor:pointer;
+}
+#alias_table .footable-paging {
+  cursor:	auto;
 }

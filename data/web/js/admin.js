@@ -1,7 +1,7 @@
 $(document).ready(function() {
   $.ajax({
     dataType: 'json',
-    url: '/api/v1/domain-admin/all',
+    url: '/api/v1/get/domain-admin/all',
     jsonp: false,
     error: function () {
       alert('Cannot draw domain administrator table');

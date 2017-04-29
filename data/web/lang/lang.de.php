@@ -9,6 +9,12 @@ $lang['header']['restart_sogo'] = 'SOGo neustarten';
 $lang['footer']['restart_sogo'] = 'SOGo neustarten';
 $lang['footer']['restart_now'] = 'Jetzt neustarten';
 $lang['footer']['restart_sogo_info'] = 'Einige Änderungen an Domains benötigen einen Neustart SOGos. Hier können Sie SOGo neustarten.<br /><br /><b>Wichtig:</b> Ein korrekter Neustart SOGos kann eine Weile in Anspruch nehmen, bitte warten Sie, bis der Prozess vollständig beendet wurde.';
+
+$lang['footer']['confirm_delete'] = 'Löschen bestätigen';
+$lang['footer']['delete_these_items'] = 'Sind Sie sicher, dass die folgenden Elemente entfernt werden sollen?';
+$lang['footer']['delete_now'] = 'Jetzt löschen';
+$lang['footer']['cancel'] = 'Abbrechen';
+
 $lang['dkim']['confirm'] = 'Sind Sie sicher?';
 $lang['danger']['dkim_not_found'] = 'DKIM-Key nicht gefunden';
 $lang['danger']['dkim_remove_failed'] = 'Kann DKIM-Key nicht entfernen';
@@ -249,9 +255,12 @@ $lang['mailbox']['add_mailbox'] = 'Mailbox hinzufügen';
 $lang['mailbox']['add_resource'] = 'Ressource hinzufügen';
 $lang['mailbox']['add_alias'] = 'Alias hinzufügen';
 $lang['mailbox']['empty'] = 'Keine Einträge vorhanden';
+$lang['mailbox']['toggle_all'] = 'Alle';
+$lang['mailbox']['quick_actions'] = 'Aktionen';
+$lang['mailbox']['activate'] = 'Aktivieren';
+$lang['mailbox']['deactivate'] = 'Deaktivieren';
 
 $lang['info']['no_action'] = 'Keine Aktion anwendbar';
-
 $lang['delete']['title'] = 'Objekt entfernen';
 $lang['delete']['remove_domain_warning'] = '<b>Warnung:</b> Sie entfernen die Domain <b>%s</b>!';
 $lang['delete']['remove_domainalias_warning'] = '<b>Warnung:</b> Sie entfernen die Alias-Domain <b>%s</b>!';
@@ -450,11 +459,20 @@ $lang['admin']['unchanged_if_empty'] = 'Unverändert, wenn leer';
 $lang['admin']['yes'] = '&#10004;';
 $lang['admin']['no'] = '&#10008;';
 $lang['admin']['access'] = 'Zugang';
-$lang['admin']['invalid_max_msg_size'] = 'Invalid max. message size'; // NEEDS TRANSLATION
+$lang['admin']['invalid_max_msg_size'] = 'Ungültige maximale Nachrichtengröße';
 $lang['admin']['site_not_found'] = 'Kann mailcow Site-Konfiguration nicht finden';
-$lang['admin']['public_folder_empty'] = 'Public folder name must not be empty'; // NEEDS TRANSLATION
+$lang['admin']['public_folder_empty'] = 'Name des öffentlichen Ordners darf nicht leer sein';
 $lang['admin']['set_rr_failed'] = 'Kann Postfix Restriktionen nicht setzen';
 $lang['admin']['no_record'] = 'Kein Eintrag';
 $lang['admin']['filter_table'] = 'Tabelle Filtern';
 $lang['admin']['empty'] = 'Keine Einträge vorhanden';
+$lang['admin']['forwarding_hosts'] = 'Weiterleitungs-Hosts';
+$lang['admin']['forwarding_hosts_hint'] = 'Eingehende Nachrichten werden von den hier gelisteten Hosts bedingungslos akzeptiert. Diese Hosts werden dann nicht mit DNSBLs abgeglichen oder Greylisting unterworfen. Von ihnen empfangener Spam wird nie abgelehnt und immer in den Spam-Ordner einsortiert. Die übliche Verwendung für diese Funktion ist, um Mailserver anzugeben, auf denen eine Weiterleitung zu Ihrem Mailcow-Server eingerichtet wurde.';
+$lang['admin']['forwarding_hosts_add_hint'] = 'Sie können entweder IPv4/IPv6-Adressen, Netzwerke in CIDR-Notation, Hostnamen (die zu IP-Adressen aufgelöst werden), oder Domainnamen (die zu IP-Adressen aufgelöst werden, indem ihr SPF-Record abgefragt wird oder, in dessen Abwesenheit, ihre MX-Records) angeben.';
+$lang['edit']['host'] = 'Host';
+$lang['edit']['source'] = 'Quelle';
+$lang['admin']['add_forwarding_host'] = 'Weiterleitungs-Host hinzufügen';
+$lang['delete']['remove_forwardinghost_warning'] = '<b>Warnung:</b> Sie entfernen den Weiterleitungs-Host <b>%s</b>!';
+$lang['success']['forwarding_host_removed'] = "Weiterleitungs-Host %s wurde entfernt";
+$lang['success']['forwarding_host_added'] = "Weiterleitungs-Host %s wurde hinzugefügt";
 ?>

@@ -7,10 +7,6 @@ rspamd_config.MAILCOW_AUTH = {
 	end
 }
 
-rspamd_config.MAILCOW_MOO = function (task)
-	return true
-end
-
 modify_subject_map = rspamd_config:add_map({
   url = 'http://172.22.1.251:8081/tags.php',
   type = 'map',

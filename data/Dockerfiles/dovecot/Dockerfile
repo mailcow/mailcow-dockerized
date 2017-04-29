@@ -4,8 +4,8 @@ MAINTAINER Andre Peters <andre.peters@servercow.de>
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV LC_ALL C
-ENV DOVECOT_VERSION 2.2.28
-ENV PIGEONHOLE_VERSION 0.4.17
+ENV DOVECOT_VERSION 2.2.29.1
+ENV PIGEONHOLE_VERSION 0.4.18
 
 RUN apt-get update \
 	&& apt-get -y install libpam-dev \

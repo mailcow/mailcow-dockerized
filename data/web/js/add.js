@@ -2,7 +2,7 @@ $(document).ready(function() {
 	// add.php
 	// Get max. possible quota for a domain when domain field changes
 	$('#addSelectDomain').on('change', function() {
-		$.get("/api/v1/domain/" + this.value, function(data){
+		$.get("/api/v1/get/domain/" + this.value, function(data){
       var result = jQuery.parseJSON( data );
       max_new_mailbox_quota = ( result.max_new_mailbox_quota / 1048576);
 			if (max_new_mailbox_quota != '0') {

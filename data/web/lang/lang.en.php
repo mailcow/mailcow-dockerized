@@ -9,6 +9,12 @@ $lang['header']['restart_sogo'] = 'Restart SOGo';
 $lang['footer']['restart_sogo'] = 'Restart SOGo';
 $lang['footer']['restart_now'] = 'Restart now';
 $lang['footer']['restart_sogo_info'] = 'Some tasks, e.g. adding a domain, require you to restart SOGo to catch changes made in the mailcow UI.<br /><br /><b>Important:</b> A graceful restart may take a while to complete, please wait for it to finish.';
+
+$lang['footer']['confirm_delete'] = 'Confirm deletion';
+$lang['footer']['delete_these_items'] = 'Are you sure you want to delete the following items?';
+$lang['footer']['delete_now'] = 'Delete now';
+$lang['footer']['cancel'] = 'Cancel';
+
 $lang['dkim']['confirm'] = "Are you sure?";
 $lang['danger']['dkim_not_found'] = "DKIM key not found";
 $lang['danger']['dkim_remove_failed'] = "Cannot remove selected DKIM key";
@@ -40,7 +46,7 @@ $lang['danger']['alias_goto_identical'] = "Alias and goto address must not be id
 $lang['danger']['aliasd_targetd_identical'] = "Alias domain must not be equal to target domain";
 $lang['danger']['maxquota_empty'] = 'Max. quota per mailbox must not be 0.';
 $lang['success']['alias_added'] = "Alias address/es has/have been added";
-$lang['success']['alias_modified'] = "Changes to alias have been saved";
+$lang['success']['alias_modified'] = "Changes to alias/es %s have been saved";
 $lang['success']['aliasd_modified'] = "Changes to alias domain have been saved";
 $lang['success']['mailbox_modified'] = "Changes to mailbox %s have been saved";
 $lang['success']['resource_modified'] = "Changes to mailbox %s have been saved";
@@ -79,7 +85,7 @@ $lang['danger']['mailbox_quota_left_exceeded'] = "Not enough space left (space l
 $lang['success']['mailbox_added'] = "Mailbox %s has been added";
 $lang['success']['resource_added'] = "Resource %s has been added";
 $lang['success']['domain_removed'] = "Domain %s has been removed";
-$lang['success']['alias_removed'] = "Alias-Adresse %s has been removed";
+$lang['success']['alias_removed'] = "Alias %s has been removed";
 $lang['success']['alias_domain_removed'] = "Alias domain %s has been removed";
 $lang['success']['domain_admin_removed'] = "Domain administrator %s has been removed";
 $lang['success']['mailbox_removed'] = "Mailbox %s has been removed";
@@ -252,6 +258,10 @@ $lang['mailbox']['add_resource'] = 'Add resource';
 $lang['mailbox']['add_alias'] = 'Add alias';
 $lang['mailbox']['add_domain_record_first'] = 'Please add a domain first';
 $lang['mailbox']['empty'] = 'No results';
+$lang['mailbox']['toggle_all'] = 'Toggle all';
+$lang['mailbox']['quick_actions'] = 'Quick actions';
+$lang['mailbox']['activate'] = 'Activate';
+$lang['mailbox']['deactivate'] = 'Deactivate';
 
 $lang['info']['no_action'] = 'No action applicable';
 
@@ -468,4 +478,13 @@ $lang['admin']['set_rr_failed'] = 'Cannot set Postfix restrictions';
 $lang['admin']['no_record'] = 'No record';
 $lang['admin']['filter_table'] = 'Filter table';
 $lang['admin']['empty'] = 'No results';
+$lang['admin']['forwarding_hosts'] = 'Forwarding Hosts';
+$lang['admin']['forwarding_hosts_hint'] = 'Incoming messages are unconditionally accepted from any hosts listed here. These hosts are then not checked against DNSBLs or subjected to greylisting. Spam received from them is never rejected and always filed into the Junk folder. The most common use for this is to specify mail servers on which you have set up a rule that forwards incoming emails to your Mailcow server.';
+$lang['admin']['forwarding_hosts_add_hint'] = 'You can either specify IPv4/IPv6 addresses, networks in CIDR notation, host names (which will be resolved to IP addresses), or domain names (which will be resolved to IP addresses by querying SPF records or, in their absence, MX records).';
+$lang['edit']['host'] = 'Host';
+$lang['edit']['source'] = 'Source';
+$lang['admin']['add_forwarding_host'] = 'Add Forwarding Host';
+$lang['delete']['remove_forwardinghost_warning'] = '<b>Warning:</b> You are about to remove the forwarding host <b>%s</b>!';
+$lang['success']['forwarding_host_removed'] = "Forwarding host %s has been removed";
+$lang['success']['forwarding_host_added'] = "Forwarding host %s has been added";
 ?>
