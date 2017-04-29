@@ -306,7 +306,7 @@ $(document).ready(function() {
             type: "POST",
             dataType: "json",
             data: { "address": JSON.stringify(selected_aliases), "active": "1" },
-            url: '/api/v1/edit/alias/post',
+            url: '/api/v1/edit/alias',
             jsonp: false,
             complete: function (data) {
               location.reload();
@@ -322,7 +322,7 @@ $(document).ready(function() {
             type: "POST",
             dataType: "json",
             data: { "address": JSON.stringify(selected_aliases), "active": "0" },
-            url: '/api/v1/edit/alias/post',
+            url: '/api/v1/edit/alias',
             jsonp: false,
             complete: function (data) {
               location.reload();
@@ -349,7 +349,7 @@ $(document).ready(function() {
               type: "POST",
               dataType: "json",
               data: { "address": JSON.stringify(selected_aliases) },
-              url: '/api/v1/delete/alias/post',
+              url: '/api/v1/delete/alias',
               jsonp: false,
               complete: function (data) {
                 location.reload();

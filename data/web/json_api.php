@@ -1,14 +1,27 @@
 <?php
+/*
+edit/alias => POST data:
+  {
+    address: {a, b, c},   (where a, b, c represent alias addresses)
+    active: 1             (0 or 1)
+  }
+
+delete/alias => POST data:
+  {
+    address: {a, b, c},   (where a, b, c represent alias addresses)
+  }
+
+*/
+header('Content-Type: application/json');
 require_once 'inc/prerequisites.inc.php';
 error_reporting(E_ALL);
 if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_username'])) {
-  if (isset($_GET['action']) && isset($_GET['cat'])) {
-    $category = filter_input(INPUT_GET, 'cat',  FILTER_SANITIZE_STRING);
-    $action = filter_input(INPUT_GET, 'action',  FILTER_SANITIZE_STRING);
-    
-    if (isset($_GET['object'])) {
-      $object = filter_input(INPUT_GET, 'object',  FILTER_SANITIZE_STRING);
-    }
+  if (isset($_GET['query'])) {
+
+    $query = explode('/', $_GET['query']);
+    $action =     (isset($query[0])) ? $query[0] : null;
+    $category =   (isset($query[1])) ? $query[1] : null;
+    $object =     (isset($query[2])) ? $query[2] : null;
 
     switch ($action) {
       case "get":
