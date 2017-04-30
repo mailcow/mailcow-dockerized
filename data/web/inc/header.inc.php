@@ -56,7 +56,7 @@
 				if (isset($_SESSION['mailcow_cc_role'])) {
 				?>
 				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?=$lang['header']['mailcow_settings'];?><span class="caret"></span></a>
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"> <?=$lang['header']['mailcow_settings'];?> <span class="caret"></span></a>
 					<ul class="dropdown-menu" role="menu">
 					<?php
 						if (isset($_SESSION['mailcow_cc_role'])) {
@@ -86,7 +86,19 @@
 				<?php
 				endif;
 				?>
-					<?php
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Apps <span class="caret"></span></a>
+					<ul class="dropdown-menu" role="menu">
+          <?php
+          foreach ($MAILCOW_APPS as $app):
+          ?>
+            <li><a href="<?=$app['link'];?>"><?=$app['name'];?></a></li>
+          <?php
+          endforeach;
+          ?>
+					</ul>
+				</li>
+        <?php
 				}
 				if (!isset($_SESSION["dual-login"]) && isset($_SESSION['mailcow_cc_username'])):
 				?>
