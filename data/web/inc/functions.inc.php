@@ -4294,7 +4294,7 @@ function mailbox_get_domain_details($domain) {
     $domaindata['relay_all_recipients_int'] = $row['relay_all_recipients_int'];
 
     $stmt = $pdo->prepare("SELECT COUNT(*) AS `alias_count` FROM `alias`
-      WHERE (`domain`= :domain OR `domain` = (SELECT `alias_domain` FROM `alias_domain` WHERE `target_domain` = :domain2))
+      WHERE (`domain`= :domain OR `domain` IN (SELECT `alias_domain` FROM `alias_domain` WHERE `target_domain` = :domain2))
         AND `address` NOT IN (
           SELECT `username` FROM `mailbox`
         )");
