@@ -1,4 +1,4 @@
-FROM debian:testing-slim
+FROM debian:stretch-slim
 MAINTAINER Andre Peters <andre.peters@servercow.de>
 
 ENV DEBIAN_FRONTEND noninteractive
