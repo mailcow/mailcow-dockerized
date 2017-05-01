@@ -107,8 +107,8 @@ $(document).ready(function() {
       });
       $('#mailbox_table').footable({
         "columns": [
-          {"sorted": true,"name":"username","title":lang.username,"style":{"width":"250px"}},
-          {"name":"name","title":lang.fname,"breakpoints":"xs sm"},
+          {"sorted": true,"name":"username","style":{"word-break":"break-all"},"title":lang.username},
+          {"name":"name","title":lang.fname,"style":{"word-break":"break-all"},"breakpoints":"xs sm"},
           {"name":"domain","title":lang.domain,"breakpoints":"xs sm"},
           {"name":"quota","style":{"whiteSpace":"nowrap"},"title":lang.domain_quota,"formatter": function(value){
             res = value.split("/");
