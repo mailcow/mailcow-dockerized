@@ -67,7 +67,7 @@ $(document).ready(function() {
           type: "GET",
           cache: false,
           dataType: 'script',
-          url: "/api/v1/u2f-authentication/<?=(isset($_SESSION['pending_mailcow_cc_username'])) ? $_SESSION['pending_mailcow_cc_username'] : null;?>",
+          url: "/api/v1/get/u2f-authentication/<?=(isset($_SESSION['pending_mailcow_cc_username'])) ? $_SESSION['pending_mailcow_cc_username'] : null;?>",
           success: function(data){
             data;
           }
@@ -100,7 +100,7 @@ $(document).ready(function() {
         type: "GET",
         cache: false,
         dataType: 'script',
-        url: "/api/v1/u2f-registration/<?=(isset($_SESSION['mailcow_cc_username'])) ? $_SESSION['mailcow_cc_username'] : null;?>",
+        url: "/api/v1/get/u2f-registration/<?=(isset($_SESSION['mailcow_cc_username'])) ? $_SESSION['mailcow_cc_username'] : null;?>",
         success: function(data){
           data;
         }
