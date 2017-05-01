@@ -235,6 +235,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             }
           break;
           case "u2f-registration":
+            header('Content-Type: application/javascript');
             if (($_SESSION["mailcow_cc_role"] == "admin" || $_SESSION["mailcow_cc_role"] == "domainadmin") && $_SESSION["mailcow_cc_username"] == $object) {
               $data = $u2f->getRegisterData(get_u2f_registrations($object));
               list($req, $sigs) = $data;
@@ -246,6 +247,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             }
           break;
           case "u2f-authentication":
+            header('Content-Type: application/javascript');
             if (isset($_SESSION['pending_mailcow_cc_username']) && $_SESSION['pending_mailcow_cc_username'] == $object) {
               $reqs = json_encode($u2f->getAuthenticateData(get_u2f_registrations($object)));
               $_SESSION['authReq']  = $reqs;
