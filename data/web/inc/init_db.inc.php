@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "01052017_1619";
+    $db_version = "01052017_1702";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'"); 
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -248,6 +248,7 @@ function init_db_schema() {
       "tfa" => array(
         "cols" => array(
           "id" => "INT NOT NULL AUTO_INCREMENT",
+          "key_id" => "VARCHAR(255) NOT NULL",
           "username" => "VARCHAR(255) NOT NULL",
           "authmech" => "ENUM('yubi_otp', 'u2f', 'hotp', 'totp')",
           "secret" => "VARCHAR(255) DEFAULT NULL",
