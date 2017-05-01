@@ -345,6 +345,20 @@ Consider attaching a local folder as new volume to `rspamd-mailcow` in `docker-c
 for file in /data/old_mail/.Junk/cur/*; do rspamc learn_spam < zcat $file; done
 ```
 
+Other than that if you want to be sure emails are learned as HAM/SPAM you can check directly on Redis using the following commands:
+
+```
+docker-compose exec redis-mailcow redis-cli
+```
+
+And when the Redis shell's prompt appears, type
+
+```
+HGETALL BAYES_HAM
+```
+
+to check the emails tagged as HAM. Replace this command with HGETALL BAYES_SPAM for doing the same with SPAM.
+
 ### CLI tools
 
 ```
