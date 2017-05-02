@@ -107,8 +107,8 @@ $(document).ready(function() {
       });
       $('#mailbox_table').footable({
         "columns": [
-          {"sorted": true,"name":"username","style":{"word-break":"break-all","min-width":"180px"},"title":lang.username},
-          {"name":"name","title":lang.fname,"style":{"word-break":"break-all","min-width":"180px"},"breakpoints":"xs sm"},
+          {"sorted": true,"name":"username","style":{"word-break":"break-all","min-width":"120px"},"title":lang.username},
+          {"name":"name","title":lang.fname,"style":{"word-break":"break-all","min-width":"120px"},"breakpoints":"xs sm"},
           {"name":"domain","title":lang.domain,"breakpoints":"xs sm"},
           {"name":"quota","style":{"whiteSpace":"nowrap"},"title":lang.domain_quota,"formatter": function(value){
             res = value.split("/");
@@ -120,10 +120,10 @@ $(document).ready(function() {
           },
           },
           {"name":"spam_aliases","filterable": false,"title":lang.spam_aliases,"breakpoints":"xs sm md"},
-          {"name":"in_use","filterable": false,"style":{"whiteSpace":"nowrap"},"type":"html","title":lang.in_use},
-          {"name":"messages","filterable": false,"style":{"whiteSpace":"nowrap"},"title":lang.msg_num,"breakpoints":"xs sm md"},
-          {"name":"active","filterable": false,"style":{"whiteSpace":"nowrap"},"title":lang.active},
-          {"name":"action","filterable": false,"sortable": false,"style":{"whiteSpace":"nowrap","text-align":"right","width":"290px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
+          {"name":"in_use","filterable": false,"type":"html","title":lang.in_use},
+          {"name":"messages","filterable": false,"title":lang.msg_num,"breakpoints":"xs sm md"},
+          {"name":"active","filterable": false,"title":lang.active},
+          {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"250px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
         ],
         "empty": lang.empty,
         "rows": data,
