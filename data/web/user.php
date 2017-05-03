@@ -45,6 +45,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'doma
         <select id="selectTFA" class="selectpicker" title="<?=$lang['tfa']['select'];?>">
           <option value="yubi_otp"><?=$lang['tfa']['yubi_otp'];?></option>
           <option value="u2f"><?=$lang['tfa']['u2f'];?></option>
+          <option value="totp"><?=$lang['tfa']['totp'];?></option>
           <option value="none"><?=$lang['tfa']['none'];?></option>
         </select>
       </div>
@@ -431,7 +432,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 				<td><?=htmlspecialchars($row['user1']);?></td>
 				<td><?=($row['exclude'] == '') ? '&#10008;' : '<code>' . $row['exclude'] . '</code>';?></td>
 				<td><?=htmlspecialchars($row['mins_interval']);?> min</td>
-				<td><?=(empty($row['last_run'])) ? '&#10008;' : htmlspecialchars(date($lang['user']['syncjob_full_date'], strtotime($row['last_run'] . ' UTC')));?></td>
+				<td><?=(empty($row['last_run'])) ? '&#10008;' : htmlspecialchars(date($lang['user']['syncjob_full_date'], strtotime($row['last_run'])));?></td>
 				<td>
         <?php
         if (empty($row['returned_text'])) {
