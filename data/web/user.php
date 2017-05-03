@@ -399,7 +399,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 			</div>
 			<div class="form-group">
 				<div class="col-sm-12">
-					<button type="submit" id="edit_tls_policy" name="edit_tls_policy" class="btn btn-default"><?=$lang['user']['save_changes'];?></button>
+					<button type="submit" id="edit_tls_policy" name="edit_tls_policy" class="btn btn-success"><?=$lang['user']['save_changes'];?></button>
 				</div>
 			</div>
 		</form>
