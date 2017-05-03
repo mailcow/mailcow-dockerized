@@ -24,9 +24,10 @@ if (file_exists('./inc/vars.local.inc.php')) {
 // Yubi OTP API
 require_once 'inc/lib/Yubico.php';
 
-// U2F API
-require_once 'inc/lib/U2F.php';
+// U2F API + T/HOTP API
+require_once 'inc/lib/vendor/autoload.php';
 $u2f = new u2flib_server\U2F('https://' . $_SERVER['SERVER_NAME']);
+$tfa = new RobThree\Auth\TwoFactorAuth('mailcow UI');
 
 // PDO
 // Calculate offset
