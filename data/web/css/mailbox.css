@@ -34,3 +34,8 @@ table.footable>tbody>tr.footable-empty>td {
 #alias_table .footable-paging {
   cursor:	auto;
 }
+@media (min-width: 992px) {
+  .container {
+      width: 80%;
+  }
+}

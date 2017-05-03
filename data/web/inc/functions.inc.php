@@ -1754,6 +1754,7 @@ function set_tfa($postarray) {
 	global $pdo;
 	global $yubi;
 	global $u2f;
+	global $tfa;
 
   if ($_SESSION['mailcow_cc_role'] != "domainadmin" &&
     $_SESSION['mailcow_cc_role'] != "admin") {
@@ -1850,6 +1851,36 @@ function set_tfa($postarray) {
           'msg' => "U2F: " . $e->getMessage()
         );
         $_SESSION['regReq'] = null;
+        return false;
+      }
+		break;
+
+		case "totp":
+      (!isset($postarray["key_id"])) ? $key_id = 'unidentified' : $key_id = $postarray["key_id"];
+      if ($tfa->verifyCode($_POST['totp_secret'], $_POST['totp_confirm_token']) === true) {
+        try {
+        $stmt = $pdo->prepare("DELETE FROM `tfa` WHERE `username` = :username");
+        $stmt->execute(array(':username' => $username));
+        $stmt = $pdo->prepare("INSERT INTO `tfa` (`username`, `key_id`, `authmech`, `secret`, `active`) VALUES (?, ?, 'totp', ?, '1')");
+        $stmt->execute(array($username, $key_id, $_POST['totp_secret']));
+        }
+        catch (PDOException $e) {
+          $_SESSION['return'] = array(
+            'type' => 'danger',
+            'msg' => 'MySQL: '.$e
+          );
+          return false;
+        }
+        $_SESSION['return'] = array(
+          'type' => 'success',
+          'msg' => sprintf($lang['success']['object_modified'], $username)
+        );
+      }
+      else {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => 'TOTP verification failed'
+        );
       }
 		break;
 
@@ -1970,8 +2001,16 @@ function get_tfa($username = null) {
  		case "totp":
       $data['name'] = "totp";
       $data['pretty'] = "Time-based OTP";
+      $stmt = $pdo->prepare("SELECT `id`, `key_id`, `secret` FROM `tfa` WHERE `authmech` = 'totp' AND `username` = :username");
+      $stmt->execute(array(
+        ':username' => $username,
+      ));
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      while($row = array_shift($rows)) {
+        $data['additional'][] = $row;
+      }
       return $data;
-		break;
+      break;
     default:
       $data['name'] = 'none';
       $data['pretty'] = "-";
@@ -1983,6 +2022,8 @@ function verify_tfa_login($username, $token) {
 	global $pdo;
 	global $lang;
 	global $yubi;
+	global $u2f;
+	global $tfa;
 
   $stmt = $pdo->prepare("SELECT `authmech` FROM `tfa`
       WHERE `username` = :username AND `active` = '1'");
@@ -2020,7 +2061,6 @@ function verify_tfa_login($username, $token) {
   break;
   case "u2f":
     try {
-      global $u2f;
       $reg = $u2f->doAuthenticate(json_decode($_SESSION['authReq']), get_u2f_registrations($username), json_decode($token));
       $stmt = $pdo->prepare("UPDATE `tfa` SET `counter` = ? WHERE `id` = ?");
       $stmt->execute(array($reg->counter, $reg->id));
@@ -2042,7 +2082,26 @@ function verify_tfa_login($username, $token) {
       return false;
   break;
   case "totp":
+    try {
+      $stmt = $pdo->prepare("SELECT `id`, `secret` FROM `tfa`
+          WHERE `username` = :username
+          AND `authmech` = 'totp'
+          AND `active`='1'");
+      $stmt->execute(array(':username' => $username));
+      $row = $stmt->fetch(PDO::FETCH_ASSOC);
+      if ($tfa->verifyCode($row['secret'], $_POST['token']) === true) {
+        $_SESSION['tfa_id'] = $row['id'];
+        return true;
+      }
       return false;
+    }
+    catch (PDOException $e) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => 'MySQL: '.$e
+      );
+      return false;
+    }
   break;
   default:
       return false;

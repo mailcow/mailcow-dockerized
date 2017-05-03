@@ -67,6 +67,7 @@ $tfa_data = get_tfa();
             <select data-width="auto" id="selectTFA" class="selectpicker" title="<?=$lang['tfa']['select'];?>">
               <option value="yubi_otp"><?=$lang['tfa']['yubi_otp'];?></option>
               <option value="u2f"><?=$lang['tfa']['u2f'];?></option>
+              <option value="totp"><?=$lang['tfa']['totp'];?></option>
               <option value="none"><?=$lang['tfa']['none'];?></option>
             </select>
           </div>

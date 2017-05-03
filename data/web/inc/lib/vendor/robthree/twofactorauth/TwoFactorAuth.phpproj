@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Name>TwoFactorAuth</Name>
+    <ProjectGuid>{e569f53a-a604-4579-91ce-4e35b27da47b}</ProjectGuid>
+    <RootNamespace>TwoFactorAuth</RootNamespace>
+    <OutputType>Library</OutputType>
+    <ProjectTypeGuids>{A0786B88-2ADB-4C21-ABE8-AA2D79766269}</ProjectTypeGuids>
+    <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+    <Server>PHPDev</Server>
+    <PublishEvent>None</PublishEvent>
+    <PHPDevAutoPort>True</PHPDevAutoPort>
+    <PHPDevPort>41315</PHPDevPort>
+    <PHPDevHostName>localhost</PHPDevHostName>
+    <IISProjectUrl>http://localhost:41315/</IISProjectUrl>
+    <Runtime>PHP</Runtime>
+    <RuntimeVersion>7.0</RuntimeVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <IncludeDebugInformation>true</IncludeDebugInformation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <IncludeDebugInformation>false</IncludeDebugInformation>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="demo\demo.php" />
+    <Compile Include="demo\loader.php" />
+    <Compile Include="lib\Providers\Qr\BaseHTTPQRCodeProvider.php" />
+    <Compile Include="lib\Providers\Qr\GoogleQRCodeProvider.php" />
+    <Compile Include="lib\Providers\Qr\IQRCodeProvider.php" />
+    <Compile Include="lib\Providers\Qr\QRException.php" />
+    <Compile Include="lib\Providers\Qr\QRicketProvider.php" />
+    <Compile Include="lib\Providers\Qr\QRServerProvider.php" />
+    <Compile Include="lib\Providers\Rng\CSRNGProvider.php" />
+    <Compile Include="lib\Providers\Rng\IRNGProvider.php" />
+    <Compile Include="lib\Providers\Rng\MCryptRNGProvider.php" />
+    <Compile Include="lib\Providers\Rng\OpenSSLRNGProvider.php" />
+    <Compile Include="lib\Providers\Rng\HashRNGProvider.php" />
+    <Compile Include="lib\Providers\Rng\RNGException.php" />
+    <Compile Include="lib\Providers\Time\ConvertUnixTimeDotComTimeProvider.php" />
+    <Compile Include="lib\Providers\Time\HttpTimeProvider.php" />
+    <Compile Include="lib\Providers\Time\ITimeProvider.php" />
+    <Compile Include="lib\Providers\Time\LocalMachineTimeProvider.php" />
+    <Compile Include="lib\Providers\Time\TimeException.php" />
+    <Compile Include="lib\TwoFactorAuth.php" />
+    <Compile Include=".gitignore" />
+    <Compile Include="README.md" />
+    <Compile Include="lib\TwoFactorAuthException.php" />
+    <Compile Include="tests\TwoFactorAuthTest.php" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="lib\" />
+    <Folder Include="lib\Providers\" />
+    <Folder Include="lib\Providers\Time\" />
+    <Folder Include="lib\Providers\Qr\" />
+    <Folder Include="lib\Providers\Rng\" />
+    <Folder Include="demo\" />
+    <Folder Include="tests\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include=".travis.yml" />
+    <Content Include="composer.json" />
+    <Content Include="composer.lock" />
+    <Content Include="logo.png" />
+    <Content Include="multifactorauthforeveryone.png" />
+    <Content Include="LICENSE" />
+  </ItemGroup>
+</Project>

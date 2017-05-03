@@ -395,6 +395,7 @@ $lang['tfa']['tfa'] = "Two-Factor Authentication";
 $lang['tfa']['set_tfa'] = "Konfiguriere Two-Factor Authentication Methode";
 $lang['tfa']['yubi_otp'] = "Yubico OTP Authentifizierung";
 $lang['tfa']['key_id'] = "Ein Name für diesen YubiKey";
+$lang['tfa']['key_id_totp'] = "Ein eindeutiger Name";
 $lang['tfa']['api_register'] = 'mailcow verwendet die Yubico Cloud API. Ein API-Key für den Yubico Stick kann <a href="https://upgrade.yubico.com/getapikey/" target="_blank">hier</a> bezogen werden.';
 $lang['tfa']['u2f'] = "U2F Authentifizierung";
 $lang['tfa']['hotp'] = "HOTP Authentifizierung";
@@ -405,10 +406,14 @@ $lang['tfa']['disable_tfa'] = "Deaktiviere TFA bis zur nächsten erfolgreichen A
 $lang['tfa']['confirm_tfa'] = "Please confirm your one-time password in the below field";
 $lang['tfa']['confirm'] = "Bestätigen";
 $lang['tfa']['otp'] = "Einmalpasswort";
+$lang['tfa']['totp'] = "Time-based OTP (Google Authenticator etc.)";
 $lang['tfa']['trash_login'] = "Login verwerfen";
 $lang['tfa']['select'] = "Bitte auswählen";
 $lang['tfa']['waiting_usb_auth'] = "<i>Warte auf USB-Gerät...</i><br /><br />Bitte jetzt den vorgesehenen Taster des U2F USB-Gerätes berühren.";
 $lang['tfa']['waiting_usb_register'] = "<i>Warte auf USB-Gerät...</i><br /><br />Bitte zuerst das obere Passwortfeld ausfüllen und erst dann den vorgesehenen Taster des U2F USB-Gerätes berühren.";
+$lang['tfa']['scan_qr_code'] = "Bitte scannen Sie jetzt den angezeigten QR-Code:.";
+$lang['tfa']['enter_qr_code'] = "Falls Sie den angezeigten QR-Code nicht scannen können, verwenden Sie bitte nachstehenden Sicherheitsschlüssel";
+$lang['tfa']['confirm_totp_token'] = "Bitte bestätigen Sie die Änderung durch Eingabe eines generierten Tokens";
 
 $lang['admin']['search_domain_da'] = 'Domains durchsuchen';
 $lang['admin']['restrictions'] = 'Postifx Restriktionen';
