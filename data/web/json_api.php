@@ -14,7 +14,7 @@ delete/alias => POST data:
 */
 header('Content-Type: application/json');
 require_once 'inc/prerequisites.inc.php';
-error_reporting(E_ALL);
+error_reporting(0);
 if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_username'])) {
   if (isset($_GET['query'])) {
 
