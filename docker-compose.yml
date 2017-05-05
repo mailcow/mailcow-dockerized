@@ -265,6 +265,14 @@ services:
           aliases:
             - nginx
 
+    ipv6nat:
+      image: robbertkl/ipv6nat
+      restart: always
+      privileged: true
+      network_mode: "host"
+      volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
 networks:
   mailcow-network:
     driver: bridge
