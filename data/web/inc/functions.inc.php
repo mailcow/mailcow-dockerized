@@ -2357,6 +2357,7 @@ function get_admin_details() {
 function dkim_add_key($postarray) {
 	global $lang;
 	global $pdo;
+	global $redis;
   if ($_SESSION['mailcow_cc_role'] != "admin") {
     $_SESSION['return'] = array(
       'type' => 'danger',
@@ -2372,6 +2373,7 @@ function dkim_add_key($postarray) {
     // return false;
   // }
   $key_length	= intval($postarray['key_size']);
+  $dkim_selector = (isset($postarray['dkim_selector'])) ? $postarray['dkim_selector'] : 'dkim';
   $domain	= $postarray['domain'];
   if (!is_valid_domain_name($domain) || !is_numeric($key_length)) {
     $_SESSION['return'] = array(
@@ -2381,7 +2383,16 @@ function dkim_add_key($postarray) {
     return false;
   }
 
-  if (!empty(glob($GLOBALS['MC_DKIM_TXTS'] . '/' . $domain . '.dkim'))) {
+  if (!empty(glob($GLOBALS['MC_DKIM_TXTS'] . '/' . $domain . '.dkim')) ||
+    $redis->hGet('DKIM_PUB_KEYS', $domain)) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['dkim_domain_or_sel_invalid'])
+      );
+      return false;
+  }
+
+  if (!ctype_alnum($dkim_selector)) {
     $_SESSION['return'] = array(
       'type' => 'danger',
       'msg' => sprintf($lang['danger']['dkim_domain_or_sel_invalid'])
@@ -2401,10 +2412,14 @@ function dkim_add_key($postarray) {
           explode(PHP_EOL, $key_details['key'])
         ), 1, -1)
       );
-    // Save public key to file
-    file_put_contents($GLOBALS['MC_DKIM_TXTS'] . '/' . $domain . '.dkim', $pubKey);
-    // Save private key to file
-    openssl_pkey_export_to_file($keypair_ressource, $GLOBALS['MC_DKIM_KEYS'] . '/' . $domain . '.dkim');
+    // Save public key and selector to redis
+    $redis->hSet('DKIM_PUB_KEYS', $domain, $pubKey);
+    $redis->hSet('DKIM_SELECTORS', $domain, $dkim_selector);
+    // Export private key and save private key to redis
+    openssl_pkey_export($keypair_ressource, $privKey);
+    if (isset($privKey) && !empty($privKey)) {
+      $redis->hSet('DKIM_PRIV_KEYS', $dkim_selector . '.' . $domain, trim($privKey));
+    }
     $_SESSION['return'] = array(
       'type' => 'success',
       'msg' => sprintf($lang['success']['dkim_added'])
@@ -2421,17 +2436,30 @@ function dkim_add_key($postarray) {
 }
 function dkim_get_key_details($domain) {
   $data = array();
+  global $redis;
   if (hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
     $dkim_pubkey_file = escapeshellarg($GLOBALS["MC_DKIM_TXTS"]. "/" . $domain . "." . "dkim");
     if (file_exists(substr($dkim_pubkey_file, 1, -1))) {
       $data['pubkey'] = file_get_contents($GLOBALS["MC_DKIM_TXTS"]. "/" . $domain . "." . "dkim");
       $data['length'] = (strlen($data['pubkey']) < 391) ? 1024 : 2048;
       $data['dkim_txt'] = 'v=DKIM1;k=rsa;t=s;s=email;p=' . file_get_contents($GLOBALS["MC_DKIM_TXTS"]. "/" . $domain . "." . "dkim");
+      $data['dkim_selector'] = 'dkim';
+      // Migrate key to redis
+      $redis->hSet('DKIM_PRIV_KEYS', $data['dkim_selector'] . '.' . $domain, trim(file_get_contents($GLOBALS["MC_DKIM_KEYS"]. "/" . $domain . "." . "dkim")));
+      $redis->hSet('DKIM_PUB_KEYS', $domain, $data['pubkey']);
+      $redis->hSet('DKIM_SELECTORS', $domain, 'dkim');
+    }
+    elseif ($redis_dkim_key_data = $redis->hGet('DKIM_PUB_KEYS', $domain)) {
+      $data['pubkey'] = $redis_dkim_key_data;
+      $data['length'] = (strlen($data['pubkey']) < 391) ? 1024 : 2048;
+      $data['dkim_txt'] = 'v=DKIM1;k=rsa;t=s;s=email;p=' . $redis_dkim_key_data;
+      $data['dkim_selector'] = $redis->hGet('DKIM_SELECTORS', $domain);
     }
   }
   return $data;
 }
 function dkim_get_blind_keys() {
+  global $redis;
 	global $lang;
   if ($_SESSION['mailcow_cc_role'] != "admin") {
     $_SESSION['return'] = array(
@@ -2446,9 +2474,13 @@ function dkim_get_blind_keys() {
   foreach($dnstxt_files as $file) {
     $domains[] = substr($file, 0, -5);
   }
+  foreach ($redis->hKeys('DKIM_PUB_KEYS') as $redis_dkim_domain) {
+    $domains[] = $redis_dkim_domain;
+  }
   return array_diff($domains, array_merge(mailbox_get_domains(), mailbox_get_alias_domains()));
 }
 function dkim_delete_key($postarray) {
+	global $redis;
 	global $lang;
   $domain	= $postarray['domain'];
 
@@ -2473,7 +2505,29 @@ function dkim_delete_key($postarray) {
     );
     return false;
   }
-  exec('rm ' . escapeshellarg($GLOBALS['MC_DKIM_TXTS'] . '/' . $domain . '.dkim'), $out, $return);
+  foreach (array('DKIM_PUB_KEYS', 'DKIM_SELECTORS',) as $hash) {
+    if (!$redis->hDel($hash, $domain)) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['dkim_remove_failed'])
+      );
+      return false;
+    }
+  }
+  if (!empty($key_details = dkim_get_key_details($domain))) {
+    if (!$redis->hDel($hash . $key_details['dkim_selector'], $domain)) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['dkim_remove_failed'])
+      );
+      return false;
+    }
+  }
+  
+  $redis->hDel('DKIM_PUB_KEYS', $domain);
+  $redis->hDel('DKIM_PRIV_KEYS', $domain);
+  $redis->hDel('DKIM_SELECTORS', $domain);
+  exec('rm -f ' . escapeshellarg($GLOBALS['MC_DKIM_TXTS'] . '/' . $domain . '.dkim'), $out, $return);
   if ($return != "0") {
     $_SESSION['return'] = array(
       'type' => 'danger',
@@ -2481,7 +2535,7 @@ function dkim_delete_key($postarray) {
     );
     return false;
   }
-  exec('rm ' . escapeshellarg($GLOBALS['MC_DKIM_KEYS'] . '/' . $domain . '.dkim'), $out, $return);
+  exec('rm -f ' . escapeshellarg($GLOBALS['MC_DKIM_KEYS'] . '/' . $domain . '.dkim'), $out, $return);
   if ($return != "0") {
     $_SESSION['return'] = array(
       'type' => 'danger',

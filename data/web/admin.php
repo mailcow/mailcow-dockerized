@@ -190,7 +190,6 @@ $tfa_data = get_tfa();
   <div class="panel panel-default">
   <div class="panel-heading"><?=$lang['admin']['dkim_keys'];?></div>
   <div class="panel-body">
-    <p style="margin-bottom:40px"><?=$lang['admin']['dkim_key_hint'];?></p>
     <?php
     foreach(mailbox_get_domains() as $domain) {
         if (!empty($dkim = dkim_get_key_details($domain))) {
@@ -199,6 +198,7 @@ $tfa_data = get_tfa();
           <div class="col-xs-3">
             <p>Domain: <strong><?=htmlspecialchars($domain);?></strong><br />
               <span class="label label-success"><?=$lang['admin']['dkim_key_valid'];?></span>
+              <span class="label label-primary">Selector '<?=$dkim['dkim_selector'];?>'</span>
               <span class="label label-info"><?=$dkim['length'];?> bit</span>
             </p>
           </div>
@@ -233,6 +233,7 @@ $tfa_data = get_tfa();
             <div class="col-xs-offset-1 col-xs-2">
               <p><small>↳ Alias-Domain: <strong><?=htmlspecialchars($alias_domain);?></strong><br /></small>
                 <span class="label label-success"><?=$lang['admin']['dkim_key_valid'];?></span>
+                <span class="label label-primary">Selector '<?=$dkim['dkim_selector'];?>'</span>
                 <span class="label label-info"><?=$dkim['length'];?> bit</span>
             </p>
             </div>
@@ -267,8 +268,12 @@ $tfa_data = get_tfa();
       ?>
         <div class="row">
           <div class="col-xs-3">
-            <p>Domain: <strong><?=htmlspecialchars($blind);?></strong><br /><span class="label label-warning"><?=$lang['admin']['dkim_key_unused'];?></span></p>
-          </div>
+            <p>Domain: <strong><?=htmlspecialchars($blind);?></strong><br />
+              <span class="label label-warning"><?=$lang['admin']['dkim_key_unused'];?></span>
+              <span class="label label-primary">Selector '<?=$dkim['dkim_selector'];?>'</span>
+              <span class="label label-info"><?=$dkim['length'];?> bit</span>
+            </p>
+            </div>
             <div class="col-xs-8">
               <pre><?=$dkim['dkim_txt'];?></pre>
             </div>
@@ -289,6 +294,10 @@ $tfa_data = get_tfa();
       <div class="form-group">
         <label for="domain">Domain</label>
         <input class="form-control" id="domain" name="domain" placeholder="example.org" required>
+      </div>
+      <div class="form-group">
+        <label for="domain">Selector</label>
+        <input class="form-control" id="dkim_selector" name="dkim_selector" value="dkim" required>
       </div>
       <div class="form-group">
         <select data-width="200px" class="form-control" id="key_size" name="key_size" title="<?=$lang['admin']['dkim_key_length'];?>" required>

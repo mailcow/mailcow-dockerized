@@ -29,6 +29,10 @@ require_once 'inc/lib/vendor/autoload.php';
 $u2f = new u2flib_server\U2F('https://' . $_SERVER['SERVER_NAME']);
 $tfa = new RobThree\Auth\TwoFactorAuth('mailcow UI');
 
+// Redis
+$redis = new Redis();
+$redis->connect('redis-mailcow', 6379);
+
 // PDO
 // Calculate offset
 $now = new DateTime();
