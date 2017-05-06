@@ -58,6 +58,7 @@ endforeach;
 		apply "default" {
 			actions {
 				reject = 999.9;
+				greylist = 999.8;
 			}
 		}
 		symbols [
