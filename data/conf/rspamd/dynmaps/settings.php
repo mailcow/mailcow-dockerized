@@ -55,14 +55,7 @@ foreach ($rows as $host):
 <?php
 endforeach;
 ?>
-		apply "default" {
-			actions {
-				reject = 999.9;
-			}
-		}
-		symbols [
-			"WHITELIST_FORWARDING_HOST"
-		]
+		want_spam = yes;
 	}
 <?php
 }
