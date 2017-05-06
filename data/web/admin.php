@@ -9,7 +9,7 @@ $tfa_data = get_tfa();
 <div class="container">
   <h4><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <?=$lang['admin']['access'];?></h4>
 
-  <div class="panel-group" id="accordion_access">
+  <div class="panel-group">
     <div class="panel panel-danger">
       <div class="panel-heading"><?=$lang['admin']['admin_details'];?></div>
       <div class="panel-body">
@@ -82,52 +82,7 @@ $tfa_data = get_tfa();
         <div class="panel-body">
           <form method="post">
             <div class="table-responsive">
-            <table class="table table-striped" id="domainadminstable">
-              <thead>
-              <tr>
-                <th style="min-width: 100px;"><?=$lang['admin']['username'];?></th>
-                <th style="min-width: 166px;"><?=$lang['admin']['admin_domains'];?></th>
-                <th style="min-width: 76px;"><?=$lang['admin']['active'];?></th>
-                <th style="min-width: 76px;"><?=$lang['tfa']['tfa'];?></th>
-                <th style="text-align: right; min-width: 200px;"><?=$lang['admin']['action'];?></th>
-              </tr>
-              </thead>
-              <tbody>
-                <?php
-                foreach (get_domain_admins() as $domain_admin) {
-                  $da_data = get_domain_admin_details($domain_admin); 
-                  if (!empty($da_data)):
-                ?>
-                <tr id="data">
-                  <td><?=htmlspecialchars(strtolower($domain_admin));?></td>
-                  <td>
-                  <?php
-                  foreach ($da_data['selected_domains'] as $domain) {
-                    echo htmlspecialchars($domain).'<br />';
-                  }
-                  ?>
-                  </td>
-                  <td><?=$da_data['active'];?></td>
-                  <td><?=empty($da_data['tfa_active_int']) ? "✘" : "✔";?></td>
-                  <td style="text-align: right;">
-                    <div class="btn-group">
-                      <a href="edit.php?domainadmin=<?=$domain_admin;?>" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> <?=$lang['admin']['edit'];?></a>
-                      <a href="delete.php?domainadmin=<?=$domain_admin;?>" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> <?=$lang['admin']['remove'];?></a>
-                    </div>
-                  </td>
-                  </td>
-                </tr>
-
-                <?php
-                else:
-                ?>
-                  <tr id="no-data"><td colspan="4" style="text-align: center; font-style: italic;"><?=$lang['admin']['no_record'];?></td></tr>
-                <?php
-                endif;
-                }
-                ?>
-              </tbody>
-            </table>
+            <table class="table table-striped" id="domainadminstable"></table>
             </div>
           </form>
           <small>
@@ -185,7 +140,7 @@ $tfa_data = get_tfa();
 
   <h4><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> <?=$lang['admin']['configuration'];?></h4>
 
-  <div class="panel-group" id="accordion_access">
+  <div class="panel-group">
 
   <div class="panel panel-default">
   <div class="panel-heading"><?=$lang['admin']['dkim_keys'];?></div>
@@ -372,9 +327,19 @@ $tfa_data = get_tfa();
       </form>
     </div>
   </div>
-
   </div>
 
+  <h4><span class="glyphicon glyphicon-book" aria-hidden="true"></span> Mail Logs</h4>
+  <div class="panel-group">
+    <div class="panel panel-default">
+    <div class="panel-heading">Logs</div>
+    <div class="panel-body">
+      <div class="table-responsive">
+        <table class="table table-striped" id="dovecot_log"></table>
+      </div>
+    </div>
+  </div>
+  </div>
 </div> <!-- /container -->
 <script type='text/javascript'>
 <?php

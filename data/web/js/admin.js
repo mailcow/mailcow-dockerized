@@ -39,4 +39,37 @@ $(document).ready(function() {
       });
     }
   });
+  $.ajax({
+    dataType: 'json',
+    url: '/api/v1/get/logs/dovecot/all',
+    jsonp: false,
+    error: function () {
+      alert('Cannot draw dovecot log table');
+    },
+    success: function (data) {
+      $('#dovecot_log').footable({
+        "columns": [
+          {"name":"time","title":"time"},
+          {"name":"program","title":"program"},
+          {"name":"priority","title":"priority"},
+          {"name":"message","title":"message"},
+        ],
+        "rows": data,
+        "empty": lang.empty,
+        "paging": {
+          "enabled": true,
+          "limit": 5,
+          "size": pagination_size
+        },
+        "filtering": {
+          "enabled": true,
+          "position": "left",
+          "placeholder": lang.filter_table
+        },
+        "sorting": {
+          "enabled": true
+        }
+      });
+    }
+  });
 });

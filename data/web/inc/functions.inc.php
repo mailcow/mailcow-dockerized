@@ -5181,4 +5181,30 @@ function delete_forwarding_host($postarray) {
 		'msg' => sprintf($lang['success']['forwarding_host_removed'], htmlspecialchars($host))
 	);
 }
+function get_logs($container, $lines = 100) {
+	global $lang;
+	global $redis;
+	if ($_SESSION['mailcow_cc_role'] != "admin") {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['access_denied'])
+		);
+		return false;
+	}
+  $lines = intval($lines);
+  if ($container == "dovecot-mailcow") {
+    if ($data = $redis->lRange('DOVECOT_MAILLOG', 1, $lines)) {
+      foreach ($data as $json_line) {
+        $data_array[] = json_decode($json_line, true);
+      }
+      return $data_array;
+    }
+  }
+  if ($container == "postfix-mailcow") {
+    if ($data = $redis->lRange('POSTFIX_MAILLOG', 1, $lines)) {
+      return $data;
+    }
+  }
+  return false;
+}
 ?>

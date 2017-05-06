@@ -22,6 +22,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
     $action =     (isset($query[0])) ? $query[0] : null;
     $category =   (isset($query[1])) ? $query[1] : null;
     $object =     (isset($query[2])) ? $query[2] : null;
+    $extra =      (isset($query[3])) ? $query[3] : null;
 
     switch ($action) {
       case "get":
@@ -53,6 +54,41 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 }
                 else {
                   echo json_encode(mailbox_get_domain_details($object), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                }
+              break;
+            }
+          break;
+          case "logs":
+            switch ($object) {
+              case "dovecot":
+                if (isset($extra) && !empty($extra) && is_int($extra)) {
+                  $extra = intval($extra);
+                  $logs = get_logs('dovecot-mailcow', $extra);
+                }
+                else {
+                  $logs = get_logs('dovecot-mailcow', -1);
+                }
+                if (isset($logs) && !empty($logs)) {
+                  echo json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                }
+                else {
+                  echo '{}';
+                }
+              break;
+
+              case "postfix":
+                if (isset($extra) && !empty($extra) && is_int($extra)) {
+                  $extra = intval($extra);
+                  $logs = get_logs('postfix-mailcow', $extra);
+                }
+                else {
+                  $logs = get_logs('postfix-mailcow', -1);
+                }
+                if (isset($logs) && !empty($logs)) {
+                  echo json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                }
+                else {
+                  echo '{}';
                 }
               break;
             }
