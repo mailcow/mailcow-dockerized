@@ -233,13 +233,13 @@ services:
       depends_on:
         - sogo-mailcow
         - php-fpm-mailcow
-      image: nginx:mainline
+      image: nginx:mainline-alpine
       healthcheck:
         test: ["CMD", "ping", "php-fpm-mailcow", "-c", "10"]
         interval: 10s
         timeout: 30s
         retries: 5
-      command: /bin/bash -c "envsubst < /etc/nginx/conf.d/templates/listen_plain.template > /etc/nginx/conf.d/listen_plain.active &&
+      command: /bin/sh -c "envsubst < /etc/nginx/conf.d/templates/listen_plain.template > /etc/nginx/conf.d/listen_plain.active &&
         envsubst < /etc/nginx/conf.d/templates/listen_ssl.template > /etc/nginx/conf.d/listen_ssl.active &&
         envsubst < /etc/nginx/conf.d/templates/server_name.template > /etc/nginx/conf.d/server_name.active &&
         nginx -g 'daemon off;'"
