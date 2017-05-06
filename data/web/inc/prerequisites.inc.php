@@ -24,23 +24,34 @@ if (file_exists('./inc/vars.local.inc.php')) {
 // Yubi OTP API
 require_once 'inc/lib/Yubico.php';
 
-// U2F API
-require_once 'inc/lib/U2F.php';
+// U2F API + T/HOTP API
+require_once 'inc/lib/vendor/autoload.php';
 $u2f = new u2flib_server\U2F('https://' . $_SERVER['SERVER_NAME']);
+$tfa = new RobThree\Auth\TwoFactorAuth('mailcow UI');
 
 // PDO
-$dsn = "$database_type:host=$database_host;dbname=$database_name";
+// Calculate offset
+$now = new DateTime();
+$mins = $now->getOffset() / 60;
+$sgn = ($mins < 0 ? -1 : 1);
+$mins = abs($mins);
+$hrs = floor($mins / 60);
+$mins -= $hrs * 60;
+$offset = sprintf('%+d:%02d', $hrs*$sgn, $mins);
+
+$dsn = $database_type . ":host=" . $database_host . ";dbname=" . $database_name;
 $opt = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     PDO::ATTR_EMULATE_PREPARES   => false,
+    PDO::MYSQL_ATTR_INIT_COMMAND => "SET time_zone = '" . $offset . "'",
 ];
 try {
 	$pdo = new PDO($dsn, $database_user, $database_pass, $opt);
 }
 catch (PDOException $e) {
 ?>
-<center style='font-family: "Lucida Sans Unicode", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;'>🐮 Connection failed, database may be in warm-up state, please try again later.<br /><br />The following error was reported:<br/>  <?=$e->getMessage();?></center>
+<center style='font-family: "Lucida Sans Unicode", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;'>?? Connection failed, database may be in warm-up state, please try again later.<br /><br />The following error was reported:<br/>  <?=$e->getMessage();?></center>
 <?php
 exit;
 }
@@ -106,5 +117,6 @@ if (isset($_GET['lang'])) {
 require_once 'lang/lang.en.php';
 include 'lang/lang.'.$_SESSION['mailcow_locale'].'.php';
 require_once 'inc/functions.inc.php';
+require_once 'inc/init_db.inc.php';
 require_once 'inc/triggers.inc.php';
-(!isset($_SESSION['mailcow_cc_username'])) ? init_db_schema() : null;
+init_db_schema();

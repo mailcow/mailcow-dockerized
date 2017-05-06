@@ -353,6 +353,13 @@ elseif (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == 
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">
+							<label><input type="checkbox" name="delete1"> <?=$lang['add']['delete1'];?></label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<div class="checkbox">
 							<label><input type="checkbox" name="active" checked> <?=$lang['add']['active'];?></label>
 							</div>
 						</div>

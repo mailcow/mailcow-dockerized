@@ -45,6 +45,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'doma
         <select id="selectTFA" class="selectpicker" title="<?=$lang['tfa']['select'];?>">
           <option value="yubi_otp"><?=$lang['tfa']['yubi_otp'];?></option>
           <option value="u2f"><?=$lang['tfa']['u2f'];?></option>
+          <option value="totp"><?=$lang['tfa']['totp'];?></option>
           <option value="none"><?=$lang['tfa']['none'];?></option>
         </select>
       </div>
@@ -398,14 +399,14 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 			</div>
 			<div class="form-group">
 				<div class="col-sm-12">
-					<button type="submit" id="edit_tls_policy" name="edit_tls_policy" class="btn btn-default"><?=$lang['user']['save_changes'];?></button>
+					<button type="submit" id="edit_tls_policy" name="edit_tls_policy" class="btn btn-success"><?=$lang['user']['save_changes'];?></button>
 				</div>
 			</div>
 		</form>
 	</div>
 	<div role="tabpanel" class="tab-pane" id="Syncjobs">
 		<div class="table-responsive">
-		<table class="table table-striped sortable-theme-bootstrap" data-sortable id="timelimitedaliases">
+		<table class="table table-striped" id="timelimitedaliases">
 			<thead>
 			<tr>
 				<th class="sort-table" style="min-width: 96px;">Server:Port</th>
@@ -416,7 +417,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 				<th class="sort-table" style="min-width: 35px;"><?=$lang['user']['last_run'];?></th>
 				<th class="sort-table" style="min-width: 35px;">Log</th>
 				<th class="sort-table" style="max-width: 95px;"><?=$lang['user']['active'];?></th>
-				<th style="text-align: right; min-width: 200px;" data-sortable="false"><?=$lang['user']['action'];?></th>
+				<th style="text-align: right; min-width: 200px;"><?=$lang['user']['action'];?></th>
 			</tr>
 			</thead>
 			<tbody>
@@ -431,7 +432,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 				<td><?=htmlspecialchars($row['user1']);?></td>
 				<td><?=($row['exclude'] == '') ? '&#10008;' : '<code>' . $row['exclude'] . '</code>';?></td>
 				<td><?=htmlspecialchars($row['mins_interval']);?> min</td>
-				<td><?=(empty($row['last_run'])) ? '&#10008;' : htmlspecialchars(date($lang['user']['syncjob_full_date'], strtotime($row['last_run'] . ' UTC')));?></td>
+				<td><?=(empty($row['last_run'])) ? '&#10008;' : htmlspecialchars(date($lang['user']['syncjob_full_date'], strtotime($row['last_run'])));?></td>
 				<td>
         <?php
         if (empty($row['returned_text'])) {

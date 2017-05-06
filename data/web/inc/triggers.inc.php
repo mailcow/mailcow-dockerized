@@ -72,6 +72,12 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
 	if (isset($_POST["delete_domain_admin"])) {
 		delete_domain_admin($_POST);
 	}
+	if (isset($_POST["add_forwarding_host"])) {
+		add_forwarding_host($_POST);
+	}
+	if (isset($_POST["delete_forwarding_host"])) {
+		delete_forwarding_host($_POST);
+	}
 }
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "user") {
 	if (isset($_POST["edit_user_account"])) {

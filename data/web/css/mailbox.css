@@ -1,19 +1,41 @@
-.panel-heading div {
-	margin-top: -18px;
-	font-size: 15px;
+table.footable>tbody>tr.footable-empty>td {
+  font-size:15px !important;
+  font-style:italic;
 }
-.panel-heading div span {
-	margin-left:5px;
+.pagination a {
+  text-decoration: none !important;
 }
-.panel-body {
-	display: none;
+.panel panel-default {
+  overflow: visible !important;
 }
-.clickable {
-	cursor: pointer;
+.table-responsive {
+  overflow: visible !important;
 }
-.progress {
-	margin-bottom: 0px;
+.footer-add-item {
+  display:block;
+  padding: 10px;
+  background: #F5F5F5;
 }
-.table>thead>tr>th {
-  vertical-align: top !important;
+.mass-each-action {
+  padding: 0 3px 0 3px;
+  user-select: none;
+}
+.mass-actions {
+  user-select: none;
+  padding:10px;
+}
+.mass-select-all {
+  cursor:pointer;
+  color:#555;
+}
+#alias_table {
+  cursor:pointer;
+}
+#alias_table .footable-paging {
+  cursor:	auto;
+}
+@media (min-width: 992px) {
+  .container {
+      width: 80%;
+  }
 }

@@ -1,8 +1,8 @@
-FROM debian:latest
+FROM debian:stretch-slim
 MAINTAINER https://m-ko.de Markus Kosmal <code@cnfg.io>
 
 # Debian Base to use
-ENV DEBIAN_VERSION jessie
+ENV DEBIAN_VERSION stretch
 
 # initial install of av daemon
 RUN echo "deb http://http.debian.net/debian/ $DEBIAN_VERSION main contrib non-free" > /etc/apt/sources.list && \
@@ -13,15 +13,14 @@ RUN echo "deb http://http.debian.net/debian/ $DEBIAN_VERSION main contrib non-fr
         clamav-daemon \
         clamav-freshclam \
         libclamunrar7 \
-        wget && \
+        curl && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 # initial update of av databases
-RUN wget -O /var/lib/clamav/main.cvd http://db.local.clamav.net/main.cvd && \
-    wget -O /var/lib/clamav/daily.cvd http://db.local.clamav.net/daily.cvd && \
-    wget -O /var/lib/clamav/bytecode.cvd http://db.local.clamav.net/bytecode.cvd && \
-    chown clamav:clamav /var/lib/clamav/*.cvd
+COPY dl_files.sh /dl_files.sh
+RUN chmod +x /dl_files.sh
+RUN /dl_files.sh
 
 # permission juggling
 RUN mkdir /var/run/clamav && \
@@ -32,9 +31,6 @@ RUN mkdir /var/run/clamav && \
 RUN sed -i 's/^Foreground .*$/Foreground true/g' /etc/clamav/clamd.conf && \
     echo "TCPSocket 3310" >> /etc/clamav/clamd.conf && \
     sed -i 's/^Foreground .*$/Foreground true/g' /etc/clamav/freshclam.conf
-
-# volume provision
-VOLUME ["/var/lib/clamav"]
 
 # port provision
 EXPOSE 3310

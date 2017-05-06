@@ -67,6 +67,7 @@ $tfa_data = get_tfa();
             <select data-width="auto" id="selectTFA" class="selectpicker" title="<?=$lang['tfa']['select'];?>">
               <option value="yubi_otp"><?=$lang['tfa']['yubi_otp'];?></option>
               <option value="u2f"><?=$lang['tfa']['u2f'];?></option>
+              <option value="totp"><?=$lang['tfa']['totp'];?></option>
               <option value="none"><?=$lang['tfa']['none'];?></option>
             </select>
           </div>
@@ -81,14 +82,14 @@ $tfa_data = get_tfa();
         <div class="panel-body">
           <form method="post">
             <div class="table-responsive">
-            <table class="table table-striped sortable-theme-bootstrap" data-sortable id="domainadminstable">
+            <table class="table table-striped" id="domainadminstable">
               <thead>
               <tr>
-                <th class="sort-table" style="min-width: 100px;"><?=$lang['admin']['username'];?></th>
-                <th class="sort-table" style="min-width: 166px;"><?=$lang['admin']['admin_domains'];?></th>
-                <th class="sort-table" style="min-width: 76px;"><?=$lang['admin']['active'];?></th>
-                <th class="sort-table" style="min-width: 76px;"><?=$lang['tfa']['tfa'];?></th>
-                <th style="text-align: right; min-width: 200px;" data-sortable="false"><?=$lang['admin']['action'];?></th>
+                <th style="min-width: 100px;"><?=$lang['admin']['username'];?></th>
+                <th style="min-width: 166px;"><?=$lang['admin']['admin_domains'];?></th>
+                <th style="min-width: 76px;"><?=$lang['admin']['active'];?></th>
+                <th style="min-width: 76px;"><?=$lang['tfa']['tfa'];?></th>
+                <th style="text-align: right; min-width: 200px;"><?=$lang['admin']['action'];?></th>
               </tr>
               </thead>
               <tbody>
@@ -183,9 +184,11 @@ $tfa_data = get_tfa();
   </div>
 
   <h4><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> <?=$lang['admin']['configuration'];?></h4>
+
+  <div class="panel-group" id="accordion_access">
+
   <div class="panel panel-default">
   <div class="panel-heading"><?=$lang['admin']['dkim_keys'];?></div>
-  <div id="collapseDKIM" class="panel-collapse">
   <div class="panel-body">
     <p style="margin-bottom:40px"><?=$lang['admin']['dkim_key_hint'];?></p>
     <?php
@@ -297,10 +300,81 @@ $tfa_data = get_tfa();
     </form>
   </div>
   </div>
+  
+  <div class="panel panel-default">
+    <div class="panel-heading"><?=$lang['admin']['forwarding_hosts'];?></div>
+    <div class="panel-body">
+      <p style="margin-bottom:40px"><?=$lang['admin']['forwarding_hosts_hint'];?></p>
+      <form method="post">
+        <div class="table-responsive">
+        <table class="table table-striped" id="forwardinghoststable">
+          <thead>
+          <tr>
+            <th style="min-width: 100px;"><?=$lang['edit']['host'];?></th>
+            <th style="min-width: 100px;"><?=$lang['edit']['source'];?></th>
+            <th style="text-align: right; min-width: 200px;"><?=$lang['admin']['action'];?></th>
+          </tr>
+          </thead>
+          <tbody>
+            <?php
+            $forwarding_hosts = get_forwarding_hosts();
+            if ($forwarding_hosts) {
+              foreach ($forwarding_hosts as $host) {
+                $source = $host->source;
+                $host = $host->host;
+              ?>
+              <tr id="data">
+                <td><?=htmlspecialchars(strtolower($host));?></td>
+                <td><?=htmlspecialchars(strtolower($source));?></td>
+                <td style="text-align: right;">
+                  <div class="btn-group">
+                    <a href="delete.php?forwardinghost=<?=$host;?>" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> <?=$lang['admin']['remove'];?></a>
+                  </div>
+                </td>
+                </td>
+              </tr>
+
+              <?php
+              }
+            } else {
+            ?>
+              <tr id="no-data"><td colspan="4" style="text-align: center; font-style: italic;"><?=$lang['admin']['no_record'];?></td></tr>
+            <?php
+            }
+            ?>
+          </tbody>
+        </table>
+        </div>
+      </form>
+      <legend><?=$lang['admin']['add_forwarding_host'];?></legend>
+      <p class="help-block"><?=$lang['admin']['forwarding_hosts_add_hint'];?></p>
+      <form class="form-horizontal" role="form" method="post">
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="hostname"><?=$lang['edit']['host'];?>:</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" name="hostname" id="hostname" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" name="add_forwarding_host" class="btn btn-default"><?=$lang['admin']['add'];?></button>
+          </div>
+        </div>
+      </form>
+    </div>
   </div>
+
+  </div>
+
 </div> <!-- /container -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js" integrity="sha384-YWP9O4NjmcGo4oEJFXvvYSEzuHIvey+LbXkBNJ1Kd0yfugEZN9NCQNpRYBVC1RvA" crossorigin="anonymous"></script>
-<script src="js/sorttable.js"></script>
+<script type='text/javascript'>
+<?php
+$lang_admin = json_encode($lang['admin']);
+echo "var lang = ". $lang_admin . ";\n";
+echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
+?>
+</script>
+<script src="js/footable.min.js"></script>
 <script src="js/admin.js"></script>
 <?php
 require_once("inc/footer.inc.php");

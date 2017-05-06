@@ -1,17 +1,12 @@
-FROM ubuntu:xenial
+FROM debian:jessie-slim
 MAINTAINER Andre Peters <andre.peters@servercow.de>
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV LC_ALL C
 ENV GOSU_VERSION 1.9
 
-RUN dpkg-divert --local --rename --add /sbin/initctl \
-    && ln -sf /bin/true /sbin/initctl \
-    && dpkg-divert --local --rename --add /usr/bin/ischroot \
-    && ln -sf /bin/true /usr/bin/ischroot
-
 RUN apt-get update \
-	&& apt-get install -y --no-install-recommends apt-transport-https \
+	&& apt-get install -y --no-install-recommends apt-transport-https gnupg \
 		ca-certificates \
 		wget \
 		syslog-ng \
@@ -29,8 +24,11 @@ RUN apt-get update \
     && chmod +x /usr/local/bin/gosu \
     && gosu nobody true
 
+RUN mkdir /usr/share/doc/sogo
+RUN touch /usr/share/doc/sogo/empty.sh
+
 RUN apt-key adv --keyserver keys.gnupg.net --recv-key 0x810273C4 \
-	&& echo "deb http://packages.inverse.ca/SOGo/nightly/3/ubuntu/ xenial xenial" > /etc/apt/sources.list.d/sogo.list \
+	&& echo "deb http://packages.inverse.ca/SOGo/nightly/3/debian/ jessie jessie" > /etc/apt/sources.list.d/sogo.list \
 	&& apt-get update \
 	&& apt-get -y --force-yes install sogo sogo-activesync 
 
@@ -41,10 +39,6 @@ RUN echo '0 0 * * *   sogo   /usr/sbin/sogo-tool update-autoreply -p /etc/sogo/s
 
 COPY ./reconf-domains.sh /
 COPY supervisord.conf /etc/supervisor/supervisord.conf
-
-#EXPOSE 20000
-#EXPOSE 9191
-#EXPOSE 9192
 
 CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 

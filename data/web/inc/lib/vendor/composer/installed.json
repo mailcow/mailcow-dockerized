@@ -1,0 +1,88 @@
+[
+    {
+        "name": "robthree/twofactorauth",
+        "version": "1.6",
+        "version_normalized": "1.6.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/RobThree/TwoFactorAuth.git",
+            "reference": "5093ab230cd8f1296d792afb6a49545f37e7fd5a"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/RobThree/TwoFactorAuth/zipball/5093ab230cd8f1296d792afb6a49545f37e7fd5a",
+            "reference": "5093ab230cd8f1296d792afb6a49545f37e7fd5a",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "@stable"
+        },
+        "time": "2017-02-17T15:24:54+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "RobThree\\Auth\\": "lib"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Rob Janssen",
+                "homepage": "http://robiii.me",
+                "role": "Developer"
+            }
+        ],
+        "description": "Two Factor Authentication",
+        "homepage": "https://github.com/RobThree/TwoFactorAuth",
+        "keywords": [
+            "Authentication",
+            "MFA",
+            "Multi Factor Authentication",
+            "Two Factor Authentication",
+            "authenticator",
+            "authy",
+            "php",
+            "tfa"
+        ]
+    },
+    {
+        "name": "yubico/u2flib-server",
+        "version": "1.0.0",
+        "version_normalized": "1.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/Yubico/php-u2flib-server.git",
+            "reference": "407eb21da24150aad30bcd8cc0ee72963eac5e9d"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/Yubico/php-u2flib-server/zipball/407eb21da24150aad30bcd8cc0ee72963eac5e9d",
+            "reference": "407eb21da24150aad30bcd8cc0ee72963eac5e9d",
+            "shasum": ""
+        },
+        "require": {
+            "ext-openssl": "*"
+        },
+        "time": "2016-02-19T09:47:51+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "src/"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-2-Clause"
+        ],
+        "description": "Library for U2F implementation",
+        "homepage": "https://developers.yubico.com/php-u2flib-server"
+    }
+]

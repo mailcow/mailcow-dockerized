@@ -8,5 +8,4 @@ data/conf/nginx/server_name.active
 data/conf/postfix/sql
 data/conf/dovecot/sql
 data/web/inc/vars.local.inc.php
-site/
 data/assets/ssl

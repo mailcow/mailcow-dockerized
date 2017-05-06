@@ -19,6 +19,23 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
 		</div>
 	</div>
 </div>
+<div id="ConfirmDeleteModal" class="modal fade" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal">&times;</button>
+			<h4 class="modal-title"><?=$lang['footer']['confirm_delete'];?></h4>
+		</div>
+		<div class="modal-body">
+			<p><?=$lang['footer']['delete_these_items'];?></p>
+      <ul id="ItemsToDelete"></ul>
+			<hr />
+			<button class="btn btn-sm btn-danger" id="IsConfirmed"><?=$lang['footer']['delete_now'];?></button>
+			<button class="btn btn-sm btn-default" id="isCanceled"><?=$lang['footer']['cancel'];?></button>
+		</div>
+		</div>
+	</div>
+</div>
 <?php
 endif;
 ?>
@@ -50,11 +67,7 @@ $(document).ready(function() {
           type: "GET",
           cache: false,
           dataType: 'script',
-          url: "json_api.php",
-          data: {
-            'action':'get_u2f_auth_challenge',
-            'object':'<?=(isset($_SESSION['pending_mailcow_cc_username'])) ? $_SESSION['pending_mailcow_cc_username'] : null;?>',
-          },
+          url: "/api/v1/get/u2f-authentication/<?=(isset($_SESSION['pending_mailcow_cc_username'])) ? $_SESSION['pending_mailcow_cc_username'] : null;?>",
           success: function(data){
             data;
           }
@@ -80,6 +93,10 @@ $(document).ready(function() {
       $('#YubiOTPModal').modal('show');
       $("option:selected").prop("selected", false);
     }
+    if ($(this).val() == "totp") {
+      $('#TOTPModal').modal('show');
+      $("option:selected").prop("selected", false);
+    }
     if ($(this).val() == "u2f") {
       $('#U2FModal').modal('show');
       $("option:selected").prop("selected", false);
@@ -87,11 +104,7 @@ $(document).ready(function() {
         type: "GET",
         cache: false,
         dataType: 'script',
-        url: "json_api.php",
-        data: {
-          'action':'get_u2f_reg_challenge',
-          'object':'<?=(isset($_SESSION['mailcow_cc_username'])) ? $_SESSION['mailcow_cc_username'] : null;?>',
-        },
+        url: "/api/v1/get/u2f-registration/<?=(isset($_SESSION['mailcow_cc_username'])) ? $_SESSION['mailcow_cc_username'] : null;?>",
         success: function(data){
           data;
         }
@@ -132,25 +145,27 @@ $(document).ready(function() {
 	// Remember last navigation pill
 	(function () {
 		'use strict';
-		$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-			var id = $(this).parents('[role="tablist"]').attr('id');
-			var key = 'lastTag';
-			if (id) {
-				key += ':' + id;
-			}
-			localStorage.setItem(key, $(e.target).attr('href'));
-		});
-		$('[role="tablist"]').each(function (idx, elem) {
-			var id = $(elem).attr('id');
-			var key = 'lastTag';
-			if (id) {
-				key += ':' + id;
-			}
-			var lastTab = localStorage.getItem(key);
-			if (lastTab) {
-				$('[href="' + lastTab + '"]').tab('show');
-			}
-		});
+    if ($('a[data-toggle="tab"]').length) {
+      $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        var id = $(this).parents('[role="tablist"]').attr('id');
+        var key = 'lastTag';
+        if (id) {
+          key += ':' + id;
+        }
+        localStorage.setItem(key, $(e.target).attr('href'));
+      });
+      $('[role="tablist"]').each(function (idx, elem) {
+        var id = $(elem).attr('id');
+        var key = 'lastTag';
+        if (id) {
+          key += ':' + id;
+        }
+        var lastTab = localStorage.getItem(key);
+        if (lastTab) {
+          $('[href="' + lastTab + '"]').tab('show');
+        }
+      });
+    }
 	})();
 
 	// Disable submit after submitting form
