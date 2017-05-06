@@ -20,6 +20,7 @@ RUN apt-get update \
 	automake \
 	syslog-ng \
 	syslog-ng-core \
+    syslog-ng-mod-redis \
 	ca-certificates \
 	supervisor \
 	wget \
@@ -64,20 +65,20 @@ RUN wget https://pigeonhole.dovecot.org/releases/2.2/dovecot-2.2-pigeonhole-$PIG
 	&& make install \
 	&& make clean
 
-RUN sed -i -E 's/^(\s*)system\(\);/\1unix-stream("\/dev\/log");/' /etc/syslog-ng/syslog-ng.conf
 RUN cpanm Data::Uniqid Mail::IMAPClient String::Util
 RUN echo '* * * * *   root   /usr/local/bin/imapsync_cron.pl' > /etc/cron.d/imapsync
 RUN echo '30 3 * * *   vmail  /usr/bin/doveadm quota recalc -A' > /etc/cron.d/dovecot-sync
 
-COPY ./imapsync /usr/local/bin/imapsync
-COPY ./postlogin.sh /usr/local/bin/postlogin.sh
-COPY ./imapsync_cron.pl /usr/local/bin/imapsync_cron.pl
-COPY ./report-spam.sieve /usr/local/lib/dovecot/sieve/report-spam.sieve
-COPY ./report-ham.sieve /usr/local/lib/dovecot/sieve/report-ham.sieve
-COPY ./rspamd-pipe-ham /usr/local/lib/dovecot/sieve/rspamd-pipe-ham
-COPY ./rspamd-pipe-spam /usr/local/lib/dovecot/sieve/rspamd-pipe-spam
-COPY ./docker-entrypoint.sh /
-COPY ./supervisord.conf /etc/supervisor/supervisord.conf
+COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
+COPY imapsync /usr/local/bin/imapsync
+COPY postlogin.sh /usr/local/bin/postlogin.sh
+COPY imapsync_cron.pl /usr/local/bin/imapsync_cron.pl
+COPY report-spam.sieve /usr/local/lib/dovecot/sieve/report-spam.sieve
+COPY report-ham.sieve /usr/local/lib/dovecot/sieve/report-ham.sieve
+COPY rspamd-pipe-ham /usr/local/lib/dovecot/sieve/rspamd-pipe-ham
+COPY rspamd-pipe-spam /usr/local/lib/dovecot/sieve/rspamd-pipe-spam
+COPY docker-entrypoint.sh /
+COPY supervisord.conf /etc/supervisor/supervisord.conf
 
 RUN chmod +x /usr/local/lib/dovecot/sieve/rspamd-pipe-ham \
 	/usr/local/lib/dovecot/sieve/rspamd-pipe-spam \
@@ -91,6 +92,8 @@ RUN groupadd -g 5000 vmail \
 	&& useradd -g vmail -u 5000 vmail -d /var/vmail \
 	&& useradd -c "Dovecot unprivileged user" -d /dev/null -u 401 -g dovecot -s /bin/false dovecot \
 	&& useradd -c "Dovecot login user" -d /dev/null -u 402 -g dovenull -s /bin/false dovenull
+
+RUN touch /etc/default/locale
 
 EXPOSE 24 10001
 

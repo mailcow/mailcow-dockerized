@@ -19,6 +19,7 @@ RUN apt-get install -y --no-install-recommends supervisor \
 	postfix-pcre \
 	syslog-ng \
 	syslog-ng-core \
+    syslog-ng-mod-redis \
 	ca-certificates \
 	gnupg \
 	python-gpgme \
@@ -29,11 +30,13 @@ RUN apt-get install -y --no-install-recommends supervisor \
 RUN addgroup --system --gid 600 zeyple
 RUN adduser --system --home /var/lib/zeyple --no-create-home --uid 600 --gid 600 --disabled-login zeyple
 RUN touch /var/log/zeyple.log && chown zeyple: /var/log/zeyple.log
-RUN sed -i -E 's/^(\s*)system\(\);/\1unix-stream("\/dev\/log");/' /etc/syslog-ng/syslog-ng.conf
+
+RUN touch /etc/default/locale
 
 COPY zeyple.py /usr/local/bin/zeyple.py
 COPY zeyple.conf /etc/zeyple.conf
 COPY supervisord.conf /etc/supervisor/supervisord.conf
+COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
 COPY postfix.sh /opt/postfix.sh
 COPY whitelist_forwardinghosts.sh /usr/local/bin/whitelist_forwardinghosts.sh
 
