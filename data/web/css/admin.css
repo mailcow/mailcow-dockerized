@@ -11,3 +11,6 @@ table.footable>tbody>tr.footable-empty>td {
 .table-responsive {
   overflow: visible !important;
 }
+body {
+  overflow-y:scroll;
+}

@@ -21,8 +21,8 @@ $csrfProtector = new csrfProtector;
 class mailcowCsrfProtector extends csrfprotector {
   public static function logCSRFattack() {
     $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => 'CSRF violation'
+      'type' => 'warning',
+      'msg' => 'CSRF violation, please try again.'
     );
   }
 }
