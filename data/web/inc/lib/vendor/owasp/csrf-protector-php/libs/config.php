@@ -9,6 +9,26 @@
  * ---- tokenLength
  */
 
+function get_trusted_hostname() {
+  $js_path = "/inc/lib/vendor/owasp/csrf-protector-php/js/csrfprotector.js";
+  if ((isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) == "https") || isset($_SERVER['HTTPS'])) {
+    $is_scheme = "https://";
+  }
+  else {
+    $is_scheme = "http://";
+  }
+  if (isset(explode(':', $_SERVER['HTTP_HOST'])[1])) {
+    $is_port = intval(explode(':', $_SERVER['HTTP_HOST'])[1]);
+    if (filter_var($is_port, FILTER_VALIDATE_INT, array("options" => array("min_range" =>1, "max_range" => 65535))) === false) {
+      return false;
+    }
+  }
+  if (!isset($is_port) || $is_port == 0) {
+    $is_port = ($is_scheme == "https://") ? 443 : 80;
+  }
+  return $is_scheme . $GLOBALS['mailcow_hostname'] . ':' . $is_port . $js_path;
+}
+
 return array(
 	"CSRFP_TOKEN" => "MAILCOW_CSRF",
 	"logDirectory" => "../log",
@@ -19,7 +39,7 @@ return array(
 	"customErrorMessage" => "",
 	"jsPath" => "../js/csrfprotector.js",
   // Fetching IS_HTTPS from sessions handler
-	"jsUrl" => (($GLOBALS['IS_HTTPS'] === true) ? 'https://' : 'http://') . $GLOBALS['mailcow_hostname'] . ':' . intval(explode(':', $_SERVER['HTTP_HOST'])[1]) . "/inc/lib/vendor/owasp/csrf-protector-php/js/csrfprotector.js",
+	"jsUrl" => get_trusted_hostname(),
 	"tokenLength" => 10,
 	"secureCookie" => false,
 	"disabledJavascriptMessage" => "This site attempts to protect users against <a href=\"https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29\">
