@@ -1,20 +1,5 @@
 <?php
-//ini_set("session.cookie_secure", 1);
-//ini_set("session.cookie_httponly", 1);
-session_start();
-if (isset($_POST["logout"])) {
-  if (isset($_SESSION["dual-login"])) {
-    $_SESSION["mailcow_cc_username"] = $_SESSION["dual-login"]["username"];
-    $_SESSION["mailcow_cc_role"] = $_SESSION["dual-login"]["role"];
-    unset($_SESSION["dual-login"]);
-  }
-  else {
-    session_unset();
-    session_destroy();
-    session_write_close();
-    setcookie(session_name(),'',0,'/');
-  }
-}
+require_once 'inc/sessions.inc.php';
 
 require_once 'inc/vars.inc.php';
 if (file_exists('./inc/vars.local.inc.php')) {
@@ -24,10 +9,24 @@ if (file_exists('./inc/vars.local.inc.php')) {
 // Yubi OTP API
 require_once 'inc/lib/Yubico.php';
 
-// U2F API + T/HOTP API
+// Autoload composer
 require_once 'inc/lib/vendor/autoload.php';
-$u2f = new u2flib_server\U2F('https://' . $_SERVER['SERVER_NAME']);
+
+// U2F API + T/HOTP API
+$u2f = new u2flib_server\U2F('https://' . $_SERVER['HTTP_HOST']);
 $tfa = new RobThree\Auth\TwoFactorAuth('mailcow UI');
+
+// OWASP CSRF Protector
+$csrfProtector = new csrfProtector;
+class mailcowCsrfProtector extends csrfprotector {
+  public static function logCSRFattack() {
+    $_SESSION['return'] = array(
+      'type' => 'danger',
+      'msg' => 'CSRF violation'
+    );
+  }
+}
+mailcowCsrfProtector::init();
 
 // Redis
 $redis = new Redis();

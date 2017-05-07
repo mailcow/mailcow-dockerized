@@ -53,5 +53,7 @@ $MAILCOW_APPS = array(
 // Rows until pagination begins
 $PAGINATION_SIZE = 10;
 
+// Session lifetime in seconds
+$SESSION_LIFETIME = 3600;
 
 ?>
