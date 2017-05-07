@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit verbose="true">
+    <php>
+        <ini name="memory_limit" value="1024M" />
+        <ini name="error_reporting" value="E_ALL"/>
+    </php>
+    <testsuite name="OWASP CSRF Protector php">
+        <directory>./test/csrfprotector_test.php</directory>
+    </testsuite>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+        <file>libs/csrf/csrfprotector.php</file>
+        </whitelist>
+    </filter>
+</phpunit>
