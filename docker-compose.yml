@@ -100,6 +100,7 @@ services:
       command: "php-fpm -d date.timezone=${TZ}"
       depends_on:
         - bind9-mailcow
+        - redis-mailcow
       volumes:
         - ./data/web:/web:ro
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
