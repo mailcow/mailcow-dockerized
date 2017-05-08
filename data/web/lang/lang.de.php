@@ -450,6 +450,7 @@ $lang['admin']['configuration'] = 'Konfiguration';
 $lang['admin']['password'] = 'Passwort';
 $lang['admin']['password_repeat'] = 'Passwort (Wiederholung)';
 $lang['admin']['active'] = 'Aktiv';
+$lang['admin']['inactive'] = 'Inaktiv';
 $lang['admin']['action'] = 'Aktion';
 $lang['admin']['add_domain_admin'] = 'Domain-Administrator hinzufügen';
 $lang['admin']['admin_domains'] = 'Domain-Zuweisungen';

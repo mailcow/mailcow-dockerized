@@ -462,6 +462,7 @@ $lang['admin']['configuration'] = 'Configuration';
 $lang['admin']['password'] = 'Password';
 $lang['admin']['password_repeat'] = 'Confirmation password (repeat)';
 $lang['admin']['active'] = 'Active';
+$lang['admin']['inactive'] = 'Inactive';
 $lang['admin']['action'] = 'Action';
 $lang['admin']['add_domain_admin'] = 'Add Domain administrator';
 $lang['admin']['admin_domains'] = 'Domain assignments';

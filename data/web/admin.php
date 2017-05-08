@@ -292,24 +292,25 @@ $tfa_data = get_tfa();
             </thead>
             <tbody>
               <?php
-              $forwarding_hosts = get_forwarding_hosts();
-              if ($forwarding_hosts) {
-                foreach ($forwarding_hosts as $host) {
+              $fwd_hosts = get_forwarding_hosts();
+              if (!empty($fwd_hosts)) {
+                foreach ($fwd_hosts as $host => $attr) {
                 ?>
                 <tr id="data">
-                  <td><?=htmlspecialchars(strtolower($host->host));?></td>
-                  <td><?=htmlspecialchars(strtolower($host->source));?></td>
+                  <td><?=htmlspecialchars($host);?></td>
+                  <td><?=htmlspecialchars($attr['source']);?></td>
+                  <td><?=($attr['keep_spam'] == "no") ? $lang['admin']['yes'] : $lang['admin']['no'];?></td>
                   <td style="text-align: right;">
                     <div class="btn-group">
-                      <a href="delete.php?forwardinghost=<?=$host->host;?>" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> <?=$lang['admin']['remove'];?></a>
+                      <a href="delete.php?forwardinghost=<?=htmlspecialchars($host);?>" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> <?=$lang['admin']['remove'];?></a>
                     </div>
                   </td>
                   </td>
                 </tr>
-
                 <?php
                 }
-              } else {
+              }
+              else {
               ?>
                 <tr id="no-data"><td colspan="4" style="text-align: center; font-style: italic;"><?=$lang['admin']['no_record'];?></td></tr>
               <?php
@@ -321,24 +322,18 @@ $tfa_data = get_tfa();
         </form>
         <legend><?=$lang['admin']['add_forwarding_host'];?></legend>
         <p class="help-block"><?=$lang['admin']['forwarding_hosts_add_hint'];?></p>
-        <form class="form-horizontal" role="form" method="post">
+        <form class="form-inline" role="form" method="post">
           <div class="form-group">
-            <label class="control-label col-sm-2" for="hostname"><?=$lang['edit']['host'];?>:</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" name="hostname" id="hostname" required>
-            </div>
+            <label for="hostname"><?=$lang['edit']['host'];?></label>
+            <input class="form-control" id="hostname" name="hostname" placeholder="example.org" required>
           </div>
           <div class="form-group">
-            <label class="control-label col-sm-2" for="filter_spam"><?=$lang['user']['spamfilter'];?>:</label>
-            <div class="col-sm-10">
-              <input type="checkbox" class="form-control" name="filter_spam" id="filter_spam">
-            </div>
+            <select data-width="200px" class="form-control" id="filter_spam" name="filter_spam" title="<?=$lang['user']['spamfilter'];?>" required>
+              <option value="1"><?=$lang['admin']['active'];?></option>
+              <option value="0"><?=$lang['admin']['inactive'];?></option>
+            </select>
           </div>
-          <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-              <button type="submit" name="add_forwarding_host" class="btn btn-default"><?=$lang['admin']['add'];?></button>
-            </div>
-          </div>
+          <button type="submit" name="add_forwarding_host" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
         </form>
       </div>
     </div>

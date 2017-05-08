@@ -5100,14 +5100,29 @@ function get_u2f_registrations($username) {
   return $sel->fetchAll(PDO::FETCH_OBJ);
 }
 function get_forwarding_hosts() {
-	global $pdo;
-  $sel = $pdo->prepare("SELECT * FROM `forwarding_hosts`");
-  $sel->execute();
-  return $sel->fetchAll(PDO::FETCH_OBJ);
+	global $redis;
+  $data = array();
+  try {
+    $wl_hosts = $redis->hGetAll('WHITELISTED_FWD_HOST');
+    if (!empty($wl_hosts)) {
+      foreach ($wl_hosts as $host => $source) {
+        $data[$host]['keep_spam'] = ($redis->hGet('KEEP_SPAM', $host)) ? "yes" : "no";
+        $data[$host]['source'] = $source;
+      }
+    }
+  }
+  catch (RedisException $e) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => 'Redis: '.$e
+		);
+		return false;
+  }
+  return $data;
 }
 function add_forwarding_host($postarray) {
 	require_once 'spf.inc.php';
-	global $pdo;
+	global $redis;
 	global $lang;
 	if ($_SESSION['mailcow_cc_role'] != "admin") {
 		$_SESSION['return'] = array(
@@ -5117,20 +5132,21 @@ function add_forwarding_host($postarray) {
 		return false;
 	}
 	$source = $postarray['hostname'];
-	$host = $postarray['hostname'];
-	$filter_spam = !empty($postarray['filter_spam']);
-	$hosts = array();
-	if (preg_match('/^[0-9a-fA-F:\/]+$/', $host)) { // IPv6 address
+	$host   = trim($postarray['hostname']);
+  $filter_spam = $postarray['filter_spam'];
+  if (isset($postarray['filter_spam']) && $postarray['filter_spam'] == 1) {
+    $filter_spam = 1;
+  }
+  else {
+    $filter_spam = 0;
+  }
+  if (filter_var($host, FILTER_VALIDATE_IP)) {
 		$hosts = array($host);
-	}
-	elseif (preg_match('/^[0-9\.\/]+$/', $host)) { // IPv4 address
-		$hosts = array($host);
-	}
+  }
 	else {
 		$hosts = get_outgoing_hosts_best_guess($host);
 	}
-	if (!$hosts)
-	{
+	if (!$hosts) {
 		$_SESSION['return'] = array(
 			'type' => 'danger',
 			'msg' => 'Invalid host specified: '. htmlspecialchars($host)
@@ -5138,23 +5154,22 @@ function add_forwarding_host($postarray) {
 		return false;
 	}
 	foreach ($hosts as $host) {
-		if ($source == $host)
-			$source = '';
-		try {
-			$stmt = $pdo->prepare("REPLACE INTO `forwarding_hosts` (`host`, `source`, `filter_spam`) VALUES (:host, :source, :filter_spam)");
-			$stmt->execute(array(
-				':host' => $host,
-				':source' => $source,
-				':filter_spam' => $filter_spam ? 1 : 0,
-			));
-		}
-		catch (PDOException $e) {
-			$_SESSION['return'] = array(
-				'type' => 'danger',
-				'msg' => 'MySQL: '.$e
-			);
-			return false;
-		}
+    try {
+      $redis->hSet('WHITELISTED_FWD_HOST', $host, $source);
+      if ($filter_spam == 0) {
+        $redis->hSet('KEEP_SPAM', $host, 1);
+      }
+      elseif ($redis->hGet('KEEP_SPAM', $host)) {
+        $redis->hDel('KEEP_SPAM', $host);
+      }
+    }
+    catch (RedisException $e) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => 'Redis: '.$e
+      );
+      return false;
+    }
 	}
 	$_SESSION['return'] = array(
 		'type' => 'success',
@@ -5162,7 +5177,7 @@ function add_forwarding_host($postarray) {
 	);
 }
 function delete_forwarding_host($postarray) {
-	global $pdo;
+	global $redis;
 	global $lang;
 	if ($_SESSION['mailcow_cc_role'] != "admin") {
 		$_SESSION['return'] = array(
@@ -5171,20 +5186,26 @@ function delete_forwarding_host($postarray) {
 		);
 		return false;
 	}
-	$host = $postarray['forwardinghost'];
-	try {
-		$stmt = $pdo->prepare("DELETE FROM `forwarding_hosts` WHERE `host` = :host");
-		$stmt->execute(array(
-			':host' => $host,
-		));
-	}
-	catch (PDOException $e) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => 'MySQL: '.$e
-		);
-		return false;
-	}
+  if (!is_array($postarray['forwardinghost'])) {
+    $hosts = array();
+    $hosts[] = $postarray['forwardinghost'];
+  }
+  else {
+    $hosts = $postarray['forwardinghost'];
+  }
+  foreach ($hosts as $host) {
+    try {
+      return $redis->hDel('WHITELISTED_FWD_HOST', $host);
+      return $redis->hDel('KEEP_SPAM', $host);
+    }
+    catch (RedisException $e) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => 'Redis: '.$e
+      );
+      return false;
+    }
+  }
 	$_SESSION['return'] = array(
 		'type' => 'success',
 		'msg' => sprintf($lang['success']['forwarding_host_removed'], htmlspecialchars($host))
