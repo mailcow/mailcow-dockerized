@@ -286,7 +286,7 @@ $tfa_data = get_tfa();
             <tr>
               <th style="min-width: 100px;"><?=$lang['edit']['host'];?></th>
               <th style="min-width: 100px;"><?=$lang['edit']['source'];?></th>
-              <th style="min-width: 100px;"><?=$lang['user']['spamfilter'];?></th>
+              <th><?=$lang['user']['spamfilter'];?></th>
               <th style="text-align: right; min-width: 200px;"><?=$lang['admin']['action'];?></th>
             </tr>
             </thead>
