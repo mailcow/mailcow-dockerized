@@ -177,7 +177,6 @@ local function dkim_signing_cb(task)
       p.selector = data
     end
   end
-
   if settings.path_map then
     local data = settings.path_map:get_key(dkim_domain)
     if data then
