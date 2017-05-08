@@ -5134,11 +5134,7 @@ function add_forwarding_host($postarray) {
 		if ($source == $host)
 			$source = '';
 		try {
-			if ($filter_spam) { // if the host already exists, REPLACE it with the spam filter turned on
-				$stmt = $pdo->prepare("REPLACE INTO `forwarding_hosts` (`host`, `source`, `filter_spam`) VALUES (:host, :source, :filter_spam)");
-			} else { // if the host already exists, IGNORE it no matter whether the spam filter is already turned on
-				$stmt = $pdo->prepare("INSERT IGNORE INTO `forwarding_hosts` (`host`, `source`, `filter_spam`) VALUES (:host, :source, :filter_spam)");
-			}
+			$stmt = $pdo->prepare("REPLACE INTO `forwarding_hosts` (`host`, `source`, `filter_spam`) VALUES (:host, :source, :filter_spam)");
 			$stmt->execute(array(
 				':host' => $host,
 				':source' => $source,
