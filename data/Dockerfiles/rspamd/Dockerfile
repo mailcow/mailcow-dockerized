@@ -13,7 +13,7 @@ RUN echo '.include $LOCAL_CONFDIR/local.d/rspamd.conf.local' > /etc/rspamd/rspam
 
 COPY settings.conf /etc/rspamd/modules.d/settings.conf
 COPY antivirus.conf /etc/rspamd/modules.d/antivirus.conf
-
+COPY dkim_signing.lua /usr/share/rspamd/lua/dkim_signing.lua
 RUN pip install -U oletools
 
 CMD /usr/bin/rspamd -f -u _rspamd -g _rspamd
