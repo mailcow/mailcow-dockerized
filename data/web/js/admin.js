@@ -39,37 +39,118 @@ $(document).ready(function() {
       });
     }
   });
-  $.ajax({
-    dataType: 'json',
-    url: '/api/v1/get/logs/dovecot/all',
-    jsonp: false,
-    error: function () {
-      alert('Cannot draw dovecot log table');
-    },
-    success: function (data) {
-      $('#dovecot_log').footable({
-        "columns": [
-          {"name":"time","title":"time"},
-          {"name":"program","title":"program"},
-          {"name":"priority","title":"priority"},
-          {"name":"message","title":"message"},
-        ],
-        "rows": data,
-        "empty": lang.empty,
-        "paging": {
-          "enabled": true,
-          "limit": 5,
-          "size": pagination_size
+  $("#refresh_dovecot_log").on('click', function(e) {
+      function unix_time_format(tm) {
+        var date = new Date(tm ? tm * 1000 : 0);
+        return date.toLocaleString();
+      }
+      e.preventDefault();
+      if (typeof ft_dovecot_logs != 'undefined') {
+        ft_dovecot_logs.destroy();
+      }
+      $.ajax({
+        dataType: 'json',
+        url: '/api/v1/get/logs/dovecot/1000',
+        jsonp: false,
+        error: function () {
+          alert('Cannot draw dovecot log table');
         },
-        "filtering": {
-          "enabled": true,
-          "position": "left",
-          "placeholder": lang.filter_table
-        },
-        "sorting": {
-          "enabled": true
+        success: function (data) {
+          $.each(data, function (i, item) {
+            var danger_class = ["emerg", "alert", "crit"];
+            var warning_class = ["warning"];
+            var info_class = ["notice", "info", "debug"];
+            if (jQuery.inArray(item.priority, danger_class) !== -1) {
+              item.priority = '<span class="label label-danger">' + item.priority + '</span>';
+            } 
+            else if (jQuery.inArray(item.priority, warning_class) !== -1) {
+              item.priority = '<span class="label label-warning">' + item.priority + '</span>';
+            }
+            else if (jQuery.inArray(item.priority, info_class) !== -1) {
+              item.priority = '<span class="label label-info">' + item.priority + '</span>';
+            }
+          });
+          ft_dovecot_logs = FooTable.init("#dovecot_log", {
+            "columns": [
+              {"name":"time","formatter":function unix_time_format(tm) {var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},"title":lang.time,"style":{"width":"170px"}},
+              {"name":"priority","title":lang.priority,"style":{"width":"80px"}},
+              {"name":"message","title":lang.message},
+            ],
+            "rows": data,
+            "empty": lang.empty,
+            "paging": {
+              "enabled": true,
+              "limit": 5,
+              "size": pagination_size
+            },
+            "filtering": {
+              "enabled": true,
+              "position": "left",
+              "placeholder": lang.filter_table
+            },
+            "sorting": {
+              "enabled": true
+            }
+          });
         }
       });
-    }
   });
+  $("#refresh_postfix_log").on('click', function(e) {
+      function unix_time_format(tm) {
+        var date = new Date(tm ? tm * 1000 : 0);
+        return date.toLocaleString();
+      }
+      e.preventDefault();
+      if (typeof ft_postfix_logs != 'undefined') {
+        ft_postfix_logs.destroy();
+      }
+      $.ajax({
+        dataType: 'json',
+        url: '/api/v1/get/logs/postfix/1000',
+        jsonp: false,
+        error: function () {
+          alert('Cannot draw postfix log table');
+        },
+        success: function (data) {
+          $.each(data, function (i, item) {
+            var danger_class = ["emerg", "alert", "crit"];
+            var warning_class = ["warning"];
+            var info_class = ["notice", "info", "debug"];
+            if (jQuery.inArray(item.priority, danger_class) !== -1) {
+              item.priority = '<span class="label label-danger">' + item.priority + '</span>';
+            } 
+            else if (jQuery.inArray(item.priority, warning_class) !== -1) {
+              item.priority = '<span class="label label-warning">' + item.priority + '</span>';
+            }
+            else if (jQuery.inArray(item.priority, info_class) !== -1) {
+              item.priority = '<span class="label label-info">' + item.priority + '</span>';
+            }
+          });
+          ft_postfix_logs = FooTable.init("#postfix_log", {
+            "columns": [
+              {"name":"time","formatter":function unix_time_format(tm) {var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},"title":lang.time,"style":{"width":"170px"}},
+              {"name":"priority","title":lang.priority,"style":{"width":"80px"}},
+              {"name":"message","title":lang.message},
+            ],
+            "rows": data,
+            "empty": lang.empty,
+            "paging": {
+              "enabled": true,
+              "limit": 5,
+              "size": pagination_size
+            },
+            "filtering": {
+              "enabled": true,
+              "position": "left",
+              "placeholder": lang.filter_table
+            },
+            "sorting": {
+              "enabled": true
+            }
+          });
+        }
+      });
+  });
+  $("#refresh_dovecot_log").trigger('click');
+  $("#refresh_postfix_log").trigger('click');
 });

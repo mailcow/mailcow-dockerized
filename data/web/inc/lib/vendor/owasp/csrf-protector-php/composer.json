@@ -1,0 +1,14 @@
+{   
+    "name": "owasp/csrf-protector-php",
+    "type": "library",
+    "description": "CSRF protector php, a standalone php library for csrf mitigation in web applications. Easy to integrate in any php web app.",
+    "keywords": ["security","csrf", "owasp"],
+    "homepage": "https://github.com/mebjas/CSRF-Protector-PHP",
+    "license": "APACHE",
+    "require-dev": {
+        "satooshi/php-coveralls": "~1.0"
+    },
+    "autoload": {
+        "classmap": ["libs/csrf/"]
+    }
+}

@@ -5208,7 +5208,10 @@ function get_logs($container, $lines = 100) {
   }
   if ($container == "postfix-mailcow") {
     if ($data = $redis->lRange('POSTFIX_MAILLOG', 1, $lines)) {
-      return $data;
+      foreach ($data as $json_line) {
+        $data_array[] = json_decode($json_line, true);
+      }
+      return $data_array;
     }
   }
   return false;
