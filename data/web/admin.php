@@ -286,6 +286,7 @@ $tfa_data = get_tfa();
             <tr>
               <th style="min-width: 100px;"><?=$lang['edit']['host'];?></th>
               <th style="min-width: 100px;"><?=$lang['edit']['source'];?></th>
+              <th><?=$lang['user']['spamfilter'];?></th>
               <th style="text-align: right; min-width: 200px;"><?=$lang['admin']['action'];?></th>
             </tr>
             </thead>
@@ -294,15 +295,13 @@ $tfa_data = get_tfa();
               $forwarding_hosts = get_forwarding_hosts();
               if ($forwarding_hosts) {
                 foreach ($forwarding_hosts as $host) {
-                  $source = $host->source;
-                  $host = $host->host;
                 ?>
                 <tr id="data">
-                  <td><?=htmlspecialchars(strtolower($host));?></td>
-                  <td><?=htmlspecialchars(strtolower($source));?></td>
+                  <td><?=htmlspecialchars(strtolower($host->host));?></td>
+                  <td><?=htmlspecialchars(strtolower($host->source));?></td>
                   <td style="text-align: right;">
                     <div class="btn-group">
-                      <a href="delete.php?forwardinghost=<?=$host;?>" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> <?=$lang['admin']['remove'];?></a>
+                      <a href="delete.php?forwardinghost=<?=$host->host;?>" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> <?=$lang['admin']['remove'];?></a>
                     </div>
                   </td>
                   </td>
@@ -327,6 +326,12 @@ $tfa_data = get_tfa();
             <label class="control-label col-sm-2" for="hostname"><?=$lang['edit']['host'];?>:</label>
             <div class="col-sm-10">
               <input type="text" class="form-control" name="hostname" id="hostname" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="filter_spam"><?=$lang['user']['spamfilter'];?>:</label>
+            <div class="col-sm-10">
+              <input type="checkbox" class="form-control" name="filter_spam" id="filter_spam">
             </div>
           </div>
           <div class="form-group">

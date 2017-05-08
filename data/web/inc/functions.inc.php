@@ -5101,7 +5101,7 @@ function get_u2f_registrations($username) {
 }
 function get_forwarding_hosts() {
 	global $pdo;
-  $sel = $pdo->prepare("SELECT host, source FROM `forwarding_hosts`");
+  $sel = $pdo->prepare("SELECT * FROM `forwarding_hosts`");
   $sel->execute();
   return $sel->fetchAll(PDO::FETCH_OBJ);
 }
@@ -5118,6 +5118,7 @@ function add_forwarding_host($postarray) {
 	}
 	$source = $postarray['hostname'];
 	$host = $postarray['hostname'];
+	$filter_spam = !empty($postarray['filter_spam']);
 	$hosts = array();
 	if (preg_match('/^[0-9a-fA-F:\/]+$/', $host)) { // IPv6 address
 		$hosts = array($host);
@@ -5140,10 +5141,11 @@ function add_forwarding_host($postarray) {
 		if ($source == $host)
 			$source = '';
 		try {
-			$stmt = $pdo->prepare("INSERT IGNORE INTO `forwarding_hosts` (`host`, `source`) VALUES (:host, :source)");
+			$stmt = $pdo->prepare("REPLACE INTO `forwarding_hosts` (`host`, `source`, `filter_spam`) VALUES (:host, :source, :filter_spam)");
 			$stmt->execute(array(
 				':host' => $host,
 				':source' => $source,
+				':filter_spam' => $filter_spam ? 1 : 0,
 			));
 		}
 		catch (PDOException $e) {

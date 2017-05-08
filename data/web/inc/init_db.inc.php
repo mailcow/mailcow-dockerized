@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "01052017_1702";
+    $db_version = "07052017_0824";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'"); 
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -268,7 +268,8 @@ function init_db_schema() {
       "forwarding_hosts" => array(
         "cols" => array(
           "host" => "VARCHAR(255) NOT NULL",
-          "source" => "VARCHAR(255) NOT NULL"
+          "source" => "VARCHAR(255) NOT NULL",
+          "filter_spam" => "TINYINT(1) NOT NULL DEFAULT '0'"
         ),
         "keys" => array(
           "primary" => array(

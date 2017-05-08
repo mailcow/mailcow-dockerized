@@ -31,19 +31,52 @@ catch (PDOException $e) {
 
 ?>
 settings {
-<?php
 
 /*
 // Start whitelist for forwarding hosts
 */
 
+<?php
 try {
-	$stmt = $pdo->query("SELECT `host` FROM `forwarding_hosts`");
+	$stmt = $pdo->query("SELECT `host` FROM `forwarding_hosts` WHERE `filter_spam` = 1");
 	$rows = $stmt->fetchAll(PDO::FETCH_COLUMN);
 }
 catch (PDOException $e) {
 	$rows = array();
 }
+
+if (!empty($rows)) {
+?>
+	whitelist_forwarding_hosts_with_spam_filter {
+		priority = high;
+<?php
+foreach ($rows as $host):
+?>
+		ip = "<?=$host;?>";
+<?php
+endforeach;
+?>
+		apply "default" {
+			actions {
+				reject = 999.9;
+				greylist = 999.8;
+			}
+		}
+		symbols [
+			"WHITELIST_FORWARDING_HOST"
+		]
+	}
+<?php
+}
+
+try {
+	$stmt = $pdo->query("SELECT `host` FROM `forwarding_hosts` WHERE `filter_spam` = 0");
+	$rows = $stmt->fetchAll(PDO::FETCH_COLUMN);
+}
+catch (PDOException $e) {
+	$rows = array();
+}
+
 if (!empty($rows)) {
 ?>
 	whitelist_forwarding_hosts {
