@@ -1327,7 +1327,7 @@ function edit_delimiter_action($postarray) {
   // Array items
   // 'username' can be set, defaults to mailcow_cc_username
 	global $lang;
-	global $pdo;
+	global $redis;
   if (isset($postarray['username']) && filter_var($postarray['username'], FILTER_VALIDATE_EMAIL)) {
     if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $postarray['username'])) {
       $_SESSION['return'] = array(
@@ -1343,7 +1343,6 @@ function edit_delimiter_action($postarray) {
   else {
     $username = $_SESSION['mailcow_cc_username'];
   }
-  ($postarray['tagged_mail_handler'] == "subject") ? $wants_tagged_subject = '1' : $wants_tagged_subject = '0';
   if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
     $_SESSION['return'] = array(
       'type' => 'danger',
@@ -1351,17 +1350,29 @@ function edit_delimiter_action($postarray) {
     );
     return false;
   }
-  try {
-    $stmt = $pdo->prepare("UPDATE `mailbox` SET `wants_tagged_subject` = :wants_tagged_subject WHERE `username` = :username");
-    $stmt->execute(array(':username' => $username, ':wants_tagged_subject' => $wants_tagged_subject));
-    $SelectData = $stmt->fetch(PDO::FETCH_ASSOC);
+  if (isset($postarray['tagged_mail_handler']) && $postarray['tagged_mail_handler'] == "subject") {
+    try {
+      $redis->hSet('RCPT_WANTS_SUBJECT_TAG', $username, 1);
+    }
+    catch (RedisException $e) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => 'Redis: '.$e
+      );
+      return false;
+    }
   }
-  catch(PDOException $e) {
-    $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => 'MySQL: '.$e
-    );
-    return false;
+  else {
+    try {
+      $redis->hDel('RCPT_WANTS_SUBJECT_TAG', $username);
+    }
+    catch (RedisException $e) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => 'Redis: '.$e
+      );
+      return false;
+    }
   }
   $_SESSION['return'] = array(
     'type' => 'success',
@@ -1372,7 +1383,7 @@ function edit_delimiter_action($postarray) {
 function get_delimiter_action($username = null) {
   // 'username' can be set, defaults to mailcow_cc_username
 	global $lang;
-	global $pdo;
+	global $redis;
 	$data = array();
   if (isset($username) && filter_var($username, FILTER_VALIDATE_EMAIL)) {
     if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
@@ -1383,18 +1394,20 @@ function get_delimiter_action($username = null) {
     $username = $_SESSION['mailcow_cc_username'];
   }
   try {
-    $stmt = $pdo->prepare("SELECT `wants_tagged_subject` FROM `mailbox` WHERE `username` = :username");
-    $stmt->execute(array(':username' => $username));
-    $data = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($redis->hGet('RCPT_WANTS_SUBJECT_TAG', $username)) {
+      return "subject";
+    }
+    else {
+      return "subfolder";
+    }
   }
-  catch(PDOException $e) {
+  catch (RedisException $e) {
     $_SESSION['return'] = array(
       'type' => 'danger',
-      'msg' => 'MySQL: '.$e
+      'msg' => 'Redis: '.$e
     );
     return false;
   }
-  return $data;
 }
 function user_get_alias_details($username) {
 	global $lang;
@@ -2413,12 +2426,30 @@ function dkim_add_key($postarray) {
         ), 1, -1)
       );
     // Save public key and selector to redis
-    $redis->hSet('DKIM_PUB_KEYS', $domain, $pubKey);
-    $redis->hSet('DKIM_SELECTORS', $domain, $dkim_selector);
+    try {
+      $redis->hSet('DKIM_PUB_KEYS', $domain, $pubKey);
+      $redis->hSet('DKIM_SELECTORS', $domain, $dkim_selector);
+    }
+    catch (RedisException $e) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => 'Redis: '.$e
+      );
+      return false;
+    }
     // Export private key and save private key to redis
     openssl_pkey_export($keypair_ressource, $privKey);
     if (isset($privKey) && !empty($privKey)) {
-      $redis->hSet('DKIM_PRIV_KEYS', $dkim_selector . '.' . $domain, trim($privKey));
+      try {
+        $redis->hSet('DKIM_PRIV_KEYS', $dkim_selector . '.' . $domain, trim($privKey));
+      }
+      catch (RedisException $e) {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => 'Redis: '.$e
+        );
+        return false;
+      }
     }
     $_SESSION['return'] = array(
       'type' => 'success',
@@ -2438,18 +2469,7 @@ function dkim_get_key_details($domain) {
   $data = array();
   global $redis;
   if (hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
-    $dkim_pubkey_file = escapeshellarg($GLOBALS["MC_DKIM_TXTS"]. "/" . $domain . "." . "dkim");
-    if (file_exists(substr($dkim_pubkey_file, 1, -1))) {
-      $data['pubkey'] = file_get_contents($GLOBALS["MC_DKIM_TXTS"]. "/" . $domain . "." . "dkim");
-      $data['length'] = (strlen($data['pubkey']) < 391) ? 1024 : 2048;
-      $data['dkim_txt'] = 'v=DKIM1;k=rsa;t=s;s=email;p=' . file_get_contents($GLOBALS["MC_DKIM_TXTS"]. "/" . $domain . "." . "dkim");
-      $data['dkim_selector'] = 'dkim';
-      // Migrate key to redis
-      $redis->hSet('DKIM_PRIV_KEYS', $data['dkim_selector'] . '.' . $domain, trim(file_get_contents($GLOBALS["MC_DKIM_KEYS"]. "/" . $domain . "." . "dkim")));
-      $redis->hSet('DKIM_PUB_KEYS', $domain, $data['pubkey']);
-      $redis->hSet('DKIM_SELECTORS', $domain, 'dkim');
-    }
-    elseif ($redis_dkim_key_data = $redis->hGet('DKIM_PUB_KEYS', $domain)) {
+    if ($redis_dkim_key_data = $redis->hGet('DKIM_PUB_KEYS', $domain)) {
       $data['pubkey'] = $redis_dkim_key_data;
       $data['length'] = (strlen($data['pubkey']) < 391) ? 1024 : 2048;
       $data['dkim_txt'] = 'v=DKIM1;k=rsa;t=s;s=email;p=' . $redis_dkim_key_data;
@@ -2469,11 +2489,6 @@ function dkim_get_blind_keys() {
     return false;
   }
   $domains = array();
-  $dnstxt_folder = scandir($GLOBALS["MC_DKIM_TXTS"]);
-  $dnstxt_files = array_diff($dnstxt_folder, array('.', '..'));
-  foreach($dnstxt_files as $file) {
-    $domains[] = substr($file, 0, -5);
-  }
   foreach ($redis->hKeys('DKIM_PUB_KEYS') as $redis_dkim_domain) {
     $domains[] = $redis_dkim_domain;
   }
@@ -2491,13 +2506,6 @@ function dkim_delete_key($postarray) {
     );
     return false;
   }
-  // if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
-    // $_SESSION['return'] = array(
-      // 'type' => 'danger',
-      // 'msg' => sprintf($lang['danger']['access_denied'])
-    // );
-    // return false;
-  // }
   if (!is_valid_domain_name($domain)) {
     $_SESSION['return'] = array(
       'type' => 'danger',
@@ -2505,43 +2513,22 @@ function dkim_delete_key($postarray) {
     );
     return false;
   }
-  foreach (array('DKIM_PUB_KEYS', 'DKIM_SELECTORS',) as $hash) {
-    if (!$redis->hDel($hash, $domain)) {
-      $_SESSION['return'] = array(
-        'type' => 'danger',
-        'msg' => sprintf($lang['danger']['dkim_remove_failed'])
-      );
-      return false;
+  try {
+    foreach ($redis->hGetAll('DKIM_PRIV_KEYS') as $key => $value) {
+      if (preg_match('/\.' . $domain . '$/i', $key)) {
+        $redis->hDel('DKIM_PUB_KEYS', $key);
+      }
     }
+    $redis->hDel('DKIM_PUB_KEYS', $domain);
+    $redis->hDel('DKIM_SELECTORS', $domain);
+    $redis->hDel('DKIM_PRIV_KEYS', $domain);
   }
-  if (!empty($key_details = dkim_get_key_details($domain))) {
-    if (!$redis->hDel($hash . $key_details['dkim_selector'], $domain)) {
-      $_SESSION['return'] = array(
-        'type' => 'danger',
-        'msg' => sprintf($lang['danger']['dkim_remove_failed'])
-      );
-      return false;
-    }
-  }
-  
-  $redis->hDel('DKIM_PUB_KEYS', $domain);
-  $redis->hDel('DKIM_PRIV_KEYS', $domain);
-  $redis->hDel('DKIM_SELECTORS', $domain);
-  exec('rm -f ' . escapeshellarg($GLOBALS['MC_DKIM_TXTS'] . '/' . $domain . '.dkim'), $out, $return);
-  if ($return != "0") {
-    $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => sprintf($lang['danger']['dkim_remove_failed'])
-    );
-    return false;
-  }
-  exec('rm -f ' . escapeshellarg($GLOBALS['MC_DKIM_KEYS'] . '/' . $domain . '.dkim'), $out, $return);
-  if ($return != "0") {
-    $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => sprintf($lang['danger']['dkim_remove_failed'])
-    );
-    return false;
+  catch (RedisException $e) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => 'Redis: '.$e
+		);
+		return false;
   }
   $_SESSION['return'] = array(
     'type' => 'success',
@@ -2654,6 +2641,16 @@ function mailbox_add_domain($postarray) {
 			':active' => $active,
 			':relay_all_recipients' => $relay_all_recipients
 		));
+    try {
+      $redis->hSet('DOMAIN_MAP', $domain, 1);
+    }
+    catch (RedisException $e) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => 'Redis: '.$e
+      );
+      return false;
+    }
 		$_SESSION['return'] = array(
 			'type' => 'success',
 			'msg' => sprintf($lang['success']['domain_added'], htmlspecialchars($domain))
@@ -4646,6 +4643,16 @@ function mailbox_delete_domain($postarray) {
 		);
 		return false;
 	}
+  try {
+    $redis->hDel('DOMAIN_MAP', $domain);
+  }
+  catch (RedisException $e) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => 'Redis: '.$e
+		);
+		return false;
+  }
 	$_SESSION['return'] = array(
 		'type' => 'success',
 		'msg' => sprintf($lang['success']['domain_removed'], htmlspecialchars($domain))

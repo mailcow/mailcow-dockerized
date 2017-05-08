@@ -4,7 +4,7 @@ $(document).ready(function() {
     url: '/api/v1/get/domain-admin/all',
     jsonp: false,
     error: function () {
-      alert('Cannot draw domain administrator table');
+      console.log('Cannot draw domain admin table');
     },
     success: function (data) {
       $.each(data, function (i, item) {
@@ -53,7 +53,7 @@ $(document).ready(function() {
         url: '/api/v1/get/logs/dovecot/1000',
         jsonp: false,
         error: function () {
-          alert('Cannot draw dovecot log table');
+          console.log('Cannot draw dovecot log table');
         },
         success: function (data) {
           $.each(data, function (i, item) {
@@ -109,7 +109,7 @@ $(document).ready(function() {
         url: '/api/v1/get/logs/postfix/1000',
         jsonp: false,
         error: function () {
-          alert('Cannot draw postfix log table');
+          console.log('Cannot draw postfix log table');
         },
         success: function (data) {
           $.each(data, function (i, item) {
@@ -128,7 +128,7 @@ $(document).ready(function() {
           });
           ft_postfix_logs = FooTable.init("#postfix_log", {
             "columns": [
-              {"name":"time","formatter":function unix_time_format(tm) {var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},"title":lang.time,"style":{"width":"170px"}},
+              {"name":"time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},"title":lang.time,"style":{"width":"170px"}},
               {"name":"priority","title":lang.priority,"style":{"width":"80px"}},
               {"name":"message","title":lang.message},
             ],

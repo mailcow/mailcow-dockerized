@@ -61,7 +61,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "logs":
             switch ($object) {
               case "dovecot":
-                if (isset($extra) && !empty($extra) && is_int($extra)) {
+                if (isset($extra) && !empty($extra)) {
                   $extra = intval($extra);
                   $logs = get_logs('dovecot-mailcow', $extra);
                 }
@@ -77,7 +77,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               break;
 
               case "postfix":
-                if (isset($extra) && !empty($extra) && is_int($extra)) {
+                if (isset($extra) && !empty($extra)) {
                   $extra = intval($extra);
                   $logs = get_logs('postfix-mailcow', $extra);
                 }
