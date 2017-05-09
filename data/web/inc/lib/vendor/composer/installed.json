@@ -53,39 +53,6 @@
         ]
     },
     {
-        "name": "yubico/u2flib-server",
-        "version": "1.0.0",
-        "version_normalized": "1.0.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/Yubico/php-u2flib-server.git",
-            "reference": "407eb21da24150aad30bcd8cc0ee72963eac5e9d"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/Yubico/php-u2flib-server/zipball/407eb21da24150aad30bcd8cc0ee72963eac5e9d",
-            "reference": "407eb21da24150aad30bcd8cc0ee72963eac5e9d",
-            "shasum": ""
-        },
-        "require": {
-            "ext-openssl": "*"
-        },
-        "time": "2016-02-19T09:47:51+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "classmap": [
-                "src/"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "BSD-2-Clause"
-        ],
-        "description": "Library for U2F implementation",
-        "homepage": "https://developers.yubico.com/php-u2flib-server"
-    },
-    {
         "name": "owasp/csrf-protector-php",
         "version": "dev-master",
         "version_normalized": "9999999-dev",
@@ -122,5 +89,42 @@
             "owasp",
             "security"
         ]
+    },
+    {
+        "name": "yubico/u2flib-server",
+        "version": "1.0.1",
+        "version_normalized": "1.0.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/Yubico/php-u2flib-server.git",
+            "reference": "dc318c80b59e62921c210f31b014def26ceebbab"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/Yubico/php-u2flib-server/zipball/dc318c80b59e62921c210f31b014def26ceebbab",
+            "reference": "dc318c80b59e62921c210f31b014def26ceebbab",
+            "shasum": ""
+        },
+        "require": {
+            "ext-openssl": "*",
+            "php": ">=5.6"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "~5.7"
+        },
+        "time": "2017-05-09T07:33:58+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "src/"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-2-Clause"
+        ],
+        "description": "Library for U2F implementation",
+        "homepage": "https://developers.yubico.com/php-u2flib-server"
     }
 ]

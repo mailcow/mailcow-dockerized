@@ -3,7 +3,8 @@ destination: apidocs
 source:
   - src/u2flib_server
 
-exclude: "*/tests/*"
+exclude:
+  - "*/tests/*"
 
 groups: none
 

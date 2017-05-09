@@ -2552,6 +2552,7 @@ function mailbox_add_domain($postarray) {
   // relay_all_recipients   int
   // backupmx               int
 	global $pdo;
+	global $redis;
 	global $lang;
 	if ($_SESSION['mailcow_cc_role'] != "admin") {
 		$_SESSION['return'] = array(
@@ -5177,6 +5178,7 @@ function add_forwarding_host($postarray) {
 	else {
 		$hosts = get_outgoing_hosts_best_guess($host);
 	}
+  print_r($hosts);
 	if (empty($hosts)) {
 		$_SESSION['return'] = array(
 			'type' => 'danger',

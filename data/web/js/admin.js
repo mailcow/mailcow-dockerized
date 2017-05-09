@@ -28,7 +28,7 @@ $(document).ready(function() {
   $(document).on('click', '#toggle_multi_select_all', function(e) {
     e.preventDefault();
     var all_checkboxes = $("input[data-form-id=" + $(this).attr("data-form-id") + "]");
-    all_checkboxes.prop("checked", !closests_checkboxes.prop("checked")).change();
+    all_checkboxes.prop("checked", !all_checkboxes.prop("checked")).change();
   });
 
   // Draw domain admin table
@@ -170,7 +170,7 @@ $(document).ready(function() {
           url: '/api/v1/delete/dkim',
           jsonp: false,
           complete: function (data) {
-            window.location.href = window.location.href;
+            mailcow_alert_box("warn", "asd");
           }
         });
       })

@@ -32,7 +32,7 @@ mkdir -p $releasedir
 git archive $VERSION --format=tar | tar -xC $releasedir
 git2cl > $releasedir/ChangeLog
 cd $releasedir
-apigen
+apigen generate
 cd -
 tar -cz --directory=$tmpdir --file=${releasename}.tar.gz $releasename
 gpg --detach-sign --default-key $PGP_KEYID ${releasename}.tar.gz

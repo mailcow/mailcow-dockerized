@@ -222,6 +222,7 @@ class U2F
     public function getAuthenticateData(array $registrations)
     {
         $sigs = array();
+        $challenge = $this->createChallenge();
         foreach ($registrations as $reg) {
             if( !is_object( $reg ) ) {
                 throw new \InvalidArgumentException('$registrations of getAuthenticateData() method only accepts array of object.');
@@ -230,7 +231,7 @@ class U2F
             $sig = new SignRequest();
             $sig->appId = $this->appId;
             $sig->keyHandle = $reg->keyHandle;
-            $sig->challenge = $this->createChallenge();
+            $sig->challenge = $challenge;
             $sigs[] = $sig;
         }
         return $sigs;

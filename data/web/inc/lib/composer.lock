@@ -40,7 +40,7 @@
                 "owasp",
                 "security"
             ],
-            "time": "2017-04-12 05:47:07"
+            "time": "2017-04-12T05:47:07+00:00"
         },
         {
             "name": "robthree/twofactorauth",
@@ -95,20 +95,24 @@
         },
         {
             "name": "yubico/u2flib-server",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Yubico/php-u2flib-server.git",
-                "reference": "407eb21da24150aad30bcd8cc0ee72963eac5e9d"
+                "reference": "dc318c80b59e62921c210f31b014def26ceebbab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Yubico/php-u2flib-server/zipball/407eb21da24150aad30bcd8cc0ee72963eac5e9d",
-                "reference": "407eb21da24150aad30bcd8cc0ee72963eac5e9d",
+                "url": "https://api.github.com/repos/Yubico/php-u2flib-server/zipball/dc318c80b59e62921c210f31b014def26ceebbab",
+                "reference": "dc318c80b59e62921c210f31b014def26ceebbab",
                 "shasum": ""
             },
             "require": {
-                "ext-openssl": "*"
+                "ext-openssl": "*",
+                "php": ">=5.6"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~5.7"
             },
             "type": "library",
             "autoload": {
@@ -122,7 +126,7 @@
             ],
             "description": "Library for U2F implementation",
             "homepage": "https://developers.yubico.com/php-u2flib-server",
-            "time": "2016-02-19T09:47:51+00:00"
+            "time": "2017-05-09T07:33:58+00:00"
         }
     ],
     "packages-dev": [],

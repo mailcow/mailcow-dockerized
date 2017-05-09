@@ -59,9 +59,7 @@ $(document).ready(function() {
     $('#mailcow-alert-text').text(message);
   }
   // PHP error handler
-  <?php if (isset($_SESSION['return'])): ?>
-  mailcow_alert_box("<?=$_SESSION['return']['type'];?>",  "<?=$_SESSION['return']['msg'];?>");
-  <?php endif; unset($_SESSION['return']); ?>
+
 
   // Confirm TFA modal
   <?php if (isset($_SESSION['pending_tfa_method'])):?>
@@ -230,10 +228,25 @@ $(document).ready(function() {
 	});
 });
 </script>
-<div class="mailcow-alert-box alert" role="alert">
-  <a href="#" class="close" data-dismiss="alert"> &times;</a>
-  <span id="mailcow-alert-text"></span>
+
+<div class="container">
+  <div id="mailcow-alert" class="alert" role="alert">
+    <a href="#" class="close" data-dismiss="alert"> &times;</a>
+    <span id="mailcow-alert-text"></span>
+  </div>
 </div>
+
 </body>
+<?php // Notifications ?>
+<script>
+function mailcow_alert_box(msg, type) {
+  document.getElementById('mailcow-alert').style.display = 'visible';
+  document.getElementById('mailcow-alert-text').innerHTML = msg;
+  document.getElementById("mailcow-alert").className = "alert alert-" + type;
+}
+<?php if (isset($_SESSION['return'])): ?>
+mailcow_alert_box("<?=$_SESSION['return']['msg'];?>",  "<?=$_SESSION['return']['type'];?>");
+<?php endif; unset($_SESSION['return']); ?>
+</script>
 </html>
 <?php $stmt = null; $pdo = null; ?>
