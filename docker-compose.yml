@@ -133,7 +133,7 @@ services:
       dns_search: mailcow-network
       volumes:
         - ./data/conf/sogo/:/etc/sogo/
-        - /usr/lib/GNUstep/SOGo/WebServerResources/
+        - sogo-vol-1:/usr/lib/GNUstep/SOGo/WebServerResources/
       restart: always
       networks:
         mailcow-network:
@@ -281,3 +281,4 @@ volumes:
   rspamd-vol-1:
   postfix-vol-1:
   crypt-vol-1:
+  sogo-vol-1:
