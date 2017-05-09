@@ -49,6 +49,7 @@
 						<li <?=($_SESSION['mailcow_locale'] == 'nl') ? 'class="active"' : ''?>> <a href="?<?= http_build_query(array_merge($_GET, array("lang" => "nl"))) ?>"><span class="lang-xs lang-lbl-full" lang="nl"></span></a></li>
 						<li <?=($_SESSION['mailcow_locale'] == 'pt') ? 'class="active"' : ''?>> <a href="?<?= http_build_query(array_merge($_GET, array("lang" => "pt"))) ?>"><span class="lang-xs lang-lbl-full" lang="pt"></span></a></li>
 						<li <?=($_SESSION['mailcow_locale'] == 'ru') ? 'class="active"' : ''?>> <a href="?<?= http_build_query(array_merge($_GET, array("lang" => "ru"))) ?>"><span class="lang-xs lang-lbl-full" lang="ru"></span></a></li>
+						<li <?=($_SESSION['mailcow_locale'] == 'it') ? 'class="active"' : ''?>> <a href="?<?= http_build_query(array_merge($_GET, array("lang" => "it"))) ?>"><span class="lang-xs lang-lbl-full" lang="it"></span></a></li>
 					</ul>
 				</li>
 				<?php
