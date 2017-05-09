@@ -5103,12 +5103,36 @@ function get_forwarding_hosts() {
 	global $redis;
   $data = array();
   try {
-    $wl_hosts = $redis->hGetAll('WHITELISTED_FWD_HOST');
-    if (!empty($wl_hosts)) {
-      foreach ($wl_hosts as $host => $source) {
-        $data[$host]['keep_spam'] = ($redis->hGet('KEEP_SPAM', $host)) ? "yes" : "no";
-        $data[$host]['source'] = $source;
+    $fwd_hosts = $redis->hGetAll('WHITELISTED_FWD_HOST');
+    if (!empty($fwd_hosts)) {
+      foreach ($fwd_hosts as $fwd_host => $source) {
+        $data[] = $fwd_host;
       }
+    }
+  }
+  catch (RedisException $e) {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => 'Redis: '.$e
+		);
+		return false;
+  }
+  return $data;
+}
+function get_forwarding_host_details($host) {
+	global $redis;
+  $data = array();
+  if (!isset($host) || empty($host)) {
+    return false;
+  }
+  if (filter_var($host, FILTER_VALIDATE_IP)) {
+    return;
+  }
+  try {
+    if ($source = $redis->hGet('WHITELISTED_FWD_HOST', $host)) {
+      $data['host'] = $host;
+      $data['source'] = $source;
+      $data['keep_spam'] = ($redis->hGet('KEEP_SPAM', $host)) ? "yes" : "no";
     }
   }
   catch (RedisException $e) {
@@ -5132,7 +5156,7 @@ function add_forwarding_host($postarray) {
 		return false;
 	}
 	$source = $postarray['hostname'];
-	$host   = trim($postarray['hostname']);
+	$host = trim($postarray['hostname']);
   $filter_spam = $postarray['filter_spam'];
   if (isset($postarray['filter_spam']) && $postarray['filter_spam'] == 1) {
     $filter_spam = 1;
@@ -5140,13 +5164,16 @@ function add_forwarding_host($postarray) {
   else {
     $filter_spam = 0;
   }
-  if (filter_var($host, FILTER_VALIDATE_IP)) {
+	if (preg_match('/^[0-9a-fA-F:\/]+$/', $host)) { // IPv6 address
 		$hosts = array($host);
-  }
+	}
+	elseif (preg_match('/^[0-9\.\/]+$/', $host)) { // IPv4 address
+		$hosts = array($host);
+	}
 	else {
 		$hosts = get_outgoing_hosts_best_guess($host);
 	}
-	if (!$hosts) {
+	if (empty($hosts)) {
 		$_SESSION['return'] = array(
 			'type' => 'danger',
 			'msg' => 'Invalid host specified: '. htmlspecialchars($host)
@@ -5195,8 +5222,8 @@ function delete_forwarding_host($postarray) {
   }
   foreach ($hosts as $host) {
     try {
-      return $redis->hDel('WHITELISTED_FWD_HOST', $host);
-      return $redis->hDel('KEEP_SPAM', $host);
+      $redis->hDel('WHITELISTED_FWD_HOST', $host);
+      $redis->hDel('KEEP_SPAM', $host);
     }
     catch (RedisException $e) {
       $_SESSION['return'] = array(
@@ -5208,7 +5235,7 @@ function delete_forwarding_host($postarray) {
   }
 	$_SESSION['return'] = array(
 		'type' => 'success',
-		'msg' => sprintf($lang['success']['forwarding_host_removed'], htmlspecialchars($host))
+		'msg' => sprintf($lang['success']['forwarding_host_removed'], htmlspecialchars(implode(', ', $hosts)))
 	);
 }
 function get_logs($container, $lines = 100) {

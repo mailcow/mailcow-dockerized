@@ -301,7 +301,7 @@ $(document).ready(function() {
 
       $(document).on('click', '#activate_selected_alias', function(e) {
         e.preventDefault();
-        if (selected_aliases.length !== 0) {
+        if (Object.keys(selected_aliases).length !== 0) {
           $.ajax({
             type: "POST",
             dataType: "json",

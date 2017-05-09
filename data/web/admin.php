@@ -279,45 +279,14 @@ $tfa_data = get_tfa();
       <div class="panel-heading"><?=$lang['admin']['forwarding_hosts'];?></div>
       <div class="panel-body">
         <p style="margin-bottom:40px"><?=$lang['admin']['forwarding_hosts_hint'];?></p>
-        <form method="post">
-          <div class="table-responsive">
-          <table class="table table-striped" id="forwardinghoststable">
-            <thead>
-            <tr>
-              <th style="min-width: 100px;"><?=$lang['edit']['host'];?></th>
-              <th style="min-width: 100px;"><?=$lang['edit']['source'];?></th>
-              <th><?=$lang['user']['spamfilter'];?></th>
-              <th style="text-align: right; min-width: 200px;"><?=$lang['admin']['action'];?></th>
-            </tr>
-            </thead>
-            <tbody>
-              <?php
-              $fwd_hosts = get_forwarding_hosts();
-              if (!empty($fwd_hosts)) {
-                foreach ($fwd_hosts as $host => $attr) {
-                ?>
-                <tr id="data">
-                  <td><?=htmlspecialchars($host);?></td>
-                  <td><?=htmlspecialchars($attr['source']);?></td>
-                  <td><?=($attr['keep_spam'] == "no") ? $lang['admin']['yes'] : $lang['admin']['no'];?></td>
-                  <td style="text-align: right;">
-                    <div class="btn-group">
-                      <a href="delete.php?forwardinghost=<?=htmlspecialchars($host);?>" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> <?=$lang['admin']['remove'];?></a>
-                    </div>
-                  </td>
-                  </td>
-                </tr>
-                <?php
-                }
-              }
-              else {
-              ?>
-                <tr id="no-data"><td colspan="4" style="text-align: center; font-style: italic;"><?=$lang['admin']['no_record'];?></td></tr>
-              <?php
-              }
-              ?>
-            </tbody>
-          </table>
+        <form method="post" data-id="fwdhosts">
+        <div class="btn-group btn-group-sm">
+          <button type="button" id="toggle_multi_select_all" data-form-id="fwdhosts" class="btn btn-default">Toggle all</button>
+          <button type="button" id="delete_fwdhosts" name="delete_fwdhosts" class="btn btn-danger"><?=$lang['admin']['remove'];?></button>
+        </div>
+        <hr >
+        <div class="table-responsive">
+            <table class="table table-striped" id="forwardinghoststable"></table>
           </div>
         </form>
         <legend><?=$lang['admin']['add_forwarding_host'];?></legend>

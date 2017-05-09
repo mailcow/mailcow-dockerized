@@ -55,4 +55,12 @@ body.modal-open {
   overflow: inherit;
   padding-right: inherit !important;
 }
-
+.mailcow-alert-box {
+  position: fixed;
+  bottom: 8px;
+  right: 25px;
+  min-width: 300px;
+  max-width: 350px;
+  z-index: 2000;
+  display: none;
+}

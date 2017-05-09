@@ -33,7 +33,12 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 $domains = mailbox_get_domains();
                 if (!empty($domains)) {
                   foreach ($domains as $domain) {
-                    $data[] = mailbox_get_domain_details($domain);
+                    if ($details = mailbox_get_domain_details($domain)) {
+                      $data[] = $details;
+                    }
+                    else {
+                      continue;
+                    }
                   }
                   if (!isset($data) || empty($data)) {
                     echo '{}';
@@ -53,7 +58,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                   echo '{}';
                 }
                 else {
-                  echo json_encode(mailbox_get_domain_details($object), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                  echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
                 }
               break;
             }
@@ -102,7 +107,12 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                     $mailboxes = mailbox_get_mailboxes($domain);
                     if (!empty($mailboxes)) {
                       foreach ($mailboxes as $mailbox) {
-                        $data[] = mailbox_get_mailbox_details($mailbox);
+                        if ($details = mailbox_get_mailbox_details($mailbox)) {
+                          $data[] = $details;
+                        }
+                        else {
+                          continue;
+                        }
                       }
                     }
                   }
@@ -124,7 +134,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                   echo '{}';
                 }
                 else {
-                  echo json_encode(mailbox_get_mailbox_details($object), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                  echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
                 }
               break;
 
@@ -139,7 +149,12 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                     $resources = mailbox_get_resources($domain);
                     if (!empty($resources)) {
                       foreach ($resources as $resource) {
-                        $data[] = mailbox_get_resource_details($resource);
+                        if ($details = mailbox_get_resource_details($resource)) {
+                          $data[] = $details;
+                        }
+                        else {
+                          continue;
+                        }
                       }
                     }
                   }
@@ -161,7 +176,40 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                   echo '{}';
                 }
                 else {
-                  echo json_encode(mailbox_get_resource_details($object), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                  echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                }
+              break;
+
+            }
+          break;
+          case "fwdhost":
+            switch ($object) {
+              case "all":
+                $fwdhosts = get_forwarding_hosts();
+                if (!empty($fwdhosts)) {
+                  foreach ($fwdhosts as $fwdhost) {
+                    if ($details = get_forwarding_host_details($fwdhost)) {
+                      $data[] = $details;
+                    }
+                    else {
+                      continue;
+                    }
+                  }
+                }
+                if (!isset($data) || empty($data)) {
+                  echo '{}';
+                }
+                else {
+                  echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                }
+              break;
+              default:
+                $data = get_forwarding_host_details($object);
+                if (!isset($data) || empty($data)) {
+                  echo '{}';
+                }
+                else {
+                  echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
                 }
               break;
 
@@ -176,7 +224,12 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                     $alias_domains = mailbox_get_alias_domains($domain);
                     if (!empty($alias_domains)) {
                       foreach ($alias_domains as $alias_domain) {
-                        $data[] = mailbox_get_alias_domain_details($alias_domain);
+                        if ($details = mailbox_get_alias_domain_details($alias_domain)) {
+                          $data[] = $details;
+                        }
+                        else {
+                          continue;
+                        }
                       }
                     }
                   }
@@ -198,7 +251,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                   echo '{}';
                 }
                 else {
-                  echo json_encode(mailbox_get_alias_domains($object), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                  echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
                 }
               break;
             }
@@ -212,7 +265,12 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                     $aliases = mailbox_get_aliases($domain);
                     if (!empty($aliases)) {
                       foreach ($aliases as $alias) {
-                        $data[] = mailbox_get_alias_details($alias);
+                        if ($details = mailbox_get_alias_details($alias)) {
+                          $data[] = $details;
+                        }
+                        else {
+                          continue;
+                        }
                       }
                     }
                   }
@@ -234,7 +292,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                   echo '{}';
                 }
                 else {
-                  echo json_encode(mailbox_get_alias_details($object), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                  echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
                 }
               break;
             }
@@ -245,7 +303,12 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 $domain_admins = get_domain_admins();
                 if (!empty($domain_admins)) {
                   foreach ($domain_admins as $domain_admin) {
-                    $data[] = get_domain_admin_details($domain_admin);
+                    if ($details = get_domain_admin_details($domain_admin)) {
+                      $data[] = $details;
+                    }
+                    else {
+                      continue;
+                    }
                   }
                   if (!isset($data) || empty($data)) {
                     echo '{}';
@@ -265,7 +328,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                   echo '{}';
                 }
                 else {
-                  echo json_encode(get_domain_admin_details($object), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                  echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
                 }
               break;
             }
@@ -307,7 +370,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 if (mailbox_delete_alias(array('address' => $address)) === false) {
                   echo json_encode(array(
                     'type' => 'error',
-                    'message' => 'Deletion of item failed'
+                    'message' => 'Deletion of item/s failed'
                   ));
                   exit();
                 }
@@ -321,6 +384,30 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               echo json_encode(array(
                 'type' => 'error',
                 'message' => 'Cannot find address array in post data'
+              ));
+            }
+          break;
+          case "fwdhost":
+            if (isset($_POST['forwardinghost'])) {
+              $forwardinghost = json_decode($_POST['forwardinghost'], true);
+              if (is_array($forwardinghost)) {
+                if (delete_forwarding_host(array('forwardinghost' => $forwardinghost)) === false) {
+                  echo json_encode(array(
+                    'type' => 'error',
+                    'message' => 'Deletion of item/s failed'
+                  ));
+                  exit();
+                }
+                echo json_encode(array(
+                  'type' => 'success',
+                  'message' => 'Task completed'
+                ));
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'message' => 'Cannot find forwardinghost array in post data'
               ));
             }
           break;

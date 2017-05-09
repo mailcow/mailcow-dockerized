@@ -19,6 +19,9 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
 		</div>
 	</div>
 </div>
+<?php
+endif;
+?>
 <div id="ConfirmDeleteModal" class="modal fade" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -36,9 +39,6 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
 		</div>
 	</div>
 </div>
-<?php
-endif;
-?>
 <div style="margin-bottom:100px"></div>
 <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <script src="/js/bootstrap-switch.min.js"></script>
@@ -53,6 +53,16 @@ function setLang(sel) {
 }
 
 $(document).ready(function() {
+  function mailcow_alert_box(type, message) {
+    $('.mailcow-alert-box').show();
+    $('.mailcow-alert-box').addClass("alert-" + type);
+    $('#mailcow-alert-text').text(message);
+  }
+  // PHP error handler
+  <?php if (isset($_SESSION['return'])): ?>
+  mailcow_alert_box("<?=$_SESSION['return']['type'];?>",  "<?=$_SESSION['return']['msg'];?>");
+  <?php endif; unset($_SESSION['return']); ?>
+
   // Confirm TFA modal
   <?php if (isset($_SESSION['pending_tfa_method'])):?>
   $('#ConfirmTFAModal').modal({
@@ -220,21 +230,10 @@ $(document).ready(function() {
 	});
 });
 </script>
-<?php
-if (isset($_SESSION['return'])):
-?>
-<div class="container">
-	<div style="position:fixed;bottom:8px;right:25px;min-width:300px;max-width:350px;z-index:2000">
-		<div <?=($_SESSION['return']['type'] == 'danger') ? null : 'id="alert-fade"'?> class="alert alert-<?=$_SESSION['return']['type'];?>" role="alert">
-		<a href="#" class="close" data-dismiss="alert"> &times;</a>
-		<?=htmlspecialchars($_SESSION['return']['msg']);?>
-		</div>
-	</div>
+<div class="mailcow-alert-box alert" role="alert">
+  <a href="#" class="close" data-dismiss="alert"> &times;</a>
+  <span id="mailcow-alert-text"></span>
 </div>
-<?php
-unset($_SESSION['return']);
-endif;
-?>
 </body>
 </html>
 <?php $stmt = null; $pdo = null; ?>
