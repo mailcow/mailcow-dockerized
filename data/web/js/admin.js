@@ -1,6 +1,6 @@
 $(document).ready(function() {
   
-  // Collect values of input fields with name multi_select to js array multi_data[data-id-of-checkbox]
+  // Collect values of input fields with name multi_select with same data-form-id to js array multi_data[data-form-id-of-checkbox]
   var multi_data = [];
   $(document).on('change', 'input[name=multi_select]:checkbox', function() {
     if ($(this).is(':checked') && $(this).attr('data-form-id')) {
@@ -15,7 +15,7 @@ $(document).ready(function() {
       multi_data[id].splice($.inArray($(this).val(), multi_data[id]),1);
     }
   });
-  // Select by click on tr
+  // Select checkbox by click on parent tr
   $(document).on('click', 'tr', function(e) {
     if (e.target.type == "checkbox") {
       e.stopPropagation();
@@ -27,8 +27,8 @@ $(document).ready(function() {
   // Select or deselect all checkboxes with same data-form-id
   $(document).on('click', '#toggle_multi_select_all', function(e) {
     e.preventDefault();
-    var closests_checkboxes = $("input[data-form-id=" + $(this).attr("data-form-id") + "]");
-    closests_checkboxes.prop("checked", !closests_checkboxes.prop("checked")).change();
+    var all_checkboxes = $("input[data-form-id=" + $(this).attr("data-form-id") + "]");
+    all_checkboxes.prop("checked", !closests_checkboxes.prop("checked")).change();
   });
 
   // Draw domain admin table
@@ -140,7 +140,7 @@ $(document).ready(function() {
           url: '/api/v1/delete/fwdhost',
           jsonp: false,
           complete: function (data) {
-            location.reload();
+            window.location.href = window.location.href;
           }
         });
       })
@@ -148,6 +148,35 @@ $(document).ready(function() {
         $('#ConfirmDeleteModal').modal('hide');
       });;
     }
+  });
+
+  $(document).on('click', '#delete_dkim_key', function(e) {
+    e.preventDefault();
+    var dkim_domain = $(this).data('dkim-domain');
+    var dkim_selector = $(this).data('dkim-selector');
+      $(document).on('show.bs.modal','#ConfirmDeleteModal', function () {
+        $("#ItemsToDelete").empty();
+        $("#ItemsToDelete").append("<li>" + dkim_domain + ", " + dkim_selector + "</li>");
+      })
+      $('#ConfirmDeleteModal').modal({
+        backdrop: 'static',
+        keyboard: false
+      })
+      .one('click', '#IsConfirmed', function(e) {
+        $.ajax({
+          type: "POST",
+          dataType: "json",
+          data: { "domains": JSON.stringify(dkim_domain) },
+          url: '/api/v1/delete/dkim',
+          jsonp: false,
+          complete: function (data) {
+            window.location.href = window.location.href;
+          }
+        });
+      })
+      .one('click', '#isCanceled', function(e) {
+        $('#ConfirmDeleteModal').modal('hide');
+      });;
   });
 
   $("#refresh_dovecot_log").on('click', function(e) {

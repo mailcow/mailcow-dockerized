@@ -356,6 +356,18 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               return;
             }
           break;
+          case "csrf-cookie":
+            if (isset($_SESSION['mailcow_cc_username']) && isset($_SESSION['mailcow_cc_role'])) {
+              csrfprotector::refreshToken();
+              echo json_encode(array(
+                'type' => 'success',
+                'msg' => 'Cookie refreshed'
+              ));
+            }
+            else {
+              return;
+            }
+          break;
           default:
             echo '{}';
           break;
@@ -368,46 +380,94 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               $address = json_decode($_POST['address'], true);
               if (is_array($address)) {
                 if (mailbox_delete_alias(array('address' => $address)) === false) {
-                  echo json_encode(array(
-                    'type' => 'error',
-                    'message' => 'Deletion of item/s failed'
-                  ));
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'error',
+                      'msg' => 'Deletion of items/s failed'
+                    ));
+                  }
                   exit();
                 }
-                echo json_encode(array(
-                  'type' => 'success',
-                  'message' => 'Task completed'
-                ));
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'success',
+                    'msg' => 'Item/s deleted: ' . $domains
+                  ));
+                }
               }
-            }
-            else {
-              echo json_encode(array(
-                'type' => 'error',
-                'message' => 'Cannot find address array in post data'
-              ));
             }
           break;
           case "fwdhost":
             if (isset($_POST['forwardinghost'])) {
-              $forwardinghost = json_decode($_POST['forwardinghost'], true);
+              $forwardinghost = (array)json_decode($_POST['forwardinghost'], true);
               if (is_array($forwardinghost)) {
                 if (delete_forwarding_host(array('forwardinghost' => $forwardinghost)) === false) {
-                  echo json_encode(array(
-                    'type' => 'error',
-                    'message' => 'Deletion of item/s failed'
-                  ));
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'error',
+                      'msg' => 'Deletion of items/s failed'
+                    ));
+                  }
                   exit();
                 }
-                echo json_encode(array(
-                  'type' => 'success',
-                  'message' => 'Task completed'
-                ));
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'success',
+                    'msg' => 'Item/s deleted: ' . $domains
+                  ));
+                }
               }
             }
             else {
               echo json_encode(array(
                 'type' => 'error',
-                'message' => 'Cannot find forwardinghost array in post data'
+                'msg' => 'Cannot find forwardinghost array in post data'
+              ));
+            }
+          break;
+          case "dkim":
+            if (isset($_POST['domains'])) {
+              $domains = (array)json_decode($_POST['domains'], true);
+              if (is_array($domains)) {
+                if (dkim_delete_key(array('domains' => $domains)) === false) {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'error',
+                      'msg' => 'Deletion of items/s failed'
+                    ));
+                  }
+                  exit();
+                }
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'success',
+                    'msg' => 'Item/s deleted: ' . $domains
+                  ));
+                }
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Cannot find domains array in post data'
               ));
             }
           break;
@@ -417,25 +477,25 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
         switch ($category) {
           case "alias":
             if (isset($_POST['address']) && isset($_POST['active'])) {
-              $address = json_decode($_POST['address'], true);
+              $address = (array)json_decode($_POST['address'], true);
               if (is_array($address)) {
                 if (mailbox_edit_alias(array('address' => $address, 'active' => ($_POST['active'] == "1") ? $active = 1 : null)) === false) {
                   echo json_encode(array(
                     'type' => 'error',
-                    'message' => 'Edit item failed'
+                    'msg' => 'Edit item failed'
                   ));
                   exit();
                 }
                 echo json_encode(array(
                   'type' => 'success',
-                  'message' => 'Task completed'
+                  'msg' => 'Task completed'
                 ));
               }
             }
             else {
               echo json_encode(array(
                 'type' => 'error',
-                'message' => 'Cannot find address array in post data'
+                'msg' => 'Cannot find address array in post data'
               ));
             }
           break;

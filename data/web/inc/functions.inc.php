@@ -2497,8 +2497,13 @@ function dkim_get_blind_keys() {
 function dkim_delete_key($postarray) {
 	global $redis;
 	global $lang;
-  $domain	= $postarray['domain'];
-
+  if (!is_array($postarray['domains'])) {
+    $domains = array();
+    $domains[] = $postarray['domains'];
+  }
+  else {
+    $domains = $postarray['domains'];
+  }
   if ($_SESSION['mailcow_cc_role'] != "admin") {
     $_SESSION['return'] = array(
       'type' => 'danger',
@@ -2506,29 +2511,28 @@ function dkim_delete_key($postarray) {
     );
     return false;
   }
-  if (!is_valid_domain_name($domain)) {
-    $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => sprintf($lang['danger']['dkim_domain_or_sel_invalid'])
-    );
-    return false;
-  }
-  try {
-    foreach ($redis->hGetAll('DKIM_PRIV_KEYS') as $key => $value) {
-      if (preg_match('/\.' . $domain . '$/i', $key)) {
-        $redis->hDel('DKIM_PUB_KEYS', $key);
+  foreach ($domains as $domain) {
+    if (!is_valid_domain_name($domain)) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['dkim_domain_or_sel_invalid'])
+      );
+      return false;
+    }
+    try {
+      foreach ($redis->hGetAll('DKIM_SELECTORS') as $domain_name => $selector) {
+        $redis->hDel('DKIM_PUB_KEYS', $domain_name);
+        $redis->hDel('DKIM_PRIV_KEYS', $selector . '.' . $domain_name);
+        $redis->hDel('DKIM_SELECTORS', $domain_name);
       }
     }
-    $redis->hDel('DKIM_PUB_KEYS', $domain);
-    $redis->hDel('DKIM_SELECTORS', $domain);
-    $redis->hDel('DKIM_PRIV_KEYS', $domain);
-  }
-  catch (RedisException $e) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => 'Redis: '.$e
-		);
-		return false;
+    catch (RedisException $e) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => 'Redis: '.$e
+      );
+      return false;
+    }
   }
   $_SESSION['return'] = array(
     'type' => 'success',

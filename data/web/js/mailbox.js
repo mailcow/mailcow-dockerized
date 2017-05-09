@@ -309,7 +309,7 @@ $(document).ready(function() {
             url: '/api/v1/edit/alias',
             jsonp: false,
             complete: function (data) {
-              location.reload();
+              window.location.href = window.location.href;
             }
           });
         }
@@ -325,7 +325,7 @@ $(document).ready(function() {
             url: '/api/v1/edit/alias',
             jsonp: false,
             complete: function (data) {
-              location.reload();
+              window.location.href = window.location.href;
             }
           });
         }
@@ -352,7 +352,7 @@ $(document).ready(function() {
               url: '/api/v1/delete/alias',
               jsonp: false,
               complete: function (data) {
-                location.reload();
+              window.location.href = window.location.href;
               }
             });
           })

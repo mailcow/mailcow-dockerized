@@ -155,6 +155,7 @@ $tfa_data = get_tfa();
     <div class="panel panel-default">
       <div class="panel-heading"><?=$lang['admin']['dkim_keys'];?></div>
       <div class="panel-body">
+      <form class="form-inline" method="post" data-id="dkimkeys">
         <?php
         foreach(mailbox_get_domains() as $domain) {
             if (!empty($dkim = dkim_get_key_details($domain))) {
@@ -171,11 +172,7 @@ $tfa_data = get_tfa();
                   <pre><?=$dkim['dkim_txt'];?></pre>
               </div>
               <div class="col-xs-1">
-                <form class="form-inline" method="post">
-                  <input type="hidden" name="domain" value="<?=$domain;?>">
-                  <input type="hidden" name="dkim_delete_key" value="1">
-                    <a href="#" onclick="$(this).closest('form').submit()" data-toggle="tooltip" data-placement="top" title="<?=$lang['user']['delete_now'];?>"><span class="glyphicon glyphicon-remove"></span></a>
-                </form>
+                <span style="cursor:pointer" data-dkim-domain="<?=$domain;?>" data-dkim-selector="<?=$dkim['dkim_selector'];?>" id="delete_dkim_key" class="text-danger glyphicon glyphicon-remove"></span></a>
               </div>
             </div>
           <?php
@@ -206,11 +203,7 @@ $tfa_data = get_tfa();
                   <pre><?=$dkim['dkim_txt'];?></pre>
                 </div>
                 <div class="col-xs-1">
-                  <form class="form-inline" method="post">
-                    <input type="hidden" name="domain" value="<?=$alias_domain;?>">
-                    <input type="hidden" name="dkim_delete_key" value="1">
-                    <a href="#" onclick="$(this).closest('form').submit()" data-toggle="tooltip" data-placement="top" title="<?=$lang['user']['delete_now'];?>"><span class="glyphicon glyphicon-remove"></span></a>
-                  </form>
+                  <span style="cursor:pointer" data-dkim-domain="<?=$domain;?>" data-dkim-selector="<?=$dkim['dkim_selector'];?>" id="delete_dkim_key" class="text-danger glyphicon glyphicon-remove"></span></a>
                 </div>
               </div>
             <?php
@@ -243,17 +236,15 @@ $tfa_data = get_tfa();
                   <pre><?=$dkim['dkim_txt'];?></pre>
                 </div>
                 <div class="col-xs-1">
-                  <form class="form-inline" method="post">
-                    <input type="hidden" name="domain" value="<?=$blind;?>">
-                    <input type="hidden" name="dkim_delete_key" value="1">
-                    <a href="#" onclick="$(this).closest('form').submit()" data-toggle="tooltip" data-placement="top" title="<?=$lang['user']['delete_now'];?>"><span class="glyphicon glyphicon-remove"></span></a>
-                  </form>
+                  <span style="cursor:pointer" data-dkim-domain="<?=$blind;?>" data-dkim-selector="<?=$dkim['dkim_selector'];?>" id="delete_dkim_key" class="text-danger glyphicon glyphicon-remove"></span></a>
                 </div>
             </div>
           <?php
           }
         }
         ?>
+        </form>
+
         <legend style="margin-top:40px"><?=$lang['admin']['dkim_add_key'];?></legend>
         <form class="form-inline" role="form" method="post">
           <div class="form-group">
