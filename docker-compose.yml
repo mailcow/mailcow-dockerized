@@ -134,7 +134,6 @@ services:
       dns_search: mailcow-network
       volumes:
         - ./data/conf/sogo/:/etc/sogo/
-        - /usr/lib/GNUstep/SOGo/WebServerResources/
       restart: always
       networks:
         mailcow-network:
