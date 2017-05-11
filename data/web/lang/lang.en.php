@@ -77,7 +77,7 @@ $lang['danger']['is_alias'] = "%s is already known as an alias address";
 $lang['danger']['is_alias_or_mailbox'] = "%s is already known as an alias or a mailbox";
 $lang['danger']['is_spam_alias'] = "%s is already known as a spam alias address";
 $lang['danger']['quota_not_0_not_numeric'] = "Quota must be numeric and >= 0";
-$lang['danger']['domain_not_found'] = "Domain not found.";
+$lang['danger']['domain_not_found'] = 'Domain "%s" not found';
 $lang['danger']['max_mailbox_exceeded'] = "Max. mailboxes exceeded (%d of %d)";
 $lang['danger']['max_alias_exceeded'] = 'Max. aliases exceeded';
 $lang['danger']['mailbox_quota_exceeded'] = "Quota exceeds the domain limit (max. %d MiB)";

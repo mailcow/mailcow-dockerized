@@ -226,12 +226,15 @@ $(document).ready(function() {
 			}
 		});
 	});
+
+  if ($('#mailcow-alert').hasClass('alert-success')) {
+    $('#mailcow-alert').delay(5000).animate({right: '-50%'}, 1000);
+  };
 });
 </script>
 
 <div class="container">
   <div id="mailcow-alert" class="alert" role="alert">
-    <a href="#" class="close" data-dismiss="alert"> &times;</a>
     <span id="mailcow-alert-text"></span>
   </div>
 </div>

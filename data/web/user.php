@@ -382,18 +382,20 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 	</div>
 	<div role="tabpanel" class="tab-pane" id="TLSPolicy">
 		<form class="form-horizontal" role="form" method="post">
+      <input type="hidden" value="0" name="tls_in">
+      <input type="hidden" value="0" name="tls_out">
 			<p class="help-block"><?=$lang['user']['tls_policy_warning'];?></p>
 			<div class="form-group">
 				<div class="col-sm-6">
 					<div class="checkbox">
 						<h4><span class="glyphicon glyphicon-download" aria-hidden="true"></span> <?=$lang['user']['tls_enforce_in'];?></h4>
-						<input type="checkbox" id="tls_in" name="tls_in" <?=($get_tls_policy['tls_enforce_in'] == "1") ? "checked" : null;?> data-on-text="<?=$lang['user']['on'];?>" data-off-text="<?=$lang['user']['off'];?>">
+						<input type="checkbox" value="1" id="tls_in" name="tls_in" <?=($get_tls_policy['tls_enforce_in'] == "1") ? "checked" : null;?> data-on-text="<?=$lang['user']['on'];?>" data-off-text="<?=$lang['user']['off'];?>">
 					</div>
 				</div>
 				<div class="col-sm-6">
 					<div class="checkbox">
 						<h4><span class="glyphicon glyphicon-upload" aria-hidden="true"></span> <?=$lang['user']['tls_enforce_out'];?></h4>
-						<input type="checkbox" id="tls_out" name="tls_out" <?=($get_tls_policy['tls_enforce_out'] == "1") ? "checked" : null;?> data-on-text="<?=$lang['user']['on'];?>" data-off-text="<?=$lang['user']['off'];?>">
+						<input type="checkbox" value="1" id="tls_out" name="tls_out" <?=($get_tls_policy['tls_enforce_out'] == "1") ? "checked" : null;?> data-on-text="<?=$lang['user']['on'];?>" data-off-text="<?=$lang['user']['off'];?>">
 					</div>
 				</div>
 			</div>
