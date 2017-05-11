@@ -15,7 +15,7 @@ $(document).ready(function() {
     }
   });
   // Select checkbox by click on parent tr
-  $(document).on('click', 'tr', function(e) {
+  $(document).on('click', 'tbody>tr', function(e) {
     if (e.target.type == "checkbox") {
       e.stopPropagation();
     } else {
