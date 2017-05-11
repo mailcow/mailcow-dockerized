@@ -21,9 +21,9 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 ?>
 				<h4><?=$lang['add']['domain'];?></h4>
 				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
-          <input type="hidden" value="0" name="active">
-          <input type="hidden" value="0" name="backupmx">
-          <input type="hidden" value="0" name="relay_all_recipients">
+					<input type="hidden" value="0" name="active">
+					<input type="hidden" value="0" name="backupmx">
+					<input type="hidden" value="0" name="relay_all_recipients">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="domain"><?=$lang['add']['domain'];?>:</label>
 						<div class="col-sm-10">
@@ -92,7 +92,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 				<h4><?=$lang['add']['alias'];?></h4>
 				<p><?=$lang['add']['alias_spf_fail'];?></p>
 				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
-          <input type="hidden" value="0" name="active">
+					<input type="hidden" value="0" name="active">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="address"><?=$lang['add']['alias_address'];?></label>
 						<div class="col-sm-10">
@@ -126,7 +126,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 	?>
 				<h4><?=$lang['add']['alias_domain'];?></h4>
 				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
-          <input type="hidden" value="0" name="active">
+					<input type="hidden" value="0" name="active">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="alias_domain"><?=$lang['add']['alias_domain'];?></label>
 						<div class="col-sm-10">
@@ -165,7 +165,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 	?>
 				<h4><?=$lang['add']['mailbox'];?></h4>
 				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
-          <input type="hidden" value="0" name="active">
+					<input type="hidden" value="0" name="active">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="local_part"><?=$lang['add']['mailbox_username'];?></label>
 						<div class="col-sm-10">
@@ -229,8 +229,8 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 	?>
 				<h4><?=$lang['add']['resource'];?></h4>
 				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
-          <input type="hidden" value="0" name="active">
-          <input type="hidden" value="0" name="multiple_bookings">
+					<input type="hidden" value="0" name="active">
+					<input type="hidden" value="0" name="multiple_bookings">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="description"><?=$lang['add']['description'];?></label>
 						<div class="col-sm-10">
@@ -293,9 +293,9 @@ elseif (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == 
 				<h4><?=$lang['add']['syncjob'];?></h4>
 				<p><?=$lang['add']['syncjob_hint'];?></p>
 				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
-          <input type="hidden" value="0" name="active">
-          <input type="hidden" value="0" name="delete1">
-          <input type="hidden" value="0" name="delete2duplicates">
+					<input type="hidden" value="0" name="active">
+					<input type="hidden" value="0" name="delete1">
+					<input type="hidden" value="0" name="delete2duplicates">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="host1"><?=$lang['add']['hostname'];?></label>
 						<div class="col-sm-10">

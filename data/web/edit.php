@@ -26,8 +26,8 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					<h4><?=$lang['edit']['alias'];?></h4>
 					<br />
 					<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
-          <input type="hidden" value="0" name="active">
-					<input type="hidden" name="address" value="<?=htmlspecialchars($alias);?>">
+						<input type="hidden" value="0" name="active">
+						<input type="hidden" name="address" value="<?=htmlspecialchars($alias);?>">
 						<div class="form-group">
 							<label class="control-label col-sm-2" for="goto"><?=$lang['edit']['target_address'];?></label>
 							<div class="col-sm-10">
@@ -67,8 +67,8 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 				<h4><?=$lang['edit']['domain_admin'];?></h4>
 				<br />
 				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
-        <input type="hidden" value="0" name="active">
-				<input type="hidden" name="username_now" value="<?=htmlspecialchars($domain_admin);?>">
+					<input type="hidden" value="0" name="active">
+					<input type="hidden" name="username_now" value="<?=htmlspecialchars($domain_admin);?>">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="username"><?=$lang['edit']['username'];?></label>
 						<div class="col-sm-10">
@@ -143,10 +143,10 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 			?>
 				<h4><?=$lang['edit']['domain'];?></h4>
 				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
-        <input type="hidden" value="0" name="active">
-        <input type="hidden" value="0" name="backupmx">
-        <input type="hidden" value="0" name="relay_all_recipients">
-				<input type="hidden" name="domain" value="<?=htmlspecialchars($domain);?>">
+					<input type="hidden" value="0" name="active">
+					<input type="hidden" value="0" name="backupmx">
+					<input type="hidden" value="0" name="relay_all_recipients">
+					<input type="hidden" name="domain" value="<?=htmlspecialchars($domain);?>">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="description"><?=$lang['edit']['description'];?></label>
 						<div class="col-sm-10">
@@ -249,9 +249,9 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
               <?php
               if ($wl['object'] == $domain):
               ?>
-                <input type="hidden" name="delete_prefid" value="<?=$wl['prefid'];?>">
-                <input type="hidden" name="delete_policy_list_item">
-                <input type="hidden" name="domain" value="<?=$domain;?>">
+							<input type="hidden" name="delete_prefid" value="<?=$wl['prefid'];?>">
+							<input type="hidden" name="delete_policy_list_item">
+							<input type="hidden" name="domain" value="<?=$domain;?>">
                 <a href="#" onclick="$(this).closest('form').submit()" data-toggle="tooltip" data-placement="left" title="<?=$lang['user']['delete_now'];?>"><span class="glyphicon glyphicon-remove"></span></a>
               <?php
               else:
@@ -302,12 +302,12 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
             <form class="form-inline" method="post">
             <div class="col-xs-6"><code><?=$bl['value'];?></code></div>
             <div class="col-xs-6">
-              <input type="hidden" name="delete_prefid" value="<?=$bl['prefid'];?>">
+							<input type="hidden" name="delete_prefid" value="<?=$bl['prefid'];?>">
               <?php
               if ($bl['object'] == $domain):
               ?>
-                <input type="hidden" name="delete_policy_list_item">
-                <input type="hidden" name="domain" value="<?=$domain;?>">
+								<input type="hidden" name="delete_policy_list_item">
+								<input type="hidden" name="domain" value="<?=$domain;?>">
                 <a href="#" onclick="$(this).closest('form').submit()" data-toggle="tooltip" data-placement="left" title="<?=$lang['user']['delete_now'];?>"><span class="glyphicon glyphicon-remove"></span></a>
               <?php
               else:
@@ -355,8 +355,8 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 			?>
 				<h4><?=$lang['edit']['edit_alias_domain'];?></h4>
 				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
-          <input type="hidden" value="0" name="active">
-          <input type="hidden" value="<?=$result['alias_domain'];?>" name="alias_domain">
+					<input type="hidden" value="0" name="active">
+					<input type="hidden" value="<?=$result['alias_domain'];?>" name="alias_domain">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="target_domain"><?=$lang['edit']['target_domain'];?></label>
 						<div class="col-sm-10">
@@ -404,9 +404,9 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
       ?>
       <h4><?=$lang['edit']['mailbox'];?></h4>
       <form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
-      <input type="hidden" value="0" name="sender_acl">
-      <input type="hidden" value="0" name="active">
-      <input type="hidden" name="username" value="<?=htmlspecialchars($result['username']);?>">
+				<input type="hidden" value="0" name="sender_acl">
+				<input type="hidden" value="0" name="active">
+				<input type="hidden" name="username" value="<?=htmlspecialchars($result['username']);?>">
         <div class="form-group">
           <label class="control-label col-sm-2" for="name"><?=$lang['edit']['full_name'];?>:</label>
           <div class="col-sm-10">
@@ -571,10 +571,10 @@ elseif (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == 
 			?>
 				<h4><?=$lang['edit']['syncjob'];?></h4>
 				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
-        <input type="hidden" value="0" name="delete2duplicates">
-        <input type="hidden" value="0" name="delete1">
-        <input type="hidden" value="0" name="active">
-				<input type="hidden" name="id" value="<?=htmlspecialchars($result['id']);?>">
+          <input type="hidden" value="0" name="delete2duplicates">
+          <input type="hidden" value="0" name="delete1">
+          <input type="hidden" value="0" name="active">
+          <input type="hidden" name="id" value="<?=htmlspecialchars($result['id']);?>">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="host1"><?=$lang['edit']['hostname'];?></label>
 						<div class="col-sm-10">
