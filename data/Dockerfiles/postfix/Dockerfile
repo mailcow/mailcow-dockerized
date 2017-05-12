@@ -19,7 +19,7 @@ RUN apt-get install -y --no-install-recommends supervisor \
 	postfix-pcre \
 	syslog-ng \
 	syslog-ng-core \
-    syslog-ng-mod-redis \
+	syslog-ng-mod-redis \
 	ca-certificates \
 	gnupg \
 	python-gpgme \
