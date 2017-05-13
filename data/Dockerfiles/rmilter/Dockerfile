@@ -1,5 +1,5 @@
 FROM debian:jessie-slim
-MAINTAINER Andre Peters <andre.peters@servercow.de>
+LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV LC_ALL C

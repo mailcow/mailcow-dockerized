@@ -1,5 +1,5 @@
 FROM debian:stretch-slim
-MAINTAINER https://m-ko.de Markus Kosmal <code@cnfg.io>
+LABEL maintainer "https://m-ko.de Markus Kosmal <code@cnfg.io>"
 
 # Debian Base to use
 ENV DEBIAN_VERSION stretch

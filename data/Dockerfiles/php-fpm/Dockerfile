@@ -1,5 +1,5 @@
 FROM php:7.1-fpm
-MAINTAINER Andre Peters <andre.peters@servercow.de>
+LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 ENV DEBIAN_FRONTEND noninteractive
 
