@@ -21,6 +21,9 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 ?>
 				<h4><?=$lang['add']['domain'];?></h4>
 				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
+					<input type="hidden" value="0" name="active">
+					<input type="hidden" value="0" name="backupmx">
+					<input type="hidden" value="0" name="relay_all_recipients">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="domain"><?=$lang['add']['domain'];?>:</label>
 						<div class="col-sm-10">
@@ -61,9 +64,9 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 						<label class="control-label col-sm-2"><?=$lang['add']['backup_mx_options'];?></label>
 						<div class="col-sm-10">
 							<div class="checkbox">
-							<label><input type="checkbox" name="backupmx"> <?=$lang['add']['relay_domain'];?></label>
+							<label><input type="checkbox" value="1" name="backupmx"> <?=$lang['add']['relay_domain'];?></label>
 							<br />
-							<label><input type="checkbox" name="relay_all_recipients"> <?=$lang['add']['relay_all'];?></label>
+							<label><input type="checkbox" value="1" name="relay_all_recipients"> <?=$lang['add']['relay_all'];?></label>
 							<p><?=$lang['add']['relay_all_info'];?></p>
 							</div>
 						</div>
@@ -71,7 +74,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">
-							<label><input type="checkbox" name="active" checked> <?=$lang['add']['active'];?></label>
+							<label><input type="checkbox" value="1" name="active" checked> <?=$lang['add']['active'];?></label>
 							</div>
 						</div>
 					</div>
@@ -89,6 +92,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 				<h4><?=$lang['add']['alias'];?></h4>
 				<p><?=$lang['add']['alias_spf_fail'];?></p>
 				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
+					<input type="hidden" value="0" name="active">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="address"><?=$lang['add']['alias_address'];?></label>
 						<div class="col-sm-10">
@@ -106,7 +110,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">
-							<label><input type="checkbox" name="active" checked> <?=$lang['add']['active'];?></label>
+							<label><input type="checkbox" value="1" name="active" checked> <?=$lang['add']['active'];?></label>
 							</div>
 						</div>
 					</div>
@@ -122,6 +126,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 	?>
 				<h4><?=$lang['add']['alias_domain'];?></h4>
 				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
+					<input type="hidden" value="0" name="active">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="alias_domain"><?=$lang['add']['alias_domain'];?></label>
 						<div class="col-sm-10">
@@ -144,7 +149,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">
-							<label><input type="checkbox" name="active" checked> <?=$lang['add']['active'];?></label>
+							<label><input type="checkbox" value="1" name="active" checked> <?=$lang['add']['active'];?></label>
 							</div>
 						</div>
 					</div>
@@ -160,6 +165,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 	?>
 				<h4><?=$lang['add']['mailbox'];?></h4>
 				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
+					<input type="hidden" value="0" name="active">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="local_part"><?=$lang['add']['mailbox_username'];?></label>
 						<div class="col-sm-10">
@@ -169,7 +175,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="domain"><?=$lang['add']['domain'];?>:</label>
 						<div class="col-sm-10">
-							<select id="addSelectDomain" name="domain" id="domain" title="<?=$lang['add']['select'];?>" required>
+							<select id="addSelectDomain" name="domain" id="domain" required>
 							<?php
               foreach (mailbox_get_domains() as $domain) {
 								echo "<option>".htmlspecialchars($domain)."</option>";
@@ -207,7 +213,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">
-							<label><input type="checkbox" name="active" checked> <?=$lang['add']['active'];?></label>
+							<label><input type="checkbox" value="1" name="active" checked> <?=$lang['add']['active'];?></label>
 							</div>
 						</div>
 					</div>
@@ -223,6 +229,8 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 	?>
 				<h4><?=$lang['add']['resource'];?></h4>
 				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
+					<input type="hidden" value="0" name="active">
+					<input type="hidden" value="0" name="multiple_bookings">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="description"><?=$lang['add']['description'];?></label>
 						<div class="col-sm-10">
@@ -254,14 +262,14 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">
-							<label><input type="checkbox" name="active" checked> <?=$lang['add']['active'];?></label>
+							<label><input type="checkbox" value="1" name="active" checked> <?=$lang['add']['active'];?></label>
 							</div>
 						</div>
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">
-							<label><input type="checkbox" name="multiple_bookings" checked> <?=$lang['add']['multiple_bookings'];?></label>
+							<label><input type="checkbox" value="1" name="multiple_bookings" checked> <?=$lang['add']['multiple_bookings'];?></label>
 							</div>
 						</div>
 					</div>
@@ -285,6 +293,9 @@ elseif (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == 
 				<h4><?=$lang['add']['syncjob'];?></h4>
 				<p><?=$lang['add']['syncjob_hint'];?></p>
 				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
+					<input type="hidden" value="0" name="active">
+					<input type="hidden" value="0" name="delete1">
+					<input type="hidden" value="0" name="delete2duplicates">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="host1"><?=$lang['add']['hostname'];?></label>
 						<div class="col-sm-10">
@@ -346,27 +357,27 @@ elseif (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == 
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">
-							<label><input type="checkbox" name="delete2duplicates" checked> <?=$lang['add']['delete2duplicates'];?></label>
+							<label><input type="checkbox" value="1" name="delete2duplicates" checked> <?=$lang['add']['delete2duplicates'];?></label>
 							</div>
 						</div>
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">
-							<label><input type="checkbox" name="delete1"> <?=$lang['add']['delete1'];?></label>
+							<label><input type="checkbox" value="1" name="delete1"> <?=$lang['add']['delete1'];?></label>
 							</div>
 						</div>
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">
-							<label><input type="checkbox" name="active" checked> <?=$lang['add']['active'];?></label>
+							<label><input type="checkbox" value="1" name="active" checked> <?=$lang['add']['active'];?></label>
 							</div>
 						</div>
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
-							<button type="submit" name="add_syncjob" value="1" class="btn btn-success "><?=$lang['add']['save'];?></button>
+							<button type="submit" name="add_syncjob" class="btn btn-success "><?=$lang['add']['save'];?></button>
 						</div>
 					</div>
 				</form>

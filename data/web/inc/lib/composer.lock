@@ -4,8 +4,44 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "5652a086b6d277d72d7ae0341e517b1e",
+    "content-hash": "413fc63dc6c7815f0a175217bccb490a",
     "packages": [
+        {
+            "name": "owasp/csrf-protector-php",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mebjas/CSRF-Protector-PHP.git",
+                "reference": "aec0d6966992363a7192b2ae9fb0a9643e8fa26b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mebjas/CSRF-Protector-PHP/zipball/aec0d6966992363a7192b2ae9fb0a9643e8fa26b",
+                "reference": "aec0d6966992363a7192b2ae9fb0a9643e8fa26b",
+                "shasum": ""
+            },
+            "require-dev": {
+                "satooshi/php-coveralls": "~1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "libs/csrf/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "APACHE"
+            ],
+            "description": "CSRF protector php, a standalone php library for csrf mitigation in web applications. Easy to integrate in any php web app.",
+            "homepage": "https://github.com/mebjas/CSRF-Protector-PHP",
+            "keywords": [
+                "csrf",
+                "owasp",
+                "security"
+            ],
+            "time": "2017-04-12T05:47:07+00:00"
+        },
         {
             "name": "robthree/twofactorauth",
             "version": "1.6",
@@ -59,20 +95,24 @@
         },
         {
             "name": "yubico/u2flib-server",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Yubico/php-u2flib-server.git",
-                "reference": "407eb21da24150aad30bcd8cc0ee72963eac5e9d"
+                "reference": "dc318c80b59e62921c210f31b014def26ceebbab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Yubico/php-u2flib-server/zipball/407eb21da24150aad30bcd8cc0ee72963eac5e9d",
-                "reference": "407eb21da24150aad30bcd8cc0ee72963eac5e9d",
+                "url": "https://api.github.com/repos/Yubico/php-u2flib-server/zipball/dc318c80b59e62921c210f31b014def26ceebbab",
+                "reference": "dc318c80b59e62921c210f31b014def26ceebbab",
                 "shasum": ""
             },
             "require": {
-                "ext-openssl": "*"
+                "ext-openssl": "*",
+                "php": ">=5.6"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~5.7"
             },
             "type": "library",
             "autoload": {
@@ -86,13 +126,15 @@
             ],
             "description": "Library for U2F implementation",
             "homepage": "https://developers.yubico.com/php-u2flib-server",
-            "time": "2016-02-19T09:47:51+00:00"
+            "time": "2017-05-09T07:33:58+00:00"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "owasp/csrf-protector-php": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

@@ -1,19 +1,21 @@
 language: php
 sudo: false
 php:
-  - 5.3
-  - 5.4
-  - 5.5
-  - 5.6
   - 7.0
+  - 7.1
   - hhvm
-  - hhvm-nightly
-after_success:
-  - test -z $COVERALLS || (composer require satooshi/php-coveralls && vendor/bin/coveralls -v)
 matrix:
   include:
     - php: 5.6
       env: COVERALLS=true
   allow_failures:
     - php: hhvm
-    - php: hhvm-nightly
+
+before_script:
+  - composer install
+
+script:
+  - ./vendor/phpunit/phpunit/phpunit -c phpunit.xml
+
+after_success:
+  - test -z $COVERALLS || (composer require satooshi/php-coveralls && vendor/bin/coveralls -v)

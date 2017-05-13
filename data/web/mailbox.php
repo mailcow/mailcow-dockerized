@@ -31,15 +31,27 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             <?php
             if ($_SESSION['mailcow_cc_role'] == "admin"):
             ?>
-              <a href="/add.php?domain"><span class="glyphicon glyphicon-plus"></span></a>
+            <a href="/add.php?domain"><span class="glyphicon glyphicon-plus"></span></a></li>
             <?php
             endif;
             ?>
             </div>
-            <h3 class="panel-title"><?=$lang['mailbox']['domains'];?></h3>
+            <?=$lang['mailbox']['domains'];?>
             </div>
             <div class="table-responsive">
               <table id="domain_table" class="table table-striped"></table>
+            </div>
+            <div class="mass-actions-mailbox">
+              <div class="btn-group">
+                <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="domain" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
+                <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a id="edit_selected" data-id="domain" data-api-url='edit/domain' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
+                  <li><a id="edit_selected" data-id="domain" data-api-url='edit/domain' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a id="delete_selected" data-id="domain" data-api-url='delete/domain' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+                </ul>
+              </div>
             </div>
             <span class="footer-add-item"><a href="/add.php?domain"><?=$lang['mailbox']['add_domain'];?></a></span>
           </div>
@@ -56,6 +68,18 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             <div class="table-responsive">
               <table id="mailbox_table" class="table table-striped"></table>
             </div>
+            <div class="mass-actions-mailbox">
+              <div class="btn-group">
+                <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="mailbox" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
+                <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a id="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
+                  <li><a id="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a id="delete_selected" data-id="mailbox" data-api-url='delete/mailbox' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+                </ul>
+              </div>
+            </div>
             <span class="footer-add-item"><a href="/add.php?mailbox"><?=$lang['mailbox']['add_mailbox'];?></a></span>
           </div>
         </div>
@@ -69,7 +93,19 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               <h3 class="panel-title"><?=$lang['mailbox']['resources'];?></h3>
             </div>
             <div class="table-responsive">
-              <table id="resources_table" class="table table-striped"></table>
+              <table id="resource_table" class="table table-striped"></table>
+            </div>
+            <div class="mass-actions-mailbox">
+              <div class="btn-group">
+                <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="resource" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
+                <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a id="edit_selected" data-id="resource" data-api-url='edit/resource' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
+                  <li><a id="edit_selected" data-id="resource" data-api-url='edit/resource' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a id="delete_selected" data-id="resource" data-api-url='delete/resource' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+                </ul>
+              </div>
             </div>
             <span class="footer-add-item"><a href="/add.php?resource"><?=$lang['mailbox']['add_resource'];?></a></span>
           </div>
@@ -86,6 +122,18 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             <div class="table-responsive">
               <table id="aliasdomain_table" class="table table-striped"></table>
             </div>
+            <div class="mass-actions-mailbox">
+              <div class="btn-group">
+                <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="alias-domain" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
+                <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a id="edit_selected" data-id="alias-domain" data-api-url='edit/alias-domain' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
+                  <li><a id="edit_selected" data-id="alias-domain" data-api-url='edit/alias-domain' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a id="delete_selected" data-id="alias-domain" data-api-url='delete/alias-domain' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+                </ul>
+              </div>
+            </div>
             <span class="footer-add-item"><a href="/add.php?aliasdomain"><?=$lang['mailbox']['add_domain_alias'];?></a></span>
           </div>
         </div>
@@ -99,18 +147,19 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             <div class="table-responsive">
               <table id="alias_table" class="table table-striped"></table>
             </div>
-            <div class="mass-actions">
-              <p id="select_all_aliases" class="mass-select-all">
-                ↪ <?=$lang['mailbox']['toggle_all'];?>
-              </p>
+            <div class="mass-actions-mailbox">
+              <div class="btn-group">
+                <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="alias" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
+                <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a id="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"active":"1","active1":"12"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
+                  <li><a id="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a id="delete_selected" data-id="alias" data-api-url='delete/alias' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+                </ul>
+              </div>
             </div>
-            <div class="footer-add-item">
-              <a class="pull-right" href="/add.php?alias"><span class="glyphicon glyphicon-plus"></span></a>
-              <b><?=$lang['mailbox']['quick_actions'];?>:</b>
-              <a id="delete_selected_alias" href="#" class="mass-each-action"><?=$lang['mailbox']['remove'];?></a> |
-              <a id="activate_selected_alias" href="#" class="mass-each-action"><?=$lang['mailbox']['activate'];?></a> |
-              <a id="deactivate_selected_alias" href="#" class="mass-each-action"><?=$lang['mailbox']['deactivate'];?></a>
-            </div>
+            <span class="footer-add-item"><a href="/add.php?alias"><?=$lang['mailbox']['add_alias'];?></a></span>
           </div>
         </div>
 

@@ -71,5 +71,7 @@ sievec /usr/local/lib/dovecot/sieve/report-ham.sieve
 # Fix permissions
 chown -R vmail:vmail /var/vmail/sieve
 
+# Fix more than 1 hardlink issue
+touch /etc/crontab /etc/cron.*/*
 
 exec "$@"

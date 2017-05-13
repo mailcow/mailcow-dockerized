@@ -1,33 +1,36 @@
 <?php
-//ini_set("session.cookie_secure", 1);
-//ini_set("session.cookie_httponly", 1);
-session_start();
-if (isset($_POST["logout"])) {
-  if (isset($_SESSION["dual-login"])) {
-    $_SESSION["mailcow_cc_username"] = $_SESSION["dual-login"]["username"];
-    $_SESSION["mailcow_cc_role"] = $_SESSION["dual-login"]["role"];
-    unset($_SESSION["dual-login"]);
-  }
-  else {
-    session_unset();
-    session_destroy();
-    session_write_close();
-    setcookie(session_name(),'',0,'/');
-  }
-}
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
 
-require_once 'inc/vars.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/vars.inc.php';
 if (file_exists('./inc/vars.local.inc.php')) {
 	include_once 'inc/vars.local.inc.php';
 }
 
 // Yubi OTP API
-require_once 'inc/lib/Yubico.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/Yubico.php';
+
+// Autoload composer
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/vendor/autoload.php';
 
 // U2F API + T/HOTP API
-require_once 'inc/lib/vendor/autoload.php';
-$u2f = new u2flib_server\U2F('https://' . $_SERVER['SERVER_NAME']);
+$u2f = new u2flib_server\U2F('https://' . $_SERVER['HTTP_HOST']);
 $tfa = new RobThree\Auth\TwoFactorAuth('mailcow UI');
+
+// OWASP CSRF Protector
+$csrfProtector = new csrfProtector;
+class mailcowCsrfProtector extends csrfprotector {
+  public static function logCSRFattack() {
+    $_SESSION['return'] = array(
+      'type' => 'danger',
+      'msg' => 'CSRF violation'
+    );
+  }
+}
+mailcowCsrfProtector::init();
+
+// Redis
+$redis = new Redis();
+$redis->connect('redis-mailcow', 6379);
 
 // PDO
 // Calculate offset
@@ -114,9 +117,9 @@ if (isset($_GET['lang'])) {
 		break;
 	}
 }
-require_once 'lang/lang.en.php';
-include 'lang/lang.'.$_SESSION['mailcow_locale'].'.php';
-require_once 'inc/functions.inc.php';
-require_once 'inc/init_db.inc.php';
-require_once 'inc/triggers.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lang/lang.en.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/lang/lang.'.$_SESSION['mailcow_locale'].'.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/init_db.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/triggers.inc.php';
 init_db_schema();

@@ -7,9 +7,21 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 $tfa_data = get_tfa();
 ?>
 <div class="container">
-  <h4><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <?=$lang['admin']['access'];?></h4>
 
-  <div class="panel-group" id="accordion_access">
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active">
+      <a href="#tab-access" aria-controls="tab-access" role="tab" data-toggle="tab"><?=$lang['admin']['access'];?></a>
+    </li>
+    <li role="presentation">
+      <a href="#tab-config" aria-controls="tab-config" role="tab" data-toggle="tab"><?=$lang['admin']['configuration'];?></a>
+    </li>
+    <li role="presentation">
+      <a href="#tab-logs" aria-controls="tab-logs" role="tab" data-toggle="tab"><?=$lang['admin']['logs'];?></a>
+    </li>
+  </ul>
+
+  <div class="tab-content" style="padding-top:20px">
+  <div role="tabpanel" class="tab-pane active" id="tab-access">
     <div class="panel panel-danger">
       <div class="panel-heading"><?=$lang['admin']['admin_details'];?></div>
       <div class="panel-body">
@@ -82,57 +94,13 @@ $tfa_data = get_tfa();
         <div class="panel-body">
           <form method="post">
             <div class="table-responsive">
-            <table class="table table-striped" id="domainadminstable">
-              <thead>
-              <tr>
-                <th style="min-width: 100px;"><?=$lang['admin']['username'];?></th>
-                <th style="min-width: 166px;"><?=$lang['admin']['admin_domains'];?></th>
-                <th style="min-width: 76px;"><?=$lang['admin']['active'];?></th>
-                <th style="min-width: 76px;"><?=$lang['tfa']['tfa'];?></th>
-                <th style="text-align: right; min-width: 200px;"><?=$lang['admin']['action'];?></th>
-              </tr>
-              </thead>
-              <tbody>
-                <?php
-                foreach (get_domain_admins() as $domain_admin) {
-                  $da_data = get_domain_admin_details($domain_admin); 
-                  if (!empty($da_data)):
-                ?>
-                <tr id="data">
-                  <td><?=htmlspecialchars(strtolower($domain_admin));?></td>
-                  <td>
-                  <?php
-                  foreach ($da_data['selected_domains'] as $domain) {
-                    echo htmlspecialchars($domain).'<br />';
-                  }
-                  ?>
-                  </td>
-                  <td><?=$da_data['active'];?></td>
-                  <td><?=empty($da_data['tfa_active_int']) ? "✘" : "✔";?></td>
-                  <td style="text-align: right;">
-                    <div class="btn-group">
-                      <a href="edit.php?domainadmin=<?=$domain_admin;?>" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> <?=$lang['admin']['edit'];?></a>
-                      <a href="delete.php?domainadmin=<?=$domain_admin;?>" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> <?=$lang['admin']['remove'];?></a>
-                    </div>
-                  </td>
-                  </td>
-                </tr>
-
-                <?php
-                else:
-                ?>
-                  <tr id="no-data"><td colspan="4" style="text-align: center; font-style: italic;"><?=$lang['admin']['no_record'];?></td></tr>
-                <?php
-                endif;
-                }
-                ?>
-              </tbody>
-            </table>
+            <table class="table table-striped" id="domainadminstable"></table>
             </div>
           </form>
           <small>
           <legend><?=$lang['admin']['add_domain_admin'];?></legend>
           <form class="form-horizontal" role="form" method="post">
+            <input type="hidden" value="0" name="active">
             <div class="form-group">
               <label class="control-label col-sm-2" for="username"><?=$lang['admin']['username'];?>:</label>
               <div class="col-sm-10">
@@ -167,7 +135,7 @@ $tfa_data = get_tfa();
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
                 <div class="checkbox">
-                <label><input type="checkbox" name="active" checked> <?=$lang['admin']['active'];?></label>
+                <label><input type="checkbox" value="1" name="active" checked> <?=$lang['admin']['active'];?></label>
                 </div>
               </div>
             </div>
@@ -183,189 +151,201 @@ $tfa_data = get_tfa();
     </div>
   </div>
 
-  <h4><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> <?=$lang['admin']['configuration'];?></h4>
 
-  <div class="panel-group" id="accordion_access">
-
-  <div class="panel panel-default">
-  <div class="panel-heading"><?=$lang['admin']['dkim_keys'];?></div>
-  <div class="panel-body">
-    <p style="margin-bottom:40px"><?=$lang['admin']['dkim_key_hint'];?></p>
-    <?php
-    foreach(mailbox_get_domains() as $domain) {
-        if (!empty($dkim = dkim_get_key_details($domain))) {
-      ?>
-        <div class="row">
-          <div class="col-xs-3">
-            <p>Domain: <strong><?=htmlspecialchars($domain);?></strong><br />
-              <span class="label label-success"><?=$lang['admin']['dkim_key_valid'];?></span>
-              <span class="label label-info"><?=$dkim['length'];?> bit</span>
-            </p>
-          </div>
-          <div class="col-xs-8">
-              <pre><?=$dkim['dkim_txt'];?></pre>
-          </div>
-          <div class="col-xs-1">
-            <form class="form-inline" method="post">
-              <input type="hidden" name="domain" value="<?=$domain;?>">
-              <input type="hidden" name="dkim_delete_key" value="1">
-                <a href="#" onclick="$(this).closest('form').submit()" data-toggle="tooltip" data-placement="top" title="<?=$lang['user']['delete_now'];?>"><span class="glyphicon glyphicon-remove"></span></a>
-            </form>
+  <div role="tabpanel" class="tab-pane" id="tab-config">
+    <div class="panel panel-default">
+      <div class="panel-heading"><?=$lang['admin']['dkim_keys'];?></div>
+      <div class="panel-body">
+        <div class="mass-actions-admin">
+          <div class="btn-group btn-group-sm">
+            <button type="button" id="toggle_multi_select_all" data-id="dkim" class="btn btn-default"><?=$lang['mailbox']['toggle_all'];?></button>
+            <button type="button" id="delete_selected" name="delete_selected" data-id="dkim" data-api-url="delete/dkim" class="btn btn-danger"><?=$lang['admin']['remove'];?></button>
           </div>
         </div>
-      <?php
-      }
-      else {
-      ?>
-      <div class="row">
-        <div class="col-xs-3">
-          <p>Domain: <strong><?=htmlspecialchars($domain);?></strong><br /><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
-        </div>
-        <div class="col-xs-8"><pre>-</pre></div>
-        <div class="col-xs-1">&nbsp;</div>
-      </div>
-      <?php
-      }
-      foreach(mailbox_get_alias_domains($domain) as $alias_domain) {
-        if (!empty($dkim = dkim_get_key_details($alias_domain))) {
-        ?>
+        <?php
+        foreach(mailbox_get_domains() as $domain) {
+            if (!empty($dkim = dkim_get_key_details($domain))) {
+          ?>
+            <div class="row">
+              <div class="col-xs-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" /></div>
+              <div class="col-xs-2">
+                <p>Domain: <strong><?=htmlspecialchars($domain);?></strong><br />
+                  <span class="label label-success"><?=$lang['admin']['dkim_key_valid'];?></span>
+                  <span class="label label-primary">Selector '<?=$dkim['dkim_selector'];?>'</span>
+                  <span class="label label-info"><?=$dkim['length'];?> bit</span>
+                </p>
+              </div>
+              <div class="col-xs-9">
+                  <pre><?=$dkim['dkim_txt'];?></pre>
+              </div>
+            </div>
+          <?php
+          }
+          else {
+          ?>
           <div class="row">
-            <div class="col-xs-offset-1 col-xs-2">
-              <p><small>↳ Alias-Domain: <strong><?=htmlspecialchars($alias_domain);?></strong><br /></small>
-                <span class="label label-success"><?=$lang['admin']['dkim_key_valid'];?></span>
-                <span class="label label-info"><?=$dkim['length'];?> bit</span>
-            </p>
+              <div class="col-xs-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" disabled /></div>
+            <div class="col-xs-2">
+              <p>Domain: <strong><?=htmlspecialchars($domain);?></strong><br /><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
             </div>
-            <div class="col-xs-8">
-              <pre><?=$dkim['dkim_txt'];?></pre>
-            </div>
-            <div class="col-xs-1">
-              <form class="form-inline" method="post">
-                <input type="hidden" name="domain" value="<?=$alias_domain;?>">
-                <input type="hidden" name="dkim_delete_key" value="1">
-                <a href="#" onclick="$(this).closest('form').submit()" data-toggle="tooltip" data-placement="top" title="<?=$lang['user']['delete_now'];?>"><span class="glyphicon glyphicon-remove"></span></a>
-              </form>
-            </div>
+            <div class="col-xs-9"><pre>-</pre></div>
           </div>
-        <?php
-        }
-        else {
-        ?>
-        <div class="row">
-          <div class="col-xs-2 col-xs-offset-1">
-            <p><small>↳ Alias-Domain: <strong><?=htmlspecialchars($alias_domain);?></strong><br /></small><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
-          </div>
-        <div class="col-xs-8"><pre>-</pre></div>
-        <div class="col-xs-1">&nbsp;</div>
-        </div>
-        <?php
-        }
-      }
-    }
-    foreach(dkim_get_blind_keys() as $blind) {
-      if (!empty($dkim = dkim_get_key_details($blind))) {
-      ?>
-        <div class="row">
-          <div class="col-xs-3">
-            <p>Domain: <strong><?=htmlspecialchars($blind);?></strong><br /><span class="label label-warning"><?=$lang['admin']['dkim_key_unused'];?></span></p>
-          </div>
-            <div class="col-xs-8">
-              <pre><?=$dkim['dkim_txt'];?></pre>
-            </div>
-            <div class="col-xs-1">
-              <form class="form-inline" method="post">
-                <input type="hidden" name="domain" value="<?=$blind;?>">
-                <input type="hidden" name="dkim_delete_key" value="1">
-                <a href="#" onclick="$(this).closest('form').submit()" data-toggle="tooltip" data-placement="top" title="<?=$lang['user']['delete_now'];?>"><span class="glyphicon glyphicon-remove"></span></a>
-              </form>
-            </div>
-        </div>
-      <?php
-      }
-    }
-    ?>
-    <legend style="margin-top:40px"><?=$lang['admin']['dkim_add_key'];?></legend>
-    <form class="form-inline" role="form" method="post">
-      <div class="form-group">
-        <label for="domain">Domain</label>
-        <input class="form-control" id="domain" name="domain" placeholder="example.org" required>
-      </div>
-      <div class="form-group">
-        <select data-width="200px" class="form-control" id="key_size" name="key_size" title="<?=$lang['admin']['dkim_key_length'];?>" required>
-          <option data-subtext="bits">1024</option>
-          <option data-subtext="bits">2048</option>
-        </select>
-      </div>
-      <button type="submit" name="dkim_add_key" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
-    </form>
-  </div>
-  </div>
-  
-  <div class="panel panel-default">
-    <div class="panel-heading"><?=$lang['admin']['forwarding_hosts'];?></div>
-    <div class="panel-body">
-      <p style="margin-bottom:40px"><?=$lang['admin']['forwarding_hosts_hint'];?></p>
-      <form method="post">
-        <div class="table-responsive">
-        <table class="table table-striped" id="forwardinghoststable">
-          <thead>
-          <tr>
-            <th style="min-width: 100px;"><?=$lang['edit']['host'];?></th>
-            <th style="min-width: 100px;"><?=$lang['edit']['source'];?></th>
-            <th style="text-align: right; min-width: 200px;"><?=$lang['admin']['action'];?></th>
-          </tr>
-          </thead>
-          <tbody>
-            <?php
-            $forwarding_hosts = get_forwarding_hosts();
-            if ($forwarding_hosts) {
-              foreach ($forwarding_hosts as $host) {
-                $source = $host->source;
-                $host = $host->host;
-              ?>
-              <tr id="data">
-                <td><?=htmlspecialchars(strtolower($host));?></td>
-                <td><?=htmlspecialchars(strtolower($source));?></td>
-                <td style="text-align: right;">
-                  <div class="btn-group">
-                    <a href="delete.php?forwardinghost=<?=$host;?>" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> <?=$lang['admin']['remove'];?></a>
-                  </div>
-                </td>
-                </td>
-              </tr>
-
-              <?php
-              }
-            } else {
+          <?php
+          }
+          foreach(mailbox_get_alias_domains($domain) as $alias_domain) {
+            if (!empty($dkim = dkim_get_key_details($alias_domain))) {
             ?>
-              <tr id="no-data"><td colspan="4" style="text-align: center; font-style: italic;"><?=$lang['admin']['no_record'];?></td></tr>
+              <div class="row">
+              <div class="col-xs-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$alias_domain;?>" /></div>
+                <div class="col-xs-1 col-xs-offset-1">
+                  <p><small>↳ Alias-Domain: <strong><?=htmlspecialchars($alias_domain);?></strong><br /></small>
+                    <span class="label label-success"><?=$lang['admin']['dkim_key_valid'];?></span>
+                    <span class="label label-primary">Selector '<?=$dkim['dkim_selector'];?>'</span>
+                    <span class="label label-info"><?=$dkim['length'];?> bit</span>
+                </p>
+                </div>
+                <div class="col-xs-9">
+                  <pre><?=$dkim['dkim_txt'];?></pre>
+                </div>
+              </div>
             <?php
             }
+            else {
             ?>
-          </tbody>
-        </table>
-        </div>
-      </form>
-      <legend><?=$lang['admin']['add_forwarding_host'];?></legend>
-      <p class="help-block"><?=$lang['admin']['forwarding_hosts_add_hint'];?></p>
-      <form class="form-horizontal" role="form" method="post">
-        <div class="form-group">
-          <label class="control-label col-sm-2" for="hostname"><?=$lang['edit']['host'];?>:</label>
-          <div class="col-sm-10">
-            <input type="text" class="form-control" name="hostname" id="hostname" required>
+            <div class="row">
+              <div class="col-xs-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" disabled /></div>
+              <div class="col-xs-1 col-xs-offset-1">
+                <p><small>↳ Alias-Domain: <strong><?=htmlspecialchars($alias_domain);?></strong><br /></small><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
+              </div>
+            <div class="col-xs-9"><pre>-</pre></div>
+            </div>
+            <?php
+            }
+          }
+        }
+        foreach(dkim_get_blind_keys() as $blind) {
+          if (!empty($dkim = dkim_get_key_details($blind))) {
+          ?>
+            <div class="row">
+              <div class="col-xs-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$blind;?>" /></div>
+              <div class="col-xs-2">
+                <p>Domain: <strong><?=htmlspecialchars($blind);?></strong><br />
+                  <span class="label label-warning"><?=$lang['admin']['dkim_key_unused'];?></span>
+                  <span class="label label-primary">Selector '<?=$dkim['dkim_selector'];?>'</span>
+                  <span class="label label-info"><?=$dkim['length'];?> bit</span>
+                </p>
+                </div>
+                <div class="col-xs-9">
+                  <pre><?=$dkim['dkim_txt'];?></pre>
+                </div>
+            </div>
+          <?php
+          }
+        }
+        ?>
+
+        <legend style="margin-top:40px"><?=$lang['admin']['dkim_add_key'];?></legend>
+        <form class="form-inline" role="form" method="post">
+          <div class="form-group">
+            <label for="domain">Domain</label>
+            <input class="form-control" id="domain" name="domain" placeholder="example.org" required>
+          </div>
+          <div class="form-group">
+            <label for="domain">Selector</label>
+            <input class="form-control" id="dkim_selector" name="dkim_selector" value="dkim" required>
+          </div>
+          <div class="form-group">
+            <select data-width="200px" class="form-control" id="key_size" name="key_size" title="<?=$lang['admin']['dkim_key_length'];?>" required>
+              <option data-subtext="bits">1024</option>
+              <option data-subtext="bits">2048</option>
+            </select>
+          </div>
+          <button type="submit" name="dkim_add_key" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
+        </form>
+      </div>
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-heading"><?=$lang['admin']['forwarding_hosts'];?></div>
+      <div class="panel-body">
+        <p style="margin-bottom:40px"><?=$lang['admin']['forwarding_hosts_hint'];?></p>
+        <div class="mass-actions-admin">
+          <div class="btn-group btn-group-sm">
+            <button type="button" id="toggle_multi_select_all" data-id="fwdhosts" class="btn btn-default"><?=$lang['mailbox']['toggle_all'];?></button>
+            <button type="button" id="delete_selected" name="delete_selected" data-id="fwdhosts" data-api-url="delete/fwdhost" class="btn btn-danger"><?=$lang['admin']['remove'];?></button>
           </div>
         </div>
-        <div class="form-group">
-          <div class="col-sm-offset-2 col-sm-10">
-            <button type="submit" name="add_forwarding_host" class="btn btn-default"><?=$lang['admin']['add'];?></button>
-          </div>
+        <div class="table-responsive">
+          <table class="table table-striped" id="forwardinghoststable"></table>
         </div>
-      </form>
+        <legend><?=$lang['admin']['add_forwarding_host'];?></legend>
+        <p class="help-block"><?=$lang['admin']['forwarding_hosts_add_hint'];?></p>
+        <form class="form-inline" role="form" method="post">
+          <div class="form-group">
+            <label for="hostname"><?=$lang['admin']['host'];?></label>
+            <input class="form-control" id="hostname" name="hostname" placeholder="example.org" required>
+          </div>
+          <div class="form-group">
+            <select data-width="200px" class="form-control" id="filter_spam" name="filter_spam" title="<?=$lang['user']['spamfilter'];?>" required>
+              <option value="1"><?=$lang['admin']['active'];?></option>
+              <option value="0"><?=$lang['admin']['inactive'];?></option>
+            </select>
+          </div>
+          <button type="submit" name="add_forwarding_host" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div role="tabpanel" class="tab-pane" id="tab-logs">
+    <div class="panel panel-default">
+      <div class="panel-heading">Dovecot
+        <div class="btn-group pull-right">
+          <a class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['admin']['action'];?> <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#" id="refresh_dovecot_log"><?=$lang['admin']['refresh'];?></a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive">
+          <table class="table table-striped" id="dovecot_log"></table>
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">Postfix
+        <div class="btn-group pull-right">
+          <a class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['admin']['action'];?> <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#" id="refresh_postfix_log"><?=$lang['admin']['refresh'];?></a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive">
+          <table class="table table-striped" id="postfix_log"></table>
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">SOGo
+        <div class="btn-group pull-right">
+          <a class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['admin']['action'];?> <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#" id="refresh_sogo_log"><?=$lang['admin']['refresh'];?></a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive">
+          <table class="table table-striped" id="sogo_log"></table>
+        </div>
+      </div>
     </div>
   </div>
 
   </div>
-
 </div> <!-- /container -->
 <script type='text/javascript'>
 <?php

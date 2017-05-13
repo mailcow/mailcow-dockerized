@@ -1,7 +1,7 @@
 <phpunit
     colors="true">
     <testsuite name="tests">
-        <directory suffix="test.php">.</directory>
+        <directory suffix="test.php">tests</directory>
     </testsuite>
     <logging>
         <log type="coverage-clover" target="build/logs/clover.xml"/>

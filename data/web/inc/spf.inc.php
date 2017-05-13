@@ -1,4 +1,6 @@
 <?php
+error_reporting(0);
+
 function get_spf_allowed_hosts($domain)
 {
 	$hosts = array();
@@ -79,17 +81,25 @@ function get_spf_allowed_hosts($domain)
 	return $hosts;
 }
 
+
 function get_mx_hosts($domain)
 {
 	$hosts = array();
-	
-	$mx_records = dns_get_record($domain, DNS_MX);
-	foreach ($mx_records as $mx_record)
-	{
-		$new_hosts = get_a_hosts($mx_record['target']);
-		$hosts = array_unique(array_merge($hosts,$new_hosts), SORT_REGULAR);
-	}
-	
+  try {
+    $mx_records = dns_get_record($domain, DNS_MX);
+    if ($mx_records) {
+      foreach ($mx_records as $mx_record) {
+        $new_hosts = get_a_hosts($mx_record['target']);
+        $hosts = array_unique(array_merge($hosts,$new_hosts), SORT_REGULAR);
+      }
+    }
+  }
+  catch (Exception $e) {
+    if ($e->getMessage() !== 'dns_get_record(): A temporary server error occurred.') {
+      throw $e;
+    }
+    $mx_records = false;
+  }
 	return $hosts;
 }
 

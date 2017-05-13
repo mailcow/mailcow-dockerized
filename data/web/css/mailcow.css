@@ -55,4 +55,19 @@ body.modal-open {
   overflow: inherit;
   padding-right: inherit !important;
 }
-
+#mailcow-alert {
+  position: fixed;
+  bottom: 8px;
+  right: 25px;
+  min-width: 350px;
+  max-width: 550px;
+  z-index: 2000;
+}
+.mass-actions-mailbox {
+  user-select: none;
+  padding:10px 0 10px 10px;
+}
+.mass-actions-admin {
+  user-select: none;
+  padding:10px 0 10px 0;
+}
