@@ -1,7 +1,7 @@
 FROM debian:jessie-slim
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
-ENV DEBIAN_FRONTEND noninteractive
+ARG DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL C
 
 RUN apt-key adv --fetch-keys http://rspamd.com/apt-stable/gpg.key \

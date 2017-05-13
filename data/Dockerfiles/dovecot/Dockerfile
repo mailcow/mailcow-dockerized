@@ -2,7 +2,7 @@ FROM debian:stretch-slim
 #ubuntu:xenial
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
-ENV DEBIAN_FRONTEND noninteractive
+ARG DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL C
 ENV DOVECOT_VERSION 2.2.29.1
 ENV PIGEONHOLE_VERSION 0.4.18

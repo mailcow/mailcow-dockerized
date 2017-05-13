@@ -1,7 +1,7 @@
 FROM debian:jessie-slim
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
-ENV DEBIAN_FRONTEND noninteractive
+ARG DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL C
 ENV GOSU_VERSION 1.9
 

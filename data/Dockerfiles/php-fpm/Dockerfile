@@ -1,7 +1,7 @@
 FROM php:7.1-fpm
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
-ENV DEBIAN_FRONTEND noninteractive
+ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
 	g++ \
