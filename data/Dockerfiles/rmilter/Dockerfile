@@ -7,11 +7,11 @@ ENV LC_ALL C
 RUN apt-key adv --fetch-keys http://rspamd.com/apt-stable/gpg.key \
 	&& echo "deb http://rspamd.com/apt-stable/ jessie main" > /etc/apt/sources.list.d/rspamd.list \
 	&& apt-get update && apt-get install -y --force-yes --no-install-recommends \
-		rmilter \
 		cron \
+		rmilter \
+		supervisor \
 		syslog-ng \
 		syslog-ng-core \
-		supervisor \
 	&& rm -rf /var/lib/apt/lists/*
 
 COPY supervisord.conf /etc/supervisor/supervisord.conf

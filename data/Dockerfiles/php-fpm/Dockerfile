@@ -4,13 +4,13 @@ LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update && apt-get install -y \
-	zlib1g-dev \
-	libicu-dev \
 	g++ \
+	libicu-dev \
 	libidn11-dev \
 	libxml2-dev \
-	redis-tools \
 	mysql-client \
+	redis-tools \
+	zlib1g-dev \
 	&& rm -rf /var/lib/apt/lists/*
 
 RUN docker-php-ext-configure intl

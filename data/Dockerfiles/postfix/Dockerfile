@@ -10,22 +10,22 @@ RUN dpkg-divert --local --rename --add /sbin/initctl \
 	&& ln -sf /bin/true /usr/bin/ischroot
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-	supervisor \
-	postfix \
-	sasl2-bin \
+	ca-certificates \
+	curl \
+	dirmngr \
+	gnupg \
 	libsasl2-modules \
+	postfix \
 	postfix \
 	postfix-mysql \
 	postfix-pcre \
+	python-gpgme \
+	sasl2-bin \
+	sudo \
+	supervisor \
 	syslog-ng \
 	syslog-ng-core \
 	syslog-ng-mod-redis \
-	ca-certificates \
-	gnupg \
-	python-gpgme \
-	sudo \
-	curl \
-	dirmngr \
 	&& rm -rf /var/lib/apt/lists/*
 
 RUN addgroup --system --gid 600 zeyple

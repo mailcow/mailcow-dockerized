@@ -8,47 +8,47 @@ ENV DOVECOT_VERSION 2.2.29.1
 ENV PIGEONHOLE_VERSION 0.4.18
 
 RUN apt-get update && apt-get -y install \
-	libpam-dev \
-	default-libmysqlclient-dev \
-	lzma-dev \
-	liblz-dev \
-	libbz2-dev \
-	liblz4-dev \
-	liblzma-dev \
-	build-essential \
-	autotools-dev \
 	automake \
-	syslog-ng \
-	syslog-ng-core \
-	syslog-ng-mod-redis \
+	autotools-dev \
+	build-essential \
 	ca-certificates \
-	supervisor \
-	wget \
+	cpanminus \
 	curl \
-	libssl-dev \
+	default-libmysqlclient-dev \
 	libauthen-ntlm-perl \
+	libbz2-dev \
 	libcrypt-ssleay-perl \
+	libdbd-mysql-perl \
+	libdbi-perl \
 	libdigest-hmac-perl \
 	libfile-copy-recursive-perl \
 	libio-compress-perl \
 	libio-socket-inet6-perl \
 	libio-socket-ssl-perl \
 	libio-tee-perl \
+	libipc-run-perl \
+	liblockfile-simple-perl \
+	liblz-dev \
+	liblz4-dev \
+	liblzma-dev \
 	libmodule-scandeps-perl \
 	libnet-ssleay-perl \
+	libpam-dev \
 	libpar-packer-perl \
 	libreadonly-perl \
+	libssl-dev \
 	libterm-readkey-perl \
 	libtest-pod-perl \
 	libtest-simple-perl \
 	libunicode-string-perl \
 	liburi-perl \
-	libdbi-perl \
-	liblockfile-simple-perl \
-	libdbd-mysql-perl \
-	libipc-run-perl \
+	lzma-dev \
 	make \
-	cpanminus \
+	supervisor \
+	syslog-ng \
+	syslog-ng-core \
+	syslog-ng-mod-redis \
+	wget \
 	&& rm -rf /var/lib/apt/lists/*
 
 

@@ -7,14 +7,14 @@ ENV GOSU_VERSION 1.9
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
 		apt-transport-https \
-		gnupg \
 		ca-certificates \
-		wget \
+		cron \
+		gnupg \
+		mysql-client \
+		supervisor \
 		syslog-ng \
 		syslog-ng-core \
-		supervisor \
-		mysql-client \
-		cron \
+		wget \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
 	&& wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \

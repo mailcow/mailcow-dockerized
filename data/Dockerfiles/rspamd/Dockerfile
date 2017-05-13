@@ -7,9 +7,9 @@ ENV LC_ALL C
 RUN apt-key adv --fetch-keys http://rspamd.com/apt-stable/gpg.key \
 	&& echo "deb http://rspamd.com/apt-stable/ jessie main" > /etc/apt/sources.list.d/rspamd.list \
 	&& apt-get update && apt-get install -y \
-		rspamd \
 		ca-certificates \
 		python-pip \
+		rspamd \
 	&& rm -rf /var/lib/apt/lists/*
 
 RUN echo '.include $LOCAL_CONFDIR/local.d/rspamd.conf.local' > /etc/rspamd/rspamd.conf.local

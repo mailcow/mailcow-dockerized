@@ -11,8 +11,8 @@ RUN echo "deb http://http.debian.net/debian/ $DEBIAN_VERSION main contrib non-fr
 	apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
 		clamav-daemon \
 		clamav-freshclam \
-		libclamunrar7 \
 		curl \
+		libclamunrar7 \
 	&& rm -rf /var/lib/apt/lists/*
 
 # initial update of av databases
