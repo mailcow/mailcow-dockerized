@@ -57,14 +57,16 @@ RUN wget https://www.dovecot.org/releases/2.2/dovecot-$DOVECOT_VERSION.tar.gz -O
 	&& ./configure --with-mysql --with-lzma --with-lz4 --with-ssl=openssl --with-notify=inotify --with-storages=mdbox,sdbox,maildir,mbox,imapc,pop3c --with-bzlib --with-zlib \
 	&& make -j3 \
 	&& make install \
-	&& make clean
+	&& make clean \
+	&& cd .. && rm -rf dovecot-$DOVECOT_VERSION
 
 RUN wget https://pigeonhole.dovecot.org/releases/2.2/dovecot-2.2-pigeonhole-$PIGEONHOLE_VERSION.tar.gz -O - | tar xvz  \
 	&& cd dovecot-2.2-pigeonhole-$PIGEONHOLE_VERSION \
 	&& ./configure \
 	&& make -j3 \
 	&& make install \
-	&& make clean
+	&& make clean \
+	&& cd .. && rm -rf dovecot-2.2-pigeonhole-$PIGEONHOLE_VERSION
 
 RUN cpanm Data::Uniqid Mail::IMAPClient String::Util
 RUN echo '* * * * *   root   /usr/local/bin/imapsync_cron.pl' > /etc/cron.d/imapsync
@@ -103,6 +105,4 @@ CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 
 RUN rm -rf \
 	/tmp/* \
-	/var/tmp/* \
-	/dovecot-2.2-pigeonhole-$PIGEONHOLE_VERSION \
-	/dovecot-$DOVECOT_VERSION
+	/var/tmp/*
