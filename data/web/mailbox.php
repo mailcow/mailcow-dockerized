@@ -93,7 +93,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               <h3 class="panel-title"><?=$lang['mailbox']['resources'];?></h3>
             </div>
             <div class="table-responsive">
-              <table id="resources_table" class="table table-striped"></table>
+              <table id="resource_table" class="table table-striped"></table>
             </div>
             <div class="mass-actions-mailbox">
               <div class="btn-group">

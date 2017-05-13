@@ -44,6 +44,7 @@ endif;
 <script src="/js/bootstrap-switch.min.js"></script>
 <script src="/js/bootstrap-slider.min.js"></script>
 <script src="/js/bootstrap-select.min.js"></script>
+<script src="/js/notifications.min.js"></script>
 <script src="/js/u2f-api.js"></script>
 <script>
 // Select language and reopen active URL without POST
@@ -53,14 +54,12 @@ function setLang(sel) {
 }
 
 $(document).ready(function() {
-  function mailcow_alert_box(type, message) {
-    $('.mailcow-alert-box').show();
-    $('.mailcow-alert-box').addClass("alert-" + type);
-    $('#mailcow-alert-text').text(message);
+  function mailcow_alert_box(message, type) {
+    $.notify({message: message},{type: type,placement: {from: "bottom",align: "right"},animate: {enter: 'animated fadeInUp',exit: 'animated fadeOutDown'}});
   }
-  // PHP error handler
-
-
+  <?php if (isset($_SESSION['return'])): ?>
+  mailcow_alert_box("<?=$_SESSION['return']['msg'];?>",  "<?=$_SESSION['return']['type'];?>");
+  <?php endif; unset($_SESSION['return']); ?>
   // Confirm TFA modal
   <?php if (isset($_SESSION['pending_tfa_method'])):?>
   $('#ConfirmTFAModal').modal({
@@ -226,30 +225,9 @@ $(document).ready(function() {
 			}
 		});
 	});
-
-  if ($('#mailcow-alert').hasClass('alert-success')) {
-    $('#mailcow-alert').delay(5000).animate({right: '-50%'}, 1000);
-  };
 });
 </script>
 
-<div class="container">
-  <div id="mailcow-alert" class="alert" role="alert">
-    <span id="mailcow-alert-text"></span>
-  </div>
-</div>
-
 </body>
-<?php // Notifications ?>
-<script>
-function mailcow_alert_box(msg, type) {
-  document.getElementById('mailcow-alert').style.display = 'visible';
-  document.getElementById('mailcow-alert-text').innerHTML = msg;
-  document.getElementById("mailcow-alert").className = "alert alert-" + type;
-}
-<?php if (isset($_SESSION['return'])): ?>
-mailcow_alert_box("<?=$_SESSION['return']['msg'];?>",  "<?=$_SESSION['return']['type'];?>");
-<?php endif; unset($_SESSION['return']); ?>
-</script>
 </html>
 <?php $stmt = null; $pdo = null; ?>

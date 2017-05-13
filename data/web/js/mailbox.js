@@ -48,8 +48,8 @@ $(document).ready(function() {
         jsonp: false,
         complete: function (data) {
           // var reponse = (JSON.parse(data.responseText));
-          // alert(reponse.type);
-          // alert(reponse.msg);
+          // console.log(reponse.type);
+          // console.log(reponse.msg);
           location.assign(window.location);
         }
       });
@@ -133,8 +133,8 @@ jQuery(function($){
         dataType: 'json',
         url: '/api/v1/get/domain/all',
         jsonp: false,
-        error: function () {
-          alert('Cannot draw domain table');
+        error: function (data) {
+          console.log('Cannot draw domain table');
         },
         success: function (data) {
           $.each(data, function (i, item) {
@@ -201,7 +201,7 @@ jQuery(function($){
         url: '/api/v1/get/mailbox/all',
         jsonp: false,
         error: function () {
-          alert('Cannot draw mailbox table');
+          console.log('Cannot draw mailbox table');
         },
         success: function (data) {
           $.each(data, function (i, item) {
@@ -260,7 +260,7 @@ jQuery(function($){
         url: '/api/v1/get/resource/all',
         jsonp: false,
         error: function () {
-          alert('Cannot draw resource table');
+          console.log('Cannot draw resource table');
         },
         success: function (data) {
           $.each(data, function (i, item) {
@@ -304,7 +304,7 @@ jQuery(function($){
         url: '/api/v1/get/alias/all',
         jsonp: false,
         error: function () {
-          alert('Cannot draw alias table');
+          console.log('Cannot draw alias table');
         },
         success: function (data) {
           $.each(data, function (i, item) {
@@ -353,7 +353,7 @@ jQuery(function($){
         url: '/api/v1/get/alias-domain/all',
         jsonp: false,
         error: function () {
-          alert('Cannot draw alias domain table');
+          console.log('Cannot draw alias domain table');
         },
         success: function (data) {
           $.each(data, function (i, item) {

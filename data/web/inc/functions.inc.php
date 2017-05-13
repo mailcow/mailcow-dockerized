@@ -457,10 +457,6 @@ function get_time_limited_aliases($username = null) {
   $data = array();
   if (isset($username) && filter_var($username, FILTER_VALIDATE_EMAIL)) {
     if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
-      $_SESSION['return'] = array(
-        'type' => 'danger',
-        'msg' => sprintf($lang['danger']['access_denied'])
-      );
       return false;
     }
   }
@@ -687,19 +683,11 @@ function get_policy_list($object = null) {
     if (!filter_var($object, FILTER_VALIDATE_EMAIL) && is_valid_domain_name($object)) {
       $object = idn_to_ascii(strtolower(trim($object)));
       if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $object)) {
-        $_SESSION['return'] = array(
-          'type' => 'danger',
-          'msg' => sprintf($lang['danger']['access_denied'])
-        );
         return false;
       }
     }
     elseif (filter_var($object, FILTER_VALIDATE_EMAIL)) {
       if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $object)) {
-        $_SESSION['return'] = array(
-          'type' => 'danger',
-          'msg' => sprintf($lang['danger']['access_denied'])
-        );
         return false;
       }
     }
@@ -885,10 +873,6 @@ function get_syncjobs($username = null) {
   $data = array();
   if (isset($username) && filter_var($username, FILTER_VALIDATE_EMAIL)) {
     if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
-      $_SESSION['return'] = array(
-        'type' => 'danger',
-        'msg' => sprintf($lang['danger']['access_denied'])
-      );
       return false;
     }
   }
@@ -916,17 +900,9 @@ function get_syncjob_details($id) {
   $syncjobdetails = array();
 	if ($_SESSION['mailcow_cc_role'] != "user" &&
 		$_SESSION['mailcow_cc_role'] != "admin") {
-			$_SESSION['return'] = array(
-				'type' => 'danger',
-				'msg' => sprintf($lang['danger']['access_denied'])
-			);
 			return false;
 	}
   if (!is_numeric($id)) {
-    $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => sprintf($lang['danger']['access_denied'])
-    );
     return false;
   }
   try {
@@ -1301,10 +1277,6 @@ function get_tls_policy($username = null) {
   $data = array();
   if (isset($username) && filter_var($username, FILTER_VALIDATE_EMAIL)) {
     if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
-      $_SESSION['return'] = array(
-        'type' => 'danger',
-        'msg' => sprintf($lang['danger']['access_denied'])
-      );
       return false;
     }
   }
@@ -1687,26 +1659,14 @@ function get_domain_admin_details($domain_admin) {
 	global $lang;
   $domainadmindata = array();
 	if (isset($domain_admin) && $_SESSION['mailcow_cc_role'] != "admin") {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => sprintf($lang['danger']['access_denied'])
-		);
 		return false;
 	}
   if (!isset($domain_admin) && $_SESSION['mailcow_cc_role'] != "domainadmin") {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => sprintf($lang['danger']['access_denied'])
-		);
 		return false;
 	}
   (!isset($domain_admin)) ? $domain_admin = $_SESSION['mailcow_cc_username'] : null;
   
   if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $domain_admin))) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => sprintf($lang['danger']['username_invalid'])
-		);
 		return false;
 	}
   try {
@@ -2351,10 +2311,6 @@ function get_admin_details() {
 	global $lang;
   $data = array();
   if ($_SESSION['mailcow_cc_role'] != 'admin') {
-    $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => sprintf($lang['danger']['access_denied'])
-    );
     return false;
   }
   try {
@@ -2469,15 +2425,16 @@ function dkim_add_key($postarray) {
   }
 }
 function dkim_get_key_details($domain) {
-  $data = array();
   global $redis;
-  if (hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
-    if ($redis_dkim_key_data = $redis->hGet('DKIM_PUB_KEYS', $domain)) {
-      $data['pubkey'] = $redis_dkim_key_data;
-      $data['length'] = (strlen($data['pubkey']) < 391) ? 1024 : 2048;
-      $data['dkim_txt'] = 'v=DKIM1;k=rsa;t=s;s=email;p=' . $redis_dkim_key_data;
-      $data['dkim_selector'] = $redis->hGet('DKIM_SELECTORS', $domain);
-    }
+  if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
+    return false;
+  }
+  $data = array();
+  if ($redis_dkim_key_data = $redis->hGet('DKIM_PUB_KEYS', $domain)) {
+    $data['pubkey'] = $redis_dkim_key_data;
+    $data['length'] = (strlen($data['pubkey']) < 391) ? 1024 : 2048;
+    $data['dkim_txt'] = 'v=DKIM1;k=rsa;t=s;s=email;p=' . $redis_dkim_key_data;
+    $data['dkim_selector'] = $redis->hGet('DKIM_SELECTORS', $domain);
   }
   return $data;
 }
@@ -2485,10 +2442,6 @@ function dkim_get_blind_keys() {
   global $redis;
 	global $lang;
   if ($_SESSION['mailcow_cc_role'] != "admin") {
-    $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => sprintf($lang['danger']['access_denied'])
-    );
     return false;
   }
   $domains = array();
@@ -4044,10 +3997,6 @@ function mailbox_get_mailboxes($domain = null) {
 	global $pdo;
   $mailboxes = array();
 	if (isset($domain) && !hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => sprintf($lang['danger']['access_denied'])
-		);
 		return false;
 	}
   elseif (isset($domain) && hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
@@ -4096,10 +4045,6 @@ function mailbox_get_resources($domain = null) {
 	global $pdo;
   $resources = array();
 	if (isset($domain) && !hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => sprintf($lang['danger']['access_denied'])
-		);
 		return false;
 	}
   elseif (isset($domain) && hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
@@ -4151,10 +4096,6 @@ function mailbox_get_alias_domains($domain = null) {
 	global $pdo;
   $aliasdomains = array();
 	if (isset($domain) && !hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => sprintf($lang['danger']['access_denied'])
-		);
 		return false;
   }
   elseif (isset($domain) && hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
@@ -4203,10 +4144,6 @@ function mailbox_get_aliases($domain) {
 	global $pdo;
   $aliases = array();
 	if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => sprintf($lang['danger']['access_denied'])
-		);
 		return false;
 	}
 
@@ -4268,10 +4205,6 @@ function mailbox_get_alias_details($address) {
     $aliasdata['created'] = $row['created'];
     $aliasdata['modified'] = $row['modified'];
     if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $aliasdata['domain'])) {
-      $_SESSION['return'] = array(
-        'type' => 'danger',
-        'msg' => sprintf($lang['danger']['access_denied'])
-      );
       return false;
     }
   }
@@ -4317,10 +4250,6 @@ function mailbox_get_alias_domain_details($aliasdomain) {
     return false;
   }
   if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $aliasdomaindata['target_domain'])) {
-    $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => sprintf($lang['danger']['access_denied'])
-    );
     return false;
   }
   return $aliasdomaindata;
@@ -4331,9 +4260,11 @@ function mailbox_get_domains() {
   // Domain does not need to be active
 	global $lang;
 	global $pdo;
-
+  $domains = array();
+	if ($_SESSION['mailcow_cc_role'] != "admin" && $_SESSION['mailcow_cc_role'] != "domainadmin") {
+    return false;
+	}
   try {
-    $domains = array();
     $stmt = $pdo->prepare("SELECT `domain` FROM `domain`
       WHERE (`domain` IN (
         SELECT `domain` from `domain_admins`
@@ -4367,10 +4298,6 @@ function mailbox_get_domain_details($domain) {
 	$domain = idn_to_ascii(strtolower(trim($domain)));
 
 	if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => sprintf($lang['danger']['access_denied'])
-		);
 		return false;
 	}
 
@@ -4461,10 +4388,6 @@ function mailbox_get_mailbox_details($mailbox) {
 	global $lang;
 	global $pdo;
   if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $mailbox)) {
-    $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => sprintf($lang['danger']['access_denied'])
-    );
     return false;
   }
   $mailboxdata = array();
@@ -4538,10 +4461,6 @@ function mailbox_get_resource_details($resource) {
 	global $pdo;
   $resourcedata = array();
   if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $resource)) {
-    $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => sprintf($lang['danger']['access_denied'])
-    );
     return false;
   }
   try {
@@ -4579,10 +4498,6 @@ function mailbox_get_resource_details($resource) {
   }
   if (!isset($resourcedata['domain']) ||
     (isset($resourcedata['domain']) && !hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $resourcedata['domain']))) {
-    $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => sprintf($lang['danger']['access_denied'])
-    );
     return false;
   }
   
@@ -5047,10 +4962,6 @@ function mailbox_get_sender_acl_handles($mailbox) {
 	global $pdo;
 	global $lang;
 	if ($_SESSION['mailcow_cc_role'] != "admin" && $_SESSION['mailcow_cc_role'] != "domainadmin") {
-    $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => sprintf($lang['danger']['access_denied'])
-    );
     return false;
 	}
 
@@ -5184,9 +5095,6 @@ function get_forwarding_host_details($host) {
   if (!isset($host) || empty($host)) {
     return false;
   }
-  if (filter_var($host, FILTER_VALIDATE_IP)) {
-    return;
-  }
   try {
     if ($source = $redis->hGet('WHITELISTED_FWD_HOST', $host)) {
       $data['host'] = $host;
@@ -5301,10 +5209,6 @@ function get_logs($container, $lines = 100) {
 	global $lang;
 	global $redis;
 	if ($_SESSION['mailcow_cc_role'] != "admin") {
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => sprintf($lang['danger']['access_denied'])
-		);
 		return false;
 	}
   $lines = intval($lines);
