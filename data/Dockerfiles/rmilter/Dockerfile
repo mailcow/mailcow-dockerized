@@ -6,8 +6,13 @@ ENV LC_ALL C
 
 RUN apt-key adv --fetch-keys http://rspamd.com/apt-stable/gpg.key \
 	&& echo "deb http://rspamd.com/apt-stable/ jessie main" > /etc/apt/sources.list.d/rspamd.list \
-	&& apt-get update \
-	&& apt-get --no-install-recommends -y --force-yes install rmilter cron syslog-ng syslog-ng-core supervisor
+	&& apt-get update && apt-get install -y --force-yes --no-install-recommends \
+		rmilter \
+		cron \
+		syslog-ng \
+		syslog-ng-core \
+		supervisor \
+	&& rm -rf /var/lib/apt/lists/*
 
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 
@@ -18,4 +23,4 @@ RUN touch /var/log/mail.log && chmod 640 /var/log/mail.log && chown root:adm /va
 
 CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN rm -rf /tmp/* /var/tmp/*

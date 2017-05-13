@@ -8,14 +8,12 @@ ENV DEBIAN_VERSION stretch
 RUN echo "deb http://http.debian.net/debian/ $DEBIAN_VERSION main contrib non-free" > /etc/apt/sources.list && \
 	echo "deb http://http.debian.net/debian/ $DEBIAN_VERSION-updates main contrib non-free" >> /etc/apt/sources.list && \
 	echo "deb http://security.debian.org/ $DEBIAN_VERSION/updates main contrib non-free" >> /etc/apt/sources.list && \
-	apt-get update && \
-	DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y -qq \
+	apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
 		clamav-daemon \
 		clamav-freshclam \
 		libclamunrar7 \
-		curl && \
-	apt-get clean && \
-	rm -rf /var/lib/apt/lists/*
+		curl \
+	&& rm -rf /var/lib/apt/lists/*
 
 # initial update of av databases
 COPY dl_files.sh /dl_files.sh

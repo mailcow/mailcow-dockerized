@@ -9,8 +9,8 @@ RUN dpkg-divert --local --rename --add /sbin/initctl \
 	&& dpkg-divert --local --rename --add /usr/bin/ischroot \
 	&& ln -sf /bin/true /usr/bin/ischroot
 
-RUN apt-get update
-RUN apt-get install -y --no-install-recommends supervisor \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+	supervisor \
 	postfix \
 	sasl2-bin \
 	libsasl2-modules \
@@ -25,7 +25,8 @@ RUN apt-get install -y --no-install-recommends supervisor \
 	python-gpgme \
 	sudo \
 	curl \
-	dirmngr
+	dirmngr \
+	&& rm -rf /var/lib/apt/lists/*
 
 RUN addgroup --system --gid 600 zeyple
 RUN adduser --system --home /var/lib/zeyple --no-create-home --uid 600 --gid 600 --disabled-login zeyple
@@ -44,4 +45,4 @@ EXPOSE 588
 
 CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN rm -rf /tmp/* /var/tmp/*

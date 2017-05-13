@@ -7,8 +7,8 @@ ENV LC_ALL C
 ENV DOVECOT_VERSION 2.2.29.1
 ENV PIGEONHOLE_VERSION 0.4.18
 
-RUN apt-get update \
-	&& apt-get -y install libpam-dev \
+RUN apt-get update && apt-get -y install \
+	libpam-dev \
 	default-libmysqlclient-dev \
 	lzma-dev \
 	liblz-dev \
@@ -48,7 +48,8 @@ RUN apt-get update \
 	libdbd-mysql-perl \
 	libipc-run-perl \
 	make \
-	cpanminus
+	cpanminus \
+	&& rm -rf /var/lib/apt/lists/*
 
 
 RUN wget https://www.dovecot.org/releases/2.2/dovecot-$DOVECOT_VERSION.tar.gz -O - | tar xvz  \
@@ -100,8 +101,7 @@ EXPOSE 24 10001
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 
-RUN apt-get clean \
-	&& rm -rf /var/lib/apt/lists/* \
+RUN rm -rf \
 	/tmp/* \
 	/var/tmp/* \
 	/dovecot-2.2-pigeonhole-$PIGEONHOLE_VERSION \
