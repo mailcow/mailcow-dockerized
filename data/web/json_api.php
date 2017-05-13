@@ -80,7 +80,6 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                   echo '{}';
                 }
               break;
-
               case "postfix":
                 if (isset($extra) && !empty($extra)) {
                   $extra = intval($extra);
@@ -88,6 +87,21 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 }
                 else {
                   $logs = get_logs('postfix-mailcow', -1);
+                }
+                if (isset($logs) && !empty($logs)) {
+                  echo json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                }
+                else {
+                  echo '{}';
+                }
+              break;
+              case "sogo":
+                if (isset($extra) && !empty($extra)) {
+                  $extra = intval($extra);
+                  $logs = get_logs('sogo-mailcow', $extra);
+                }
+                else {
+                  $logs = get_logs('sogo-mailcow', -1);
                 }
                 if (isset($logs) && !empty($logs)) {
                   echo json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);

@@ -5228,6 +5228,14 @@ function get_logs($container, $lines = 100) {
       return $data_array;
     }
   }
+  if ($container == "sogo-mailcow") {
+    if ($data = $redis->lRange('SOGO_LOG', 1, $lines)) {
+      foreach ($data as $json_line) {
+        $data_array[] = json_decode($json_line, true);
+      }
+      return $data_array;
+    }
+  }
   return false;
 }
 ?>

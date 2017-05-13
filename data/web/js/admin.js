@@ -79,6 +79,10 @@ jQuery(function($){
     e.preventDefault();
     draw_dovecot_logs();
   });
+  $("#refresh_sogo_log").on('click', function(e) {
+    e.preventDefault();
+    draw_sogo_logs();
+  });
   function draw_postfix_logs() {
     ft_postfix_logs = FooTable.init('#postfix_log', {
       "columns": [
@@ -92,6 +96,53 @@ jQuery(function($){
         jsonp: false,
         error: function () {
           console.log('Cannot draw postfix log table');
+        },
+        success: function (data) {
+          $.each(data, function (i, item) {
+            var danger_class = ["emerg", "alert", "crit"];
+            var warning_class = ["warning"];
+            var info_class = ["notice", "info", "debug"];
+            if (jQuery.inArray(item.priority, danger_class) !== -1) {
+              item.priority = '<span class="label label-danger">' + item.priority + '</span>';
+            } 
+            else if (jQuery.inArray(item.priority, warning_class) !== -1) {
+              item.priority = '<span class="label label-warning">' + item.priority + '</span>';
+            }
+            else if (jQuery.inArray(item.priority, info_class) !== -1) {
+              item.priority = '<span class="label label-info">' + item.priority + '</span>';
+            }
+          });
+        }
+      }),
+      "empty": lang.empty,
+      "paging": {
+        "enabled": true,
+        "limit": 5,
+        "size": pagination_size
+      },
+      "filtering": {
+        "enabled": true,
+        "position": "left",
+        "placeholder": lang.filter_table
+      },
+      "sorting": {
+        "enabled": true
+      }
+    });
+  }
+  function draw_sogo_logs() {
+    ft_sogo_logs = FooTable.init('#sogo_log', {
+      "columns": [
+        {"name":"time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},"title":lang.time,"style":{"width":"170px"}},
+        {"name":"priority","title":lang.priority,"style":{"width":"80px"}},
+        {"name":"message","title":lang.message},
+      ],
+      "rows": $.ajax({
+        dataType: 'json',
+        url: '/api/v1/get/logs/sogo/1000',
+        jsonp: false,
+        error: function () {
+          console.log('Cannot draw sogo log table');
         },
         success: function (data) {
           $.each(data, function (i, item) {
@@ -214,7 +265,6 @@ jQuery(function($){
       }
     });
   }
-
   function draw_fwd_hosts() {
     ft_domainadmins = FooTable.init('#forwardinghoststable', {
       "columns": [
@@ -260,6 +310,7 @@ jQuery(function($){
 
   draw_postfix_logs();
   draw_dovecot_logs();
+  draw_sogo_logs();
   draw_domain_admins();
   draw_fwd_hosts();
 });

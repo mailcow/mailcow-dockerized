@@ -328,6 +328,21 @@ $tfa_data = get_tfa();
         </div>
       </div>
     </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">SOGo
+        <div class="btn-group pull-right">
+          <a class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['admin']['action'];?> <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#" id="refresh_sogo_log"><?=$lang['admin']['refresh'];?></a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive">
+          <table class="table table-striped" id="sogo_log"></table>
+        </div>
+      </div>
+    </div>
   </div>
 
   </div>
