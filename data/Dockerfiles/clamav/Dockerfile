@@ -11,14 +11,23 @@ RUN echo "deb http://http.debian.net/debian/ $DEBIAN_VERSION main contrib non-fr
 	apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
 		clamav-daemon \
 		clamav-freshclam \
-		curl \
 		libclamunrar7 \
 	&& rm -rf /var/lib/apt/lists/*
 
 # initial update of av databases
 COPY dl_files.sh /dl_files.sh
 RUN chmod +x /dl_files.sh
-RUN /dl_files.sh
+
+RUN set -ex; \
+	\
+	fetchDeps=' \
+		curl \
+	'; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends $fetchDeps; \
+	rm -rf /var/lib/apt/lists/*; \
+	/dl_files.sh \
+	apt-get purge -y --auto-remove $fetchDeps
 
 # permission juggling
 RUN mkdir /var/run/clamav && \
