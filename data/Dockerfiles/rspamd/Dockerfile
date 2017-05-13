@@ -5,9 +5,9 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV LC_ALL C
 
 RUN apt-key adv --fetch-keys http://rspamd.com/apt-stable/gpg.key \
-    && echo "deb http://rspamd.com/apt-stable/ jessie main" > /etc/apt/sources.list.d/rspamd.list \
-    && apt-get update \
-    && apt-get -y install rspamd ca-certificates python-pip
+	&& echo "deb http://rspamd.com/apt-stable/ jessie main" > /etc/apt/sources.list.d/rspamd.list \
+	&& apt-get update \
+	&& apt-get -y install rspamd ca-certificates python-pip
 
 RUN echo '.include $LOCAL_CONFDIR/local.d/rspamd.conf.local' > /etc/rspamd/rspamd.conf.local
 
