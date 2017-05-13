@@ -1,26 +1,34 @@
 FROM debian:stretch-slim
-MAINTAINER https://m-ko.de Markus Kosmal <code@cnfg.io>
+LABEL maintainer "https://m-ko.de Markus Kosmal <code@cnfg.io>"
 
 # Debian Base to use
 ENV DEBIAN_VERSION stretch
+ARG DEBIAN_FRONTEND=noninteractive
 
 # initial install of av daemon
 RUN echo "deb http://http.debian.net/debian/ $DEBIAN_VERSION main contrib non-free" > /etc/apt/sources.list && \
 	echo "deb http://http.debian.net/debian/ $DEBIAN_VERSION-updates main contrib non-free" >> /etc/apt/sources.list && \
 	echo "deb http://security.debian.org/ $DEBIAN_VERSION/updates main contrib non-free" >> /etc/apt/sources.list && \
-	apt-get update && \
-	DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y -qq \
+	apt-get update && apt-get install -y -qq --no-install-recommends \
 		clamav-daemon \
 		clamav-freshclam \
 		libclamunrar7 \
-		curl && \
-	apt-get clean && \
-	rm -rf /var/lib/apt/lists/*
+	&& rm -rf /var/lib/apt/lists/*
 
 # initial update of av databases
 COPY dl_files.sh /dl_files.sh
 RUN chmod +x /dl_files.sh
-RUN /dl_files.sh
+
+RUN set -ex; \
+	\
+	fetchDeps=' \
+		curl \
+	'; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends $fetchDeps; \
+	rm -rf /var/lib/apt/lists/*; \
+	/dl_files.sh \
+	apt-get purge -y --auto-remove $fetchDeps
 
 # permission juggling
 RUN mkdir /var/run/clamav && \

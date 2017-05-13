@@ -1,7 +1,7 @@
 FROM debian:stretch-slim
-MAINTAINER Andre Peters <andre.peters@servercow.de>
+LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
-ENV DEBIAN_FRONTEND noninteractive
+ARG DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL C
 
 RUN dpkg-divert --local --rename --add /sbin/initctl \
@@ -9,23 +9,24 @@ RUN dpkg-divert --local --rename --add /sbin/initctl \
 	&& dpkg-divert --local --rename --add /usr/bin/ischroot \
 	&& ln -sf /bin/true /usr/bin/ischroot
 
-RUN apt-get update
-RUN apt-get install -y --no-install-recommends supervisor \
-	postfix \
-	sasl2-bin \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+	ca-certificates \
+	curl \
+	dirmngr \
+	gnupg \
 	libsasl2-modules \
+	postfix \
 	postfix \
 	postfix-mysql \
 	postfix-pcre \
+	python-gpgme \
+	sasl2-bin \
+	sudo \
+	supervisor \
 	syslog-ng \
 	syslog-ng-core \
 	syslog-ng-mod-redis \
-	ca-certificates \
-	gnupg \
-	python-gpgme \
-	sudo \
-	curl \
-	dirmngr
+	&& rm -rf /var/lib/apt/lists/*
 
 RUN addgroup --system --gid 600 zeyple
 RUN adduser --system --home /var/lib/zeyple --no-create-home --uid 600 --gid 600 --disabled-login zeyple
@@ -44,4 +45,4 @@ EXPOSE 588
 
 CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN rm -rf /tmp/* /var/tmp/*

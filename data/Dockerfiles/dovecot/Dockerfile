@@ -1,69 +1,71 @@
 FROM debian:stretch-slim
 #ubuntu:xenial
-MAINTAINER Andre Peters <andre.peters@servercow.de>
+LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
-ENV DEBIAN_FRONTEND noninteractive
+ARG DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL C
 ENV DOVECOT_VERSION 2.2.29.1
 ENV PIGEONHOLE_VERSION 0.4.18
 
-RUN apt-get update \
-	&& apt-get -y install libpam-dev \
-	default-libmysqlclient-dev \
-	lzma-dev \
-	liblz-dev \
-	libbz2-dev \
-	liblz4-dev \
-	liblzma-dev \
-	build-essential \
-	autotools-dev \
+RUN apt-get update && apt-get -y install \
 	automake \
-	syslog-ng \
-	syslog-ng-core \
-	syslog-ng-mod-redis \
+	autotools-dev \
+	build-essential \
 	ca-certificates \
-	supervisor \
-	wget \
+	cpanminus \
 	curl \
-	libssl-dev \
+	default-libmysqlclient-dev \
 	libauthen-ntlm-perl \
+	libbz2-dev \
 	libcrypt-ssleay-perl \
+	libdbd-mysql-perl \
+	libdbi-perl \
 	libdigest-hmac-perl \
 	libfile-copy-recursive-perl \
 	libio-compress-perl \
 	libio-socket-inet6-perl \
 	libio-socket-ssl-perl \
 	libio-tee-perl \
+	libipc-run-perl \
+	liblockfile-simple-perl \
+	liblz-dev \
+	liblz4-dev \
+	liblzma-dev \
 	libmodule-scandeps-perl \
 	libnet-ssleay-perl \
+	libpam-dev \
 	libpar-packer-perl \
 	libreadonly-perl \
+	libssl-dev \
 	libterm-readkey-perl \
 	libtest-pod-perl \
 	libtest-simple-perl \
 	libunicode-string-perl \
 	liburi-perl \
-	libdbi-perl \
-	liblockfile-simple-perl \
-	libdbd-mysql-perl \
-	libipc-run-perl \
+	lzma-dev \
 	make \
-	cpanminus
+	supervisor \
+	syslog-ng \
+	syslog-ng-core \
+	syslog-ng-mod-redis \
+	&& rm -rf /var/lib/apt/lists/*
 
 
-RUN wget https://www.dovecot.org/releases/2.2/dovecot-$DOVECOT_VERSION.tar.gz -O - | tar xvz  \
+RUN curl https://www.dovecot.org/releases/2.2/dovecot-$DOVECOT_VERSION.tar.gz | tar xvz  \
 	&& cd dovecot-$DOVECOT_VERSION \
 	&& ./configure --with-mysql --with-lzma --with-lz4 --with-ssl=openssl --with-notify=inotify --with-storages=mdbox,sdbox,maildir,mbox,imapc,pop3c --with-bzlib --with-zlib \
 	&& make -j3 \
 	&& make install \
-	&& make clean
+	&& make clean \
+	&& cd .. && rm -rf dovecot-$DOVECOT_VERSION
 
-RUN wget https://pigeonhole.dovecot.org/releases/2.2/dovecot-2.2-pigeonhole-$PIGEONHOLE_VERSION.tar.gz -O - | tar xvz  \
+RUN curl https://pigeonhole.dovecot.org/releases/2.2/dovecot-2.2-pigeonhole-$PIGEONHOLE_VERSION.tar.gz | tar xvz  \
 	&& cd dovecot-2.2-pigeonhole-$PIGEONHOLE_VERSION \
 	&& ./configure \
 	&& make -j3 \
 	&& make install \
-	&& make clean
+	&& make clean \
+	&& cd .. && rm -rf dovecot-2.2-pigeonhole-$PIGEONHOLE_VERSION
 
 RUN cpanm Data::Uniqid Mail::IMAPClient String::Util
 RUN echo '* * * * *   root   /usr/local/bin/imapsync_cron.pl' > /etc/cron.d/imapsync
@@ -100,9 +102,6 @@ EXPOSE 24 10001
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 
-RUN apt-get clean \
-	&& rm -rf /var/lib/apt/lists/* \
+RUN rm -rf \
 	/tmp/* \
-	/var/tmp/* \
-	/dovecot-2.2-pigeonhole-$PIGEONHOLE_VERSION \
-	/dovecot-$DOVECOT_VERSION
+	/var/tmp/*
