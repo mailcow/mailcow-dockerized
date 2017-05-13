@@ -265,13 +265,23 @@ services:
           aliases:
             - nginx
 
+    ipv6nat:
+      image: robbertkl/ipv6nat
+      restart: always
+      privileged: true
+      network_mode: "host"
+      volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
 networks:
   mailcow-network:
     driver: bridge
+    enable_ipv6: true
     ipam:
       driver: default
       config:
         - subnet: 172.22.1.0/24
+        - subnet: fd4d:6169:6c63:6f77::/64
 
 volumes:
   vmail-vol-1:
