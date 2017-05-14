@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-if [[ ! -d "/data/dkim/txt" || ! -d "/data/dkim/keys" ]] ; then	mkdir -p /data/dkim/{txt,keys} ; chown -R www-data:www-data /data/dkim; fi
+if [[ ! -d "/data/dkim/txt" || ! -d "/data/dkim/keys" ]] ; then mkdir -p /data/dkim/{txt,keys} ; chown -R www-data:www-data /data/dkim; fi
 if [[ $(stat -c %U /data/dkim/) != "www-data" ]] ; then chown -R www-data:www-data /data/dkim ; fi
 
 # Wait for containers
@@ -50,7 +50,7 @@ fi
 for file in $(ls /data/dkim/keys/); do
   domain=${file%.dkim}
   if [[ -f /data/dkim/txt/${file} ]]; then
-    redis-cli -h redis-mailcow HSET DKIM_PUB_KEYS "${domain}" "$(cat /data/dkim/keys/${domain})"
+    redis-cli -h redis-mailcow HSET DKIM_PUB_KEYS "${domain}" "$(cat /data/dkim/txt/${file})"
     redis-cli -h redis-mailcow HSET DKIM_PRIV_KEYS "${domain}" "$(cat /data/dkim/keys/${file})"
     redis-cli -h redis-mailcow HSET DKIM_SELECTORS "${domain}" "dkim.${domain}"
   fi
