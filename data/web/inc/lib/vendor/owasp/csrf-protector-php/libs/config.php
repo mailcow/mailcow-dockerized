@@ -39,7 +39,7 @@ return array(
 	"customErrorMessage" => "",
 	"jsPath" => "../js/csrfprotector.js",
   // Fetching IS_HTTPS from sessions handler
-	"jsUrl" => get_trusted_hostname(),
+	"jsUrl" => "/inc/lib/vendor/owasp/csrf-protector-php/js/csrfprotector.js",
 	"tokenLength" => 10,
 	"secureCookie" => false,
 	"disabledJavascriptMessage" => "",

@@ -54,5 +54,9 @@ function session_check() {
   return true;
 }
 if (isset($_SESSION['mailcow_cc_role']) && session_check() === false) {
-  exit("Invalid session");
+  session_regenerate_id(true);
+  session_unset();
+  session_destroy();
+  session_write_close();
+  header("Location: /");
 }
