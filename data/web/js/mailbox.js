@@ -43,7 +43,7 @@ $(document).ready(function() {
       $.ajax({
         type: "POST",
         dataType: "json",
-        data: { "items": JSON.stringify(data_array), "attr": JSON.stringify(api_attr) },
+        data: { "items": JSON.stringify(data_array), "attr": JSON.stringify(api_attr), "csrf_token": csrf_token },
         url: '/api/v1/' + api_url,
         jsonp: false,
         complete: function (data) {
@@ -76,7 +76,7 @@ $(document).ready(function() {
         $.ajax({
           type: "POST",
           dataType: "json",
-          data: { "items": JSON.stringify(data_array) },
+          data: { "items": JSON.stringify(data_array), "csrf_token": csrf_token },
           url: '/api/v1/' + api_url,
           jsonp: false,
           complete: function (data) {

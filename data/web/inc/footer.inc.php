@@ -225,6 +225,7 @@ $(document).ready(function() {
 			}
 		});
 	});
+  $("<input type='hidden' value='<?=$_SESSION['CSRF']['TOKEN'];?>' />").attr("id", "csrf_token").attr("name", "csrf_token").appendTo("form");
 });
 </script>
 

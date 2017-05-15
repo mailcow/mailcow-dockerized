@@ -172,6 +172,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 <?php
 $lang_mailbox = json_encode($lang['mailbox']);
 echo "var lang = ". $lang_mailbox . ";\n";
+echo "var csrf_token = '". $_SESSION['CSRF']['TOKEN'] . "';\n";
 $role = ($_SESSION['mailcow_cc_role'] == "admin") ? 'admin' : 'domainadmin';
 echo "var role = '". $role . "';\n";
 echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";

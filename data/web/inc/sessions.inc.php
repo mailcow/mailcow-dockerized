@@ -15,21 +15,8 @@ else {
 }
 session_set_cookie_params($GLOBALS['SESSION_LIFETIME'], '/', $_SERVER['SERVER_NAME'], $IS_HTTPS, true);
 session_start();
-
-// Handle logouts
-if (isset($_POST["logout"])) {
-  if (isset($_SESSION["dual-login"])) {
-    $_SESSION["mailcow_cc_username"] = $_SESSION["dual-login"]["username"];
-    $_SESSION["mailcow_cc_role"] = $_SESSION["dual-login"]["role"];
-    unset($_SESSION["dual-login"]);
-  }
-  else {
-    session_regenerate_id(true);
-    session_unset();
-    session_destroy();
-    session_write_close();
-    header("Location: /");
-  }
+if (!isset($_SESSION['CSRF']['TOKEN'])) {
+  $_SESSION['CSRF']['TOKEN'] = bin2hex(random_bytes(32));
 }
 
 // Set session IP and UA
@@ -51,12 +38,36 @@ function session_check() {
   if ($_SESSION['SESS_REMOTE_UA'] != $_SERVER['HTTP_USER_AGENT']) {
     return false;
   }
+  if (!empty($_POST)) {
+    if ($_SESSION['CSRF']['TOKEN'] != $_POST['csrf_token']) {
+      return false;
+    }
+    $_SESSION['CSRF']['TOKEN'] = bin2hex(random_bytes(32));
+    $_SESSION['CSRF']['TIME'] = time();
+  }
   return true;
 }
+
 if (isset($_SESSION['mailcow_cc_role']) && session_check() === false) {
-  session_regenerate_id(true);
-  session_unset();
-  session_destroy();
-  session_write_close();
-  header("Location: /");
+  $_SESSION['return'] = array(
+    'type' => 'warning',
+    'msg' => 'Form token invalid or timed out'
+  );
+  $_POST = array();
+}
+
+// Handle logouts
+if (isset($_POST["logout"])) {
+  if (isset($_SESSION["dual-login"])) {
+    $_SESSION["mailcow_cc_username"] = $_SESSION["dual-login"]["username"];
+    $_SESSION["mailcow_cc_role"] = $_SESSION["dual-login"]["role"];
+    unset($_SESSION["dual-login"]);
+  }
+  else {
+    session_regenerate_id(true);
+    session_unset();
+    session_destroy();
+    session_write_close();
+    header("Location: /");
+  }
 }
