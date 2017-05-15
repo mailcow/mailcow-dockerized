@@ -351,6 +351,7 @@ $tfa_data = get_tfa();
 <?php
 $lang_admin = json_encode($lang['admin']);
 echo "var lang = ". $lang_admin . ";\n";
+echo "var csrf_token = '". $_SESSION['CSRF']['TOKEN'] . "';\n";
 echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
 ?>
 </script>
