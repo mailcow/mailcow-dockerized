@@ -1,7 +1,6 @@
 {
     "require": {
         "robthree/twofactorauth": "^1.6",
-        "yubico/u2flib-server": "^1.0",
-        "owasp/csrf-protector-php": "dev-master"
+        "yubico/u2flib-server": "^1.0"
     }
 }

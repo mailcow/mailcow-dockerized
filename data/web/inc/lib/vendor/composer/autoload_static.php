@@ -21,14 +21,6 @@ class ComposerStaticInit873464e4bd965a3168f133248b1b218b
     );
 
     public static $classMap = array (
-        'alreadyInitializedException' => __DIR__ . '/..' . '/owasp/csrf-protector-php/libs/csrf/csrfprotector.php',
-        'baseJSFileNotFoundExceptio' => __DIR__ . '/..' . '/owasp/csrf-protector-php/libs/csrf/csrfprotector.php',
-        'configFileNotFoundException' => __DIR__ . '/..' . '/owasp/csrf-protector-php/libs/csrf/csrfprotector.php',
-        'csrfProtector' => __DIR__ . '/..' . '/owasp/csrf-protector-php/libs/csrf/csrfprotector.php',
-        'incompleteConfigurationException' => __DIR__ . '/..' . '/owasp/csrf-protector-php/libs/csrf/csrfprotector.php',
-        'jsFileNotFoundException' => __DIR__ . '/..' . '/owasp/csrf-protector-php/libs/csrf/csrfprotector.php',
-        'logDirectoryNotFoundException' => __DIR__ . '/..' . '/owasp/csrf-protector-php/libs/csrf/csrfprotector.php',
-        'logFileWriteError' => __DIR__ . '/..' . '/owasp/csrf-protector-php/libs/csrf/csrfprotector.php',
         'u2flib_server\\Error' => __DIR__ . '/..' . '/yubico/u2flib-server/src/u2flib_server/U2F.php',
         'u2flib_server\\RegisterRequest' => __DIR__ . '/..' . '/yubico/u2flib-server/src/u2flib_server/U2F.php',
         'u2flib_server\\Registration' => __DIR__ . '/..' . '/yubico/u2flib-server/src/u2flib_server/U2F.php',

@@ -16,18 +16,6 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/vendor/autoload.php';
 $u2f = new u2flib_server\U2F('https://' . $_SERVER['HTTP_HOST']);
 $tfa = new RobThree\Auth\TwoFactorAuth('mailcow UI');
 
-// OWASP CSRF Protector
-$csrfProtector = new csrfProtector;
-class mailcowCsrfProtector extends csrfprotector {
-  public static function logCSRFattack() {
-    $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => 'CSRF violation'
-    );
-  }
-}
-mailcowCsrfProtector::init();
-
 // Redis
 $redis = new Redis();
 $redis->connect('redis-mailcow', 6379);
