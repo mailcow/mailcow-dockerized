@@ -9,8 +9,8 @@ This file will be reset on upgrades.
 */
 
 // SQL database connection variables
-$database_type = "mysql";
-$database_host = "mysql";
+$database_type = 'mysql';
+$database_host = 'mysql';
 $database_user = getenv('DBUSER');
 $database_pass = getenv('DBPASS');
 $database_name = getenv('DBNAME');
@@ -21,23 +21,23 @@ $mailcow_hostname = getenv('MAILCOW_HOSTNAME');
 // Where to go after adding and editing objects
 // Can be "form" or "previous"
 // "form" will stay in the current form, "previous" will redirect to previous page
-$FORM_ACTION = "previous";
+$FORM_ACTION = 'previous';
 
 // File locations should not be changed
-$MC_DKIM_TXTS = "/data/dkim/txt";
-$MC_DKIM_KEYS = "/data/dkim/keys";
+$MC_DKIM_TXTS = '/data/dkim/txt';
+$MC_DKIM_KEYS = '/data/dkim/keys';
 
 // Change default language, "de", "en", "es", "nl", "pt", "ru"
-$DEFAULT_LANG = "en";
+$DEFAULT_LANG = 'en';
 
 // Available languages
-$AVAILABLE_LANGUAGES = array("de", "en", "es", "nl", "pt", "ru");
+$AVAILABLE_LANGUAGES = array('de', 'en', 'es', 'nl', 'pt', 'ru');
 
 // Change theme (default: lumen)
 // Needs to be one of those: cerulean, cosmo, cyborg, darkly, flatly, journal, lumen, paper, readable, sandstone,
 // simplex, slate, spacelab, superhero, united, yeti
 // See https://bootswatch.com/
-$DEFAULT_THEME = "lumen";
+$DEFAULT_THEME = 'lumen';
 
 // Password complexity as regular expression
 $PASSWD_REGEP = '.{4,}';
@@ -59,5 +59,3 @@ $PAGINATION_SIZE = 10;
 
 // Session lifetime in seconds
 $SESSION_LIFETIME = 3600;
-
-?>
