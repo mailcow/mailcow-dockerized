@@ -1,14 +1,13 @@
 <?php
 /*
-//
-//  English language file
-//
-*/
+ * English language file
+ */
+
 $lang['footer']['loading'] = "Please wait...";
 $lang['header']['restart_sogo'] = 'Restart SOGo';
 $lang['footer']['restart_sogo'] = 'Restart SOGo';
 $lang['footer']['restart_now'] = 'Restart now';
-$lang['footer']['restart_sogo_info'] = 'Some tasks, e.g. adding a domain, require you to restart SOGo to catch changes made in the mailcow UI.<br /><br /><b>Important:</b> A graceful restart may take a while to complete, please wait for it to finish.';
+$lang['footer']['restart_sogo_info'] = 'Some tasks, e.g. adding a domain, require you to restart SOGo to catch changes made in the mailcow UI.<br><br><b>Important:</b> A graceful restart may take a while to complete, please wait for it to finish.';
 
 $lang['footer']['confirm_delete'] = 'Confirm deletion';
 $lang['footer']['delete_these_items'] = 'Are you sure you want to delete the following items?';
@@ -156,7 +155,7 @@ $lang['user']['spamfilter_default_score'] = 'Default values:';
 $lang['user']['spamfilter_hint'] = 'The first value describes the "low spam score", the second represents the "high spam score".';
 $lang['user']['spamfilter_table_domain_policy'] = "n/a (domain policy)";
 
-$lang['user']['tls_policy_warning'] = '<strong>Warning:</strong> If you decide to enforce encrypted mail transfer, you may lose emails.<br />Messages to not satisfy the policy will be bounced with a hard fail by the mail system.<br />This option applies to your primary email address (login name), all addresses derived from alias domains as well as alias addresses <b>with only this single mailbox</b> as target.';
+$lang['user']['tls_policy_warning'] = '<strong>Warning:</strong> If you decide to enforce encrypted mail transfer, you may lose emails.<br>Messages to not satisfy the policy will be bounced with a hard fail by the mail system.<br>This option applies to your primary email address (login name), all addresses derived from alias domains as well as alias addresses <b>with only this single mailbox</b> as target.';
 $lang['user']['tls_policy'] = 'Encryption policy';
 $lang['user']['tls_enforce_in'] = 'Enforce TLS incoming';
 $lang['user']['tls_enforce_out'] = 'Enforce TLS outgoing';
@@ -168,12 +167,12 @@ $lang['user']['misc_delete_profile'] = 'Other profile settings';
 $lang['user']['tag_handling'] = 'Set handling for tagged mail';
 $lang['user']['tag_in_subfolder'] = 'In subfolder';
 $lang['user']['tag_in_subject'] = 'In subject';
-$lang['user']['tag_help_explain'] = 'In subfolder: a new subfolder named after the tag will be created below INBOX ("INBOX/Facebook").<br />
+$lang['user']['tag_help_explain'] = 'In subfolder: a new subfolder named after the tag will be created below INBOX ("INBOX/Facebook").<br>
 In subject: the tags name will be prepended to the mails subject, example: "[Facebook] Meine Neuigkeiten".';
 $lang['user']['tag_help_example'] = 'Example for a tagged email address: ich<b>+Facebook</b>@example.org';
 $lang['user']['eas_reset'] = 'Reset ActiveSync device cache';
 $lang['user']['eas_reset_now'] = 'Reset now';
-$lang['user']['eas_reset_help'] = 'In many cases a device cache reset will help to recover a broken ActiveSync profile.<br /><b>Attention:</b> All elements will be redownloaded!';
+$lang['user']['eas_reset_help'] = 'In many cases a device cache reset will help to recover a broken ActiveSync profile.<br><b>Attention:</b> All elements will be redownloaded!';
 
 $lang['user']['encryption'] = 'Encyrption';
 $lang['user']['username'] = 'Username';
@@ -194,17 +193,17 @@ $lang['start']['start_sogo'] = 'Open SOGo';
 $lang['start']['mailcow_apps_detail'] = 'Use a mailcow app to access your mails, calendar, contacts and more.';
 $lang['start']['mailcow_panel'] = 'Start mailcow UI';
 $lang['start']['mailcow_panel_description'] = 'The mailcow UI is available for administrators and mailbox users.';
-$lang['start']['mailcow_panel_detail'] = '<b>Domain administrators</b> create, modify or delete mailboxes and aliases, change domains and read further information about their assigned domains.<br />
+$lang['start']['mailcow_panel_detail'] = '<b>Domain administrators</b> create, modify or delete mailboxes and aliases, change domains and read further information about their assigned domains.<br>
 	<b>Mailbox users</b> are able to create time-limited aliases (spam aliases), change their password and spam filter settings.';
 $lang['start']['recommended_config'] = 'Recommended configuration (without ActiveSync)';
 $lang['start']['imap_smtp_server'] = 'IMAP- and SMTP server data';
 $lang['start']['imap_smtp_server_description'] = 'For the best experience we recommend to use <a href="%s" target="_blank"><b>Mozilla Thunderbird</b></a>.';
 $lang['start']['imap_smtp_server_badge'] = 'Read/Write emails';
-$lang['start']['imap_smtp_server_auth_info'] = 'Please use your full email address and the PLAIN authentication mechanism.<br />
+$lang['start']['imap_smtp_server_auth_info'] = 'Please use your full email address and the PLAIN authentication mechanism.<br>
 Your login data will be encrypted by the server-side mandatory encryption.';
 $lang['start']['managesieve'] = 'ManageSieve';
 $lang['start']['managesieve_badge'] = 'Email filter';
-$lang['start']['managesieve_description'] = 'Please use <b>Mozilla Thunderbird</b> with the <a style="text-decoration:none" target="_blank" href="%s"><b>nightly sieve extension</b></a>.<br />Start Thunderbird, open the add-on settings and drop the newly downloaded xpi file into the opened window.<br />The server name is <b>%s</b>, use port <b>4190</b> if you are asked for. The login data match your email login.';
+$lang['start']['managesieve_description'] = 'Please use <b>Mozilla Thunderbird</b> with the <a style="text-decoration:none" target="_blank" href="%s"><b>nightly sieve extension</b></a>.<br>Start Thunderbird, open the add-on settings and drop the newly downloaded xpi file into the opened window.<br>The server name is <b>%s</b>, use port <b>4190</b> if you are asked for. The login data match your email login.';
 $lang['start']['service'] = 'Service';
 $lang['start']['encryption'] = 'Encryption method';
 $lang['start']['help'] = 'Show/Hide help panel';
@@ -276,7 +275,7 @@ $lang['delete']['remove_mailbox_warning'] = '<b>Warning:</b> You are about to re
 $lang['delete']['remove_mailbox_details'] = 'The mailbox will be <b>purged permanently</b>!';
 $lang['delete']['remove_resource_warning'] = '<b>Warning:</b> You are about to remove the resource <b>%s</b>!';
 $lang['delete']['remove_resource_details'] = 'The resource will be <b>purged permanently</b>!';
-$lang['delete']['remove_domain_details'] = 'This also removes domain aliases.<br /><br /><b>A domain must be empty to be removed.</b>';
+$lang['delete']['remove_domain_details'] = 'This also removes domain aliases.<br><br><b>A domain must be empty to be removed.</b>';
 $lang['delete']['remove_syncjob_details'] = 'Objects from this sync job will not be pulled from the remote server anymore.';
 $lang['delete']['remove_alias_details'] = 'Users will no longer be able to receive mail for or send mail from this address.</b>';
 $lang['delete']['remove_button'] = 'Remove';
@@ -287,8 +286,8 @@ $lang['edit']['save'] = 'Save changes';
 $lang['edit']['username'] = 'Username';
 $lang['edit']['hostname'] = 'Hostname';
 $lang['edit']['encryption'] = 'Encryption';
-$lang['edit']['maxage'] = 'Maximum age of messages in days that will be polled from remote<br /><small>(0 = ignore age)</small>';
-$lang['edit']['subfolder2'] = 'Sync into subfolder on destination<br /><small>(empty = do not use subfolder)</small>';
+$lang['edit']['maxage'] = 'Maximum age of messages in days that will be polled from remote<br><small>(0 = ignore age)</small>';
+$lang['edit']['subfolder2'] = 'Sync into subfolder on destination<br><small>(empty = do not use subfolder)</small>';
 $lang['edit']['mins_interval'] = 'Interval (min)';
 $lang['edit']['exclude'] = 'Exclude objects (regex)';
 $lang['edit']['save'] = 'Save changes';
@@ -415,8 +414,8 @@ $lang['tfa']['otp'] = "One-time password";
 $lang['tfa']['totp'] = "Time-based OTP (Google Authenticator etc.)";
 $lang['tfa']['trash_login'] = "Trash login";
 $lang['tfa']['select'] = "Please select";
-$lang['tfa']['waiting_usb_auth'] = "<i>Waiting for USB device...</i><br /><br />Please tap the button on your U2F USB device now.";
-$lang['tfa']['waiting_usb_register'] = "<i>Waiting for USB device...</i><br /><br />Please enter your password above and confirm your U2F registration by tapping the button on your U2F USB device.";
+$lang['tfa']['waiting_usb_auth'] = "<i>Waiting for USB device...</i><br><br>Please tap the button on your U2F USB device now.";
+$lang['tfa']['waiting_usb_register'] = "<i>Waiting for USB device...</i><br><br>Please enter your password above and confirm your U2F registration by tapping the button on your U2F USB device.";
 $lang['tfa']['scan_qr_code'] = "Please scan the following code with your authenticator app or enter the code manually.";
 $lang['tfa']['enter_qr_code'] = "Your TOTP code if your device cannot scan QR codes";
 $lang['tfa']['confirm_totp_token'] = "Please confirm your changes by entering the generated token";
@@ -429,7 +428,7 @@ $lang['admin']['reset_defaults'] = 'Reset to defaults';
 $lang['admin']['sr'] = 'Postfix Sender Restrictions';
 $lang['admin']['r_inactive'] = 'Inactive restrictions';
 $lang['admin']['r_active'] = 'Active restrictions';
-$lang['admin']['r_info'] = 'Greyed out/disabled elements on the list of active restrictions are not known as valid restrictions to mailcow and cannot be moved. Unknown restrictions will be set in order of appearance anyway. <br />You can add new elements in <code>inc/vars.local.inc.php</code> to be able to toggle them.';
+$lang['admin']['r_info'] = 'Greyed out/disabled elements on the list of active restrictions are not known as valid restrictions to mailcow and cannot be moved. Unknown restrictions will be set in order of appearance anyway. <br>You can add new elements in <code>inc/vars.local.inc.php</code> to be able to toggle them.';
 $lang['admin']['public_folders'] = 'Public Folders';
 $lang['admin']['public_folders_text'] = 'A namespace "Public" is created. Below\'s public folder name indicates the name of the first auto-created mailbox within this namespace.';
 $lang['admin']['public_folder_name'] = 'Folder name <small>(alphanumeric)</small>';
@@ -499,4 +498,3 @@ $lang['admin']['add_forwarding_host'] = 'Add Forwarding Host';
 $lang['delete']['remove_forwardinghost_warning'] = '<b>Warning:</b> You are about to remove the forwarding host <b>%s</b>!';
 $lang['success']['forwarding_host_removed'] = "Forwarding host %s has been removed";
 $lang['success']['forwarding_host_added'] = "Forwarding host %s has been added";
-?>
