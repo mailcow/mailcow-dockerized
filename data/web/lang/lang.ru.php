@@ -1,14 +1,13 @@
 <?php
 /*
-//
-//  Russian language file
-//
-*/
+ * Russian language file
+ */
+
 $lang['footer']['loading'] = "Пожалуйста, подождите...";
 $lang['header']['restart_sogo'] = "Перезагрузить SOGo";
 $lang['footer']['restart_sogo'] = "Перезагрузить SOGo";
 $lang['footer']['restart_now'] = "Перезагрузить сейчас";
-$lang['footer']['restart_sogo_info'] = "Некоторые операции, например при добавлении домена, требуют перезагрузить SOGo, для вступления в силу внесенных изменений.<br /><br /><b>Важно:</b> Перезагрузка может занять некоторое время, дождитесь ее окончания.";
+$lang['footer']['restart_sogo_info'] = "Некоторые операции, например при добавлении домена, требуют перезагрузить SOGo, для вступления в силу внесенных изменений.<br><br><b>Важно:</b> Перезагрузка может занять некоторое время, дождитесь ее окончания.";
 $lang['dkim']['confirm'] = "Вы уверены?";
 $lang['danger']['dkim_not_found'] = "DKIM ключ не найден";
 $lang['danger']['dkim_remove_failed'] = "Не удается удалить выбранный DKIM ключ";
@@ -146,7 +145,7 @@ $lang['user']['spamfilter_red'] = "Красный: это сообщение я�
 $lang['user']['spamfilter_default_score'] = "Значения по умолчанию";
 $lang['user']['spamfilter_hint'] = 'The first value describes the "low spam score", the second represents the "high spam score".';
 $lang['user']['spamfilter_table_domain_policy'] = "n/a (domain policy)";
-$lang['user']['tls_policy_warning'] = '<strong>Warning:</strong> If you decide to enforce encrypted mail transfer, you may lose emails.<br />Messages to not satisfy the policy will be bounced with a hard fail by the mail system.';
+$lang['user']['tls_policy_warning'] = '<strong>Warning:</strong> If you decide to enforce encrypted mail transfer, you may lose emails.<br>Messages to not satisfy the policy will be bounced with a hard fail by the mail system.';
 $lang['user']['tls_policy'] = "Настройки TLS шифрования";
 $lang['user']['tls_enforce_in'] = "Принудительное TLS входящих";
 $lang['user']['tls_enforce_out'] = "Принудительное TLS исходящих";
@@ -156,12 +155,12 @@ $lang['user']['misc_delete_profile'] = "Другие настройки проф
 $lang['user']['tag_handling'] = 'Set handling for tagged mail';
 $lang['user']['tag_in_subfolder'] = "В подпапку";
 $lang['user']['tag_in_subject'] = "В теме";
-$lang['user']['tag_help_explain'] = 'In subfolder: a new subfolder named after the tag will be created below INBOX ("INBOX/Facebook").<br />
+$lang['user']['tag_help_explain'] = 'In subfolder: a new subfolder named after the tag will be created below INBOX ("INBOX/Facebook").<br>
 In subject: the tags name will be prepended to the mails subject, example: "[Facebook] Meine Neuigkeiten".';
 $lang['user']['tag_help_example'] = 'Example for a tagged email address: ich<b>+Facebook</b>@example.org';
 $lang['user']['eas_reset'] = "Сбросить кеш ActiveSync устройств";
 $lang['user']['eas_reset_now'] = "Сбросить сейчас";
-$lang['user']['eas_reset_help'] = 'In many cases a device cache reset will help to recover a broken ActiveSync profile.<br /><b>Attention:</b> All elements will be redownloaded!';
+$lang['user']['eas_reset_help'] = 'In many cases a device cache reset will help to recover a broken ActiveSync profile.<br><b>Attention:</b> All elements will be redownloaded!';
 $lang['user']['encryption'] = "Шифрование";
 $lang['user']['username'] = "Логин";
 $lang['user']['password'] = "Пароль";
@@ -180,17 +179,17 @@ $lang['start']['start_sogo'] = "Открыть SOGo";
 $lang['start']['mailcow_apps_detail'] = "Приложения для доступа к электронной почте, календарю, контактам и т.д.";
 $lang['start']['mailcow_panel'] = 'Start mailcow UI';
 $lang['start']['mailcow_panel_description'] = "Пользовательский интерфейс mailcow доступен для администраторов и пользователей почтовых ящиков.";
-$lang['start']['mailcow_panel_detail'] = "<b>Администраторы</b> могут создавать, изменять или удалять почтовые ящики, псевдонимы и другие административные настройки.<br />
+$lang['start']['mailcow_panel_detail'] = "<b>Администраторы</b> могут создавать, изменять или удалять почтовые ящики, псевдонимы и другие административные настройки.<br>
 	<b>Пользователи</b> могут изменять пароль, создавать временные псевдонимы (спам псевдонимы), фильтры спама и другие доступные настройки своего профиля.";
 $lang['start']['recommended_config'] = "Рекомендуемые настройки (без ActiveSync)";
 $lang['start']['imap_smtp_server'] = 'IMAP- and SMTP server data';
 $lang['start']['imap_smtp_server_description'] = 'For the best experience we recommend to use <a href="%s" target="_blank"><b>Mozilla Thunderbird</b></a>.';
 $lang['start']['imap_smtp_server_badge'] = 'Read/Write emails';
-$lang['start']['imap_smtp_server_auth_info'] = 'Please use your full email address and the PLAIN authentication mechanism.<br />
+$lang['start']['imap_smtp_server_auth_info'] = 'Please use your full email address and the PLAIN authentication mechanism.<br>
 Your login data will be encrypted by the server-side mandatory encryption.';
 $lang['start']['managesieve'] = 'ManageSieve';
 $lang['start']['managesieve_badge'] = "Фильтр почты";
-$lang['start']['managesieve_description'] = 'Please use <b>Mozilla Thunderbird</b> with the <a style="text-decoration:none" target="_blank" href="%s"><b>nightly sieve extension</b></a>.<br />Start Thunderbird, open the add-on settings and drop the newly downloaded xpi file into the opened window.<br />The server name is <b>%s</b>, use port <b>4190</b> if you are asked for. The login data match your email login.';
+$lang['start']['managesieve_description'] = 'Please use <b>Mozilla Thunderbird</b> with the <a style="text-decoration:none" target="_blank" href="%s"><b>nightly sieve extension</b></a>.<br>Start Thunderbird, open the add-on settings and drop the newly downloaded xpi file into the opened window.<br>The server name is <b>%s</b>, use port <b>4190</b> if you are asked for. The login data match your email login.';
 $lang['start']['service'] = "Сервисы";
 $lang['start']['encryption'] = "Метод шифрования";
 $lang['start']['help'] = "Справка";
@@ -255,7 +254,7 @@ $lang['delete']['remove_mailbox_warning'] = "<b>Внимание:</b> Вы со�
 $lang['delete']['remove_mailbox_details'] = "Почтовый ящик будет <b>очищен навсегда</b>!";
 $lang['delete']['remove_resource_warning'] = "<b>Внимание:</b> Вы собираетесь удалить ресурс <b>%s</b>!";
 $lang['delete']['remove_resource_details'] = "Ресурс будет <b>очищен навсегда</b>!";
-$lang['delete']['remove_domain_details'] = "Это также удаляет псевдонимы доменов.<br /><br /><b>Домен должен быть пустым для удаления.</b>";
+$lang['delete']['remove_domain_details'] = "Это также удаляет псевдонимы доменов.<br><br><b>Домен должен быть пустым для удаления.</b>";
 $lang['delete']['remove_syncjob_details'] = "Объекты из этого задания синхронизации больше не будут извлекаться с удаленного сервера.";
 $lang['delete']['remove_alias_details'] = "Пользователи больше не смогут получать почту или отправлять почту с этого адреса.</b>";
 $lang['delete']['remove_button'] = "Удалить";
@@ -265,8 +264,8 @@ $lang['edit']['save'] = "Сохранить";
 $lang['edit']['username'] = "Логин";
 $lang['edit']['hostname'] = "Имя хоста";
 $lang['edit']['encryption'] = "Шифрование";
-$lang['edit']['maxage'] = 'Maximum age of messages in days that will be polled from remote<br /><small>(0 = ignore age)</small>';
-$lang['edit']['subfolder2'] = 'Sync into subfolder on destination<br /><small>(empty = do not use subfolder)</small>';
+$lang['edit']['maxage'] = 'Maximum age of messages in days that will be polled from remote<br><small>(0 = ignore age)</small>';
+$lang['edit']['subfolder2'] = 'Sync into subfolder on destination<br><small>(empty = do not use subfolder)</small>';
 $lang['edit']['mins_interval'] = "Интервал (минуты)";
 $lang['edit']['exclude'] = 'Exclude objects (regex)';
 $lang['edit']['save'] = "Сохранить";
@@ -385,8 +384,8 @@ $lang['tfa']['confirm'] = "Подтвердить";
 $lang['tfa']['otp'] = "Одноразовый пароль";
 $lang['tfa']['trash_login'] = "Некорректный логин";
 $lang['tfa']['select'] = "Пожалуйста выберите";
-$lang['tfa']['waiting_usb_auth'] = "<i>Ждем USB-устройства...</i><br /><br />Пожалуйста, нажмите кнопку на USB-устройстве U2F.";
-$lang['tfa']['waiting_usb_register'] = "<i>Ждем USB-устройства...</i><br /><br />Пожалуйста, введите свой пароль выше и подтвердите регистрацию U2F, нажав кнопку на USB-устройстве U2F.";
+$lang['tfa']['waiting_usb_auth'] = "<i>Ждем USB-устройства...</i><br><br>Пожалуйста, нажмите кнопку на USB-устройстве U2F.";
+$lang['tfa']['waiting_usb_register'] = "<i>Ждем USB-устройства...</i><br><br>Пожалуйста, введите свой пароль выше и подтвердите регистрацию U2F, нажав кнопку на USB-устройстве U2F.";
 $lang['admin']['search_domain_da'] = "Поиск домена";
 $lang['admin']['restrictions'] = "Настройки Postfix";
 $lang['admin']['rr'] = "Настройки получателя";
@@ -395,7 +394,7 @@ $lang['admin']['reset_defaults'] = "Сброс по умолчанию";
 $lang['admin']['sr'] = "Настройки отправителя";
 $lang['admin']['r_inactive'] = "Неактивные элементы";
 $lang['admin']['r_active'] = "Активные элементы";
-$lang['admin']['r_info'] = "Выделенные серым цветом элементы в списке активных элементов заблокированы от перемещения в список неактивных элементов, так как их отключение может непредсказуемо повлиять на работу mailcow. Unknown restrictions will be set in order of appearance anyway. <br />Вы можете добавить новые элементы в <code>inc/vars.local.inc.php</code>, что бы иметь возможно переключать их.";
+$lang['admin']['r_info'] = "Выделенные серым цветом элементы в списке активных элементов заблокированы от перемещения в список неактивных элементов, так как их отключение может непредсказуемо повлиять на работу mailcow. Unknown restrictions will be set in order of appearance anyway. <br>Вы можете добавить новые элементы в <code>inc/vars.local.inc.php</code>, что бы иметь возможно переключать их.";
 $lang['admin']['public_folders'] = "Общие папки";
 $lang['admin']['public_folders_text'] = 'A namespace "Public" is created. Below\'s public folder name indicates the name of the first auto-created mailbox within this namespace.';
 $lang['admin']['public_folder_name'] = "Имя папки";
@@ -448,4 +447,3 @@ $lang['admin']['site_not_found'] = "Не удается найти конфиг�
 $lang['admin']['public_folder_empty'] = "Имя общей папки не может быть пустым";
 $lang['admin']['set_rr_failed'] = "Не установить настройки Postfix";
 $lang['admin']['no_record'] = "Нет записей";
-?>

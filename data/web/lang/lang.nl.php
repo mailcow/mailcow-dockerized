@@ -1,13 +1,13 @@
 <?php
 /*
-//
-//  Dutch language file
-*/
+ * Dutch language file
+ */
+
 $lang['footer']['loading'] = "Even geduld a.u.b. ...";
 $lang['header']['restart_sogo'] = 'SOGo herstarten';
 $lang['footer']['restart_sogo'] = 'SOGo herstarten';
 $lang['footer']['restart_now'] = 'Nu opnieuw starten';
-$lang['footer']['restart_sogo_info'] = 'Sommige taken, zoals het toevoegen van een domein, vereisen een herstart van SOGo om de veranderingen door te voeren.<br /><br /><b>Belangrijk:</b> Het opnieuw opstarten kan een poos duren, wacht a.u.b. totdat dit volledig voltooid is.';
+$lang['footer']['restart_sogo_info'] = 'Sommige taken, zoals het toevoegen van een domein, vereisen een herstart van SOGo om de veranderingen door te voeren.<br><br><b>Belangrijk:</b> Het opnieuw opstarten kan een poos duren, wacht a.u.b. totdat dit volledig voltooid is.';
 $lang['dkim']['confirm'] = "Weet u het zeker?";
 $lang['danger']['dkim_not_found'] = "DKIM record niet gevonden.";
 $lang['danger']['dkim_remove_failed'] = "Kan geselecteerde DKIM record niet verwijderen.";
@@ -131,7 +131,7 @@ $lang['user']['spamfilter_red'] = 'Rood: Dit bericht is spam en zal worden gewei
 $lang['user']['spamfilter_default_score'] = 'Standaardwaarden:';
 $lang['user']['spamfilter_hint'] = 'De eerste waarde omschrijft een "lage spam score", de tweede waarde een "hoge spam score".';
 
-$lang['user']['tls_policy_warning'] = '<strong>Attentie:</strong> Door versleutelde e-mails te forceren, worden mogelijk niet alle e-mails afgeleverd.<br />Berichten die niet aan het ingestelde beleid voldoen worden resoluut geweigerd (bounced met hard-fail).';
+$lang['user']['tls_policy_warning'] = '<strong>Attentie:</strong> Door versleutelde e-mails te forceren, worden mogelijk niet alle e-mails afgeleverd.<br>Berichten die niet aan het ingestelde beleid voldoen worden resoluut geweigerd (bounced met hard-fail).';
 $lang['user']['tls_policy'] = 'Versleutelbeleid';
 $lang['user']['tls_enforce_in'] = 'Forceer TLS-gebruik inkomend';
 $lang['user']['tls_enforce_out'] = 'Forceer TLS-gebruik uitgaand';
@@ -142,7 +142,7 @@ $lang['user']['misc_delete_profile'] = 'Andere profielinstellingen';
 $lang['user']['tag_handling'] = 'Omgaan met e-mail tags';
 $lang['user']['tag_in_subfolder'] = 'In onderliggende map';
 $lang['user']['tag_in_subject'] = 'In onderwerp';
-$lang['user']['tag_help_explain'] = 'In onderliggende map: maakt onder INBOX een nieuwe map aan met de naam van de tag (bijv.: "INBOX/Facebook").<br />
+$lang['user']['tag_help_explain'] = 'In onderliggende map: maakt onder INBOX een nieuwe map aan met de naam van de tag (bijv.: "INBOX/Facebook").<br>
 In onderwerp: de tag wordt vóór het oorspronkelijke e-mail onderwerp geplaatst (bijv.: "[Facebook] Mijn nieuws").';
 $lang['user']['tag_help_example'] = 'Voorbeeld van een e-mailadres met tag: ik<b>+Facebook</b>@voorbeeld.org';
 $lang['start']['dashboard'] = '%s - startpagina';
@@ -151,17 +151,17 @@ $lang['start']['start_sogo'] = 'Open SOGo';
 $lang['start']['mailcow_apps_detail'] = 'Gebruik een mailcow app om toegang te hebben tot uw e-mails, kalender, contactpersonen en meer.';
 $lang['start']['mailcow_panel'] = 'Start mailcow UI';
 $lang['start']['mailcow_panel_description'] = 'De mailcow UI is beschikbaar voor zowel beheerders als gebruikers.';
-$lang['start']['mailcow_panel_detail'] = '<b>Domeinbeheerders</b> kunnen postvakken en aliassen aanmaken, wijzigen of verwijderen, domeinen veranderen of informatie krijgen over hun domein.<br />
+$lang['start']['mailcow_panel_detail'] = '<b>Domeinbeheerders</b> kunnen postvakken en aliassen aanmaken, wijzigen of verwijderen, domeinen veranderen of informatie krijgen over hun domein.<br>
 	<b>Gebruikers</b> kunnen tijdsgelimiteerde aliassen (spam-aliasses) aanmaken, hun wachtwoord wijzigen en spamfilterinstellingen wijzigen.';
 $lang['start']['recommended_config'] = 'Aanbevoen instellingen (zonder ActiveSync)';
 $lang['start']['imap_smtp_server'] = 'IMAP- en SMTP-server gegevens';
 $lang['start']['imap_smtp_server_description'] = 'Voor de best mogelijke ervaring bevelen wij <a href="%s" target="_blank"><b>Mozilla Thunderbird</b></a> aan.';
 $lang['start']['imap_smtp_server_badge'] = 'Lees/schrijf e-mails';
-$lang['start']['imap_smtp_server_auth_info'] = 'Gebruik uw volledige e-mailadres en de onversleutelde (PLAIN) verificatiemechanisme.<br />
+$lang['start']['imap_smtp_server_auth_info'] = 'Gebruik uw volledige e-mailadres en de onversleutelde (PLAIN) verificatiemechanisme.<br>
 De aanmeldgegevens zullen door de server worden versleuteld.';
 $lang['start']['managesieve'] = 'ManageSieve';
 $lang['start']['managesieve_badge'] = 'Emailfilter';
-$lang['start']['managesieve_description'] = 'Gebruik <b>Mozilla Thunderbird</b> met een <a style="text-decoration:none" target="_blank" href="%s"><b>nightly sieve addon</b></a>.<br />Start Thunderbird, open de add-on instellingen en sleep het gedownloadde xpi-bestand naar dit venster.<br />Servernaam <b>%s</b>, Poort <b>4190</b>. De aanmeldgegevens zijn gelijk aan de gegevens voor uw e-mail.';
+$lang['start']['managesieve_description'] = 'Gebruik <b>Mozilla Thunderbird</b> met een <a style="text-decoration:none" target="_blank" href="%s"><b>nightly sieve addon</b></a>.<br>Start Thunderbird, open de add-on instellingen en sleep het gedownloadde xpi-bestand naar dit venster.<br>Servernaam <b>%s</b>, Poort <b>4190</b>. De aanmeldgegevens zijn gelijk aan de gegevens voor uw e-mail.';
 $lang['start']['service'] = 'Service';
 $lang['start']['encryption'] = 'Versleutelmethode';
 $lang['start']['help'] = 'Toon/Verberg Hulppaneel';
@@ -215,7 +215,7 @@ $lang['delete']['remove_domainadmin_warning'] = '<b>Let op:</b> U staat op het p
 $lang['delete']['remove_alias_warning'] = '<b>Let op:</b> U staat op het punt alias <b>%s</b> te verwijderen!';
 $lang['delete']['remove_mailbox_warning'] = '<b>Let op::</b> U staat op het punt postvak <b>%s</b> te verwijderen!';
 $lang['delete']['remove_mailbox_details'] = 'Het postvak zal <b>permanent</b> worden verwijderd!';
-$lang['delete']['remove_domain_details'] = 'Dit verwijdert ook de domeinaliassen. <br /><br /><b>Een domein moet leeg zijn alvorens deze verwijderd kan worden.</b>';
+$lang['delete']['remove_domain_details'] = 'Dit verwijdert ook de domeinaliassen. <br><br><b>Een domein moet leeg zijn alvorens deze verwijderd kan worden.</b>';
 $lang['delete']['remove_alias_details'] = '<b>Gebruikers zullen niet meer in staat zijn e-mails te ontvangen op -of te versturen vanaf- dit adres.</b>';
 $lang['delete']['remove_button'] = 'Verwijder';
 $lang['delete']['previous'] = 'Vorige pagina';
@@ -318,7 +318,7 @@ $lang['admin']['sr'] = 'Postifx verzendersbeperkingen';
 $lang['admin']['reset_defaults'] = 'Herstel standaardwaarden';
 $lang['admin']['r_inactive'] = 'Inactieve beperkingen';
 $lang['admin']['r_active'] = 'Actieve beperkignen';
-$lang['admin']['r_info'] = 'Grijze, uitgeschakelde, elementen in de lijst met actieve beperkingen zijn voor mailcow niet bekend als valide en kunnen daarom niet verplaatst worden.<br />U kunt nieuwe elementen toevoegen in <code>inc/vars.inc.php</code> om ze te (de)activeren.';
+$lang['admin']['r_info'] = 'Grijze, uitgeschakelde, elementen in de lijst met actieve beperkingen zijn voor mailcow niet bekend als valide en kunnen daarom niet verplaatst worden.<br>U kunt nieuwe elementen toevoegen in <code>inc/vars.inc.php</code> om ze te (de)activeren.';
 $lang['admin']['public_folders'] = 'Gemeenschappelijke mappen';
 $lang['admin']['public_folders_text'] = 'Een namespace "Public" wordt aangemaakt. Onder deze map worden de automatisch aangemaakte postvakken in deze namespace weergegeven.';
 $lang['admin']['public_folder_name'] = 'Mapnaam <small>(alphanumeriek)</small>';
@@ -367,4 +367,3 @@ $lang['admin']['site_not_found'] = 'Kan mailcow instellingenbeheer niet vinden';
 $lang['admin']['public_folder_empty'] = 'Namen van gemeenschappelijke mappen mogen niet leeg blijven.';
 $lang['admin']['set_rr_failed'] = 'Kan Postfix beperkingen niet opleggen.';
 $lang['admin']['no_record'] = 'Geen vermelding';
-?>
