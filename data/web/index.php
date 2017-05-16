@@ -50,7 +50,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <?php
                   foreach ($AVAILABLE_LANGUAGES as $language):
                   ?>
-                  <li<?= ($_SESSION['mailcow_locale'] == $language) ? ' class="active"' : ''; ?>><a href="<?= http_build_query(array_merge($_GET, array('lang' => $language))) ?>"><span class="lang-xs lang-lbl-full" lang="<?= $language; ?>"></span></a></li>
+                  <li<?= ($_SESSION['mailcow_locale'] == $language) ? ' class="active"' : ''; ?>><a href="?<?= http_build_query(array_merge($_GET, array('lang' => $language))) ?>"><span class="lang-xs lang-lbl-full" lang="<?= $language; ?>"></span></a></li>
                   <?php
                   endforeach;
                   ?>
