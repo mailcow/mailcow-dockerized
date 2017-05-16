@@ -56,7 +56,7 @@ if (isset($_GET['lang']) && in_array($_GET['lang'], $AVAILABLE_LANGUAGES)) {
 elseif (isset($_COOKIE['language']) && in_array($_COOKIE['language'], $AVAILABLE_LANGUAGES)) {
   $_SESSION['mailcow_locale'] = $_COOKIE['language'];
 }
-if (isset($_SESSION['mailcow_locale']) && file_exists($_SERVER['DOCUMENT_ROOT'] . '/lang/lang.'.$_SESSION['mailcow_locale'].'.php')) {
+if (isset($_SESSION['mailcow_locale']) && !file_exists($_SERVER['DOCUMENT_ROOT'] . '/lang/lang.'.$_SESSION['mailcow_locale'].'.php')) {
   $_SESSION['mailcow_locale'] = strtolower(trim($DEFAULT_LANG));
 }
 setcookie('language', $_SESSION['mailcow_locale']);
