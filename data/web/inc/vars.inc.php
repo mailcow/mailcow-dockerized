@@ -27,8 +27,11 @@ $FORM_ACTION = "previous";
 $MC_DKIM_TXTS = "/data/dkim/txt";
 $MC_DKIM_KEYS = "/data/dkim/keys";
 
-// Change default language, "en", "es" "pt", "de", "ru" or "nl"
+// Change default language, "de", "en", "es", "nl", "pt", "ru"
 $DEFAULT_LANG = "en";
+
+// Available languages
+$AVAILABLE_LANGUAGES = array("de", "en", "es", "nl", "pt", "ru");
 
 // Change theme (default: lumen)
 // Needs to be one of those: cerulean, cosmo, cyborg, darkly, flatly, journal, lumen, paper, readable, sandstone,
