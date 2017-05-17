@@ -569,6 +569,7 @@ function init_db_schema() {
     // Recreate SQL views
     foreach ($views as $view => $create) {
       $pdo->query("DROP VIEW IF EXISTS `" . $view . "`;");
+      $pdo->query("DROP TABLE IF EXISTS `" . $view . "`;");
       $pdo->query($create);
     }
 
