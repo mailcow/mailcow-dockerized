@@ -1,39 +1,21 @@
-FROM debian:stretch-slim
+FROM alpine
 LABEL maintainer "https://m-ko.de Markus Kosmal <code@cnfg.io>"
 
-# Debian Base to use
-ENV DEBIAN_VERSION stretch
-ARG DEBIAN_FRONTEND=noninteractive
-
-# initial install of av daemon
-RUN echo "deb http://http.debian.net/debian/ $DEBIAN_VERSION main contrib non-free" > /etc/apt/sources.list && \
-	echo "deb http://http.debian.net/debian/ $DEBIAN_VERSION-updates main contrib non-free" >> /etc/apt/sources.list && \
-	echo "deb http://security.debian.org/ $DEBIAN_VERSION/updates main contrib non-free" >> /etc/apt/sources.list && \
-	apt-get update && apt-get install -y -qq --no-install-recommends \
-		clamav-daemon \
-		clamav-freshclam \
-		libclamunrar7 \
-	&& rm -rf /var/lib/apt/lists/*
+RUN apk add -U --no-cache clamav clamav-libunrar clamav-daemon bash curl
 
 # initial update of av databases
 COPY dl_files.sh /dl_files.sh
 RUN chmod +x /dl_files.sh
 
+# pre-download defintions
 RUN set -ex; \
-	\
-	fetchDeps=' \
-		curl \
-	'; \
-	apt-get update; \
-	apt-get install -y --no-install-recommends $fetchDeps; \
-	rm -rf /var/lib/apt/lists/*; \
-	/dl_files.sh \
-	apt-get purge -y --auto-remove $fetchDeps
+	/dl_files.sh && \
+	apk del curl
 
 # permission juggling
-RUN mkdir /var/run/clamav && \
-	chown clamav:clamav /var/run/clamav && \
-	chmod 750 /var/run/clamav
+RUN mkdir -p /run/clamav && \
+	chown clamav:clamav /run/clamav && \
+	chmod 750 /run/clamav
 
 # av configuration update
 RUN sed -i 's/^Foreground .*$/Foreground true/g' /etc/clamav/clamd.conf && \
