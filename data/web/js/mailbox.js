@@ -88,7 +88,6 @@ $(document).ready(function() {
         $('#ConfirmDeleteModal').modal('hide');
       });;
   });
-
 });
 
 jQuery(function($){

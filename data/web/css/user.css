@@ -18,12 +18,7 @@ table.footable>tbody>tr.footable-empty>td {
   padding: 10px;
   background: #F5F5F5;
 }
-@media (min-width: 992px) {
-  .container {
-      width: 80%;
-  }
-}
-.mass-actions-mailbox {
+.mass-actions-user {
   user-select: none;
-  padding:10px 0 10px 10px;
+  padding:10px 0 10px 0;
 }

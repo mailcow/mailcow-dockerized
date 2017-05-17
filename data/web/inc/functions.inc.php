@@ -867,7 +867,7 @@ function delete_policy_list_item($postarray) {
   return true;
 }
 function get_syncjobs($username = null) {
-  // 'username' can be be set, if not, default to mailcow_cc_username
+  // 'username' can be set, if not set, defaults to mailcow_cc_username
 	global $lang;
 	global $pdo;
   $data = array();
@@ -880,7 +880,10 @@ function get_syncjobs($username = null) {
     $username = $_SESSION['mailcow_cc_username'];
   }
   try {
-    $stmt = $pdo->prepare("SELECT *, CONCAT(LEFT(`password1`, 3), '…') as `password1_short`
+    $stmt = $pdo->prepare("SELECT *,
+      CONCAT(LEFT(`password1`, 3), '...') AS `password1_short`,
+      `active` AS `active_int`,
+      CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`
         FROM `imapsync`
           WHERE `user2` = :username");
     $stmt->execute(array(':username' => $username));
@@ -1096,126 +1099,107 @@ function add_syncjob($postarray) {
 }
 function edit_syncjob($postarray) {
   // Array items
-  // 'username' can be set, defaults to mailcow_cc_username
 	global $lang;
 	global $pdo;
-  if (isset($postarray['username']) && filter_var($postarray['username'], FILTER_VALIDATE_EMAIL)) {
-    if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $postarray['username'])) {
+  if (!is_array($postarray['id'])) {
+    $ids = array();
+    $ids[] = $postarray['id'];
+  }
+  else {
+    $ids = $postarray['id'];
+  }
+
+  foreach ($ids as $id) {
+    $is_now = get_syncjob_details($id);
+    if (!empty($is_now)) {
+      $username = $is_now['user2'];
+      $user1 = (!empty($postarray['user1'])) ? $postarray['user1'] : $is_now['user1'];
+      $active = (isset($postarray['active'])) ? $postarray['active'] : $is_now['active_int'];
+      $delete2duplicates = (isset($postarray['delete2duplicates'])) ? $postarray['delete2duplicates'] : $is_now['delete2duplicates'];
+      $delete1 = (isset($postarray['delete1'])) ? $postarray['delete1'] : $is_now['delete1'];
+      $port1 = (!empty($postarray['port1'])) ? $postarray['port1'] : $is_now['port1'];
+      $password1 = (!empty($postarray['password1'])) ? $postarray['password1'] : $is_now['password1'];
+      $host1 = (!empty($postarray['host1'])) ? $postarray['host1'] : $is_now['host1'];
+      $subfolder2 = (!empty($postarray['subfolder2'])) ? $postarray['subfolder2'] : $is_now['subfolder2'];
+      $enc1 = (!empty($postarray['enc1'])) ? $postarray['enc1'] : $is_now['enc1'];
+      $mins_interval = (!empty($postarray['mins_interval'])) ? $postarray['mins_interval'] : $is_now['mins_interval'];
+      $exclude = (!empty($postarray['exclude'])) ? $postarray['exclude'] : $is_now['exclude'];
+      $maxage = (!empty($postarray['maxage'])) ? $postarray['maxage'] : $is_now['maxage'];
+    }
+    else {
       $_SESSION['return'] = array(
         'type' => 'danger',
         'msg' => sprintf($lang['danger']['access_denied'])
       );
       return false;
     }
-    else {
-      $username = $postarray['username'];
+    if (empty($subfolder2)) {
+      $subfolder2 = "";
     }
-  }
-  else {
-    $username = $_SESSION['mailcow_cc_username'];
-  }
-  
-	$active           = intval($postarray['active']);
-	$delete2duplicates = intval($postarray['delete2duplicates']);
-	$delete1          = intval($postarray['delete1']);
-  $id               = $postarray['id'];
-  $port1            = $postarray['port1'];
-  $host1            = $postarray['host1'];
-  $password1        = $postarray['password1'];
-  $exclude          = $postarray['exclude'];
-  $maxage           = $postarray['maxage'];
-  $subfolder2       = $postarray['subfolder2'];
-  $user1            = $postarray['user1'];
-  $mins_interval    = $postarray['mins_interval'];
-  $enc1             = $postarray['enc1'];
-
-  if (empty($subfolder2)) {
-    $subfolder2 = "";
-  }
-  if (!isset($maxage) || !filter_var($maxage, FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 32767)))) {
-    $maxage = "0";
-  }
-  if (!filter_var($port1, FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 65535)))) {
-    $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => sprintf($lang['danger']['access_denied'])
-    );
-    return false;
-  }
-  if (!filter_var($mins_interval, FILTER_VALIDATE_INT, array('options' => array('min_range' => 10, 'max_range' => 3600)))) {
-    $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => sprintf($lang['danger']['access_denied'])
-    );
-    return false;
-  }
-  if (!is_valid_domain_name($host1)) {
-    $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => sprintf($lang['danger']['access_denied'])
-    );
-    return false;
-  }
-  if ($enc1 != "TLS" && $enc1 != "SSL" && $enc1 != "PLAIN") {
-    $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => sprintf($lang['danger']['access_denied'])
-    );
-    return false;
-  }
-  if (@preg_match("/" . $exclude . "/", null) === false) {
-    $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => sprintf($lang['danger']['access_denied'])
-    );
-    return false;
-  }
-  try {
-    $stmt = $pdo->prepare("SELECT `user2` FROM `imapsync`
-      WHERE `user2` = :user2 AND `id` = :id");
-    $stmt->execute(array(':user2' => $username, ':id' => $id));
-    $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-  }
-  catch(PDOException $e) {
-    $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => 'MySQL: '.$e
-    );
-    return false;
-  }
-  if (empty($num_results)) {
-    $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => sprintf($lang['danger']['access_denied'])
-    );
-    return false;
-  }
-  try {
-    $stmt = $pdo->prepare("UPDATE `imapsync` set `delete1` = :delete1, `maxage` = :maxage, `subfolder2` = :subfolder2, `exclude` = :exclude, `host1` = :host1, `user1` = :user1, `password1` = :password1, `mins_interval` = :mins_interval, `port1` = :port1, `enc1` = :enc1, `delete2duplicates` = :delete2duplicates, `active` = :active
-      WHERE `user2` = :user2 AND `id` = :id");
-    $stmt->execute(array(
-      ':user2' => $username,
-      ':delete1' => $delete1,
-      ':id' => $id,
-      ':exclude' => $exclude,
-      ':maxage' => $maxage,
-      ':subfolder2' => $subfolder2,
-      ':host1' => $host1,
-      ':user1' => $user1,
-      ':password1' => $password1,
-      ':mins_interval' => $mins_interval,
-      ':port1' => $port1,
-      ':enc1' => $enc1,
-      ':delete2duplicates' => $delete2duplicates,
-      ':active' => $active,
-    ));
-  }
-  catch(PDOException $e) {
-    $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => 'MySQL: '.$e
-    );
-    return false;
+    if (!isset($maxage) || !filter_var($maxage, FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 32767)))) {
+      $maxage = "0";
+    }
+    if (!filter_var($port1, FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 65535)))) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['access_denied'])
+      );
+      return false;
+    }
+    if (!filter_var($mins_interval, FILTER_VALIDATE_INT, array('options' => array('min_range' => 10, 'max_range' => 3600)))) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['access_denied'])
+      );
+      return false;
+    }
+    if (!is_valid_domain_name($host1)) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['access_denied'])
+      );
+      return false;
+    }
+    if ($enc1 != "TLS" && $enc1 != "SSL" && $enc1 != "PLAIN") {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['access_denied'])
+      );
+      return false;
+    }
+    if (@preg_match("/" . $exclude . "/", null) === false) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => sprintf($lang['danger']['access_denied'])
+      );
+      return false;
+    }
+    try {
+      $stmt = $pdo->prepare("UPDATE `imapsync` SET `delete1` = :delete1, `maxage` = :maxage, `subfolder2` = :subfolder2, `exclude` = :exclude, `host1` = :host1, `user1` = :user1, `password1` = :password1, `mins_interval` = :mins_interval, `port1` = :port1, `enc1` = :enc1, `delete2duplicates` = :delete2duplicates, `active` = :active
+        WHERE `id` = :id");
+      $stmt->execute(array(
+        ':delete1' => $delete1,
+        ':id' => $id,
+        ':exclude' => $exclude,
+        ':maxage' => $maxage,
+        ':subfolder2' => $subfolder2,
+        ':host1' => $host1,
+        ':user1' => $user1,
+        ':password1' => $password1,
+        ':mins_interval' => $mins_interval,
+        ':port1' => $port1,
+        ':enc1' => $enc1,
+        ':delete2duplicates' => $delete2duplicates,
+        ':active' => $active,
+      ));
+    }
+    catch(PDOException $e) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => 'MySQL: '.$e
+      );
+      return false;
+    }
   }
   $_SESSION['return'] = array(
     'type' => 'success',
@@ -2479,7 +2463,7 @@ function dkim_delete_key($postarray) {
       $selector = $redis->hGet('DKIM_SELECTORS', $domain);
       $redis->hDel('DKIM_PUB_KEYS', $domain);
       $redis->hDel('DKIM_PRIV_KEYS', $selector . '.' . $domain);
-      $redis->hDel('DKIM_SELECTORS', $selector);
+      $redis->hDel('DKIM_SELECTORS', $domain);
     }
     catch (RedisException $e) {
       $_SESSION['return'] = array(

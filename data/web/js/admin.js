@@ -56,7 +56,7 @@ $(document).ready(function() {
           url: '/api/v1/' + api_url,
           jsonp: false,
           complete: function (data) {
-            location.assign(window.location);
+            location.reload(true);
           }
         });
       })
