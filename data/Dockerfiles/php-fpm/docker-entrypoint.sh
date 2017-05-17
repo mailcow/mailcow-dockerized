@@ -51,7 +51,7 @@ for file in $(ls /data/dkim/keys/); do
   domain=${file%.dkim}
   if [[ -f /data/dkim/txt/${file} ]]; then
     redis-cli -h redis-mailcow HSET DKIM_PUB_KEYS "${domain}" "$(cat /data/dkim/txt/${file})"
-    redis-cli -h redis-mailcow HSET DKIM_PRIV_KEYS "${domain}" "$(cat /data/dkim/keys/${file})"
+    redis-cli -h redis-mailcow HSET DKIM_PRIV_KEYS "dkim.${domain}" "$(cat /data/dkim/keys/${file})"
     redis-cli -h redis-mailcow HSET DKIM_SELECTORS "${domain}" "dkim"
   fi
   rm /data/dkim/{keys,txt}/${file}
