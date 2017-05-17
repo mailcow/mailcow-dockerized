@@ -71,9 +71,9 @@ services:
       image: mailcow/rspamd
       build: ./data/Dockerfiles/rspamd
       command: > 
-        /bin/sh -c "
+        /bin/bash -c "
         sleep 5;
-        /usr/sbin/rspamd -f -u _rspamd -g _rspamd
+        /usr/bin/rspamd -f -u _rspamd -g _rspamd
         "
       depends_on:
         nginx-mailcow:
