@@ -1,9 +1,8 @@
 <?php
 /*
-//
-//  Portuguese (pt) language file - Português do Brasil (pt_BR) - ISO-8859-1
-//
-*/
+ * Portuguese (pt) language file - Português do Brasil (pt_BR) - ISO-8859-1
+ */
+
 $lang['footer']['loading'] = "Aguarde...";
 $lang['getmail']['no_status'] = "Nenhum registro anterior encontrado";
 $lang['dkim']['confirm'] = "Tem certeza?";
@@ -131,7 +130,7 @@ $lang['user']['spamfilter_yellow'] = 'Amarelo: essa mensagem <b>pode ser</b> spa
 $lang['user']['spamfilter_red'] = 'Vermelho: essa mensagem <b>é mesmo spam</b> e será rejeitada definitivamente pelo servidor';
 $lang['user']['spamfilter_default_score'] = 'Valores padrão:';
 $lang['user']['spamfilter_hint'] = 'O primeiro espaço indica "baixo nível de spam", a segunda representa "alto nível de spam".';
-$lang['user']['tls_policy_warning'] = '<strong>Aviso:</strong> Se você selecionar para forçar o envio encryptado , alguns emails poderão ser rejeitados.<br />Mensages que não satisfizerem as politicas dos outros servidores serão rejeitadas definitivamente.';
+$lang['user']['tls_policy_warning'] = '<strong>Aviso:</strong> Se você selecionar para forçar o envio encryptado , alguns emails poderão ser rejeitados.<br>Mensages que não satisfizerem as politicas dos outros servidores serão rejeitadas definitivamente.';
 $lang['user']['tls_policy'] = 'Regras de Encryptação';
 $lang['user']['tls_enforce_in'] = 'Forçar TLS na entrada';
 $lang['user']['tls_enforce_out'] = 'Forçar TLS na saída';
@@ -144,17 +143,17 @@ $lang['start']['start_sogo'] = 'Abrir SOGo';
 $lang['start']['mailcow_apps_detail'] = 'Use um mailcow app para acessar seus emails, calendário, contatos e outras informações.';
 $lang['start']['mailcow_panel'] = 'Iniciar mailcow UI';
 $lang['start']['mailcow_panel_description'] = 'O mailcow UI está disponível para Administradores e Usuários.';
-$lang['start']['mailcow_panel_detail'] = '<b>Administradores:</b> podem criar, alterar ou apagar contas e apelidos , alterar domínios e outras informações de seus domínios atribuídos.<br />
+$lang['start']['mailcow_panel_detail'] = '<b>Administradores:</b> podem criar, alterar ou apagar contas e apelidos , alterar domínios e outras informações de seus domínios atribuídos.<br>
 	<b>Usuários:</b> podem criar apelidos por tempo determinado , alterar senha e configuração do nível do filtro de spam.';
 $lang['start']['recommended_config'] = 'Configuração recomendada (sem o ActiveSync)';
 $lang['start']['imap_smtp_server'] = 'IMAP e SMTP server data';
 $lang['start']['imap_smtp_server_description'] = 'Para uma melhor utilização use o <a href="%s" target="_blank"><b>Mozilla Thunderbird</b></a>.';
 $lang['start']['imap_smtp_server_badge'] = 'Ler/Criar emails';
-$lang['start']['imap_smtp_server_auth_info'] = 'Utilize o endereço de email completo com o método de autentucação PLAIN.<br />
+$lang['start']['imap_smtp_server_auth_info'] = 'Utilize o endereço de email completo com o método de autentucação PLAIN.<br>
 Os dados de login serão encryptados pelo servidor.';
 $lang['start']['managesieve'] = 'ManageSieve';
 $lang['start']['managesieve_badge'] = 'Filtro de email';
-$lang['start']['managesieve_description'] = 'Utilize o <b>Mozilla Thunderbird</b> com a <a style="text-decoration:none" target="_blank" href="%s"><b>extensão para sieve</b></a>.<br />Inicie o Thunderbird, acesse os Complementos e solte o arquivo xpi que foi baixado, na janela aberta.<br />Preencha com o servidor <b>%s</b>, porta <b>4190</b> se for solicitado. Os dados de acesso são os mesmos da sua conta de email.';
+$lang['start']['managesieve_description'] = 'Utilize o <b>Mozilla Thunderbird</b> com a <a style="text-decoration:none" target="_blank" href="%s"><b>extensão para sieve</b></a>.<br>Inicie o Thunderbird, acesse os Complementos e solte o arquivo xpi que foi baixado, na janela aberta.<br>Preencha com o servidor <b>%s</b>, porta <b>4190</b> se for solicitado. Os dados de acesso são os mesmos da sua conta de email.';
 $lang['start']['service'] = 'Serviço';
 $lang['start']['encryption'] = 'Método de criptografia';
 $lang['start']['help'] = 'Mostrar/Ocultar painel de ajuda';
@@ -206,7 +205,7 @@ $lang['delete']['remove_domainadmin_warning'] = '<b>Aviso:</b> Você está prest
 $lang['delete']['remove_alias_warning'] = '<b>Aviso:</b> Você está prestes a remover o Apelido <b>%s</b>!';
 $lang['delete']['remove_mailbox_warning'] = '<b>Aviso:</b> Você está prestes a remover a Conta <b>%s</b>!';
 $lang['delete']['remove_mailbox_details'] = 'A Conta será <b>excluída permanentemente</b>!';
-$lang['delete']['remove_domain_details'] = 'Esse procedimento removerá o Encaminhamento de Domínio.<br /><br /><b>O Domínio deve estar sem nenhuma configuração para ser removido.</b>';
+$lang['delete']['remove_domain_details'] = 'Esse procedimento removerá o Encaminhamento de Domínio.<br><br><b>O Domínio deve estar sem nenhuma configuração para ser removido.</b>';
 $lang['delete']['remove_alias_details'] = 'Os usuários não poderão mais enviar ou receber emails através deste endereço.</b>';
 $lang['delete']['remove_button'] = 'Remover';
 $lang['delete']['previous'] = 'Voltar';
@@ -304,7 +303,7 @@ $lang['admin']['reset_defaults'] = 'Voltar configuração padrão';
 $lang['admin']['sr'] = 'Postfix Sender Restrictions';
 $lang['admin']['r_inactive'] = 'Restrictions Inativos';
 $lang['admin']['r_active'] = 'Restrictions Ativos';
-$lang['admin']['r_info'] = 'Greyed out/disabled elements on the list of active restrictions are not known as valid restrictions to mailcow and cannot be moved. Unknown restrictions will be set in order of appearance anyway. <br />You can add new elements in <code>inc/vars.local.inc.php</code> to be able to toggle them.';
+$lang['admin']['r_info'] = 'Greyed out/disabled elements on the list of active restrictions are not known as valid restrictions to mailcow and cannot be moved. Unknown restrictions will be set in order of appearance anyway. <br>You can add new elements in <code>inc/vars.local.inc.php</code> to be able to toggle them.';
 $lang['admin']['public_folders'] = 'Pastas públicas';
 $lang['admin']['public_folders_text'] = 'A pasta "Public" esta criada. Abaixo a pasta pública indica o nome da primeira pasta criada automaticamente na conta, com este nome.';
 $lang['admin']['public_folder_name'] = 'Nome da Pasta <small>(alfa numérico)</small>';
@@ -353,4 +352,3 @@ $lang['admin']['site_not_found'] = 'Não foi possível localizar as configuraç�
 $lang['admin']['public_folder_empty'] = 'O nome da Pasta Pública deve ser preenchido';
 $lang['admin']['set_rr_failed'] = 'Não foi possível alterar Postfix Restrictions';
 $lang['admin']['no_record'] = 'Nenhum registro';
-?>

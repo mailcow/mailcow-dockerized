@@ -96,6 +96,8 @@ RUN groupadd -g 5000 vmail \
 	&& useradd -c "Dovecot login user" -d /dev/null -u 402 -g dovenull -s /bin/false dovenull
 
 RUN touch /etc/default/locale
+RUN apt-get purge -y build-essential automake autotools-dev \
+	&& apt-get autoremove --purge -y
 
 EXPOSE 24 10001
 

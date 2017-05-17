@@ -1,14 +1,13 @@
 <?php
 /*
-//
-//  Spanish language file
-//
-*/
+ * Spanish language file
+ */
+
 $lang['footer']['loading'] = "Espere Por Favor...";
 $lang['header']['restart_sogo'] = 'Reiniciar SOGo';
 $lang['footer']['restart_sogo'] = 'Reiniciar SOGo';
 $lang['footer']['restart_now'] = 'Reiniciar ahora';
-$lang['footer']['restart_sogo_info'] = 'Algunas tareas, por ejemplo agregar un dominio, requieren que reinicies SOGo para detectar cambios hechos en la UI de mailcow.<br /><br /><b>Importante:</b> Un reinicio sencillo puede tardar un poco en completarse, por favor espere a que termine.';
+$lang['footer']['restart_sogo_info'] = 'Algunas tareas, por ejemplo agregar un dominio, requieren que reinicies SOGo para detectar cambios hechos en la UI de mailcow.<br><br><b>Importante:</b> Un reinicio sencillo puede tardar un poco en completarse, por favor espere a que termine.';
 $lang['dkim']['confirm'] = "¿Estás Seguro?";
 $lang['danger']['dkim_not_found'] = "Registro DKIM no encontrado";
 $lang['danger']['dkim_remove_failed'] = "No se puede eliminar el registro DKIM seleccionado";
@@ -136,7 +135,7 @@ $lang['user']['spamfilter_red'] = 'Rojo: Este mensaje es spam y sera rechazado p
 $lang['user']['spamfilter_default_score'] = 'Valores por defecto:';
 $lang['user']['spamfilter_hint'] = 'El primer valor representa la "calificación baja de spam", el segundo representa la "calificación alta de spam".';
 
-$lang['user']['tls_policy_warning'] = '<strong>Advertencia:</strong> Si decides forzar la transmisión de correo encriptado, puedes perder correos.<br />Mensajes que no satisfagan la política serán rebotados con una falla grave en el sistema de correos .';
+$lang['user']['tls_policy_warning'] = '<strong>Advertencia:</strong> Si decides forzar la transmisión de correo encriptado, puedes perder correos.<br>Mensajes que no satisfagan la política serán rebotados con una falla grave en el sistema de correos .';
 $lang['user']['tls_policy'] = 'Política de encriptación';
 $lang['user']['tls_enforce_in'] = 'Aplicar TLS entrante';
 $lang['user']['tls_enforce_out'] = 'Aplicar TLS saliente';
@@ -148,7 +147,7 @@ $lang['user']['misc_delete_profile'] = 'Otras configuraciones de usuario';
 $lang['user']['tag_handling'] = 'Establecer manejo para el correo etiquetado';
 $lang['user']['tag_in_subfolder'] = 'En subcarpeta';
 $lang['user']['tag_in_subject'] = 'En asunto';
-$lang['user']['tag_help_explain'] = 'En subcarpeta: una nueva subcarpeta llamada como la etiqueta será creada debajo de INBOX ("INBOX/Facebook").<br />
+$lang['user']['tag_help_explain'] = 'En subcarpeta: una nueva subcarpeta llamada como la etiqueta será creada debajo de INBOX ("INBOX/Facebook").<br>
 En asunto: los nombres de las etiquetas serán añadidos al asunto de los correos, ejemplo: "[Facebook] Mis Noticias".';
 $lang['user']['tag_help_example'] = 'Ejemplo de una dirección email etiquetada: mi<b>+Facebook</b>@ejemplo.org';
 
@@ -158,17 +157,17 @@ $lang['start']['start_sogo'] = 'Abrir SOGo';
 $lang['start']['mailcow_apps_detail'] = 'Utiliza una aplicación de mailcow para acceder a tus correos, calendario, contactos y más.';
 $lang['start']['mailcow_panel'] = 'Iniciar mailcow UI';
 $lang['start']['mailcow_panel_description'] = 'Mailcow UI está disponible para administradores y usuarios de buzón.';
-$lang['start']['mailcow_panel_detail'] = '<b>Administradores del dominio</b> crean, modifican o eliminan buzones y alias, cambia dominios y lee información más detallada sobre sus dominios asignados<br />
+$lang['start']['mailcow_panel_detail'] = '<b>Administradores del dominio</b> crean, modifican o eliminan buzones y alias, cambia dominios y lee información más detallada sobre sus dominios asignados<br>
 	<b>Usuarios de buzón</b> son capaces de crear alias de tiempo limitado (spam alias), cambiar su contraseña y la configuración del filtro de spam.';
 $lang['start']['recommended_config'] = 'Configuración recomendada (sin ActiveSync)';
 $lang['start']['imap_smtp_server'] = 'IMAP- y SMTP datos del servidor';
 $lang['start']['imap_smtp_server_description'] = 'Para la mejor experiencia recomendamos utilizar <a href="%s" target="_blank"><b>Mozilla Thunderbird</b></a>.';
 $lang['start']['imap_smtp_server_badge'] = 'Leer/Escribir correos';
-$lang['start']['imap_smtp_server_auth_info'] = 'Por favor utiliza tu dirección de correo completa y el mecanismo de autenticación PLANO.<br />
+$lang['start']['imap_smtp_server_auth_info'] = 'Por favor utiliza tu dirección de correo completa y el mecanismo de autenticación PLANO.<br>
 Tus datos para iniciar sesión serán encriptados por la encriptación obligatoria del servidor';
 $lang['start']['managesieve'] = 'ManageSieve';
 $lang['start']['managesieve_badge'] = 'Filtro de correos';
-$lang['start']['managesieve_description'] = 'Por favor utiliza <b>Mozilla Thunderbird</b> con la <a style="text-decoration:none" target="_blank" href="%s"><b>extensión nightly sieve</b></a>.<br />Inicia Thunderbird, abre la configuración de complementos y suelta el archivo xpi descargado en la ventana abierta.<br />El servidor es <b>%s</b>, utiliza el puerto <b>4190</b> si se te pregunta. Los datos para iniciar sesión coinciden con los datos de tu correo.';
+$lang['start']['managesieve_description'] = 'Por favor utiliza <b>Mozilla Thunderbird</b> con la <a style="text-decoration:none" target="_blank" href="%s"><b>extensión nightly sieve</b></a>.<br>Inicia Thunderbird, abre la configuración de complementos y suelta el archivo xpi descargado en la ventana abierta.<br>El servidor es <b>%s</b>, utiliza el puerto <b>4190</b> si se te pregunta. Los datos para iniciar sesión coinciden con los datos de tu correo.';
 $lang['start']['service'] = 'Servicio';
 $lang['start']['encryption'] = 'Método de encriptación';
 $lang['start']['help'] = 'Mostrar/Ocultar panel de ayuda';
@@ -222,7 +221,7 @@ $lang['delete']['remove_domainadmin_warning'] = '<b>Advertencia:</b> ¡Estás a 
 $lang['delete']['remove_alias_warning'] = '<b>Advertencia:</b> ¡Estás a punto de eliminar la dirección alias <b>%s</b>!';
 $lang['delete']['remove_mailbox_warning'] = '<b>Advertencia:</b> ¡Estás a punto de eliminar el buzón <b>%s</b>!';
 $lang['delete']['remove_mailbox_details'] = 'El buzón será <b>purgado permanentemente</b>!';
-$lang['delete']['remove_domain_details'] = 'Esto también eliminará alias de dominio.<br /><br /><b>Un dominio debe estar vacío para poder ser eliminado.</b>';
+$lang['delete']['remove_domain_details'] = 'Esto también eliminará alias de dominio.<br><br><b>Un dominio debe estar vacío para poder ser eliminado.</b>';
 $lang['delete']['remove_alias_details'] = 'Los usuarios ya no serán capaces de recibir correos o enviar correos desde esta dirección.</b>';
 $lang['delete']['remove_button'] = 'Eliminar';
 $lang['delete']['previous'] = 'Página anterior';
@@ -326,7 +325,7 @@ $lang['admin']['reset_defaults'] = 'Restablecer los valores predeterminados';
 $lang['admin']['sr'] = 'Restricciones Postfix para remitentes';
 $lang['admin']['r_inactive'] = 'Restricciones inactivas';
 $lang['admin']['r_active'] = 'Restricciones activas';
-$lang['admin']['r_info'] = 'Elementos en gris/deshabilitados en la lista de restricciones activas no son reconocidas como restricciones válidas para mailcow y no pueden ser movidas. Restricciones desconocidas serán establecidas en el orden de aparicion de todas maneras. <br />Puedes agregar nuevos elementos en <code>inc/vars.local.inc.php</code> para ser capaz de habilitarlas.';
+$lang['admin']['r_info'] = 'Elementos en gris/deshabilitados en la lista de restricciones activas no son reconocidas como restricciones válidas para mailcow y no pueden ser movidas. Restricciones desconocidas serán establecidas en el orden de aparicion de todas maneras. <br>Puedes agregar nuevos elementos en <code>inc/vars.local.inc.php</code> para ser capaz de habilitarlas.';
 $lang['admin']['public_folders'] = 'Carpetas Públicas';
 $lang['admin']['public_folders_text'] = 'Un espacio de nombres "Public" (Público) será creado. Debajo del nombre de la carpeta pública se indica el nombre del primer buzón creado automáticamente dentro de este espacio de nombres';
 $lang['admin']['public_folder_name'] = 'Nombre de la carpeta <small>(alfanumérico)</small>';
@@ -375,4 +374,3 @@ $lang['admin']['site_not_found'] = 'No se puede localizar la configuración del 
 $lang['admin']['public_folder_empty'] = 'El nombre de la carpeta pública no debe estar vacío';
 $lang['admin']['set_rr_failed'] = 'No se pueden establecer las restricciones de Postfix';
 $lang['admin']['no_record'] = 'Sin registro';
-?>

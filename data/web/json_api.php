@@ -151,7 +151,19 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                   echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
                 }
               break;
-
+            }
+          break;
+          case "syncjob":
+            switch ($object) {
+              default:
+                $data = get_syncjobs($object);
+                if (!isset($data) || empty($data)) {
+                  echo '{}';
+                }
+                else {
+                  echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                }
+              break;
             }
           break;
           case "resource":
@@ -183,7 +195,6 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                   echo '{}';
                 }
               break;
-
               default:
                 $data = mailbox_get_resource_details($object);
                 if (!isset($data) || empty($data)) {
@@ -193,7 +204,6 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                   echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
                 }
               break;
-
             }
           break;
           case "fwdhost":
@@ -226,7 +236,6 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                   echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
                 }
               break;
-
             }
           break;
           case "alias-domain":
@@ -258,7 +267,6 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                   echo '{}';
                 }
               break;
-
               default:
                 $data = mailbox_get_alias_domains($object);
                 if (!isset($data) || empty($data)) {
@@ -719,6 +727,50 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               $postarray = array_merge(array('username' => $items), $attr);
               if (is_array($postarray['username'])) {
                 if (mailbox_edit_mailbox($postarray) === false) {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'error',
+                      'msg' => 'Edit failed'
+                    ));
+                  }
+                  exit();
+                }
+                else {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'success',
+                      'msg' => 'Task completed'
+                    ));
+                  }
+                }
+              }
+              else {
+                echo json_encode(array(
+                  'type' => 'error',
+                  'msg' => 'Incomplete post data'
+                ));
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Incomplete post data'
+              ));
+            }
+          break;
+          case "syncjob":
+            if (isset($_POST['items']) && isset($_POST['attr'])) {
+              $items = (array)json_decode($_POST['items'], true);
+              $attr = (array)json_decode($_POST['attr'], true);
+              $postarray = array_merge(array('id' => $items), $attr);
+              if (is_array($postarray['id'])) {
+                if (edit_syncjob($postarray) === false) {
                   if (isset($_SESSION['return'])) {
                     echo json_encode($_SESSION['return']);
                   }

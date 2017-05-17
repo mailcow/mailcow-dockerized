@@ -19,3 +19,7 @@ body.modal-open {
   overflow-y:scroll;
   padding-right: inherit !important;
 }
+.mass-actions-admin {
+  user-select: none;
+  padding:10px 0 10px 0;
+}

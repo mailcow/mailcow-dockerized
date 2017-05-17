@@ -58,7 +58,7 @@ $tfa_data = get_tfa();
           <div class="col-sm-9 col-xs-7">
             <p id="tfa_pretty"><?=$tfa_data['pretty'];?></p>
               <div id="tfa_additional">
-                <?php if($tfa_data['additional']):
+                <?php if (!empty($tfa_data['additional'])):
                 foreach ($tfa_data['additional'] as $key_info): ?>
                 <form style="display:inline;" method="post">
                   <input type="hidden" name="unset_tfa_key" value="<?=$key_info['id'];?>" />

@@ -408,71 +408,21 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 	</div>
 	<div role="tabpanel" class="tab-pane" id="Syncjobs">
 		<div class="table-responsive">
-		<table class="table table-striped" id="timelimitedaliases">
-			<thead>
-			<tr>
-				<th class="sort-table" style="min-width: 96px;">Server:Port</th>
-				<th class="sort-table" style="min-width: 96px;"><?=$lang['user']['encryption'];?></th>
-				<th class="sort-table" style="min-width: 96px;"><?=$lang['user']['username'];?></th>
-				<th class="sort-table" style="min-width: 96px;"><?=$lang['user']['excludes'];?></th>
-				<th class="sort-table" style="min-width: 35px;"><?=$lang['user']['interval'];?></th>
-				<th class="sort-table" style="min-width: 35px;"><?=$lang['user']['last_run'];?></th>
-				<th class="sort-table" style="min-width: 35px;">Log</th>
-				<th class="sort-table" style="max-width: 95px;"><?=$lang['user']['active'];?></th>
-				<th style="text-align: right; min-width: 200px;"><?=$lang['user']['action'];?></th>
-			</tr>
-			</thead>
-			<tbody>
-			<?php
-      $get_syncjobs = get_syncjobs($username);
-			if (!empty($get_syncjobs)):
-			foreach ($get_syncjobs as $row):
-			?>
-				<tr id="data">
-				<td><?=htmlspecialchars($row['host1'] . ':' . $row['port1']);?></td>
-				<td><?=htmlspecialchars($row['enc1']);?></td>
-				<td><?=htmlspecialchars($row['user1']);?></td>
-				<td><?=($row['exclude'] == '') ? '&#10008;' : '<code>' . $row['exclude'] . '</code>';?></td>
-				<td><?=htmlspecialchars($row['mins_interval']);?> min</td>
-				<td><?=(empty($row['last_run'])) ? '&#10008;' : htmlspecialchars(date($lang['user']['syncjob_full_date'], strtotime($row['last_run'])));?></td>
-				<td>
-        <?php
-        if (empty($row['returned_text'])) {
-          echo '&#10008;';
-        }
-        else {
-        ?>
-          <a href="#logModal" data-toggle="modal" data-log-text="<?=htmlspecialchars($row['returned_text']);?>">Open logs</a>
-        <?php
-        }
-        ?>
-        </td>
-				<td><?=($row['active'] == '1') ? '&#10004;' : '&#10008;';?></td>
-        <td style="text-align: right;">
-          <div class="btn-group">
-            <a href="/edit.php?syncjob=<?=urlencode($row['id']);?>" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> <?=$lang['user']['edit'];?></a>
-            <a href="/delete.php?syncjob=<?=urlencode($row['id']);?>" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> <?=$lang['user']['remove'];?></a>
-          </div>
-        </td>
-				</tr>
-			<?php
-			endforeach;
-			else:
-			?>
-				<tr id="no-data"><td colspan="9" style="text-align: center; font-style: italic;"><?=$lang['user']['no_record'];?></td></tr>
-			<?php
-			endif;	
-			?>
-			</tbody>
-      <tfoot>
-        <tr id="no-data">
-          <td colspan="9" style="text-align: center; font-style: normal; border-top: 1px solid #e7e7e7;">
-            <a href="/add.php?syncjob"><?=$lang['user']['create_syncjob'];?></a>
-          </td>
-        </tr>
-      </tfoot>
-		</table>
+      <table class="table table-striped" id="sync_job_table"></table>
 		</div>
+    <div class="mass-actions-user">
+      <div class="btn-group">
+        <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="syncjob" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
+        <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          <li><a id="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
+          <li><a id="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
+          <li role="separator" class="divider"></li>
+          <li><a id="delete_selected" data-id="syncjob" data-api-url='delete/syncjob' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+        </ul>
+        <a class="btn btn-sm btn-success" href="/add.php?syncjob"><?=$lang['user']['create_syncjob'];?></a>
+      </div>
+    </div>
 		</div>
 	</div>
 </div>
@@ -533,7 +483,15 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "use
   </div>
 </div>
 </div> <!-- /container -->
-<script src="js/sorttable.js"></script>
+<script type='text/javascript'>
+<?php
+$lang_user = json_encode($lang['user']);
+echo "var lang = ". $lang_user . ";\n";
+echo "var csrf_token = '". $_SESSION['CSRF']['TOKEN'] . "';\n";
+echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
+?>
+</script>
+<script src="js/footable.min.js"></script>
 <script src="js/user.js"></script>
 <?php
 require_once("inc/footer.inc.php");

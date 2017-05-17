@@ -2,8 +2,8 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/vars.inc.php';
-if (file_exists('./inc/vars.local.inc.php')) {
-	include_once 'inc/vars.local.inc.php';
+if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/inc/vars.local.inc.php')) {
+  include_once $_SERVER['DOCUMENT_ROOT'] . '/inc/vars.local.inc.php';
 }
 
 // Yubi OTP API
@@ -32,13 +32,13 @@ $offset = sprintf('%+d:%02d', $hrs*$sgn, $mins);
 
 $dsn = $database_type . ":host=" . $database_host . ";dbname=" . $database_name;
 $opt = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES   => false,
-    PDO::MYSQL_ATTR_INIT_COMMAND => "SET time_zone = '" . $offset . "'",
+  PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+  PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+  PDO::ATTR_EMULATE_PREPARES   => false,
+  PDO::MYSQL_ATTR_INIT_COMMAND => "SET time_zone = '" . $offset . "'",
 ];
 try {
-	$pdo = new PDO($dsn, $database_user, $database_pass, $opt);
+  $pdo = new PDO($dsn, $database_user, $database_pass, $opt);
 }
 catch (PDOException $e) {
 ?>
@@ -47,64 +47,20 @@ catch (PDOException $e) {
 exit;
 }
 
+// Set language
 $_SESSION['mailcow_locale'] = strtolower(trim($DEFAULT_LANG));
-setcookie('language', $DEFAULT_LANG);
-if (isset($_COOKIE['language'])) {
-	switch ($_COOKIE['language']) {
-		case "de":
-			$_SESSION['mailcow_locale'] = 'de';
-			setcookie('language', 'de');
-		break;
-		case "en":
-			$_SESSION['mailcow_locale'] = 'en';
-			setcookie('language', 'en');
-		break;
-		case "es":
-			$_SESSION['mailcow_locale'] = 'es';
-			setcookie('language', 'es');
-		break;
-		case "nl":
-			$_SESSION['mailcow_locale'] = 'nl';
-			setcookie('language', 'nl');
-		break;
-		case "pt":
-			$_SESSION['mailcow_locale'] = 'pt';
-			setcookie('language', 'pt');
-		break;
-    case "ru":
-			$_SESSION['mailcow_locale'] = 'ru';
-			setcookie('language', 'ru');
-		break;
-	}
+
+if (isset($_GET['lang']) && in_array($_GET['lang'], $AVAILABLE_LANGUAGES)) {
+  $_SESSION['mailcow_locale'] = $_GET['lang'];
 }
-if (isset($_GET['lang'])) {
-	switch ($_GET['lang']) {
-		case "de":
-			$_SESSION['mailcow_locale'] = 'de';
-			setcookie('language', 'de');
-		break;
-		case "en":
-			$_SESSION['mailcow_locale'] = 'en';
-			setcookie('language', 'en');
-		break;
-		case "es":
-			$_SESSION['mailcow_locale'] = 'es';
-			setcookie('language', 'es');
-		break;
-		case "nl":
-			$_SESSION['mailcow_locale'] = 'nl';
-			setcookie('language', 'nl');
-		break;
-		case "pt":
-			$_SESSION['mailcow_locale'] = 'pt';
-			setcookie('language', 'pt');
-		break;
-		case "ru":
-			$_SESSION['mailcow_locale'] = 'ru';
-			setcookie('language', 'ru');
-		break;
-	}
+elseif (isset($_COOKIE['language']) && in_array($_COOKIE['language'], $AVAILABLE_LANGUAGES)) {
+  $_SESSION['mailcow_locale'] = $_COOKIE['language'];
 }
+if (isset($_SESSION['mailcow_locale']) && !file_exists($_SERVER['DOCUMENT_ROOT'] . '/lang/lang.'.$_SESSION['mailcow_locale'].'.php')) {
+  $_SESSION['mailcow_locale'] = strtolower(trim($DEFAULT_LANG));
+}
+setcookie('language', $_SESSION['mailcow_locale']);
+
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lang/lang.en.php';
 include $_SERVER['DOCUMENT_ROOT'] . '/lang/lang.'.$_SESSION['mailcow_locale'].'.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.inc.php';
