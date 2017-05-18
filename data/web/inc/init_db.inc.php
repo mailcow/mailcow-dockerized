@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "07052017_0824";
+    $db_version = "18052017_1017";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'"); 
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -576,7 +576,7 @@ function init_db_schema() {
     $stmt = $pdo->query("INSERT INTO `admin` (`username`, `password`, `superadmin`, `created`, `modified`, `active`)
       SELECT 'admin', '{SSHA256}K8eVJ6YsZbQCfuJvSUbaQRLr0HPLz5rC9IAp0PAFl0tmNDBkMDc0NDAyOTAxN2Rk', 1, NOW(), NOW(), 1
         WHERE NOT EXISTS (SELECT * FROM `admin`);");
-    $stmt = $pdo->query("DELETE FROM `domain_admins`;");
+    $stmt = $pdo->query("DELETE FROM `admin` WHERE `username` NOT IN  (SELECT `username` FROM `domain_admins`);");
     $stmt = $pdo->query("INSERT INTO `domain_admins` (`username`, `domain`, `created`, `active`)
         SELECT `username`, 'ALL', NOW(), 1 FROM `admin`
           WHERE superadmin='1' AND `username` NOT IN (SELECT `username` FROM `domain_admins`);"); 
