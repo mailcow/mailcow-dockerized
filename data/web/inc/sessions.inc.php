@@ -19,20 +19,14 @@ if (!isset($_SESSION['CSRF']['TOKEN'])) {
   $_SESSION['CSRF']['TOKEN'] = bin2hex(random_bytes(32));
 }
 
-// Set session IP and UA
-if (!isset($_SESSION['SESS_REMOTE_IP'])) {
-  $_SESSION['SESS_REMOTE_IP'] = $_SERVER['REMOTE_ADDR'];
-}
+// Set session UA
 if (!isset($_SESSION['SESS_REMOTE_UA'])) {
   $_SESSION['SESS_REMOTE_UA'] = $_SERVER['HTTP_USER_AGENT'];
 }
 
 // Check session
 function session_check() {
-  if (!isset($_SESSION['SESS_REMOTE_IP']) || !isset($_SESSION['SESS_REMOTE_UA'])) {
-    return false;
-  }
-  if ($_SESSION['SESS_REMOTE_IP'] != $_SERVER['REMOTE_ADDR']) {
+  if (!isset($_SESSION['SESS_REMOTE_UA'])) {
     return false;
   }
   if ($_SESSION['SESS_REMOTE_UA'] != $_SERVER['HTTP_USER_AGENT']) {
