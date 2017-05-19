@@ -135,7 +135,7 @@ if (isset($_SESSION['pending_tfa_method'])):
           <div class="form-group">
             <div class="input-group">
               <span class="input-group-addon" id="yubi-addon"><img alt="Yubicon Icon" src="/img/yubi.ico"></span>
-              <input type="text" name="token" id="token" class="form-control" placeholder="Touch Yubikey" aria-describedby="yubi-addon">
+              <input type="text" name="token" id="token" class="form-control" autocomplete="off" placeholder="Touch Yubikey" aria-describedby="yubi-addon">
               <input type="hidden" name="tfa_method" value="yubi_otp">
             </div>
           </div>
