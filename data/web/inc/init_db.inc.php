@@ -569,7 +569,6 @@ function init_db_schema() {
     // Recreate SQL views
     foreach ($views as $view => $create) {
       $pdo->query("DROP VIEW IF EXISTS `" . $view . "`;");
-      $pdo->query("DROP TABLE IF EXISTS `" . $view . "`;");
       $pdo->query($create);
     }
 
@@ -577,10 +576,10 @@ function init_db_schema() {
     $stmt = $pdo->query("INSERT INTO `admin` (`username`, `password`, `superadmin`, `created`, `modified`, `active`)
       SELECT 'admin', '{SSHA256}K8eVJ6YsZbQCfuJvSUbaQRLr0HPLz5rC9IAp0PAFl0tmNDBkMDc0NDAyOTAxN2Rk', 1, NOW(), NOW(), 1
         WHERE NOT EXISTS (SELECT * FROM `admin`);");
-    $stmt = $pdo->query("DELETE FROM `admin` WHERE `username` NOT IN  (SELECT `username` FROM `domain_admins`);");
     $stmt = $pdo->query("INSERT INTO `domain_admins` (`username`, `domain`, `created`, `active`)
         SELECT `username`, 'ALL', NOW(), 1 FROM `admin`
-          WHERE superadmin='1' AND `username` NOT IN (SELECT `username` FROM `domain_admins`);"); 
+          WHERE superadmin='1' AND `username` NOT IN (SELECT `username` FROM `domain_admins`);");
+    $stmt = $pdo->query("DELETE FROM `admin` WHERE `username` NOT IN  (SELECT `username` FROM `domain_admins`);");
 
     // Insert new DB schema version
     $stmt = $pdo->query("REPLACE INTO `versions` (`application`, `version`) VALUES ('db_schema', '" . $db_version . "');"); 
