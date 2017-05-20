@@ -65,38 +65,3 @@ rspamd_config:register_symbol({
 })
 end
 
-rspamd_config.MRAPTOR = {
-  callback = function(task)
-    local parts = task:get_parts()
-    local rspamd_logger = require "rspamd_logger"
-    local rspamd_regexp = require "rspamd_regexp"
-
-    if parts then
-      for _,p in ipairs(parts) do
-        local mtype,subtype = p:get_type()
-        local re = rspamd_regexp.create_cached('/(office|word|excel)/i')
-        if re:match(subtype) then
-          local content = tostring(p:get_content())
-          local filename = p:get_filename()
-
-          local file = os.tmpname()
-          f = io.open(file, "a+")
-          f:write(content)
-          f:close()
-
-          local scan = assert(io.popen('PATH=/usr/bin:/usr/local/bin mraptor ' .. file .. '> /dev/null 2>&1; echo $?', 'r'))
-          local result = scan:read('*all')
-          local exit_code = string.match(result, "%d+")
-          rspamd_logger.infox(exit_code)
-          scan:close()
-
-          if exit_code == "20" then
-            rspamd_logger.infox("Reject dangerous macro in office file " .. filename)
-            task:set_pre_result(rspamd_actions['reject'], 'Dangerous macro in office file ' .. filename)
-          end
-
-        end
-      end
-    end
-  end
-}
