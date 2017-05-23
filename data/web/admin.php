@@ -32,7 +32,7 @@ $tfa_data = get_tfa();
     <div class="panel panel-danger">
       <div class="panel-heading"><?=$lang['admin']['admin_details'];?></div>
       <div class="panel-body">
-        <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
+        <form class="form-horizontal" autocapitalize="none" data-id="admin" autocorrect="off" role="form" method="post">
         <?php $admindetails = get_admin_details(); ?>
           <div class="form-group">
             <label class="control-label col-sm-3" for="admin_user"><?=$lang['admin']['admin'];?>:</label>
@@ -55,7 +55,7 @@ $tfa_data = get_tfa();
           </div>
           <div class="form-group">
             <div class="col-sm-offset-3 col-sm-9">
-              <button type="submit" name="edit_admin_account" class="btn btn-default"><?=$lang['admin']['save'];?></button>
+              <button class="btn btn-default" id="edit_selected" data-id="admin" data-item="null" data-api-url='edit/admin' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
             </div>
           </div>
         </form>
@@ -94,20 +94,27 @@ $tfa_data = get_tfa();
       </div>
     </div>
     <div class="panel panel-default">
-    <div style="cursor:pointer;" class="panel-heading" data-toggle="collapse" data-parent="#accordion_access" data-target="#collapseDomAdmins">
-      <span class="accordion-toggle"><?=$lang['admin']['domain_admins'];?></span>
-    </div>
-      <div id="collapseDomAdmins" class="panel-collapse collapse">
+    <div class="panel-heading"><?=$lang['admin']['domain_admins'];?></div>
         <div class="panel-body">
-          <form method="post">
-            <div class="table-responsive">
+          <div class="table-responsive">
             <table class="table table-striped" id="domainadminstable"></table>
+          </div>
+          <div class="mass-actions-admin">
+            <div class="btn-group">
+              <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="domain_admins" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
+              <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a id="edit_selected" data-id="domain_admins" data-api-url='edit/domain_admin' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
+                <li><a id="edit_selected" data-id="domain_admins" data-api-url='edit/domain_admin' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
+                <li role="separator" class="divider"></li>
+                <li><a id="edit_selected" data-id="domain_admins" data-api-url='edit/domain_admin' data-api-attr='{"disable_tfa":"1"}' href="#"><?=$lang['tfa']['disable_tfa'];?></a></li>
+                <li role="separator" class="divider"></li>
+                <li><a id="delete_selected" data-id="domain_admins" data-api-url='delete/domain_admin' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+              </ul>
             </div>
-          </form>
-          <small>
+          </div>
           <legend><?=$lang['admin']['add_domain_admin'];?></legend>
-          <form class="form-horizontal" role="form" method="post">
-            <input type="hidden" value="0" name="active">
+          <form class="form-horizontal" data-id="domain_admin" role="form" method="post">
             <div class="form-group">
               <label class="control-label col-sm-2" for="username"><?=$lang['admin']['username'];?>:</label>
               <div class="col-sm-10">
@@ -118,7 +125,7 @@ $tfa_data = get_tfa();
             <div class="form-group">
               <label class="control-label col-sm-2" for="name"><?=$lang['admin']['admin_domains'];?>:</label>
               <div class="col-sm-10">
-                <select title="<?=$lang['admin']['search_domain_da'];?>" style="width:100%" name="domain[]" size="5" multiple>
+                <select title="<?=$lang['admin']['search_domain_da'];?>" style="width:100%" name="domains" size="5" multiple>
                 <?php
                 foreach (mailbox('get', 'domains') as $domain) {
                   echo "<option>".htmlspecialchars($domain)."</option>";
@@ -148,13 +155,11 @@ $tfa_data = get_tfa();
             </div>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" name="add_domain_admin" class="btn btn-default"><?=$lang['admin']['add'];?></button>
+                <button class="btn btn-default" id="add_item" data-id="domain_admin" data-api-url='add/domain_admin' data-api-attr='{}' href="#"><?=$lang['admin']['add'];?></button>
               </div>
             </div>
           </form>
-          </small>
         </div>
-      </div>
     </div>
   </div>
 

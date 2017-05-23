@@ -1,4 +1,19 @@
 $(document).ready(function() {
+  $.fn.serializeObject = function() {
+    var o = {};
+    var a = this.serializeArray();
+    $.each(a, function() {
+      if (o[this.name]) {
+        if (!o[this.name].push) {
+          o[this.name] = [o[this.name]];
+        }
+        o[this.name].push(this.value || '');
+      } else {
+        o[this.name] = this.value || '';
+      }
+    });
+    return o;
+  };
   // Collect values of input fields with name "multi_select" an same data-id to js array multi_data[data-id]
   var multi_data = [];
   $(document).on('change', 'input[name=multi_select]:checkbox', function() {
@@ -43,10 +58,7 @@ $(document).ready(function() {
     // If clicked element #edit_selected is in a form with the same data-id as the button,
     // we merge all input fields by {"name":"value"} into api-attr
     if ($(this).closest("form").data('id') == id) {
-      var attr_to_merge = {};
-      $.each($(this).closest("form").serializeArray(), function(i, field) {
-          attr_to_merge[field.name] = field.value;
-      });
+      var attr_to_merge = $(this).closest("form").serializeObject();
       var api_attr = $.extend(api_attr, attr_to_merge)
     }
     // If clicked element #edit_selected has data-item attribute, it is added to "items"
@@ -59,6 +71,7 @@ $(document).ready(function() {
     }
     if (typeof multi_data[id] == "undefined") return;
     api_items = multi_data[id];
+
     if (Object.keys(api_items).length !== 0) {
       $.ajax({
         type: "POST",
@@ -85,10 +98,7 @@ $(document).ready(function() {
     // If clicked button is in a form with the same data-id as the button,
     // we merge all input fields by {"name":"value"} into api-attr
     if ($(this).closest("form").data('id') == id) {
-      var attr_to_merge = {};
-      $.each($(this).closest("form").serializeArray(), function(i, field) {
-          attr_to_merge[field.name] = field.value;
-      });
+      var attr_to_merge = $(this).closest("form").serializeObject();
       var api_attr = $.extend(api_attr, attr_to_merge)
     }
     $.ajax({
@@ -125,30 +135,33 @@ $(document).ready(function() {
     if (typeof multi_data[id] == "undefined" || multi_data[id] == "") return;
     data_array = multi_data[id];
     api_url = $(this).data('api-url');
-      $(document).on('show.bs.modal','#ConfirmDeleteModal', function () {
-        $("#ItemsToDelete").empty();
-        for (var i in data_array) {
-          $("#ItemsToDelete").append("<li>" + data_array[i] + "</li>");
+    $(document).on('show.bs.modal','#ConfirmDeleteModal', function () {
+      $("#ItemsToDelete").empty();
+      for (var i in data_array) {
+        $("#ItemsToDelete").append("<li>" + data_array[i] + "</li>");
+      }
+    })
+    $('#ConfirmDeleteModal').modal({
+      backdrop: 'static',
+      keyboard: false
+    })
+    .one('click', '#IsConfirmed', function(e) {
+      $.ajax({
+        type: "POST",
+        dataType: "json",
+        cache: false,
+        data: { "items": JSON.stringify(data_array), "csrf_token": csrf_token },
+        url: '/api/v1/' + api_url,
+        jsonp: false,
+        complete: function (data) {
+          window.location = window.location.href.split("#")[0];
         }
-      })
-      $('#ConfirmDeleteModal').modal({
-        backdrop: 'static',
-        keyboard: false
-      })
-      .one('click', '#IsConfirmed', function(e) {
-        $.ajax({
-          type: "POST",
-          dataType: "json",
-          data: { "items": JSON.stringify(data_array), "csrf_token": csrf_token },
-          url: '/api/v1/' + api_url,
-          jsonp: false,
-          complete: function (data) {
-            window.location = window.location.href.split("#")[0];
-          }
-        });
-      })
-      .one('click', '#isCanceled', function(e) {
-        $('#ConfirmDeleteModal').modal('hide');
-      });;
+      });
+    })
+    .one('click', '#isCanceled', function(e) {
+      // Remove event handler to allow to close modal and restart dialog without multiple submits
+      $('#ConfirmDeleteModal').off();
+      $('#ConfirmDeleteModal').modal('hide');
+    });
   });
 });

@@ -63,12 +63,6 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
 	if (isset($_POST["dkim_add_key"])) {
 		dkim_add_key($_POST);
 	}
-	if (isset($_POST["add_domain_admin"])) {
-		add_domain_admin($_POST);
-	}
-	if (isset($_POST["delete_domain_admin"])) {
-		delete_domain_admin($_POST);
-	}
 	if (isset($_POST["add_forwarding_host"])) {
 		add_forwarding_host($_POST);
 	}

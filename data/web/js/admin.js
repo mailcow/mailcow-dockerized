@@ -175,6 +175,7 @@ jQuery(function($){
   function draw_domain_admins() {
     ft_domainadmins = FooTable.init('#domainadminstable', {
       "columns": [
+        {"name":"chkbox","title":"","style":{"maxWidth":"40px","width":"40px"},"filterable": false,"sortable": false,"type":"html"},
         {"sorted": true,"name":"username","title":lang.username,"style":{"width":"250px"}},
         {"name":"selected_domains","title":lang.admin_domains,"breakpoints":"xs sm"},
         {"name":"tfa_active","title":"TFA", "filterable": false,"style":{"maxWidth":"80px","width":"80px"}},
@@ -190,9 +191,9 @@ jQuery(function($){
         },
         success: function (data) {
           $.each(data, function (i, item) {
+            item.chkbox = '<input type="checkbox" data-id="domain_admins" name="multi_select" value="' + item.username + '" />';
             item.action = '<div class="btn-group">' +
               '<a href="/edit.php?domainadmin=' + encodeURI(item.username) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-              '<a href="/delete.php?domainadmin=' + encodeURI(item.username) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
               '</div>';
           });
         }
@@ -214,7 +215,7 @@ jQuery(function($){
     });
   }
   function draw_fwd_hosts() {
-    ft_domainadmins = FooTable.init('#forwardinghoststable', {
+    ft_forwardinghoststable = FooTable.init('#forwardinghoststable', {
       "columns": [
         {"name":"chkbox","title":"","style":{"maxWidth":"40px","width":"40px"},"filterable": false,"sortable": false,"type":"html"},
         {"name":"host","type":"text","title":lang.host,"style":{"width":"250px"}},

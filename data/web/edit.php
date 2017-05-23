@@ -68,17 +68,17 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 				<br />
 				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
 					<input type="hidden" value="0" name="active">
-					<input type="hidden" name="username_now" value="<?=htmlspecialchars($domain_admin);?>">
+					<input type="hidden" name="username" value="<?=htmlspecialchars($domain_admin);?>">
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="username"><?=$lang['edit']['username'];?></label>
+						<label class="control-label col-sm-2" for="username_new"><?=$lang['edit']['username'];?></label>
 						<div class="col-sm-10">
-              <input class="form-control" type="text" name="username" value="<?=htmlspecialchars($domain_admin);?>" />
+              <input class="form-control" type="text" name="username_new" value="<?=htmlspecialchars($domain_admin);?>" />
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="domain"><?=$lang['edit']['domains'];?></label>
+						<label class="control-label col-sm-2" for="domains"><?=$lang['edit']['domains'];?></label>
 						<div class="col-sm-10">
-							<select id="domain" name="domain[]" multiple>
+							<select id="domains" name="domains[]" multiple required>
 							<?php
 							foreach ($result['selected_domains'] as $domain):
 							?>
