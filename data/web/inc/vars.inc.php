@@ -31,7 +31,7 @@ $MC_DKIM_KEYS = '/data/dkim/keys';
 $DEFAULT_LANG = 'en';
 
 // Available languages
-$AVAILABLE_LANGUAGES = array('de', 'en', 'es', 'nl', 'pt', 'ru');
+$AVAILABLE_LANGUAGES = array('de', 'en', 'es', 'nl', 'pt', 'ru', 'it');
 
 // Change theme (default: lumen)
 // Needs to be one of those: cerulean, cosmo, cyborg, darkly, flatly, journal, lumen, paper, readable, sandstone,
