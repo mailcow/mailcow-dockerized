@@ -7,12 +7,6 @@ rspamd_config.MAILCOW_AUTH = {
 	end
 }
 
-modify_subject_map = rspamd_config:add_map({
-  url = 'http://172.22.1.251:8081/tags.php',
-  type = 'map',
-  description = 'Map of users to use subject tags for'
-})
-
 local redis_params
 redis_params = rspamd_parse_redis_server('tag_settings')
 if redis_params then
