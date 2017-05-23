@@ -31,7 +31,7 @@ endif;
       <h4 class="modal-title"><?= $lang['footer']['confirm_delete']; ?></h4>
     </div>
     <div class="modal-body">
-      <p><?= $lang['footer']['delete_these_items']; ?></p>
+      <p id="DeleteText"><?= $lang['footer']['delete_these_items']; ?></p>
       <ul id="ItemsToDelete"></ul>
       <hr>
       <button class="btn btn-sm btn-danger" id="IsConfirmed"><?= $lang['footer']['delete_now']; ?></button>
@@ -48,6 +48,7 @@ endif;
 <script src="/js/bootstrap-select.min.js"></script>
 <script src="/js/notifications.min.js"></script>
 <script src="/js/u2f-api.js"></script>
+<script src="/js/api.js"></script>
 <script>
 // Select language and reopen active URL without POST
 function setLang(sel) {

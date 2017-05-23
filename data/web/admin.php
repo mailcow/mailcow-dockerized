@@ -15,8 +15,15 @@ $tfa_data = get_tfa();
     <li role="presentation">
       <a href="#tab-config" aria-controls="tab-config" role="tab" data-toggle="tab"><?=$lang['admin']['configuration'];?></a>
     </li>
-    <li role="presentation">
-      <a href="#tab-logs" aria-controls="tab-logs" role="tab" data-toggle="tab"><?=$lang['admin']['logs'];?></a>
+    <li class="dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Logs
+    <span class="caret"></span></a>
+    <ul class="dropdown-menu">
+    <li role="presentation"><a href="#tab-postfix-logs" aria-controls="tab-postfix-logs" role="tab" data-toggle="tab">Postfix</a></li>
+    <li role="presentation"><a href="#tab-dovecot-logs" aria-controls="tab-dovecot-logs" role="tab" data-toggle="tab">Dovecot</a></li>
+    <li role="presentation"><a href="#tab-sogo-logs" aria-controls="tab-sogo-logs" role="tab" data-toggle="tab">SOGo</a></li>
+    <li role="presentation"><a href="#tab-rspamd-history" aria-controls="tab-rspamd-history" role="tab" data-toggle="tab">Rspamd</a></li>
+    </ul>
     </li>
   </ul>
 
@@ -113,7 +120,7 @@ $tfa_data = get_tfa();
               <div class="col-sm-10">
                 <select title="<?=$lang['admin']['search_domain_da'];?>" style="width:100%" name="domain[]" size="5" multiple>
                 <?php
-                foreach (mailbox_get_domains() as $domain) {
+                foreach (mailbox('get', 'domains') as $domain) {
                   echo "<option>".htmlspecialchars($domain)."</option>";
                 }
                 ?>
@@ -163,7 +170,7 @@ $tfa_data = get_tfa();
           </div>
         </div>
         <?php
-        foreach(mailbox_get_domains() as $domain) {
+        foreach(mailbox('get', 'domains') as $domain) {
             if (!empty($dkim = dkim_get_key_details($domain))) {
           ?>
             <div class="row">
@@ -192,7 +199,7 @@ $tfa_data = get_tfa();
           </div>
           <?php
           }
-          foreach(mailbox_get_alias_domains($domain) as $alias_domain) {
+          foreach(mailbox('get', 'alias_domains') as $alias_domain) {
             if (!empty($dkim = dkim_get_key_details($alias_domain))) {
             ?>
               <div class="row">
@@ -297,22 +304,7 @@ $tfa_data = get_tfa();
     </div>
   </div>
 
-  <div role="tabpanel" class="tab-pane" id="tab-logs">
-    <div class="panel panel-default">
-      <div class="panel-heading">Dovecot
-        <div class="btn-group pull-right">
-          <a class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['admin']['action'];?> <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="#" id="refresh_dovecot_log"><?=$lang['admin']['refresh'];?></a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="panel-body">
-        <div class="table-responsive">
-          <table class="table table-striped" id="dovecot_log"></table>
-        </div>
-      </div>
-    </div>
+  <div role="tabpanel" class="tab-pane" id="tab-postfix-logs">
     <div class="panel panel-default">
       <div class="panel-heading">Postfix
         <div class="btn-group pull-right">
@@ -328,6 +320,27 @@ $tfa_data = get_tfa();
         </div>
       </div>
     </div>
+  </div>
+
+  <div role="tabpanel" class="tab-pane" id="tab-dovecot-logs">
+    <div class="panel panel-default">
+      <div class="panel-heading">Dovecot
+        <div class="btn-group pull-right">
+          <a class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['admin']['action'];?> <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#" id="refresh_dovecot_log"><?=$lang['admin']['refresh'];?></a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive">
+          <table class="table table-striped" id="dovecot_log"></table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div role="tabpanel" class="tab-pane" id="tab-sogo-logs">
     <div class="panel panel-default">
       <div class="panel-heading">SOGo
         <div class="btn-group pull-right">
@@ -340,6 +353,24 @@ $tfa_data = get_tfa();
       <div class="panel-body">
         <div class="table-responsive">
           <table class="table table-striped" id="sogo_log"></table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div role="tabpanel" class="tab-pane" id="tab-rspamd-history">
+    <div class="panel panel-default">
+      <div class="panel-heading">Rspamd history
+        <div class="btn-group pull-right">
+          <a class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['admin']['action'];?> <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#" id="refresh_rspamd_history"><?=$lang['admin']['refresh'];?></a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive">
+          <table class="table table-striped" id="rspamd_history"></table>
         </div>
       </div>
     </div>

@@ -20,7 +20,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 		if (isset($_GET["alias"]) &&
 			!empty($_GET["alias"])) {
 				$alias = $_GET["alias"];
-        $result = mailbox_get_alias_details($alias);
+        $result = mailbox('get', 'alias_details', $alias);
 				if (!empty($result)) {
 				?>
 					<h4><?=$lang['edit']['alias'];?></h4>
@@ -138,7 +138,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 		is_valid_domain_name($_GET["domain"]) &&
 		!empty($_GET["domain"])) {
 			$domain = $_GET["domain"];
-      $result = mailbox_get_domain_details($domain);
+      $result = mailbox('get', 'domain_details', $domain);
 			if (!empty($result)) {
 			?>
 				<h4><?=$lang['edit']['domain'];?></h4>
@@ -225,119 +225,54 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 		<hr>
 		<div class="row">
 			<div class="col-sm-6">
-				<h4><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span> <?=$lang['user']['spamfilter_wl'];?></h4>
-				<p><?=$lang['user']['spamfilter_wl_desc'];?></p>
-				<div class="row">
-					<div class="col-sm-6"><b><?=$lang['user']['spamfilter_table_rule'];?></b></div>
-					<div class="col-sm-6"><b><?=$lang['user']['spamfilter_table_action'];?></b></div>
-				</div>
-				<?php
-        $get_policy_list = get_policy_list($domain);
-				if (empty($get_policy_list['whitelist'])):
-				?>
-					<div class="row">
-						<div class="col-sm-12"><i><?=$lang['user']['spamfilter_table_empty'];?></i></div>
-					</div>
-				<?php
-				else:
-          foreach($get_policy_list['whitelist'] as $wl):
-          ?>
-          <div class="row striped">
-            <form class="form-inline" method="post">
-            <div class="col-xs-6"><code><?=$wl['value'];?></code></div>
-            <div class="col-xs-6">
-              <?php
-              if ($wl['object'] == $domain):
-              ?>
-							<input type="hidden" name="delete_prefid" value="<?=$wl['prefid'];?>">
-							<input type="hidden" name="delete_policy_list_item">
-							<input type="hidden" name="domain" value="<?=$domain;?>">
-                <a href="#" onclick="$(this).closest('form').submit()" data-toggle="tooltip" data-placement="left" title="<?=$lang['user']['delete_now'];?>"><span class="glyphicon glyphicon-remove"></span></a>
-              <?php
-              else:
-              ?>
-                <span style="cursor:not-allowed"><?=$lang['user']['spamfilter_table_domain_policy'];?></span>
-              <?php
-              endif;
-              ?>
-            </div>
-            </form>
+				<h4><?=$lang['user']['spamfilter_wl'];?></h4>
+        <p><?=$lang['user']['spamfilter_wl_desc'];?></p>
+        <div class="table-responsive">
+          <table class="table table-striped table-condensed" id="wl_policy_domain_table"></table>
+        </div>
+        <div class="mass-actions-user">
+          <div class="btn-group">
+            <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="policy_wl_domain" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
+            <a class="btn btn-sm btn-danger" id="delete_selected" data-id="policy_wl_domain" data-api-url='delete/policy_mailbox' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+            </ul>
           </div>
-          <?php
-          endforeach;
-        endif;
-				?>
-				<hr style="margin:5px 0px 7px 0px">
-				<div class="row">
-					<form class="form-inline" method="post">
-					<div class="col-xs-6">
-						<input type="text" class="form-control input-sm" name="object_from" id="object_from" placeholder="*@example.org" required>
-						<input type="hidden" name="object_list" value="wl">
-						<input type="hidden" name="domain" value="<?=$domain;?>">
-					</div>
-					<div class="col-xs-6">
-						<button type="submit" name="add_policy_list_item" class="btn btn-xs btn-default"><?=$lang['user']['spamfilter_table_add'];?></button>
-					</div>
-					</form>
-				</div>
-			</div>
+        </div>
+        <form class="form-inline" method="post">
+          <div class="input-group">
+            <input type="text" class="form-control" name="object_from" id="object_from" placeholder="*@example.org" required>
+            <input type="hidden" name="domain" value="<?= $domain ;?>">
+            <input type="hidden" name="object_list" value="wl">
+            <span class="input-group-btn">
+              <button type="submit" id="add_policy_list_item" name="add_policy_list_item" class="btn btn-default"><?=$lang['user']['spamfilter_table_add'];?></button>
+            </span>
+          </div>
+        </form>
+      </div>
 			<div class="col-sm-6">
-				<h4><span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span> <?=$lang['user']['spamfilter_bl'];?></h4>
-				<p><?=$lang['user']['spamfilter_bl_desc'];?></p>
-				<div class="row">
-					<div class="col-sm-6"><b><?=$lang['user']['spamfilter_table_rule'];?></b></div>
-					<div class="col-sm-6"><b><?=$lang['user']['spamfilter_table_action'];?></b></div>
-				</div>
-				<?php
-				if (empty($get_policy_list['blacklist'])):
-				?>
-					<div class="row">
-						<div class="col-sm-12"><i><?=$lang['user']['spamfilter_table_empty'];?></i></div>
-					</div>
-				<?php
-				else:
-          foreach($get_policy_list['blacklist'] as $bl):
-          ?>
-          <div class="row striped">
-            <form class="form-inline" method="post">
-            <div class="col-xs-6"><code><?=$bl['value'];?></code></div>
-            <div class="col-xs-6">
-							<input type="hidden" name="delete_prefid" value="<?=$bl['prefid'];?>">
-              <?php
-              if ($bl['object'] == $domain):
-              ?>
-								<input type="hidden" name="delete_policy_list_item">
-								<input type="hidden" name="domain" value="<?=$domain;?>">
-                <a href="#" onclick="$(this).closest('form').submit()" data-toggle="tooltip" data-placement="left" title="<?=$lang['user']['delete_now'];?>"><span class="glyphicon glyphicon-remove"></span></a>
-              <?php
-              else:
-              ?>
-                <span style="cursor:not-allowed"><?=$lang['user']['spamfilter_table_domain_policy'];?></span>
-              <?php
-              endif;
-              ?>
-            </div>
-            </form>
+				<h4><?=$lang['user']['spamfilter_bl'];?></h4>
+        <p><?=$lang['user']['spamfilter_bl_desc'];?></p>
+        <div class="table-responsive">
+          <table class="table table-striped table-condensed" id="bl_policy_domain_table"></table>
+        </div>
+        <div class="mass-actions-user">
+          <div class="btn-group">
+            <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="policy_bl_domain" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
+            <a class="btn btn-sm btn-danger" id="delete_selected" data-id="policy_bl_domain" data-api-url='delete/policy_mailbox' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+            </ul>
           </div>
-          <?php
-          endforeach;
-        endif;
-				?>
-				<hr style="margin:5px 0px 7px 0px">
-				<div class="row">
-					<form class="form-inline" method="post">
-					<div class="col-xs-6">
-						<input type="text" class="form-control input-sm" name="object_from" id="object_from" placeholder="*@example.org" required>
-						<input type="hidden" name="object_list" value="bl">
-						<input type="hidden" name="domain" value="<?=$domain;?>">
-					</div>
-					<div class="col-xs-6">
-						<button type="submit" name="add_policy_list_item" class="btn btn-xs btn-default"><?=$lang['user']['spamfilter_table_add'];?></button>
-					</div>
-					</form>
-				</div>
-			</div>
-		</div>
+        </div>
+        <form class="form-inline" method="post">
+          <div class="input-group">
+            <input type="text" class="form-control" name="object_from" id="object_from" placeholder="*@example.org" required>
+            <input type="hidden" name="domain" value="<?= $domain ;?>">
+            <input type="hidden" name="object_list" value="bl">
+            <span class="input-group-btn">
+              <button type="submit" id="add_policy_list_item" name="add_policy_list_item" class="btn btn-default"><?=$lang['user']['spamfilter_table_add'];?></button>
+            </span>
+          </div>
+        </form>
+      </div>
+    </div>
         <?php
 			}
 			else {
@@ -350,7 +285,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 		is_valid_domain_name($_GET["aliasdomain"]) &&
 		!empty($_GET["aliasdomain"])) {
 			$alias_domain = $_GET["aliasdomain"];
-      $result = mailbox_get_alias_domain_details($alias_domain);
+      $result = mailbox('get', 'alias_domain_details', $alias_domain);
       if (!empty($result)) {
 			?>
 				<h4><?=$lang['edit']['edit_alias_domain'];?></h4>
@@ -399,7 +334,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 	}
 	elseif (isset($_GET['mailbox']) && filter_var($_GET["mailbox"], FILTER_VALIDATE_EMAIL) && !empty($_GET["mailbox"])) {
     $mailbox = $_GET["mailbox"];
-    $result = mailbox_get_mailbox_details($mailbox);
+    $result = mailbox('get', 'mailbox_details', $mailbox);
     if (!empty($result)) {
       ?>
       <h4><?=$lang['edit']['mailbox'];?></h4>
@@ -426,7 +361,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
           <div class="col-sm-10">
             <select data-width="100%" style="width:100%" id="sender_acl" name="sender_acl[]" size="10" multiple>
             <?php
-            $sender_acl_handles = mailbox_get_sender_acl_handles($mailbox);
+            $sender_acl_handles = mailbox('get', 'sender_acl_handles', $mailbox);
 
             foreach ($sender_acl_handles['sender_acl_domains']['ro'] as $domain):
               ?>
@@ -504,7 +439,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
   }
 	elseif (isset($_GET['resource']) && filter_var($_GET["resource"], FILTER_VALIDATE_EMAIL) && !empty($_GET["resource"])) {
 			$resource = $_GET["resource"];
-      $result = mailbox_get_resource_details($resource);
+      $result = mailbox('get', 'resource_details', $resource);
       if (!empty($result)) {
         ?>
 				<h4><?=$lang['edit']['resource'];?></h4>
@@ -566,7 +501,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == 
 	if (isset($_GET['syncjob']) &&
     is_numeric($_GET['syncjob'])) {
 			$id = $_GET["syncjob"];
-      $result = get_syncjob_details($id);
+      $result = mailbox('get', 'syncjob_details', $id);
       if (!empty($result)) {
 			?>
 				<h4><?=$lang['edit']['syncjob'];?></h4>
@@ -686,6 +621,17 @@ else {
 	</div>
 <a href="<?=$_SESSION['return_to'];?>">&#8592; <?=$lang['edit']['previous'];?></a>
 </div> <!-- /container -->
+<script type='text/javascript'>
+<?php
+$lang_user = json_encode($lang['user']);
+echo "var lang = ". $lang_user . ";\n";
+echo "var table_for_domain = '". ((isset($domain)) ? $domain : null) . "';\n";
+echo "var csrf_token = '". $_SESSION['CSRF']['TOKEN'] . "';\n";
+echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
+?>
+</script>
+<script src="js/footable.min.js"></script>
+<script src="js/edit.js"></script>
 <?php
 require_once("inc/footer.inc.php");
 ?>

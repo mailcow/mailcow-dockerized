@@ -42,28 +42,24 @@ try {
 }
 catch (PDOException $e) {
 ?>
-<center style='font-family: "Lucida Sans Unicode", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;'>?? Connection failed, database may be in warm-up state, please try again later.<br /><br />The following error was reported:<br/>  <?=$e->getMessage();?></center>
+<center style='font-family: "Lucida Sans Unicode", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;'>Connection failed, database may be in warm-up state, please try again later.<br /><br />The following error was reported:<br/>  <?=$e->getMessage();?></center>
 <?php
 exit;
 }
 
 // Set language
-$_SESSION['mailcow_locale'] = strtolower(trim($DEFAULT_LANG));
-
+if (!isset($_SESSION['mailcow_locale'])) {
+  $_SESSION['mailcow_locale'] = strtolower(trim($DEFAULT_LANG));
+}
 if (isset($_GET['lang']) && in_array($_GET['lang'], $AVAILABLE_LANGUAGES)) {
   $_SESSION['mailcow_locale'] = $_GET['lang'];
 }
-elseif (isset($_COOKIE['language']) && in_array($_COOKIE['language'], $AVAILABLE_LANGUAGES)) {
-  $_SESSION['mailcow_locale'] = $_COOKIE['language'];
-}
-if (isset($_SESSION['mailcow_locale']) && !file_exists($_SERVER['DOCUMENT_ROOT'] . '/lang/lang.'.$_SESSION['mailcow_locale'].'.php')) {
-  $_SESSION['mailcow_locale'] = strtolower(trim($DEFAULT_LANG));
-}
-setcookie('language', $_SESSION['mailcow_locale']);
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lang/lang.en.php';
 include $_SERVER['DOCUMENT_ROOT'] . '/lang/lang.'.$_SESSION['mailcow_locale'].'.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.mailbox.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.policy.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/init_db.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/triggers.inc.php';
 init_db_schema();

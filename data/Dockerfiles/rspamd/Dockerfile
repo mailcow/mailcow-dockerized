@@ -17,6 +17,9 @@ COPY settings.conf /etc/rspamd/modules.d/settings.conf
 COPY antivirus.conf /etc/rspamd/modules.d/antivirus.conf
 COPY dkim_signing.lua /usr/share/rspamd/lua/dkim_signing.lua
 
+RUN apt-get autoremove --purge \
+	&& apt-get clean
+
 CMD /usr/bin/rspamd -f -u _rspamd -g _rspamd
 
 RUN rm -rf /tmp/* /var/tmp/*

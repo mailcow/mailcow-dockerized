@@ -1,75 +1,19 @@
-$(document).ready(function() {
-  // Collect values of input fields with name multi_select with same data-id to js array multi_data[data-id]
-  var multi_data = [];
-  $(document).on('change', 'input[name=multi_select]:checkbox', function() {
-    if ($(this).is(':checked') && $(this).data('id')) {
-      var id = $(this).data('id');
-      if (typeof multi_data[id] == "undefined") {
-        multi_data[id] = [];
-      }
-      multi_data[id].push($(this).val());
-    }
-    else {
-      var id = $(this).data('id');
-      multi_data[id].splice($.inArray($(this).val(), multi_data[id]),1);
-    }
-  });
-  // Select checkbox by click on parent tr
-  $(document).on('click', 'tbody>tr', function(e) {
-    if (e.target.type == "checkbox") {
-      e.stopPropagation();
-    } else {
-      var checkbox = $(this).find(':checkbox');
-      checkbox.trigger('click');
-    }
-  });
-  // Select or deselect all checkboxes with same data-id
-  $(document).on('click', '#toggle_multi_select_all', function(e) {
-    e.preventDefault();
-    id = $(this).data("id");
-    multi_data[id] = [];
-    var all_checkboxes = $("input[data-id=" + id + "]:enabled");
-    all_checkboxes.prop("checked", !all_checkboxes.prop("checked")).change();
-  });
-  // General API edit function
-  $(document).on('click', '#delete_selected', function(e) {
-    e.preventDefault();
-    var id = $(this).data('id');
-    if (typeof multi_data[id] == "undefined" || multi_data[id] == "") return;
-    data_array = multi_data[id];
-    api_url = $(this).data('api-url');
-      $(document).on('show.bs.modal','#ConfirmDeleteModal', function () {
-        $("#ItemsToDelete").empty();
-        for (var i in data_array) {
-          $("#ItemsToDelete").append("<li>" + data_array[i] + "</li>");
-        }
-      })
-      $('#ConfirmDeleteModal').modal({
-        backdrop: 'static',
-        keyboard: false
-      })
-      .one('click', '#IsConfirmed', function(e) {
-        $.ajax({
-          type: "POST",
-          dataType: "json",
-          data: { "items": JSON.stringify(data_array), "csrf_token": csrf_token },
-          url: '/api/v1/' + api_url,
-          jsonp: false,
-          complete: function (data) {
-            location.reload(true);
-          }
-        });
-      })
-      .one('click', '#isCanceled', function(e) {
-        $('#ConfirmDeleteModal').modal('hide');
-      });;
-  });
-
-});
 jQuery(function($){
   function unix_time_format(tm) {
     var date = new Date(tm ? tm * 1000 : 0);
     return date.toLocaleString();
+  }
+  function humanFileSize(bytes) {
+    if(Math.abs(bytes) < 1024) {
+        return bytes + ' B';
+    }
+    var units = ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+    var u = -1;
+    do {
+        bytes /= 1024;
+        ++u;
+    } while(Math.abs(bytes) >= 1024 && u < units.length - 1);
+    return bytes.toFixed(1)+' '+units[u];
   }
   $("#refresh_postfix_log").on('click', function(e) {
     e.preventDefault();
@@ -82,6 +26,10 @@ jQuery(function($){
   $("#refresh_sogo_log").on('click', function(e) {
     e.preventDefault();
     draw_sogo_logs();
+  });
+  $("#refresh_rspamd_history").on('click', function(e) {
+    e.preventDefault();
+    draw_rspamd_history();
   });
   function draw_postfix_logs() {
     ft_postfix_logs = FooTable.init('#postfix_log', {
@@ -307,10 +255,185 @@ jQuery(function($){
       }
     });
   }
-
+  function draw_rspamd_history() {
+    ft_postfix_logs = FooTable.init('#rspamd_history', {
+      "columns": [{
+        "name": "message-id",
+        "title": "ID",
+        "breakpoints": "all",
+        "style": {
+          "minWidth": 130,
+          "overflow": "hidden",
+          "textOverflow": "ellipsis",
+          "wordBreak": "break-all",
+          "whiteSpace": "normal"
+        }
+        }, {
+          "name": "ip",
+          "title": "IP address",
+          "breakpoints": "all",
+          "style": {
+            "minWidth": 88
+          }
+        }, {
+          "name": "sender_mime",
+          "title": "From",
+          "breakpoints": "xs sm md",
+          "style": {
+            "minWidth": 100
+          }
+        }, {
+          "name": "rcpt_mime",
+          "title": "To",
+          "breakpoints": "xs sm md",
+          "style": {
+            "minWidth": 100
+          }
+        }, {
+          "name": "subject",
+          "title": "Subject",
+          "breakpoints": "all",
+          "style": {
+            "word-break": "break-all",
+            "minWidth": 150
+          }
+        }, {
+          "name": "action",
+          "title": "Action",
+          "style": {
+            "minwidth": 82
+          }
+        }, {
+          "name": "score",
+          "title": "Score",
+          "style": {
+            "maxWidth": 110
+          },
+        }, {
+          "name": "symbols",
+          "title": "Symbols",
+          "breakpoints": "all",
+        }, {
+          "name": "size",
+          "title": "Msg size",
+          "breakpoints": "all",
+          "style": {
+            "minwidth": 50,
+          },
+          "formatter": function(value) { return humanFileSize(value); }
+        }, {
+          "name": "scan_time",
+          "title": "Scan time",
+          "breakpoints": "all",
+          "style": {
+            "maxWidth": 72
+          },
+        }, {
+          "sorted": true,
+          "breakpoints": "all",
+          "direction": "DESC",
+          "name": "time",
+          "title": "Time",
+        }, {
+          "name": "user",
+          "title": "Authenticated user",
+          "breakpoints": "xs sm md",
+          "style": {
+            "minWidth": 100
+          }
+        }],
+      "rows": $.ajax({
+        dataType: 'json',
+        url: '/api/v1/get/logs/rspamd-history',
+        jsonp: false,
+        error: function () {
+          console.log('Cannot draw rspamd history table');
+        },
+        success: function (data) {
+          $.each(data, function (i, item) {
+            item.rcpt_mime = item.rcpt_mime.join(",&#8203;");
+            Object.keys(item.symbols).map(function(key) {
+              var sym = item.symbols[key];
+              if (sym.score <= 0) {
+                sym.score_formatted = '(<span class="text-success"><b>' + sym.score + '</b></span>)'
+              }
+              else {
+                sym.score_formatted = '(<span class="text-danger"><b>' + sym.score + '</b></span>)'
+              }
+              var str = '<strong>' + key + '</strong> ' + sym.score_formatted;
+              if (sym.options) {
+                str += ' [' + sym.options.join(",") + "]";
+              }
+              item.symbols[key].str = str;
+            });
+            item.symbols = Object.keys(item.symbols).
+            map(function(key) {
+              return item.symbols[key];
+            }).sort(function(e1, e2) {
+              return Math.abs(e1.score) < Math.abs(e2.score);
+            }).map(function(e) {
+              return e.str;
+            }).join("<br>\n");
+            item.time = {
+              "value": unix_time_format(item.unix_time),
+              "options": {
+                "sortValue": item.unix_time
+              }
+            };
+            var scan_time = item.time_real.toFixed(3) + ' / ' + item.time_virtual.toFixed(3);
+            item.scan_time = {
+              "options": {
+                "sortValue": item.time_real
+              },
+              "value": scan_time
+            };
+            if (item.action === 'clean' || item.action === 'no action') {
+              item.action = "<div class='label label-success'>" + item.action + "</div>";
+            } else if (item.action === 'rewrite subject' || item.action === 'add header' || item.action === 'probable spam') {
+              item.action = "<div class='label label-warning'>" + item.action + "</div>";
+            } else if (item.action === 'spam' || item.action === 'reject') {
+              item.action = "<div class='label label-danger'>" + item.action + "</div>";
+            } else {
+              item.action = "<div class='label label-info'>" + item.action + "</div>";
+            }
+            var score_content;
+            if (item.score < item.required_score) {
+              score_content = "[ <span class='text-success'>" + item.score.toFixed(2) + " / " + item.required_score + "</span> ]";
+            } else {
+              score_content = "[ <span class='text-danger'>" + item.score.toFixed(2) + " / " + item.required_score + "</span> ]";
+            }
+            item.score = {
+              "options": {
+                "sortValue": item.score
+              },
+              "value": score_content
+            };
+            if (item.user == null) {
+              item.user = "none";
+            }
+          });
+        }
+      }),
+      "empty": lang.empty,
+      "paging": {
+        "enabled": true,
+        "limit": 5,
+        "size": pagination_size
+      },
+      "filtering": {
+        "enabled": true,
+        "position": "left",
+        "placeholder": lang.filter_table
+      },
+      "sorting": {
+        "enabled": true
+      }
+    });
+  }
   draw_postfix_logs();
   draw_dovecot_logs();
   draw_sogo_logs();
   draw_domain_admins();
   draw_fwd_hosts();
+  draw_rspamd_history();
 });

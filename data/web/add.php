@@ -139,7 +139,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 						<div class="col-sm-10">
 							<select name="target_domain" id="target_domain" title="<?=$lang['add']['select'];?>" required>
 							<?php
-              foreach (mailbox_get_domains() as $domain) {
+              foreach (mailbox('get', 'domains') as $domain) {
 								echo "<option>".htmlspecialchars($domain)."</option>";
 							}
 							?>
@@ -177,7 +177,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 						<div class="col-sm-10">
 							<select id="addSelectDomain" name="domain" id="domain" required>
 							<?php
-              foreach (mailbox_get_domains() as $domain) {
+              foreach (mailbox('get', 'domains') as $domain) {
 								echo "<option>".htmlspecialchars($domain)."</option>";
 							}
 							?>
@@ -242,7 +242,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 						<div class="col-sm-10">
 							<select name="domain" id="domain" title="<?=$lang['add']['select'];?>" required>
 							<?php
-              foreach (mailbox_get_domains() as $domain) {
+              foreach (mailbox('get', 'domains') as $domain) {
 								echo "<option>".htmlspecialchars($domain)."</option>";
 							}
 							?>

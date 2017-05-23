@@ -10,7 +10,7 @@ $lang['footer']['restart_now'] = 'Restart now';
 $lang['footer']['restart_sogo_info'] = 'Some tasks, e.g. adding a domain, require you to restart SOGo to catch changes made in the mailcow UI.<br><br><b>Important:</b> A graceful restart may take a while to complete, please wait for it to finish.';
 
 $lang['footer']['confirm_delete'] = 'Confirm deletion';
-$lang['footer']['delete_these_items'] = 'Are you sure you want to delete the following items?';
+$lang['footer']['delete_these_items'] = 'Please confirm your changes to the following items:';
 $lang['footer']['delete_now'] = 'Delete now';
 $lang['footer']['cancel'] = 'Cancel';
 
@@ -28,6 +28,7 @@ $lang['danger']['domain_invalid'] = "Domain name is invalid";
 $lang['danger']['mailbox_quota_exceeds_domain_quota'] = "Max. quota exceeds domain quota limit";
 $lang['danger']['object_is_not_numeric'] = "Value %s is not numeric";
 $lang['success']['domain_added'] = "Added domain %s";
+$lang['success']['items_deleted'] = "Item %s successfully deleted";
 $lang['danger']['alias_empty'] = "Alias address must not be empty";
 $lang['danger']['last_key'] = 'Last key cannot be deleted';
 $lang['danger']['goto_empty'] = "Goto address must not be empty";
