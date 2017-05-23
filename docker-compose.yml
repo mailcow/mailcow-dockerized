@@ -85,6 +85,7 @@ services:
         - dkim-vol-1:/data/dkim
         - rspamd-vol-1:/var/lib/rspamd
       restart: always
+      hostname: rspamd
       dns:
         - 172.22.1.254
       dns_search: mailcow-network
