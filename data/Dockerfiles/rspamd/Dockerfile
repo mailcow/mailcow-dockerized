@@ -16,8 +16,6 @@ RUN echo '.include $LOCAL_CONFDIR/local.d/rspamd.conf.local' > /etc/rspamd/rspam
 COPY settings.conf /etc/rspamd/modules.d/settings.conf
 COPY antivirus.conf /etc/rspamd/modules.d/antivirus.conf
 COPY dkim_signing.lua /usr/share/rspamd/lua/dkim_signing.lua
-# Workaround
-RUN rm /etc/rspamd/modules.d/fann_redis.conf
 
 RUN apt-get autoremove --purge \
 	&& apt-get clean
