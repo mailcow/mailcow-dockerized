@@ -272,6 +272,7 @@ services:
         - dovecot-mailcow
         - postfix-mailcow
         - sogo-mailcow
+        - php-fpm-mailcow
       restart: always
       privileged: true
       network_mode: "host"
