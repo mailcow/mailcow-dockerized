@@ -13,6 +13,7 @@ RULES = {
 	'mailcowdockerized_postfix-mailcow_1': 'warning: .*\[([0-9a-f\.:]+)\]: SASL .* authentication failed',
 	'mailcowdockerized_dovecot-mailcow_1': '-login: Disconnected \(auth failed, .*\): user=.*, method=.*, rip=([0-9a-f\.:]+),',
 	'mailcowdockerized_sogo-mailcow_1': 'SOGo.* Login from \'([0-9a-f\.:]+)\' for user .* might not have worked',
+	'mailcowdockerized_php-fpm-mailcow_1': 'Mailcow UI: Invalid password for .* by ([0-9a-f\.:]+)',
 }
 BAN_TIME = 1800
 MAX_ATTEMPTS = 10
@@ -22,6 +23,9 @@ quit_now = False
 
 def ban(address):
 	ip = ipaddress.ip_address(address.decode('ascii'))
+	if type(ip) is ipaddress.IPv6Address and ip.ipv4_mapped:
+		ip = ip.ipv4_mapped
+		address = str(ip)
 	if ip.is_private or ip.is_loopback:
 		return
 	
