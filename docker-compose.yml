@@ -266,6 +266,20 @@ services:
           aliases:
             - nginx
 
+    fail2ban-mailcow:
+      image: mailcow/fail2ban
+      build: ./data/Dockerfiles/fail2ban
+      depends_on:
+        - dovecot-mailcow
+        - postfix-mailcow
+        - sogo-mailcow
+      restart: always
+      privileged: true
+      network_mode: "host"
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock:ro
+        - /lib/modules:/lib/modules:ro
+
     ipv6nat:
       image: robbertkl/ipv6nat
       restart: always
