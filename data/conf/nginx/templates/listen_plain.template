@@ -1,1 +1,2 @@
 listen ${HTTP_PORT};
+listen listen [::]:${HTTP_PORT};
