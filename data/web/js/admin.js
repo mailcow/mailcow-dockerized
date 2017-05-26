@@ -221,7 +221,6 @@ jQuery(function($){
         {"name":"host","type":"text","title":lang.host,"style":{"width":"250px"}},
         {"name":"source","title":lang.source,"breakpoints":"xs sm"},
         {"name":"keep_spam","title":lang.spamfilter, "type": "text","style":{"maxWidth":"80px","width":"80px"}},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
       "rows": $.ajax({
         dataType: 'json',
@@ -232,9 +231,6 @@ jQuery(function($){
         },
         success: function (data) {
           $.each(data, function (i, item) {
-            item.action = '<div class="btn-group">' +
-              '<a href="/delete.php?forwardinghost=' + encodeURI(item.host) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
-              '</div>';
             if (item.keep_spam == "yes") {
               item.keep_spam = lang.no;
             }

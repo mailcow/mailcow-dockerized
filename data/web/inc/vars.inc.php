@@ -1,7 +1,6 @@
 <?php
 error_reporting(E_ERROR);
 //error_reporting(E_ALL);
-header('X-Powered-By: mailcow');
 
 /*
 PLEASE USE THE FILE "vars.local.inc.php" TO OVERWRITE SETTINGS AND MAKE THEM PERSISTENT!
@@ -22,10 +21,6 @@ $mailcow_hostname = getenv('MAILCOW_HOSTNAME');
 // Can be "form" or "previous"
 // "form" will stay in the current form, "previous" will redirect to previous page
 $FORM_ACTION = 'previous';
-
-// File locations should not be changed
-$MC_DKIM_TXTS = '/data/dkim/txt';
-$MC_DKIM_KEYS = '/data/dkim/keys';
 
 // Change default language, "de", "en", "es", "nl", "pt", "ru"
 $DEFAULT_LANG = 'en';
@@ -59,3 +54,6 @@ $PAGINATION_SIZE = 10;
 
 // Session lifetime in seconds
 $SESSION_LIFETIME = 3600;
+
+// Label for OTP devices
+$OTP_LABEL = "mailcow UI";

@@ -648,7 +648,7 @@ function mailbox($_action, $_type, $_data = null) {
             if ($num_results == 0) {
               $_SESSION['return'] = array(
                 'type' => 'danger',
-                'msg' => sprintf($lang['danger']['domain_not_found'], $domain)
+                'msg' => sprintf($lang['danger']['domain_not_found'], htmlspecialchars($domain))
               );
               return false;
             }
@@ -832,7 +832,7 @@ function mailbox($_action, $_type, $_data = null) {
             if ($num_results == 0) {
               $_SESSION['return'] = array(
                 'type' => 'danger',
-                'msg' => sprintf($lang['danger']['domain_not_found'], $domain)
+                'msg' => sprintf($lang['danger']['domain_not_found'], htmlspecialchars($domain))
               );
               return false;
             }
@@ -875,13 +875,7 @@ function mailbox($_action, $_type, $_data = null) {
     case 'edit':
       switch ($_type) {
         case 'alias_domain':
-          if (!is_array($_data['alias_domain'])) {
-            $alias_domains = array();
-            $alias_domains[] = $_data['alias_domain'];
-          }
-          else {
-            $alias_domains = $_data['alias_domain'];
-          }
+          $alias_domains = (array)$_data['alias_domain'];
           foreach ($alias_domains as $alias_domain) {
             $alias_domain = idn_to_ascii(strtolower(trim($alias_domain)));
             $is_now = mailbox('get', 'alias_domain_details', $alias_domain);

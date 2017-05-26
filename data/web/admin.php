@@ -176,7 +176,7 @@ $tfa_data = get_tfa();
         </div>
         <?php
         foreach(mailbox('get', 'domains') as $domain) {
-            if (!empty($dkim = dkim_get_key_details($domain))) {
+            if (!empty($dkim = dkim('details', $domain))) {
           ?>
             <div class="row">
               <div class="col-xs-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" /></div>
@@ -204,8 +204,8 @@ $tfa_data = get_tfa();
           </div>
           <?php
           }
-          foreach(mailbox('get', 'alias_domains') as $alias_domain) {
-            if (!empty($dkim = dkim_get_key_details($alias_domain))) {
+          foreach(mailbox('get', 'alias_domains', $domain) as $alias_domain) {
+            if (!empty($dkim = dkim('details', $alias_domain))) {
             ?>
               <div class="row">
               <div class="col-xs-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$alias_domain;?>" /></div>
@@ -235,8 +235,8 @@ $tfa_data = get_tfa();
             }
           }
         }
-        foreach(dkim_get_blind_keys() as $blind) {
-          if (!empty($dkim = dkim_get_key_details($blind))) {
+        foreach(dkim('blind') as $blind) {
+          if (!empty($dkim = dkim('details', $blind))) {
           ?>
             <div class="row">
               <div class="col-xs-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$blind;?>" /></div>
@@ -257,7 +257,7 @@ $tfa_data = get_tfa();
         ?>
 
         <legend style="margin-top:40px"><?=$lang['admin']['dkim_add_key'];?></legend>
-        <form class="form-inline" role="form" method="post">
+        <form class="form-inline" data-id="dkim" role="form" method="post">
           <div class="form-group">
             <label for="domain">Domain</label>
             <input class="form-control" id="domain" name="domain" placeholder="example.org" required>
@@ -272,7 +272,7 @@ $tfa_data = get_tfa();
               <option data-subtext="bits">2048</option>
             </select>
           </div>
-          <button type="submit" name="dkim_add_key" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
+          <button class="btn btn-default" id="add_item" data-id="dkim" data-api-url='add/dkim' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
         </form>
       </div>
     </div>
@@ -281,18 +281,24 @@ $tfa_data = get_tfa();
       <div class="panel-heading"><?=$lang['admin']['forwarding_hosts'];?></div>
       <div class="panel-body">
         <p style="margin-bottom:40px"><?=$lang['admin']['forwarding_hosts_hint'];?></p>
+        <div class="table-responsive">
+          <table class="table table-striped table-condensed" id="forwardinghoststable"></table>
+        </div>
         <div class="mass-actions-admin">
           <div class="btn-group btn-group-sm">
             <button type="button" id="toggle_multi_select_all" data-id="fwdhosts" class="btn btn-default"><?=$lang['mailbox']['toggle_all'];?></button>
-            <button type="button" id="delete_selected" name="delete_selected" data-id="fwdhosts" data-api-url="delete/fwdhost" class="btn btn-danger"><?=$lang['admin']['remove'];?></button>
+            <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a id="edit_selected" data-id="fwdhosts" data-api-url='edit/fwdhost' data-api-attr='{"keep_spam":"0"}' href="#">Enable spam filter</a></li>
+              <li><a id="edit_selected" data-id="fwdhosts" data-api-url='edit/fwdhost' data-api-attr='{"keep_spam":"1"}' href="#">Disable spam filter</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a id="delete_selected" data-id="fwdhosts" data-api-url='delete/fwdhost' href="#"><?=$lang['admin']['remove'];?></a></li>
+            </ul>
           </div>
-        </div>
-        <div class="table-responsive">
-          <table class="table table-striped" id="forwardinghoststable"></table>
         </div>
         <legend><?=$lang['admin']['add_forwarding_host'];?></legend>
         <p class="help-block"><?=$lang['admin']['forwarding_hosts_add_hint'];?></p>
-        <form class="form-inline" role="form" method="post">
+        <form class="form-inline" data-id="fwdhost" role="form" method="post">
           <div class="form-group">
             <label for="hostname"><?=$lang['admin']['host'];?></label>
             <input class="form-control" id="hostname" name="hostname" placeholder="example.org" required>
@@ -303,7 +309,7 @@ $tfa_data = get_tfa();
               <option value="0"><?=$lang['admin']['inactive'];?></option>
             </select>
           </div>
-          <button type="submit" name="add_forwarding_host" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
+          <button class="btn btn-default" id="add_item" data-id="fwdhost" data-api-url='add/fwdhost' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
         </form>
       </div>
     </div>

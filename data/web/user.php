@@ -272,17 +272,15 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
         <div class="mass-actions-user">
           <div class="btn-group">
             <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="policy_wl_mailbox" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
-            <a class="btn btn-sm btn-danger" id="delete_selected" data-id="policy_wl_mailbox" data-api-url='delete/policy_mailbox' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+            <a class="btn btn-sm btn-danger" id="delete_selected" data-id="policy_wl_mailbox" data-api-url='delete/mailbox-policy' href="#"><?=$lang['mailbox']['remove'];?></a></li>
             </ul>
           </div>
         </div>
-        <form class="form-inline" method="post">
+        <form class="form-inline" data-id="add_wl_policy_mailbox">
           <div class="input-group">
             <input type="text" class="form-control" name="object_from" id="object_from" placeholder="*@example.org" required>
-            <input type="hidden" name="username" value="<?= $username ;?>">
-            <input type="hidden" name="object_list" value="wl">
             <span class="input-group-btn">
-              <button type="submit" id="add_policy_list_item" name="add_policy_list_item" class="btn btn-default"><?=$lang['user']['spamfilter_table_add'];?></button>
+              <button class="btn btn-default" id="add_item" data-id="add_wl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username":"<?= $username; ?>","object_list":"wl"}' href="#"><?=$lang['user']['spamfilter_table_add'];?></button>
             </span>
           </div>
         </form>
@@ -296,17 +294,17 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
         <div class="mass-actions-user">
           <div class="btn-group">
             <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="policy_bl_mailbox" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
-            <a class="btn btn-sm btn-danger" id="delete_selected" data-id="policy_bl_mailbox" data-api-url='delete/policy_mailbox' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+            <a class="btn btn-sm btn-danger" id="delete_selected" data-id="policy_bl_mailbox" data-api-url='delete/mailbox-policy' href="#"><?=$lang['mailbox']['remove'];?></a></li>
             </ul>
           </div>
         </div>
-        <form class="form-inline" method="post">
+        <form class="form-inline" data-id="add_bl_policy_mailbox">
           <div class="input-group">
             <input type="text" class="form-control" name="object_from" id="object_from" placeholder="*@example.org" required>
             <input type="hidden" name="username" value="<?= $username ;?>">
             <input type="hidden" name="object_list" value="bl">
             <span class="input-group-btn">
-              <button type="submit" id="add_policy_list_item" name="add_policy_list_item" class="btn btn-default"><?=$lang['user']['spamfilter_table_add'];?></button>
+              <button class="btn btn-default" id="add_item" data-id="add_bl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username":"<?= $username; ?>","object_list":"bl"}' href="#"><?=$lang['user']['spamfilter_table_add'];?></button>
             </span>
           </div>
         </form>
@@ -328,7 +326,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
           <li role="separator" class="divider"></li>
           <li><a id="delete_selected" data-id="syncjob" data-api-url='delete/syncjob' href="#"><?=$lang['mailbox']['remove'];?></a></li>
         </ul>
-        <a class="btn btn-sm btn-success" href="/add.php?syncjob"><?=$lang['user']['create_syncjob'];?></a>
+        <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addSyncJobModal"><?=$lang['user']['create_syncjob'];?></a>
       </div>
     </div>
 		</div>
@@ -391,6 +389,9 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "use
   </div>
 </div>
 </div> <!-- /container -->
+<?php
+require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/user.php';
+?>
 <script type='text/javascript'>
 <?php
 $lang_user = json_encode($lang['user']);

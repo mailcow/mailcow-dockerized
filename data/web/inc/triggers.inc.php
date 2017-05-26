@@ -53,32 +53,10 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
       }
     }
   }
-
-	if (isset($_POST["edit_admin_account"])) {
-		edit_admin_account($_POST);
-	}
-	if (isset($_POST["dkim_delete_key"])) {
-		dkim_delete_key($_POST);
-	}
-	if (isset($_POST["dkim_add_key"])) {
-		dkim_add_key($_POST);
-	}
-	if (isset($_POST["add_forwarding_host"])) {
-		add_forwarding_host($_POST);
-	}
-	if (isset($_POST["delete_forwarding_host"])) {
-		delete_forwarding_host($_POST);
-	}
 }
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "user") {
 	if (isset($_POST["edit_user_account"])) {
 		edit_user_account($_POST);
-	}
-	if (isset($_POST["add_policy_list_item"])) {
-		policy('add', 'mailbox', $_POST);
-	}
-	if (isset($_POST["add_syncjob"])) {
-		mailbox('add', 'syncjob', $_POST);
 	}
 	if (isset($_POST["edit_syncjob"])) {
 		mailbox('edit', 'syncjob', $_POST);
@@ -93,24 +71,6 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 	}
 	if (isset($_POST["unset_tfa_key"])) {
 		unset_tfa_key($_POST);
-	}
-	if (isset($_POST["add_policy_list_item"])) {
-		policy('add', 'domain', $_POST);
-	}
-	if (isset($_POST["mailbox_add_domain"])) {
-		mailbox('add', 'domain', $_POST);
-	}
-	if (isset($_POST["mailbox_add_alias"])) {
-		mailbox('add', 'alias', $_POST);
-	}
-	if (isset($_POST["mailbox_add_alias_domain"])) {
-		mailbox('add', 'alias_domain', $_POST);
-	}
-	if (isset($_POST["mailbox_add_mailbox"])) {
-		mailbox('add', 'mailbox', $_POST);
-	}
-	if (isset($_POST["mailbox_add_resource"])) {
-		mailbox('add', 'resource', $_POST);
 	}
 	if (isset($_POST["mailbox_edit_alias"])) {
 		mailbox('edit', 'alias', $_POST);

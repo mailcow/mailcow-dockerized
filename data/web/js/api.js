@@ -44,7 +44,6 @@ $(document).ready(function() {
   $(document).on('click', '#toggle_multi_select_all', function(e) {
     e.preventDefault();
     id = $(this).data("id");
-    multi_data[id] = [];
     var all_checkboxes = $("input[data-id=" + id + "]:enabled");
     all_checkboxes.prop("checked", !all_checkboxes.prop("checked")).change();
   });
@@ -71,15 +70,18 @@ $(document).ready(function() {
     }
     if (typeof multi_data[id] == "undefined") return;
     api_items = multi_data[id];
-
     if (Object.keys(api_items).length !== 0) {
       $.ajax({
         type: "POST",
         dataType: "json",
-        data: { "items": JSON.stringify(api_items), "attr": JSON.stringify(api_attr), "csrf_token": csrf_token },
+        data: {
+          "items": JSON.stringify(api_items),
+          "attr": JSON.stringify(api_attr),
+          "csrf_token": csrf_token
+        },
         url: '/api/v1/' + api_url,
         jsonp: false,
-        complete: function (data) {
+        complete: function(data) {
           // var reponse = (JSON.parse(data.responseText));
           // console.log(reponse.type);
           // console.log(reponse.msg);
@@ -98,16 +100,34 @@ $(document).ready(function() {
     // If clicked button is in a form with the same data-id as the button,
     // we merge all input fields by {"name":"value"} into api-attr
     if ($(this).closest("form").data('id') == id) {
-      var attr_to_merge = $(this).closest("form").serializeObject();
-      var api_attr = $.extend(api_attr, attr_to_merge)
+      var req_empty = false;
+      $(this).closest("form").find('select, textarea, input').each(function() {
+        if ($(this).prop('required')) {
+          if (!$(this).val()) {
+            req_empty = true;
+            $(this).addClass('inputMissingAttr');
+          } else {
+            $(this).removeClass('inputMissingAttr');
+          }
+        }
+      });
+      if (!req_empty) {
+        var attr_to_merge = $(this).closest("form").serializeObject();
+        var api_attr = $.extend(api_attr, attr_to_merge)
+      } else {
+        return false;
+      }
     }
     $.ajax({
       type: "POST",
       dataType: "json",
-      data: { "attr": JSON.stringify(api_attr), "csrf_token": csrf_token },
+      data: {
+        "attr": JSON.stringify(api_attr),
+        "csrf_token": csrf_token
+      },
       url: '/api/v1/' + api_url,
       jsonp: false,
-      complete: function (data) {
+      complete: function(data) {
         // var reponse = (JSON.parse(data.responseText));
         // console.log(reponse.type);
         // console.log(reponse.msg);
@@ -115,6 +135,7 @@ $(document).ready(function() {
       }
     });
   });
+
   // General API delete actions
   $(document).on('click', '#delete_selected', function(e) {
     e.preventDefault();
@@ -125,7 +146,7 @@ $(document).ready(function() {
       if (typeof multi_data[id] == "undefined") {
         multi_data[id] = [];
       }
-      multi_data[id].splice($.inArray($(this).data('item'), multi_data[id]),1);
+      multi_data[id].splice($.inArray($(this).data('item'), multi_data[id]), 1);
       multi_data[id].push($(this).data('item'));
     }
     if (typeof $(this).data('text') !== 'undefined') {
@@ -135,33 +156,36 @@ $(document).ready(function() {
     if (typeof multi_data[id] == "undefined" || multi_data[id] == "") return;
     data_array = multi_data[id];
     api_url = $(this).data('api-url');
-    $(document).on('show.bs.modal','#ConfirmDeleteModal', function () {
+    $(document).on('show.bs.modal', '#ConfirmDeleteModal', function() {
       $("#ItemsToDelete").empty();
       for (var i in data_array) {
         $("#ItemsToDelete").append("<li>" + data_array[i] + "</li>");
       }
     })
     $('#ConfirmDeleteModal').modal({
-      backdrop: 'static',
-      keyboard: false
-    })
-    .one('click', '#IsConfirmed', function(e) {
-      $.ajax({
-        type: "POST",
-        dataType: "json",
-        cache: false,
-        data: { "items": JSON.stringify(data_array), "csrf_token": csrf_token },
-        url: '/api/v1/' + api_url,
-        jsonp: false,
-        complete: function (data) {
-          window.location = window.location.href.split("#")[0];
-        }
+        backdrop: 'static',
+        keyboard: false
+      })
+      .one('click', '#IsConfirmed', function(e) {
+        $.ajax({
+          type: "POST",
+          dataType: "json",
+          cache: false,
+          data: {
+            "items": JSON.stringify(data_array),
+            "csrf_token": csrf_token
+          },
+          url: '/api/v1/' + api_url,
+          jsonp: false,
+          complete: function(data) {
+            window.location = window.location.href.split("#")[0];
+          }
+        });
+      })
+      .one('click', '#isCanceled', function(e) {
+        // Remove event handler to allow to close modal and restart dialog without multiple submits
+        $('#ConfirmDeleteModal').off();
+        $('#ConfirmDeleteModal').modal('hide');
       });
-    })
-    .one('click', '#isCanceled', function(e) {
-      // Remove event handler to allow to close modal and restart dialog without multiple submits
-      $('#ConfirmDeleteModal').off();
-      $('#ConfirmDeleteModal').modal('hide');
-    });
   });
 });

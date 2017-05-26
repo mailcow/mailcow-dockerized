@@ -14,7 +14,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/vendor/autoload.php';
 
 // U2F API + T/HOTP API
 $u2f = new u2flib_server\U2F('https://' . $_SERVER['HTTP_HOST']);
-$tfa = new RobThree\Auth\TwoFactorAuth('mailcow UI');
+$tfa = new RobThree\Auth\TwoFactorAuth($OTP_LABEL);
 
 // Redis
 $redis = new Redis();
@@ -60,6 +60,8 @@ include $_SERVER['DOCUMENT_ROOT'] . '/lang/lang.'.$_SESSION['mailcow_locale'].'.
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.mailbox.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.policy.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.dkim.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.fwdhost.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/init_db.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/triggers.inc.php';
 init_db_schema();

@@ -168,13 +168,7 @@ function policy($_action, $_scope, $_data = null) {
     case 'delete':
       switch ($_scope) {
         case 'domain':
-          if (!is_array($_data['prefid'])) {
-            $prefids = array();
-            $prefids[] = $_data['prefid'];
-          }
-          else {
-            $prefids = $_data['prefid'];
-          }
+          (array)$prefids = $_data['prefid'];
           foreach ($prefids as $prefid) {
             if (!is_numeric($prefid)) {
               $_SESSION['return'] = array(

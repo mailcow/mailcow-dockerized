@@ -1,5 +1,5 @@
 <?php
-include 'inc/tfa_modals.php';
+include 'modals/footer.php';
 
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'admin'):
 ?>

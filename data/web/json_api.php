@@ -60,6 +60,336 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               ));
             }
           break;
+          case "mailbox":
+            if (isset($_POST['attr'])) {
+              $attr = (array)json_decode($_POST['attr'], true);
+              if (mailbox('add', 'mailbox', $attr) === false) {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'error',
+                    'msg' => 'Cannot add item'
+                  ));
+                }
+              }
+              else {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'success',
+                    'msg' => 'Task completed'
+                  ));
+                }
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Cannot find attributes in post data'
+              ));
+            }
+          break;
+          case "domain":
+            if (isset($_POST['attr'])) {
+              $attr = (array)json_decode($_POST['attr'], true);
+              if (mailbox('add', 'domain', $attr) === false) {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'error',
+                    'msg' => 'Cannot add item'
+                  ));
+                }
+              }
+              else {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'success',
+                    'msg' => 'Task completed'
+                  ));
+                }
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Cannot find attributes in post data'
+              ));
+            }
+          break;
+          case "resource":
+            if (isset($_POST['attr'])) {
+              $attr = (array)json_decode($_POST['attr'], true);
+              if (mailbox('add', 'resource', $attr) === false) {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'error',
+                    'msg' => 'Cannot add item'
+                  ));
+                }
+              }
+              else {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'success',
+                    'msg' => 'Task completed'
+                  ));
+                }
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Cannot find attributes in post data'
+              ));
+            }
+          break;
+          case "alias":
+            if (isset($_POST['attr'])) {
+              $attr = (array)json_decode($_POST['attr'], true);
+              if (mailbox('add', 'alias', $attr) === false) {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'error',
+                    'msg' => 'Cannot add item'
+                  ));
+                }
+              }
+              else {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'success',
+                    'msg' => 'Task completed'
+                  ));
+                }
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Cannot find attributes in post data'
+              ));
+            }
+          break;
+          case "syncjob":
+            if (isset($_POST['attr'])) {
+              $attr = (array)json_decode($_POST['attr'], true);
+              if (mailbox('add', 'syncjob', $attr) === false) {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'error',
+                    'msg' => 'Cannot add item'
+                  ));
+                }
+              }
+              else {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'success',
+                    'msg' => 'Task completed'
+                  ));
+                }
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Cannot find attributes in post data'
+              ));
+            }
+          break;
+          case "domain-policy":
+            if (isset($_POST['attr'])) {
+              $attr = (array)json_decode($_POST['attr'], true);
+              if (policy('add', 'domain', $attr) === false) {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'error',
+                    'msg' => 'Cannot add item'
+                  ));
+                }
+              }
+              else {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'success',
+                    'msg' => 'Task completed'
+                  ));
+                }
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Cannot find attributes in post data'
+              ));
+            }
+          break;
+          case "mailbox-policy":
+            if (isset($_POST['attr'])) {
+              $attr = (array)json_decode($_POST['attr'], true);
+              if (policy('add', 'mailbox', $attr) === false) {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'error',
+                    'msg' => 'Cannot add item'
+                  ));
+                }
+              }
+              else {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'success',
+                    'msg' => 'Task completed'
+                  ));
+                }
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Cannot find attributes in post data'
+              ));
+            }
+          break;
+          case "alias-domain":
+            if (isset($_POST['attr'])) {
+              $attr = (array)json_decode($_POST['attr'], true);
+              if (mailbox('add', 'alias_domain', $attr) === false) {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'error',
+                    'msg' => 'Cannot add item'
+                  ));
+                }
+              }
+              else {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'success',
+                    'msg' => 'Task completed'
+                  ));
+                }
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Cannot find attributes in post data'
+              ));
+            }
+          break;
+          case "fwdhost":
+            if (isset($_POST['attr'])) {
+              $attr = (array)json_decode($_POST['attr'], true);
+              if (fwdhost('add', $attr) === false) {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'error',
+                    'msg' => 'Cannot add item'
+                  ));
+                }
+              }
+              else {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'success',
+                    'msg' => 'Task completed'
+                  ));
+                }
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Cannot find attributes in post data'
+              ));
+            }
+          break;
+          case "dkim":
+            if (isset($_POST['attr'])) {
+              $attr = (array)json_decode($_POST['attr'], true);
+              if (dkim('add', $attr) === false) {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'error',
+                    'msg' => 'Cannot add item'
+                  ));
+                }
+              }
+              else {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'success',
+                    'msg' => 'Task completed'
+                  ));
+                }
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Cannot find attributes in post data'
+              ));
+            }
+          break;
           case "domain_admin":
             if (isset($_POST['attr'])) {
               $attr = (array)json_decode($_POST['attr'], true);
@@ -353,10 +683,32 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "fwdhost":
             switch ($object) {
               case "all":
-                $fwdhosts = get_forwarding_hosts();
-                if (!empty($fwdhosts)) {
-                  foreach ($fwdhosts as $fwdhost) {
-                    if ($details = get_forwarding_host_details($fwdhost)) {
+                $data = fwdhost('get');
+                if (!isset($data) || empty($data)) {
+                  echo '{}';
+                }
+                else {
+                  echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                }
+              break;
+              default:
+                $data = fwdhost('details', $object);
+                if (!isset($data) || empty($data)) {
+                  echo '{}';
+                }
+                else {
+                  echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                }
+              break;
+            }
+          break;
+          case "alias-domain":
+            switch ($object) {
+              case "all":
+                $alias_domains = mailbox('get', 'alias_domains');
+                if (!empty($alias_domains)) {
+                  foreach ($alias_domains as $alias_domain) {
+                    if ($details = mailbox('get', 'alias_domain_details', $alias_domain)) {
                       $data[] = $details;
                     }
                     else {
@@ -372,47 +724,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 }
               break;
               default:
-                $data = get_forwarding_host_details($object);
-                if (!isset($data) || empty($data)) {
-                  echo '{}';
-                }
-                else {
-                  echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-                }
-              break;
-            }
-          break;
-          case "alias-domain":
-            switch ($object) {
-              case "all":
-                $domains = mailbox('get', 'domains');
-                if (!empty($domains)) {
-                  foreach ($domains as $domain) {
-                    $alias_domains = mailbox('get', 'alias_domains', $domain);
-                    if (!empty($alias_domains)) {
-                      foreach ($alias_domains as $alias_domain) {
-                        if ($details = mailbox('get', 'alias_domain_details', $alias_domain)) {
-                          $data[] = $details;
-                        }
-                        else {
-                          continue;
-                        }
-                      }
-                    }
-                  }
-                  if (!isset($data) || empty($data)) {
-                    echo '{}';
-                  }
-                  else {
-                    echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-                  }
-                }
-                else {
-                  echo '{}';
-                }
-              break;
-              default:
-                $data = mailbox('get', 'alias_domains', $object);
+                $data = mailbox('get', 'alias_domain_details', $object);
                 if (!isset($data) || empty($data)) {
                   echo '{}';
                 }
@@ -615,7 +927,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             if (isset($_POST['items'])) {
               $items = (array)json_decode($_POST['items'], true);
               if (is_array($items)) {
-                if (delete_forwarding_host(array('forwardinghost' => $items)) === false) {
+                if (fwdhost('delete', array('forwardinghost' => $items)) === false) {
                   if (isset($_SESSION['return'])) {
                     echo json_encode($_SESSION['return']);
                   }
@@ -656,7 +968,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             if (isset($_POST['items'])) {
               $items = (array)json_decode($_POST['items'], true);
               if (is_array($items)) {
-                if (dkim_delete_key(array('domains' => $items)) === false) {
+                if (dkim('delete', array('domains' => $items)) === false) {
                   if (isset($_SESSION['return'])) {
                     echo json_encode($_SESSION['return']);
                   }
@@ -857,11 +1169,52 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               ));
             }
           break;
-          case "policy_mailbox":
+          case "mailbox-policy":
             if (isset($_POST['items'])) {
               $items = (array)json_decode($_POST['items'], true);
               if (is_array($items)) {
                 if (policy('delete', 'mailbox', array('prefid' => $items)) === false) {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'error',
+                      'msg' => 'Task failed'
+                    ));
+                  }
+                }
+                else {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'success',
+                      'msg' => 'Task completed'
+                    ));
+                  }
+                }
+              }
+              else {
+                echo json_encode(array(
+                  'type' => 'error',
+                  'msg' => 'Cannot find name array in post data'
+                ));
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Cannot find items in post data'
+              ));
+            }
+          break;
+          case "domain-policy":
+            if (isset($_POST['items'])) {
+              $items = (array)json_decode($_POST['items'], true);
+              if (is_array($items)) {
+                if (policy('delete', 'domain', array('prefid' => $items)) === false) {
                   if (isset($_SESSION['return'])) {
                     echo json_encode($_SESSION['return']);
                   }
@@ -1472,6 +1825,50 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               $postarray = array_merge(array('username' => $items), $attr);
               if (is_array($postarray['username'])) {
                 if (edit_domain_admin($postarray) === false) {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'error',
+                      'msg' => 'Edit failed'
+                    ));
+                  }
+                  exit();
+                }
+                else {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'success',
+                      'msg' => 'Task completed'
+                    ));
+                  }
+                }
+              }
+              else {
+                echo json_encode(array(
+                  'type' => 'error',
+                  'msg' => 'Incomplete post data'
+                ));
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Incomplete post data'
+              ));
+            }
+          break;
+          case "fwdhost":
+            if (isset($_POST['items']) && isset($_POST['attr'])) {
+              $items = (array)json_decode($_POST['items'], true);
+              $attr = (array)json_decode($_POST['attr'], true);
+              $postarray = array_merge(array('fwdhost' => $items), $attr);
+              if (is_array($postarray['fwdhost'])) {
+                if (fwdhost('edit', $postarray) === false) {
                   if (isset($_SESSION['return'])) {
                     echo json_encode($_SESSION['return']);
                   }

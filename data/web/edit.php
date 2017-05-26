@@ -208,12 +208,12 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					</div>
 				</form>
 				<?php
-        if (!empty($dkim = dkim_get_key_details($domain))) {
+        if (!empty($dkim = dkim('details', $domain))) {
 				?>
         <hr>
         <div class="row">
           <div class="col-xs-2">
-            <p>Domain: <strong><?=htmlspecialchars($result['domain_name']);?></strong> (dkim._domainkey)</p>
+            <p>Domain: <strong><?=htmlspecialchars($result['domain_name']);?></strong> (<?=$dkim['dkim_selector'];?>._domainkey)</p>
           </div>
           <div class="col-xs-10">
             <pre><?=$dkim['dkim_txt'];?></pre>
@@ -233,17 +233,15 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
         <div class="mass-actions-user">
           <div class="btn-group">
             <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="policy_wl_domain" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
-            <a class="btn btn-sm btn-danger" id="delete_selected" data-id="policy_wl_domain" data-api-url='delete/policy_mailbox' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+            <a class="btn btn-sm btn-danger" id="delete_selected" data-id="policy_wl_domain" data-api-url='delete/domain-policy' href="#"><?=$lang['mailbox']['remove'];?></a></li>
             </ul>
           </div>
         </div>
-        <form class="form-inline" method="post">
+        <form class="form-inline" data-id="add_wl_policy_domain">
           <div class="input-group">
             <input type="text" class="form-control" name="object_from" id="object_from" placeholder="*@example.org" required>
-            <input type="hidden" name="domain" value="<?= $domain ;?>">
-            <input type="hidden" name="object_list" value="wl">
             <span class="input-group-btn">
-              <button type="submit" id="add_policy_list_item" name="add_policy_list_item" class="btn btn-default"><?=$lang['user']['spamfilter_table_add'];?></button>
+              <button class="btn btn-default" id="add_item" data-id="add_wl_policy_domain" data-api-url='add/domain-policy' data-api-attr='{"domain":"<?= $domain; ?>","object_list":"wl"}' href="#"><?=$lang['user']['spamfilter_table_add'];?></button>
             </span>
           </div>
         </form>
@@ -257,17 +255,15 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
         <div class="mass-actions-user">
           <div class="btn-group">
             <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="policy_bl_domain" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
-            <a class="btn btn-sm btn-danger" id="delete_selected" data-id="policy_bl_domain" data-api-url='delete/policy_mailbox' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+            <a class="btn btn-sm btn-danger" id="delete_selected" data-id="policy_bl_domain" data-api-url='delete/domain-policy' href="#"><?=$lang['mailbox']['remove'];?></a></li>
             </ul>
           </div>
         </div>
-        <form class="form-inline" method="post">
+        <form class="form-inline" data-id="add_bl_policy_domain">
           <div class="input-group">
             <input type="text" class="form-control" name="object_from" id="object_from" placeholder="*@example.org" required>
-            <input type="hidden" name="domain" value="<?= $domain ;?>">
-            <input type="hidden" name="object_list" value="bl">
             <span class="input-group-btn">
-              <button type="submit" id="add_policy_list_item" name="add_policy_list_item" class="btn btn-default"><?=$lang['user']['spamfilter_table_add'];?></button>
+              <button class="btn btn-default" id="add_item" data-id="add_bl_policy_domain" data-api-url='add/domain-policy' data-api-attr='{"domain":"<?= $domain; ?>","object_list":"bl"}' href="#"><?=$lang['user']['spamfilter_table_add'];?></button>
             </span>
           </div>
         </form>
@@ -312,12 +308,12 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					</div>
 				</form>
 				<?php
-        if (!empty($dkim = dkim_get_key_details($alias_domain))) {
+        if (!empty($dkim = dkim('details', $alias_domain))) {
 				?>
         <hr>
         <div class="row">
           <div class="col-xs-2">
-            <p>Domain: <strong><?=htmlspecialchars($result['alias_domain']);?></strong> (dkim._domainkey)</p>
+            <p>Domain: <strong><?=htmlspecialchars($result['alias_domain']);?></strong> (<?=$dkim['dkim_selector'];?>._domainkey)</p>
           </div>
           <div class="col-xs-10">
           <pre><?=$dkim['dkim_txt'];?></pre>
