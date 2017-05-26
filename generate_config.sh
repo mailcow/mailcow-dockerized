@@ -71,4 +71,8 @@ SIEVE_PORT=4190
 
 # Your timezone
 TZ=${TZ}
+
+# Fixed project name
+COMPOSE_PROJECT_NAME=mailcow-dockerized
+
 EOF
