@@ -1,6 +1,4 @@
 version: '2.1'
-project_name: "mailcow-dockerized"
-
 services:
     bind9-mailcow:
       image: resystit/bind9
