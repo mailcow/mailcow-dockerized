@@ -169,6 +169,7 @@ function check_login($user, $pass) {
 	}
 	elseif (!isset($_SESSION['mailcow_cc_username'])) {
 		$_SESSION['ldelay'] = $_SESSION['ldelay']+0.5;
+		error_log("Mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
 	}
 	sleep($_SESSION['ldelay']);
 }

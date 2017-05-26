@@ -8,6 +8,7 @@ RUN docker-php-ext-install intl pdo pdo_mysql xmlrpc
 RUN docker-php-ext-enable redis
 RUN pear install channel://pear.php.net/Net_IDNA2-0.1.1 Auth_SASL Net_IMAP NET_SMTP Net_IDNA2 Mail_mime
 RUN apk del autoconf g++ make libxml2-dev icu-dev
+RUN echo 'php_admin_flag[log_errors] = on' >> /usr/local/etc/php-fpm.d/www.conf
 
 COPY ./docker-entrypoint.sh /
 
