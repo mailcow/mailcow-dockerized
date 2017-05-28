@@ -3,7 +3,7 @@ version: '2.1'
 services:
     bind9-mailcow:
       image: resystit/bind9
-      command: "named -c /etc/bind/named.conf -g -u named -4"
+      command: "named -c /etc/bind/named.conf -g -u named"
       depends_on:
         mysql-mailcow:
           condition: service_healthy
