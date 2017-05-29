@@ -1389,7 +1389,7 @@ function mailbox($_action, $_type, $_data = null) {
                 $relay_all_recipients = (isset($_data['relay_all_recipients'])) ? $_data['relay_all_recipients'] : $is_now['relay_all_recipients_int'];
                 $aliases              = (!empty($_data['aliases'])) ? $_data['aliases'] : $is_now['max_num_aliases_for_domain'];
                 $mailboxes            = (!empty($_data['mailboxes'])) ? $_data['mailboxes'] : $is_now['max_num_mboxes_for_domain'];
-                $maxquota             = (!empty($_data['maxquota'])) ? $_data['maxquota'] : ($is_now['max_new_mailbox_quota'] / 1048576);
+                $maxquota             = (!empty($_data['maxquota'])) ? $_data['maxquota'] : ($is_now['max_quota_for_mbox'] / 1048576);
                 $quota                = (!empty($_data['quota'])) ? $_data['quota'] : ($is_now['max_quota_for_domain'] / 1048576);
                 $description          = (!empty($_data['description'])) ? $_data['description'] : $is_now['description'];
                 ($relay_all_recipients == '1') ? $backupmx = '1' : null;

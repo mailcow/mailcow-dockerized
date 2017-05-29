@@ -1,10 +1,10 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
-
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/vars.inc.php';
 if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/inc/vars.local.inc.php')) {
   include_once $_SERVER['DOCUMENT_ROOT'] . '/inc/vars.local.inc.php';
 }
+
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
 
 // Yubi OTP API
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/Yubico.php';

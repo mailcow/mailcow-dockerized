@@ -32,6 +32,7 @@ $AVAILABLE_LANGUAGES = array('de', 'en', 'es', 'nl', 'pt', 'ru', 'it');
 // Needs to be one of those: cerulean, cosmo, cyborg, darkly, flatly, journal, lumen, paper, readable, sandstone,
 // simplex, slate, spacelab, superhero, united, yeti
 // See https://bootswatch.com/
+// WARNING: Only lumen is loaded locally. Enabling any other theme, will download external sources.
 $DEFAULT_THEME = 'lumen';
 
 // Password complexity as regular expression
@@ -51,6 +52,9 @@ $MAILCOW_APPS = array(
 
 // Rows until pagination begins
 $PAGINATION_SIZE = 10;
+
+// Rows until pagination begins (log table)
+$LOG_PAGINATION_SIZE = 30;
 
 // Session lifetime in seconds
 $SESSION_LIFETIME = 3600;

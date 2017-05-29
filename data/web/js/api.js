@@ -32,9 +32,16 @@ $(document).ready(function() {
 
   // Select checkbox by click on parent tr
   $(document).on('click', 'tbody>tr', function(e) {
-    if (e.target.type == "checkbox") {
+    if(e.target.tagName.toLowerCase() === 'button') {
       e.stopPropagation();
-    } else {
+    }
+    else if(e.target.tagName.toLowerCase() === 'a') {
+      e.stopPropagation();
+    }
+    else if (e.target.type == "checkbox") {
+      e.stopPropagation();
+    }
+    else {
       var checkbox = $(this).find(':checkbox');
       checkbox.trigger('click');
     }

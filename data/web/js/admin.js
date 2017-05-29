@@ -66,7 +66,7 @@ jQuery(function($){
       "paging": {
         "enabled": true,
         "limit": 5,
-        "size": pagination_size
+        "size": log_pagination_size
       },
       "filtering": {
         "enabled": true,
@@ -113,7 +113,7 @@ jQuery(function($){
       "paging": {
         "enabled": true,
         "limit": 5,
-        "size": pagination_size
+        "size": log_pagination_size
       },
       "filtering": {
         "enabled": true,
@@ -160,7 +160,7 @@ jQuery(function($){
       "paging": {
         "enabled": true,
         "limit": 5,
-        "size": pagination_size
+        "size": log_pagination_size
       },
       "filtering": {
         "enabled": true,
@@ -194,6 +194,7 @@ jQuery(function($){
             item.chkbox = '<input type="checkbox" data-id="domain_admins" name="multi_select" value="' + item.username + '" />';
             item.action = '<div class="btn-group">' +
               '<a href="/edit.php?domainadmin=' + encodeURI(item.username) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+              '<a href="#" id="delete_selected" data-id="single-domain-admin" data-api-url="delete/domain-admin" data-item="' + encodeURI(item.username) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
               '</div>';
           });
         }
@@ -202,7 +203,7 @@ jQuery(function($){
       "paging": {
         "enabled": true,
         "limit": 5,
-        "size": pagination_size
+        "size": log_pagination_size
       },
       "filtering": {
         "enabled": true,
@@ -221,6 +222,7 @@ jQuery(function($){
         {"name":"host","type":"text","title":lang.host,"style":{"width":"250px"}},
         {"name":"source","title":lang.source,"breakpoints":"xs sm"},
         {"name":"keep_spam","title":lang.spamfilter, "type": "text","style":{"maxWidth":"80px","width":"80px"}},
+        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
       "rows": $.ajax({
         dataType: 'json',
@@ -231,6 +233,9 @@ jQuery(function($){
         },
         success: function (data) {
           $.each(data, function (i, item) {
+            item.action = '<div class="btn-group">' +
+              '<a href="#" id="delete_selected" data-id="single-domain-admin" data-api-url="delete/fwdhost" data-item="' + encodeURI(item.host) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+              '</div>';
             if (item.keep_spam == "yes") {
               item.keep_spam = lang.no;
             }
@@ -245,7 +250,7 @@ jQuery(function($){
       "paging": {
         "enabled": true,
         "limit": 5,
-        "size": pagination_size
+        "size": log_pagination_size
       },
       "sorting": {
         "enabled": true
@@ -415,7 +420,7 @@ jQuery(function($){
       "paging": {
         "enabled": true,
         "limit": 5,
-        "size": pagination_size
+        "size": log_pagination_size
       },
       "filtering": {
         "enabled": true,

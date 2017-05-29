@@ -390,7 +390,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               ));
             }
           break;
-          case "domain_admin":
+          case "domain-admin":
             if (isset($_POST['attr'])) {
               $attr = (array)json_decode($_POST['attr'], true);
               if (add_domain_admin($attr) === false) {
@@ -1333,7 +1333,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               ));
             }
           break;
-          case "domain_admin":
+          case "domain-admin":
             if (isset($_POST['items'])) {
               $items = (array)json_decode($_POST['items'], true);
               if (is_array($items)) {
@@ -1818,7 +1818,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               ));
             }
           break;
-          case "domain_admin":
+          case "domain-admin":
             if (isset($_POST['items']) && isset($_POST['attr'])) {
               $items = (array)json_decode($_POST['items'], true);
               $attr = (array)json_decode($_POST['attr'], true);

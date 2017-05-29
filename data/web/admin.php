@@ -104,61 +104,16 @@ $tfa_data = get_tfa();
               <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="domain_admins" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
               <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
               <ul class="dropdown-menu">
-                <li><a id="edit_selected" data-id="domain_admins" data-api-url='edit/domain_admin' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
-                <li><a id="edit_selected" data-id="domain_admins" data-api-url='edit/domain_admin' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
+                <li><a id="edit_selected" data-id="domain_admins" data-api-url='edit/domain-admin' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
+                <li><a id="edit_selected" data-id="domain_admins" data-api-url='edit/domain-admin' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
                 <li role="separator" class="divider"></li>
-                <li><a id="edit_selected" data-id="domain_admins" data-api-url='edit/domain_admin' data-api-attr='{"disable_tfa":"1"}' href="#"><?=$lang['tfa']['disable_tfa'];?></a></li>
+                <li><a id="edit_selected" data-id="domain_admins" data-api-url='edit/domain-admin' data-api-attr='{"disable_tfa":"1"}' href="#"><?=$lang['tfa']['disable_tfa'];?></a></li>
                 <li role="separator" class="divider"></li>
-                <li><a id="delete_selected" data-id="domain_admins" data-api-url='delete/domain_admin' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+                <li><a id="delete_selected" data-id="domain_admins" data-api-url='delete/domain-admin' href="#"><?=$lang['mailbox']['remove'];?></a></li>
               </ul>
+              <a class="btn btn-sm btn-success" data-id="add_domain_admin" data-toggle="modal" data-target="#addDomainAdminModal" href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add_domain_admin'];?></a>
             </div>
           </div>
-          <legend><?=$lang['admin']['add_domain_admin'];?></legend>
-          <form class="form-horizontal" data-id="domain_admin" role="form" method="post">
-            <div class="form-group">
-              <label class="control-label col-sm-2" for="username"><?=$lang['admin']['username'];?>:</label>
-              <div class="col-sm-10">
-                <input type="text" class="form-control" name="username" id="username" required>
-                &rdsh; <kbd>a-z A-Z - _ .</kbd>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="control-label col-sm-2" for="name"><?=$lang['admin']['admin_domains'];?>:</label>
-              <div class="col-sm-10">
-                <select title="<?=$lang['admin']['search_domain_da'];?>" style="width:100%" name="domains" size="5" multiple>
-                <?php
-                foreach (mailbox('get', 'domains') as $domain) {
-                  echo "<option>".htmlspecialchars($domain)."</option>";
-                }
-                ?>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="control-label col-sm-2" for="password"><?=$lang['admin']['password'];?>:</label>
-              <div class="col-sm-10">
-              <input type="password" class="form-control" name="password" id="password" placeholder="">
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="control-label col-sm-2" for="password2"><?=$lang['admin']['password_repeat'];?>:</label>
-              <div class="col-sm-10">
-              <input type="password" class="form-control" name="password2" id="password2" placeholder="">
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="col-sm-offset-2 col-sm-10">
-                <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active" checked> <?=$lang['admin']['active'];?></label>
-                </div>
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="col-sm-offset-2 col-sm-10">
-                <button class="btn btn-default" id="add_item" data-id="domain_admin" data-api-url='add/domain_admin' data-api-attr='{}' href="#"><?=$lang['admin']['add'];?></button>
-              </div>
-            </div>
-          </form>
         </div>
     </div>
   </div>
@@ -327,7 +282,7 @@ $tfa_data = get_tfa();
       </div>
       <div class="panel-body">
         <div class="table-responsive">
-          <table class="table table-striped" id="postfix_log"></table>
+          <table class="table table-striped table-condensed" id="postfix_log"></table>
         </div>
       </div>
     </div>
@@ -345,7 +300,7 @@ $tfa_data = get_tfa();
       </div>
       <div class="panel-body">
         <div class="table-responsive">
-          <table class="table table-striped" id="dovecot_log"></table>
+          <table class="table table-striped table-condensed" id="dovecot_log"></table>
         </div>
       </div>
     </div>
@@ -363,7 +318,7 @@ $tfa_data = get_tfa();
       </div>
       <div class="panel-body">
         <div class="table-responsive">
-          <table class="table table-striped" id="sogo_log"></table>
+          <table class="table table-striped table-condensed" id="sogo_log"></table>
         </div>
       </div>
     </div>
@@ -381,7 +336,7 @@ $tfa_data = get_tfa();
       </div>
       <div class="panel-body">
         <div class="table-responsive">
-          <table class="table table-striped" id="rspamd_history"></table>
+          <table class="table table-striped table-condensed" id="rspamd_history"></table>
         </div>
       </div>
     </div>
@@ -389,18 +344,22 @@ $tfa_data = get_tfa();
 
   </div>
 </div> <!-- /container -->
+<?php
+require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/admin.php';
+?>
 <script type='text/javascript'>
 <?php
 $lang_admin = json_encode($lang['admin']);
 echo "var lang = ". $lang_admin . ";\n";
 echo "var csrf_token = '". $_SESSION['CSRF']['TOKEN'] . "';\n";
 echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
+echo "var log_pagination_size = '". $LOG_PAGINATION_SIZE . "';\n";
 ?>
 </script>
 <script src="js/footable.min.js"></script>
 <script src="js/admin.js"></script>
 <?php
-require_once("inc/footer.inc.php");
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
 } else {
 	header('Location: /');
 	exit();

@@ -78,7 +78,7 @@ jQuery(function($){
             if (role == "admin") {
               item.action = '<div class="btn-group">' +
                 '<a href="/edit.php?domain=' + encodeURI(item.domain_name) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-                '<a href="/delete.php?domain=' + encodeURI(item.domain_name) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+                '<a href="#" id="delete_selected" data-id="single-domain" data-api-url="delete/domain" data-item="' + encodeURI(item.domain_name) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
                 '</div>';
             }
             else {
@@ -143,14 +143,14 @@ jQuery(function($){
             if (role == "admin") {
             item.action = '<div class="btn-group">' +
               '<a href="/edit.php?mailbox=' + encodeURI(item.username) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-              '<a href="/delete.php?mailbox=' + encodeURI(item.username) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+              '<a href="#" id="delete_selected" data-id="single-mailbox" data-api-url="delete/mailbox" data-item="' + encodeURI(item.username) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
               '<a href="/index.php?duallogin=' + encodeURI(item.username) + '" class="btn btn-xs btn-success"><span class="glyphicon glyphicon-user"></span> Login</a>' +
               '</div>';
             }
             else {
             item.action = '<div class="btn-group">' +
               '<a href="/edit.php?mailbox=' + encodeURI(item.username) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-              '<a href="/delete.php?mailbox=' + encodeURI(item.username) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+              '<a href="#" id="delete_selected" data-id="single-mailbox" data-api-url="delete/mailbox" data-item="' + encodeURI(item.username) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
               '</div>';
             }
             item.in_use = '<div class="progress">' +
@@ -198,7 +198,7 @@ jQuery(function($){
           $.each(data, function (i, item) {
             item.action = '<div class="btn-group">' +
               '<a href="/edit.php?resource=' + encodeURI(item.name) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-              '<a href="/delete.php?resource=' + encodeURI(item.name) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+              '<a href="#" id="delete_selected" data-id="single-resource" data-api-url="delete/resource" data-item="' + encodeURI(item.name) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="resource" name="multi_select" value="' + item.name + '" />';
           });
@@ -242,7 +242,7 @@ jQuery(function($){
           $.each(data, function (i, item) {
             item.action = '<div class="btn-group">' +
               '<a href="/edit.php?alias=' + encodeURI(item.address) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-              '<a href="/delete.php?alias=' + encodeURI(item.address) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-pencil"></span> ' + lang.remove + '</a>' +
+              '<a href="#" id="delete_selected" data-id="single-alias" data-api-url="delete/alias" data-item="' + encodeURI(item.address) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="alias" name="multi_select" value="' + item.address + '" />';
             if (item.is_catch_all == 1) {
@@ -291,7 +291,7 @@ jQuery(function($){
           $.each(data, function (i, item) {
             item.action = '<div class="btn-group">' +
               '<a href="/edit.php?aliasdomain=' + encodeURI(item.alias_domain) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-              '<a href="/delete.php?aliasdomain=' + encodeURI(item.alias_domain) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+              '<a href="#" id="delete_selected" data-id="single-alias-domain" data-api-url="delete/alias-domain" data-item="' + encodeURI(item.alias_domain) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="alias-domain" name="multi_select" value="' + item.alias_domain + '" />';
           });
