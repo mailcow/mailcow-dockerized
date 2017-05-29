@@ -55,7 +55,7 @@ rspamd_config:register_symbol({
       end
     end
   end,
-  priority = 10
+  priority = 11
 })
 end
 
