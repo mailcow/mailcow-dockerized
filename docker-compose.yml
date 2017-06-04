@@ -97,7 +97,7 @@ services:
     php-fpm-mailcow:
       image: mailcow/phpfpm
       build: ./data/Dockerfiles/php-fpm
-      command: "php-fpm -d date.timezone=${TZ}"
+      command: "php-fpm7 -d date.timezone=${TZ}"
       depends_on:
         - bind9-mailcow
         - redis-mailcow
