@@ -10,5 +10,5 @@ If ((Test-Path $File) -eq $True) {
       Write-Host "Something went wrong! " -foregroundcolor red
     }
 } else {
-    Write-Host "Does mailcow.conf exit?"  -foregroundcolor red
+    Write-Host "Does mailcow.conf exist?"  -foregroundcolor red
 }
