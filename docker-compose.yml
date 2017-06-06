@@ -175,7 +175,7 @@ services:
       ports:
         - "${IMAP_PORT:-143}:143"
         - "${IMAPS_PORT:-993}:993"
-        - "${POP_PORT-110}:110"
+        - "${POP_PORT:-110}:110"
         - "${POPS_PORT:-995}:995"
         - "${SIEVE_PORT:-4190}:4190"
       dns:
