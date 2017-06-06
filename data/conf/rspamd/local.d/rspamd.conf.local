@@ -3,3 +3,12 @@ history_redis {}
 worker "log_helper" {
   count = 1;
 }
+worker "rspamd_proxy" {
+  bind_socket = "rspamd:9900";
+  milter = true;
+  upstream {
+    name = "localhost";
+    default = true;
+    hosts = "rspamd:11333"
+  }
+}

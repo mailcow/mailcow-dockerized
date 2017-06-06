@@ -43,13 +43,13 @@ rspamd_config:register_symbol({
         rspamd_logger.infox("user wants subject modified for tagged mail")
         local sbj = task:get_header('Subject')
         new_sbj = '=?UTF-8?B?' .. tostring(util.encode_base64('[' .. tag .. '] ' .. sbj)) .. '?='
-        task:set_rmilter_reply({
+        task:set_milter_reply({
           remove_headers = {['Subject'] = 1},
           add_headers = {['Subject'] = new_sbj}
         })
       else
         rspamd_logger.infox("Add X-Moo-Tag header")
-        task:set_rmilter_reply({
+        task:set_milter_reply({
           add_headers = {['X-Moo-Tag'] = 'YES'}
         })
       end
