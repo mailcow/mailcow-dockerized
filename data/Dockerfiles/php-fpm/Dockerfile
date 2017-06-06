@@ -15,25 +15,25 @@ RUN set -x \
 && apk add --no-cache \
   bash \
   curl \
-  redis \
-  mariadb-client \
   libressl \
+  mariadb-client \
+  redis \
   php7-fpm \
   php7-common \
+  php7-ctype \
+  php7-curl \
   php7-intl \
+  php7-json \
+  php7-openssl \
   php7-pdo \
   php7-pdo_mysql \
-  php7-xmlrpc \
-  php7-redis \
-  php7-openssl \
-  php7-json \
-  php7-curl \
-  php7-ctype \
   php7-pear \
   php7-pear-auth_sasl \
+  php7-pear-mail_mime \
   php7-pear-net_smtp \
   php7-pear-net_idna2 \
-  php7-pear-mail_mime \
+  php7-redis \
+  php7-xmlrpc \
 && pear install Net_IMAP \
 # MISSING apk for php7-pear-net_imap - can be installed once https://github.com/alpinelinux/aports/pull/1359 is merged.
 \
