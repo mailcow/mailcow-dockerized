@@ -195,7 +195,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 <div class="tab-content">
 	<div role="tabpanel" class="tab-pane active" id="SpamAliases">
     <div class="row">
-      <div class="col-md-6 col-sm-12 col-xs-12">
+      <div class="col-md-12 col-sm-12 col-xs-12">
         <div class="table-responsive">
           <table class="table table-striped" id="tla_table"></table>
         </div>
@@ -324,7 +324,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
           <li><a id="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
           <li><a id="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
           <li role="separator" class="divider"></li>
-          <li><a id="delete_selected" data-id="syncjob" data-api-url='delete/syncjob' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+          <li><a id="delete_selected" data-text="<?=$lang['user']['eas_reset'];?>?" data-id="syncjob" data-api-url='delete/syncjob' href="#"><?=$lang['mailbox']['remove'];?></a></li>
         </ul>
         <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addSyncJobModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['create_syncjob'];?></a>
       </div>

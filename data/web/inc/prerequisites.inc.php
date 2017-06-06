@@ -6,6 +6,8 @@ if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/inc/vars.local.inc.php')) {
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
 
+header_remove("X-Powered-By");
+
 // Yubi OTP API
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/Yubico.php';
 

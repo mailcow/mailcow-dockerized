@@ -10,7 +10,7 @@ $lang['footer']['restart_now'] = 'Jetzt neustarten';
 $lang['footer']['restart_sogo_info'] = 'Einige Änderungen an Domains benötigen einen Neustart SOGos. Hier können Sie SOGo neustarten.<br><br><b>Wichtig:</b> Ein korrekter Neustart SOGos kann eine Weile in Anspruch nehmen, bitte warten Sie, bis der Prozess vollständig beendet wurde.';
 
 $lang['footer']['confirm_delete'] = 'Löschen bestätigen';
-$lang['footer']['delete_these_items'] = 'Sind Sie sicher, dass die Änderungen an folgenden Elementen durchgeführt werden sollen?';
+$lang['footer']['delete_these_items'] = 'Sind Sie sicher, dass die Änderungen an Elementen mit folgender ID durchgeführt werden sollen?';
 $lang['footer']['delete_now'] = 'Jetzt löschen';
 $lang['footer']['cancel'] = 'Abbrechen';
 

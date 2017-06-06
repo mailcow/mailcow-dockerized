@@ -10,7 +10,7 @@ $lang['footer']['restart_now'] = 'Restart now';
 $lang['footer']['restart_sogo_info'] = 'Some tasks, e.g. adding a domain, require you to restart SOGo to catch changes made in the mailcow UI.<br><br><b>Important:</b> A graceful restart may take a while to complete, please wait for it to finish.';
 
 $lang['footer']['confirm_delete'] = 'Confirm deletion';
-$lang['footer']['delete_these_items'] = 'Please confirm your changes to the following items:';
+$lang['footer']['delete_these_items'] = 'Please confirm your changes to the following object id:';
 $lang['footer']['delete_now'] = 'Delete now';
 $lang['footer']['cancel'] = 'Cancel';
 

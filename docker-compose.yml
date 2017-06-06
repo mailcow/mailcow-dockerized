@@ -141,22 +141,6 @@ services:
           aliases:
             - sogo
 
-    rmilter-mailcow:
-      image: mailcow/rmilter
-      build: ./data/Dockerfiles/rmilter
-      depends_on:
-        - bind9-mailcow
-      volumes:
-        - ./data/conf/rmilter/:/etc/rmilter.conf.d/:ro
-      restart: always
-      dns:
-        - 172.22.1.254
-      dns_search: mailcow-network
-      networks:
-        mailcow-network:
-          aliases:
-            - rmilter
-
     dovecot-mailcow:
       image: mailcow/dovecot
       build: ./data/Dockerfiles/dovecot
