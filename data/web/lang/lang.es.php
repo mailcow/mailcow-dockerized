@@ -156,7 +156,7 @@ $lang['start']['start_rc'] = 'Abrir Roundcube';
 $lang['start']['start_sogo'] = 'Abrir SOGo';
 $lang['start']['mailcow_apps_detail'] = 'Utiliza una aplicación de mailcow para acceder a tus correos, calendario, contactos y más.';
 $lang['start']['mailcow_panel'] = 'Iniciar mailcow UI';
-$lang['start']['mailcow_panel_description'] = 'Mailcow UI está disponible para administradores y usuarios de buzón.';
+$lang['start']['mailcow_panel_description'] = 'mailcow UI está disponible para administradores y usuarios de buzón.';
 $lang['start']['mailcow_panel_detail'] = '<b>Administradores del dominio</b> crean, modifican o eliminan buzones y alias, cambia dominios y lee información más detallada sobre sus dominios asignados<br>
 	<b>Usuarios de buzón</b> son capaces de crear alias de tiempo limitado (spam alias), cambiar su contraseña y la configuración del filtro de spam.';
 $lang['start']['recommended_config'] = 'Configuración recomendada (sin ActiveSync)';
