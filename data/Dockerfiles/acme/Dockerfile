@@ -4,7 +4,7 @@ LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 RUN apk add --update --no-cache \
       acme-client \
-      docker \
+      curl \
       openssl
 
 COPY docker.sh /srv/docker-entrypoint.sh

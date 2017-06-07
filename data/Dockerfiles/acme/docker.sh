@@ -3,6 +3,14 @@
 ACME_BASE=/var/lib/acme
 mkdir -p ${ACME_BASE}/acme/private
 
+restart_containers(){
+	for container in $*; do
+		curl -X POST \
+			--unix-socket /var/run/docker.sock \
+			"http:/v1.24/containers/${container}/restart"
+	done
+}
+
 while true; do
 
 	acme-client \
@@ -23,7 +31,7 @@ while true; do
 			openssl dhparam -out ${ACME_BASE}/dhparams.pem 2048
 
 			# restart docker containers
-			docker restart ${CONTAINERS_RESTART}
+			restart_containers ${CONTAINERS_RESTART}
 			;;
 		1) # failure
 			exit 1;;
