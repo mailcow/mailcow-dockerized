@@ -175,7 +175,7 @@ $lang['user']['eas_reset'] = 'Reset ActiveSync device cache';
 $lang['user']['eas_reset_now'] = 'Reset now';
 $lang['user']['eas_reset_help'] = 'In many cases a device cache reset will help to recover a broken ActiveSync profile.<br><b>Attention:</b> All elements will be redownloaded!';
 
-$lang['user']['encryption'] = 'Encyrption';
+$lang['user']['encryption'] = 'Encryption';
 $lang['user']['username'] = 'Username';
 $lang['user']['password'] = 'Password';
 $lang['user']['last_run'] = 'Last run';
