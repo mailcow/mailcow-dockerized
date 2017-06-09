@@ -18,7 +18,7 @@ while true; do
 		-f ${ACME_BASE}/acme/private/account.key \
 		-k ${ACME_BASE}/acme/private/privkey.pem \
 		-c ${ACME_BASE}/acme \
-		${MAILCOW_HOSTNAME#*.} autoconfig.${MAILCOW_HOSTNAME#*.} autoconfig.${MAILCOW_HOSTNAME#*.} ${ADDITIONAL_SAN}
+		${MAILCOW_HOSTNAME} autoconfig.${MAILCOW_HOSTNAME#*.} autoconfig.${MAILCOW_HOSTNAME#*.} ${ADDITIONAL_SAN}
 
 	case "$?" in
 		0) # new certs
