@@ -280,9 +280,10 @@ services:
       image: mailcow/acme
       build: ./data/Dockerfiles/acme
       # All domains to be included in the certificate
-      command: ${MAILCOW_HOSTNAME} autodiscover.${MAILCOW_HOSTNAME} autoconfig.${MAILCOW_HOSTNAME}
       environment:
         - CONTAINERS_RESTART=mailcowdockerized_postfix-mailcow_1 mailcowdockerized_dovecot-mailcow_1 mailcowdockerized_nginx-mailcow_1
+        # Additional subject alternate names
+        - ADDITIONAL_SAN=
       volumes:
         - ./data/web/.well-known/acme-challenge:/var/www/acme:rw
         - ./data/assets/ssl:/var/lib/acme/:rw
