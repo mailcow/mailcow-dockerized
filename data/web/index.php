@@ -69,7 +69,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
           <?php
           foreach ($MAILCOW_APPS as $app):
           ?>
-            <a href="<?= $app['link']; ?>" role="button" class="btn btn-lg btn-default"><?= $app['name']; ?></a>&nbsp;
+            <a href="<?= htmlspecialchars($app['link']); ?>" role="button" title="<?= htmlspecialchars($app['description']); ?>" class="btn btn-lg btn-default"><?= htmlspecialchars($app['name']); ?></a>&nbsp;
           <?php
           endforeach;
           ?>
