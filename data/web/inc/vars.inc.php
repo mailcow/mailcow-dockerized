@@ -42,11 +42,13 @@ $PASSWD_REGEP = '.{4,}';
 $MAILCOW_APPS = array(
   array(
     'name' => 'SOGo',
-    'link' => '/SOGo/'
+    'link' => '/SOGo/',
+    'description' => 'SOGo is a collaborative software (groupware) server.'
   ),
   // array(
     // 'name' => 'Roundcube',
-    // 'link' => '/rc/'
+    // 'link' => '/rc/',
+    // 'description' => 'Roundcube is a web-based IMAP email client.',
   // ),
 );
 
