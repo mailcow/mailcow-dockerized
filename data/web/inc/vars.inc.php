@@ -43,12 +43,12 @@ $MAILCOW_APPS = array(
   array(
     'name' => 'SOGo',
     'link' => '/SOGo/',
-    'description' => 'SOGo is a collaborative software (groupware) server.'
+    'description' => 'SOGo is a web-based client for email, address book and calendar.'
   ),
   // array(
     // 'name' => 'Roundcube',
     // 'link' => '/rc/',
-    // 'description' => 'Roundcube is a web-based IMAP email client.',
+    // 'description' => 'Roundcube is a web-based email client.',
   // ),
 );
 
