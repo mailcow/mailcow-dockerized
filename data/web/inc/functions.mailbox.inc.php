@@ -473,15 +473,8 @@ function mailbox($_action, $_type, $_data = null) {
         break;
         case 'alias_domain':
           $active = intval($_data['active']);
-          $alias_domain     = idn_to_ascii(strtolower(trim($_data['alias_domain'])));
-          $target_domain    = idn_to_ascii(strtolower(trim($_data['target_domain'])));
-          if (!is_valid_domain_name($alias_domain)) {
-            $_SESSION['return'] = array(
-              'type' => 'danger',
-              'msg' => sprintf($lang['danger']['alias_domain_invalid'])
-            );
-            return false;
-          }
+          $alias_domains  = array_map('trim', preg_split( "/( |,|;|\n)/", $_data['alias_domain']));
+          $target_domain = idn_to_ascii(strtolower(trim($_data['target_domain'])));
           if (!is_valid_domain_name($target_domain)) {
             $_SESSION['return'] = array(
               'type' => 'danger',
@@ -496,66 +489,76 @@ function mailbox($_action, $_type, $_data = null) {
             );
             return false;
           }
-          if ($alias_domain == $target_domain) {
-            $_SESSION['return'] = array(
-              'type' => 'danger',
-              'msg' => sprintf($lang['danger']['aliasd_targetd_identical'])
-            );
-            return false;
-          }
-          try {
-            $stmt = $pdo->prepare("SELECT `domain` FROM `domain`
-              WHERE `domain`= :target_domain");
-            $stmt->execute(array(':target_domain' => $target_domain));
-            $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-            if ($num_results == 0) {
+          foreach ($alias_domains as $alias_domain) {
+            $alias_domain = idn_to_ascii(strtolower(trim($alias_domain)));
+            if (!is_valid_domain_name($alias_domain)) {
               $_SESSION['return'] = array(
                 'type' => 'danger',
-                'msg' => sprintf($lang['danger']['targetd_not_found'])
+                'msg' => sprintf($lang['danger']['alias_domain_invalid'])
               );
               return false;
             }
-            $stmt = $pdo->prepare("SELECT `alias_domain` FROM `alias_domain` WHERE `alias_domain`= :alias_domain
-              UNION
-              SELECT `alias_domain` FROM `alias_domain` WHERE `alias_domain`= :alias_domain_in_domain");
-            $stmt->execute(array(':alias_domain' => $alias_domain, ':alias_domain_in_domain' => $alias_domain));
-            $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-            if ($num_results != 0) {
+            if ($alias_domain == $target_domain) {
               $_SESSION['return'] = array(
                 'type' => 'danger',
-                'msg' => sprintf($lang['danger']['aliasd_exists'])
+                'msg' => sprintf($lang['danger']['aliasd_targetd_identical'])
+              );
+              return false;
+            }
+            try {
+              $stmt = $pdo->prepare("SELECT `domain` FROM `domain`
+                WHERE `domain`= :target_domain");
+              $stmt->execute(array(':target_domain' => $target_domain));
+              $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+              if ($num_results == 0) {
+                $_SESSION['return'] = array(
+                  'type' => 'danger',
+                  'msg' => sprintf($lang['danger']['targetd_not_found'])
+                );
+                return false;
+              }
+              $stmt = $pdo->prepare("SELECT `alias_domain` FROM `alias_domain` WHERE `alias_domain`= :alias_domain
+                UNION
+                SELECT `alias_domain` FROM `alias_domain` WHERE `alias_domain`= :alias_domain_in_domain");
+              $stmt->execute(array(':alias_domain' => $alias_domain, ':alias_domain_in_domain' => $alias_domain));
+              $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+              if ($num_results != 0) {
+                $_SESSION['return'] = array(
+                  'type' => 'danger',
+                  'msg' => sprintf($lang['danger']['aliasd_exists'])
+                );
+                return false;
+              }
+            }
+            catch(PDOException $e) {
+              $_SESSION['return'] = array(
+                'type' => 'danger',
+                'msg' => 'MySQL: '.$e
+              );
+              return false;
+            }
+            try {
+              $stmt = $pdo->prepare("INSERT INTO `alias_domain` (`alias_domain`, `target_domain`, `active`)
+                VALUES (:alias_domain, :target_domain, :active)");
+              $stmt->execute(array(
+                ':alias_domain' => $alias_domain,
+                ':target_domain' => $target_domain,
+                ':active' => $active
+              ));
+            }
+            catch (PDOException $e) {
+              mailbox('delete', 'alias_domain', array('alias_domain' => $alias_domain));
+              $_SESSION['return'] = array(
+                'type' => 'danger',
+                'msg' => 'MySQL: '.$e
               );
               return false;
             }
           }
-          catch(PDOException $e) {
-            $_SESSION['return'] = array(
-              'type' => 'danger',
-              'msg' => 'MySQL: '.$e
-            );
-            return false;
-          }
-          try {
-            $stmt = $pdo->prepare("INSERT INTO `alias_domain` (`alias_domain`, `target_domain`, `active`)
-              VALUES (:alias_domain, :target_domain, :active)");
-            $stmt->execute(array(
-              ':alias_domain' => $alias_domain,
-              ':target_domain' => $target_domain,
-              ':active' => $active
-            ));
-            $_SESSION['return'] = array(
-              'type' => 'success',
-              'msg' => sprintf($lang['success']['aliasd_added'], htmlspecialchars($alias_domain))
-            );
-          }
-          catch (PDOException $e) {
-            mailbox('delete', 'alias_domain', array('alias_domain' => $alias_domain));
-            $_SESSION['return'] = array(
-              'type' => 'danger',
-              'msg' => 'MySQL: '.$e
-            );
-            return false;
-          }
+          $_SESSION['return'] = array(
+            'type' => 'success',
+            'msg' => sprintf($lang['success']['aliasd_added'], htmlspecialchars(implode(', ', $alias_domains)))
+          );
         break;
         case 'mailbox':
           $local_part   = strtolower(trim($_data['local_part']));
