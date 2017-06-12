@@ -75,4 +75,7 @@ TZ=${TZ}
 # Fixed project name
 COMPOSE_PROJECT_NAME=mailcow-dockerized
 
+# Additional SAN for the certificate
+ADDITIONAL_SAN=
+
 EOF
