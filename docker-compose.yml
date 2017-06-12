@@ -69,11 +69,7 @@ services:
     rspamd-mailcow:
       image: mailcow/rspamd
       build: ./data/Dockerfiles/rspamd
-      command: > 
-        /bin/bash -c "
-        sleep 5;
-        /usr/bin/rspamd -f -u _rspamd -g _rspamd
-        "
+      command: ["/bin/bash", "-c", "sleep 5; /usr/bin/rspamd -f -u _rspamd -g _rspamd"]
       depends_on:
         nginx-mailcow:
           condition: service_healthy
@@ -97,7 +93,7 @@ services:
     php-fpm-mailcow:
       image: mailcow/phpfpm
       build: ./data/Dockerfiles/php-fpm
-      command: "php-fpm -d date.timezone=${TZ}"
+      command: "php-fpm7 -d date.timezone=${TZ}"
       depends_on:
         - bind9-mailcow
         - redis-mailcow
