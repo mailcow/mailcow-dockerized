@@ -1,5 +1,9 @@
 #!/bin/bash
 
+until mysqladmin ping --host mysql --silent; do
+	sleep 1
+done
+
 # Wait for MySQL to warm-up
 while mysqladmin ping --host mysql --silent; do
 
