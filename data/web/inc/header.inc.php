@@ -99,7 +99,7 @@
           <?php
           foreach ($MAILCOW_APPS as $app):
           ?>
-            <li><a href="<?= $app['link']; ?>"><?= $app['name']; ?></a></li>
+            <li title="<?= htmlspecialchars($app['description']); ?>"><a href="<?= htmlspecialchars($app['link']); ?>"><?= htmlspecialchars($app['name']); ?></a></li>
           <?php
           endforeach;
           ?>
