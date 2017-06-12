@@ -14,8 +14,6 @@ RUN apt-key adv --fetch-keys http://rspamd.com/apt/gpg.key \
 RUN echo '.include $LOCAL_CONFDIR/local.d/rspamd.conf.local' > /etc/rspamd/rspamd.conf.local
 
 COPY settings.conf /etc/rspamd/modules.d/settings.conf
-COPY antivirus.conf /etc/rspamd/modules.d/antivirus.conf
-COPY milter_headers.lua /usr/share/rspamd/lua/milter_headers.lua
 
 RUN apt-get autoremove --purge \
 	&& apt-get clean
