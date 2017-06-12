@@ -10,7 +10,7 @@ RUN apk add -U --no-cache libxml2-dev \
 	autoconf \
 	g++ \
 	make \
-	openssl
+	openssl \
 	&& pecl install redis \
 	&& pecl clear-cache \
 	&& docker-php-ext-configure intl \
