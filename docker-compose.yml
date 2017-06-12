@@ -1,20 +1,5 @@
 version: '2.1'
 services:
-    bind9-mailcow:
-      image: resystit/bind9
-      command: "named -c /etc/bind/named.conf -g -u named"
-      depends_on:
-        mysql-mailcow:
-          condition: service_healthy
-      volumes:
-        - ./data/conf/bind9/named.conf:/etc/bind/named.conf
-      restart: always
-      networks:
-        mailcow-network:
-          ipv4_address: 172.22.1.254
-          aliases:
-            - bind9
-
     mysql-mailcow:
       image: mariadb:10.1
       healthcheck:
@@ -25,9 +10,6 @@ services:
       volumes:
         - mysql-vol-1:/var/lib/mysql/
         - ./data/conf/mysql/:/etc/mysql/conf.d/:ro
-      dns:
-        - 172.22.1.254
-      dns_search: mailcow-network
       environment:
         - MYSQL_ROOT_PASSWORD=${DBROOT}
         - MYSQL_DATABASE=${DBNAME}
@@ -42,13 +24,11 @@ services:
     redis-mailcow:
       image: redis:alpine
       depends_on:
-        - bind9-mailcow
+        mysql-mailcow:
+          condition: service_healthy
       volumes:
         - redis-vol-1:/data/
       restart: always
-      dns:
-        - 172.22.1.254
-      dns_search: mailcow-network
       networks:
         mailcow-network:
           aliases:
@@ -58,9 +38,6 @@ services:
       image: mailcow/clamd
       build: ./data/Dockerfiles/clamav
       restart: always
-      dns:
-        - 172.22.1.254
-      dns_search: mailcow-network
       networks:
         mailcow-network:
           aliases:
@@ -85,9 +62,6 @@ services:
         - rspamd-vol-1:/var/lib/rspamd
       restart: always
       hostname: rspamd
-      dns:
-        - 172.22.1.254
-      dns_search: mailcow-network
       networks:
         mailcow-network:
           ipv4_address: 172.22.1.253
@@ -99,15 +73,11 @@ services:
       build: ./data/Dockerfiles/php-fpm
       command: "php-fpm -d date.timezone=${TZ}"
       depends_on:
-        - bind9-mailcow
         - redis-mailcow
       volumes:
         - ./data/web:/web:ro
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
         - dkim-vol-1:/data/dkim
-      dns:
-        - 172.22.1.254
-      dns_search: mailcow-network
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -123,15 +93,13 @@ services:
       image: mailcow/sogo
       build: ./data/Dockerfiles/sogo
       depends_on:
-        - bind9-mailcow
+        mysql-mailcow:
+          condition: service_healthy
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
         - TZ=${TZ}
-      dns:
-        - 172.22.1.254
-      dns_search: mailcow-network
       volumes:
         - ./data/conf/sogo/:/etc/sogo/
       restart: always
@@ -145,7 +113,8 @@ services:
       image: mailcow/dovecot
       build: ./data/Dockerfiles/dovecot
       depends_on:
-        - bind9-mailcow
+        mysql-mailcow:
+          condition: service_healthy
       volumes:
         - ./data/conf/dovecot:/usr/local/etc/dovecot
         - ./data/assets/ssl:/etc/ssl/mail/:ro
@@ -162,9 +131,6 @@ services:
         - "${POP_PORT:-110}:110"
         - "${POPS_PORT:-995}:995"
         - "${SIEVE_PORT:-4190}:4190"
-      dns:
-        - 172.22.1.254
-      dns_search: mailcow-network
       restart: always
       hostname: ${MAILCOW_HOSTNAME}
       networks:
@@ -176,7 +142,8 @@ services:
       image: mailcow/postfix
       build: ./data/Dockerfiles/postfix
       depends_on:
-        - bind9-mailcow
+        mysql-mailcow:
+          condition: service_healthy
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
         - ./data/assets/ssl:/etc/ssl/mail/:ro
@@ -192,9 +159,6 @@ services:
         - "${SUBMISSION_PORT:-587}:587"
       restart: always
       hostname: ${MAILCOW_HOSTNAME}
-      dns:
-        - 172.22.1.254
-      dns_search: mailcow-network
       networks:
         mailcow-network:
           aliases:
@@ -203,11 +167,9 @@ services:
     memcached-mailcow:
       image: memcached:alpine
       depends_on:
-        - bind9-mailcow
+        mysql-mailcow:
+          condition: service_healthy
       restart: always
-      dns:
-        - 172.22.1.254
-      dns_search: mailcow-network
       networks:
         mailcow-network:
           aliases:
@@ -236,9 +198,6 @@ services:
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
         - ./data/assets/ssl/:/etc/ssl/mail/:ro
         - ./data/conf/nginx/:/etc/nginx/conf.d/:rw
-      dns:
-        - 172.22.1.254
-      dns_search: mailcow-network
       ports:
         - "${HTTPS_BIND:-0.0.0.0}:${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
         - "${HTTP_BIND:-127.0.0.1}:${HTTP_PORT:-80}:${HTTP_PORT:-80}"
@@ -248,6 +207,28 @@ services:
           ipv4_address: 172.22.1.251
           aliases:
             - nginx
+
+    acme-mailcow:
+      depends_on:
+        - nginx-mailcow
+      image: mailcow/acme
+      build: ./data/Dockerfiles/acme
+      # All domains to be included in the certificate
+      environment:
+        - CONTAINERS_RESTART=mailcowdockerized_postfix-mailcow_1 mailcowdockerized_dovecot-mailcow_1 mailcowdockerized_nginx-mailcow_1
+        # Additional subject alternate names
+        - ADDITIONAL_SAN=${ADDITIONAL_SAN}
+        - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
+      volumes:
+        - ./data/web/.well-known/acme-challenge:/var/www/acme:rw
+        - ./data/assets/ssl:/var/lib/acme/:rw
+        - /var/run/docker.sock:/var/run/docker.sock:ro
+      # do not restart the container too often. Things get worse when we hit let's encrypt's ratelimit.
+      restart: on-failure:3
+      networks:
+        mailcow-network:
+          aliases:
+            - acme
 
     fail2ban-mailcow:
       image: mailcow/fail2ban
