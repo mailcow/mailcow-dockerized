@@ -11,8 +11,7 @@ RUN apk add -U --no-cache libxml2-dev \
 	g++ \
 	make \
 	openssl
-
-RUN pecl install redis \
+	&& pecl install redis \
 	&& pecl clear-cache \
 	&& docker-php-ext-configure intl \
 	&& docker-php-ext-install intl pdo pdo_mysql xmlrpc \
