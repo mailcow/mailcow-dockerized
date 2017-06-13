@@ -270,12 +270,15 @@ services:
         # Additional subject alternate names
         - ADDITIONAL_SAN=${ADDITIONAL_SAN}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
+        - DBNAME=${DBNAME}
+        - DBUSER=${DBUSER}
+        - DBPASS=${DBPASS}
       volumes:
         - ./data/web/.well-known/acme-challenge:/var/www/acme:rw
         - ./data/assets/ssl:/var/lib/acme/:rw
         - /var/run/docker.sock:/var/run/docker.sock:ro
       # do not restart the container too often. Things get worse when we hit let's encrypt's ratelimit.
-      restart: on-failure:3
+      restart: on-failure:1
       networks:
         mailcow-network:
           aliases:
