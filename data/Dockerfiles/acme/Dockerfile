@@ -7,7 +7,8 @@ RUN apk add --update --no-cache \
 	acme-client \
 	curl \
 	openssl \
-	bind-tools
+	bind-tools \
+	mariadb-client
 
 COPY docker-entrypoint.sh /srv/docker-entrypoint.sh
 
