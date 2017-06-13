@@ -41,17 +41,17 @@ RUN set -x \
 && set -ex \
 && cd /etc/php7/ \
 # Change the setting so the daemon runs in the foreground and as www-data:www-data
-&& sed -i 's/^user = .*/user = www-data/' /etc/php7/php-fpm.d/www.conf \
-&& sed -i 's/^group = .*/group = www-data/' /etc/php7/php-fpm.d/www.conf \
+&& sed -i 's/^user = .*/user = www-data/' php-fpm.d/www.conf \
+&& sed -i 's/^group = .*/group = www-data/' php-fpm.d/www.conf \
 # Include PEAR and other libs
-&& sed -i 's/;include_path = ".:\/php\/includes"/include_path = ".:\/usr\/share\/php7"/g' /etc/php7/php.ini \
+&& sed -i 's/;include_path = ".:\/php\/includes"/include_path = ".:\/usr\/share\/php7"/g' php.ini \
 # Uncomment line bebelow for diagnostics capabilities
-#&& sed -i 's/^;daemonize .*$/daemonize = no/g' /etc/php7/php-fpm.conf \
-#&& sed -i 's/^display_errors = .*/display_errors = On/' /etc/php7/php.ini \
-#&& sed -i 's/^display_startup_errors = .*/display_startup_errors = On/' /etc/php7/php.ini \
-#&& sed -i 's/^short_open_tag = .*/short_open_tag = On/' /etc/php7/php.ini \
-#&& sed -i 's/^register_argc_argv = .*/register_argc_argv = On/' /etc/php7/php.ini \
-#&& sed -i 's/^error_reporting = .*/error_reporting = -1/' /etc/php7/php.ini \
+#&& sed -i 's/^;daemonize .*$/daemonize = no/g' php-fpm.conf \
+#&& sed -i 's/^display_errors = .*/display_errors = On/' php.ini \
+#&& sed -i 's/^display_startup_errors = .*/display_startup_errors = On/' php.ini \
+#&& sed -i 's/^short_open_tag = .*/short_open_tag = On/' php.ini \
+#&& sed -i 's/^register_argc_argv = .*/register_argc_argv = On/' php.ini \
+#&& sed -i 's/^error_reporting = .*/error_reporting = -1/' php.ini \
 && { \
     echo '[global]'; \
     echo 'error_log = /proc/self/fd/2'; \
