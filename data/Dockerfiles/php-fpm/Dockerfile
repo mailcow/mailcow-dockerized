@@ -11,7 +11,7 @@ RUN set -x \
 && adduser -u 82 -D -S -G www-data www-data \
 \
 # Install Dependencies 
-&& apk add --update \
+&& apk update \
 && apk add --no-cache \
   bash \
   curl \
