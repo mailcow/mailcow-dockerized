@@ -46,7 +46,8 @@ services:
     redis-mailcow:
       image: redis:alpine
       depends_on:
-        - unbound-mailcow
+        unbound-mailcow:
+          condition: service_healthy
       volumes:
         - redis-vol-1:/data/
       restart: always
@@ -125,7 +126,8 @@ services:
       image: mailcow/sogo
       build: ./data/Dockerfiles/sogo
       depends_on:
-        - unbound-mailcow
+        unbound-mailcow:
+          condition: service_healthy
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -147,7 +149,8 @@ services:
       image: mailcow/dovecot
       build: ./data/Dockerfiles/dovecot
       depends_on:
-        - unbound-mailcow
+        unbound-mailcow:
+          condition: service_healthy
       volumes:
         - ./data/conf/dovecot:/usr/local/etc/dovecot
         - ./data/assets/ssl:/etc/ssl/mail/:ro
@@ -178,7 +181,8 @@ services:
       image: mailcow/postfix
       build: ./data/Dockerfiles/postfix
       depends_on:
-        - unbound-mailcow
+        unbound-mailcow:
+          condition: service_healthy
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
         - ./data/assets/ssl:/etc/ssl/mail/:ro
@@ -205,7 +209,8 @@ services:
     memcached-mailcow:
       image: memcached:alpine
       depends_on:
-        - unbound-mailcow
+        unbound-mailcow:
+          condition: service_healthy
       restart: always
       dns:
         - 172.22.1.254
