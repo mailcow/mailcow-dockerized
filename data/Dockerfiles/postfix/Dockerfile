@@ -16,7 +16,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	gnupg \
 	libsasl2-modules \
 	postfix \
-	postfix \
 	postfix-mysql \
 	postfix-pcre \
 	python-gpgme \
