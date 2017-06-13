@@ -44,6 +44,7 @@ RUN mkdir /usr/share/doc/sogo \
 COPY ./reconf-domains.sh /
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
 COPY supervisord.conf /etc/supervisor/supervisord.conf
+COPY event-listener-ordered-startup.py /usr/local/bin/event-listener-ordered-startup.py
 
 CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 
