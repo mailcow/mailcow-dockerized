@@ -9,5 +9,7 @@ data/conf/postfix/sql
 data/conf/dovecot/sql
 data/web/inc/vars.local.inc.php
 data/assets/ssl/*
+data/assets/ssl/key.pem
+data/assets/ssl/cert.pem
 .vscode/*
 data/web/.well-known/acme-challenge
