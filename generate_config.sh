@@ -79,3 +79,6 @@ COMPOSE_PROJECT_NAME=mailcow-dockerized
 ADDITIONAL_SAN=
 
 EOF
+
+# copy but don't overwrite existing certificate
+cp -n data/assets/ssl-example/*.pem data/assets/ssl/
