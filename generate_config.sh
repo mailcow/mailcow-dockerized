@@ -80,5 +80,7 @@ ADDITIONAL_SAN=
 
 EOF
 
+mkdir -p data/assets/ssl
+
 # copy but don't overwrite existing certificate
 cp -n data/assets/ssl-example/*.pem data/assets/ssl/
