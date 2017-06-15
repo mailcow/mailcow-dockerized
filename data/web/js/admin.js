@@ -1,4 +1,20 @@
 jQuery(function($){
+  // http://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery
+  var entityMap = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;',
+  '/': '&#x2F;',
+  '`': '&#x60;',
+  '=': '&#x3D;'
+  };
+  function escapeHtml(string) {
+    return String(string).replace(/[&<>"'`=\/]/g, function (s) {
+      return entityMap[s];
+    });
+  }
   function unix_time_format(tm) {
     var date = new Date(tm ? tm * 1000 : 0);
     return date.toLocaleString();
@@ -47,6 +63,7 @@ jQuery(function($){
         },
         success: function (data) {
           $.each(data, function (i, item) {
+            item.message = escapeHtml(item.message);
             var danger_class = ["emerg", "alert", "crit"];
             var warning_class = ["warning"];
             var info_class = ["notice", "info", "debug"];
@@ -97,6 +114,7 @@ jQuery(function($){
             var danger_class = ["emerg", "alert", "crit"];
             var warning_class = ["warning"];
             var info_class = ["notice", "info", "debug"];
+            item.message = escapeHtml(item.message);
             if (jQuery.inArray(item.priority, danger_class) !== -1) {
               item.priority = '<span class="label label-danger">' + item.priority + '</span>';
             } 
@@ -144,6 +162,7 @@ jQuery(function($){
             var danger_class = ["emerg", "alert", "crit"];
             var warning_class = ["warning"];
             var info_class = ["notice", "info", "debug"];
+            item.message = escapeHtml(item.message);
             if (jQuery.inArray(item.priority, danger_class) !== -1) {
               item.priority = '<span class="label label-danger">' + item.priority + '</span>';
             } 
