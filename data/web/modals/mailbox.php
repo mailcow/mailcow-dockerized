@@ -50,6 +50,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             <label class="control-label col-sm-2" for="password"><?=$lang['add']['password'];?></label>
             <div class="col-sm-10">
             <input type="password" class="form-control" name="password" id="password" placeholder="" required>
+            (<a href="#" class="generate_password">Generate</a>)
             </div>
           </div>
           <div class="form-group">

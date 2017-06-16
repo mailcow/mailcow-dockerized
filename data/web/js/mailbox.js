@@ -20,6 +20,15 @@ $(document).ready(function() {
     auto_fill_quota($('#addSelectDomain').val());
 	});
   auto_fill_quota($('#addSelectDomain').val());
+
+  $(".generate_password").click(function( event ) {
+    event.preventDefault();
+    var random_passwd = Math.random().toString(36).slice(-8)
+    $('#password').prop('type', 'text');
+    $('#password').val(random_passwd);
+    $('#password2').prop('type', 'text');
+    $('#password2').val(random_passwd);
+  });
 });
 
 jQuery(function($){
