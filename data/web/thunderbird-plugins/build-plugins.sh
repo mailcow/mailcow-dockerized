@@ -17,12 +17,13 @@ tar --strip-components=1 -C connector -xf connector.tar.gz
 while read DOMAIN; do
 	echo "Building SOGo Integrator for $DOMAIN hosted on $MAILHOST"
 	cd integrator
-	echo 'pref("sogo-integrator.autocomplete.server.urlid", "'${DOMAIN}'");' > defaults/preferences/site.js
+	echo > defaults/preferences/site.js
 	mkdir -p custom/${DOMAIN}
 	cp -r custom/sogo-demo/* custom/${DOMAIN}/
 	sed -i "s/http:\/\/sogo-demo\.inverse\.ca/https:\/\/${MAILHOST}/g" custom/${DOMAIN}/chrome/content/extensions.rdf
 	sed -i "s/plugins\/updates\.php[?]/thunderbird-plugins.php?domain=${DOMAIN}\&amp;/g" custom/${DOMAIN}/chrome/content/extensions.rdf
 	echo 'pref("sogo-integrator.autocomplete.server.urlid", "'${DOMAIN}'");' > custom/${DOMAIN}/defaults/preferences/site.js
+	echo 'pref("mail.collect_email_address_outgoing", false);' >> custom/${DOMAIN}/defaults/preferences/site.js
 	sed -i 's/<\/Seq>/<li><Description em:id="sieve@mozdev.org" em:name="Sieve"\/><\/li><li><Description em:id="imap-acl@sirphreak.com" em:name="Imap-ACL-Extension"\/><\/li><\/Seq>/g' custom/${DOMAIN}/chrome/content/extensions.rdf
 	make build=${DOMAIN}
 	INTEGRATOR_VER=$(grep em:version install.rdf | awk -F '"' '{print $2}')
