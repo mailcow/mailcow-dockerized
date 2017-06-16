@@ -26,7 +26,7 @@ while read DOMAIN; do
 	sed -i 's/<\/Seq>/<li><Description em:id="sieve@mozdev.org" em:name="Sieve"\/><\/li><li><Description em:id="imap-acl@sirphreak.com" em:name="Imap-ACL-Extension"\/><\/li><\/Seq>/g' custom/${DOMAIN}/chrome/content/extensions.rdf
 	make build=${DOMAIN}
 	INTEGRATOR_VER=$(grep em:version install.rdf | awk -F '"' '{print $2}')
-	cp sogo-integrator*.xpi ../sogo-integrator-${INTEGRATOR_VER}-${DOMAIN}.xpi
+	cp sogo-integrator-*-${DOMAIN}.xpi ../sogo-integrator-${INTEGRATOR_VER}-${DOMAIN}.xpi
 	cd ..
 done
 
@@ -34,7 +34,7 @@ done
 cd connector
 make
 CONNECTOR_VER=$(grep em:version install.rdf | awk -F '"' '{print $2}')
-cp sogo-connector*.xpi ../sogo-connector-${CONNECTOR_VER}.xpi
+cp sogo-connector-*.xpi ../sogo-connector-${CONNECTOR_VER}.xpi
 cd ..
 
 # download Sieve plugin
