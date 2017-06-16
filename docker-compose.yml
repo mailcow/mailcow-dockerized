@@ -21,6 +21,7 @@ services:
 
     mysql-mailcow:
       image: mariadb:10.1
+      command: mysqld --max_allowed_packet=128M
       healthcheck:
         test: ["CMD", "mysqladmin", "ping", "--host", "localhost", "--silent"]
         interval: 10s
