@@ -274,6 +274,30 @@ services:
         - /var/run/docker.sock:/var/run/docker.sock:ro
         - /lib/modules:/lib/modules:ro
 
+    acme-mailcow:
+      depends_on:
+        - nginx-mailcow
+      image: mailcow/acme
+      build: ./data/Dockerfiles/acme
+      # All domains to be included in the certificate
+      environment:
+        - CONTAINERS_RESTART=mailcowdockerized_postfix-mailcow_1 mailcowdockerized_dovecot-mailcow_1 mailcowdockerized_nginx-mailcow_1
+        # Additional subject alternate names
+        - ADDITIONAL_SAN=
+      volumes:
+        - ./data/web/.well-known/acme-challenge:/var/www/acme:rw
+        - ./data/assets/ssl:/var/lib/acme/:rw
+        - /var/run/docker.sock:/var/run/docker.sock:ro
+      dns:
+        - 172.22.1.254
+      dns_search: mailcow-network
+      # do not restart the container too often. Things get worse when we hit let's encrypt's ratelimit.
+      restart: on-failure:3
+      networks:
+        mailcow-network:
+          aliases:
+            - acme
+
 networks:
   mailcow-network:
     driver: bridge
