@@ -135,6 +135,7 @@ services:
         - TZ=${TZ}
       volumes:
         - ./data/conf/sogo/:/etc/sogo/
+        - ./data/web/thunderbird-plugins:/thunderbird
       restart: always
       dns:
         - 172.22.1.254
