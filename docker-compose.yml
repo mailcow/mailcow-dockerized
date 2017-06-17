@@ -17,7 +17,7 @@ services:
         mailcow-network:
           ipv4_address: 172.22.1.254
           aliases:
-            - bind9
+            - unbound
 
     mysql-mailcow:
       image: mariadb:10.1
