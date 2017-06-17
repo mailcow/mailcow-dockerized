@@ -8,9 +8,9 @@ services:
         mysql-mailcow:
           condition: service_healthy
       healthcheck:
-        test: ["CMD", "drill", "A", "servercow.de", "@127.0.0.1"]
-        interval: 10s
-        timeout: 30s
+        test: ["CMD", "nslookup", "mailcow.email", "127.0.0.1"]
+        interval: 3s
+        timeout: 3s
         retries: 5
       restart: always
       networks:
