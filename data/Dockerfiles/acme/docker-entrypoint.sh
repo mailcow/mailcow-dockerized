@@ -11,6 +11,12 @@ restart_containers(){
 	done
 }
 
+if [[ $(openssl x509 -in ${ACME_BASE}/cert.pem -noout -issuer) != *"Let's Encrypt"* &&
+      $(openssl x509 -in ${ACME_BASE}/cert.pem -noout -issuer) != *"mailcow"* ]]; then
+	echo "Skipping ACME client"
+	exit 0
+fi
+
 while true; do
 
 	declare -a SQL_DOMAIN_ARR
