@@ -134,6 +134,7 @@ services:
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
         - TZ=${TZ}
+        - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
       volumes:
         - ./data/conf/sogo/:/etc/sogo/
         - ./data/web/thunderbird-plugins:/thunderbird
