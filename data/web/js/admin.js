@@ -64,7 +64,7 @@ jQuery(function($){
         success: function (data) {
           $.each(data, function (i, item) {
             item.message = escapeHtml(item.message);
-            var danger_class = ["emerg", "alert", "crit"];
+            var danger_class = ["emerg", "alert", "crit", "err"];
             var warning_class = ["warning"];
             var info_class = ["notice", "info", "debug"];
             if (jQuery.inArray(item.priority, danger_class) !== -1) {
@@ -111,7 +111,7 @@ jQuery(function($){
         },
         success: function (data) {
           $.each(data, function (i, item) {
-            var danger_class = ["emerg", "alert", "crit"];
+            var danger_class = ["emerg", "alert", "crit", "err"];
             var warning_class = ["warning"];
             var info_class = ["notice", "info", "debug"];
             item.message = escapeHtml(item.message);
@@ -159,7 +159,7 @@ jQuery(function($){
         },
         success: function (data) {
           $.each(data, function (i, item) {
-            var danger_class = ["emerg", "alert", "crit"];
+            var danger_class = ["emerg", "alert", "crit", "err"];
             var warning_class = ["warning"];
             var info_class = ["notice", "info", "debug"];
             item.message = escapeHtml(item.message);
