@@ -13,6 +13,8 @@ services:
         interval: 3s
         timeout: 3s
         retries: 5
+      volumes:
+        - ./data/conf/unbound/unbound.conf:/etc/unbound/unbound.conf:ro
       restart: always
       networks:
         mailcow-network:
