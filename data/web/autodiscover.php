@@ -33,6 +33,10 @@ if ($config['useEASforOutlook'] == 'no') {
 	}
 }
 
+if (!isset($_SERVER['HTTP_USER_AGENT']) || empty($_SERVER['HTTP_USER_AGENT'])) { // eM Client sends no user agent
+	$config['autodiscoverType'] = 'imap';
+}
+
 $dsn = "$database_type:host=$database_host;dbname=$database_name";
 $opt = [
 		PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
@@ -93,6 +97,18 @@ if (!isset($_SERVER['PHP_AUTH_USER']) OR $as !== "user") {
               <AuthRequired>on</AuthRequired>
               <UsePOPAuth>on</UsePOPAuth>
               <SMTPLast>off</SMTPLast>
+          </Protocol>
+          <Protocol>
+              <Type>CalDAV</Type>
+              <Server>https://<?php echo $mailcow_hostname; ?>/SOGo/dav/<?php echo $email; ?>/Calendar</Server>
+              <DomainRequired>off</DomainRequired>
+              <LoginName><?php echo $email; ?></LoginName>
+          </Protocol>
+          <Protocol>
+              <Type>CardDAV</Type>
+              <Server>https://<?php echo $mailcow_hostname; ?>/SOGo/dav/<?php echo $email; ?>/Contacts</Server>
+              <DomainRequired>off</DomainRequired>
+              <LoginName><?php echo $email; ?></LoginName>
           </Protocol>
       </Account>
   </Response>
