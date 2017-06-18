@@ -35,7 +35,8 @@ if (strpos($data, 'autodiscover/outlook/responseschema')) { // desktop client
 	if ($config['useEASforOutlook'] == 'yes' &&
 	    strpos($_SERVER['HTTP_USER_AGENT'], 'Outlook') !== FALSE && // Outlook
 	    strpos($_SERVER['HTTP_USER_AGENT'], 'Windows NT') !== FALSE && // Windows
-	    preg_match('/Outlook (1[5-9]\.|[2-9]|1[0-9][0-9])/', $_SERVER['HTTP_USER_AGENT']) // Outlook 2013 (version 15) or higher
+	    preg_match('/Outlook (1[5-9]\.|[2-9]|1[0-9][0-9])/', $_SERVER['HTTP_USER_AGENT']) && // Outlook 2013 (version 15) or higher
+	    strpos($_SERVER['HTTP_USER_AGENT'], 'MS Connectivity Analyzer') === FALSE // https://testconnectivity.microsoft.com doesn't support EAS for Outlook
 	) {
 			$config['autodiscoverType'] = 'activesync';
 	}
