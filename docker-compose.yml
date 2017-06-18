@@ -3,6 +3,7 @@ services:
 
     unbound-mailcow:
       image: mailcow/unbound
+      build: ./data/Dockerfiles/unbound
       command: /usr/sbin/unbound
       depends_on:
         mysql-mailcow:
