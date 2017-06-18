@@ -27,14 +27,18 @@ if(file_exists('inc/vars.local.inc.php')) {
 
 error_reporting(0);
 
-if ($config['useEASforOutlook'] == 'no') {
-	if (strpos($_SERVER['HTTP_USER_AGENT'], 'Outlook')) {
-		$config['autodiscoverType'] = 'imap';
-	}
-}
+$data = trim(file_get_contents("php://input"));
 
-if (!isset($_SERVER['HTTP_USER_AGENT']) || empty($_SERVER['HTTP_USER_AGENT'])) { // eM Client sends no user agent
+// Desktop clients need IMAP, unless it's Outlook 2013 or higher on Windows
+if (strpos($data, 'autodiscover/outlook/responseschema')) { // desktop client
 	$config['autodiscoverType'] = 'imap';
+	if ($config['useEASforOutlook'] == 'yes' &&
+	    strpos($_SERVER['HTTP_USER_AGENT'], 'Outlook') !== FALSE && // Outlook
+	    strpos($_SERVER['HTTP_USER_AGENT'], 'Windows NT') !== FALSE && // Windows
+	    preg_match('/Outlook (1[5-9]\.|[2-9]|1[0-9][0-9])/', $_SERVER['HTTP_USER_AGENT']) // Outlook 2013 (version 15) or higher
+	) {
+			$config['autodiscoverType'] = 'activesync';
+	}
 }
 
 $dsn = "$database_type:host=$database_host;dbname=$database_name";
@@ -57,7 +61,6 @@ if (!isset($_SERVER['PHP_AUTH_USER']) OR $as !== "user") {
       header("Content-Type: application/xml");
       echo '<?xml version="1.0" encoding="utf-8" ?><Autodiscover xmlns="http://schemas.microsoft.com/exchange/autodiscover/responseschema/2006">';
 
-      $data = trim(file_get_contents("php://input"));
       if(!$data) {
         list($usec, $sec) = explode(' ', microtime());
         echo '<Response>';
