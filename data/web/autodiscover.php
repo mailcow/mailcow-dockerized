@@ -29,7 +29,7 @@ error_reporting(0);
 
 $data = trim(file_get_contents("php://input"));
 
-// Desktop clients need IMAP, unless it's Outlook 2013 or higher on Windows
+// Desktop client needs IMAP, unless it's Outlook 2013 or higher on Windows
 if (strpos($data, 'autodiscover/outlook/responseschema')) { // desktop client
 	$config['autodiscoverType'] = 'imap';
 	if ($config['useEASforOutlook'] == 'yes' &&
@@ -77,6 +77,9 @@ if (!isset($_SERVER['PHP_AUTH_USER']) OR $as !== "user") {
       if ($config['autodiscoverType'] == 'imap') {
       ?>
   <Response xmlns="http://schemas.microsoft.com/exchange/autodiscover/outlook/responseschema/2006a">
+      <User>
+          <DisplayName><?php echo $displayname; ?></DisplayName>
+      </User>
       <Account>
           <AccountType>email</AccountType>
           <Action>settings</Action>
