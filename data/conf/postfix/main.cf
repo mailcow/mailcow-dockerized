@@ -92,3 +92,5 @@ non_smtpd_milters = inet:rspamd:9900
 milter_mail_macros = i {mail_addr} {client_addr} {client_name} {auth_authen}
 mydestination = localhost.localdomain, localhost
 #content_filter=zeyple
+# Prefere IPv4, useful for v4-only envs
+smtp_address_preference = ipv4
