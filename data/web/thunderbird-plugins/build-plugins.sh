@@ -39,14 +39,18 @@ cp sogo-connector-*.xpi ../sogo-connector-${CONNECTOR_VER}.xpi
 cd ..
 
 # download Sieve plugin
-SIEVE_RELEASES=$(wget -qO - https://api.github.com/repos/thsmi/sieve/releases)
-SIEVE_VER=$(echo "$SIEVE_RELEASES" | grep '"tag_name": ' | head -n 1 | awk -F '"' '{print $4}')
-wget -O sieve-${SIEVE_VER}.xpi $(echo "$SIEVE_RELEASES" | grep '"browser_download_url": ' | head -n 1 | awk -F '"' '{print $4}')
+SIEVE_RELEASES=$(wget --header="Accept: application/vnd.github.v3+json" -qO - https://api.github.com/repos/thsmi/sieve/releases)
+SIEVE_VER=$(echo "$SIEVE_RELEASES" | grep -o '"tag_name": *"[^"]*"' | head -n 1 | awk -F '"' '{print $4}')
+SIEVE_URL=$(echo "$SIEVE_RELEASES" | grep -o '"browser_download_url": *"[^"]*"' | head -n 1 | awk -F '"' '{print $4}')
+wget -O sieve-${SIEVE_VER}.xpi ${SIEVE_URL}
 unset SIEVE_RELEASES
 
 # download ACL plugin
-IMAP_ACL_VER=0.2.7
-wget -O imap_acl_extension-${IMAP_ACL_VER}-tb.xpi https://addons.cdn.mozilla.net/user-media/addons/_attachments/176736/imap_acl_extension-${IMAP_ACL_VER}-tb.xpi
+IMAP_ACL_RELEASES=$(wget -qO - 'https://addons.mozilla.org/api/v3/addons/addon/176736')
+IMAP_ACL_VER=$(echo "$IMAP_ACL_RELEASES" | grep -o '"version": *"[^"]*"' | head -n 1 | awk -F '"' '{print $4}')
+IMAP_ACL_URL=$(echo "$IMAP_ACL_RELEASES" | grep -o '"url": *"[^"]*\.xpi' | head -n 1 | awk -F '"' '{print $4}')
+wget -O imap_acl_extension-${IMAP_ACL_VER}-tb.xpi ${IMAP_ACL_URL}
+unset IMAP_ACL_RELEASES
 
 # update version file
 echo "sogo-connector@inverse.ca;${CONNECTOR_VER};sogo-connector-${CONNECTOR_VER}.xpi" > version.csv
