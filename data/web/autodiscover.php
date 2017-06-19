@@ -27,9 +27,18 @@ if(file_exists('inc/vars.local.inc.php')) {
 
 error_reporting(0);
 
-if ($config['useEASforOutlook'] == 'no') {
-	if (strpos($_SERVER['HTTP_USER_AGENT'], 'Outlook')) {
-		$config['autodiscoverType'] = 'imap';
+$data = trim(file_get_contents("php://input"));
+
+// Desktop client needs IMAP, unless it's Outlook 2013 or higher on Windows
+if (strpos($data, 'autodiscover/outlook/responseschema')) { // desktop client
+	$config['autodiscoverType'] = 'imap';
+	if ($config['useEASforOutlook'] == 'yes' &&
+	    strpos($_SERVER['HTTP_USER_AGENT'], 'Outlook') !== FALSE && // Outlook
+	    strpos($_SERVER['HTTP_USER_AGENT'], 'Windows NT') !== FALSE && // Windows
+	    preg_match('/Outlook (1[5-9]\.|[2-9]|1[0-9][0-9])/', $_SERVER['HTTP_USER_AGENT']) && // Outlook 2013 (version 15) or higher
+	    strpos($_SERVER['HTTP_USER_AGENT'], 'MS Connectivity Analyzer') === FALSE // https://testconnectivity.microsoft.com doesn't support EAS for Outlook
+	) {
+			$config['autodiscoverType'] = 'activesync';
 	}
 }
 
@@ -53,7 +62,6 @@ if (!isset($_SERVER['PHP_AUTH_USER']) OR $as !== "user") {
       header("Content-Type: application/xml");
       echo '<?xml version="1.0" encoding="utf-8" ?><Autodiscover xmlns="http://schemas.microsoft.com/exchange/autodiscover/responseschema/2006">';
 
-      $data = trim(file_get_contents("php://input"));
       if(!$data) {
         list($usec, $sec) = explode(' ', microtime());
         echo '<Response>';
@@ -69,6 +77,9 @@ if (!isset($_SERVER['PHP_AUTH_USER']) OR $as !== "user") {
       if ($config['autodiscoverType'] == 'imap') {
       ?>
   <Response xmlns="http://schemas.microsoft.com/exchange/autodiscover/outlook/responseschema/2006a">
+      <User>
+          <DisplayName><?php echo $displayname; ?></DisplayName>
+      </User>
       <Account>
           <AccountType>email</AccountType>
           <Action>settings</Action>
@@ -93,6 +104,18 @@ if (!isset($_SERVER['PHP_AUTH_USER']) OR $as !== "user") {
               <AuthRequired>on</AuthRequired>
               <UsePOPAuth>on</UsePOPAuth>
               <SMTPLast>off</SMTPLast>
+          </Protocol>
+          <Protocol>
+              <Type>CalDAV</Type>
+              <Server>https://<?php echo $mailcow_hostname; ?>/SOGo/dav/<?php echo $email; ?>/Calendar</Server>
+              <DomainRequired>off</DomainRequired>
+              <LoginName><?php echo $email; ?></LoginName>
+          </Protocol>
+          <Protocol>
+              <Type>CardDAV</Type>
+              <Server>https://<?php echo $mailcow_hostname; ?>/SOGo/dav/<?php echo $email; ?>/Contacts</Server>
+              <DomainRequired>off</DomainRequired>
+              <LoginName><?php echo $email; ?></LoginName>
           </Protocol>
       </Account>
   </Response>
