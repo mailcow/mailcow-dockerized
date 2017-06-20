@@ -4,6 +4,12 @@ set -o pipefail
 export LC_ALL=C
 DATE=$(date +%Y-%m-%d_%H_%M_%S)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
+if [[ -f mailcow.conf ]]; then
+	source mailcow.conf
+else
+	echo -e "\e[31mNo mailcow.conf - is mailcow installed?\e[0m"
+	exit 1
+fi
 
 # Stopping mailcow
 docker-compose down
@@ -14,10 +20,6 @@ if [[ ! -z $(docker images mailcow/${image} -q) ]]; then
   docker tag mailcow/${image} mailcow/${image}:${DATE}
 fi
 done
-
-# Fix missing SSL, does not overwrite existing files
-[[ ! -d data/assets/ssl ]] && mkdir -p data/assets/ssl
-cp -n data/assets/ssl-example/*.pem data/assets/ssl/
 
 # Silently fixing remote url from andryyy to mailcow
 git remote set-url origin https://github.com/mailcow/mailcow-dockerized
@@ -45,3 +47,7 @@ echo
 
 # TODO: Menu, select hard reset, select reset to "before update" etc.
 #git reset --hard origin/${BRANCH}
+
+# Fix missing SSL, does not overwrite existing files
+[[ ! -d data/assets/ssl ]] && mkdir -p data/assets/ssl
+cp -n data/assets/ssl-example/*.pem data/assets/ssl/
