@@ -18,7 +18,7 @@ echo -e "\e[32mCommitting current status...\e[90m"
 git add -u
 git commit -am "Before update on ${DATE}" > /dev/null
 echo -e "\e[32mFetching updated code from remote...\e[90m"
-git fetch origin master
+git fetch origin ${BRANCH}
 echo -e "\e[32mMerging local with remote code...\e[90m"
 git merge -Xtheirs -Xpatience -m "After update on ${DATE}"
 
