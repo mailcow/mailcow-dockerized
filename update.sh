@@ -5,12 +5,19 @@ export LC_ALL=C
 DATE=$(date +%Y-%m-%d_%H_%M_%S)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
-for image in "phpfpm" "dovecot" "postfix" "sogo" "unbound" "rspamd" "clamd"; do
+# Stopping mailcow
+docker-compose down
+
+for image in "phpfpm" "dovecot" "postfix" "sogo" "unbound" "rspamd" "clamd" "fail2ban"; do
 if [[ ! -z $(docker images mailcow/${image} -q) ]]; then
   echo -e "\e[32mSaving mailcow/${image} to mailcow/${image}:${DATE}...\e[90m"
   docker tag mailcow/${image} mailcow/${image}:${DATE}
 fi
 done
+
+# Fix missing SSL, does not overwrite existing files
+[[ ! -d data/assets/ssl ]] && mkdir -p data/assets/ssl
+cp -n data/assets/ssl-example/*.pem data/assets/ssl/
 
 # Silently fixing remote url from andryyy to mailcow
 git remote set-url origin https://github.com/mailcow/mailcow-dockerized
@@ -30,10 +37,11 @@ if [[ $? == 1 ]]; then
   git checkout .
   echo -e "\e[32mRemoved and recreated files if necessary.\e[90m"
 fi
-echo -e "\e[32mDone!\e[0m"
+echo -e "\e[32mFetching new images, if any...\e[0m"
+docker-compose pull
 echo
-echo -e "\e[32mHashes to revert to:\e[0m"
-git reflog --color=always | grep "Before update on "
+#echo -e "\e[32mHashes to revert to:\e[0m"
+#git reflog --color=always | grep "Before update on "
 
 # TODO: Menu, select hard reset, select reset to "before update" etc.
 #git reset --hard origin/${BRANCH}
