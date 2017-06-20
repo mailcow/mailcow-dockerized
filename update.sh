@@ -9,6 +9,10 @@ else
 	echo -e "\e[32mOK\e[0m"
 fi
 
+if [[ -z $(which curl) ]]; then echo "Cannot find curl, exiting."; exit 1; fi
+if [[ -z $(which docker-compose) ]]; then echo "Cannot find docker-compose, exiting."; exit 1; fi
+if [[ -z $(which git) ]]; then echo "Cannot find git, exiting."; exit 1; fi
+
 set -o pipefail
 export LC_ALL=C
 DATE=$(date +%Y-%m-%d_%H_%M_%S)
@@ -21,15 +25,15 @@ else
 	exit 1
 fi
 
+read -r -p "Are you sure? [y/N] " response
+if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+	echo "OK, exiting."
+	exit 0
+fi
+
+echo -e "Stopping mailcow... "
 # Stopping mailcow
 docker-compose down
-
-for image in "phpfpm" "dovecot" "postfix" "sogo" "unbound" "rspamd" "clamd" "fail2ban"; do
-if [[ ! -z $(docker images mailcow/${image} -q) ]]; then
-  echo -e "\e[32mSaving mailcow/${image} to mailcow/${image}:${DATE}...\e[90m"
-  docker tag mailcow/${image} mailcow/${image}:${DATE}
-fi
-done
 
 # Silently fixing remote url from andryyy to mailcow
 git remote set-url origin https://github.com/mailcow/mailcow-dockerized
@@ -38,7 +42,7 @@ git add -u
 git commit -am "Before update on ${DATE}" > /dev/null
 echo -e "\e[32mFetching updated code from remote...\e[90m"
 git fetch origin ${BRANCH}
-echo -e "\e[32mMerging local with remote code...\e[90m"
+echo -e "\e[32mMerging local with remote code (recursive, options: \"theirs\", \"patience\"...\e[90m"
 git merge -Xtheirs -Xpatience -m "After update on ${DATE}"
 
 if [[ $? == 1 ]]; then
@@ -61,5 +65,8 @@ echo
 # Fix missing SSL, does not overwrite existing files
 [[ ! -d data/assets/ssl ]] && mkdir -p data/assets/ssl
 cp -n data/assets/ssl-example/*.pem data/assets/ssl/
+
+curl -L https://github.com/docker/compose/releases/download/$(curl -Ls https://www.servercow.de/docker-compose/latest.php)/docker-compose-$(uname -s)-$(uname -m) > $(which docker-compose)
+chmod +x $(which docker-compose)
 
 docker-compose up -d
