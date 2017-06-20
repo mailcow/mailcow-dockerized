@@ -1,9 +1,19 @@
 #!/bin/bash
 
+echo -en "Checking internet connection... "
+timeout 1 bash -c "echo >/dev/tcp/8.8.8.8/53"
+if [[ $? != 0 ]]; then
+	echo -e "\e[31mfailed\e[0m"
+	exit 1
+else
+	echo -e "\e[32mOK\e[0m"
+fi
+
 set -o pipefail
 export LC_ALL=C
 DATE=$(date +%Y-%m-%d_%H_%M_%S)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
 if [[ -f mailcow.conf ]]; then
 	source mailcow.conf
 else
@@ -51,3 +61,5 @@ echo
 # Fix missing SSL, does not overwrite existing files
 [[ ! -d data/assets/ssl ]] && mkdir -p data/assets/ssl
 cp -n data/assets/ssl-example/*.pem data/assets/ssl/
+
+docker-compose up -d
