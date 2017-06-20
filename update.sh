@@ -13,11 +13,23 @@ if [[ -z $(which curl) ]]; then echo "Cannot find curl, exiting."; exit 1; fi
 if [[ -z $(which docker-compose) ]]; then echo "Cannot find docker-compose, exiting."; exit 1; fi
 if [[ -z $(which docker) ]]; then echo "Cannot find docker, exiting."; exit 1; fi
 if [[ -z $(which git) ]]; then echo "Cannot find git, exiting."; exit 1; fi
+if [[ -z $(which awk) ]]; then echo "Cannot find awk, exiting."; exit 1; fi
+if [[ -z $(which sha1sum) ]]; then echo "Cannot find sha1sum, exiting."; exit 1; fi
+
+curl -s https://raw.githubusercontent.com/mailcow/mailcow-dockerized/dev/update.sh | shasum
 
 set -o pipefail
 export LC_ALL=C
 DATE=$(date +%Y-%m-%d_%H_%M_%S)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
+TMPFILE=$(mktemp "${TMPDIR:-/tmp}/curldata.XXXXXX")
+
+curl -#o ${TMPFILE} https://raw.githubusercontent.com/mailcow/mailcow-dockerized/dev/update.sh
+if [[ $(sha1sum ${TMPFILE} | awk '{ print $1 }') != $(sha1sum ./update.sh | awk '{ print $1 }') ]]; then
+	echo "Updating script, please run this script again, exiting."
+	mv ${TMPFILE} ./update.sh
+	exit 0
+fi
 
 if [[ -f mailcow.conf ]]; then
 	source mailcow.conf
