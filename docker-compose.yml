@@ -2,7 +2,7 @@ version: '2.1'
 services:
 
     unbound-mailcow:
-      image: mailcow/unbound
+      image: mailcow/unbound:1.0
       build: ./data/Dockerfiles/unbound
       command: /usr/sbin/unbound
       depends_on:
@@ -65,7 +65,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd
+      image: mailcow/clamd:1.0
       build: ./data/Dockerfiles/clamav
       restart: always
       dns:
@@ -77,7 +77,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd
+      image: mailcow/rspamd:1.0
       build: ./data/Dockerfiles/rspamd
       command: > 
         /bin/bash -c "
@@ -104,7 +104,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm
+      image: mailcow/phpfpm:1.0
       build: ./data/Dockerfiles/php-fpm
       command: "php-fpm -d date.timezone=${TZ}"
       depends_on:
@@ -128,7 +128,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo
+      image: mailcow/sogo:1.0
       build: ./data/Dockerfiles/sogo
       depends_on:
         unbound-mailcow:
@@ -153,7 +153,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot
+      image: mailcow/dovecot:1.0
       build: ./data/Dockerfiles/dovecot
       depends_on:
         unbound-mailcow:
@@ -185,7 +185,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix
+      image: mailcow/postfix:1.0
       build: ./data/Dockerfiles/postfix
       depends_on:
         unbound-mailcow:
@@ -266,7 +266,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme
+      image: mailcow/acme:1.0
       build: ./data/Dockerfiles/acme
       dns:
         - 172.22.1.254
@@ -283,6 +283,7 @@ services:
       volumes:
         - ./data/web/.well-known/acme-challenge:/var/www/acme:rw
         - ./data/assets/ssl:/var/lib/acme/:rw
+        - ./data/assets/ssl-example:/var/lib/ssl-example/:ro
         - /var/run/docker.sock:/var/run/docker.sock:ro
       # do not restart the container too often. Things get worse when we hit let's encrypt's ratelimit.
       restart: on-failure:1
@@ -292,7 +293,7 @@ services:
             - acme
 
     fail2ban-mailcow:
-      image: mailcow/fail2ban
+      image: mailcow/fail2ban:1.0
       build: ./data/Dockerfiles/fail2ban
       depends_on:
         - dovecot-mailcow
