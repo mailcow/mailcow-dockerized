@@ -11,6 +11,7 @@ fi
 
 if [[ -z $(which curl) ]]; then echo "Cannot find curl, exiting."; exit 1; fi
 if [[ -z $(which docker-compose) ]]; then echo "Cannot find docker-compose, exiting."; exit 1; fi
+if [[ -z $(which docker) ]]; then echo "Cannot find docker, exiting."; exit 1; fi
 if [[ -z $(which git) ]]; then echo "Cannot find git, exiting."; exit 1; fi
 
 set -o pipefail
@@ -56,9 +57,9 @@ fi
 echo -e "\e[32mFetching new images, if any...\e[0m"
 docker-compose pull
 echo
+
 #echo -e "\e[32mHashes to revert to:\e[0m"
 #git reflog --color=always | grep "Before update on "
-
 # TODO: Menu, select hard reset, select reset to "before update" etc.
 #git reset --hard origin/${BRANCH}
 
@@ -69,4 +70,9 @@ cp -n data/assets/ssl-example/*.pem data/assets/ssl/
 curl -L https://github.com/docker/compose/releases/download/$(curl -Ls https://www.servercow.de/docker-compose/latest.php)/docker-compose-$(uname -s)-$(uname -m) > $(which docker-compose)
 chmod +x $(which docker-compose)
 
-docker-compose up -d
+docker-compose up -d --remove-orphans
+#echo -e "\e[32mCleaning up...\e[0m"
+if docker images -f "dangling=true" | grep ago --quiet; then
+	docker rmi -f $(docker images -f "dangling=true" -q)
+	docker volume rm $(docker volume ls -qf dangling=true)
+fi
