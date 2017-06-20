@@ -16,8 +16,6 @@ if [[ -z $(which git) ]]; then echo "Cannot find git, exiting."; exit 1; fi
 if [[ -z $(which awk) ]]; then echo "Cannot find awk, exiting."; exit 1; fi
 if [[ -z $(which sha1sum) ]]; then echo "Cannot find sha1sum, exiting."; exit 1; fi
 
-curl -s https://raw.githubusercontent.com/mailcow/mailcow-dockerized/dev/update.sh | shasum
-
 set -o pipefail
 export LC_ALL=C
 DATE=$(date +%Y-%m-%d_%H_%M_%S)
@@ -27,9 +25,11 @@ TMPFILE=$(mktemp "${TMPDIR:-/tmp}/curldata.XXXXXX")
 curl -#o ${TMPFILE} https://raw.githubusercontent.com/mailcow/mailcow-dockerized/dev/update.sh
 if [[ $(sha1sum ${TMPFILE} | awk '{ print $1 }') != $(sha1sum ./update.sh | awk '{ print $1 }') ]]; then
 	echo "Updating script, please run this script again, exiting."
+	chmod +x ${TMPFILE}
 	mv ${TMPFILE} ./update.sh
 	exit 0
 fi
+rm -f mv ${TMPFILE}
 
 if [[ -f mailcow.conf ]]; then
 	source mailcow.conf
