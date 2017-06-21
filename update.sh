@@ -16,15 +16,18 @@ if [[ -z $(which git) ]]; then echo "Cannot find git, exiting."; exit 1; fi
 if [[ -z $(which awk) ]]; then echo "Cannot find awk, exiting."; exit 1; fi
 if [[ -z $(which sha1sum) ]]; then echo "Cannot find sha1sum, exiting."; exit 1; fi
 
-[[ -z $(grep update.sh .gitignore) ]] && echo "update.sh" >> .gitignore
-
 set -o pipefail
 export LC_ALL=C
 DATE=$(date +%Y-%m-%d_%H_%M_%S)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 TMPFILE=$(mktemp "${TMPDIR:-/tmp}/curldata.XXXXXX")
+FORGED_SCRIPT=$(mktemp "${TMPDIR:-/tmp}/updatesh.XXXXXX")
 
-curl -#o ${TMPFILE} https://raw.githubusercontent.com/mailcow/mailcow-dockerized/dev/update.sh
+echo $(basename ${0})
+exit 0
+
+echo -e "\e[32mChecking for newer update script...\e[90m"
+curl -#o ${TMPFILE} https://raw.githubusercontent.com/mailcow/mailcow-dockerized/${BRANCH}/update.sh
 if [[ $(sha1sum ${TMPFILE} | awk '{ print $1 }') != $(sha1sum ./update.sh | awk '{ print $1 }') ]]; then
 	echo "Updating script, please run this script again, exiting."
 	chmod +x ${TMPFILE}
@@ -69,7 +72,10 @@ elif [[ $? == 1 ]]; then
   git commit -m "After update on ${DATE}" > /dev/null
   git checkout .
   echo -e "\e[32mRemoved and recreated files if necessary.\e[90m"
+elif [[ $? != 0 ]]; then
+  echo -e "\e[31m\nOh no, something went wrong. Please check the error message above."
 fi
+
 echo -e "\e[32mFetching new images, if any...\e[0m"
 docker-compose pull
 echo
