@@ -59,18 +59,20 @@ echo -e "\e[32mFetching updated code from remote...\e[0m"
 git fetch origin ${BRANCH}
 echo -e "\e[32mMerging local with remote code (recursive, options: \"theirs\", \"patience\"...\e[0m"
 git merge -Xtheirs -Xpatience -m "After update on ${DATE}"
-if [[ $? == 128 ]]; then
+# Need to use a variable to not pass return codes of if checks
+MERGE_RETURN=$?
+if [[ ${MERGE_RETURN} == 128 ]]; then
   echo -e "\e[31m\nOh no, what happened?\n=> You most likely added files to your local mailcow instance that were now added to the official mailcow repository. Please move them to another location before updating mailcow.\e[0m"
   exit 1
-elif [[ $? == 1 ]]; then
-  echo -e "\e[31mRun into conflict, trying to fix...\e[0m"
+elif [[ ${MERGE_RETURN} == 1 ]]; then
+  echo -e "\e[93mPotenial conflict, trying to fix...\e[0m"
   git status --porcelain | grep -E "UD|DU" | awk '{print $2}' | xargs rm -v
   git add -A
   git commit -m "After update on ${DATE}" > /dev/null
   git checkout .
   echo -e "\e[32mRemoved and recreated files if necessary.\e[0m"
-elif [[ $? != 0 ]]; then
-  echo -e "\e[31m\nOh no, something went wrong. Please check the error message above."
+elif [[ ${MERGE_RETURN} != 0 ]]; then
+  echo -e "\e[31m\nOh no, something went wrong. Please check the error message above.\e[0m"
 fi
 
 echo -e "\e[32mFetching new images, if any...\e[0m"
