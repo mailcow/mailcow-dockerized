@@ -48,7 +48,7 @@ if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 fi
 
 echo -e "Stopping mailcow... "
-# Stopping mailcow
+sleep 2
 docker-compose down
 
 # Silently fixing remote url from andryyy to mailcow
@@ -80,18 +80,20 @@ elif [[ ${MERGE_RETURN} != 0 ]]; then
 fi
 
 echo -e "\e[32mFetching new images, if any...\e[0m"
+sleep 2
 docker-compose pull
-echo
 
 # Fix missing SSL, does not overwrite existing files
 [[ ! -d data/assets/ssl ]] && mkdir -p data/assets/ssl
 cp -n data/assets/ssl-example/*.pem data/assets/ssl/
 
 echo -e "\e[32mFetching new docker-compose version...\e[0m"
+sleep 2
 curl -L https://github.com/docker/compose/releases/download/$(curl -Ls https://www.servercow.de/docker-compose/latest.php)/docker-compose-$(uname -s)-$(uname -m) > $(which docker-compose)
 chmod +x $(which docker-compose)
 
 echo -e "\e[32mStarting mailcow...\e[0m"
+sleep 2
 docker-compose up -d --remove-orphans
 #echo -e "\e[32mCleaning up Docker objects...\e[0m"
 if docker images -f "dangling=true" | grep ago --quiet; then
