@@ -61,6 +61,7 @@ echo -e "\e[32mMerging local with remote code (recursive, options: \"theirs\", \
 git merge -Xtheirs -Xpatience -m "After update on ${DATE}"
 if [[ $? == 128 ]]; then
   echo -e "\e[31m\nOh no, what happened?\n=> You most likely added files to your local mailcow instance that were now added to the official mailcow repository. Please move them to another location before updating mailcow."
+  exit 1
 elif [[ $? == 1 ]]; then
   echo -e "\e[31mRun into conflict, trying to fix...\e[90m"
   git status --porcelain | grep -E "UD|DU" | awk '{print $2}' | xargs rm -v
