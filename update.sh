@@ -23,7 +23,7 @@ BRANCH=$(git rev-parse --abbrev-ref HEAD)
 TMPFILE=$(mktemp "${TMPDIR:-/tmp}/curldata.XXXXXX")
 FORGED_SCRIPT=$(mktemp "${TMPDIR:-/tmp}/updatesh.XXXXXX")
 
-echo -e "\e[32mChecking for newer update script...\e[90m"
+echo -e "\e[32mChecking for newer update script...\e[0m"
 curl -#o ${TMPFILE} https://raw.githubusercontent.com/mailcow/mailcow-dockerized/${BRANCH}/update.sh
 if [[ $(sha1sum ${TMPFILE} | awk '{ print $1 }') != $(sha1sum ./update.sh | awk '{ print $1 }') ]]; then
 	echo "Updating script, please run this script again, exiting."
@@ -52,23 +52,23 @@ docker-compose down
 
 # Silently fixing remote url from andryyy to mailcow
 git remote set-url origin https://github.com/mailcow/mailcow-dockerized
-echo -e "\e[32mCommitting current status...\e[90m"
+echo -e "\e[32mCommitting current status...\e[0m"
 git add -u
 git commit -am "Before update on ${DATE}" > /dev/null
-echo -e "\e[32mFetching updated code from remote...\e[90m"
+echo -e "\e[32mFetching updated code from remote...\e[0m"
 git fetch origin ${BRANCH}
-echo -e "\e[32mMerging local with remote code (recursive, options: \"theirs\", \"patience\"...\e[90m"
+echo -e "\e[32mMerging local with remote code (recursive, options: \"theirs\", \"patience\"...\e[0m"
 git merge -Xtheirs -Xpatience -m "After update on ${DATE}"
 if [[ $? == 128 ]]; then
-  echo -e "\e[31m\nOh no, what happened?\n=> You most likely added files to your local mailcow instance that were now added to the official mailcow repository. Please move them to another location before updating mailcow."
+  echo -e "\e[31m\nOh no, what happened?\n=> You most likely added files to your local mailcow instance that were now added to the official mailcow repository. Please move them to another location before updating mailcow.\e[0m"
   exit 1
 elif [[ $? == 1 ]]; then
-  echo -e "\e[31mRun into conflict, trying to fix...\e[90m"
+  echo -e "\e[31mRun into conflict, trying to fix...\e[0m"
   git status --porcelain | grep -E "UD|DU" | awk '{print $2}' | xargs rm -v
   git add -A
   git commit -m "After update on ${DATE}" > /dev/null
   git checkout .
-  echo -e "\e[32mRemoved and recreated files if necessary.\e[90m"
+  echo -e "\e[32mRemoved and recreated files if necessary.\e[0m"
 elif [[ $? != 0 ]]; then
   echo -e "\e[31m\nOh no, something went wrong. Please check the error message above."
 fi
