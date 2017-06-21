@@ -1,53 +1,14 @@
 <?php
-include 'inc/tfa_modals.php';
-
-if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'admin'):
+require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/footer.php';
 ?>
-<div id="RestartSOGo" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-    <div class="modal-content">
-    <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal">&times;</button>
-      <h4 class="modal-title"><?= $lang['footer']['restart_sogo']; ?></h4>
-    </div>
-    <div class="modal-body">
-      <p><?= $lang['footer']['restart_sogo_info']; ?></p>
-      <hr>
-      <button class="btn btn-md btn-primary" id="triggerRestartSogo"><?= $lang['footer']['restart_now']; ?></button>
-      <br><br>
-      <div id="statusTriggerRestartSogo"></div>
-    </div>
-    </div>
-  </div>
-</div>
-<?php
-endif;
-?>
-<div id="ConfirmDeleteModal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-    <div class="modal-content">
-    <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal">&times;</button>
-      <h4 class="modal-title"><?= $lang['footer']['confirm_delete']; ?></h4>
-    </div>
-    <div class="modal-body">
-      <p><?= $lang['footer']['delete_these_items']; ?></p>
-      <ul id="ItemsToDelete"></ul>
-      <hr>
-      <button class="btn btn-sm btn-danger" id="IsConfirmed"><?= $lang['footer']['delete_now']; ?></button>
-      <button class="btn btn-sm btn-default" id="isCanceled"><?= $lang['footer']['cancel']; ?></button>
-    </div>
-    </div>
-  </div>
-</div>
 <div style="margin-bottom: 100px;"></div>
-
-<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="/js/bootstrap.min.js"></script>
 <script src="/js/bootstrap-switch.min.js"></script>
 <script src="/js/bootstrap-slider.min.js"></script>
 <script src="/js/bootstrap-select.min.js"></script>
 <script src="/js/notifications.min.js"></script>
 <script src="/js/u2f-api.js"></script>
+<script src="/js/api.js"></script>
 <script>
 // Select language and reopen active URL without POST
 function setLang(sel) {
@@ -204,7 +165,7 @@ $(document).ready(function() {
     $('#statusTriggerRestartSogo').text('Stopping SOGo workers, this may take a while... ');
     $.ajax({
       method: 'get',
-      url: 'call_sogo_ctrl.php',
+      url: '/inc/call_sogo_ctrl.php',
       data: {
         'ajax': true,
         'ACTION': 'stop'
@@ -214,7 +175,7 @@ $(document).ready(function() {
         $('#statusTriggerRestartSogo').append('<br>Starting SOGo...');
         $.ajax({
           method: 'get',
-          url: 'call_sogo_ctrl.php',
+          url: '/inc/call_sogo_ctrl.php',
           data: {
             'ajax': true,
             'ACTION': 'start'

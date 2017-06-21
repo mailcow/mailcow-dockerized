@@ -87,8 +87,10 @@ virtual_mailbox_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_mailbox_m
 virtual_minimum_uid = 104
 virtual_transport = lmtp:inet:dovecot:24
 virtual_uid_maps = static:5000
-smtpd_milters = inet:rmilter:9900
-non_smtpd_milters = inet:rmilter:9900
+smtpd_milters = inet:rspamd:9900
+non_smtpd_milters = inet:rspamd:9900
 milter_mail_macros = i {mail_addr} {client_addr} {client_name} {auth_authen}
 mydestination = localhost.localdomain, localhost
 #content_filter=zeyple
+# Prefere IPv4, useful for v4-only envs
+smtp_address_preference = ipv4

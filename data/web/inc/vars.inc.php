@@ -1,7 +1,6 @@
 <?php
 error_reporting(E_ERROR);
 //error_reporting(E_ALL);
-header('X-Powered-By: mailcow');
 
 /*
 PLEASE USE THE FILE "vars.local.inc.php" TO OVERWRITE SETTINGS AND MAKE THEM PERSISTENT!
@@ -23,20 +22,17 @@ $mailcow_hostname = getenv('MAILCOW_HOSTNAME');
 // "form" will stay in the current form, "previous" will redirect to previous page
 $FORM_ACTION = 'previous';
 
-// File locations should not be changed
-$MC_DKIM_TXTS = '/data/dkim/txt';
-$MC_DKIM_KEYS = '/data/dkim/keys';
-
 // Change default language, "de", "en", "es", "nl", "pt", "ru"
 $DEFAULT_LANG = 'en';
 
 // Available languages
-$AVAILABLE_LANGUAGES = array('de', 'en', 'es', 'nl', 'pt', 'ru');
+$AVAILABLE_LANGUAGES = array('de', 'en', 'es', 'nl', 'pt', 'ru', 'it');
 
 // Change theme (default: lumen)
 // Needs to be one of those: cerulean, cosmo, cyborg, darkly, flatly, journal, lumen, paper, readable, sandstone,
 // simplex, slate, spacelab, superhero, united, yeti
 // See https://bootswatch.com/
+// WARNING: Only lumen is loaded locally. Enabling any other theme, will download external sources.
 $DEFAULT_THEME = 'lumen';
 
 // Password complexity as regular expression
@@ -46,16 +42,24 @@ $PASSWD_REGEP = '.{4,}';
 $MAILCOW_APPS = array(
   array(
     'name' => 'SOGo',
-    'link' => '/SOGo/'
+    'link' => '/SOGo/',
+    'description' => 'SOGo is a web-based client for email, address book and calendar.'
   ),
   // array(
     // 'name' => 'Roundcube',
-    // 'link' => '/rc/'
+    // 'link' => '/rc/',
+    // 'description' => 'Roundcube is a web-based email client.',
   // ),
 );
 
 // Rows until pagination begins
 $PAGINATION_SIZE = 10;
 
+// Rows until pagination begins (log table)
+$LOG_PAGINATION_SIZE = 30;
+
 // Session lifetime in seconds
 $SESSION_LIFETIME = 3600;
+
+// Label for OTP devices
+$OTP_LABEL = "mailcow UI";

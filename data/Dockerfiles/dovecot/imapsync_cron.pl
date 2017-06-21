@@ -1,11 +1,11 @@
 #!/usr/bin/perl
 
 use DBI;
-use File::Temp qw/ mkstemp /;
 use LockFile::Simple qw(lock trylock unlock);
 use Data::Dumper qw(Dumper);
 use IPC::Run 'run';
 use String::Util 'trim';
+use File::Temp;
 
 $DBNAME = '';
 $DBUSER = '';
@@ -21,7 +21,7 @@ open my $file, '<', "/etc/sogo/sieve.creds";
 my $creds = <$file>; 
 close $file;
 my ($master_user, $master_pass) = split /:/, $creds;
-my $sth = $dbh->prepare("SELECT id, user1, user2, host1, authmech1, password1, exclude, port1, enc1, delete2duplicates, maxage, subfolder2, delete1 FROM imapsync WHERE active = 1 AND (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(last_run) > mins_interval * 60 OR last_run IS NULL)");
+my $sth = $dbh->prepare("SELECT id, user1, user2, host1, authmech1, password1, exclude, port1, enc1, delete2duplicates, maxage, subfolder2, delete1 FROM imapsync WHERE active = 1 AND (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(last_run) > mins_interval * 60 OR last_run IS NULL) ORDER BY last_run");
 $sth->execute();
 my $row;
 
@@ -43,6 +43,13 @@ while ($row = $sth->fetchrow_arrayref()) {
 
   if ($enc1 eq "TLS") { $enc1 = "--tls1"; } elsif ($enc1 eq "SSL") { $enc1 = "--ssl1"; } else { undef $enc1; }
 
+  my $template = $run_dir . '/imapsync.XXXXXXX';
+  my $passfile1 = File::Temp->new(TEMPLATE => $template);
+  my $passfile2 = File::Temp->new(TEMPLATE => $template);
+
+  print $passfile1 "$password1\n";
+  print $passfile2 trim($master_pass) . "\n";
+
   run [ "/usr/local/bin/imapsync",
 	"--timeout1", "10",
 	"--tmpdir", "/tmp",
@@ -55,11 +62,11 @@ while ($row = $sth->fetchrow_arrayref()) {
 	(!defined($enc1) ? () : ($enc1)),
 	"--host1", $host1,
 	"--user1", $user1,
-	"--password1", $password1,
+	"--passfile1", $passfile1->filename,
 	"--port1", $port1,
 	"--host2", "localhost",
 	"--user2", $user2 . '*' . trim($master_user),
-	"--password2", trim($master_pass),
+	"--passfile2", $passfile2->filename,
 	'--no-modulesversion'], ">", \my $stdout;
 
   $update = $dbh->prepare("UPDATE imapsync SET returned_text = ?, last_run = NOW() WHERE id = ?");

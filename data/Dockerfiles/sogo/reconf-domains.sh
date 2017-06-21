@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Wait for MySQL to warm-up
-while mysqladmin ping --host mysql --silent; do
+while mysqladmin ping --host 172.22.1.250 --silent; do
 
 # Recreate view
 
@@ -92,6 +92,11 @@ echo '    </dict>
 # Fix permissions
 chown sogo:sogo -R /var/lib/sogo/
 chmod 600 /var/lib/sogo/GNUstep/Defaults/sogod.plist
+
+# Regenerate the SOGo Integrator plugin
+/thunderbird/build-plugins.sh ${MAILCOW_HOSTNAME} < <(mysql --host mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM domain;" -B -N)
+
+supervisorctl restart sogo
 
 sleep 99999
 

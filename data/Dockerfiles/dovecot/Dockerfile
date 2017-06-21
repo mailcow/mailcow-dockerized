@@ -1,10 +1,9 @@
 FROM debian:stretch-slim
-#ubuntu:xenial
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL C
-ENV DOVECOT_VERSION 2.2.29.1
+ENV DOVECOT_VERSION 2.2.30.2
 ENV PIGEONHOLE_VERSION 0.4.18
 
 RUN apt-get update && apt-get -y install \
@@ -57,9 +56,8 @@ RUN curl https://www.dovecot.org/releases/2.2/dovecot-$DOVECOT_VERSION.tar.gz | 
 	&& make -j3 \
 	&& make install \
 	&& make clean \
-	&& cd .. && rm -rf dovecot-$DOVECOT_VERSION
-
-RUN curl https://pigeonhole.dovecot.org/releases/2.2/dovecot-2.2-pigeonhole-$PIGEONHOLE_VERSION.tar.gz | tar xvz  \
+	&& cd .. && rm -rf dovecot-$DOVECOT_VERSION \
+	&& curl https://pigeonhole.dovecot.org/releases/2.2/dovecot-2.2-pigeonhole-$PIGEONHOLE_VERSION.tar.gz | tar xvz  \
 	&& cd dovecot-2.2-pigeonhole-$PIGEONHOLE_VERSION \
 	&& ./configure \
 	&& make -j3 \

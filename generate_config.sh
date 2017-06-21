@@ -71,4 +71,16 @@ SIEVE_PORT=4190
 
 # Your timezone
 TZ=${TZ}
+
+# Fixed project name
+COMPOSE_PROJECT_NAME=mailcow-dockerized
+
+# Additional SAN for the certificate
+ADDITIONAL_SAN=
+
 EOF
+
+mkdir -p data/assets/ssl
+
+# copy but don't overwrite existing certificate
+cp -n data/assets/ssl-example/*.pem data/assets/ssl/

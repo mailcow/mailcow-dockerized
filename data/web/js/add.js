@@ -1,5 +1,5 @@
 $(document).ready(function() {
-
+  // Auto-fill domain quota when adding new domain
   auto_fill_quota = function(domain) {
 		$.get("/api/v1/get/domain/" + domain, function(data){
       var result = $.parseJSON(JSON.stringify(data));
@@ -16,10 +16,8 @@ $(document).ready(function() {
 			}
 		});
   }
-
 	$('#addSelectDomain').on('change', function() {
     auto_fill_quota($('#addSelectDomain').val());
 	});
-
   auto_fill_quota($('#addSelectDomain').val());
 });

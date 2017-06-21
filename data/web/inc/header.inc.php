@@ -9,9 +9,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js" integrity="sha256-3Jy/GbSLrg0o9y5Z5n1uw0qxZECH7C6OQpVBgNFYa0g=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js" integrity="sha256-g6iAfvZp+nDQ2TdTR/VVKJf3bGro4ub5fvWSWVRi2NE=" crossorigin="anonymous"></script>
 <![endif]-->
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
+<script src="/js/jquery-1.12.4.min.js"></script>
+<?php if (strtolower(trim($DEFAULT_THEME)) != "lumen"): ?>
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/<?= strtolower(trim($DEFAULT_THEME)); ?>/bootstrap.min.css">
+<?php else: ?>
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+<?php endif; ?>
 <link rel="stylesheet" href="/css/bootstrap-select.min.css">
 <link rel="stylesheet" href="/css/bootstrap-slider.min.css">
 <link rel="stylesheet" href="/css/bootstrap-switch.min.css">
@@ -22,6 +25,7 @@
 <?= (preg_match("/mailbox.php/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/mailbox.css">' : null; ?>
 <?= (preg_match("/admin.php/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/admin.css">' : null; ?>
 <?= (preg_match("/user.php/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/user.css">' : null; ?>
+<?= (preg_match("/edit.php/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/edit.css">' : null; ?>
 <link rel="shortcut icon" href="/favicon.png" type="image/png">
 <link rel="icon" href="/favicon.png" type="image/png">
 </head>
@@ -95,7 +99,7 @@
           <?php
           foreach ($MAILCOW_APPS as $app):
           ?>
-            <li><a href="<?= $app['link']; ?>"><?= $app['name']; ?></a></li>
+            <li title="<?= htmlspecialchars($app['description']); ?>"><a href="<?= htmlspecialchars($app['link']); ?>"><?= htmlspecialchars($app['name']); ?></a></li>
           <?php
           endforeach;
           ?>

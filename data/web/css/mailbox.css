@@ -27,3 +27,7 @@ table.footable>tbody>tr.footable-empty>td {
   user-select: none;
   padding:10px 0 10px 10px;
 }
+.inputMissingAttr {
+  border-color: #FF4136;
+}
+

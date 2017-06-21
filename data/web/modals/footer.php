@@ -181,4 +181,42 @@ if (isset($_SESSION['pending_tfa_method'])):
 </div>
 <?php
 endif;
+if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'admin'):
 ?>
+<div id="RestartSOGo" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal">&times;</button>
+      <h4 class="modal-title"><?= $lang['footer']['restart_sogo']; ?></h4>
+    </div>
+    <div class="modal-body">
+      <p><?= $lang['footer']['restart_sogo_info']; ?></p>
+      <hr>
+      <button class="btn btn-md btn-primary" id="triggerRestartSogo"><?= $lang['footer']['restart_now']; ?></button>
+      <br><br>
+      <div id="statusTriggerRestartSogo"></div>
+    </div>
+    </div>
+  </div>
+</div>
+<?php
+endif;
+?>
+<div id="ConfirmDeleteModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal">&times;</button>
+      <h4 class="modal-title"><?= $lang['footer']['confirm_delete']; ?></h4>
+    </div>
+    <div class="modal-body">
+      <p id="DeleteText"><?= $lang['footer']['delete_these_items']; ?></p>
+      <ul id="ItemsToDelete"></ul>
+      <hr>
+      <button class="btn btn-sm btn-danger" id="IsConfirmed"><?= $lang['footer']['delete_now']; ?></button>
+      <button class="btn btn-sm btn-default" id="isCanceled"><?= $lang['footer']['cancel']; ?></button>
+    </div>
+    </div>
+  </div>
+</div>

@@ -13,7 +13,7 @@ elseif (isset($_SERVER['HTTPS'])) {
 else {
   $IS_HTTPS = false;
 }
-session_set_cookie_params($GLOBALS['SESSION_LIFETIME'], '/', '', $IS_HTTPS, true);
+session_set_cookie_params($SESSION_LIFETIME, '/', '', $IS_HTTPS, true);
 session_start();
 if (!isset($_SESSION['CSRF']['TOKEN'])) {
   $_SESSION['CSRF']['TOKEN'] = bin2hex(random_bytes(32));

@@ -27,16 +27,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
         <div role="tabpanel" class="tab-pane active" id="tab-domains">
           <div class="panel panel-default">
             <div class="panel-heading">
-            <div class="pull-right">
-            <?php
-            if ($_SESSION['mailcow_cc_role'] == "admin"):
-            ?>
-            <a href="/add.php?domain"><span class="glyphicon glyphicon-plus"></span></a></li>
-            <?php
-            endif;
-            ?>
-            </div>
-            <?=$lang['mailbox']['domains'];?>
+              <h3 class="panel-title"><?=$lang['mailbox']['domains'];?></h3>
             </div>
             <div class="table-responsive">
               <table id="domain_table" class="table table-striped"></table>
@@ -51,18 +42,15 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <li role="separator" class="divider"></li>
                   <li><a id="delete_selected" data-id="domain" data-api-url='delete/domain' href="#"><?=$lang['mailbox']['remove'];?></a></li>
                 </ul>
+                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addDomainModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_domain'];?></a>
               </div>
             </div>
-            <span class="footer-add-item"><a href="/add.php?domain"><?=$lang['mailbox']['add_domain'];?></a></span>
           </div>
         </div>
 
         <div role="tabpanel" class="tab-pane" id="tab-mailboxes">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <div class="pull-right">
-                <a href="/add.php?mailbox"><span class="glyphicon glyphicon-plus"></span></a>
-              </div>
               <h3 class="panel-title"><?=$lang['mailbox']['mailboxes'];?></h3>
             </div>
             <div class="table-responsive">
@@ -78,18 +66,15 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <li role="separator" class="divider"></li>
                   <li><a id="delete_selected" data-id="mailbox" data-api-url='delete/mailbox' href="#"><?=$lang['mailbox']['remove'];?></a></li>
                 </ul>
+                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addMailboxModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_mailbox'];?></a>
               </div>
             </div>
-            <span class="footer-add-item"><a href="/add.php?mailbox"><?=$lang['mailbox']['add_mailbox'];?></a></span>
           </div>
         </div>
 
         <div role="tabpanel" class="tab-pane" id="tab-resources">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <div class="pull-right">
-                <a href="/add.php?resource"><span class="glyphicon glyphicon-plus"></span></a>
-              </div>
               <h3 class="panel-title"><?=$lang['mailbox']['resources'];?></h3>
             </div>
             <div class="table-responsive">
@@ -105,9 +90,9 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <li role="separator" class="divider"></li>
                   <li><a id="delete_selected" data-id="resource" data-api-url='delete/resource' href="#"><?=$lang['mailbox']['remove'];?></a></li>
                 </ul>
+                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addResourceModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_resource'];?></a>
               </div>
             </div>
-            <span class="footer-add-item"><a href="/add.php?resource"><?=$lang['mailbox']['add_resource'];?></a></span>
           </div>
         </div>
 
@@ -115,7 +100,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
           <div class="panel panel-default">
             <div class="panel-heading">
               <div class="pull-right">
-                <a href="/add.php?aliasdomain"><span class="glyphicon glyphicon-plus"></span></a>
+                <a href="#" data-toggle="modal" data-target="#addAliasDomainModal" ><span class="glyphicon glyphicon-plus"></span></a>
               </div>
               <h3 class="panel-title"><?=$lang['mailbox']['domain_aliases'];?></h3>
             </div>
@@ -132,16 +117,15 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <li role="separator" class="divider"></li>
                   <li><a id="delete_selected" data-id="alias-domain" data-api-url='delete/alias-domain' href="#"><?=$lang['mailbox']['remove'];?></a></li>
                 </ul>
+                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addAliasDomainModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_domain_alias'];?></a>
               </div>
             </div>
-            <span class="footer-add-item"><a href="/add.php?aliasdomain"><?=$lang['mailbox']['add_domain_alias'];?></a></span>
           </div>
         </div>
 
         <div role="tabpanel" class="tab-pane" id="tab-mbox-aliases">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <a class="pull-right" href="/add.php?alias"><span class="glyphicon glyphicon-plus"></span></a>
               <h3 class="panel-title"><?=$lang['mailbox']['aliases'];?></h3>
             </div>
             <div class="table-responsive">
@@ -157,9 +141,9 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <li role="separator" class="divider"></li>
                   <li><a id="delete_selected" data-id="alias" data-api-url='delete/alias' href="#"><?=$lang['mailbox']['remove'];?></a></li>
                 </ul>
+                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addAliasModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_alias'];?></a>
               </div>
             </div>
-            <span class="footer-add-item"><a href="/add.php?alias"><?=$lang['mailbox']['add_alias'];?></a></span>
           </div>
         </div>
 
@@ -167,7 +151,9 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
     </div> <!-- /col-md-12 -->
   </div> <!-- /row -->
 </div> <!-- /container -->
-
+<?php
+require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/mailbox.php';
+?>
 <script type='text/javascript'>
 <?php
 $lang_mailbox = json_encode($lang['mailbox']);
@@ -181,7 +167,7 @@ echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
 <script src="js/footable.min.js"></script>
 <script src="js/mailbox.js"></script>
 <?php
-require_once("inc/footer.inc.php");
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
 } else {
 	header('Location: /');
 	exit();
