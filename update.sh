@@ -40,7 +40,7 @@ else
 	exit 1
 fi
 
-read -r -p "Are you sure? [y/N] " response
+read -r -p "Are you sure you want to update mailcow: dockerized? All containers will be stopped. [y/N] " response
 if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 	echo "OK, exiting."
 	exit 0
@@ -73,6 +73,9 @@ elif [[ ${MERGE_RETURN} == 1 ]]; then
   echo -e "\e[32mRemoved and recreated files if necessary.\e[0m"
 elif [[ ${MERGE_RETURN} != 0 ]]; then
   echo -e "\e[31m\nOh no, something went wrong. Please check the error message above.\e[0m"
+  echo
+  echo "Run docker-compose up -d to restart your stack without updates or try again after fixing the mentioned errors."
+  exit 1
 fi
 
 echo -e "\e[32mFetching new images, if any...\e[0m"
@@ -92,8 +95,14 @@ curl -L https://github.com/docker/compose/releases/download/$(curl -Ls https://w
 chmod +x $(which docker-compose)
 
 docker-compose up -d --remove-orphans
-#echo -e "\e[32mCleaning up...\e[0m"
+#echo -e "\e[32mCleaning up Docker objects...\e[0m"
 if docker images -f "dangling=true" | grep ago --quiet; then
 	docker rmi -f $(docker images -f "dangling=true" -q)
 	docker volume rm $(docker volume ls -qf dangling=true)
 fi
+
+echo "In case you encounter any problem, hard-reset to a state before updating mailcow:"
+echo
+git reflog --color=always | grep "Before update on "
+echo
+echo "Use \"git reset --hard hash-on-the-left\" and run docker-compose up -d afterwards."
