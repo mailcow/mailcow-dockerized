@@ -23,9 +23,6 @@ BRANCH=$(git rev-parse --abbrev-ref HEAD)
 TMPFILE=$(mktemp "${TMPDIR:-/tmp}/curldata.XXXXXX")
 FORGED_SCRIPT=$(mktemp "${TMPDIR:-/tmp}/updatesh.XXXXXX")
 
-echo $(basename ${0})
-exit 0
-
 echo -e "\e[32mChecking for newer update script...\e[90m"
 curl -#o ${TMPFILE} https://raw.githubusercontent.com/mailcow/mailcow-dockerized/${BRANCH}/update.sh
 if [[ $(sha1sum ${TMPFILE} | awk '{ print $1 }') != $(sha1sum ./update.sh | awk '{ print $1 }') ]]; then
