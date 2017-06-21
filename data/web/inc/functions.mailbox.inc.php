@@ -315,8 +315,40 @@ function mailbox($_action, $_type, $_data = null) {
             );
             return false;
           }
+          foreach ($gotos as &$goto) {
+            if (empty($goto)) {
+              continue;
+            }
+            $goto_domain = idn_to_ascii(substr(strstr($goto, '@'), 1));
+            $goto_local_part = strstr($goto, '@', true);
+            $goto = $goto_local_part.'@'.$goto_domain;
+            $stmt = $pdo->prepare("SELECT `username` FROM `mailbox`
+              WHERE `kind` REGEXP 'location|thing|group'
+                AND `username`= :goto");
+            $stmt->execute(array(':goto' => $goto));
+            $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+            if ($num_results != 0) {
+              $_SESSION['return'] = array(
+                'type' => 'danger',
+                'msg' => sprintf($lang['danger']['goto_invalid'])
+              );
+              return false;
+            }
+            if (!filter_var($goto, FILTER_VALIDATE_EMAIL) === true) {
+              $_SESSION['return'] = array(
+                'type' => 'danger',
+                'msg' => sprintf($lang['danger']['goto_invalid'])
+              );
+              return false;
+            }
+          }
+          $gotos = array_filter($gotos);
+          $goto = implode(",", $gotos);
           foreach ($addresses as $address) {
             if (empty($address)) {
+              continue;
+            }
+            if (in_array($address, $gotos)) {
               continue;
             }
             $stmt = $pdo->prepare("SELECT `address` FROM `alias`
@@ -397,42 +429,6 @@ function mailbox($_action, $_type, $_data = null) {
               );
               return false;
             }
-            foreach ($gotos as &$goto) {
-              if (empty($goto)) {
-                continue;
-              }
-              $goto_domain		= idn_to_ascii(substr(strstr($goto, '@'), 1));
-              $goto_local_part	= strstr($goto, '@', true);
-              $goto				= $goto_local_part.'@'.$goto_domain;
-              $stmt = $pdo->prepare("SELECT `username` FROM `mailbox`
-                WHERE `kind` REGEXP 'location|thing|group'
-                  AND `username`= :goto");
-              $stmt->execute(array(':goto' => $goto));
-              $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-              if ($num_results != 0) {
-                $_SESSION['return'] = array(
-                  'type' => 'danger',
-                  'msg' => sprintf($lang['danger']['goto_invalid'])
-                );
-                return false;
-              }
-              if (!filter_var($goto, FILTER_VALIDATE_EMAIL) === true) {
-                $_SESSION['return'] = array(
-                  'type' => 'danger',
-                  'msg' => sprintf($lang['danger']['goto_invalid'])
-                );
-                return false;
-              }
-              if ($goto == $address) {
-                $_SESSION['return'] = array(
-                  'type' => 'danger',
-                  'msg' => sprintf($lang['danger']['alias_goto_identical'])
-                );
-                return false;
-              }
-            }
-            $gotos = array_filter($gotos);
-            $goto = implode(",", $gotos);
             try {
               $stmt = $pdo->prepare("INSERT INTO `alias` (`address`, `goto`, `domain`, `active`)
                 VALUES (:address, :goto, :domain, :active)");
