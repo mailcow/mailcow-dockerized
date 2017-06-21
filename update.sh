@@ -16,6 +16,8 @@ if [[ -z $(which git) ]]; then echo "Cannot find git, exiting."; exit 1; fi
 if [[ -z $(which awk) ]]; then echo "Cannot find awk, exiting."; exit 1; fi
 if [[ -z $(which sha1sum) ]]; then echo "Cannot find sha1sum, exiting."; exit 1; fi
 
+[[ -z $(grep update.sh .gitignore) ]] && echo "update.sh" >> .gitignore
+
 set -o pipefail
 export LC_ALL=C
 DATE=$(date +%Y-%m-%d_%H_%M_%S)
@@ -57,8 +59,9 @@ echo -e "\e[32mFetching updated code from remote...\e[90m"
 git fetch origin ${BRANCH}
 echo -e "\e[32mMerging local with remote code (recursive, options: \"theirs\", \"patience\"...\e[90m"
 git merge -Xtheirs -Xpatience -m "After update on ${DATE}"
-
-if [[ $? == 1 ]]; then
+if [[ $? == 128 ]]; then
+  echo -e "\e[31m\nOh no, what happened?\n=> You most likely added files to your local mailcow instance that were now added to the official mailcow repository. Please move them to another location before updating mailcow."
+elif [[ $? == 1 ]]; then
   echo -e "\e[31mRun into conflict, trying to fix...\e[90m"
   git status --porcelain | grep -E "UD|DU" | awk '{print $2}' | xargs rm -v
   git add -A
