@@ -21,14 +21,15 @@ export LC_ALL=C
 DATE=$(date +%Y-%m-%d_%H_%M_%S)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 TMPFILE=$(mktemp "${TMPDIR:-/tmp}/curldata.XXXXXX")
-FORGED_SCRIPT=$(mktemp "${TMPDIR:-/tmp}/updatesh.XXXXXX")
 
 echo -e "\e[32mChecking for newer update script...\e[0m"
-curl -#o ${TMPFILE} https://raw.githubusercontent.com/mailcow/mailcow-dockerized/${BRANCH}/update.sh
-if [[ $(sha1sum ${TMPFILE} | awk '{ print $1 }') != $(sha1sum ./update.sh | awk '{ print $1 }') ]]; then
-	echo "Updating script, please run this script again, exiting."
-	chmod +x ${TMPFILE}
-	mv ${TMPFILE} ./update.sh
+SHA1_1=$(sha1sum update.sh)
+git fetch origin ${BRANCH}
+git checkout origin/${BRANCH} update.sh
+SHA1_2=$(sha1sum update.sh)
+if [[ ${SHA1_1} != ${SHA1_2} ]]; then
+	echo "update.sh changed, please run this script again, exiting."
+	chmod +x update.sh
 	exit 0
 fi
 rm -f mv ${TMPFILE}
@@ -62,20 +63,20 @@ git merge -Xtheirs -Xpatience -m "After update on ${DATE}"
 # Need to use a variable to not pass return codes of if checks
 MERGE_RETURN=$?
 if [[ ${MERGE_RETURN} == 128 ]]; then
-  echo -e "\e[31m\nOh no, what happened?\n=> You most likely added files to your local mailcow instance that were now added to the official mailcow repository. Please move them to another location before updating mailcow.\e[0m"
-  exit 1
+	echo -e "\e[31m\nOh no, what happened?\n=> You most likely added files to your local mailcow instance that were now added to the official mailcow repository. Please move them to another location before updating mailcow.\e[0m"
+	exit 1
 elif [[ ${MERGE_RETURN} == 1 ]]; then
-  echo -e "\e[93mPotenial conflict, trying to fix...\e[0m"
-  git status --porcelain | grep -E "UD|DU" | awk '{print $2}' | xargs rm -v
-  git add -A
-  git commit -m "After update on ${DATE}" > /dev/null
-  git checkout .
-  echo -e "\e[32mRemoved and recreated files if necessary.\e[0m"
+	echo -e "\e[93mPotenial conflict, trying to fix...\e[0m"
+	git status --porcelain | grep -E "UD|DU" | awk '{print $2}' | xargs rm -v
+	git add -A
+	git commit -m "After update on ${DATE}" > /dev/null
+	git checkout .
+	echo -e "\e[32mRemoved and recreated files if necessary.\e[0m"
 elif [[ ${MERGE_RETURN} != 0 ]]; then
-  echo -e "\e[31m\nOh no, something went wrong. Please check the error message above.\e[0m"
-  echo
-  echo "Run docker-compose up -d to restart your stack without updates or try again after fixing the mentioned errors."
-  exit 1
+	echo -e "\e[31m\nOh no, something went wrong. Please check the error message above.\e[0m"
+	echo
+	echo "Run docker-compose up -d to restart your stack without updates or try again after fixing the mentioned errors."
+	exit 1
 fi
 
 echo -e "\e[32mFetching new images, if any...\e[0m"
