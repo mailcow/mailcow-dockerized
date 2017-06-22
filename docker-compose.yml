@@ -284,20 +284,19 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.0
+      image: mailcow/acme:1.1
       build: ./data/Dockerfiles/acme
       dns:
         - 172.22.1.254
       dns_search: mailcow-network
-      # All domains to be included in the certificate
       environment:
         - CONTAINERS_RESTART=mailcowdockerized_postfix-mailcow_1 mailcowdockerized_dovecot-mailcow_1 mailcowdockerized_nginx-mailcow_1
-        # Additional subject alternate names
         - ADDITIONAL_SAN=${ADDITIONAL_SAN}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
+        - SKIP_LETS_ENCRYPT=${SKIP_LETS_ENCRYPT:-n}
       volumes:
         - ./data/web/.well-known/acme-challenge:/var/www/acme:rw
         - ./data/assets/ssl:/var/lib/acme/:rw

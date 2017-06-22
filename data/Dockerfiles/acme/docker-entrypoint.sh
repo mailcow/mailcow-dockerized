@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [[ ! "${SKIP_LETS_ENCRYPT}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+    echo "Skipping Let's Encrypt..."
+    exit 0
+fi
+
+
 ACME_BASE=/var/lib/acme
 SSL_EXAMPLE=/var/lib/ssl-example
 mkdir -p ${ACME_BASE}/acme/private
