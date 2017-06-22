@@ -78,6 +78,10 @@ COMPOSE_PROJECT_NAME=mailcow-dockerized
 # Additional SAN for the certificate
 ADDITIONAL_SAN=
 
+# To never run acme-mailcow for Let's Encrypt, set this to y
+SKIP_LETS_ENCRYPT=n
+
+
 EOF
 
 mkdir -p data/assets/ssl
