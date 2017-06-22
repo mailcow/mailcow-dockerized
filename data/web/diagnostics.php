@@ -1,6 +1,7 @@
 <?php
-require_once("inc/prerequisites.inc.php");
-require_once("inc/spf.inc.php");
+require_once 'inc/prerequisites.inc.php';
+require_once 'inc/spf.inc.php';
+require_once 'inc/clientconfig.inc.php';
 
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admin") {
 require_once("inc/header.inc.php");
@@ -49,6 +50,11 @@ function get_tlsa($host, $port, $starttls = '') {
   return '3 1 1 ' . trim(shell_exec('echo | openssl s_client -connect ' . $host . ':' . $port . ' -servername ' . $host . $starttls . ' 2>/dev/null | openssl x509 -noout -pubkey | openssl pkey -pubin -outform DER | openssl sha256 | awk \'{print $2}\''));
 }
 
+$config = get_client_config();
+if(file_exists('inc/vars.local.inc.php')) {
+	include_once 'inc/vars.local.inc.php';
+}
+
 $records = array();
 $records[] = array($mailcow_hostname, 'A', $ip);
 $records[] = array($ptr, 'PTR', $mailcow_hostname);
@@ -57,13 +63,13 @@ if (!empty($ip6)) {
   $records[] = array($ptr6, 'PTR', $mailcow_hostname);
 }
 $records[] = array('_25._tcp.' . $mailcow_hostname, 'TLSA', get_tlsa($mailcow_hostname, 25, 'smtp'));
-$records[] = array('_110._tcp.' . $mailcow_hostname, 'TLSA', get_tlsa($mailcow_hostname, 110, 'pop3'));
-$records[] = array('_143._tcp.' . $mailcow_hostname, 'TLSA', get_tlsa($mailcow_hostname, 143, 'imap'));
-$records[] = array('_443._tcp.' . $mailcow_hostname, 'TLSA', get_tlsa($mailcow_hostname, 443));
-$records[] = array('_465._tcp.' . $mailcow_hostname, 'TLSA', get_tlsa($mailcow_hostname, 465));
-$records[] = array('_587._tcp.' . $mailcow_hostname, 'TLSA', get_tlsa($mailcow_hostname, 587, 'smtp'));
-$records[] = array('_993._tcp.' . $mailcow_hostname, 'TLSA', get_tlsa($mailcow_hostname, 993));
-$records[] = array('_995._tcp.' . $mailcow_hostname, 'TLSA', get_tlsa($mailcow_hostname, 995));
+$records[] = array('_' . $config['http']['port']    . '._tcp.' . $mailcow_hostname, 'TLSA', get_tlsa($mailcow_hostname, $config['http']['port']));
+$records[] = array('_' . $config['pop3']['tlsport'] . '._tcp.' . $mailcow_hostname, 'TLSA', get_tlsa($mailcow_hostname, $config['pop3']['tlsport'], 'pop3'));
+$records[] = array('_' . $config['imap']['tlsport'] . '._tcp.' . $mailcow_hostname, 'TLSA', get_tlsa($mailcow_hostname, $config['imap']['tlsport'], 'imap'));
+$records[] = array('_' . $config['smtp']['port']    . '._tcp.' . $mailcow_hostname, 'TLSA', get_tlsa($mailcow_hostname, $config['smtp']['port']));
+$records[] = array('_' . $config['smtp']['tlsport'] . '._tcp.' . $mailcow_hostname, 'TLSA', get_tlsa($mailcow_hostname, $config['smtp']['tlsport'], 'smtp'));
+$records[] = array('_' . $config['imap']['port']    . '._tcp.' . $mailcow_hostname, 'TLSA', get_tlsa($mailcow_hostname, $config['imap']['port']));
+$records[] = array('_' . $config['pop3']['port']    . '._tcp.' . $mailcow_hostname, 'TLSA', get_tlsa($mailcow_hostname, $config['pop3']['port']));
 
 $domains = mailbox('get', 'domains');
 foreach(mailbox('get', 'domains') as $domain) {
@@ -79,6 +85,26 @@ foreach ($domains as $domain) {
   
   if (!empty($dkim = dkim('details', $domain))) {
     $records[] = array($dkim['dkim_selector'] . '._domainkey.' . $domain, 'TXT', $dkim['dkim_txt']);
+  }
+  
+
+  if ($config['pop3']['tlsport'] != '110')  {
+    $records[] = array('_pop3._tcp.' . $domain, 'SRV', $mailcow_hostname . ' ' . $config['pop3']['tlsport']);
+  }
+  if ($config['pop3']['port'] != '995')  {
+    $records[] = array('_pop3s._tcp.' . $domain, 'SRV', $mailcow_hostname . ' ' . $config['pop3']['port']);
+  }
+  if ($config['imap']['tlsport'] != '143')  {
+    $records[] = array('_imap._tcp.' . $domain, 'SRV', $mailcow_hostname . ' ' . $config['imap']['tlsport']);
+  }
+  if ($config['imap']['port'] != '993')  {
+    $records[] = array('_imaps._tcp.' . $domain, 'SRV', $mailcow_hostname . ' ' . $config['imap']['port']);
+  }
+  if ($config['smtp']['tlsport'] != '587')  {
+    $records[] = array('_submission._tcp.' . $domain, 'SRV', $mailcow_hostname . ' ' . $config['smtp']['tlsport']);
+  }
+  if ($config['smtp']['port'] != '465')  {
+    $records[] = array('_smtps._tcp.' . $domain, 'SRV', $mailcow_hostname . ' ' . $config['smtp']['port']);
   }
 }
 
@@ -106,7 +132,7 @@ $data_field = array(
   'CNAME' => 'target',
   'MX' => 'target',
   'PTR' => 'target',
-  'SRV' => 'target',
+  'SRV' => 'data',
   'TLSA' => 'data',
   'TXT' => 'txt',
 );
