@@ -74,6 +74,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
   <div class="row">
     <div class="col-sm-offset-3 col-sm-9">
       <p><a href="#pwChangeModal" data-toggle="modal">[<?=$lang['user']['change_password'];?>]</a></p>
+      <p><a href="clientconfig.php">[<?=$lang['user']['client_configuration'];?>]</a></p>
     </div>
   </div>
   <hr>
