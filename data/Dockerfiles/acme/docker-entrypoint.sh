@@ -101,6 +101,7 @@ while true; do
 		echo "Found orphaned SAN in certificate, moving old files to ${ACME_BASE}/acme/private/${DATE}/"
 		mkdir -p ${ACME_BASE}/acme/private/${DATE}/
 		mv ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/acme/private/${DATE}/
+		mv ${ACME_BASE}/acme/private/account.key ${ACME_BASE}/acme/private/${DATE}/
 		mv ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/acme/private/${DATE}/
         mv ${ACME_BASE}/acme/cert.pem ${ACME_BASE}/acme/private/${DATE}/
 	fi
