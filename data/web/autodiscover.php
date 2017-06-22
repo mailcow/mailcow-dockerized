@@ -74,6 +74,22 @@ if (!isset($_SERVER['PHP_AUTH_USER']) OR $as !== "user") {
       $discover = new SimpleXMLElement($data);
       $email = $discover->Request->EMailAddress;
 
+      $username = trim($email);
+      try {
+        $stmt = $pdo->prepare("SELECT `name` FROM `mailbox` WHERE `username`= :username");
+        $stmt->execute(array(':username' => $username));
+        $MailboxData = $stmt->fetch(PDO::FETCH_ASSOC);
+      }
+      catch(PDOException $e) {
+        die("Failed to determine name from SQL");
+      }
+      if (!empty($MailboxData['name'])) {
+        $displayname = utf8_encode($MailboxData['name']);
+      }
+      else {
+        $displayname = $email;
+      }
+
       if ($config['autodiscoverType'] == 'imap') {
       ?>
   <Response xmlns="http://schemas.microsoft.com/exchange/autodiscover/outlook/responseschema/2006a">
@@ -122,21 +138,6 @@ if (!isset($_SERVER['PHP_AUTH_USER']) OR $as !== "user") {
       <?php
       }
       else if ($config['autodiscoverType'] == 'activesync') {
-        $username = trim($email);
-        try {
-          $stmt = $pdo->prepare("SELECT `name` FROM `mailbox` WHERE `username`= :username");
-          $stmt->execute(array(':username' => $username));
-          $MailboxData = $stmt->fetch(PDO::FETCH_ASSOC);
-        }
-        catch(PDOException $e) {
-          die("Failed to determine name from SQL");
-        }
-        if (!empty($MailboxData['name'])) {
-          $displayname = utf8_encode($MailboxData['name']);
-        }
-        else {
-          $displayname = $email;
-        }
       ?>
   <Response xmlns="http://schemas.microsoft.com/exchange/autodiscover/mobilesync/responseschema/2006">
       <Culture>en:en</Culture>
