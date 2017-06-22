@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ ! "${SKIP_LETS_ENCRYPT}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+if [[ "${SKIP_LETS_ENCRYPT}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
     echo "Skipping Let's Encrypt..."
     exit 0
 fi
