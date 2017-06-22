@@ -53,7 +53,7 @@ while true; do
 	done < <(mysql -h mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM domain" -Bs)
 
 	for SQL_DOMAIN in "${SQL_DOMAIN_ARR[@]}"; do
-		A_CONFIG=$(dig A autoconfig.${SQL_DOMAIN} +short)
+		A_CONFIG=$(dig A autoconfig.${SQL_DOMAIN} +short | tail -n 1)
 		if [[ ! -z ${A_CONFIG} ]]; then
 			echo "Found A record for autoconfig.${SQL_DOMAIN}: ${A_CONFIG}"
 			if [[ ${IPV4} == ${A_CONFIG} ]]; then
@@ -66,7 +66,7 @@ while true; do
 			echo "No A record for autoconfig.${SQL_DOMAIN} found"
 		fi
 
-        A_DISCOVER=$(dig A autodiscover.${SQL_DOMAIN} +short)
+        A_DISCOVER=$(dig A autodiscover.${SQL_DOMAIN} +short | tail -n 1)
 		if [[ ! -z ${A_DISCOVER} ]]; then
 			echo "Found A record for autodiscover.${SQL_DOMAIN}: ${A_CONFIG}"
 			if [[ ${IPV4} == ${A_DISCOVER} ]]; then
@@ -81,7 +81,7 @@ while true; do
 	done
 
 	for SAN in "${ADDITIONAL_SAN_ARR[@]}"; do
-		A_SAN=$(dig A ${SAN} +short)
+		A_SAN=$(dig A ${SAN} +short | tail -n 1)
 		if [[ ! -z ${A_SAN} ]]; then
 			echo "Found A record for ${SAN}: ${A_SAN}"
 			if [[ ${IPV4} == ${A_SAN} ]]; then
