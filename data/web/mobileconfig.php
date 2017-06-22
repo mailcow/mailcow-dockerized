@@ -1,27 +1,6 @@
 <?php
-require_once("inc/prerequisites.inc.php");
-
-$config = array(
-     'imap' => array(
-       'server' => $mailcow_hostname,
-       'port' => '993',
-       'ssl' => 'on',
-     ),
-     'smtp' => array(
-       'server' => $mailcow_hostname,
-       'port' => '465',
-       'ssl' => 'on'
-     ),
-     'sogo' => array(
-       'server' => $mailcow_hostname,
-       'port' => '443',
-       'ssl' => 'on'
-     )
-);
-
-if(file_exists('inc/vars.local.inc.php')) {
-  include_once 'inc/vars.local.inc.php';
-}
+require_once 'inc/clientconfig.inc.php';
+require_once 'inc/prerequisites.inc.php';
 
 if (empty($mailcow_hostname)) {
   exit();
@@ -33,6 +12,8 @@ if (!isset($_SESSION['mailcow_cc_role']) || $_SESSION['mailcow_cc_role'] != 'use
 
 header('Content-Type: application/x-apple-aspen-config');
 header('Content-Disposition: attachment; filename="Mailcow.mobileconfig"');
+
+$config = get_client_config();
 
 $email = $_SESSION['mailcow_cc_username'];
 $domain = explode('@', $_SESSION['mailcow_cc_username'])[1];

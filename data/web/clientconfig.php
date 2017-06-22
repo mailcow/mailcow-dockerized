@@ -1,4 +1,5 @@
 <?php
+require_once 'inc/clientconfig.inc.php';
 require_once("inc/prerequisites.inc.php");
 
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "user") {
@@ -19,9 +20,10 @@ if (file_exists('thunderbird-plugins/version.csv'))
   }
 }
 
-$useEASForOutlook = TRUE; // TODO automate
 $email = $_SESSION['mailcow_cc_username'];
 $domain = explode('@', $_SESSION['mailcow_cc_username'])[1];
+
+$config = get_client_config();
 
 $username = trim($email);
 try {
@@ -38,7 +40,6 @@ if (!empty($MailboxData['name'])) {
 else {
   $displayname = $email;
 }
-// $mailcow_hostname
 ?>
 <div class="container">
   <h2>Client Configuration Guide</h2>
@@ -95,7 +96,7 @@ else {
       <li>Choose <em>DAV groupware resource</em> and click <em>OK</em>.</li>
       <li>Enter your email address (<code><?php echo $email; ?></code>) and your password. Click <em>Next</em>.</li>
       <li>Select <em>ScalableOGo</em> from the dropdown menu and click <em>Next</em>.</li>
-      <li>Enter <code><?php echo $mailcow_hostname; ?><!--:XXX--></code> into the <em>Host</em> field<!--, uncheck <em>Use secure connection</em>-->, and click <em>Next</em>.</li>
+      <li>Enter <code><?php echo $mailcow_hostname; if ($config['sogo']['port'] != '443') echo ':'.$config['sogo']['port']; ?></code> into the <em>Host</em> field<?php if ($config['sogo']['ssl'] == 'off') echo ', uncheck <em>Use secure connection</em>'; ?>, and click <em>Next</em>.</li>
       <li>Click <em>Test Connection</em> and then <em>Finish</em>. Finally, click <em>OK</em> twice.</li>
     </ol>
     <p>Once you have set up Kontact, you can also use KMail, KOrganizer and KAddressBook individually.</p>
@@ -103,7 +104,7 @@ else {
   
   <h3><a href="#" onclick="document.getElementById('client_outlook').style.display = 'block'">Microsoft Outlook</a></h3>
   <div id="client_outlook" style="display: none">
-<?php if ($useEASForOutlook) { ?>
+<?php if ($config['useEASforOutlook']) { ?>
     <h4>Outlook 2013 or higher on Windows</h4>
     <ol>
       <li>Launch Outlook.</li>
@@ -152,7 +153,7 @@ else {
       <li>Click <em>Extensions</em> on the left, click the little gear icon at the top and select <em>Install Add-on From File</em>. Select the file you downloaded in step 9, click <em>Open</em> and, after waiting for a few seconds, <em>Install Now</em>.</li>
       <li>Click the <em>Restart Now</em> button at the top that appears.</li>
       <li>Thunderbird briefly shows a message that it is updating extensions, then restarts automatically once more.</li>
-      <li>When you are prompted to authenticate for https://<?php echo $mailcow_hostname; ?>, enter your email address and password, check <em>Use Password Manager</em> and click <em>OK</em>.</li>
+      <li>When you are prompted to authenticate for http<?php if ($config['sogo']['ssl'] == 'on') echo 's' ?>://<?php echo $mailcow_hostname; if ($config['sogo']['port'] != '443') echo ':'.$config['sogo']['port']; ?>, enter your email address and password, check <em>Use Password Manager</em> and click <em>OK</em>.</li>
     </ol>
   </div>
   

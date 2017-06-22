@@ -1,8 +1,13 @@
 <?php
-require_once 'inc/vars.inc.php';
+require_once 'inc/clientconfig.inc.php';
 
 if (empty($mailcow_hostname)) {
   exit();
+}
+
+$config = get_client_config();
+if(file_exists('vars.local.inc.php')) {
+  include_once 'vars.local.inc.php';
 }
 
 header('Content-Type: application/xml');
@@ -16,51 +21,75 @@ header('Content-Type: application/xml');
 
       <incomingServer type="imap">
          <hostname><?= $mailcow_hostname; ?></hostname>
-         <port>993</port>
+         <port><?= $config['imap']['port']; ?></port>
+<?php if ($config['imap']['ssl'] == 'on') { ?>
          <socketType>SSL</socketType>
+<?php } else { ?>
+         <socketType>plain</socketType>
+<?php } ?>
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
       </incomingServer>
       <incomingServer type="imap">
          <hostname><?= $mailcow_hostname; ?></hostname>
-         <port>143</port>
+         <port><?= $config['imap']['tlsport']; ?></port>
+<?php if ($config['imap']['ssl'] == 'on') { ?>
          <socketType>STARTTLS</socketType>
+<?php } else { ?>
+         <socketType>plain</socketType>
+<?php } ?>
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
       </incomingServer>
 
       <incomingServer type="pop3">
          <hostname><?= $mailcow_hostname; ?></hostname>
-         <port>995</port>
+         <port><?= $config['pop3']['port']; ?></port>
+<?php if ($config['pop3']['ssl'] == 'on') { ?>
          <socketType>SSL</socketType>
+<?php } else { ?>
+         <socketType>plain</socketType>
+<?php } ?>
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
       </incomingServer>
       <incomingServer type="pop3">
          <hostname><?= $mailcow_hostname; ?></hostname>
-         <port>110</port>
+         <port><?= $config['pop3']['tlsport']; ?></port>
+<?php if ($config['pop3']['ssl'] == 'on') { ?>
          <socketType>STARTTLS</socketType>
+<?php } else { ?>
+         <socketType>plain</socketType>
+<?php } ?>
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
       </incomingServer>
 
       <outgoingServer type="smtp">
          <hostname><?= $mailcow_hostname; ?></hostname>
-         <port>465</port>
+         <port><?= $config['smtp']['port']; ?></port>
+<?php if ($config['smtp']['ssl'] == 'on') { ?>
          <socketType>SSL</socketType>
+<?php } else { ?>
+         <socketType>plain</socketType>
+<?php } ?>
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
       </outgoingServer>
 
       <outgoingServer type="smtp">
          <hostname><?= $mailcow_hostname; ?></hostname>
-         <port>587</port>
+         <port><?= $config['smtp']['tlsport']; ?></port>
+<?php if ($config['smtp']['ssl'] == 'on') { ?>
          <socketType>STARTTLS</socketType>
+<?php } else { ?>
+         <socketType>plain</socketType>
+<?php } ?>
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
       </outgoingServer>
 
-      <enable visiturl="https://<?= $mailcow_hostname; ?>/admin.php">
+      <enable visiturl="http<?php if ($config['http']['ssl'] == 'on') echo 's' ?>://<?= $mailcow_hostname . ':' . $config['http']['port']; ?>/admin.php">
          <instruction>If you didn't change the password given to you by the administrator or if you didn't change it in a long time, please consider doing that now.</instruction>
          <instruction lang="de">Sollten Sie das Ihnen durch den Administrator vergebene Passwort noch nicht geändert haben, empfehlen wir dies nun zu tun. Auch ein altes Passwort sollte aus Sicherheitsgründen geändert werden.</instruction>
       </enable>
@@ -68,6 +97,6 @@ header('Content-Type: application/xml');
     </emailProvider>
 
     <webMail>
-      <loginPage url="https://<?= $mailcow_hostname; ?>/SOGo/" />
+      <loginPage url="http<?php if ($config['sogo']['ssl'] == 'on') echo 's' ?>://<?= $mailcow_hostname . ':' . $config['sogo']['port']; ?>/SOGo/" />
     </webMail>
 </clientConfig>

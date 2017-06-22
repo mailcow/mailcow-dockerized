@@ -1,27 +1,13 @@
 <?php
-require_once 'inc/vars.inc.php';
+require_once 'inc/clientconfig.inc.php';
 require_once 'inc/functions.inc.php';
-$config = array(
-     'useEASforOutlook' => 'yes',
-     'autodiscoverType' => 'activesync',
-     'imap' => array(
-       'server' => $mailcow_hostname,
-       'port' => '993',
-       'ssl' => 'on',
-     ),
-     'smtp' => array(
-       'server' => $mailcow_hostname,
-       'port' => '465',
-       'ssl' => 'on'
-     ),
-     'activesync' => array(
-       'url' => 'https://'.$mailcow_hostname.'/Microsoft-Server-ActiveSync'
-     )
-);
 
+$config = get_client_config();
 if(file_exists('inc/vars.local.inc.php')) {
 	include_once 'inc/vars.local.inc.php';
 }
+
+$config['autodiscoverType'] = 'activesync';
 
 /* ---------- DO NOT MODIFY ANYTHING BEYOND THIS LINE. IGNORE AT YOUR OWN RISK. ---------- */
 
@@ -30,7 +16,7 @@ error_reporting(0);
 $data = trim(file_get_contents("php://input"));
 
 // Desktop client needs IMAP, unless it's Outlook 2013 or higher on Windows
-if (strpos($data, 'autodiscover/outlook/responseschema')) { // desktop client
+if (strpos($data, 'autodiscover/outlook/responseschema') !== FALSE) { // desktop client
 	$config['autodiscoverType'] = 'imap';
 	if ($config['useEASforOutlook'] == 'yes' &&
 	    strpos($_SERVER['HTTP_USER_AGENT'], 'Outlook') !== FALSE && // Outlook
@@ -60,7 +46,8 @@ if (!isset($_SERVER['PHP_AUTH_USER']) OR $as !== "user") {
 	if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
 		if ($as === "user") {
       header("Content-Type: application/xml");
-      echo '<?xml version="1.0" encoding="utf-8" ?><Autodiscover xmlns="http://schemas.microsoft.com/exchange/autodiscover/responseschema/2006">';
+      echo '<?xml version="1.0" encoding="utf-8" ?>
+<Autodiscover xmlns="http://schemas.microsoft.com/exchange/autodiscover/responseschema/2006">' . "\n";
 
       if(!$data) {
         list($usec, $sec) = explode(' ', microtime());
@@ -71,8 +58,12 @@ if (!isset($_SERVER['PHP_AUTH_USER']) OR $as !== "user") {
         echo '</Autodiscover>';
         exit(0);
       }
-      $discover = new SimpleXMLElement($data);
-      $email = $discover->Request->EMailAddress;
+      try {
+        $discover = new SimpleXMLElement($data);
+        $email = $discover->Request->EMailAddress;
+      } catch (Exception $e) {
+        $email = $_SERVER['PHP_AUTH_USER'];
+      }
 
       $username = trim($email);
       try {
@@ -123,13 +114,13 @@ if (!isset($_SERVER['PHP_AUTH_USER']) OR $as !== "user") {
           </Protocol>
           <Protocol>
               <Type>CalDAV</Type>
-              <Server>https://<?php echo $mailcow_hostname; ?>/SOGo/dav/<?php echo $email; ?>/Calendar</Server>
+              <Server>http<?php if ($config['sogo']['ssl'] == 'on') echo 's' ?>://<?php echo $mailcow_hostname.':'.$config['sogo']['port']; ?>/SOGo/dav/<?php echo $email; ?>/Calendar</Server>
               <DomainRequired>off</DomainRequired>
               <LoginName><?php echo $email; ?></LoginName>
           </Protocol>
           <Protocol>
               <Type>CardDAV</Type>
-              <Server>https://<?php echo $mailcow_hostname; ?>/SOGo/dav/<?php echo $email; ?>/Contacts</Server>
+              <Server>http<?php if ($config['sogo']['ssl'] == 'on') echo 's' ?>://<?php echo $mailcow_hostname.':'.$config['sogo']['port']; ?>/SOGo/dav/<?php echo $email; ?>/Contacts</Server>
               <DomainRequired>off</DomainRequired>
               <LoginName><?php echo $email; ?></LoginName>
           </Protocol>
