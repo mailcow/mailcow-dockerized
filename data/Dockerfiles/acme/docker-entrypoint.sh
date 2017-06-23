@@ -122,14 +122,14 @@ while true; do
 			restart_containers ${CONTAINERS_RESTART}
 			;;
 		1) # failure
-			[[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && cp -n ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ${ACME_BASE}/cert.pem
-			[[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]] && cp -n ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ${ACME_BASE}/key.pem
+			[[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && cp ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ${ACME_BASE}/cert.pem
+			[[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]] && cp ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ${ACME_BASE}/key.pem
 			exit 1;;
 		2) # no change
 			;;
 		*) # unspecified
-			[[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && cp -n ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ${ACME_BASE}/cert.pem
-			[[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]] && cp -n ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ${ACME_BASE}/key.pem
+			[[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && cp ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ${ACME_BASE}/cert.pem
+			[[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]] && cp ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ${ACME_BASE}/key.pem
 			exit 1;;
 	esac
 
