@@ -94,9 +94,10 @@ foreach(mailbox('get', 'domains') as $domain) {
 foreach ($domains as $domain) {
   $records[] = array($domain, 'MX', $mailcow_hostname);
   $records[] = array('autodiscover.' . $domain, 'CNAME', $mailcow_hostname);
+  $records[] = array('_autodiscover._tcp.' . $domain, 'SRV', $config['http']['server'] . ' ' . $config['http']['port']);
   $records[] = array('autoconfig.' . $domain, 'CNAME', $mailcow_hostname);
   $records[] = array($domain, 'TXT', 'v=spf1 mx -all');
-  $records[] = array('_dmarc.' . $domain, 'TXT', 'v=DMARC1; p=reject');
+  $records[] = array('_dmarc.' . $domain, 'TXT', 'v=DMARC1; p=reject', 'v=DMARC1; p=');
   
   if (!empty($dkim = dkim('details', $domain))) {
     $records[] = array($dkim['dkim_selector'] . '._domainkey.' . $domain, 'TXT', $dkim['dkim_txt']);
@@ -220,8 +221,8 @@ foreach ($records as $record)
     
     if ($current['type'] == 'TXT' && strpos($record[0], '_dmarc.') === 0) {
       $state = state_nomatch;
-      if (strpos($current[$data_field[$current['type']]], $record[2]) === 0)
-        $state = state_good;
+      if (strpos($current[$data_field[$current['type']]], $record[3]) === 0)
+        $state = state_good . ' (' . current[$data_field[$current['type']]] . ')';
     }
     else if ($current['type'] == 'TXT' && strpos($current['txt'], 'v=spf1') === 0) {
       $allowed = get_spf_allowed_hosts($record[0]);
@@ -235,9 +236,9 @@ foreach ($records as $record)
           $spf_ok6 = TRUE;
       }
       if ($spf_ok && (empty($ip6) || $spf_ok6))
-        $state = state_good;
+        $state = state_good . ' (' . $current[$data_field[$current['type']]] . ')';
     }
-    else if (isset($data_field[$current['type']]) && $state != state_good) {
+    else if ($current['type'] != 'TXT' && isset($data_field[$current['type']]) && $state != state_good) {
       $state = state_nomatch;
       if ($current[$data_field[$current['type']]] == $record[2])
         $state = state_good;
