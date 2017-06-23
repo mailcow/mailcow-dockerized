@@ -1446,8 +1446,8 @@ function in_net($addr, $net) {
   }
   return substr($addr_bin, 0, $mask) == substr($net_bin, 0, $mask);
 }
-function get_client_config($domain = NULL) {
-  global $pdo, $mailcow_hostname;
+function get_client_config($domain) {
+  global $mailcow_hostname;
   $config = array(
     'useEASforOutlook' => 'yes',
     'imap' => array(
@@ -1482,13 +1482,6 @@ function get_client_config($domain = NULL) {
       'url' => 'https://'.$mailcow_hostname.'/Microsoft-Server-ActiveSync',
     )
   );
-  
-  // if no domain was provided (e.g. from autoconfig.php), use the SRV records of the first domain to obtain the correct port numbers
-  if (!$domain) {
-    $stmt = $pdo->prepare("SELECT `domain` FROM `domain` LIMIT 1");
-    $stmt->execute();
-    $domain = $stmt->fetchColumn();
-  }
   
   // IMAP
   $records = dns_get_record('_imaps._tcp.' . $domain, DNS_SRV);
