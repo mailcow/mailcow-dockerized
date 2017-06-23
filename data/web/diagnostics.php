@@ -169,10 +169,11 @@ $data_field = array(
 );
 ?>
 <div class="container">
-  <h3>DNS Records</h3>
+  <h3><?=$lang['diagnostics']['dns_records'];?></h3>
+  <p><?=$lang['diagnostics']['dns_records_24hours'];?></p>
   <div class="table-responsive" id="dnstable">
     <table class="table table-striped">
-      <tr><th>Name</th><th>Type</th><th>Data</th><th>Status</th></tr>
+      <tr> <th><?=$lang['diagnostics']['dns_records_name'];?></th> <th><?=$lang['diagnostics']['dns_records_type'];?></th> <th><?=$lang['diagnostics']['dns_records_data'];?></th ><th><?=$lang['diagnostics']['dns_records_status'];?></th> </tr>
 <?php
 foreach ($records as $record)
 {
