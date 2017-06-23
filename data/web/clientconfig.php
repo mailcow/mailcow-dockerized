@@ -22,7 +22,7 @@ if (file_exists('thunderbird-plugins/version.csv'))
 $email = $_SESSION['mailcow_cc_username'];
 $domain = explode('@', $_SESSION['mailcow_cc_username'])[1];
 
-$config = get_client_config();
+$config = get_client_config($domain);
 
 $username = trim($email);
 try {

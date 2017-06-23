@@ -1446,7 +1446,7 @@ function in_net($addr, $net) {
   }
   return substr($addr_bin, 0, $mask) == substr($net_bin, 0, $mask);
 }
-function get_client_config() {
+function get_client_config($domain = NULL) {
   global $pdo, $mailcow_hostname;
   $config = array(
     'useEASforOutlook' => 'yes',
@@ -1483,10 +1483,12 @@ function get_client_config() {
     )
   );
   
-  // use the SRV records of the first domain to obtain the correct port numbers
-  $stmt = $pdo->prepare("SELECT `domain` FROM `domain` LIMIT 1");
-  $stmt->execute();
-  $domain = $stmt->fetchColumn();
+  // if no domain was provided (e.g. from autoconfig.php), use the SRV records of the first domain to obtain the correct port numbers
+  if (!$domain) {
+    $stmt = $pdo->prepare("SELECT `domain` FROM `domain` LIMIT 1");
+    $stmt->execute();
+    $domain = $stmt->fetchColumn();
+  }
   
   // IMAP
   $records = dns_get_record('_imaps._tcp.' . $domain, DNS_SRV);

@@ -47,27 +47,48 @@ if (!empty($ip6)) {
   $records[] = array($mailcow_hostname, 'AAAA', $ip6);
   $records[] = array($ptr6, 'PTR', $mailcow_hostname);
 }
-$records[] = array('_25._tcp.' . $config['smtp']['server'], 'TLSA', generate_tlsa_digest($config['smtp']['server'], 25, 1));
-if (isset($config['http']['port']))
-  $records[] = array('_' . $config['http']['port']    . '._tcp.' . $config['http']['server'], 'TLSA', generate_tlsa_digest($config['http']['server'], $config['http']['port']));
-if (isset($config['pop3']['tlsport']))
-  $records[] = array('_' . $config['pop3']['tlsport'] . '._tcp.' . $config['pop3']['server'], 'TLSA', generate_tlsa_digest($config['pop3']['server'], $config['pop3']['tlsport'], 1));
-if (isset($config['imap']['tlsport']))
-  $records[] = array('_' . $config['imap']['tlsport'] . '._tcp.' . $config['imap']['server'], 'TLSA', generate_tlsa_digest($config['imap']['server'], $config['imap']['tlsport'], 1));
-if (isset($config['smtp']['port']))
-  $records[] = array('_' . $config['smtp']['port']    . '._tcp.' . $config['smtp']['server'], 'TLSA', generate_tlsa_digest($config['smtp']['server'], $config['smtp']['port']));
-if (isset($config['smtp']['tlsport']))
-  $records[] = array('_' . $config['smtp']['tlsport'] . '._tcp.' . $config['smtp']['server'], 'TLSA', generate_tlsa_digest($config['smtp']['server'], $config['smtp']['tlsport'], 1));
-if (isset($config['imap']['port']))
-  $records[] = array('_' . $config['imap']['port']    . '._tcp.' . $config['imap']['server'], 'TLSA', generate_tlsa_digest($config['imap']['server'], $config['imap']['port']));
-if (isset($config['pop3']['port']))
-  $records[] = array('_' . $config['pop3']['port']    . '._tcp.' . $config['pop3']['server'], 'TLSA', generate_tlsa_digest($config['pop3']['server'], $config['pop3']['port']));
-  $domains = mailbox('get', 'domains');
+$tlsa_records = array();
+$domains = mailbox('get', 'domains');
 foreach(mailbox('get', 'domains') as $domain) {
   $domains = array_merge($domains, mailbox('get', 'alias_domains', $domain));
 }
 
 foreach ($domains as $domain) {
+  $config = get_client_config($domain);
+  
+  if (!in_array('_25._tcp.' . $config['smtp']['server'], $tlsa_records)) {
+    $records[] = array('_25._tcp.' . $config['smtp']['server'], 'TLSA', generate_tlsa_digest($config['smtp']['server'], 25, 1));
+    $tlsa_records[] = '_25._tcp.' . $config['smtp']['server'];
+  }
+  if (isset($config['http']['port']) && !in_array('_' . $config['http']['port']    . '._tcp.' . $config['http']['server'], $tlsa_records)) {
+    $records[] = array('_' . $config['http']['port']    . '._tcp.' . $config['http']['server'], 'TLSA', generate_tlsa_digest($config['http']['server'], $config['http']['port']));
+    $tlsa_records[] = '_' . $config['http']['port']    . '._tcp.' . $config['http']['server'];
+  }
+  if (isset($config['pop3']['tlsport']) && !in_array('_' . $config['pop3']['tlsport'] . '._tcp.' . $config['pop3']['server'], $tlsa_records)) {
+    $records[] = array('_' . $config['pop3']['tlsport'] . '._tcp.' . $config['pop3']['server'], 'TLSA', generate_tlsa_digest($config['pop3']['server'], $config['pop3']['tlsport'], 1));
+    $tlsa_records[] = '_' . $config['pop3']['tlsport'] . '._tcp.' . $config['pop3']['server'];
+  }
+  if (isset($config['imap']['tlsport']) && !in_array('_' . $config['imap']['tlsport'] . '._tcp.' . $config['imap']['server'], $tlsa_records)) {
+    $records[] = array('_' . $config['imap']['tlsport'] . '._tcp.' . $config['imap']['server'], 'TLSA', generate_tlsa_digest($config['imap']['server'], $config['imap']['tlsport'], 1));
+    $tlsa_records[] = '_' . $config['imap']['tlsport'] . '._tcp.' . $config['imap']['server'];
+  }
+  if (isset($config['smtp']['port']) && !in_array('_' . $config['smtp']['port']    . '._tcp.' . $config['smtp']['server'], $tlsa_records)) {
+    $records[] = array('_' . $config['smtp']['port']    . '._tcp.' . $config['smtp']['server'], 'TLSA', generate_tlsa_digest($config['smtp']['server'], $config['smtp']['port']));
+    $tlsa_records[] = '_' . $config['smtp']['port']    . '._tcp.' . $config['smtp']['server'];
+  }
+  if (isset($config['smtp']['tlsport']) && !in_array('_' . $config['smtp']['tlsport'] . '._tcp.' . $config['smtp']['server'], $tlsa_records)) {
+    $records[] = array('_' . $config['smtp']['tlsport'] . '._tcp.' . $config['smtp']['server'], 'TLSA', generate_tlsa_digest($config['smtp']['server'], $config['smtp']['tlsport'], 1));
+    $tlsa_records[] = '_' . $config['smtp']['tlsport'] . '._tcp.' . $config['smtp']['server'];
+  }
+  if (isset($config['imap']['port']) && !in_array('_' . $config['imap']['port']    . '._tcp.' . $config['imap']['server'], $tlsa_records)) {
+    $records[] = array('_' . $config['imap']['port']    . '._tcp.' . $config['imap']['server'], 'TLSA', generate_tlsa_digest($config['imap']['server'], $config['imap']['port']));
+    $tlsa_records[] = '_' . $config['imap']['port']    . '._tcp.' . $config['imap']['server'];
+  }
+  if (isset($config['pop3']['port']) && !in_array('_' . $config['pop3']['port']    . '._tcp.' . $config['pop3']['server'], $tlsa_records)) {
+    $records[] = array('_' . $config['pop3']['port']    . '._tcp.' . $config['pop3']['server'], 'TLSA', generate_tlsa_digest($config['pop3']['server'], $config['pop3']['port']));
+    $tlsa_records[] = '_' . $config['pop3']['port']    . '._tcp.' . $config['pop3']['server'];
+  }
+  
   $records[] = array($domain, 'MX', $mailcow_hostname);
   $records[] = array('autodiscover.' . $domain, 'CNAME', $mailcow_hostname);
   $records[] = array('_autodiscover._tcp.' . $domain, 'SRV', $config['http']['server'] . ' ' . $config['http']['port']);
