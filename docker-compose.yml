@@ -270,7 +270,7 @@ services:
           max-size: "5m"
       ports:
         - "${HTTPS_BIND:-0.0.0.0}:${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
-        - "${HTTP_BIND:-127.0.0.1}:${HTTP_PORT:-80}:${HTTP_PORT:-80}"
+        - "${HTTP_BIND:-0.0.0.0}:${HTTP_PORT:-80}:${HTTP_PORT:-80}"
       restart: always
       dns:
         - 172.22.1.254
