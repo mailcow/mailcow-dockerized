@@ -97,10 +97,11 @@ while true; do
 	ORPHANED_SAN=($(echo ${SAN_ARRAY_NOW[*]} ${VALIDATED_CONFIG_DOMAINS[*]} ${ADDITIONAL_VALIDATED_SAN[*]} ${MAILCOW_HOSTNAME} | tr ' ' '\n' | sort | uniq -u ))
 	if [[ ! -z ${ORPHANED_SAN[*]} ]]; then
 		DATE=$(date +%Y-%m-%d_%H_%M_%S)
-		echo "Found orphaned SAN in certificate, moving old files to ${ACME_BASE}/acme/private/${DATE}.bak/"
+		echo "Found orphaned SAN(s) ${ORPHANED_SAN[*]} in certificate, moving old files to ${ACME_BASE}/acme/private/${DATE}.bak/"
 		mkdir -p ${ACME_BASE}/acme/private/${DATE}.bak/
 		[[ -f ${ACME_BASE}/acme/private/account.key ]] && mv ${ACME_BASE}/acme/private/account.key ${ACME_BASE}/acme/private/${DATE}.bak/
 		mv ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/acme/private/${DATE}.bak/
+        mv ${ACME_BASE}/acme/cert.pem ${ACME_BASE}/acme/private/${DATE}.bak/
 		cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/acme/private/${DATE}.bak/ # Keep key for TLSA 3 1 1 records
 	fi
 
