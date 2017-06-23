@@ -58,7 +58,7 @@ function get_client_config() {
     }
   }
   if (count($records)) {
-    if ($records[0]['target'] == '.') {
+    if ($records[0]['target'] == '') {
       unset($config['imap']['port']);
     } else {
       $config['imap']['server'] = $records[0]['target'];
@@ -67,7 +67,7 @@ function get_client_config() {
   $records = dns_get_record('_imap._tcp.' . $domain, DNS_SRV);
   if (count($records)) {
     $config['imap']['tlsport'] = $records[0]['port'];
-    if ($records[0]['target'] == '.') {
+    if ($records[0]['target'] == '') {
       unset($config['imap']['tlsport']);
     } else {
       $config['imap']['server'] = $records[0]['target'];
@@ -86,7 +86,7 @@ function get_client_config() {
     }
   }
   if (count($records)) {
-    if ($records[0]['target'] == '.') {
+    if ($records[0]['target'] == '') {
       unset($config['pop3']['port']);
     } else {
       $config['pop3']['server'] = $records[0]['target'];
@@ -95,7 +95,7 @@ function get_client_config() {
   $records = dns_get_record('_pop3._tcp.' . $domain, DNS_SRV);
   if (count($records)) {
     $config['pop3']['tlsport'] = $records[0]['port'];
-    if ($records[0]['target'] == '.') {
+    if ($records[0]['target'] == '') {
       unset($config['pop3']['tlsport']);
     } else {
       $config['pop3']['server'] = $records[0]['target'];
@@ -114,7 +114,7 @@ function get_client_config() {
     }
   }
   if (count($records)) {
-    if ($records[0]['target'] == '.') {
+    if ($records[0]['target'] == '') {
       unset($config['smtp']['port']);
     } else {
       $config['smtp']['server'] = $records[0]['target'];
@@ -123,7 +123,7 @@ function get_client_config() {
   $records = dns_get_record('_submission._tcp.' . $domain, DNS_SRV);
   if (count($records)) {
     $config['smtp']['tlsport'] = $records[0]['port'];
-    if ($records[0]['target'] == '.') {
+    if ($records[0]['target'] == '') {
       unset($config['smtp']['tlsport']);
     } else {
       $config['smtp']['server'] = $records[0]['target'];

@@ -62,16 +62,22 @@ if (!empty($ip6)) {
   $records[] = array($mailcow_hostname, 'AAAA', $ip6);
   $records[] = array($ptr6, 'PTR', $mailcow_hostname);
 }
-$records[] = array('_25._tcp.' . $mailcow_hostname, 'TLSA', get_tlsa($mailcow_hostname, 25, 'smtp'));
-$records[] = array('_' . $config['http']['port']    . '._tcp.' . $mailcow_hostname, 'TLSA', get_tlsa($mailcow_hostname, $config['http']['port']));
-$records[] = array('_' . $config['pop3']['tlsport'] . '._tcp.' . $mailcow_hostname, 'TLSA', get_tlsa($mailcow_hostname, $config['pop3']['tlsport'], 'pop3'));
-$records[] = array('_' . $config['imap']['tlsport'] . '._tcp.' . $mailcow_hostname, 'TLSA', get_tlsa($mailcow_hostname, $config['imap']['tlsport'], 'imap'));
-$records[] = array('_' . $config['smtp']['port']    . '._tcp.' . $mailcow_hostname, 'TLSA', get_tlsa($mailcow_hostname, $config['smtp']['port']));
-$records[] = array('_' . $config['smtp']['tlsport'] . '._tcp.' . $mailcow_hostname, 'TLSA', get_tlsa($mailcow_hostname, $config['smtp']['tlsport'], 'smtp'));
-$records[] = array('_' . $config['imap']['port']    . '._tcp.' . $mailcow_hostname, 'TLSA', get_tlsa($mailcow_hostname, $config['imap']['port']));
-$records[] = array('_' . $config['pop3']['port']    . '._tcp.' . $mailcow_hostname, 'TLSA', get_tlsa($mailcow_hostname, $config['pop3']['port']));
-
-$domains = mailbox('get', 'domains');
+$records[] = array('_25._tcp.' . $config['smtp']['server'], 'TLSA', get_tlsa($config['smtp']['server'], 25, 'smtp'));
+if (isset($config['http']['port']))
+  $records[] = array('_' . $config['http']['port']    . '._tcp.' . $config['http']['server'], 'TLSA', get_tlsa($config['http']['server'], $config['http']['port']));
+if (isset($config['pop3']['tlsport']))
+  $records[] = array('_' . $config['pop3']['tlsport'] . '._tcp.' . $config['pop3']['server'], 'TLSA', get_tlsa($config['pop3']['server'], $config['pop3']['tlsport'], 'pop3'));
+if (isset($config['imap']['tlsport']))
+  $records[] = array('_' . $config['imap']['tlsport'] . '._tcp.' . $config['imap']['server'], 'TLSA', get_tlsa($config['imap']['server'], $config['imap']['tlsport'], 'imap'));
+if (isset($config['smtp']['port']))
+  $records[] = array('_' . $config['smtp']['port']    . '._tcp.' . $config['smtp']['server'], 'TLSA', get_tlsa($config['smtp']['server'], $config['smtp']['port']));
+if (isset($config['smtp']['tlsport']))
+  $records[] = array('_' . $config['smtp']['tlsport'] . '._tcp.' . $config['smtp']['server'], 'TLSA', get_tlsa($config['smtp']['server'], $config['smtp']['tlsport'], 'smtp'));
+if (isset($config['imap']['port']))
+  $records[] = array('_' . $config['imap']['port']    . '._tcp.' . $config['imap']['server'], 'TLSA', get_tlsa($config['imap']['server'], $config['imap']['port']));
+if (isset($config['pop3']['port']))
+  $records[] = array('_' . $config['pop3']['port']    . '._tcp.' . $config['pop3']['server'], 'TLSA', get_tlsa($config['pop3']['server'], $config['pop3']['port']));
+  $domains = mailbox('get', 'domains');
 foreach(mailbox('get', 'domains') as $domain) {
   $domains = array_merge($domains, mailbox('get', 'alias_domains', $domain));
 }
@@ -86,25 +92,48 @@ foreach ($domains as $domain) {
   if (!empty($dkim = dkim('details', $domain))) {
     $records[] = array($dkim['dkim_selector'] . '._domainkey.' . $domain, 'TXT', $dkim['dkim_txt']);
   }
-  
 
-  if ($config['pop3']['tlsport'] != '110')  {
-    $records[] = array('_pop3._tcp.' . $domain, 'SRV', $mailcow_hostname . ' ' . $config['pop3']['tlsport']);
+  if (isset($config['pop3']['tlsport'])) {
+    if ($config['pop3']['tlsport'] != '110')  {
+      $records[] = array('_pop3._tcp.' . $domain, 'SRV', $config['pop3']['server'] . ' ' . $config['pop3']['tlsport']);
+    }
+  } else {
+      $records[] = array('_pop3._tcp.' . $domain, 'SRV', '. 0');
   }
-  if ($config['pop3']['port'] != '995')  {
-    $records[] = array('_pop3s._tcp.' . $domain, 'SRV', $mailcow_hostname . ' ' . $config['pop3']['port']);
+  if (isset($config['pop3']['port'])) {
+    if ($config['pop3']['port'] != '995')  {
+      $records[] = array('_pop3s._tcp.' . $domain, 'SRV', $config['pop3']['server'] . ' ' . $config['pop3']['port']);
+    }
+  } else {
+      $records[] = array('_pop3s._tcp.' . $domain, 'SRV', '. 0');
   }
-  if ($config['imap']['tlsport'] != '143')  {
-    $records[] = array('_imap._tcp.' . $domain, 'SRV', $mailcow_hostname . ' ' . $config['imap']['tlsport']);
+  if (isset($config['imap']['tlsport'])) {
+    if ($config['imap']['tlsport'] != '143')  {
+      $records[] = array('_imap._tcp.' . $domain, 'SRV', $config['imap']['server'] . ' ' . $config['imap']['tlsport']);
+    }
+  } else {
+      $records[] = array('_imap._tcp.' . $domain, 'SRV', '. 0');
   }
-  if ($config['imap']['port'] != '993')  {
-    $records[] = array('_imaps._tcp.' . $domain, 'SRV', $mailcow_hostname . ' ' . $config['imap']['port']);
+  if (isset($config['imap']['port'])) {
+    if ($config['imap']['port'] != '993')  {
+      $records[] = array('_imaps._tcp.' . $domain, 'SRV', $config['imap']['server'] . ' ' . $config['imap']['port']);
+    }
+  } else {
+      $records[] = array('_imaps._tcp.' . $domain, 'SRV', '. 0');
   }
-  if ($config['smtp']['tlsport'] != '587')  {
-    $records[] = array('_submission._tcp.' . $domain, 'SRV', $mailcow_hostname . ' ' . $config['smtp']['tlsport']);
+  if (isset($config['smtp']['tlsport'])) {
+    if ($config['smtp']['tlsport'] != '587')  {
+      $records[] = array('_submission._tcp.' . $domain, 'SRV', $config['smtp']['server'] . ' ' . $config['smtp']['tlsport']);
+    }
+  } else {
+      $records[] = array('_submission._tcp.' . $domain, 'SRV', '. 0');
   }
-  if ($config['smtp']['port'] != '465')  {
-    $records[] = array('_smtps._tcp.' . $domain, 'SRV', $mailcow_hostname . ' ' . $config['smtp']['port']);
+  if (isset($config['smtp']['port'])) {
+    if ($config['smtp']['port'] != '465')  {
+      $records[] = array('_smtps._tcp.' . $domain, 'SRV', $config['smtp']['server'] . ' ' . $config['smtp']['port']);
+    }
+  } else {
+      $records[] = array('_smtps._tcp.' . $domain, 'SRV', '. 0');
   }
 }
 
@@ -163,6 +192,10 @@ foreach ($records as $record)
     $currents = dns_get_record($record[0], $record_types[$record[1]]);
     if ($record[1] == 'SRV') {
       foreach ($currents as &$current) {
+        if ($current['target'] == '') {
+          $current['target'] = '.';
+          $current['port'] = '0';
+        }
         $current['data'] = $current['target'] . ' ' . $current['port'];
       }
       unset($current);

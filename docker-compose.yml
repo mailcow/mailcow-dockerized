@@ -134,7 +134,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.0
+      image: mailcow/sogo:1.1
       build: ./data/Dockerfiles/sogo
       depends_on:
         unbound-mailcow:
