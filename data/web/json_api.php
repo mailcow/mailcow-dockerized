@@ -480,6 +480,21 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                   echo '{}';
                 }
               break;
+              case "fail2ban":
+                if (isset($extra) && !empty($extra)) {
+                  $extra = intval($extra);
+                  $logs = get_logs('fail2ban-mailcow', $extra);
+                }
+                else {
+                  $logs = get_logs('fail2ban-mailcow', -1);
+                }
+                if (isset($logs) && !empty($logs)) {
+                  echo json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                }
+                else {
+                  echo '{}';
+                }
+              break;
               case "postfix":
                 if (isset($extra) && !empty($extra)) {
                   $extra = intval($extra);

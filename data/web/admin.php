@@ -22,6 +22,7 @@ $tfa_data = get_tfa();
     <li role="presentation"><a href="#tab-postfix-logs" aria-controls="tab-postfix-logs" role="tab" data-toggle="tab">Postfix</a></li>
     <li role="presentation"><a href="#tab-dovecot-logs" aria-controls="tab-dovecot-logs" role="tab" data-toggle="tab">Dovecot</a></li>
     <li role="presentation"><a href="#tab-sogo-logs" aria-controls="tab-sogo-logs" role="tab" data-toggle="tab">SOGo</a></li>
+    <li role="presentation"><a href="#tab-fail2ban-logs" aria-controls="tab-fail2ban-logs" role="tab" data-toggle="tab">Fail2ban</a></li>
     <li role="presentation"><a href="#tab-rspamd-history" aria-controls="tab-rspamd-history" role="tab" data-toggle="tab">Rspamd</a></li>
     </ul>
     </li>
@@ -319,6 +320,24 @@ $tfa_data = get_tfa();
       <div class="panel-body">
         <div class="table-responsive">
           <table class="table table-striped table-condensed" id="sogo_log"></table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div role="tabpanel" class="tab-pane" id="tab-fail2ban-logs">
+    <div class="panel panel-default">
+      <div class="panel-heading">Fail2ban
+        <div class="btn-group pull-right">
+          <a class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['admin']['action'];?> <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#" id="refresh_fail2ban_log"><?=$lang['admin']['refresh'];?></a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive">
+          <table class="table table-striped table-condensed" id="fail2ban_log"></table>
         </div>
       </div>
     </div>

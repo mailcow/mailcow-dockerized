@@ -1388,7 +1388,7 @@ function get_logs($container, $lines = 100) {
 	}
   $lines = intval($lines);
   if ($container == "dovecot-mailcow") {
-    if ($data = $redis->lRange('DOVECOT_MAILLOG', 1, $lines)) {
+    if ($data = $redis->lRange('DOVECOT_MAILLOG', 0, $lines)) {
       foreach ($data as $json_line) {
         $data_array[] = json_decode($json_line, true);
       }
@@ -1396,7 +1396,7 @@ function get_logs($container, $lines = 100) {
     }
   }
   if ($container == "postfix-mailcow") {
-    if ($data = $redis->lRange('POSTFIX_MAILLOG', 1, $lines)) {
+    if ($data = $redis->lRange('POSTFIX_MAILLOG', 0, $lines)) {
       foreach ($data as $json_line) {
         $data_array[] = json_decode($json_line, true);
       }
@@ -1404,7 +1404,15 @@ function get_logs($container, $lines = 100) {
     }
   }
   if ($container == "sogo-mailcow") {
-    if ($data = $redis->lRange('SOGO_LOG', 1, $lines)) {
+    if ($data = $redis->lRange('SOGO_LOG', 0, $lines)) {
+      foreach ($data as $json_line) {
+        $data_array[] = json_decode($json_line, true);
+      }
+      return $data_array;
+    }
+  }
+  if ($container == "fail2ban-mailcow") {
+    if ($data = $redis->lRange('F2B_LOG', 0, $lines)) {
       foreach ($data as $json_line) {
         $data_array[] = json_decode($json_line, true);
       }
