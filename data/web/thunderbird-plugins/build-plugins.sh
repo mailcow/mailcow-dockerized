@@ -17,7 +17,7 @@ tar --strip-components=1 -C connector -xf connector.tar.gz
 while read DOMAIN; do
 	echo "Building SOGo Integrator for $DOMAIN hosted on $MAILHOST"
 	PORT_NUM=$(dig -t srv  _autodiscover._tcp.$DOMAIN +short | tail -n 1 | awk '{print $3}')
-	if [ "$PORT_NUM" = "" ]; then
+	if [[ -z ${PORT_NUM} ]]; then
 		PORT_NUM=443
 	fi
 	cd integrator
