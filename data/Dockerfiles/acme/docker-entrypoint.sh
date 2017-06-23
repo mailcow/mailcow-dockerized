@@ -1,11 +1,5 @@
 #!/bin/bash
 
-if [[ "${SKIP_LETS_ENCRYPT}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-    echo "Skipping Let's Encrypt..."
-    exit 0
-fi
-
-
 ACME_BASE=/var/lib/acme
 SSL_EXAMPLE=/var/lib/ssl-example
 mkdir -p ${ACME_BASE}/acme/private
@@ -19,18 +13,20 @@ restart_containers(){
 }
 
 if [[ -f ${ACME_BASE}/cert.pem ]]; then
-	if [[ $(openssl x509 -in ${ACME_BASE}/cert.pem -noout -issuer) != *"Let's Encrypt"* &&
-		  $(openssl x509 -in ${ACME_BASE}/cert.pem -noout -issuer) != *"mailcow"* ]]; then
-		echo "Skipping ACME client"
+	ISSUER=$(openssl x509 -in ${ACME_BASE}/cert.pem -noout -issuer)
+	if [[ ${ISSUER} != *"Let's Encrypt"* && ${ISSUER} != *"mailcow"* ]]; then
+		echo "Found certificate with issuer other than mailcow snake-oil CA and Let's Encrypt, skipping ACME client..."
 		exit 0
 	else
 		declare -a SAN_ARRAY_NOW
 		SAN_NAMES=$(openssl x509 -noout -text -in ${ACME_BASE}/cert.pem | awk '/X509v3 Subject Alternative Name/ {getline;gsub(/ /, "", $0); print}' | tr -d "DNS:")
 		if [[ ! -z ${SAN_NAMES} ]]; then
 			IFS=',' read -a SAN_ARRAY_NOW <<< ${SAN_NAMES}
+			echo "Found Let's Encrypt or mailcow snake-oil CA issued certificate with SANs: ${SAN_ARRAY_NOW[*]}"
 		fi
 	fi
 else
+	ISSUER="mailcow"
 	if [[ -f ${ACME_BASE}/acme/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/privkey.pem ]]; then
 		cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
 		cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
@@ -41,7 +37,10 @@ else
 fi
 
 while true; do
-
+	if [[ "${SKIP_LETS_ENCRYPT}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+		echo "SKIP_LETS_ENCRYPT=y, skipping Let's Encrypt..."
+		exit 0
+	fi
 	declare -a SQL_DOMAIN_ARR
     declare -a VALIDATED_CONFIG_DOMAINS
 	declare -a ADDITIONAL_VALIDATED_SAN
@@ -98,12 +97,12 @@ while true; do
 	ORPHANED_SAN=($(echo ${SAN_ARRAY_NOW[*]} ${VALIDATED_CONFIG_DOMAINS[*]} ${ADDITIONAL_VALIDATED_SAN[*]} ${MAILCOW_HOSTNAME} | tr ' ' '\n' | sort | uniq -u ))
 	if [[ ! -z ${ORPHANED_SAN[*]} ]]; then
 		DATE=$(date +%Y-%m-%d_%H_%M_%S)
-		echo "Found orphaned SAN in certificate, moving old files to ${ACME_BASE}/acme/private/${DATE}/"
-		mkdir -p ${ACME_BASE}/acme/private/${DATE}/
-		mv ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/acme/private/${DATE}/
-		mv ${ACME_BASE}/acme/private/account.key ${ACME_BASE}/acme/private/${DATE}/
-		mv ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/acme/private/${DATE}/
-        mv ${ACME_BASE}/acme/cert.pem ${ACME_BASE}/acme/private/${DATE}/
+		echo "Found orphaned SAN(s) ${ORPHANED_SAN[*]} in certificate, moving old files to ${ACME_BASE}/acme/private/${DATE}.bak/"
+		mkdir -p ${ACME_BASE}/acme/private/${DATE}.bak/
+		[[ -f ${ACME_BASE}/acme/private/account.key ]] && mv ${ACME_BASE}/acme/private/account.key ${ACME_BASE}/acme/private/${DATE}.bak/
+		mv ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/acme/private/${DATE}.bak/
+        mv ${ACME_BASE}/acme/cert.pem ${ACME_BASE}/acme/private/${DATE}.bak/
+		cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/acme/private/${DATE}.bak/ # Keep key for TLSA 3 1 1 records
 	fi
 
 	acme-client \
@@ -123,10 +122,14 @@ while true; do
 			restart_containers ${CONTAINERS_RESTART}
 			;;
 		1) # failure
+			[[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && cp -n ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ${ACME_BASE}/cert.pem
+			[[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]] && cp -n ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ${ACME_BASE}/key.pem
 			exit 1;;
 		2) # no change
 			;;
 		*) # unspecified
+			[[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && cp -n ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ${ACME_BASE}/cert.pem
+			[[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]] && cp -n ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ${ACME_BASE}/key.pem
 			exit 1;;
 	esac
 
