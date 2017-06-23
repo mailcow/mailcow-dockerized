@@ -6,8 +6,23 @@ require_once 'inc/clientconfig.inc.php';
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admin") {
 require_once("inc/header.inc.php");
 
-$ip = file_get_contents('http://v4.ipv6-test.com/api/myip.php');
-$ip6 = @file_get_contents('http://v6.ipv6-test.com/api/myip.php');
+$ch = curl_init('http://ipv4.mailcow.email');
+curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+curl_setopt($ch, CURLOPT_VERBOSE, false);
+curl_setopt($ch, CURLOPT_HEADER, false);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+$ip = curl_exec($ch);
+curl_close($ch);
+
+$ch = curl_init('http://ipv6.mailcow.email');
+curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V6);
+curl_setopt($ch, CURLOPT_VERBOSE, false);
+curl_setopt($ch, CURLOPT_HEADER, false);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+$ip6 = curl_exec($ch);
+curl_close($ch);
 
 function in_net($addr, $net) {
   $net = explode('/', $net);
