@@ -8,20 +8,28 @@ import ipaddress
 import subprocess
 from threading import Thread
 import docker
+import redis
+import time
+import json
 
+r = redis.StrictRedis(host='172.22.1.249', port=6379, db=0)
 RULES = {
 	'mailcowdockerized_postfix-mailcow_1': 'warning: .*\[([0-9a-f\.:]+)\]: SASL .* authentication failed',
 	'mailcowdockerized_dovecot-mailcow_1': '-login: Disconnected \(auth failed, .*\): user=.*, method=.*, rip=([0-9a-f\.:]+),',
 	'mailcowdockerized_sogo-mailcow_1': 'SOGo.* Login from \'([0-9a-f\.:]+)\' for user .* might not have worked',
 	'mailcowdockerized_php-fpm-mailcow_1': 'Mailcow UI: Invalid password for .* by ([0-9a-f\.:]+)',
 }
-BAN_TIME = 1800
-MAX_ATTEMPTS = 10
+
+r.setnx("F2B_BAN_TIME", "1800")
+r.setnx("F2B_MAX_ATTEMPTS", "10")
 
 bans = {}
+log = {}
 quit_now = False
 
 def ban(address):
+	BAN_TIME = int(r.get("F2B_BAN_TIME"))
+	MAX_ATTEMPTS = int(r.get("F2B_MAX_ATTEMPTS"))
 	ip = ipaddress.ip_address(address.decode('ascii'))
 	if type(ip) is ipaddress.IPv6Address and ip.ipv4_mapped:
 		ip = ip.ipv4_mapped
@@ -39,6 +47,9 @@ def ban(address):
 	bans[net]['last_attempt'] = time.time()
 	
 	if bans[net]['attempts'] >= MAX_ATTEMPTS:
+		log['time'] = int(round(time.time()))
+		log['message'] = "Banning %s" % net
+		r.lpush("F2B_LOG", json.dumps(log, ensure_ascii=False))
 		print "Banning %s" % net
 		if type(ip) is ipaddress.IPv4Address:
 			subprocess.call(["iptables", "-I", "INPUT", "-s", net, "-j", "REJECT"])
@@ -47,9 +58,15 @@ def ban(address):
 			subprocess.call(["ip6tables", "-I", "INPUT", "-s", net, "-j", "REJECT"])
 			subprocess.call(["ip6tables", "-I", "FORWARD", "-s", net, "-j", "REJECT"])
 	else:
+		log['time'] = int(round(time.time()))
+		log['message'] = "%d more attempts until %s is banned" % (MAX_ATTEMPTS - bans[net]['attempts'], net)
+		r.lpush("F2B_LOG", json.dumps(log, ensure_ascii=False))
 		print "%d more attempts until %s is banned" % (MAX_ATTEMPTS - bans[net]['attempts'], net)
 
 def unban(net):
+	log['time'] = int(round(time.time()))
+	log['message'] = "Unbanning %s" % net
+	r.lpush("F2B_LOG", json.dumps(log, ensure_ascii=False))
 	print "Unbanning %s" % net
 	if type(ipaddress.ip_network(net.decode('ascii'))) is ipaddress.IPv4Network:
 		subprocess.call(["iptables", "-D", "INPUT", "-s", net, "-j", "REJECT"])
@@ -64,11 +81,17 @@ def quit(signum, frame):
 	quit_now = True
 
 def clear():
+	log['time'] = int(round(time.time()))
+	log['message'] = "Clearing all bans"
+	r.lpush("F2B_LOG", json.dumps(log, ensure_ascii=False))
 	print "Clearing all bans"
 	for net in bans.copy():
 		unban(net)
 
 def watch(container):
+	log['time'] = int(round(time.time()))
+	log['message'] = "Watching %s" % container
+	r.lpush("F2B_LOG", json.dumps(log, ensure_ascii=False))
 	print "Watching", container
 	client = docker.from_env()
 	for msg in client.containers.get(container).attach(stream=True, logs=False):
@@ -79,6 +102,7 @@ def watch(container):
 
 def autopurge():
 	while not quit_now:
+		BAN_TIME = int(r.get("F2B_BAN_TIME"))
 		for net in bans.copy():
 			if time.time() - bans[net]['last_attempt'] > BAN_TIME:
 				unban(net)
