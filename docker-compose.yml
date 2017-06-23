@@ -61,6 +61,7 @@ services:
       dns_search: mailcow-network
       networks:
         mailcow-network:
+          ipv4_address: 172.22.1.249
           aliases:
             - redis
 
@@ -318,11 +319,13 @@ services:
         - sogo-mailcow
         - php-fpm-mailcow
       restart: always
+      privileged: true
+      environment:
+        - TZ=${TZ}
+      network_mode: "host"
       dns:
         - 172.22.1.254
       dns_search: mailcow-network
-      privileged: true
-      network_mode: "host"
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
         - /lib/modules:/lib/modules:ro
