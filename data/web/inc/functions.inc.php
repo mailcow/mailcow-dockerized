@@ -62,6 +62,69 @@ function hasMailboxObjectAccess($username, $role, $object) {
 	}
 	return false;
 }
+function generate_tlsa_digest($hostname, $port, $starttls = null) {
+  if (!is_valid_domain_name($hostname)) {
+    return "Not a valid hostname";
+  }
+  function pem_to_der($pem_key) {
+    // Need to remove BEGIN/END PUBLIC KEY
+    $lines = explode("\n", trim($pem_key));
+    unset($lines[count($lines)-1]);
+    unset($lines[0]);
+    return base64_decode(implode('', $lines));
+  }
+
+  if (empty($starttls)) {
+    $context = stream_context_create(array("ssl" => array("capture_peer_cert" => true, 'verify_peer' => false, 'allow_self_signed' => true)));
+    $stream = stream_socket_client('tls://' . $hostname . ':' . $port, $error_nr, $error_msg, 5, STREAM_CLIENT_CONNECT, $context);
+    // error_nr can be 0, so checking against error_msg
+    if ($error_msg) {
+      return $error_nr . ': ' . $error_msg;
+    }
+  }
+  else {
+    $stream = stream_socket_client('tcp://' . $hostname . ':' . $port, $error_nr, $error_msg, 5);
+    if ($error_msg) {
+      return $error_nr . ': ' . $error_msg;
+    }
+    $banner = fread($stream, 512 );
+    if (preg_match("/^220/i", $banner)) {
+      fwrite($stream,"HELO tlsa.generator.local\r\n");
+      fread($stream, 512);
+      fwrite($stream,"STARTTLS\r\n");
+      fread($stream, 512);
+    }
+    elseif (preg_match("/imap.+starttls/i", $banner)) {
+      fwrite($stream,"A1 STARTTLS\r\n");
+      fread($stream, 512);
+    }
+    elseif (preg_match("/^\+OK/", $banner)) {
+      fwrite($stream,"STLS\r\n");
+      fread($stream, 512);
+    }
+    else {
+      return 'Unknown banner: "' . htmlspecialchars(trim($banner)) . '"';
+    }
+    // Upgrade connection
+    stream_set_blocking($stream, true);
+    stream_context_set_option($stream, 'ssl', 'capture_peer_cert', true);
+    stream_context_set_option($stream, 'ssl', 'verify_peer', false);
+    stream_context_set_option($stream, 'ssl', 'allow_self_signed', true);
+    stream_socket_enable_crypto($stream, true, STREAM_CRYPTO_METHOD_ANY_CLIENT);
+    stream_set_blocking($stream, false);
+  }
+
+  $params = stream_context_get_params($stream);
+  if (!empty($params['options']['ssl']['peer_certificate'])) {
+    $key_resource = openssl_pkey_get_public($params['options']['ssl']['peer_certificate']);
+    // We cannot get ['rsa']['n'], the binary data would contain BEGIN/END PUBLIC KEY
+    $key_data = openssl_pkey_get_details($key_resource)['key'];
+    return '3 1 1 ' . openssl_digest(pem_to_der($key_data), 'sha256');
+  }
+  else {
+    return 'Error: Cannot read peer certificate';
+  }
+}
 function verify_ssha256($hash, $password) {
 	// Remove tag if any
 	$hash = ltrim($hash, '{SSHA256}');
