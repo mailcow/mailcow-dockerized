@@ -90,6 +90,7 @@ if (!isset($_SERVER['PHP_AUTH_USER']) OR $as !== "user") {
       <Account>
           <AccountType>email</AccountType>
           <Action>settings</Action>
+<?php if (isset($config['imap']['port']) ) { ?>
           <Protocol>
               <Type>IMAP</Type>
               <Server><?php echo $config['imap']['server']; ?></Server>
@@ -100,6 +101,8 @@ if (!isset($_SERVER['PHP_AUTH_USER']) OR $as !== "user") {
               <SSL><?php echo $config['imap']['ssl']; ?></SSL>
               <AuthRequired>on</AuthRequired>
           </Protocol>
+<?php } ?>
+<?php if (isset($config['smtp']['port']) ) { ?>
           <Protocol>
               <Type>SMTP</Type>
               <Server><?php echo $config['smtp']['server']; ?></Server>
@@ -112,18 +115,21 @@ if (!isset($_SERVER['PHP_AUTH_USER']) OR $as !== "user") {
               <UsePOPAuth>on</UsePOPAuth>
               <SMTPLast>off</SMTPLast>
           </Protocol>
+<?php } ?>
+<?php if (isset($config['sogo']['port']) ) { ?>
           <Protocol>
               <Type>CalDAV</Type>
-              <Server>http<?php if ($config['sogo']['ssl'] == 'on') echo 's' ?>://<?php echo $mailcow_hostname.':'.$config['sogo']['port']; ?>/SOGo/dav/<?php echo $email; ?>/Calendar</Server>
+              <Server>http<?php if ($config['sogo']['ssl'] == 'on') echo 's' ?>://<?php echo $config['sogo']['server'].':'.$config['sogo']['port']; ?>/SOGo/dav/<?php echo $email; ?>/Calendar</Server>
               <DomainRequired>off</DomainRequired>
               <LoginName><?php echo $email; ?></LoginName>
           </Protocol>
           <Protocol>
               <Type>CardDAV</Type>
-              <Server>http<?php if ($config['sogo']['ssl'] == 'on') echo 's' ?>://<?php echo $mailcow_hostname.':'.$config['sogo']['port']; ?>/SOGo/dav/<?php echo $email; ?>/Contacts</Server>
+              <Server>http<?php if ($config['sogo']['ssl'] == 'on') echo 's' ?>://<?php echo $config['sogo']['server'].':'.$config['sogo']['port']; ?>/SOGo/dav/<?php echo $email; ?>/Contacts</Server>
               <DomainRequired>off</DomainRequired>
               <LoginName><?php echo $email; ?></LoginName>
           </Protocol>
+<?php } ?>
       </Account>
   </Response>
       <?php

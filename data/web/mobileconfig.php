@@ -41,6 +41,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 <dict>
 	<key>PayloadContent</key>
 	<array>
+<?php if (isset($config['sogo']['port']) ) { ?>
 		<dict>
 			<key>CalDAVAccountDescription</key>
 			<string><?php echo $domain; ?></string>
@@ -73,6 +74,8 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			<key>PayloadVersion</key>
 			<integer>1</integer>
 		</dict>
+<?php } ?>
+<?php if (isset($config['imap']['port']) && isset($config['smtp']['port'])) { ?>
 		<dict>
 			<key>EmailAccountDescription</key>
 			<string><?php echo $domain; ?></string>
@@ -133,6 +136,8 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			<key>SMIMEEnabled</key>
 			<false/>
 		</dict>
+<?php } ?>
+<?php if (isset($config['sogo']['port']) ) { ?>
 		<dict>
 			<key>CardDAVAccountDescription</key>
 			<string><?php echo $domain; ?></string>
@@ -165,9 +170,17 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			<key>PayloadVersion</key>
 			<integer>1</integer>
 		</dict>
+<?php } ?>
 	</array>
 	<key>PayloadDescription</key>
-	<string>IMAP, CalDAV, CardDAV</string>
+<?php
+$services_enabled = array();
+if (isset($config['imap']['port']) && isset($config['smtp']['port']))
+  $services_enabled[] = 'IMAP';
+if (isset($config['sogo']['port']))
+  $services_enabled[] = 'CalDAV, CardDAV';
+?>
+	<string><?php echo implode(', ', $services_enabled); ?></string>
 	<key>PayloadDisplayName</key>
 	<string><?php echo $domain; ?> Mailcow</string>
 	<key>PayloadIdentifier</key>

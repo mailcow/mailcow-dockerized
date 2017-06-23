@@ -28,6 +28,7 @@ $client_config = array(
        'ssl' => 'on',
      ),
      'http' => array(
+       'server' => $mailcow_hostname,
        'port' => '443',
        'ssl' => 'on',
      ),
@@ -56,9 +57,21 @@ function get_client_config() {
       $config['imap']['ssl'] = 'off';
     }
   }
+  if (count($records)) {
+    if ($records[0]['target'] == '.') {
+      unset($config['imap']['port']);
+    } else {
+      $config['imap']['server'] = $records[0]['target'];
+    }
+  }
   $records = dns_get_record('_imap._tcp.' . $domain, DNS_SRV);
   if (count($records)) {
     $config['imap']['tlsport'] = $records[0]['port'];
+    if ($records[0]['target'] == '.') {
+      unset($config['imap']['tlsport']);
+    } else {
+      $config['imap']['server'] = $records[0]['target'];
+    }
   }
   
   // POP3
@@ -72,9 +85,21 @@ function get_client_config() {
       $config['pop3']['ssl'] = 'off';
     }
   }
+  if (count($records)) {
+    if ($records[0]['target'] == '.') {
+      unset($config['pop3']['port']);
+    } else {
+      $config['pop3']['server'] = $records[0]['target'];
+    }
+  }
   $records = dns_get_record('_pop3._tcp.' . $domain, DNS_SRV);
   if (count($records)) {
     $config['pop3']['tlsport'] = $records[0]['port'];
+    if ($records[0]['target'] == '.') {
+      unset($config['pop3']['tlsport']);
+    } else {
+      $config['pop3']['server'] = $records[0]['target'];
+    }
   }
   
   // SMTP
@@ -88,13 +113,25 @@ function get_client_config() {
       $config['smtp']['ssl'] = 'off';
     }
   }
+  if (count($records)) {
+    if ($records[0]['target'] == '.') {
+      unset($config['smtp']['port']);
+    } else {
+      $config['smtp']['server'] = $records[0]['target'];
+    }
+  }
   $records = dns_get_record('_submission._tcp.' . $domain, DNS_SRV);
   if (count($records)) {
     $config['smtp']['tlsport'] = $records[0]['port'];
+    if ($records[0]['target'] == '.') {
+      unset($config['smtp']['tlsport']);
+    } else {
+      $config['smtp']['server'] = $records[0]['target'];
+    }
   }
   
   // Web server port from Autodiscovery
-  $records = dns_get_record('_autodiscovery._tcp.' . $domain, DNS_SRV);
+  $records = dns_get_record('_autodiscover._tcp.' . $domain, DNS_SRV);
   if (count($records)) {
     $config['sogo']['port'] = $records[0]['port'];
     $config['http']['port'] = $records[0]['port'];
