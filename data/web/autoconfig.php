@@ -1,5 +1,5 @@
 <?php
-require_once 'inc/clientconfig.inc.php';
+require_once 'inc/prerequisites.inc.php';
 
 if (empty($mailcow_hostname)) {
   exit();

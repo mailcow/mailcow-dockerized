@@ -1,7 +1,6 @@
 <?php
 require_once 'inc/prerequisites.inc.php';
 require_once 'inc/spf.inc.php';
-require_once 'inc/clientconfig.inc.php';
 
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admin") {
 require_once("inc/header.inc.php");

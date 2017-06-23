@@ -1,6 +1,5 @@
 <?php
-require_once 'inc/clientconfig.inc.php';
-require_once("inc/prerequisites.inc.php");
+require_once 'inc/prerequisites.inc.php';
 
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "user") {
 require_once("inc/header.inc.php");

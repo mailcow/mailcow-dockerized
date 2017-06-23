@@ -1363,4 +1363,201 @@ function get_logs($container, $lines = 100) {
   }
   return false;
 }
+function pem_to_der($pem_key) {
+  // Need to remove BEGIN/END PUBLIC KEY
+  $lines = explode("\n", trim($pem_key));
+  unset($lines[count($lines)-1]);
+  unset($lines[0]);
+  return base64_decode(implode('', $lines));
+}
+function generate_tlsa_digest($hostname, $port, $starttls = null) {
+  if (!is_valid_domain_name($hostname)) {
+    return "Not a valid hostname";
+  }
+  if (empty($starttls)) {
+    $context = stream_context_create(array("ssl" => array("capture_peer_cert" => true, 'verify_peer' => false, 'allow_self_signed' => true)));
+    $stream = stream_socket_client('tls://' . $hostname . ':' . $port, $error_nr, $error_msg, 5, STREAM_CLIENT_CONNECT, $context);
+    // error_nr can be 0, so checking against error_msg
+    if ($error_msg) {
+      return $error_nr . ': ' . $error_msg;
+    }
+  }
+  else {
+    $stream = stream_socket_client('tcp://' . $hostname . ':' . $port, $error_nr, $error_msg, 5);
+    if ($error_msg) {
+      return $error_nr . ': ' . $error_msg;
+    }
+    $banner = fread($stream, 512 );
+    if (preg_match("/^220/i", $banner)) {
+      fwrite($stream,"HELO tlsa.generator.local\r\n");
+      fread($stream, 512);
+      fwrite($stream,"STARTTLS\r\n");
+      fread($stream, 512);
+    }
+    elseif (preg_match("/imap.+starttls/i", $banner)) {
+      fwrite($stream,"A1 STARTTLS\r\n");
+      fread($stream, 512);
+    }
+    elseif (preg_match("/^\+OK/", $banner)) {
+      fwrite($stream,"STLS\r\n");
+      fread($stream, 512);
+    }
+    else {
+      return 'Unknown banner: "' . htmlspecialchars(trim($banner)) . '"';
+    }
+    // Upgrade connection
+    stream_set_blocking($stream, true);
+    stream_context_set_option($stream, 'ssl', 'capture_peer_cert', true);
+    stream_context_set_option($stream, 'ssl', 'verify_peer', false);
+    stream_context_set_option($stream, 'ssl', 'allow_self_signed', true);
+    stream_socket_enable_crypto($stream, true, STREAM_CRYPTO_METHOD_ANY_CLIENT);
+    stream_set_blocking($stream, false);
+  }
+  $params = stream_context_get_params($stream);
+  if (!empty($params['options']['ssl']['peer_certificate'])) {
+    $key_resource = openssl_pkey_get_public($params['options']['ssl']['peer_certificate']);
+    // We cannot get ['rsa']['n'], the binary data would contain BEGIN/END PUBLIC KEY
+    $key_data = openssl_pkey_get_details($key_resource)['key'];
+    return '3 1 1 ' . openssl_digest(pem_to_der($key_data), 'sha256');
+  }
+  else {
+    return 'Error: Cannot read peer certificate';
+  }
+}
+function get_client_config() {
+  global $pdo, $mailcow_hostname;
+  $config = array(
+    'useEASforOutlook' => 'yes',
+    'imap' => array(
+      'server' => $mailcow_hostname,
+      'port' => '993',
+      'ssl' => 'on',
+      'tlsport' => '143',
+    ),
+    'pop3' => array(
+      'server' => $mailcow_hostname,
+      'port' => '995',
+      'ssl' => 'on',
+      'tlsport' => '110',
+    ),
+    'smtp' => array(
+      'server' => $mailcow_hostname,
+      'port' => '465',
+      'ssl' => 'on',
+      'tlsport' => '587',
+    ),
+    'sogo' => array(
+      'server' => $mailcow_hostname,
+      'port' => '443',
+      'ssl' => 'on',
+    ),
+    'http' => array(
+      'server' => $mailcow_hostname,
+      'port' => '443',
+      'ssl' => 'on',
+    ),
+    'activesync' => array(
+      'url' => 'https://'.$mailcow_hostname.'/Microsoft-Server-ActiveSync',
+    )
+  );
+  
+  // use the SRV records of the first domain to obtain the correct port numbers
+  $stmt = $pdo->prepare("SELECT `domain` FROM `domain` LIMIT 1");
+  $stmt->execute();
+  $domain = $stmt->fetchColumn();
+  
+  // IMAP
+  $records = dns_get_record('_imaps._tcp.' . $domain, DNS_SRV);
+  if (count($records)) {
+    $config['imap']['port'] = $records[0]['port'];
+  } else {
+    $records = dns_get_record('_imap._tcp.' . $domain, DNS_SRV);
+    if (count($records)) {
+      $config['imap']['port'] = $records[0]['port'];
+      $config['imap']['ssl'] = 'off';
+    }
+  }
+  if (count($records)) {
+    if ($records[0]['target'] == '') {
+      unset($config['imap']['port']);
+    } else {
+      $config['imap']['server'] = $records[0]['target'];
+    }
+  }
+  $records = dns_get_record('_imap._tcp.' . $domain, DNS_SRV);
+  if (count($records)) {
+    $config['imap']['tlsport'] = $records[0]['port'];
+    if ($records[0]['target'] == '') {
+      unset($config['imap']['tlsport']);
+    } else {
+      $config['imap']['server'] = $records[0]['target'];
+    }
+  }
+  
+  // POP3
+  $records = dns_get_record('_pop3s._tcp.' . $domain, DNS_SRV);
+  if (count($records)) {
+    $config['pop3']['port'] = $records[0]['port'];
+  } else {
+    $records = dns_get_record('_pop3._tcp.' . $domain, DNS_SRV);
+    if (count($records)) {
+      $config['pop3']['port'] = $records[0]['port'];
+      $config['pop3']['ssl'] = 'off';
+    }
+  }
+  if (count($records)) {
+    if ($records[0]['target'] == '') {
+      unset($config['pop3']['port']);
+    } else {
+      $config['pop3']['server'] = $records[0]['target'];
+    }
+  }
+  $records = dns_get_record('_pop3._tcp.' . $domain, DNS_SRV);
+  if (count($records)) {
+    $config['pop3']['tlsport'] = $records[0]['port'];
+    if ($records[0]['target'] == '') {
+      unset($config['pop3']['tlsport']);
+    } else {
+      $config['pop3']['server'] = $records[0]['target'];
+    }
+  }
+  
+  // SMTP
+  $records = dns_get_record('_smtps._tcp.' . $domain, DNS_SRV);
+  if (count($records)) {
+    $config['smtp']['port'] = $records[0]['port'];
+  } else {
+    $records = dns_get_record('_submission._tcp.' . $domain, DNS_SRV);
+    if (count($records)) {
+      $config['smtp']['port'] = $records[0]['port'];
+      $config['smtp']['ssl'] = 'off';
+    }
+  }
+  if (count($records)) {
+    if ($records[0]['target'] == '') {
+      unset($config['smtp']['port']);
+    } else {
+      $config['smtp']['server'] = $records[0]['target'];
+    }
+  }
+  $records = dns_get_record('_submission._tcp.' . $domain, DNS_SRV);
+  if (count($records)) {
+    $config['smtp']['tlsport'] = $records[0]['port'];
+    if ($records[0]['target'] == '') {
+      unset($config['smtp']['tlsport']);
+    } else {
+      $config['smtp']['server'] = $records[0]['target'];
+    }
+  }
+  
+  // Web server port from Autodiscovery
+  $records = dns_get_record('_autodiscover._tcp.' . $domain, DNS_SRV);
+  if (count($records)) {
+    $config['sogo']['port'] = $records[0]['port'];
+    $config['http']['port'] = $records[0]['port'];
+    $config['activesync']['url'] = 'https://'.$mailcow_hostname.':'.$records[0]['port'].'/Microsoft-Server-ActiveSync';
+  }
+  
+  return $config;
+}
 ?>

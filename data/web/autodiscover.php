@@ -1,6 +1,5 @@
 <?php
-require_once 'inc/clientconfig.inc.php';
-require_once 'inc/functions.inc.php';
+require_once 'inc/prerequisites.inc.php';
 
 $config = get_client_config();
 if(file_exists('inc/vars.local.inc.php')) {
