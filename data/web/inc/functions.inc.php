@@ -1424,27 +1424,49 @@ function generate_tlsa_digest($hostname, $port, $starttls = null) {
     return 'Error: Cannot read peer certificate';
   }
 }
+function in_net($addr, $net) {
+  $net = explode('/', $net);
+  if (count($net) > 1) {
+    $mask = $net[1];
+  }
+  $net = inet_pton($net[0]);
+  $addr = inet_pton($addr);
+  $length = strlen($net); // 4 for IPv4, 16 for IPv6
+  if (strlen($net) != strlen($addr)) {
+    return false;
+  }
+  if (!isset($mask)) {
+    $mask = $length * 8;
+  }
+  $addr_bin = '';
+  $net_bin = '';
+  for ($i = 0; $i < $length; ++$i) {
+    $addr_bin .= str_pad(decbin(ord(substr($addr, $i, $i+1))), 8, '0', STR_PAD_LEFT);
+    $net_bin .= str_pad(decbin(ord(substr($net, $i, $i+1))), 8, '0', STR_PAD_LEFT);
+  }
+  return substr($addr_bin, 0, $mask) == substr($net_bin, 0, $mask);
+}
 function get_client_config() {
   global $pdo, $mailcow_hostname;
   $config = array(
     'useEASforOutlook' => 'yes',
     'imap' => array(
       'server' => $mailcow_hostname,
-      'port' => '993',
+      'port' => getenv('IMAPS_PORT'),
       'ssl' => 'on',
-      'tlsport' => '143',
+      'tlsport' => getenv('IMAP_PORT'),
     ),
     'pop3' => array(
       'server' => $mailcow_hostname,
-      'port' => '995',
+      'port' => getenv('POPS_PORT'),
       'ssl' => 'on',
-      'tlsport' => '110',
+      'tlsport' => getenv('POP_PORT'),
     ),
     'smtp' => array(
       'server' => $mailcow_hostname,
-      'port' => '465',
+      'port' => getenv('SMTPS_PORT'),
       'ssl' => 'on',
-      'tlsport' => '587',
+      'tlsport' => getenv('SUBMISSION_PORT'),
     ),
     'sogo' => array(
       'server' => $mailcow_hostname,
