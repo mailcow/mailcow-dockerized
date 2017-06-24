@@ -1,20 +1,20 @@
 #!/bin/bash
 
-echo -en "Checking internet connection... "
-timeout 1 bash -c "echo >/dev/tcp/8.8.8.8/53"
-if [[ $? != 0 ]]; then
-	echo -e "\e[31mfailed\e[0m"
-	exit 1
-else
-	echo -e "\e[32mOK\e[0m"
-fi
-
 if [[ -z $(which curl) ]]; then echo "Cannot find curl, exiting."; exit 1; fi
 if [[ -z $(which docker-compose) ]]; then echo "Cannot find docker-compose, exiting."; exit 1; fi
 if [[ -z $(which docker) ]]; then echo "Cannot find docker, exiting."; exit 1; fi
 if [[ -z $(which git) ]]; then echo "Cannot find git, exiting."; exit 1; fi
 if [[ -z $(which awk) ]]; then echo "Cannot find awk, exiting."; exit 1; fi
 if [[ -z $(which sha1sum) ]]; then echo "Cannot find sha1sum, exiting."; exit 1; fi
+
+echo -en "Checking internet connection... "
+curl -o /dev/null google.com -sm3
+if [[ $? != 0 ]]; then
+	echo -e "\e[31mfailed\e[0m"
+	exit 1
+else
+	echo -e "\e[32mOK\e[0m"
+fi
 
 set -o pipefail
 export LC_ALL=C
@@ -81,7 +81,7 @@ fi
 
 echo -e "\e[32mFetching new images, if any...\e[0m"
 sleep 2
-docker-compose pull
+docker-compose pull --parallel
 
 # Fix missing SSL, does not overwrite existing files
 [[ ! -d data/assets/ssl ]] && mkdir -p data/assets/ssl
