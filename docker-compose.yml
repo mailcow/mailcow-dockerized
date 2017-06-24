@@ -318,6 +318,7 @@ services:
         - postfix-mailcow
         - sogo-mailcow
         - php-fpm-mailcow
+        - redis-mailcow
       restart: always
       privileged: true
       environment:
