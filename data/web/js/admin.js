@@ -292,7 +292,7 @@ jQuery(function($){
         success: function (data) {
           $.each(data, function (i, item) {
             item.action = '<div class="btn-group">' +
-              '<a href="#" id="delete_selected" data-id="single-domain-admin" data-api-url="delete/fwdhost" data-item="' + encodeURI(item.host) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+              '<a href="#" id="delete_selected" data-id="single-fwdhost" data-api-url="delete/fwdhost" data-item="' + encodeURI(item.host) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
               '</div>';
             if (item.keep_spam == "yes") {
               item.keep_spam = lang.no;
