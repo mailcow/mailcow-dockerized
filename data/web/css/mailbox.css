@@ -9,7 +9,12 @@ table.footable>tbody>tr.footable-empty>td {
   overflow: visible !important;
 }
 .table-responsive {
-  overflow-x: scroll !important;
+  overflow: visible !important;
+}
+@media screen and (max-width: 767px) {
+  .table-responsive {
+    overflow-x: scroll !important;
+  }
 }
 .footer-add-item {
   display:block;
@@ -30,4 +35,3 @@ table.footable>tbody>tr.footable-empty>td {
 .inputMissingAttr {
   border-color: #FF4136;
 }
-
