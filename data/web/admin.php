@@ -269,6 +269,30 @@ $tfa_data = get_tfa();
         </form>
       </div>
     </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">Fail2Ban parameters</div>
+      <div class="panel-body">
+      <?php
+      $f2b_data = get_f2b_parameters();
+      ?>
+        <form class="form" data-id="f2b" role="form" method="post">
+          <div class="form-group">
+            <label for="ban_time">Ban time (s):</label>
+            <input type="number" class="form-control" id="ban_time" name="ban_time" value="<?=$f2b_data['ban_time'];?>" required>
+          </div>
+          <div class="form-group">
+            <label for="max_attempts">Max. attempts:</label>
+            <input type="number" class="form-control" id="max_attempts" name="max_attempts" value="<?=$f2b_data['max_attempts'];?>" required>
+          </div>
+          <div class="form-group">
+            <label for="retry_window">Retry window (s) for max. attempts:</label>
+            <input type="number" class="form-control" id="retry_window" name="retry_window" value="<?=$f2b_data['retry_window'];?>" required>
+          </div>
+          <button class="btn btn-default" id="add_item" data-id="f2b" data-api-url='edit/fail2ban' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+        </form>
+      </div>
+    </div>
   </div>
 
   <div role="tabpanel" class="tab-pane" id="tab-postfix-logs">

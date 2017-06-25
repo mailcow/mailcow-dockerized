@@ -229,6 +229,7 @@ function check_login($user, $pass) {
 	}
 	if (!isset($_SESSION['ldelay'])) {
 		$_SESSION['ldelay'] = "0";
+    error_log("Mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
 	}
 	elseif (!isset($_SESSION['mailcow_cc_username'])) {
 		$_SESSION['ldelay'] = $_SESSION['ldelay']+0.5;
@@ -1433,5 +1434,69 @@ function get_logs($container, $lines = 100) {
     return false;
   }
   return false;
+}
+function get_f2b_parameters() {
+	global $lang;
+	global $redis;
+  $data = array();
+	if ($_SESSION['mailcow_cc_role'] != "admin") {
+		return false;
+	}
+  try {
+    $data['ban_time'] = $redis->Get('F2B_BAN_TIME');
+    $data['max_attempts'] = $redis->Get('F2B_MAX_ATTEMPTS');
+    $data['retry_window'] = $redis->Get('F2B_RETRY_WINDOW');
+  }
+  catch (RedisException $e) {
+    $_SESSION['return'] = array(
+      'type' => 'danger',
+      'msg' => 'Redis: '.$e
+    );
+    return false;
+  }
+  return $data;
+}
+function edit_f2b_parameters($postarray) {
+	global $lang;
+	global $redis;
+	if ($_SESSION['mailcow_cc_role'] != "admin") {
+    $_SESSION['return'] = array(
+      'type' => 'danger',
+      'msg' => sprintf($lang['danger']['access_denied'])
+    );
+    return false;
+  }
+  $is_now = get_f2b_parameters();
+  if (!empty($is_now)) {
+    $ban_time = intval((isset($postarray['ban_time'])) ? $postarray['ban_time'] : $is_now['ban_time']);
+    $max_attempts = intval((isset($postarray['max_attempts'])) ? $postarray['max_attempts'] : $is_now['active_int']);
+    $retry_window = intval((isset($postarray['retry_window'])) ? $postarray['retry_window'] : $is_now['retry_window']);
+  }
+  else {
+    $_SESSION['return'] = array(
+      'type' => 'danger',
+      'msg' => sprintf($lang['danger']['access_denied'])
+    );
+    return false;
+  }
+  $ban_time = ($ban_time < 60) ? 60 : $ban_time;
+  $max_attempts = ($max_attempts < 1) ? 1 : $max_attempts;
+  $retry_window = ($retry_window < 1) ? 1 : $retry_window;
+  try {
+    $redis->Set('F2B_BAN_TIME', $ban_time);
+    $redis->Set('F2B_MAX_ATTEMPTS', $max_attempts);
+    $redis->Set('F2B_RETRY_WINDOW', $retry_window);
+  }
+  catch (RedisException $e) {
+    $_SESSION['return'] = array(
+      'type' => 'danger',
+      'msg' => 'Redis: '.$e
+    );
+    return false;
+  }
+  $_SESSION['return'] = array(
+    'type' => 'success',
+    'msg' => 'Saved changes to Fail2ban configuration'
+  );
 }
 ?>
