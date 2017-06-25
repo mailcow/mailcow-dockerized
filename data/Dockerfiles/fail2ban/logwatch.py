@@ -22,6 +22,7 @@ RULES = {
 
 r.setnx("F2B_BAN_TIME", "1800")
 r.setnx("F2B_MAX_ATTEMPTS", "10")
+r.setnx("F2B_RETRY_WINDOW", "600")
 
 bans = {}
 log = {}
@@ -30,6 +31,8 @@ quit_now = False
 def ban(address):
 	BAN_TIME = int(r.get("F2B_BAN_TIME"))
 	MAX_ATTEMPTS = int(r.get("F2B_MAX_ATTEMPTS"))
+	RETRY_WINDOW = int(r.get("F2B_RETRY_WINDOW"))
+
 	ip = ipaddress.ip_address(address.decode('ascii'))
 	if type(ip) is ipaddress.IPv6Address and ip.ipv4_mapped:
 		ip = ip.ipv4_mapped
@@ -39,18 +42,24 @@ def ban(address):
 	
 	net = ipaddress.ip_network((address + ('/24' if type(ip) is ipaddress.IPv4Address else '/64')).decode('ascii'), strict=False)
 	net = str(net)
-	
-	if not net in bans or time.time() - bans[net]['last_attempt'] > BAN_TIME:
+
+	if not net in bans or time.time() - bans[net]['last_attempt'] > RETRY_WINDOW:
 		bans[net] = { 'attempts': 0 }
+		active_window = RETRY_WINDOW
+	else:
+		active_window = time.time() - bans[net]['last_attempt']
 	
 	bans[net]['attempts'] += 1
 	bans[net]['last_attempt'] = time.time()
 	
+	active_window = time.time() - bans[net]['last_attempt']
+
 	if bans[net]['attempts'] >= MAX_ATTEMPTS:
 		log['time'] = int(round(time.time()))
+		log['priority'] = "crit"
 		log['message'] = "Banning %s" % net
 		r.lpush("F2B_LOG", json.dumps(log, ensure_ascii=False))
-		print "Banning %s" % net
+		print "Banning %s for %d minutes" % (net, BAN_TIME / 60)
 		if type(ip) is ipaddress.IPv4Address:
 			subprocess.call(["iptables", "-I", "INPUT", "-s", net, "-j", "REJECT"])
 			subprocess.call(["iptables", "-I", "FORWARD", "-s", net, "-j", "REJECT"])
@@ -59,12 +68,14 @@ def ban(address):
 			subprocess.call(["ip6tables", "-I", "FORWARD", "-s", net, "-j", "REJECT"])
 	else:
 		log['time'] = int(round(time.time()))
-		log['message'] = "%d more attempts until %s is banned" % (MAX_ATTEMPTS - bans[net]['attempts'], net)
+		log['priority'] = "warn"
+		log['message'] = "%d more attempts in the next %d seconds until %s is banned" % (MAX_ATTEMPTS - bans[net]['attempts'], RETRY_WINDOW, net)
 		r.lpush("F2B_LOG", json.dumps(log, ensure_ascii=False))
-		print "%d more attempts until %s is banned" % (MAX_ATTEMPTS - bans[net]['attempts'], net)
+		print "%d more attempts in the next %d seconds until %s is banned" % (MAX_ATTEMPTS - bans[net]['attempts'], RETRY_WINDOW, net)
 
 def unban(net):
 	log['time'] = int(round(time.time()))
+	log['priority'] = "info"
 	log['message'] = "Unbanning %s" % net
 	r.lpush("F2B_LOG", json.dumps(log, ensure_ascii=False))
 	print "Unbanning %s" % net
@@ -82,6 +93,7 @@ def quit(signum, frame):
 
 def clear():
 	log['time'] = int(round(time.time()))
+	log['priority'] = "info"
 	log['message'] = "Clearing all bans"
 	r.lpush("F2B_LOG", json.dumps(log, ensure_ascii=False))
 	print "Clearing all bans"
@@ -90,6 +102,7 @@ def clear():
 
 def watch(container):
 	log['time'] = int(round(time.time()))
+	log['priority'] = "info"
 	log['message'] = "Watching %s" % container
 	r.lpush("F2B_LOG", json.dumps(log, ensure_ascii=False))
 	print "Watching", container
@@ -103,9 +116,11 @@ def watch(container):
 def autopurge():
 	while not quit_now:
 		BAN_TIME = int(r.get("F2B_BAN_TIME"))
+		MAX_ATTEMPTS = int(r.get("F2B_MAX_ATTEMPTS"))
 		for net in bans.copy():
-			if time.time() - bans[net]['last_attempt'] > BAN_TIME:
-				unban(net)
+			if bans[net]['attempts'] >= MAX_ATTEMPTS:
+				if time.time() - bans[net]['last_attempt'] > BAN_TIME:
+					unban(net)
 		time.sleep(60)
 
 if __name__ == '__main__':

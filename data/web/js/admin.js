@@ -69,7 +69,7 @@ jQuery(function($){
           $.each(data, function (i, item) {
             item.message = escapeHtml(item.message);
             var danger_class = ["emerg", "alert", "crit", "err"];
-            var warning_class = ["warning"];
+            var warning_class = ["warning", "warn"];
             var info_class = ["notice", "info", "debug"];
             if (jQuery.inArray(item.priority, danger_class) !== -1) {
               item.priority = '<span class="label label-danger">' + item.priority + '</span>';
@@ -103,6 +103,7 @@ jQuery(function($){
     ft_fail2ban_logs = FooTable.init('#fail2ban_log', {
       "columns": [
         {"name":"time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},"title":lang.time,"style":{"width":"170px"}},
+        {"name":"priority","title":lang.priority,"style":{"width":"80px"}},
         {"name":"message","title":lang.message},
       ],
       "rows": $.ajax({
@@ -114,7 +115,19 @@ jQuery(function($){
         },
         success: function (data) {
           $.each(data, function (i, item) {
+            var danger_class = ["emerg", "alert", "crit", "err"];
+            var warning_class = ["warning", "warn"];
+            var info_class = ["notice", "info", "debug"];
             item.message = escapeHtml(item.message);
+            if (jQuery.inArray(item.priority, danger_class) !== -1) {
+              item.priority = '<span class="label label-danger">' + item.priority + '</span>';
+            } 
+            else if (jQuery.inArray(item.priority, warning_class) !== -1) {
+              item.priority = '<span class="label label-warning">' + item.priority + '</span>';
+            }
+            else if (jQuery.inArray(item.priority, info_class) !== -1) {
+              item.priority = '<span class="label label-info">' + item.priority + '</span>';
+            }
           });
         }
       }),
@@ -151,7 +164,7 @@ jQuery(function($){
         success: function (data) {
           $.each(data, function (i, item) {
             var danger_class = ["emerg", "alert", "crit", "err"];
-            var warning_class = ["warning"];
+            var warning_class = ["warning", "warn"];
             var info_class = ["notice", "info", "debug"];
             item.message = escapeHtml(item.message);
             if (jQuery.inArray(item.priority, danger_class) !== -1) {
@@ -199,7 +212,7 @@ jQuery(function($){
         success: function (data) {
           $.each(data, function (i, item) {
             var danger_class = ["emerg", "alert", "crit", "err"];
-            var warning_class = ["warning"];
+            var warning_class = ["warning", "warn"];
             var info_class = ["notice", "info", "debug"];
             item.message = escapeHtml(item.message);
             if (jQuery.inArray(item.priority, danger_class) !== -1) {

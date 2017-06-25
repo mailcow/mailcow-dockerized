@@ -67,7 +67,7 @@ services:
 
     clamd-mailcow:
       image: mailcow/clamd:1.0
-      build: ./data/Dockerfiles/clamav
+      build: ./data/Dockerfiles/clamd
       restart: always
       dns:
         - 172.22.1.254
@@ -109,7 +109,7 @@ services:
 
     php-fpm-mailcow:
       image: mailcow/phpfpm:1.0
-      build: ./data/Dockerfiles/php-fpm
+      build: ./data/Dockerfiles/phpfpm
       command: "php-fpm -d date.timezone=${TZ}"
       depends_on:
         - redis-mailcow
@@ -317,13 +317,14 @@ services:
             - acme
 
     fail2ban-mailcow:
-      image: mailcow/fail2ban:1.1
+      image: mailcow/fail2ban:1.2
       build: ./data/Dockerfiles/fail2ban
       depends_on:
         - dovecot-mailcow
         - postfix-mailcow
         - sogo-mailcow
         - php-fpm-mailcow
+        - redis-mailcow
       restart: always
       privileged: true
       environment:
