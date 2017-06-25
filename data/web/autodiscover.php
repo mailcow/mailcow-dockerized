@@ -1,29 +1,9 @@
 <?php
 require_once 'inc/vars.inc.php';
 require_once 'inc/functions.inc.php';
-$autodiscover_config = array(
-     'useEASforOutlook' => 'yes',
-     'autodiscoverType' => 'activesync',
-     'imap' => array(
-       'server' => $mailcow_hostname,
-       'port' => '993',
-       'ssl' => 'on',
-     ),
-     'smtp' => array(
-       'server' => $mailcow_hostname,
-       'port' => '465',
-       'ssl' => 'on'
-     ),
-     'activesync' => array(
-       'url' => 'https://'.$mailcow_hostname.'/Microsoft-Server-ActiveSync'
-     )
-);
-
 if (file_exists('inc/vars.local.inc.php')) {
 	include_once 'inc/vars.local.inc.php';
 }
-
-/* ---------- DO NOT MODIFY ANYTHING BEYOND THIS LINE. IGNORE AT YOUR OWN RISK. ---------- */
 
 error_reporting(0);
 
