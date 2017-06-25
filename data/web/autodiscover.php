@@ -29,11 +29,10 @@ error_reporting(0);
 
 $data = trim(file_get_contents("php://input"));
 
-// Desktop client needs IMAP, unless it's Outlook 2013 or higher on Windows
+// Desktop client needs IMAP, unless it's Outlook 2013 or higher
 if (strpos($data, 'autodiscover/outlook/responseschema')) { // desktop client
 	$config['autodiscoverType'] = 'imap';
 	if ($config['useEASforOutlook'] == 'yes' &&
-	    strpos($_SERVER['HTTP_USER_AGENT'], 'Windows NT') !== FALSE && // Windows
 	    preg_match('/(Outlook|Office) (1[5-9]\.|[2-9]|1[0-9][0-9])/', $_SERVER['HTTP_USER_AGENT']) && // Outlook 2013 (version 15) or higher
 	    strpos($_SERVER['HTTP_USER_AGENT'], 'MS Connectivity Analyzer') === FALSE // https://testconnectivity.microsoft.com doesn't support EAS for Outlook
 	) {
