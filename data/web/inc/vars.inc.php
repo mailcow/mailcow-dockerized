@@ -17,6 +17,28 @@ $database_name = getenv('DBNAME');
 // Other variables
 $mailcow_hostname = getenv('MAILCOW_HOSTNAME');
 
+// Autodiscover settings
+$autodiscover_config = array(
+  // Enable the autodiscover service for Outlook desktop clients
+  'useEASforOutlook' => 'yes',
+  // General autodiscover service type: "activesync" or "imap"
+  'autodiscoverType' => 'activesync',
+  'imap' => array(
+    'server' => $mailcow_hostname,
+    'port' => getenv('IMAPS_PORT'),
+    'ssl' => 'on',
+  ),
+  'smtp' => array(
+    'server' => $mailcow_hostname,
+    'port' => getenv('SMTPS_PORT'),
+    'ssl' => 'on'
+  ),
+  'activesync' => array(
+    'url' => 'https://'.$mailcow_hostname.'/Microsoft-Server-ActiveSync'
+  )
+);
+
+
 // Where to go after adding and editing objects
 // Can be "form" or "previous"
 // "form" will stay in the current form, "previous" will redirect to previous page
