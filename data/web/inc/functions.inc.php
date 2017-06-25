@@ -102,6 +102,10 @@ function generate_tlsa_digest($hostname, $port, $starttls = null) {
       fwrite($stream,"STLS\r\n");
       fread($stream, 512);
     }
+    elseif (preg_match("/^OK/m", $banner)) {
+      fwrite($stream,"STARTTLS\r\n");
+      fread($stream, 512);
+    }
     else {
       return 'Unknown banner: "' . htmlspecialchars(trim($banner)) . '"';
     }
@@ -1472,6 +1476,10 @@ function get_client_config($domain) {
       'ssl' => 'on',
       'tlsport' => getenv('POP_PORT'),
     ),
+    'sieve' => array(
+      'server' => $mailcow_hostname,
+      'port' => getenv('SIEVE_PORT'),
+    ),
     'smtp' => array(
       'server' => $mailcow_hostname,
       'port' => getenv('SMTPS_PORT'),
@@ -1546,6 +1554,17 @@ function get_client_config($domain) {
       unset($config['pop3']['tlsport']);
     } else {
       $config['pop3']['server'] = $records[0]['target'];
+    }
+  }
+
+  // Sieve
+  $records = dns_get_record('_sieve._tcp.' . $domain, DNS_SRV);
+  if (count($records)) {
+    if ($records[0]['target'] == '') {
+      unset($config['sieve']['port']);
+    } else {
+      $config['sieve']['port'] = $records[0]['port'];
+      $config['sieve']['server'] = $records[0]['target'];
     }
   }
   

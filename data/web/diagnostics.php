@@ -83,6 +83,10 @@ foreach ($domains as $domain) {
     $records[] = array('_' . $config['pop3']['port']    . '._tcp.' . $config['pop3']['server'], 'TLSA', generate_tlsa_digest($config['pop3']['server'], $config['pop3']['port']));
     $tlsa_records[] = '_' . $config['pop3']['port']    . '._tcp.' . $config['pop3']['server'];
   }
+  if (isset($config['sieve']['port']) && !in_array('_' . $config['sieve']['port']    . '._tcp.' . $config['sieve']['server'], $tlsa_records)) {
+    $records[] = array('_' . $config['sieve']['port']    . '._tcp.' . $config['sieve']['server'], 'TLSA', generate_tlsa_digest($config['sieve']['server'], $config['sieve']['port'], 1));
+    $tlsa_records[] = '_' . $config['sieve']['port']    . '._tcp.' . $config['sieve']['server'];
+  }
   
   $records[] = array($domain, 'MX', $mailcow_hostname);
   $records[] = array('autodiscover.' . $domain, 'CNAME', $mailcow_hostname);
@@ -136,6 +140,13 @@ foreach ($domains as $domain) {
     }
   } else {
       $records[] = array('_smtps._tcp.' . $domain, 'SRV', '. 0');
+  }
+  if (isset($config['sieve']['port'])) {
+    if ($config['sieve']['port'] != '4190')  {
+      $records[] = array('_sieve._tcp.' . $domain, 'SRV', $config['sieve']['server'] . ' ' . $config['sieve']['port']);
+    }
+  } else {
+      $records[] = array('_sieve._tcp.' . $domain, 'SRV', '. 0');
   }
 }
 

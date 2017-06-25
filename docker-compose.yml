@@ -126,6 +126,7 @@ services:
         - IMAPS_PORT=${IMAPS_PORT:-993}
         - POP_PORT=${POP_PORT:-110}
         - POPS_PORT=${POPS_PORT:-995}
+        - SIEVE_PORT=${SIEVE_PORT:-4190}
         - SMTPS_PORT=${SMTPS_PORT:-465}
         - SUBMISSION_PORT=${SUBMISSION_PORT:-587}
       restart: always
