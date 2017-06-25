@@ -3,9 +3,6 @@ require_once 'inc/prerequisites.inc.php';
 
 $domain = explode('@', $_SERVER['PHP_AUTH_USER'])[1];
 $config = get_client_config($domain);
-if(file_exists('inc/vars.local.inc.php')) {
-	include_once 'inc/vars.local.inc.php';
-}
 
 $config['autodiscoverType'] = 'activesync';
 

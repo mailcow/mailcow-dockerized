@@ -1459,7 +1459,7 @@ function in_net($addr, $net) {
 function get_client_config($domain) {
   global $mailcow_hostname;
   $config = array(
-    'useEASforOutlook' => 'yes',
+    'useEASforOutlook' => isset($GLOBALS['config']['useEASforOutlook']) ? $GLOBALS['config']['useEASforOutlook'] : 'yes',
     'imap' => array(
       'server' => $mailcow_hostname,
       'port' => getenv('IMAPS_PORT'),

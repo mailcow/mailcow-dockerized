@@ -50,9 +50,6 @@ foreach(mailbox('get', 'domains') as $domain) {
 
 foreach ($domains as $domain) {
   $config = get_client_config($domain);
-  if(file_exists('inc/vars.local.inc.php')) {
-    include_once 'inc/vars.local.inc.php';
-  }
   
   if (!in_array('_25._tcp.' . $config['smtp']['server'], $tlsa_records)) {
     $records[] = array('_25._tcp.' . $config['smtp']['server'], 'TLSA', generate_tlsa_digest($config['smtp']['server'], 25, 1));

@@ -9,9 +9,6 @@ $domain = explode('.', $_SERVER['HTTP_HOST']);
 array_shift($domain); // This is "autoconfig"
 $domain = implode('.', $domain);
 $config = get_client_config($domain);
-if(file_exists('vars.local.inc.php')) {
-  include_once 'vars.local.inc.php';
-}
 
 header('Content-Type: application/xml');
 ?>

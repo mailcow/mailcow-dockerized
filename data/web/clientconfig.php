@@ -103,7 +103,7 @@ else {
   
   <h3><a href="#" onclick="document.getElementById('client_outlook').style.display = 'block'">Microsoft Outlook</a></h3>
   <div id="client_outlook" style="display: none">
-<?php if ($config['useEASforOutlook']) { ?>
+<?php if ($config['useEASforOutlook'] == 'yes') { ?>
     <h4>Outlook 2013 or higher on Windows</h4>
     <ol>
       <li>Launch Outlook.</li>
