@@ -1446,6 +1446,16 @@ function get_f2b_parameters() {
     $data['ban_time'] = $redis->Get('F2B_BAN_TIME');
     $data['max_attempts'] = $redis->Get('F2B_MAX_ATTEMPTS');
     $data['retry_window'] = $redis->Get('F2B_RETRY_WINDOW');
+    $wl = $redis->hGetAll('F2B_WHITELIST');
+    if (is_array($wl)) {
+      foreach ($wl as $key => $value) {
+        $tmp_data[] = $key;
+      }
+      $data['whitelist'] = implode(PHP_EOL, $tmp_data);
+    }
+    else {
+      $data['whitelist'] = "";
+    }
   }
   catch (RedisException $e) {
     $_SESSION['return'] = array(
@@ -1479,6 +1489,7 @@ function edit_f2b_parameters($postarray) {
     );
     return false;
   }
+  $wl = $postarray['whitelist'];
   $ban_time = ($ban_time < 60) ? 60 : $ban_time;
   $max_attempts = ($max_attempts < 1) ? 1 : $max_attempts;
   $retry_window = ($retry_window < 1) ? 1 : $retry_window;
@@ -1486,6 +1497,21 @@ function edit_f2b_parameters($postarray) {
     $redis->Set('F2B_BAN_TIME', $ban_time);
     $redis->Set('F2B_MAX_ATTEMPTS', $max_attempts);
     $redis->Set('F2B_RETRY_WINDOW', $retry_window);
+    $redis->Del('F2B_WHITELIST');
+    if(!empty($wl)) {
+      $wl_array = array_map('trim', preg_split( "/( |,|;|\n)/", $wl));
+      if (is_array($wl_array)) {
+        foreach ($wl_array as $wl_item) {
+          $cidr = explode('/', $wl_item);
+          if (filter_var($cidr[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) && (!isset($cidr[1]) || ($cidr[1] >= 8 && $cidr[1] <= 32))) {
+            $redis->hSet('F2B_WHITELIST', $wl_item, 1);
+          }
+          elseif (filter_var($cidr[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) && (!isset($cidr[1]) || ($cidr[1] >= 16 && $cidr[1] <= 128))) {
+            $redis->hSet('F2B_WHITELIST', $wl_item, 1);
+          }
+        }
+      }
+    }
   }
   catch (RedisException $e) {
     $_SESSION['return'] = array(

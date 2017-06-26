@@ -289,6 +289,10 @@ $tfa_data = get_tfa();
             <label for="retry_window">Retry window (s) for max. attempts:</label>
             <input type="number" class="form-control" id="retry_window" name="retry_window" value="<?=$f2b_data['retry_window'];?>" required>
           </div>
+          <div class="form-group">
+            <label for="retry_window">Whitelisted networks/hosts</label>
+            <textarea class="form-control" id="whitelist" name="whitelist" rows="5"><?=$f2b_data['whitelist'];?></textarea>
+          </div>
           <button class="btn btn-default" id="add_item" data-id="f2b" data-api-url='edit/fail2ban' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
         </form>
       </div>
