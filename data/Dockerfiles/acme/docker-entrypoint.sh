@@ -36,6 +36,8 @@ else
 	fi
 fi
 
+[[ ! -f ${ACME_BASE}/dhparams.pem ]] && cp ${SSL_EXAMPLE}/dhparams.pem ${ACME_BASE}/dhparams.pem
+
 while true; do
 	if [[ "${SKIP_LETS_ENCRYPT}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 		echo "SKIP_LETS_ENCRYPT=y, skipping Let's Encrypt..."
