@@ -319,7 +319,7 @@ services:
             - acme
 
     fail2ban-mailcow:
-      image: mailcow/fail2ban:1.2
+      image: mailcow/fail2ban:1.3
       build: ./data/Dockerfiles/fail2ban
       depends_on:
         - dovecot-mailcow

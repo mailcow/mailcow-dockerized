@@ -1503,10 +1503,10 @@ function edit_f2b_parameters($postarray) {
       if (is_array($wl_array)) {
         foreach ($wl_array as $wl_item) {
           $cidr = explode('/', $wl_item);
-          if (filter_var($cidr[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) && (!isset($cidr[1]) || ($cidr[1] >= 8 && $cidr[1] <= 32))) {
+          if (filter_var($cidr[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) && (!isset($cidr[1]) || ($cidr[1] >= 0 && $cidr[1] <= 32))) {
             $redis->hSet('F2B_WHITELIST', $wl_item, 1);
           }
-          elseif (filter_var($cidr[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) && (!isset($cidr[1]) || ($cidr[1] >= 16 && $cidr[1] <= 128))) {
+          elseif (filter_var($cidr[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) && (!isset($cidr[1]) || ($cidr[1] >= 0 && $cidr[1] <= 128))) {
             $redis->hSet('F2B_WHITELIST', $wl_item, 1);
           }
         }
