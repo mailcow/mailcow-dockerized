@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 
 import re
+import os
 import time
 import atexit
 import signal
@@ -11,6 +12,11 @@ import docker
 import redis
 import time
 import json
+
+yes_regex = re.compile(r'([yY][eE][sS]|[yY])+$')
+if re.search(yes_regex, os.getenv('SKIP_FAIL2BAN', 0)):
+	print "Skipping Fail2ban container..."
+	raise SystemExit
 
 r = redis.StrictRedis(host='172.22.1.249', decode_responses=True, port=6379, db=0)
 RULES = {

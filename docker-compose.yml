@@ -331,6 +331,7 @@ services:
       privileged: true
       environment:
         - TZ=${TZ}
+        - SKIP_FAIL2BAN=${SKIP_FAIL2BAN:-no}
       network_mode: "host"
       dns:
         - 172.22.1.254
@@ -338,7 +339,6 @@ services:
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
         - /lib/modules:/lib/modules:ro
-
     ipv6nat:
       image: robbertkl/ipv6nat
       restart: always
