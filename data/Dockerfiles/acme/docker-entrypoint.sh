@@ -12,6 +12,18 @@ restart_containers(){
 	done
 }
 
+verify_hash_match(){
+	CERT_HASH=$(openssl x509 -noout -modulus -in "${1}" | openssl md5)
+	KEY_HASH=$(openssl rsa -noout -modulus -in "${2}" | openssl md5)
+	if [[ ${CERT_HASH} != ${KEY_HASH} ]]; then
+		echo "Certificate and key hashes do not match!"
+		return 1
+	else
+		echo "Verified hashes."
+		return 0
+	fi
+}
+
 if [[ -f ${ACME_BASE}/cert.pem ]]; then
 	ISSUER=$(openssl x509 -in ${ACME_BASE}/cert.pem -noout -issuer)
 	if [[ ${ISSUER} != *"Let's Encrypt"* && ${ISSUER} != *"mailcow"* ]]; then
@@ -28,8 +40,10 @@ if [[ -f ${ACME_BASE}/cert.pem ]]; then
 else
 	ISSUER="mailcow"
 	if [[ -f ${ACME_BASE}/acme/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/privkey.pem ]]; then
-		cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
-		cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
+		if verify_hash_match ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/acme/private/privkey.pem; then
+			cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
+			cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
+		fi
 	else
 		cp ${SSL_EXAMPLE}/cert.pem ${ACME_BASE}/cert.pem
 		cp ${SSL_EXAMPLE}/key.pem ${ACME_BASE}/key.pem
@@ -44,7 +58,7 @@ while true; do
 		exit 0
 	fi
 	declare -a SQL_DOMAIN_ARR
-    declare -a VALIDATED_CONFIG_DOMAINS
+	declare -a VALIDATED_CONFIG_DOMAINS
 	declare -a ADDITIONAL_VALIDATED_SAN
 	IFS=',' read -r -a ADDITIONAL_SAN_ARR <<< "${ADDITIONAL_SAN}"
 	IPV4=$(curl -4s https://mailcow.email/ip.php)
@@ -61,7 +75,7 @@ while true; do
 				echo "Confirmed A record autoconfig.${SQL_DOMAIN}"
 				VALIDATED_CONFIG_DOMAINS+=("autoconfig.${SQL_DOMAIN}")
 			else
-				echo "Cannot match Your IP against hostname autoconfig.${SQL_DOMAIN}"
+				echo "Cannot match your IP against hostname autoconfig.${SQL_DOMAIN}"
 			fi
 		else
 			echo "No A record for autoconfig.${SQL_DOMAIN} found"
@@ -69,17 +83,30 @@ while true; do
 
         A_DISCOVER=$(dig A autodiscover.${SQL_DOMAIN} +short | tail -n 1)
 		if [[ ! -z ${A_DISCOVER} ]]; then
-			echo "Found A record for autodiscover.${SQL_DOMAIN}: ${A_CONFIG}"
+			echo "Found A record for autodiscover.${SQL_DOMAIN}: ${A_DISCOVER}"
 			if [[ ${IPV4} == ${A_DISCOVER} ]]; then
 				echo "Confirmed A record autodiscover.${SQL_DOMAIN}"
 				VALIDATED_CONFIG_DOMAINS+=("autodiscover.${SQL_DOMAIN}")
 			else
-				echo "Cannot match Your IP against hostname autodiscover.${SQL_DOMAIN}"
+				echo "Cannot match your IP against hostname autodiscover.${SQL_DOMAIN}"
 			fi
 		else
 			echo "No A record for autodiscover.${SQL_DOMAIN} found"
 		fi
 	done
+
+	A_MAILCOW_HOSTNAME=$(dig A ${MAILCOW_HOSTNAME} +short | tail -n 1)
+	if [[ ! -z ${A_MAILCOW_HOSTNAME} ]]; then
+		echo "Found A record for ${MAILCOW_HOSTNAME}: ${A_MAILCOW_HOSTNAME}"
+		if [[ ${IPV4} == ${A_MAILCOW_HOSTNAME} ]]; then
+			echo "Confirmed A record ${MAILCOW_HOSTNAME}"
+			VALIDATED_MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
+		else
+			echo "Cannot match your IP against hostname ${MAILCOW_HOSTNAME}"
+		fi
+	else
+		echo "No A record for ${MAILCOW_HOSTNAME} found"
+	fi
 
 	for SAN in "${ADDITIONAL_SAN_ARR[@]}"; do
 		A_SAN=$(dig A ${SAN} +short | tail -n 1)
@@ -89,12 +116,18 @@ while true; do
 				echo "Confirmed A record ${SAN}"
 				ADDITIONAL_VALIDATED_SAN+=("${SAN}")
 			else
-				echo "Cannot match Your IP against hostname ${SAN}"
+				echo "Cannot match your IP against hostname ${SAN}"
 			fi
 		else
 			echo "No A record for ${SAN} found"
 		fi
 	done
+
+	ALL_VALIDATED=($(echo ${VALIDATED_CONFIG_DOMAINS[*]} ${ADDITIONAL_VALIDATED_SAN[*]} ${VALIDATED_MAILCOW_HOSTNAME}))
+	if [[ -z ${ALL_VALIDATED[*]} ]]; then
+		echo "Cannot validate hostnames, skipping Let's Encrypt..."
+		echo 0
+	fi
 
 	ORPHANED_SAN=($(echo ${SAN_ARRAY_NOW[*]} ${VALIDATED_CONFIG_DOMAINS[*]} ${ADDITIONAL_VALIDATED_SAN[*]} ${MAILCOW_HOSTNAME} | tr ' ' '\n' | sort | uniq -u ))
 	if [[ ! -z ${ORPHANED_SAN[*]} ]]; then
@@ -112,7 +145,7 @@ while true; do
 		-f ${ACME_BASE}/acme/private/account.key \
 		-k ${ACME_BASE}/acme/private/privkey.pem \
 		-c ${ACME_BASE}/acme \
-		${MAILCOW_HOSTNAME} ${VALIDATED_CONFIG_DOMAINS[*]} ${ADDITIONAL_VALIDATED_SAN[*]}
+		${VALIDATED_MAILCOW_HOSTNAME} ${VALIDATED_CONFIG_DOMAINS[*]} ${ADDITIONAL_VALIDATED_SAN[*]}
 
 	case "$?" in
 		0) # new certs
@@ -121,17 +154,33 @@ while true; do
 			cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
 
 			# restart docker containers
+			if ! verify_hash_match ${ACME_BASE}/cert.pem ${ACME_BASE}/key.pem; then
+				cp ${SSL_EXAMPLE}/cert.pem ${ACME_BASE}/cert.pem
+				cp ${SSL_EXAMPLE}/key.pem ${ACME_BASE}/key.pem
+			fi
 			restart_containers ${CONTAINERS_RESTART}
 			;;
 		1) # failure
 			[[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && cp ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ${ACME_BASE}/cert.pem
 			[[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]] && cp ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ${ACME_BASE}/key.pem
+			if ! verify_hash_match ${ACME_BASE}/cert.pem ${ACME_BASE}/key.pem; then
+				cp ${SSL_EXAMPLE}/cert.pem ${ACME_BASE}/cert.pem
+				cp ${SSL_EXAMPLE}/key.pem ${ACME_BASE}/key.pem
+			fi
 			exit 1;;
 		2) # no change
+			if ! verify_hash_match ${ACME_BASE}/cert.pem ${ACME_BASE}/key.pem; then
+				cp ${SSL_EXAMPLE}/cert.pem ${ACME_BASE}/cert.pem
+				cp ${SSL_EXAMPLE}/key.pem ${ACME_BASE}/key.pem
+			fi
 			;;
 		*) # unspecified
 			[[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && cp ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ${ACME_BASE}/cert.pem
 			[[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]] && cp ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ${ACME_BASE}/key.pem
+			if ! verifyhash_match ${ACME_BASE}/cert.pem ${ACME_BASE}/key.pem; then
+				cp ${SSL_EXAMPLE}/cert.pem ${ACME_BASE}/cert.pem
+				cp ${SSL_EXAMPLE}/key.pem ${ACME_BASE}/key.pem
+			fi
 			exit 1;;
 	esac
 

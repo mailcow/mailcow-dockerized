@@ -23,21 +23,26 @@ $autodiscover_config = array(
   'useEASforOutlook' => 'yes',
   // General autodiscover service type: "activesync" or "imap"
   'autodiscoverType' => 'activesync',
+  // Please don't use STARTTLS-enabled service ports here.
+  // The autodiscover service will always point to SMTPS and IMAPS (TLS-wrapped services).
   'imap' => array(
     'server' => $mailcow_hostname,
     'port' => getenv('IMAPS_PORT'),
-    'ssl' => 'on',
   ),
   'smtp' => array(
     'server' => $mailcow_hostname,
     'port' => getenv('SMTPS_PORT'),
-    'ssl' => 'on'
   ),
   'activesync' => array(
     'url' => 'https://'.$mailcow_hostname.'/Microsoft-Server-ActiveSync'
+  ),
+  'caldav' => array(
+    'url' => 'https://'.$mailcow_hostname
+  ),
+  'carddav' => array(
+    'url' => 'https://'.$mailcow_hostname
   )
 );
-
 
 // Where to go after adding and editing objects
 // Can be "form" or "previous"

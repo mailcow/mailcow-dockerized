@@ -1,9 +1,11 @@
 <?php
 require_once 'inc/vars.inc.php';
 require_once 'inc/functions.inc.php';
+$default_autodiscover_config = $autodiscover_config;
 if(file_exists('inc/vars.local.inc.php')) {
   include_once 'inc/vars.local.inc.php';
 }
+$configuration = array_merge($default_autodiscover_config, $autodiscover_config);
 
 error_reporting(0);
 
@@ -11,13 +13,13 @@ $data = trim(file_get_contents("php://input"));
 
 // Desktop client needs IMAP, unless it's Outlook 2013 or higher on Windows
 if (strpos($data, 'autodiscover/outlook/responseschema')) { // desktop client
-  $autodiscover_config['autodiscoverType'] = 'imap';
-  if ($autodiscover_config['useEASforOutlook'] == 'yes' &&
+  $configuration['autodiscoverType'] = 'imap';
+  if ($configuration['useEASforOutlook'] == 'yes' &&
   // Office for macOS does not support EAS
   strpos($_SERVER['HTTP_USER_AGENT'], 'Mac') === false &&
   // Outlook 2013 (version 15) or higher
   preg_match('/(Outlook|Office).+1[5-9]\./', $_SERVER['HTTP_USER_AGENT'])) {
-    $autodiscover_config['autodiscoverType'] = 'activesync';
+    $configuration['autodiscoverType'] = 'activesync';
   }
 }
 
@@ -61,7 +63,7 @@ else {
       $discover = new SimpleXMLElement($data);
       $email = $discover->Request->EMailAddress;
 
-      if ($autodiscover_config['autodiscoverType'] == 'imap') {
+      if ($configuration['autodiscoverType'] == 'imap') {
 ?>
   <Response xmlns="http://schemas.microsoft.com/exchange/autodiscover/outlook/responseschema/2006a">
     <User>
@@ -72,35 +74,35 @@ else {
       <Action>settings</Action>
       <Protocol>
         <Type>IMAP</Type>
-        <Server><?=$autodiscover_config['imap']['server'];?></Server>
-        <Port><?=$autodiscover_config['imap']['port'];?></Port>
+        <Server><?=$configuration['imap']['server'];?></Server>
+        <Port><?=$configuration['imap']['port'];?></Port>
         <DomainRequired>off</DomainRequired>
         <LoginName><?=$email;?></LoginName>
         <SPA>off</SPA>
-        <SSL><?=$autodiscover_config['imap']['ssl'];?></SSL>
+        <SSL>on</SSL>
         <AuthRequired>on</AuthRequired>
       </Protocol>
       <Protocol>
         <Type>SMTP</Type>
-        <Server><?=$autodiscover_config['smtp']['server'];?></Server>
-        <Port><?=$autodiscover_config['smtp']['port'];?></Port>
+        <Server><?=$configuration['smtp']['server'];?></Server>
+        <Port><?=$configuration['smtp']['port'];?></Port>
         <DomainRequired>off</DomainRequired>
         <LoginName><?=$email;?></LoginName>
         <SPA>off</SPA>
-        <SSL><?=$autodiscover_config['smtp']['ssl'];?></SSL>
+        <SSL>on</SSL>
         <AuthRequired>on</AuthRequired>
         <UsePOPAuth>on</UsePOPAuth>
         <SMTPLast>off</SMTPLast>
       </Protocol>
       <Protocol>
         <Type>CalDAV</Type>
-        <Server>https://<?=$mailcow_hostname;?>/SOGo/dav/<?=$email;?>/Calendar</Server>
+        <Server><?=$configuration['caldav']['server'];?>/SOGo/dav/<?=$email;?>/Calendar</Server>
         <DomainRequired>off</DomainRequired>
         <LoginName><?=$email;?></LoginName>
       </Protocol>
       <Protocol>
         <Type>CardDAV</Type>
-        <Server>https://<?=$mailcow_hostname;?>/SOGo/dav/<?=$email;?>/Contacts</Server>
+        <Server><?=$configuration['carddav']['server'];?>/SOGo/dav/<?=$email;?>/Contacts</Server>
         <DomainRequired>off</DomainRequired>
         <LoginName><?=$email;?></LoginName>
       </Protocol>
@@ -108,7 +110,7 @@ else {
   </Response>
 <?php
       }
-      else if ($autodiscover_config['autodiscoverType'] == 'activesync') {
+      else if ($configuration['autodiscoverType'] == 'activesync') {
         $username = trim($email);
         try {
           $stmt = $pdo->prepare("SELECT `name` FROM `mailbox` WHERE `username`= :username");
@@ -135,8 +137,8 @@ else {
       <Settings>
         <Server>
         <Type>MobileSync</Type>
-        <Url><?=$autodiscover_config['activesync']['url'];?></Url>
-        <Name><?=$autodiscover_config['activesync']['url'];?></Name>
+        <Url><?=$configuration['activesync']['url'];?></Url>
+        <Name><?=$configuration['activesync']['url'];?></Name>
         </Server>
       </Settings>
     </Action>
