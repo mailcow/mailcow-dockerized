@@ -1462,8 +1462,10 @@ function in_net($addr, $net) {
 }
 function get_client_config($domain) {
   global $mailcow_hostname;
+  
+  // get defaults from environment variables
   $config = array(
-    'useEASforOutlook' => isset($GLOBALS['config']['useEASforOutlook']) ? $GLOBALS['config']['useEASforOutlook'] : 'yes',
+    'useEASforOutlook' => 'yes',
     'imap' => array(
       'server' => $mailcow_hostname,
       'port' => getenv('IMAPS_PORT'),
@@ -1503,105 +1505,51 @@ function get_client_config($domain) {
   
   // IMAP
   $records = dns_get_record('_imaps._tcp.' . $domain, DNS_SRV);
-  if (count($records)) {
-    $config['imap']['port'] = $records[0]['port'];
-  } else {
-    $records = dns_get_record('_imap._tcp.' . $domain, DNS_SRV);
-    if (count($records)) {
-      $config['imap']['port'] = $records[0]['port'];
-      $config['imap']['ssl'] = 'off';
-    }
-  }
-  if (count($records)) {
-    if ($records[0]['target'] == '') {
-      unset($config['imap']['port']);
-    } else {
-      $config['imap']['server'] = $records[0]['target'];
-    }
+  if (count($records) && $records[0]['target'] == '') {
+    unset($config['imap']['port']);
   }
   $records = dns_get_record('_imap._tcp.' . $domain, DNS_SRV);
-  if (count($records)) {
-    $config['imap']['tlsport'] = $records[0]['port'];
-    if ($records[0]['target'] == '') {
-      unset($config['imap']['tlsport']);
-    } else {
-      $config['imap']['server'] = $records[0]['target'];
-    }
+  if (count($records) && $records[0]['target'] == '') {
+    unset($config['imap']['tlsport']);
   }
   
   // POP3
   $records = dns_get_record('_pop3s._tcp.' . $domain, DNS_SRV);
-  if (count($records)) {
-    $config['pop3']['port'] = $records[0]['port'];
-  } else {
-    $records = dns_get_record('_pop3._tcp.' . $domain, DNS_SRV);
-    if (count($records)) {
-      $config['pop3']['port'] = $records[0]['port'];
-      $config['pop3']['ssl'] = 'off';
-    }
-  }
-  if (count($records)) {
-    if ($records[0]['target'] == '') {
-      unset($config['pop3']['port']);
-    } else {
-      $config['pop3']['server'] = $records[0]['target'];
-    }
+  if (count($records) && $records[0]['target'] == '') {
+    unset($config['pop3']['port']);
   }
   $records = dns_get_record('_pop3._tcp.' . $domain, DNS_SRV);
-  if (count($records)) {
-    $config['pop3']['tlsport'] = $records[0]['port'];
-    if ($records[0]['target'] == '') {
-      unset($config['pop3']['tlsport']);
-    } else {
-      $config['pop3']['server'] = $records[0]['target'];
-    }
+  if (count($records) && $records[0]['target'] == '') {
+    unset($config['pop3']['tlsport']);
   }
 
   // Sieve
   $records = dns_get_record('_sieve._tcp.' . $domain, DNS_SRV);
-  if (count($records)) {
-    if ($records[0]['target'] == '') {
-      unset($config['sieve']['port']);
-    } else {
-      $config['sieve']['port'] = $records[0]['port'];
-      $config['sieve']['server'] = $records[0]['target'];
-    }
+  if (count($records) && records[0]['target'] == '') {
+    unset($config['sieve']['port']);
   }
   
   // SMTP
   $records = dns_get_record('_smtps._tcp.' . $domain, DNS_SRV);
-  if (count($records)) {
-    $config['smtp']['port'] = $records[0]['port'];
-  } else {
-    $records = dns_get_record('_submission._tcp.' . $domain, DNS_SRV);
-    if (count($records)) {
-      $config['smtp']['port'] = $records[0]['port'];
-      $config['smtp']['ssl'] = 'off';
-    }
-  }
-  if (count($records)) {
-    if ($records[0]['target'] == '') {
-      unset($config['smtp']['port']);
-    } else {
-      $config['smtp']['server'] = $records[0]['target'];
-    }
+  if (count($records) && $records[0]['target'] == '') {
+    unset($config['smtp']['port']);
   }
   $records = dns_get_record('_submission._tcp.' . $domain, DNS_SRV);
-  if (count($records)) {
-    $config['smtp']['tlsport'] = $records[0]['port'];
-    if ($records[0]['target'] == '') {
-      unset($config['smtp']['tlsport']);
-    } else {
-      $config['smtp']['server'] = $records[0]['target'];
-    }
+  if (count($records) && $records[0]['target'] == '') {
+    unset($config['smtp']['tlsport']);
   }
   
-  // Web server port from Autodiscovery
+  // Web server port from Autodiscovery SRV
   $records = dns_get_record('_autodiscover._tcp.' . $domain, DNS_SRV);
   if (count($records)) {
     $config['sogo']['port'] = $records[0]['port'];
     $config['http']['port'] = $records[0]['port'];
     $config['activesync']['url'] = 'https://'.$mailcow_hostname.':'.$records[0]['port'].'/Microsoft-Server-ActiveSync';
+  }
+  
+  // EAS or IMAP for Outlook
+  if (isset($GLOBALS['config']['useEASforOutlook'])) {
+    $config['useEASforOutlook'] = $GLOBALS['config']['useEASforOutlook'];
   }
   
   return $config;
