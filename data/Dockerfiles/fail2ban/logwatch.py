@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 
 import re
+import os
 import time
 import atexit
 import signal
@@ -12,7 +13,12 @@ import redis
 import time
 import json
 
-r = redis.StrictRedis(host='172.22.1.249', port=6379, db=0)
+yes_regex = re.compile(r'([yY][eE][sS]|[yY])+$')
+if re.search(yes_regex, os.getenv('SKIP_FAIL2BAN', 0)):
+	print "Skipping Fail2ban container..."
+	raise SystemExit
+
+r = redis.StrictRedis(host='172.22.1.249', decode_responses=True, port=6379, db=0)
 RULES = {
 	'mailcowdockerized_postfix-mailcow_1': 'warning: .*\[([0-9a-f\.:]+)\]: SASL .* authentication failed',
 	'mailcowdockerized_dovecot-mailcow_1': '-login: Disconnected \(auth failed, .*\): user=.*, method=.*, rip=([0-9a-f\.:]+),',
@@ -32,6 +38,7 @@ def ban(address):
 	BAN_TIME = int(r.get("F2B_BAN_TIME"))
 	MAX_ATTEMPTS = int(r.get("F2B_MAX_ATTEMPTS"))
 	RETRY_WINDOW = int(r.get("F2B_RETRY_WINDOW"))
+	WHITELIST = r.hgetall("F2B_WHITELIST")
 
 	ip = ipaddress.ip_address(address.decode('ascii'))
 	if type(ip) is ipaddress.IPv6Address and ip.ipv4_mapped:
@@ -39,7 +46,19 @@ def ban(address):
 		address = str(ip)
 	if ip.is_private or ip.is_loopback:
 		return
-	
+
+	self_network = ipaddress.ip_network(address.decode('ascii'))
+	if WHITELIST:
+		for wl_key in WHITELIST:
+			wl_net = ipaddress.ip_network(wl_key.decode('ascii'), False)
+			if wl_net.overlaps(self_network):
+				log['time'] = int(round(time.time()))
+				log['priority'] = "info"
+				log['message'] = "Address %s is whitelisted by rule %s" % (self_network, wl_net)
+				r.lpush("F2B_LOG", json.dumps(log, ensure_ascii=False))
+				print "Address %s is whitelisted by rule %s" % (self_network, wl_net)
+				return
+
 	net = ipaddress.ip_network((address + ('/24' if type(ip) is ipaddress.IPv4Address else '/64')).decode('ascii'), strict=False)
 	net = str(net)
 
@@ -48,10 +67,10 @@ def ban(address):
 		active_window = RETRY_WINDOW
 	else:
 		active_window = time.time() - bans[net]['last_attempt']
-	
+
 	bans[net]['attempts'] += 1
 	bans[net]['last_attempt'] = time.time()
-	
+
 	active_window = time.time() - bans[net]['last_attempt']
 
 	if bans[net]['attempts'] >= MAX_ATTEMPTS:
@@ -66,6 +85,7 @@ def ban(address):
 		else:
 			subprocess.call(["ip6tables", "-I", "INPUT", "-s", net, "-j", "REJECT"])
 			subprocess.call(["ip6tables", "-I", "FORWARD", "-s", net, "-j", "REJECT"])
+		r.hset("F2B_ACTIVE_BANS", "%s" % net, log['time'] + BAN_TIME)
 	else:
 		log['time'] = int(round(time.time()))
 		log['priority'] = "warn"
@@ -76,6 +96,13 @@ def ban(address):
 def unban(net):
 	log['time'] = int(round(time.time()))
 	log['priority'] = "info"
+	r.lpush("F2B_LOG", json.dumps(log, ensure_ascii=False))
+	if not net in bans:
+		log['message'] = "%s is not banned, skipping unban and deleting from queue (if any)" % net
+		r.lpush("F2B_LOG", json.dumps(log, ensure_ascii=False))
+		print "%s is not banned, skipping unban and deleting from queue (if any)" % net
+		r.hdel("F2B_QUEUE_UNBAN", "%s" % net)
+		return
 	log['message'] = "Unbanning %s" % net
 	r.lpush("F2B_LOG", json.dumps(log, ensure_ascii=False))
 	print "Unbanning %s" % net
@@ -85,6 +112,8 @@ def unban(net):
 	else:
 		subprocess.call(["ip6tables", "-D", "INPUT", "-s", net, "-j", "REJECT"])
 		subprocess.call(["ip6tables", "-D", "FORWARD", "-s", net, "-j", "REJECT"])
+	r.hdel("F2B_ACTIVE_BANS", "%s" % net)
+	r.hdel("F2B_QUEUE_UNBAN", "%s" % net)
 	del bans[net]
 
 def quit(signum, frame):
@@ -117,11 +146,15 @@ def autopurge():
 	while not quit_now:
 		BAN_TIME = int(r.get("F2B_BAN_TIME"))
 		MAX_ATTEMPTS = int(r.get("F2B_MAX_ATTEMPTS"))
+		QUEUE_UNBAN = r.hgetall("F2B_QUEUE_UNBAN")
+		if QUEUE_UNBAN:
+			for net in QUEUE_UNBAN:
+				unban(str(net))
 		for net in bans.copy():
 			if bans[net]['attempts'] >= MAX_ATTEMPTS:
 				if time.time() - bans[net]['last_attempt'] > BAN_TIME:
 					unban(net)
-		time.sleep(60)
+		time.sleep(30)
 
 if __name__ == '__main__':
 	threads = []

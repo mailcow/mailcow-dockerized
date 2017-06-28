@@ -7,9 +7,6 @@ rspamd_config.MAILCOW_AUTH = {
 	end
 }
 
-local redis_params
-redis_params = rspamd_parse_redis_server('tag_settings')
-if redis_params then
 rspamd_config:register_symbol({
   name = 'TAG_MOO',
   type = 'postfilter',
@@ -19,11 +16,6 @@ rspamd_config:register_symbol({
 
     local tagged_rcpt = task:get_symbol("TAGGED_RCPT")
     local mailcow_domain = task:get_symbol("RCPT_MAILCOW_DOMAIN")
-
-    local user = task:get_recipients(0)[1]['user']
-    local domain = task:get_recipients(0)[1]['domain']
-    local rcpt = user .. '@' .. domain
-
 
     if tagged_rcpt and mailcow_domain then
       local tag = tagged_rcpt[1].options[1]
@@ -57,5 +49,5 @@ rspamd_config:register_symbol({
   end,
   priority = 11
 })
-end
+
 
