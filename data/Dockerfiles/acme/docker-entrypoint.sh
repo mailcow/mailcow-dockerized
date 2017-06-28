@@ -46,7 +46,7 @@ while true; do
 	declare -a SQL_DOMAIN_ARR
     declare -a VALIDATED_CONFIG_DOMAINS
 	declare -a ADDITIONAL_VALIDATED_SAN
-	IFS=' ' read -r -a ADDITIONAL_SAN_ARR <<< "${ADDITIONAL_SAN}"
+	IFS=',' read -r -a ADDITIONAL_SAN_ARR <<< "${ADDITIONAL_SAN}"
 	IPV4=$(curl -4s https://mailcow.email/ip.php)
 
 	while read line; do
