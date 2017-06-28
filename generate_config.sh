@@ -81,6 +81,8 @@ ADDITIONAL_SAN=
 # To never run acme-mailcow for Let's Encrypt, set this to y
 SKIP_LETS_ENCRYPT=n
 
+# To never run fail2ban-mailcow
+SKIP_FAIL2BAN=n
 
 EOF
 
