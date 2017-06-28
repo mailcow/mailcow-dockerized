@@ -24,7 +24,9 @@ verify_hash_match(){
 	fi
 }
 
-if [[ -f ${ACME_BASE}/cert.pem ]]; then
+[[ ! -f ${ACME_BASE}/dhparams.pem ]] && cp ${SSL_EXAMPLE}/dhparams.pem ${ACME_BASE}/dhparams.pem
+
+if [[ -f ${ACME_BASE}/cert.pem ]] && [[ -f ${ACME_BASE}/key.pem ]]; then
 	ISSUER=$(openssl x509 -in ${ACME_BASE}/cert.pem -noout -issuer)
 	if [[ ${ISSUER} != *"Let's Encrypt"* && ${ISSUER} != *"mailcow"* ]]; then
 		echo "Found certificate with issuer other than mailcow snake-oil CA and Let's Encrypt, skipping ACME client..."
@@ -38,19 +40,21 @@ if [[ -f ${ACME_BASE}/cert.pem ]]; then
 		fi
 	fi
 else
-	ISSUER="mailcow"
 	if [[ -f ${ACME_BASE}/acme/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/privkey.pem ]]; then
 		if verify_hash_match ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/acme/private/privkey.pem; then
+			echo "Restoring previous acme certificate and restarting script..."
 			cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
 			cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
+			exec $(readlink -f "$0")
 		fi
+	ISSUER="mailcow"
 	else
+		echo "Restoring mailcow snake-oil certificates and restarting script..."
 		cp ${SSL_EXAMPLE}/cert.pem ${ACME_BASE}/cert.pem
 		cp ${SSL_EXAMPLE}/key.pem ${ACME_BASE}/key.pem
+		exec $(readlink -f "$0")
 	fi
 fi
-
-[[ ! -f ${ACME_BASE}/dhparams.pem ]] && cp ${SSL_EXAMPLE}/dhparams.pem ${ACME_BASE}/dhparams.pem
 
 while true; do
 	if [[ "${SKIP_LETS_ENCRYPT}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
@@ -130,7 +134,7 @@ while true; do
 	fi
 
 	ORPHANED_SAN=($(echo ${SAN_ARRAY_NOW[*]} ${VALIDATED_CONFIG_DOMAINS[*]} ${ADDITIONAL_VALIDATED_SAN[*]} ${MAILCOW_HOSTNAME} | tr ' ' '\n' | sort | uniq -u ))
-	if [[ ! -z ${ORPHANED_SAN[*]} ]]; then
+	if [[ ! -z ${ORPHANED_SAN[*]} ]] && [[ ${ISSUER} != *"mailcow"* ]]; then
 		DATE=$(date +%Y-%m-%d_%H_%M_%S)
 		echo "Found orphaned SAN(s) ${ORPHANED_SAN[*]} in certificate, moving old files to ${ACME_BASE}/acme/private/${DATE}.bak/"
 		mkdir -p ${ACME_BASE}/acme/private/${DATE}.bak/
@@ -155,32 +159,65 @@ while true; do
 
 			# restart docker containers
 			if ! verify_hash_match ${ACME_BASE}/cert.pem ${ACME_BASE}/key.pem; then
+				echo "Certificate was successfully request, but key and certificate have non-matching hashes, restoring mailcow snake-oil and restarting containers..."
 				cp ${SSL_EXAMPLE}/cert.pem ${ACME_BASE}/cert.pem
 				cp ${SSL_EXAMPLE}/key.pem ${ACME_BASE}/key.pem
 			fi
 			restart_containers ${CONTAINERS_RESTART}
 			;;
 		1) # failure
-			[[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && cp ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ${ACME_BASE}/cert.pem
-			[[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]] && cp ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ${ACME_BASE}/key.pem
+			if [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]]; then
+				echo "Error requesting certificate, restoring previous certificate from backup and restarting containers...."
+				cp ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ${ACME_BASE}/cert.pem
+				cp ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ${ACME_BASE}/key.pem
+				TRIGGER_RESTART=1
+			elif [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]]; then
+				echo "Error requesting certificate, restoring from previous acme request and restarting containers..."
+				cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
+				cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
+				TRIGGER_RESTART=1
+			fi
 			if ! verify_hash_match ${ACME_BASE}/cert.pem ${ACME_BASE}/key.pem; then
+				echo "Error verifying certificates, restoring mailcow snake-oil and restarting containers..."
 				cp ${SSL_EXAMPLE}/cert.pem ${ACME_BASE}/cert.pem
 				cp ${SSL_EXAMPLE}/key.pem ${ACME_BASE}/key.pem
+				TRIGGER_RESTART=1
 			fi
+			[[ ${TRIGGER_RESTART} == 1 ]] && restart_containers ${CONTAINERS_RESTART}
 			exit 1;;
 		2) # no change
+			if ! diff ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem; then
+				echo "Certificate was not changed, but active certificate does not match the verified certificate, fixing and restarting containers..."
+				cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
+				cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
+				restart_containers ${CONTAINERS_RESTART}
+			fi
 			if ! verify_hash_match ${ACME_BASE}/cert.pem ${ACME_BASE}/key.pem; then
-				cp ${SSL_EXAMPLE}/cert.pem ${ACME_BASE}/cert.pem
-				cp ${SSL_EXAMPLE}/key.pem ${ACME_BASE}/key.pem
+				echo "Certificate was not changed, but hashes do not match, restoring from previous acme request and restarting containers..."
+				cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
+				cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
+				restart_containers ${CONTAINERS_RESTART}
 			fi
 			;;
 		*) # unspecified
-			[[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && cp ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ${ACME_BASE}/cert.pem
-			[[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]] && cp ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ${ACME_BASE}/key.pem
-			if ! verifyhash_match ${ACME_BASE}/cert.pem ${ACME_BASE}/key.pem; then
+			if [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]]; then
+				echo "Error requesting certificate, restoring previous certificate from backup and restarting containers...."
+				cp ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ${ACME_BASE}/cert.pem
+				cp ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ${ACME_BASE}/key.pem
+				TRIGGER_RESTART=1
+            elif [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]]; then
+				echo "Error requesting certificate, restoring from previous acme request and restarting containers..."
+				cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
+				cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
+				TRIGGER_RESTART=1
+			fi
+			if ! verify_hash_match ${ACME_BASE}/cert.pem ${ACME_BASE}/key.pem; then
+				echo "Error verifying certificates, restoring mailcow snake-oil..."
 				cp ${SSL_EXAMPLE}/cert.pem ${ACME_BASE}/cert.pem
 				cp ${SSL_EXAMPLE}/key.pem ${ACME_BASE}/key.pem
+				TRIGGER_RESTART=1
 			fi
+			[[ ${TRIGGER_RESTART} == 1 ]] && restart_containers ${CONTAINERS_RESTART}
 			exit 1;;
 	esac
 
