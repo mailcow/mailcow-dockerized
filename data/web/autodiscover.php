@@ -48,7 +48,7 @@ else {
 ?>
 <Autodiscover xmlns="http://schemas.microsoft.com/exchange/autodiscover/responseschema/2006">
 <?php
-      if (!$data) {
+      if(!$data) {
         list($usec, $sec) = explode(' ', microtime());
 ?>
   <Response>
@@ -89,7 +89,7 @@ else {
 ?>
   <Response xmlns="http://schemas.microsoft.com/exchange/autodiscover/outlook/responseschema/2006a">
     <User>
-      <DisplayName><?= $displayname; ?></DisplayName>
+      <DisplayName><?=$displayname;?></DisplayName>
     </User>
     <Account>
       <AccountType>email</AccountType>
@@ -97,24 +97,24 @@ else {
 <?php if (isset($autodiscover_config['imap']['port']) ) { ?>
       <Protocol>
         <Type>IMAP</Type>
-        <Server><?= $autodiscover_config['imap']['server']; ?></Server>
-        <Port><?= $autodiscover_config['imap']['port']; ?></Port>
+        <Server><?=$autodiscover_config['imap']['server'];?></Server>
+        <Port><?=$autodiscover_config['imap']['port'];?></Port>
         <DomainRequired>off</DomainRequired>
-        <LoginName><?= $email; ?></LoginName>
+        <LoginName><?=$email;?></LoginName>
         <SPA>off</SPA>
-        <SSL><?= $autodiscover_config['imap']['ssl']; ?></SSL>
+        <SSL><?=$autodiscover_config['imap']['ssl'];?></SSL>
         <AuthRequired>on</AuthRequired>
       </Protocol>
 <?php } ?>
 <?php if (isset($autodiscover_config['smtp']['port']) ) { ?>
       <Protocol>
         <Type>SMTP</Type>
-        <Server><?= $autodiscover_config['smtp']['server']; ?></Server>
-        <Port><?= $autodiscover_config['smtp']['port']; ?></Port>
+        <Server><?=$autodiscover_config['smtp']['server'];?></Server>
+        <Port><?=$autodiscover_config['smtp']['port'];?></Port>
         <DomainRequired>off</DomainRequired>
-        <LoginName><?= $email; ?></LoginName>
+        <LoginName><?=$email;?></LoginName>
         <SPA>off</SPA>
-        <SSL><?= $autodiscover_config['smtp']['ssl']; ?></SSL>
+        <SSL><?=$autodiscover_config['smtp']['ssl'];?></SSL>
         <AuthRequired>on</AuthRequired>
         <UsePOPAuth>on</UsePOPAuth>
         <SMTPLast>off</SMTPLast>
@@ -123,18 +123,18 @@ else {
 <?php if (isset($autodiscover_config['sogo']['port']) ) { ?>
       <Protocol>
         <Type>CalDAV</Type>
-        <Server>http<?php if ($autodiscover_config['sogo']['ssl'] == 'on') echo 's' ?>://<?= $autodiscover_config['sogo']['server'].':'.$autodiscover_config['sogo']['port']; ?>/SOGo/dav/<?= $email; ?>/Calendar</Server>
+        <Server>http<?php if ($autodiscover_config['sogo']['ssl'] == 'on') echo 's' ?>://<?php echo $autodiscover_config['sogo']['server'].':'.$autodiscover_config['sogo']['port']; ?>/SOGo/dav/<?=$email;?>/Calendar</Server>
         <DomainRequired>off</DomainRequired>
-        <LoginName><?= $email; ?></LoginName>
+        <LoginName><?=$email;?></LoginName>
       </Protocol>
       <Protocol>
         <Type>CardDAV</Type>
-        <Server>http<?php if ($autodiscover_config['sogo']['ssl'] == 'on') echo 's' ?>://<?= $autodiscover_config['sogo']['server'].':'.$autodiscover_config['sogo']['port']; ?>/SOGo/dav/<?= $email; ?>/Contacts</Server>
+        <Server>http<?php if ($autodiscover_config['sogo']['ssl'] == 'on') echo 's' ?>://<?php echo $autodiscover_config['sogo']['server'].':'.$autodiscover_config['sogo']['port']; ?>/SOGo/dav/<?=$email; ?>/Contacts</Server>
         <DomainRequired>off</DomainRequired>
-        <LoginName><?= $email; ?></LoginName>
+        <LoginName><?=$email;?></LoginName>
       </Protocol>
 <?php } ?>
-      </Account>
+    </Account>
   </Response>
 <?php
       }
