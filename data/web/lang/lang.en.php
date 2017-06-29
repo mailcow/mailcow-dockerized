@@ -423,6 +423,10 @@ $lang['tfa']['enter_qr_code'] = "Your TOTP code if your device cannot scan QR co
 $lang['tfa']['confirm_totp_token'] = "Please confirm your changes by entering the generated token";
 
 $lang['admin']['f2b_parameters'] = 'Fail2ban parameters';
+$lang['admin']['f2b_ban_time'] = 'Ban time (s)';
+$lang['admin']['f2b_max_attempts'] = 'Max. attempts';
+$lang['admin']['f2b_retry_window'] = 'Retry window (s) for max. attempts';
+$lang['admin']['f2b_whitelist'] = 'Whitelisted networks/hosts';
 $lang['admin']['search_domain_da'] = 'Search domains';
 $lang['admin']['restrictions'] = 'Postfix Restrictions';
 $lang['admin']['rr'] = 'Postfix Recipient Restrictions';

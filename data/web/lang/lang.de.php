@@ -419,6 +419,10 @@ $lang['tfa']['confirm_totp_token'] = "Bitte bestätigen Sie die Änderung durch 
 
 $lang['admin']['search_domain_da'] = 'Domains durchsuchen';
 $lang['admin']['f2b_parameters'] = 'Fail2ban Parameter';
+$lang['admin']['f2b_ban_time'] = 'Banzeit (s)';
+$lang['admin']['f2b_max_attempts'] = 'Max. Versuche';
+$lang['admin']['f2b_retry_window'] = 'Wiederholungen im Zeitraum von (s)';
+$lang['admin']['f2b_whitelist'] = 'Whitelist für Netzwerke und Hosts';
 $lang['admin']['restrictions'] = 'Postfix Restriktionen';
 $lang['admin']['rr'] = 'Postfix Empfänger Restriktionen';
 $lang['admin']['sr'] = 'Postfix Sender Restriktionen';

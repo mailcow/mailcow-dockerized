@@ -271,26 +271,26 @@ $tfa_data = get_tfa();
     </div>
 
     <div class="panel panel-default">
-      <div class="panel-heading">Fail2Ban parameters</div>
+      <div class="panel-heading"><?=$lang['admin']['f2b_parameters'];?></div>
       <div class="panel-body">
       <?php
       $f2b_data = fail2ban('get');
       ?>
         <form class="form" data-id="f2b" role="form" method="post">
           <div class="form-group">
-            <label for="ban_time">Ban time (s):</label>
+            <label for="ban_time"><?=$lang['admin']['f2b_ban_time'];?>:</label>
             <input type="number" class="form-control" id="ban_time" name="ban_time" value="<?=$f2b_data['ban_time'];?>" required>
           </div>
           <div class="form-group">
-            <label for="max_attempts">Max. attempts:</label>
+            <label for="max_attempts"><?=$lang['admin']['f2b_max_attempts'];?>:</label>
             <input type="number" class="form-control" id="max_attempts" name="max_attempts" value="<?=$f2b_data['max_attempts'];?>" required>
           </div>
           <div class="form-group">
-            <label for="retry_window">Retry window (s) for max. attempts:</label>
+            <label for="retry_window"><?=$lang['admin']['f2b_retry_window'];?>:</label>
             <input type="number" class="form-control" id="retry_window" name="retry_window" value="<?=$f2b_data['retry_window'];?>" required>
           </div>
           <div class="form-group">
-            <label for="retry_window">Whitelisted networks/hosts</label>
+            <label for="retry_window"><?=$lang['admin']['f2b_whitelist'];?>:</label>
             <textarea class="form-control" id="whitelist" name="whitelist" rows="5"><?=$f2b_data['whitelist'];?></textarea>
           </div>
           <button class="btn btn-default" id="add_item" data-id="f2b" data-api-url='edit/fail2ban' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
