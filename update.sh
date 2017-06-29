@@ -20,6 +20,20 @@ set -o pipefail
 export LC_ALL=C
 DATE=$(date +%Y-%m-%d_%H_%M_%S)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+case "${1}" in
+	--check|-c)
+		echo "Checking remote code for updates..."
+		git fetch
+		if ! git diff --quiet --exit-code; then
+			echo "Updated code is available."
+		else
+			echo "No updates available."
+		fi
+		exit 0
+	;;
+esac
+
 TMPFILE=$(mktemp "${TMPDIR:-/tmp}/curldata.XXXXXX")
 
 echo -e "\e[32mChecking for newer update script...\e[0m"
