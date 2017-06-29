@@ -1925,7 +1925,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             // No items
             if (isset($_POST['attr'])) {
               $attr = (array)json_decode($_POST['attr'], true);
-              if (edit_f2b_parameters($attr) === false) {
+              if (fail2ban('edit', $attr) === false) {
                 if (isset($_SESSION['return'])) {
                   echo json_encode($_SESSION['return']);
                 }

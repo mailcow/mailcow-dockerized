@@ -49,6 +49,7 @@ $lang['success']['aliasd_modified'] = 'Änderungen an Alias-Domain %s wurden ges
 $lang['success']['mailbox_modified'] = 'Änderungen an Mailbox %s wurden gespeichert';
 $lang['success']['resource_modified'] = "Änderungen an Ressource %s wurden gespeichert";
 $lang['success']['object_modified'] = "Änderungen an Objekt %s wurden gespeichert";
+$lang['success']['f2b_modified'] = "Änderungen an Fail2ban Parametern wurden gespeichert";
 $lang['success']['msg_size_saved'] = 'Limit wurde gesetzt';
 $lang['danger']['aliasd_not_found'] = 'Alias-Domain nicht gefunden';
 $lang['danger']['targetd_not_found'] = 'Ziel-Domain nicht gefunden';
@@ -417,6 +418,7 @@ $lang['tfa']['enter_qr_code'] = "Falls Sie den angezeigten QR-Code nicht scannen
 $lang['tfa']['confirm_totp_token'] = "Bitte bestätigen Sie die Änderung durch Eingabe eines generierten Tokens";
 
 $lang['admin']['search_domain_da'] = 'Domains durchsuchen';
+$lang['admin']['f2b_parameters'] = 'Fail2ban Parameter';
 $lang['admin']['restrictions'] = 'Postfix Restriktionen';
 $lang['admin']['rr'] = 'Postfix Empfänger Restriktionen';
 $lang['admin']['sr'] = 'Postfix Sender Restriktionen';

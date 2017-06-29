@@ -274,7 +274,7 @@ $tfa_data = get_tfa();
       <div class="panel-heading">Fail2Ban parameters</div>
       <div class="panel-body">
       <?php
-      $f2b_data = get_f2b_parameters();
+      $f2b_data = fail2ban('get');
       ?>
         <form class="form" data-id="f2b" role="form" method="post">
           <div class="form-group">
