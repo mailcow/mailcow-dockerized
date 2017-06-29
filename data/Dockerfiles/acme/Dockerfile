@@ -8,6 +8,7 @@ RUN apk add --update --no-cache \
 	curl \
 	openssl \
 	bind-tools \
+	jq \
 	mariadb-client
 
 COPY docker-entrypoint.sh /srv/docker-entrypoint.sh
