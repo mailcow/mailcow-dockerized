@@ -1469,22 +1469,22 @@ function get_client_config($domain) {
     'useEASforOutlook' => 'yes',
     'imap' => array(
       'server' => $mailcow_hostname,
-      'port' => getenv('IMAPS_PORT'),
-      'tlsport' => getenv('IMAP_PORT'),
+      'port' => array_pop(explode(':', getenv('IMAPS_PORT'))),
+      'tlsport' => array_pop(explode(':', getenv('IMAP_PORT'))),
     ),
     'pop3' => array(
       'server' => $mailcow_hostname,
-      'port' => getenv('POPS_PORT'),
-      'tlsport' => getenv('POP_PORT'),
+      'port' => array_pop(explode(':', getenv('POPS_PORT'))),
+      'tlsport' => array_pop(explode(':', getenv('POP_PORT'))),
     ),
     'sieve' => array(
       'server' => $mailcow_hostname,
-      'port' => getenv('SIEVE_PORT'),
+      'port' => array_pop(explode(':', getenv('SIEVE_PORT'))),
     ),
     'smtp' => array(
       'server' => $mailcow_hostname,
-      'port' => getenv('SMTPS_PORT'),
-      'tlsport' => getenv('SUBMISSION_PORT'),
+      'port' => array_pop(explode(':', getenv('SMTPS_PORT'))),
+      'tlsport' => array_pop(explode(':', getenv('SUBMISSION_PORT'))),
     ),
     'sogo' => array(
       'server' => $mailcow_hostname,
@@ -1498,6 +1498,15 @@ function get_client_config($domain) {
       'url' => 'https://'.$mailcow_hostname.'/Microsoft-Server-ActiveSync',
     )
   );
+  
+  // HTTP
+  $_SERVER['HTTP_HOST'] = 'michael.blah:444';
+  $portpos = strpos($_SERVER['HTTP_HOST'], ':');
+  if ($portpos !== FALSE) {
+    $config['sogo']['port'] = substr($_SERVER['HTTP_HOST'], $portpos);
+    $config['http']['port'] = substr($_SERVER['HTTP_HOST'], $portpos);
+    $config['activesync']['url'] = 'https://'.$mailcow_hostname.':'.$records[0]['port'].'/Microsoft-Server-ActiveSync';
+  }
   
   // IMAP
   $records = dns_get_record('_imaps._tcp.' . $domain, DNS_SRV);
@@ -1533,14 +1542,6 @@ function get_client_config($domain) {
   $records = dns_get_record('_submission._tcp.' . $domain, DNS_SRV);
   if (count($records) && $records[0]['target'] == '') {
     unset($config['smtp']['tlsport']);
-  }
-  
-  // Web server port from Autodiscovery SRV
-  $records = dns_get_record('_autodiscover._tcp.' . $domain, DNS_SRV);
-  if (count($records)) {
-    $config['sogo']['port'] = $records[0]['port'];
-    $config['http']['port'] = $records[0]['port'];
-    $config['activesync']['url'] = 'https://'.$mailcow_hostname.':'.$records[0]['port'].'/Microsoft-Server-ActiveSync';
   }
   
   // EAS or IMAP for Outlook
