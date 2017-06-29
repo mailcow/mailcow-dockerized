@@ -79,7 +79,7 @@ while true; do
 				echo "Confirmed A record autoconfig.${SQL_DOMAIN}"
 				VALIDATED_CONFIG_DOMAINS+=("autoconfig.${SQL_DOMAIN}")
 			else
-				echo "Cannot match your IP against hostname autoconfig.${SQL_DOMAIN}"
+				echo "Cannot match your IP ${IPV4} against hostname autoconfig.${SQL_DOMAIN} (${A_CONFIG})"
 			fi
 		else
 			echo "No A record for autoconfig.${SQL_DOMAIN} found"
@@ -92,7 +92,7 @@ while true; do
 				echo "Confirmed A record autodiscover.${SQL_DOMAIN}"
 				VALIDATED_CONFIG_DOMAINS+=("autodiscover.${SQL_DOMAIN}")
 			else
-				echo "Cannot match your IP against hostname autodiscover.${SQL_DOMAIN}"
+				echo "Cannot match your IP ${IPV4} against hostname autodiscover.${SQL_DOMAIN} (${A_DISCOVER})"
 			fi
 		else
 			echo "No A record for autodiscover.${SQL_DOMAIN} found"
@@ -106,7 +106,7 @@ while true; do
 			echo "Confirmed A record ${MAILCOW_HOSTNAME}"
 			VALIDATED_MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
 		else
-			echo "Cannot match your IP against hostname ${MAILCOW_HOSTNAME}"
+			echo "Cannot match your IP ${IPV4} against hostname ${MAILCOW_HOSTNAME} (${A_MAILCOW_HOSTNAME}) "
 		fi
 	else
 		echo "No A record for ${MAILCOW_HOSTNAME} found"
