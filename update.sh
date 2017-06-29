@@ -25,7 +25,7 @@ case "${1}" in
 	--check|-c)
 		echo "Checking remote code for updates..."
 		git fetch
-		if ! git diff --quiet --exit-code; then
+		if ! git diff origin/${BRANCH} --quiet; then
 			echo "Updated code is available."
 		else
 			echo "No updates available."
