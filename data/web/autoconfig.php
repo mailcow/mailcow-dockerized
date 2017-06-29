@@ -23,11 +23,7 @@ header('Content-Type: application/xml');
       <incomingServer type="imap">
          <hostname><?= $config['imap']['server']; ?></hostname>
          <port><?= $config['imap']['port']; ?></port>
-<?php if ($config['imap']['ssl'] == 'on') { ?>
          <socketType>SSL</socketType>
-<?php } else { ?>
-         <socketType>plain</socketType>
-<?php } ?>
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
       </incomingServer>
@@ -36,11 +32,7 @@ header('Content-Type: application/xml');
       <incomingServer type="imap">
          <hostname><?= $config['imap']['server']; ?></hostname>
          <port><?= $config['imap']['tlsport']; ?></port>
-<?php if ($config['imap']['ssl'] == 'on') { ?>
          <socketType>STARTTLS</socketType>
-<?php } else { ?>
-         <socketType>plain</socketType>
-<?php } ?>
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
       </incomingServer>
@@ -50,11 +42,7 @@ header('Content-Type: application/xml');
       <incomingServer type="pop3">
          <hostname><?= $config['pop3']['server']; ?></hostname>
          <port><?= $config['pop3']['port']; ?></port>
-<?php if ($config['pop3']['ssl'] == 'on') { ?>
          <socketType>SSL</socketType>
-<?php } else { ?>
-         <socketType>plain</socketType>
-<?php } ?>
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
       </incomingServer>
@@ -63,11 +51,7 @@ header('Content-Type: application/xml');
       <incomingServer type="pop3">
          <hostname><?= $config['pop3']['server']; ?></hostname>
          <port><?= $config['pop3']['tlsport']; ?></port>
-<?php if ($config['pop3']['ssl'] == 'on') { ?>
          <socketType>STARTTLS</socketType>
-<?php } else { ?>
-         <socketType>plain</socketType>
-<?php } ?>
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
       </incomingServer>
@@ -77,11 +61,7 @@ header('Content-Type: application/xml');
       <outgoingServer type="smtp">
          <hostname><?= $config['smtp']['server']; ?></hostname>
          <port><?= $config['smtp']['port']; ?></port>
-<?php if ($config['smtp']['ssl'] == 'on') { ?>
          <socketType>SSL</socketType>
-<?php } else { ?>
-         <socketType>plain</socketType>
-<?php } ?>
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
       </outgoingServer>
@@ -90,17 +70,13 @@ header('Content-Type: application/xml');
       <outgoingServer type="smtp">
          <hostname><?= $config['smtp']['server']; ?></hostname>
          <port><?= $config['smtp']['tlsport']; ?></port>
-<?php if ($config['smtp']['ssl'] == 'on') { ?>
          <socketType>STARTTLS</socketType>
-<?php } else { ?>
-         <socketType>plain</socketType>
-<?php } ?>
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
       </outgoingServer>
 <?php } ?>
 
-      <enable visiturl="http<?php if ($config['http']['ssl'] == 'on') echo 's' ?>://<?= $config['http']['server'] . ':' . $config['http']['port']; ?>/admin.php">
+      <enable visiturl="https://<?= $config['http']['server'] . ':' . $config['http']['port']; ?>/admin.php">
          <instruction>If you didn't change the password given to you by the administrator or if you didn't change it in a long time, please consider doing that now.</instruction>
          <instruction lang="de">Sollten Sie das Ihnen durch den Administrator vergebene Passwort noch nicht geändert haben, empfehlen wir dies nun zu tun. Auch ein altes Passwort sollte aus Sicherheitsgründen geändert werden.</instruction>
       </enable>
@@ -108,6 +84,6 @@ header('Content-Type: application/xml');
     </emailProvider>
 
     <webMail>
-      <loginPage url="http<?php if ($config['sogo']['ssl'] == 'on') echo 's' ?>://<?= $config['sogo']['server'] . ':' . $config['sogo']['port']; ?>/SOGo/" />
+      <loginPage url="https://<?= $config['sogo']['server'] . ':' . $config['sogo']['port']; ?>/SOGo/" />
     </webMail>
 </clientConfig>

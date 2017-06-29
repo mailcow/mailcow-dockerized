@@ -50,11 +50,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			<key>CalDAVPrincipalURL</key>
 			<string>/SOGo/dav/<?php echo $email; ?></string>
 			<key>CalDAVUseSSL</key>
-<?php if ($config['sogo']['ssl'] == 'on') { ?>
 			<true/>
-<?php } else { ?>
-			<false/>
-<?php } ?>
 			<key>CalDAVUsername</key>
 			<string><?php echo $email; ?></string>
 			<key>PayloadDescription</key>
@@ -90,11 +86,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			<key>IncomingMailServerPortNumber</key>
 			<integer><?php echo $config['imap']['port']; ?></integer>
 			<key>IncomingMailServerUseSSL</key>
-<?php if ($config['imap']['ssl'] == 'on') { ?>
 			<true/>
-<?php } else { ?>
-			<false/>
-<?php } ?>
 			<key>IncomingMailServerUsername</key>
 			<string><?php echo $email; ?></string>
 			<key>OutgoingMailServerAuthentication</key>
@@ -104,11 +96,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			<key>OutgoingMailServerPortNumber</key>
 			<integer><?php echo $config['smtp']['port']; ?></integer>
 			<key>OutgoingMailServerUseSSL</key>
-<?php if ($config['smtp']['ssl'] == 'on') { ?>
 			<true/>
-<?php } else { ?>
-			<false/>
-<?php } ?>
 			<key>OutgoingMailServerUsername</key>
 			<string><?php echo $email; ?></string>
 			<key>OutgoingPasswordSameAsIncomingPassword</key>
@@ -146,11 +134,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			<key>CardDAVPrincipalURL</key>
 			<string>/SOGo/dav/<?php echo $email; ?></string>
 			<key>CardDAVUseSSL</key>
-<?php if ($config['sogo']['ssl'] == 'on') { ?>
 			<true/>
-<?php } else { ?>
-			<false/>
-<?php } ?>
 			<key>CardDAVUsername</key>
 			<string><?php echo $email; ?></string>
 			<key>PayloadDescription</key>

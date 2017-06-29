@@ -102,7 +102,7 @@ else {
         <DomainRequired>off</DomainRequired>
         <LoginName><?=$email;?></LoginName>
         <SPA>off</SPA>
-        <SSL><?=$autodiscover_config['imap']['ssl'];?></SSL>
+        <SSL>on</SSL>
         <AuthRequired>on</AuthRequired>
       </Protocol>
 <?php } ?>
@@ -114,7 +114,7 @@ else {
         <DomainRequired>off</DomainRequired>
         <LoginName><?=$email;?></LoginName>
         <SPA>off</SPA>
-        <SSL><?=$autodiscover_config['smtp']['ssl'];?></SSL>
+        <SSL>on</SSL>
         <AuthRequired>on</AuthRequired>
         <UsePOPAuth>on</UsePOPAuth>
         <SMTPLast>off</SMTPLast>
@@ -123,13 +123,13 @@ else {
 <?php if (isset($autodiscover_config['sogo']['port']) ) { ?>
       <Protocol>
         <Type>CalDAV</Type>
-        <Server>http<?php if ($autodiscover_config['sogo']['ssl'] == 'on') echo 's' ?>://<?php echo $autodiscover_config['sogo']['server'].':'.$autodiscover_config['sogo']['port']; ?>/SOGo/dav/<?=$email;?>/Calendar</Server>
+        <Server>https://<?php echo $autodiscover_config['sogo']['server'].':'.$autodiscover_config['sogo']['port']; ?>/SOGo/dav/<?=$email;?>/Calendar</Server>
         <DomainRequired>off</DomainRequired>
         <LoginName><?=$email;?></LoginName>
       </Protocol>
       <Protocol>
         <Type>CardDAV</Type>
-        <Server>http<?php if ($autodiscover_config['sogo']['ssl'] == 'on') echo 's' ?>://<?php echo $autodiscover_config['sogo']['server'].':'.$autodiscover_config['sogo']['port']; ?>/SOGo/dav/<?=$email; ?>/Contacts</Server>
+        <Server>https://<?php echo $autodiscover_config['sogo']['server'].':'.$autodiscover_config['sogo']['port']; ?>/SOGo/dav/<?=$email; ?>/Contacts</Server>
         <DomainRequired>off</DomainRequired>
         <LoginName><?=$email;?></LoginName>
       </Protocol>

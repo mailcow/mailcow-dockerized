@@ -1470,13 +1470,11 @@ function get_client_config($domain) {
     'imap' => array(
       'server' => $mailcow_hostname,
       'port' => getenv('IMAPS_PORT'),
-      'ssl' => 'on',
       'tlsport' => getenv('IMAP_PORT'),
     ),
     'pop3' => array(
       'server' => $mailcow_hostname,
       'port' => getenv('POPS_PORT'),
-      'ssl' => 'on',
       'tlsport' => getenv('POP_PORT'),
     ),
     'sieve' => array(
@@ -1486,18 +1484,15 @@ function get_client_config($domain) {
     'smtp' => array(
       'server' => $mailcow_hostname,
       'port' => getenv('SMTPS_PORT'),
-      'ssl' => 'on',
       'tlsport' => getenv('SUBMISSION_PORT'),
     ),
     'sogo' => array(
       'server' => $mailcow_hostname,
       'port' => '443',
-      'ssl' => 'on',
     ),
     'http' => array(
       'server' => $mailcow_hostname,
       'port' => '443',
-      'ssl' => 'on',
     ),
     'activesync' => array(
       'url' => 'https://'.$mailcow_hostname.'/Microsoft-Server-ActiveSync',
