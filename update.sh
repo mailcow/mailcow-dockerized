@@ -24,7 +24,7 @@ BRANCH=$(git rev-parse --abbrev-ref HEAD)
 case "${1}" in
 	--check|-c)
 		echo "Checking remote code for updates..."
-		git fetch
+		git fetch origin ${BRANCH}
 		if ! git diff origin/${BRANCH} --quiet; then
 			echo "Updated code is available."
 		else
@@ -33,8 +33,6 @@ case "${1}" in
 		exit 0
 	;;
 esac
-
-TMPFILE=$(mktemp "${TMPDIR:-/tmp}/curldata.XXXXXX")
 
 echo -e "\e[32mChecking for newer update script...\e[0m"
 SHA1_1=$(sha1sum update.sh)
@@ -46,7 +44,6 @@ if [[ ${SHA1_1} != ${SHA1_2} ]]; then
 	chmod +x update.sh
 	exit 0
 fi
-rm -f mv ${TMPFILE}
 
 if [[ -f mailcow.conf ]]; then
 	source mailcow.conf
