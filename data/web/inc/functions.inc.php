@@ -1500,12 +1500,12 @@ function get_client_config($domain) {
   );
   
   // HTTP
-  $_SERVER['HTTP_HOST'] = 'michael.blah:444';
   $portpos = strpos($_SERVER['HTTP_HOST'], ':');
   if ($portpos !== FALSE) {
-    $config['sogo']['port'] = substr($_SERVER['HTTP_HOST'], $portpos);
-    $config['http']['port'] = substr($_SERVER['HTTP_HOST'], $portpos);
-    $config['activesync']['url'] = 'https://'.$mailcow_hostname.':'.$records[0]['port'].'/Microsoft-Server-ActiveSync';
+    $port = substr($_SERVER['HTTP_HOST'], $portpos + 1);
+    $config['sogo']['port'] = $port;
+    $config['http']['port'] = $port;
+    $config['activesync']['url'] = 'https://'.$mailcow_hostname.':'.$port.'/Microsoft-Server-ActiveSync';
   }
   
   // IMAP
