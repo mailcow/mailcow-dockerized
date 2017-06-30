@@ -230,6 +230,27 @@ $tfa_data = get_tfa();
           </div>
           <button class="btn btn-default" id="add_item" data-id="dkim" data-api-url='add/dkim' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
         </form>
+
+        <legend data-target="#import_dkim" style="margin-top:40px;cursor:pointer" data-toggle="collapse">↳ Import private key</legend>
+        <div id="import_dkim" class="collapse">
+        <form class="form" data-id="dkim_import" role="form" method="post">
+          <div class="form-group">
+            <label for="domain">Domain</label>
+            <input class="form-control" id="domain" name="domain" placeholder="example.org" required>
+          </div>
+          <div class="form-group">
+            <label for="domain">Selector</label>
+            <input class="form-control" id="dkim_selector" name="dkim_selector" value="dkim" required>
+          </div>
+          <div class="form-group">
+            <label for="private_key_file">Private key:</label>
+            <textarea class="form-control" rows="5" name="private_key_file" id="private_key_file" required placeholder="-----BEGIN RSA PRIVATE KEY-----
+XYZ
+-----END RSA PRIVATE KEY-----"></textarea>
+          </div>
+          <button class="btn btn-default" id="add_item" data-id="dkim_import" data-api-url='add/dkim_import' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> Import</button>
+        </form>
+        </div>
       </div>
     </div>
     
