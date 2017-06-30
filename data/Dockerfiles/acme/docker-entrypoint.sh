@@ -7,6 +7,7 @@ mkdir -p ${ACME_BASE}/acme/private
 
 restart_containers(){
 	for container in $*; do
+		echo "Restarting ${container}..."
 		curl -X POST \
 			--unix-socket /var/run/docker.sock \
 			"http/containers/${container}/restart"
@@ -68,10 +69,7 @@ while true; do
 	IFS=',' read -r -a ADDITIONAL_SAN_ARR <<< "${ADDITIONAL_SAN}"
 	IPV4=$(curl -4s https://mailcow.email/ip.php)
 	# Container ids may have changed
-	CONTAINERS_RESTART=($(curl --silent --unix-socket /var/run/docker.sock http/containers/json | \
-		jq -rc 'map(select(.Names[] | contains ("nginx-mailcow") or contains ("postfix-mailcow") or contains ("dovecot-mailcow"))) | .[] .Id' | \
-		tr "\n" " "))
-
+	CONTAINERS_RESTART=($(curl --silent --unix-socket /var/run/docker.sock http/containers/json | jq -rc 'map(select(.Names[] | contains ("nginx-mailcow") or contains ("postfix-mailcow") or contains ("dovecot-mailcow"))) | .[] .Id' | tr "\n" " "))
 
 	while read line; do
 		SQL_DOMAIN_ARR+=("${line}")
@@ -81,7 +79,7 @@ while true; do
 		A_CONFIG=$(dig A autoconfig.${SQL_DOMAIN} +short | tail -n 1)
 		if [[ ! -z ${A_CONFIG} ]]; then
 			echo "Found A record for autoconfig.${SQL_DOMAIN}: ${A_CONFIG}"
-			if [[ ${IPV4} == ${A_CONFIG} ]]; then
+			if [[ ${IPV4:-ERR} == ${A_CONFIG} ]]; then
 				echo "Confirmed A record autoconfig.${SQL_DOMAIN}"
 				VALIDATED_CONFIG_DOMAINS+=("autoconfig.${SQL_DOMAIN}")
 			else
@@ -94,7 +92,7 @@ while true; do
         A_DISCOVER=$(dig A autodiscover.${SQL_DOMAIN} +short | tail -n 1)
 		if [[ ! -z ${A_DISCOVER} ]]; then
 			echo "Found A record for autodiscover.${SQL_DOMAIN}: ${A_DISCOVER}"
-			if [[ ${IPV4} == ${A_DISCOVER} ]]; then
+			if [[ ${IPV4:-ERR} == ${A_DISCOVER} ]]; then
 				echo "Confirmed A record autodiscover.${SQL_DOMAIN}"
 				VALIDATED_CONFIG_DOMAINS+=("autodiscover.${SQL_DOMAIN}")
 			else
@@ -108,7 +106,7 @@ while true; do
 	A_MAILCOW_HOSTNAME=$(dig A ${MAILCOW_HOSTNAME} +short | tail -n 1)
 	if [[ ! -z ${A_MAILCOW_HOSTNAME} ]]; then
 		echo "Found A record for ${MAILCOW_HOSTNAME}: ${A_MAILCOW_HOSTNAME}"
-		if [[ ${IPV4} == ${A_MAILCOW_HOSTNAME} ]]; then
+		if [[ ${IPV4:-ERR} == ${A_MAILCOW_HOSTNAME} ]]; then
 			echo "Confirmed A record ${MAILCOW_HOSTNAME}"
 			VALIDATED_MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
 		else
@@ -122,7 +120,7 @@ while true; do
 		A_SAN=$(dig A ${SAN} +short | tail -n 1)
 		if [[ ! -z ${A_SAN} ]]; then
 			echo "Found A record for ${SAN}: ${A_SAN}"
-			if [[ ${IPV4} == ${A_SAN} ]]; then
+			if [[ ${IPV4:-ERR} == ${A_SAN} ]]; then
 				echo "Confirmed A record ${SAN}"
 				ADDITIONAL_VALIDATED_SAN+=("${SAN}")
 			else
