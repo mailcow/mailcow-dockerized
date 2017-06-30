@@ -10,8 +10,8 @@ services:
           condition: service_healthy
       healthcheck:
         test: ["CMD", "nslookup", "mailcow.email", "127.0.0.1"]
-        interval: 3s
-        timeout: 3s
+        interval: 60s
+        timeout: 5s
         retries: 5
       volumes:
         - ./data/conf/unbound/unbound.conf:/etc/unbound/unbound.conf:ro
@@ -171,7 +171,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.0
+      image: mailcow/dovecot:1.1
       build: ./data/Dockerfiles/dovecot
       depends_on:
         unbound-mailcow:
@@ -293,7 +293,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.8
+      image: mailcow/acme:1.9
       build: ./data/Dockerfiles/acme
       dns:
         - 172.22.1.254
