@@ -10,9 +10,9 @@ services:
           condition: service_healthy
       healthcheck:
         test: ["CMD", "nslookup", "mailcow.email", "127.0.0.1"]
-        interval: 60s
-        timeout: 5s
-        retries: 5
+        interval: 120s
+        timeout: 7s
+        retries: 10
       volumes:
         - ./data/conf/unbound/unbound.conf:/etc/unbound/unbound.conf:ro
       restart: always
@@ -27,9 +27,9 @@ services:
       command: mysqld --max_allowed_packet=128M
       healthcheck:
         test: ["CMD", "mysqladmin", "ping", "--host", "localhost", "--silent"]
-        interval: 10s
-        timeout: 30s
-        retries: 5
+        interval: 60s
+        timeout: 7s
+        retries: 10
       volumes:
         - mysql-vol-1:/var/lib/mysql/
         - ./data/conf/mysql/:/etc/mysql/conf.d/:ro
@@ -299,12 +299,13 @@ services:
         - 172.22.1.254
       dns_search: mailcow-network
       environment:
-        - ADDITIONAL_SAN=${ADDITIONAL_SAN}
+        - ADDITIONAL_SAN=${ADDITIONAL_SAN:-}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
         - SKIP_LETS_ENCRYPT=${SKIP_LETS_ENCRYPT:-n}
+        - SKIP_IP_CHECK=${SKIP_IP_CHECK:-n}
       volumes:
         - ./data/web/.well-known/acme-challenge:/var/www/acme:rw
         - ./data/assets/ssl:/var/lib/acme/:rw
