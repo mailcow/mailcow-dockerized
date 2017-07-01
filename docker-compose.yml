@@ -10,7 +10,7 @@ services:
           condition: service_healthy
       healthcheck:
         test: ["CMD", "nslookup", "mailcow.email", "127.0.0.1"]
-        interval: 120s
+        interval: 30s
         timeout: 7s
         retries: 10
       volumes:
@@ -27,7 +27,7 @@ services:
       command: mysqld --max_allowed_packet=128M
       healthcheck:
         test: ["CMD", "mysqladmin", "ping", "--host", "localhost", "--silent"]
-        interval: 60s
+        interval: 10s
         timeout: 7s
         retries: 10
       volumes:
@@ -299,7 +299,7 @@ services:
         - 172.22.1.254
       dns_search: mailcow-network
       environment:
-        - ADDITIONAL_SAN=${ADDITIONAL_SAN:-}
+        - ADDITIONAL_SAN=${ADDITIONAL_SAN:- }
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
