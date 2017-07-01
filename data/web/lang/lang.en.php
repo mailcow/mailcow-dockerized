@@ -422,6 +422,9 @@ $lang['tfa']['scan_qr_code'] = "Please scan the following code with your authent
 $lang['tfa']['enter_qr_code'] = "Your TOTP code if your device cannot scan QR codes";
 $lang['tfa']['confirm_totp_token'] = "Please confirm your changes by entering the generated token";
 
+$lang['admin']['private_key'] = 'Private key';
+$lang['admin']['import'] = 'Import';
+$lang['admin']['import_private_key'] = 'Import private key';
 $lang['admin']['f2b_parameters'] = 'Fail2ban parameters';
 $lang['admin']['f2b_ban_time'] = 'Ban time (s)';
 $lang['admin']['f2b_max_attempts'] = 'Max. attempts';

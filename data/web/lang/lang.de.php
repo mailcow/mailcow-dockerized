@@ -417,7 +417,9 @@ $lang['tfa']['scan_qr_code'] = "Bitte scannen Sie jetzt den angezeigten QR-Code:
 $lang['tfa']['enter_qr_code'] = "Falls Sie den angezeigten QR-Code nicht scannen können, verwenden Sie bitte nachstehenden Sicherheitsschlüssel";
 $lang['tfa']['confirm_totp_token'] = "Bitte bestätigen Sie die Änderung durch Eingabe eines generierten Tokens";
 
-$lang['admin']['search_domain_da'] = 'Domains durchsuchen';
+$lang['admin']['private_key'] = 'Private Key';
+$lang['admin']['import'] = 'Importieren';
+$lang['admin']['import_private_key'] = 'Private Key importieren';
 $lang['admin']['f2b_parameters'] = 'Fail2ban Parameter';
 $lang['admin']['f2b_ban_time'] = 'Banzeit (s)';
 $lang['admin']['f2b_max_attempts'] = 'Max. Versuche';
