@@ -40,8 +40,11 @@ RULES[php_fpm_container] = {}
 
 RULES[postfix_container][1] = 'warning: .*\[([0-9a-f\.:]+)\]: SASL .* authentication failed'
 RULES[dovecot_container][1] = '-login: Disconnected \(auth failed, .*\): user=.*, method=.*, rip=([0-9a-f\.:]+),'
+RULES[dovecot_container][2] = '-login: Disconnected \(no auth .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
+RULES[dovecot_container][3] = '-login: Aborted login \(no auth .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
+RULES[dovecot_container][4] = '-login: Aborted login \(tried to use disallowed .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
 RULES[sogo_container][1] = 'SOGo.* Login from \'([0-9a-f\.:]+)\' for user .* might not have worked'
-RULES[php_fpm_container][1] = 'Mailcow UI: Invalid password for .* by ([0-9a-f\.:]+)'
+RULES[php_fpm_container][1] = 'mailcow UI: Invalid password for .* by ([0-9a-f\.:]+)'
 
 
 r.setnx("F2B_BAN_TIME", "1800")
