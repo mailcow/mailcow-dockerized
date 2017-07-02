@@ -2,10 +2,12 @@
 
 ACME_BASE=/var/lib/acme
 SSL_EXAMPLE=/var/lib/ssl-example
+
 mkdir -p ${ACME_BASE}/acme/private
 
 restart_containers(){
 	for container in $*; do
+		echo "Restarting ${container}..."
 		curl -X POST \
 			--unix-socket /var/run/docker.sock \
 			"http/containers/${container}/restart"
@@ -45,14 +47,14 @@ else
 			echo "Restoring previous acme certificate and restarting script..."
 			cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
 			cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
-			exec $(readlink -f "$0")
+			exec env TRIGGER_RESTART=1 $(readlink -f "$0")
 		fi
 	ISSUER="mailcow"
 	else
 		echo "Restoring mailcow snake-oil certificates and restarting script..."
 		cp ${SSL_EXAMPLE}/cert.pem ${ACME_BASE}/cert.pem
 		cp ${SSL_EXAMPLE}/key.pem ${ACME_BASE}/key.pem
-		exec $(readlink -f "$0")
+		exec env TRIGGER_RESTART=1 $(readlink -f "$0")
 	fi
 fi
 
@@ -66,6 +68,8 @@ while true; do
 	declare -a ADDITIONAL_VALIDATED_SAN
 	IFS=',' read -r -a ADDITIONAL_SAN_ARR <<< "${ADDITIONAL_SAN}"
 	IPV4=$(curl -4s https://mailcow.email/ip.php)
+	# Container ids may have changed
+	CONTAINERS_RESTART=($(curl --silent --unix-socket /var/run/docker.sock http/containers/json | jq -rc 'map(select(.Names[] | contains ("nginx-mailcow") or contains ("postfix-mailcow") or contains ("dovecot-mailcow"))) | .[] .Id' | tr "\n" " "))
 
 	while read line; do
 		SQL_DOMAIN_ARR+=("${line}")
@@ -75,7 +79,7 @@ while true; do
 		A_CONFIG=$(dig A autoconfig.${SQL_DOMAIN} +short | tail -n 1)
 		if [[ ! -z ${A_CONFIG} ]]; then
 			echo "Found A record for autoconfig.${SQL_DOMAIN}: ${A_CONFIG}"
-			if [[ ${IPV4} == ${A_CONFIG} ]]; then
+			if [[ ${IPV4:-ERR} == ${A_CONFIG} ]]; then
 				echo "Confirmed A record autoconfig.${SQL_DOMAIN}"
 				VALIDATED_CONFIG_DOMAINS+=("autoconfig.${SQL_DOMAIN}")
 			else
@@ -88,7 +92,7 @@ while true; do
         A_DISCOVER=$(dig A autodiscover.${SQL_DOMAIN} +short | tail -n 1)
 		if [[ ! -z ${A_DISCOVER} ]]; then
 			echo "Found A record for autodiscover.${SQL_DOMAIN}: ${A_DISCOVER}"
-			if [[ ${IPV4} == ${A_DISCOVER} ]]; then
+			if [[ ${IPV4:-ERR} == ${A_DISCOVER} ]]; then
 				echo "Confirmed A record autodiscover.${SQL_DOMAIN}"
 				VALIDATED_CONFIG_DOMAINS+=("autodiscover.${SQL_DOMAIN}")
 			else
@@ -102,7 +106,7 @@ while true; do
 	A_MAILCOW_HOSTNAME=$(dig A ${MAILCOW_HOSTNAME} +short | tail -n 1)
 	if [[ ! -z ${A_MAILCOW_HOSTNAME} ]]; then
 		echo "Found A record for ${MAILCOW_HOSTNAME}: ${A_MAILCOW_HOSTNAME}"
-		if [[ ${IPV4} == ${A_MAILCOW_HOSTNAME} ]]; then
+		if [[ ${IPV4:-ERR} == ${A_MAILCOW_HOSTNAME} ]]; then
 			echo "Confirmed A record ${MAILCOW_HOSTNAME}"
 			VALIDATED_MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
 		else
@@ -116,7 +120,7 @@ while true; do
 		A_SAN=$(dig A ${SAN} +short | tail -n 1)
 		if [[ ! -z ${A_SAN} ]]; then
 			echo "Found A record for ${SAN}: ${A_SAN}"
-			if [[ ${IPV4} == ${A_SAN} ]]; then
+			if [[ ${IPV4:-ERR} == ${A_SAN} ]]; then
 				echo "Confirmed A record ${SAN}"
 				ADDITIONAL_VALIDATED_SAN+=("${SAN}")
 			else
@@ -127,7 +131,7 @@ while true; do
 		fi
 	done
 
-	ALL_VALIDATED=($(echo ${VALIDATED_CONFIG_DOMAINS[*]} ${ADDITIONAL_VALIDATED_SAN[*]} ${VALIDATED_MAILCOW_HOSTNAME}))
+	ALL_VALIDATED="$(echo ${VALIDATED_CONFIG_DOMAINS[*]} ${ADDITIONAL_VALIDATED_SAN[*]} ${VALIDATED_MAILCOW_HOSTNAME})"
 	if [[ -z ${ALL_VALIDATED[*]} ]]; then
 		echo "Cannot validate hostnames, skipping Let's Encrypt..."
 		echo 0
@@ -136,7 +140,7 @@ while true; do
 	ORPHANED_SAN=($(echo ${SAN_ARRAY_NOW[*]} ${VALIDATED_CONFIG_DOMAINS[*]} ${ADDITIONAL_VALIDATED_SAN[*]} ${MAILCOW_HOSTNAME} | tr ' ' '\n' | sort | uniq -u ))
 	if [[ ! -z ${ORPHANED_SAN[*]} ]] && [[ ${ISSUER} != *"mailcow"* ]]; then
 		DATE=$(date +%Y-%m-%d_%H_%M_%S)
-		echo "Found orphaned SAN(s) ${ORPHANED_SAN[*]} in certificate, moving old files to ${ACME_BASE}/acme/private/${DATE}.bak/"
+		echo "Found orphaned SAN ${ORPHANED_SAN[*]} in certificate, moving old files to ${ACME_BASE}/acme/private/${DATE}.bak/, keeping key file..."
 		mkdir -p ${ACME_BASE}/acme/private/${DATE}.bak/
 		[[ -f ${ACME_BASE}/acme/private/account.key ]] && mv ${ACME_BASE}/acme/private/account.key ${ACME_BASE}/acme/private/${DATE}.bak/
 		mv ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/acme/private/${DATE}.bak/
@@ -159,11 +163,11 @@ while true; do
 
 			# restart docker containers
 			if ! verify_hash_match ${ACME_BASE}/cert.pem ${ACME_BASE}/key.pem; then
-				echo "Certificate was successfully request, but key and certificate have non-matching hashes, restoring mailcow snake-oil and restarting containers..."
+				echo "Certificate was successfully requested, but key and certificate have non-matching hashes, restoring mailcow snake-oil and restarting containers..."
 				cp ${SSL_EXAMPLE}/cert.pem ${ACME_BASE}/cert.pem
 				cp ${SSL_EXAMPLE}/key.pem ${ACME_BASE}/key.pem
 			fi
-			restart_containers ${CONTAINERS_RESTART}
+			restart_containers ${CONTAINERS_RESTART[*]}
 			;;
 		1) # failure
 			if [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]]; then
@@ -171,7 +175,7 @@ while true; do
 				cp ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ${ACME_BASE}/cert.pem
 				cp ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ${ACME_BASE}/key.pem
 				TRIGGER_RESTART=1
-			elif [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]]; then
+            elif [[ -f ${ACME_BASE}/acme/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/privkey.pem ]]; then
 				echo "Error requesting certificate, restoring from previous acme request and restarting containers..."
 				cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
 				cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
@@ -183,20 +187,20 @@ while true; do
 				cp ${SSL_EXAMPLE}/key.pem ${ACME_BASE}/key.pem
 				TRIGGER_RESTART=1
 			fi
-			[[ ${TRIGGER_RESTART} == 1 ]] && restart_containers ${CONTAINERS_RESTART}
+			[[ ${TRIGGER_RESTART} == 1 ]] && restart_containers ${CONTAINERS_RESTART[*]}
 			exit 1;;
 		2) # no change
 			if ! diff ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem; then
 				echo "Certificate was not changed, but active certificate does not match the verified certificate, fixing and restarting containers..."
 				cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
 				cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
-				restart_containers ${CONTAINERS_RESTART}
+				restart_containers ${CONTAINERS_RESTART[*]}
 			fi
 			if ! verify_hash_match ${ACME_BASE}/cert.pem ${ACME_BASE}/key.pem; then
 				echo "Certificate was not changed, but hashes do not match, restoring from previous acme request and restarting containers..."
 				cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
 				cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
-				restart_containers ${CONTAINERS_RESTART}
+				restart_containers ${CONTAINERS_RESTART[*]}
 			fi
 			;;
 		*) # unspecified
@@ -205,7 +209,7 @@ while true; do
 				cp ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ${ACME_BASE}/cert.pem
 				cp ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ${ACME_BASE}/key.pem
 				TRIGGER_RESTART=1
-            elif [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]]; then
+            elif [[ -f ${ACME_BASE}/acme/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/privkey.pem ]]; then
 				echo "Error requesting certificate, restoring from previous acme request and restarting containers..."
 				cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
 				cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
@@ -217,7 +221,7 @@ while true; do
 				cp ${SSL_EXAMPLE}/key.pem ${ACME_BASE}/key.pem
 				TRIGGER_RESTART=1
 			fi
-			[[ ${TRIGGER_RESTART} == 1 ]] && restart_containers ${CONTAINERS_RESTART}
+			[[ ${TRIGGER_RESTART} == 1 ]] && restart_containers ${CONTAINERS_RESTART[*]}
 			exit 1;;
 	esac
 

@@ -19,12 +19,33 @@ if re.search(yes_regex, os.getenv('SKIP_FAIL2BAN', 0)):
 	raise SystemExit
 
 r = redis.StrictRedis(host='172.22.1.249', decode_responses=True, port=6379, db=0)
-RULES = {
-	'mailcowdockerized_postfix-mailcow_1': 'warning: .*\[([0-9a-f\.:]+)\]: SASL .* authentication failed',
-	'mailcowdockerized_dovecot-mailcow_1': '-login: Disconnected \(auth failed, .*\): user=.*, method=.*, rip=([0-9a-f\.:]+),',
-	'mailcowdockerized_sogo-mailcow_1': 'SOGo.* Login from \'([0-9a-f\.:]+)\' for user .* might not have worked',
-	'mailcowdockerized_php-fpm-mailcow_1': 'Mailcow UI: Invalid password for .* by ([0-9a-f\.:]+)',
-}
+client = docker.from_env()
+
+for container in client.containers.list():
+	if "postfix-mailcow" in container.name:
+		postfix_container = container.name
+	elif "dovecot-mailcow" in container.name:
+		dovecot_container = container.name
+	elif "sogo-mailcow" in container.name:
+		sogo_container = container.name
+	elif "php-fpm-mailcow" in container.name:
+		php_fpm_container = container.name
+
+RULES = {}
+
+RULES[postfix_container] = {}
+RULES[dovecot_container] = {}
+RULES[sogo_container] = {}
+RULES[php_fpm_container] = {}
+
+RULES[postfix_container][1] = 'warning: .*\[([0-9a-f\.:]+)\]: SASL .* authentication failed'
+RULES[dovecot_container][1] = '-login: Disconnected \(auth failed, .*\): user=.*, method=.*, rip=([0-9a-f\.:]+),'
+RULES[dovecot_container][2] = '-login: Disconnected \(no auth .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
+RULES[dovecot_container][3] = '-login: Aborted login \(no auth .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
+RULES[dovecot_container][4] = '-login: Aborted login \(tried to use disallowed .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
+RULES[sogo_container][1] = 'SOGo.* Login from \'([0-9a-f\.:]+)\' for user .* might not have worked'
+RULES[php_fpm_container][1] = 'mailcow UI: Invalid password for .* by ([0-9a-f\.:]+)'
+
 
 r.setnx("F2B_BAN_TIME", "1800")
 r.setnx("F2B_MAX_ATTEMPTS", "10")
@@ -135,12 +156,17 @@ def watch(container):
 	log['message'] = "Watching %s" % container
 	r.lpush("F2B_LOG", json.dumps(log, ensure_ascii=False))
 	print "Watching", container
-	client = docker.from_env()
 	for msg in client.containers.get(container).attach(stream=True, logs=False):
-		result = re.search(RULES[container], msg)
-		if result:
-			addr = result.group(1)
-			ban(addr)
+		for rule_id, rule_regex in RULES[container].iteritems():
+			result = re.search(rule_regex, msg)
+			if result:
+				addr = result.group(1)
+				print "%s matched rule id %d in %s" % (addr, rule_id, container)
+				log['time'] = int(round(time.time()))
+				log['priority'] = "warn"
+				log['message'] = "%s matched rule id %d in %s" % (addr, rule_id, container)
+				r.lpush("F2B_LOG", json.dumps(log, ensure_ascii=False))
+				ban(addr)
 
 def autopurge():
 	while not quit_now:

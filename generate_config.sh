@@ -81,6 +81,9 @@ ADDITIONAL_SAN=
 # To never run acme-mailcow for Let's Encrypt, set this to y
 SKIP_LETS_ENCRYPT=n
 
+# Skip IPv4 check in ACME container
+SKIP_IP_CHECK=n
+
 # To never run fail2ban-mailcow
 SKIP_FAIL2BAN=n
 
