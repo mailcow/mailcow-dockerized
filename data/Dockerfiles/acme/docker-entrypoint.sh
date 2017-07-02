@@ -63,6 +63,9 @@ while true; do
 		echo "SKIP_LETS_ENCRYPT=y, skipping Let's Encrypt..."
 		exit 0
 	fi
+	if [[ "${SKIP_IP_CHECK}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+		SKIP_IP_CHECK=y
+	fi
 	declare -a SQL_DOMAIN_ARR
 	declare -a VALIDATED_CONFIG_DOMAINS
 	declare -a ADDITIONAL_VALIDATED_SAN
@@ -79,7 +82,7 @@ while true; do
 		A_CONFIG=$(dig A autoconfig.${SQL_DOMAIN} +short | tail -n 1)
 		if [[ ! -z ${A_CONFIG} ]]; then
 			echo "Found A record for autoconfig.${SQL_DOMAIN}: ${A_CONFIG}"
-			if [[ ${IPV4:-ERR} == ${A_CONFIG} ]]; then
+			if [[ ${IPV4:-ERR} == ${A_CONFIG} ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
 				echo "Confirmed A record autoconfig.${SQL_DOMAIN}"
 				VALIDATED_CONFIG_DOMAINS+=("autoconfig.${SQL_DOMAIN}")
 			else
@@ -92,7 +95,7 @@ while true; do
         A_DISCOVER=$(dig A autodiscover.${SQL_DOMAIN} +short | tail -n 1)
 		if [[ ! -z ${A_DISCOVER} ]]; then
 			echo "Found A record for autodiscover.${SQL_DOMAIN}: ${A_DISCOVER}"
-			if [[ ${IPV4:-ERR} == ${A_DISCOVER} ]]; then
+			if [[ ${IPV4:-ERR} == ${A_DISCOVER} ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
 				echo "Confirmed A record autodiscover.${SQL_DOMAIN}"
 				VALIDATED_CONFIG_DOMAINS+=("autodiscover.${SQL_DOMAIN}")
 			else
@@ -106,7 +109,7 @@ while true; do
 	A_MAILCOW_HOSTNAME=$(dig A ${MAILCOW_HOSTNAME} +short | tail -n 1)
 	if [[ ! -z ${A_MAILCOW_HOSTNAME} ]]; then
 		echo "Found A record for ${MAILCOW_HOSTNAME}: ${A_MAILCOW_HOSTNAME}"
-		if [[ ${IPV4:-ERR} == ${A_MAILCOW_HOSTNAME} ]]; then
+		if [[ ${IPV4:-ERR} == ${A_MAILCOW_HOSTNAME} ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
 			echo "Confirmed A record ${MAILCOW_HOSTNAME}"
 			VALIDATED_MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
 		else
@@ -120,7 +123,7 @@ while true; do
 		A_SAN=$(dig A ${SAN} +short | tail -n 1)
 		if [[ ! -z ${A_SAN} ]]; then
 			echo "Found A record for ${SAN}: ${A_SAN}"
-			if [[ ${IPV4:-ERR} == ${A_SAN} ]]; then
+			if [[ ${IPV4:-ERR} == ${A_SAN} ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
 				echo "Confirmed A record ${SAN}"
 				ADDITIONAL_VALIDATED_SAN+=("${SAN}")
 			else

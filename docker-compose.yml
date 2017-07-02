@@ -293,13 +293,13 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.9
+      image: mailcow/acme:1.10
       build: ./data/Dockerfiles/acme
       dns:
         - 172.22.1.254
       dns_search: mailcow-network
       environment:
-        - ADDITIONAL_SAN=${ADDITIONAL_SAN:- }
+        - ADDITIONAL_SAN=${ADDITIONAL_SAN}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
