@@ -20,7 +20,19 @@ set -o pipefail
 export LC_ALL=C
 DATE=$(date +%Y-%m-%d_%H_%M_%S)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
-TMPFILE=$(mktemp "${TMPDIR:-/tmp}/curldata.XXXXXX")
+
+case "${1}" in
+	--check|-c)
+		echo "Checking remote code for updates..."
+		git fetch origin ${BRANCH}
+		if ! git diff origin/${BRANCH} --quiet; then
+			echo "Updated code is available."
+		else
+			echo "No updates available."
+		fi
+		exit 0
+	;;
+esac
 
 echo -e "\e[32mChecking for newer update script...\e[0m"
 SHA1_1=$(sha1sum update.sh)
@@ -32,7 +44,6 @@ if [[ ${SHA1_1} != ${SHA1_2} ]]; then
 	chmod +x update.sh
 	exit 0
 fi
-rm -f mv ${TMPFILE}
 
 if [[ -f mailcow.conf ]]; then
 	source mailcow.conf

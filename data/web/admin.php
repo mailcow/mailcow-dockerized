@@ -230,6 +230,27 @@ $tfa_data = get_tfa();
           </div>
           <button class="btn btn-default" id="add_item" data-id="dkim" data-api-url='add/dkim' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
         </form>
+
+        <legend data-target="#import_dkim" style="margin-top:40px;cursor:pointer" data-toggle="collapse">↳ <?=$lang['admin']['import_private_key'];?></legend>
+        <div id="import_dkim" class="collapse">
+        <form class="form" data-id="dkim_import" role="form" method="post">
+          <div class="form-group">
+            <label for="domain">Domain:</label>
+            <input class="form-control" id="domain" name="domain" placeholder="example.org" required>
+          </div>
+          <div class="form-group">
+            <label for="domain">Selector:</label>
+            <input class="form-control" id="dkim_selector" name="dkim_selector" value="dkim" required>
+          </div>
+          <div class="form-group">
+            <label for="private_key_file"><?=$lang['admin']['private_key'];?>:</label>
+            <textarea class="form-control" rows="5" name="private_key_file" id="private_key_file" required placeholder="-----BEGIN RSA PRIVATE KEY-----
+XYZ
+-----END RSA PRIVATE KEY-----"></textarea>
+          </div>
+          <button class="btn btn-default" id="add_item" data-id="dkim_import" data-api-url='add/dkim_import' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['import'];?></button>
+        </form>
+        </div>
       </div>
     </div>
     
@@ -271,26 +292,26 @@ $tfa_data = get_tfa();
     </div>
 
     <div class="panel panel-default">
-      <div class="panel-heading">Fail2Ban parameters</div>
+      <div class="panel-heading"><?=$lang['admin']['f2b_parameters'];?></div>
       <div class="panel-body">
       <?php
-      $f2b_data = get_f2b_parameters();
+      $f2b_data = fail2ban('get');
       ?>
         <form class="form" data-id="f2b" role="form" method="post">
           <div class="form-group">
-            <label for="ban_time">Ban time (s):</label>
+            <label for="ban_time"><?=$lang['admin']['f2b_ban_time'];?>:</label>
             <input type="number" class="form-control" id="ban_time" name="ban_time" value="<?=$f2b_data['ban_time'];?>" required>
           </div>
           <div class="form-group">
-            <label for="max_attempts">Max. attempts:</label>
+            <label for="max_attempts"><?=$lang['admin']['f2b_max_attempts'];?>:</label>
             <input type="number" class="form-control" id="max_attempts" name="max_attempts" value="<?=$f2b_data['max_attempts'];?>" required>
           </div>
           <div class="form-group">
-            <label for="retry_window">Retry window (s) for max. attempts:</label>
+            <label for="retry_window"><?=$lang['admin']['f2b_retry_window'];?>:</label>
             <input type="number" class="form-control" id="retry_window" name="retry_window" value="<?=$f2b_data['retry_window'];?>" required>
           </div>
           <div class="form-group">
-            <label for="retry_window">Whitelisted networks/hosts</label>
+            <label for="retry_window"><?=$lang['admin']['f2b_whitelist'];?>:</label>
             <textarea class="form-control" id="whitelist" name="whitelist" rows="5"><?=$f2b_data['whitelist'];?></textarea>
           </div>
           <button class="btn btn-default" id="add_item" data-id="f2b" data-api-url='edit/fail2ban' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>

@@ -233,11 +233,11 @@ function check_login($user, $pass) {
 	}
 	if (!isset($_SESSION['ldelay'])) {
 		$_SESSION['ldelay'] = "0";
-    error_log("Mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
+    error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
 	}
 	elseif (!isset($_SESSION['mailcow_cc_username'])) {
 		$_SESSION['ldelay'] = $_SESSION['ldelay']+0.5;
-		error_log("Mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
+		error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
 	}
 	sleep($_SESSION['ldelay']);
 }
@@ -1439,28 +1439,6 @@ function get_logs($container, $lines = 100) {
   }
   return false;
 }
-function in_net($addr, $net) {
-  $net = explode('/', $net);
-  if (count($net) > 1) {
-    $mask = $net[1];
-  }
-  $net = inet_pton($net[0]);
-  $addr = inet_pton($addr);
-  $length = strlen($net); // 4 for IPv4, 16 for IPv6
-  if (strlen($net) != strlen($addr)) {
-    return false;
-  }
-  if (!isset($mask)) {
-    $mask = $length * 8;
-  }
-  $addr_bin = '';
-  $net_bin = '';
-  for ($i = 0; $i < $length; ++$i) {
-    $addr_bin .= str_pad(decbin(ord(substr($addr, $i, $i+1))), 8, '0', STR_PAD_LEFT);
-    $net_bin .= str_pad(decbin(ord(substr($net, $i, $i+1))), 8, '0', STR_PAD_LEFT);
-  }
-  return substr($addr_bin, 0, $mask) == substr($net_bin, 0, $mask);
-}
 function get_client_config($domain) {
   global $mailcow_hostname;
   
@@ -1553,95 +1531,5 @@ function get_client_config($domain) {
     return array_merge($config, $GLOBALS['autodiscover_config']);
 
   return $config;
-}
-function get_f2b_parameters() {
-	global $lang;
-	global $redis;
-  $data = array();
-	if ($_SESSION['mailcow_cc_role'] != "admin") {
-		return false;
-	}
-  try {
-    $data['ban_time'] = $redis->Get('F2B_BAN_TIME');
-    $data['max_attempts'] = $redis->Get('F2B_MAX_ATTEMPTS');
-    $data['retry_window'] = $redis->Get('F2B_RETRY_WINDOW');
-    $wl = $redis->hGetAll('F2B_WHITELIST');
-    if (is_array($wl)) {
-      foreach ($wl as $key => $value) {
-        $tmp_data[] = $key;
-      }
-      $data['whitelist'] = implode(PHP_EOL, $tmp_data);
-    }
-    else {
-      $data['whitelist'] = "";
-    }
-  }
-  catch (RedisException $e) {
-    $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => 'Redis: '.$e
-    );
-    return false;
-  }
-  return $data;
-}
-function edit_f2b_parameters($postarray) {
-	global $lang;
-	global $redis;
-	if ($_SESSION['mailcow_cc_role'] != "admin") {
-    $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => sprintf($lang['danger']['access_denied'])
-    );
-    return false;
-  }
-  $is_now = get_f2b_parameters();
-  if (!empty($is_now)) {
-    $ban_time = intval((isset($postarray['ban_time'])) ? $postarray['ban_time'] : $is_now['ban_time']);
-    $max_attempts = intval((isset($postarray['max_attempts'])) ? $postarray['max_attempts'] : $is_now['active_int']);
-    $retry_window = intval((isset($postarray['retry_window'])) ? $postarray['retry_window'] : $is_now['retry_window']);
-  }
-  else {
-    $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => sprintf($lang['danger']['access_denied'])
-    );
-    return false;
-  }
-  $wl = $postarray['whitelist'];
-  $ban_time = ($ban_time < 60) ? 60 : $ban_time;
-  $max_attempts = ($max_attempts < 1) ? 1 : $max_attempts;
-  $retry_window = ($retry_window < 1) ? 1 : $retry_window;
-  try {
-    $redis->Set('F2B_BAN_TIME', $ban_time);
-    $redis->Set('F2B_MAX_ATTEMPTS', $max_attempts);
-    $redis->Set('F2B_RETRY_WINDOW', $retry_window);
-    $redis->Del('F2B_WHITELIST');
-    if(!empty($wl)) {
-      $wl_array = array_map('trim', preg_split( "/( |,|;|\n)/", $wl));
-      if (is_array($wl_array)) {
-        foreach ($wl_array as $wl_item) {
-          $cidr = explode('/', $wl_item);
-          if (filter_var($cidr[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) && (!isset($cidr[1]) || ($cidr[1] >= 0 && $cidr[1] <= 32))) {
-            $redis->hSet('F2B_WHITELIST', $wl_item, 1);
-          }
-          elseif (filter_var($cidr[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) && (!isset($cidr[1]) || ($cidr[1] >= 0 && $cidr[1] <= 128))) {
-            $redis->hSet('F2B_WHITELIST', $wl_item, 1);
-          }
-        }
-      }
-    }
-  }
-  catch (RedisException $e) {
-    $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => 'Redis: '.$e
-    );
-    return false;
-  }
-  $_SESSION['return'] = array(
-    'type' => 'success',
-    'msg' => 'Saved changes to Fail2ban configuration'
-  );
 }
 ?>

@@ -1,0 +1,60 @@
+diff --git a/data/web/inc/header.inc.php b/data/web/inc/header.inc.php
+index 533711d..8e5b6d0 100644
+--- a/data/web/inc/header.inc.php
++++ b/data/web/inc/header.inc.php
+@@ -77,6 +77,11 @@
+                 <li<?= (preg_match("/mailbox/i", $_SERVER['REQUEST_URI'])) ? ' class="active"' : ''; ?>><a href="/mailbox.php"><?= $lang['header']['mailboxes']; ?></a></li>
+               <?php
+               }
++              if ($_SESSION['mailcow_cc_role'] == 'admin') {
++              ?>
++                <li<?= (preg_match("/diagnostics/i", $_SERVER['REQUEST_URI'])) ? ' class="active"' : ''; ?>><a href="/diagnostics.php"><?= $lang['header']['diagnostics']; ?></a></li>
++              <?php
++              }
+               if ($_SESSION['mailcow_cc_role'] != 'admin') {
+               ?>
+                 <li<?= (preg_match("/user/i", $_SERVER['REQUEST_URI'])) ? ' class="active"' : ''; ?>><a href="/user.php"><?= $lang['header']['user_settings']; ?></a></li>
+diff --git a/data/web/lang/lang.de.php b/data/web/lang/lang.de.php
+index 2737d9f..c66145a 100644
+--- a/data/web/lang/lang.de.php
++++ b/data/web/lang/lang.de.php
+@@ -214,6 +214,7 @@ $lang['header']['mailcow_settings'] = 'Konfiguration';
+ $lang['header']['administration'] = 'Administration';
+ $lang['header']['mailboxes'] = 'Mailboxen';
+ $lang['header']['user_settings'] = 'Benutzereinstellungen';
++$lang['header']['diagnostics'] = 'Diagnose';
+ $lang['header']['login'] = 'Anmeldung';
+ $lang['header']['logged_in_as_logout'] = 'Eingeloggt als <b>%s</b> (abmelden)';
+ $lang['header']['logged_in_as_logout_dual'] = 'Eingeloggt als <b>%s <span class="text-info">[%s]</span></b>';
+@@ -488,3 +489,9 @@ $lang['admin']['add_forwarding_host'] = 'Weiterleitungs-Host hinzufügen';
+ $lang['delete']['remove_forwardinghost_warning'] = '<b>Warnung:</b> Sie entfernen den Weiterleitungs-Host <b>%s</b>!';
+ $lang['success']['forwarding_host_removed'] = "Weiterleitungs-Host %s wurde entfernt";
+ $lang['success']['forwarding_host_added'] = "Weiterleitungs-Host %s wurde hinzugefügt";
++$lang['diagnostics']['dns_records'] = 'DNS-Einträge';
++$lang['diagnostics']['dns_records_24hours'] = 'Bitte beachten Sie, dass es bis zu 24 Stunden dauern kann, bis Änderungen an Ihren DNS-Einträgen als aktueller Status auf dieser Seite dargestellt werden. Diese Seite ist nur als Hilfsmittel gedacht, um die korrekten Werte für DNS-Einträge zu anzuzeigen und zu überprüfen, ob die Daten im DNS hinterlegt sind.';
++$lang['diagnostics']['dns_records_name'] = 'Name';
++$lang['diagnostics']['dns_records_type'] = 'Typ';
++$lang['diagnostics']['dns_records_data'] = 'Korrekte Daten';
++$lang['diagnostics']['dns_records_status'] = 'Aktueller Status';
+diff --git a/data/web/lang/lang.en.php b/data/web/lang/lang.en.php
+index b7bd49f..914d75c 100644
+--- a/data/web/lang/lang.en.php
++++ b/data/web/lang/lang.en.php
+@@ -216,6 +216,7 @@ $lang['header']['mailcow_settings'] = 'Configuration';
+ $lang['header']['administration'] = 'Administration';
+ $lang['header']['mailboxes'] = 'Mailboxes';
+ $lang['header']['user_settings'] = 'User settings';
++$lang['header']['diagnostics'] = 'Diagnostics';
+ $lang['header']['login'] = 'Login';
+ $lang['header']['logged_in_as_logout'] = 'Logged in as <b>%s</b> (logout)';
+ $lang['header']['logged_in_as_logout_dual'] = 'Logged in as <b>%s <span class="text-info">[%s]</span></b>';
+@@ -500,3 +501,9 @@ $lang['admin']['add_forwarding_host'] = 'Add Forwarding Host';
+ $lang['delete']['remove_forwardinghost_warning'] = '<b>Warning:</b> You are about to remove the forwarding host <b>%s</b>!';
+ $lang['success']['forwarding_host_removed'] = "Forwarding host %s has been removed";
+ $lang['success']['forwarding_host_added'] = "Forwarding host %s has been added";
++$lang['diagnostics']['dns_records'] = 'DNS Records';
++$lang['diagnostics']['dns_records_24hours'] = 'Please note that changes made to DNS may take up to 24 hours to correctly have their current state reflected on this page. It is intended as a way for you to easily see how to configure your DNS records and to check whether all your records are correctly stored in DNS.';
++$lang['diagnostics']['dns_records_name'] = 'Name';
++$lang['diagnostics']['dns_records_type'] = 'Type';
++$lang['diagnostics']['dns_records_data'] = 'Correct Data';
++$lang['diagnostics']['dns_records_status'] = 'Current State';

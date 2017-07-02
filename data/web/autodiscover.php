@@ -2,10 +2,11 @@
 require_once 'inc/prerequisites.inc.php';
 
 $domain = explode('@', $_SERVER['PHP_AUTH_USER'])[1];
-$autodiscover_config = get_client_config($domain);
+$configuration = get_client_config($domain);
+print_r($configuration);
 
-if (!isset($autodiscover_config['autodiscoverType'])) {
-  $autodiscover_config['autodiscoverType'] = 'activesync';
+if (!isset($configuration['autodiscoverType'])) {
+  $configuration['autodiscoverType'] = 'activesync';
 }
 
 error_reporting(0);
@@ -14,14 +15,14 @@ $data = trim(file_get_contents("php://input"));
 
 // Desktop client needs IMAP, unless it's Outlook 2013 or higher on Windows
 if (strpos($data, 'autodiscover/outlook/responseschema') !== false) { // desktop client
-  $autodiscover_config['autodiscoverType'] = 'imap';
-  if ($autodiscover_config['useEASforOutlook'] == 'yes' &&
+  $configuration['autodiscoverType'] = 'imap';
+  if ($configuration['useEASforOutlook'] == 'yes' &&
     // Office for macOS does not support EAS
     strpos($_SERVER['HTTP_USER_AGENT'], 'Mac') === false &&
     // Outlook 2013 (version 15) or higher
     preg_match('/(Outlook|Office).+1[5-9]\./', $_SERVER['HTTP_USER_AGENT'])
   ) {
-    $autodiscover_config['autodiscoverType'] = 'activesync';
+    $configuration['autodiscoverType'] = 'activesync';
   }
 }
 
@@ -85,7 +86,7 @@ else {
         $displayname = $email;
       }
 
-      if ($autodiscover_config['autodiscoverType'] == 'imap') {
+      if ($configuration['autodiscoverType'] == 'imap') {
 ?>
   <Response xmlns="http://schemas.microsoft.com/exchange/autodiscover/outlook/responseschema/2006a">
     <User>
@@ -94,11 +95,11 @@ else {
     <Account>
       <AccountType>email</AccountType>
       <Action>settings</Action>
-<?php if (isset($autodiscover_config['imap']['port']) ) { ?>
+<?php if (isset($configuration['imap']['port']) ) { ?>
       <Protocol>
         <Type>IMAP</Type>
-        <Server><?=$autodiscover_config['imap']['server'];?></Server>
-        <Port><?=$autodiscover_config['imap']['port'];?></Port>
+        <Server><?=$configuration['imap']['server'];?></Server>
+        <Port><?=$configuration['imap']['port'];?></Port>
         <DomainRequired>off</DomainRequired>
         <LoginName><?=$email;?></LoginName>
         <SPA>off</SPA>
@@ -106,11 +107,11 @@ else {
         <AuthRequired>on</AuthRequired>
       </Protocol>
 <?php } ?>
-<?php if (isset($autodiscover_config['smtp']['port']) ) { ?>
+<?php if (isset($configuration['smtp']['port']) ) { ?>
       <Protocol>
         <Type>SMTP</Type>
-        <Server><?=$autodiscover_config['smtp']['server'];?></Server>
-        <Port><?=$autodiscover_config['smtp']['port'];?></Port>
+        <Server><?=$configuration['smtp']['server'];?></Server>
+        <Port><?=$configuration['smtp']['port'];?></Port>
         <DomainRequired>off</DomainRequired>
         <LoginName><?=$email;?></LoginName>
         <SPA>off</SPA>
@@ -120,16 +121,16 @@ else {
         <SMTPLast>off</SMTPLast>
       </Protocol>
 <?php } ?>
-<?php if (isset($autodiscover_config['sogo']['port']) ) { ?>
+<?php if (isset($configuration['sogo']['port']) ) { ?>
       <Protocol>
         <Type>CalDAV</Type>
-        <Server>https://<?php echo $autodiscover_config['sogo']['server'].':'.$autodiscover_config['sogo']['port']; ?>/SOGo/dav/<?=$email;?>/Calendar</Server>
+        <Server>https://<?php echo $configuration['sogo']['server'].':'.$configuration['sogo']['port']; ?>/SOGo/dav/<?=$email;?>/Calendar</Server>
         <DomainRequired>off</DomainRequired>
         <LoginName><?=$email;?></LoginName>
       </Protocol>
       <Protocol>
         <Type>CardDAV</Type>
-        <Server>https://<?php echo $autodiscover_config['sogo']['server'].':'.$autodiscover_config['sogo']['port']; ?>/SOGo/dav/<?=$email; ?>/Contacts</Server>
+        <Server>https://<?php echo $configuration['sogo']['server'].':'.$configuration['sogo']['port']; ?>/SOGo/dav/<?=$email; ?>/Contacts</Server>
         <DomainRequired>off</DomainRequired>
         <LoginName><?=$email;?></LoginName>
       </Protocol>
@@ -138,7 +139,7 @@ else {
   </Response>
 <?php
       }
-      else if ($autodiscover_config['autodiscoverType'] == 'activesync') {
+      else if ($configuration['autodiscoverType'] == 'activesync') {
 ?>
   <Response xmlns="http://schemas.microsoft.com/exchange/autodiscover/mobilesync/responseschema/2006">
     <Culture>en:en</Culture>
@@ -150,8 +151,8 @@ else {
       <Settings>
         <Server>
         <Type>MobileSync</Type>
-        <Url><?=$autodiscover_config['activesync']['url'];?></Url>
-        <Name><?=$autodiscover_config['activesync']['url'];?></Name>
+        <Url><?=$configuration['activesync']['url'];?></Url>
+        <Name><?=$configuration['activesync']['url'];?></Name>
         </Server>
       </Settings>
     </Action>

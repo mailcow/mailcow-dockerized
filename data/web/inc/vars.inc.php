@@ -17,7 +17,6 @@ $database_name = getenv('DBNAME');
 // Other variables
 $mailcow_hostname = getenv('MAILCOW_HOSTNAME');
 
-
 // Where to go after adding and editing objects
 // Can be "form" or "previous"
 // "form" will stay in the current form, "previous" will redirect to previous page
