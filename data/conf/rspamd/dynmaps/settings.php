@@ -7,7 +7,7 @@ then any of these will trigger the rule. If a rule is triggered then no more rul
 header('Content-Type: text/plain');
 require_once "vars.inc.php";
 
-ini_set('error_reporting', 1);
+ini_set('error_reporting', 0);
 
 $dsn = $database_type . ':host=' . $database_host . ';dbname=' . $database_name;
 $opt = [
