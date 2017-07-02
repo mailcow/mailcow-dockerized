@@ -17,6 +17,50 @@ $database_name = getenv('DBNAME');
 // Other variables
 $mailcow_hostname = getenv('MAILCOW_HOSTNAME');
 
+// Autodiscover settings
+$https_port = strpos($_SERVER['HTTP_HOST'], ':');
+if ($https_port === FALSE) {
+  $https_port = 443;
+} else {
+  $https_port = substr($_SERVER['HTTP_HOST'], $https_port+1);
+}
+$autodiscover_config = array(
+  // Enable the autodiscover service for Outlook desktop clients
+  'useEASforOutlook' => 'yes',
+  // General autodiscover service type: "activesync" or "imap"
+  'autodiscoverType' => 'activesync',
+  // Please don't use STARTTLS-enabled service ports in the "port" variable.
+  // The autodiscover service will always point to SMTPS and IMAPS (TLS-wrapped services).
+  // The autoconfig service will additionally announce the STARTTLS-enabled ports, specified in the "tlsport" variable.
+  'imap' => array(
+    'server' => $mailcow_hostname,
+    'port' => getenv('IMAPS_PORT'),
+    'tlsport' => getenv('IMAP_PORT'),
+  ),
+  'pop3' => array(
+    'server' => $mailcow_hostname,
+    'port' => getenv('POPS_PORT'),
+    'tlsport' => getenv('POP_PORT'),
+  ),
+  'smtp' => array(
+    'server' => $mailcow_hostname,
+    'port' => getenv('SMTPS_PORT'),
+    'tlsport' => getenv('SUBMISSION_PORT'),
+  ),
+  'activesync' => array(
+    'url' => 'https://'.$mailcow_hostname.($https_port == 443 ? '' : ':'.$https_port).'/Microsoft-Server-ActiveSync',
+  ),
+  'caldav' => array(
+    'server' => $mailcow_hostname,
+    'port' => $https_port,
+  ),
+  'carddav' => array(
+    'server' => $mailcow_hostname,
+    'port' => $https_port,
+  ),
+);
+unset($https_port);
+
 // Where to go after adding and editing objects
 // Can be "form" or "previous"
 // "form" will stay in the current form, "previous" will redirect to previous page

@@ -1,13 +1,11 @@
 <?php
-require_once 'inc/prerequisites.inc.php';
-
-$domain = explode('@', $_SERVER['PHP_AUTH_USER'])[1];
-$configuration = get_client_config($domain);
-print_r($configuration);
-
-if (!isset($configuration['autodiscoverType'])) {
-  $configuration['autodiscoverType'] = 'activesync';
+require_once 'inc/vars.inc.php';
+require_once 'inc/functions.inc.php';
+$default_autodiscover_config = $autodiscover_config;
+if(file_exists('inc/vars.local.inc.php')) {
+  include_once 'inc/vars.local.inc.php';
 }
+$configuration = array_merge($default_autodiscover_config, $autodiscover_config);
 
 error_reporting(0);
 
@@ -95,7 +93,6 @@ else {
     <Account>
       <AccountType>email</AccountType>
       <Action>settings</Action>
-<?php if (isset($configuration['imap']['port']) ) { ?>
       <Protocol>
         <Type>IMAP</Type>
         <Server><?=$configuration['imap']['server'];?></Server>
@@ -106,8 +103,6 @@ else {
         <SSL>on</SSL>
         <AuthRequired>on</AuthRequired>
       </Protocol>
-<?php } ?>
-<?php if (isset($configuration['smtp']['port']) ) { ?>
       <Protocol>
         <Type>SMTP</Type>
         <Server><?=$configuration['smtp']['server'];?></Server>
@@ -120,21 +115,18 @@ else {
         <UsePOPAuth>on</UsePOPAuth>
         <SMTPLast>off</SMTPLast>
       </Protocol>
-<?php } ?>
-<?php if (isset($configuration['sogo']['port']) ) { ?>
       <Protocol>
         <Type>CalDAV</Type>
-        <Server>https://<?php echo $configuration['sogo']['server'].':'.$configuration['sogo']['port']; ?>/SOGo/dav/<?=$email;?>/Calendar</Server>
+        <Server>https://<?= $configuration['caldav']['server']; ?><?php if ($configuration['caldav']['port'] != 443) echo ':'.$configuration['caldav']['port']; ?>/SOGo/dav/<?=$email;?>/Calendar</Server>
         <DomainRequired>off</DomainRequired>
         <LoginName><?=$email;?></LoginName>
       </Protocol>
       <Protocol>
         <Type>CardDAV</Type>
-        <Server>https://<?php echo $configuration['sogo']['server'].':'.$configuration['sogo']['port']; ?>/SOGo/dav/<?=$email; ?>/Contacts</Server>
+        <Server>https://<?= $configuration['carddav']['server']; ?><?php if ($configuration['caldav']['port'] != 443) echo ':'.$configuration['carddav']['port']; ?>/SOGo/dav/<?=$email; ?>/Contacts</Server>
         <DomainRequired>off</DomainRequired>
         <LoginName><?=$email;?></LoginName>
       </Protocol>
-<?php } ?>
     </Account>
   </Response>
 <?php

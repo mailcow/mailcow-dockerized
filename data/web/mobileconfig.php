@@ -14,7 +14,6 @@ header('Content-Disposition: attachment; filename="Mailcow.mobileconfig"');
 
 $email = $_SESSION['mailcow_cc_username'];
 $domain = explode('@', $_SESSION['mailcow_cc_username'])[1];
-$config = get_client_config($domain);
 $identifier = implode('.', array_reverse(explode('.', $domain))) . '.iphoneprofile.mailcow';
 
 try {
@@ -39,14 +38,13 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 <dict>
 	<key>PayloadContent</key>
 	<array>
-<?php if (isset($config['sogo']['port']) ) { ?>
 		<dict>
 			<key>CalDAVAccountDescription</key>
 			<string><?php echo $domain; ?></string>
 			<key>CalDAVHostName</key>
-			<string><?php echo $config['sogo']['server']; ?></string>
+			<string><?php echo $autodiscover_config['caldav']['server']; ?></string>
 			<key>CalDAVPort</key>
-			<real><?php echo $config['sogo']['port']; ?></real>
+			<real><?php echo $autodiscover_config['caldav']['port']; ?></real>
 			<key>CalDAVPrincipalURL</key>
 			<string>/SOGo/dav/<?php echo $email; ?></string>
 			<key>CalDAVUseSSL</key>
@@ -68,8 +66,6 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			<key>PayloadVersion</key>
 			<integer>1</integer>
 		</dict>
-<?php } ?>
-<?php if (isset($config['imap']['port']) && isset($config['smtp']['port'])) { ?>
 		<dict>
 			<key>EmailAccountDescription</key>
 			<string><?php echo $domain; ?></string>
@@ -82,9 +78,9 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			<key>IncomingMailServerAuthentication</key>
 			<string>EmailAuthPassword</string>
 			<key>IncomingMailServerHostName</key>
-			<string><?php echo $config['imap']['server']; ?></string>
+			<string><?php echo $autodiscover_config['imap']['server']; ?></string>
 			<key>IncomingMailServerPortNumber</key>
-			<integer><?php echo $config['imap']['port']; ?></integer>
+			<integer><?php echo $autodiscover_config['imap']['port']; ?></integer>
 			<key>IncomingMailServerUseSSL</key>
 			<true/>
 			<key>IncomingMailServerUsername</key>
@@ -92,9 +88,9 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			<key>OutgoingMailServerAuthentication</key>
 			<string>EmailAuthPassword</string>
 			<key>OutgoingMailServerHostName</key>
-			<string><?php echo $config['smtp']['server']; ?></string>
+			<string><?php echo $autodiscover_config['smtp']['server']; ?></string>
 			<key>OutgoingMailServerPortNumber</key>
-			<integer><?php echo $config['smtp']['port']; ?></integer>
+			<integer><?php echo $autodiscover_config['smtp']['port']; ?></integer>
 			<key>OutgoingMailServerUseSSL</key>
 			<true/>
 			<key>OutgoingMailServerUsername</key>
@@ -122,15 +118,13 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			<key>SMIMEEnabled</key>
 			<false/>
 		</dict>
-<?php } ?>
-<?php if (isset($config['sogo']['port']) ) { ?>
 		<dict>
 			<key>CardDAVAccountDescription</key>
 			<string><?php echo $domain; ?></string>
 			<key>CardDAVHostName</key>
-			<string><?php echo $config['sogo']['server']; ?></string>
+			<string><?php echo $autodiscover_config['carddav']['server']; ?></string>
 			<key>CardDAVPort</key>
-			<integer><?php echo $config['sogo']['port']; ?></integer>
+			<integer><?php echo $autodiscover_config['carddav']['port']; ?></integer>
 			<key>CardDAVPrincipalURL</key>
 			<string>/SOGo/dav/<?php echo $email; ?></string>
 			<key>CardDAVUseSSL</key>
@@ -152,17 +146,9 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			<key>PayloadVersion</key>
 			<integer>1</integer>
 		</dict>
-<?php } ?>
 	</array>
 	<key>PayloadDescription</key>
-<?php
-$services_enabled = array();
-if (isset($config['imap']['port']) && isset($config['smtp']['port']))
-  $services_enabled[] = 'IMAP';
-if (isset($config['sogo']['port']))
-  $services_enabled[] = 'CalDAV, CardDAV';
-?>
-	<string><?php echo implode(', ', $services_enabled); ?></string>
+	<string>IMAP, CalDAV, CardDAV</string>
 	<key>PayloadDisplayName</key>
 	<string><?php echo $domain; ?> Mailcow</string>
 	<key>PayloadIdentifier</key>

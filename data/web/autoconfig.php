@@ -1,14 +1,19 @@
 <?php
-require_once 'inc/prerequisites.inc.php';
+require_once 'inc/vars.inc.php';
 
 if (empty($mailcow_hostname)) {
   exit();
 }
 
-$domain = explode('.', $_SERVER['HTTP_HOST']);
-array_shift($domain); // This is "autoconfig"
-$domain = implode('.', $domain);
-$config = get_client_config($domain);
+$domain_dot = strpos($_SERVER['HTTP_HOST'], '.');
+$domain_port = strpos($_SERVER['HTTP_HOST'], ':');
+if ($domain_port === FALSE) {
+  $domain = substr($_SERVER['HTTP_HOST'], $domain_dot+1);
+  $port = 443;
+} else {
+  $domain = substr($_SERVER['HTTP_HOST'], $domain_dot+1, $domain_port-$domain_dot-1);
+  $port = substr($_SERVER['HTTP_HOST'], $domain_port+1);
+}
 
 header('Content-Type: application/xml');
 ?>
@@ -19,64 +24,60 @@ header('Content-Type: application/xml');
       <displayName>A mailcow mail server</displayName>
       <displayShortName>mail server</displayShortName>
 
-<?php if (isset($config['imap']['port']) ) { ?>
       <incomingServer type="imap">
-         <hostname><?= $config['imap']['server']; ?></hostname>
-         <port><?= $config['imap']['port']; ?></port>
+         <hostname><?= $autodiscover_config['imap']['server']; ?></hostname>
+         <port><?= $autodiscover_config['imap']['port']; ?></port>
+         <socketType>SSL</socketType>
+         <username>%EMAILADDRESS%</username>
+         <authentication>password-cleartext</authentication>
+      </incomingServer>
+      <incomingServer type="imap">
+         <hostname><?= $autodiscover_config['imap']['server']; ?></hostname>
+         <port><?= $autodiscover_config['imap']['tlsport']; ?></port>
+         <socketType>STARTTLS</socketType>
+         <username>%EMAILADDRESS%</username>
+         <authentication>password-cleartext</authentication>
+      </incomingServer>
+
+<?php
+$records = dns_get_record('_pop3s._tcp.' . $domain, DNS_SRV); // check if POP3 is announced as "not provided" via SRV record
+if (count($records) > 0 && $records[0]['target'] != '') { ?>
+      <incomingServer type="pop3">
+         <hostname><?= $autodiscover_config['pop3']['server']; ?></hostname>
+         <port><?= $autodiscover_config['pop3']['port']; ?></port>
          <socketType>SSL</socketType>
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
       </incomingServer>
 <?php } ?>
-<?php if (isset($config['imap']['tlsport']) ) { ?>
-      <incomingServer type="imap">
-         <hostname><?= $config['imap']['server']; ?></hostname>
-         <port><?= $config['imap']['tlsport']; ?></port>
+<?php
+$records = dns_get_record('_pop3._tcp.' . $domain, DNS_SRV); // check if POP3 is announced as "not provided" via SRV record
+if (count($records) > 0 && $records[0]['target'] != '') { ?>
+      <incomingServer type="pop3">
+         <hostname><?= $autodiscover_config['pop3']['server']; ?></hostname>
+         <port><?= $autodiscover_config['pop3']['tlsport']; ?></port>
          <socketType>STARTTLS</socketType>
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
       </incomingServer>
 <?php } ?>
 
-<?php if (isset($config['pop3']['port']) ) { ?>
-      <incomingServer type="pop3">
-         <hostname><?= $config['pop3']['server']; ?></hostname>
-         <port><?= $config['pop3']['port']; ?></port>
-         <socketType>SSL</socketType>
-         <username>%EMAILADDRESS%</username>
-         <authentication>password-cleartext</authentication>
-      </incomingServer>
-<?php } ?>
-<?php if (isset($config['pop3']['tlsport']) ) { ?>
-      <incomingServer type="pop3">
-         <hostname><?= $config['pop3']['server']; ?></hostname>
-         <port><?= $config['pop3']['tlsport']; ?></port>
-         <socketType>STARTTLS</socketType>
-         <username>%EMAILADDRESS%</username>
-         <authentication>password-cleartext</authentication>
-      </incomingServer>
-<?php } ?>
-
-<?php if (isset($config['smtp']['port']) ) { ?>
       <outgoingServer type="smtp">
-         <hostname><?= $config['smtp']['server']; ?></hostname>
-         <port><?= $config['smtp']['port']; ?></port>
+         <hostname><?= $autodiscover_config['smtp']['server']; ?></hostname>
+         <port><?= $autodiscover_config['smtp']['port']; ?></port>
          <socketType>SSL</socketType>
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
       </outgoingServer>
-<?php } ?>
-<?php if (isset($config['smtp']['tlsport']) ) { ?>
       <outgoingServer type="smtp">
-         <hostname><?= $config['smtp']['server']; ?></hostname>
-         <port><?= $config['smtp']['tlsport']; ?></port>
+         <hostname><?= $autodiscover_config['smtp']['server']; ?></hostname>
+         <port><?= $autodiscover_config['smtp']['tlsport']; ?></port>
          <socketType>STARTTLS</socketType>
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
       </outgoingServer>
-<?php } ?>
 
-      <enable visiturl="https://<?= $config['http']['server'] . ':' . $config['http']['port']; ?>/admin.php">
+      <enable visiturl="https://<?= $mailcow_hostname; ?><?php if ($port != 443) echo ':'.$port; ?>/admin.php">
          <instruction>If you didn't change the password given to you by the administrator or if you didn't change it in a long time, please consider doing that now.</instruction>
          <instruction lang="de">Sollten Sie das Ihnen durch den Administrator vergebene Passwort noch nicht geändert haben, empfehlen wir dies nun zu tun. Auch ein altes Passwort sollte aus Sicherheitsgründen geändert werden.</instruction>
       </enable>
@@ -84,6 +85,6 @@ header('Content-Type: application/xml');
     </emailProvider>
 
     <webMail>
-      <loginPage url="https://<?= $config['sogo']['server'] . ':' . $config['sogo']['port']; ?>/SOGo/" />
+      <loginPage url="https://<?= $mailcow_hostname; ?><?php if ($port != 443) echo ':'.$port; ?>/SOGo/" />
     </webMail>
 </clientConfig>

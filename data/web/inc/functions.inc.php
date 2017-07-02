@@ -88,21 +88,21 @@ function generate_tlsa_digest($hostname, $port, $starttls = null) {
       return $error_nr . ': ' . $error_msg;
     }
     $banner = fread($stream, 512 );
-    if (preg_match("/^220/i", $banner)) {
+    if (preg_match("/^220/i", $banner)) { // SMTP
       fwrite($stream,"HELO tlsa.generator.local\r\n");
       fread($stream, 512);
       fwrite($stream,"STARTTLS\r\n");
       fread($stream, 512);
     }
-    elseif (preg_match("/imap.+starttls/i", $banner)) {
+    elseif (preg_match("/imap.+starttls/i", $banner)) { // IMAP
       fwrite($stream,"A1 STARTTLS\r\n");
       fread($stream, 512);
     }
-    elseif (preg_match("/^\+OK/", $banner)) {
+    elseif (preg_match("/^\+OK/", $banner)) { // POP3
       fwrite($stream,"STLS\r\n");
       fread($stream, 512);
     }
-    elseif (preg_match("/^OK/m", $banner)) {
+    elseif (preg_match("/^OK/m", $banner)) { // Sieve
       fwrite($stream,"STARTTLS\r\n");
       fread($stream, 512);
     }
@@ -1438,98 +1438,5 @@ function get_logs($container, $lines = 100) {
     return false;
   }
   return false;
-}
-function get_client_config($domain) {
-  global $mailcow_hostname;
-  
-  // get defaults from environment variables
-  $config = array(
-    'useEASforOutlook' => 'yes',
-    'imap' => array(
-      'server' => $mailcow_hostname,
-      'port' => array_pop(explode(':', getenv('IMAPS_PORT'))),
-      'tlsport' => array_pop(explode(':', getenv('IMAP_PORT'))),
-    ),
-    'pop3' => array(
-      'server' => $mailcow_hostname,
-      'port' => array_pop(explode(':', getenv('POPS_PORT'))),
-      'tlsport' => array_pop(explode(':', getenv('POP_PORT'))),
-    ),
-    'sieve' => array(
-      'server' => $mailcow_hostname,
-      'port' => array_pop(explode(':', getenv('SIEVE_PORT'))),
-    ),
-    'smtp' => array(
-      'server' => $mailcow_hostname,
-      'port' => array_pop(explode(':', getenv('SMTPS_PORT'))),
-      'tlsport' => array_pop(explode(':', getenv('SUBMISSION_PORT'))),
-    ),
-    'sogo' => array(
-      'server' => $mailcow_hostname,
-      'port' => '443',
-    ),
-    'http' => array(
-      'server' => $mailcow_hostname,
-      'port' => '443',
-    ),
-    'activesync' => array(
-      'url' => 'https://'.$mailcow_hostname.'/Microsoft-Server-ActiveSync',
-    )
-  );
-  
-  // HTTP
-  $portpos = strpos($_SERVER['HTTP_HOST'], ':');
-  if ($portpos !== FALSE) {
-    $port = substr($_SERVER['HTTP_HOST'], $portpos + 1);
-    $config['sogo']['port'] = $port;
-    $config['http']['port'] = $port;
-    $config['activesync']['url'] = 'https://'.$mailcow_hostname.':'.$port.'/Microsoft-Server-ActiveSync';
-  }
-  
-  // IMAP
-  $records = dns_get_record('_imaps._tcp.' . $domain, DNS_SRV);
-  if (count($records) && $records[0]['target'] == '') {
-    unset($config['imap']['port']);
-  }
-  $records = dns_get_record('_imap._tcp.' . $domain, DNS_SRV);
-  if (count($records) && $records[0]['target'] == '') {
-    unset($config['imap']['tlsport']);
-  }
-  
-  // POP3
-  $records = dns_get_record('_pop3s._tcp.' . $domain, DNS_SRV);
-  if (count($records) && $records[0]['target'] == '') {
-    unset($config['pop3']['port']);
-  }
-  $records = dns_get_record('_pop3._tcp.' . $domain, DNS_SRV);
-  if (count($records) && $records[0]['target'] == '') {
-    unset($config['pop3']['tlsport']);
-  }
-
-  // Sieve
-  $records = dns_get_record('_sieve._tcp.' . $domain, DNS_SRV);
-  if (count($records) && records[0]['target'] == '') {
-    unset($config['sieve']['port']);
-  }
-  
-  // SMTP
-  $records = dns_get_record('_smtps._tcp.' . $domain, DNS_SRV);
-  if (count($records) && $records[0]['target'] == '') {
-    unset($config['smtp']['port']);
-  }
-  $records = dns_get_record('_submission._tcp.' . $domain, DNS_SRV);
-  if (count($records) && $records[0]['target'] == '') {
-    unset($config['smtp']['tlsport']);
-  }
-  
-  // EAS or IMAP for Outlook
-  if (isset($GLOBALS['config']['useEASforOutlook'])) {
-    $config['useEASforOutlook'] = $GLOBALS['config']['useEASforOutlook'];
-  }
-  
-  if (isset($GLOBALS['autodiscover_config']))
-    return array_merge($config, $GLOBALS['autodiscover_config']);
-
-  return $config;
 }
 ?>
