@@ -15,10 +15,6 @@ jQuery(function($){
       return entityMap[s];
     });
   }
-  function unix_time_format(tm) {
-    var date = new Date(tm ? tm * 1000 : 0);
-    return date.toLocaleString();
-  }
   function humanFileSize(bytes) {
     if(Math.abs(bytes) < 1024) {
         return bytes + ' B';
@@ -331,16 +327,12 @@ jQuery(function($){
   function draw_rspamd_history() {
     ft_postfix_logs = FooTable.init('#rspamd_history', {
       "columns": [{
-        "name": "message-id",
-        "title": "ID",
-        "breakpoints": "all",
-        "style": {
-          "minWidth": 130,
-          "overflow": "hidden",
-          "textOverflow": "ellipsis",
-          "wordBreak": "break-all",
-          "whiteSpace": "normal"
-        }
+          "name":"unix_time",
+          "formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},
+          "title":lang.time,
+          "style":{
+            "width":"170px"
+          }
         }, {
           "name": "ip",
           "title": "IP address",
@@ -402,11 +394,16 @@ jQuery(function($){
             "maxWidth": 72
           },
         }, {
-          "sorted": true,
-          "breakpoints": "all",
-          "direction": "DESC",
-          "name": "time",
-          "title": "Time",
+        "name": "message-id",
+        "title": "ID",
+        "breakpoints": "all",
+        "style": {
+          "minWidth": 130,
+          "overflow": "hidden",
+          "textOverflow": "ellipsis",
+          "wordBreak": "break-all",
+          "whiteSpace": "normal"
+        }
         }, {
           "name": "user",
           "title": "Authenticated user",
@@ -447,12 +444,6 @@ jQuery(function($){
             }).map(function(e) {
               return e.str;
             }).join("<br>\n");
-            item.time = {
-              "value": unix_time_format(item.unix_time),
-              "options": {
-                "sortValue": item.unix_time
-              }
-            };
             var scan_time = item.time_real.toFixed(3) + ' / ' + item.time_virtual.toFixed(3);
             item.scan_time = {
               "options": {
