@@ -66,6 +66,9 @@ while true; do
 	if [[ "${SKIP_IP_CHECK}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 		SKIP_IP_CHECK=y
 	fi
+	unset SQL_DOMAIN_ARR
+	unset VALIDATED_CONFIG_DOMAINS
+	unset ADDITIONAL_VALIDATED_SAN
 	declare -a SQL_DOMAIN_ARR
 	declare -a VALIDATED_CONFIG_DOMAINS
 	declare -a ADDITIONAL_VALIDATED_SAN
