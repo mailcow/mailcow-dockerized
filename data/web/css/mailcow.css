@@ -92,3 +92,10 @@ body.modal-open {
   z-index: 2000;
 }
 .input-group-sm .btn { margin-top: 0px !important }
+legend {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none
+  -o-user-select: none;
+  user-select: none;
+}
