@@ -7,6 +7,25 @@ if [[ -z $(which git) ]]; then echo "Cannot find git, exiting."; exit 1; fi
 if [[ -z $(which awk) ]]; then echo "Cannot find awk, exiting."; exit 1; fi
 if [[ -z $(which sha1sum) ]]; then echo "Cannot find sha1sum, exiting."; exit 1; fi
 
+CONFIG_ARRAY=("SKIP_LETS_ENCRYPT" "SKIP_CLAMD" "SKIP_IP_CHECK" "SKIP_FAIL2BAN" "ADDITIONAL_SAN")
+echo >> mailcow.conf
+for option in ${CONFIG_ARRAY[@]}; do
+	if [[ ${option} == "ADDITIONAL_SAN" ]]; then
+		if ! grep -q ${option} mailcow.conf; then
+			echo "Adding new option \"${option}\" to mailcow.conf"
+			echo "${option}=" >> mailcow.conf
+		fi
+	elif [[ ${option} == "COMPOSE_PROJECT_NAME" ]]; then
+		if ! grep -q ${option} mailcow.conf; then
+			echo "Adding new option \"${option}\" to mailcow.conf"
+			echo "${COMPOSE_PROJECT_NAME}=mailcow-dockerized" >> mailcow.conf
+		fi
+	elif ! grep -q ${option} mailcow.conf; then
+		echo "Adding new option \"${option}\" to mailcow.conf"
+		echo "${option}=n" >> mailcow.conf
+	fi
+done
+
 echo -en "Checking internet connection... "
 curl -o /dev/null google.com -sm3
 if [[ $? != 0 ]]; then
@@ -106,14 +125,16 @@ chmod +x $(which docker-compose)
 echo -e "\e[32mStarting mailcow...\e[0m"
 sleep 2
 docker-compose up -d --remove-orphans
-#echo -e "\e[32mCleaning up Docker objects...\e[0m"
-if docker images -f "dangling=true" | grep ago --quiet; then
-	docker rmi -f $(docker images -f "dangling=true" -q)
+#echo -e "\e[32mCleaning up dangling Docker objects...\e[0m"
+if [[ ! -z $(docker images -qf "dangling=true") ]]; then
+	docker rmi -f $(docker images -qf "dangling=true" -q)
+fi
+if [[ ! -z $(docker volume ls -qf dangling=true) ]]; then
 	docker volume rm $(docker volume ls -qf dangling=true)
 fi
 
-echo "In case you encounter any problem, hard-reset to a state before updating mailcow:"
-echo
-git reflog --color=always | grep "Before update on "
-echo
-echo "Use \"git reset --hard hash-on-the-left\" and run docker-compose up -d afterwards."
+#echo "In case you encounter any problem, hard-reset to a state before updating mailcow:"
+#echo
+#git reflog --color=always | grep "Before update on "
+#echo
+#echo "Use \"git reset --hard hash-on-the-left\" and run docker-compose up -d afterwards."
