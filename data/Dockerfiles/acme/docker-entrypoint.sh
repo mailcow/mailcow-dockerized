@@ -137,10 +137,11 @@ while true; do
 		fi
 	done
 
-	ALL_VALIDATED="$(echo ${VALIDATED_CONFIG_DOMAINS[*]} ${ADDITIONAL_VALIDATED_SAN[*]} ${VALIDATED_MAILCOW_HOSTNAME})"
+  # Unique elements
+	ALL_VALIDATED=($(echo ${VALIDATED_CONFIG_DOMAINS[*]} ${ADDITIONAL_VALIDATED_SAN[*]} ${VALIDATED_MAILCOW_HOSTNAME} | xargs -n1 | sort -u | xargs))
 	if [[ -z ${ALL_VALIDATED[*]} ]]; then
 		echo "Cannot validate hostnames, skipping Let's Encrypt..."
-		echo 0
+		exit 0
 	fi
 
 	ORPHANED_SAN=($(echo ${SAN_ARRAY_NOW[*]} ${VALIDATED_CONFIG_DOMAINS[*]} ${ADDITIONAL_VALIDATED_SAN[*]} ${MAILCOW_HOSTNAME} | tr ' ' '\n' | sort | uniq -u ))
@@ -159,7 +160,7 @@ while true; do
 		-f ${ACME_BASE}/acme/private/account.key \
 		-k ${ACME_BASE}/acme/private/privkey.pem \
 		-c ${ACME_BASE}/acme \
-		${VALIDATED_MAILCOW_HOSTNAME} ${VALIDATED_CONFIG_DOMAINS[*]} ${ADDITIONAL_VALIDATED_SAN[*]}
+		${ALL_VALIDATED[*]}
 
 	case "$?" in
 		0) # new certs

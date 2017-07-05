@@ -1,4 +1,4 @@
-FROM debian:jessie-slim
+FROM debian:stretch-slim
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -11,30 +11,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 		ca-certificates \
 		cron \
 		gnupg \
-		make \
 		mysql-client \
 		supervisor \
 		syslog-ng \
 		syslog-ng-core \
 		syslog-ng-mod-redis \
-		tar \
+		dirmngr \
 		wget \
-		zip \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
 	&& wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
-	&& wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc" \
-	&& export GNUPGHOME="$(mktemp -d)" \
-	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
-	&& gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
-	&& rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc \
 	&& chmod +x /usr/local/bin/gosu \
 	&& gosu nobody true
 
 RUN mkdir /usr/share/doc/sogo \
 	&& touch /usr/share/doc/sogo/empty.sh \
-	&& apt-key adv --keyserver keys.gnupg.net --recv-key 0x810273C4 \
-	&& echo "deb http://packages.inverse.ca/SOGo/nightly/3/debian/ jessie jessie" > /etc/apt/sources.list.d/sogo.list \
+	&& apt-key adv --keyserver sks.labs.nic.cz --recv-key A04BE668 \
+	&& echo "deb http://www.axis.cz/linux/debian stretch sogo-v3" > /etc/apt/sources.list.d/sogo.list \
 	&& apt-get update && apt-get install -y --force-yes \
 		sogo \
 		sogo-activesync \

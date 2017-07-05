@@ -66,9 +66,11 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.0
+      image: mailcow/clamd:1.1
       build: ./data/Dockerfiles/clamd
       restart: always
+      environment:
+        - SKIP_CLAMD=${SKIP_CLAMD:-n}
       dns:
         - 172.22.1.254
       dns_search: mailcow-network
@@ -143,7 +145,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.0
+      image: mailcow/sogo:1.1
       build: ./data/Dockerfiles/sogo
       depends_on:
         unbound-mailcow:
@@ -156,7 +158,6 @@ services:
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
       volumes:
         - ./data/conf/sogo/:/etc/sogo/
-        - ./data/web/thunderbird-plugins:/thunderbird
       restart: always
       logging:
         options:
@@ -171,7 +172,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.1
+      image: mailcow/dovecot:1.2
       build: ./data/Dockerfiles/dovecot
       depends_on:
         unbound-mailcow:
@@ -206,7 +207,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.0
+      image: mailcow/postfix:1.1
       build: ./data/Dockerfiles/postfix
       depends_on:
         unbound-mailcow:
@@ -293,7 +294,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.11
+      image: mailcow/acme:1.12
       build: ./data/Dockerfiles/acme
       dns:
         - 172.22.1.254
@@ -319,7 +320,7 @@ services:
             - acme
 
     fail2ban-mailcow:
-      image: mailcow/fail2ban:1.4
+      image: mailcow/fail2ban:1.5
       build: ./data/Dockerfiles/fail2ban
       depends_on:
         - dovecot-mailcow
@@ -337,8 +338,8 @@ services:
         - 172.22.1.254
       dns_search: mailcow-network
       volumes:
-        - /var/run/docker.sock:/var/run/docker.sock:ro
         - /lib/modules:/lib/modules:ro
+
     ipv6nat:
       image: robbertkl/ipv6nat
       restart: always

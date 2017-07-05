@@ -47,6 +47,10 @@ jQuery(function($){
     e.preventDefault();
     draw_rspamd_history();
   });
+  $("#import_dkim_legend").on('click', function(e) {
+    e.preventDefault();
+    $('#import_dkim_arrow').toggleClass("animation"); 
+  });
   function draw_postfix_logs() {
     ft_postfix_logs = FooTable.init('#postfix_log', {
       "columns": [

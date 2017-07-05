@@ -168,6 +168,7 @@ function doveadm_authenticate($hash, $algorithm, $password) {
 }
 function check_login($user, $pass) {
 	global $pdo;
+	global $redis;
 	if (!filter_var($user, FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $user))) {
 		return false;
 	}
@@ -229,10 +230,12 @@ function check_login($user, $pass) {
 	}
 	if (!isset($_SESSION['ldelay'])) {
 		$_SESSION['ldelay'] = "0";
+    $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
     error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
 	}
 	elseif (!isset($_SESSION['mailcow_cc_username'])) {
 		$_SESSION['ldelay'] = $_SESSION['ldelay']+0.5;
+    $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
 		error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
 	}
 	sleep($_SESSION['ldelay']);

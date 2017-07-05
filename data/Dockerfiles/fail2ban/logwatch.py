@@ -8,7 +8,6 @@ import signal
 import ipaddress
 import subprocess
 from threading import Thread
-import docker
 import redis
 import time
 import json
@@ -19,33 +18,16 @@ if re.search(yes_regex, os.getenv('SKIP_FAIL2BAN', 0)):
 	raise SystemExit
 
 r = redis.StrictRedis(host='172.22.1.249', decode_responses=True, port=6379, db=0)
-client = docker.from_env()
-
-for container in client.containers.list():
-	if "postfix-mailcow" in container.name:
-		postfix_container = container.name
-	elif "dovecot-mailcow" in container.name:
-		dovecot_container = container.name
-	elif "sogo-mailcow" in container.name:
-		sogo_container = container.name
-	elif "php-fpm-mailcow" in container.name:
-		php_fpm_container = container.name
+pubsub = r.pubsub()
 
 RULES = {}
-
-RULES[postfix_container] = {}
-RULES[dovecot_container] = {}
-RULES[sogo_container] = {}
-RULES[php_fpm_container] = {}
-
-RULES[postfix_container][1] = 'warning: .*\[([0-9a-f\.:]+)\]: SASL .* authentication failed'
-RULES[dovecot_container][1] = '-login: Disconnected \(auth failed, .*\): user=.*, method=.*, rip=([0-9a-f\.:]+),'
-RULES[dovecot_container][2] = '-login: Disconnected \(no auth .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
-RULES[dovecot_container][3] = '-login: Aborted login \(no auth .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
-RULES[dovecot_container][4] = '-login: Aborted login \(tried to use disallowed .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
-RULES[sogo_container][1] = 'SOGo.* Login from \'([0-9a-f\.:]+)\' for user .* might not have worked'
-RULES[php_fpm_container][1] = 'mailcow UI: Invalid password for .* by ([0-9a-f\.:]+)'
-
+RULES[1] = 'warning: .*\[([0-9a-f\.:]+)\]: SASL .+ authentication failed'
+RULES[2] = '-login: Disconnected \(auth failed, .+\): user=.*, method=.+, rip=([0-9a-f\.:]+),'
+RULES[3] = '-login: Disconnected \(no auth .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
+RULES[4] = '-login: Aborted login \(no auth .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
+RULES[5] = '-login: Aborted login \(tried to use disallowed .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
+RULES[6] = 'SOGo.+ Login from \'([0-9a-f\.:]+)\' for user .+ might not have worked'
+RULES[7] = 'mailcow UI: Invalid password for .+ by ([0-9a-f\.:]+)'
 
 r.setnx("F2B_BAN_TIME", "1800")
 r.setnx("F2B_MAX_ATTEMPTS", "10")
@@ -149,24 +131,28 @@ def clear():
 	print "Clearing all bans"
 	for net in bans.copy():
 		unban(net)
+	pubsub.unsubscribe()
 
-def watch(container):
+def watch():
 	log['time'] = int(round(time.time()))
 	log['priority'] = "info"
-	log['message'] = "Watching %s" % container
+	log['message'] = "Watching Redis channel F2B_CHANNEL"
 	r.lpush("F2B_LOG", json.dumps(log, ensure_ascii=False))
-	print "Watching", container
-	for msg in client.containers.get(container).attach(stream=True, logs=False):
-		for rule_id, rule_regex in RULES[container].iteritems():
-			result = re.search(rule_regex, msg)
-			if result:
-				addr = result.group(1)
-				print "%s matched rule id %d in %s" % (addr, rule_id, container)
-				log['time'] = int(round(time.time()))
-				log['priority'] = "warn"
-				log['message'] = "%s matched rule id %d in %s" % (addr, rule_id, container)
-				r.lpush("F2B_LOG", json.dumps(log, ensure_ascii=False))
-				ban(addr)
+	pubsub.subscribe("F2B_CHANNEL")
+	print "Subscribing to Redis channel F2B_CHANNEL"
+	while True:
+		for item in pubsub.listen():
+			for rule_id, rule_regex in RULES.iteritems():
+				if item['data'] and item['type'] == 'message':
+					result = re.search(rule_regex, item['data'])
+					if result:
+						addr = result.group(1)
+						print "%s matched rule id %d" % (addr, rule_id)
+						log['time'] = int(round(time.time()))
+						log['priority'] = "warn"
+						log['message'] = "%s matched rule id %d" % (addr, rule_id)
+						r.lpush("F2B_LOG", json.dumps(log, ensure_ascii=False))
+						ban(addr)
 
 def autopurge():
 	while not quit_now:
@@ -180,14 +166,13 @@ def autopurge():
 			if bans[net]['attempts'] >= MAX_ATTEMPTS:
 				if time.time() - bans[net]['last_attempt'] > BAN_TIME:
 					unban(net)
-		time.sleep(30)
+		time.sleep(10)
 
 if __name__ == '__main__':
-	threads = []
-	for container in RULES:
-		threads.append(Thread(target=watch, args=(container,)))
-		threads[-1].daemon = True
-		threads[-1].start()
+
+	watch_thread = Thread(target=watch)
+	watch_thread.daemon = True
+	watch_thread.start()
 
 	autopurge_thread = Thread(target=autopurge)
 	autopurge_thread.daemon = True
@@ -197,9 +182,4 @@ if __name__ == '__main__':
 	atexit.register(clear)
 
 	while not quit_now:
-		for thread in threads:
-			if not thread.isAlive():
-				break
-		time.sleep(0.1)
-	
-	clear()
+		time.sleep(0.5)
