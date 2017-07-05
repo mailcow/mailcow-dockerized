@@ -16,15 +16,11 @@ tar --strip-components=1 -C connector -xf connector.tar.gz
 # build custom integrator
 while read DOMAIN; do
 	echo "Building SOGo Integrator for $DOMAIN hosted on $MAILHOST"
-	PORT_NUM=$(dig -t srv  _autodiscover._tcp.$DOMAIN +short | tail -n 1 | awk '{print $3}')
-	if [[ -z ${PORT_NUM} ]]; then
-		PORT_NUM=443
-	fi
 	cd integrator
 	echo > defaults/preferences/site.js
 	mkdir -p custom/${DOMAIN}
 	cp -r custom/sogo-demo/* custom/${DOMAIN}/
-	sed -i "s/http:\/\/sogo-demo\.inverse\.ca/https:\/\/${MAILHOST}:${PORT_NUM}/g" custom/${DOMAIN}/chrome/content/extensions.rdf
+	sed -i "s/http:\/\/sogo-demo\.inverse\.ca/https:\/\/${MAILHOST}/g" custom/${DOMAIN}/chrome/content/extensions.rdf
 	sed -i "s/plugins\/updates\.php[?]/thunderbird-plugins.php?domain=${DOMAIN}\&amp;/g" custom/${DOMAIN}/chrome/content/extensions.rdf
 	echo 'pref("sogo-integrator.autocomplete.server.urlid", "'${DOMAIN}'");' > custom/${DOMAIN}/defaults/preferences/site.js
 	echo 'pref("mail.collect_email_address_outgoing", false);' >> custom/${DOMAIN}/defaults/preferences/site.js

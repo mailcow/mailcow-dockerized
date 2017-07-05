@@ -8,7 +8,6 @@ ENV GOSU_VERSION 1.9
 # Prerequisites
 RUN apt-get update && apt-get install -y --no-install-recommends \
 		apt-transport-https \
-		bind9-host \
 		ca-certificates \
 		cron \
 		gnupg \
