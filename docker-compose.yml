@@ -158,7 +158,6 @@ services:
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
       volumes:
         - ./data/conf/sogo/:/etc/sogo/
-        - ./data/web/thunderbird-plugins:/thunderbird
       restart: always
       logging:
         options:
