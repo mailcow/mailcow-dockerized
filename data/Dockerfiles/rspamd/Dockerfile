@@ -7,8 +7,9 @@ ENV LC_ALL C
 RUN apt-get update && apt-get install -y \
 	ca-certificates \
 	gnupg2 \
-	&& apt-key adv --fetch-keys http://rspamd.com/apt-stable/gpg.key \
-	&& echo "deb http://rspamd.com/apt-stable/ stretch main" > /etc/apt/sources.list.d/rspamd.list \
+	apt-transport-https \
+	&& apt-key adv --fetch-keys https://rspamd.com/apt-stable/gpg.key \
+	&& echo "deb https://rspamd.com/apt/ stretch main" > /etc/apt/sources.list.d/rspamd.list \
 	&& apt-get update && apt-get install -y rspamd \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& echo '.include $LOCAL_CONFDIR/local.d/rspamd.conf.local' > /etc/rspamd/rspamd.conf.local \
