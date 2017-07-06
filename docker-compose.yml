@@ -11,7 +11,7 @@ services:
       healthcheck:
         test: ["CMD", "nslookup", "mailcow.email", "127.0.0.1"]
         interval: 30s
-        timeout: 7s
+        timeout: 3s
         retries: 10
       volumes:
         - ./data/conf/unbound/unbound.conf:/etc/unbound/unbound.conf:ro
@@ -27,8 +27,8 @@ services:
       command: mysqld --max_allowed_packet=128M
       healthcheck:
         test: ["CMD", "mysqladmin", "ping", "--host", "localhost", "--silent"]
-        interval: 10s
-        timeout: 7s
+        interval: 5s
+        timeout: 5s
         retries: 10
       volumes:
         - mysql-vol-1:/var/lib/mysql/
@@ -258,10 +258,10 @@ services:
         - php-fpm-mailcow
       image: nginx:mainline-alpine
       healthcheck:
-        test: ["CMD", "ping", "php-fpm-mailcow", "-c", "10"]
-        interval: 10s
-        timeout: 30s
-        retries: 5
+        test: ["CMD", "ping", "php-fpm-mailcow"]
+        interval: 5s
+        timeout: 5s
+        retries: 10
       command: /bin/sh -c "envsubst < /etc/nginx/conf.d/templates/listen_plain.template > /etc/nginx/conf.d/listen_plain.active &&
         envsubst < /etc/nginx/conf.d/templates/listen_ssl.template > /etc/nginx/conf.d/listen_ssl.active &&
         envsubst < /etc/nginx/conf.d/templates/server_name.template > /etc/nginx/conf.d/server_name.active &&
