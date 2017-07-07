@@ -258,7 +258,7 @@ services:
         - php-fpm-mailcow
       image: nginx:mainline-alpine
       healthcheck:
-        test: ["CMD", "ping", "php-fpm-mailcow"]
+        test: ["CMD", "ping", "php-fpm-mailcow", "-c", "5"]
         interval: 5s
         timeout: 5s
         retries: 10
