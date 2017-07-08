@@ -132,6 +132,7 @@ echo -e "\e[32mStarting mailcow...\e[0m"
 sleep 2
 docker-compose up -d --remove-orphans
 
+echo -e "\e[32mCollecting garbage...\e[0m"
 IMGS_TO_DELETE=()
 for container in $(grep -oP "image: \Kmailcow.+" docker-compose.yml); do
 	REPOSITORY=${container/:*}
@@ -164,11 +165,11 @@ if [[ ! -z ${IMGS_TO_DELETE[*]} ]]; then
 	if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 		docker rmi ${IMGS_TO_DELETE[*]}
 	else
-		"OK, skipped."
+		echo "OK, skipped."
 	fi
 fi
-
-echo -e "\e[32mIf you want to cleanup further garbage collected by Docker, please make sure all containers are up and running before cleaning your system by executing \"docker system prune\".\e[0m"
+echo -e "\e[32mFurther cleanup...\e[0m"
+echo "If you want to cleanup further garbage collected by Docker, please make sure all containers are up and running before cleaning your system by executing \"docker system prune\""
 
 #echo "In case you encounter any problem, hard-reset to a state before updating mailcow:"
 #echo
