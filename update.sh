@@ -129,9 +129,6 @@ docker-compose up -d --remove-orphans
 if [[ ! -z $(docker images -qf "dangling=true") ]]; then
 	docker rmi -f $(docker images -qf "dangling=true" -q)
 fi
-if [[ ! -z $(docker volume ls -qf dangling=true) ]]; then
-	docker volume rm $(docker volume ls -qf dangling=true)
-fi
 
 #echo "In case you encounter any problem, hard-reset to a state before updating mailcow:"
 #echo
