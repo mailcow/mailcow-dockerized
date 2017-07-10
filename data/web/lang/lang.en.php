@@ -110,7 +110,6 @@ $lang['user']['user_settings'] = 'User settings';
 $lang['user']['mailbox_settings'] = 'Mailbox settings';
 $lang['user']['mailbox_details'] = 'Mailbox details';
 $lang['user']['change_password'] = 'Change password';
-$lang['user']['client_configuration'] = 'Show configuration guides for email clients and smartphones';
 $lang['user']['new_password'] = 'New password';
 $lang['user']['save_changes'] = 'Save changes';
 $lang['user']['password_now'] = 'Current password (confirm changes)';

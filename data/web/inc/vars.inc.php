@@ -18,48 +18,31 @@ $database_name = getenv('DBNAME');
 $mailcow_hostname = getenv('MAILCOW_HOSTNAME');
 
 // Autodiscover settings
-$https_port = strpos($_SERVER['HTTP_HOST'], ':');
-if ($https_port === FALSE) {
-  $https_port = 443;
-} else {
-  $https_port = substr($_SERVER['HTTP_HOST'], $https_port+1);
-}
 $autodiscover_config = array(
   // Enable the autodiscover service for Outlook desktop clients
   'useEASforOutlook' => 'yes',
   // General autodiscover service type: "activesync" or "imap"
   'autodiscoverType' => 'activesync',
-  // Please don't use STARTTLS-enabled service ports in the "port" variable.
+  // Please don't use STARTTLS-enabled service ports here.
   // The autodiscover service will always point to SMTPS and IMAPS (TLS-wrapped services).
-  // The autoconfig service will additionally announce the STARTTLS-enabled ports, specified in the "tlsport" variable.
   'imap' => array(
     'server' => $mailcow_hostname,
-    'port' => array_pop(explode(':', getenv('IMAPS_PORT'))),
-    'tlsport' => array_pop(explode(':', getenv('IMAP_PORT'))),
-  ),
-  'pop3' => array(
-    'server' => $mailcow_hostname,
-    'port' => array_pop(explode(':', getenv('POPS_PORT'))),
-    'tlsport' => array_pop(explode(':', getenv('POP_PORT'))),
+    'port' => getenv('IMAPS_PORT'),
   ),
   'smtp' => array(
     'server' => $mailcow_hostname,
-    'port' => array_pop(explode(':', getenv('SMTPS_PORT'))),
-    'tlsport' => array_pop(explode(':', getenv('SUBMISSION_PORT'))),
+    'port' => getenv('SMTPS_PORT'),
   ),
   'activesync' => array(
-    'url' => 'https://'.$mailcow_hostname.($https_port == 443 ? '' : ':'.$https_port).'/Microsoft-Server-ActiveSync',
+    'url' => 'https://'.$mailcow_hostname.'/Microsoft-Server-ActiveSync'
   ),
   'caldav' => array(
-    'server' => $mailcow_hostname,
-    'port' => $https_port,
+    'url' => 'https://'.$mailcow_hostname
   ),
   'carddav' => array(
-    'server' => $mailcow_hostname,
-    'port' => $https_port,
-  ),
+    'url' => 'https://'.$mailcow_hostname
+  )
 );
-unset($https_port);
 
 // Where to go after adding and editing objects
 // Can be "form" or "previous"
