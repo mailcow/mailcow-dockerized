@@ -145,13 +145,19 @@ else {
       <li>Once the configuration has been automatically detected, click <em>Done</em>.</li>
       <li>If you already had other accounts configured in Thunderbird, select the new one (<?php echo $email; ?>) on the left, click the <em>Account Actions</em> dropdown and select <em>Set as Default</em>.</li>
       <li>Close the account settings window with the <em>OK</em> button.</li>
+<?php if (isset($integrator_file)) {?>
       <li>In your web browser, download <a href="thunderbird-plugins/<?php echo str_replace('__DOMAIN__', $domain, $integrator_file); ?>">SOGo Integrator</a>.</li>
       <li>Back in Thunderbird, go to the <em>Tools</em> menu and select <em>Add-ons</em>.</li>
       <li>Click <em>Extensions</em> on the left, click the little gear icon at the top and select <em>Install Add-on From File</em>. Select the file you downloaded in step 9, click <em>Open</em> and, after waiting for a few seconds, <em>Install Now</em>.</li>
       <li>Click the <em>Restart Now</em> button at the top that appears.</li>
       <li>Thunderbird briefly shows a message that it is updating extensions, then restarts automatically once more.</li>
       <li>When you are prompted to authenticate for <?= $autodiscover_config['caldav']['server']; ?>, enter your email address and password, check <em>Use Password Manager</em> and click <em>OK</em>.</li>
+<?php } ?>
     </ol>
+<?php if (!isset($integrator_file)) {?>
+    <p>Automatic configuration of calendars and address books in Thunderbird is not currently supported.
+      You can ask your server administrator to enable <a href="https://mailcow.github.io/mailcow-dockerized-docs/third_party-thunderbird/" target="_blank">SOGo Integrator</a> if you need it.</p>
+<?php } ?>
   </div>
   
   <h3><a href="#" onclick="document.getElementById('client_windows').style.display = 'block'">Windows</a></h3>
