@@ -2,28 +2,10 @@
 require_once 'inc/prerequisites.inc.php';
 require_once 'inc/spf.inc.php';
 
-function in_net($addr, $net) {
-  $net = explode('/', $net);
-  if (count($net) > 1) {
-    $mask = $net[1];
-  }
-  $net = inet_pton($net[0]);
-  $addr = inet_pton($addr);
-  $length = strlen($net); // 4 for IPv4, 16 for IPv6
-  if (strlen($net) != strlen($addr)) {
-    return false;
-  }
-  if (!isset($mask)) {
-    $mask = $length * 8;
-  }
-  $addr_bin = '';
-  $net_bin = '';
-  for ($i = 0; $i < $length; ++$i) {
-    $addr_bin .= str_pad(decbin(ord(substr($addr, $i, $i+1))), 8, '0', STR_PAD_LEFT);
-    $net_bin .= str_pad(decbin(ord(substr($net, $i, $i+1))), 8, '0', STR_PAD_LEFT);
-  }
-  return substr($addr_bin, 0, $mask) == substr($net_bin, 0, $mask);
-}
+define('state_good',  "&#10003;");
+define('state_missing',   "&#x2717;");
+define('state_nomatch', "?");
+define('state_optional', "(optional)");
 
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admin") {
 require_once("inc/header.inc.php");
@@ -96,8 +78,8 @@ foreach ($domains as $domain) {
   $records[] = array('autodiscover.' . $domain, 'CNAME', $mailcow_hostname);
   $records[] = array('_autodiscover._tcp.' . $domain, 'SRV', $mailcow_hostname . ' ' . $https_port);
   $records[] = array('autoconfig.' . $domain, 'CNAME', $mailcow_hostname);
-  $records[] = array($domain, 'TXT', 'v=spf1 mx -all');
-  $records[] = array('_dmarc.' . $domain, 'TXT', 'v=DMARC1; p=reject', 'v=DMARC1; p=');
+  $records[] = array($domain, 'TXT', '<a href="http://www.openspf.org/SPF_Record_Syntax" target="_blank">SPF Record Syntax</a>', state_optional);
+  $records[] = array('_dmarc.' . $domain, 'TXT', '<a href="http://www.kitterman.com/dmarc/assistant.html" target="_blank">DMARC Assistant</a>', state_optional);
   
   if (!empty($dkim = dkim('details', $domain))) {
     $records[] = array($dkim['dkim_selector'] . '._domainkey.' . $domain, 'TXT', $dkim['dkim_txt']);
@@ -135,10 +117,6 @@ foreach ($domains as $domain) {
     $records[] = array('_sieve._tcp.' . $domain, 'SRV', $autodiscover_config['sieve']['server'] . ' ' . $autodiscover_config['sieve']['port']);
   }
 }
-
-define('state_good',  "&#10003;");
-define('state_missing',   "&#x2717;");
-define('state_nomatch', "?");
 
 $record_types = array(
   'A' => DNS_A,
@@ -224,29 +202,20 @@ foreach ($records as $record)
     }
     
     elseif ($current['type'] == 'TXT' && strpos($record[0], '_dmarc.') === 0) {
-      $state = state_nomatch;
-      if (strpos($current[$data_field[$current['type']]], $record[3]) === 0)
-        $state = state_good . ' (' . current[$data_field[$current['type']]] . ')';
+      $state = state_optional . '<br />' . $current[$data_field[$current['type']]];
     }
     else if ($current['type'] == 'TXT' && strpos($current['txt'], 'v=spf1') === 0) {
-      $allowed = get_spf_allowed_hosts($record[0]);
-      $spf_ok = FALSE;
-      $spf_ok6 = FALSE;
-      foreach ($allowed as $net)
-      {
-        if (in_net($ip, $net))
-          $spf_ok = TRUE;
-        if (in_net($ip6, $net))
-          $spf_ok6 = TRUE;
-      }
-      if ($spf_ok && (empty($ip6) || $spf_ok6))
-        $state = state_good . ' (' . $current[$data_field[$current['type']]] . ')';
+      $state = state_optional . '<br />' . $current[$data_field[$current['type']]];
     }
     else if ($current['type'] != 'TXT' && isset($data_field[$current['type']]) && $state != state_good) {
       $state = state_nomatch;
       if ($current[$data_field[$current['type']]] == $record[2])
         $state = state_good;
     }
+  }
+  
+  if (isset($record[3]) && $record[3] == state_optional && ($state == state_missing || $state == state_nomatch)) {
+    $state = state_optional;
   }
   
   if ($state == state_nomatch) {
@@ -256,7 +225,7 @@ foreach ($records as $record)
     }
     $state = implode('<br />', $state);
   }
-  
+
   echo sprintf('<tr><td>%s</td><td>%s</td><td style="max-width: 300px; word-break: break-all">%s</td><td style="max-width: 150px; word-break: break-all">%s</td></tr>', $record[0], $record[1], $record[2], $state);
 }
 ?>
