@@ -12,14 +12,13 @@ error_reporting(0);
 $data = trim(file_get_contents("php://input"));
 
 // Desktop client needs IMAP, unless it's Outlook 2013 or higher on Windows
-if (strpos($data, 'autodiscover/outlook/responseschema') !== false) { // desktop client
+if (strpos($data, 'autodiscover/outlook/responseschema')) { // desktop client
   $configuration['autodiscoverType'] = 'imap';
   if ($configuration['useEASforOutlook'] == 'yes' &&
-    // Office for macOS does not support EAS
-    strpos($_SERVER['HTTP_USER_AGENT'], 'Mac') === false &&
-    // Outlook 2013 (version 15) or higher
-    preg_match('/(Outlook|Office).+1[5-9]\./', $_SERVER['HTTP_USER_AGENT'])
-  ) {
+  // Office for macOS does not support EAS
+  strpos($_SERVER['HTTP_USER_AGENT'], 'Mac') === false &&
+  // Outlook 2013 (version 15) or higher
+  preg_match('/(Outlook|Office).+1[5-9]\./', $_SERVER['HTTP_USER_AGENT'])) {
     $configuration['autodiscoverType'] = 'activesync';
   }
 }
@@ -61,28 +60,8 @@ else {
 <?php
         exit(0);
       }
-      try {
-        $discover = new SimpleXMLElement($data);
-        $email = $discover->Request->EMailAddress;
-      } catch (Exception $e) {
-        $email = $_SERVER['PHP_AUTH_USER'];
-      }
-
-      $username = trim($email);
-      try {
-        $stmt = $pdo->prepare("SELECT `name` FROM `mailbox` WHERE `username`= :username");
-        $stmt->execute(array(':username' => $username));
-        $MailboxData = $stmt->fetch(PDO::FETCH_ASSOC);
-      }
-      catch(PDOException $e) {
-        die("Failed to determine name from SQL");
-      }
-      if (!empty($MailboxData['name'])) {
-        $displayname = utf8_encode($MailboxData['name']);
-      }
-      else {
-        $displayname = $email;
-      }
+      $discover = new SimpleXMLElement($data);
+      $email = $discover->Request->EMailAddress;
 
       if ($configuration['autodiscoverType'] == 'imap') {
 ?>
@@ -117,13 +96,13 @@ else {
       </Protocol>
       <Protocol>
         <Type>CalDAV</Type>
-        <Server>https://<?=$configuration['caldav']['server'];?><?php if ($configuration['caldav']['port'] != 443) echo ':'.$configuration['caldav']['port']; ?>/SOGo/dav/<?=$email;?>/Calendar</Server>
+        <Server><?=$configuration['caldav']['server'];?>/SOGo/dav/<?=$email;?>/Calendar</Server>
         <DomainRequired>off</DomainRequired>
         <LoginName><?=$email;?></LoginName>
       </Protocol>
       <Protocol>
         <Type>CardDAV</Type>
-        <Server>https://<?=$configuration['carddav']['server'];?><?php if ($configuration['caldav']['port'] != 443) echo ':'.$configuration['carddav']['port']; ?>/SOGo/dav/<?=$email;?>/Contacts</Server>
+        <Server><?=$configuration['carddav']['server'];?>/SOGo/dav/<?=$email;?>/Contacts</Server>
         <DomainRequired>off</DomainRequired>
         <LoginName><?=$email;?></LoginName>
       </Protocol>
@@ -132,6 +111,21 @@ else {
 <?php
       }
       else if ($configuration['autodiscoverType'] == 'activesync') {
+        $username = trim($email);
+        try {
+          $stmt = $pdo->prepare("SELECT `name` FROM `mailbox` WHERE `username`= :username");
+          $stmt->execute(array(':username' => $username));
+          $MailboxData = $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+        catch(PDOException $e) {
+          die("Failed to determine name from SQL");
+        }
+        if (!empty($MailboxData['name'])) {
+          $displayname = utf8_encode($MailboxData['name']);
+        }
+        else {
+          $displayname = $email;
+        }
 ?>
   <Response xmlns="http://schemas.microsoft.com/exchange/autodiscover/mobilesync/responseschema/2006">
     <Culture>en:en</Culture>
