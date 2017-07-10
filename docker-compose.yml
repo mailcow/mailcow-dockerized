@@ -191,6 +191,7 @@ services:
         options:
           max-size: "5m"
       ports:
+        - "${DOVEADM_PORT:-127.0.0.1:19991}:12345"
         - "${IMAP_PORT:-143}:143"
         - "${IMAPS_PORT:-993}:993"
         - "${POP_PORT:-110}:110"
