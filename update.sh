@@ -7,7 +7,7 @@ if [[ -z $(which git) ]]; then echo "Cannot find git, exiting."; exit 1; fi
 if [[ -z $(which awk) ]]; then echo "Cannot find awk, exiting."; exit 1; fi
 if [[ -z $(which sha1sum) ]]; then echo "Cannot find sha1sum, exiting."; exit 1; fi
 
-CONFIG_ARRAY=("SKIP_LETS_ENCRYPT" "SKIP_CLAMD" "SKIP_IP_CHECK" "SKIP_FAIL2BAN" "ADDITIONAL_SAN", "DOVEADM_PORT")
+CONFIG_ARRAY=("SKIP_LETS_ENCRYPT" "SKIP_CLAMD" "SKIP_IP_CHECK" "SKIP_FAIL2BAN" "ADDITIONAL_SAN" "DOVEADM_PORT")
 echo >> mailcow.conf
 for option in ${CONFIG_ARRAY[@]}; do
 	if [[ ${option} == "ADDITIONAL_SAN" ]]; then
