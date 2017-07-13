@@ -77,9 +77,12 @@ while true; do
 	# Container ids may have changed
 	CONTAINERS_RESTART=($(curl --silent --unix-socket /var/run/docker.sock http/containers/json | jq -rc 'map(select(.Names[] | contains ("nginx-mailcow") or contains ("postfix-mailcow") or contains ("dovecot-mailcow"))) | .[] .Id' | tr "\n" " "))
 
-	while read line; do
-		SQL_DOMAIN_ARR+=("${line}")
+	while read domain; do
+		SQL_DOMAIN_ARR+=("${domain}")
 	done < <(mysql -h mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM domain" -Bs)
+    while read alias_domain; do
+        SQL_DOMAIN_ARR+=("${alias_domain}")
+    done < <(mysql -h mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT alias_domain FROM alias_domain" -Bs)
 
 	for SQL_DOMAIN in "${SQL_DOMAIN_ARR[@]}"; do
 		A_CONFIG=$(dig A autoconfig.${SQL_DOMAIN} +short | tail -n 1)
@@ -138,7 +141,7 @@ while true; do
 	done
 
   # Unique elements
-	ALL_VALIDATED=($(echo ${VALIDATED_CONFIG_DOMAINS[*]} ${ADDITIONAL_VALIDATED_SAN[*]} ${VALIDATED_MAILCOW_HOSTNAME} | xargs -n1 | sort -u | xargs))
+	ALL_VALIDATED=($(echo ${VALIDATED_MAILCOW_HOSTNAME} ${VALIDATED_CONFIG_DOMAINS[*]} ${ADDITIONAL_VALIDATED_SAN[*]} | xargs -n1 | sort -u | xargs))
 	if [[ -z ${ALL_VALIDATED[*]} ]]; then
 		echo "Cannot validate hostnames, skipping Let's Encrypt..."
 		exit 0
