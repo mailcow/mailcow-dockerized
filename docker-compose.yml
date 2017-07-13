@@ -80,7 +80,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.3
+      image: mailcow/rspamd:1.4
       build: ./data/Dockerfiles/rspamd
       command: > 
         /bin/bash -c "
@@ -186,6 +186,11 @@ services:
         - "${POPS_PORT:-995}:995"
         - "${SIEVE_PORT:-4190}:4190"
       restart: always
+      ulimits:
+        nproc: 65535
+        nofile:
+          soft: 20000
+          hard: 40000
       dns:
         - 172.22.1.254
       dns_search: mailcow-network
@@ -277,7 +282,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.12
+      image: mailcow/acme:1.13
       build: ./data/Dockerfiles/acme
       dns:
         - 172.22.1.254
