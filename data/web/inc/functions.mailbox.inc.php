@@ -879,7 +879,7 @@ function mailbox($_action, $_type, $_data = null) {
             $alias_domain = idn_to_ascii(strtolower(trim($alias_domain)));
             $is_now = mailbox('get', 'alias_domain_details', $alias_domain);
             if (!empty($is_now)) {
-              $active         = (isset($_data['active'])) ? $_data['active'] : $is_now['active_int'];
+              $active         = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
               $target_domain  = (!empty($_data['target_domain'])) ? idn_to_ascii(strtolower(trim($_data['target_domain']))) : $is_now['target_domain'];
             }
             else {
@@ -903,7 +903,7 @@ function mailbox($_action, $_type, $_data = null) {
               );
               return false;
             }
-            if (empty(mailbox('get', 'domain_details', $target_domain))) {
+            if (empty(mailbox('get', 'domain_details', $target_domain)) || !empty(mailbox('get', 'alias_domain_details', $target_domain))) {
               $_SESSION['return'] = array(
                 'type' => 'danger',
                 'msg' => sprintf($lang['danger']['target_domain_invalid'])
@@ -950,12 +950,10 @@ function mailbox($_action, $_type, $_data = null) {
               );
               return false;
             }
-            $tls_enforce_out = intval($_data['tls_enforce_out']);
-            $tls_enforce_in = intval($_data['tls_enforce_in']);
             $is_now = mailbox('get', 'tls_policy', $username);
             if (!empty($is_now)) {
-              $tls_enforce_in = (isset($_data['tls_enforce_in'])) ? $_data['tls_enforce_in'] : $is_now['tls_enforce_in'];
-              $tls_enforce_out = (isset($_data['tls_enforce_out'])) ? $_data['tls_enforce_out'] : $is_now['tls_enforce_out'];
+              $tls_enforce_in = (isset($_data['tls_enforce_in'])) ? intval($_data['tls_enforce_in']) : $is_now['tls_enforce_in'];
+              $tls_enforce_out = (isset($_data['tls_enforce_out'])) ? intval($_data['tls_enforce_out']) : $is_now['tls_enforce_out'];
             }
             else {
               $_SESSION['return'] = array(
@@ -1136,6 +1134,63 @@ function mailbox($_action, $_type, $_data = null) {
             'msg' => sprintf($lang['success']['mailbox_modified'], implode(', ', $usernames))
           );
         break;
+        case 'domain_ratelimit':
+          $rl_value = intval($_data['rl_value']);
+          $rl_frame = $_data['rl_frame'];
+          if (!in_array($rl_frame, array('s', 'm', 'h'))) {
+              $_SESSION['return'] = array(
+                'type' => 'danger',
+                'msg' => 'Ratelimit time frame is incorrect'
+              );
+              return false;
+          }
+          if (!is_array($_data['domain'])) {
+            $domains = array();
+            $domains[] = $_data['domain'];
+          }
+          else {
+            $domains = $_data['domain'];
+          }
+          foreach ($domains as $domain) {
+            if (!is_valid_domain_name($domain) || !hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
+              $_SESSION['return'] = array(
+                'type' => 'danger',
+                'msg' => sprintf($lang['danger']['access_denied'])
+              );
+              return false;
+            }
+            if (empty($rl_value)) {
+              try {
+                $redis->hDel('RL_OBJECT', $domain);
+                $redis->hDel('RL_VALUE', $domain);
+              }
+              catch (RedisException $e) {
+                $_SESSION['return'] = array(
+                  'type' => 'danger',
+                  'msg' => 'Redis: '.$e
+                );
+                return false;
+              }
+            }
+            else {
+              try {
+                $redis->hSet('RL_OBJECT', $domain, '1');
+                $redis->hSet('RL_VALUE', $domain, $rl_value . ' / 1' . $rl_frame);
+              }
+              catch (RedisException $e) {
+                $_SESSION['return'] = array(
+                  'type' => 'danger',
+                  'msg' => 'Redis: '.$e
+                );
+                return false;
+              }
+            }
+          }
+          $_SESSION['return'] = array(
+            'type' => 'success',
+            'msg' => sprintf($lang['success']['domain_modified'], implode(', ', $domains))
+          );
+        break;
         case 'syncjob':
           if (!is_array($_data['id'])) {
             $ids = array();
@@ -1149,9 +1204,9 @@ function mailbox($_action, $_type, $_data = null) {
             if (!empty($is_now)) {
               $username = $is_now['user2'];
               $user1 = (!empty($_data['user1'])) ? $_data['user1'] : $is_now['user1'];
-              $active = (isset($_data['active'])) ? $_data['active'] : $is_now['active_int'];
-              $delete2duplicates = (isset($_data['delete2duplicates'])) ? $_data['delete2duplicates'] : $is_now['delete2duplicates'];
-              $delete1 = (isset($_data['delete1'])) ? $_data['delete1'] : $is_now['delete1'];
+              $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
+              $delete2duplicates = (isset($_data['delete2duplicates'])) ? intval($_data['delete2duplicates']) : $is_now['delete2duplicates'];
+              $delete1 = (isset($_data['delete1'])) ? intval($_data['delete1']) : $is_now['delete1'];
               $port1 = (!empty($_data['port1'])) ? $_data['port1'] : $is_now['port1'];
               $password1 = (!empty($_data['password1'])) ? $_data['password1'] : $is_now['password1'];
               $host1 = (!empty($_data['host1'])) ? $_data['host1'] : $is_now['host1'];
@@ -1253,7 +1308,7 @@ function mailbox($_action, $_type, $_data = null) {
           foreach ($addresses as $address) {
             $is_now = mailbox('get', 'alias_details', $address);
             if (!empty($is_now)) {
-              $active = (isset($_data['active'])) ? $_data['active'] : $is_now['active_int'];
+              $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
               $goto   = (!empty($_data['goto'])) ? $_data['goto'] : $is_now['goto'];
             }
             else {
@@ -1383,9 +1438,9 @@ function mailbox($_action, $_type, $_data = null) {
             elseif ($_SESSION['mailcow_cc_role'] == "admin") {
               $is_now = mailbox('get', 'domain_details', $domain);
               if (!empty($is_now)) {
-                $active               = (isset($_data['active'])) ? $_data['active'] : $is_now['active_int'];
-                $backupmx             = (isset($_data['backupmx'])) ? $_data['backupmx'] : $is_now['backupmx_int'];
-                $relay_all_recipients = (isset($_data['relay_all_recipients'])) ? $_data['relay_all_recipients'] : $is_now['relay_all_recipients_int'];
+                $active               = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
+                $backupmx             = (isset($_data['backupmx'])) ? intval($_data['backupmx']) : $is_now['backupmx_int'];
+                $relay_all_recipients = (isset($_data['relay_all_recipients'])) ? intval($_data['relay_all_recipients']) : $is_now['relay_all_recipients_int'];
                 $aliases              = (!empty($_data['aliases'])) ? $_data['aliases'] : $is_now['max_num_aliases_for_domain'];
                 $mailboxes            = (!empty($_data['mailboxes'])) ? $_data['mailboxes'] : $is_now['max_num_mboxes_for_domain'];
                 $maxquota             = (!empty($_data['maxquota'])) ? $_data['maxquota'] : ($is_now['max_quota_for_mbox'] / 1048576);
@@ -1524,7 +1579,7 @@ function mailbox($_action, $_type, $_data = null) {
             }
             $is_now = mailbox('get', 'mailbox_details', $username);
             if (!empty($is_now)) {
-              $active     = (isset($_data['active'])) ? $_data['active'] : $is_now['active_int'];
+              $active     = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
               $name       = (!empty($_data['name'])) ? $_data['name'] : $is_now['name'];
               $domain     = $is_now['domain'];
               $quota_m    = (!empty($_data['quota'])) ? $_data['quota'] : ($is_now['quota'] / 1048576);
@@ -1588,19 +1643,15 @@ function mailbox($_action, $_type, $_data = null) {
                 mailbox('get', 'sender_acl_handles', $username)['sender_acl_addresses']['ro']
               );
               // Get sender_acl items from POST array
-              $sender_acl_domain_admin = ($_data['sender_acl'] == "0") ? array() : $_data['sender_acl'];
+              $sender_acl_domain_admin = ($_data['sender_acl'] == "0") ? array() : (array)$_data['sender_acl'];
               if (!empty($sender_acl_domain_admin) || !empty($sender_acl_admin)) {
-                // Check items in POST array
-                foreach ($sender_acl_domain_admin as $sender_acl) {
-                  if (!filter_var($sender_acl, FILTER_VALIDATE_EMAIL) && !is_valid_domain_name(ltrim($sender_acl, '@'))) {
-                      $_SESSION['return'] = array(
-                        'type' => 'danger',
-                        'msg' => sprintf($lang['danger']['sender_acl_invalid'])
-                      );
-                      return false;
+                // Check items in POST array and skip invalid
+                foreach ($sender_acl_domain_admin as $key => $val) {
+                  if (!filter_var($val, FILTER_VALIDATE_EMAIL) && !is_valid_domain_name(ltrim($val, '@'))) {
+                    unset($sender_acl_domain_admin[$key]);
                   }
-                  if (is_valid_domain_name(ltrim($sender_acl, '@'))) {
-                    if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], ltrim($sender_acl, '@'))) {
+                  if (is_valid_domain_name(ltrim($val, '@'))) {
+                    if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], ltrim($val, '@'))) {
                       $_SESSION['return'] = array(
                         'type' => 'danger',
                         'msg' => sprintf($lang['danger']['sender_acl_invalid'])
@@ -1608,8 +1659,8 @@ function mailbox($_action, $_type, $_data = null) {
                       return false;
                     }
                   }
-                  if (filter_var($sender_acl, FILTER_VALIDATE_EMAIL)) {
-                    if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $sender_acl)) {
+                  if (filter_var($val, FILTER_VALIDATE_EMAIL)) {
+                    if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $val)) {
                       $_SESSION['return'] = array(
                         'type' => 'danger',
                         'msg' => sprintf($lang['danger']['sender_acl_invalid'])
@@ -1761,8 +1812,8 @@ function mailbox($_action, $_type, $_data = null) {
           foreach ($names as $name) {
             $is_now = mailbox('get', 'resource_details', $name);
             if (!empty($is_now)) {
-              $active             = (isset($_data['active'])) ? $_data['active'] : $is_now['active_int'];
-              $multiple_bookings  = (isset($_data['multiple_bookings'])) ? $_data['multiple_bookings'] : $is_now['multiple_bookings_int'];
+              $active             = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
+              $multiple_bookings  = (isset($_data['multiple_bookings'])) ? intval($_data['multiple_bookings']) : $is_now['multiple_bookings_int'];
               $description        = (!empty($_data['description'])) ? $_data['description'] : $is_now['description'];
               $kind               = (!empty($_data['kind'])) ? $_data['kind'] : $is_now['kind'];
             }
@@ -2266,6 +2317,31 @@ function mailbox($_action, $_type, $_data = null) {
             return false;
           }
           return $aliases;
+        break;
+        case 'domain_ratelimit':
+          $aliases = array();
+          if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
+            return false;
+          }
+          try {
+            if (($rl_value = $redis->hGet('RL_VALUE', $_data)) && $redis->hGet('RL_OBJECT', $_data)) {
+              $rl = explode(' / 1', $rl_value);
+              $data['value'] = $rl[0];
+              $data['frame'] = $rl[1];
+              return $data;
+            }
+            else {
+              return false;
+            }
+          }
+          catch (RedisException $e) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => 'Redis: '.$e
+            );
+            return false;
+          }
+          return false;
         break;
         case 'alias_details':
           $aliasdata = array();

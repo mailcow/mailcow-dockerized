@@ -1,6 +1,8 @@
 <?php
 // Start session
 ini_set("session.cookie_httponly", 1);
+ini_set('session.gc_maxlifetime', $SESSION_LIFETIME);
+
 if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && 
   strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) == "https") {
   ini_set("session.cookie_secure", 1);

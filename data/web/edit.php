@@ -25,9 +25,8 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 				?>
 					<h4><?=$lang['edit']['alias'];?></h4>
 					<br />
-					<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
+					<form class="form-horizontal" data-id="editalias" role="form" method="post">
 						<input type="hidden" value="0" name="active">
-						<input type="hidden" name="address" value="<?=htmlspecialchars($alias);?>">
 						<div class="form-group">
 							<label class="control-label col-sm-2" for="goto"><?=$lang['edit']['target_address'];?></label>
 							<div class="col-sm-10">
@@ -43,7 +42,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 						</div>
 						<div class="form-group">
 							<div class="col-sm-offset-2 col-sm-10">
-								<button type="submit" name="mailbox_edit_alias" class="btn btn-success btn-sm"><?=$lang['edit']['save'];?></button>
+                <button class="btn btn-success" id="edit_selected" data-id="editalias" data-item="<?=$alias;?>" data-api-url='edit/alias' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
 							</div>
 						</div>
 					</form>
@@ -55,20 +54,19 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 				<?php
 				}
 		}
-		elseif (isset($_GET['domainadmin']) && 
-			ctype_alnum(str_replace(array('_', '.', '-'), '', $_GET["domainadmin"])) &&
-			!empty($_GET["domainadmin"]) &&
-			$_GET["domainadmin"] != 'admin' &&
-			$_SESSION['mailcow_cc_role'] == "admin") {
+		elseif (isset($_GET['domainadmin']) &&
+				ctype_alnum(str_replace(array('_', '.', '-'), '', $_GET["domainadmin"])) &&
+				!empty($_GET["domainadmin"]) &&
+				$_GET["domainadmin"] != 'admin' &&
+				$_SESSION['mailcow_cc_role'] == "admin") {
 				$domain_admin = $_GET["domainadmin"];
-        $result = get_domain_admin_details($domain_admin);
+				$result = domain_admin('details', $domain_admin);
 				if (!empty($result)) {
 				?>
 				<h4><?=$lang['edit']['domain_admin'];?></h4>
 				<br />
-				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
+				<form class="form-horizontal" data-id="editdomainadmin" role="form" method="post">
 					<input type="hidden" value="0" name="active">
-					<input type="hidden" name="username" value="<?=htmlspecialchars($domain_admin);?>">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="username_new"><?=$lang['edit']['username'];?></label>
 						<div class="col-sm-10">
@@ -122,7 +120,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
-							<button type="submit" name="edit_domain_admin" class="btn btn-success btn-sm"><?=$lang['edit']['save'];?></button>
+              <button class="btn btn-success" id="edit_selected" data-id="editdomainadmin" data-item="<?=$domain_admin;?>" data-api-url='edit/domain-admin' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
 						</div>
 					</div>
 				</form>
@@ -139,14 +137,14 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 		!empty($_GET["domain"])) {
 			$domain = $_GET["domain"];
       $result = mailbox('get', 'domain_details', $domain);
+      $rl = mailbox('get', 'domain_ratelimit', $domain);
 			if (!empty($result)) {
 			?>
 				<h4><?=$lang['edit']['domain'];?></h4>
-				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
+				<form data-id="editdomain" class="form-horizontal" role="form" method="post">
 					<input type="hidden" value="0" name="active">
 					<input type="hidden" value="0" name="backupmx">
 					<input type="hidden" value="0" name="relay_all_recipients">
-					<input type="hidden" name="domain" value="<?=htmlspecialchars($domain);?>">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="description"><?=$lang['edit']['description'];?></label>
 						<div class="col-sm-10">
@@ -203,7 +201,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
-							<button type="submit" name="mailbox_edit_domain" class="btn btn-success btn-sm"><?=$lang['edit']['save'];?></button>
+              <button class="btn btn-success" id="edit_selected" data-id="editdomain" data-item="<?=$domain;?>" data-api-url='edit/domain' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
 						</div>
 					</div>
 				</form>
@@ -222,6 +220,23 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 				<?php
 				}
         ?>
+		<hr>
+    <form data-id="domratelimit" class="form-inline well" method="post">
+      <div class="form-group">
+        <label class="control-label">Ratelimit</label>
+        <input name="rl_value" id="rl_value" type="number" value="<?=(!empty($rl['value'])) ? $rl['value'] : null;?>" class="form-control" placeholder="disabled">
+      </div>
+      <div class="form-group">
+        <select name="rl_frame" id="rl_frame" class="form-control">
+          <option value="s" <?=(isset($rl['frame']) && $rl['frame'] == 's') ? 'selected' : null;?>>msgs / second</option>
+          <option value="m" <?=(isset($rl['frame']) && $rl['frame'] == 'm') ? 'selected' : null;?>>msgs / minute</option>
+          <option value="h" <?=(isset($rl['frame']) && $rl['frame'] == 'h') ? 'selected' : null;?>>msgs / hour</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <button class="btn btn-default" id="edit_selected" data-id="domratelimit" data-item="<?=$domain;?>" data-api-url='edit/domain-ratelimit' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
+      </div>
+    </form>
 		<hr>
 		<div class="row">
 			<div class="col-sm-6">
@@ -282,12 +297,12 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 		!empty($_GET["aliasdomain"])) {
 			$alias_domain = $_GET["aliasdomain"];
       $result = mailbox('get', 'alias_domain_details', $alias_domain);
+      $rl = mailbox('get', 'domain_ratelimit', $alias_domain);
       if (!empty($result)) {
 			?>
 				<h4><?=$lang['edit']['edit_alias_domain'];?></h4>
-				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
+				<form class="form-horizontal" data-id="editaliasdomain" role="form" method="post">
 					<input type="hidden" value="0" name="active">
-					<input type="hidden" value="<?=$result['alias_domain'];?>" name="alias_domain">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="target_domain"><?=$lang['edit']['target_domain'];?></label>
 						<div class="col-sm-10">
@@ -303,10 +318,27 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
-							<button type="submit" name="mailbox_edit_alias_domain" class="btn btn-success btn-sm"><?=$lang['edit']['save'];?></button>
+              <button class="btn btn-success" id="edit_selected" data-id="editaliasdomain" data-item="<?=$alias_domain;?>" data-api-url='edit/alias-domain' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
 						</div>
 					</div>
 				</form>
+        <hr>
+        <form data-id="domratelimit" class="form-inline well" method="post">
+          <div class="form-group">
+            <label class="control-label">Ratelimit</label>
+            <input name="rl_value" id="rl_value" type="number" value="<?=(!empty($rl['value'])) ? $rl['value'] : null;?>" class="form-control" placeholder="disabled">
+          </div>
+          <div class="form-group">
+            <select name="rl_frame" id="rl_frame" class="form-control">
+              <option value="s" <?=(isset($rl['frame']) && $rl['frame'] == 's') ? 'selected' : null;?>>msgs / second</option>
+              <option value="m" <?=(isset($rl['frame']) && $rl['frame'] == 'm') ? 'selected' : null;?>>msgs / minute</option>
+              <option value="h" <?=(isset($rl['frame']) && $rl['frame'] == 'h') ? 'selected' : null;?>>msgs / hour</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <button class="btn btn-default" id="edit_selected" data-id="domratelimit" data-item="<?=$alias_domain;?>" data-api-url='edit/domain-ratelimit' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
+          </div>
+        </form>
 				<?php
         if (!empty($dkim = dkim('details', $alias_domain))) {
 				?>
@@ -334,10 +366,9 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
     if (!empty($result)) {
       ?>
       <h4><?=$lang['edit']['mailbox'];?></h4>
-      <form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
+      <form class="form-horizontal" data-id="editmailbox" role="form" method="post">
 				<input type="hidden" value="0" name="sender_acl">
 				<input type="hidden" value="0" name="active">
-				<input type="hidden" name="username" value="<?=htmlspecialchars($result['username']);?>">
         <div class="form-group">
           <label class="control-label col-sm-2" for="name"><?=$lang['edit']['full_name'];?>:</label>
           <div class="col-sm-10">
@@ -355,7 +386,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
         <div class="form-group">
           <label class="control-label col-sm-2" for="sender_acl"><?=$lang['edit']['sender_acl'];?>:</label>
           <div class="col-sm-10">
-            <select data-width="100%" style="width:100%" id="sender_acl" name="sender_acl[]" size="10" multiple>
+            <select data-width="100%" style="width:100%" id="sender_acl" name="sender_acl" size="10" multiple>
             <?php
             $sender_acl_handles = mailbox('get', 'sender_acl_handles', $mailbox);
 
@@ -426,7 +457,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
         </div>
         <div class="form-group">
           <div class="col-sm-offset-2 col-sm-10">
-            <button type="submit" name="mailbox_edit_mailbox" class="btn btn-success btn-sm"><?=$lang['edit']['save'];?></button>
+            <button class="btn btn-success" id="edit_selected" data-id="editmailbox" data-item="<?=htmlspecialchars($result['username']);?>" data-api-url='edit/mailbox' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
           </div>
         </div>
       </form>
@@ -439,10 +470,9 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
       if (!empty($result)) {
         ?>
 				<h4><?=$lang['edit']['resource'];?></h4>
-				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
+				<form class="form-horizontal" role="form" method="post" data-id="editresource">
           <input type="hidden" value="0" name="active">
           <input type="hidden" value="0" name="multiple_bookings">
-          <input type="hidden" name="name" value="<?=htmlspecialchars($result['name']);?>">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="description"><?=$lang['add']['description'];?></label>
 						<div class="col-sm-10">
@@ -475,7 +505,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
-							<button type="submit" name="mailbox_edit_resource" class="btn btn-success btn-sm"><?=$lang['edit']['save'];?></button>
+              <button class="btn btn-success" id="edit_selected" data-id="editresource" data-item="<?=htmlspecialchars($result['name']);?>" data-api-url='edit/resource' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
 						</div>
 					</div>
 				</form>
@@ -501,11 +531,10 @@ elseif (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == 
       if (!empty($result)) {
 			?>
 				<h4><?=$lang['edit']['syncjob'];?></h4>
-				<form class="form-horizontal" role="form" method="post" action="<?=($FORM_ACTION == "previous") ? $_SESSION['return_to'] : null;?>">
+				<form class="form-horizontal" data-id="editsyncjob" role="form" method="post">
           <input type="hidden" value="0" name="delete2duplicates">
           <input type="hidden" value="0" name="delete1">
           <input type="hidden" value="0" name="active">
-          <input type="hidden" name="id" value="<?=htmlspecialchars($result['id']);?>">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="host1"><?=$lang['edit']['hostname'];?></label>
 						<div class="col-sm-10">
@@ -587,7 +616,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == 
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
-							<button type="submit" name="edit_syncjob" value="1" class="btn btn-success btn-sm"><?=$lang['edit']['save'];?></button>
+              <button class="btn btn-success" id="edit_selected" data-id="editsyncjob" data-item="<?=htmlspecialchars($result['id']);?>" data-api-url='edit/syncjob' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
 						</div>
 					</div>
 				</form>

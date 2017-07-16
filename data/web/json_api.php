@@ -426,7 +426,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "domain-admin":
             if (isset($_POST['attr'])) {
               $attr = (array)json_decode($_POST['attr'], true);
-              if (add_domain_admin($attr) === false) {
+              if (domain_admin('add', $attr) === false) {
                 if (isset($_SESSION['return'])) {
                   echo json_encode($_SESSION['return']);
                 }
@@ -826,10 +826,10 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "domain-admin":
             switch ($object) {
               case "all":
-                $domain_admins = get_domain_admins();
+                $domain_admins = domain_admin('get');
                 if (!empty($domain_admins)) {
                   foreach ($domain_admins as $domain_admin) {
-                    if ($details = get_domain_admin_details($domain_admin)) {
+                    if ($details = domain_admin('details', $domain_admin)) {
                       $data[] = $details;
                     }
                     else {
@@ -849,7 +849,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               break;
 
               default:
-                $data = get_domain_admin_details($object);
+                $data = domain_admin('details', $object);
                 if (!isset($data) || empty($data)) {
                   echo '{}';
                 }
@@ -1385,7 +1385,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             if (isset($_POST['items'])) {
               $items = (array)json_decode($_POST['items'], true);
               if (is_array($items)) {
-                if (delete_domain_admin(array('username' => $items)) === false) {
+                if (domain_admin('delete', array('username' => $items)) === false) {
                   if (isset($_SESSION['return'])) {
                     echo json_encode($_SESSION['return']);
                   }
@@ -1603,6 +1603,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             }
           break;
           case "mailbox":
+            // sender_acl:0 removes all entries
             if (isset($_POST['items']) && isset($_POST['attr'])) {
               $items = (array)json_decode($_POST['items'], true);
               $attr = (array)json_decode($_POST['attr'], true);
@@ -1778,6 +1779,50 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               ));
             }
           break;
+          case "domain-ratelimit":
+            if (isset($_POST['items']) && isset($_POST['attr'])) {
+              $items = (array)json_decode($_POST['items'], true);
+              $attr = (array)json_decode($_POST['attr'], true);
+              $postarray = array_merge(array('domain' => $items), $attr);
+              if (is_array($postarray['domain'])) {
+                if (mailbox('edit', 'domain_ratelimit', $postarray) === false) {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'error',
+                      'msg' => 'Edit failed'
+                    ));
+                  }
+                  exit();
+                }
+                else {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'success',
+                      'msg' => 'Task completed'
+                    ));
+                  }
+                }
+              }
+              else {
+                echo json_encode(array(
+                  'type' => 'error',
+                  'msg' => 'Incomplete post data'
+                ));
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Incomplete post data'
+              ));
+            }
+          break;
           case "alias-domain":
             if (isset($_POST['items']) && isset($_POST['attr'])) {
               $items = (array)json_decode($_POST['items'], true);
@@ -1822,7 +1867,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               ));
             }
           break;
-          case "spam_score":
+          case "spam-score":
             if (isset($_POST['items']) && isset($_POST['attr'])) {
               $items = (array)json_decode($_POST['items'], true);
               $attr = (array)json_decode($_POST['attr'], true);
@@ -1872,7 +1917,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               $attr = (array)json_decode($_POST['attr'], true);
               $postarray = array_merge(array('username' => $items), $attr);
               if (is_array($postarray['username'])) {
-                if (edit_domain_admin($postarray) === false) {
+                if (domain_admin('edit', $postarray) === false) {
                   if (isset($_SESSION['return'])) {
                     echo json_encode($_SESSION['return']);
                   }
@@ -1989,39 +2034,109 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               ));
             }
           break;
-          case "admin":
-            // No items as there is only one admin
-            if (isset($_POST['attr'])) {
-              $attr = (array)json_decode($_POST['attr'], true);
-              if (edit_admin_account($attr) === false) {
-                if (isset($_SESSION['return'])) {
-                  echo json_encode($_SESSION['return']);
+          case "self":
+            // No items, logged-in user, users and domain admins
+            if ($_SESSION['mailcow_cc_role'] == "domainadmin") {
+              if (isset($_POST['attr'])) {
+                $attr = (array)json_decode($_POST['attr'], true);
+                if (domain_admin('edit', $attr) === false) {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'error',
+                      'msg' => 'Edit failed'
+                    ));
+                  }
+                  exit();
                 }
                 else {
-                  echo json_encode(array(
-                    'type' => 'error',
-                    'msg' => 'Edit failed'
-                  ));
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'success',
+                      'msg' => 'Task completed'
+                    ));
+                  }
                 }
-                exit();
               }
               else {
-                if (isset($_SESSION['return'])) {
-                  echo json_encode($_SESSION['return']);
-                }
-                else {
-                  echo json_encode(array(
-                    'type' => 'success',
-                    'msg' => 'Task completed'
-                  ));
-                }
+                echo json_encode(array(
+                  'type' => 'error',
+                  'msg' => 'Incomplete post data'
+                ));
               }
             }
-            else {
-              echo json_encode(array(
-                'type' => 'error',
-                'msg' => 'Incomplete post data'
-              ));
+            elseif ($_SESSION['mailcow_cc_role'] == "user") {
+              if (isset($_POST['attr'])) {
+                $attr = (array)json_decode($_POST['attr'], true);
+                if (edit_user_account($attr) === false) {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'error',
+                      'msg' => 'Edit failed'
+                    ));
+                  }
+                  exit();
+                }
+                else {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'success',
+                      'msg' => 'Task completed'
+                    ));
+                  }
+                }
+              }
+              else {
+                echo json_encode(array(
+                  'type' => 'error',
+                  'msg' => 'Incomplete post data'
+                ));
+              }
+            }
+            elseif ($_SESSION['mailcow_cc_role'] == "admin") {
+              if (isset($_POST['attr'])) {
+                $attr = (array)json_decode($_POST['attr'], true);
+                if (edit_admin_account($attr) === false) {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'error',
+                      'msg' => 'Edit failed'
+                    ));
+                  }
+                  exit();
+                }
+                else {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'success',
+                      'msg' => 'Task completed'
+                    ));
+                  }
+                }
+              }
+              else {
+                echo json_encode(array(
+                  'type' => 'error',
+                  'msg' => 'Incomplete post data'
+                ));
+              }
             }
           break;
         }

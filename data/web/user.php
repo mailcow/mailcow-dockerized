@@ -357,7 +357,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "use
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-body">
-        <form class="form-horizontal" role="form" method="post" autocomplete="off">
+        <form class="form-horizontal" data-id="pwchange" role="form" method="post" autocomplete="off">
           <div class="form-group">
             <label class="control-label col-sm-3" for="user_new_pass"><?=$lang['user']['new_password'];?></label>
             <div class="col-sm-5">
@@ -380,7 +380,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "use
           </div>
           <div class="form-group">
             <div class="col-sm-offset-3 col-sm-9">
-              <button type="submit" name="edit_<?=($_SESSION['mailcow_cc_role'] == "domainadmin") ? "domain_admin" : "user_account";?>" class="btn btn-sm btn-success"><?=$lang['user']['change_password'];?></button>
+              <button class="btn btn-default" id="edit_selected" data-id="pwchange" data-item="null" data-api-url='edit/self' data-api-attr='{}' href="#"><?=$lang['user']['change_password'];?></button>
             </div>
           </div>
         </form>

@@ -54,53 +54,12 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
     }
   }
 }
-if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "user") {
-	if (isset($_POST["edit_user_account"])) {
-		edit_user_account($_POST);
-	}
-	if (isset($_POST["edit_syncjob"])) {
-		mailbox('edit', 'syncjob', $_POST);
-	}
-}
 if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "admin" || $_SESSION['mailcow_cc_role'] == "domainadmin")) {
-	if (isset($_POST["edit_domain_admin"])) {
-		edit_domain_admin($_POST);
-	}
 	if (isset($_POST["set_tfa"])) {
 		set_tfa($_POST);
 	}
 	if (isset($_POST["unset_tfa_key"])) {
 		unset_tfa_key($_POST);
-	}
-	if (isset($_POST["mailbox_edit_alias"])) {
-		mailbox('edit', 'alias', $_POST);
-	}
-	if (isset($_POST["mailbox_edit_domain"])) {
-		mailbox('edit', 'domain', $_POST);
-	}
-	if (isset($_POST["mailbox_edit_mailbox"])) {
-		mailbox('edit', 'mailbox', $_POST);
-	}
-	if (isset($_POST["mailbox_edit_alias_domain"])) {
-		mailbox('edit', 'alias_domain', $_POST);
-	}
-	if (isset($_POST["mailbox_edit_resource"])) {
-		mailbox('edit', 'resource', $_POST);
-	}
-	if (isset($_POST["mailbox_delete_domain"])) {
-		mailbox('delete', 'domain', $_POST);
-	}
-	if (isset($_POST["mailbox_delete_alias"])) {
-		mailbox('delete', 'delete_alias', $_POST);
-	}
-	if (isset($_POST["mailbox_delete_alias_domain"])) {
-		mailbox('delete', 'alias_domain', $_POST);
-	}
-	if (isset($_POST["mailbox_delete_mailbox"])) {
-		mailbox('delete', 'mailbox', $_POST);
-	}
-	if (isset($_POST["mailbox_delete_resource"])) {
-		mailbox('delete', 'resource', $_POST);
 	}
 }
 ?>

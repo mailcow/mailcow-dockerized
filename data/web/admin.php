@@ -56,7 +56,7 @@ $tfa_data = get_tfa();
           </div>
           <div class="form-group">
             <div class="col-sm-offset-3 col-sm-9">
-              <button class="btn btn-default" id="edit_selected" data-id="admin" data-item="null" data-api-url='edit/admin' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
+              <button class="btn btn-default" id="edit_selected" data-id="admin" data-item="null" data-api-url='edit/self' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
             </div>
           </div>
         </form>
@@ -253,7 +253,7 @@ XYZ
         </div>
       </div>
     </div>
-    
+
     <div class="panel panel-default">
       <div class="panel-heading"><?=$lang['admin']['forwarding_hosts'];?></div>
       <div class="panel-body">
