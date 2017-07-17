@@ -135,9 +135,9 @@ function mailbox($_action, $_type, $_data = null) {
             return false;
           }
           try {
-            $stmt = $pdo->prepare("SELECT `user2`, `user1` FROM `imapsync`
-              WHERE `user2` = :user2 AND `user1` = :user1");
-            $stmt->execute(array(':user1' => $user1, ':user2' => $username));
+            $stmt = $pdo->prepare("SELECT '1' FROM `imapsync`
+              WHERE `user2` = :user2 AND `user1` = :user1 AND `host1` = :host1");
+            $stmt->execute(array(':user1' => $user1, ':user2' => $username, ':host1' => $host1));
             $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
           }
           catch(PDOException $e) {
