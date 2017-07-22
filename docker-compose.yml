@@ -201,7 +201,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.2
+      image: mailcow/postfix:1.3
       build: ./data/Dockerfiles/postfix
       depends_on:
         unbound-mailcow:

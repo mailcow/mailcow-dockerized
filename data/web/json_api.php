@@ -60,6 +60,39 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               ));
             }
           break;
+          case "relayhost":
+            if (isset($_POST['attr'])) {
+              $attr = (array)json_decode($_POST['attr'], true);
+              if (relayhost('add', $attr) === false) {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'error',
+                    'msg' => 'Cannot add item'
+                  ));
+                }
+              }
+              else {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'success',
+                    'msg' => 'Task completed'
+                  ));
+                }
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Cannot find attributes in post data'
+              ));
+            }
+          break;
           case "mailbox":
             if (isset($_POST['attr'])) {
               $attr = (array)json_decode($_POST['attr'], true);
@@ -496,6 +529,42 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               break;
             }
           break;
+          case "relayhost":
+            switch ($object) {
+              case "all":
+                $relayhosts = relayhost('get');
+                if (!empty($relayhosts)) {
+                  foreach ($relayhosts as $relayhost) {
+                    if ($details = relayhost('details', $relayhost['id'])) {
+                      $data[] = $details;
+                    }
+                    else {
+                      continue;
+                    }
+                  }
+                  if (!isset($data) || empty($data)) {
+                    echo '{}';
+                  }
+                  else {
+                    echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                  }
+                }
+                else {
+                  echo '{}';
+                }
+              break;
+
+              default:
+                $data = relayhost('details', $object);
+                if (!isset($data) || empty($data)) {
+                  echo '{}';
+                }
+                else {
+                  echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                }
+              break;
+            }
+          break;
           case "logs":
             switch ($object) {
               case "dovecot":
@@ -920,6 +989,47 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 echo json_encode(array(
                   'type' => 'error',
                   'msg' => 'Cannot find address array in post data'
+                ));
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Cannot find items in post data'
+              ));
+            }
+          break;
+          case "relayhost":
+            if (isset($_POST['items'])) {
+              $items = (array)json_decode($_POST['items'], true);
+              if (is_array($items)) {
+                if (relayhost('delete', array('id' => $items)) === false) {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'error',
+                      'msg' => 'Deletion of items/s failed'
+                    ));
+                  }
+                }
+                else {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'success',
+                      'msg' => 'Task completed'
+                    ));
+                  }
+                }
+              }
+              else {
+                echo json_encode(array(
+                  'type' => 'error',
+                  'msg' => 'Cannot find id array in post data'
                 ));
               }
             }
@@ -1433,6 +1543,50 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               $postarray = array_merge(array('address' => $items), $attr);
               if (is_array($postarray['address'])) {
                 if (mailbox('edit', 'alias', $postarray) === false) {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'error',
+                      'msg' => 'Edit failed'
+                    ));
+                  }
+                  exit();
+                }
+                else {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'success',
+                      'msg' => 'Task completed'
+                    ));
+                  }
+                }
+              }
+              else {
+                echo json_encode(array(
+                  'type' => 'error',
+                  'msg' => 'Incomplete post data'
+                ));
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Incomplete post data'
+              ));
+            }
+          break;
+          case "relayhost":
+            if (isset($_POST['items']) && isset($_POST['attr'])) {
+              $items = (array)json_decode($_POST['items'], true);
+              $attr = (array)json_decode($_POST['attr'], true);
+              $postarray = array_merge(array('id' => $items), $attr);
+              if (is_array($postarray['id'])) {
+                if (relayhost('edit', $postarray) === false) {
                   if (isset($_SESSION['return'])) {
                     echo json_encode($_SESSION['return']);
                   }

@@ -138,6 +138,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 			$domain = $_GET["domain"];
       $result = mailbox('get', 'domain_details', $domain);
       $rl = mailbox('get', 'domain_ratelimit', $domain);
+      $rlyhosts = relayhost('get');
 			if (!empty($result)) {
 			?>
 				<h4><?=$lang['edit']['domain'];?></h4>
@@ -177,6 +178,21 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 						<div class="col-sm-10">
 							<input type="number" class="form-control" name="quota" id="quota" value="<?=intval($result['max_quota_for_domain'] / 1048576);?>">
 						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="quota">Relayhost</label>
+						<div class="col-sm-10">
+              <select name="relayhost" id="relayhost" class="form-control">
+                <?php
+                foreach ($rlyhosts as $rlyhost) {
+                ?>
+                <option value="<?=$rlyhost['id'];?>" <?=($result['relayhost'] == $rlyhost['id']) ? 'selected' : null;?>>ID <?=$rlyhost['id'];?>: <?=$rlyhost['hostname'];?> (<?=$rlyhost['username'];?>)</option>
+                <?php
+                }
+                ?>
+                <option value="" <?=($result['relayhost'] == "0") ? 'selected' : null;?>>None</option>
+              </select>
+            </div>
 					</div>
 					<div class="form-group">
 						<label class="control-label col-sm-2"><?=$lang['edit']['backup_mx_options'];?></label>

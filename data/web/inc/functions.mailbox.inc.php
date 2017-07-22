@@ -260,8 +260,8 @@ function mailbox($_action, $_type, $_data = null) {
             return false;
           }
           try {
-            $stmt = $pdo->prepare("INSERT INTO `domain` (`domain`, `description`, `aliases`, `mailboxes`, `maxquota`, `quota`, `transport`, `backupmx`, `active`, `relay_all_recipients`)
-              VALUES (:domain, :description, :aliases, :mailboxes, :maxquota, :quota, 'virtual', :backupmx, :active, :relay_all_recipients)");
+            $stmt = $pdo->prepare("INSERT INTO `domain` (`domain`, `description`, `aliases`, `mailboxes`, `maxquota`, `quota`, `backupmx`, `active`, `relay_all_recipients`)
+              VALUES (:domain, :description, :aliases, :mailboxes, :maxquota, :quota, :backupmx, :active, :relay_all_recipients)");
             $stmt->execute(array(
               ':domain' => $domain,
               ':description' => $description,
@@ -1441,6 +1441,7 @@ function mailbox($_action, $_type, $_data = null) {
                 $active               = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
                 $backupmx             = (isset($_data['backupmx'])) ? intval($_data['backupmx']) : $is_now['backupmx_int'];
                 $relay_all_recipients = (isset($_data['relay_all_recipients'])) ? intval($_data['relay_all_recipients']) : $is_now['relay_all_recipients_int'];
+                $relayhost            = (isset($_data['relayhost'])) ? intval($_data['relayhost']) : $is_now['relayhost'];
                 $aliases              = (!empty($_data['aliases'])) ? $_data['aliases'] : $is_now['max_num_aliases_for_domain'];
                 $mailboxes            = (!empty($_data['mailboxes'])) ? $_data['mailboxes'] : $is_now['max_num_mboxes_for_domain'];
                 $maxquota             = (!empty($_data['maxquota'])) ? $_data['maxquota'] : ($is_now['max_quota_for_mbox'] / 1048576);
@@ -1531,6 +1532,7 @@ function mailbox($_action, $_type, $_data = null) {
                 `active` = :active,
                 `quota` = :quota,
                 `maxquota` = :maxquota,
+                `relayhost` = :relayhost,
                 `mailboxes` = :mailboxes,
                 `aliases` = :aliases,
                 `description` = :description
@@ -1541,6 +1543,7 @@ function mailbox($_action, $_type, $_data = null) {
                   ':active' => $active,
                   ':quota' => $quota,
                   ':maxquota' => $maxquota,
+                  ':relayhost' => $relayhost,
                   ':mailboxes' => $mailboxes,
                   ':aliases' => $aliases,
                   ':description' => $description,
@@ -2470,7 +2473,7 @@ function mailbox($_action, $_type, $_data = null) {
               ':domain' => $_data
             ));
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (!empty($row)) { 
+            if (!empty($row)) {
               $_data = $row['target_domain'];
             }
             $stmt = $pdo->prepare("SELECT 
@@ -2480,6 +2483,7 @@ function mailbox($_action, $_type, $_data = null) {
                 `mailboxes`, 
                 `maxquota`,
                 `quota`,
+                `relayhost`,
                 `relay_all_recipients` as `relay_all_recipients_int`,
                 `backupmx` as `backupmx_int`,
                 `active` as `active_int`,
@@ -2514,6 +2518,7 @@ function mailbox($_action, $_type, $_data = null) {
             $domaindata['max_num_mboxes_for_domain'] = $row['mailboxes'];
             $domaindata['max_quota_for_mbox'] = $row['maxquota'] * 1048576;
             $domaindata['max_quota_for_domain'] = $row['quota'] * 1048576;
+            $domaindata['relayhost'] = $row['relayhost'];
             $domaindata['backupmx'] = $row['backupmx'];
             $domaindata['backupmx_int'] = $row['backupmx_int'];
             $domaindata['active'] = $row['active'];
