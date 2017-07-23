@@ -328,6 +328,44 @@ jQuery(function($){
       }
     });
   }
+  function draw_relayhosts() {
+    ft_forwardinghoststable = FooTable.init('#relayhoststable', {
+      "columns": [
+        {"name":"chkbox","title":"","style":{"maxWidth":"40px","width":"40px"},"filterable": false,"sortable": false,"type":"html"},
+        {"name":"id","type":"text","title":"ID","style":{"width":"50px"}},
+        {"name":"hostname","type":"text","title":lang.host,"style":{"width":"250px"}},
+        {"name":"username","title":lang.username,"breakpoints":"xs sm"},
+        {"name":"used_by_domains","title":lang.in_use_by, "type": "text","breakpoints":"xs sm"},
+        {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active},
+        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
+      ],
+      "rows": $.ajax({
+        dataType: 'json',
+        url: '/api/v1/get/relayhost/all',
+        jsonp: false,
+        error: function () {
+          console.log('Cannot draw forwarding hosts table');
+        },
+        success: function (data) {
+          $.each(data, function (i, item) {
+            item.action = '<div class="btn-group">' +
+              '<a href="#" id="delete_selected" data-id="single-rlshost" data-api-url="delete/relayhost" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+              '</div>';
+            item.chkbox = '<input type="checkbox" data-id="rlyhosts" name="multi_select" value="' + item.id + '" />';
+          });
+        }
+      }),
+      "empty": lang.empty,
+      "paging": {
+        "enabled": true,
+        "limit": 5,
+        "size": log_pagination_size
+      },
+      "sorting": {
+        "enabled": true
+      }
+    });
+  }
   function draw_rspamd_history() {
     ft_postfix_logs = FooTable.init('#rspamd_history', {
       "columns": [{
@@ -504,5 +542,20 @@ jQuery(function($){
   draw_fail2ban_logs();
   draw_domain_admins();
   draw_fwd_hosts();
+  draw_relayhosts();
   draw_rspamd_history();
+});
+
+$(window).load(function(){
+  width = $("#scrollbox").width();
+  $(window).bind('scroll', function() {
+    if ($(window).scrollTop() > 70) {
+      $('#scrollbox').addClass('scrollboxFixed');
+      $("#scrollbox").css("width", width);
+    } else {
+      width = $("#scrollbox").width();
+      $('#scrollbox').removeClass('scrollboxFixed');
+      $("#scrollbox").removeAttr("style");
+    }
+  });
 });

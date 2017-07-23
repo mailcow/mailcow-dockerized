@@ -77,9 +77,12 @@ while true; do
 	# Container ids may have changed
 	CONTAINERS_RESTART=($(curl --silent --unix-socket /var/run/docker.sock http/containers/json | jq -rc 'map(select(.Names[] | contains ("nginx-mailcow") or contains ("postfix-mailcow") or contains ("dovecot-mailcow"))) | .[] .Id' | tr "\n" " "))
 
-	while read line; do
-		SQL_DOMAIN_ARR+=("${line}")
+	while read domain; do
+		SQL_DOMAIN_ARR+=("${domain}")
 	done < <(mysql -h mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM domain" -Bs)
+    while read alias_domain; do
+        SQL_DOMAIN_ARR+=("${alias_domain}")
+    done < <(mysql -h mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT alias_domain FROM alias_domain" -Bs)
 
 	for SQL_DOMAIN in "${SQL_DOMAIN_ARR[@]}"; do
 		A_CONFIG=$(dig A autoconfig.${SQL_DOMAIN} +short | tail -n 1)
@@ -138,20 +141,20 @@ while true; do
 	done
 
   # Unique elements
-	ALL_VALIDATED=($(echo ${VALIDATED_CONFIG_DOMAINS[*]} ${ADDITIONAL_VALIDATED_SAN[*]} ${VALIDATED_MAILCOW_HOSTNAME} | xargs -n1 | sort -u | xargs))
+	ALL_VALIDATED=($(echo ${VALIDATED_MAILCOW_HOSTNAME} ${VALIDATED_CONFIG_DOMAINS[*]} ${ADDITIONAL_VALIDATED_SAN[*]} | xargs -n1 | sort -u | xargs))
 	if [[ -z ${ALL_VALIDATED[*]} ]]; then
 		echo "Cannot validate hostnames, skipping Let's Encrypt..."
 		exit 0
 	fi
 
-	ORPHANED_SAN=($(echo ${SAN_ARRAY_NOW[*]} ${VALIDATED_CONFIG_DOMAINS[*]} ${ADDITIONAL_VALIDATED_SAN[*]} ${MAILCOW_HOSTNAME} | tr ' ' '\n' | sort | uniq -u ))
+	ORPHANED_SAN=($(echo ${SAN_ARRAY_NOW[*]} ${ALL_VALIDATED[*]} | tr ' ' '\n' | sort | uniq -u ))
 	if [[ ! -z ${ORPHANED_SAN[*]} ]] && [[ ${ISSUER} != *"mailcow"* ]]; then
 		DATE=$(date +%Y-%m-%d_%H_%M_%S)
 		echo "Found orphaned SAN ${ORPHANED_SAN[*]} in certificate, moving old files to ${ACME_BASE}/acme/private/${DATE}.bak/, keeping key file..."
 		mkdir -p ${ACME_BASE}/acme/private/${DATE}.bak/
 		[[ -f ${ACME_BASE}/acme/private/account.key ]] && mv ${ACME_BASE}/acme/private/account.key ${ACME_BASE}/acme/private/${DATE}.bak/
-		mv ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/acme/private/${DATE}.bak/
-        mv ${ACME_BASE}/acme/cert.pem ${ACME_BASE}/acme/private/${DATE}.bak/
+		[[ -f ${ACME_BASE}/acme/fullchain.pem ]] && mv ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/acme/private/${DATE}.bak/
+		[[ -f ${ACME_BASE}/acme/cert.pem ]] && mv ${ACME_BASE}/acme/cert.pem ${ACME_BASE}/acme/private/${DATE}.bak/
 		cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/acme/private/${DATE}.bak/ # Keep key for TLSA 3 1 1 records
 	fi
 

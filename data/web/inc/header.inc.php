@@ -29,7 +29,7 @@
 <link rel="shortcut icon" href="/favicon.png" type="image/png">
 <link rel="icon" href="/favicon.png" type="image/png">
 </head>
-<body style="padding-top: 70px;">
+<body style="padding-top: 70px;" id="top">
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container-fluid">
     <div class="navbar-header">
