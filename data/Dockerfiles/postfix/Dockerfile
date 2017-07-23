@@ -25,13 +25,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	syslog-ng \
 	syslog-ng-core \
 	syslog-ng-mod-redis \
-	&& rm -rf /var/lib/apt/lists/*
+	&& rm -rf /var/lib/apt/lists/* \
+	&& touch /etc/default/locale
 
 RUN addgroup --system --gid 600 zeyple
 RUN adduser --system --home /var/lib/zeyple --no-create-home --uid 600 --gid 600 --disabled-login zeyple
 RUN touch /var/log/zeyple.log && chown zeyple: /var/log/zeyple.log
-
-RUN touch /etc/default/locale
 
 COPY zeyple.py /usr/local/bin/zeyple.py
 COPY zeyple.conf /etc/zeyple.conf
