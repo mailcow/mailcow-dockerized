@@ -9,6 +9,8 @@ if (!isset($_SESSION['mailcow_cc_role']) || $_SESSION['mailcow_cc_role'] != 'use
   die("This page is only available to logged-in users, not admins.");
 }
 
+error_reporting(0);
+
 header('Content-Type: application/x-apple-aspen-config');
 header('Content-Disposition: attachment; filename="Mailcow.mobileconfig"');
 
