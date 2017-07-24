@@ -3,6 +3,13 @@
 # Wait for MySQL to warm-up
 while mysqladmin ping --host 172.22.1.250 --silent; do
 
+# Wait until port becomes free and send sig
+until ! nc -z sogo-mailcow 20000;
+do
+	killall -TERM sogod
+	sleep 3
+done
+
 # Recreate view
 
 mysql --host mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "DROP VIEW IF EXISTS sogo_view"
@@ -93,8 +100,6 @@ echo '    </dict>
 chown sogo:sogo -R /var/lib/sogo/
 chmod 600 /var/lib/sogo/GNUstep/Defaults/sogod.plist
 
-supervisorctl restart sogo
-
-sleep 99999
+exec gosu sogo /usr/sbin/sogod
 
 done

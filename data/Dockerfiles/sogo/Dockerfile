@@ -17,6 +17,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 		syslog-ng-core \
 		syslog-ng-mod-redis \
 		dirmngr \
+		netcat \
+		psmisc \
 		wget \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
@@ -37,7 +39,7 @@ RUN mkdir /usr/share/doc/sogo \
 	&& echo '0 0 * * *   sogo   /usr/sbin/sogo-tool update-autoreply -p /etc/sogo/sieve.creds' >> /etc/cron.d/sogo \
 	&& touch /etc/default/locale
 
-COPY ./reconf-domains.sh /
+COPY ./bootstrap-sogo.sh /
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 
