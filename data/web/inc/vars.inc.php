@@ -18,12 +18,17 @@ $database_name = getenv('DBNAME');
 $mailcow_hostname = getenv('MAILCOW_HOSTNAME');
 
 // Autodiscover settings
+// ===
+// Auto-detect HTTPS port =>
 $https_port = strpos($_SERVER['HTTP_HOST'], ':');
 if ($https_port === FALSE) {
   $https_port = 443;
 } else {
   $https_port = substr($_SERVER['HTTP_HOST'], $https_port+1);
 }
+// Alternatively select port here =>
+//$https_port = 1234;
+// Other settings =>
 $autodiscover_config = array(
   // Enable the autodiscover service for Outlook desktop clients
   'useEASforOutlook' => 'yes',
@@ -60,11 +65,6 @@ $autodiscover_config = array(
   ),
 );
 unset($https_port);
-
-// Where to go after adding and editing objects
-// Can be "form" or "previous"
-// "form" will stay in the current form, "previous" will redirect to previous page
-$FORM_ACTION = 'previous';
 
 // Change default language, "de", "en", "es", "nl", "pt", "ru"
 $DEFAULT_LANG = 'en';
