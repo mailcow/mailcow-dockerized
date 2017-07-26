@@ -337,7 +337,7 @@ jQuery(function($){
         {"name":"username","title":lang.username,"breakpoints":"xs sm"},
         {"name":"used_by_domains","title":lang.in_use_by, "type": "text","breakpoints":"xs sm"},
         {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
+        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"280px","width":"280px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
       "rows": $.ajax({
         dataType: 'json',
@@ -349,6 +349,8 @@ jQuery(function($){
         success: function (data) {
           $.each(data, function (i, item) {
             item.action = '<div class="btn-group">' +
+              '<a href="#" data-toggle="modal" id="miau" data-target="#testRelayhostModal" data-relayhost-id="' + encodeURI(item.id) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-stats"></span> Test</a>' +
+              '<a href="/edit.php?relayhost=' + encodeURI(item.id) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
               '<a href="#" id="delete_selected" data-id="single-rlshost" data-api-url="delete/relayhost" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="rlyhosts" name="multi_select" value="' + item.id + '" />';
@@ -544,6 +546,32 @@ jQuery(function($){
   draw_fwd_hosts();
   draw_relayhosts();
   draw_rspamd_history();
+
+  $('#testRelayhostModal').on('show.bs.modal', function (e) {
+    $('#test_relayhost_result').text("-");
+    button = $(e.relatedTarget)
+    if (button != null) {
+      $('#relayhost_id').val(button.data('relayhost-id'));
+    }
+  })
+
+  $('#test_relayhost').on('click', function (e) {
+    e.preventDefault();
+    prev = $('#test_relayhost').text();
+    $(this).prop("disabled",true);
+    $(this).html('<span class="glyphicon glyphicon-refresh glyphicon-spin"></span> ');
+    $.ajax({
+        type: 'GET',
+        url: 'inc/relay_check.php',
+        dataType: 'text',
+        data: $('#test_relayhost_form').serialize(),
+        complete: function (data) {
+            $('#test_relayhost_result').html(data.responseText);
+            $('#test_relayhost').prop("disabled",false);
+            $('#test_relayhost').text(prev);
+        }
+    });
+  })
 });
 
 $(window).load(function(){
