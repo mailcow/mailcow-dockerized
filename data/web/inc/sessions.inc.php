@@ -26,6 +26,9 @@ if (!isset($_SESSION['SESS_REMOTE_UA'])) {
   $_SESSION['SESS_REMOTE_UA'] = $_SERVER['HTTP_USER_AGENT'];
 }
 
+// Update session cookie
+setcookie(session_name() ,session_id(), time() + $SESSION_LIFETIME);
+
 // Check session
 function session_check() {
   if (!isset($_SESSION['SESS_REMOTE_UA'])) {
