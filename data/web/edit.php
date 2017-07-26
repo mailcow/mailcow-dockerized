@@ -237,6 +237,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 				}
         ?>
 		<hr>
+    <!--
     <form data-id="domratelimit" class="form-inline well" method="post">
       <div class="form-group">
         <label class="control-label">Ratelimit</label>
@@ -254,6 +255,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
       </div>
     </form>
 		<hr>
+    -->
 		<div class="row">
 			<div class="col-sm-6">
 				<h4><?=$lang['user']['spamfilter_wl'];?></h4>
@@ -313,7 +315,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 		!empty($_GET["aliasdomain"])) {
 			$alias_domain = $_GET["aliasdomain"];
       $result = mailbox('get', 'alias_domain_details', $alias_domain);
-      $rl = mailbox('get', 'domain_ratelimit', $alias_domain);
+      // $rl = mailbox('get', 'domain_ratelimit', $alias_domain);
       if (!empty($result)) {
 			?>
 				<h4><?=$lang['edit']['edit_alias_domain'];?></h4>
@@ -338,6 +340,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 						</div>
 					</div>
 				</form>
+        <!--
         <hr>
         <form data-id="domratelimit" class="form-inline well" method="post">
           <div class="form-group">
@@ -355,6 +358,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
             <button class="btn btn-default" id="edit_selected" data-id="domratelimit" data-item="<?=$alias_domain;?>" data-api-url='edit/domain-ratelimit' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
           </div>
         </form>
+        -->
 				<?php
         if (!empty($dkim = dkim('details', $alias_domain))) {
 				?>
@@ -480,6 +484,53 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
     <?php
     }
   }
+	elseif (isset($_GET['relayhost']) && is_numeric($_GET["relayhost"]) && !empty($_GET["relayhost"])) {
+			$relayhost = intval($_GET["relayhost"]);
+      $result = relayhost('details', $relayhost);
+      if (!empty($result)) {
+        ?>
+				<h4><?=$lang['edit']['resource'];?></h4>
+				<form class="form-horizontal" role="form" method="post" data-id="editrelayhost">
+          <input type="hidden" value="0" name="active">
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="hostname"><?=$lang['add']['hostname'];?></label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" name="hostname" id="hostname" value="<?=htmlspecialchars($result['hostname'], ENT_QUOTES, 'UTF-8');?>" required>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="username"><?=$lang['add']['username'];?></label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" name="username" id="username" value="<?=htmlspecialchars($result['username'], ENT_QUOTES, 'UTF-8');?>">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="password"><?=$lang['add']['password'];?></label>
+						<div class="col-sm-10">
+							<input type="password" class="form-control" name="password" id="password" value="<?=htmlspecialchars($result['password'], ENT_QUOTES, 'UTF-8');?>">
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<div class="checkbox">
+							<label><input type="checkbox" value="1" name="active" <?=($result['active_int']=="1") ? "checked" : null;?>> <?=$lang['edit']['active'];?></label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+              <button class="btn btn-success" id="edit_selected" data-id="editrelayhost" data-item="<?=htmlspecialchars($result['id']);?>" data-api-url='edit/relayhost' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
+						</div>
+					</div>
+				</form>
+			<?php
+			}
+			else {
+			?>
+				<div class="alert alert-info" role="alert"><?=$lang['info']['no_action'];?></div>
+			<?php
+			}
+	}
 	elseif (isset($_GET['resource']) && filter_var($_GET["resource"], FILTER_VALIDATE_EMAIL) && !empty($_GET["resource"])) {
 			$resource = $_GET["resource"];
       $result = mailbox('get', 'resource_details', $resource);
