@@ -107,3 +107,6 @@ $SESSION_LIFETIME = 3600;
 
 // Label for OTP devices
 $OTP_LABEL = "mailcow UI";
+
+// Default "to" address in relay test tool
+$RELAY_TO = "null@hosted.mailcow.de";
