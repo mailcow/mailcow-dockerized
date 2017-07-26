@@ -493,6 +493,59 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
       break;
       case "get":
         switch ($category) {
+          case "rspamd":
+            switch ($object) {
+              case "stat":
+                $data = file_get_contents('http://rspamd-mailcow:11334/stat');
+                if (!empty($data)) {
+                  echo $data;
+                }
+                elseif (!isset($data) || empty($data)) {
+                  echo '{}';
+                }
+              break;
+              case "graph":
+                switch ($extra) {
+                  case "hourly":
+                    $data = file_get_contents('http://rspamd-mailcow:11334/graph?type=daily');
+                    if (!empty($data)) {
+                      echo $data;
+                    }
+                    elseif (!isset($data) || empty($data)) {
+                      echo '{}';
+                    }
+                  break;
+                  case "daily":
+                    $data = file_get_contents('http://rspamd-mailcow:11334/graph?type=daily');
+                    if (!empty($data)) {
+                      echo $data;
+                    }
+                    elseif (!isset($data) || empty($data)) {
+                      echo '{}';
+                    }
+                  break;
+                  case "weekly":
+                    $data = file_get_contents('http://rspamd-mailcow:11334/graph?type=daily');
+                    if (!empty($data)) {
+                      echo $data;
+                    }
+                    elseif (!isset($data) || empty($data)) {
+                      echo '{}';
+                    }
+                  break;
+                  case "monthly":
+                    $data = file_get_contents('http://rspamd-mailcow:11334/graph?type=daily');
+                    if (!empty($data)) {
+                      echo $data;
+                    }
+                    elseif (!isset($data) || empty($data)) {
+                      echo '{}';
+                    }
+                  break;
+                }
+              break;
+            }
+          break;
           case "domain":
             switch ($object) {
               case "all":
