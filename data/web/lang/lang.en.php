@@ -264,6 +264,9 @@ $lang['mailbox']['toggle_all'] = 'Toggle all';
 $lang['mailbox']['quick_actions'] = 'Actions';
 $lang['mailbox']['activate'] = 'Activate';
 $lang['mailbox']['deactivate'] = 'Deactivate';
+$lang['mailbox']['owner'] = 'Owner';
+$lang['mailbox']['mins_interval'] = 'Interval (min)';
+$lang['mailbox']['last_run'] = 'Last run';
 
 $lang['info']['no_action'] = 'No action applicable';
 

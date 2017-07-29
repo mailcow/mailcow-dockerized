@@ -575,15 +575,19 @@ jQuery(function($){
 });
 
 $(window).load(function(){
-  width = $("#scrollbox").width();
+  initial_width = $("#sidebar-admin").width();
+  $("#scrollbox").css("width", initial_width);
   $(window).bind('scroll', function() {
     if ($(window).scrollTop() > 70) {
       $('#scrollbox').addClass('scrollboxFixed');
-      $("#scrollbox").css("width", width);
     } else {
-      width = $("#scrollbox").width();
       $('#scrollbox').removeClass('scrollboxFixed');
-      $("#scrollbox").removeAttr("style");
     }
   });
+});
+
+$(window).on('resize', function(){
+  on_resize_width = $("#sidebar-admin").width();
+  $("#scrollbox").removeAttr("style");
+  $("#scrollbox").css("width", on_resize_width);
 });

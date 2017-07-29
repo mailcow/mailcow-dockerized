@@ -261,6 +261,9 @@ $lang['mailbox']['toggle_all'] = 'Alle';
 $lang['mailbox']['quick_actions'] = 'Aktionen';
 $lang['mailbox']['activate'] = 'Aktivieren';
 $lang['mailbox']['deactivate'] = 'Deaktivieren';
+$lang['mailbox']['owner'] = 'Besitzer';
+$lang['mailbox']['mins_interval'] = 'Intervall (min)';
+$lang['mailbox']['last_run'] = 'Letzte Ausführung';
 
 $lang['info']['no_action'] = 'Keine Aktion anwendbar';
 $lang['delete']['title'] = 'Objekt entfernen';

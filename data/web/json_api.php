@@ -507,9 +507,35 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               case "graph":
                 switch ($extra) {
                   case "hourly":
-                    $data = file_get_contents('http://rspamd-mailcow:11334/graph?type=daily');
+                    $data = file_get_contents('http://rspamd-mailcow:11334/graph?type=hourly');
                     if (!empty($data)) {
-                      echo $data;
+                      $data_array = json_decode($data, true);
+                      $rejected['label'] = "reject";
+                      foreach ($data_array[0] as $dataset) {
+                        $rejected['data'][] = $dataset;
+                      }
+                      $temp_reject['label'] = "temp_reject";
+                      foreach ($data_array[1] as $dataset) {
+                        $temp_reject['data'][] = $dataset;
+                      }
+                      $add_header['label'] = "add_header";
+                      foreach ($data_array[2] as $dataset) {
+                        $add_header['data'][] = $dataset;
+                      }
+                      $prob_spam['label'] = "prob_spam";
+                      foreach ($data_array[3] as $dataset) {
+                        $prob_spam['data'][] = $dataset;
+                      }
+                      $greylist['label'] = "greylist";
+                      foreach ($data_array[4] as $dataset) {
+                        $greylist['data'][] = $dataset;
+                      }
+                      $clean['label'] = "clean";
+                      $clean['pointStyle'] = "cross";
+                      foreach ($data_array[5] as $dataset) {
+                        $clean['data'][] = $dataset;
+                      }
+                      echo json_encode(array($rejected, $temp_reject, $add_header, $prob_spam, $greylist, $clean), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
                     }
                     elseif (!isset($data) || empty($data)) {
                       echo '{}';
@@ -518,25 +544,103 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                   case "daily":
                     $data = file_get_contents('http://rspamd-mailcow:11334/graph?type=daily');
                     if (!empty($data)) {
-                      echo $data;
+                      $data_array = json_decode($data, true);
+                      $rejected['label'] = "reject";
+                      foreach ($data_array[0] as $dataset) {
+                        $rejected['data'][] = $dataset;
+                      }
+                      $temp_reject['label'] = "temp_reject";
+                      foreach ($data_array[1] as $dataset) {
+                        $temp_reject['data'][] = $dataset;
+                      }
+                      $add_header['label'] = "add_header";
+                      foreach ($data_array[2] as $dataset) {
+                        $add_header['data'][] = $dataset;
+                      }
+                      $prob_spam['label'] = "prob_spam";
+                      foreach ($data_array[3] as $dataset) {
+                        $prob_spam['data'][] = $dataset;
+                      }
+                      $greylist['label'] = "greylist";
+                      foreach ($data_array[4] as $dataset) {
+                        $greylist['data'][] = $dataset;
+                      }
+                      $clean['label'] = "clean";
+                      $clean['pointStyle'] = "cross";
+                      foreach ($data_array[5] as $dataset) {
+                        $clean['data'][] = $dataset;
+                      }
+                      echo json_encode(array($rejected, $temp_reject, $add_header, $prob_spam, $greylist, $clean), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
                     }
                     elseif (!isset($data) || empty($data)) {
                       echo '{}';
                     }
                   break;
                   case "weekly":
-                    $data = file_get_contents('http://rspamd-mailcow:11334/graph?type=daily');
+                    $data = file_get_contents('http://rspamd-mailcow:11334/graph?type=weekly');
                     if (!empty($data)) {
-                      echo $data;
+                      $data_array = json_decode($data, true);
+                      $rejected['label'] = "reject";
+                      foreach ($data_array[0] as $dataset) {
+                        $rejected['data'][] = $dataset;
+                      }
+                      $temp_reject['label'] = "temp_reject";
+                      foreach ($data_array[1] as $dataset) {
+                        $temp_reject['data'][] = $dataset;
+                      }
+                      $add_header['label'] = "add_header";
+                      foreach ($data_array[2] as $dataset) {
+                        $add_header['data'][] = $dataset;
+                      }
+                      $prob_spam['label'] = "prob_spam";
+                      foreach ($data_array[3] as $dataset) {
+                        $prob_spam['data'][] = $dataset;
+                      }
+                      $greylist['label'] = "greylist";
+                      foreach ($data_array[4] as $dataset) {
+                        $greylist['data'][] = $dataset;
+                      }
+                      $clean['label'] = "clean";
+                      $clean['pointStyle'] = "cross";
+                      foreach ($data_array[5] as $dataset) {
+                        $clean['data'][] = $dataset;
+                      }
+                      echo json_encode(array($rejected, $temp_reject, $add_header, $prob_spam, $greylist, $clean), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
                     }
                     elseif (!isset($data) || empty($data)) {
                       echo '{}';
                     }
                   break;
                   case "monthly":
-                    $data = file_get_contents('http://rspamd-mailcow:11334/graph?type=daily');
+                    $data = file_get_contents('http://rspamd-mailcow:11334/graph?type=monthly');
                     if (!empty($data)) {
-                      echo $data;
+                      $data_array = json_decode($data, true);
+                      $rejected['label'] = "reject";
+                      foreach ($data_array[0] as $dataset) {
+                        $rejected['data'][] = $dataset;
+                      }
+                      $temp_reject['label'] = "temp_reject";
+                      foreach ($data_array[1] as $dataset) {
+                        $temp_reject['data'][] = $dataset;
+                      }
+                      $add_header['label'] = "add_header";
+                      foreach ($data_array[2] as $dataset) {
+                        $add_header['data'][] = $dataset;
+                      }
+                      $prob_spam['label'] = "prob_spam";
+                      foreach ($data_array[3] as $dataset) {
+                        $prob_spam['data'][] = $dataset;
+                      }
+                      $greylist['label'] = "greylist";
+                      foreach ($data_array[4] as $dataset) {
+                        $greylist['data'][] = $dataset;
+                      }
+                      $clean['label'] = "clean";
+                      $clean['pointStyle'] = "cross";
+                      foreach ($data_array[5] as $dataset) {
+                        $clean['data'][] = $dataset;
+                      }
+                      echo json_encode(array($rejected, $temp_reject, $add_header, $prob_spam, $greylist, $clean), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
                     }
                     elseif (!isset($data) || empty($data)) {
                       echo '{}';
@@ -734,8 +838,51 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           break;
           case "syncjobs":
             switch ($object) {
+              case "all":
+                $domains = mailbox('get', 'domains');
+                if (!empty($domains)) {
+                  foreach ($domains as $domain) {
+                    $mailboxes = mailbox('get', 'mailboxes', $domain);
+                    if (!empty($mailboxes)) {
+                      foreach ($mailboxes as $mailbox) {
+                        $syncjobs = mailbox('get', 'syncjobs', $mailbox);
+                        if (!empty($syncjobs)) {
+                          foreach ($syncjobs as $syncjob) {
+                            if ($details = mailbox('get', 'syncjob_details', $syncjob)) {
+                              $data[] = $details;
+                            }
+                            else {
+                              continue;
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                  if (!isset($data) || empty($data)) {
+                    echo '{}';
+                  }
+                  else {
+                    echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                  }
+                }
+                else {
+                  echo '{}';
+                }
+              break;
+
               default:
-                $data = mailbox('get', 'syncjobs', $object);
+                $syncjobs = mailbox('get', 'syncjobs', $object);
+                if (!empty($syncjobs)) {
+                  foreach ($syncjobs as $syncjob) {
+                    if ($details = mailbox('get', 'syncjob_details', $syncjob)) {
+                      $data[] = $details;
+                    }
+                    else {
+                      continue;
+                    }
+                  }
+                }
                 if (!isset($data) || empty($data)) {
                   echo '{}';
                 }

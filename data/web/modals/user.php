@@ -104,3 +104,49 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
     </div>
   </div>
 </div><!-- add sync job modal -->
+<!-- log modal -->
+<div class="modal fade" id="logModal" tabindex="-1" role="dialog" aria-labelledby="logTextLabel">
+  <div class="modal-dialog" style="width:90%" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <span id="logText"></span>
+      </div>
+    </div>
+  </div>
+</div><!-- log modal -->
+<!-- pw change modal -->
+<div class="modal fade" id="pwChangeModal" tabindex="-1" role="dialog" aria-labelledby="pwChangeModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <form class="form-horizontal" data-id="pwchange" role="form" method="post" autocomplete="off">
+          <div class="form-group">
+            <label class="control-label col-sm-3" for="user_new_pass"><?=$lang['user']['new_password'];?></label>
+            <div class="col-sm-5">
+            <input type="password" class="form-control" name="user_new_pass" id="user_new_pass" autocomplete="off" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-3" for="user_new_pass2"><?=$lang['user']['new_password_repeat'];?></label>
+            <div class="col-sm-5">
+            <input type="password" class="form-control" name="user_new_pass2" id="user_new_pass2" autocomplete="off" required>
+            <p class="help-block"><?=$lang['user']['new_password_description'];?></p>
+            </div>
+          </div>
+          <hr>
+          <div class="form-group">
+            <label class="control-label col-sm-3" for="user_old_pass"><?=$lang['user']['password_now'];?></label>
+            <div class="col-sm-5">
+            <input type="password" class="form-control" name="user_old_pass" id="user_old_pass" autocomplete="off" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+              <button class="btn btn-default" id="edit_selected" data-id="pwchange" data-item="null" data-api-url='edit/self' data-api-attr='{}' href="#"><?=$lang['user']['change_password'];?></button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div><!-- pw change modal -->

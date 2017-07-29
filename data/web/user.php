@@ -51,7 +51,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'doma
       </div>
     </div>
   </div>
-</div>
+  </div>
 <?php
 }
 elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user') {
@@ -256,7 +256,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
         <button type="button" class="btn btn-sm btn-success" id="edit_selected"
           data-item="<?= $username; ?>"
           data-id="spam_score"
-          data-api-url='edit/spam_score'
+          data-api-url='edit/spam-score'
           data-api-attr='{}'><?=$lang['user']['save_changes'];?></button>
 				</div>
 			</div>
@@ -331,65 +331,12 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
     </div>
 		</div>
 	</div>
-</div>
 
+</div><!-- /container -->
+<div style="margin-bottom:200px;"></div>
 <?php
 }
-if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "user" || $_SESSION['mailcow_cc_role'] == "domainadmin")) {
-
-  /*
-  / USER OR DOMAIN ADMIN
-  */
-
-?>
-<div class="modal fade" id="logModal" tabindex="-1" role="dialog" aria-labelledby="logTextLabel">
-  <div class="modal-dialog" style="width:90%" role="document">
-    <div class="modal-content">
-      <div class="modal-body">
-        <span id="logText"></span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div style="margin-bottom:200px;"></div>
-<div class="modal fade" id="pwChangeModal" tabindex="-1" role="dialog" aria-labelledby="pwChangeModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-body">
-        <form class="form-horizontal" data-id="pwchange" role="form" method="post" autocomplete="off">
-          <div class="form-group">
-            <label class="control-label col-sm-3" for="user_new_pass"><?=$lang['user']['new_password'];?></label>
-            <div class="col-sm-5">
-            <input type="password" class="form-control" name="user_new_pass" id="user_new_pass" autocomplete="off" required>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="control-label col-sm-3" for="user_new_pass2"><?=$lang['user']['new_password_repeat'];?></label>
-            <div class="col-sm-5">
-            <input type="password" class="form-control" name="user_new_pass2" id="user_new_pass2" autocomplete="off" required>
-            <p class="help-block"><?=$lang['user']['new_password_description'];?></p>
-            </div>
-          </div>
-          <hr>
-          <div class="form-group">
-            <label class="control-label col-sm-3" for="user_old_pass"><?=$lang['user']['password_now'];?></label>
-            <div class="col-sm-5">
-            <input type="password" class="form-control" name="user_old_pass" id="user_old_pass" autocomplete="off" required>
-            </div>
-          </div>
-          <div class="form-group">
-            <div class="col-sm-offset-3 col-sm-9">
-              <button class="btn btn-default" id="edit_selected" data-id="pwchange" data-item="null" data-api-url='edit/self' data-api-attr='{}' href="#"><?=$lang['user']['change_password'];?></button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-</div> <!-- /container -->
-<?php
+if (isset($_SESSION['mailcow_cc_role'])) {
 require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/user.php';
 ?>
 <script type='text/javascript'>
@@ -397,6 +344,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/user.php';
 $lang_user = json_encode($lang['user']);
 echo "var lang = ". $lang_user . ";\n";
 echo "var csrf_token = '". $_SESSION['CSRF']['TOKEN'] . "';\n";
+echo "var mailcow_cc_username = '". $_SESSION['mailcow_cc_username'] . "';\n";
 echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
 ?>
 </script>

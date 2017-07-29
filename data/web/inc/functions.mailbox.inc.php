@@ -78,14 +78,21 @@ function mailbox($_action, $_type, $_data = null) {
               $username = $_data['username'];
             }
           }
-          else {
+          elseif ($_SESSION['mailcow_cc_role'] == "user") {
             $username = $_SESSION['mailcow_cc_username'];
+          }
+          else {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => 'No user defined'
+            );
+            return false;
           }
           $active  = intval($_data['active']);
           $delete2duplicates = intval($_data['delete2duplicates']);
           $delete1  = intval($_data['delete1']);
           $port1            = $_data['port1'];
-          $host1            = $_data['host1'];
+          $host1            = strtolower($_data['host1']);
           $password1        = $_data['password1'];
           $exclude          = $_data['exclude'];
           $maxage           = $_data['maxage'];
@@ -2060,7 +2067,11 @@ function mailbox($_action, $_type, $_data = null) {
             return false;
           }
           try {
-            $stmt = $pdo->prepare("SELECT * FROM `imapsync` WHERE id = :id");
+            $stmt = $pdo->prepare("SELECT *,
+              CONCAT(LEFT(`password1`, 3), '...') AS `password1_short`,
+              `active` AS `active_int`,
+              CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`
+                FROM `imapsync` WHERE id = :id");
             $stmt->execute(array(':id' => $_data));
             $syncjobdetails = $stmt->fetch(PDO::FETCH_ASSOC);
           }
@@ -2086,14 +2097,12 @@ function mailbox($_action, $_type, $_data = null) {
             $_data = $_SESSION['mailcow_cc_username'];
           }
           try {
-            $stmt = $pdo->prepare("SELECT *,
-              CONCAT(LEFT(`password1`, 3), '...') AS `password1_short`,
-              `active` AS `active_int`,
-              CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`
-                FROM `imapsync`
-                  WHERE `user2` = :username");
+            $stmt = $pdo->prepare("SELECT `id` FROM `imapsync` WHERE `user2` = :username");
             $stmt->execute(array(':username' => $_data));
-            $syncjobdata = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            while($row = array_shift($rows)) {
+              $syncjobdata[] = $row['id'];
+            }
           }
           catch(PDOException $e) {
             $_SESSION['return'] = array(
