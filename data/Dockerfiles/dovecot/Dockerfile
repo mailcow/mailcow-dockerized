@@ -40,6 +40,7 @@ RUN apt-get update && apt-get -y install \
 	libtest-pod-perl \
 	libtest-simple-perl \
 	libunicode-string-perl \
+    libproc-processtable-perl \
 	liburi-perl \
 	lzma-dev \
 	make \

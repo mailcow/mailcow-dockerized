@@ -74,4 +74,7 @@ chown -R vmail:vmail /var/vmail/sieve
 # Fix more than 1 hardlink issue
 touch /etc/crontab /etc/cron.*/*
 
+# Clean old PID if any
+[[ -f /usr/local/var/run/dovecot/master.pid ]] && rm /usr/local/var/run/dovecot/master.pid
+
 exec "$@"
