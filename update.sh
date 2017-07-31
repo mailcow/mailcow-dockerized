@@ -149,6 +149,11 @@ for container in $(grep -oP "image: \Kmailcow.+" docker-compose.yml); do
 	for existing_tag in ${EXISTING_TAGS[@]}; do
 		V_MAIN_EXISTING=${existing_tag/*.}
 		V_SUB_EXISTING=${existing_tag/*.}
+
+		# Not an integer
+		[[ ! $V_MAIN_EXISTING =~ ^[0-9]+$ ]] && continue
+		[[ ! $V_SUB_EXISTING =~ ^[0-9]+$ ]] && continue
+
 		if [[ $V_MAIN_EXISTING == "latest" ]]; then
 			echo "Found deprecated label \"latest\" for repository $REPOSITORY, it should be deleted."
 			IMGS_TO_DELETE+=($REPOSITORY:$existing_tag)
