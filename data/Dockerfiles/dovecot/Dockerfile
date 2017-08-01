@@ -68,7 +68,7 @@ RUN curl https://www.dovecot.org/releases/2.2/dovecot-$DOVECOT_VERSION.tar.gz | 
 
 RUN cpanm Data::Uniqid Mail::IMAPClient String::Util
 RUN echo '* * * * *   root   /usr/local/bin/imapsync_cron.pl' > /etc/cron.d/imapsync
-RUN echo '30 3 * * *   vmail  /usr/bin/doveadm quota recalc -A' > /etc/cron.d/dovecot-sync
+RUN echo '30 3 * * *   vmail  /usr/local/bin/doveadm quota recalc -A' > /etc/cron.d/dovecot-sync
 
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
 COPY imapsync /usr/local/bin/imapsync

@@ -163,7 +163,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.5
+      image: mailcow/dovecot:1.6
       build: ./data/Dockerfiles/dovecot
       depends_on:
         unbound-mailcow:
