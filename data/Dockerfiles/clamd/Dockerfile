@@ -15,6 +15,8 @@ RUN apk add --update \
 	&& chmod 750 /run/clamav \
 	&& sed -i '/Foreground yes/s/^#//g' /etc/clamav/clamd.conf \
 	&& sed -i '/TCPSocket 3310/s/^#//g' /etc/clamav/clamd.conf \
+	&& sed -i 's/#PhishingSignatures yes/PhishingSignatures no/g' /etc/clamav/clamd.conf \
+	&& sed -i 's/#PhishingScanURLs yes/PhishingScanURLs no/g' /etc/clamav/clamd.conf \
 	&& sed -i '/Foreground yes/s/^#//g' /etc/clamav/freshclam.conf
 
 # Port provision
