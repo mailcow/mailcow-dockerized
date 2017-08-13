@@ -7,6 +7,10 @@ if(file_exists('inc/vars.local.inc.php')) {
 }
 $configuration = array_merge($default_autodiscover_config, $autodiscover_config);
 
+// Redis
+$redis = new Redis();
+$redis->connect('redis-mailcow', 6379);
+
 error_reporting(0);
 
 $data = trim(file_get_contents("php://input"));
