@@ -79,7 +79,7 @@ while true; do
 
 	while read line; do
 		SQL_DOMAIN_ARR+=("${line}")
-	done < <(mysql -h mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM domain" -Bs)
+	done < <(mysql -h mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM domain WHERE backupmx=0" -Bs)
 
 	for SQL_DOMAIN in "${SQL_DOMAIN_ARR[@]}"; do
 		A_CONFIG=$(dig A autoconfig.${SQL_DOMAIN} +short | tail -n 1)
