@@ -79,7 +79,7 @@ while true; do
 
 	while read domain; do
 		SQL_DOMAIN_ARR+=("${domain}")
-	done < <(mysql -h mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM domain" -Bs)
+	done < <(mysql -h mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM domain WHERE backupmx=0" -Bs)
     while read alias_domain; do
         SQL_DOMAIN_ARR+=("${alias_domain}")
     done < <(mysql -h mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT alias_domain FROM alias_domain" -Bs)
