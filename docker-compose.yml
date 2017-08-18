@@ -90,6 +90,7 @@ services:
       depends_on:
         - nginx-mailcow
       volumes:
+        - ./data/conf/rspamd/custom/:/etc/rspamd/custom:ro
         - ./data/conf/rspamd/override.d/:/etc/rspamd/override.d:ro
         - ./data/conf/rspamd/local.d/:/etc/rspamd/local.d:ro
         - ./data/conf/rspamd/lua/:/etc/rspamd/lua/:ro
@@ -139,7 +140,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.4
+      image: mailcow/sogo:1.5
       build: ./data/Dockerfiles/sogo
       depends_on:
         unbound-mailcow:
@@ -282,7 +283,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.13
+      image: mailcow/acme:1.14
       build: ./data/Dockerfiles/acme
       dns:
         - 172.22.1.254
