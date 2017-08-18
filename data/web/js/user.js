@@ -34,6 +34,8 @@ jQuery(function($){
     var date = new Date(tm ? tm * 1000 : 0);
     return date.toLocaleString();
   }
+  acl_data = JSON.parse(acl);
+
   function draw_tla_table() {
     ft_tla_table = FooTable.init('#tla_table', {
       "columns": [
@@ -52,10 +54,16 @@ jQuery(function($){
         },
         success: function (data) {
           $.each(data, function (i, item) {
-            item.action = '<div class="btn-group">' +
-              '<a href="#" id="delete_selected" data-id="single-tla" data-api-url="delete/time_limited_alias" data-item="' + encodeURI(item.address) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
-              '</div>';
-            item.chkbox = '<input type="checkbox" data-id="tla" name="multi_select" value="' + item.address + '" />';
+            if (acl_data.spam_alias === 1) {
+              item.action = '<div class="btn-group">' +
+                '<a href="#" id="delete_selected" data-id="single-tla" data-api-url="delete/time_limited_alias" data-item="' + encodeURI(item.address) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+                '</div>';
+              item.chkbox = '<input type="checkbox" data-id="tla" name="multi_select" value="' + item.address + '" />';
+            }
+            else {
+              item.chkbox = '<input type="checkbox" disabled />';
+              item.action = '<span>-</span>';
+            }
           });
         }
       }),
@@ -97,11 +105,17 @@ jQuery(function($){
             item.log = '<a href="#logModal" data-toggle="modal" data-log-text="' + escapeHtml(item.returned_text) + '">Open logs</a>'
             item.exclude = '<code>' + item.exclude + '</code>'
             item.server_w_port = item.user1 + '@' + item.host1 + ':' + item.port1;
-            item.action = '<div class="btn-group">' +
-              '<a href="/edit.php?syncjob=' + item.id + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-              '<a href="#" id="delete_selected" data-id="single-syncjob" data-api-url="delete/syncjob" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
-              '</div>';
-            item.chkbox = '<input type="checkbox" data-id="syncjob" name="multi_select" value="' + item.id + '" />';
+            if (acl_data.syncjobs === 1) {
+              item.action = '<div class="btn-group">' +
+                '<a href="/edit.php?syncjob=' + item.id + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+                '<a href="#" id="delete_selected" data-id="single-syncjob" data-api-url="delete/syncjob" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+                '</div>';
+              item.chkbox = '<input type="checkbox" data-id="syncjob" name="multi_select" value="' + item.id + '" />';
+            }
+            else {
+              item.action = '<span>-</span>';
+              item.chkbox = '<input type="checkbox" disabled />';
+            }
           });
         }
       }),
@@ -139,6 +153,9 @@ jQuery(function($){
             else {
               item.chkbox = '<input type="checkbox" disabled title="' + lang.spamfilter_table_domain_policy + '" />';
             }
+            if (acl_data.spam_policy === 0) {
+              item.chkbox = '<input type="checkbox" disabled />';
+            }
           });
         }
       }),
@@ -175,6 +192,9 @@ jQuery(function($){
             }
             else {
               item.chkbox = '<input type="checkbox" disabled tooltip="' + lang.spamfilter_table_domain_policy + '" />';
+            }
+            if (acl_data.spam_policy === 0) {
+              item.chkbox = '<input type="checkbox" disabled />';
             }
           });
         }

@@ -218,6 +218,23 @@ function check_login($user, $pass) {
 	}
 	sleep($_SESSION['ldelay']);
 }
+function set_acl() {
+	global $pdo;
+	if (!isset($_SESSION['mailcow_cc_username'])) {
+		return false;
+	}
+	$username = strtolower(trim($_SESSION['mailcow_cc_username']));
+	$stmt = $pdo->prepare("SELECT * FROM `user_acl` WHERE `username` = :username");
+	$stmt->execute(array(':username' => $username));
+	$acl['acl'] = $stmt->fetch(PDO::FETCH_ASSOC);
+  unset($acl['acl']['username']);
+  if (!empty($acl)) {
+    $_SESSION = array_merge($_SESSION, $acl);
+  }
+  else {
+    return false;
+  }
+}
 function formatBytes($size, $precision = 2) {
 	if(!is_numeric($size)) {
 		return "0";

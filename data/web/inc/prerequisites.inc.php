@@ -70,3 +70,6 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.fail2ban.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/init_db.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/triggers.inc.php';
 init_db_schema();
+if (isset($_SESSION['mailcow_cc_role'])) {
+  set_acl();
+}

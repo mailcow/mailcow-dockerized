@@ -7,6 +7,13 @@ function mailbox($_action, $_type, $_data = null) {
     case 'add':
       switch ($_type) {
         case 'time_limited_alias':
+          if (!isset($_SESSION['acl']['spam_alias']) || $_SESSION['acl']['spam_alias'] != "1" ) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => sprintf($lang['danger']['access_denied'])
+            );
+            return false;
+          }
           if (isset($_data['username']) && filter_var($_data['username'], FILTER_VALIDATE_EMAIL)) {
             if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data['username'])) {
               $_SESSION['return'] = array(
@@ -66,6 +73,13 @@ function mailbox($_action, $_type, $_data = null) {
           );
         break;
         case 'syncjob':
+          if (!isset($_SESSION['acl']['syncjobs']) || $_SESSION['acl']['syncjobs'] != "1" ) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => sprintf($lang['danger']['access_denied'])
+            );
+            return false;
+          }
           if (isset($_data['username']) && filter_var($_data['username'], FILTER_VALIDATE_EMAIL)) {
             if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data['username'])) {
               $_SESSION['return'] = array(
@@ -743,6 +757,10 @@ function mailbox($_action, $_type, $_data = null) {
               ':domain' => $domain,
               ':active' => $active
             ));
+            $stmt = $pdo->prepare("INSERT INTO `user_acl` (`username`) VALUES (:username)");
+            $stmt->execute(array(
+              ':username' => $username
+            ));
             $_SESSION['return'] = array(
               'type' => 'success',
               'msg' => sprintf($lang['success']['mailbox_added'], htmlspecialchars($username))
@@ -949,6 +967,13 @@ function mailbox($_action, $_type, $_data = null) {
           else {
             $usernames = $_data['username'];
           }
+          if (!isset($_SESSION['acl']['tls_policy']) || $_SESSION['acl']['tls_policy'] != "1" ) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => sprintf($lang['danger']['access_denied'])
+            );
+            return false;
+          }
           foreach ($usernames as $username) {
             if (!filter_var($username, FILTER_VALIDATE_EMAIL) || !hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
               $_SESSION['return'] = array(
@@ -998,6 +1023,13 @@ function mailbox($_action, $_type, $_data = null) {
           else {
             $usernames = $_data['username'];
           }
+          if (!isset($_SESSION['acl']['spam_score']) || $_SESSION['acl']['spam_score'] != "1" ) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => sprintf($lang['danger']['access_denied'])
+            );
+            return false;
+          }
           foreach ($usernames as $username) {
             $lowspamlevel	= explode(',', $_data['spam_score'])[0];
             $highspamlevel	= explode(',', $_data['spam_score'])[1];
@@ -1046,6 +1078,13 @@ function mailbox($_action, $_type, $_data = null) {
           );
         break;
         case 'time_limited_alias':
+          if (!isset($_SESSION['acl']['spam_alias']) || $_SESSION['acl']['spam_alias'] != "1" ) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => sprintf($lang['danger']['access_denied'])
+            );
+            return false;
+          }
           if (!is_array($_data['address'])) {
             $addresses = array();
             $addresses[] = $_data['address'];
@@ -1102,6 +1141,13 @@ function mailbox($_action, $_type, $_data = null) {
           }
           else {
             $usernames = $_data['username'];
+          }
+          if (!isset($_SESSION['acl']['delimiter_action']) || $_SESSION['acl']['delimiter_action'] != "1" ) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => sprintf($lang['danger']['access_denied'])
+            );
+            return false;
           }
           foreach ($usernames as $username) {
             if (!filter_var($username, FILTER_VALIDATE_EMAIL) || !hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
@@ -1205,6 +1251,13 @@ function mailbox($_action, $_type, $_data = null) {
           }
           else {
             $ids = $_data['id'];
+          }
+          if (!isset($_SESSION['acl']['syncjobs']) || $_SESSION['acl']['syncjobs'] != "1" ) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => sprintf($lang['danger']['access_denied'])
+            );
+            return false;
           }
           foreach ($ids as $id) {
             $is_now = mailbox('get', 'syncjob_details', $id);
@@ -2677,6 +2730,13 @@ function mailbox($_action, $_type, $_data = null) {
           else {
             $ids = $_data['id'];
           }
+          if (!isset($_SESSION['acl']['syncjobs']) || $_SESSION['acl']['syncjobs'] != "1" ) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => sprintf($lang['danger']['access_denied'])
+            );
+            return false;
+          }
           foreach ($ids as $id) {
             if (!is_numeric($id)) {
               $_SESSION['return'] = array(
@@ -2720,6 +2780,13 @@ function mailbox($_action, $_type, $_data = null) {
           }
           else {
             $addresses = $_data['address'];
+          }
+          if (!isset($_SESSION['acl']['spam_alias']) || $_SESSION['acl']['spam_alias'] != "1" ) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => sprintf($lang['danger']['access_denied'])
+            );
+            return false;
           }
           foreach ($addresses as $address) {
             try {
@@ -2768,6 +2835,13 @@ function mailbox($_action, $_type, $_data = null) {
           }
           else {
             $usernames = $_data['username'];
+          }
+          if (!isset($_SESSION['acl']['eas_reset']) || $_SESSION['acl']['eas_reset'] != "1" ) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => sprintf($lang['danger']['access_denied'])
+            );
+            return false;
           }
           foreach ($usernames as $username) {
             if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
