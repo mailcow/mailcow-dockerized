@@ -82,10 +82,6 @@ if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 	exit 0
 fi
 
-echo -e "Stopping mailcow... "
-sleep 2
-docker-compose down
-
 # Silently fixing remote url from andryyy to mailcow
 git remote set-url origin https://github.com/mailcow/mailcow-dockerized
 echo -e "\e[32mCommitting current status...\e[0m"
@@ -132,6 +128,10 @@ docker-compose pull --parallel
 # Fix missing SSL, does not overwrite existing files
 [[ ! -d data/assets/ssl ]] && mkdir -p data/assets/ssl
 cp -n data/assets/ssl-example/*.pem data/assets/ssl/
+
+echo -e "Stopping mailcow... "
+sleep 2
+docker-compose down
 
 echo -e "\e[32mStarting mailcow...\e[0m"
 sleep 2
