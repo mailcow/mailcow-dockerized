@@ -141,6 +141,7 @@ $(document).ready(function() {
         return false;
       }
     }
+    // alert(JSON.stringify(api_attr));
     $.ajax({
       type: "POST",
       dataType: "json",

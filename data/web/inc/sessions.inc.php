@@ -15,7 +15,7 @@ elseif (isset($_SERVER['HTTPS'])) {
 else {
   $IS_HTTPS = false;
 }
-session_set_cookie_params($SESSION_LIFETIME, '/', '', $IS_HTTPS, true);
+// session_set_cookie_params($SESSION_LIFETIME, '/', '', $IS_HTTPS, true);
 session_start();
 if (!isset($_SESSION['CSRF']['TOKEN'])) {
   $_SESSION['CSRF']['TOKEN'] = bin2hex(random_bytes(32));
@@ -25,6 +25,9 @@ if (!isset($_SESSION['CSRF']['TOKEN'])) {
 if (!isset($_SESSION['SESS_REMOTE_UA'])) {
   $_SESSION['SESS_REMOTE_UA'] = $_SERVER['HTTP_USER_AGENT'];
 }
+
+// Update session cookie
+// setcookie(session_name() ,session_id(), time() + $SESSION_LIFETIME);
 
 // Check session
 function session_check() {

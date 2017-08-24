@@ -2,10 +2,19 @@
 
 use DBI;
 use LockFile::Simple qw(lock trylock unlock);
+use Proc::ProcessTable;
 use Data::Dumper qw(Dumper);
 use IPC::Run 'run';
 use String::Util 'trim';
 use File::Temp;
+
+my $t = Proc::ProcessTable->new;
+my $imapsync_running = grep { $_->{cmndline} =~ /^\/usr\/bin\/perl \/usr\/local\/bin\/imapsync\s/ } @{$t->table};
+if ($imapsync_running eq 1)
+{
+  print "imapsync is active, exiting...";
+  exit;
+}
 
 $DBNAME = '';
 $DBUSER = '';
@@ -16,7 +25,10 @@ $dsn = "DBI:mysql:database=" . $DBNAME . ";host=mysql";
 $lock_file = $run_dir . "/imapsync_busy";
 $lockmgr = LockFile::Simple->make(-autoclean => 1, -max => 1);
 $lockmgr->lock($lock_file) || die "can't lock ${lock_file}";
-$dbh = DBI->connect($dsn, $DBUSER, $DBPASS);
+$dbh = DBI->connect($dsn, $DBUSER, $DBPASS, {
+  mysql_auto_reconnect => 1,
+  mysql_enable_utf8mb4 => 1
+});
 open my $file, '<', "/etc/sogo/sieve.creds"; 
 my $creds = <$file>; 
 close $file;

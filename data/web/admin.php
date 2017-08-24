@@ -122,7 +122,7 @@ $tfa_data = get_tfa();
 
   <div role="tabpanel" class="tab-pane" id="tab-config">
     <div class="row">
-    <div class="col-sm-2 hidden-xs">
+    <div id="sidebar-admin" class="col-sm-2 hidden-xs">
       <div id="scrollbox" class="list-group">
         <a href="#dkim" class="list-group-item"><?=$lang['admin']['dkim_keys'];?></a>
         <a href="#fwdhosts" class="list-group-item"><?=$lang['admin']['forwarding_hosts'];?></a>

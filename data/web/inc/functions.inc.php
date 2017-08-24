@@ -62,16 +62,16 @@ function hasMailboxObjectAccess($username, $role, $object) {
 	}
 	return false;
 }
+function pem_to_der($pem_key) {
+  // Need to remove BEGIN/END PUBLIC KEY
+  $lines = explode("\n", trim($pem_key));
+  unset($lines[count($lines)-1]);
+  unset($lines[0]);
+  return base64_decode(implode('', $lines));
+}
 function generate_tlsa_digest($hostname, $port, $starttls = null) {
   if (!is_valid_domain_name($hostname)) {
     return "Not a valid hostname";
-  }
-  function pem_to_der($pem_key) {
-    // Need to remove BEGIN/END PUBLIC KEY
-    $lines = explode("\n", trim($pem_key));
-    unset($lines[count($lines)-1]);
-    unset($lines[0]);
-    return base64_decode(implode('', $lines));
   }
   if (empty($starttls)) {
     $context = stream_context_create(array("ssl" => array("capture_peer_cert" => true, 'verify_peer' => false, 'allow_self_signed' => true)));
@@ -87,18 +87,22 @@ function generate_tlsa_digest($hostname, $port, $starttls = null) {
       return $error_nr . ': ' . $error_msg;
     }
     $banner = fread($stream, 512 );
-    if (preg_match("/^220/i", $banner)) {
+    if (preg_match("/^220/i", $banner)) { // SMTP
       fwrite($stream,"HELO tlsa.generator.local\r\n");
       fread($stream, 512);
       fwrite($stream,"STARTTLS\r\n");
       fread($stream, 512);
     }
-    elseif (preg_match("/imap.+starttls/i", $banner)) {
+    elseif (preg_match("/imap.+starttls/i", $banner)) { // IMAP
       fwrite($stream,"A1 STARTTLS\r\n");
       fread($stream, 512);
     }
-    elseif (preg_match("/^\+OK/", $banner)) {
+    elseif (preg_match("/^\+OK/", $banner)) { // POP3
       fwrite($stream,"STLS\r\n");
+      fread($stream, 512);
+    }
+    elseif (preg_match("/^OK/m", $banner)) { // Sieve
+      fwrite($stream,"STARTTLS\r\n");
       fread($stream, 512);
     }
     else {
@@ -213,6 +217,23 @@ function check_login($user, $pass) {
 		error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
 	}
 	sleep($_SESSION['ldelay']);
+}
+function set_acl() {
+	global $pdo;
+	if (!isset($_SESSION['mailcow_cc_username'])) {
+		return false;
+	}
+	$username = strtolower(trim($_SESSION['mailcow_cc_username']));
+	$stmt = $pdo->prepare("SELECT * FROM `user_acl` WHERE `username` = :username");
+	$stmt->execute(array(':username' => $username));
+	$acl['acl'] = $stmt->fetch(PDO::FETCH_ASSOC);
+  unset($acl['acl']['username']);
+  if (!empty($acl)) {
+    $_SESSION = array_merge($_SESSION, $acl);
+  }
+  else {
+    return false;
+  }
 }
 function formatBytes($size, $precision = 2) {
 	if(!is_numeric($size)) {

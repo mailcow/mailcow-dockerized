@@ -17,7 +17,12 @@ function fail2ban($_action, $_data = null) {
           foreach ($wl as $key => $value) {
             $tmp_data[] = $key;
           }
-          $data['whitelist'] = implode(PHP_EOL, $tmp_data);
+          if (isset($tmp_data)) {
+            $data['whitelist'] = implode(PHP_EOL, $tmp_data);
+          }
+          else {
+            $data['whitelist'] = "";
+          }
         }
         else {
           $data['whitelist'] = "";

@@ -1,6 +1,7 @@
 {
     "require": {
         "robthree/twofactorauth": "^1.6",
-        "yubico/u2flib-server": "^1.0"
+        "yubico/u2flib-server": "^1.0",
+        "phpmailer/phpmailer": "^5.2"
     }
 }

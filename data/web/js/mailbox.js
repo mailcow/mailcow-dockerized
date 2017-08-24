@@ -29,9 +29,35 @@ $(document).ready(function() {
     $('#password2').prop('type', 'text');
     $('#password2').val(random_passwd);
   });
-});
 
+  // Log modal
+  $('#logModal').on('show.bs.modal', function(e) {
+    var logText = $(e.relatedTarget).data('log-text');
+    $(e.currentTarget).find('#logText').html('<pre style="background:none;font-size:11px;line-height:1.1;border:0px">' + logText + '</pre>');
+  });
+});
 jQuery(function($){
+  // http://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery
+  var entityMap = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;',
+  '/': '&#x2F;',
+  '`': '&#x60;',
+  '=': '&#x3D;'
+  };
+  function escapeHtml(string) {
+    return String(string).replace(/[&<>"'`=\/]/g, function (s) {
+      return entityMap[s];
+    });
+  }
+  // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
+  function validateEmail(email) {
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+  }
   // Calculation human readable file sizes
   function humanFileSize(bytes) {
     if(Math.abs(bytes) < 1024) {
@@ -322,9 +348,55 @@ jQuery(function($){
     });
   }
 
+  function draw_sync_job_table() {
+    ft_syncjob_table = FooTable.init('#sync_job_table', {
+      "columns": [
+        {"name":"chkbox","title":"","style":{"maxWidth":"40px","width":"40px","text-align":"center"},"filterable": false,"sortable": false,"type":"html"},
+        {"sorted": true,"name":"id","title":"ID","style":{"maxWidth":"60px","width":"60px","text-align":"center"}},
+        {"name":"user2","title":lang.owner},
+        {"name":"server_w_port","title":"Server","breakpoints":"xs"},
+        {"name":"mins_interval","title":lang.mins_interval,"breakpoints":"all"},
+        {"name":"last_run","title":lang.last_run,"breakpoints":"all"},
+        {"name":"log","title":"Log"},
+        {"name":"active","filterable": false,"style":{"maxWidth":"50px","width":"70px"},"title":lang.active},
+        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
+      ],
+      "empty": lang.empty,
+      "rows": $.ajax({
+        dataType: 'json',
+        url: '/api/v1/get/syncjobs/all',
+        jsonp: false,
+        error: function () {
+          console.log('Cannot draw sync job table');
+        },
+        success: function (data) {
+          $.each(data, function (i, item) {
+            item.log = '<a href="#logModal" data-toggle="modal" data-log-text="' + escapeHtml(item.returned_text) + '">Open logs</a>'
+            item.exclude = '<code>' + item.exclude + '</code>'
+            item.server_w_port = item.user1 + '@' + item.host1 + ':' + item.port1;
+            item.action = '<div class="btn-group">' +
+              '<a href="/edit.php?syncjob=' + item.id + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+              '<a href="#" id="delete_selected" data-id="single-syncjob" data-api-url="delete/syncjob" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+              '</div>';
+            item.chkbox = '<input type="checkbox" data-id="syncjob" name="multi_select" value="' + item.id + '" />';
+          });
+        }
+      }),
+      "paging": {
+        "enabled": true,
+        "limit": 5,
+        "size": pagination_size
+      },
+      "sorting": {
+        "enabled": true
+      }
+    });
+  }
+
   draw_domain_table();
   draw_mailbox_table();
   draw_resource_table();
   draw_alias_table();
   draw_aliasdomain_table();
+  draw_sync_job_table();
 });

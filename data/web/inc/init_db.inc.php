@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "20072107_1029";
+    $db_version = "02082017_0938";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'"); 
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -123,6 +123,30 @@ function init_db_schema() {
         "keys" => array(
           "primary" => array(
             "" => array("domain")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "user_acl" => array(
+        "cols" => array(
+          "username" => "VARCHAR(255) NOT NULL",
+          "spam_alias" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "tls_policy" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "spam_score" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "spam_policy" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "delimiter_action" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "syncjobs" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "eas_reset" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "eas_autoconfig" => "TINYINT(1) NOT NULL DEFAULT '1'"
+        ),
+        "keys" => array(
+          "fkey" => array(
+            "fk_username" => array(
+              "col" => "username",
+              "ref" => "mailbox.username",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
@@ -511,6 +535,19 @@ function init_db_schema() {
               $pdo->query("ALTER TABLE `" . $table . "` " . $is_drop . "ADD UNIQUE KEY `" . $key_name . "` (" . $fields . ")");
             }
           }
+          if (strtolower($key_type) == 'fkey') {
+            foreach ($key_content as $key_name => $key_values) {
+              $fields = "`" . implode("`, `", $key_values) . "`";
+              $stmt = $pdo->query("SHOW KEYS FROM `" . $table . "` WHERE Key_name = '" . $key_name . "'"); 
+              $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+              if ($num_results != 0) {
+                $pdo->query("ALTER TABLE `" . $table . "` DROP FOREIGN KEY `" . $key_name . "`");
+              }
+              @list($table_ref, $field_ref) = explode('.', $key_values['ref']);
+              $pdo->query("ALTER TABLE `" . $table . "` ADD FOREIGN KEY `" . $key_name . "` (" . $key_values['col'] . ") REFERENCES `" . $table_ref . "` (`" . $field_ref . "`)
+                ON DELETE " . $key_values['delete'] . " ON UPDATE " . $key_values['update']);
+            }
+          }
         }
         // Drop all vanished columns
         $stmt = $pdo->query("SHOW COLUMNS FROM `" . $table . "`"); 
@@ -535,10 +572,21 @@ function init_db_schema() {
              $keys_to_exist[] = $key_name;
           }
         }
+        // Index for foreign key must exist
+        if (isset($properties['keys']['fkey']) && is_array($properties['keys']['fkey'])) {
+          foreach ($properties['keys']['fkey'] as $key_name => $key_values) {
+             $keys_to_exist[] = $key_name;
+          }
+        }
         // Step 2: Drop all vanished indexes
         while ($row = array_shift($keys_in_table)) {
           if (!in_array($row['Key_name'], $keys_to_exist)) {
-            $pdo->query("ALTER TABLE `" . $table . "` DROP INDEX `" . $row['Key_name'] . "`");
+            try {
+              $pdo->query("ALTER TABLE `" . $table . "` DROP FOREIGN KEY `" . $row['Key_name'] . "`");
+            }
+            finally {
+              $pdo->query("ALTER TABLE `" . $table . "` DROP INDEX `" . $row['Key_name'] . "`");
+            }
           }
         }
         // Step 3: Drop all vanished primary keys
@@ -575,6 +623,14 @@ function init_db_schema() {
               $sql .= "UNIQUE KEY `" . $key_name . "` (" . $fields . ")" . ",";
             }
           }
+          elseif (strtolower($key_type) == 'fkey') {
+            foreach ($key_content as $key_name => $key_values) {
+              @list($table_ref, $field_ref) = explode('.', $key_values['ref']);
+              $fields = "`" . implode("`, `", $key_values) . "`";
+              $sql .= "FOREIGN KEY `" . $key_name . "` (" . $key_values['col'] . ") REFERENCES `" . $table_ref . "` (`" . $field_ref . "`)
+                ON DELETE " . $key_values['delete'] . " ON UPDATE " . $key_values['update'] . ",";
+            }
+          }
         }
         $sql = rtrim($sql, ",");
         $sql .= ") " . $properties['attr'];
@@ -606,6 +662,9 @@ function init_db_schema() {
       'type' => 'success',
       'msg' => 'Database initialisation completed'
     );
+
+    // Fix user_acl
+    $stmt = $pdo->query("INSERT INTO `user_acl` (`username`) SELECT `username` FROM `mailbox` WHERE `kind` = '' AND NOT EXISTS (SELECT `username` FROM `user_acl`);");
   }
   catch (PDOException $e) {
     $_SESSION['return'] = array(
