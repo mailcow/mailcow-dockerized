@@ -83,7 +83,7 @@ function ucl_rcpts($object, $type) {
 		$rcpt[] = '/.*@' . $object . '/i';
 		$stmt = $pdo->prepare("SELECT `alias_domain` FROM `alias_domain`
 			WHERE `target_domain` = :object");
-		$stmt->execute(array(':object' => $row['object']));
+		$stmt->execute(array(':object' => $object));
 		$alias_domains = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		array_filter($alias_domains);
 		while ($row = array_shift($alias_domains)) {
@@ -112,7 +112,7 @@ while ($row = array_shift($rows)) {
 	score_<?=$username_sane;?> {
 		priority = 4;
 <?php
-  foreach (ucl_rcpts($row['object'], 'mailbox') as $rcpt) {
+  foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
 		rcpt = "<?=$rcpt;?>";
 <?php
@@ -158,7 +158,7 @@ while ($row = array_shift($rows)) {
 ?>
 		priority = 5;
 <?php
-		foreach (ucl_rcpts($row['object'], 'mailbox') as $rcpt) {
+		foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
 		rcpt = "<?=$rcpt;?>";
 <?php
@@ -168,7 +168,7 @@ while ($row = array_shift($rows)) {
 ?>
 		priority = 6;
 <?php
-		foreach (ucl_rcpts($row['object'], 'mailbox') as $rcpt) {
+		foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
 		rcpt = "<?=$rcpt;?>";
 <?php
@@ -199,7 +199,7 @@ while ($row = array_shift($rows)) {
 ?>
 		priority = 5;
 <?php
-		foreach (ucl_rcpts($row['object'], 'mailbox') as $rcpt) {
+		foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
 		rcpt = "<?=$rcpt;?>";
 <?php
@@ -209,7 +209,7 @@ while ($row = array_shift($rows)) {
 ?>
 		priority = 6;
 <?php
-		foreach (ucl_rcpts($row['object'], 'mailbox') as $rcpt) {
+		foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
 		rcpt = "<?=$rcpt;?>";
 <?php
@@ -250,7 +250,7 @@ while ($row = array_shift($rows)) {
 ?>
 		priority = 5;
 <?php
-		foreach (ucl_rcpts($row['object'], 'mailbox') as $rcpt) {
+		foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
 		rcpt = "<?=$rcpt;?>";
 <?php
@@ -260,7 +260,7 @@ while ($row = array_shift($rows)) {
 ?>
 		priority = 6;
 <?php
-		foreach (ucl_rcpts($row['object'], 'mailbox') as $rcpt) {
+		foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
 		rcpt = "<?=$rcpt;?>";
 <?php
@@ -291,7 +291,7 @@ while ($row = array_shift($rows)) {
 ?>
 		priority = 5;
 <?php
-		foreach (ucl_rcpts($row['object'], 'mailbox') as $rcpt) {
+		foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
 		rcpt = "<?=$rcpt;?>";
 <?php
@@ -301,7 +301,7 @@ while ($row = array_shift($rows)) {
 ?>
 		priority = 6;
 <?php
-		foreach (ucl_rcpts($row['object'], 'mailbox') as $rcpt) {
+		foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
 		rcpt = "<?=$rcpt;?>";
 <?php
