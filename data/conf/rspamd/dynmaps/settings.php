@@ -47,7 +47,7 @@ function ucl_rcpts($object, $type) {
       $local = parse_email($row['address'])['local'];
       $domain = parse_email($row['address'])['domain'];
       if (!empty($local) && !empty($domain)) {
-        $rcpt[] = '/' . $local . '\+.*' . $domain . '/';
+        $rcpt[] = '/' . $local . '\+.*' . $domain . '/i';
       }
       $rcpt[] = $row['address'];
     }
@@ -65,7 +65,7 @@ function ucl_rcpts($object, $type) {
         $local = parse_email($row['alias'])['local'];
         $domain = parse_email($row['alias'])['domain'];
         if (!empty($local) && !empty($domain)) {
-          $rcpt[] = '/' . $local . '\+.*' . $domain . '/';
+          $rcpt[] = '/' . $local . '\+.*' . $domain . '/i';
         }
       $rcpt[] = $row['alias'];
       }
@@ -74,20 +74,20 @@ function ucl_rcpts($object, $type) {
     $local = parse_email($row['object'])['local'];
     $domain = parse_email($row['object'])['domain'];
     if (!empty($local) && !empty($domain)) {
-      $rcpt[] = '/' . $local . '\+.*' . $domain . '/';
+      $rcpt[] = '/' . $local . '\+.*' . $domain . '/i';
     }
     $rcpt[] = $object;
   }
   elseif ($type == 'domain') {
     // Domain self
-		$rcpt[] = '/.*@' . $object . '/';
+		$rcpt[] = '/.*@' . $object . '/i';
 		$stmt = $pdo->prepare("SELECT `alias_domain` FROM `alias_domain`
 			WHERE `target_domain` = :object");
 		$stmt->execute(array(':object' => $row['object']));
 		$alias_domains = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		array_filter($alias_domains);
 		while ($row = array_shift($alias_domains)) {
-      $rcpt[] = '/.*@' . $row['alias_domain'] . '/';
+      $rcpt[] = '/.*@' . $row['alias_domain'] . '/i';
 		}
   }
   if (!empty($rcpt)) {
@@ -152,7 +152,7 @@ while ($row = array_shift($rows)) {
 	$grouped_lists = $stmt->fetchAll(PDO::FETCH_COLUMN);
 	$value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
 ?>
-		from = "/(<?=$value_sane;?>)/";
+		from = "/(<?=$value_sane;?>)/i";
 <?php
 	if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
 ?>
@@ -203,7 +203,7 @@ while ($row = array_shift($rows)) {
 	$grouped_lists = $stmt->fetchAll(PDO::FETCH_COLUMN);
 	$value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
 ?>
-		from = "/(<?=$value_sane;?>)/";
+		from = "/(<?=$value_sane;?>)/i";
 <?php
 	if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
 ?>
