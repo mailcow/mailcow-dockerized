@@ -182,6 +182,47 @@ while ($row = array_shift($rows)) {
 			"MAILCOW_WHITE"
 		]
 	}
+	whitelist_header_<?=$username_sane;?> {
+<?php
+	$stmt = $pdo->prepare("SELECT GROUP_CONCAT(REPLACE(`value`, '*', '.*') SEPARATOR '|') AS `value` FROM `filterconf`
+		WHERE `object`= :object
+			AND `option` = 'whitelist_from'");
+	$stmt->execute(array(':object' => $row['object']));
+	$grouped_lists = $stmt->fetchAll(PDO::FETCH_COLUMN);
+	$value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
+?>
+		request_header = {
+			"From" = "/(<?=$value_sane;?>)/i";
+		}
+<?php
+	if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
+?>
+		priority = 5;
+<?php
+		foreach (ucl_rcpts($row['object'], 'mailbox') as $rcpt) {
+?>
+		rcpt = "<?=$rcpt;?>";
+<?php
+		}
+	}
+	else {
+?>
+		priority = 6;
+<?php
+		foreach (ucl_rcpts($row['object'], 'mailbox') as $rcpt) {
+?>
+		rcpt = "<?=$rcpt;?>";
+<?php
+		}
+	}
+?>
+		apply "default" {
+			MAILCOW_WHITE = -999.0;
+		}
+		symbols [
+			"MAILCOW_WHITE"
+		]
+	}
 <?php
 }
 
@@ -204,6 +245,47 @@ while ($row = array_shift($rows)) {
 	$value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
 ?>
 		from = "/(<?=$value_sane;?>)/i";
+<?php
+	if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
+?>
+		priority = 5;
+<?php
+		foreach (ucl_rcpts($row['object'], 'mailbox') as $rcpt) {
+?>
+		rcpt = "<?=$rcpt;?>";
+<?php
+		}
+	}
+	else {
+?>
+		priority = 6;
+<?php
+		foreach (ucl_rcpts($row['object'], 'mailbox') as $rcpt) {
+?>
+		rcpt = "<?=$rcpt;?>";
+<?php
+		}
+	}
+?>
+		apply "default" {
+			MAILCOW_BLACK = 999.0;
+		}
+		symbols [
+			"MAILCOW_BLACK"
+		]
+	}
+	blacklist_header_<?=$username_sane;?> {
+<?php
+	$stmt = $pdo->prepare("SELECT GROUP_CONCAT(REPLACE(`value`, '*', '.*') SEPARATOR '|') AS `value` FROM `filterconf`
+		WHERE `object`= :object
+			AND `option` = 'blacklist_from'");
+	$stmt->execute(array(':object' => $row['object']));
+	$grouped_lists = $stmt->fetchAll(PDO::FETCH_COLUMN);
+	$value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
+?>
+		request_header = {
+			"From" = "/(<?=$value_sane;?>)/i";
+		}
 <?php
 	if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
 ?>
