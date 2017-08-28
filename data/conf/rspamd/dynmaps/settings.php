@@ -192,7 +192,7 @@ while ($row = array_shift($rows)) {
 	$value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
 ?>
 		request_header = {
-			"From" = "/(<?=$value_sane;?>)/i";
+			"From" = "(<?=$value_sane;?>)";
 		}
 <?php
 	if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
@@ -284,7 +284,7 @@ while ($row = array_shift($rows)) {
 	$value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
 ?>
 		request_header = {
-			"From" = "/(<?=$value_sane;?>)/i";
+			"From" = "(<?=$value_sane;?>)";
 		}
 <?php
 	if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
