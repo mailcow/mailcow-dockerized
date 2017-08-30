@@ -1214,7 +1214,6 @@ function mailbox($_action, $_type, $_data = null) {
             }
             if (empty($rl_value)) {
               try {
-                $redis->hDel('RL_OBJECT', $domain);
                 $redis->hDel('RL_VALUE', $domain);
               }
               catch (RedisException $e) {
@@ -1227,7 +1226,6 @@ function mailbox($_action, $_type, $_data = null) {
             }
             else {
               try {
-                $redis->hSet('RL_OBJECT', $domain, '1');
                 $redis->hSet('RL_VALUE', $domain, $rl_value . ' / 1' . $rl_frame);
               }
               catch (RedisException $e) {
@@ -2389,7 +2387,7 @@ function mailbox($_action, $_type, $_data = null) {
             return false;
           }
           try {
-            if (($rl_value = $redis->hGet('RL_VALUE', $_data)) && $redis->hGet('RL_OBJECT', $_data)) {
+            if ($rl_value = $redis->hGet('RL_VALUE', $_data)) {
               $rl = explode(' / 1', $rl_value);
               $data['value'] = $rl[0];
               $data['frame'] = $rl[1];

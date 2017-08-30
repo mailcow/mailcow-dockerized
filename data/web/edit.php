@@ -238,7 +238,6 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           }
           ?>
       <hr>
-      <!--
       <form data-id="domratelimit" class="form-inline well" method="post">
         <div class="form-group">
           <label class="control-label">Ratelimit</label>
@@ -256,7 +255,6 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         </div>
       </form>
       <hr>
-      -->
       <div class="row">
         <div class="col-sm-6">
           <h4><?=$lang['user']['spamfilter_wl'];?></h4>
@@ -316,7 +314,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
       !empty($_GET["aliasdomain"])) {
         $alias_domain = $_GET["aliasdomain"];
         $result = mailbox('get', 'alias_domain_details', $alias_domain);
-        // $rl = mailbox('get', 'domain_ratelimit', $alias_domain);
+        $rl = mailbox('get', 'domain_ratelimit', $alias_domain);
         if (!empty($result)) {
         ?>
           <h4><?=$lang['edit']['edit_alias_domain'];?></h4>
@@ -341,7 +339,6 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               </div>
             </div>
           </form>
-          <!--
           <hr>
           <form data-id="domratelimit" class="form-inline well" method="post">
             <div class="form-group">
@@ -359,7 +356,6 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               <button class="btn btn-default" id="edit_selected" data-id="domratelimit" data-item="<?=$alias_domain;?>" data-api-url='edit/domain-ratelimit' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
             </div>
           </form>
-          -->
           <?php
           if (!empty($dkim = dkim('details', $alias_domain))) {
           ?>

@@ -50,4 +50,61 @@ rspamd_config:register_symbol({
   priority = 11
 })
 
+rspamd_config:register_symbol({
+  name = 'DYN_RL_CHECK',
+  type = 'prefilter',
+  callback = function(task)
+    local util = require("rspamd_util")
+    local redis_params = rspamd_parse_redis_server('dyn_rl')
+    local rspamd_logger = require "rspamd_logger"
+    local envfrom = task:get_from(1)
+    local env_from_domain = envfrom[1].domain:lower() -- get smtp from domain in lower case
+    local env_from_addr = envfrom[1].addr:lower() -- get smtp from addr in lower case
 
+    local function redis_cb_user(err, data)
+
+      if err or type(data) ~= 'string' then
+        rspamd_logger.infox(rspamd_config, "dynamic ratelimit request for user %s returned invalid or empty data (\"%s\") or error (\"%s\") - trying dynamic ratelimit for domain...", env_from_addr, data, err)
+
+        local function redis_key_cb_domain(err, data)
+          if err or type(data) ~= 'string' then
+            rspamd_logger.infox(rspamd_config, "dynamic ratelimit request for domain %s returned invalid or empty data (\"%s\") or error (\"%s\")", env_from_domain, data, err)
+          else
+            rspamd_logger.infox(rspamd_config, "found dynamic ratelimit in redis for domain %s with value %s", env_from_domain, data)
+            task:insert_result('DYN_RL', 0.0, data)
+          end
+        end
+
+        local redis_ret_domain = rspamd_redis_make_request(task,
+          redis_params, -- connect params
+          env_from_domain, -- hash key
+          false, -- is write
+          redis_key_cb_domain, --callback
+          'HGET', -- command
+          {'RL_VALUE', env_from_domain} -- arguments
+        )
+        if not redis_ret_domain then
+          rspamd_logger.infox(rspamd_config, "cannot make request to load ratelimit for domain")
+        end
+      else
+        rspamd_logger.infox(rspamd_config, "found dynamic ratelimit in redis for user %s with value %s", env_from_addr, data)
+        task:insert_result('DYN_RL', 0.0, data)
+      end
+
+    end
+
+    local redis_ret_user = rspamd_redis_make_request(task,
+      redis_params, -- connect params
+      env_from_addr, -- hash key
+      false, -- is write
+      redis_cb_user, --callback
+      'HGET', -- command
+      {'RL_VALUE', env_from_addr} -- arguments
+    )
+    if not redis_ret_user then
+      rspamd_logger.infox(rspamd_config, "cannot make request to load ratelimit for user")
+    end
+    return true
+  end,
+  priority = 20
+})
