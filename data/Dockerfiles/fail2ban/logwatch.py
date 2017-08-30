@@ -23,11 +23,10 @@ pubsub = r.pubsub()
 RULES = {}
 RULES[1] = 'warning: .*\[([0-9a-f\.:]+)\]: SASL .+ authentication failed'
 RULES[2] = '-login: Disconnected \(auth failed, .+\): user=.*, method=.+, rip=([0-9a-f\.:]+),'
-RULES[3] = '-login: Disconnected \(no auth .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
-RULES[4] = '-login: Aborted login \(no auth .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
-RULES[5] = '-login: Aborted login \(tried to use disallowed .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
-RULES[6] = 'SOGo.+ Login from \'([0-9a-f\.:]+)\' for user .+ might not have worked'
-RULES[7] = 'mailcow UI: Invalid password for .+ by ([0-9a-f\.:]+)'
+RULES[3] = '-login: Aborted login \(no auth .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
+RULES[4] = '-login: Aborted login \(tried to use disallowed .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
+RULES[5] = 'SOGo.+ Login from \'([0-9a-f\.:]+)\' for user .+ might not have worked'
+RULES[6] = 'mailcow UI: Invalid password for .+ by ([0-9a-f\.:]+)'
 
 r.setnx("F2B_BAN_TIME", "1800")
 r.setnx("F2B_MAX_ATTEMPTS", "10")
