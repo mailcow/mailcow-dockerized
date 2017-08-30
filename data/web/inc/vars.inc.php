@@ -70,7 +70,7 @@ unset($https_port);
 $DEFAULT_LANG = 'en';
 
 // Available languages
-$AVAILABLE_LANGUAGES = array('de', 'en', 'es', 'nl', 'pt', 'ru', 'it');
+$AVAILABLE_LANGUAGES = array('de', 'en', 'es', 'nl', 'pl', 'pt', 'ru', 'it');
 
 // Change theme (default: lumen)
 // Needs to be one of those: cerulean, cosmo, cyborg, darkly, flatly, journal, lumen, paper, readable, sandstone,
