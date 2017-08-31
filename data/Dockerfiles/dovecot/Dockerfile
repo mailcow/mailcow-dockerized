@@ -3,8 +3,8 @@ LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL C
-ENV DOVECOT_VERSION 2.2.31
-ENV PIGEONHOLE_VERSION 0.4.18
+ENV DOVECOT_VERSION 2.2.32
+ENV PIGEONHOLE_VERSION 0.4.20
 
 RUN apt-get update && apt-get -y install \
 	automake \

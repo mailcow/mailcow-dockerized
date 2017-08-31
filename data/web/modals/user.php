@@ -87,6 +87,13 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 							</div>
 						</div>
 					</div>
+          <div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<div class="checkbox">
+							<label><input type="checkbox" value="1" name="delete2"> <?=$lang['add']['delete2'];?></label>
+							</div>
+						</div>
+					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">

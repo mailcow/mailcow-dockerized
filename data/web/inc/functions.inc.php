@@ -223,11 +223,20 @@ function set_acl() {
 	if (!isset($_SESSION['mailcow_cc_username'])) {
 		return false;
 	}
-	$username = strtolower(trim($_SESSION['mailcow_cc_username']));
-	$stmt = $pdo->prepare("SELECT * FROM `user_acl` WHERE `username` = :username");
-	$stmt->execute(array(':username' => $username));
-	$acl['acl'] = $stmt->fetch(PDO::FETCH_ASSOC);
-  unset($acl['acl']['username']);
+	if ($_SESSION['mailcow_cc_role'] == 'admin' || $_SESSION['mailcow_cc_role'] == 'domainadmin') {
+    $stmt = $pdo->query("SHOW COLUMNS FROM `user_acl` WHERE `Field` != 'username';");
+    $acl_all = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    while ($row = array_shift($acl_all)) {
+      $acl['acl'][$row['Field']] = 1;
+    }
+	}
+  else {
+    $username = strtolower(trim($_SESSION['mailcow_cc_username']));
+    $stmt = $pdo->prepare("SELECT * FROM `user_acl` WHERE `username` = :username");
+    $stmt->execute(array(':username' => $username));
+    $acl['acl'] = $stmt->fetch(PDO::FETCH_ASSOC);
+    unset($acl['acl']['username']);
+  }
   if (!empty($acl)) {
     $_SESSION = array_merge($_SESSION, $acl);
   }

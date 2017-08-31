@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "02082017_0938";
+    $db_version = "31082017_0853";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'"); 
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -274,6 +274,7 @@ function init_db_schema() {
           "enc1" => "ENUM('TLS','SSL','PLAIN') DEFAULT 'TLS'",
           "delete2duplicates" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "delete1" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "delete2" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "returned_text" => "TEXT",
           "last_run" => "TIMESTAMP NULL DEFAULT NULL",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",

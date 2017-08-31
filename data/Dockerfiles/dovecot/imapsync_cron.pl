@@ -33,7 +33,7 @@ open my $file, '<', "/etc/sogo/sieve.creds";
 my $creds = <$file>; 
 close $file;
 my ($master_user, $master_pass) = split /:/, $creds;
-my $sth = $dbh->prepare("SELECT id, user1, user2, host1, authmech1, password1, exclude, port1, enc1, delete2duplicates, maxage, subfolder2, delete1 FROM imapsync WHERE active = 1 AND (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(last_run) > mins_interval * 60 OR last_run IS NULL) ORDER BY last_run");
+my $sth = $dbh->prepare("SELECT id, user1, user2, host1, authmech1, password1, exclude, port1, enc1, delete2duplicates, maxage, subfolder2, delete1, delete2 FROM imapsync WHERE active = 1 AND (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(last_run) > mins_interval * 60 OR last_run IS NULL) ORDER BY last_run");
 $sth->execute();
 my $row;
 
@@ -52,6 +52,7 @@ while ($row = $sth->fetchrow_arrayref()) {
   $maxage             = @$row[10];
   $subfolder2         = @$row[11];
   $delete1            = @$row[12];
+  $delete2            = @$row[13];
 
   if ($enc1 eq "TLS") { $enc1 = "--tls1"; } elsif ($enc1 eq "SSL") { $enc1 = "--ssl1"; } else { undef $enc1; }
 
@@ -71,6 +72,7 @@ while ($row = $sth->fetchrow_arrayref()) {
 	($maxage eq "0"	? () : ('--maxage', $maxage)),
 	($delete2duplicates	ne "1"	? () : ('--delete2duplicates')),
 	($delete1	ne "1"	? () : ('--delete')),
+    ($delete2   ne "1"  ? () : ('--delete2')),
 	(!defined($enc1) ? () : ($enc1)),
 	"--host1", $host1,
 	"--user1", $user1,

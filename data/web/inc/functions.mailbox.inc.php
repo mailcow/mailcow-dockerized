@@ -105,6 +105,7 @@ function mailbox($_action, $_type, $_data = null) {
           $active  = intval($_data['active']);
           $delete2duplicates = intval($_data['delete2duplicates']);
           $delete1  = intval($_data['delete1']);
+          $delete2  = intval($_data['delete2']);
           $port1            = $_data['port1'];
           $host1            = strtolower($_data['host1']);
           $password1        = $_data['password1'];
@@ -176,13 +177,14 @@ function mailbox($_action, $_type, $_data = null) {
             return false;
           }
           try {
-            $stmt = $pdo->prepare("INSERT INTO `imapsync` (`user2`, `exclude`, `delete1`, `maxage`, `subfolder2`, `host1`, `authmech1`, `user1`, `password1`, `mins_interval`, `port1`, `enc1`, `delete2duplicates`, `active`)
-              VALUES (:user2, :exclude, :maxage, :delete1, :subfolder2, :host1, :authmech1, :user1, :password1, :mins_interval, :port1, :enc1, :delete2duplicates, :active)");
+            $stmt = $pdo->prepare("INSERT INTO `imapsync` (`user2`, `exclude`, `delete1`, `delete2`, `maxage`, `subfolder2`, `host1`, `authmech1`, `user1`, `password1`, `mins_interval`, `port1`, `enc1`, `delete2duplicates`, `active`)
+              VALUES (:user2, :exclude, :maxage, :delete1, :delete2, :subfolder2, :host1, :authmech1, :user1, :password1, :mins_interval, :port1, :enc1, :delete2duplicates, :active)");
             $stmt->execute(array(
               ':user2' => $username,
               ':exclude' => $exclude,
               ':maxage' => $maxage,
               ':delete1' => $delete1,
+              ':delete2' => $delete2,
               ':subfolder2' => $subfolder2,
               ':host1' => $host1,
               ':authmech1' => 'PLAIN',
@@ -1265,6 +1267,7 @@ function mailbox($_action, $_type, $_data = null) {
               $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
               $delete2duplicates = (isset($_data['delete2duplicates'])) ? intval($_data['delete2duplicates']) : $is_now['delete2duplicates'];
               $delete1 = (isset($_data['delete1'])) ? intval($_data['delete1']) : $is_now['delete1'];
+              $delete2 = (isset($_data['delete2'])) ? intval($_data['delete2']) : $is_now['delete2'];
               $port1 = (!empty($_data['port1'])) ? $_data['port1'] : $is_now['port1'];
               $password1 = (!empty($_data['password1'])) ? $_data['password1'] : $is_now['password1'];
               $host1 = (!empty($_data['host1'])) ? $_data['host1'] : $is_now['host1'];
@@ -1323,10 +1326,11 @@ function mailbox($_action, $_type, $_data = null) {
               return false;
             }
             try {
-              $stmt = $pdo->prepare("UPDATE `imapsync` SET `delete1` = :delete1, `maxage` = :maxage, `subfolder2` = :subfolder2, `exclude` = :exclude, `host1` = :host1, `user1` = :user1, `password1` = :password1, `mins_interval` = :mins_interval, `port1` = :port1, `enc1` = :enc1, `delete2duplicates` = :delete2duplicates, `active` = :active
+              $stmt = $pdo->prepare("UPDATE `imapsync` SET `delete1` = :delete1, `delete2` = :delete2, `maxage` = :maxage, `subfolder2` = :subfolder2, `exclude` = :exclude, `host1` = :host1, `user1` = :user1, `password1` = :password1, `mins_interval` = :mins_interval, `port1` = :port1, `enc1` = :enc1, `delete2duplicates` = :delete2duplicates, `active` = :active
                 WHERE `id` = :id");
               $stmt->execute(array(
                 ':delete1' => $delete1,
+                ':delete2' => $delete2,
                 ':id' => $id,
                 ':exclude' => $exclude,
                 ':maxage' => $maxage,

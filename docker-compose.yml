@@ -164,7 +164,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.6
+      image: mailcow/dovecot:1.7
       build: ./data/Dockerfiles/dovecot
       depends_on:
         unbound-mailcow:
