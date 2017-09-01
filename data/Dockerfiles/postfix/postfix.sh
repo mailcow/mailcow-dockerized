@@ -3,6 +3,10 @@
 trap "postfix stop" EXIT
 
 [[ ! -d /opt/postfix/conf/sql/ ]] && mkdir -p /opt/postfix/conf/sql/
+if [[ -z $(grep null /etc/aliases) ]]; then
+	echo null: /dev/null >> /etc/aliases;
+	newaliases;
+fi
 
 cat <<EOF > /opt/postfix/conf/sql/mysql_relay_recipient_maps.cf
 user = ${DBUSER}
