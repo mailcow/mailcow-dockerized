@@ -10,7 +10,7 @@ function relayhost($_action, $_data = null) {
           'msg' => sprintf($lang['danger']['access_denied'])
         );
         return false;
-      }
+
       $hostname = trim($_data['hostname']);
       $username = str_replace(':', '\:', trim($_data['username']));
       $password = str_replace(':', '\:', trim($_data['password']));
@@ -20,7 +20,7 @@ function relayhost($_action, $_data = null) {
           'msg' => 'Invalid host specified: '. htmlspecialchars($host)
         );
         return false;
-      }
+
       try {
         $stmt = $pdo->prepare("INSERT INTO `relayhosts` (`hostname`, `username` ,`password`, `active`)
           VALUES (:hostname, :username, :password, :active)");
@@ -30,14 +30,14 @@ function relayhost($_action, $_data = null) {
           ':password' => $password,
           ':active' => '1'
         ));
-      }
+
       catch (PDOException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
           'msg' => 'MySQL: '.$e
         );
         return false;
-      }
+
       $_SESSION['return'] = array(
         'type' => 'success',
         'msg' => sprintf($lang['success']['relayhost_added'], htmlspecialchars(implode(', ', $hosts)))
@@ -50,7 +50,7 @@ function relayhost($_action, $_data = null) {
           'msg' => sprintf($lang['danger']['access_denied'])
         );
         return false;
-      }
+
       $ids = (array)$_data['id'];
       foreach ($ids as $id) {
         $is_now = relayhost('details', $id);
@@ -59,14 +59,14 @@ function relayhost($_action, $_data = null) {
           $username = (!empty($_data['username'])) ? trim($_data['username']) : $is_now['username'];
           $password = (!empty($_data['password'])) ? trim($_data['password']) : $is_now['password'];
           $active   = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
-        }
+
         else {
           $_SESSION['return'] = array(
             'type' => 'danger',
             'msg' => 'Relayhost invalid'
           );
           return false;
-        }
+
         try {
           $stmt = $pdo->prepare("UPDATE `relayhosts` SET
             `hostname` = :hostname,
@@ -81,15 +81,15 @@ function relayhost($_action, $_data = null) {
             ':password' => $password,
             ':active' => $active
           ));
-        }
+
         catch (PDOException $e) {
           $_SESSION['return'] = array(
             'type' => 'danger',
             'msg' => 'MySQL: '.$e
           );
           return false;
-        }
-      }
+
+
       $_SESSION['return'] = array(
         'type' => 'success',
         'msg' => sprintf($lang['success']['object_modified'], htmlspecialchars(implode(', ', $hostnames)))
@@ -102,7 +102,7 @@ function relayhost($_action, $_data = null) {
           'msg' => sprintf($lang['danger']['access_denied'])
         );
         return false;
-      }
+
       $ids = (array)$_data['id'];
       foreach ($ids as $id) {
         try {
@@ -110,15 +110,15 @@ function relayhost($_action, $_data = null) {
           $stmt->execute(array(':id' => $id));
           $stmt = $pdo->prepare("UPDATE `domain` SET `relayhost` = '0' WHERE `relayhost`= :id");
           $stmt->execute(array(':id' => $id));
-        }
+
         catch (PDOException $e) {
           $_SESSION['return'] = array(
             'type' => 'danger',
             'msg' => 'MySQL: '.$e
           );
           return false;
-        }
-      }
+
+
       $_SESSION['return'] = array(
         'type' => 'success',
         'msg' => sprintf($lang['success']['relayhost_removed'], htmlspecialchars(implode(', ', $hostnames)))
@@ -127,24 +127,24 @@ function relayhost($_action, $_data = null) {
     case 'get':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         return false;
-      }
+
       $relayhosts = array();
       try {
         $stmt = $pdo->query("SELECT `id`, `hostname`, `username` FROM `relayhosts`");
         $relayhosts = $stmt->fetchAll(PDO::FETCH_ASSOC);
-      }
+
       catch(PDOException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
           'msg' => 'MySQL: '.$e
         );
-      }
+
       return $relayhosts;
     break;
     case 'details':
       if ($_SESSION['mailcow_cc_role'] != "admin" || !isset($_data)) {
         return false;
-      }
+
       $relayhostdata = array();
       try {
         $stmt = $pdo->prepare("SELECT `id`,
@@ -165,15 +165,13 @@ function relayhost($_action, $_data = null) {
           $used_by_domains = $stmt->fetch(PDO::FETCH_ASSOC)['used_by_domains'];
           $used_by_domains = (empty($used_by_domains)) ? '' : $used_by_domains;
           $relayhostdata['used_by_domains'] = $used_by_domains;
-        }
-      }
+
+
       catch(PDOException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
           'msg' => 'MySQL: '.$e
         );
-      }
+
       return $relayhostdata;
     break;
-  }
-}

@@ -8,7 +8,7 @@ $lang['footer']['loading'] = "Attendere...";
 $lang['header']['restart_sogo'] = 'Riavvia SOGo';
 $lang['footer']['restart_sogo'] = 'Riavvia SOGo';
 $lang['footer']['restart_now'] = 'Riavvia adesso';
-$lang['footer']['restart_sogo_info'] = 'Some tasks, e.g. adding a domain, require you to restart SOGo to catch changes made in the mailcow UI.<br /><br /><b>Important:</b> A graceful restart may take a while to complete, please wait for it to finish.';
+$lang['footer']['restart_sogo_info'] = 'Some tasks, e.g. adding a domain, require you to restart SOGo to catch changes made in the mailcow UI.<br><br><b>Important:</b> A graceful restart may take a while to complete, please wait for it to finish.';
 
 $lang['footer']['confirm_delete'] = 'Conferma eliminazione';
 $lang['footer']['delete_these_items'] = 'Sicuro di voler eliminare gli oggetti selezionati?';
@@ -155,7 +155,7 @@ $lang['user']['spamfilter_default_score'] = 'Valori di default:';
 $lang['user']['spamfilter_hint'] = 'Il primo valore rappresenta un "basso punteggio di spam", il secondo rappresenta un "alto punteggio di spam".';
 $lang['user']['spamfilter_table_domain_policy'] = "n/a (policy di dominio)";
 
-$lang['user']['tls_policy_warning'] = '<strong>Attenzione:</strong> If you decide to enforce encrypted mail transfer, you may lose emails.<br />Messages to not satisfy the policy will be bounced with a hard fail by the mail system.<br />This option applies to your primary email address (login name), all addresses derived from alias domains as well as alias addresses <b>with only this single mailbox</b> as target.';
+$lang['user']['tls_policy_warning'] = '<strong>Attenzione:</strong> If you decide to enforce encrypted mail transfer, you may lose emails.<br>Messages to not satisfy the policy will be bounced with a hard fail by the mail system.<br>This option applies to your primary email address (login name), all addresses derived from alias domains as well as alias addresses <b>with only this single mailbox</b> as target.';
 $lang['user']['tls_policy'] = 'Politica di crittografia';
 $lang['user']['tls_enforce_in'] = 'Imponi TLS in ingresso';
 $lang['user']['tls_enforce_out'] = 'Imponi TLS in uscita';
@@ -167,12 +167,12 @@ $lang['user']['misc_delete_profile'] = 'Impostazioni di altri profili';
 $lang['user']['tag_handling'] = 'Imposta le gestione della mail evidenziate';
 $lang['user']['tag_in_subfolder'] = 'Nella sotto cartella';
 $lang['user']['tag_in_subject'] = 'Nell\'oggetto';
-$lang['user']['tag_help_explain'] = 'In sotto cartelle: Una nuova cartella dal nome del tag verrà creata sotto INBOX ("INBOX/Facebook").<br />
+$lang['user']['tag_help_explain'] = 'In sotto cartelle: Una nuova cartella dal nome del tag verrà creata sotto INBOX ("INBOX/Facebook").<br>
 Nell\'oggetto: Il nome del tag verrà aggiunto all\'inizio dell\'oggetto mail, esempio: "[Facebook] Meine Neuigkeiten".';
 $lang['user']['tag_help_example'] = 'Esempio di mail con tag: ich<b>+Facebook</b>@example.org';
 $lang['user']['eas_reset'] = 'Ripristina la cache dei dispositivi ActiveSync';
 $lang['user']['eas_reset_now'] = 'Ripristina ora';
-$lang['user']['eas_reset_help'] = 'In molti casi un ripristino risolve i problemi di sincronizzazione dei dispositivi.<br /><b>Attenzione:</b> Tutti gli elementi verranno scaricati nuovamente!';
+$lang['user']['eas_reset_help'] = 'In molti casi un ripristino risolve i problemi di sincronizzazione dei dispositivi.<br><b>Attenzione:</b> Tutti gli elementi verranno scaricati nuovamente!';
 
 $lang['user']['encryption'] = 'Crittografia';
 $lang['user']['username'] = 'Nome utente';
@@ -193,17 +193,17 @@ $lang['start']['start_sogo'] = 'Apri SOGo';
 $lang['start']['mailcow_apps_detail'] = 'Usa l\'app mailcow per accedere alla posta, calendari, contatti ed altro.';
 $lang['start']['mailcow_panel'] = 'Avvia UI mailcow';
 $lang['start']['mailcow_panel_description'] = 'L\'UI di mailcow per gli amministratori e gli utenti di caselle.';
-$lang['start']['mailcow_panel_detail'] = '<b>Amministratori di dominio</b> crea, modifica o cancella caselle e alias, cambia i domini e informazioni relative ai domini associati.<br />
+$lang['start']['mailcow_panel_detail'] = '<b>Amministratori di dominio</b> crea, modifica o cancella caselle e alias, cambia i domini e informazioni relative ai domini associati.<br>
 	<b>Utenti di caselle</b> possono creare degli alias temporanei (spam aliases), cambiare la loro password e le impostazioni relative ai filtri spam.';
 $lang['start']['recommended_config'] = 'Configurazioni consigliate (senza ActiveSync)';
 $lang['start']['imap_smtp_server'] = 'Dati server IMAP e SMTP';
 $lang['start']['imap_smtp_server_description'] = 'Per l\'esperienza migliore utilizzare <a href="%s" target="_blank"><b>Mozilla Thunderbird</b></a>.';
 $lang['start']['imap_smtp_server_badge'] = 'Leggi e scrivi le email';
-$lang['start']['imap_smtp_server_auth_info'] = 'Please use your full email address and the PLAIN authentication mechanism.<br />
+$lang['start']['imap_smtp_server_auth_info'] = 'Please use your full email address and the PLAIN authentication mechanism.<br>
 Your login data will be encrypted by the server-side mandatory encryption.';
 $lang['start']['managesieve'] = 'ManageSieve';
 $lang['start']['managesieve_badge'] = 'Filtri email';
-$lang['start']['managesieve_description'] = 'Please use <b>Mozilla Thunderbird</b> with the <a style="text-decoration:none" target="_blank" href="%s"><b>nightly sieve extension</b></a>.<br />Start Thunderbird, open the add-on settings and drop the newly downloaded xpi file into the opened window.<br />The server name is <b>%s</b>, use port <b>4190</b> if you are asked for. The login data match your email login.';
+$lang['start']['managesieve_description'] = 'Please use <b>Mozilla Thunderbird</b> with the <a style="text-decoration:none" target="_blank" href="%s"><b>nightly sieve extension</b></a>.<br>Start Thunderbird, open the add-on settings and drop the newly downloaded xpi file into the opened window.<br>The server name is <b>%s</b>, use port <b>4190</b> if you are asked for. The login data match your email login.';
 $lang['start']['service'] = 'Servizio';
 $lang['start']['encryption'] = 'Metodo di criptazione';
 $lang['start']['help'] = 'Mostra/Nascondi pannello di aiuto';
@@ -275,7 +275,7 @@ $lang['delete']['remove_mailbox_warning'] = '<b>Attenzione:</b> Sei sicuro di vo
 $lang['delete']['remove_mailbox_details'] = 'La casella di posta sarà <b>eliminata definitivamente</b>!';
 $lang['delete']['remove_resource_warning'] = '<b>Attenzione:</b> Stai per rimuovere la risorsa <b>%s</b>!';
 $lang['delete']['remove_resource_details'] = 'La risorsa sarà <b>eliminata definitivamente</b>!';
-$lang['delete']['remove_domain_details'] = 'Questo rimuoverà anche gli alias di dominio.<br /><br /><b>Un dominio deve essere vuoto per essere rinmosso.</b>';
+$lang['delete']['remove_domain_details'] = 'Questo rimuoverà anche gli alias di dominio.<br><br><b>Un dominio deve essere vuoto per essere rinmosso.</b>';
 $lang['delete']['remove_syncjob_details'] = 'Gli oggetti provenienti da questa sincronizzazione non verranno più estratti dal server remoto.';
 $lang['delete']['remove_alias_details'] = 'Gli utenti non potranno più ricevere posta per o inviare posta da questo indirizzo.</b>';
 $lang['delete']['remove_button'] = 'Rimuovi';
@@ -286,8 +286,8 @@ $lang['edit']['save'] = 'Salva modifiche';
 $lang['edit']['username'] = 'Username';
 $lang['edit']['hostname'] = 'Hostname';
 $lang['edit']['encryption'] = 'Criptazione';
-$lang['edit']['maxage'] = 'Massima età dei messaggi che verranno scaricati dal server remoto<br /><small>(0 = ignorà età)</small>';
-$lang['edit']['subfolder2'] = 'Sincronizza in una sottocartella<br /><small>(vuoto = non sincronizzare in sottocartella)</small>';
+$lang['edit']['maxage'] = 'Massima età dei messaggi che verranno scaricati dal server remoto<br><small>(0 = ignorà età)</small>';
+$lang['edit']['subfolder2'] = 'Sincronizza in una sottocartella<br><small>(vuoto = non sincronizzare in sottocartella)</small>';
 $lang['edit']['mins_interval'] = 'Intervallo (min)';
 $lang['edit']['exclude'] = 'Escludi oggetti (regex)';
 $lang['edit']['save'] = 'Salva modifiche';
@@ -413,8 +413,8 @@ $lang['tfa']['otp'] = "Password provvisoria";
 $lang['tfa']['totp'] = "Time-based OTP (Google Authenticator etc.)";
 $lang['tfa']['trash_login'] = "Trash login";
 $lang['tfa']['select'] = "Seleziona";
-$lang['tfa']['waiting_usb_auth'] = "<i>Attendo il device USB...</i><br /><br />Tocca ora il pulsante sul dispositivo U2F USB.";
-$lang['tfa']['waiting_usb_register'] = "<i>Attendo il device USB...</i><br /><br />Inserisci la tua password sopra e conferma la tua registrazione U2F toccando il pulsante del dispositivo U2F USB.";
+$lang['tfa']['waiting_usb_auth'] = "<i>Attendo il device USB...</i><br><br>Tocca ora il pulsante sul dispositivo U2F USB.";
+$lang['tfa']['waiting_usb_register'] = "<i>Attendo il device USB...</i><br><br>Inserisci la tua password sopra e conferma la tua registrazione U2F toccando il pulsante del dispositivo U2F USB.";
 $lang['tfa']['scan_qr_code'] = "Esegui la scansione del seguente codice con l'applicazione di autenticazione o inserisci manualmente il codice.";
 $lang['tfa']['enter_qr_code'] = "Il codice TOTP se il tuo dispositivo non è in grado di acquisire i codici QR";
 $lang['tfa']['confirm_totp_token'] = "Conferma le modifiche inserendo il token generato";
@@ -427,7 +427,7 @@ $lang['admin']['reset_defaults'] = 'Ripristina i valori di default';
 $lang['admin']['sr'] = 'Restrizioni del mittente di Postfix';
 $lang['admin']['r_inactive'] = 'Restrizioni inattive';
 $lang['admin']['r_active'] = 'Restrizioni attive';
-$lang['admin']['r_info'] = 'Gli elementi disabilitati nell\'elenco delle restrizioni attive non sono conosciute come restrizioni valide per la posta e non possono essere spostate. Le restrizioni sconosciute verranno comunque impostate in ordine di aspetto. <br />Puoi aggiungere nuovi elementi in <code>inc/vars.local.inc.php</code> per poterli attivare.';
+$lang['admin']['r_info'] = 'Gli elementi disabilitati nell\'elenco delle restrizioni attive non sono conosciute come restrizioni valide per la posta e non possono essere spostate. Le restrizioni sconosciute verranno comunque impostate in ordine di aspetto. <br>Puoi aggiungere nuovi elementi in <code>inc/vars.local.inc.php</code> per poterli attivare.';
 $lang['admin']['public_folders'] = 'Cartelle pubbliche';
 $lang['admin']['public_folders_text'] = 'Verrà creato uno spazio "Public". Di seguito il nome della cartella pubblica indica il nome della prima casella di posta automaticamente creata all\'interno di questo spazio.';
 $lang['admin']['public_folder_name'] = 'Nome cartella <small>(alfanumerico)</small>';
