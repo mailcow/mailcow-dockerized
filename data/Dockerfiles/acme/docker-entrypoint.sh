@@ -126,6 +126,9 @@ while true; do
 	fi
 
 	for SAN in "${ADDITIONAL_SAN_ARR[@]}"; do
+		if [[ ${SAN} == ${MAILCOW_HOSTNAME} ]]; then
+			continue
+		fi
 		A_SAN=$(dig A ${SAN} +short | tail -n 1)
 		if [[ ! -z ${A_SAN} ]]; then
 			echo "Found A record for ${SAN}: ${A_SAN}"
@@ -141,7 +144,7 @@ while true; do
 	done
 
   # Unique elements
-	ALL_VALIDATED=($(echo ${VALIDATED_MAILCOW_HOSTNAME} ${VALIDATED_CONFIG_DOMAINS[*]} ${ADDITIONAL_VALIDATED_SAN[*]} | xargs -n1 | sort -u | xargs))
+	ALL_VALIDATED=(${VALIDATED_MAILCOW_HOSTNAME} $(echo ${VALIDATED_CONFIG_DOMAINS[*]} ${ADDITIONAL_VALIDATED_SAN[*]} | xargs -n1 | sort -u | xargs))
 	if [[ -z ${ALL_VALIDATED[*]} ]]; then
 		echo "Cannot validate hostnames, skipping Let's Encrypt..."
 		exit 0
