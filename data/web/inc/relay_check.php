@@ -51,6 +51,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
         }
       }
     };
+
     $mail->isSMTP();
     $mail->Host = $hostname;
     if (!empty($username)) {

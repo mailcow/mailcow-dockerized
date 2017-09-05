@@ -44,7 +44,7 @@ try {
 }
 catch (PDOException $e) {
 ?>
-<center style='font-family: "Lucida Sans Unicode", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;'>Connection failed, database may be in warm-up state, please try again later.<br /><br />The following error was reported:<br/>  <?=$e->getMessage();?></center>
+<center style='font-family: "Lucida Sans Unicode", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;'>Connection failed, database may be in warm-up state, please try again later.<br><br>The following error was reported:<br><?= $e->getMessage(); ?></center>
 <?php
 exit;
 }
@@ -70,6 +70,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.fail2ban.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/init_db.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/triggers.inc.php';
 init_db_schema();
+
 if (isset($_SESSION['mailcow_cc_role'])) {
   set_acl();
 }

@@ -51,9 +51,9 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
           <hr>
           <p><?=$lang['tfa']['waiting_usb_register'];?></p>
           <div class="alert alert-danger" style="display:none" id="u2f_return_code"></div>
-          <input type="hidden" name="token" id="u2f_register_data"/>
+          <input type="hidden" name="token" id="u2f_register_data">
           <input type="hidden" name="tfa_method" value="u2f">
-          <input type="hidden" name="set_tfa"/><br/>
+          <input type="hidden" name="set_tfa"><br>
         </form>
       </div>
     </div>
@@ -76,13 +76,13 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
           <?php
           $totp_secret = $tfa->createSecret();
           ?>
-          <input type="hidden" value="<?=$totp_secret;?>" name="totp_secret" id="totp_secret"/>
+          <input type="hidden" value="<?=$totp_secret;?>" name="totp_secret" id="totp_secret">
           <input type="hidden" name="tfa_method" value="totp">
           <ol>
             <li>
               <p><?=$lang['tfa']['scan_qr_code'];?></p>
               <img src="<?=$tfa->getQRCodeImageAsDataUri($_SESSION['mailcow_cc_username'], $totp_secret);?>">
-              <p class="help-block"><?=$lang['tfa']['enter_qr_code'];?>:<br />
+              <p class="help-block"><?=$lang['tfa']['enter_qr_code'];?>:<br>
               <code><?=$totp_secret;?></code>
               </p>
             </li>
@@ -148,9 +148,9 @@ if (isset($_SESSION['pending_tfa_method'])):
         <form role="form" method="post" id="u2f_auth_form">
           <p><?=$lang['tfa']['waiting_usb_auth'];?></p>
           <div class="alert alert-danger" style="display:none" id="u2f_return_code"></div>
-          <input type="hidden" name="token" id="u2f_auth_data"/>
+          <input type="hidden" name="token" id="u2f_auth_data">
           <input type="hidden" name="tfa_method" value="u2f">
-          <input type="hidden" name="verify_tfa_login"/><br/>
+          <input type="hidden" name="verify_tfa_login"><br>
         </form>
       <?php
         break;

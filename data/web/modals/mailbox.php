@@ -40,7 +40,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
           </div>
           <div class="form-group">
             <label class="control-label col-sm-2" for="addInputQuota"><?=$lang['add']['quota_mb'];?>
-              <br /><span id="quotaBadge" class="badge">max. - MiB</span>
+              <br><span id="quotaBadge" class="badge">max. - MiB</span>
             </label>
             <div class="col-sm-10">
             <input type="text" class="form-control" name="quota" min="1" max="" id="addInputQuota" disabled value="<?=$lang['add']['select_domain'];?>" required>
@@ -127,7 +127,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 						<div class="col-sm-10">
 							<div class="checkbox">
 							<label><input type="checkbox" value="1" name="backupmx"> <?=$lang['add']['relay_domain'];?></label>
-							<br />
+							<br>
 							<label><input type="checkbox" value="1" name="relay_all_recipients"> <?=$lang['add']['relay_all'];?></label>
 							<p><?=$lang['add']['relay_all_info'];?></p>
 							</div>
@@ -330,7 +330,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
               ?>
               </select>
             </div>
-          </div> 
+          </div>
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="host1"><?=$lang['add']['hostname'];?></label>
 						<div class="col-sm-10">

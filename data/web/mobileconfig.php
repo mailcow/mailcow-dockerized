@@ -4,9 +4,10 @@ require_once 'inc/prerequisites.inc.php';
 if (empty($mailcow_hostname)) {
   exit();
 }
+
 if (!isset($_SESSION['mailcow_cc_role']) || $_SESSION['mailcow_cc_role'] != 'user') {
-  header("Location: index.php");
-  die("This page is only available to logged-in users, not admins.");
+  header('Location: index.php');
+  die('This page is only available to logged-in users, not admins.');
 }
 
 error_reporting(0);
@@ -19,13 +20,14 @@ $domain = explode('@', $_SESSION['mailcow_cc_username'])[1];
 $identifier = implode('.', array_reverse(explode('.', $domain))) . '.iphoneprofile.mailcow';
 
 try {
-  $stmt = $pdo->prepare("SELECT `name` FROM `mailbox` WHERE `username`= :username");
+  $stmt = $pdo->prepare("SELECT `name` FROM `mailbox` WHERE `username` = :username");
   $stmt->execute(array(':username' => $email));
   $MailboxData = $stmt->fetch(PDO::FETCH_ASSOC);
 }
 catch(PDOException $e) {
-  die("Failed to determine name from SQL");
+  die('Failed to determine name from SQL');
 }
+
 if (!empty($MailboxData['name'])) {
   $displayname = utf8_encode($MailboxData['name']);
 }

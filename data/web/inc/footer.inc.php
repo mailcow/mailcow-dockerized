@@ -39,7 +39,7 @@ $(document).ready(function() {
           cache: false,
           dataType: 'script',
           url: "/api/v1/get/u2f-authentication/<?= (isset($_SESSION['pending_mailcow_cc_username'])) ? $_SESSION['pending_mailcow_cc_username'] : null; ?>",
-          success: function(data){
+          success: function(data) {
             data;
           }
         });
@@ -76,7 +76,7 @@ $(document).ready(function() {
         cache: false,
         dataType: 'script',
         url: "/api/v1/get/u2f-registration/<?= (isset($_SESSION['mailcow_cc_username'])) ? $_SESSION['mailcow_cc_username'] : null; ?>",
-        success: function(data){
+        success: function(data) {
           data;
         }
       });
@@ -160,7 +160,7 @@ $(document).ready(function() {
   $('select').selectpicker();
 
   // Trigger SOGo restart
-  $('#triggerRestartSogo').click(function(){
+  $('#triggerRestartSogo').click(function() {
     $(this).prop("disabled",true);
     $(this).html('<span class="glyphicon glyphicon-refresh glyphicon-spin"></span> ');
     $('#statusTriggerRestartSogo').text('Stopping SOGo workers, this may take a while... ');

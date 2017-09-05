@@ -69,7 +69,7 @@ $tfa_data = get_tfa();
                 <?php if (!empty($tfa_data['additional'])):
                 foreach ($tfa_data['additional'] as $key_info): ?>
                 <form style="display:inline;" method="post">
-                  <input type="hidden" name="unset_tfa_key" value="<?=$key_info['id'];?>" />
+                  <input type="hidden" name="unset_tfa_key" value="<?=$key_info['id'];?>">
                   <div style="padding:4px;margin:4px" class="label label-<?=($_SESSION['tfa_id'] == $key_info['id']) ? 'success' : 'default'; ?>">
                   <?=$key_info['key_id'];?>
                   <a href="#" style="font-weight:bold;color:white" onClick="$(this).closest('form').submit()">[<?=strtolower($lang['admin']['remove']);?>]</a>
@@ -78,7 +78,7 @@ $tfa_data = get_tfa();
                 <?php endforeach;
                 endif;?>
               </div>
-              <br />
+              <br>
           </div>
         </div>
         <div class="row">
@@ -147,9 +147,9 @@ $tfa_data = get_tfa();
             if (!empty($dkim = dkim('details', $domain))) {
           ?>
             <div class="row">
-              <div class="col-xs-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" /></div>
+              <div class="col-xs-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>"></div>
               <div class="col-xs-2">
-                <p>Domain: <strong><?=htmlspecialchars($domain);?></strong><br />
+                <p>Domain: <strong><?=htmlspecialchars($domain);?></strong><br>
                   <span class="label label-success"><?=$lang['admin']['dkim_key_valid'];?></span>
                   <span class="label label-primary">Selector '<?=$dkim['dkim_selector'];?>'</span>
                   <span class="label label-info"><?=$dkim['length'];?> bit</span>
@@ -164,9 +164,9 @@ $tfa_data = get_tfa();
           else {
           ?>
           <div class="row">
-              <div class="col-xs-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" disabled /></div>
+              <div class="col-xs-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" disabled></div>
             <div class="col-xs-2">
-              <p>Domain: <strong><?=htmlspecialchars($domain);?></strong><br /><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
+              <p>Domain: <strong><?=htmlspecialchars($domain);?></strong><br><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
             </div>
             <div class="col-xs-9"><pre>-</pre></div>
           </div>
@@ -176,9 +176,9 @@ $tfa_data = get_tfa();
             if (!empty($dkim = dkim('details', $alias_domain))) {
             ?>
               <div class="row">
-              <div class="col-xs-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$alias_domain;?>" /></div>
+              <div class="col-xs-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$alias_domain;?>"></div>
                 <div class="col-xs-1 col-xs-offset-1">
-                  <p><small>↳ Alias-Domain: <strong><?=htmlspecialchars($alias_domain);?></strong><br /></small>
+                  <p><small>↳ Alias-Domain: <strong><?=htmlspecialchars($alias_domain);?></strong><br></small>
                     <span class="label label-success"><?=$lang['admin']['dkim_key_valid'];?></span>
                     <span class="label label-primary">Selector '<?=$dkim['dkim_selector'];?>'</span>
                     <span class="label label-info"><?=$dkim['length'];?> bit</span>
@@ -193,9 +193,9 @@ $tfa_data = get_tfa();
             else {
             ?>
             <div class="row">
-              <div class="col-xs-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" disabled /></div>
+              <div class="col-xs-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" disabled></div>
               <div class="col-xs-1 col-xs-offset-1">
-                <p><small>↳ Alias-Domain: <strong><?=htmlspecialchars($alias_domain);?></strong><br /></small><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
+                <p><small>↳ Alias-Domain: <strong><?=htmlspecialchars($alias_domain);?></strong><br></small><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
               </div>
             <div class="col-xs-9"><pre>-</pre></div>
             </div>
@@ -207,9 +207,9 @@ $tfa_data = get_tfa();
           if (!empty($dkim = dkim('details', $blind))) {
           ?>
             <div class="row">
-              <div class="col-xs-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$blind;?>" /></div>
+              <div class="col-xs-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$blind;?>"></div>
               <div class="col-xs-2">
-                <p>Domain: <strong><?=htmlspecialchars($blind);?></strong><br />
+                <p>Domain: <strong><?=htmlspecialchars($blind);?></strong><br>
                   <span class="label label-warning"><?=$lang['admin']['dkim_key_unused'];?></span>
                   <span class="label label-primary">Selector '<?=$dkim['dkim_selector'];?>'</span>
                   <span class="label label-info"><?=$dkim['length'];?> bit</span>
@@ -471,7 +471,7 @@ XYZ
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/admin.php';
 ?>
-<script type='text/javascript'>
+<script>
 <?php
 $lang_admin = json_encode($lang['admin']);
 echo "var lang = ". $lang_admin . ";\n";
@@ -485,7 +485,6 @@ echo "var log_pagination_size = '". $LOG_PAGINATION_SIZE . "';\n";
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
 } else {
-	header('Location: /');
-	exit();
+  header('Location: /');
+  exit();
 }
-?>

@@ -10,7 +10,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js" integrity="sha256-g6iAfvZp+nDQ2TdTR/VVKJf3bGro4ub5fvWSWVRi2NE=" crossorigin="anonymous"></script>
 <![endif]-->
 <script src="/js/jquery-1.12.4.min.js"></script>
-<?php if (strtolower(trim($DEFAULT_THEME)) != "lumen"): ?>
+<?php if (strtolower(trim($DEFAULT_THEME)) != 'lumen'): ?>
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/<?= strtolower(trim($DEFAULT_THEME)); ?>/bootstrap.min.css">
 <?php else: ?>
 <link rel="stylesheet" href="/css/bootstrap.min.css">
