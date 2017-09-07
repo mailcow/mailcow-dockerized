@@ -51,10 +51,11 @@ case "${1}" in
 		git fetch origin ${BRANCH}
 		if ! git diff origin/${BRANCH} --quiet; then
 			echo "Updated code is available."
+			exit 0
 		else
 			echo "No updates available."
+			exit 3
 		fi
-		exit 0
 	;;
 esac
 
