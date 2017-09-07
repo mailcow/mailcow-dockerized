@@ -251,11 +251,12 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 		<h4><?=$lang['user']['spamfilter_behavior'];?></h4>
 		<form class="form-horizontal" role="form" data-id="spam_score" method="post">
 			<div class="form-group">
-				<div class="col-sm-offset-2 col-sm-10">
-					<input name="spam_score" id="spam_score" type="text" 
+				<div class="col-sm-12">
+					<input name="spam_score" id="spam_score" type="text" style="width: 100% !important;"
 						data-provide="slider"
 						data-slider-min="1"
-						data-slider-max="30"
+						data-slider-max="2000"
+            data-slider-scale='logarithmic'
 						data-slider-step="0.5"
 						data-slider-range="true"
 						data-slider-tooltip='always'
@@ -276,7 +277,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
       if ($_SESSION['acl']['spam_score'] == 1):
       ?>
       <div class="form-group">
-				<div class="col-sm-offset-2 col-sm-10">
+				<div class="col-sm-10">
         <button type="button" class="btn btn-sm btn-success" id="edit_selected"
           data-item="<?= $username; ?>"
           data-id="spam_score"
