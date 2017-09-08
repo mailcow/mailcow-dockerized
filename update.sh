@@ -83,9 +83,9 @@ if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 	exit 0
 fi
 
-echo -e "Stopping mailcow... "
-sleep 2
-docker-compose down
+#echo -e "Stopping mailcow... "
+#sleep 2
+#docker-compose down
 
 # Silently fixing remote url from andryyy to mailcow
 git remote set-url origin https://github.com/mailcow/mailcow-dockerized
