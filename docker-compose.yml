@@ -79,23 +79,6 @@ services:
           aliases:
             - clamd
 
-    watchdog-mailcow:
-      image: mailcow/watchdog:1.0
-      build: ./data/Dockerfiles/watchdog
-      restart: always
-      environment:
-        - DBNAME=${DBNAME}
-        - DBUSER=${DBUSER}
-        - DBPASS=${DBPASS}
-        - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
-      command: /bin/bash -c 'sleep 999999'
-      volumes:
-        - vmail-vol-1:/vmail:ro
-      networks:
-        mailcow-network:
-          aliases:
-            - watchdog
-
     rspamd-mailcow:
       image: mailcow/rspamd:1.6
       build: ./data/Dockerfiles/rspamd
@@ -157,7 +140,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.6
+      image: mailcow/sogo:1.7
       build: ./data/Dockerfiles/sogo
       depends_on:
         unbound-mailcow:
