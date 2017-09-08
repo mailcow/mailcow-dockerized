@@ -3,8 +3,8 @@ LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL C
-ENV DOVECOT_VERSION 2.2.31
-ENV PIGEONHOLE_VERSION 0.4.18
+ENV DOVECOT_VERSION 2.2.32
+ENV PIGEONHOLE_VERSION 0.4.20
 
 RUN apt-get update && apt-get -y install \
 	automake \
@@ -40,6 +40,7 @@ RUN apt-get update && apt-get -y install \
 	libtest-pod-perl \
 	libtest-simple-perl \
 	libunicode-string-perl \
+    libproc-processtable-perl \
 	liburi-perl \
 	lzma-dev \
 	make \
@@ -67,7 +68,7 @@ RUN curl https://www.dovecot.org/releases/2.2/dovecot-$DOVECOT_VERSION.tar.gz | 
 
 RUN cpanm Data::Uniqid Mail::IMAPClient String::Util
 RUN echo '* * * * *   root   /usr/local/bin/imapsync_cron.pl' > /etc/cron.d/imapsync
-RUN echo '30 3 * * *   vmail  /usr/bin/doveadm quota recalc -A' > /etc/cron.d/dovecot-sync
+RUN echo '30 3 * * *   vmail  /usr/local/bin/doveadm quota recalc -A' > /etc/cron.d/dovecot-sync
 
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
 COPY imapsync /usr/local/bin/imapsync

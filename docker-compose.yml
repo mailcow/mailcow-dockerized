@@ -9,7 +9,7 @@ services:
         mysql-mailcow:
           condition: service_healthy
       healthcheck:
-        test: ["CMD", "nslookup", "google.com", "127.0.0.1"]
+        test: ["CMD", "nslookup", "mailcow.email", "127.0.0.1"]
         interval: 30s
         timeout: 3s
         retries: 10
@@ -24,7 +24,7 @@ services:
 
     mysql-mailcow:
       image: mariadb:10.1
-      command: mysqld --max_allowed_packet=128M
+      command: mysqld --max_allowed_packet=128M --max-connections=1500
       healthcheck:
         test: ["CMD", "mysqladmin", "ping", "--host", "localhost", "--silent"]
         interval: 5s
@@ -66,7 +66,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.1
+      image: mailcow/clamd:1.2
       build: ./data/Dockerfiles/clamd
       restart: always
       environment:
@@ -80,7 +80,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.3
+      image: mailcow/rspamd:1.6
       build: ./data/Dockerfiles/rspamd
       command: > 
         /bin/bash -c "
@@ -90,6 +90,7 @@ services:
       depends_on:
         - nginx-mailcow
       volumes:
+        - ./data/conf/rspamd/custom/:/etc/rspamd/custom:ro
         - ./data/conf/rspamd/override.d/:/etc/rspamd/override.d:ro
         - ./data/conf/rspamd/local.d/:/etc/rspamd/local.d:ro
         - ./data/conf/rspamd/lua/:/etc/rspamd/lua/:ro
@@ -139,7 +140,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.3
+      image: mailcow/sogo:1.7
       build: ./data/Dockerfiles/sogo
       depends_on:
         unbound-mailcow:
@@ -163,7 +164,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.4
+      image: mailcow/dovecot:1.8
       build: ./data/Dockerfiles/dovecot
       depends_on:
         unbound-mailcow:
@@ -186,6 +187,11 @@ services:
         - "${POPS_PORT:-995}:995"
         - "${SIEVE_PORT:-4190}:4190"
       restart: always
+      ulimits:
+        nproc: 65535
+        nofile:
+          soft: 20000
+          hard: 40000
       dns:
         - 172.22.1.254
       dns_search: mailcow-network
@@ -196,7 +202,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.2
+      image: mailcow/postfix:1.4
       build: ./data/Dockerfiles/postfix
       depends_on:
         unbound-mailcow:
@@ -277,7 +283,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.12
+      image: mailcow/acme:1.15
       build: ./data/Dockerfiles/acme
       dns:
         - 172.22.1.254
@@ -303,7 +309,7 @@ services:
             - acme
 
     fail2ban-mailcow:
-      image: mailcow/fail2ban:1.5
+      image: mailcow/fail2ban:1.6
       build: ./data/Dockerfiles/fail2ban
       depends_on:
         - dovecot-mailcow

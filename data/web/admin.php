@@ -56,7 +56,7 @@ $tfa_data = get_tfa();
           </div>
           <div class="form-group">
             <div class="col-sm-offset-3 col-sm-9">
-              <button class="btn btn-default" id="edit_selected" data-id="admin" data-item="null" data-api-url='edit/admin' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
+              <button class="btn btn-default" id="edit_selected" data-id="admin" data-item="null" data-api-url='edit/self' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
             </div>
           </div>
         </form>
@@ -121,6 +121,18 @@ $tfa_data = get_tfa();
 
 
   <div role="tabpanel" class="tab-pane" id="tab-config">
+    <div class="row">
+    <div id="sidebar-admin" class="col-sm-2 hidden-xs">
+      <div id="scrollbox" class="list-group">
+        <a href="#dkim" class="list-group-item"><?=$lang['admin']['dkim_keys'];?></a>
+        <a href="#fwdhosts" class="list-group-item"><?=$lang['admin']['forwarding_hosts'];?></a>
+        <a href="#f2bparams" class="list-group-item"><?=$lang['admin']['f2b_parameters'];?></a>
+        <a href="#relayhosts" class="list-group-item">Relayhosts</a>
+        <a href="#top" class="list-group-item" style="border-top:1px dashed #dadada">↸ <?=$lang['admin']['to_top'];?></a>
+      </div>
+    </div>
+    <div class="col-sm-10">
+    <span class="anchor" id="dkim"></span>
     <div class="panel panel-default">
       <div class="panel-heading"><?=$lang['admin']['dkim_keys'];?></div>
       <div class="panel-body">
@@ -253,7 +265,8 @@ XYZ
         </div>
       </div>
     </div>
-    
+
+    <span class="anchor" id="fwdhosts"></span>
     <div class="panel panel-default">
       <div class="panel-heading"><?=$lang['admin']['forwarding_hosts'];?></div>
       <div class="panel-body">
@@ -291,6 +304,7 @@ XYZ
       </div>
     </div>
 
+    <span class="anchor" id="f2bparams"></span>
     <div class="panel panel-default">
       <div class="panel-heading"><?=$lang['admin']['f2b_parameters'];?></div>
       <div class="panel-body">
@@ -318,6 +332,48 @@ XYZ
         </form>
       </div>
     </div>
+
+    <span class="anchor" id="relayhosts"></span>
+    <div class="panel panel-default">
+      <div class="panel-heading">Relayhosts</div>
+      <div class="panel-body">
+        <p style="margin-bottom:40px"><?=$lang['admin']['relayhosts_hint'];?></p>
+        <div class="table-responsive">
+          <table class="table table-striped table-condensed" id="relayhoststable"></table>
+        </div>
+        <div class="mass-actions-admin">
+          <div class="btn-group btn-group-sm">
+            <button type="button" id="toggle_multi_select_all" data-id="rlyhosts" class="btn btn-default"><?=$lang['mailbox']['toggle_all'];?></button>
+            <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a id="edit_selected" data-id="rlyhosts" data-api-url='edit/relayhost' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
+              <li><a id="edit_selected" data-id="rlyhosts" data-api-url='edit/relayhost' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
+              <li role="separator" class="divider"></li>
+              <li><a id="delete_selected" data-id="rlyhosts" data-api-url='delete/relayhost' href="#"><?=$lang['admin']['remove'];?></a></li>
+            </ul>
+          </div>
+        </div>
+        <legend><?=$lang['admin']['add_relayhost'];?></legend>
+        <p class="help-block"><?=$lang['admin']['add_relayhost_add_hint'];?></p>
+        <form class="form-inline" data-id="rlyhost" role="form" method="post">
+          <div class="form-group">
+            <label for="hostname"><?=$lang['admin']['host'];?></label>
+            <input class="form-control" id="hostname" name="hostname" required>
+          </div>
+          <div class="form-group">
+            <label for="hostname"><?=$lang['admin']['username'];?></label>
+            <input class="form-control" id="username" name="username">
+          </div>
+          <div class="form-group">
+            <label for="hostname"><?=$lang['admin']['password'];?></label>
+            <input class="form-control" id="password" name="password">
+          </div>
+          <button class="btn btn-default" id="add_item" data-id="rlyhost" data-api-url='add/relayhost' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
+        </form>
+      </div>
+    </div>
+  </div>
+  </div>
   </div>
 
   <div role="tabpanel" class="tab-pane" id="tab-postfix-logs">

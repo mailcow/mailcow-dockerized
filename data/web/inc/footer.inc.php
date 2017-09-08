@@ -18,7 +18,8 @@ function setLang(sel) {
 
 $(document).ready(function() {
   function mailcow_alert_box(message, type) {
-    $.notify({message: message},{type: type,placement: {from: "bottom",align: "right"},animate: {enter: 'animated fadeInUp',exit: 'animated fadeOutDown'}});
+    msg = $('<span/>').html(message).text();
+    $.notify({message: msg},{type: type,placement: {from: "bottom",align: "right"},animate: {enter: 'animated fadeInUp',exit: 'animated fadeOutDown'}});
   }
   <?php if (isset($_SESSION['return'])): ?>
   mailcow_alert_box("<?= $_SESSION['return']['msg']; ?>",  "<?= $_SESSION['return']['type']; ?>");

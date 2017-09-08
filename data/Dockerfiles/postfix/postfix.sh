@@ -3,6 +3,10 @@
 trap "postfix stop" EXIT
 
 [[ ! -d /opt/postfix/conf/sql/ ]] && mkdir -p /opt/postfix/conf/sql/
+if [[ -z $(grep null /etc/aliases) ]]; then
+	echo null: /dev/null >> /etc/aliases;
+	newaliases;
+fi
 
 cat <<EOF > /opt/postfix/conf/sql/mysql_relay_recipient_maps.cf
 user = ${DBUSER}
@@ -20,12 +24,26 @@ dbname = ${DBNAME}
 query = SELECT IF( EXISTS( SELECT 'TLS_ACTIVE' FROM alias LEFT OUTER JOIN mailbox ON mailbox.username = alias.goto WHERE (address='%s' OR address IN (SELECT CONCAT('%u', '@', target_domain) FROM alias_domain WHERE alias_domain='%d')) AND mailbox.tls_enforce_in = '1' AND mailbox.active = '1'), 'reject_plaintext_session', NULL) AS 'tls_enforce_in';
 EOF
 
-cat <<EOF > /opt/postfix/conf/sql/mysql_tls_enforce_out_policy.cf
+cat <<EOF > /opt/postfix/conf/sql/mysql_sender_dependent_default_transport_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
 hosts = mysql
 dbname = ${DBNAME}
-query = SELECT IF( EXISTS( SELECT 'TLS_ACTIVE' FROM alias LEFT OUTER JOIN mailbox ON mailbox.username = alias.goto WHERE (address='%s' OR address IN (SELECT CONCAT('%u', '@', target_domain) FROM alias_domain WHERE alias_domain='%d')) AND mailbox.tls_enforce_out = '1' AND mailbox.active = '1'), 'smtp_enforced_tls:', NULL) AS 'tls_enforce_out';
+query = SELECT GROUP_CONCAT(transport SEPARATOR '') AS transport_maps
+  FROM (
+    SELECT IF(EXISTS(SELECT 'smtp_type' FROM alias LEFT OUTER JOIN mailbox ON mailbox.username = alias.goto WHERE (address = '%s' OR address IN (SELECT CONCAT('%u', '@', target_domain) FROM alias_domain WHERE alias_domain = '%d')) AND mailbox.tls_enforce_out = '1' AND mailbox.active = '1'), 'smtp_enforced_tls:', 'smtp:') AS 'transport'
+    UNION ALL
+    SELECT hostname AS transport FROM relayhosts LEFT OUTER JOIN domain ON domain.relayhost = relayhosts.id WHERE relayhosts.active = '1' AND domain = '%d' OR domain IN (SELECT target_domain FROM alias_domain WHERE alias_domain = '%d')
+  )
+  AS transport_view;
+EOF
+
+cat <<EOF > /opt/postfix/conf/sql/mysql_sasl_passwd_maps.cf
+user = ${DBUSER}
+password = ${DBPASS}
+hosts = mysql
+dbname = ${DBNAME}
+query = SELECT CONCAT_WS(':', username, password) AS auth_data FROM relayhosts WHERE id IN (SELECT relayhost FROM domain WHERE CONCAT('@', domain) = '%s');
 EOF
 
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_alias_domain_catchall_maps.cf
@@ -110,6 +128,5 @@ if [[ $? != 0 ]]; then
 	exit 1
 else
 	postfix -c /opt/postfix/conf start
-	supervisorctl restart postfix-maillog
 	sleep 126144000
 fi

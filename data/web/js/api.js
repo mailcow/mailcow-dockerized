@@ -64,8 +64,23 @@ $(document).ready(function() {
     // If clicked element #edit_selected is in a form with the same data-id as the button,
     // we merge all input fields by {"name":"value"} into api-attr
     if ($(this).closest("form").data('id') == id) {
-      var attr_to_merge = $(this).closest("form").serializeObject();
-      var api_attr = $.extend(api_attr, attr_to_merge)
+      var req_empty = false;
+      $(this).closest("form").find('select, textarea, input').each(function() {
+        if ($(this).prop('required')) {
+          if (!$(this).val()) {
+            req_empty = true;
+            $(this).addClass('inputMissingAttr');
+          } else {
+            $(this).removeClass('inputMissingAttr');
+          }
+        }
+      });
+      if (!req_empty) {
+        var attr_to_merge = $(this).closest("form").serializeObject();
+        var api_attr = $.extend(api_attr, attr_to_merge)
+      } else {
+        return false;
+      }
     }
     // If clicked element #edit_selected has data-item attribute, it is added to "items"
     if (typeof $(this).data('item') !== 'undefined') {
@@ -77,6 +92,7 @@ $(document).ready(function() {
     }
     if (typeof multi_data[id] == "undefined") return;
     api_items = multi_data[id];
+    // alert(JSON.stringify(api_attr));
     if (Object.keys(api_items).length !== 0) {
       $.ajax({
         type: "POST",
@@ -125,6 +141,7 @@ $(document).ready(function() {
         return false;
       }
     }
+    // alert(JSON.stringify(api_attr));
     $.ajax({
       type: "POST",
       dataType: "json",

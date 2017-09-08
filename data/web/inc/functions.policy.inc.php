@@ -1,5 +1,4 @@
 <?php
-
 function policy($_action, $_scope, $_data = null) {
 	global $pdo;
 	global $redis;
@@ -93,6 +92,13 @@ function policy($_action, $_scope, $_data = null) {
         case 'mailbox':
           $object = $_data['username'];
           if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $object)) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => sprintf($lang['danger']['access_denied'])
+            );
+            return false;
+          }
+          if (!isset($_SESSION['acl']['spam_policy']) || $_SESSION['acl']['spam_policy'] != "1" ) {
             $_SESSION['return'] = array(
               'type' => 'danger',
               'msg' => sprintf($lang['danger']['access_denied'])
@@ -232,6 +238,13 @@ function policy($_action, $_scope, $_data = null) {
           }
           else {
             $prefids = $_data['prefid'];
+          }
+          if (!isset($_SESSION['acl']['spam_policy']) || $_SESSION['acl']['spam_policy'] != "1" ) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => sprintf($lang['danger']['access_denied'])
+            );
+            return false;
           }
           foreach ($prefids as $prefid) {
             if (!is_numeric($prefid)) {

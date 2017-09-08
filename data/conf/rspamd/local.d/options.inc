@@ -6,3 +6,4 @@ dns {
   timeout = 4s;
   retransmits = 5;
 }
+disable_monitored = true;
