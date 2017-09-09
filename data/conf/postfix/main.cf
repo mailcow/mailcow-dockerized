@@ -99,3 +99,10 @@ smtp_sasl_auth_enable = yes
 smtp_sasl_password_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps.cf
 smtp_sasl_security_options = 
 smtp_sasl_mechanism_filter = plain, login
+# Limit Deny of Service Attacks
+default_process_limit = 100
+smtpd_client_connection_count_limit = 10
+smtpd_client_connection_rate_limit = 30
+queue_minfree = 20971520
+header_size_limit = 51200
+smtpd_recipient_limit = 100
