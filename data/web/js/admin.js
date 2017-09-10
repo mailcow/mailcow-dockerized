@@ -591,8 +591,12 @@ $(window).load(function(){
   });
 });
 
-$(window).on('resize', function(){
+function resizeScrollbox() {
   on_resize_width = $("#sidebar-admin").width();
   $("#scrollbox").removeAttr("style");
   $("#scrollbox").css("width", on_resize_width);
-});
+}
+
+$(window).on('resize', resizeScrollbox);
+$('a[data-toggle="tab"]').on('shown.bs.tab', resizeScrollbox);
+
