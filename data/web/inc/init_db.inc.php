@@ -127,6 +127,34 @@ function init_db_schema() {
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
+      "mailbox" => array(
+        "cols" => array(
+          "username" => "VARCHAR(255) NOT NULL",
+          "password" => "VARCHAR(255) NOT NULL",
+          "name" => "VARCHAR(255)",
+          "maildir" => "VARCHAR(255) NOT NULL",
+          "quota" => "BIGINT(20) NOT NULL DEFAULT '102400'",
+          "local_part" => "VARCHAR(255) NOT NULL",
+          "domain" => "VARCHAR(255) NOT NULL",
+          "tls_enforce_in" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "tls_enforce_out" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "kind" => "VARCHAR(100) NOT NULL DEFAULT ''",
+          "multiple_bookings" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "wants_tagged_subject" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
+          "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("username")
+          ),
+          "key" => array(
+            "domain" => array("domain")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
       "user_acl" => array(
         "cols" => array(
           "username" => "VARCHAR(255) NOT NULL",
@@ -209,34 +237,6 @@ function init_db_schema() {
         "keys" => array(
           "primary" => array(
             "" => array("username")
-          )
-        ),
-        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
-      ),
-      "mailbox" => array(
-        "cols" => array(
-          "username" => "VARCHAR(255) NOT NULL",
-          "password" => "VARCHAR(255) NOT NULL",
-          "name" => "VARCHAR(255)",
-          "maildir" => "VARCHAR(255) NOT NULL",
-          "quota" => "BIGINT(20) NOT NULL DEFAULT '102400'",
-          "local_part" => "VARCHAR(255) NOT NULL",
-          "domain" => "VARCHAR(255) NOT NULL",
-          "tls_enforce_in" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "tls_enforce_out" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "kind" => "VARCHAR(100) NOT NULL DEFAULT ''",
-          "multiple_bookings" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "wants_tagged_subject" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
-          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
-          "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
-        ),
-        "keys" => array(
-          "primary" => array(
-            "" => array("username")
-          ),
-          "key" => array(
-            "domain" => array("domain")
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
