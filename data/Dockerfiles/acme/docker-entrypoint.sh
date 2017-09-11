@@ -26,6 +26,24 @@ verify_hash_match(){
 	fi
 }
 
+get_ipv4(){
+  local IPV4=
+  local IPV4_SRCS=
+  local TRY=
+  IPV4_SRCS[0]="api.ipify.org"
+  IPV4_SRCS[1]="ifconfig.co"
+  IPV4_SRCS[2]="icanhazip.com"
+  IPV4_SRCS[3]="v4.ident.me"
+  IPV4_SRCS[4]="ipecho.net/plain"
+  IPV4_SRCS[5]="mailcow.email/ip.php"
+  until [[ ! -z ${IPV4} ]] || [[ ${TRY} -ge 100 ]]; do
+    IPV4=$(curl --connect-timeout 3 -m 10 -L4s ${IPV4_SRCS[$RANDOM % ${#IPV4_SRCS[@]} ]} | grep -E "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")
+    [[ ! -z ${TRY} ]] && sleep 1
+    TRY=$((TRY+1))
+  done
+  echo ${IPV4}
+}
+
 [[ ! -f ${ACME_BASE}/dhparams.pem ]] && cp ${SSL_EXAMPLE}/dhparams.pem ${ACME_BASE}/dhparams.pem
 
 if [[ -f ${ACME_BASE}/cert.pem ]] && [[ -f ${ACME_BASE}/key.pem ]]; then
@@ -73,7 +91,7 @@ while true; do
 	declare -a VALIDATED_CONFIG_DOMAINS
 	declare -a ADDITIONAL_VALIDATED_SAN
 	IFS=',' read -r -a ADDITIONAL_SAN_ARR <<< "${ADDITIONAL_SAN}"
-	IPV4=$(curl -4s https://mailcow.email/ip.php)
+	IPV4=$(get_ipv4)
 	# Container ids may have changed
 	CONTAINERS_RESTART=($(curl --silent --unix-socket /var/run/docker.sock http/containers/json | jq -rc 'map(select(.Names[] | contains ("nginx-mailcow") or contains ("postfix-mailcow") or contains ("dovecot-mailcow"))) | .[] .Id' | tr "\n" " "))
 

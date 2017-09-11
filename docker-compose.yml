@@ -283,7 +283,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.15
+      image: mailcow/acme:1.16
       build: ./data/Dockerfiles/acme
       dns:
         - 172.22.1.254
