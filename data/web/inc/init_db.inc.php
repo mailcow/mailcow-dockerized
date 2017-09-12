@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "31082017_0853";
+    $db_version = "12092017_2254";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'"); 
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -649,7 +649,7 @@ function init_db_schema() {
 
     // Inject admin if not exists
     $stmt = $pdo->query("INSERT INTO `admin` (`username`, `password`, `superadmin`, `created`, `modified`, `active`)
-      SELECT 'admin', '{SSHA256}K8eVJ6YsZbQCfuJvSUbaQRLr0HPLz5rC9IAp0PAFl0tmNDBkMDc0NDAyOTAxN2Rk', 1, NOW(), NOW(), 1
+      SELECT 'admin', '{SSHA256}K8eVJ6YsZbQCfuJvSUbaQRLr0HPLz5rC9IAp0PAFl0tmNDBkMDc0NDAyOTAxN2Rk', 1, NOW(), NOW(), 1 FROM `admin`
         WHERE NOT EXISTS (SELECT * FROM `admin`);");
     $stmt = $pdo->query("INSERT INTO `domain_admins` (`username`, `domain`, `created`, `active`)
         SELECT `username`, 'ALL', NOW(), 1 FROM `admin`
