@@ -68,7 +68,7 @@ services:
     clamd-mailcow:
       image: mailcow/clamd:1.2
       build: ./data/Dockerfiles/clamd
-      restart: always
+      restart: on-failure
       environment:
         - SKIP_CLAMD=${SKIP_CLAMD:-n}
       dns:
