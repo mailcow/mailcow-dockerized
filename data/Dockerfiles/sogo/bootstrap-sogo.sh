@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Wait for MySQL to warm-up
-while mysqladmin ping --host 172.22.1.250 --silent; do
+while mysqladmin ping --host mysql -u${DBUSER} -p${DBPASS}${DBPASS} --silent; do
 
 # Wait until port becomes free and send sig
 until ! nc -z sogo-mailcow 20000;
