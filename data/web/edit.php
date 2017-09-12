@@ -138,7 +138,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
       !empty($_GET["domain"])) {
         $domain = $_GET["domain"];
         $result = mailbox('get', 'domain_details', $domain);
-        $rl = mailbox('get', 'domain_ratelimit', $domain);
+        $rl = mailbox('get', 'ratelimit', $domain);
         $rlyhosts = relayhost('get');
         if (!empty($result)) {
         ?>
@@ -251,7 +251,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           </select>
         </div>
         <div class="form-group">
-          <button class="btn btn-default" id="edit_selected" data-id="domratelimit" data-item="<?=$domain;?>" data-api-url='edit/domain-ratelimit' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
+          <button class="btn btn-default" id="edit_selected" data-id="domratelimit" data-item="<?=$domain;?>" data-api-url='edit/ratelimit' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
         </div>
       </form>
       <hr>
@@ -314,7 +314,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
       !empty($_GET["aliasdomain"])) {
         $alias_domain = $_GET["aliasdomain"];
         $result = mailbox('get', 'alias_domain_details', $alias_domain);
-        $rl = mailbox('get', 'domain_ratelimit', $alias_domain);
+        $rl = mailbox('get', 'ratelimit', $alias_domain);
         if (!empty($result)) {
         ?>
           <h4><?=$lang['edit']['edit_alias_domain'];?></h4>
@@ -353,7 +353,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               </select>
             </div>
             <div class="form-group">
-              <button class="btn btn-default" id="edit_selected" data-id="domratelimit" data-item="<?=$alias_domain;?>" data-api-url='edit/domain-ratelimit' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
+              <button class="btn btn-default" id="edit_selected" data-id="domratelimit" data-item="<?=$alias_domain;?>" data-api-url='edit/ratelimit' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
             </div>
           </form>
           <?php
@@ -380,6 +380,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
     elseif (isset($_GET['mailbox']) && filter_var($_GET["mailbox"], FILTER_VALIDATE_EMAIL) && !empty($_GET["mailbox"])) {
       $mailbox = $_GET["mailbox"];
       $result = mailbox('get', 'mailbox_details', $mailbox);
+      $rl = mailbox('get', 'ratelimit', $mailbox);
       if (!empty($result)) {
         ?>
         <h4><?=$lang['edit']['mailbox'];?></h4>
@@ -476,6 +477,23 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="col-sm-offset-2 col-sm-10">
               <button class="btn btn-success" id="edit_selected" data-id="editmailbox" data-item="<?=htmlspecialchars($result['username']);?>" data-api-url='edit/mailbox' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
             </div>
+          </div>
+        </form>
+        <hr>
+        <form data-id="mboxratelimit" class="form-inline well" method="post">
+          <div class="form-group">
+            <label class="control-label">Ratelimit</label>
+            <input name="rl_value" id="rl_value" type="number" value="<?=(!empty($rl['value'])) ? $rl['value'] : null;?>" class="form-control" placeholder="disabled">
+          </div>
+          <div class="form-group">
+            <select name="rl_frame" id="rl_frame" class="form-control">
+              <option value="s" <?=(isset($rl['frame']) && $rl['frame'] == 's') ? 'selected' : null;?>>msgs / second</option>
+              <option value="m" <?=(isset($rl['frame']) && $rl['frame'] == 'm') ? 'selected' : null;?>>msgs / minute</option>
+              <option value="h" <?=(isset($rl['frame']) && $rl['frame'] == 'h') ? 'selected' : null;?>>msgs / hour</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <button class="btn btn-default" id="edit_selected" data-id="mboxratelimit" data-item="<?=$mailbox;?>" data-api-url='edit/ratelimit' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
           </div>
         </form>
       <?php

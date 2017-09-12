@@ -2133,13 +2133,13 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               ));
             }
           break;
-          case "domain-ratelimit":
+          case "ratelimit":
             if (isset($_POST['items']) && isset($_POST['attr'])) {
               $items = (array)json_decode($_POST['items'], true);
               $attr = (array)json_decode($_POST['attr'], true);
-              $postarray = array_merge(array('domain' => $items), $attr);
-              if (is_array($postarray['domain'])) {
-                if (mailbox('edit', 'domain_ratelimit', $postarray) === false) {
+              $postarray = array_merge(array('object' => $items), $attr);
+              if (is_array($postarray['object'])) {
+                if (mailbox('edit', 'ratelimit', $postarray) === false) {
                   if (isset($_SESSION['return'])) {
                     echo json_encode($_SESSION['return']);
                   }
