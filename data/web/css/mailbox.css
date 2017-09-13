@@ -1,19 +1,37 @@
-.panel-heading div {
-	margin-top: -18px;
-	font-size: 15px;
+table.footable>tbody>tr.footable-empty>td {
+  font-size:15px !important;
+  font-style:italic;
 }
-.panel-heading div span {
-	margin-left:5px;
+.pagination a {
+  text-decoration: none !important;
 }
-.panel-body {
-	display: none;
+.panel panel-default {
+  overflow: visible !important;
 }
-.clickable {
-	cursor: pointer;
+.table-responsive {
+  overflow: visible !important;
 }
-.progress {
-	margin-bottom: 0px;
+@media screen and (max-width: 767px) {
+  .table-responsive {
+    overflow-x: scroll !important;
+  }
 }
-.table>thead>tr>th {
-  vertical-align: top !important;
+.footer-add-item {
+  display:block;
+  text-align: center;
+  font-style: italic;
+  padding: 10px;
+  background: #F5F5F5;
+}
+@media (min-width: 992px) {
+  .container {
+      width: 80%;
+  }
+}
+.mass-actions-mailbox {
+  user-select: none;
+  padding:10px 0 10px 10px;
+}
+.inputMissingAttr {
+  border-color: #FF4136;
 }

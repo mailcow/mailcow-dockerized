@@ -10,15 +10,12 @@ if header :contains "X-Spam-Flag" "YES" {
 
 if allof (
   envelope :detail :matches "to" "*",
-  header :contains "X-Moo-Tag" "YES",
-  mailboxexists "INBOX/${s}"
-  ) {
-    fileinto "INBOX/${s}";
-}
-elsif allof (
-  envelope :detail :matches "to" "*",
   header :contains "X-Moo-Tag" "YES"
   ) {
-    set :lower "s" "${1}";
-    fileinto :create "INBOX/${s}";
+  set :lower :upperfirst "tag" "${1}";
+  if mailboxexists "INBOX/${1}" {
+    fileinto "INBOX/${1}";
+  } else {
+    fileinto :create "INBOX/${tag}";
+  }
 }

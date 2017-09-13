@@ -1,0 +1,13 @@
+destination: apidocs
+
+source:
+  - src/u2flib_server
+
+exclude:
+  - "*/tests/*"
+
+groups: none
+
+tree: false
+
+title: php-u2flib-server API

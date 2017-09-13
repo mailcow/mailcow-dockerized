@@ -4,10 +4,10 @@ The match section performs AND operation on different matches: for example, if y
 then the rule matches only when from AND rcpt match. For similar matches, the OR rule applies: if you have multiple rcpt matches,
 then any of these will trigger the rule. If a rule is triggered then no more rules are matched.
 */
-ini_set('error_reporting', '0');
-
 header('Content-Type: text/plain');
 require_once "vars.inc.php";
+
+ini_set('error_reporting', 0);
 
 $dsn = $database_type . ':host=' . $database_host . ';dbname=' . $database_name;
 $opt = [
@@ -15,10 +15,94 @@ $opt = [
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     PDO::ATTR_EMULATE_PREPARES   => false,
 ];
-$pdo = new PDO($dsn, $database_user, $database_pass, $opt);
+try {
+  $pdo = new PDO($dsn, $database_user, $database_pass, $opt);
+  $stmt = $pdo->query("SELECT * FROM `filterconf`");
+}
+catch (PDOException $e) {
+  echo 'settings { }';
+  exit;
+}
+
+function parse_email($email) {
+  if(!filter_var($email, FILTER_VALIDATE_EMAIL)) return false;
+  $a = strrpos($email, '@');
+  return array('local' => substr($email, 0, $a), 'domain' => substr($email, $a));
+}
+
+function ucl_rcpts($object, $type) {
+  global $pdo;
+  if ($type == 'mailbox') {
+    // Standard aliases
+    $stmt = $pdo->prepare("SELECT `address` FROM `alias`
+      WHERE `goto` LIKE :object_goto
+        AND `address` NOT LIKE '@%'
+        AND `address` != :object_address");
+    $stmt->execute(array(
+      ':object_goto' => '%' . $object . '%',
+      ':object_address' => $object
+    ));
+    $standard_aliases = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    while ($row = array_shift($standard_aliases)) {
+      $local = parse_email($row['address'])['local'];
+      $domain = parse_email($row['address'])['domain'];
+      if (!empty($local) && !empty($domain)) {
+        $rcpt[] = '/' . $local . '\+.*' . $domain . '/i';
+      }
+      $rcpt[] = $row['address'];
+    }
+    // Aliases by alias domains
+    $stmt = $pdo->prepare("SELECT CONCAT(`local_part`, '@', `alias_domain`.`alias_domain`) AS `alias` FROM `mailbox` 
+      LEFT OUTER JOIN `alias_domain` ON `mailbox`.`domain` = `alias_domain`.`target_domain`
+      WHERE `mailbox`.`username` = :object");
+    $stmt->execute(array(
+      ':object' => $object
+    ));
+    $by_domain_aliases = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    array_filter($by_domain_aliases);
+    while ($row = array_shift($by_domain_aliases)) {
+      if (!empty($row['alias'])) {
+        $local = parse_email($row['alias'])['local'];
+        $domain = parse_email($row['alias'])['domain'];
+        if (!empty($local) && !empty($domain)) {
+          $rcpt[] = '/' . $local . '\+.*' . $domain . '/i';
+        }
+      $rcpt[] = $row['alias'];
+      }
+    }
+    // Mailbox self
+    $local = parse_email($row['object'])['local'];
+    $domain = parse_email($row['object'])['domain'];
+    if (!empty($local) && !empty($domain)) {
+      $rcpt[] = '/' . $local . '\+.*' . $domain . '/i';
+    }
+    $rcpt[] = $object;
+  }
+  elseif ($type == 'domain') {
+    // Domain self
+		$rcpt[] = '/.*@' . $object . '/i';
+		$stmt = $pdo->prepare("SELECT `alias_domain` FROM `alias_domain`
+			WHERE `target_domain` = :object");
+		$stmt->execute(array(':object' => $object));
+		$alias_domains = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		array_filter($alias_domains);
+		while ($row = array_shift($alias_domains)) {
+      $rcpt[] = '/.*@' . $row['alias_domain'] . '/i';
+		}
+  }
+  if (!empty($rcpt)) {
+    return $rcpt;
+  }
+  return false;
+}
 ?>
 settings {
 <?php
+
+/*
+// Start custom scores for users
+*/
+
 $stmt = $pdo->query("SELECT DISTINCT `object` FROM `filterconf` WHERE `option` = 'highspamlevel' OR `option` = 'lowspamlevel'");
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -26,45 +110,18 @@ while ($row = array_shift($rows)) {
 	$username_sane = preg_replace("/[^a-zA-Z0-9]+/", "", $row['object']);
 ?>
 	score_<?=$username_sane;?> {
-		priority = low;
+		priority = 4;
 <?php
+  foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
+?>
+		rcpt = "<?=$rcpt;?>";
+<?php
+  }
 	$stmt = $pdo->prepare("SELECT `option`, `value` FROM `filterconf` 
 		WHERE (`option` = 'highspamlevel' OR `option` = 'lowspamlevel')
 			AND `object`= :object");
 	$stmt->execute(array(':object' => $row['object']));
 	$spamscore = $stmt->fetchAll(PDO::FETCH_COLUMN|PDO::FETCH_GROUP);
-
-	$stmt = $pdo->prepare("SELECT GROUP_CONCAT(REPLACE(`value`, '*', '.*') SEPARATOR '|') AS `value` FROM `filterconf`
-		WHERE (`object`= :object OR `object`= :object_domain)
-			AND (`option` = 'blacklist_from' OR `option` = 'whitelist_from')");
-	$stmt->execute(array(':object' => $row['object'], ':object_domain' => substr(strrchr($row['object'], "@"), 1)));
-	$grouped_lists = $stmt->fetchAll(PDO::FETCH_COLUMN);
-	$value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
-?>
-		from = "/^((?!<?=$value_sane;?>).)*$/";
-		rcpt = "<?=$row['object'];?>";
-<?php
-	$stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `goto` = :object_goto AND `address` NOT LIKE '@%' AND `address` != :object_address");
-	$stmt->execute(array(':object_goto' => $row['object'], ':object_address' => $row['object']));
-	$rows_aliases_1 = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	while ($row_aliases_1 = array_shift($rows_aliases_1)) {
-?>
-		rcpt = "<?=$row_aliases_1['address'];?>";
-<?php
-	}
-	$stmt = $pdo->prepare("SELECT CONCAT(`local_part`, '@', `alias_domain`.`alias_domain`) AS `aliases` FROM `mailbox` 
-		LEFT OUTER JOIN `alias_domain` on `mailbox`.`domain` = `alias_domain`.`target_domain`
-		WHERE `mailbox`.`username` = :object");
-	$stmt->execute(array(':object' => $row['object']));
-	$rows_aliases_2 = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  array_filter($rows_aliases_2);
-	while ($row_aliases_2 = array_shift($rows_aliases_2)) {
-    if (!empty($row_aliases_2['aliases'])) {
-?>
-		rcpt = "<?=$row_aliases_2['aliases'];?>";
-<?php
-    }
-	}
 ?>
 		apply "default" {
 			actions {
@@ -95,56 +152,76 @@ while ($row = array_shift($rows)) {
 	$grouped_lists = $stmt->fetchAll(PDO::FETCH_COLUMN);
 	$value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
 ?>
-		from = "/(<?=$value_sane;?>)/";
+		from = "/(<?=$value_sane;?>)/i";
 <?php
 	if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
 ?>
-		priority = medium;
-		rcpt = "/.*@<?=$row['object'];?>/";
+		priority = 5;
 <?php
-		$stmt = $pdo->prepare("SELECT `alias_domain` FROM `alias_domain`
-			WHERE `target_domain` = :object");
-		$stmt->execute(array(':object' => $row['object']));
-		$rows_domain_aliases = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    array_filter($rows_domain_aliases);
-		while ($row_domain_aliases = array_shift($rows_domain_aliases)) {
+		foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
-		rcpt = "/.*@<?=$row_domain_aliases['alias_domain'];?>/";
+		rcpt = "<?=$rcpt;?>";
 <?php
 		}
 	}
 	else {
 ?>
-		priority = high;
-		rcpt = "<?=$row['object'];?>";
+		priority = 6;
 <?php
-	}
-	$stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `goto` = :object_goto AND `address` NOT LIKE '@%' AND `address` != :object_address");
-	$stmt->execute(array(':object_goto' => $row['object'], ':object_address' => $row['object']));
-	$rows_aliases_wl_1 = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  array_filter($rows_aliases_wl_1);
-	while ($row_aliases_wl_1 = array_shift($rows_aliases_wl_1)) {
+		foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
-		rcpt = "<?=$row_aliases_wl_1['address'];?>";
+		rcpt = "<?=$rcpt;?>";
 <?php
-	}
-	$stmt = $pdo->prepare("SELECT CONCAT(`local_part`, '@', `alias_domain`.`alias_domain`) AS `aliases` FROM `mailbox` 
-		LEFT OUTER JOIN `alias_domain` on `mailbox`.`domain` = `alias_domain`.`target_domain`
-		WHERE `mailbox`.`username` = :object");
-	$stmt->execute(array(':object' => $row['object']));
-	$rows_aliases_wl_2 = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  array_filter($rows_aliases_wl_2);
-	while ($row_aliases_wl_2 = array_shift($rows_aliases_wl_2)) {
-    if (!empty($row_aliases_wl_2['aliases'])) {
-?>
-		rcpt = "<?=$row_aliases_wl_2['aliases'];?>";
-<?php
-    }
+		}
 	}
 ?>
 		apply "default" {
-			MAILCOW_MOO = -999.0;
+			MAILCOW_WHITE = -999.0;
 		}
+		symbols [
+			"MAILCOW_WHITE"
+		]
+	}
+	whitelist_header_<?=$username_sane;?> {
+<?php
+	$stmt = $pdo->prepare("SELECT GROUP_CONCAT(REPLACE(`value`, '*', '.*') SEPARATOR '|') AS `value` FROM `filterconf`
+		WHERE `object`= :object
+			AND `option` = 'whitelist_from'");
+	$stmt->execute(array(':object' => $row['object']));
+	$grouped_lists = $stmt->fetchAll(PDO::FETCH_COLUMN);
+	$value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
+?>
+		request_header = {
+			"From" = "(<?=$value_sane;?>)";
+		}
+<?php
+	if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
+?>
+		priority = 5;
+<?php
+		foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
+?>
+		rcpt = "<?=$rcpt;?>";
+<?php
+		}
+	}
+	else {
+?>
+		priority = 6;
+<?php
+		foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
+?>
+		rcpt = "<?=$rcpt;?>";
+<?php
+		}
+	}
+?>
+		apply "default" {
+			MAILCOW_WHITE = -999.0;
+		}
+		symbols [
+			"MAILCOW_WHITE"
+		]
 	}
 <?php
 }
@@ -167,56 +244,76 @@ while ($row = array_shift($rows)) {
 	$grouped_lists = $stmt->fetchAll(PDO::FETCH_COLUMN);
 	$value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
 ?>
-		from = "/(<?=$value_sane;?>)/";
+		from = "/(<?=$value_sane;?>)/i";
 <?php
 	if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
 ?>
-		priority = medium;
-		rcpt = "/.*@<?=$row['object'];?>/";
+		priority = 5;
 <?php
-		$stmt = $pdo->prepare("SELECT `alias_domain` FROM `alias_domain`
-			WHERE `target_domain` = :object");
-		$stmt->execute(array(':object' => $row['object']));
-		$rows_domain_aliases = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    array_filter($rows_domain_aliases);
-		while ($row_domain_aliases = array_shift($rows_domain_aliases)) {
+		foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
-		rcpt = "/.*@<?=$row_domain_aliases['alias_domain'];?>/";
+		rcpt = "<?=$rcpt;?>";
 <?php
 		}
 	}
 	else {
 ?>
-		priority = high;
-		rcpt = "<?=$row['object'];?>";
+		priority = 6;
 <?php
-	}
-	$stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `goto` = :object_goto AND `address` NOT LIKE '@%' AND `address` != :object_address");
-	$stmt->execute(array(':object_goto' => $row['object'], ':object_address' => $row['object']));
-	$rows_aliases_bl_1 = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  array_filter($rows_aliases_bl_1);
-	while ($row_aliases_bl_1 = array_shift($rows_aliases_bl_1)) {
+		foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
-		rcpt = "<?=$row_aliases_bl_1['address'];?>";
+		rcpt = "<?=$rcpt;?>";
 <?php
-	}
-	$stmt = $pdo->prepare("SELECT CONCAT(`local_part`, '@', `alias_domain`.`alias_domain`) AS `aliases` FROM `mailbox` 
-		LEFT OUTER JOIN `alias_domain` on `mailbox`.`domain` = `alias_domain`.`target_domain`
-		WHERE `mailbox`.`username` = :object");
-	$stmt->execute(array(':object' => $row['object']));
-	$rows_aliases_bl_2 = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  array_filter($rows_aliases_bl_2);
-	while ($row_aliases_bl_2 = array_shift($rows_aliases_bl_2)) {
-    if (!empty($row_aliases_bl_2['aliases'])) {
-?>
-		rcpt = "<?=$row_aliases_bl_2['aliases'];?>";
-<?php
-    }
+		}
 	}
 ?>
 		apply "default" {
-			MAILCOW_MOO = 999.0;
+			MAILCOW_BLACK = 999.0;
 		}
+		symbols [
+			"MAILCOW_BLACK"
+		]
+	}
+	blacklist_header_<?=$username_sane;?> {
+<?php
+	$stmt = $pdo->prepare("SELECT GROUP_CONCAT(REPLACE(`value`, '*', '.*') SEPARATOR '|') AS `value` FROM `filterconf`
+		WHERE `object`= :object
+			AND `option` = 'blacklist_from'");
+	$stmt->execute(array(':object' => $row['object']));
+	$grouped_lists = $stmt->fetchAll(PDO::FETCH_COLUMN);
+	$value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
+?>
+		request_header = {
+			"From" = "(<?=$value_sane;?>)";
+		}
+<?php
+	if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
+?>
+		priority = 5;
+<?php
+		foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
+?>
+		rcpt = "<?=$rcpt;?>";
+<?php
+		}
+	}
+	else {
+?>
+		priority = 6;
+<?php
+		foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
+?>
+		rcpt = "<?=$rcpt;?>";
+<?php
+		}
+	}
+?>
+		apply "default" {
+			MAILCOW_BLACK = 999.0;
+		}
+		symbols [
+			"MAILCOW_BLACK"
+		]
 	}
 <?php
 }
