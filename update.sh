@@ -74,7 +74,7 @@ else
 	exit 1
 fi
 
-read -r -p "Are you sure you want to update mailcow: dockerized? All containers will be stopped. [y/N] " response
+read -r -p "Are you sure you want to update mailcow: dockerized? [y/N] " response
 if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 	echo "OK, exiting."
 	exit 0
@@ -92,6 +92,7 @@ git commit -am "Before update on ${DATE}" > /dev/null
 echo -e "\e[32mFetching updated code from remote...\e[0m"
 git fetch origin ${BRANCH}
 echo -e "\e[32mMerging local with remote code (recursive, options: \"theirs\", \"patience\"...\e[0m"
+git config merge.defaultToUpstream true
 git merge -Xtheirs -Xpatience -m "After update on ${DATE}"
 # Need to use a variable to not pass return codes of if checks
 MERGE_RETURN=$?
