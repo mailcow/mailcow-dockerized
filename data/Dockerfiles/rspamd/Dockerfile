@@ -1,27 +1,28 @@
-FROM ubuntu:xenial
-MAINTAINER Andre Peters <andre.peters@debinux.de>
+FROM debian:stretch-slim
+LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
-ENV DEBIAN_FRONTEND noninteractive
+ARG DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL C
 
-RUN dpkg-divert --local --rename --add /sbin/initctl \
-    && ln -sf /bin/true /sbin/initctl \
-    && dpkg-divert --local --rename --add /usr/bin/ischroot \
-    && ln -sf /bin/true /usr/bin/ischroot
+RUN apt-get update && apt-get install -y \
+	ca-certificates \
+	gnupg2 \
+	apt-transport-https \
+	&& apt-key adv --fetch-keys https://rspamd.com/apt/gpg.key \
+	&& echo "deb https://rspamd.com/apt/ stretch main" > /etc/apt/sources.list.d/rspamd.list \
+	&& apt-get update && apt-get install -y rspamd \
+	&& rm -rf /var/lib/apt/lists/* \
+	&& echo '.include $LOCAL_CONFDIR/local.d/rspamd.conf.local' > /etc/rspamd/rspamd.conf.local \
+	&& apt-get autoremove --purge \
+	&& apt-get clean \
+	&& mkdir -p /run/rspamd \
+	&& chown _rspamd:_rspamd /run/rspamd
 
-RUN apt-key adv --fetch-keys http://rspamd.com/apt-stable/gpg.key \
-    && echo "deb http://rspamd.com/apt-stable/ xenial main" > /etc/apt/sources.list.d/rspamd.list \
-    && apt-get update \
-    && apt-get -y install rspamd ca-certificates
+COPY settings.conf /etc/rspamd/modules.d/settings.conf
+COPY ratelimit.lua /usr/share/rspamd/lua/ratelimit.lua
+COPY lua_util.lua /usr/share/rspamd/lib/lua_util.lua
+COPY docker-entrypoint.sh /docker-entrypoint.sh
 
-RUN echo '.include $LOCAL_CONFDIR/local.d/rspamd.conf.local' > /etc/rspamd/rspamd.conf.local
-# "Hardcoded" - we need them
-RUN echo 'settings = "http://nginx:8081/settings.php";' > /etc/rspamd/modules.d/settings.conf
+ENTRYPOINT ["/docker-entrypoint.sh"]
 
-CMD ["/usr/bin/rspamd","-f", "-u", "_rspamd", "-g", "_rspamd"]
-
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-USER _rspamd
-
-EXPOSE 11333 11334
+CMD /usr/bin/rspamd -f -u _rspamd -g _rspamd

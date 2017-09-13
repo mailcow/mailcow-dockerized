@@ -1,5 +1,0 @@
-user = mailcow
-password = mysafepasswd
-hosts = mysql
-dbname = mailcow
-query = SELECT goto FROM alias WHERE address='%s' AND active='1';
