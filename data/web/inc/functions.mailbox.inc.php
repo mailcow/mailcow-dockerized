@@ -1189,7 +1189,7 @@ function mailbox($_action, $_type, $_data = null) {
             'msg' => sprintf($lang['success']['mailbox_modified'], implode(', ', $usernames))
           );
         break;
-        case 'domain_ratelimit':
+        case 'ratelimit':
           $rl_value = intval($_data['rl_value']);
           $rl_frame = $_data['rl_frame'];
           if (!in_array($rl_frame, array('s', 'm', 'h'))) {
@@ -1199,24 +1199,38 @@ function mailbox($_action, $_type, $_data = null) {
               );
               return false;
           }
-          if (!is_array($_data['domain'])) {
-            $domains = array();
-            $domains[] = $_data['domain'];
+          if (!is_array($_data['object'])) {
+            $objects = array();
+            $objects[] = $_data['object'];
           }
           else {
-            $domains = $_data['domain'];
+            $objects = $_data['object'];
           }
-          foreach ($domains as $domain) {
-            if (!is_valid_domain_name($domain) || !hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
-              $_SESSION['return'] = array(
-                'type' => 'danger',
-                'msg' => sprintf($lang['danger']['access_denied'])
-              );
+          foreach ($objects as $object) {
+            if (is_valid_domain_name($object)) {
+              if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $object)) {
+                $_SESSION['return'] = array(
+                  'type' => 'danger',
+                  'msg' => sprintf($lang['danger']['access_denied'])
+                );
+                return false;
+              }
+            }
+            elseif (filter_var($object, FILTER_VALIDATE_EMAIL)) {
+              if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $object)) {
+                $_SESSION['return'] = array(
+                  'type' => 'danger',
+                  'msg' => sprintf($lang['danger']['access_denied'])
+                );
+                return false;
+              }
+            }
+            else {
               return false;
             }
             if (empty($rl_value)) {
               try {
-                $redis->hDel('RL_VALUE', $domain);
+                $redis->hDel('RL_VALUE', $object);
               }
               catch (RedisException $e) {
                 $_SESSION['return'] = array(
@@ -1228,7 +1242,7 @@ function mailbox($_action, $_type, $_data = null) {
             }
             else {
               try {
-                $redis->hSet('RL_VALUE', $domain, $rl_value . ' / 1' . $rl_frame);
+                $redis->hSet('RL_VALUE', $object, $rl_value . ' / 1' . $rl_frame);
               }
               catch (RedisException $e) {
                 $_SESSION['return'] = array(
@@ -1241,7 +1255,7 @@ function mailbox($_action, $_type, $_data = null) {
           }
           $_SESSION['return'] = array(
             'type' => 'success',
-            'msg' => sprintf($lang['success']['domain_modified'], implode(', ', $domains))
+            'msg' => sprintf($lang['success']['domain_modified'], implode(', ', $objects))
           );
         break;
         case 'syncjob':
@@ -2385,9 +2399,26 @@ function mailbox($_action, $_type, $_data = null) {
           }
           return $aliases;
         break;
-        case 'domain_ratelimit':
-          $aliases = array();
-          if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
+        case 'ratelimit':
+          if (is_valid_domain_name($_data)) {
+            if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
+              $_SESSION['return'] = array(
+                'type' => 'danger',
+                'msg' => sprintf($lang['danger']['access_denied'])
+              );
+              return false;
+            }
+          }
+          elseif (filter_var($_data, FILTER_VALIDATE_EMAIL)) {
+            if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
+              $_SESSION['return'] = array(
+                'type' => 'danger',
+                'msg' => sprintf($lang['danger']['access_denied'])
+              );
+              return false;
+            }
+          }
+          else {
             return false;
           }
           try {

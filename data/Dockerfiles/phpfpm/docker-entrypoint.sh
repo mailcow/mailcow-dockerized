@@ -6,7 +6,7 @@ if [[ $(stat -c %U /data/dkim/) != "www-data" ]] ; then chown -R www-data:www-da
 
 # Wait for containers
 
-while ! mysqladmin ping --host mysql --silent; do
+while ! mysqladmin ping --host mysql -u${DBUSER} -p${DBPASS} --silent; do
   sleep 2
 done
 

@@ -23,10 +23,10 @@ services:
             - unbound
 
     mysql-mailcow:
-      image: mariadb:10.1
-      command: mysqld --max_allowed_packet=128M --max-connections=1500
+      image: mariadb:10.2
+      command: mysqld --max_allowed_packet=192M --max-connections=1500 --innodb-strict-mode=0 --skip-host-cache --skip-name-resolve --log-warnings=0
       healthcheck:
-        test: ["CMD", "mysqladmin", "ping", "--host", "localhost", "--silent"]
+        test: ["CMD", "mysqladmin", "-u$DBUSER", "-p$DBPASS",  "ping", "-h", "localhost"]
         interval: 5s
         timeout: 5s
         retries: 10
@@ -108,7 +108,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.0
+      image: mailcow/phpfpm:1.1
       build: ./data/Dockerfiles/phpfpm
       command: "php-fpm -d date.timezone=${TZ}"
       depends_on:
@@ -140,7 +140,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.7
+      image: mailcow/sogo:1.8
       build: ./data/Dockerfiles/sogo
       depends_on:
         unbound-mailcow:
