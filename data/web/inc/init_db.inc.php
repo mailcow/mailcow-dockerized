@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "12092017_2254";
+    $db_version = "14092017_2244";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'"); 
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -648,14 +648,16 @@ function init_db_schema() {
     }
 
     // Inject admin if not exists
+    $stmt = $pdo->query("SELECT NULL FROM `admin`"); 
+    $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+    if ($num_results == 0) {
     $stmt = $pdo->query("INSERT INTO `admin` (`username`, `password`, `superadmin`, `created`, `modified`, `active`)
-      SELECT 'admin', '{SSHA256}K8eVJ6YsZbQCfuJvSUbaQRLr0HPLz5rC9IAp0PAFl0tmNDBkMDc0NDAyOTAxN2Rk', 1, NOW(), NOW(), 1 FROM `admin`
-        WHERE NOT EXISTS (SELECT * FROM `admin`);");
+      VALUES ('admin', '{SSHA256}K8eVJ6YsZbQCfuJvSUbaQRLr0HPLz5rC9IAp0PAFl0tmNDBkMDc0NDAyOTAxN2Rk', 1, NOW(), NOW(), 1)");
     $stmt = $pdo->query("INSERT INTO `domain_admins` (`username`, `domain`, `created`, `active`)
         SELECT `username`, 'ALL', NOW(), 1 FROM `admin`
           WHERE superadmin='1' AND `username` NOT IN (SELECT `username` FROM `domain_admins`);");
     $stmt = $pdo->query("DELETE FROM `admin` WHERE `username` NOT IN  (SELECT `username` FROM `domain_admins`);");
-
+    }
     // Insert new DB schema version
     $stmt = $pdo->query("REPLACE INTO `versions` (`application`, `version`) VALUES ('db_schema', '" . $db_version . "');"); 
 
