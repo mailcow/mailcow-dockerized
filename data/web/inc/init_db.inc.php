@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "14092017_2244";
+    $db_version = "15092017_0754";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'"); 
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -376,7 +376,7 @@ function init_db_schema() {
           "c_path3" => "VARCHAR(255) DEFAULT NULL",
           "c_path4" => "VARCHAR(255) DEFAULT NULL",
           "c_foldername" => "VARCHAR(255) NOT NULL",
-          "c_location" => "INT NULL",
+          "c_location" => "VARCHAR(2048) DEFAULT NULL",
           "c_quick_location" => "VARCHAR(2048) DEFAULT NULL",
           "c_acl_location" => "VARCHAR(2048) DEFAULT NULL",
           "c_folder_type" => "VARCHAR(255) NOT NULL"
