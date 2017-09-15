@@ -352,9 +352,6 @@ services:
           ipv4_address: 172.22.1.248
           aliases:
             - solr
-      ports:
-        - "127.0.0.1:8983:8983"
-
 
 networks:
   mailcow-network:
