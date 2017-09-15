@@ -1,0 +1,67 @@
+<?xml version="1.0" ?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<!-- Example exchange rates file for CurrencyField type named "currency" in example schema -->
+
+<currencyConfig version="1.0">
+  <rates>
+    <!-- Updated from http://www.exchangerate.com/ at 2011-09-27 -->
+    <rate from="USD" to="ARS" rate="4.333871" comment="ARGENTINA Peso" />
+    <rate from="USD" to="AUD" rate="1.025768" comment="AUSTRALIA Dollar" />
+    <rate from="USD" to="EUR" rate="0.743676" comment="European Euro" />
+    <rate from="USD" to="BRL" rate="1.881093" comment="BRAZIL Real" />
+    <rate from="USD" to="CAD" rate="1.030815" comment="CANADA Dollar" />
+    <rate from="USD" to="CLP" rate="519.0996" comment="CHILE Peso" />
+    <rate from="USD" to="CNY" rate="6.387310" comment="CHINA Yuan" />
+    <rate from="USD" to="CZK" rate="18.47134" comment="CZECH REP. Koruna" />
+    <rate from="USD" to="DKK" rate="5.515436" comment="DENMARK Krone" />
+    <rate from="USD" to="HKD" rate="7.801922" comment="HONG KONG Dollar" />
+    <rate from="USD" to="HUF" rate="215.6169" comment="HUNGARY Forint" />
+    <rate from="USD" to="ISK" rate="118.1280" comment="ICELAND Krona" />
+    <rate from="USD" to="INR" rate="49.49088" comment="INDIA Rupee" />
+    <rate from="USD" to="XDR" rate="0.641358" comment="INTNL MON. FUND SDR" />
+    <rate from="USD" to="ILS" rate="3.709739" comment="ISRAEL Sheqel" />
+    <rate from="USD" to="JPY" rate="76.32419" comment="JAPAN Yen" />
+    <rate from="USD" to="KRW" rate="1169.173" comment="KOREA (SOUTH) Won" />
+    <rate from="USD" to="KWD" rate="0.275142" comment="KUWAIT Dinar" />
+    <rate from="USD" to="MXN" rate="13.85895" comment="MEXICO Peso" />
+    <rate from="USD" to="NZD" rate="1.285159" comment="NEW ZEALAND Dollar" />
+    <rate from="USD" to="NOK" rate="5.859035" comment="NORWAY Krone" />
+    <rate from="USD" to="PKR" rate="87.57007" comment="PAKISTAN Rupee" />
+    <rate from="USD" to="PEN" rate="2.730683" comment="PERU Sol" />
+    <rate from="USD" to="PHP" rate="43.62039" comment="PHILIPPINES Peso" />
+    <rate from="USD" to="PLN" rate="3.310139" comment="POLAND Zloty" />
+    <rate from="USD" to="RON" rate="3.100932" comment="ROMANIA Leu" />
+    <rate from="USD" to="RUB" rate="32.14663" comment="RUSSIA Ruble" />
+    <rate from="USD" to="SAR" rate="3.750465" comment="SAUDI ARABIA Riyal" />
+    <rate from="USD" to="SGD" rate="1.299352" comment="SINGAPORE Dollar" />
+    <rate from="USD" to="ZAR" rate="8.329761" comment="SOUTH AFRICA Rand" />
+    <rate from="USD" to="SEK" rate="6.883442" comment="SWEDEN Krona" />
+    <rate from="USD" to="CHF" rate="0.906035" comment="SWITZERLAND Franc" />
+    <rate from="USD" to="TWD" rate="30.40283" comment="TAIWAN Dollar" />
+    <rate from="USD" to="THB" rate="30.89487" comment="THAILAND Baht" />
+    <rate from="USD" to="AED" rate="3.672955" comment="U.A.E. Dirham" />
+    <rate from="USD" to="UAH" rate="7.988582" comment="UKRAINE Hryvnia" />
+    <rate from="USD" to="GBP" rate="0.647910" comment="UNITED KINGDOM Pound" />
+    
+    <!-- Cross-rates for some common currencies -->
+    <rate from="EUR" to="GBP" rate="0.869914" />  
+    <rate from="EUR" to="NOK" rate="7.800095" />  
+    <rate from="GBP" to="NOK" rate="8.966508" />  
+  </rates>
+</currencyConfig>

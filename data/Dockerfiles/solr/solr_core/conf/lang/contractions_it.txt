@@ -1,0 +1,23 @@
+# Set of Italian contractions for ElisionFilter
+# TODO: load this as a resource from the analyzer and sync it in build.xml
+c
+l 
+all 
+dall 
+dell 
+nell 
+sull 
+coll 
+pell 
+gl 
+agl 
+dagl 
+degl 
+negl 
+sugl 
+un 
+m 
+t 
+s 
+v 
+d

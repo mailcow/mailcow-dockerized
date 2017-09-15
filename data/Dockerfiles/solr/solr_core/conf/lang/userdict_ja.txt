@@ -1,0 +1,29 @@
+#
+# This is a sample user dictionary for Kuromoji (JapaneseTokenizer)
+#
+# Add entries to this file in order to override the statistical model in terms
+# of segmentation, readings and part-of-speech tags.  Notice that entries do
+# not have weights since they are always used when found.  This is by-design
+# in order to maximize ease-of-use.
+#
+# Entries are defined using the following CSV format:
+#  <text>,<token 1> ... <token n>,<reading 1> ... <reading n>,<part-of-speech tag>
+#
+# Notice that a single half-width space separates tokens and readings, and
+# that the number tokens and readings must match exactly.
+#
+# Also notice that multiple entries with the same <text> is undefined.
+#
+# Whitespace only lines are ignored.  Comments are not allowed on entry lines.
+#
+
+# Custom segmentation for kanji compounds
+日本経済新聞,日本 経済 新聞,ニホン ケイザイ シンブン,カスタム名詞
+関西国際空港,関西 国際 空港,カンサイ コクサイ クウコウ,カスタム名詞
+
+# Custom segmentation for compound katakana
+トートバッグ,トート バッグ,トート バッグ,かずカナ名詞
+ショルダーバッグ,ショルダー バッグ,ショルダー バッグ,かずカナ名詞
+
+# Custom reading for former sumo wrestler
+朝青龍,朝青龍,アサショウリュウ,カスタム人名

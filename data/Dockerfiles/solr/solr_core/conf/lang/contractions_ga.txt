@@ -1,0 +1,5 @@
+# Set of Irish contractions for ElisionFilter
+# TODO: load this as a resource from the analyzer and sync it in build.xml
+d
+m
+b
