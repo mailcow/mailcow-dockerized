@@ -331,6 +331,7 @@ $lang['edit']['dont_check_sender_acl'] = 'Absender für Domain %s u. Alias-Dom. 
 $lang['edit']['multiple_bookings'] = 'Mehrfaches Buchen';
 $lang['edit']['kind'] = 'Art';
 $lang['edit']['resource'] = 'Ressource';
+$lang['edit']['goto_null'] = 'Nachrichten sofort verwerfen';
 
 $lang['add']['syncjob'] = 'Sync-Job erstellen';
 $lang['add']['syncjob_hint'] = 'Passwörter werden unverschlüsselt abgelegt!';
@@ -385,6 +386,7 @@ $lang['add']['password'] = 'Passwort';
 $lang['add']['password_repeat'] = 'Passwort (Wiederholung)';
 $lang['add']['previous'] = 'Vorherige Seite';
 $lang['add']['restart_sogo_hint'] = 'Der SOGo Container muss nach dem Hinzufügen einer neuen Domain neugestartet werden!';
+$lang['add']['goto_null'] = 'Nachrichten sofort verwerfen';
 
 $lang['login']['title'] = 'Anmeldung';
 $lang['login']['administration'] = 'Administration';

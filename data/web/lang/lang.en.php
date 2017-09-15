@@ -336,6 +336,7 @@ $lang['edit']['dont_check_sender_acl'] = "Disable sender check for domain %s + a
 $lang['edit']['multiple_bookings'] = 'Multiple bookings';
 $lang['edit']['kind'] = 'Kind';
 $lang['edit']['resource'] = 'Resource';
+$lang['edit']['goto_null'] = 'Silently discard mail';
 
 $lang['add']['syncjob'] = 'Add sync job';
 $lang['add']['syncjob_hint'] = 'Be aware that passwords need to be saved plain-text!';
@@ -390,6 +391,7 @@ $lang['add']['password'] = 'Password';
 $lang['add']['password_repeat'] = 'Confirmation password (repeat)';
 $lang['add']['previous'] = 'Previous page';
 $lang['add']['restart_sogo_hint'] = 'You will need to restart the SOGo service container after adding a new domain!';
+$lang['add']['goto_null'] = 'Silently discard mail';
 
 $lang['login']['title'] = 'Login';
 $lang['login']['administration'] = 'Administration';
