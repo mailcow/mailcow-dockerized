@@ -67,7 +67,7 @@ $(document).ready(function() {
       var req_empty = false;
       $(this).closest("form").find('select, textarea, input').each(function() {
         if ($(this).prop('required')) {
-          if (!$(this).val()) {
+          if (!$(this).val() && $(this).prop('disabled') === false) {
             req_empty = true;
             $(this).addClass('inputMissingAttr');
           } else {
@@ -126,7 +126,7 @@ $(document).ready(function() {
       var req_empty = false;
       $(this).closest("form").find('select, textarea, input').each(function() {
         if ($(this).prop('required')) {
-          if (!$(this).val()) {
+          if (!$(this).val() && $(this).prop('disabled') === false) {
             req_empty = true;
             $(this).addClass('inputMissingAttr');
           } else {
