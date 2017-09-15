@@ -17,9 +17,11 @@ RUN apt-get update && apt-get -y install \
 	libauthen-ntlm-perl \
 	libbz2-dev \
 	libcrypt-ssleay-perl \
+	libcurl4-openssl-dev \
 	libdbd-mysql-perl \
 	libdbi-perl \
 	libdigest-hmac-perl \
+	libexpat1-dev \
 	libfile-copy-recursive-perl \
 	libio-compress-perl \
 	libio-socket-inet6-perl \
@@ -53,7 +55,7 @@ RUN apt-get update && apt-get -y install \
 
 RUN curl https://www.dovecot.org/releases/2.2/dovecot-$DOVECOT_VERSION.tar.gz | tar xvz  \
 	&& cd dovecot-$DOVECOT_VERSION \
-	&& ./configure --with-mysql --with-lzma --with-lz4 --with-ssl=openssl --with-notify=inotify --with-storages=mdbox,sdbox,maildir,mbox,imapc,pop3c --with-bzlib --with-zlib \
+	&& ./configure --with-solr --with-mysql --with-lzma --with-lz4 --with-ssl=openssl --with-notify=inotify --with-storages=mdbox,sdbox,maildir,mbox,imapc,pop3c --with-bzlib --with-zlib \
 	&& make -j3 \
 	&& make install \
 	&& make clean \
