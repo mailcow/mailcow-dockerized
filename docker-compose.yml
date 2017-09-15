@@ -338,6 +338,24 @@ services:
         - /var/run/docker.sock:/var/run/docker.sock:ro
         - /lib/modules:/lib/modules:ro
 
+
+    solr:
+      build: ./data/Dockerfiles/solr
+      restart: always
+      volumes:
+        - solr-vol-1:/opt/solr/
+      dns:
+        - 172.22.1.254
+      dns_search: mailcow-network
+      networks:
+        mailcow-network:
+          ipv4_address: 172.22.1.248
+          aliases:
+            - solr
+      ports:
+        - "127.0.0.1:8983:8983"
+
+
 networks:
   mailcow-network:
     driver: bridge
@@ -356,3 +374,4 @@ volumes:
   rspamd-vol-1:
   postfix-vol-1:
   crypt-vol-1:
+  solr-vol-1:
