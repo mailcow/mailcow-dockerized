@@ -343,7 +343,7 @@ services:
       build: ./data/Dockerfiles/solr
       restart: always
       volumes:
-        - solr-vol-1:/opt/solr/
+        - solr-vol-1:/opt/solr/server/solr
       dns:
         - 172.22.1.254
       dns_search: mailcow-network
