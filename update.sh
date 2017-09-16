@@ -74,15 +74,15 @@ else
 	exit 1
 fi
 
-read -r -p "Are you sure you want to update mailcow: dockerized? [y/N] " response
+read -r -p "Are you sure you want to update mailcow: dockerized? All containers will be stoped. [y/N] " response
 if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 	echo "OK, exiting."
 	exit 0
 fi
 
-#echo -e "Stopping mailcow... "
-#sleep 2
-#docker-compose down
+echo -e "Stopping mailcow... "
+sleep 2
+docker-compose down
 
 # Silently fixing remote url from andryyy to mailcow
 git remote set-url origin https://github.com/mailcow/mailcow-dockerized
@@ -170,7 +170,7 @@ if [[ ! -z ${IMGS_TO_DELETE[*]} ]]; then
 	echo
 	echo "    docker rmi ${IMGS_TO_DELETE[*]}"
 	echo
-	read -r -p "Do you want to delete old image tags right now? [Y/n] " response
+	read -r -p "Do you want to delete old image tags right now? [y/N] " response
 	if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 		docker rmi ${IMGS_TO_DELETE[*]}
 	else
