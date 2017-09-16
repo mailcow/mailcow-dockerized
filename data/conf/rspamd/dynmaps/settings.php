@@ -191,8 +191,8 @@ while ($row = array_shift($rows)) {
 	$grouped_lists = $stmt->fetchAll(PDO::FETCH_COLUMN);
 	$value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
 ?>
-		request_header = {
-			"From" = "(<?=$value_sane;?>)";
+		header = {
+			"From" = "/(<?=$value_sane;?>)/i";
 		}
 <?php
 	if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
@@ -283,8 +283,8 @@ while ($row = array_shift($rows)) {
 	$grouped_lists = $stmt->fetchAll(PDO::FETCH_COLUMN);
 	$value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
 ?>
-		request_header = {
-			"From" = "(<?=$value_sane;?>)";
+		header = {
+			"From" = "/(<?=$value_sane;?>)/i";
 		}
 <?php
 	if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
