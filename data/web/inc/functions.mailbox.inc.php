@@ -324,6 +324,7 @@ function mailbox($_action, $_type, $_data = null) {
           $addresses  = array_map('trim', preg_split( "/( |,|;|\n)/", $_data['address']));
           $gotos      = array_map('trim', preg_split( "/( |,|;|\n)/", $_data['goto']));
           $active = intval($_data['active']);
+          $goto_null = intval($_data['goto_null']);
           if (empty($addresses[0])) {
             $_SESSION['return'] = array(
               'type' => 'danger',
@@ -331,42 +332,47 @@ function mailbox($_action, $_type, $_data = null) {
             );
             return false;
           }
-          if (empty($gotos[0])) {
+          if (empty($gotos[0]) && $goto_null == 0) {
             $_SESSION['return'] = array(
               'type' => 'danger',
               'msg' => sprintf($lang['danger']['goto_empty'])
             );
             return false;
           }
-          foreach ($gotos as &$goto) {
-            if (empty($goto)) {
-              continue;
-            }
-            $goto_domain = idn_to_ascii(substr(strstr($goto, '@'), 1));
-            $goto_local_part = strstr($goto, '@', true);
-            $goto = $goto_local_part.'@'.$goto_domain;
-            $stmt = $pdo->prepare("SELECT `username` FROM `mailbox`
-              WHERE `kind` REGEXP 'location|thing|group'
-                AND `username`= :goto");
-            $stmt->execute(array(':goto' => $goto));
-            $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-            if ($num_results != 0) {
-              $_SESSION['return'] = array(
-                'type' => 'danger',
-                'msg' => sprintf($lang['danger']['goto_invalid'])
-              );
-              return false;
-            }
-            if (!filter_var($goto, FILTER_VALIDATE_EMAIL) === true) {
-              $_SESSION['return'] = array(
-                'type' => 'danger',
-                'msg' => sprintf($lang['danger']['goto_invalid'])
-              );
-              return false;
-            }
+          if ($goto_null == "1") {
+            $goto = "null@localhost";
           }
-          $gotos = array_filter($gotos);
-          $goto = implode(",", $gotos);
+          else {
+            foreach ($gotos as &$goto) {
+              if (empty($goto)) {
+                continue;
+              }
+              $goto_domain = idn_to_ascii(substr(strstr($goto, '@'), 1));
+              $goto_local_part = strstr($goto, '@', true);
+              $goto = $goto_local_part.'@'.$goto_domain;
+              $stmt = $pdo->prepare("SELECT `username` FROM `mailbox`
+                WHERE `kind` REGEXP 'location|thing|group'
+                  AND `username`= :goto");
+              $stmt->execute(array(':goto' => $goto));
+              $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+              if ($num_results != 0) {
+                $_SESSION['return'] = array(
+                  'type' => 'danger',
+                  'msg' => sprintf($lang['danger']['goto_invalid'])
+                );
+                return false;
+              }
+              if (!filter_var($goto, FILTER_VALIDATE_EMAIL) === true) {
+                $_SESSION['return'] = array(
+                  'type' => 'danger',
+                  'msg' => sprintf($lang['danger']['goto_invalid'])
+                );
+                return false;
+              }
+            }
+            $gotos = array_filter($gotos);
+            $goto = implode(",", $gotos);
+          }
           foreach ($addresses as $address) {
             if (empty($address)) {
               continue;
@@ -1385,6 +1391,7 @@ function mailbox($_action, $_type, $_data = null) {
             $is_now = mailbox('get', 'alias_details', $address);
             if (!empty($is_now)) {
               $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
+              $goto_null = (isset($_data['goto_null'])) ? intval($_data['goto_null']) : $is_now['goto_null'];
               $goto   = (!empty($_data['goto'])) ? $_data['goto'] : $is_now['goto'];
             }
             else {
@@ -1394,30 +1401,33 @@ function mailbox($_action, $_type, $_data = null) {
               );
               return false;
             }
-            
-            $gotos = array_map('trim', preg_split( "/( |,|;|\n)/", $_data['goto']));
-            foreach ($gotos as &$goto) {
-              if (empty($goto)) {
-                continue;
-              }
-              if (!filter_var($goto, FILTER_VALIDATE_EMAIL)) {
-                $_SESSION['return'] = array(
-                  'type' => 'danger',
-                  'msg' =>sprintf($lang['danger']['goto_invalid'])
-                );
-                return false;
-              }
-              if ($goto == $address) {
-                $_SESSION['return'] = array(
-                  'type' => 'danger',
-                  'msg' => sprintf($lang['danger']['alias_goto_identical'])
-                );
-                return false;
-              }
+            if ($goto_null == "1") {
+              $goto = "null@localhost";
             }
-            $gotos = array_filter($gotos);
-            $goto = implode(",", $gotos);
-            
+            else {
+              $gotos = array_map('trim', preg_split( "/( |,|;|\n)/", $_data['goto']));
+              foreach ($gotos as &$goto) {
+                if (empty($goto)) {
+                  continue;
+                }
+                if (!filter_var($goto, FILTER_VALIDATE_EMAIL)) {
+                  $_SESSION['return'] = array(
+                    'type' => 'danger',
+                    'msg' =>sprintf($lang['danger']['goto_invalid'])
+                  );
+                  return false;
+                }
+                if ($goto == $address) {
+                  $_SESSION['return'] = array(
+                    'type' => 'danger',
+                    'msg' => sprintf($lang['danger']['alias_goto_identical'])
+                  );
+                  return false;
+                }
+              }
+              $gotos = array_filter($gotos);
+              $goto = implode(",", $gotos);
+            }
             $domain = idn_to_ascii(substr(strstr($address, '@'), 1));
             $local_part = strstr($address, '@', true);
             if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {

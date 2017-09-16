@@ -31,7 +31,10 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               <div class="form-group">
                 <label class="control-label col-sm-2" for="goto"><?=$lang['edit']['target_address'];?></label>
                 <div class="col-sm-10">
-                  <textarea class="form-control" autocapitalize="none" autocorrect="off" rows="10" id="goto" name="goto"><?=htmlspecialchars($result['goto']) ?></textarea>
+                  <textarea id="textarea_alias_goto" class="form-control" autocapitalize="none" autocorrect="off" rows="10" id="goto" name="goto" required><?= ($result['goto'] != "null@localhost") ? htmlspecialchars($result['goto']) : null; ?></textarea>
+                  <div class="checkbox">
+                    <label><input id="goto_null" type="checkbox" value="1" name="goto_null" <?= ($result['goto'] == "null@localhost") ? "checked" : null; ?>> <?=$lang['add']['goto_null'];?></label>
+                  </div>
                 </div>
               </div>
               <div class="form-group">
