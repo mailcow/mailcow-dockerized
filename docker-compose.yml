@@ -1,18 +1,14 @@
-version: '2.1'
+version: '2.3'
 services:
 
     unbound-mailcow:
       image: mailcow/unbound:1.0
       build: ./data/Dockerfiles/unbound
       command: /usr/sbin/unbound
+      init: true
       depends_on:
         mysql-mailcow:
           condition: service_healthy
-      healthcheck:
-        test: ["CMD", "nslookup", "mailcow.email", "127.0.0.1"]
-        interval: 30s
-        timeout: 3s
-        retries: 10
       volumes:
         - ./data/conf/unbound/unbound.conf:/etc/unbound/unbound.conf:ro
       restart: always
@@ -38,6 +34,7 @@ services:
         - MYSQL_DATABASE=${DBNAME}
         - MYSQL_USER=${DBUSER}
         - MYSQL_PASSWORD=${DBPASS}
+      init: true
       restart: always
       dns:
         - 172.22.1.254
@@ -50,9 +47,6 @@ services:
 
     redis-mailcow:
       image: redis:alpine
-      depends_on:
-        unbound-mailcow:
-          condition: service_healthy
       volumes:
         - redis-vol-1:/data/
       restart: always
@@ -66,11 +60,12 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.2
+      image: mailcow/clamd:1.3
       build: ./data/Dockerfiles/clamd
       restart: on-failure
       environment:
         - SKIP_CLAMD=${SKIP_CLAMD:-n}
+      init: true
       dns:
         - 172.22.1.254
       dns_search: mailcow-network
@@ -80,13 +75,9 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.6
+      image: mailcow/rspamd:1.7
       build: ./data/Dockerfiles/rspamd
-      command: > 
-        /bin/bash -c "
-        sleep 5;
-        /usr/bin/rspamd -f -u _rspamd -g _rspamd
-        "
+      command: "/usr/bin/rspamd -f -u _rspamd -g _rspamd"
       depends_on:
         - nginx-mailcow
       volumes:
@@ -97,6 +88,7 @@ services:
         - dkim-vol-1:/data/dkim
         - rspamd-vol-1:/var/lib/rspamd
       restart: always
+      init: true
       dns:
         - 172.22.1.254
       dns_search: mailcow-network
@@ -142,9 +134,6 @@ services:
     sogo-mailcow:
       image: mailcow/sogo:1.8
       build: ./data/Dockerfiles/sogo
-      depends_on:
-        unbound-mailcow:
-          condition: service_healthy
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -166,9 +155,6 @@ services:
     dovecot-mailcow:
       image: mailcow/dovecot:1.8
       build: ./data/Dockerfiles/dovecot
-      depends_on:
-        unbound-mailcow:
-          condition: service_healthy
       volumes:
         - ./data/conf/dovecot:/usr/local/etc/dovecot
         - ./data/assets/ssl:/etc/ssl/mail/:ro
@@ -204,9 +190,6 @@ services:
     postfix-mailcow:
       image: mailcow/postfix:1.4
       build: ./data/Dockerfiles/postfix
-      depends_on:
-        unbound-mailcow:
-          condition: service_healthy
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
         - ./data/assets/ssl:/etc/ssl/mail/:ro
@@ -232,9 +215,6 @@ services:
 
     memcached-mailcow:
       image: memcached:alpine
-      depends_on:
-        unbound-mailcow:
-          condition: service_healthy
       restart: always
       dns:
         - 172.22.1.254
@@ -249,15 +229,11 @@ services:
         - sogo-mailcow
         - php-fpm-mailcow
       image: nginx:mainline-alpine
-      healthcheck:
-        test: ["CMD", "ping", "php-fpm-mailcow", "-c", "5"]
-        interval: 5s
-        timeout: 5s
-        retries: 10
       command: /bin/sh -c "envsubst < /etc/nginx/conf.d/templates/listen_plain.template > /etc/nginx/conf.d/listen_plain.active &&
         envsubst < /etc/nginx/conf.d/templates/listen_ssl.template > /etc/nginx/conf.d/listen_ssl.active &&
         envsubst < /etc/nginx/conf.d/templates/server_name.template > /etc/nginx/conf.d/server_name.active &&
-        nginx -g 'daemon off;'"
+        until ping phpfpm -c1 > /dev/null; do sleep 1; done &&
+        exec nginx -g 'daemon off;'"
       environment:
         - HTTPS_PORT=${HTTPS_PORT:-443}
         - HTTP_PORT=${HTTP_PORT:-80}
@@ -283,8 +259,9 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.16
+      image: mailcow/acme:1.17
       build: ./data/Dockerfiles/acme
+      init: true
       dns:
         - 172.22.1.254
       dns_search: mailcow-network
@@ -319,6 +296,7 @@ services:
         - redis-mailcow
       restart: always
       privileged: true
+      init: true
       environment:
         - TZ=${TZ}
         - SKIP_FAIL2BAN=${SKIP_FAIL2BAN:-no}

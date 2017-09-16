@@ -60,10 +60,26 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
   / USER
   */
 
-	require_once("inc/header.inc.php");
-	$_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
-	$username = $_SESSION['mailcow_cc_username'];
+  require_once("inc/header.inc.php");
+  $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
+  $username = $_SESSION['mailcow_cc_username'];
   $mailboxdata = mailbox('get', 'mailbox_details', $username);
+
+  $clientconfigstr = "host=" . urlencode($mailcow_hostname) . "&email=" . urlencode($username) . "&name=" . urlencode($mailboxdata['name']) . "&port=" . urlencode($autodiscover_config['caldav']['port']);
+  if ($autodiscover_config['useEASforOutlook'] == 'yes')
+  $clientconfigstr .= "&outlookEAS=1";
+  if (file_exists('thunderbird-plugins/version.csv')) {
+    $fh = fopen('thunderbird-plugins/version.csv', 'r');
+    if ($fh) {
+      while (($row = fgetcsv($fh, 1000, ';')) !== FALSE) {
+        if ($row[0] == 'sogo-integrator@inverse.ca') {
+          $clientconfigstr .= "&integrator=" . urlencode($row[1]);
+        }
+      }
+      fclose($fh);
+    }
+  }
+
 ?>
 <div class="container">
 <h3><?=$lang['user']['user_settings'];?></h3>
@@ -74,6 +90,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
   <div class="row">
     <div class="col-sm-offset-3 col-sm-9">
       <p><a href="#pwChangeModal" data-toggle="modal">[<?=$lang['user']['change_password'];?>]</a></p>
+      <p><a target="_blank" href="https://mailcow.github.io/mailcow-dockerized-docs/client/#<?=$clientconfigstr;?>">[<?=$lang['user']['client_configuration'];?>]</a></p>
     </div>
   </div>
   <hr>
