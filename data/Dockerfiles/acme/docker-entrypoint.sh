@@ -50,7 +50,8 @@ if [[ -f ${ACME_BASE}/cert.pem ]] && [[ -f ${ACME_BASE}/key.pem ]]; then
 	ISSUER=$(openssl x509 -in ${ACME_BASE}/cert.pem -noout -issuer)
 	if [[ ${ISSUER} != *"Let's Encrypt"* && ${ISSUER} != *"mailcow"* ]]; then
 		echo "Found certificate with issuer other than mailcow snake-oil CA and Let's Encrypt, skipping ACME client..."
-		exit 0
+		sleep 3650d
+		exec $(readlink -f "$0")
 	else
 		declare -a SAN_ARRAY_NOW
 		SAN_NAMES=$(openssl x509 -noout -text -in ${ACME_BASE}/cert.pem | awk '/X509v3 Subject Alternative Name/ {getline;gsub(/ /, "", $0); print}' | tr -d "DNS:")
@@ -79,7 +80,8 @@ fi
 while true; do
 	if [[ "${SKIP_LETS_ENCRYPT}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 		echo "SKIP_LETS_ENCRYPT=y, skipping Let's Encrypt..."
-		exit 0
+		sleep 3650d
+		exec $(readlink -f "$0")
 	fi
 	if [[ "${SKIP_IP_CHECK}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 		SKIP_IP_CHECK=y
@@ -164,8 +166,10 @@ while true; do
   # Unique elements
 	ALL_VALIDATED=(${VALIDATED_MAILCOW_HOSTNAME} $(echo ${VALIDATED_CONFIG_DOMAINS[*]} ${ADDITIONAL_VALIDATED_SAN[*]} | xargs -n1 | sort -u | xargs))
 	if [[ -z ${ALL_VALIDATED[*]} ]]; then
-		echo "Cannot validate hostnames, skipping Let's Encrypt..."
-		exit 0
+		echo "Cannot validate hostnames, skipping Let's Encrypt for 1 hour."
+		echo "Use SKIP_LETS_ENCRYPT=y in mailcow.conf to skip it permanently."
+		sleep 1h
+		exec $(readlink -f "$0")
 	fi
 
 	ORPHANED_SAN=($(echo ${SAN_ARRAY_NOW[*]} ${ALL_VALIDATED[*]} | tr ' ' '\n' | sort | uniq -u ))
@@ -219,7 +223,10 @@ while true; do
 				TRIGGER_RESTART=1
 			fi
 			[[ ${TRIGGER_RESTART} == 1 ]] && restart_containers ${CONTAINERS_RESTART[*]}
-			exit 1;;
+			echo "Retrying in 30 minutes..."
+			sleep 30m
+			exec $(readlink -f "$0")
+            ;;
 		2) # no change
 			if ! diff ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem; then
 				echo "Certificate was not changed, but active certificate does not match the verified certificate, fixing and restarting containers..."
@@ -253,10 +260,11 @@ while true; do
 				TRIGGER_RESTART=1
 			fi
 			[[ ${TRIGGER_RESTART} == 1 ]] && restart_containers ${CONTAINERS_RESTART[*]}
-			exit 1;;
+			sleep 3650d
+			;;
 	esac
 
 	echo "ACME certificate validation done. Sleeping for another day."
-	sleep 86400
+	sleep 1d
 
 done
