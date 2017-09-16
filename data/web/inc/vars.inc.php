@@ -82,6 +82,9 @@ $DEFAULT_THEME = 'lumen';
 // Password complexity as regular expression
 $PASSWD_REGEP = '.{4,}';
 
+// Show DKIM private keys - false by default
+$SHOW_DKIM_PRIV_KEYS = false;
+
 // mailcow Apps - buttons on login screen
 $MAILCOW_APPS = array(
   array(

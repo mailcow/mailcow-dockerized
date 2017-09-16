@@ -4,7 +4,7 @@ $default_autodiscover_config = $autodiscover_config;
 if(file_exists('inc/vars.local.inc.php')) {
   include_once 'inc/vars.local.inc.php';
 }
-$configuration = array_merge($default_autodiscover_config, $autodiscover_config);
+$autodiscover_config = array_merge($default_autodiscover_config, $autodiscover_config);
 
 error_reporting(0);
 
@@ -33,15 +33,15 @@ header('Content-Type: application/xml');
       <displayShortName>mail server</displayShortName>
 
       <incomingServer type="imap">
-         <hostname><?=$configuration['imap']['server']; ?></hostname>
-         <port><?=$configuration['imap']['port']; ?></port>
+         <hostname><?=$autodiscover_config['imap']['server']; ?></hostname>
+         <port><?=$autodiscover_config['imap']['port']; ?></port>
          <socketType>SSL</socketType>
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
       </incomingServer>
       <incomingServer type="imap">
-         <hostname><?=$configuration['imap']['server']; ?></hostname>
-         <port><?=$configuration['imap']['tlsport']; ?></port>
+         <hostname><?=$autodiscover_config['imap']['server']; ?></hostname>
+         <port><?=$autodiscover_config['imap']['tlsport']; ?></port>
          <socketType>STARTTLS</socketType>
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
@@ -51,8 +51,8 @@ header('Content-Type: application/xml');
 $records = dns_get_record('_pop3s._tcp.' . $domain, DNS_SRV); // check if POP3 is announced as "not provided" via SRV record
 if (count($records) == 0 || $records[0]['target'] != '') { ?>
       <incomingServer type="pop3">
-         <hostname><?=$configuration['pop3']['server']; ?></hostname>
-         <port><?=$configuration['pop3']['port']; ?></port>
+         <hostname><?=$autodiscover_config['pop3']['server']; ?></hostname>
+         <port><?=$autodiscover_config['pop3']['port']; ?></port>
          <socketType>SSL</socketType>
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
@@ -62,8 +62,8 @@ if (count($records) == 0 || $records[0]['target'] != '') { ?>
 $records = dns_get_record('_pop3._tcp.' . $domain, DNS_SRV); // check if POP3 is announced as "not provided" via SRV record
 if (count($records) == 0 || $records[0]['target'] != '') { ?>
       <incomingServer type="pop3">
-         <hostname><?=$configuration['pop3']['server']; ?></hostname>
-         <port><?=$configuration['pop3']['tlsport']; ?></port>
+         <hostname><?=$autodiscover_config['pop3']['server']; ?></hostname>
+         <port><?=$autodiscover_config['pop3']['tlsport']; ?></port>
          <socketType>STARTTLS</socketType>
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
@@ -71,15 +71,15 @@ if (count($records) == 0 || $records[0]['target'] != '') { ?>
 <?php } ?>
 
       <outgoingServer type="smtp">
-         <hostname><?=$configuration['smtp']['server']; ?></hostname>
-         <port><?=$configuration['smtp']['port']; ?></port>
+         <hostname><?=$autodiscover_config['smtp']['server']; ?></hostname>
+         <port><?=$autodiscover_config['smtp']['port']; ?></port>
          <socketType>SSL</socketType>
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
       </outgoingServer>
       <outgoingServer type="smtp">
-         <hostname><?=$configuration['smtp']['server']; ?></hostname>
-         <port><?=$configuration['smtp']['tlsport']; ?></port>
+         <hostname><?=$autodiscover_config['smtp']['server']; ?></hostname>
+         <port><?=$autodiscover_config['smtp']['tlsport']; ?></port>
          <socketType>STARTTLS</socketType>
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>

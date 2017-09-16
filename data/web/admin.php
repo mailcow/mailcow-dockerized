@@ -157,6 +157,7 @@ $tfa_data = get_tfa();
               </div>
               <div class="col-xs-9">
                   <pre><?=$dkim['dkim_txt'];?></pre>
+                  <p data-toggle="modal" data-target="#showDKIMprivKey" id="dkim_priv" style="cursor:pointer;margin-top:-8pt" data-priv-key="<?=$dkim['privkey'];?>"><small>↪ Private key</small></p>
               </div>
             </div>
           <?php
@@ -186,6 +187,7 @@ $tfa_data = get_tfa();
                 </div>
                 <div class="col-xs-9">
                   <pre><?=$dkim['dkim_txt'];?></pre>
+                  <p data-toggle="modal" data-target="#showDKIMprivKey" id="dkim_priv" style="cursor:pointer;margin-top:-8pt" data-priv-key="<?=$dkim['privkey'];?>"><small>↪ Private key</small></p>
                 </div>
               </div>
             <?php
@@ -197,7 +199,7 @@ $tfa_data = get_tfa();
               <div class="col-xs-1 col-xs-offset-1">
                 <p><small>↳ Alias-Domain: <strong><?=htmlspecialchars($alias_domain);?></strong><br /></small><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
               </div>
-            <div class="col-xs-9"><pre>-</pre></div>
+              <div class="col-xs-9"><pre>-</pre></div>
             </div>
             <?php
             }
@@ -217,6 +219,7 @@ $tfa_data = get_tfa();
                 </div>
                 <div class="col-xs-9">
                   <pre><?=$dkim['dkim_txt'];?></pre>
+                  <p data-toggle="modal" data-target="#showDKIMprivKey" id="dkim_priv" style="cursor:pointer;margin-top:-8pt" data-priv-key="<?=$dkim['privkey'];?>"><small>↪ Private key</small></p>
                 </div>
             </div>
           <?php
