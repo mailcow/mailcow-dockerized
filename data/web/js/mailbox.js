@@ -30,6 +30,15 @@ $(document).ready(function() {
     $('#password2').val(random_passwd);
   });
 
+  $("#goto_null").click(function( event ) {
+    if ($("#goto_null").is(":checked")) {
+      $('#textarea_alias_goto').prop('disabled', true);
+    }
+    else {
+      $("#textarea_alias_goto").removeAttr('disabled');
+    }
+  });
+
   // Log modal
   $('#logModal').on('show.bs.modal', function(e) {
     var logText = $(e.relatedTarget).data('log-text');
@@ -282,6 +291,9 @@ jQuery(function($){
             item.chkbox = '<input type="checkbox" data-id="alias" name="multi_select" value="' + item.address + '" />';
             if (item.is_catch_all == 1) {
               item.address = '<div class="label label-default">Catch-All</div> ' + item.address;
+            }
+            if (item.goto == "null@localhost") {
+              item.goto = '⤷ <span style="font-size:12px" class="glyphicon glyphicon-trash" aria-hidden="true"></span>';
             }
             if (item.in_primary_domain !== "") {
               item.domain = "↳ " + item.domain + " (" + item.in_primary_domain + ")";
