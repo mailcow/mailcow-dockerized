@@ -149,10 +149,10 @@ $tfa_data = get_tfa();
             <div class="row">
               <div class="col-xs-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" /></div>
               <div class="col-xs-2">
-                <p>Domain: <strong><?=htmlspecialchars($domain);?></strong><br />
-                  <span class="label label-success"><?=$lang['admin']['dkim_key_valid'];?></span>
-                  <span class="label label-primary">Selector '<?=$dkim['dkim_selector'];?>'</span>
-                  <span class="label label-info"><?=$dkim['length'];?> bit</span>
+                <p>Domain: <strong><?=htmlspecialchars($domain);?></strong>
+                  <p><span class="label label-success"><?=$lang['admin']['dkim_key_valid'];?></span></p>
+                  <p><span class="label label-primary">Selector '<?=$dkim['dkim_selector'];?>'</span></p>
+                  <p><span class="label label-info"><?=$dkim['length'];?> bit</span></p>
                 </p>
               </div>
               <div class="col-xs-9">
@@ -179,10 +179,10 @@ $tfa_data = get_tfa();
               <div class="row">
               <div class="col-xs-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$alias_domain;?>" /></div>
                 <div class="col-xs-1 col-xs-offset-1">
-                  <p><small>↳ Alias-Domain: <strong><?=htmlspecialchars($alias_domain);?></strong><br /></small>
-                    <span class="label label-success"><?=$lang['admin']['dkim_key_valid'];?></span>
-                    <span class="label label-primary">Selector '<?=$dkim['dkim_selector'];?>'</span>
-                    <span class="label label-info"><?=$dkim['length'];?> bit</span>
+                  <p><small>↳ Alias-Domain: <strong><?=htmlspecialchars($alias_domain);?></strong></small>
+                    <p><span class="label label-success"><?=$lang['admin']['dkim_key_valid'];?></span></p>
+                    <p><span class="label label-primary">Selector '<?=$dkim['dkim_selector'];?>'</span></p>
+                    <p><span class="label label-info"><?=$dkim['length'];?> bit</span></p>
                 </p>
                 </div>
                 <div class="col-xs-9">
@@ -211,10 +211,10 @@ $tfa_data = get_tfa();
             <div class="row">
               <div class="col-xs-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$blind;?>" /></div>
               <div class="col-xs-2">
-                <p>Domain: <strong><?=htmlspecialchars($blind);?></strong><br />
-                  <span class="label label-warning"><?=$lang['admin']['dkim_key_unused'];?></span>
-                  <span class="label label-primary">Selector '<?=$dkim['dkim_selector'];?>'</span>
-                  <span class="label label-info"><?=$dkim['length'];?> bit</span>
+                <p>Domain: <strong><?=htmlspecialchars($blind);?></strong>
+                  <p><span class="label label-warning"><?=$lang['admin']['dkim_key_unused'];?></span></p>
+                  <p><span class="label label-primary">Selector '<?=$dkim['dkim_selector'];?>'</span></p>
+                  <p><span class="label label-info"><?=$dkim['length'];?> bit</span></p>
                 </p>
                 </div>
                 <div class="col-xs-9">
