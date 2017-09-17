@@ -349,7 +349,6 @@ services:
       dns_search: mailcow-network
       networks:
         mailcow-network:
-          ipv4_address: 172.22.1.248
           aliases:
             - solr
 
