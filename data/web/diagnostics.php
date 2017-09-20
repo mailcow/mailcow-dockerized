@@ -10,7 +10,7 @@ define('state_optional', "(optional)");
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admin") {
 require_once("inc/header.inc.php");
 
-$ch = curl_init('http://ipv4.mailcow.email');
+$ch = curl_init('http://ip4.mailcow.email');
 curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
 curl_setopt($ch, CURLOPT_VERBOSE, false);
 curl_setopt($ch, CURLOPT_HEADER, false);
@@ -19,7 +19,7 @@ curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
 $ip = curl_exec($ch);
 curl_close($ch);
 
-$ch = curl_init('http://ipv6.mailcow.email');
+$ch = curl_init('http://ip6.mailcow.email');
 curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V6);
 curl_setopt($ch, CURLOPT_VERBOSE, false);
 curl_setopt($ch, CURLOPT_HEADER, false);
