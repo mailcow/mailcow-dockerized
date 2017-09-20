@@ -15,6 +15,7 @@ import json
 yes_regex = re.compile(r'([yY][eE][sS]|[yY])+$')
 if re.search(yes_regex, os.getenv('SKIP_FAIL2BAN', 0)):
 	print "Skipping Fail2ban container..."
+	time.sleep(31536000)
 	raise SystemExit
 
 r = redis.StrictRedis(host='172.22.1.249', decode_responses=True, port=6379, db=0)
