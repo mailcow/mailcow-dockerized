@@ -8,7 +8,7 @@ PARENT_PID=$$
 BACKGROUND_TASKS=()
 
 # Skip watchdog?
-if [[ "${USE_WATCHDOG}" =~ ^([nN][oO])+$ ]]; then
+if [[ "${USE_WATCHDOG}" =~ ^([nN][oO]|[nN])+$ ]]; then
   echo "Skipping watchdog, sleeping..."
   sleep 365d
   exit 0
