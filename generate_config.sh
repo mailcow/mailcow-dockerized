@@ -96,6 +96,9 @@ SKIP_FAIL2BAN=n
 # To never run clamd-mailcow
 SKIP_CLAMD=n
 
+# Enable watchdog to restart unhealthy containers (experimental)
+USE_WATCHDOG=n
+
 EOF
 
 mkdir -p data/assets/ssl
