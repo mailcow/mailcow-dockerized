@@ -4,6 +4,7 @@ chown -R clamav:clamav /var/log/clamav/
 
 if [[ "${SKIP_CLAMD}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 	echo "SKIP_CLAMD=y, skipping ClamAV..."
+	sleep 365d
 	exit 0
 fi
 

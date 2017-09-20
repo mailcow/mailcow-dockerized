@@ -80,7 +80,7 @@ fi
 while true; do
 	if [[ "${SKIP_LETS_ENCRYPT}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 		echo "SKIP_LETS_ENCRYPT=y, skipping Let's Encrypt..."
-		sleep 3650d
+		sleep 365d
 		exec $(readlink -f "$0")
 	fi
 	if [[ "${SKIP_IP_CHECK}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
