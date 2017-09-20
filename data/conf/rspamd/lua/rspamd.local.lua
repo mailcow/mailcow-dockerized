@@ -108,3 +108,15 @@ rspamd_config:register_symbol({
   end,
   priority = 20
 })
+
+rspamd_config:register_symbol({
+  name = 'NO_LOG_STAT_MAILFLOW',
+  type = 'postfilter',
+  callback = function(task)
+    local sender = task:get_header('From')
+    if sender == 'monitoring-system@everycloudtech.us' then
+      task:set_flag('no_log')
+      task:set_flag('no_stat')
+    end
+  end
+})
