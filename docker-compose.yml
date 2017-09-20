@@ -38,7 +38,6 @@ services:
       restart: always
       dns:
         - 172.22.1.254
-      dns_search: mailcow-network
       networks:
         mailcow-network:
           ipv4_address: 172.22.1.250
@@ -52,7 +51,6 @@ services:
       restart: always
       dns:
         - 172.22.1.254
-      dns_search: mailcow-network
       networks:
         mailcow-network:
           ipv4_address: 172.22.1.249
@@ -68,7 +66,6 @@ services:
       init: true
       dns:
         - 172.22.1.254
-      dns_search: mailcow-network
       networks:
         mailcow-network:
           aliases:
@@ -91,7 +88,6 @@ services:
       init: true
       dns:
         - 172.22.1.254
-      dns_search: mailcow-network
       hostname: rspamd
       networks:
         mailcow-network:
@@ -125,7 +121,6 @@ services:
       restart: always
       dns:
         - 172.22.1.254
-      dns_search: mailcow-network
       networks:
         mailcow-network:
           aliases:
@@ -145,7 +140,6 @@ services:
       restart: always
       dns:
         - 172.22.1.254
-      dns_search: mailcow-network
       networks:
         mailcow-network:
           ipv4_address: 172.22.1.252
@@ -180,7 +174,6 @@ services:
           hard: 40000
       dns:
         - 172.22.1.254
-      dns_search: mailcow-network
       hostname: ${MAILCOW_HOSTNAME}
       networks:
         mailcow-network:
@@ -206,7 +199,6 @@ services:
       restart: always
       dns:
         - 172.22.1.254
-      dns_search: mailcow-network
       hostname: ${MAILCOW_HOSTNAME}
       networks:
         mailcow-network:
@@ -218,7 +210,6 @@ services:
       restart: always
       dns:
         - 172.22.1.254
-      dns_search: mailcow-network
       networks:
         mailcow-network:
           aliases:
@@ -249,7 +240,6 @@ services:
       restart: always
       dns:
         - 172.22.1.254
-      dns_search: mailcow-network
       networks:
         mailcow-network:
           ipv4_address: 172.22.1.251
@@ -264,7 +254,6 @@ services:
       init: true
       dns:
         - 172.22.1.254
-      dns_search: mailcow-network
       environment:
         - ADDITIONAL_SAN=${ADDITIONAL_SAN}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
@@ -278,7 +267,6 @@ services:
         - ./data/assets/ssl:/var/lib/acme/:rw
         - ./data/assets/ssl-example:/var/lib/ssl-example/:ro
         - /var/run/docker.sock:/var/run/docker.sock:ro
-      # do not restart the container too often. Things get worse when we hit let's encrypt's ratelimit.
       restart: always
       networks:
         mailcow-network:
@@ -299,11 +287,10 @@ services:
       init: true
       environment:
         - TZ=${TZ}
-        - SKIP_FAIL2BAN=${SKIP_FAIL2BAN:-no}
+        - SKIP_FAIL2BAN=${SKIP_FAIL2BAN:-n}
       network_mode: "host"
       dns:
         - 172.22.1.254
-      dns_search: mailcow-network
       volumes:
         - /lib/modules:/lib/modules:ro
 
@@ -313,6 +300,7 @@ services:
       init: false
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
+        - vmail-vol-1:/vmail:ro
       restart: always
       environment:
         - DBNAME=${DBNAME}
