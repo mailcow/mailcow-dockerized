@@ -4,7 +4,7 @@ for bin in curl docker-compose docker git awk sha1sum; do
 	if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
 done
 
-CONFIG_ARRAY=("SKIP_LETS_ENCRYPT" "SKIP_CLAMD" "SKIP_IP_CHECK" "SKIP_FAIL2BAN" "ADDITIONAL_SAN" "DOVEADM_PORT")
+CONFIG_ARRAY=("SKIP_LETS_ENCRYPT" "USE_WATCHDOG" "SKIP_CLAMD" "SKIP_IP_CHECK" "SKIP_FAIL2BAN" "ADDITIONAL_SAN" "DOVEADM_PORT")
 echo >> mailcow.conf
 for option in ${CONFIG_ARRAY[@]}; do
 	if [[ ${option} == "ADDITIONAL_SAN" ]]; then

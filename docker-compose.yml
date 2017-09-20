@@ -307,6 +307,23 @@ services:
       volumes:
         - /lib/modules:/lib/modules:ro
 
+    watchdog-mailcow:
+      image: mailcow/watchdog:1.0
+      build: ./data/Dockerfiles/watchdog
+      init: false
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock:ro
+      restart: always
+      environment:
+        - DBNAME=${DBNAME}
+        - DBUSER=${DBUSER}
+        - DBPASS=${DBPASS}
+        - USE_WATCHDOG=${USE_WATCHDOG:-n}
+      networks:
+        mailcow-network:
+          aliases:
+            - watchdog
+
     ipv6nat:
       image: robbertkl/ipv6nat
       restart: always
