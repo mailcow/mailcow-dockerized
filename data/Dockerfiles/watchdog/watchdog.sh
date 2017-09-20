@@ -7,13 +7,6 @@ PARENT_PID=$$
 # Prepare
 BACKGROUND_TASKS=()
 
-# Skip watchdog?
-if [[ "${USE_WATCHDOG}" =~ ^([nN][oO]|[nN])+$ ]]; then
-  echo "Skipping watchdog, sleeping..."
-  sleep 365d
-  exit 0
-fi
-
 # Checks pipe their corresponding container name in this pipe
 if [[ ! -p /tmp/com_pipe ]]; then
   mkfifo /tmp/com_pipe
@@ -41,17 +34,30 @@ progress() {
   echo "(${DIFF})"
 }
 
+get_container_ip() {
+  # ${1} is container
+  CONTAINER_ID=
+  CONTAINER_IP=
+  until [[ ${CONTAINER_IP} =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; do
+    sleep 1
+    CONTAINER_ID=$(curl --silent --unix-socket /var/run/docker.sock http/containers/json?all=1 | jq -rc "map(select(.Names[] | contains (\"${1}\"))) | .[] .Id")
+    CONTAINER_IP=$(curl --silent --unix-socket /var/run/docker.sock http/containers/${CONTAINER_ID}/json | jq -r '.NetworkSettings.Networks[].IPAddress')
+  done
+  echo ${CONTAINER_IP}
+}
+
 # Check functions
 nginx_checks() {
   err_count=0
   diff_c=0
+  HOST_IP=$(get_container_ip nginx-mailcow)
   THRESHOLD=16
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
     err_c_cur=${err_count}
-    /usr/lib/nagios/plugins/check_ping -H nginx-mailcow -w 2000,10% -c 4000,100% -p2 1>&2; err_count=$(( ${err_count} + $? ))
-    /usr/lib/nagios/plugins/check_http -H nginx-mailcow -u / -p 8081 1>&2; err_count=$(( ${err_count} + $? ))
+    /usr/lib/nagios/plugins/check_ping -4 -H ${HOST_IP} -w 2000,10% -c 4000,100% -p2 1>&2; err_count=$(( ${err_count} + $? ))
+    /usr/lib/nagios/plugins/check_http -4 -H ${HOST_IP} -u / -p 8081 1>&2; err_count=$(( ${err_count} + $? ))
     sleep $(( ( RANDOM % 30 )  + 10 ))
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
     [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
@@ -63,13 +69,14 @@ nginx_checks() {
 mysql_checks() {
   err_count=0
   diff_c=0
+  HOST_IP=$(get_container_ip mysql-mailcow)
   THRESHOLD=12
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
     err_c_cur=${err_count}
-    /usr/lib/nagios/plugins/check_mysql -H mysql-mailcow -P 3306 -u ${DBUSER} -p ${DBPASS} -d ${DBNAME} 1>&2; err_count=$(( ${err_count} + $? ))
-    /usr/lib/nagios/plugins/check_mysql_query -H mysql-mailcow -P 3306 -u ${DBUSER} -p ${DBPASS} -d ${DBNAME} -q "SELECT COUNT(*) FROM information_schema.tables" 1>&2; err_count=$(( ${err_count} + $? ))
+    /usr/lib/nagios/plugins/check_mysql -H ${HOST_IP} -P 3306 -u ${DBUSER} -p ${DBPASS} -d ${DBNAME} 1>&2; err_count=$(( ${err_count} + $? ))
+    /usr/lib/nagios/plugins/check_mysql_query -H ${HOST_IP} -P 3306 -u ${DBUSER} -p ${DBPASS} -d ${DBNAME} -q "SELECT COUNT(*) FROM information_schema.tables" 1>&2; err_count=$(( ${err_count} + $? ))
     sleep $(( ( RANDOM % 30 )  + 10 ))
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
     [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
@@ -81,15 +88,14 @@ mysql_checks() {
 sogo_checks() {
   err_count=0
   diff_c=0
+  HOST_IP=$(get_container_ip sogo-mailcow)
   THRESHOLD=20
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
     err_c_cur=${err_count}
-    /usr/lib/nagios/plugins/check_http -H sogo-mailcow -u /WebServerResources/css/theme-default.css -p 9192 -R md-default-theme 1>&2; err_count=$(( ${err_count} + $? ))
-    /usr/lib/nagios/plugins/check_http -H sogo-mailcow -u /SOGo.index/ -p 20000 -R "SOGo\sGroupware" 1>&2; err_count=$(( ${err_count} + $? ))
-    /usr/lib/nagios/plugins/check_http -H nginx-mailcow -u /SOGo/ -p 443 --ssl -R "Bad Gateway" --invert-regex 1>&2; err_count=$(( ${err_count} + $? ))
-    /usr/lib/nagios/plugins/check_http -H nginx-mailcow -u /SOGo/ -p 80 -R "Bad Gateway" --invert-regex 1>&2; err_count=$(( ${err_count} + $? ))
+    /usr/lib/nagios/plugins/check_http -4 -H ${HOST_IP} -u /WebServerResources/css/theme-default.css -p 9192 -R md-default-theme 1>&2; err_count=$(( ${err_count} + $? ))
+    /usr/lib/nagios/plugins/check_http -4 -H ${HOST_IP} -u /SOGo.index/ -p 20000 -R "SOGo\sGroupware" 1>&2; err_count=$(( ${err_count} + $? ))
     sleep $(( ( RANDOM % 30 )  + 10 ))
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
     [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
@@ -101,14 +107,15 @@ sogo_checks() {
 postfix_checks() {
   err_count=0
   diff_c=0
+  HOST_IP=$(get_container_ip postfix-mailcow)
   THRESHOLD=16
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
     err_c_cur=${err_count}
-    /usr/lib/nagios/plugins/check_smtp -H postfix-mailcow -p 25 1>&2; err_count=$(( ${err_count} + $? ))
-    /usr/lib/nagios/plugins/check_smtp -H postfix-mailcow -p 588 -f watchdog -C "RCPT TO:null@localhost" -C DATA -C . -R 250 1>&2; err_count=$(( ${err_count} + $? ))
-    /usr/lib/nagios/plugins/check_smtp -H postfix-mailcow -p 587 -S 1>&2; err_count=$(( ${err_count} + $? ))
+    /usr/lib/nagios/plugins/check_smtp -4 -H ${HOST_IP} -p 25 1>&2; err_count=$(( ${err_count} + $? ))
+    /usr/lib/nagios/plugins/check_smtp -4 -H ${HOST_IP} -p 588 -f watchdog -C "RCPT TO:null@localhost" -C DATA -C . -R 250 1>&2; err_count=$(( ${err_count} + $? ))
+    /usr/lib/nagios/plugins/check_smtp -4 -H ${HOST_IP} -p 587 -S 1>&2; err_count=$(( ${err_count} + $? ))
     sleep $(( ( RANDOM % 30 )  + 10 ))
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
     [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
@@ -120,16 +127,17 @@ postfix_checks() {
 dovecot_checks() {
   err_count=0
   diff_c=0
+  HOST_IP=$(get_container_ip dovecot-mailcow)
   THRESHOLD=24
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
     err_c_cur=${err_count}
-    /usr/lib/nagios/plugins/check_smtp -H dovecot-mailcow -p 24 -f "watchdog" -C "RCPT TO:<watchdog@invalid>" -L -R "User doesn't exist" 1>&2; err_count=$(( ${err_count} + $? ))
-    /usr/lib/nagios/plugins/check_imap -H dovecot-mailcow -p 993 -S -e "OK " 1>&2; err_count=$(( ${err_count} + $? ))
-    /usr/lib/nagios/plugins/check_imap -H dovecot-mailcow -p 143 -e "OK " 1>&2; err_count=$(( ${err_count} + $? ))
-    /usr/lib/nagios/plugins/check_tcp -H dovecot-mailcow -p 10001 -e "VERSION" 1>&2; err_count=$(( ${err_count} + $? ))
-    /usr/lib/nagios/plugins/check_tcp -H dovecot-mailcow -p 4190 -e "Dovecot ready" 1>&2; err_count=$(( ${err_count} + $? ))
+    /usr/lib/nagios/plugins/check_smtp -4 -H ${HOST_IP} -p 24 -f "watchdog" -C "RCPT TO:<watchdog@invalid>" -L -R "User doesn't exist" 1>&2; err_count=$(( ${err_count} + $? ))
+    /usr/lib/nagios/plugins/check_imap -4 -H ${HOST_IP} -p 993 -S -e "OK " 1>&2; err_count=$(( ${err_count} + $? ))
+    /usr/lib/nagios/plugins/check_imap -4 -H ${HOST_IP} -p 143 -e "OK " 1>&2; err_count=$(( ${err_count} + $? ))
+    /usr/lib/nagios/plugins/check_tcp -4 -H ${HOST_IP} -p 10001 -e "VERSION" 1>&2; err_count=$(( ${err_count} + $? ))
+    /usr/lib/nagios/plugins/check_tcp -4 -H ${HOST_IP} -p 4190 -e "Dovecot ready" 1>&2; err_count=$(( ${err_count} + $? ))
     sleep $(( ( RANDOM % 30 )  + 10 ))
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
     [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
@@ -141,14 +149,14 @@ dovecot_checks() {
 phpfpm_checks() {
   err_count=0
   diff_c=0
+  HOST_IP=$(get_container_ip php-fpm-mailcow)
   THRESHOLD=12
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
     err_c_cur=${err_count}
-    cgi-fcgi -bind -connect php-fpm-mailcow:9000 | grep PHP 1>&2; err_count=$(( ${err_count} + ($? * 2)))
-    /usr/lib/nagios/plugins/check_ping -H php-fpm-mailcow -w 2000,10% -c 4000,100% -p2 1>&2; err_count=$(( ${err_count} + $? ))
-    /usr/lib/nagios/plugins/check_http -H nginx-mailcow -u /settings.php -p 8081 -r "settings \{" 1>&2; err_count=$(( ${err_count} + ($? * 2)))
+    cgi-fcgi -bind -connect ${HOST_IP}:9000 | grep PHP 1>&2; err_count=$(( ${err_count} + ($? * 2)))
+    /usr/lib/nagios/plugins/check_ping -4 -H ${HOST_IP} -w 2000,10% -c 4000,100% -p2 1>&2; err_count=$(( ${err_count} + $? ))
     sleep $(( ( RANDOM % 30 )  + 10 ))
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
     [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
@@ -160,15 +168,15 @@ phpfpm_checks() {
 dns_checks() {
   err_count=0
   diff_c=0
+  HOST_IP=$(get_container_ip unbound-mailcow)
   THRESHOLD=28
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
     err_c_cur=${err_count}
     /usr/lib/nagios/plugins/check_dns -H google.com 1>&2; err_count=$(( ${err_count} + ($? * 2)))
-    /usr/lib/nagios/plugins/check_dns -s $(dig unbound-mailcow +short A) -H google.com 1>&2; err_count=$(( ${err_count} + ($? * 2)))
-    /usr/lib/nagios/plugins/check_dns -s $(dig unbound-mailcow +short AAAA) -H google.com 1>&2; err_count=$(( ${err_count} + ($? * 2)))
-    dig +dnssec org. @172.22.1.254 | grep -E 'flags:.+ad' 1>&2; err_count=$(( ${err_count} + ($? * 2)))
+    /usr/lib/nagios/plugins/check_dns -s ${HOST_IP} -H google.com 1>&2; err_count=$(( ${err_count} + ($? * 2)))
+    dig +dnssec org. @${HOST_IP} | grep -E 'flags:.+ad' 1>&2; err_count=$(( ${err_count} + ($? * 2)))
     sleep $(( ( RANDOM % 30 )  + 10 ))
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
     [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
@@ -242,7 +250,7 @@ BACKGROUND_TASKS+=($!)
 while true; do
   if ! dns_checks; then
     echo -e "\e[31m$(date) - Unbound hit error limit\e[0m"
-    echo unbound-mailcow > /tmp/com_pipe
+    #echo unbound-mailcow > /tmp/com_pipe
   fi
 done
 ) &
@@ -279,3 +287,4 @@ while true; do
     kill -USR1 ${BACKGROUND_TASKS[*]}
   fi
 done
+
