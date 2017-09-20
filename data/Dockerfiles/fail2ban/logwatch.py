@@ -14,7 +14,7 @@ import json
 
 yes_regex = re.compile(r'([yY][eE][sS]|[yY])+$')
 if re.search(yes_regex, os.getenv('SKIP_FAIL2BAN', 0)):
-	print "Skipping Fail2ban container..."
+	print "SKIP_FAIL2BAN=y, Skipping Fail2ban container..."
 	time.sleep(31536000)
 	raise SystemExit
 
