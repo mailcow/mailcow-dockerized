@@ -60,9 +60,9 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.3
+      image: mailcow/clamd:1.4
       build: ./data/Dockerfiles/clamd
-      restart: on-failure
+      restart: always
       environment:
         - SKIP_CLAMD=${SKIP_CLAMD:-n}
       init: true
@@ -259,7 +259,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.17
+      image: mailcow/acme:1.18
       build: ./data/Dockerfiles/acme
       init: true
       dns:
@@ -279,14 +279,14 @@ services:
         - ./data/assets/ssl-example:/var/lib/ssl-example/:ro
         - /var/run/docker.sock:/var/run/docker.sock:ro
       # do not restart the container too often. Things get worse when we hit let's encrypt's ratelimit.
-      restart: on-failure:1
+      restart: always
       networks:
         mailcow-network:
           aliases:
             - acme
 
     fail2ban-mailcow:
-      image: mailcow/fail2ban:1.6
+      image: mailcow/fail2ban:1.7
       build: ./data/Dockerfiles/fail2ban
       depends_on:
         - dovecot-mailcow
