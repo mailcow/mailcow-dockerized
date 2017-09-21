@@ -11,8 +11,7 @@ data/web/inc/vars.local.inc.php
 data/assets/ssl/*
 .vscode/*
 data/web/.well-known/acme-challenge
-data/conf/rspamd/local.d/*
-data/conf/rspamd/override.d/*
+data/conf/rspamd/override.d/*.inc
 !data/conf/nginx/dynmaps.conf
 !data/conf/nginx/site.conf
 data/conf/nginx/*.conf
