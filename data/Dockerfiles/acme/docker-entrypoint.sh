@@ -1,4 +1,6 @@
 #!/bin/bash
+set -o pipefail
+exec 5>&1
 
 ACME_BASE=/var/lib/acme
 SSL_EXAMPLE=/var/lib/ssl-example
@@ -66,6 +68,7 @@ else
 			echo "Restoring previous acme certificate and restarting script..."
 			cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
 			cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
+      # Restarting with env var set to trigger a restart,
 			exec env TRIGGER_RESTART=1 $(readlink -f "$0")
 		fi
 	ISSUER="mailcow"
@@ -183,12 +186,12 @@ while true; do
 		cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/acme/private/${DATE}.bak/ # Keep key for TLSA 3 1 1 records
 	fi
 
-	acme-client \
-		-v -e -b -N -n \
-		-f ${ACME_BASE}/acme/private/account.key \
-		-k ${ACME_BASE}/acme/private/privkey.pem \
-		-c ${ACME_BASE}/acme \
-		${ALL_VALIDATED[*]}
+  ACME_RESPONSE=$(acme-client \
+    -v -e -b -N -n \
+    -f ${ACME_BASE}/acme/private/account.key \
+    -k ${ACME_BASE}/acme/private/privkey.pem \
+    -c ${ACME_BASE}/acme \
+    ${ALL_VALIDATED[*]} 2>&1 | tee /dev/fd/5)
 
 	case "$?" in
 		0) # new certs
@@ -205,12 +208,18 @@ while true; do
 			restart_containers ${CONTAINERS_RESTART[*]}
 			;;
 		1) # failure
-			if [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]]; then
+      if [[ $ACME_RESPONSE =~ "No registration exists" ]]; then
+        echo "Registration keys are invalid, deleting old keys and restarting..."
+        rm ${ACME_BASE}/acme/private/account.key
+        rm ${ACME_BASE}/acme/private/privkey.pem
+        exec $(readlink -f "$0")
+      fi
+      if [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]]; then
 				echo "Error requesting certificate, restoring previous certificate from backup and restarting containers...."
 				cp ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ${ACME_BASE}/cert.pem
 				cp ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ${ACME_BASE}/key.pem
 				TRIGGER_RESTART=1
-            elif [[ -f ${ACME_BASE}/acme/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/privkey.pem ]]; then
+      elif [[ -f ${ACME_BASE}/acme/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/privkey.pem ]]; then
 				echo "Error requesting certificate, restoring from previous acme request and restarting containers..."
 				cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
 				cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
@@ -226,20 +235,21 @@ while true; do
 			echo "Retrying in 30 minutes..."
 			sleep 30m
 			exec $(readlink -f "$0")
-            ;;
+      ;;
 		2) # no change
 			if ! diff ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem; then
 				echo "Certificate was not changed, but active certificate does not match the verified certificate, fixing and restarting containers..."
 				cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
 				cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
-				restart_containers ${CONTAINERS_RESTART[*]}
+				TRIGGER_RESTART=1
 			fi
 			if ! verify_hash_match ${ACME_BASE}/cert.pem ${ACME_BASE}/key.pem; then
 				echo "Certificate was not changed, but hashes do not match, restoring from previous acme request and restarting containers..."
 				cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
 				cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
-				restart_containers ${CONTAINERS_RESTART[*]}
+				TRIGGER_RESTART=1
 			fi
+			[[ ${TRIGGER_RESTART} == 1 ]] && restart_containers ${CONTAINERS_RESTART[*]}
 			;;
 		*) # unspecified
 			if [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]]; then
@@ -260,7 +270,9 @@ while true; do
 				TRIGGER_RESTART=1
 			fi
 			[[ ${TRIGGER_RESTART} == 1 ]] && restart_containers ${CONTAINERS_RESTART[*]}
-			sleep 3650d
+			echo "Retrying in 30 minutes..."
+			sleep 30m
+			exec $(readlink -f "$0")
 			;;
 	esac
 
