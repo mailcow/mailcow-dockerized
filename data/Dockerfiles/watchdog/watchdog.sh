@@ -109,9 +109,8 @@ postfix_checks() {
   while [ ${err_count} -lt ${THRESHOLD} ]; do
   host_ip=$(get_container_ip postfix-mailcow)
     err_c_cur=${err_count}
-    /usr/lib/nagios/plugins/check_smtp -4 -H ${host_ip} -p 25 1>&2; err_count=$(( ${err_count} + $? ))
-    /usr/lib/nagios/plugins/check_smtp -4 -H ${host_ip} -p 588 -f watchdog -C "RCPT TO:null@localhost" -C DATA -C . -R 250 1>&2; err_count=$(( ${err_count} + $? ))
-    /usr/lib/nagios/plugins/check_smtp -4 -H ${host_ip} -p 587 -S 1>&2; err_count=$(( ${err_count} + $? ))
+    /usr/lib/nagios/plugins/check_smtp -4 -H ${host_ip} -p 589 -f watchdog -C "RCPT TO:null@localhost" -C DATA -C . -R 250 1>&2; err_count=$(( ${err_count} + $? ))
+    /usr/lib/nagios/plugins/check_smtp -4 -H ${host_ip} -p 589 -S 1>&2; err_count=$(( ${err_count} + $? ))
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
     [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
     progress "Postfix" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
@@ -156,6 +155,36 @@ phpfpm_checks() {
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
     [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
     progress "PHP-FPM" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
+    sleep $(( ( RANDOM % 30 )  + 10 ))
+  done
+  return 1
+}
+
+rspamd_checks() {
+  err_count=0
+  diff_c=0
+  THRESHOLD=10
+  # Reduce error count by 2 after restarting an unhealthy container
+  trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
+  while [ ${err_count} -lt ${THRESHOLD} ]; do
+    host_ip=$(get_container_ip rspamd-mailcow)
+    err_c_cur=${err_count}
+    SCORE=$(curl --silent ${host_ip}:11333/scan -d '
+To: null@localhost
+From: watchdog@localhost
+
+Empty
+' | jq -rc .required_score)
+    if [[ ${SCORE} != "9999" ]]; then
+      echo "Rspamd settings check failed" 1>&2
+      err_count=$(( ${err_count} + 1))
+    else
+      echo "Rspamd settings check succeeded" 1>&2
+    fi
+    /usr/lib/nagios/plugins/check_ping -4 -H ${host_ip} -w 2000,10% -c 4000,100% -p2 1>&2; err_count=$(( ${err_count} + $? ))
+    [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
+    [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
+    progress "Rspamd" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
     sleep $(( ( RANDOM % 30 )  + 10 ))
   done
   return 1
@@ -247,6 +276,16 @@ while true; do
   if ! dns_checks; then
     echo -e "\e[31m$(date) - Unbound hit error limit\e[0m"
     #echo unbound-mailcow > /tmp/com_pipe
+  fi
+done
+) &
+BACKGROUND_TASKS+=($!)
+
+(
+while true; do
+  if ! rspamd_checks; then
+    echo -e "\e[31m$(date) - Rspamd hit error limit\e[0m"
+    echo rspamd-mailcow > /tmp/com_pipe
   fi
 done
 ) &
