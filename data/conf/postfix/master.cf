@@ -44,6 +44,8 @@ anvil      unix  -       -       n       -       1       anvil
 scache     unix  -       -       n       -       1       scache
 maildrop   unix  -       n       n       -       -       pipe flags=DRhu
     user=vmail argv=/usr/bin/maildrop -d ${recipient}
+
+# start zeyple
 zeyple    unix  -       n       n       -       -       pipe
   user=zeyple argv=/usr/local/bin/zeyple.py ${recipient}
 127.0.0.1:10026 inet  n       -       n       -       10      smtpd
@@ -55,5 +57,21 @@ zeyple    unix  -       n       n       -       -       pipe
   -o smtpd_recipient_restrictions=permit_mynetworks,reject
   -o mynetworks=127.0.0.0/8
   -o smtpd_authorized_xforward_hosts=127.0.0.0/8
+# end zeyple
 
+# start whitelist_fwd
 127.0.0.1:10027 inet n n n - 0 spawn user=nobody argv=/usr/local/bin/whitelist_forwardinghosts.sh
+# end whitelist_fwd
+
+# start watchdog-specific
+589 inet n      -       n       -       -       smtpd
+  -o smtpd_client_restrictions=permit_mynetworks,reject
+  -o syslog_name=watchdog
+  -o smtpd_milters=
+  -o non_smtpd_milters=
+  -o queue_service_name=watchdog_qmgr
+  -o local_transport=discard
+  -o default_transport=discard
+watchdog_qmgr fifo  n       -       n       300     1       qmgr
+  -o syslog_facility=local0
+# end watchdog-specific
