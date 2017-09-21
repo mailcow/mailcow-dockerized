@@ -16,14 +16,18 @@ restart_containers(){
 	done
 }
 
+log_f() {
+  echo "$(date) - ${1}"
+}
+
 verify_hash_match(){
 	CERT_HASH=$(openssl x509 -noout -modulus -in "${1}" | openssl md5)
 	KEY_HASH=$(openssl rsa -noout -modulus -in "${2}" | openssl md5)
 	if [[ ${CERT_HASH} != ${KEY_HASH} ]]; then
-		echo "Certificate and key hashes do not match!"
+		log_f "Certificate and key hashes do not match!"
 		return 1
 	else
-		echo "Verified hashes."
+		log_f "Verified hashes."
 		return 0
 	fi
 }
@@ -33,7 +37,7 @@ get_ipv4(){
   local IPV4_SRCS=
   local TRY=
   IPV4_SRCS[0]="api.ipify.org"
-  IPV4_SRCS[1]="ifconfig.co"
+  IPV4_SRCS[1]="ifconfig.co"-
   IPV4_SRCS[2]="icanhazip.com"
   IPV4_SRCS[3]="v4.ident.me"
   IPV4_SRCS[4]="ipecho.net/plain"
@@ -51,7 +55,7 @@ get_ipv4(){
 if [[ -f ${ACME_BASE}/cert.pem ]] && [[ -f ${ACME_BASE}/key.pem ]]; then
 	ISSUER=$(openssl x509 -in ${ACME_BASE}/cert.pem -noout -issuer)
 	if [[ ${ISSUER} != *"Let's Encrypt"* && ${ISSUER} != *"mailcow"* ]]; then
-		echo "Found certificate with issuer other than mailcow snake-oil CA and Let's Encrypt, skipping ACME client..."
+		log_f "Found certificate with issuer other than mailcow snake-oil CA and Let's Encrypt, skipping ACME client..."
 		sleep 3650d
 		exec $(readlink -f "$0")
 	else
@@ -59,21 +63,21 @@ if [[ -f ${ACME_BASE}/cert.pem ]] && [[ -f ${ACME_BASE}/key.pem ]]; then
 		SAN_NAMES=$(openssl x509 -noout -text -in ${ACME_BASE}/cert.pem | awk '/X509v3 Subject Alternative Name/ {getline;gsub(/ /, "", $0); print}' | tr -d "DNS:")
 		if [[ ! -z ${SAN_NAMES} ]]; then
 			IFS=',' read -a SAN_ARRAY_NOW <<< ${SAN_NAMES}
-			echo "Found Let's Encrypt or mailcow snake-oil CA issued certificate with SANs: ${SAN_ARRAY_NOW[*]}"
+			log_f "Found Let's Encrypt or mailcow snake-oil CA issued certificate with SANs: ${SAN_ARRAY_NOW[*]}"
 		fi
 	fi
 else
 	if [[ -f ${ACME_BASE}/acme/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/privkey.pem ]]; then
 		if verify_hash_match ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/acme/private/privkey.pem; then
-			echo "Restoring previous acme certificate and restarting script..."
+			log_f "Restoring previous acme certificate and restarting script..."
 			cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
 			cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
-      # Restarting with env var set to trigger a restart,
+			# Restarting with env var set to trigger a restart,
 			exec env TRIGGER_RESTART=1 $(readlink -f "$0")
 		fi
 	ISSUER="mailcow"
 	else
-		echo "Restoring mailcow snake-oil certificates and restarting script..."
+		log_f "Restoring mailcow snake-oil certificates and restarting script..."
 		cp ${SSL_EXAMPLE}/cert.pem ${ACME_BASE}/cert.pem
 		cp ${SSL_EXAMPLE}/key.pem ${ACME_BASE}/key.pem
 		exec env TRIGGER_RESTART=1 $(readlink -f "$0")
@@ -82,7 +86,7 @@ fi
 
 while true; do
 	if [[ "${SKIP_LETS_ENCRYPT}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-		echo "SKIP_LETS_ENCRYPT=y, skipping Let's Encrypt..."
+		log_f "SKIP_LETS_ENCRYPT=y, skipping Let's Encrypt..."
 		sleep 365d
 		exec $(readlink -f "$0")
 	fi
@@ -110,42 +114,42 @@ while true; do
 	for SQL_DOMAIN in "${SQL_DOMAIN_ARR[@]}"; do
 		A_CONFIG=$(dig A autoconfig.${SQL_DOMAIN} +short | tail -n 1)
 		if [[ ! -z ${A_CONFIG} ]]; then
-			echo "Found A record for autoconfig.${SQL_DOMAIN}: ${A_CONFIG}"
+			log_f "Found A record for autoconfig.${SQL_DOMAIN}: ${A_CONFIG}"
 			if [[ ${IPV4:-ERR} == ${A_CONFIG} ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
-				echo "Confirmed A record autoconfig.${SQL_DOMAIN}"
+				log_f "Confirmed A record autoconfig.${SQL_DOMAIN}"
 				VALIDATED_CONFIG_DOMAINS+=("autoconfig.${SQL_DOMAIN}")
 			else
-				echo "Cannot match your IP ${IPV4} against hostname autoconfig.${SQL_DOMAIN} (${A_CONFIG})"
+				log_f "Cannot match your IP ${IPV4} against hostname autoconfig.${SQL_DOMAIN} (${A_CONFIG})"
 			fi
 		else
-			echo "No A record for autoconfig.${SQL_DOMAIN} found"
+			log_f "No A record for autoconfig.${SQL_DOMAIN} found"
 		fi
 
         A_DISCOVER=$(dig A autodiscover.${SQL_DOMAIN} +short | tail -n 1)
 		if [[ ! -z ${A_DISCOVER} ]]; then
-			echo "Found A record for autodiscover.${SQL_DOMAIN}: ${A_DISCOVER}"
+			log_f "Found A record for autodiscover.${SQL_DOMAIN}: ${A_DISCOVER}"
 			if [[ ${IPV4:-ERR} == ${A_DISCOVER} ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
-				echo "Confirmed A record autodiscover.${SQL_DOMAIN}"
+				log_f "Confirmed A record autodiscover.${SQL_DOMAIN}"
 				VALIDATED_CONFIG_DOMAINS+=("autodiscover.${SQL_DOMAIN}")
 			else
-				echo "Cannot match your IP ${IPV4} against hostname autodiscover.${SQL_DOMAIN} (${A_DISCOVER})"
+				log_f "Cannot match your IP ${IPV4} against hostname autodiscover.${SQL_DOMAIN} (${A_DISCOVER})"
 			fi
 		else
-			echo "No A record for autodiscover.${SQL_DOMAIN} found"
+			log_f "No A record for autodiscover.${SQL_DOMAIN} found"
 		fi
 	done
 
 	A_MAILCOW_HOSTNAME=$(dig A ${MAILCOW_HOSTNAME} +short | tail -n 1)
 	if [[ ! -z ${A_MAILCOW_HOSTNAME} ]]; then
-		echo "Found A record for ${MAILCOW_HOSTNAME}: ${A_MAILCOW_HOSTNAME}"
+		log_f "Found A record for ${MAILCOW_HOSTNAME}: ${A_MAILCOW_HOSTNAME}"
 		if [[ ${IPV4:-ERR} == ${A_MAILCOW_HOSTNAME} ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
-			echo "Confirmed A record ${MAILCOW_HOSTNAME}"
+			log_f "Confirmed A record ${MAILCOW_HOSTNAME}"
 			VALIDATED_MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
 		else
-			echo "Cannot match your IP ${IPV4} against hostname ${MAILCOW_HOSTNAME} (${A_MAILCOW_HOSTNAME}) "
+			log_f "Cannot match your IP ${IPV4} against hostname ${MAILCOW_HOSTNAME} (${A_MAILCOW_HOSTNAME}) "
 		fi
 	else
-		echo "No A record for ${MAILCOW_HOSTNAME} found"
+		log_f "No A record for ${MAILCOW_HOSTNAME} found"
 	fi
 
 	for SAN in "${ADDITIONAL_SAN_ARR[@]}"; do
@@ -154,23 +158,23 @@ while true; do
 		fi
 		A_SAN=$(dig A ${SAN} +short | tail -n 1)
 		if [[ ! -z ${A_SAN} ]]; then
-			echo "Found A record for ${SAN}: ${A_SAN}"
+			log_f "Found A record for ${SAN}: ${A_SAN}"
 			if [[ ${IPV4:-ERR} == ${A_SAN} ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
-				echo "Confirmed A record ${SAN}"
+				log_f "Confirmed A record ${SAN}"
 				ADDITIONAL_VALIDATED_SAN+=("${SAN}")
 			else
-				echo "Cannot match your IP against hostname ${SAN}"
+				log_f "Cannot match your IP against hostname ${SAN}"
 			fi
 		else
-			echo "No A record for ${SAN} found"
+			log_f "No A record for ${SAN} found"
 		fi
 	done
 
   # Unique elements
 	ALL_VALIDATED=(${VALIDATED_MAILCOW_HOSTNAME} $(echo ${VALIDATED_CONFIG_DOMAINS[*]} ${ADDITIONAL_VALIDATED_SAN[*]} | xargs -n1 | sort -u | xargs))
 	if [[ -z ${ALL_VALIDATED[*]} ]]; then
-		echo "Cannot validate hostnames, skipping Let's Encrypt for 1 hour."
-		echo "Use SKIP_LETS_ENCRYPT=y in mailcow.conf to skip it permanently."
+		log_f "Cannot validate hostnames, skipping Let's Encrypt for 1 hour."
+		log_f "Use SKIP_LETS_ENCRYPT=y in mailcow.conf to skip it permanently."
 		sleep 1h
 		exec $(readlink -f "$0")
 	fi
@@ -178,7 +182,7 @@ while true; do
 	ORPHANED_SAN=($(echo ${SAN_ARRAY_NOW[*]} ${ALL_VALIDATED[*]} | tr ' ' '\n' | sort | uniq -u ))
 	if [[ ! -z ${ORPHANED_SAN[*]} ]] && [[ ${ISSUER} != *"mailcow"* ]]; then
 		DATE=$(date +%Y-%m-%d_%H_%M_%S)
-		echo "Found orphaned SAN ${ORPHANED_SAN[*]} in certificate, moving old files to ${ACME_BASE}/acme/private/${DATE}.bak/, keeping key file..."
+		log_f "Found orphaned SAN ${ORPHANED_SAN[*]} in certificate, moving old files to ${ACME_BASE}/acme/private/${DATE}.bak/, keeping key file..."
 		mkdir -p ${ACME_BASE}/acme/private/${DATE}.bak/
 		[[ -f ${ACME_BASE}/acme/private/account.key ]] && mv ${ACME_BASE}/acme/private/account.key ${ACME_BASE}/acme/private/${DATE}.bak/
 		[[ -f ${ACME_BASE}/acme/fullchain.pem ]] && mv ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/acme/private/${DATE}.bak/
@@ -186,12 +190,12 @@ while true; do
 		cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/acme/private/${DATE}.bak/ # Keep key for TLSA 3 1 1 records
 	fi
 
-  ACME_RESPONSE=$(acme-client \
-    -v -e -b -N -n \
-    -f ${ACME_BASE}/acme/private/account.key \
-    -k ${ACME_BASE}/acme/private/privkey.pem \
-    -c ${ACME_BASE}/acme \
-    ${ALL_VALIDATED[*]} 2>&1 | tee /dev/fd/5)
+	ACME_RESPONSE=$(acme-client \
+		-v -e -b -N -n \
+		-f ${ACME_BASE}/acme/private/account.key \
+		-k ${ACME_BASE}/acme/private/privkey.pem \
+		-c ${ACME_BASE}/acme \
+		${ALL_VALIDATED[*]} 2>&1 | tee /dev/fd/5)
 
 	case "$?" in
 		0) # new certs
@@ -201,50 +205,50 @@ while true; do
 
 			# restart docker containers
 			if ! verify_hash_match ${ACME_BASE}/cert.pem ${ACME_BASE}/key.pem; then
-				echo "Certificate was successfully requested, but key and certificate have non-matching hashes, restoring mailcow snake-oil and restarting containers..."
+				log_f "Certificate was successfully requested, but key and certificate have non-matching hashes, restoring mailcow snake-oil and restarting containers..."
 				cp ${SSL_EXAMPLE}/cert.pem ${ACME_BASE}/cert.pem
 				cp ${SSL_EXAMPLE}/key.pem ${ACME_BASE}/key.pem
 			fi
 			restart_containers ${CONTAINERS_RESTART[*]}
 			;;
 		1) # failure
-      if [[ $ACME_RESPONSE =~ "No registration exists" ]]; then
-        echo "Registration keys are invalid, deleting old keys and restarting..."
-        rm ${ACME_BASE}/acme/private/account.key
-        rm ${ACME_BASE}/acme/private/privkey.pem
-        exec $(readlink -f "$0")
-      fi
-      if [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]]; then
-				echo "Error requesting certificate, restoring previous certificate from backup and restarting containers...."
+			if [[ $ACME_RESPONSE =~ "No registration exists" ]]; then
+				log_f "Registration keys are invalid, deleting old keys and restarting..."
+				rm ${ACME_BASE}/acme/private/account.key
+				rm ${ACME_BASE}/acme/private/privkey.pem
+				exec $(readlink -f "$0")
+			fi
+			if [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]]; then
+				log_f "Error requesting certificate, restoring previous certificate from backup and restarting containers...."
 				cp ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ${ACME_BASE}/cert.pem
 				cp ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ${ACME_BASE}/key.pem
 				TRIGGER_RESTART=1
-      elif [[ -f ${ACME_BASE}/acme/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/privkey.pem ]]; then
-				echo "Error requesting certificate, restoring from previous acme request and restarting containers..."
+			elif [[ -f ${ACME_BASE}/acme/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/privkey.pem ]]; then
+				log_f "Error requesting certificate, restoring from previous acme request and restarting containers..."
 				cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
 				cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
 				TRIGGER_RESTART=1
 			fi
 			if ! verify_hash_match ${ACME_BASE}/cert.pem ${ACME_BASE}/key.pem; then
-				echo "Error verifying certificates, restoring mailcow snake-oil and restarting containers..."
+				log_f "Error verifying certificates, restoring mailcow snake-oil and restarting containers..."
 				cp ${SSL_EXAMPLE}/cert.pem ${ACME_BASE}/cert.pem
 				cp ${SSL_EXAMPLE}/key.pem ${ACME_BASE}/key.pem
 				TRIGGER_RESTART=1
 			fi
 			[[ ${TRIGGER_RESTART} == 1 ]] && restart_containers ${CONTAINERS_RESTART[*]}
-			echo "Retrying in 30 minutes..."
+			log_f "Retrying in 30 minutes..."
 			sleep 30m
 			exec $(readlink -f "$0")
-      ;;
+			;;
 		2) # no change
 			if ! diff ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem; then
-				echo "Certificate was not changed, but active certificate does not match the verified certificate, fixing and restarting containers..."
+				log_f "Certificate was not changed, but active certificate does not match the verified certificate, fixing and restarting containers..."
 				cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
 				cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
 				TRIGGER_RESTART=1
 			fi
 			if ! verify_hash_match ${ACME_BASE}/cert.pem ${ACME_BASE}/key.pem; then
-				echo "Certificate was not changed, but hashes do not match, restoring from previous acme request and restarting containers..."
+				log_f "Certificate was not changed, but hashes do not match, restoring from previous acme request and restarting containers..."
 				cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
 				cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
 				TRIGGER_RESTART=1
@@ -253,30 +257,30 @@ while true; do
 			;;
 		*) # unspecified
 			if [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]]; then
-				echo "Error requesting certificate, restoring previous certificate from backup and restarting containers...."
+				log_f "Error requesting certificate, restoring previous certificate from backup and restarting containers...."
 				cp ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ${ACME_BASE}/cert.pem
 				cp ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ${ACME_BASE}/key.pem
 				TRIGGER_RESTART=1
             elif [[ -f ${ACME_BASE}/acme/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/privkey.pem ]]; then
-				echo "Error requesting certificate, restoring from previous acme request and restarting containers..."
+				log_f "Error requesting certificate, restoring from previous acme request and restarting containers..."
 				cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
 				cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
 				TRIGGER_RESTART=1
 			fi
 			if ! verify_hash_match ${ACME_BASE}/cert.pem ${ACME_BASE}/key.pem; then
-				echo "Error verifying certificates, restoring mailcow snake-oil..."
+				log_f "Error verifying certificates, restoring mailcow snake-oil..."
 				cp ${SSL_EXAMPLE}/cert.pem ${ACME_BASE}/cert.pem
 				cp ${SSL_EXAMPLE}/key.pem ${ACME_BASE}/key.pem
 				TRIGGER_RESTART=1
 			fi
 			[[ ${TRIGGER_RESTART} == 1 ]] && restart_containers ${CONTAINERS_RESTART[*]}
-			echo "Retrying in 30 minutes..."
+			log_f "Retrying in 30 minutes..."
 			sleep 30m
 			exec $(readlink -f "$0")
 			;;
 	esac
 
-	echo "ACME certificate validation done. Sleeping for another day."
+	log_f "ACME certificate validation done. Sleeping for another day."
 	sleep 1d
 
 done
