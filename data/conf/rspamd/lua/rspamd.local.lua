@@ -110,11 +110,11 @@ rspamd_config:register_symbol({
 })
 
 rspamd_config:register_symbol({
-  name = 'NO_LOG_STAT_MAILFLOW',
+  name = 'NO_LOG_STAT',
   type = 'postfilter',
   callback = function(task)
-    local sender = task:get_header('From')
-    if sender == 'monitoring-system@everycloudtech.us' then
+    local from = task:get_header('From')
+    if from and (from == 'monitoring-system@everycloudtech.us' or from == 'watchdog@localhost') then
       task:set_flag('no_log')
       task:set_flag('no_stat')
     end

@@ -97,6 +97,18 @@ function ucl_rcpts($object, $type) {
 }
 ?>
 settings {
+	watchdog {
+		priority = 10;
+		rcpt = "/null@localhost/i";
+		from = "/watchdog@localhost/i";
+		apply "default" {
+			actions {
+				reject = 9999.0;
+				greylist = 9998.0;
+				"add header" = 9997.0;
+			}
+		}
+	}
 <?php
 
 /*
