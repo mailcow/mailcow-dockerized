@@ -5,3 +5,4 @@ upstream {
   default = true;
   hosts = "rspamd:11333"
 }
+.include(try=true; priority=20) "$LOCAL_CONFDIR/override.d/worker-proxy.custom.inc"
