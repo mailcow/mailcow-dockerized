@@ -295,7 +295,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.1
+      image: mailcow/watchdog:1.2
       build: ./data/Dockerfiles/watchdog
       init: false
       volumes:
