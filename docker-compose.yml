@@ -249,7 +249,8 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.19
+        - mysql-mailcow
+      image: mailcow/acme:1.20
       build: ./data/Dockerfiles/acme
       init: true
       dns:
