@@ -84,6 +84,11 @@ else
 	fi
 fi
 
+while ! mysqladmin ping --host mysql -u${DBUSER} -p${DBPASS} --silent; do
+	echo "Waiting for database to come up..."
+	sleep 2
+done
+
 while true; do
 	if [[ "${SKIP_LETS_ENCRYPT}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 		log_f "SKIP_LETS_ENCRYPT=y, skipping Let's Encrypt..."
