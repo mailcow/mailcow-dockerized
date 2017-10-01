@@ -1,5 +1,5 @@
 <?php
-require_once 'inc/vars.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/vars.inc.php';
 $default_autodiscover_config = $autodiscover_config;
 if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/inc/vars.local.inc.php')) {
   include_once $_SERVER['DOCUMENT_ROOT'] . '/inc/vars.local.inc.php';
