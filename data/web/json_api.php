@@ -768,6 +768,20 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 else {
                   echo '{}';
                 }
+              case "autodiscover":
+                if (isset($extra) && !empty($extra)) {
+                  $extra = intval($extra);
+                  $logs = get_logs('autodiscover-mailcow', $extra);
+                }
+                else {
+                  $logs = get_logs('autodiscover-mailcow', -1);
+                }
+                if (isset($logs) && !empty($logs)) {
+                  echo json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                }
+                else {
+                  echo '{}';
+                }
               break;
               case "sogo":
                 if (isset($extra) && !empty($extra)) {

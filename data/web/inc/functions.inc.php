@@ -900,6 +900,14 @@ function get_logs($container, $lines = 100) {
       return $data_array;
     }
   }
+  if ($container == "autodiscover-mailcow") {
+    if ($data = $redis->lRange('AUTODISCOVER_LOG', 0, $lines)) {
+      foreach ($data as $json_line) {
+        $data_array[] = json_decode($json_line, true);
+      }
+      return $data_array;
+    }
+  }
   if ($container == "rspamd-history") {
     $curl = curl_init();
     curl_setopt($curl, CURLOPT_URL,"http://rspamd-mailcow:11334/history");

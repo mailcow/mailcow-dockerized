@@ -16,7 +16,7 @@ error_reporting(0);
 $data = trim(file_get_contents("php://input"));
 
 if ($autodiscover_config['autodiscoverType'] == 'activesync') {
-  if (preg_match("/Outlook/i", $_SERVER['HTTP_USER_AGENT'])) {
+  if (preg_match("/(Outlook|Office)/i", $_SERVER['HTTP_USER_AGENT'])) {
     if ($autodiscover_config['useEASforOutlook'] == 'yes') {
       preg_match("/^((?!.*Mac).)*(Outlook|Office).+1[5-9].*/i", $_SERVER['HTTP_USER_AGENT'], $supported_outlook);
       if (empty($supported_outlook)) {
@@ -43,6 +43,25 @@ $login_user = strtolower(trim($_SERVER['PHP_AUTH_USER']));
 $login_role = check_login($login_user, $_SERVER['PHP_AUTH_PW']);
 
 if (!isset($_SERVER['PHP_AUTH_USER']) OR $login_role !== "user") {
+  try {
+    $json = json_encode(
+      array(
+        "time" => time(),
+        "ua" => $_SERVER['HTTP_USER_AGENT'],
+        "user" => "none",
+        "service" => "Error: must be authenticated"
+      )
+    );
+    $redis->lPush('AUTODISCOVER_LOG', $json);
+    $redis->lTrim('AUTODISCOVER_LOG', 0, 100);
+  }
+  catch (RedisException $e) {
+    $_SESSION['return'] = array(
+      'type' => 'danger',
+      'msg' => 'Redis: '.$e
+    );
+    return false;
+  }
   header('WWW-Authenticate: Basic realm=""');
   header('HTTP/1.0 401 Unauthorized');
   exit(0);
@@ -56,6 +75,25 @@ else {
 <Autodiscover xmlns="http://schemas.microsoft.com/exchange/autodiscover/responseschema/2006">
 <?php
       if(!$data) {
+        try {
+          $json = json_encode(
+            array(
+              "time" => time(),
+              "ua" => $_SERVER['HTTP_USER_AGENT'],
+              "user" => $_SERVER['PHP_AUTH_USER'],
+              "service" => "Error: invalid or missing request data"
+            )
+          );
+          $redis->lPush('AUTODISCOVER_LOG', $json);
+          $redis->lTrim('AUTODISCOVER_LOG', 0, 100);
+        }
+        catch (RedisException $e) {
+          $_SESSION['return'] = array(
+            'type' => 'danger',
+            'msg' => 'Redis: '.$e
+          );
+          return false;
+        }
         list($usec, $sec) = explode(' ', microtime());
 ?>
   <Response>
@@ -91,7 +129,25 @@ else {
       else {
         $displayname = $email;
       }
-
+      try {
+        $json = json_encode(
+          array(
+            "time" => time(),
+            "ua" => $_SERVER['HTTP_USER_AGENT'],
+            "user" => $_SERVER['PHP_AUTH_USER'],
+            "service" => $autodiscover_config['autodiscoverType']
+          )
+        );
+        $redis->lPush('AUTODISCOVER_LOG', $json);
+        $redis->lTrim('AUTODISCOVER_LOG', 0, 100);
+      }
+      catch (RedisException $e) {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => 'Redis: '.$e
+        );
+        return false;
+      }
       if ($autodiscover_config['autodiscoverType'] == 'imap') {
 ?>
   <Response xmlns="http://schemas.microsoft.com/exchange/autodiscover/outlook/responseschema/2006a">

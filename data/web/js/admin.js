@@ -124,6 +124,10 @@ jQuery(function($){
     e.preventDefault();
     draw_postfix_logs();
   });
+  $("#refresh_autodiscover_log").on('click', function(e) {
+    e.preventDefault();
+    draw_autodiscover_logs();
+  });
   $("#refresh_dovecot_log").on('click', function(e) {
     e.preventDefault();
     draw_dovecot_logs();
@@ -172,6 +176,52 @@ jQuery(function($){
             }
             else if (jQuery.inArray(item.priority, info_class) !== -1) {
               item.priority = '<span class="label label-info">' + item.priority + '</span>';
+            }
+          });
+        }
+      }),
+      "empty": lang.empty,
+      "paging": {
+        "enabled": true,
+        "limit": 5,
+        "size": log_pagination_size
+      },
+      "filtering": {
+        "enabled": true,
+        "position": "left",
+        "placeholder": lang.filter_table
+      },
+      "sorting": {
+        "enabled": true
+      }
+    });
+  }
+  function draw_autodiscover_logs() {
+    ft_autodiscover_logs = FooTable.init('#autodiscover_log', {
+      "columns": [
+        {"name":"time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},"title":lang.time,"style":{"width":"170px"}},
+        {"name":"ua","title":"User-Agent","style":{"min-width":"200px"}},
+        {"name":"user","title":"Username","style":{"min-width":"200px"}},
+        {"name":"service","title":"Service"},
+      ],
+      "rows": $.ajax({
+        dataType: 'json',
+        url: '/api/v1/get/logs/autodiscover/100',
+        jsonp: false,
+        error: function () {
+          console.log('Cannot draw autodiscover log table');
+        },
+        success: function (data) {
+          $.each(data, function (i, item) {
+            item.ua = '<span style="font-size:small">' + item.ua + '</span>';
+            if (item.service == "activesync") {
+              item.service = '<span class="label label-info">ActiveSync</span>';
+            }
+            else if (item.service == "imap") {
+              item.service = '<span class="label label-success">IMAP, SMTP, Cal-/CardDAV</span>';
+            }
+            else {
+              item.service = '<span class="label label-danger">' + item.service + '</span>';
             }
           });
         }
@@ -637,6 +687,7 @@ jQuery(function($){
     });
   }
   draw_postfix_logs();
+  draw_autodiscover_logs();
   draw_dovecot_logs();
   draw_sogo_logs();
   draw_fail2ban_logs();
