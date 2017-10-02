@@ -83,6 +83,9 @@ body.modal-open {
   overflow: inherit;
   padding-right: inherit !important;
 }
+body {
+  font-size:11pt;
+}
 #mailcow-alert {
   position: fixed;
   bottom: 8px;
