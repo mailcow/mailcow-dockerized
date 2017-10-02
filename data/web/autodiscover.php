@@ -15,6 +15,8 @@ error_reporting(0);
 
 $data = trim(file_get_contents("php://input"));
 
+file_put_contents('/tmp/dsa', json_encode($_SERVER), FILE_APPEND);
+
 if ($autodiscover_config['autodiscoverType'] == 'activesync') {
   if (preg_match("/(Outlook|Office)/i", $_SERVER['HTTP_USER_AGENT'])) {
     if ($autodiscover_config['useEASforOutlook'] == 'yes') {
@@ -27,7 +29,7 @@ if ($autodiscover_config['autodiscoverType'] == 'activesync') {
       $autodiscover_config['autodiscoverType'] = 'imap';
     }
   }
-  if (preg_match("/eM Client/i", $_SERVER['HTTP_USER_AGENT'])) {
+  if (preg_match("/eM Client/i", $_SERVER['HTTP_USER_AGENT']) || !isset($_SERVER['HTTP_USER_AGENT'])) {
     $autodiscover_config['autodiscoverType'] = 'imap';
   }
 }
@@ -62,7 +64,7 @@ if (!isset($_SERVER['PHP_AUTH_USER']) OR $login_role !== "user") {
     );
     return false;
   }
-  header('WWW-Authenticate: Basic realm=""');
+  header('WWW-Authenticate: Basic realm="' . $_SERVER['HTTP_HOST'] . '"');
   header('HTTP/1.0 401 Unauthorized');
   exit(0);
 }
