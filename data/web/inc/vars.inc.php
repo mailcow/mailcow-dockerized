@@ -30,10 +30,12 @@ if ($https_port === FALSE) {
 //$https_port = 1234;
 // Other settings =>
 $autodiscover_config = array(
-  // Enable the autodiscover service for Outlook desktop clients
-  'useEASforOutlook' => 'yes',
   // General autodiscover service type: "activesync" or "imap"
+  // emClient uses autodiscover, but does not support ActiveSync. mailcow excludes emClient from ActiveSync.
   'autodiscoverType' => 'activesync',
+  // If autodiscoverType => activesync, also use ActiveSync (EAS) for Outlook desktop clients (>= Outlook 2013 on Windows)
+  // Outlook for Mac does not support ActiveSync
+  'useEASforOutlook' => 'yes',
   // Please don't use STARTTLS-enabled service ports in the "port" variable.
   // The autodiscover service will always point to SMTPS and IMAPS (TLS-wrapped services).
   // The autoconfig service will additionally announce the STARTTLS-enabled ports, specified in the "tlsport" variable.
