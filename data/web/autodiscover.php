@@ -27,7 +27,7 @@ if ($autodiscover_config['autodiscoverType'] == 'activesync') {
       $autodiscover_config['autodiscoverType'] = 'imap';
     }
   }
-  if (preg_match("/emClient/i", $_SERVER['HTTP_USER_AGENT'])) {
+  if (preg_match("/eM Client/i", $_SERVER['HTTP_USER_AGENT'])) {
     $autodiscover_config['autodiscoverType'] = 'imap';
   }
 }
