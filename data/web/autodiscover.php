@@ -126,7 +126,7 @@ else {
         die("Failed to determine name from SQL");
       }
       if (!empty($MailboxData['name'])) {
-        $displayname = utf8_encode($MailboxData['name']);
+        $displayname = $MailboxData['name'];
       }
       else {
         $displayname = $email;
