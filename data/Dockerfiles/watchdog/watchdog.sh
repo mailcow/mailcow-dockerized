@@ -7,6 +7,12 @@ PARENT_PID=$$
 # Prepare
 BACKGROUND_TASKS=()
 
+if [[ "${USE_WATCHDOG}" =~ ^([nN][oO]|[nN])+$ ]]; then
+  log_f "USE_WATCHDOG=n, skipping watchdog..."
+  sleep 365d
+  exec $(readlink -f "$0")
+fi
+
 # Checks pipe their corresponding container name in this pipe
 if [[ ! -p /tmp/com_pipe ]]; then
   mkfifo /tmp/com_pipe
