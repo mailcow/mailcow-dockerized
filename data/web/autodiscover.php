@@ -15,8 +15,6 @@ error_reporting(0);
 
 $data = trim(file_get_contents("php://input"));
 
-file_put_contents('/tmp/dsa', json_encode($_SERVER), FILE_APPEND);
-
 if (strpos($data, 'autodiscover/outlook/responseschema') !== false) {
   $autodiscover_config['autodiscoverType'] = 'imap';
   if ($autodiscover_config['useEASforOutlook'] == 'yes' &&
