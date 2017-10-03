@@ -755,7 +755,7 @@ function mailbox($_action, $_type, $_data = null) {
               ':active' => $active
             ));
             $stmt = $pdo->prepare("INSERT INTO `quota2` (`username`, `bytes`, `messages`)
-              VALUES (:username, '0', '0')");
+              VALUES (:username, '0', '0') ON DUPLICATE KEY UPDATE `bytes` = '0', `messages` = '0';");
             $stmt->execute(array(':username' => $username));
             $stmt = $pdo->prepare("INSERT INTO `alias` (`address`, `goto`, `domain`, `active`)
               VALUES (:username1, :username2, :domain, :active)");
