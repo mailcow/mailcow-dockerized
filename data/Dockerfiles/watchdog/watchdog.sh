@@ -8,7 +8,7 @@ PARENT_PID=$$
 BACKGROUND_TASKS=()
 
 if [[ "${USE_WATCHDOG}" =~ ^([nN][oO]|[nN])+$ ]]; then
-  log_f "USE_WATCHDOG=n, skipping watchdog..."
+  echo -e "$(date) - USE_WATCHDOG=n, skipping watchdog..."
   sleep 365d
   exec $(readlink -f "$0")
 fi
