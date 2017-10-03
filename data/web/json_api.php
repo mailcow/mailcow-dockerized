@@ -768,6 +768,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 else {
                   echo '{}';
                 }
+              break;
               case "autodiscover":
                 if (isset($extra) && !empty($extra)) {
                   $extra = intval($extra);
