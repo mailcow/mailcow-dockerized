@@ -34,6 +34,10 @@ progress() {
   echo "(${DIFF})"
 }
 
+log_to_redis() {
+	redis-cli -h redis LPUSH WATCHDOG_LOG "{\"time\":\"$(date +%s)\",\"message\":\"$(printf '%s' "${1}")\"}"
+}
+
 get_container_ip() {
   # ${1} is container
   CONTAINER_ID=
@@ -228,6 +232,7 @@ dns_checks() {
 (
 while true; do
   if ! nginx_checks; then
+    log_to_redis "Nginx hit error limit"
     echo -e "\e[31m$(date) - Nginx hit error limit\e[0m"
     echo nginx-mailcow > /tmp/com_pipe
   fi
@@ -238,6 +243,7 @@ BACKGROUND_TASKS+=($!)
 (
 while true; do
   if ! mysql_checks; then
+    log_to_redis "MySQL hit error limit"
     echo -e "\e[31m$(date) - MySQL hit error limit\e[0m"
     echo mysql-mailcow > /tmp/com_pipe
   fi
@@ -248,6 +254,7 @@ BACKGROUND_TASKS+=($!)
 (
 while true; do
   if ! phpfpm_checks; then
+    log_to_redis "PHP-FPM hit error limit"
     echo -e "\e[31m$(date) - PHP-FPM hit error limit\e[0m"
     echo php-fpm-mailcow > /tmp/com_pipe
   fi
@@ -258,6 +265,7 @@ BACKGROUND_TASKS+=($!)
 (
 while true; do
   if ! sogo_checks; then
+    log_to_redis "SOGo hit error limit"
     echo -e "\e[31m$(date) - SOGo hit error limit\e[0m"
     echo sogo-mailcow > /tmp/com_pipe
   fi
@@ -268,6 +276,7 @@ BACKGROUND_TASKS+=($!)
 (
 while true; do
   if ! postfix_checks; then
+    log_to_redis "Postfix hit error limit"
     echo -e "\e[31m$(date) - Postfix hit error limit\e[0m"
     echo postfix-mailcow > /tmp/com_pipe
   fi
@@ -278,6 +287,7 @@ BACKGROUND_TASKS+=($!)
 (
 while true; do
   if ! dovecot_checks; then
+    log_to_redis "Dovecot hit error limit"
     echo -e "\e[31m$(date) - Dovecot hit error limit\e[0m"
     echo dovecot-mailcow > /tmp/com_pipe
   fi
@@ -288,6 +298,7 @@ BACKGROUND_TASKS+=($!)
 (
 while true; do
   if ! dns_checks; then
+    log_to_redis "Unbound hit error limit"
     echo -e "\e[31m$(date) - Unbound hit error limit\e[0m"
     #echo unbound-mailcow > /tmp/com_pipe
   fi
@@ -298,6 +309,7 @@ BACKGROUND_TASKS+=($!)
 (
 while true; do
   if ! rspamd_checks; then
+    log_to_redis "Rspamd hit error limit"
     echo -e "\e[31m$(date) - Rspamd hit error limit\e[0m"
     echo rspamd-mailcow > /tmp/com_pipe
   fi
@@ -311,6 +323,7 @@ while true; do
   for bg_task in ${BACKGROUND_TASKS[*]}; do
     if ! kill -0 ${bg_task} 21>&2; then
       echo "Worker ${bg_task} died, stopping watchdog and waiting for respawn..."
+      log_to_redis "Worker ${bg_task} died, stopping watchdog and waiting for respawn..."
       kill -TERM ${PARENT_PID}
     fi
     sleep 1
@@ -327,6 +340,7 @@ while true; do
     sleep 3
     CONTAINER_ID=$(curl --silent --unix-socket /var/run/docker.sock http/containers/json?all=1 | jq -rc "map(select(.Names[] | contains (\"${com_pipe_answer}\"))) | .[] .Id")
     if [[ ! -z ${CONTAINER_ID} ]]; then
+      log_to_redis "Sending restart command to ${CONTAINER_ID}..."
       echo "Sending restart command to ${CONTAINER_ID}..."
       curl --silent --unix-socket /var/run/docker.sock -XPOST http/containers/${CONTAINER_ID}/restart
     fi

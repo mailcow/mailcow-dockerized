@@ -15,7 +15,8 @@ RUN apk add --update \
 	nagios-plugins-mysql \
 	nagios-plugins-dns \
     nagios-plugins-disk \
-	bind-tools
+	bind-tools \
+	redis
 
 COPY watchdog.sh /watchdog.sh
 
