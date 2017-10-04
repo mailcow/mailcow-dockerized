@@ -96,7 +96,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.1
+      image: mailcow/phpfpm:1.2
       build: ./data/Dockerfiles/phpfpm
       command: "php-fpm -d date.timezone=${TZ}"
       depends_on:
@@ -105,6 +105,7 @@ services:
         - ./data/web:/web:ro
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
         - dkim-vol-1:/data/dkim
+        - /var/run/docker.sock:/var/run/docker.sock:ro
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -127,7 +128,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.8
+      image: mailcow/sogo:1.9
       build: ./data/Dockerfiles/sogo
       environment:
         - DBNAME=${DBNAME}
