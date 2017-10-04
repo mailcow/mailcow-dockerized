@@ -82,4 +82,16 @@ if [[ ! -z ${DOMAIN_ARRAY} ]]; then
  done
 fi
 
+# Socket access
+DOCKER_SOCKET=/var/run/docker.sock
+DOCKER_GROUP=docker
+REGULAR_USER=www-data
+
+if [ -S ${DOCKER_SOCKET} ]; then
+    DOCKER_GID=$(stat -c '%g' ${DOCKER_SOCKET})
+    delgroup $(stat -c '%G' ${DOCKER_SOCKET})
+    addgroup -g ${DOCKER_GID} ${DOCKER_GROUP}
+    adduser ${REGULAR_USER} ${DOCKER_GROUP}
+fi
+
 exec "$@"
