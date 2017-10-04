@@ -58,6 +58,9 @@ rspamd_config:register_symbol({
     local redis_params = rspamd_parse_redis_server('dyn_rl')
     local rspamd_logger = require "rspamd_logger"
     local envfrom = task:get_from(1)
+    if not envfrom then
+      return false
+    end
     local env_from_domain = envfrom[1].domain:lower() -- get smtp from domain in lower case
     local env_from_addr = envfrom[1].addr:lower() -- get smtp from addr in lower case
 
