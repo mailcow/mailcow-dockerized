@@ -182,7 +182,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.5
+      image: mailcow/postfix:1.6
       build: ./data/Dockerfiles/postfix
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
