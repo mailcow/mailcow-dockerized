@@ -38,6 +38,26 @@ log_to_redis() {
 	redis-cli -h redis LPUSH WATCHDOG_LOG "{\"time\":\"$(date +%s)\",\"message\":\"$(printf '%s' "${1}")\"}"
 }
 
+function mail_error() {
+  [[ -z ${1} ]] && return 1
+  [[ -z ${2} ]] && return 2
+  RCPT_DOMAIN=$(echo ${1} | awk -F @ {'print $NF'})
+  RCPT_MX=$(dig +short ${RCPT_DOMAIN} mx | sort -n | awk '{print $2; exit}')
+  if [[ -z ${RCPT_MX} ]]; then
+    log_to_redis "Cannot determine MX for ${1}, skipping email notification..."
+    echo "Cannot determine MX for ${1}"
+    return 1
+  fi
+  ./smtp-cli --missing-modules-ok \
+    --subject="Watchdog: ${2} service hit the error rate limit" \
+    --body-plain="Service was restarted, please check your mailcow installation." \
+    --to=${1} \
+    --from="watchdog@${MAILCOW_HOSTNAME}" \
+    --server="${RCPT_MX}" \
+    --hello-host=${MAILCOW_HOSTNAME}
+}
+
+
 get_container_ip() {
   # ${1} is container
   CONTAINER_ID=
@@ -233,6 +253,7 @@ dns_checks() {
 while true; do
   if ! nginx_checks; then
     log_to_redis "Nginx hit error limit"
+    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${WATCHDOG_NOTIFY_EMAIL}" "nginx-mailcow"
     echo -e "\e[31m$(date) - Nginx hit error limit\e[0m"
     echo nginx-mailcow > /tmp/com_pipe
   fi
@@ -244,6 +265,7 @@ BACKGROUND_TASKS+=($!)
 while true; do
   if ! mysql_checks; then
     log_to_redis "MySQL hit error limit"
+    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${WATCHDOG_NOTIFY_EMAIL}" "mysql-mailcow"
     echo -e "\e[31m$(date) - MySQL hit error limit\e[0m"
     echo mysql-mailcow > /tmp/com_pipe
   fi
@@ -255,6 +277,7 @@ BACKGROUND_TASKS+=($!)
 while true; do
   if ! phpfpm_checks; then
     log_to_redis "PHP-FPM hit error limit"
+    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${WATCHDOG_NOTIFY_EMAIL}" "php-fpm-mailcow"
     echo -e "\e[31m$(date) - PHP-FPM hit error limit\e[0m"
     echo php-fpm-mailcow > /tmp/com_pipe
   fi
@@ -266,6 +289,7 @@ BACKGROUND_TASKS+=($!)
 while true; do
   if ! sogo_checks; then
     log_to_redis "SOGo hit error limit"
+    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${WATCHDOG_NOTIFY_EMAIL}" "sogo-mailcow"
     echo -e "\e[31m$(date) - SOGo hit error limit\e[0m"
     echo sogo-mailcow > /tmp/com_pipe
   fi
@@ -277,6 +301,7 @@ BACKGROUND_TASKS+=($!)
 while true; do
   if ! postfix_checks; then
     log_to_redis "Postfix hit error limit"
+    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${WATCHDOG_NOTIFY_EMAIL}" "postfix-mailcow"
     echo -e "\e[31m$(date) - Postfix hit error limit\e[0m"
     echo postfix-mailcow > /tmp/com_pipe
   fi
@@ -288,6 +313,7 @@ BACKGROUND_TASKS+=($!)
 while true; do
   if ! dovecot_checks; then
     log_to_redis "Dovecot hit error limit"
+    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${WATCHDOG_NOTIFY_EMAIL}" "dovecot-mailcow"
     echo -e "\e[31m$(date) - Dovecot hit error limit\e[0m"
     echo dovecot-mailcow > /tmp/com_pipe
   fi
@@ -299,6 +325,7 @@ BACKGROUND_TASKS+=($!)
 while true; do
   if ! dns_checks; then
     log_to_redis "Unbound hit error limit"
+    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${WATCHDOG_NOTIFY_EMAIL}" "unbound-mailcow"
     echo -e "\e[31m$(date) - Unbound hit error limit\e[0m"
     #echo unbound-mailcow > /tmp/com_pipe
   fi
@@ -310,6 +337,7 @@ BACKGROUND_TASKS+=($!)
 while true; do
   if ! rspamd_checks; then
     log_to_redis "Rspamd hit error limit"
+    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${WATCHDOG_NOTIFY_EMAIL}" "rspamd-mailcow"
     echo -e "\e[31m$(date) - Rspamd hit error limit\e[0m"
     echo rspamd-mailcow > /tmp/com_pipe
   fi
