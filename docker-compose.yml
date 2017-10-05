@@ -105,7 +105,6 @@ services:
         - ./data/web:/web:ro
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
         - dkim-vol-1:/data/dkim
-        - /var/run/docker.sock:/var/run/docker.sock:ro
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -297,7 +296,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.3
+      image: mailcow/watchdog:1.4
       build: ./data/Dockerfiles/watchdog
       init: false
       volumes:
@@ -309,10 +308,23 @@ services:
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
         - USE_WATCHDOG=${USE_WATCHDOG:-n}
+        - WATCHDOG_NOTIFY_EMAIL=${WATCHDOG_NOTIFY_EMAIL}
+        - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
       networks:
         mailcow-network:
           aliases:
             - watchdog
+
+    dockerapi-mailcow:
+      image: mailcow/dockerapi:1.0
+      build: ./data/Dockerfiles/dockerapi
+      init: false
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock:ro
+      networks:
+        mailcow-network:
+          aliases:
+            - dockerapi
 
     ipv6nat:
       image: robbertkl/ipv6nat

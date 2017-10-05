@@ -11,8 +11,7 @@ function docker($service_name, $action, $post_action = null, $post_fields = null
   curl_setopt($curl, CURLOPT_HTTPHEADER,array( 'Content-Type: application/json' ));
   switch($action) {
     case 'get_id':
-      curl_setopt($curl, CURLOPT_UNIX_SOCKET_PATH, "/var/run/docker.sock");
-      curl_setopt($curl, CURLOPT_URL, 'http:/v1.26/containers/json?all=1');
+      curl_setopt($curl, CURLOPT_URL, 'http://dockerapi:8080/info/container/all');
       curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
       curl_setopt($curl, CURLOPT_POST, 0);
       $response = curl_exec($curl);
@@ -35,13 +34,11 @@ function docker($service_name, $action, $post_action = null, $post_fields = null
       return false;
     break;
     case 'info':
-      curl_setopt($curl, CURLOPT_UNIX_SOCKET_PATH, "/var/run/docker.sock");
       $container_id = docker($service_name, 'get_id');
       if (ctype_xdigit($container_id)) {
-        curl_setopt($curl, CURLOPT_UNIX_SOCKET_PATH, "/var/run/docker.sock");
-        curl_setopt($curl, CURLOPT_URL, 'http/containers/' . $container_id . '/json');
-        curl_setopt($curl, CURLOPT_POST, 0);
+        curl_setopt($curl, CURLOPT_URL, 'http://dockerapi:8080/info/container/' . $container_id);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_POST, 0);
         $response = curl_exec($curl);
         if ($response === false) {
           $err = curl_error($curl);
@@ -65,9 +62,8 @@ function docker($service_name, $action, $post_action = null, $post_fields = null
     case 'post':
       if (!empty($post_action)) {
         $container_id = docker($service_name, 'get_id');
-        if (ctype_xdigit($container_id)) {
-          curl_setopt($curl, CURLOPT_UNIX_SOCKET_PATH, "/var/run/docker.sock");
-          curl_setopt($curl, CURLOPT_URL, 'http/containers/' . $container_id . '/' . $post_action);
+        if (ctype_xdigit($container_id) && ctype_alnum($post_action)) {
+          curl_setopt($curl, CURLOPT_URL, 'http://dockerapi:8080/' . $post_action . '/container/' . $container_id);
           curl_setopt($curl, CURLOPT_POST, 1);
           if (!empty($post_fields)) {
             curl_setopt( $curl, CURLOPT_POSTFIELDS, json_encode($post_fields));
@@ -96,30 +92,30 @@ function docker($service_name, $action, $post_action = null, $post_fields = null
 
 if ($_GET['ACTION'] == "start") {
   $retry = 0;
-  while (!docker('sogo-mailcow', 'info')['State']['Running'] && $retry <= 3) {
+  while (docker('sogo-mailcow', 'info')[0]['State'] != "running" && $retry <= 3) {
     $response = docker('sogo-mailcow', 'post', 'start');
-    $last_response = ($response === true) ? '<b><span class="pull-right text-success">OK</span></b>' : '<b><span class="pull-right text-warning">Error: ' . $response . '</span></b>';
-    if ($response === true) {
+    $last_response = (trim($response) == "\"OK\"") ? '<b><span class="pull-right text-success">OK</span></b>' : '<b><span class="pull-right text-danger">Error: ' . $response . '</span></b>';
+    if (trim($response) == "\"OK\"") {
       break;
     }
     usleep(1500000);
     $retry++;
   }
-  echo $last_response;
+  echo (!isset($last_response)) ? '<b><span class="pull-right text-warning">Not running</span></b>' : $last_response;
 }
 
 if ($_GET['ACTION'] == "stop") {
   $retry = 0;
-  while (docker('sogo-mailcow', 'info')['State']['Running'] && $retry <= 3) {
+  while (docker('sogo-mailcow', 'info')[0]['State'] == "running" && $retry <= 3) {
     $response = docker('sogo-mailcow', 'post', 'stop');
-    $last_response = ($response === true) ? '<b><span class="pull-right text-success">OK</span></b>' : '<b><span class="pull-right text-warning">Error: ' . $response . '</span></b>';
-    if ($response === true) {
+    $last_response = (trim($response) == "\"OK\"") ? '<b><span class="pull-right text-success">OK</span></b>' : '<b><span class="pull-right text-danger">Error: ' . $response . '</span></b>';
+    if (trim($response) == "\"OK\"") {
       break;
     }
     usleep(1500000);
     $retry++;
   }
-  echo $last_response;
+  echo (!isset($last_response)) ? '<b><span class="pull-right text-warning">Not running</span></b>' : $last_response;
 }
 
 ?>

@@ -16,7 +16,15 @@ RUN apk add --update \
 	nagios-plugins-dns \
     nagios-plugins-disk \
 	bind-tools \
-	redis
+	redis \
+	perl \
+	perl-io-socket-ssl \
+	perl-socket \
+	perl-socket6 \
+	perl-mime-lite \
+	perl-term-readkey \
+	&& curl https://raw.githubusercontent.com/mludvig/smtp-cli/v3.8/smtp-cli -o /smtp-cli \
+	&& chmod +x smtp-cli
 
 COPY watchdog.sh /watchdog.sh
 
