@@ -250,7 +250,7 @@ services:
       depends_on:
         - nginx-mailcow
         - mysql-mailcow
-      image: mailcow/acme:1.20
+      image: mailcow/acme:1.21
       build: ./data/Dockerfiles/acme
       init: true
       dns:
@@ -267,7 +267,6 @@ services:
         - ./data/web/.well-known/acme-challenge:/var/www/acme:rw
         - ./data/assets/ssl:/var/lib/acme/:rw
         - ./data/assets/ssl-example:/var/lib/ssl-example/:ro
-        - /var/run/docker.sock:/var/run/docker.sock:ro
       restart: always
       networks:
         mailcow-network:
@@ -296,11 +295,10 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.4
+      image: mailcow/watchdog:1.5
       build: ./data/Dockerfiles/watchdog
       init: false
       volumes:
-        - /var/run/docker.sock:/var/run/docker.sock:ro
         - vmail-vol-1:/vmail:ro
       restart: always
       environment:

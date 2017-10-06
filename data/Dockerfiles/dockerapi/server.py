@@ -41,6 +41,14 @@ class container_post(Resource):
                     return 'Error'
                 else:
                     return 'OK'
+            elif post_action == 'restart':
+                try:
+                    for container in docker_client.containers.list(all=True, filters={"id": container_id}):
+                        container.restart()
+                except:
+                    return 'Error'
+                else:
+                    return 'OK'
             else:
                 return jsonify(message='Invalid action')
         else:
