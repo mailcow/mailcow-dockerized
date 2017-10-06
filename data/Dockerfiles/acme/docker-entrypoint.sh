@@ -10,9 +10,7 @@ mkdir -p ${ACME_BASE}/acme/private
 restart_containers(){
 	for container in $*; do
 		echo "Restarting ${container}..."
-		curl -X POST \
-			--unix-socket /var/run/docker.sock \
-			"http/containers/${container}/restart"
+		curl -X POST http://dockerapi:8080/containers/${container}/restart
 	done
 }
 
@@ -107,7 +105,7 @@ while true; do
 	IFS=',' read -r -a ADDITIONAL_SAN_ARR <<< "${ADDITIONAL_SAN}"
 	IPV4=$(get_ipv4)
 	# Container ids may have changed
-	CONTAINERS_RESTART=($(curl --silent --unix-socket /var/run/docker.sock http/containers/json | jq -rc 'map(select(.Names[] | contains ("nginx-mailcow") or contains ("postfix-mailcow") or contains ("dovecot-mailcow"))) | .[] .Id' | tr "\n" " "))
+	CONTAINERS_RESTART=($(curl --silent http://dockerapi:8080/containers/json | jq -r '.[] | {name: .Config.Labels["com.docker.compose.service"], id: .Id}' | jq -rc 'select( .name | contains("nginx-mailcow") or contains("postfix-mailcow") or contains("dovecot-mailcow")) | .id' | tr "\n" " "))
 
 	while read domain; do
 		SQL_DOMAIN_ARR+=("${domain}")
