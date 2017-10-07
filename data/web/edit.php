@@ -614,6 +614,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           <form class="form-horizontal" data-id="editsyncjob" role="form" method="post">
             <input type="hidden" value="0" name="delete2duplicates">
             <input type="hidden" value="0" name="delete1">
+            <input type="hidden" value="0" name="delete2">
             <input type="hidden" value="0" name="active">
             <div class="form-group">
               <label class="control-label col-sm-2" for="host1"><?=$lang['edit']['hostname'];?></label>
