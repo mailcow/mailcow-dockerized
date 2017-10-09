@@ -27,7 +27,7 @@ function relayhost($_action, $_data = null) {
         $stmt->execute(array(
           ':hostname' => $hostname,
           ':username' => $username,
-          ':password' => $password,
+          ':password' => str_replace(':', '\:', $password),
           ':active' => '1'
         ));
       }
