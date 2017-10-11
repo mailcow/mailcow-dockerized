@@ -67,11 +67,24 @@ zeyple    unix  -       n       n       -       -       pipe
 589 inet n      -       n       -       -       smtpd
   -o smtpd_client_restrictions=permit_mynetworks,reject
   -o syslog_name=watchdog
+  -o syslog_facility=local7
   -o smtpd_milters=
+  -o cleanup_service_name=watchdog_cleanup
   -o non_smtpd_milters=
+watchdog_cleanup unix  n       -       n       -       0       cleanup
+  -o syslog_name=watchdog
+  -o syslog_facility=local7
   -o queue_service_name=watchdog_qmgr
-  -o local_transport=discard
-  -o default_transport=discard
 watchdog_qmgr fifo  n       -       n       300     1       qmgr
-  -o syslog_facility=local0
+  -o syslog_facility=local7
+  -o syslog_name=watchdog
+  -o rewrite_service_name=watchdog_rewrite
+watchdog_rewrite    unix  -       -       n       -       -       trivial-rewrite
+   -o syslog_facility=local7
+   -o syslog_name=watchdog
+   -o local_transport=watchdog_discard
+watchdog_discard    unix  -       -       n       -       -       discard
+   -o syslog_facility=local7
+   -o syslog_name=watchdog
+
 # end watchdog-specific
