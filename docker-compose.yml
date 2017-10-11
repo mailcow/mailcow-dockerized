@@ -147,7 +147,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.8
+      image: mailcow/dovecot:1.9
       build: ./data/Dockerfiles/dovecot
       volumes:
         - ./data/conf/dovecot:/usr/local/etc/dovecot
@@ -181,7 +181,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.6
+      image: mailcow/postfix:1.7
       build: ./data/Dockerfiles/postfix
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
@@ -297,7 +297,6 @@ services:
     watchdog-mailcow:
       image: mailcow/watchdog:1.7
       build: ./data/Dockerfiles/watchdog
-      command: /watchdog.sh
       init: false
       volumes:
         - vmail-vol-1:/vmail:ro
@@ -311,6 +310,7 @@ services:
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
       networks:
         mailcow-network:
+          ipv4_address: 172.22.1.248
           aliases:
             - watchdog
 
