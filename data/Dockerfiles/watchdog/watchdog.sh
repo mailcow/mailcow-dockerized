@@ -2,7 +2,6 @@
 
 trap "exit" INT TERM
 trap "kill 0" EXIT
-PARENT_PID=$$
 
 # Prepare
 BACKGROUND_TASKS=()
@@ -351,12 +350,12 @@ BACKGROUND_TASKS+=($!)
 (
 while true; do
   for bg_task in ${BACKGROUND_TASKS[*]}; do
-    if ! kill -0 ${bg_task} 21>&2; then
+    if ! kill -0 ${bg_task} 1>&2; then
       echo "Worker ${bg_task} died, stopping watchdog and waiting for respawn..."
       log_to_redis "Worker ${bg_task} died, stopping watchdog and waiting for respawn..."
-      kill -TERM ${PARENT_PID}
+      kill -TERM 1
     fi
-    sleep 1
+    sleep 10
   done
 done
 ) &
