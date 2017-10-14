@@ -1,11 +1,10 @@
-version: '2.3'
+version: '2.1'
 services:
 
     unbound-mailcow:
       image: mailcow/unbound:1.0
       build: ./data/Dockerfiles/unbound
       command: /usr/sbin/unbound
-      init: true
       depends_on:
         mysql-mailcow:
           condition: service_healthy
@@ -34,7 +33,6 @@ services:
         - MYSQL_DATABASE=${DBNAME}
         - MYSQL_USER=${DBUSER}
         - MYSQL_PASSWORD=${DBPASS}
-      init: true
       restart: always
       dns:
         - 172.22.1.254
@@ -65,7 +63,6 @@ services:
       restart: on-failure
       environment:
         - SKIP_CLAMD=${SKIP_CLAMD:-n}
-      init: true
       dns:
         - 172.22.1.254
       dns_search: mailcow-network
@@ -88,7 +85,6 @@ services:
         - dkim-vol-1:/data/dkim
         - rspamd-vol-1:/var/lib/rspamd
       restart: always
-      init: true
       dns:
         - 172.22.1.254
       dns_search: mailcow-network
@@ -261,7 +257,6 @@ services:
         - nginx-mailcow
       image: mailcow/acme:1.17
       build: ./data/Dockerfiles/acme
-      init: true
       dns:
         - 172.22.1.254
       dns_search: mailcow-network
@@ -296,7 +291,6 @@ services:
         - redis-mailcow
       restart: always
       privileged: true
-      init: true
       environment:
         - TZ=${TZ}
         - SKIP_FAIL2BAN=${SKIP_FAIL2BAN:-no}
