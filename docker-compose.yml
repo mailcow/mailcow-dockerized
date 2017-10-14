@@ -72,7 +72,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.9
+      image: mailcow/rspamd:1.10
       build: ./data/Dockerfiles/rspamd
       command: "/usr/bin/rspamd -f -u _rspamd -g _rspamd"
       depends_on:
