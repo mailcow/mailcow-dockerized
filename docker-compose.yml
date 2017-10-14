@@ -58,12 +58,11 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.4
+      image: mailcow/clamd:1.5
       build: ./data/Dockerfiles/clamd
       restart: always
       environment:
         - SKIP_CLAMD=${SKIP_CLAMD:-n}
-      init: true
       dns:
         - 172.22.1.254
       networks:
@@ -295,9 +294,8 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.7
+      image: mailcow/watchdog:1.8
       build: ./data/Dockerfiles/watchdog
-      init: false
       volumes:
         - vmail-vol-1:/vmail:ro
       restart: always
