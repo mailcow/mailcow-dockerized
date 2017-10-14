@@ -1,5 +1,4 @@
 FROM alpine:3.6
-
 LABEL maintainer "André Peters <andre.peters@servercow.de>"
 
 # Installation
@@ -23,10 +22,12 @@ RUN apk add --update \
 	perl-socket6 \
 	perl-mime-lite \
 	perl-term-readkey \
+  tini \
 	&& curl https://raw.githubusercontent.com/mludvig/smtp-cli/v3.8/smtp-cli -o /smtp-cli \
 	&& chmod +x smtp-cli
 
 COPY watchdog.sh /watchdog.sh
 
+ENTRYPOINT ["/sbin/tini", "-g", "--"]
 # Less verbose
 CMD /watchdog.sh 2> /dev/null
