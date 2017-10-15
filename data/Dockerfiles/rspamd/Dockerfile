@@ -22,7 +22,8 @@ COPY settings.conf /etc/rspamd/modules.d/settings.conf
 #COPY ratelimit.lua /usr/share/rspamd/lua/ratelimit.lua
 #COPY lua_util.lua /usr/share/rspamd/lib/lua_util.lua
 COPY docker-entrypoint.sh /docker-entrypoint.sh
+COPY tini /sbin/tini
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-CMD /usr/bin/rspamd -f -u _rspamd -g _rspamd
+CMD ["/usr/bin/rspamd", "-f", "-u", "_rspamd", "-g", "_rspamd"]
