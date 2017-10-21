@@ -90,7 +90,7 @@ var Base64 = {
         return t
     }
 }
-
+  
 jQuery(function($){
   // http://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery
   var entityMap = {
@@ -730,6 +730,24 @@ jQuery(function($){
         }
     });
   })
+
+  function add_table_row(table_id) {
+    var row = $('<tr />');
+    cols = '<td><input class="input-sm form-control" data-id="app_links" type="text" name="app" required></td>';
+    cols += '<td><input class="input-sm form-control" data-id="app_links" type="text" name="href" required></td>';
+    cols += '<td><a href="#" role="button" class="btn btn-xs btn-default" type="button">Remove row</a></td>';
+    row.append(cols);
+    table_id.append(row);
+  }
+
+  $('#app_link_table').on('click', 'tr a', function (e) {
+    e.preventDefault();
+    $(this).parents('tr').remove();
+  });
+
+  $('#add_app_link_row').click(function() {
+      add_table_row($('#app_link_table'));
+  });
 });
 
 $(window).load(function(){

@@ -63,4 +63,14 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 		unset_tfa_key($_POST);
 	}
 }
+if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admin") {
+	if (isset($_POST["submit_main_logo"])) {
+    if ($_FILES['main_logo']['error'] == 0) {
+      customize('add', 'main_logo', $_FILES);
+    }
+	}
+	if (isset($_POST["reset_main_logo"])) {
+    customize('delete', 'main_logo');
+	}
+}
 ?>
