@@ -129,6 +129,7 @@ $tfa_data = get_tfa();
         <a href="#fwdhosts" class="list-group-item"><?=$lang['admin']['forwarding_hosts'];?></a>
         <a href="#f2bparams" class="list-group-item"><?=$lang['admin']['f2b_parameters'];?></a>
         <a href="#relayhosts" class="list-group-item">Relayhosts</a>
+        <a href="#customize" class="list-group-item"><?=$lang['admin']['customize'];?></a>
         <a href="#top" class="list-group-item" style="border-top:1px dashed #dadada">↸ <?=$lang['admin']['to_top'];?></a>
       </div>
     </div>
@@ -260,9 +261,7 @@ $tfa_data = get_tfa();
           </div>
           <div class="form-group">
             <label for="private_key_file"><?=$lang['admin']['private_key'];?>:</label>
-            <textarea class="form-control" rows="5" name="private_key_file" id="private_key_file" required placeholder="-----BEGIN RSA PRIVATE KEY-----
-XYZ
------END RSA PRIVATE KEY-----"></textarea>
+            <textarea class="form-control" rows="5" name="private_key_file" id="private_key_file" required placeholder="-----BEGIN RSA KEY-----"></textarea>
           </div>
           <button class="btn btn-default" id="add_item" data-id="dkim_import" data-api-url='add/dkim_import' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['import'];?></button>
         </form>
@@ -373,6 +372,82 @@ XYZ
             <input class="form-control" id="password" name="password">
           </div>
           <button class="btn btn-default" id="add_item" data-id="rlyhost" data-api-url='add/relayhost' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
+        </form>
+      </div>
+    </div>
+
+    <span class="anchor" id="customize"></span>
+    <div class="panel panel-default">
+      <div class="panel-heading"><?=$lang['admin']['customize'];?></div>
+      <div class="panel-body">
+        <legend><?=$lang['admin']['change_logo'];?></legend>
+        <p class="help-block"><?=$lang['admin']['logo_info'];?></p>
+        <form class="form-inline" role="form" method="post" enctype="multipart/form-data">
+          <p>
+            <input type="file" name="main_logo" class="filestyle" data-buttonName="btn-default" data-buttonText="Select" accept="image/gif, image/jpeg, image/pjpeg, image/x-png, image/png, image/svg+xml">
+            <button name="submit_main_logo" type="submit" class="btn btn-success"><span class="glyphicon glyphicon-cloud-upload"></span> <?=$lang['admin']['upload'];?></button>
+          </p>
+        </form>
+        <?php
+        if ($main_logo = customize('get', 'main_logo')):
+          $specs = customize('get', 'main_logo_specs');
+        ?>
+        <div class="row">
+          <div class="col-sm-3">
+            <div class="thumbnail">
+              <img class="img-thumbnail" src="<?=$main_logo;?>" alt="mailcow logo">
+              <div class="caption">
+                <span class="label label-info"><?=$specs['geometry']['width'];?>x<?=$specs['geometry']['height'];?> px</span>
+                <span class="label label-info"><?=$specs['mimetype'];?></span>
+                <span class="label label-info"><?=$specs['fileSize'];?></span>
+              </div>
+            </div>
+            <hr>
+            <form class="form-inline" role="form" method="post">
+              <p><button name="reset_main_logo" type="submit" class="btn btn-xs btn-default"><?=$lang['admin']['reset_default'];?></button></p>
+            </form>
+          </div>
+        </div>
+        <?php
+        endif;
+        ?>
+        <legend><?=$lang['admin']['app_links'];?></legend>
+        <p class="help-block"><?=$lang['admin']['merged_vars_hint'];?></p>
+        <form class="form-inline" data-id="app_links" role="form" method="post">
+          <table class="table table-condensed" style="width:1%;white-space: nowrap;" id="app_link_table">
+            <tr>
+              <th><?=$lang['admin']['app_name'];?></th>
+              <th><?=$lang['admin']['link'];?></th>
+              <th>&nbsp;</th>
+            </tr>
+            <?php
+            $app_links = customize('get', 'app_links');
+            foreach ($app_links as $row) {
+              foreach ($row as $key => $val):
+            ?>
+            <tr>
+              <td><input class="input-sm form-control" data-id="app_links" type="text" name="app" required value="<?=$key;?>"></td>
+              <td><input class="input-sm form-control" data-id="app_links" type="text" name="href" required value="<?=$val;?>"></td>
+              <td><a href="#" role="button" class="btn btn-xs btn-default" type="button"><?=$lang['admin']['remove_row'];?></a></td>
+            </tr>
+            <?php 
+              endforeach;
+            }
+            foreach ($MAILCOW_APPS as $app):
+            ?>
+            <tr>
+              <td><input class="input-sm form-control" value="<?=htmlspecialchars($app['name']);?>" disabled></td>
+              <td><input class="input-sm form-control" value="<?=htmlspecialchars($app['link']);?>" disabled></td>
+              <td>&nbsp;</td>
+            </tr>
+            <?php
+            endforeach;
+            ?>
+          </table>
+          <div class="btn-group">
+            <button class="btn btn-success" id="edit_selected" data-item="admin" data-id="app_links" data-reload="no" data-api-url='edit/app_links' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
+            <button class="btn btn-default" type="button" id="add_app_link_row"><?=$lang['admin']['add_row'];?></button>
+          </div> 
         </form>
       </div>
     </div>

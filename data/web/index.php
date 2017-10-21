@@ -23,7 +23,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
       <div class="panel panel-default">
         <div class="panel-heading"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <?= $lang['login']['login']; ?></div>
         <div class="panel-body">
-          <div class="text-center"><img style="max-width: 250px;" src="/img/cow_mailcow.svg" alt="mailcow"></div>
+          <div class="text-center mailcow-logo"><img src="<?=($main_logo = customize('get', 'main_logo')) ? $main_logo : '/img/cow_mailcow.svg';?>" alt="mailcow"></div>
           <legend>mailcow UI</legend>
             <form method="post" autofill="off">
             <div class="form-group">
@@ -72,6 +72,14 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             <a href="<?= htmlspecialchars($app['link']); ?>" role="button" title="<?= htmlspecialchars($app['description']); ?>" class="btn btn-lg btn-default"><?= htmlspecialchars($app['name']); ?></a>&nbsp;
           <?php
           endforeach;
+          $app_links = customize('get', 'app_links');
+          foreach ($app_links as $row) {
+            foreach ($row as $key => $val):
+          ?>
+            <a href="<?= htmlspecialchars($val); ?>" role="button" class="btn btn-lg btn-default"><?= htmlspecialchars($key); ?></a>&nbsp;
+          <?php 
+            endforeach;
+          }
           ?>
         </div>
       </div>

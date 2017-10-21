@@ -525,3 +525,15 @@ $lang['success']['relayhost_removed'] = "Relayhost %s has been removed";
 $lang['success']['relayhost_added'] = "Relayhost %s has been added";
 $lang['admin']['relay_from'] = '"From:" address';
 $lang['admin']['relay_run'] = "Run test";
+
+$lang['admin']['customize'] = "Customize";
+$lang['admin']['change_logo'] = "Change logo";
+$lang['admin']['logo_info'] = "Your image will be scaled to a height of 40px for the top navigation bar and a max. width of 250px for the start page. A scalable graphic is highly recommended.";
+$lang['admin']['upload'] = "Upload";
+$lang['admin']['app_links'] = "App links";
+$lang['admin']['app_name'] = "App name";
+$lang['admin']['link'] = "Link";
+$lang['admin']['remove_row'] = "Remove row";
+$lang['admin']['add_row'] = "Add row";
+$lang['admin']['reset_default'] = "Reset to default";
+$lang['admin']['merged_vars_hint'] = 'Greyed out rows were merged from <code>vars.inc.(local.)php</code> and cannot be modified.';
