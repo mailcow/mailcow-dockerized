@@ -1,4 +1,1 @@
 # rspamd.conf.local
-worker "log_helper" {
-  count = 1;
-}
