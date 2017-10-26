@@ -755,7 +755,7 @@ function mailbox($_action, $_type, $_data = null) {
               ':active' => $active
             ));
             $stmt = $pdo->prepare("INSERT INTO `quota2` (`username`, `bytes`, `messages`)
-              VALUES (:username, '0', '0')");
+              VALUES (:username, '0', '0') ON DUPLICATE KEY UPDATE `bytes` = '0', `messages` = '0';");
             $stmt->execute(array(':username' => $username));
             $stmt = $pdo->prepare("INSERT INTO `alias` (`address`, `goto`, `domain`, `active`)
               VALUES (:username1, :username2, :domain, :active)");
@@ -1291,11 +1291,11 @@ function mailbox($_action, $_type, $_data = null) {
               $port1 = (!empty($_data['port1'])) ? $_data['port1'] : $is_now['port1'];
               $password1 = (!empty($_data['password1'])) ? $_data['password1'] : $is_now['password1'];
               $host1 = (!empty($_data['host1'])) ? $_data['host1'] : $is_now['host1'];
-              $subfolder2 = (!empty($_data['subfolder2'])) ? $_data['subfolder2'] : $is_now['subfolder2'];
+              $subfolder2 = (isset($_data['subfolder2'])) ? $_data['subfolder2'] : $is_now['subfolder2'];
               $enc1 = (!empty($_data['enc1'])) ? $_data['enc1'] : $is_now['enc1'];
               $mins_interval = (!empty($_data['mins_interval'])) ? $_data['mins_interval'] : $is_now['mins_interval'];
-              $exclude = (!empty($_data['exclude'])) ? $_data['exclude'] : $is_now['exclude'];
-              $maxage = (!empty($_data['maxage'])) ? $_data['maxage'] : $is_now['maxage'];
+              $exclude = (!empty($_data['exclude'])) ? $_data['exclude'] : '';
+              $maxage = (isset($_data['maxage']) && $_data['maxage'] != "") ? intval($_data['maxage']) : $is_now['maxage'];
             }
             else {
               $_SESSION['return'] = array(

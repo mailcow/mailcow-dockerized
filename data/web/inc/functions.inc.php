@@ -244,6 +244,23 @@ function set_acl() {
     return false;
   }
 }
+function get_acl($username) {
+	global $pdo;
+	if ($_SESSION['mailcow_cc_role'] != "admin") {
+		return false;
+	}
+  $username = strtolower(trim($username));
+  $stmt = $pdo->prepare("SELECT * FROM `user_acl` WHERE `username` = :username");
+  $stmt->execute(array(':username' => $username));
+  $acl = $stmt->fetch(PDO::FETCH_ASSOC);
+  unset($acl['username']);
+  if (!empty($acl)) {
+    return $acl;
+  }
+  else {
+    return false;
+  }
+}
 function formatBytes($size, $precision = 2) {
 	if(!is_numeric($size)) {
 		return "0";
@@ -894,6 +911,14 @@ function get_logs($container, $lines = 100) {
   }
   if ($container == "fail2ban-mailcow") {
     if ($data = $redis->lRange('F2B_LOG', 0, $lines)) {
+      foreach ($data as $json_line) {
+        $data_array[] = json_decode($json_line, true);
+      }
+      return $data_array;
+    }
+  }
+  if ($container == "autodiscover-mailcow") {
+    if ($data = $redis->lRange('AUTODISCOVER_LOG', 0, $lines)) {
       foreach ($data as $json_line) {
         $data_array[] = json_decode($json_line, true);
       }

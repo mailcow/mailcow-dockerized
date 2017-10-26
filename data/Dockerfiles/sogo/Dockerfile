@@ -28,8 +28,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN mkdir /usr/share/doc/sogo \
 	&& touch /usr/share/doc/sogo/empty.sh \
-	&& apt-key adv --keyserver sks.labs.nic.cz --recv-key A04BE668 \
-	&& echo "deb http://www.axis.cz/linux/debian stretch sogo-v3" > /etc/apt/sources.list.d/sogo.list \
+	&& apt-key adv --keyserver keys.gnupg.net --recv-key 0x810273C4 \
+	&& echo "deb http://packages.inverse.ca/SOGo/nightly/3/debian/ stretch stretch" > /etc/apt/sources.list.d/sogo.list \
 	&& apt-get update && apt-get install -y --force-yes \
 		sogo \
 		sogo-activesync \

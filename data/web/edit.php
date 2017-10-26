@@ -457,6 +457,23 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               </select>
             </div>
           </div>
+<?php
+$mailbox_acl = get_acl($mailbox);
+?>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="sender_acl">ACL:</label>
+            <div class="col-sm-10">
+              <select multiple data-width="100%" style="width:100%" >
+                <?php
+                foreach ($mailbox_acl as $key => $val) {
+                ?>
+                <option value="<?=$key;?>" <?=($val == 1) ? 'selected' : null;?>><?=$lang['edit'][$key];?></option>
+                <?php
+                }
+                ?>
+              </select>
+            </div>
+          </div>
           <div class="form-group">
             <label class="control-label col-sm-2" for="password"><?=$lang['edit']['password'];?></label>
             <div class="col-sm-10">

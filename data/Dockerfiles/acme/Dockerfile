@@ -9,8 +9,9 @@ RUN apk add --update --no-cache \
 	openssl \
 	bind-tools \
 	jq \
-	mariadb-client
+	mariadb-client \
+  tini
 
 COPY docker-entrypoint.sh /srv/docker-entrypoint.sh
 
-ENTRYPOINT ["/srv/docker-entrypoint.sh"]
+CMD ["/sbin/tini", "-g", "--", "/srv/docker-entrypoint.sh"]

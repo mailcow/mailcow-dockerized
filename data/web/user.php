@@ -268,8 +268,8 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 		<h4><?=$lang['user']['spamfilter_behavior'];?></h4>
 		<form class="form-horizontal" role="form" data-id="spam_score" method="post">
 			<div class="form-group">
-				<div class="col-sm-12">
-					<input name="spam_score" id="spam_score" type="text" style="width: 100% !important;"
+				<div class="col-lg-6 col-sm-12">
+					<input name="spam_score" id="spam_score" type="text" style="width: 100%;"
 						data-provide="slider"
 						data-slider-min="1"
 						data-slider-max="2000"
@@ -321,14 +321,13 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
           <div class="btn-group">
             <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="policy_wl_mailbox" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
             <a class="btn btn-sm btn-danger" id="delete_selected" data-id="policy_wl_mailbox" data-api-url='delete/mailbox-policy' href="#"><?=$lang['mailbox']['remove'];?></a></li>
-            </ul>
           </div>
         </div>
         <form class="form-inline" data-id="add_wl_policy_mailbox">
           <div class="input-group">
             <input type="text" class="form-control" name="object_from" id="object_from" placeholder="*@example.org" required>
             <span class="input-group-btn">
-              <button class="btn btn-success" id="add_item" data-id="add_wl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username":"<?= $username; ?>","object_list":"wl"}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['spamfilter_table_add'];?></button>
+              <button class="btn btn-default" id="add_item" data-id="add_wl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username":"<?= $username; ?>","object_list":"wl"}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['spamfilter_table_add'];?></button>
             </span>
           </div>
         </form>
@@ -349,7 +348,6 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
           <div class="btn-group">
             <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="policy_bl_mailbox" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
             <a class="btn btn-sm btn-danger" id="delete_selected" data-id="policy_bl_mailbox" data-api-url='delete/mailbox-policy' href="#"><?=$lang['mailbox']['remove'];?></a></li>
-            </ul>
           </div>
         </div>
         <form class="form-inline" data-id="add_bl_policy_mailbox">
@@ -358,7 +356,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
             <input type="hidden" name="username" value="<?= $username ;?>">
             <input type="hidden" name="object_list" value="bl">
             <span class="input-group-btn">
-              <button class="btn btn-success" id="add_item" data-id="add_bl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username":"<?= $username; ?>","object_list":"bl"}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['spamfilter_table_add'];?></button>
+              <button class="btn btn-default" id="add_item" data-id="add_bl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username":"<?= $username; ?>","object_list":"bl"}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['spamfilter_table_add'];?></button>
             </span>
           </div>
         </form>

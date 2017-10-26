@@ -16,10 +16,10 @@ if [ -z "$MAILCOW_HOSTNAME" ]; then
   read -p "Hostname (FQDN): " -ei "mx.example.org" MAILCOW_HOSTNAME
 fi
 
-if [[ -a /etc/timezone ]]; then 
- TZ=$(cat /etc/timezone) 
+if [[ -a /etc/timezone ]]; then
+  TZ=$(cat /etc/timezone)
 elif  [[ -a /etc/localtime ]]; then
- TZ=$(readlink /etc/localtime|sed -n 's|^.*zoneinfo/||p')
+   TZ=$(readlink /etc/localtime|sed -n 's|^.*zoneinfo/||p')
 fi
 
 if [ -z "$TZ" ]; then
@@ -84,17 +84,22 @@ COMPOSE_PROJECT_NAME=mailcow-dockerized
 # Additional SAN for the certificate
 ADDITIONAL_SAN=
 
-# To never run acme-mailcow for Let's Encrypt, set this to y
-SKIP_LETS_ENCRYPT=n
 
-# Skip IPv4 check in ACME container
+# Skip running ACME (acme-mailcow, Let's Encrypt certs) - y/n
+SKIP_LETS_ENCRYPT=n
+# Skip IPv4 check in ACME container - y/n
 SKIP_IP_CHECK=n
 
-# To never run fail2ban-mailcow
+# Skip Fail2ban implementation (fail2ban-mailcow) - y/n
 SKIP_FAIL2BAN=n
 
-# To never run clamd-mailcow
+# Skip ClamAV (clamd-mailcow) anti-virus (Rspamd will auto-detect a missing ClamAV container) - y/n
 SKIP_CLAMD=n
+
+# Enable watchdog (watchdog-mailcow) to restart unhealthy containers (experimental)
+USE_WATCHDOG=n
+# Send notifications by mail (no DKIM signature, sent from watchdog@MAILCOW_HOSTNAME)
+#WATCHDOG_NOTIFY_EMAIL=
 
 EOF
 
