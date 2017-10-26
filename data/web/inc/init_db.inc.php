@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "15092017_0754";
+    $db_version = "25102017_0748";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'"); 
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -165,7 +165,6 @@ function init_db_schema() {
           "delimiter_action" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "syncjobs" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "eas_reset" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "eas_autoconfig" => "TINYINT(1) NOT NULL DEFAULT '1'"
         ),
         "keys" => array(
           "fkey" => array(
@@ -498,6 +497,13 @@ function init_db_schema() {
       $stmt = $pdo->query("SHOW TABLES LIKE '" . $table . "'"); 
       $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
       if ($num_results != 0) {
+        $stmt = $pdo->prepare("SELECT CONCAT('ALTER TABLE ', `table_schema`, '.', `table_name`, ' DROP FOREIGN KEY ', `constraint_name`, ';') AS `FKEY_DROP` FROM `information_schema`.`table_constraints`
+          WHERE `constraint_type` = 'FOREIGN KEY' AND `table_name` = :table;");
+        $stmt->execute(array(':table' => $table));
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        while ($row = array_shift($rows)) {
+          $pdo->query($row['FKEY_DROP']);
+        }
         foreach($properties['cols'] as $column => $type) {
           $stmt = $pdo->query("SHOW COLUMNS FROM `" . $table . "` LIKE '" . $column . "'"); 
           $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -542,7 +548,7 @@ function init_db_schema() {
               $stmt = $pdo->query("SHOW KEYS FROM `" . $table . "` WHERE Key_name = '" . $key_name . "'"); 
               $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
               if ($num_results != 0) {
-                $pdo->query("ALTER TABLE `" . $table . "` DROP FOREIGN KEY `" . $key_name . "`");
+                $pdo->query("ALTER TABLE `" . $table . "` DROP INDEX `" . $key_name . "`");
               }
               @list($table_ref, $field_ref) = explode('.', $key_values['ref']);
               $pdo->query("ALTER TABLE `" . $table . "` ADD FOREIGN KEY `" . $key_name . "` (" . $key_values['col'] . ") REFERENCES `" . $table_ref . "` (`" . $field_ref . "`)
@@ -582,12 +588,7 @@ function init_db_schema() {
         // Step 2: Drop all vanished indexes
         while ($row = array_shift($keys_in_table)) {
           if (!in_array($row['Key_name'], $keys_to_exist)) {
-            try {
-              $pdo->query("ALTER TABLE `" . $table . "` DROP FOREIGN KEY `" . $row['Key_name'] . "`");
-            }
-            finally {
-              $pdo->query("ALTER TABLE `" . $table . "` DROP INDEX `" . $row['Key_name'] . "`");
-            }
+            $pdo->query("ALTER TABLE `" . $table . "` DROP INDEX `" . $row['Key_name'] . "`");
           }
         }
         // Step 3: Drop all vanished primary keys

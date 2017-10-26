@@ -6,10 +6,14 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/footer.php';
 <script src="/js/bootstrap-switch.min.js"></script>
 <script src="/js/bootstrap-slider.min.js"></script>
 <script src="/js/bootstrap-select.min.js"></script>
+<script src="/js/bootstrap-filestyle.min.js"></script>
 <script src="/js/notifications.min.js"></script>
 <script src="/js/u2f-api.js"></script>
 <script src="/js/api.js"></script>
 <script>
+$(window).scroll(function() {
+  sessionStorage.scrollTop = $(this).scrollTop();
+});
 // Select language and reopen active URL without POST
 function setLang(sel) {
   $.post( "<?= $_SERVER['REQUEST_URI']; ?>", {lang: sel} );
@@ -192,6 +196,9 @@ $(document).ready(function() {
 
   // CSRF
   $('<input type="hidden" value="<?= $_SESSION['CSRF']['TOKEN']; ?>">').attr('id', 'csrf_token').attr('name', 'csrf_token').appendTo('form');
+  if (sessionStorage.scrollTop != "undefined") {
+    $(window).scrollTop(sessionStorage.scrollTop);
+  }
 });
 </script>
 

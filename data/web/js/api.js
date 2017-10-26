@@ -14,7 +14,7 @@ $(document).ready(function() {
     });
     return o;
   };
-  // Collect values of input fields with name "multi_select" an same data-id to js array multi_data[data-id]
+  // Collect values of input fields with name "multi_select" and same data-id to js array multi_data[data-id]
   var multi_data = [];
   $(document).on('change', 'input[name=multi_select]:checkbox', function() {
     if ($(this).is(':checked') && $(this).data('id')) {
@@ -105,7 +105,8 @@ $(document).ready(function() {
         url: '/api/v1/' + api_url,
         jsonp: false,
         complete: function(data) {
-          // var reponse = (JSON.parse(data.responseText));
+          var response = (data.responseText);
+          // alert(response);
           // console.log(reponse.type);
           // console.log(reponse.msg);
           window.location = window.location.href.split("#")[0];

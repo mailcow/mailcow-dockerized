@@ -53,6 +53,7 @@ if (isset($_SESSION['mailcow_cc_role']) && session_check() === false) {
     'msg' => 'Form token invalid or timed out'
   );
   $_POST = array();
+  $_FILES = array();
 }
 
 // Handle logouts
