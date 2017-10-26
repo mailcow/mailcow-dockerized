@@ -2,6 +2,10 @@
 
 [[ -z ${1} ]] && { echo "No parameters given"; exit 1; }
 
+for bin in curl dirmngr; do
+  if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
+done
+
 while [ "$1" != '' ]; do
   case "${1}" in
     -p|--purge) NC_PURGE=y && shift;;

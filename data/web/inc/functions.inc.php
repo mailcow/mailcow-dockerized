@@ -244,6 +244,23 @@ function set_acl() {
     return false;
   }
 }
+function get_acl($username) {
+	global $pdo;
+	if ($_SESSION['mailcow_cc_role'] != "admin") {
+		return false;
+	}
+  $username = strtolower(trim($username));
+  $stmt = $pdo->prepare("SELECT * FROM `user_acl` WHERE `username` = :username");
+  $stmt->execute(array(':username' => $username));
+  $acl = $stmt->fetch(PDO::FETCH_ASSOC);
+  unset($acl['username']);
+  if (!empty($acl)) {
+    return $acl;
+  }
+  else {
+    return false;
+  }
+}
 function formatBytes($size, $precision = 2) {
 	if(!is_numeric($size)) {
 		return "0";
