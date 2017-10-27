@@ -44,11 +44,13 @@ if (isset($_GET['host'])) {
   }
 } else {
   try {
+    echo '240.240.240.240' . PHP_EOL;
     foreach ($redis->hGetAll('WHITELISTED_FWD_HOST') as $host => $source) {
-      echo $host . "\n";
+      echo $host . PHP_EOL;
     }
   }
   catch (RedisException $e) {
+    echo '240.240.240.240' . PHP_EOL;
     exit;
   }
 }
