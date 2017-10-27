@@ -17,7 +17,7 @@ rspamd_config:register_symbol({
     local tagged_rcpt = task:get_symbol("TAGGED_RCPT")
     local mailcow_domain = task:get_symbol("RCPT_MAILCOW_DOMAIN")
 
-    if tagged_rcpt and mailcow_domain then
+    if tagged_rcpt and tagged_rcpt[1].options and mailcow_domain then
       local tag = tagged_rcpt[1].options[1]
       rspamd_logger.infox("found tag: %s", tag)
       local action = task:get_metric_action('default')
