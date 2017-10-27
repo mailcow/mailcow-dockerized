@@ -360,6 +360,22 @@ while true; do
 done
 ) &
 
+# Monitor dockerapi
+(
+while true; do
+  while nc -z dockerapi 8080; do
+    sleep 3
+  done
+  echo "Cannot find dockerapi-mailcow, waiting to recover..."
+  kill -STOP ${BACKGROUND_TASKS[*]}
+  until nc -z dockerapi 8080; do
+    sleep 3
+  done
+  kill -CONT ${BACKGROUND_TASKS[*]}
+  kill -USR1 ${BACKGROUND_TASKS[*]}
+done
+) &
+
 # Restart container when threshold limit reached
 while true; do
   CONTAINER_ID=
