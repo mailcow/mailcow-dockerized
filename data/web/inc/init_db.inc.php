@@ -248,8 +248,8 @@ function init_db_schema() {
           "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
         ),
         "keys" => array(
-          "key" => array(
-            "username" => array("username")
+          "primary" => array(
+            "" => array("username", "domain")
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
