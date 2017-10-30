@@ -930,7 +930,7 @@ function get_logs($container, $lines = 100) {
     curl_setopt($curl, CURLOPT_URL,"http://rspamd-mailcow:11334/history");
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
     $history = curl_exec($curl);
-    if (!curl_errno($ch)) {
+    if (!curl_errno($curl)) {
       $data_array = json_decode($history, true);
       curl_close($curl);
       return $data_array['rows'];
