@@ -112,11 +112,12 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
   </div>
 </div><!-- add sync job modal -->
 <!-- log modal -->
-<div class="modal fade" id="logModal" tabindex="-1" role="dialog" aria-labelledby="logTextLabel">
-  <div class="modal-dialog" style="width:90%" role="document">
+<div class="modal fade" id="syncjobLogModal" tabindex="-1" role="dialog" aria-labelledby="syncjobLogModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
+      <div class="modal-header"><h4 class="modal-title">Log</h4></div>
       <div class="modal-body">
-        <span id="logText"></span>
+        <textarea class="form-control" rows="20" id="logText"></textarea>
       </div>
     </div>
   </div>
@@ -157,3 +158,17 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
     </div>
   </div>
 </div><!-- pw change modal -->
+<!-- sieve filter modal -->
+<div class="modal fade" id="userFilterModal" tabindex="-1" role="dialog" aria-labelledby="pwChangeModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <h3 class="modal-title"><?=$lang['user']['active_sieve'];?></h3>
+      </div>
+      <div class="modal-body">
+      <pre id="user_sieve_filter"></pre>
+      </div>
+    </div>
+  </div>
+</div><!-- sieve filter modal -->

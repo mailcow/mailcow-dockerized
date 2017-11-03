@@ -99,6 +99,9 @@ $lang['danger']['domain_not_empty'] = 'Kann nur leere Domains entfernen';
 $lang['warning']['spam_alias_temp_error'] = 'Kann zur Zeit keinen Spam-Alias erstellen, bitte versuchen Sie es später noch einmal.';
 $lang['danger']['spam_alias_max_exceeded'] = 'Maximale Anzahl an Spam-Alias-Adressen erreicht';
 $lang['danger']['validity_missing'] = 'Bitte geben Sie eine Gültigkeitsdauer an';
+$lang['user']['loading'] = "Lade...";
+$lang['user']['active_sieve'] = "Aktiver Filter";
+$lang['user']['no_active_filter'] = "Kein aktiver Filter vorhanden";
 $lang['user']['on'] = 'Ein';
 $lang['user']['off'] = 'Aus';
 $lang['user']['messages'] = "Nachrichten";
@@ -287,7 +290,7 @@ $lang['edit']['syncjob'] = 'Sync-Job bearbeiten';
 $lang['edit']['save'] = 'Änderungen speichern';
 $lang['edit']['username'] = 'Benutzername';
 $lang['edit']['hostname'] = 'Servername';
-$lang['edit']['encryption'] = 'Verschlüsselungsmethode';
+$lang['edit']['encryption'] = 'Verschlüsselung';
 $lang['edit']['maxage'] = 'Maximales Alter in Tagen einer Nachricht, die kopiert werden soll</br ><small>(0 = alle Nachrichten kopieren)</small>';
 $lang['edit']['subfolder2'] = 'Ziel-Ordner<br><small>(leer = kein Unterordner)</small>';
 $lang['edit']['mins_interval'] = 'Intervall (min)';
@@ -339,7 +342,7 @@ $lang['add']['syncjob_hint'] = 'Passwörter werden unverschlüsselt abgelegt!';
 $lang['add']['hostname'] = 'Servername';
 $lang['add']['port'] = 'Port';
 $lang['add']['username'] = 'Benutzername';
-$lang['add']['enc_method'] = 'Verschlüsselungsmethode';
+$lang['add']['enc_method'] = 'Verschlüsselung';
 $lang['add']['maxage'] = 'Maximales Alter von Nachrichten, welche vom Remote abgefragt werden (0 = Alter ignorieren)';
 $lang['add']['subfolder2'] = 'Synchronisation in Unterordner am Ziel';
 $lang['add']['mins_interval'] = 'Abrufintervall (Minuten)';
@@ -388,6 +391,21 @@ $lang['add']['password_repeat'] = 'Passwort (Wiederholung)';
 $lang['add']['previous'] = 'Vorherige Seite';
 $lang['add']['restart_sogo_hint'] = 'Der SOGo Container muss nach dem Hinzufügen einer neuen Domain neugestartet werden!';
 $lang['add']['goto_null'] = 'Nachrichten sofort verwerfen';
+$lang['add']['validation_success'] = 'Erfolgreich validiert';
+$lang['add']['activate_filter_warn'] = 'Alle anderen Filter diesen Typs werden deaktiviert, falls dieses Script aktiv markiert wird.';
+$lang['add']['validate'] = 'Validieren';
+$lang['mailbox']['add_filter'] = 'Filter erstellen';
+$lang['add']['sieve_desc'] = 'Kurze Beschreibung';
+$lang['edit']['sieve_desc'] = 'Kurze Beschreibung';
+$lang['add']['sieve_type'] = 'Filtertyp';
+$lang['edit']['sieve_type'] = 'Filtertyp';
+$lang['mailbox']['set_prefilter'] = 'Als Prefilter markieren';
+$lang['mailbox']['set_postfilter'] = 'Als Postfilter markieren';
+$lang['mailbox']['filters'] = 'Filter';
+$lang['mailbox']['sync_jobs'] = 'Synchronisationen';
+$lang['mailbox']['inactive'] = 'Inaktiv';
+$lang['edit']['validate_save'] = 'Validieren und speichern';
+
 
 $lang['login']['title'] = 'Anmeldung';
 $lang['login']['administration'] = 'Administration';
@@ -425,6 +443,8 @@ $lang['tfa']['scan_qr_code'] = "Bitte scannen Sie jetzt den angezeigten QR-Code:
 $lang['tfa']['enter_qr_code'] = "Falls Sie den angezeigten QR-Code nicht scannen können, verwenden Sie bitte nachstehenden Sicherheitsschlüssel";
 $lang['tfa']['confirm_totp_token'] = "Bitte bestätigen Sie die Änderung durch Eingabe eines generierten Tokens";
 
+$lang['admin']['no_new_rows'] = 'Keine weiteren Zeilen vorhanden';
+$lang['admin']['additional_rows'] = ' zusätzliche Zeilen geladen'; // parses to 'n additional rows were added'
 $lang['admin']['private_key'] = 'Private Key';
 $lang['admin']['import'] = 'Importieren';
 $lang['admin']['import_private_key'] = 'Private Key importieren';

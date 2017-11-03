@@ -1,0 +1,11 @@
+<?xml version='1.0' standalone='yes'?>
+
+<extension name="regex">
+
+	<matchtype name="regex" />
+
+	<tagged-argument extends="set">
+		<parameter type="tag" name="modifier" regex="quoteregex" occurrence="optional" />
+	</tagged-argument>
+
+</extension>

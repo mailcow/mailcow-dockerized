@@ -1,0 +1,13 @@
+<?xml version='1.0' standalone='yes'?>
+
+<extension name="envelope">
+
+	<test name="envelope">
+		<parameter type="matchtype" occurrence="optional" />
+		<parameter type="comparator" occurrence="optional" />
+		<parameter type="addresspart" occurrence="optional" />
+		<parameter type="stringlist" name="envelope-part" />
+		<parameter type="stringlist" name="key" />
+	</test>
+
+</extension>

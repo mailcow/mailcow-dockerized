@@ -10,6 +10,7 @@ $(document).ready(function() {
       $("#textarea_alias_goto").removeAttr('disabled');
     }
   });
+  $("#script_data").numberedtextarea({allowTabChar: true});
 });
 
 jQuery(function($){

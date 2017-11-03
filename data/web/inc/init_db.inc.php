@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "25102017_0748";
+    $db_version = "31102017_1049";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'"); 
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -27,7 +27,13 @@ function init_db_schema() {
       GROUP BY logged_in_as;",
     "grouped_domain_alias_address" => "CREATE VIEW grouped_domain_alias_address (username, ad_alias) AS
       SELECT username, IFNULL(GROUP_CONCAT(local_part, '@', alias_domain SEPARATOR ' '), '') AS ad_alias FROM mailbox
-      LEFT OUTER JOIN alias_domain on target_domain=domain GROUP BY username;"
+      LEFT OUTER JOIN alias_domain on target_domain=domain GROUP BY username;",
+    "sieve_before" => "CREATE VIEW sieve_before (id, username, script_name, script_data) AS
+      SELECT id, username, script_name, script_data FROM sieve_filters
+      WHERE filter_type = 'prefilter';",
+    "sieve_after" => "CREATE VIEW sieve_after (id, username, script_name, script_data) AS
+      SELECT id, username, script_name, script_data FROM sieve_filters
+      WHERE filter_type = 'postfilter';"
     );
 
     $tables = array(
@@ -155,6 +161,36 @@ function init_db_schema() {
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
+      "sieve_filters" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "username" => "VARCHAR(255) NOT NULL",
+          "script_desc" => "VARCHAR(255) NOT NULL",
+          "script_name" => "ENUM('active','inactive')",
+          "script_data" => "TEXT NOT NULL",
+          "filter_type" => "ENUM('postfilter','prefilter')",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "key" => array(
+            "username" => array("username"),
+            "script_desc" => array("script_desc")
+          ),
+          "fkey" => array(
+            "fk_username_sieve_global_before" => array(
+              "col" => "username",
+              "ref" => "mailbox.username",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
       "user_acl" => array(
         "cols" => array(
           "username" => "VARCHAR(255) NOT NULL",
@@ -165,6 +201,7 @@ function init_db_schema() {
           "delimiter_action" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "syncjobs" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "eas_reset" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "filters" => "TINYINT(1) NOT NULL DEFAULT '1'",
         ),
         "keys" => array(
           "fkey" => array(
@@ -248,8 +285,11 @@ function init_db_schema() {
           "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
         ),
         "keys" => array(
+          "primary" => array(
+            "" => array("username")
+          ),
           "key" => array(
-            "username" => array("username")
+            "domain" => array("domain")
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
