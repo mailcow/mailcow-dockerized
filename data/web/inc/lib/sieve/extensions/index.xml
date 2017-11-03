@@ -1,0 +1,17 @@
+<?xml version='1.0' standalone='yes'?>
+
+<extension name="index">
+
+	<tagged-argument extends="(header|address|date)">
+		<parameter type="tag" name="index" regex="index" occurrence="optional">
+			<parameter type="number" name="field number" />
+		</parameter>
+	</tagged-argument>
+
+	<tagged-argument extends="(header|address|date)">
+		<parameter type="tag" name="last" regex="last" occurrence="optional">
+			<requires type="tag" name="index" regex="index" />
+		</parameter>
+	</tagged-argument>
+
+</extension>

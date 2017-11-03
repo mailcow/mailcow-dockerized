@@ -1,0 +1,91 @@
+<?xml version='1.0' standalone='yes'?>
+
+<keywords>
+
+	<matchtype name="is" />
+	<matchtype name="contains" />
+	<matchtype name="matches" />
+	<matchtype name="value">
+		<parameter type="string" name="operator" regex="(gt|ge|eq|le|lt)" />
+	</matchtype>
+
+
+	<comparator name="i;octet" />
+	<comparator name="i;ascii-casemap" />
+	<comparator name="i;unicode-casemap" />
+
+	<addresspart name="all" />
+	<addresspart name="localpart" />
+	<addresspart name="domain" />
+
+
+	<command name="discard" />
+
+	<command name="elsif">
+		<parameter type="test" name="test command" />
+		<parameter type="block" />
+	</command>
+
+	<command name="else">
+		<parameter type="block" />
+	</command>
+
+	<command name="if">
+		<parameter type="test" name="test command" />
+		<parameter type="block" />
+	</command>
+
+	<command name="keep" />
+
+	<command name="redirect">
+		<parameter type="string" name="address string" />
+	</command>
+
+	<command name="require">
+		<parameter type="requirestrings" name="require string" />
+	</command>
+
+	<command name="stop" />
+
+
+	<test name="address">
+		<parameter type="matchtype" occurrence="optional" />
+		<parameter type="comparator" occurrence="optional" />
+		<parameter type="addresspart" occurrence="optional" />
+		<parameter type="stringlist" name="header list" />
+		<parameter type="stringlist" name="key list" />
+	</test>
+
+	<test name="allof">
+		<parameter type="testlist" name="test" />
+	</test>
+
+	<test name="anyof">
+		<parameter type="testlist" name="test" />
+	</test>
+
+	<test name="exists">
+		<parameter type="stringlist" name="header names" />
+	</test>
+
+	<test name="false" />
+	
+	<test name="header">
+		<parameter type="matchtype" occurrence="optional" />
+		<parameter type="comparator" occurrence="optional" />
+		<parameter type="stringlist" name="header names" />
+		<parameter type="stringlist" name="key list" />
+	</test>
+
+	<test name="not">
+		<parameter type="test" />
+	</test>
+
+	<test name="size">
+		<parameter type="tag" regex="(over|under)" />
+		<parameter type="number" name="limit" />
+	</test>
+
+	<test name="true" />
+
+</keywords>

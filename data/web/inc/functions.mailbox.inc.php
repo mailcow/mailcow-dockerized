@@ -1,5 +1,5 @@
 <?php
-function mailbox($_action, $_type, $_data = null) {
+function mailbox($_action, $_type, $_data = null, $attr = null) {
 	global $pdo;
 	global $redis;
 	global $lang;
@@ -71,6 +71,116 @@ function mailbox($_action, $_type, $_data = null) {
             'type' => 'success',
             'msg' => sprintf($lang['success']['mailbox_modified'], htmlspecialchars($usernames))
           );
+        break;
+        case 'filter':
+          $sieve = new Sieve\SieveParser();
+          if (!isset($_SESSION['acl']['filters']) || $_SESSION['acl']['filters'] != "1" ) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => sprintf($lang['danger']['access_denied'])
+            );
+            return false;
+          }
+          if (isset($_data['username']) && filter_var($_data['username'], FILTER_VALIDATE_EMAIL)) {
+            if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data['username'])) {
+              $_SESSION['return'] = array(
+                'type' => 'danger',
+                'msg' => sprintf($lang['danger']['access_denied'])
+              );
+              return false;
+            }
+            else {
+              $username = $_data['username'];
+            }
+          }
+          elseif ($_SESSION['mailcow_cc_role'] == "user") {
+            $username = $_SESSION['mailcow_cc_username'];
+          }
+          else {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => 'No user defined'
+            );
+            return false;
+          }
+          $active     = intval($_data['active']);
+          $script_data = $_data['script_data'];
+          $script_desc = $_data['script_desc'];
+          $filter_type = $_data['filter_type'];
+          if (empty($script_data)) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => 'Script cannot be empty'
+            );
+            return false;
+          }
+          try {
+            $sieve->parse($script_data);
+          }
+          catch (Exception $e) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => 'Sieve parser error: ' . $e->getMessage()
+            );
+            return false;
+          }
+          if (empty($script_data) || empty($script_desc)) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => 'Please define values for all fields'
+            );
+            return false;
+          }
+          if ($filter_type != 'postfilter' && $filter_type != 'prefilter') {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => 'Wrong filter type'
+            );
+            return false;
+          }
+          if (!empty($active)) {
+            $script_name = 'active';
+            try {
+              $stmt = $pdo->prepare("UPDATE `sieve_filters` SET `script_name` = 'inactive' WHERE `username` = :username AND `filter_type` = :filter_type");
+              $stmt->execute(array(
+                ':username' => $username,
+                ':filter_type' => $filter_type
+              ));
+            }
+            catch(PDOException $e) {
+              $_SESSION['return'] = array(
+                'type' => 'danger',
+                'msg' => 'MySQL: '.$e
+              );
+              return false;
+            }
+          }
+          else {
+            $script_name = 'inactive';
+          }
+          try {
+            $stmt = $pdo->prepare("INSERT INTO `sieve_filters` (`username`, `script_data`, `script_desc`, `script_name`, `filter_type`)
+              VALUES (:username, :script_data, :script_desc, :script_name, :filter_type)");
+            $stmt->execute(array(
+              ':username' => $username,
+              ':script_data' => $script_data,
+              ':script_desc' => $script_desc,
+              ':script_name' => $script_name,
+              ':filter_type' => $filter_type
+            ));
+          }
+          catch(PDOException $e) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => 'MySQL: '.$e
+            );
+            return false;
+          }
+          $_SESSION['return'] = array(
+            'type' => 'success',
+            'msg' => sprintf($lang['success']['mailbox_modified'], $username)
+          );
+          return true;
         break;
         case 'syncjob':
           if (!isset($_SESSION['acl']['syncjobs']) || $_SESSION['acl']['syncjobs'] != "1" ) {
@@ -1379,6 +1489,100 @@ function mailbox($_action, $_type, $_data = null) {
           );
           return true;
         break;
+        case 'filter':
+          $sieve = new Sieve\SieveParser();
+          if (!is_array($_data['id'])) {
+            $ids = array();
+            $ids[] = $_data['id'];
+          }
+          else {
+            $ids = $_data['id'];
+          }
+          if (!isset($_SESSION['acl']['filters']) || $_SESSION['acl']['filters'] != "1" ) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => sprintf($lang['danger']['access_denied'])
+            );
+            return false;
+          }
+          foreach ($ids as $id) {
+            $is_now = mailbox('get', 'filter_details', $id);
+            if (!empty($is_now)) {
+              $username = $is_now['username'];
+              $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
+              $script_desc = (!empty($_data['script_desc'])) ? $_data['script_desc'] : $is_now['script_desc'];
+              $script_data = (!empty($_data['script_data'])) ? $_data['script_data'] : $is_now['script_data'];
+              $filter_type = (!empty($_data['filter_type'])) ? $_data['filter_type'] : $is_now['filter_type'];
+            }
+            else {
+              $_SESSION['return'] = array(
+                'type' => 'danger',
+                'msg' => sprintf($lang['danger']['access_denied'])
+              );
+              return false;
+            }
+            try {
+              $sieve->parse($script_data);
+            }
+            catch (Exception $e) {
+              $_SESSION['return'] = array(
+                'type' => 'danger',
+                'msg' => 'Sieve parser error: ' . $e->getMessage()
+              );
+              return false;
+            }
+            if ($filter_type != 'postfilter' && $filter_type != 'prefilter') {
+              $_SESSION['return'] = array(
+                'type' => 'danger',
+                'msg' => 'Wrong filter type'
+              );
+              return false;
+            }
+            if ($active == '1') {
+              $script_name = 'active';
+              try {
+                $stmt = $pdo->prepare("UPDATE `sieve_filters` SET `script_name` = 'inactive' WHERE `username` = :username AND `filter_type` = :filter_type");
+                $stmt->execute(array(
+                  ':username' => $username,
+                  ':filter_type' => $filter_type
+                ));
+              }
+              catch(PDOException $e) {
+                $_SESSION['return'] = array(
+                  'type' => 'danger',
+                  'msg' => 'MySQL: '.$e
+                );
+                return false;
+              }
+            }
+            else {
+              $script_name = 'inactive';
+            }
+            try {
+              $stmt = $pdo->prepare("UPDATE `sieve_filters` SET `script_desc` = :script_desc, `script_data` = :script_data, `script_name` = :script_name, `filter_type` = :filter_type
+                WHERE `id` = :id");
+              $stmt->execute(array(
+                ':script_desc' => $script_desc,
+                ':script_data' => $script_data,
+                ':script_name' => $script_name,
+                ':filter_type' => $filter_type,
+                ':id' => $id
+              ));
+            }
+            catch(PDOException $e) {
+              $_SESSION['return'] = array(
+                'type' => 'danger',
+                'msg' => 'MySQL: '.$e
+              );
+              return false;
+            }
+          }
+          $_SESSION['return'] = array(
+            'type' => 'success',
+            'msg' => sprintf($lang['success']['mailbox_modified'], $username)
+          );
+          return true;
+        break;
         case 'alias':
           if (!is_array($_data['address'])) {
             $addresses = array();
@@ -2140,19 +2344,128 @@ function mailbox($_action, $_type, $_data = null) {
           }
           return $policydata;
         break;
+        case 'filters':
+          $filters = array();
+          if (isset($_data) && filter_var($_data, FILTER_VALIDATE_EMAIL)) {
+            if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
+              return false;
+            }
+          }
+          else {
+            $_data = $_SESSION['mailcow_cc_username'];
+          }
+          try {
+            $stmt = $pdo->prepare("SELECT `id` FROM `sieve_filters` WHERE `username` = :username");
+            $stmt->execute(array(':username' => $_data));
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            while($row = array_shift($rows)) {
+              $filters[] = $row['id'];
+            }
+          }
+          catch(PDOException $e) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => 'MySQL: '.$e
+            );
+          }
+          return $filters;
+        break;
+        case 'filter_details':
+          $filter_details = array();
+          if (!is_numeric($_data)) {
+            return false;
+          }
+          try {
+            $stmt = $pdo->prepare("SELECT CASE `script_name` WHEN 'active' THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`,
+              CASE `script_name` WHEN 'active' THEN 1 ELSE 0 END AS `active_int`,
+              id,
+              username,
+              filter_type,
+              script_data,
+              script_desc
+              FROM `sieve_filters`
+                WHERE `id` = :id");
+            $stmt->execute(array(':id' => $_data));
+            $filter_details = $stmt->fetch(PDO::FETCH_ASSOC);
+          }
+          catch(PDOException $e) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => 'MySQL: '.$e
+            );
+            return false;
+          }
+          if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $filter_details['username'])) {
+            return false;
+          }
+          return $filter_details;
+        break;
+        case 'active_user_sieve':
+          $filter_details = array();
+          if (isset($_data) && filter_var($_data, FILTER_VALIDATE_EMAIL)) {
+            if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
+              return false;
+            }
+          }
+          else {
+            $_data = $_SESSION['mailcow_cc_username'];
+          }
+          $exec_fields = array(
+            'cmd' => 'sieve_list',
+            'username' => $_data
+          );
+          $filters = json_decode(docker('dovecot-mailcow', 'post', 'exec', $exec_fields), true);
+          $filters = array_filter(explode(PHP_EOL, $filters));
+          foreach ($filters as $filter) {
+            if (preg_match('/.+ ACTIVE/i', $filter)) {
+              $exec_fields = array(
+                'cmd' => 'sieve_print',
+                'script_name' => substr($filter, 0, -7),
+                'username' => $_data
+              );
+              $filters = json_decode(docker('dovecot-mailcow', 'post', 'exec', $exec_fields), true);
+              return preg_replace('/^.+\n/', '', $filters);
+            }
+          }
+          return false;
+        break;
         case 'syncjob_details':
           $syncjobdetails = array();
           if (!is_numeric($_data)) {
             return false;
           }
           try {
-            $stmt = $pdo->prepare("SELECT *,
-              CONCAT(LEFT(`password1`, 3), '...') AS `password1_short`,
-              `active` AS `active_int`,
-              CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`
-                FROM `imapsync` WHERE id = :id");
+            if (isset($attr) && in_array('no_log', $attr)) {
+              $field_query = $pdo->query('SHOW FIELDS FROM `imapsync` WHERE FIELD NOT IN ("returned_text", "password1")');
+              $fields = $field_query->fetchAll(PDO::FETCH_ASSOC);
+              while($field = array_shift($fields)) {
+                $shown_fields[] = $field['Field'];
+              }
+              $stmt = $pdo->prepare("SELECT " . implode(',', $shown_fields) . ",
+                `active` AS `active_int`,
+                CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`
+                  FROM `imapsync` WHERE id = :id");
+            }
+            else {
+              $field_query = $pdo->query('SHOW FIELDS FROM `imapsync` WHERE FIELD NOT IN ("password1")');
+              $fields = $field_query->fetchAll(PDO::FETCH_ASSOC);
+              while($field = array_shift($fields)) {
+                $shown_fields[] = $field['Field'];
+              }
+              $stmt = $pdo->prepare("SELECT " . implode(',', $shown_fields) . ",
+                `active` AS `active_int`,
+                CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`
+                  FROM `imapsync` WHERE id = :id");
+            }
             $stmt->execute(array(':id' => $_data));
             $syncjobdetails = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!empty($syncjobdetails['returned_text'])) {
+              $syncjobdetails['log'] = $syncjobdetails['returned_text'];
+            }
+            else {
+              $syncjobdetails['log'] = '';
+            }
+            unset($syncjobdetails['returned_text']);
           }
           catch(PDOException $e) {
             $_SESSION['return'] = array(
@@ -2813,6 +3126,57 @@ function mailbox($_action, $_type, $_data = null) {
           $_SESSION['return'] = array(
             'type' => 'success',
             'msg' => 'Deleted syncjob id/s ' . implode(', ', $ids)
+          );
+          return true;
+        break;
+        case 'filter':
+          if (!is_array($_data['id'])) {
+            $ids = array();
+            $ids[] = $_data['id'];
+          }
+          else {
+            $ids = $_data['id'];
+          }
+          if (!isset($_SESSION['acl']['filters']) || $_SESSION['acl']['filters'] != "1" ) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => sprintf($lang['danger']['access_denied'])
+            );
+            return false;
+          }
+          foreach ($ids as $id) {
+            if (!is_numeric($id)) {
+              $_SESSION['return'] = array(
+                'type' => 'danger',
+                'msg' => $id
+              );
+              return false;
+            }
+            try {
+              $stmt = $pdo->prepare("SELECT `username` FROM `sieve_filters` WHERE id = :id");
+              $stmt->execute(array(':id' => $id));
+              $usr = $stmt->fetch(PDO::FETCH_ASSOC)['username'];
+              if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $usr)) {
+                $_SESSION['return'] = array(
+                  'type' => 'danger',
+                  'msg' => sprintf($lang['danger']['access_denied'])
+                );
+                return false;
+              }
+              $stmt = $pdo->prepare("DELETE FROM `sieve_filters` WHERE `id`= :id");
+              $stmt->execute(array(':id' => $id));
+            }
+            catch (PDOException $e) {
+              $_SESSION['return'] = array(
+                'type' => 'danger',
+                'msg' => 'MySQL: '.$e
+              );
+              return false;
+            }
+          }
+          $_SESSION['return'] = array(
+            'type' => 'success',
+            'msg' => 'Deleted filter id/s ' . implode(', ', $ids)
           );
           return true;
         break;

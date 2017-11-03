@@ -457,12 +457,11 @@ $tfa_data = get_tfa();
 
   <div role="tabpanel" class="tab-pane" id="tab-postfix-logs">
     <div class="panel panel-default">
-      <div class="panel-heading">Postfix
+      <div class="panel-heading">Postfix <span class="badge badge-info log-lines"></span>
         <div class="btn-group pull-right">
-          <a class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['admin']['action'];?> <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="#" id="refresh_postfix_log"><?=$lang['admin']['refresh'];?></a></li>
-          </ul>
+          <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="postfix_log" data-log-url="postfix" data-nrows="100">+ 100</button>
+          <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="postfix_log" data-log-url="postfix" data-nrows="1000">+ 1000</button>
+          <button class="btn btn-xs btn-default" id="refresh_postfix_log"><?=$lang['admin']['refresh'];?></button>
         </div>
       </div>
       <div class="panel-body">
@@ -475,12 +474,11 @@ $tfa_data = get_tfa();
 
   <div role="tabpanel" class="tab-pane" id="tab-dovecot-logs">
     <div class="panel panel-default">
-      <div class="panel-heading">Dovecot
+      <div class="panel-heading">Dovecot <span class="badge badge-info log-lines"></span>
         <div class="btn-group pull-right">
-          <a class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['admin']['action'];?> <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="#" id="refresh_dovecot_log"><?=$lang['admin']['refresh'];?></a></li>
-          </ul>
+          <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="dovecot_log" data-log-url="dovecot" data-nrows="100">+ 100</button>
+          <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="dovecot_log" data-log-url="dovecot" data-nrows="1000">+ 1000</button>
+          <button class="btn btn-xs btn-default" id="refresh_dovecot_log"><?=$lang['admin']['refresh'];?></button>
         </div>
       </div>
       <div class="panel-body">
@@ -493,12 +491,11 @@ $tfa_data = get_tfa();
 
   <div role="tabpanel" class="tab-pane" id="tab-sogo-logs">
     <div class="panel panel-default">
-      <div class="panel-heading">SOGo
+      <div class="panel-heading">SOGo <span class="badge badge-info log-lines"></span>
         <div class="btn-group pull-right">
-          <a class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['admin']['action'];?> <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="#" id="refresh_sogo_log"><?=$lang['admin']['refresh'];?></a></li>
-          </ul>
+          <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="sogo_log" data-log-url="sogo" data-nrows="100">+ 100</button>
+          <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="sogo_log" data-log-url="sogo" data-nrows="1000">+ 1000</button>
+          <button class="btn btn-xs btn-default" id="refresh_sogo_log"><?=$lang['admin']['refresh'];?></button>
         </div>
       </div>
       <div class="panel-body">
@@ -511,12 +508,11 @@ $tfa_data = get_tfa();
 
   <div role="tabpanel" class="tab-pane" id="tab-fail2ban-logs">
     <div class="panel panel-default">
-      <div class="panel-heading">Fail2ban
+      <div class="panel-heading">Fail2ban <span class="badge badge-info log-lines"></span>
         <div class="btn-group pull-right">
-          <a class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['admin']['action'];?> <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="#" id="refresh_fail2ban_log"><?=$lang['admin']['refresh'];?></a></li>
-          </ul>
+          <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="fail2ban_log" data-log-url="fail2ban" data-nrows="100">+ 100</button>
+          <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="fail2ban_log" data-log-url="fail2ban" data-nrows="1000">+ 1000</button>
+          <button class="btn btn-xs btn-default" id="refresh_fail2ban_log"><?=$lang['admin']['refresh'];?></button>
         </div>
       </div>
       <div class="panel-body">
@@ -529,17 +525,16 @@ $tfa_data = get_tfa();
 
   <div role="tabpanel" class="tab-pane" id="tab-rspamd-history">
     <div class="panel panel-default">
-      <div class="panel-heading">Rspamd history
+      <div class="panel-heading">Rspamd history <span class="badge badge-info log-lines"></span>
         <div class="btn-group pull-right">
-          <a class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['admin']['action'];?> <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="#" id="refresh_rspamd_history"><?=$lang['admin']['refresh'];?></a></li>
-          </ul>
+          <button class="btn btn-xs btn-default add_log_lines" data-post-process="rspamd_history" data-table="rspamd_history" data-log-url="rspamd-history" data-nrows="100">+ 100</button>
+          <button class="btn btn-xs btn-default add_log_lines" data-post-process="rspamd_history" data-table="rspamd_history" data-log-url="rspamd-history" data-nrows="1000">+ 1000</button>
+          <button class="btn btn-xs btn-default" id="refresh_rspamd_history"><?=$lang['admin']['refresh'];?></button>
         </div>
       </div>
       <div class="panel-body">
         <div class="table-responsive">
-          <table class="table table-striped table-condensed" id="rspamd_history"></table>
+          <table class="table table-striped table-condensed log-table" id="rspamd_history"></table>
         </div>
       </div>
     </div>
@@ -547,12 +542,11 @@ $tfa_data = get_tfa();
 
   <div role="tabpanel" class="tab-pane" id="tab-autodiscover-logs">
     <div class="panel panel-default">
-      <div class="panel-heading">Autodiscover
+      <div class="panel-heading">Autodiscover <span class="badge badge-info log-lines"></span>
         <div class="btn-group pull-right">
-          <a class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['admin']['action'];?> <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="#" id="refresh_autodiscover_log"><?=$lang['admin']['refresh'];?></a></li>
-          </ul>
+          <button class="btn btn-xs btn-default add_log_lines" data-post-process="autodiscover_log" data-table="autodiscover_log" data-log-url="autodiscover" data-nrows="100">+ 100</button>
+          <button class="btn btn-xs btn-default add_log_lines" data-post-process="autodiscover_log" data-table="autodiscover_log" data-log-url="autodiscover" data-nrows="1000">+ 1000</button>
+          <button class="btn btn-xs btn-default" id="refresh_autodiscover_log"><?=$lang['admin']['refresh'];?></button>
         </div>
       </div>
       <div class="panel-body">

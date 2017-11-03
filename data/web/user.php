@@ -94,6 +94,13 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
     </div>
   </div>
   <hr>
+  <div class="row">
+    <div class="col-md-3 col-xs-5 text-right">  <span class="glyphicon glyphicon-filter"></span></div>
+    <div class="col-md-9 col-xs-7">
+    <p><a href="#userFilterModal" data-toggle="modal">[Show active user sieve filter]</a></p>
+    </div>
+  </div>
+  <hr>
   <?php // Get user information about aliases
   $user_get_alias_details = user_get_alias_details($username);
   ?>

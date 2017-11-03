@@ -1,0 +1,22 @@
+<?xml version='1.0' standalone='yes'?>
+
+<extension name="editheader">
+
+	<command name="addheader">
+		<parameter type="tag" name="last" regex="last" occurrence="optional" />
+		<parameter type="string" name="field name" />
+		<parameter type="string" name="value" />
+	</command>
+
+	<command name="deleteheader">
+		<parameter type="tag" name="index" regex="index" occurrence="optional">
+			<parameter type="number" name="field number" />
+			<parameter type="tag" name="last" regex="last" occurrence="optional" />
+		</parameter>
+		<parameter type="matchtype" occurrence="optional" />
+		<parameter type="comparator" occurrence="optional" />
+		<parameter type="string" name="field name" />
+		<parameter type="stringlist" name="value patterns" occurrence="optional" />
+	</command>
+
+</extension>

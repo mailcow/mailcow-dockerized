@@ -104,6 +104,9 @@ $MAILCOW_APPS = array(
 // Rows until pagination begins
 $PAGINATION_SIZE = 10;
 
+// Default number of rows/lines to display (log table)
+$LOG_LINES = 100;
+
 // Rows until pagination begins (log table)
 $LOG_PAGINATION_SIZE = 30;
 
