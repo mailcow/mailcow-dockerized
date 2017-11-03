@@ -36,6 +36,7 @@ RUN apk add -U --no-cache libxml2-dev \
   && pear install channel://pear.php.net/Net_IDNA2-0.2.0 \
     channel://pear.php.net/Auth_SASL-1.1.0 \
     Net_IMAP \
+    Net_Sieve \
     NET_SMTP \
     Mail_mime \
 	&& pecl install redis-${REDIS_PECL} memcached-${MEMCACHED_PECL} APCu-${APCU_PECL} imagick-${IMAGICK_PECL} \
@@ -54,7 +55,8 @@ RUN apk add -U --no-cache libxml2-dev \
   echo 'opcache.memory_consumption=128'; \
   echo 'opcache.save_comments=1'; \
   echo 'opcache.revalidate_freq=1'; \
-} > /usr/local/etc/php/conf.d/opcache-recommended.ini
+} > /usr/local/etc/php/conf.d/opcache-recommended.ini \
+  && rm -rf /usr/src/php*
 
 
 COPY ./docker-entrypoint.sh /
