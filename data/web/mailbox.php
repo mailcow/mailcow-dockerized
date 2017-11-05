@@ -162,6 +162,8 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                 <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="syncjob" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
                 <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
+                  <li><a id="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"last_run":""}' href="#"><?=$lang['mailbox']['last_run_reset'];?></a></li>
+                  <li role="separator" class="divider"></li>
                   <li><a id="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
                   <li><a id="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
                   <li role="separator" class="divider"></li>
@@ -178,9 +180,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             <div class="panel-heading">
               <h3 class="panel-title"><?=$lang['mailbox']['filters'];?></h3>
             </div>
-            <p style="margin:10px" class="help-block">You can store multiple filters per user, but only one prefilter and one postfilter can be active at the same time.</p>
-            <p style="margin:10px" class="help-block">Each filter will be processed in the described order. A failed script will not stop processing of further scripts.</a></p>
-            <p style="margin:10px" class="help-block">Prefilter → User scripts → Postfilter → <a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/sieve_after" target="_blank">global sieve postfilter</a></p>
+            <p style="margin:10px" class="help-block"><?=$lang['mailbox']['sieve_info'];?></p>
             <div class="table-responsive">
               <table class="table table-striped" id="filter_table"></table>
             </div>
