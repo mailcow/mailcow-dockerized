@@ -1390,11 +1390,12 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             return false;
           }
           foreach ($ids as $id) {
-            $is_now = mailbox('get', 'syncjob_details', $id);
+            $is_now = mailbox('get', 'syncjob_details', $id, array('with_password'));
             if (!empty($is_now)) {
               $username = $is_now['user2'];
               $user1 = (!empty($_data['user1'])) ? $_data['user1'] : $is_now['user1'];
               $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
+              $last_run = (isset($_data['last_run'])) ? NULL : $is_now['last_run'];
               $delete2duplicates = (isset($_data['delete2duplicates'])) ? intval($_data['delete2duplicates']) : $is_now['delete2duplicates'];
               $delete1 = (isset($_data['delete1'])) ? intval($_data['delete1']) : $is_now['delete1'];
               $delete2 = (isset($_data['delete2'])) ? intval($_data['delete2']) : $is_now['delete2'];
@@ -1456,7 +1457,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               return false;
             }
             try {
-              $stmt = $pdo->prepare("UPDATE `imapsync` SET `delete1` = :delete1, `delete2` = :delete2, `maxage` = :maxage, `subfolder2` = :subfolder2, `exclude` = :exclude, `host1` = :host1, `user1` = :user1, `password1` = :password1, `mins_interval` = :mins_interval, `port1` = :port1, `enc1` = :enc1, `delete2duplicates` = :delete2duplicates, `active` = :active
+              $stmt = $pdo->prepare("UPDATE `imapsync` SET `delete1` = :delete1, `delete2` = :delete2, `maxage` = :maxage, `subfolder2` = :subfolder2, `exclude` = :exclude, `host1` = :host1, `last_run` = :last_run, `user1` = :user1, `password1` = :password1, `mins_interval` = :mins_interval, `port1` = :port1, `enc1` = :enc1, `delete2duplicates` = :delete2duplicates, `active` = :active
                 WHERE `id` = :id");
               $stmt->execute(array(
                 ':delete1' => $delete1,
@@ -1468,6 +1469,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
                 ':host1' => $host1,
                 ':user1' => $user1,
                 ':password1' => $password1,
+                ':last_run' => $last_run,
                 ':mins_interval' => $mins_interval,
                 ':port1' => $port1,
                 ':enc1' => $enc1,
@@ -2442,6 +2444,12 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
                 $shown_fields[] = $field['Field'];
               }
               $stmt = $pdo->prepare("SELECT " . implode(',', $shown_fields) . ",
+                `active` AS `active_int`,
+                CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`
+                  FROM `imapsync` WHERE id = :id");
+            }
+            elseif (isset($attr) && in_array('with_password', $attr)) {
+              $stmt = $pdo->prepare("SELECT *,
                 `active` AS `active_int`,
                 CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`
                   FROM `imapsync` WHERE id = :id");

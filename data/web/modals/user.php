@@ -117,7 +117,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
     <div class="modal-content">
       <div class="modal-header"><h4 class="modal-title">Log</h4></div>
       <div class="modal-body">
-        <textarea class="form-control" rows="20" id="logText"></textarea>
+        <textarea class="form-control" rows="20" id="logText" spellcheck="false"></textarea>
       </div>
     </div>
   </div>
