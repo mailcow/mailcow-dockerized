@@ -69,7 +69,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.12
+      image: mailcow/rspamd:1.13
       build: ./data/Dockerfiles/rspamd
       stop_grace_period: 30s
       depends_on:
@@ -143,8 +143,10 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.10
+      image: mailcow/dovecot:1.11
       build: ./data/Dockerfiles/dovecot
+      cap_add:
+        - NET_BIND_SERVICE
       volumes:
         - ./data/conf/dovecot:/usr/local/etc/dovecot
         - ./data/assets/ssl:/etc/ssl/mail/:ro
@@ -315,6 +317,7 @@ services:
       image: mailcow/dockerapi:1.2
       restart: always
       build: ./data/Dockerfiles/dockerapi
+      oom_score_adj: -10
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
       networks:
