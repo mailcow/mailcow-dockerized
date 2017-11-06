@@ -654,13 +654,13 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               }
               $stmt = $pdo->prepare("SELECT `alias_domain` FROM `alias_domain` WHERE `alias_domain`= :alias_domain
                 UNION
-                SELECT `alias_domain` FROM `alias_domain` WHERE `alias_domain`= :alias_domain_in_domain");
+                SELECT `domain` FROM `domain` WHERE `domain`= :alias_domain_in_domain");
               $stmt->execute(array(':alias_domain' => $alias_domain, ':alias_domain_in_domain' => $alias_domain));
               $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
               if ($num_results != 0) {
                 $_SESSION['return'] = array(
                   'type' => 'danger',
-                  'msg' => sprintf($lang['danger']['aliasd_exists'])
+                  'msg' => sprintf($lang['danger']['alias_domain_invalid'])
                 );
                 return false;
               }
