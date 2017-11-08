@@ -104,6 +104,8 @@ USE_WATCHDOG=n
 # Do you use mailcow under another ipv4 address than you server main address?
 # Rewrite outgoing requests source ip for servers with multiple ip addresses on one ethernet interface
 REWRITE_OUTGOING_IP=n
+# outgoing interface of mailcow network
+#REWRITE_OUTGOING_INTERFACE_TO=eth0
 # outgoing ip of mailcow network
 #REWRITE_OUTGOING_IP_TO=
 

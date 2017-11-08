@@ -345,6 +345,7 @@ services:
       pid: "host"
       environment:
         - REWRITE_OUTGOING_IP=${REWRITE_OUTGOING_IP}
+        - REWRITE_OUTGOING_INTERFACE_TO=${REWRITE_OUTGOING_INTERFACE_TO}
         - REWRITE_OUTGOING_IP_TO=${REWRITE_OUTGOING_IP_TO}
       volumes:
         - ./data/conf/source-nat-rewrite/rules.sh:/rules.sh
