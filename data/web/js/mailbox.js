@@ -421,7 +421,8 @@ jQuery(function($){
         {"name":"mins_interval","title":lang.mins_interval,"breakpoints":"all"},
         {"name":"last_run","title":lang.last_run,"breakpoints":"all"},
         {"name":"log","title":"Log"},
-        {"name":"active","filterable": false,"style":{"maxWidth":"50px","width":"70px"},"title":lang.active},
+        {"name":"active","filterable": false,"style":{"maxWidth":"70px","width":"70px"},"title":lang.active},
+        {"name":"is_running","filterable": false,"style":{"maxWidth":"120px","width":"100px"},"title":lang.status},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
       "empty": lang.empty,
@@ -442,6 +443,14 @@ jQuery(function($){
               '<a href="#" id="delete_selected" data-id="single-syncjob" data-api-url="delete/syncjob" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="syncjob" name="multi_select" value="' + item.id + '" />';
+            if (item.is_running == 1) {
+              item.is_running = '<span id="active-script" class="label label-success">' + lang.running + '</span>';
+            } else {
+              item.is_running = '<span id="inactive-script" class="label label-warning">' + lang.waiting + '</span>';
+            }
+            if (!item.last_run > 0) {
+              item.last_run = lang.waiting;
+            }
           });
         }
       }),

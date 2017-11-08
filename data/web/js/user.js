@@ -89,13 +89,14 @@ jQuery(function($){
         {"name":"chkbox","title":"","style":{"maxWidth":"40px","width":"40px","text-align":"center"},"filterable": false,"sortable": false,"type":"html"},
         {"sorted": true,"name":"id","title":"ID","style":{"maxWidth":"60px","width":"60px","text-align":"center"}},
         {"name":"server_w_port","title":"Server"},
-        {"name":"enc1","title":lang.encryption},
+        {"name":"enc1","title":lang.encryption,"breakpoints":"xs sm"},
         {"name":"user1","title":lang.username},
-        {"name":"exclude","title":lang.excludes},
+        {"name":"exclude","title":lang.excludes,"breakpoints":"xs sm"},
         {"name":"mins_interval","title":lang.interval + " (min)"},
-        {"name":"last_run","title":lang.last_run},
+        {"name":"last_run","title":lang.last_run,"breakpoints":"xs sm"},
         {"name":"log","title":"Log"},
-        {"name":"active","filterable": false,"style":{"maxWidth":"50px","width":"70px"},"title":lang.active},
+        {"name":"active","filterable": false,"style":{"maxWidth":"70px","width":"70px"},"title":lang.active},
+        {"name":"is_running","filterable": false,"style":{"maxWidth":"120px","width":"100px"},"title":lang.status},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
       "empty": lang.empty,
@@ -109,7 +110,11 @@ jQuery(function($){
         success: function (data) {
           $.each(data, function (i, item) {
             item.log = '<a href="#syncjobLogModal" data-toggle="modal" data-syncjob-id="' + encodeURI(item.id) + '">Open logs</a>'
-            item.exclude = '<code>' + item.exclude + '</code>'
+            if (!item.exclude > 0) {
+              item.exclude = '-';
+            } else {
+              item.exclude  = '<code>' + item.exclude + '</code>';
+            }
             item.server_w_port = item.user1 + '@' + item.host1 + ':' + item.port1;
             if (acl_data.syncjobs === 1) {
               item.action = '<div class="btn-group">' +
@@ -121,6 +126,14 @@ jQuery(function($){
             else {
               item.action = '<span>-</span>';
               item.chkbox = '<input type="checkbox" disabled />';
+            }
+            if (item.is_running == 1) {
+              item.is_running = '<span id="active-script" class="label label-success">' + lang.running + '</span>';
+            } else {
+              item.is_running = '<span id="inactive-script" class="label label-warning">' + lang.waiting + '</span>';
+            }
+            if (!item.last_run > 0) {
+              item.last_run = lang.waiting;
             }
           });
         }

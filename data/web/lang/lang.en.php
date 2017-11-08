@@ -160,6 +160,9 @@ $lang['user']['spamfilter_red'] = 'Red: This message is spam and will be rejecte
 $lang['user']['spamfilter_default_score'] = 'Default values:';
 $lang['user']['spamfilter_hint'] = 'The first value describes the "low spam score", the second represents the "high spam score".';
 $lang['user']['spamfilter_table_domain_policy'] = "n/a (domain policy)";
+$lang['user']['waiting'] = "Waiting";
+$lang['user']['status'] = "Status";
+$lang['user']['running'] = "Running";
 
 $lang['user']['tls_policy_warning'] = '<strong>Warning:</strong> If you decide to enforce encrypted mail transfer, you may lose emails.<br>Messages to not satisfy the policy will be bounced with a hard fail by the mail system.<br>This option applies to your primary email address (login name), all addresses derived from alias domains as well as alias addresses <b>with only this single mailbox</b> as target.';
 $lang['user']['tls_policy'] = 'Encryption policy';
@@ -567,6 +570,9 @@ $lang['admin']['remove_row'] = "Remove row";
 $lang['admin']['add_row'] = "Add row";
 $lang['admin']['reset_default'] = "Reset to default";
 $lang['admin']['merged_vars_hint'] = 'Greyed out rows were merged from <code>vars.inc.(local.)php</code> and cannot be modified.';
+$lang['mailbox']['waiting'] = "Waiting";
+$lang['mailbox']['status'] = "Status";
+$lang['mailbox']['running'] = "Running";
 
 $lang['edit']['tls_policy'] = "Change TLS policy";
 $lang['edit']['spam_score'] = "Set a custom spam score";
