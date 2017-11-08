@@ -186,6 +186,8 @@ services:
         - ./data/assets/ssl:/etc/ssl/mail/:ro
         - postfix-vol-1:/var/spool/postfix
         - crypt-vol-1:/var/lib/zeyple
+      depends_on:
+        - source-nat-rewrite
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -218,6 +220,7 @@ services:
         - sogo-mailcow
         - php-fpm-mailcow
         - redis-mailcow
+        - source-nat-rewrite
       image: nginx:mainline-alpine
       command: /bin/sh -c "envsubst < /etc/nginx/conf.d/templates/listen_plain.template > /etc/nginx/conf.d/listen_plain.active &&
         envsubst < /etc/nginx/conf.d/templates/listen_ssl.template > /etc/nginx/conf.d/listen_ssl.active &&
@@ -251,6 +254,7 @@ services:
       depends_on:
         - nginx-mailcow
         - mysql-mailcow
+        - source-nat-rewrite
       image: mailcow/acme:1.22
       build: ./data/Dockerfiles/acme
       dns:
@@ -333,6 +337,17 @@ services:
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
         - /lib/modules:/lib/modules:ro
+
+    source-nat-rewrite:
+      build: data/Dockerfiles/source-nat-rewrite
+      restart: always
+      network_mode: "host"
+      pid: "host"
+      environment:
+        - REWRITE_OUTGOING_IP=${REWRITE_OUTGOING_IP}
+        - REWRITE_OUTGOING_IP_TO=${REWRITE_OUTGOING_IP_TO}
+      volumes:
+        - ./data/conf/source-nat-rewrite/rules.sh:/rules.sh
 
 networks:
   mailcow-network:

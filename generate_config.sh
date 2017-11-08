@@ -101,6 +101,12 @@ USE_WATCHDOG=n
 # Send notifications by mail (no DKIM signature, sent from watchdog@MAILCOW_HOSTNAME)
 #WATCHDOG_NOTIFY_EMAIL=
 
+# Do you use mailcow under another ipv4 address than you server main address?
+# Rewrite outgoing requests source ip for servers with multiple ip addresses on one ethernet interface
+REWRITE_OUTGOING_IP=n
+# outgoing ip of mailcow network
+#REWRITE_OUTGOING_IP_TO=
+
 EOF
 
 mkdir -p data/assets/ssl
