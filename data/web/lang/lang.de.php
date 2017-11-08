@@ -158,6 +158,9 @@ $lang['user']['spamfilter_red'] = 'Rot: Die Nachricht ist eindeutig Spam und wir
 $lang['user']['spamfilter_default_score'] = 'Standardwert:';
 $lang['user']['spamfilter_hint'] = 'Der erste Wert beschreibt den "low spam score", der zweite Wert den "high spam score".';
 $lang['user']['spamfilter_table_domain_policy'] = "n.v. (Domainrichtlinie)";
+$lang['user']['waiting'] = "Warte auf Ausführung";
+$lang['user']['status'] = "Status";
+$lang['user']['running'] = "Wird ausgeführt";
 
 $lang['user']['tls_policy_warning'] = '<strong>Vorsicht:</strong> Entscheiden Sie sich unverschlüsselte Verbindungen abzulehnen, kann dies dazu führen, dass Kontakte Sie nicht mehr erreichen.<br>Nachrichten, die die Richtlinie nicht erfüllen, werden durch einen Hard-Fail im Mailsystem abgewiesen.<br>Diese Einstellung ist aktiv für die primäre Mailbox, für alle Alias-Adressen, die dieser Mailbox <b>direkt zugeordnet</b> sind (lediglich eine einzige Ziel-Adresse) und der Adressen, die sich aus Alias-Domains ergeben. Ausgeschlossen sind temporäre Aliasse ("Spam-Alias-Adressen"), Catch-All Alias-Adressen sowie Alias-Adressen mit mehreren Zielen.';
 $lang['user']['tls_policy'] = 'Verschlüsselungsrichtlinie';
@@ -554,3 +557,6 @@ $lang['admin']['remove_row'] = "Zeile entfernen";
 $lang['admin']['add_row'] = "Zeile hinzufügen";
 $lang['admin']['reset_default'] = "Auf Standard zurücksetzen";
 $lang['admin']['merged_vars_hint'] = 'Ausgegraute Zeilen wurden aus der Datei <code>vars.inc.(local.)php</code> gelesen und können nicht mittels UI verändert werden.';
+$lang['mailbox']['waiting'] = "Wartend";
+$lang['mailbox']['status'] = "Status";
+$lang['mailbox']['running'] = "In Ausführung";

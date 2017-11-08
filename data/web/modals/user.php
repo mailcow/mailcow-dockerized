@@ -25,6 +25,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 						<label class="control-label col-sm-2" for="port1"><?=$lang['add']['port'];?></label>
 						<div class="col-sm-10">
 						<input type="number" class="form-control" name="port1" id="port1" min="1" max="65535" value="143" required>
+            <small class="help-block">1-65535</small>
 						</div>
 					</div>
 					<div class="form-group">
@@ -53,6 +54,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 						<label class="control-label col-sm-2" for="mins_interval"><?=$lang['add']['mins_interval'];?></label>
 						<div class="col-sm-10">
               <input type="number" class="form-control" name="mins_interval" min="10" max="3600" value="20" required>
+              <small class="help-block">10-3600</small>
 						</div>
 					</div>
 					<div class="form-group">
@@ -65,6 +67,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 						<label class="control-label col-sm-2" for="maxage"><?=$lang['edit']['maxage'];?></label>
 						<div class="col-sm-10">
 						<input type="number" class="form-control" name="maxage" id="maxage" min="0" max="32000" value="0">
+            <small class="help-block">0-32000</small>
 						</div>
 					</div>
 					<div class="form-group">

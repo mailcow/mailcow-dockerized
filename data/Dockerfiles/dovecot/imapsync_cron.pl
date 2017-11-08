@@ -54,6 +54,10 @@ while ($row = $sth->fetchrow_arrayref()) {
   $delete1            = @$row[12];
   $delete2            = @$row[13];
 
+  $is_running = $dbh->prepare("UPDATE imapsync SET is_running = 1 WHERE id = ?");
+  $is_running->bind_param( 1, ${id} );
+  $is_running->execute();
+
   if ($enc1 eq "TLS") { $enc1 = "--tls1"; } elsif ($enc1 eq "SSL") { $enc1 = "--ssl1"; } else { undef $enc1; }
 
   my $template = $run_dir . '/imapsync.XXXXXXX';
@@ -83,7 +87,7 @@ while ($row = $sth->fetchrow_arrayref()) {
 	"--passfile2", $passfile2->filename,
 	'--no-modulesversion'], ">", \my $stdout;
 
-  $update = $dbh->prepare("UPDATE imapsync SET returned_text = ?, last_run = NOW() WHERE id = ?");
+  $update = $dbh->prepare("UPDATE imapsync SET returned_text = ?, last_run = NOW(), is_running = 0 WHERE id = ?");
   $update->bind_param( 1, ${stdout} );
   $update->bind_param( 2, ${id} );
   $update->execute();

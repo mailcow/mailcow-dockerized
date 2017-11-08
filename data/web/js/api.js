@@ -79,6 +79,21 @@ $(document).ready(function() {
             $(this).removeClass('inputMissingAttr');
           }
         }
+        if ($(this).attr("max")) {
+          if ($(this).val() > $(this).attr("max")) {
+            invalid = true;
+            $(this).addClass('inputMissingAttr');
+          } else {
+            if ($(this).attr("min")) {
+              if ($(this).val() < $(this).attr("min")) {
+                invalid = true;
+                $(this).addClass('inputMissingAttr');
+              } else {
+                $(this).removeClass('inputMissingAttr');
+              }
+            }
+          }
+        }
       });
       if (!req_empty) {
         var attr_to_merge = $(this).closest("form").serializeObject();
@@ -129,18 +144,33 @@ $(document).ready(function() {
     // If clicked button is in a form with the same data-id as the button,
     // we merge all input fields by {"name":"value"} into api-attr
     if ($(this).closest("form").data('id') == id) {
-      var req_empty = false;
+      var invalid = false;
       $(this).closest("form").find('select, textarea, input').each(function() {
         if ($(this).prop('required')) {
           if (!$(this).val() && $(this).prop('disabled') === false) {
-            req_empty = true;
+            invalid = true;
             $(this).addClass('inputMissingAttr');
           } else {
             $(this).removeClass('inputMissingAttr');
           }
         }
+        if ($(this).attr("max")) {
+          if ($(this).val() > $(this).attr("max")) {
+            invalid = true;
+            $(this).addClass('inputMissingAttr');
+          } else {
+            if ($(this).attr("min")) {
+              if ($(this).val() < $(this).attr("min")) {
+                invalid = true;
+                $(this).addClass('inputMissingAttr');
+              } else {
+                $(this).removeClass('inputMissingAttr');
+              }
+            }
+          }
+        }
       });
-      if (!req_empty) {
+      if (!invalid) {
         var attr_to_merge = $(this).closest("form").serializeObject();
         var api_attr = $.extend(api_attr, attr_to_merge)
       } else {
