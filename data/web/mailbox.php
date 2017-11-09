@@ -6,7 +6,7 @@ require_once "inc/header.inc.php";
 $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 ?>
 <div class="container">
-      
+
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#tab-domains" aria-controls="tab-domains" role="tab" data-toggle="tab"><?=$lang['mailbox']['domains'];?></a></li>
     <li role="presentation"><a href="#tab-mailboxes" aria-controls="tab-mailboxes" role="tab" data-toggle="tab"><?=$lang['mailbox']['mailboxes'];?></a></li>
@@ -38,12 +38,16 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                 <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="domain" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
                 <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a id="edit_selected" data-id="domain" data-api-url='edit/domain' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
-                  <li><a id="edit_selected" data-id="domain" data-api-url='edit/domain' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
-                  <li role="separator" class="divider"></li>
-                  <li><a id="delete_selected" data-id="domain" data-api-url='delete/domain' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+                  <? if($_SESSION['mailcow_cc_role'] == "admin"): ?>
+                    <li><a id="edit_selected" data-id="domain" data-api-url='edit/domain' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
+                    <li><a id="edit_selected" data-id="domain" data-api-url='edit/domain' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a id="delete_selected" data-id="domain" data-api-url='delete/domain' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+                  <? endif; ?>
                 </ul>
-                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addDomainModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_domain'];?></a>
+                <? if($_SESSION['mailcow_cc_role'] == "admin"): ?>
+                  <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addDomainModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_domain'];?></a>
+                <? endif; ?>
               </div>
             </div>
           </div>
