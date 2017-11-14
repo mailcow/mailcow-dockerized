@@ -275,7 +275,7 @@ services:
             - acme
 
     fail2ban-mailcow:
-      image: mailcow/fail2ban:1.8
+      image: mailcow/fail2ban:1.9
       build: ./data/Dockerfiles/fail2ban
       stop_grace_period: 30s
       depends_on:
