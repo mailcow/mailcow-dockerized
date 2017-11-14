@@ -484,19 +484,25 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         </form>
         <hr>
         <form data-id="mboxratelimit" class="form-inline well" method="post">
-          <div class="form-group">
-            <label class="control-label">Ratelimit</label>
-            <input name="rl_value" id="rl_value" type="number" value="<?=(!empty($rl['value'])) ? $rl['value'] : null;?>" class="form-control" placeholder="disabled">
-          </div>
-          <div class="form-group">
-            <select name="rl_frame" id="rl_frame" class="form-control">
-              <option value="s" <?=(isset($rl['frame']) && $rl['frame'] == 's') ? 'selected' : null;?>>msgs / second</option>
-              <option value="m" <?=(isset($rl['frame']) && $rl['frame'] == 'm') ? 'selected' : null;?>>msgs / minute</option>
-              <option value="h" <?=(isset($rl['frame']) && $rl['frame'] == 'h') ? 'selected' : null;?>>msgs / hour</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <button class="btn btn-default" id="edit_selected" data-id="mboxratelimit" data-item="<?=$mailbox;?>" data-api-url='edit/ratelimit' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
+          <div class="row">
+            <div class="col-sm-1">
+              <p class="help-block">Ratelimit</p>
+            </div>
+            <div class="col-sm-10">
+              <div class="form-group">
+                <input name="rl_value" id="rl_value" type="number" value="<?=(!empty($rl['value'])) ? $rl['value'] : null;?>" class="form-control" placeholder="disabled">
+              </div>
+              <div class="form-group">
+                <select name="rl_frame" id="rl_frame" class="form-control">
+                  <option value="s" <?=(isset($rl['frame']) && $rl['frame'] == 's') ? 'selected' : null;?>>msgs / second</option>
+                  <option value="m" <?=(isset($rl['frame']) && $rl['frame'] == 'm') ? 'selected' : null;?>>msgs / minute</option>
+                  <option value="h" <?=(isset($rl['frame']) && $rl['frame'] == 'h') ? 'selected' : null;?>>msgs / hour</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <button class="btn btn-default" id="edit_selected" data-id="mboxratelimit" data-item="<?=$mailbox;?>" data-api-url='edit/ratelimit' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
+              </div>
+            </div>
           </div>
         </form>
       <?php
@@ -705,6 +711,59 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
                 <button class="btn btn-success" id="edit_selected" data-id="editsyncjob" data-item="<?=htmlspecialchars($result['id']);?>" data-api-url='edit/syncjob' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
+              </div>
+            </div>
+          </form>
+        <?php
+        }
+        else {
+        ?>
+          <div class="alert alert-info" role="alert"><?=$lang['info']['no_action'];?></div>
+        <?php
+        }
+      }
+  }
+  if ($_SESSION['mailcow_cc_role'] == "admin"  || $_SESSION['mailcow_cc_role'] == "domainadmin" || $_SESSION['mailcow_cc_role'] == "user") {
+    if (isset($_GET['filter']) &&
+      is_numeric($_GET['filter'])) {
+        $id = $_GET["filter"];
+        $result = mailbox('get', 'filter_details', $id);
+        if (!empty($result)) {
+        ?>
+          <h4>Filter</h4>
+          <form class="form-horizontal" data-id="editfilter" role="form" method="post">
+            <input type="hidden" value="0" name="active">
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="script_desc"><?=$lang['edit']['sieve_desc'];?>:</label>
+              <div class="col-sm-10">
+              <input type="text" class="form-control" name="script_desc" id="script_desc" value="<?=htmlspecialchars($result['script_desc'], ENT_QUOTES, 'UTF-8');?>" required maxlength="255">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="filter_type"><?=$lang['edit']['sieve_type'];?>:</label>
+              <div class="col-sm-10">
+                <select id="addFilterType" name="filter_type" id="filter_type" required>
+                  <option value="prefilter" <?=($result['filter_type'] == 'prefilter') ? 'selected' : null;?>>Prefilter</option>
+                  <option value="postfilter" <?=($result['filter_type'] == 'postfilter') ? 'selected' : null;?>>Postfilter</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="script_data">Script:</label>
+              <div class="col-sm-10">
+                <textarea spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control" rows="20" id="script_data" name="script_data" required><?=$result['script_data'];?></textarea>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <div class="checkbox">
+                <label><input type="checkbox" value="1" name="active" <?=($result['active_int']=="1") ? "checked" : "";?>> <?=$lang['edit']['active'];?></label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <button class="btn btn-success" id="edit_selected" data-id="editfilter" data-item="<?=htmlspecialchars($result['id']);?>" data-api-url='edit/filter' data-api-attr='{}' href="#"><?=$lang['edit']['validate_save'];?></button>
               </div>
             </div>
           </form>

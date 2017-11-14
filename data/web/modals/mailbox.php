@@ -44,6 +44,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             </label>
             <div class="col-sm-10">
             <input type="text" class="form-control" name="quota" min="1" max="" id="addInputQuota" disabled value="<?=$lang['add']['select_domain'];?>" required>
+            <small class="help-block">min. 1</small>
             </div>
           </div>
           <div class="form-group">
@@ -314,7 +315,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
         <h3 class="modal-title"><?=$lang['add']['syncjob'];?></h3>
       </div>
       <div class="modal-body">
-        <p><?=$lang['add']['syncjob_hint'];?></p>
+        <p class="help-block"><?=$lang['add']['syncjob_hint'];?></p>
 				<form class="form-horizontal" role="form" data-id="add_syncjob">
           <div class="form-group">
             <label class="control-label col-sm-2" for="username"><?=$lang['add']['username'];?>:</label>
@@ -344,6 +345,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 						<label class="control-label col-sm-2" for="port1"><?=$lang['add']['port'];?></label>
 						<div class="col-sm-10">
 						<input type="number" class="form-control" name="port1" id="port1" min="1" max="65535" value="143" required>
+            <small class="help-block">1-65535</small>
 						</div>
 					</div>
 					<div class="form-group">
@@ -372,6 +374,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 						<label class="control-label col-sm-2" for="mins_interval"><?=$lang['add']['mins_interval'];?></label>
 						<div class="col-sm-10">
               <input type="number" class="form-control" name="mins_interval" min="10" max="3600" value="20" required>
+              <small class="help-block">10-3600</small>
 						</div>
 					</div>
 					<div class="form-group">
@@ -384,6 +387,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 						<label class="control-label col-sm-2" for="maxage"><?=$lang['edit']['maxage'];?></label>
 						<div class="col-sm-10">
 						<input type="number" class="form-control" name="maxage" id="maxage" min="0" max="32000" value="0">
+            <small class="help-block">0-32000</small>
 						</div>
 					</div>
 					<div class="form-group">
@@ -437,12 +441,81 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
     </div>
   </div>
 </div><!-- add sync job modal -->
-<!-- log modal -->
-<div class="modal fade" id="logModal" tabindex="-1" role="dialog" aria-labelledby="logTextLabel">
-  <div class="modal-dialog" style="width:90%" role="document">
+<!-- add add_filter modal -->
+<div class="modal fade" id="addFilterModalAdmin" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <h3 class="modal-title">Filter</h3>
+      </div>
       <div class="modal-body">
-        <span id="logText"></span>
+				<form class="form-horizontal" role="form" data-id="add_filter">
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="username"><?=$lang['add']['username'];?>:</label>
+            <div class="col-sm-10">
+              <select id="addSelectUsername" name="username" id="username" required>
+              <?php
+              $domains = mailbox('get', 'domains');
+              if (!empty($domains)) {
+                foreach ($domains as $domain) {
+                  $mailboxes = mailbox('get', 'mailboxes', $domain);
+                  foreach ($mailboxes as $mailbox) {
+                    echo "<option>".htmlspecialchars($mailbox)."</option>";
+                  }
+                }
+              }
+              ?>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="filter_type"><?=$lang['add']['sieve_type'];?>:</label>
+            <div class="col-sm-10">
+              <select id="addFilterType" name="filter_type" id="filter_type" required>
+                <option value="prefilter">Prefilter</option>
+                <option value="postfilter">Postfilter</option>
+              </select>
+            </div>
+          </div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="script_desc"><?=$lang['add']['sieve_desc'];?>:</label>
+						<div class="col-sm-10">
+						<input type="text" class="form-control" name="script_desc" id="script_desc" required maxlength="255">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="script_data">Script:</label>
+						<div class="col-sm-10">
+							<textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control" rows="20" id="script_data" name="script_data" required></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+              <p class="help-block"><?=$lang['add']['activate_filter_warn'];?></p>
+							<div class="checkbox">
+							<label><input type="checkbox" value="1" name="active" checked> <?=$lang['add']['active'];?></label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10" id="add_filter_btns">
+              <button class="btn btn-default" id="validate_sieve" href="#"><?=$lang['add']['validate'];?></button>
+              <button class="btn btn-success" id="add_item" data-id="add_filter" data-api-url='add/filter' data-api-attr='{}' href="#" disabled><?=$lang['admin']['add'];?></button>
+						</div>
+					</div>
+				</form>
+      </div>
+    </div>
+  </div>
+</div><!-- add add_filter modal -->
+<!-- log modal -->
+<div class="modal fade" id="syncjobLogModal" tabindex="-1" role="dialog" aria-labelledby="syncjobLogModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header"><h4 class="modal-title">Log</h4></div>
+      <div class="modal-body">
+        <textarea class="form-control" rows="20" id="logText" spellcheck="false"></textarea>
       </div>
     </div>
   </div>

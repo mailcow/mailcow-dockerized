@@ -35,7 +35,8 @@ $opt = [
 ];
 $pdo = new PDO($dsn, $database_user, $database_pass, $opt);
 $login_user = strtolower(trim($_SERVER['PHP_AUTH_USER']));
-$login_role = check_login($login_user, $_SERVER['PHP_AUTH_PW']);
+$login_pass = trim(htmlspecialchars_decode($_SERVER['PHP_AUTH_PW']));
+$login_role = check_login($login_user, $login_pass);
 
 if (!isset($_SERVER['PHP_AUTH_USER']) OR $login_role !== "user") {
   try {

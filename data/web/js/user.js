@@ -1,13 +1,19 @@
 $(document).ready(function() {
-
-  // Log modal
-  $('#logModal').on('show.bs.modal', function(e) {
-    var logText = $(e.relatedTarget).data('log-text');
-    $(e.currentTarget).find('#logText').html('<pre style="background:none;font-size:11px;line-height:1.1;border:0px">' + logText + '</pre>');
+  $('#syncjobLogModal').on('show.bs.modal', function(e) {
+    var syncjob_id = $(e.relatedTarget).data('syncjob-id');
+    $.ajax({
+      url: '/inc/ajax/syncjob_logs.php',
+      data: { id: syncjob_id },
+      dataType: 'text',
+      success: function(data){
+        $(e.currentTarget).find('#logText').text(data);
+      },
+      error: function(xhr, status, error) {
+        $(e.currentTarget).find('#logText').text(xhr.responseText);
+      }
+    });
   });
-
 });
-
 jQuery(function($){
   // http://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery
   var entityMap = {
@@ -83,27 +89,32 @@ jQuery(function($){
         {"name":"chkbox","title":"","style":{"maxWidth":"40px","width":"40px","text-align":"center"},"filterable": false,"sortable": false,"type":"html"},
         {"sorted": true,"name":"id","title":"ID","style":{"maxWidth":"60px","width":"60px","text-align":"center"}},
         {"name":"server_w_port","title":"Server"},
-        {"name":"enc1","title":lang.encryption},
+        {"name":"enc1","title":lang.encryption,"breakpoints":"xs sm"},
         {"name":"user1","title":lang.username},
-        {"name":"exclude","title":lang.excludes},
+        {"name":"exclude","title":lang.excludes,"breakpoints":"xs sm"},
         {"name":"mins_interval","title":lang.interval + " (min)"},
-        {"name":"last_run","title":lang.last_run},
+        {"name":"last_run","title":lang.last_run,"breakpoints":"xs sm"},
         {"name":"log","title":"Log"},
-        {"name":"active","filterable": false,"style":{"maxWidth":"50px","width":"70px"},"title":lang.active},
+        {"name":"active","filterable": false,"style":{"maxWidth":"70px","width":"70px"},"title":lang.active},
+        {"name":"is_running","filterable": false,"style":{"maxWidth":"120px","width":"100px"},"title":lang.status},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
       "empty": lang.empty,
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/syncjobs/' + mailcow_cc_username,
+        url: '/api/v1/get/syncjobs/' + mailcow_cc_username + '/no_log',
         jsonp: false,
         error: function () {
           console.log('Cannot draw sync job table');
         },
         success: function (data) {
           $.each(data, function (i, item) {
-            item.log = '<a href="#logModal" data-toggle="modal" data-log-text="' + escapeHtml(item.returned_text) + '">Open logs</a>'
-            item.exclude = '<code>' + item.exclude + '</code>'
+            item.log = '<a href="#syncjobLogModal" data-toggle="modal" data-syncjob-id="' + encodeURI(item.id) + '">Open logs</a>'
+            if (!item.exclude > 0) {
+              item.exclude = '-';
+            } else {
+              item.exclude  = '<code>' + item.exclude + '</code>';
+            }
             item.server_w_port = item.user1 + '@' + item.host1 + ':' + item.port1;
             if (acl_data.syncjobs === 1) {
               item.action = '<div class="btn-group">' +
@@ -115,6 +126,14 @@ jQuery(function($){
             else {
               item.action = '<span>-</span>';
               item.chkbox = '<input type="checkbox" disabled />';
+            }
+            if (item.is_running == 1) {
+              item.is_running = '<span id="active-script" class="label label-success">' + lang.running + '</span>';
+            } else {
+              item.is_running = '<span id="inactive-script" class="label label-warning">' + lang.waiting + '</span>';
+            }
+            if (!item.last_run > 0) {
+              item.last_run = lang.waiting;
             }
           });
         }
@@ -213,4 +232,27 @@ jQuery(function($){
   draw_tla_table();
   draw_wl_policy_mailbox_table();
   draw_bl_policy_mailbox_table();
+
+  // Sieve data modal
+  $('#userFilterModal').on('show.bs.modal', function(e) {
+    $('#user_sieve_filter').text(lang.loading);
+    $.ajax({
+      dataType: 'json',
+      url: '/api/v1/get/active-user-sieve/' + mailcow_cc_username,
+      jsonp: false,
+      error: function () {
+        console.log('Cannot get active sieve script');
+      },
+      complete: function (data) {
+        if (data.responseText == '{}') {
+          $('#user_sieve_filter').text(lang.no_active_filter);
+        } else {
+          $('#user_sieve_filter').text(JSON.parse(data.responseText));
+        }
+      }
+    })
+  });
+  $('#userFilterModal').on('hidden.bs.modal', function () {
+    $('#user_sieve_filter').text(lang.loading);
+  });
 });

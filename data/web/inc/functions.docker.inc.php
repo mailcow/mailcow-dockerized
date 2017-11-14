@@ -1,11 +1,4 @@
 <?php
-session_start();
-$AuthUsers = array("admin");
-if (!isset($_SESSION['mailcow_cc_role']) OR !in_array($_SESSION['mailcow_cc_role'], $AuthUsers)) {
-	echo "Not allowed." . PHP_EOL;
-	exit();
-}
-
 function docker($service_name, $action, $post_action = null, $post_fields = null) {
   $curl = curl_init();
   curl_setopt($curl, CURLOPT_HTTPHEADER,array( 'Content-Type: application/json' ));
@@ -89,33 +82,3 @@ function docker($service_name, $action, $post_action = null, $post_fields = null
     break;
   }
 }
-
-if ($_GET['ACTION'] == "start") {
-  $retry = 0;
-  while (docker('sogo-mailcow', 'info')['State']['Running'] != 1 && $retry <= 3) {
-    $response = docker('sogo-mailcow', 'post', 'start');
-    $last_response = (trim($response) == "\"OK\"") ? '<b><span class="pull-right text-success">OK</span></b>' : '<b><span class="pull-right text-danger">Error: ' . $response . '</span></b>';
-    if (trim($response) == "\"OK\"") {
-      break;
-    }
-    usleep(1500000);
-    $retry++;
-  }
-  echo (!isset($last_response)) ? '<b><span class="pull-right text-warning">Already running</span></b>' : $last_response;
-}
-
-if ($_GET['ACTION'] == "stop") {
-  $retry = 0;
-  while (docker('sogo-mailcow', 'info')['State']['Running'] == 1 && $retry <= 3) {
-    $response = docker('sogo-mailcow', 'post', 'stop');
-    $last_response = (trim($response) == "\"OK\"") ? '<b><span class="pull-right text-success">OK</span></b>' : '<b><span class="pull-right text-danger">Error: ' . $response . '</span></b>';
-    if (trim($response) == "\"OK\"") {
-      break;
-    }
-    usleep(1500000);
-    $retry++;
-  }
-  echo (!isset($last_response)) ? '<b><span class="pull-right text-warning">Not running</span></b>' : $last_response;
-}
-
-?>

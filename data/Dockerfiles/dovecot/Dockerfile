@@ -3,8 +3,8 @@ LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL C
-ENV DOVECOT_VERSION 2.2.32
-ENV PIGEONHOLE_VERSION 0.4.20
+ENV DOVECOT_VERSION 2.2.33.2
+ENV PIGEONHOLE_VERSION 0.4.21
 
 RUN apt-get update && apt-get -y install \
 	automake \
@@ -40,10 +40,11 @@ RUN apt-get update && apt-get -y install \
 	libtest-pod-perl \
 	libtest-simple-perl \
 	libunicode-string-perl \
-    libproc-processtable-perl \
+  libproc-processtable-perl \
 	liburi-perl \
 	lzma-dev \
 	make \
+  procps \
 	supervisor \
 	syslog-ng \
 	syslog-ng-core \
@@ -64,7 +65,8 @@ RUN curl https://www.dovecot.org/releases/2.2/dovecot-$DOVECOT_VERSION.tar.gz | 
 	&& make -j3 \
 	&& make install \
 	&& make clean \
-	&& cd .. && rm -rf dovecot-2.2-pigeonhole-$PIGEONHOLE_VERSION
+	&& cd .. \
+  && rm -rf dovecot-2.2-pigeonhole-$PIGEONHOLE_VERSION
 
 RUN cpanm Data::Uniqid Mail::IMAPClient String::Util
 RUN echo '* * * * *   root   /usr/local/bin/imapsync_cron.pl' > /etc/cron.d/imapsync
@@ -97,8 +99,6 @@ RUN groupadd -g 5000 vmail \
 RUN touch /etc/default/locale
 RUN apt-get purge -y build-essential automake autotools-dev \
 	&& apt-get autoremove --purge -y
-
-EXPOSE 24 10001
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf

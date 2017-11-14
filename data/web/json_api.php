@@ -13,7 +13,7 @@ delete/alias => POST data:
 
 */
 header('Content-Type: application/json');
-require_once 'inc/prerequisites.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 error_reporting(0);
 if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_username'])) {
   if (isset($_GET['query'])) {
@@ -225,10 +225,10 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               ));
             }
           break;
-          case "syncjob":
+          case "filter":
             if (isset($_POST['attr'])) {
               $attr = (array)json_decode($_POST['attr'], true);
-              if (mailbox('add', 'syncjob', $attr) === false) {
+              if (mailbox('add', 'filter', $attr) === false) {
                 if (isset($_SESSION['return'])) {
                   echo json_encode($_SESSION['return']);
                 }
@@ -460,6 +460,39 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             if (isset($_POST['attr'])) {
               $attr = (array)json_decode($_POST['attr'], true);
               if (domain_admin('add', $attr) === false) {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'error',
+                    'msg' => 'Cannot add item'
+                  ));
+                }
+              }
+              else {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'success',
+                    'msg' => 'Task completed'
+                  ));
+                }
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Cannot find attributes in post data'
+              ));
+            }
+          break;
+          case "syncjob":
+            if (isset($_POST['attr'])) {
+              $attr = (array)json_decode($_POST['attr'], true);
+              if (mailbox('add', 'syncjob', $attr) === false) {
                 if (isset($_SESSION['return'])) {
                   echo json_encode($_SESSION['return']);
                 }
@@ -725,12 +758,13 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "logs":
             switch ($object) {
               case "dovecot":
-                if (isset($extra) && !empty($extra)) {
-                  $extra = intval($extra);
+                // 0 is first record, so empty is fine
+                if (isset($extra)) {
+                  $extra = preg_replace('/[^\d\-]/i', '', $extra);
                   $logs = get_logs('dovecot-mailcow', $extra);
                 }
                 else {
-                  $logs = get_logs('dovecot-mailcow', -1);
+                  $logs = get_logs('dovecot-mailcow');
                 }
                 if (isset($logs) && !empty($logs)) {
                   echo json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
@@ -740,12 +774,13 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 }
               break;
               case "fail2ban":
-                if (isset($extra) && !empty($extra)) {
-                  $extra = intval($extra);
+                // 0 is first record, so empty is fine
+                if (isset($extra)) {
+                  $extra = preg_replace('/[^\d\-]/i', '', $extra);
                   $logs = get_logs('fail2ban-mailcow', $extra);
                 }
                 else {
-                  $logs = get_logs('fail2ban-mailcow', -1);
+                  $logs = get_logs('fail2ban-mailcow');
                 }
                 if (isset($logs) && !empty($logs)) {
                   echo json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
@@ -755,12 +790,13 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 }
               break;
               case "postfix":
-                if (isset($extra) && !empty($extra)) {
-                  $extra = intval($extra);
+                // 0 is first record, so empty is fine
+                if (isset($extra)) {
+                  $extra = preg_replace('/[^\d\-]/i', '', $extra);
                   $logs = get_logs('postfix-mailcow', $extra);
                 }
                 else {
-                  $logs = get_logs('postfix-mailcow', -1);
+                  $logs = get_logs('postfix-mailcow');
                 }
                 if (isset($logs) && !empty($logs)) {
                   echo json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
@@ -770,12 +806,13 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 }
               break;
               case "autodiscover":
-                if (isset($extra) && !empty($extra)) {
-                  $extra = intval($extra);
+                // 0 is first record, so empty is fine
+                if (isset($extra)) {
+                  $extra = preg_replace('/[^\d\-]/i', '', $extra);
                   $logs = get_logs('autodiscover-mailcow', $extra);
                 }
                 else {
-                  $logs = get_logs('autodiscover-mailcow', -1);
+                  $logs = get_logs('autodiscover-mailcow');
                 }
                 if (isset($logs) && !empty($logs)) {
                   echo json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
@@ -785,12 +822,13 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 }
               break;
               case "sogo":
-                if (isset($extra) && !empty($extra)) {
-                  $extra = intval($extra);
+                // 0 is first record, so empty is fine
+                if (isset($extra)) {
+                  $extra = preg_replace('/[^\d\-]/i', '', $extra);
                   $logs = get_logs('sogo-mailcow', $extra);
                 }
                 else {
-                  $logs = get_logs('sogo-mailcow', -1);
+                  $logs = get_logs('sogo-mailcow');
                 }
                 if (isset($logs) && !empty($logs)) {
                   echo json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
@@ -800,7 +838,14 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 }
               break;
               case "rspamd-history":
-                $logs = get_logs('rspamd-history');
+                // 0 is first record, so empty is fine
+                if (isset($extra)) {
+                  $extra = preg_replace('/[^\d\-]/i', '', $extra);
+                  $logs = get_logs('rspamd-history', $extra);
+                }
+                else {
+                  $logs = get_logs('rspamd-history');
+                }
                 if (isset($logs) && !empty($logs)) {
                   echo json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
                 }
@@ -863,7 +908,13 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                         $syncjobs = mailbox('get', 'syncjobs', $mailbox);
                         if (!empty($syncjobs)) {
                           foreach ($syncjobs as $syncjob) {
-                            if ($details = mailbox('get', 'syncjob_details', $syncjob)) {
+                            if (isset($extra)) {
+                              $details = mailbox('get', 'syncjob_details', $syncjob, explode(',', $extra));
+                            }
+                            else {
+                              $details = mailbox('get', 'syncjob_details', $syncjob);
+                            }
+                            if ($details) {
                               $data[] = $details;
                             }
                             else {
@@ -890,7 +941,83 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 $syncjobs = mailbox('get', 'syncjobs', $object);
                 if (!empty($syncjobs)) {
                   foreach ($syncjobs as $syncjob) {
-                    if ($details = mailbox('get', 'syncjob_details', $syncjob)) {
+                    if (isset($extra)) {
+                      $details = mailbox('get', 'syncjob_details', $syncjob, explode(',', $extra));
+                    }
+                    else {
+                      $details = mailbox('get', 'syncjob_details', $syncjob);
+                    }
+                    if ($details) {
+                      $data[] = $details;
+                    }
+                    else {
+                      continue;
+                    }
+                  }
+                }
+                if (!isset($data) || empty($data)) {
+                  echo '{}';
+                }
+                else {
+                  echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                }
+              break;
+            }
+          break;
+          case "active-user-sieve":
+            if (isset($object)) {
+              $sieve_filter = mailbox('get', 'active_user_sieve', $object);
+              if (!empty($sieve_filter)) {
+                $data[] = $sieve_filter;
+              }
+            }
+            if (!isset($data) || empty($data)) {
+              echo '{}';
+            }
+            else {
+              echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            }
+          break;
+          case "filters":
+            switch ($object) {
+              case "all":
+                $domains = mailbox('get', 'domains');
+                if (!empty($domains)) {
+                  foreach ($domains as $domain) {
+                    $mailboxes = mailbox('get', 'mailboxes', $domain);
+                    if (!empty($mailboxes)) {
+                      foreach ($mailboxes as $mailbox) {
+                        $filters = mailbox('get', 'filters', $mailbox);
+                        if (!empty($filters)) {
+                          foreach ($filters as $filter) {
+                            if ($details = mailbox('get', 'filter_details', $filter)) {
+                              $data[] = $details;
+                            }
+                            else {
+                              continue;
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                  if (!isset($data) || empty($data)) {
+                    echo '{}';
+                  }
+                  else {
+                    echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                  }
+                }
+                else {
+                  echo '{}';
+                }
+              break;
+
+              default:
+                $filters = mailbox('get', 'filters', $object);
+                if (!empty($filters)) {
+                  foreach ($filters as $filter) {
+                    if ($details = mailbox('get', 'filter_details', $filter)) {
                       $data[] = $details;
                     }
                     else {
@@ -1260,6 +1387,47 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               $items = (array)json_decode($_POST['items'], true);
               if (is_array($items)) {
                 if (mailbox('delete', 'syncjob', array('id' => $items)) === false) {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'error',
+                      'msg' => 'Deletion of items/s failed'
+                    ));
+                  }
+                }
+                else {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'success',
+                      'msg' => 'Task completed'
+                    ));
+                  }
+                }
+              }
+              else {
+                echo json_encode(array(
+                  'type' => 'error',
+                  'msg' => 'Cannot find id array in post data'
+                ));
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Cannot find items in post data'
+              ));
+            }
+          break;
+          case "filter":
+            if (isset($_POST['items'])) {
+              $items = (array)json_decode($_POST['items'], true);
+              if (is_array($items)) {
+                if (mailbox('delete', 'filter', array('id' => $items)) === false) {
                   if (isset($_SESSION['return'])) {
                     echo json_encode($_SESSION['return']);
                   }
@@ -2102,6 +2270,50 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               ));
             }
           break;
+          case "filter":
+            if (isset($_POST['items']) && isset($_POST['attr'])) {
+              $items = (array)json_decode($_POST['items'], true);
+              $attr = (array)json_decode($_POST['attr'], true);
+              $postarray = array_merge(array('id' => $items), $attr);
+              if (is_array($postarray['id'])) {
+                if (mailbox('edit', 'filter', $postarray) === false) {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'error',
+                      'msg' => 'Edit failed'
+                    ));
+                  }
+                  exit();
+                }
+                else {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'success',
+                      'msg' => 'Task completed'
+                    ));
+                  }
+                }
+              }
+              else {
+                echo json_encode(array(
+                  'type' => 'error',
+                  'msg' => 'Incomplete post data'
+                ));
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Incomplete post data'
+              ));
+            }
+          break;          
           case "resource":
             if (isset($_POST['items']) && isset($_POST['attr'])) {
               $items = (array)json_decode($_POST['items'], true);

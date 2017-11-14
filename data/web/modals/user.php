@@ -25,6 +25,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 						<label class="control-label col-sm-2" for="port1"><?=$lang['add']['port'];?></label>
 						<div class="col-sm-10">
 						<input type="number" class="form-control" name="port1" id="port1" min="1" max="65535" value="143" required>
+            <small class="help-block">1-65535</small>
 						</div>
 					</div>
 					<div class="form-group">
@@ -53,6 +54,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 						<label class="control-label col-sm-2" for="mins_interval"><?=$lang['add']['mins_interval'];?></label>
 						<div class="col-sm-10">
               <input type="number" class="form-control" name="mins_interval" min="10" max="3600" value="20" required>
+              <small class="help-block">10-3600</small>
 						</div>
 					</div>
 					<div class="form-group">
@@ -65,6 +67,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 						<label class="control-label col-sm-2" for="maxage"><?=$lang['edit']['maxage'];?></label>
 						<div class="col-sm-10">
 						<input type="number" class="form-control" name="maxage" id="maxage" min="0" max="32000" value="0">
+            <small class="help-block">0-32000</small>
 						</div>
 					</div>
 					<div class="form-group">
@@ -112,11 +115,12 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
   </div>
 </div><!-- add sync job modal -->
 <!-- log modal -->
-<div class="modal fade" id="logModal" tabindex="-1" role="dialog" aria-labelledby="logTextLabel">
-  <div class="modal-dialog" style="width:90%" role="document">
+<div class="modal fade" id="syncjobLogModal" tabindex="-1" role="dialog" aria-labelledby="syncjobLogModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
+      <div class="modal-header"><h4 class="modal-title">Log</h4></div>
       <div class="modal-body">
-        <span id="logText"></span>
+        <textarea class="form-control" rows="20" id="logText" spellcheck="false"></textarea>
       </div>
     </div>
   </div>
@@ -157,3 +161,17 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
     </div>
   </div>
 </div><!-- pw change modal -->
+<!-- sieve filter modal -->
+<div class="modal fade" id="userFilterModal" tabindex="-1" role="dialog" aria-labelledby="pwChangeModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <h3 class="modal-title"><?=$lang['user']['active_sieve'];?></h3>
+      </div>
+      <div class="modal-body">
+      <pre id="user_sieve_filter"></pre>
+      </div>
+    </div>
+  </div>
+</div><!-- sieve filter modal -->

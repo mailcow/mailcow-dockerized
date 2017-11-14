@@ -1,0 +1,9 @@
+<?xml version='1.0' standalone='yes'?>
+
+<extension name="copy">
+
+	<tagged-argument extends="(fileinto|redirect)">
+		<parameter type="tag" name="copy" regex="copy" occurrence="optional" />
+	</tagged-argument>
+
+</extension>
