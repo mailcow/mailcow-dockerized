@@ -19,7 +19,8 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
         <li role="presentation"><a href="#tab-domain-aliases" aria-controls="tab-domain-aliases" role="tab" data-toggle="tab"><?=$lang['mailbox']['domain_aliases'];?></a></li>
       </ul>
     </li>
-    <li role="presentation"><a href="#tab-syncjobs" aria-controls="tab-resources" role="tab" data-toggle="tab">Sync jobs</a></li>
+    <li role="presentation"><a href="#tab-syncjobs" aria-controls="tab-syncjobs" role="tab" data-toggle="tab"><?=$lang['mailbox']['sync_jobs'];?></a></li>
+    <li role="presentation"><a href="#tab-filters" aria-controls="tab-filters" role="tab" data-toggle="tab"><?=$lang['mailbox']['filters'];?></a></li>
   </ul>
 
 	<div class="row">
@@ -155,7 +156,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
         <div role="tabpanel" class="tab-pane" id="tab-syncjobs">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Sync jobs</h3>
+              <h3 class="panel-title"><?=$lang['mailbox']['sync_jobs'];?></h3>
             </div>
             <div class="table-responsive">
               <table class="table table-striped" id="sync_job_table"></table>
@@ -165,6 +166,8 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                 <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="syncjob" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
                 <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
+                  <li><a id="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"last_run":""}' href="#"><?=$lang['mailbox']['last_run_reset'];?></a></li>
+                  <li role="separator" class="divider"></li>
                   <li><a id="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
                   <li><a id="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
                   <li role="separator" class="divider"></li>
@@ -173,6 +176,35 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                 <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addSyncJobModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['create_syncjob'];?></a>
               </div>
             </div>
+          </div>
+        </div>
+
+        <div role="tabpanel" class="tab-pane" id="tab-filters">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title"><?=$lang['mailbox']['filters'];?></h3>
+            </div>
+            <p style="margin:10px" class="help-block"><?=$lang['mailbox']['sieve_info'];?></p>
+            <div class="table-responsive">
+              <table class="table table-striped" id="filter_table"></table>
+            </div>
+            <div class="mass-actions-mailbox">
+              <div class="btn-group">
+                <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="filter_item" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
+                <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a id="edit_selected" data-id="filter_item" data-api-url='edit/filter' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
+                  <li><a id="edit_selected" data-id="filter_item" data-api-url='edit/filter' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a id="edit_selected" data-id="filter_item" data-api-url='edit/filter' data-api-attr='{"filter_type":"prefilter"}' href="#"><?=$lang['mailbox']['set_prefilter'];?></a></li>
+                  <li><a id="edit_selected" data-id="filter_item" data-api-url='edit/filter' data-api-attr='{"filter_type":"postfilter"}' href="#"><?=$lang['mailbox']['set_postfilter'];?></a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a id="delete_selected" data-text="<?=$lang['user']['eas_reset'];?>?" data-id="filter_item" data-api-url='delete/filter' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+                </ul>
+                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addFilterModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_filter'];?></a>
+              </div>
+            </div>
+          </div>
         </div>
 
       </div> <!-- /tab-content -->

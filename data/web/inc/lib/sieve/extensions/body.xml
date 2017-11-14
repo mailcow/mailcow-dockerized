@@ -1,0 +1,14 @@
+<?xml version='1.0' standalone='yes'?>
+
+<extension name="body">
+
+	<test name="body">
+		<parameter type="matchtype" occurrence="optional" />
+		<parameter type="comparator" occurrence="optional" />
+		<parameter type="tag" name="body transform" regex="(raw|content|text)" occurrence="optional">
+			<parameter type="stringlist" name="content types" follows="content" />
+		</parameter>
+		<parameter type="stringlist" name="key list" />
+	</test>
+
+</extension>

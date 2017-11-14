@@ -147,6 +147,9 @@ def watch():
 					result = re.search(rule_regex, item['data'])
 					if result:
 						addr = result.group(1)
+            ip = ipaddress.ip_address(addr.decode('ascii'))
+            if ip.is_private or ip.is_loopback:
+              continue
 						print "%s matched rule id %d" % (addr, rule_id)
 						log['time'] = int(round(time.time()))
 						log['priority'] = "warn"

@@ -1,0 +1,11 @@
+<?xml version='1.0' standalone='yes'?>
+
+<extension name="reject">
+
+	<command name="reject">
+
+		<parameter type="string" name="reason" />
+
+	</command>
+
+</extension>

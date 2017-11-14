@@ -99,6 +99,9 @@ $lang['danger']['domain_not_empty'] = "Cannot remove non-empty domain";
 $lang['warning']['spam_alias_temp_error'] = "Temporary error: Cannot add spam alias, please try again later.";
 $lang['danger']['spam_alias_max_exceeded'] = "Max. allowed spam alias addresses exceeded";
 $lang['danger']['validity_missing'] = 'Please assign a period of validity';
+$lang['user']['loading'] = "Loading...";
+$lang['user']['active_sieve'] = "Active filter";
+$lang['user']['no_active_filter'] = "No active filter available";
 $lang['user']['on'] = "On";
 $lang['user']['off'] = "Off";
 $lang['user']['messages'] = "messages"; // "123 messages"
@@ -154,6 +157,9 @@ $lang['user']['spamfilter_red'] = 'Red: This message is spam and will be rejecte
 $lang['user']['spamfilter_default_score'] = 'Default values:';
 $lang['user']['spamfilter_hint'] = 'The first value describes the "low spam score", the second represents the "high spam score".';
 $lang['user']['spamfilter_table_domain_policy'] = "n/a (domain policy)";
+$lang['user']['waiting'] = "Waiting";
+$lang['user']['status'] = "Status";
+$lang['user']['running'] = "Running";
 
 $lang['user']['tls_policy_warning'] = '<strong>Warning:</strong> If you decide to enforce encrypted mail transfer, you may lose emails.<br>Messages to not satisfy the policy will be bounced with a hard fail by the mail system.<br>This option applies to your primary email address (login name), all addresses derived from alias domains as well as alias addresses <b>with only this single mailbox</b> as target.';
 $lang['user']['tls_policy'] = 'Encryption policy';
@@ -214,6 +220,7 @@ $lang['header']['mailcow_settings'] = 'Configuration';
 $lang['header']['administration'] = 'Administration';
 $lang['header']['mailboxes'] = 'Mailboxes';
 $lang['header']['user_settings'] = 'User settings';
+$lang['header']['diagnostics'] = 'Diagnostics';
 $lang['header']['login'] = 'Login';
 $lang['header']['logged_in_as_logout'] = 'Logged in as <b>%s</b> (logout)';
 $lang['header']['logged_in_as_logout_dual'] = 'Logged in as <b>%s <span class="text-info">[%s]</span></b>';
@@ -265,7 +272,10 @@ $lang['mailbox']['deactivate'] = 'Deactivate';
 $lang['mailbox']['owner'] = 'Owner';
 $lang['mailbox']['mins_interval'] = 'Interval (min)';
 $lang['mailbox']['last_run'] = 'Last run';
-
+$lang['mailbox']['last_run_reset'] = 'Schedule next';
+$lang['mailbox']['sieve_info'] = 'You can store multiple filters per user, but only one prefilter and one postfilter can be active at the same time.<br>
+Each filter will be processed in the described order. Neither a failed script nor an issued "keep;" will stop processing of further scripts.<br>
+Prefilter → User scripts → Postfilter → <a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/sieve_after" target="_blank">global sieve postfilter</a>';
 $lang['info']['no_action'] = 'No action applicable';
 
 $lang['delete']['title'] = 'Remove object';
@@ -389,6 +399,21 @@ $lang['add']['password_repeat'] = 'Confirmation password (repeat)';
 $lang['add']['previous'] = 'Previous page';
 $lang['add']['restart_sogo_hint'] = 'You will need to restart the SOGo service container after adding a new domain!';
 $lang['add']['goto_null'] = 'Silently discard mail';
+$lang['add']['validation_success'] = 'Validated successfully';
+$lang['add']['activate_filter_warn'] = 'All other filters will be deactivated, when active is checked.';
+$lang['add']['validate'] = 'Validate';
+$lang['mailbox']['add_filter'] = 'Add filter';
+$lang['add']['sieve_desc'] = 'Short description';
+$lang['edit']['sieve_desc'] = 'Short description';
+$lang['add']['sieve_type'] = 'Filter type';
+$lang['edit']['sieve_type'] = 'Filter type';
+$lang['mailbox']['set_prefilter'] = 'Mark as prefilter';
+$lang['mailbox']['set_postfilter'] = 'Mark as postfilter';
+$lang['mailbox']['filters'] = 'Filters';
+$lang['mailbox']['sync_jobs'] = 'Sync jobs';
+$lang['mailbox']['inactive'] = 'Inactive';
+$lang['edit']['validate_save'] = 'Validate and save';
+
 
 $lang['login']['title'] = 'Login';
 $lang['login']['administration'] = 'Administration';
@@ -425,6 +450,8 @@ $lang['tfa']['scan_qr_code'] = "Please scan the following code with your authent
 $lang['tfa']['enter_qr_code'] = "Your TOTP code if your device cannot scan QR codes";
 $lang['tfa']['confirm_totp_token'] = "Please confirm your changes by entering the generated token";
 
+$lang['admin']['no_new_rows'] = 'No further rows available';
+$lang['admin']['additional_rows'] = ' additional rows were added'; // parses to 'n additional rows were added'
 $lang['admin']['private_key'] = 'Private key';
 $lang['admin']['import'] = 'Import';
 $lang['admin']['import_private_key'] = 'Import private key';
@@ -516,6 +543,12 @@ $lang['success']['forwarding_host_removed'] = "Forwarding host %s has been remov
 $lang['success']['forwarding_host_added'] = "Forwarding host %s has been added";
 $lang['success']['relayhost_removed'] = "Relayhost %s has been removed";
 $lang['success']['relayhost_added'] = "Relayhost %s has been added";
+$lang['diagnostics']['dns_records'] = 'DNS Records';
+$lang['diagnostics']['dns_records_24hours'] = 'Please note that changes made to DNS may take up to 24 hours to correctly have their current state reflected on this page. It is intended as a way for you to easily see how to configure your DNS records and to check whether all your records are correctly stored in DNS.';
+$lang['diagnostics']['dns_records_name'] = 'Name';
+$lang['diagnostics']['dns_records_type'] = 'Type';
+$lang['diagnostics']['dns_records_data'] = 'Correct Data';
+$lang['diagnostics']['dns_records_status'] = 'Current State';
 $lang['admin']['relay_from'] = '"From:" address';
 $lang['admin']['relay_run'] = "Run test";
 
@@ -530,6 +563,9 @@ $lang['admin']['remove_row'] = "Remove row";
 $lang['admin']['add_row'] = "Add row";
 $lang['admin']['reset_default'] = "Reset to default";
 $lang['admin']['merged_vars_hint'] = 'Greyed out rows were merged from <code>vars.inc.(local.)php</code> and cannot be modified.';
+$lang['mailbox']['waiting'] = "Waiting";
+$lang['mailbox']['status'] = "Status";
+$lang['mailbox']['running'] = "Running";
 
 $lang['edit']['tls_policy'] = "Change TLS policy";
 $lang['edit']['spam_score'] = "Set a custom spam score";
