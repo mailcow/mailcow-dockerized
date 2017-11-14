@@ -92,7 +92,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.4
+      image: mailcow/phpfpm:1.5
       build: ./data/Dockerfiles/phpfpm
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
@@ -224,6 +224,7 @@ services:
         envsubst < /etc/nginx/conf.d/templates/server_name.template > /etc/nginx/conf.d/server_name.active &&
         nginx -qt &&
         until ping phpfpm -c1 > /dev/null; do sleep 1; done &&
+        until ping sogo -c1 > /dev/null; do sleep 1; done &&
         until ping redis -c1 > /dev/null; do sleep 1; done &&
         exec nginx -g 'daemon off;'"
       environment:
@@ -251,7 +252,7 @@ services:
       depends_on:
         - nginx-mailcow
         - mysql-mailcow
-      image: mailcow/acme:1.22
+      image: mailcow/acme:1.23
       build: ./data/Dockerfiles/acme
       dns:
         - 172.22.1.254
@@ -274,7 +275,7 @@ services:
             - acme
 
     fail2ban-mailcow:
-      image: mailcow/fail2ban:1.7
+      image: mailcow/fail2ban:1.8
       build: ./data/Dockerfiles/fail2ban
       stop_grace_period: 30s
       depends_on:
@@ -295,7 +296,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.9
+      image: mailcow/watchdog:1.10
       build: ./data/Dockerfiles/watchdog
       volumes:
         - vmail-vol-1:/vmail:ro
