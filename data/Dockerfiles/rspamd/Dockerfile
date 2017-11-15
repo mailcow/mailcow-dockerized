@@ -1,4 +1,4 @@
-FROM debian:stretch-slim
+FROM ubuntu:xenial
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -7,9 +7,10 @@ ENV LC_ALL C
 RUN apt-get update && apt-get install -y \
 	ca-certificates \
 	gnupg2 \
+  gnupg-curl \
 	apt-transport-https \
 	&& apt-key adv --fetch-keys https://rspamd.com/apt/gpg.key \
-	&& echo "deb https://rspamd.com/apt/ stretch main" > /etc/apt/sources.list.d/rspamd.list \
+	&& echo "deb https://rspamd.com/apt/ xenial main" > /etc/apt/sources.list.d/rspamd.list \
 	&& apt-get update && apt-get install -y rspamd \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& echo '.include $LOCAL_CONFDIR/local.d/rspamd.conf.local' > /etc/rspamd/rspamd.conf.local \
