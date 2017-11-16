@@ -8,6 +8,11 @@ if [[ "${SKIP_LETS_ENCRYPT}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   exec $(readlink -f "$0")
 fi
 
+echo "Waiting for Docker API..."
+until ping dockerapi -c1 > /dev/null; do
+  sleep 1
+done
+
 ACME_BASE=/var/lib/acme
 SSL_EXAMPLE=/var/lib/ssl-example
 
