@@ -43,6 +43,8 @@ services:
             - mysql
 
     redis-mailcow:
+      sysctls:                                                                     
+        - net.core.somaxconn=511
       image: redis:alpine
       volumes:
         - redis-vol-1:/data/
