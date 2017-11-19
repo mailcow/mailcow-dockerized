@@ -1,5 +1,4 @@
 <?php
-
 function customize($_action, $_item, $_data = null) {
 	global $redis;
 	global $lang;

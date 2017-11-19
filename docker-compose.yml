@@ -179,7 +179,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.7
+      image: mailcow/postfix:1.8
       build: ./data/Dockerfiles/postfix
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf

@@ -7,7 +7,6 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 $tfa_data = get_tfa();
 ?>
 <div class="container">
-
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active">
       <a href="#tab-access" aria-controls="tab-access" role="tab" data-toggle="tab"><?=$lang['admin']['access'];?></a>
@@ -22,7 +21,9 @@ $tfa_data = get_tfa();
     <li role="presentation"><a href="#tab-postfix-logs" aria-controls="tab-postfix-logs" role="tab" data-toggle="tab">Postfix</a></li>
     <li role="presentation"><a href="#tab-dovecot-logs" aria-controls="tab-dovecot-logs" role="tab" data-toggle="tab">Dovecot</a></li>
     <li role="presentation"><a href="#tab-sogo-logs" aria-controls="tab-sogo-logs" role="tab" data-toggle="tab">SOGo</a></li>
+    <?php if (F2B == 1): ?>
     <li role="presentation"><a href="#tab-fail2ban-logs" aria-controls="tab-fail2ban-logs" role="tab" data-toggle="tab">Fail2ban</a></li>
+    <?php endif; ?>
     <li role="presentation"><a href="#tab-rspamd-history" aria-controls="tab-rspamd-history" role="tab" data-toggle="tab">Rspamd</a></li>
     <li role="presentation"><a href="#tab-autodiscover-logs" aria-controls="tab-autodiscover-logs" role="tab" data-toggle="tab">Autodiscover</a></li>
     </ul>
@@ -127,7 +128,9 @@ $tfa_data = get_tfa();
       <div id="scrollbox" class="list-group">
         <a href="#dkim" class="list-group-item"><?=$lang['admin']['dkim_keys'];?></a>
         <a href="#fwdhosts" class="list-group-item"><?=$lang['admin']['forwarding_hosts'];?></a>
+        <?php if (F2B == 1): ?>
         <a href="#f2bparams" class="list-group-item"><?=$lang['admin']['f2b_parameters'];?></a>
+        <?php endif; ?>
         <a href="#relayhosts" class="list-group-item">Relayhosts</a>
         <a href="#customize" class="list-group-item"><?=$lang['admin']['customize'];?></a>
         <a href="#top" class="list-group-item" style="border-top:1px dashed #dadada">↸ <?=$lang['admin']['to_top'];?></a>
@@ -307,6 +310,7 @@ $tfa_data = get_tfa();
       </div>
     </div>
 
+    <?php if (F2B == 1): ?>
     <span class="anchor" id="f2bparams"></span>
     <div class="panel panel-default">
       <div class="panel-heading"><?=$lang['admin']['f2b_parameters'];?></div>
@@ -335,6 +339,7 @@ $tfa_data = get_tfa();
         </form>
       </div>
     </div>
+    <?php endif; ?>
 
     <span class="anchor" id="relayhosts"></span>
     <div class="panel panel-default">
@@ -506,6 +511,8 @@ $tfa_data = get_tfa();
     </div>
   </div>
 
+  
+  <?php if (F2B == 1): ?>
   <div role="tabpanel" class="tab-pane" id="tab-fail2ban-logs">
     <div class="panel panel-default">
       <div class="panel-heading">Fail2ban <span class="badge badge-info log-lines"></span>
@@ -522,6 +529,7 @@ $tfa_data = get_tfa();
       </div>
     </div>
   </div>
+  <?php endif; ?>
 
   <div role="tabpanel" class="tab-pane" id="tab-rspamd-history">
     <div class="panel panel-default">

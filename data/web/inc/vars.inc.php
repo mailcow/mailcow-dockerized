@@ -118,3 +118,6 @@ $OTP_LABEL = "mailcow UI";
 
 // Default "to" address in relay test tool
 $RELAY_TO = "null@hosted.mailcow.de";
+
+// Internal constants, can be ignored
+define("F2B", 1);
