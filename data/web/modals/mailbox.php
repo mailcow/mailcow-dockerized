@@ -509,6 +509,77 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
     </div>
   </div>
 </div><!-- add add_filter modal -->
+<!-- add add_bcc modal -->
+<div class="modal fade" id="addBCCModalAdmin" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <h3 class="modal-title">BCC map</h3>
+      </div>
+      <div class="modal-body">
+				<form class="form-horizontal" role="form" data-id="add_bcc">
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="local_dest">Local destination:</label>
+            <div class="col-sm-10">
+              <select id="addSelectLocalDest" name="local_dest" id="local_dest" required>
+              <?php
+              $domains = mailbox('get', 'domains');
+              $alias_domains = mailbox('get', 'alias_domains');
+              if (!empty($domains)) {
+                foreach ($domains as $domain) {
+                  echo "<option>".htmlspecialchars($domain)."</option>";
+                }
+              }
+              if (!empty($alias_domains)) {
+                foreach ($alias_domains as $alias_domain) {
+                  echo "<option>".htmlspecialchars($alias_domain)."</option>";
+                }
+              }
+              if (!empty($domains)) {
+                foreach ($domains as $domain) {
+                  $mailboxes = mailbox('get', 'mailboxes', $domain);
+                  foreach ($mailboxes as $mailbox) {
+                    echo "<option>".htmlspecialchars($mailbox)."</option>";
+                  }
+                }
+              }
+              ?>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="type">BCC map type:</label>
+            <div class="col-sm-10">
+              <select id="addFBCCType" name="type" id="type" required>
+                <option value="sender">Sender map</option>
+                <option value="rcpt">Recipient map</option>
+              </select>
+            </div>
+          </div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="bcc_dest">BCC destination/s:</label>
+						<div class="col-sm-10">
+							<textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control" rows="20" id="bcc_dest" name="bcc_dest" required></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<div class="checkbox">
+							<label><input type="checkbox" value="1" name="active" checked> <?=$lang['add']['active'];?></label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+              <button class="btn btn-success" id="add_item" data-id="add_bcc" data-api-url='add/bcc' data-api-attr='{}' href="#"><?=$lang['admin']['add'];?></button>
+						</div>
+					</div>
+				</form>
+      </div>
+    </div>
+  </div>
+</div><!-- add add_bcc modal -->
 <!-- log modal -->
 <div class="modal fade" id="syncjobLogModal" tabindex="-1" role="dialog" aria-labelledby="syncjobLogModalLabel">
   <div class="modal-dialog modal-lg" role="document">

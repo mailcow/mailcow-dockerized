@@ -119,6 +119,28 @@ query = SELECT goto FROM alias
     AND active='1';
 EOF
 
+cat <<EOF > /opt/postfix/conf/sql/mysql_recipient_bcc_maps.cf
+user = ${DBUSER}
+password = ${DBPASS}
+hosts = mysql
+dbname = ${DBNAME}
+query = SELECT bcc_dest FROM bcc_maps
+  WHERE local_dest='%s'
+    AND type='rcpt'
+    AND active='1';
+EOF
+
+cat <<EOF > /opt/postfix/conf/sql/mysql_sender_bcc_maps.cf
+user = ${DBUSER}
+password = ${DBPASS}
+hosts = mysql
+dbname = ${DBNAME}
+query = SELECT bcc_dest FROM bcc_maps
+  WHERE local_dest='%s'
+    AND type='sender'
+    AND active='1';
+EOF
+
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_domains_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}

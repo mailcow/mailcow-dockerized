@@ -722,7 +722,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
           }
           $active = intval($_data['active']);
           $quota_b		= ($quota_m * 1048576);
-          $maildir		= $domain."/".$local_part."/";
+          $maildir		= $domain . "/" . $local_part . "/mail-" . time() . "/";
           if (!is_valid_domain_name($domain)) {
             $_SESSION['return'] = array(
               'type' => 'danger',
@@ -3103,10 +3103,6 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
           }
           foreach ($ids as $id) {
             if (!is_numeric($id)) {
-              $_SESSION['return'] = array(
-                'type' => 'danger',
-                'msg' => $id
-              );
               return false;
             }
             try {
@@ -3154,10 +3150,6 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
           }
           foreach ($ids as $id) {
             if (!is_numeric($id)) {
-              $_SESSION['return'] = array(
-                'type' => 'danger',
-                'msg' => $id
-              );
               return false;
             }
             try {
@@ -3366,6 +3358,10 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               $stmt->execute(array(
                 ':domain' => '%@'.$domain,
               ));
+              $stmt = $pdo->prepare("DELETE FROM `bcc_maps` WHERE `local_dest` = :domain");
+              $stmt->execute(array(
+                ':domain' => '%@'.$domain,
+              ));
             }
             catch (PDOException $e) {
               $_SESSION['return'] = array(
@@ -3486,6 +3482,10 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               $stmt->execute(array(
                 ':alias_domain' => $alias_domain,
               ));
+              $stmt = $pdo->prepare("DELETE FROM `bcc_maps` WHERE `local_dest` = :alias_domain");
+              $stmt->execute(array(
+                ':domain' => '%@'.$alias_domain,
+              ));
             }
             catch (PDOException $e) {
               $_SESSION['return'] = array(
@@ -3577,6 +3577,10 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
                 ':username' => $username
               ));
               $stmt = $pdo->prepare("DELETE FROM `sogo_folder_info` WHERE `c_path2` = :username");
+              $stmt->execute(array(
+                ':username' => $username
+              ));
+              $stmt = $pdo->prepare("DELETE FROM `bcc_maps` WHERE `local_dest` = :username");
               $stmt->execute(array(
                 ':username' => $username
               ));
