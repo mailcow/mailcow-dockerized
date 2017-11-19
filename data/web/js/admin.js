@@ -466,7 +466,7 @@ jQuery(function($){
     $(this).html('<span class="glyphicon glyphicon-refresh glyphicon-spin"></span> ');
     $.ajax({
         type: 'GET',
-        url: 'inc/relay_check.php',
+        url: 'inc/ajax/relay_check.php',
         dataType: 'text',
         data: $('#test_relayhost_form').serialize(),
         complete: function (data) {

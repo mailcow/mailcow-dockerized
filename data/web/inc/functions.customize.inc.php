@@ -34,7 +34,6 @@ function customize($_action, $_item, $_data = null) {
               $image->destroy();
             }
             catch (ImagickException $e) {
-              $image->destroy();
               $_SESSION['return'] = array(
                 'type' => 'danger',
                 'msg' => 'Cannot validate image file'

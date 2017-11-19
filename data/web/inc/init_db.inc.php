@@ -3,9 +3,9 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "08112017_1049";
+    $db_version = "14112017_2103";
 
-    $stmt = $pdo->query("SHOW TABLES LIKE 'versions'"); 
+    $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
     if ($num_results != 0) {
       $stmt = $pdo->query("SELECT `version` FROM `versions`");
@@ -29,10 +29,10 @@ function init_db_schema() {
       SELECT username, IFNULL(GROUP_CONCAT(local_part, '@', alias_domain SEPARATOR ' '), '') AS ad_alias FROM mailbox
       LEFT OUTER JOIN alias_domain on target_domain=domain GROUP BY username;",
     "sieve_before" => "CREATE VIEW sieve_before (id, username, script_name, script_data) AS
-      SELECT id, username, script_name, script_data FROM sieve_filters
+      SELECT md5(script_data), username, script_name, script_data FROM sieve_filters
       WHERE filter_type = 'prefilter';",
     "sieve_after" => "CREATE VIEW sieve_after (id, username, script_name, script_data) AS
-      SELECT id, username, script_name, script_data FROM sieve_filters
+      SELECT md5(script_data), username, script_name, script_data FROM sieve_filters
       WHERE filter_type = 'postfilter';"
     );
 
@@ -285,11 +285,8 @@ function init_db_schema() {
           "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
         ),
         "keys" => array(
-          "primary" => array(
-            "" => array("username")
-          ),
           "key" => array(
-            "domain" => array("domain")
+            "username" => array("username")
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"

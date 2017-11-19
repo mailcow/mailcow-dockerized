@@ -2,6 +2,17 @@
 set -o pipefail
 exec 5>&1
 
+if [[ "${SKIP_LETS_ENCRYPT}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  log_f "SKIP_LETS_ENCRYPT=y, skipping Let's Encrypt..."
+  sleep 365d
+  exec $(readlink -f "$0")
+fi
+
+echo "Waiting for Docker API..."
+until ping dockerapi -c1 > /dev/null; do
+  sleep 1
+done
+
 ACME_BASE=/var/lib/acme
 SSL_EXAMPLE=/var/lib/ssl-example
 
@@ -102,11 +113,6 @@ while ! mysqladmin ping --host mysql -u${DBUSER} -p${DBPASS} --silent; do
 done
 
 while true; do
-  if [[ "${SKIP_LETS_ENCRYPT}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-    log_f "SKIP_LETS_ENCRYPT=y, skipping Let's Encrypt..."
-    sleep 365d
-    exec $(readlink -f "$0")
-  fi
   if [[ "${SKIP_IP_CHECK}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
     SKIP_IP_CHECK=y
   fi
