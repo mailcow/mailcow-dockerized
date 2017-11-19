@@ -186,8 +186,6 @@ services:
         - ./data/assets/ssl:/etc/ssl/mail/:ro
         - postfix-vol-1:/var/spool/postfix
         - crypt-vol-1:/var/lib/zeyple
-      depends_on:
-        - source-nat-rewrite
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -220,7 +218,6 @@ services:
         - sogo-mailcow
         - php-fpm-mailcow
         - redis-mailcow
-        - source-nat-rewrite
       image: nginx:mainline-alpine
       command: /bin/sh -c "envsubst < /etc/nginx/conf.d/templates/listen_plain.template > /etc/nginx/conf.d/listen_plain.active &&
         envsubst < /etc/nginx/conf.d/templates/listen_ssl.template > /etc/nginx/conf.d/listen_ssl.active &&
@@ -344,9 +341,12 @@ services:
       network_mode: "host"
       pid: "host"
       environment:
-        - REWRITE_OUTGOING_IP=${REWRITE_OUTGOING_IP}
-        - REWRITE_OUTGOING_INTERFACE_TO=${REWRITE_OUTGOING_INTERFACE_TO}
-        - REWRITE_OUTGOING_IP_TO=${REWRITE_OUTGOING_IP_TO}
+        - REWRITE_OUTGOING_IP4=${REWRITE_OUTGOING_IP4}
+        - REWRITE_OUTGOING_IP4_INTERFACE_TO=${REWRITE_OUTGOING_IP4_INTERFACE_TO}
+        - REWRITE_OUTGOING_IP4_TO=${REWRITE_OUTGOING_IP4_TO}
+        - REWRITE_OUTGOING_IP6=${REWRITE_OUTGOING_IP6}
+        - REWRITE_OUTGOING_IP6_INTERFACE_TO=${REWRITE_OUTGOING_IP6_INTERFACE_TO}
+        - REWRITE_OUTGOING_IP6_TO=${REWRITE_OUTGOING_IP6_TO}
       volumes:
         - ./data/conf/source-nat-rewrite/rules.sh:/rules.sh
 

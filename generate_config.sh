@@ -101,13 +101,18 @@ USE_WATCHDOG=n
 # Send notifications by mail (no DKIM signature, sent from watchdog@MAILCOW_HOSTNAME)
 #WATCHDOG_NOTIFY_EMAIL=
 
-# Do you use mailcow under another ipv4 address than you server main address?
+# Do you use mailcow under another ipv4/ipv6 address than you server main address?
 # Rewrite outgoing requests source ip for servers with multiple ip addresses on one ethernet interface
-REWRITE_OUTGOING_IP=n
+REWRITE_OUTGOING_IP4=n
 # outgoing interface of mailcow network
-#REWRITE_OUTGOING_INTERFACE_TO=eth0
+#REWRITE_OUTGOING_IP4_INTERFACE_TO=eth0
 # outgoing ip of mailcow network
-#REWRITE_OUTGOING_IP_TO=
+#REWRITE_OUTGOING_IP4_TO=
+REWRITE_OUTGOING_IP6=n
+# outgoing interface of mailcow network
+#REWRITE_OUTGOING_IP6_INTERFACE_TO=eth0
+# outgoing ip of mailcow network
+#REWRITE_OUTGOING_IP6_TO=
 
 EOF
 
