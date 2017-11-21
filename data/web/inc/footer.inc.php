@@ -40,6 +40,7 @@ $(document).ready(function() {
     backdrop: 'static',
     keyboard: false
   });
+  $('#u2f_status_auth').html('<p><span class="glyphicon glyphicon-refresh glyphicon-spin"></span> Initializing, please wait...</p>');
   $('#ConfirmTFAModal').on('shown.bs.modal', function(){
       $(this).find('#token').focus();
       // If U2F
@@ -49,20 +50,21 @@ $(document).ready(function() {
           cache: false,
           dataType: 'script',
           url: "/api/v1/get/u2f-authentication/<?= (isset($_SESSION['pending_mailcow_cc_username'])) ? $_SESSION['pending_mailcow_cc_username'] : null; ?>",
-          success: function(data){
+          complete: function(data){
+            $('#u2f_status_auth').html('<?=$lang['tfa']['waiting_usb_auth'];?>');
             data;
+            setTimeout(function() {
+              console.log("Ready to authenticate");
+              u2f.sign(appId, challenge, registeredKeys, function(data) {
+                var form = document.getElementById('u2f_auth_form');
+                var auth = document.getElementById('u2f_auth_data');
+                console.log("Authenticate callback", data);
+                auth.value = JSON.stringify(data);
+                form.submit();
+              });
+            }, 1000);
           }
         });
-        setTimeout(function() {
-          console.log("sign: ", req);
-          u2f.sign(req, function(data) {
-            var form = document.getElementById('u2f_auth_form');
-            var auth = document.getElementById('u2f_auth_data');
-            console.log("Authenticate callback", data);
-            auth.value = JSON.stringify(data);
-            form.submit();
-          });
-        }, 1000);
       }
   });
   <?php endif; ?>
@@ -81,32 +83,34 @@ $(document).ready(function() {
     if ($(this).val() == "u2f") {
       $('#U2FModal').modal('show');
       $("option:selected").prop("selected", false);
+      $('#u2f_status_reg').html('<p><span class="glyphicon glyphicon-refresh glyphicon-spin"></span> Initializing, please wait...</p>');
       $.ajax({
         type: "GET",
         cache: false,
         dataType: 'script',
         url: "/api/v1/get/u2f-registration/<?= (isset($_SESSION['mailcow_cc_username'])) ? $_SESSION['mailcow_cc_username'] : null; ?>",
-        success: function(data){
+        complete: function(data){
           data;
+          setTimeout(function() {
+            console.log("Ready to register");
+            $('#u2f_status_reg').html('<?=$lang['tfa']['waiting_usb_register'];?>');
+            u2f.register(appId, registerRequests, registeredKeys, function(deviceResponse) {
+              var form  = document.getElementById('u2f_reg_form');
+              var reg   = document.getElementById('u2f_register_data');
+              console.log("Register callback: ", data);
+              if (deviceResponse.errorCode && deviceResponse.errorCode != 0) {
+                var u2f_return_code = document.getElementById('u2f_return_code');
+                u2f_return_code.style.display = u2f_return_code.style.display === 'none' ? '' : null;
+                if (deviceResponse.errorCode == "4") { deviceResponse.errorCode = "4 - The presented device is not eligible for this request. For a registration request this may mean that the token is already registered, and for a sign request it may mean that the token does not know the presented key handle"; }
+                u2f_return_code.innerHTML = 'Error code: ' + deviceResponse.errorCode;
+                return;
+              }
+              reg.value = JSON.stringify(deviceResponse);
+              form.submit();
+            });
+          }, 1000);
         }
       });
-      setTimeout(function() {
-        console.log("Register: ", req);
-        u2f.register([req], sigs, function(data) {
-          var form  = document.getElementById('u2f_reg_form');
-          var reg   = document.getElementById('u2f_register_data');
-          console.log("Register callback", data);
-          if (data.errorCode && data.errorCode != 0) {
-            var u2f_return_code = document.getElementById('u2f_return_code');
-            u2f_return_code.style.display = u2f_return_code.style.display === 'none' ? '' : null;
-            if (data.errorCode == "4") { data.errorCode = "4 - The presented device is not eligible for this request. For a registration request this may mean that the token is already registered, and for a sign request it may mean that the token does not know the presented key handle"; }
-            u2f_return_code.innerHTML = 'Error code: ' + data.errorCode;
-            return;
-          }
-          reg.value = JSON.stringify(data);
-          form.submit();
-        });
-      }, 1000);
     }
     if ($(this).val() == "none") {
       $('#DisableTFAModal').modal('show');
