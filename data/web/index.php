@@ -73,12 +73,14 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
           <?php
           endforeach;
           $app_links = customize('get', 'app_links');
-          foreach ($app_links as $row) {
-            foreach ($row as $key => $val):
-          ?>
-            <a href="<?= htmlspecialchars($val); ?>" role="button" class="btn btn-lg btn-default"><?= htmlspecialchars($key); ?></a>&nbsp;
-          <?php 
-            endforeach;
+          if (!empty($app_links)) {
+            foreach ($app_links as $row) {
+              foreach ($row as $key => $val):
+            ?>
+              <a href="<?= htmlspecialchars($val); ?>" role="button" class="btn btn-lg btn-default"><?= htmlspecialchars($key); ?></a>&nbsp;
+            <?php 
+              endforeach;
+            }
           }
           ?>
         </div>
