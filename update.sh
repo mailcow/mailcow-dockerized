@@ -79,7 +79,7 @@ else
 	exit 1
 fi
 
-read -r -p "Are you sure you want to update mailcow: dockerized? All containers will be stoped. [y/N] " response
+read -r -p "Are you sure you want to update mailcow: dockerized? All containers will be stopped. [y/N] " response
 if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 	echo "OK, exiting."
 	exit 0
