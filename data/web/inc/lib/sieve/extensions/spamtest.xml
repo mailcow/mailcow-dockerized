@@ -1,0 +1,11 @@
+<?xml version='1.0' standalone='yes'?>
+
+<extension name="spamtest">
+
+	<test name="spamtest">
+		<parameter type="comparator" occurrence="optional" />
+		<parameter type="matchtype" occurrence="optional" />
+		<parameter type="string" name="value" />
+	</test>
+
+</extension>

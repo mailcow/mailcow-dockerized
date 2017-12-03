@@ -1,58 +1,5 @@
 [
     {
-        "name": "robthree/twofactorauth",
-        "version": "1.6",
-        "version_normalized": "1.6.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/RobThree/TwoFactorAuth.git",
-            "reference": "5093ab230cd8f1296d792afb6a49545f37e7fd5a"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/RobThree/TwoFactorAuth/zipball/5093ab230cd8f1296d792afb6a49545f37e7fd5a",
-            "reference": "5093ab230cd8f1296d792afb6a49545f37e7fd5a",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.0"
-        },
-        "require-dev": {
-            "phpunit/phpunit": "@stable"
-        },
-        "time": "2017-02-17T15:24:54+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "RobThree\\Auth\\": "lib"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Rob Janssen",
-                "homepage": "http://robiii.me",
-                "role": "Developer"
-            }
-        ],
-        "description": "Two Factor Authentication",
-        "homepage": "https://github.com/RobThree/TwoFactorAuth",
-        "keywords": [
-            "Authentication",
-            "MFA",
-            "Multi Factor Authentication",
-            "Two Factor Authentication",
-            "authenticator",
-            "authy",
-            "php",
-            "tfa"
-        ]
-    },
-    {
         "name": "yubico/u2flib-server",
         "version": "1.0.1",
         "version_normalized": "1.0.1.0",
@@ -90,18 +37,71 @@
         "homepage": "https://developers.yubico.com/php-u2flib-server"
     },
     {
-        "name": "phpmailer/phpmailer",
-        "version": "v5.2.25",
-        "version_normalized": "5.2.25.0",
+        "name": "robthree/twofactorauth",
+        "version": "1.6.1",
+        "version_normalized": "1.6.1.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/PHPMailer/PHPMailer.git",
-            "reference": "2baf20b01690fba8cf720c1ebcf9b988eda50915"
+            "url": "https://github.com/RobThree/TwoFactorAuth.git",
+            "reference": "a77e7d822343bb88112baef808839cfae7bc5abb"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/2baf20b01690fba8cf720c1ebcf9b988eda50915",
-            "reference": "2baf20b01690fba8cf720c1ebcf9b988eda50915",
+            "url": "https://api.github.com/repos/RobThree/TwoFactorAuth/zipball/a77e7d822343bb88112baef808839cfae7bc5abb",
+            "reference": "a77e7d822343bb88112baef808839cfae7bc5abb",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "@stable"
+        },
+        "time": "2017-11-06T17:55:56+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "RobThree\\Auth\\": "lib"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Rob Janssen",
+                "homepage": "http://robiii.me",
+                "role": "Developer"
+            }
+        ],
+        "description": "Two Factor Authentication",
+        "homepage": "https://github.com/RobThree/TwoFactorAuth",
+        "keywords": [
+            "Authentication",
+            "MFA",
+            "Multi Factor Authentication",
+            "Two Factor Authentication",
+            "authenticator",
+            "authy",
+            "php",
+            "tfa"
+        ]
+    },
+    {
+        "name": "phpmailer/phpmailer",
+        "version": "v5.2.26",
+        "version_normalized": "5.2.26.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/PHPMailer/PHPMailer.git",
+            "reference": "70362997bda4376378be7d92d81e2200550923f7"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/70362997bda4376378be7d92d81e2200550923f7",
+            "reference": "70362997bda4376378be7d92d81e2200550923f7",
             "shasum": ""
         },
         "require": {
@@ -131,7 +131,7 @@
         "suggest": {
             "league/oauth2-google": "Needed for Google XOAUTH2 authentication"
         },
-        "time": "2017-08-28T11:12:07+00:00",
+        "time": "2017-11-04T09:26:05+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {

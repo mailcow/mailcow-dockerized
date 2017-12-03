@@ -28,17 +28,30 @@ function in_net($addr, $net) {
   return substr($addr_bin, 0, $mask) == substr($net_bin, 0, $mask);
 }
 
-try {
-  foreach ($redis->hGetAll('WHITELISTED_FWD_HOST') as $host => $source) {
-    if (in_net($_GET['host'], $host)) {
-      echo '200 PERMIT';
-      exit;
+if (isset($_GET['host'])) {
+  try {
+    foreach ($redis->hGetAll('WHITELISTED_FWD_HOST') as $host => $source) {
+      if (in_net($_GET['host'], $host)) {
+        echo '200 PERMIT';
+        exit;
+      }
+    }
+    echo '200 DUNNO';
+  }
+  catch (RedisException $e) {
+    echo '200 DUNNO';
+    exit;
+  }
+} else {
+  try {
+    echo '240.240.240.240' . PHP_EOL;
+    foreach ($redis->hGetAll('WHITELISTED_FWD_HOST') as $host => $source) {
+      echo $host . PHP_EOL;
     }
   }
-  echo '200 DUNNO';
-}
-catch (RedisException $e) {
-  echo '200 DUNNO';
-  exit;
+  catch (RedisException $e) {
+    echo '240.240.240.240' . PHP_EOL;
+    exit;
+  }
 }
 ?>

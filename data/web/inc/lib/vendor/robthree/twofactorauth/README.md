@@ -10,7 +10,7 @@ PHP library for [two-factor (or multi-factor) authentication](http://en.wikipedi
 
 ## Requirements
 
-* Tested on PHP 5.3, 5.4, 5.5 and 5.6, 7 and HHVM
+* Tested on PHP 5.3, 5.4, 5.5 and 5.6, 7.0, 7.1 and HHVM
 * [cURL](http://php.net/manual/en/book.curl.php) when using the provided `GoogleQRCodeProvider` (default), `QRServerProvider` or `QRicketProvider` but you can also provide your own QR-code provider.
 * [random_bytes()](http://php.net/manual/en/function.random-bytes.php), [MCrypt](http://php.net/manual/en/book.mcrypt.php), [OpenSSL](http://php.net/manual/en/book.openssl.php) or [Hash](http://php.net/manual/en/book.hash.php) depending on which built-in RNG you use (TwoFactorAuth will try to 'autodetect' and use the best available); however: feel free to provide your own (CS)RNG.
 

@@ -15,14 +15,13 @@ error_reporting(0);
 
 $data = trim(file_get_contents("php://input"));
 
-// Desktop client needs IMAP, unless it's Outlook 2013 or higher on Windows
-if (strpos($data, 'autodiscover/outlook/responseschema') !== false) { // desktop client
+if (strpos($data, 'autodiscover/outlook/responseschema') !== false) {
   $autodiscover_config['autodiscoverType'] = 'imap';
   if ($autodiscover_config['useEASforOutlook'] == 'yes' &&
     // Office for macOS does not support EAS
     strpos($_SERVER['HTTP_USER_AGENT'], 'Mac') === false &&
     // Outlook 2013 (version 15) or higher
-    preg_match('/(Outlook|Office).+1[5-9]\./', $_SERVER['HTTP_USER_AGENT'])
+    preg_match('/(Outlook|Office).+15\./', $_SERVER['HTTP_USER_AGENT'])
   ) {
     $autodiscover_config['autodiscoverType'] = 'activesync';
   }
@@ -36,10 +35,30 @@ $opt = [
 ];
 $pdo = new PDO($dsn, $database_user, $database_pass, $opt);
 $login_user = strtolower(trim($_SERVER['PHP_AUTH_USER']));
-$login_role = check_login($login_user, $_SERVER['PHP_AUTH_PW']);
+$login_pass = trim(htmlspecialchars_decode($_SERVER['PHP_AUTH_PW']));
+$login_role = check_login($login_user, $login_pass);
 
 if (!isset($_SERVER['PHP_AUTH_USER']) OR $login_role !== "user") {
-  header('WWW-Authenticate: Basic realm=""');
+  try {
+    $json = json_encode(
+      array(
+        "time" => time(),
+        "ua" => $_SERVER['HTTP_USER_AGENT'],
+        "user" => "none",
+        "service" => "Error: must be authenticated"
+      )
+    );
+    $redis->lPush('AUTODISCOVER_LOG', $json);
+    $redis->lTrim('AUTODISCOVER_LOG', 0, 100);
+  }
+  catch (RedisException $e) {
+    $_SESSION['return'] = array(
+      'type' => 'danger',
+      'msg' => 'Redis: '.$e
+    );
+    return false;
+  }
+  header('WWW-Authenticate: Basic realm="' . $_SERVER['HTTP_HOST'] . '"');
   header('HTTP/1.0 401 Unauthorized');
   exit(0);
 }
@@ -52,6 +71,25 @@ else {
 <Autodiscover xmlns="http://schemas.microsoft.com/exchange/autodiscover/responseschema/2006">
 <?php
       if(!$data) {
+        try {
+          $json = json_encode(
+            array(
+              "time" => time(),
+              "ua" => $_SERVER['HTTP_USER_AGENT'],
+              "user" => $_SERVER['PHP_AUTH_USER'],
+              "service" => "Error: invalid or missing request data"
+            )
+          );
+          $redis->lPush('AUTODISCOVER_LOG', $json);
+          $redis->lTrim('AUTODISCOVER_LOG', 0, 100);
+        }
+        catch (RedisException $e) {
+          $_SESSION['return'] = array(
+            'type' => 'danger',
+            'msg' => 'Redis: '.$e
+          );
+          return false;
+        }
         list($usec, $sec) = explode(' ', microtime());
 ?>
   <Response>
@@ -82,12 +120,30 @@ else {
         die("Failed to determine name from SQL");
       }
       if (!empty($MailboxData['name'])) {
-        $displayname = utf8_encode($MailboxData['name']);
+        $displayname = $MailboxData['name'];
       }
       else {
         $displayname = $email;
       }
-
+      try {
+        $json = json_encode(
+          array(
+            "time" => time(),
+            "ua" => $_SERVER['HTTP_USER_AGENT'],
+            "user" => $_SERVER['PHP_AUTH_USER'],
+            "service" => $autodiscover_config['autodiscoverType']
+          )
+        );
+        $redis->lPush('AUTODISCOVER_LOG', $json);
+        $redis->lTrim('AUTODISCOVER_LOG', 0, 100);
+      }
+      catch (RedisException $e) {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => 'Redis: '.$e
+        );
+        return false;
+      }
       if ($autodiscover_config['autodiscoverType'] == 'imap') {
 ?>
   <Response xmlns="http://schemas.microsoft.com/exchange/autodiscover/outlook/responseschema/2006a">
@@ -121,13 +177,13 @@ else {
       </Protocol>
       <Protocol>
         <Type>CalDAV</Type>
-        <Server>https://<?=$autodiscover_config['caldav']['server'];?><?php if ($autodiscover_config['caldav']['port'] != 443) echo ':'.$autodiscover_config['caldav']['port']; ?>/SOGo/dav/<?=$email;?>/Calendar</Server>
+        <Server>https://<?=$autodiscover_config['caldav']['server'];?><?php if ($autodiscover_config['caldav']['port'] != 443) echo ':'.$autodiscover_config['caldav']['port']; ?>/SOGo/dav/<?=$email;?>/</Server>
         <DomainRequired>off</DomainRequired>
         <LoginName><?=$email;?></LoginName>
       </Protocol>
       <Protocol>
         <Type>CardDAV</Type>
-        <Server>https://<?=$autodiscover_config['carddav']['server'];?><?php if ($autodiscover_config['caldav']['port'] != 443) echo ':'.$autodiscover_config['carddav']['port']; ?>/SOGo/dav/<?=$email;?>/Contacts</Server>
+        <Server>https://<?=$autodiscover_config['carddav']['server'];?><?php if ($autodiscover_config['caldav']['port'] != 443) echo ':'.$autodiscover_config['carddav']['port']; ?>/SOGo/dav/<?=$email;?>/</Server>
         <DomainRequired>off</DomainRequired>
         <LoginName><?=$email;?></LoginName>
       </Protocol>

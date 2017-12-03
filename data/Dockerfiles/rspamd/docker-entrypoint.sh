@@ -2,4 +2,4 @@
 
 chown -R _rspamd:_rspamd /var/lib/rspamd
 
-exec "$@"
+exec /sbin/tini -- "$@"

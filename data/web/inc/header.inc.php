@@ -22,6 +22,7 @@
 <link rel="stylesheet" href="/inc/languages.min.css">
 <link rel="stylesheet" href="/css/mailcow.css">
 <link rel="stylesheet" href="/css/animate.min.css">
+<link rel="stylesheet" href="/css/numberedtextarea.min.css">
 <?= (preg_match("/mailbox.php/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/mailbox.css">' : null; ?>
 <?= (preg_match("/admin.php/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/admin.css">' : null; ?>
 <?= (preg_match("/user.php/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/user.css">' : null; ?>
@@ -39,7 +40,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="/"><img height="32" alt="mailcow-logo" style="margin-top: -5px;" src="/img/cow_mailcow.svg"></a>
+      <a class="navbar-brand" href="/"><img alt="mailcow-logo" src="<?=($main_logo = customize('get', 'main_logo')) ? $main_logo : '/img/cow_mailcow.svg';?>"></a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav navbar-right">
@@ -102,6 +103,14 @@
             <li title="<?= htmlspecialchars($app['description']); ?>"><a href="<?= htmlspecialchars($app['link']); ?>"><?= htmlspecialchars($app['name']); ?></a></li>
           <?php
           endforeach;
+          $app_links = customize('get', 'app_links');
+          foreach ($app_links as $row) {
+            foreach ($row as $key => $val):
+          ?>
+            <li><a href="<?= htmlspecialchars($val); ?>"><?= htmlspecialchars($key); ?></a></li>
+          <?php 
+            endforeach;
+          }
           ?>
           </ul>
         </li>

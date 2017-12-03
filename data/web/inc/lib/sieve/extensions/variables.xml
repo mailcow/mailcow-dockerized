@@ -1,0 +1,21 @@
+<?xml version='1.0' standalone='yes'?>
+
+<extension name="variables">
+
+	<command name="set">
+		<parameter type="tag" name="modifier" regex="(lower|upper)" occurrence="optional" />
+		<parameter type="tag" name="modifier" regex="(lower|upper)first" occurrence="optional" />
+		<parameter type="tag" name="modifier" regex="quotewildcard" occurrence="optional" />
+		<parameter type="tag" name="modifier" regex="length" occurrence="optional" />
+		<parameter type="string" name="name" regex="[[:alpha:]_][[:alnum:]_]*" />
+		<parameter type="string" name="value" />
+	</command>
+
+	<test name="string">
+		<parameter type="matchtype" occurrence="optional" />
+		<parameter type="comparator" occurrence="optional" />
+		<parameter type="stringlist" name="source" />
+		<parameter type="stringlist" name="key list" />
+	</test>
+
+</extension>

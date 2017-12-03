@@ -1,4 +1,4 @@
-FROM debian:stretch-slim
+FROM ubuntu:xenial
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -7,9 +7,10 @@ ENV LC_ALL C
 RUN apt-get update && apt-get install -y \
 	ca-certificates \
 	gnupg2 \
+  gnupg-curl \
 	apt-transport-https \
 	&& apt-key adv --fetch-keys https://rspamd.com/apt/gpg.key \
-	&& echo "deb https://rspamd.com/apt/ stretch main" > /etc/apt/sources.list.d/rspamd.list \
+	&& echo "deb https://rspamd.com/apt/ xenial main" > /etc/apt/sources.list.d/rspamd.list \
 	&& apt-get update && apt-get install -y rspamd \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& echo '.include $LOCAL_CONFDIR/local.d/rspamd.conf.local' > /etc/rspamd/rspamd.conf.local \
@@ -22,7 +23,8 @@ COPY settings.conf /etc/rspamd/modules.d/settings.conf
 #COPY ratelimit.lua /usr/share/rspamd/lua/ratelimit.lua
 #COPY lua_util.lua /usr/share/rspamd/lib/lua_util.lua
 COPY docker-entrypoint.sh /docker-entrypoint.sh
+COPY tini /sbin/tini
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-CMD /usr/bin/rspamd -f -u _rspamd -g _rspamd
+CMD ["/usr/bin/rspamd", "-f", "-u", "_rspamd", "-g", "_rspamd"]

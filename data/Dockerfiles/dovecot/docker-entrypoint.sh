@@ -15,7 +15,7 @@ sed -i "/^\$DBNAME/c\\\$DBNAME='${DBNAME}';" /usr/local/bin/imapsync_cron.pl
 DBPASS=$(echo ${DBPASS} | sed 's/"/\\"/g')
 
 # Create quota dict for Dovecot
-cat <<EOF > /usr/local/etc/dovecot/sql/dovecot-dict-sql.conf
+cat <<EOF > /usr/local/etc/dovecot/sql/dovecot-dict-sql-quota.conf
 connect = "host=mysql dbname=${DBNAME} user=${DBUSER} password=${DBPASS}"
 map {
   pattern = priv/quota/storage
@@ -31,8 +31,54 @@ map {
 }
 EOF
 
+# Create dict used for sieve pre and postfilters
+cat <<EOF > /usr/local/etc/dovecot/sql/dovecot-dict-sql-sieve_before.conf
+connect = "host=mysql dbname=${DBNAME} user=${DBUSER} password=${DBPASS}"
+map {
+  pattern = priv/sieve/name/\$script_name
+  table = sieve_before
+  username_field = username
+  value_field = id
+  fields {
+    script_name = \$script_name
+  }
+}
+map {
+  pattern = priv/sieve/data/\$id
+  table = sieve_before
+  username_field = username
+  value_field = script_data
+  fields {
+    id = \$id
+  }
+}
+EOF
+
+cat <<EOF > /usr/local/etc/dovecot/sql/dovecot-dict-sql-sieve_after.conf
+connect = "host=mysql dbname=${DBNAME} user=${DBUSER} password=${DBPASS}"
+map {
+  pattern = priv/sieve/name/\$script_name
+  table = sieve_after
+  username_field = username
+  value_field = id
+  fields {
+    script_name = \$script_name
+  }
+}
+map {
+  pattern = priv/sieve/data/\$id
+  table = sieve_after
+  username_field = username
+  value_field = script_data
+  fields {
+    id = \$id
+  }
+}
+EOF
+
+
 # Create user and pass dict for Dovecot
-cat <<EOF > /usr/local/etc/dovecot/sql/dovecot-mysql.conf
+cat <<EOF > /usr/local/etc/dovecot/sql/dovecot-dict-sql-passdb.conf
 driver = mysql
 connect = "host=mysql dbname=${DBNAME} user=${DBUSER} password=${DBPASS}"
 default_pass_scheme = SSHA256

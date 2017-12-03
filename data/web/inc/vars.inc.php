@@ -30,10 +30,12 @@ if ($https_port === FALSE) {
 //$https_port = 1234;
 // Other settings =>
 $autodiscover_config = array(
-  // Enable the autodiscover service for Outlook desktop clients
-  'useEASforOutlook' => 'yes',
   // General autodiscover service type: "activesync" or "imap"
+  // emClient uses autodiscover, but does not support ActiveSync. mailcow excludes emClient from ActiveSync.
   'autodiscoverType' => 'activesync',
+  // If autodiscoverType => activesync, also use ActiveSync (EAS) for Outlook desktop clients (>= Outlook 2013 on Windows)
+  // Outlook for Mac does not support ActiveSync
+  'useEASforOutlook' => 'yes',
   // Please don't use STARTTLS-enabled service ports in the "port" variable.
   // The autodiscover service will always point to SMTPS and IMAPS (TLS-wrapped services).
   // The autoconfig service will additionally announce the STARTTLS-enabled ports, specified in the "tlsport" variable.
@@ -70,7 +72,7 @@ unset($https_port);
 $DEFAULT_LANG = 'en';
 
 // Available languages
-$AVAILABLE_LANGUAGES = array('de', 'en', 'es', 'nl', 'pl', 'pt', 'ru', 'it');
+$AVAILABLE_LANGUAGES = array('de', 'en', 'es', 'fr', 'nl', 'pl', 'pt', 'ru', 'it');
 
 // Change theme (default: lumen)
 // Needs to be one of those: cerulean, cosmo, cyborg, darkly, flatly, journal, lumen, paper, readable, sandstone,
@@ -102,6 +104,9 @@ $MAILCOW_APPS = array(
 // Rows until pagination begins
 $PAGINATION_SIZE = 10;
 
+// Default number of rows/lines to display (log table)
+$LOG_LINES = 100;
+
 // Rows until pagination begins (log table)
 $LOG_PAGINATION_SIZE = 30;
 
@@ -113,3 +118,6 @@ $OTP_LABEL = "mailcow UI";
 
 // Default "to" address in relay test tool
 $RELAY_TO = "null@hosted.mailcow.de";
+
+// Internal constants, can be ignored
+define("F2B", 1);

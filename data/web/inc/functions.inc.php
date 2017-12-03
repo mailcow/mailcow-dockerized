@@ -244,6 +244,23 @@ function set_acl() {
     return false;
   }
 }
+function get_acl($username) {
+	global $pdo;
+	if ($_SESSION['mailcow_cc_role'] != "admin") {
+		return false;
+	}
+  $username = strtolower(trim($username));
+  $stmt = $pdo->prepare("SELECT * FROM `user_acl` WHERE `username` = :username");
+  $stmt->execute(array(':username' => $username));
+  $acl = $stmt->fetch(PDO::FETCH_ASSOC);
+  unset($acl['username']);
+  if (!empty($acl)) {
+    return $acl;
+  }
+  else {
+    return false;
+  }
+}
 function formatBytes($size, $precision = 2) {
 	if(!is_numeric($size)) {
 		return "0";
@@ -861,15 +878,24 @@ function get_u2f_registrations($username) {
   $sel->execute(array($username));
   return $sel->fetchAll(PDO::FETCH_OBJ);
 }
-function get_logs($container, $lines = 100) {
+function get_logs($container, $lines = false) {
+  if ($lines === false) {
+    $lines = $GLOBALS['LOG_LINES'] - 1; 
+  }
 	global $lang;
 	global $redis;
 	if ($_SESSION['mailcow_cc_role'] != "admin") {
 		return false;
 	}
-  $lines = intval($lines);
   if ($container == "dovecot-mailcow") {
-    if ($data = $redis->lRange('DOVECOT_MAILLOG', 0, $lines)) {
+    if (!is_numeric($lines)) {
+      list ($from, $to) = explode('-', $lines);
+      $data = $redis->lRange('DOVECOT_MAILLOG', intval($from), intval($to));
+    }
+    else {
+      $data = $redis->lRange('DOVECOT_MAILLOG', 0, intval($lines));
+    }
+    if ($data) {
       foreach ($data as $json_line) {
         $data_array[] = json_decode($json_line, true);
       }
@@ -877,7 +903,14 @@ function get_logs($container, $lines = 100) {
     }
   }
   if ($container == "postfix-mailcow") {
-    if ($data = $redis->lRange('POSTFIX_MAILLOG', 0, $lines)) {
+    if (!is_numeric($lines)) {
+      list ($from, $to) = explode('-', $lines);
+      $data = $redis->lRange('POSTFIX_MAILLOG', intval($from), intval($to));
+    }
+    else {
+      $data = $redis->lRange('POSTFIX_MAILLOG', 0, intval($lines));
+    }
+    if ($data) {
       foreach ($data as $json_line) {
         $data_array[] = json_decode($json_line, true);
       }
@@ -885,7 +918,14 @@ function get_logs($container, $lines = 100) {
     }
   }
   if ($container == "sogo-mailcow") {
-    if ($data = $redis->lRange('SOGO_LOG', 0, $lines)) {
+    if (!is_numeric($lines)) {
+      list ($from, $to) = explode('-', $lines);
+      $data = $redis->lRange('SOGO_LOG', intval($from), intval($to));
+    }
+    else {
+      $data = $redis->lRange('SOGO_LOG', 0, intval($lines));
+    }
+    if ($data) {
       foreach ($data as $json_line) {
         $data_array[] = json_decode($json_line, true);
       }
@@ -893,7 +933,29 @@ function get_logs($container, $lines = 100) {
     }
   }
   if ($container == "fail2ban-mailcow") {
-    if ($data = $redis->lRange('F2B_LOG', 0, $lines)) {
+    if (!is_numeric($lines)) {
+      list ($from, $to) = explode('-', $lines);
+      $data = $redis->lRange('F2B_LOG', intval($from), intval($to));
+    }
+    else {
+      $data = $redis->lRange('F2B_LOG', 0, intval($lines));
+    }
+    if ($data) {
+      foreach ($data as $json_line) {
+        $data_array[] = json_decode($json_line, true);
+      }
+      return $data_array;
+    }
+  }
+  if ($container == "autodiscover-mailcow") {
+    if (!is_numeric($lines)) {
+      list ($from, $to) = explode('-', $lines);
+      $data = $redis->lRange('AUTODISCOVER_LOG', intval($from), intval($to));
+    }
+    else {
+      $data = $redis->lRange('AUTODISCOVER_LOG', 0, intval($lines));
+    }
+    if ($data) {
       foreach ($data as $json_line) {
         $data_array[] = json_decode($json_line, true);
       }
@@ -902,10 +964,16 @@ function get_logs($container, $lines = 100) {
   }
   if ($container == "rspamd-history") {
     $curl = curl_init();
-    curl_setopt($curl, CURLOPT_URL,"http://rspamd-mailcow:11334/history");
+    if (!is_numeric($lines)) {
+      list ($from, $to) = explode('-', $lines);
+      curl_setopt($curl, CURLOPT_URL,"http://rspamd-mailcow:11334/history?from=" . intval($from) . "&to=" . intval($to));
+    }
+    else {
+      curl_setopt($curl, CURLOPT_URL,"http://rspamd-mailcow:11334/history?to=" . intval($lines));
+    }
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
     $history = curl_exec($curl);
-    if (!curl_errno($ch)) {
+    if (!curl_errno($curl)) {
       $data_array = json_decode($history, true);
       curl_close($curl);
       return $data_array['rows'];

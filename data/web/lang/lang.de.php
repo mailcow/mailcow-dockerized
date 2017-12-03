@@ -99,6 +99,9 @@ $lang['danger']['domain_not_empty'] = 'Kann nur leere Domains entfernen';
 $lang['warning']['spam_alias_temp_error'] = 'Kann zur Zeit keinen Spam-Alias erstellen, bitte versuchen Sie es später noch einmal.';
 $lang['danger']['spam_alias_max_exceeded'] = 'Maximale Anzahl an Spam-Alias-Adressen erreicht';
 $lang['danger']['validity_missing'] = 'Bitte geben Sie eine Gültigkeitsdauer an';
+$lang['user']['loading'] = "Lade...";
+$lang['user']['active_sieve'] = "Aktiver Filter";
+$lang['user']['no_active_filter'] = "Kein aktiver Filter vorhanden";
 $lang['user']['on'] = 'Ein';
 $lang['user']['off'] = 'Aus';
 $lang['user']['messages'] = "Nachrichten";
@@ -155,6 +158,9 @@ $lang['user']['spamfilter_red'] = 'Rot: Die Nachricht ist eindeutig Spam und wir
 $lang['user']['spamfilter_default_score'] = 'Standardwert:';
 $lang['user']['spamfilter_hint'] = 'Der erste Wert beschreibt den "low spam score", der zweite Wert den "high spam score".';
 $lang['user']['spamfilter_table_domain_policy'] = "n.v. (Domainrichtlinie)";
+$lang['user']['waiting'] = "Warte auf Ausführung";
+$lang['user']['status'] = "Status";
+$lang['user']['running'] = "Wird ausgeführt";
 
 $lang['user']['tls_policy_warning'] = '<strong>Vorsicht:</strong> Entscheiden Sie sich unverschlüsselte Verbindungen abzulehnen, kann dies dazu führen, dass Kontakte Sie nicht mehr erreichen.<br>Nachrichten, die die Richtlinie nicht erfüllen, werden durch einen Hard-Fail im Mailsystem abgewiesen.<br>Diese Einstellung ist aktiv für die primäre Mailbox, für alle Alias-Adressen, die dieser Mailbox <b>direkt zugeordnet</b> sind (lediglich eine einzige Ziel-Adresse) und der Adressen, die sich aus Alias-Domains ergeben. Ausgeschlossen sind temporäre Aliasse ("Spam-Alias-Adressen"), Catch-All Alias-Adressen sowie Alias-Adressen mit mehreren Zielen.';
 $lang['user']['tls_policy'] = 'Verschlüsselungsrichtlinie';
@@ -215,6 +221,7 @@ $lang['header']['mailcow_settings'] = 'Konfiguration';
 $lang['header']['administration'] = 'Administration';
 $lang['header']['mailboxes'] = 'Mailboxen';
 $lang['header']['user_settings'] = 'Benutzereinstellungen';
+$lang['header']['diagnostics'] = 'Diagnose';
 $lang['header']['login'] = 'Anmeldung';
 $lang['header']['logged_in_as_logout'] = 'Eingeloggt als <b>%s</b> (abmelden)';
 $lang['header']['logged_in_as_logout_dual'] = 'Eingeloggt als <b>%s <span class="text-info">[%s]</span></b>';
@@ -265,6 +272,10 @@ $lang['mailbox']['deactivate'] = 'Deaktivieren';
 $lang['mailbox']['owner'] = 'Besitzer';
 $lang['mailbox']['mins_interval'] = 'Intervall (min)';
 $lang['mailbox']['last_run'] = 'Letzte Ausführung';
+$lang['mailbox']['last_run_reset'] = 'Als nächstes ausführen';
+$lang['mailbox']['sieve_info'] = 'Es können mehrere Filter pro Benutzer existieren, aber nur ein Filter eines Typs (Pre-/Postfilter) kann gleichzeitig aktiv sein.<br>
+Die Ausführung erfolgt in nachstehender Reihenfolge. Ein fehlgeschlagenes Script sowie der Befehl "keep;" stoppen die weitere Verarbeitung <b>nicht</b>.<br>
+Prefilter → User scripts → Postfilter → <a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/sieve_after" target="_blank">global sieve postfilter</a>';
 
 $lang['info']['no_action'] = 'Keine Aktion anwendbar';
 $lang['delete']['title'] = 'Objekt entfernen';
@@ -287,7 +298,7 @@ $lang['edit']['syncjob'] = 'Sync-Job bearbeiten';
 $lang['edit']['save'] = 'Änderungen speichern';
 $lang['edit']['username'] = 'Benutzername';
 $lang['edit']['hostname'] = 'Servername';
-$lang['edit']['encryption'] = 'Verschlüsselungsmethode';
+$lang['edit']['encryption'] = 'Verschlüsselung';
 $lang['edit']['maxage'] = 'Maximales Alter in Tagen einer Nachricht, die kopiert werden soll</br ><small>(0 = alle Nachrichten kopieren)</small>';
 $lang['edit']['subfolder2'] = 'Ziel-Ordner<br><small>(leer = kein Unterordner)</small>';
 $lang['edit']['mins_interval'] = 'Intervall (min)';
@@ -339,7 +350,7 @@ $lang['add']['syncjob_hint'] = 'Passwörter werden unverschlüsselt abgelegt!';
 $lang['add']['hostname'] = 'Servername';
 $lang['add']['port'] = 'Port';
 $lang['add']['username'] = 'Benutzername';
-$lang['add']['enc_method'] = 'Verschlüsselungsmethode';
+$lang['add']['enc_method'] = 'Verschlüsselung';
 $lang['add']['maxage'] = 'Maximales Alter von Nachrichten, welche vom Remote abgefragt werden (0 = Alter ignorieren)';
 $lang['add']['subfolder2'] = 'Synchronisation in Unterordner am Ziel';
 $lang['add']['mins_interval'] = 'Abrufintervall (Minuten)';
@@ -388,6 +399,21 @@ $lang['add']['password_repeat'] = 'Passwort (Wiederholung)';
 $lang['add']['previous'] = 'Vorherige Seite';
 $lang['add']['restart_sogo_hint'] = 'Der SOGo Container muss nach dem Hinzufügen einer neuen Domain neugestartet werden!';
 $lang['add']['goto_null'] = 'Nachrichten sofort verwerfen';
+$lang['add']['validation_success'] = 'Erfolgreich validiert';
+$lang['add']['activate_filter_warn'] = 'Alle anderen Filter diesen Typs werden deaktiviert, falls dieses Script aktiv markiert wird.';
+$lang['add']['validate'] = 'Validieren';
+$lang['mailbox']['add_filter'] = 'Filter erstellen';
+$lang['add']['sieve_desc'] = 'Kurze Beschreibung';
+$lang['edit']['sieve_desc'] = 'Kurze Beschreibung';
+$lang['add']['sieve_type'] = 'Filtertyp';
+$lang['edit']['sieve_type'] = 'Filtertyp';
+$lang['mailbox']['set_prefilter'] = 'Als Prefilter markieren';
+$lang['mailbox']['set_postfilter'] = 'Als Postfilter markieren';
+$lang['mailbox']['filters'] = 'Filter';
+$lang['mailbox']['sync_jobs'] = 'Synchronisationen';
+$lang['mailbox']['inactive'] = 'Inaktiv';
+$lang['edit']['validate_save'] = 'Validieren und speichern';
+
 
 $lang['login']['title'] = 'Anmeldung';
 $lang['login']['administration'] = 'Administration';
@@ -425,6 +451,8 @@ $lang['tfa']['scan_qr_code'] = "Bitte scannen Sie jetzt den angezeigten QR-Code:
 $lang['tfa']['enter_qr_code'] = "Falls Sie den angezeigten QR-Code nicht scannen können, verwenden Sie bitte nachstehenden Sicherheitsschlüssel";
 $lang['tfa']['confirm_totp_token'] = "Bitte bestätigen Sie die Änderung durch Eingabe eines generierten Tokens";
 
+$lang['admin']['no_new_rows'] = 'Keine weiteren Zeilen vorhanden';
+$lang['admin']['additional_rows'] = ' zusätzliche Zeilen geladen'; // parses to 'n additional rows were added'
 $lang['admin']['private_key'] = 'Private Key';
 $lang['admin']['import'] = 'Importieren';
 $lang['admin']['import_private_key'] = 'Private Key importieren';
@@ -510,5 +538,25 @@ $lang['success']['forwarding_host_removed'] = "Weiterleitungs-Host %s wurde entf
 $lang['success']['forwarding_host_added'] = "Weiterleitungs-Host %s wurde hinzugefügt";
 $lang['success']['relayhost_removed'] = "Relayhost %s wurde entfernt";
 $lang['success']['relayhost_added'] = "Relayhost %s wurde hinzugefügt";
+$lang['diagnostics']['dns_records'] = 'DNS-Einträge';
+$lang['diagnostics']['dns_records_24hours'] = 'Bitte beachten Sie, dass es bis zu 24 Stunden dauern kann, bis Änderungen an Ihren DNS-Einträgen als aktueller Status auf dieser Seite dargestellt werden. Diese Seite ist nur als Hilfsmittel gedacht, um die korrekten Werte für DNS-Einträge zu anzuzeigen und zu überprüfen, ob die Daten im DNS hinterlegt sind.';
+$lang['diagnostics']['dns_records_name'] = 'Name';
+$lang['diagnostics']['dns_records_type'] = 'Typ';
+$lang['diagnostics']['dns_records_data'] = 'Korrekte Daten';
+$lang['diagnostics']['dns_records_status'] = 'Aktueller Status';
 $lang['admin']['relay_from'] = "Absenderadresse";
 $lang['admin']['relay_run'] = "Test durchführen";
+$lang['admin']['customize'] = "Anpassung";
+$lang['admin']['change_logo'] = "Logo ändern";
+$lang['admin']['logo_info'] = "Die hochgeladene Grafik wird für die Navigationsleiste auf eine Höhe von 40px skaliert. Für die Startseite ist eine Skalierung auf eine maximale Breite von 250px programmiert. Eine frei skalierbare Grafik (etwa SVG) wird empfohlen.";
+$lang['admin']['upload'] = "Hochladen";
+$lang['admin']['app_links'] = "App Links";
+$lang['admin']['app_name'] = "App Name";
+$lang['admin']['link'] = "Link";
+$lang['admin']['remove_row'] = "Zeile entfernen";
+$lang['admin']['add_row'] = "Zeile hinzufügen";
+$lang['admin']['reset_default'] = "Auf Standard zurücksetzen";
+$lang['admin']['merged_vars_hint'] = 'Ausgegraute Zeilen wurden aus der Datei <code>vars.inc.(local.)php</code> gelesen und können nicht mittels UI verändert werden.';
+$lang['mailbox']['waiting'] = "Wartend";
+$lang['mailbox']['status'] = "Status";
+$lang['mailbox']['running'] = "In Ausführung";

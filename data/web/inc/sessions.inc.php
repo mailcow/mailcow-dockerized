@@ -53,6 +53,7 @@ if (isset($_SESSION['mailcow_cc_role']) && session_check() === false) {
     'msg' => 'Form token invalid or timed out'
   );
   $_POST = array();
+  $_FILES = array();
 }
 
 // Handle logouts
@@ -61,6 +62,8 @@ if (isset($_POST["logout"])) {
     $_SESSION["mailcow_cc_username"] = $_SESSION["dual-login"]["username"];
     $_SESSION["mailcow_cc_role"] = $_SESSION["dual-login"]["role"];
     unset($_SESSION["dual-login"]);
+    header("Location: /mailbox.php");
+    exit();
   }
   else {
     session_regenerate_id(true);
