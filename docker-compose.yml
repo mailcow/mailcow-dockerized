@@ -5,9 +5,6 @@ services:
       image: mailcow/unbound:1.0
       build: ./data/Dockerfiles/unbound
       command: /usr/sbin/unbound
-      depends_on:
-        mysql-mailcow:
-          condition: service_healthy
       volumes:
         - ./data/conf/unbound/unbound.conf:/etc/unbound/unbound.conf:ro
       restart: always
@@ -19,12 +16,6 @@ services:
 
     mysql-mailcow:
       image: mariadb:10.2
-      command: mysqld --max_allowed_packet=192M --max-connections=1500 --innodb-strict-mode=0 --skip-host-cache --skip-name-resolve --log-warnings=0
-      healthcheck:
-        test: ["CMD", "mysqladmin", "-u$DBUSER", "-p$DBPASS",  "ping", "-h", "localhost"]
-        interval: 5s
-        timeout: 5s
-        retries: 10
       volumes:
         - mysql-vol-1:/var/lib/mysql/
         - ./data/conf/mysql/:/etc/mysql/conf.d/:ro

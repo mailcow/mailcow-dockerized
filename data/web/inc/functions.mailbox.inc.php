@@ -490,9 +490,20 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             if (in_array($address, $gotos)) {
               continue;
             }
+            $domain       = idn_to_ascii(substr(strstr($address, '@'), 1));
+            $local_part   = strstr($address, '@', true);
+            $address      = $local_part.'@'.$domain;
             $stmt = $pdo->prepare("SELECT `address` FROM `alias`
-              WHERE `address`= :address");
-            $stmt->execute(array(':address' => $address));
+              WHERE `address`= :address OR `address` IN (
+                SELECT `username` FROM `mailbox`, `alias_domain`
+                  WHERE (
+                    `alias_domain`.`alias_domain` = :address_d
+                      AND `mailbox`.`username` = CONCAT(:address_l, '@', alias_domain.target_domain)))");
+            $stmt->execute(array(
+              ':address' => $address,
+              ':address_l' => $local_part,
+              ':address_d' => $domain
+            ));
             $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
             if ($num_results != 0) {
               $_SESSION['return'] = array(
@@ -501,9 +512,6 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               );
               return false;
             }
-            $domain       = idn_to_ascii(substr(strstr($address, '@'), 1));
-            $local_part   = strstr($address, '@', true);
-            $address      = $local_part.'@'.$domain;
             $domaindata = mailbox('get', 'domain_details', $domain);
             if (is_array($domaindata) && $domaindata['aliases_left'] == "0") {
               $_SESSION['return'] = array(
@@ -722,7 +730,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
           }
           $active = intval($_data['active']);
           $quota_b		= ($quota_m * 1048576);
-          $maildir		= $domain . "/" . $local_part . "/mail-" . time() . "/";
+          $maildir		= $domain . "/" . $local_part . "/mails/";
           if (!is_valid_domain_name($domain)) {
             $_SESSION['return'] = array(
               'type' => 'danger',
@@ -2302,7 +2310,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
           }
           else {
             try {
-              $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `kind` NOT REGEXP 'location|thing|group' AND `domain` IN (SELECT `domain` FROM `domain_admins` WHERE `active` = '1' AND `username` = :username) OR 'admin' = :role");
+              $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `kind` NOT REGEXP 'location|thing|group' AND (`domain` IN (SELECT `domain` FROM `domain_admins` WHERE `active` = '1' AND `username` = :username) OR 'admin' = :role)");
               $stmt->execute(array(
                 ':username' => $_SESSION['mailcow_cc_username'],
                 ':role' => $_SESSION['mailcow_cc_role'],
@@ -3360,7 +3368,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               ));
               $stmt = $pdo->prepare("DELETE FROM `bcc_maps` WHERE `local_dest` = :domain");
               $stmt->execute(array(
-                ':domain' => '%@'.$domain,
+                ':domain' => $domain,
               ));
             }
             catch (PDOException $e) {
@@ -3484,7 +3492,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               ));
               $stmt = $pdo->prepare("DELETE FROM `bcc_maps` WHERE `local_dest` = :alias_domain");
               $stmt->execute(array(
-                ':domain' => '%@'.$alias_domain,
+                ':domain' => $alias_domain,
               ));
             }
             catch (PDOException $e) {

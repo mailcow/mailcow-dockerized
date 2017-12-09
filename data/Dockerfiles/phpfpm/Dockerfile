@@ -41,8 +41,8 @@ RUN apk add -U --no-cache libxml2-dev \
     Net_Sieve \
     NET_SMTP \
     Mail_mime \
-	&& pecl install redis-${REDIS_PECL} memcached-${MEMCACHED_PECL} APCu-${APCU_PECL} imagick-${IMAGICK_PECL} \
-	&& docker-php-ext-enable redis apcu memcached imagick \
+	&& pecl install redis-${REDIS_PECL} memcached-${MEMCACHED_PECL} APCu-${APCU_PECL} imagick-${IMAGICK_PECL} mailparse \
+	&& docker-php-ext-enable redis apcu memcached imagick mailparse \
 	&& pecl clear-cache \
 	&& docker-php-ext-configure intl \
   && docker-php-ext-install -j 4 intl gettext ldap sockets soap pdo pdo_mysql xmlrpc gd zip pcntl opcache \

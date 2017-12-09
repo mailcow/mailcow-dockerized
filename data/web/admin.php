@@ -8,26 +8,8 @@ $tfa_data = get_tfa();
 ?>
 <div class="container">
   <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active">
-      <a href="#tab-access" aria-controls="tab-access" role="tab" data-toggle="tab"><?=$lang['admin']['access'];?></a>
-    </li>
-    <li role="presentation">
-      <a href="#tab-config" aria-controls="tab-config" role="tab" data-toggle="tab"><?=$lang['admin']['configuration'];?></a>
-    </li>
-    <li class="dropdown">
-    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Logs
-    <span class="caret"></span></a>
-    <ul class="dropdown-menu">
-    <li role="presentation"><a href="#tab-postfix-logs" aria-controls="tab-postfix-logs" role="tab" data-toggle="tab">Postfix</a></li>
-    <li role="presentation"><a href="#tab-dovecot-logs" aria-controls="tab-dovecot-logs" role="tab" data-toggle="tab">Dovecot</a></li>
-    <li role="presentation"><a href="#tab-sogo-logs" aria-controls="tab-sogo-logs" role="tab" data-toggle="tab">SOGo</a></li>
-    <?php if (F2B == 1): ?>
-    <li role="presentation"><a href="#tab-fail2ban-logs" aria-controls="tab-fail2ban-logs" role="tab" data-toggle="tab">Fail2ban</a></li>
-    <?php endif; ?>
-    <li role="presentation"><a href="#tab-rspamd-history" aria-controls="tab-rspamd-history" role="tab" data-toggle="tab">Rspamd</a></li>
-    <li role="presentation"><a href="#tab-autodiscover-logs" aria-controls="tab-autodiscover-logs" role="tab" data-toggle="tab">Autodiscover</a></li>
-    </ul>
-    </li>
+    <li role="presentation" class="active"><a href="#tab-access" aria-controls="tab-access" role="tab" data-toggle="tab"><?=$lang['admin']['access'];?></a></li>
+    <li role="presentation"><a href="#tab-config" aria-controls="tab-config" role="tab" data-toggle="tab"><?=$lang['admin']['configuration'];?></a></li>
   </ul>
 
   <div class="tab-content" style="padding-top:20px">
@@ -58,7 +40,7 @@ $tfa_data = get_tfa();
           </div>
           <div class="form-group">
             <div class="col-sm-offset-3 col-sm-9">
-              <button class="btn btn-default" id="edit_selected" data-id="admin" data-item="null" data-api-url='edit/self' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
+              <button class="btn btn-default" id="edit_selected" data-id="admin" data-item="null" data-api-url='edit/self' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
             </div>
           </div>
         </form>
@@ -96,6 +78,42 @@ $tfa_data = get_tfa();
         </div>
       </div>
     </div>
+
+    <div class="panel panel-primary">
+      <div class="panel-heading">API</div>
+      <div class="panel-body">
+        <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
+          <div class="form-group">
+            <label class="control-label col-sm-3" for="allow_from"><?=$lang['admin']['api_allow_from'];?>:</label>
+            <div class="col-sm-9">
+              <textarea class="form-control" rows="5" name="allow_from" id="allow_from" required><?=htmlspecialchars($admindetails['allow_from']);?></textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-3" for="admin_api_key"><?=$lang['admin']['api_key'];?>:</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" placeholder="-" value="<?=htmlspecialchars($admindetails['api_key']);?>" readonly>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+              <label>
+                <input type="checkbox" name="active" <?=($admindetails['api_active'] == 1) ? 'checked' : null;?>> <?=$lang['admin']['activate_api'];?>
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+              <div class="btn-group">
+                <button class="btn btn-default" name="admin_api" type="submit" href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+                <button class="btn btn-info" name="admin_api_regen_key" type="submit" href="#"><?=$lang['admin']['regen_api_key'];?></button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <div class="panel panel-default">
     <div class="panel-heading"><?=$lang['admin']['domain_admins'];?></div>
         <div class="panel-body">
@@ -121,17 +139,15 @@ $tfa_data = get_tfa();
     </div>
   </div>
 
-
   <div role="tabpanel" class="tab-pane" id="tab-config">
     <div class="row">
     <div id="sidebar-admin" class="col-sm-2 hidden-xs">
       <div id="scrollbox" class="list-group">
         <a href="#dkim" class="list-group-item"><?=$lang['admin']['dkim_keys'];?></a>
         <a href="#fwdhosts" class="list-group-item"><?=$lang['admin']['forwarding_hosts'];?></a>
-        <?php if (F2B == 1): ?>
         <a href="#f2bparams" class="list-group-item"><?=$lang['admin']['f2b_parameters'];?></a>
-        <?php endif; ?>
         <a href="#relayhosts" class="list-group-item">Relayhosts</a>
+        <a href="#quarantaine" class="list-group-item">Quarantaine</a>
         <a href="#customize" class="list-group-item"><?=$lang['admin']['customize'];?></a>
         <a href="#top" class="list-group-item" style="border-top:1px dashed #dadada">↸ <?=$lang['admin']['to_top'];?></a>
       </div>
@@ -310,7 +326,6 @@ $tfa_data = get_tfa();
       </div>
     </div>
 
-    <?php if (F2B == 1): ?>
     <span class="anchor" id="f2bparams"></span>
     <div class="panel panel-default">
       <div class="panel-heading"><?=$lang['admin']['f2b_parameters'];?></div>
@@ -332,14 +347,13 @@ $tfa_data = get_tfa();
             <input type="number" class="form-control" id="retry_window" name="retry_window" value="<?=$f2b_data['retry_window'];?>" required>
           </div>
           <div class="form-group">
-            <label for="retry_window"><?=$lang['admin']['f2b_whitelist'];?>:</label>
+            <label for="whitelist"><?=$lang['admin']['f2b_whitelist'];?>:</label>
             <textarea class="form-control" id="whitelist" name="whitelist" rows="5"><?=$f2b_data['whitelist'];?></textarea>
           </div>
           <button class="btn btn-default" id="add_item" data-id="f2b" data-api-url='edit/fail2ban' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
         </form>
       </div>
     </div>
-    <?php endif; ?>
 
     <span class="anchor" id="relayhosts"></span>
     <div class="panel panel-default">
@@ -377,6 +391,43 @@ $tfa_data = get_tfa();
             <input class="form-control" id="password" name="password">
           </div>
           <button class="btn btn-default" id="add_item" data-id="rlyhost" data-api-url='add/relayhost' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
+        </form>
+      </div>
+    </div>
+
+    <span class="anchor" id="quarantaine"></span>
+    <div class="panel panel-default">
+      <div class="panel-heading">Quarantäne</div>
+      <div class="panel-body">
+       <?php $q_data = quarantaine('settings'); ?>
+        <form class="form" data-id="quarantaine" role="form" method="post">
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="retention_size">Rückhaltungen pro Mailbox:</label>
+                <input type="number" class="form-control" id="retention_size" name="retention_size" value="<?=$q_data['retention_size'];?>" required>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="max_size">Maximale Größe in MiB (größere Elemente werden verworfen):</label>
+                <input type="number" class="form-control" id="max_size" name="max_size" value="<?=$q_data['max_size'];?>" required>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="exclude_domains">Domains und Alias-Domains ausschließen:</label><br />
+            <select data-width="100%" id="exclude_domains" name="exclude_domains" class="selectpicker" title="<?=$lang['tfa']['select'];?>" multiple>
+              <?php
+              foreach (array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains')) as $domain):
+              ?>
+                <option <?=(in_array($domain, $q_data['exclude_domains'])) ? 'selected' : null;?>><?=htmlspecialchars($domain);?></option>
+              <?php
+              endforeach;
+              ?>
+            </select>
+          </div>
+          <button class="btn btn-success" id="edit_selected" data-item="self" data-id="quarantaine" data-api-url='edit/quarantaine' data-api-attr='{"action":"settings"}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
         </form>
       </div>
     </div>
@@ -449,120 +500,34 @@ $tfa_data = get_tfa();
             endforeach;
             ?>
           </table>
-          <div class="btn-group">
-            <button class="btn btn-success" id="edit_selected" data-item="admin" data-id="app_links" data-reload="no" data-api-url='edit/app_links' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
-            <button class="btn btn-default" type="button" id="add_app_link_row"><?=$lang['admin']['add_row'];?></button>
-          </div> 
+          <p><div class="btn-group">
+            <button class="btn btn-sm btn-success" id="edit_selected" data-item="admin" data-id="app_links" data-reload="no" data-api-url='edit/app_links' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+            <button class="btn btn-sm btn-default" type="button" id="add_app_link_row"><?=$lang['admin']['add_row'];?></button>
+          </div></p>
+        </form>
+        <legend><?=$lang['admin']['ui_texts'];?></legend>
+        <?php
+        $ui_texts = customize('get', 'ui_texts');
+        ?>
+        <form class="form" data-id="uitexts" role="form" method="post">
+          <div class="form-group">
+            <label for="main_name"><?=$lang['admin']['main_name'];?>:</label>
+            <input type="text" class="form-control" id="main_name" name="main_name" placeholder="mailcow UI" value="<?=$ui_texts['main_name'];?>">
+          </div>
+          <div class="form-group">
+            <label for="apps_name"><?=$lang['admin']['apps_name'];?>:</label>
+            <input type="text" class="form-control" id="apps_name" name="apps_name" placeholder="mailcow Apps" value="<?=$ui_texts['apps_name'];?>">
+          </div>
+          <div class="form-group">
+            <label for="help_text"><?=$lang['admin']['help_text'];?>:</label>
+            <textarea class="form-control" id="help_text" name="help_text" rows="7"><?=$ui_texts['help_text'];?></textarea>
+          </div>
+          <button class="btn btn-success" id="edit_selected" data-item="null" data-id="uitexts" data-api-url='edit/ui_texts' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
         </form>
       </div>
     </div>
   </div>
   </div>
-  </div>
-
-  <div role="tabpanel" class="tab-pane" id="tab-postfix-logs">
-    <div class="panel panel-default">
-      <div class="panel-heading">Postfix <span class="badge badge-info log-lines"></span>
-        <div class="btn-group pull-right">
-          <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="postfix_log" data-log-url="postfix" data-nrows="100">+ 100</button>
-          <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="postfix_log" data-log-url="postfix" data-nrows="1000">+ 1000</button>
-          <button class="btn btn-xs btn-default" id="refresh_postfix_log"><?=$lang['admin']['refresh'];?></button>
-        </div>
-      </div>
-      <div class="panel-body">
-        <div class="table-responsive">
-          <table class="table table-striped table-condensed" id="postfix_log"></table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div role="tabpanel" class="tab-pane" id="tab-dovecot-logs">
-    <div class="panel panel-default">
-      <div class="panel-heading">Dovecot <span class="badge badge-info log-lines"></span>
-        <div class="btn-group pull-right">
-          <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="dovecot_log" data-log-url="dovecot" data-nrows="100">+ 100</button>
-          <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="dovecot_log" data-log-url="dovecot" data-nrows="1000">+ 1000</button>
-          <button class="btn btn-xs btn-default" id="refresh_dovecot_log"><?=$lang['admin']['refresh'];?></button>
-        </div>
-      </div>
-      <div class="panel-body">
-        <div class="table-responsive">
-          <table class="table table-striped table-condensed" id="dovecot_log"></table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div role="tabpanel" class="tab-pane" id="tab-sogo-logs">
-    <div class="panel panel-default">
-      <div class="panel-heading">SOGo <span class="badge badge-info log-lines"></span>
-        <div class="btn-group pull-right">
-          <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="sogo_log" data-log-url="sogo" data-nrows="100">+ 100</button>
-          <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="sogo_log" data-log-url="sogo" data-nrows="1000">+ 1000</button>
-          <button class="btn btn-xs btn-default" id="refresh_sogo_log"><?=$lang['admin']['refresh'];?></button>
-        </div>
-      </div>
-      <div class="panel-body">
-        <div class="table-responsive">
-          <table class="table table-striped table-condensed" id="sogo_log"></table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  
-  <?php if (F2B == 1): ?>
-  <div role="tabpanel" class="tab-pane" id="tab-fail2ban-logs">
-    <div class="panel panel-default">
-      <div class="panel-heading">Fail2ban <span class="badge badge-info log-lines"></span>
-        <div class="btn-group pull-right">
-          <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="fail2ban_log" data-log-url="fail2ban" data-nrows="100">+ 100</button>
-          <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="fail2ban_log" data-log-url="fail2ban" data-nrows="1000">+ 1000</button>
-          <button class="btn btn-xs btn-default" id="refresh_fail2ban_log"><?=$lang['admin']['refresh'];?></button>
-        </div>
-      </div>
-      <div class="panel-body">
-        <div class="table-responsive">
-          <table class="table table-striped table-condensed" id="fail2ban_log"></table>
-        </div>
-      </div>
-    </div>
-  </div>
-  <?php endif; ?>
-
-  <div role="tabpanel" class="tab-pane" id="tab-rspamd-history">
-    <div class="panel panel-default">
-      <div class="panel-heading">Rspamd history <span class="badge badge-info log-lines"></span>
-        <div class="btn-group pull-right">
-          <button class="btn btn-xs btn-default add_log_lines" data-post-process="rspamd_history" data-table="rspamd_history" data-log-url="rspamd-history" data-nrows="100">+ 100</button>
-          <button class="btn btn-xs btn-default add_log_lines" data-post-process="rspamd_history" data-table="rspamd_history" data-log-url="rspamd-history" data-nrows="1000">+ 1000</button>
-          <button class="btn btn-xs btn-default" id="refresh_rspamd_history"><?=$lang['admin']['refresh'];?></button>
-        </div>
-      </div>
-      <div class="panel-body">
-        <div class="table-responsive">
-          <table class="table table-striped table-condensed log-table" id="rspamd_history"></table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div role="tabpanel" class="tab-pane" id="tab-autodiscover-logs">
-    <div class="panel panel-default">
-      <div class="panel-heading">Autodiscover <span class="badge badge-info log-lines"></span>
-        <div class="btn-group pull-right">
-          <button class="btn btn-xs btn-default add_log_lines" data-post-process="autodiscover_log" data-table="autodiscover_log" data-log-url="autodiscover" data-nrows="100">+ 100</button>
-          <button class="btn btn-xs btn-default add_log_lines" data-post-process="autodiscover_log" data-table="autodiscover_log" data-log-url="autodiscover" data-nrows="1000">+ 1000</button>
-          <button class="btn btn-xs btn-default" id="refresh_autodiscover_log"><?=$lang['admin']['refresh'];?></button>
-        </div>
-      </div>
-      <div class="panel-body">
-        <div class="table-responsive">
-          <table class="table table-striped table-condensed" id="autodiscover_log"></table>
-        </div>
-      </div>
-    </div>
   </div>
 
   </div>
