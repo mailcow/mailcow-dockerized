@@ -13,7 +13,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
         <h3 class="modal-title"><?=$lang['mailbox']['add_mailbox'];?></h3>
       </div>
       <div class="modal-body">
-        <form class="form-horizontal" data-id="add_mailbox" role="form">
+        <form class="form-horizontal" data-cached-form="true" data-id="add_mailbox" role="form">
           <div class="form-group">
             <label class="control-label col-sm-2" for="local_part"><?=$lang['add']['mailbox_username'];?></label>
             <div class="col-sm-10">
@@ -86,7 +86,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
         <h3 class="modal-title"><?=$lang['mailbox']['add_domain'];?></h3>
       </div>
       <div class="modal-body">
-				<form class="form-horizontal" data-id="add_domain" role="form">
+				<form class="form-horizontal" data-cached-form="true" data-id="add_domain" role="form">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="domain"><?=$lang['add']['domain'];?>:</label>
 						<div class="col-sm-10">
@@ -96,7 +96,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="description"><?=$lang['add']['description'];?></label>
 						<div class="col-sm-10">
-						<input type="text" class="form-control" name="description" id="description">
+						<input type="text" class="form-control" name="description" id="description" required>
 						</div>
 					</div>
 					<div class="form-group">
@@ -161,7 +161,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
         <h3 class="modal-title"><?=$lang['mailbox']['add_resource'];?></h3>
       </div>
       <div class="modal-body">
-				<form class="form-horizontal" role="form" data-id="add_resource">
+				<form class="form-horizontal" data-cached-form="true" role="form" data-id="add_resource">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="description"><?=$lang['add']['description'];?></label>
 						<div class="col-sm-10">
@@ -223,7 +223,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
         <h3 class="modal-title"><?=$lang['mailbox']['add_alias'];?></h3>
       </div>
       <div class="modal-body">
-				<form class="form-horizontal" role="form" data-id="add_alias">
+				<form class="form-horizontal" data-cached-form="true" role="form" data-id="add_alias">
 					<input type="hidden" value="0" name="active">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="address"><?=$lang['add']['alias_address'];?></label>
@@ -268,7 +268,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
         <h3 class="modal-title"><?=$lang['mailbox']['add_domain_alias'];?></h3>
       </div>
       <div class="modal-body">
-				<form class="form-horizontal" role="form" data-id="add_alias_domain">
+				<form class="form-horizontal" data-cached-form="true" role="form" data-id="add_alias_domain">
 					<input type="hidden" value="0" name="active">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="alias_domain"><?=$lang['add']['alias_domain'];?></label>
@@ -316,7 +316,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
       </div>
       <div class="modal-body">
         <p class="help-block"><?=$lang['add']['syncjob_hint'];?></p>
-				<form class="form-horizontal" role="form" data-id="add_syncjob">
+				<form class="form-horizontal" data-cached-form="true" role="form" data-id="add_syncjob">
           <div class="form-group">
             <label class="control-label col-sm-2" for="username"><?=$lang['add']['username'];?>:</label>
             <div class="col-sm-10">
@@ -420,13 +420,6 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">
-							<label><input type="checkbox" value="1" name="delete2"> <?=$lang['add']['delete2'];?></label>
-							</div>
-						</div>
-					</div>
-					<div class="form-group">
-						<div class="col-sm-offset-2 col-sm-10">
-							<div class="checkbox">
 							<label><input type="checkbox" value="1" name="active" checked> <?=$lang['add']['active'];?></label>
 							</div>
 						</div>
@@ -450,7 +443,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
         <h3 class="modal-title">Filter</h3>
       </div>
       <div class="modal-body">
-				<form class="form-horizontal" role="form" data-id="add_filter">
+				<form class="form-horizontal" data-cached-form="true" role="form" data-id="add_filter">
           <div class="form-group">
             <label class="control-label col-sm-2" for="username"><?=$lang['add']['username'];?>:</label>
             <div class="col-sm-10">
@@ -515,12 +508,12 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
-        <h3 class="modal-title">BCC map</h3>
+        <h3 class="modal-title"><?=$lang['mailbox']['bcc_maps'];?></h3>
       </div>
       <div class="modal-body">
-				<form class="form-horizontal" role="form" data-id="add_bcc">
+				<form class="form-horizontal" data-cached-form="true" role="form" data-id="add_bcc">
           <div class="form-group">
-            <label class="control-label col-sm-2" for="local_dest">Local destination:</label>
+            <label class="control-label col-sm-2" for="local_dest"><?=$lang['mailbox']['bcc_local_dest'];?>:</label>
             <div class="col-sm-10">
               <select id="addSelectLocalDest" name="local_dest" id="local_dest" required>
               <?php
@@ -549,16 +542,16 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             </div>
           </div>
           <div class="form-group">
-            <label class="control-label col-sm-2" for="type">BCC map type:</label>
+            <label class="control-label col-sm-2" for="type"><?=$lang['mailbox']['bcc_map_type'];?>:</label>
             <div class="col-sm-10">
               <select id="addFBCCType" name="type" id="type" required>
-                <option value="sender">Sender map</option>
-                <option value="rcpt">Recipient map</option>
+                <option value="sender"><?=$lang['mailbox']['bcc_sender_map'];?></option>
+                <option value="rcpt"><?=$lang['mailbox']['bcc_rcpt_map'];?></option>
               </select>
             </div>
           </div>
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="bcc_dest">BCC destination/s:</label>
+						<label class="control-label col-sm-2" for="bcc_dest"><?=$lang['mailbox']['bcc_destinations'];?>:</label>
 						<div class="col-sm-10">
 							<textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control" rows="20" id="bcc_dest" name="bcc_dest" required></textarea>
 						</div>

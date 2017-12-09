@@ -1,5 +1,4 @@
 <?php
-if (F2B == 1) {
 function fail2ban($_action, $_data = null) {
   global $redis;
   global $lang;
@@ -96,5 +95,4 @@ function fail2ban($_action, $_data = null) {
       );
     break;
   }
-}
 }

@@ -15,6 +15,7 @@
 <?php else: ?>
 <link rel="stylesheet" href="/css/bootstrap.min.css">
 <?php endif; ?>
+<link rel="stylesheet" href="/css/breakpoint.min.css">
 <link rel="stylesheet" href="/css/bootstrap-select.min.css">
 <link rel="stylesheet" href="/css/bootstrap-slider.min.css">
 <link rel="stylesheet" href="/css/bootstrap-switch.min.css">
@@ -27,6 +28,8 @@
 <?= (preg_match("/admin.php/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/admin.css">' : null; ?>
 <?= (preg_match("/user.php/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/user.css">' : null; ?>
 <?= (preg_match("/edit.php/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/edit.css">' : null; ?>
+<?= (preg_match("/quarantaine.php/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/quarantaine.css">' : null; ?>
+<?= (preg_match("/debug.php/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/debug.css">' : null; ?>
 <link rel="shortcut icon" href="/favicon.png" type="image/png">
 <link rel="icon" href="/favicon.png" type="image/png">
 </head>
@@ -35,7 +38,6 @@
   <div class="container-fluid">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-        <span class="sr-only">Toggle navigation</span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -70,6 +72,7 @@
             if (isset($_SESSION['mailcow_cc_role'])) {
               if ($_SESSION['mailcow_cc_role'] == 'admin') {
               ?>
+                <li<?= (preg_match("/debug/i", $_SERVER['REQUEST_URI'])) ? ' class="active"' : ''; ?>><a href="/debug.php"><?= $lang['header']['debug']; ?></a></li>
                 <li<?= (preg_match("/admin/i", $_SERVER['REQUEST_URI'])) ? ' class="active"' : ''; ?>><a href="/admin.php"><?= $lang['header']['administration']; ?></a></li>
               <?php
               }
@@ -88,14 +91,19 @@
           </ul>
         </li>
         <?php
+        if (isset($_SESSION['mailcow_cc_role'])) {
+        ?>
+        <li<?= (preg_match("/quarantaine/i", $_SERVER['REQUEST_URI'])) ? ' class="active"' : ''; ?>><a href="/quarantaine.php"><span style="font-size: 12px;" class="glyphicon glyphicon-briefcase"></span> <?= $lang['header']['quarantaine']; ?></a></li>
+        <?php
+        }
         if ($_SESSION['mailcow_cc_role'] == 'admin') {
         ?>
-        <li><a href data-toggle="modal" data-target="#RestartSOGo"><span style="font-size: 12px;" class="glyphicon glyphicon-refresh" aria-hidden="true"></span> <?= $lang['header']['restart_sogo']; ?></a></li>
+        <li><a href data-toggle="modal" data-container="sogo-mailcow" data-target="#RestartContainer"><span style="font-size: 12px;" class="glyphicon glyphicon-refresh"></span> <?= $lang['header']['restart_sogo']; ?></a></li>
         <?php
         }
         ?>
         <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Apps <span class="caret"></span></a>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-link"></span> Apps <span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
           <?php
           foreach ($MAILCOW_APPS as $app):

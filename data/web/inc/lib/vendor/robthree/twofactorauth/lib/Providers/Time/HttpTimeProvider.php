@@ -26,8 +26,7 @@ class HttpTimeProvider implements ITimeProvider
                     'request_fulluri' => true,
                     'header' => array(
                         'Connection: close',
-                        'User-agent: TwoFactorAuth HttpTimeProvider (https://github.com/RobThree/TwoFactorAuth)',
-                        'Cache-Control: no-cache'
+                        'User-agent: TwoFactorAuth HttpTimeProvider (https://github.com/RobThree/TwoFactorAuth)'
                     )
                 )
             );

@@ -64,6 +64,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 	}
 }
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admin") {
+  // TODO: Move file upload to API?
 	if (isset($_POST["submit_main_logo"])) {
     if ($_FILES['main_logo']['error'] == 0) {
       customize('add', 'main_logo', $_FILES);
@@ -71,6 +72,17 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
 	}
 	if (isset($_POST["reset_main_logo"])) {
     customize('delete', 'main_logo');
+	}
+  // API cannot be controlled by API
+	if (isset($_POST["admin_api"])) {
+		admin_api('edit', $_POST);
+	}
+	if (isset($_POST["admin_api_regen_key"])) {
+		admin_api('regen_key', $_POST);
+	}
+  // Not available via API
+	if (isset($_POST["rspamd_ui"])) {
+		rspamd_ui('edit', $_POST);
 	}
 }
 ?>

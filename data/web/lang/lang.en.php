@@ -5,9 +5,9 @@
 
 $lang['footer']['loading'] = "Please wait...";
 $lang['header']['restart_sogo'] = 'Restart SOGo';
-$lang['footer']['restart_sogo'] = 'Restart SOGo';
+$lang['footer']['restart_container'] = 'Restart container';
 $lang['footer']['restart_now'] = 'Restart now';
-$lang['footer']['restart_sogo_info'] = 'Some tasks, e.g. adding a domain, require you to restart SOGo to catch changes made in the mailcow UI.<br><br><b>Important:</b> A graceful restart may take a while to complete, please wait for it to finish.';
+$lang['footer']['restart_container_info'] = '<b>Important:</b> A graceful restart may take a while to complete, please wait for it to finish.';
 
 $lang['footer']['confirm_delete'] = 'Confirm deletion';
 $lang['footer']['delete_these_items'] = 'Please confirm your changes to the following object id:';
@@ -73,7 +73,7 @@ $lang['danger']['description_invalid'] = 'Resource description is invalid';
 $lang['danger']['resource_invalid'] = "Resource name is invalid";
 $lang['danger']['mailbox_invalid_suggest'] = 'Mailbox name is invalid, did you mean to type "%s"?';
 $lang['danger']['is_alias'] = "%s is already known as an alias address";
-$lang['danger']['is_alias_or_mailbox'] = "%s is already known as an alias or a mailbox";
+$lang['danger']['is_alias_or_mailbox'] = "%s is already known as an alias, a mailbox or an alias address expanded from an alias domain.";
 $lang['danger']['is_spam_alias'] = "%s is already known as a spam alias address";
 $lang['danger']['quota_not_0_not_numeric'] = "Quota must be numeric and >= 0";
 $lang['danger']['domain_not_found'] = 'Domain %s not found';
@@ -121,6 +121,8 @@ $lang['user']['did_you_know'] = '<b>Did you know?</b> You can use tags in your e
 $lang['user']['spam_aliases'] = 'Temporary email aliases';
 $lang['user']['alias'] = 'Alias';
 $lang['user']['aliases'] = 'Aliases';
+$lang['user']['shared_aliases'] = 'Shared alias addresses';
+$lang['user']['direct_aliases'] = 'Direct alias addresses';
 $lang['user']['domain_aliases'] = 'Domain alias addresses';
 $lang['user']['is_catch_all'] = 'Catch-all for domain/s';
 $lang['user']['aliases_also_send_as'] = 'Also allowed to send as user';
@@ -550,7 +552,15 @@ $lang['diagnostics']['dns_records_type'] = 'Type';
 $lang['diagnostics']['dns_records_data'] = 'Correct Data';
 $lang['diagnostics']['dns_records_status'] = 'Current State';
 $lang['admin']['relay_from'] = '"From:" address';
-$lang['admin']['relay_run'] = "Run test";
+$lang['admin']['api_allow_from'] = "Allow API access from these IPs";
+$lang['admin']['api_key'] = "API key";
+$lang['admin']['activate_api'] = "Activate API";
+$lang['admin']['regen_api_key'] = "Regenerate API key";
+
+$lang['admin']['ui_texts'] = "UI labels and texts";
+$lang['admin']['help_text'] = "Override help text below login mask (HTML allowed)";
+$lang['admin']['main_name'] = '"mailcow UI" name';
+$lang['admin']['apps_name'] = '"mailcow Apps" name';
 
 $lang['admin']['customize'] = "Customize";
 $lang['admin']['change_logo'] = "Change logo";
@@ -574,3 +584,55 @@ $lang['edit']['delimiter_action'] = "Change delimiter action";
 $lang['edit']['syncjobs'] = "Add or change sync jobs";
 $lang['edit']['eas_reset'] = "Reset EAS devices";
 $lang['edit']['spam_alias'] = "Create or change time limited alias addresses";
+
+$lang['danger']['img_tmp_missing'] = "Cannot validate image file: Temporary file not found";
+$lang['danger']['img_invalid'] = "Cannot validate image file";
+$lang['danger']['invalid_mime_type'] = "Invalid mime type";
+$lang['success']['upload_success'] = "File uploaded successfully";
+$lang['success']['app_links'] = "Saved changes to app links";
+$lang['success']['ui_texts'] = "Saved changes to UI texts";
+$lang['success']['reset_main_logo'] = "Reset to default logo";
+$lang['success']['items_released'] = "Selected items were released";
+$lang['danger']['imagick_exception'] = "Error: Imagick exception while reading image";
+
+$lang['quarantaine']['quarantaine'] = "Quarantaine";
+$lang['quarantaine']['qinfo'] = "The quarantaine system will save rejected mail to the database, while the sender will <em>not</em> be given the impression of a delivered mail.<br />
+  Only mails up to 10 MiB will be saved in the quarantaine.";
+$lang['quarantaine']['release'] = "Release";
+$lang['quarantaine']['empty'] = 'No results';
+$lang['quarantaine']['toggle_all'] = 'Toggle all';
+$lang['quarantaine']['quick_actions'] = 'Actions';
+$lang['quarantaine']['remove'] = 'Remove';
+$lang['quarantaine']['received'] = "Received";
+$lang['quarantaine']['action'] = "Action";
+$lang['quarantaine']['rcpt'] = "Recipient";
+$lang['quarantaine']['qid'] = "Rspamd QID";
+$lang['quarantaine']['sender'] = "Sender";
+$lang['quarantaine']['show_item'] = "Show item";
+$lang['quarantaine']['check_hash'] = "Search file hash @ VT";
+$lang['quarantaine']['qitem'] = "Quarantaine item";
+$lang['quarantaine']['subj'] = "Subject";
+$lang['quarantaine']['text_plain_content'] = "Content (text/plain)";
+$lang['quarantaine']['atts'] = "Attachments";
+
+$lang['header']['quarantaine'] = "Quarantaine";
+$lang['header']['debug'] = "Debug";
+
+$lang['quarantaine']['release_body'] = "We have attached your message as eml file to this message.";
+$lang['danger']['release_send_failed'] = "Message could not be released: %s";
+$lang['quarantaine']['release_subject'] = "Potentially damaging quarantaine item %s";
+
+$lang['mailbox']['bcc_map_type'] = "BCC type";
+$lang['mailbox']['bcc_type'] = "BCC type";
+$lang['mailbox']['bcc_sender_map'] = "Sender map";
+$lang['mailbox']['bcc_rcpt_map'] = "Recipient map";
+$lang['mailbox']['bcc_local_dest'] = "Local destination";
+$lang['mailbox']['bcc_destinations'] = "BCC destination/s";
+
+$lang['mailbox']['bcc'] = "BCC";
+$lang['mailbox']['bcc_maps'] = "BCC maps";
+$lang['mailbox']['bcc_to_sender'] = "Switch to sender map type";
+$lang['mailbox']['bcc_to_rcpt'] = "Switch to recipient map type";
+$lang['mailbox']['add_bcc_entry'] = "Add BCC map";
+$lang['mailbox']['bcc_info'] = "A recipient map type entry is used, when the local destination acts as recipient of a mail. Sender maps conform to the same principle.<br/>
+  The local destination will not be informed about a failed delivery.";

@@ -12,6 +12,11 @@ submission inet n       -       n       -       -       smtpd
 588 inet n      -       n       -       -       smtpd
   -o smtpd_client_restrictions=permit_mynetworks,permit_sasl_authenticated,reject
   -o smtpd_tls_auth_only=no
+590 inet n      -       n       -       -       smtpd
+  -o smtpd_client_restrictions=permit_mynetworks,reject
+  -o smtpd_tls_auth_only=no
+  -o smtpd_milters=
+  -o non_smtpd_milters=
 smtp_enforced_tls      unix  -       -       n       -       -       smtp
   -o smtp_tls_security_level=encrypt
   -o syslog_name=enforced-tls-smtp

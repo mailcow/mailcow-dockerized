@@ -4,20 +4,100 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "d51ef1712a74b0dfed729f2bdd85d1e3",
+    "content-hash": "ee4c9e269c29282221ce88bc23f1bda9",
     "packages": [
         {
-            "name": "phpmailer/phpmailer",
-            "version": "v5.2.26",
+            "name": "php-mime-mail-parser/php-mime-mail-parser",
+            "version": "2.9.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "70362997bda4376378be7d92d81e2200550923f7"
+                "url": "https://github.com/php-mime-mail-parser/php-mime-mail-parser.git",
+                "reference": "c6884c7bc77adbf55979db99841195b232fd30f1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/70362997bda4376378be7d92d81e2200550923f7",
-                "reference": "70362997bda4376378be7d92d81e2200550923f7",
+                "url": "https://api.github.com/repos/php-mime-mail-parser/php-mime-mail-parser/zipball/c6884c7bc77adbf55979db99841195b232fd30f1",
+                "reference": "c6884c7bc77adbf55979db99841195b232fd30f1",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mailparse": "*",
+                "php": "^5.4.0 || ^7.0"
+            },
+            "replace": {
+                "exorus/php-mime-mail-parser": "*",
+                "messaged/php-mime-mail-parser": "*"
+            },
+            "require-dev": {
+                "phpunit/php-token-stream": "^1.3.0",
+                "phpunit/phpunit": "^4.0 || ^5.0",
+                "satooshi/php-coveralls": "0.*",
+                "squizlabs/php_codesniffer": "2.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpMimeMailParser\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "bucabay",
+                    "email": "gabe@fijiwebdesign.com",
+                    "homepage": "http://www.fijiwebdesign.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "eXorus",
+                    "email": "exorus.spam@gmail.com",
+                    "homepage": "https://github.com/eXorus/",
+                    "role": "Developer"
+                },
+                {
+                    "name": "M.Valinskis",
+                    "email": "M.Valins@gmail.com",
+                    "homepage": "https://code.google.com/p/php-mime-mail-parser",
+                    "role": "Developer"
+                },
+                {
+                    "name": "eugene.emmett.wood",
+                    "email": "gene_w@cementhorizon.com",
+                    "homepage": "https://code.google.com/p/php-mime-mail-parser",
+                    "role": "Developer"
+                },
+                {
+                    "name": "alknetso",
+                    "email": "alkne@gmail.com",
+                    "homepage": "https://code.google.com/p/php-mime-mail-parser",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Fully Tested Mailparse Extension Wrapper for PHP 5.4+",
+            "homepage": "https://github.com/php-mime-mail-parser/php-mime-mail-parser",
+            "keywords": [
+                "MimeMailParser",
+                "mail",
+                "mailparse",
+                "mime"
+            ],
+            "time": "2017-11-02T05:49:00+00:00"
+        },
+        {
+            "name": "phpmailer/phpmailer",
+            "version": "v5.2.25",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPMailer/PHPMailer.git",
+                "reference": "2baf20b01690fba8cf720c1ebcf9b988eda50915"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/2baf20b01690fba8cf720c1ebcf9b988eda50915",
+                "reference": "2baf20b01690fba8cf720c1ebcf9b988eda50915",
                 "shasum": ""
             },
             "require": {
@@ -81,20 +161,20 @@
                 }
             ],
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
-            "time": "2017-11-04T09:26:05+00:00"
+            "time": "2017-08-28T11:12:07+00:00"
         },
         {
             "name": "robthree/twofactorauth",
-            "version": "1.6.1",
+            "version": "1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/RobThree/TwoFactorAuth.git",
-                "reference": "a77e7d822343bb88112baef808839cfae7bc5abb"
+                "reference": "5093ab230cd8f1296d792afb6a49545f37e7fd5a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/RobThree/TwoFactorAuth/zipball/a77e7d822343bb88112baef808839cfae7bc5abb",
-                "reference": "a77e7d822343bb88112baef808839cfae7bc5abb",
+                "url": "https://api.github.com/repos/RobThree/TwoFactorAuth/zipball/5093ab230cd8f1296d792afb6a49545f37e7fd5a",
+                "reference": "5093ab230cd8f1296d792afb6a49545f37e7fd5a",
                 "shasum": ""
             },
             "require": {
@@ -132,7 +212,7 @@
                 "php",
                 "tfa"
             ],
-            "time": "2017-11-06T17:55:56+00:00"
+            "time": "2017-02-17T15:24:54+00:00"
         },
         {
             "name": "yubico/u2flib-server",
