@@ -3,20 +3,21 @@ FROM alpine:3.6
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 RUN apk add --update --no-cache \
-	bash \
-	curl \
-	openssl \
-	bind-tools \
-	jq \
+  bash \
+  curl \
+  openssl \
+  bind-tools \
+  jq \
   libressl-dev \
   libbsd-dev \
   libseccomp-dev \
-	mariadb-client \
+  mariadb-client \
   tini \
   make \
   gcc \
   libressl \
   libc-dev \
+  redis \
   linux-headers \
   ca-certificates \
   && curl -s https://kristaps.bsd.lv/acme-client/snapshots/acme-client-portable.tgz | tar xfvz - \
