@@ -14,7 +14,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
       </div>
       <div class="modal-body">
         <p><?=$lang['add']['syncjob_hint'];?></p>
-				<form class="form-horizontal" role="form" data-id="add_syncjob">
+				<form class="form-horizontal" data-cached-form="true" role="form" data-id="add_syncjob">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="host1"><?=$lang['add']['hostname'];?></label>
 						<div class="col-sm-10">
@@ -130,7 +130,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-body">
-        <form class="form-horizontal" data-id="pwchange" role="form" method="post" autocomplete="off">
+        <form class="form-horizontal" data-cached-form="true" data-id="pwchange" role="form" method="post" autocomplete="off">
           <div class="form-group">
             <label class="control-label col-sm-3" for="user_new_pass"><?=$lang['user']['new_password'];?></label>
             <div class="col-sm-5">

@@ -102,6 +102,7 @@ $(document).ready(function() {
         return false;
       }
     }
+    // alert(JSON.stringify(api_attr));
     // If clicked element #edit_selected has data-item attribute, it is added to "items"
     if (typeof $(this).data('item') !== 'undefined') {
       var id = $(this).data('id');
@@ -126,7 +127,9 @@ $(document).ready(function() {
         jsonp: false,
         complete: function(data) {
           var response = (data.responseText);
-          response_obj = JSON.parse(response);
+          if (typeof response !== 'undefined' && response.length !== 0) {
+            response_obj = JSON.parse(response);
+          }
           if (api_reload_window === true) {
             window.location = window.location.href.split("#")[0];
           }
@@ -141,6 +144,11 @@ $(document).ready(function() {
     var id = $(this).data('id');
     var api_url = $(this).data('api-url');
     var api_attr = $(this).data('api-attr');
+    if (typeof $(this).data('api-reload-window') !== 'undefined') {
+      api_reload_window = $(this).data('api-reload-window');
+    } else {
+      api_reload_window = true;
+    }
     // If clicked button is in a form with the same data-id as the button,
     // we merge all input fields by {"name":"value"} into api-attr
     if ($(this).closest("form").data('id') == id) {
@@ -188,10 +196,20 @@ $(document).ready(function() {
       url: '/api/v1/' + api_url,
       jsonp: false,
       complete: function(data) {
-        // var reponse = (JSON.parse(data.responseText));
-        // console.log(reponse.type);
-        // console.log(reponse.msg);
-        window.location = window.location.href.split("#")[0];
+        var response = (data.responseText);
+        if (typeof response !== 'undefined' && response.length !== 0) {
+          response_obj = JSON.parse(response);
+          if (response_obj.type == 'success') {
+            $('form').formcache('clear');
+          }
+          else {
+            var add_modal = $('.modal.in').attr('id');
+            localStorage.setItem("add_modal", add_modal);
+          }
+        }
+        if (api_reload_window === true) {
+          window.location = window.location.href.split("#")[0];
+        }
       }
     });
   });
