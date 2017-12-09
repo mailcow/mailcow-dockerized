@@ -184,6 +184,3 @@ FakesAssemblies/
 
 # Composer
 /vendor
-
-# .vs
-.vs/

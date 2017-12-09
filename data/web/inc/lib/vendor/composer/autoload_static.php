@@ -11,12 +11,20 @@ class ComposerStaticInit873464e4bd965a3168f133248b1b218b
         array (
             'RobThree\\Auth\\' => 14,
         ),
+        'P' => 
+        array (
+            'PhpMimeMailParser\\' => 18,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
         'RobThree\\Auth\\' => 
         array (
             0 => __DIR__ . '/..' . '/robthree/twofactorauth/lib',
+        ),
+        'PhpMimeMailParser\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/php-mime-mail-parser/php-mime-mail-parser/src',
         ),
     );
 

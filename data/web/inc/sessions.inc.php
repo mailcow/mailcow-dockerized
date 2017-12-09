@@ -26,11 +26,29 @@ if (!isset($_SESSION['SESS_REMOTE_UA'])) {
   $_SESSION['SESS_REMOTE_UA'] = $_SERVER['HTTP_USER_AGENT'];
 }
 
+// API
+if (!empty($_SERVER['HTTP_X_API_KEY'])) {
+  $stmt = $pdo->prepare("SELECT `username`, `allow_from` FROM `api` WHERE `api_key` = :api_key AND `active` = '1';");
+  $stmt->execute(array(
+    ':api_key' => preg_replace('/[^A-Z0-9-]/', '', $_SERVER['HTTP_X_API_KEY'])
+  ));
+  $api_return = $stmt->fetch(PDO::FETCH_ASSOC);
+  if (!empty($api_return['username'])) {
+    if (in_array($_SERVER['REMOTE_ADDR'], explode(',', $api_return['allow_from']))) {
+      $_SESSION['mailcow_cc_username'] = $api_return['username'];
+      $_SESSION['mailcow_cc_role'] = 'admin';
+      $_SESSION['mailcow_cc_api'] = true;
+    }
+  }
+}
 // Update session cookie
 // setcookie(session_name() ,session_id(), time() + $SESSION_LIFETIME);
 
 // Check session
 function session_check() {
+  if ($_SESSION['mailcow_cc_api'] === true) {
+    return true;
+  }
   if (!isset($_SESSION['SESS_REMOTE_UA'])) {
     return false;
   }
