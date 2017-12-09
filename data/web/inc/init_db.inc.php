@@ -237,51 +237,6 @@ function init_db_schema() {
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
-      "imap_user_shares" => array(
-        "cols" => array(
-          "from_user" => "VARCHAR(255) NOT NULL",
-          "to_user" => "VARCHAR(255) NOT NULL",
-          "dummy" => "CHAR(1) DEFAULT '1'",
-          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
-          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP"
-        ),
-        "keys" => array(
-          "primary" => array(
-            "" => array("from_user", "to_user")
-          ),
-          "fkey" => array(
-            "fk_from_user_user_shares" => array(
-              "col" => "from_user",
-              "ref" => "mailbox.username",
-              "delete" => "CASCADE",
-              "update" => "NO ACTION"
-            )
-          )
-        ),
-        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
-      ),
-      "imap_anyone_shares" => array(
-        "cols" => array(
-          "from_user" => "VARCHAR(255) NOT NULL",
-          "dummy" => "CHAR(1) DEFAULT '1'",
-          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
-          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP"
-        ),
-        "keys" => array(
-          "primary" => array(
-            "" => array("from_user")
-          ),
-          "fkey" => array(
-            "fk_from_anyone_user_shares" => array(
-              "col" => "from_user",
-              "ref" => "mailbox.username",
-              "delete" => "CASCADE",
-              "update" => "NO ACTION"
-            )
-          )
-        ),
-        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
-      ),
       "user_acl" => array(
         "cols" => array(
           "username" => "VARCHAR(255) NOT NULL",
