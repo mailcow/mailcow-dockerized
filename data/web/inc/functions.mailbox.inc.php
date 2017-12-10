@@ -730,7 +730,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
           }
           $active = intval($_data['active']);
           $quota_b		= ($quota_m * 1048576);
-          $maildir		= $domain . "/" . $local_part . "/mails/";
+          $maildir		= $domain . "/" . $local_part . "/";
           if (!is_valid_domain_name($domain)) {
             $_SESSION['return'] = array(
               'type' => 'danger',
