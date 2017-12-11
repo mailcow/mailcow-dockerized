@@ -115,7 +115,6 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               'fail2ban-mailcow',
               'clamd-mailcow'
             );
-            }
             foreach ($container_array as $container) {
                 $container_stats = docker($container, 'info');
                 ?>
@@ -321,7 +320,8 @@ echo "var log_pagination_size = '". $LOG_PAGINATION_SIZE . "';\n";
 <script src="js/debug.js"></script>
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
-} else {
+}
+else {
 	header('Location: /');
 	exit();
 }
