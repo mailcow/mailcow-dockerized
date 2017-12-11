@@ -59,33 +59,6 @@ function docker($service_name, $action, $attr1 = null, $attr2 = null, $extra_hea
         return false;
       }
     break;
-    case 'logs':
-      $container_id = docker($service_name, 'get_id');
-      if (ctype_xdigit($container_id)) {
-        $lines = (empty($attr1) || !is_numeric($attr1)) ? 100 : $attr1;
-        curl_setopt($curl, CURLOPT_URL, 'http://dockerapi:8080/containers/' . $container_id . '/logs/' . $lines);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_POST, 0);
-        $response = curl_exec($curl);
-        if ($response === false) {
-          $err = curl_error($curl);
-          curl_close($curl);
-          return $err;
-        }
-        else {
-          curl_close($curl);
-          if (empty($response)) {
-            return true;
-          }
-          else {
-            return json_decode($response, true);
-          }
-        }
-      }
-      else {
-        return false;
-      }
-    break;
     case 'post':
       if (!empty($attr1)) {
         $container_id = docker($service_name, 'get_id');
