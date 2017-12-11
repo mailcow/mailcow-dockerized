@@ -5,6 +5,8 @@ services:
       image: mailcow/unbound:1.1
       build: ./data/Dockerfiles/unbound
       command: /usr/sbin/unbound
+      environment:
+        - TZ=${TZ}
       volumes:
         - ./data/conf/unbound/unbound.conf:/etc/unbound/unbound.conf:ro
       restart: always
@@ -20,6 +22,7 @@ services:
         - mysql-vol-1:/var/lib/mysql/
         - ./data/conf/mysql/:/etc/mysql/conf.d/:ro
       environment:
+        - TZ=${TZ}
         - MYSQL_ROOT_PASSWORD=${DBROOT}
         - MYSQL_DATABASE=${DBNAME}
         - MYSQL_USER=${DBUSER}
@@ -38,6 +41,8 @@ services:
       volumes:
         - redis-vol-1:/data/
       restart: always
+      environment:
+        - TZ=${TZ}
       dns:
         - 172.22.1.254
       networks:
@@ -52,6 +57,7 @@ services:
       restart: always
       environment:
         - SKIP_CLAMD=${SKIP_CLAMD:-n}
+        - TZ=${TZ}
       dns:
         - 172.22.1.254
       networks:
@@ -65,6 +71,8 @@ services:
       stop_grace_period: 30s
       depends_on:
         - nginx-mailcow
+      environment:
+        - TZ=${TZ}
       volumes:
         - ./data/conf/rspamd/custom/:/etc/rspamd/custom:ro
         - ./data/conf/rspamd/override.d/:/etc/rspamd/override.d:ro
@@ -93,6 +101,7 @@ services:
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
         - dkim-vol-1:/data/dkim
       environment:
+        - TZ=${TZ}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
@@ -148,6 +157,7 @@ services:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
+        - TZ=${TZ}
       ports:
         - "${DOVEADM_PORT:-127.0.0.1:19991}:12345"
         - "${IMAP_PORT:-143}:143"
@@ -178,6 +188,7 @@ services:
         - postfix-vol-1:/var/spool/postfix
         - crypt-vol-1:/var/lib/zeyple
       environment:
+        - TZ=${TZ}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
@@ -293,6 +304,7 @@ services:
         - vmail-vol-1:/vmail:ro
       restart: always
       environment:
+        - TZ=${TZ}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
@@ -310,8 +322,11 @@ services:
       restart: always
       build: ./data/Dockerfiles/dockerapi
       oom_score_adj: -10
+      environment:
+        - TZ=${TZ}
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
+        - ./data/conf/rspamd/override.d/worker-controller-password.inc:/access.inc:rw
       networks:
         mailcow-network:
           aliases:
