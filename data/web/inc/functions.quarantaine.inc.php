@@ -151,7 +151,7 @@ function quarantaine($_action, $_data = null) {
               )
             );
             if (!empty(gethostbynamel('postfix-mailcow'))) {
-              $postfix = 'apostfix-mailcow';
+              $postfix = 'postfix-mailcow';
             }
             if (!empty(gethostbynamel('postfix'))) {
               $postfix = 'postfix';

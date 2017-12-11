@@ -17,6 +17,7 @@ data/conf/rspamd/local.d/*
 data/conf/rspamd/override.d/*
 !data/conf/nginx/dynmaps.conf
 !data/conf/nginx/site.conf
+!data/conf/nginx/meta_exporter.conf
 data/conf/nginx/*.conf
 data/conf/nginx/*.custom
 data/conf/nginx/*.bak
