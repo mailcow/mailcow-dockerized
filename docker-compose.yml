@@ -100,6 +100,7 @@ services:
         - ./data/web:/web:rw
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
         - dkim-vol-1:/data/dkim
+        - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro
       environment:
         - TZ=${TZ}
         - DBNAME=${DBNAME}
@@ -238,6 +239,7 @@ services:
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
         - ./data/assets/ssl/:/etc/ssl/mail/:ro
         - ./data/conf/nginx/:/etc/nginx/conf.d/:rw
+        - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro
       ports:
         - "${HTTPS_BIND:-0.0.0.0}:${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
         - "${HTTP_BIND:-0.0.0.0}:${HTTP_PORT:-80}:${HTTP_PORT:-80}"
