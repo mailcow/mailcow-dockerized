@@ -18,7 +18,7 @@ class containers_get(Resource):
   def get(self):
     containers = {}
     try:
-      for container in docker_client.containers.list(all=True, filters={"label": "com.docker.compose.project=" + os.environ['COMPOSE_PROJECT_NAME']}):
+      for container in docker_client.containers.list(all=True):
         containers.update({container.attrs['Id']: container.attrs})
       return containers
     except Exception as e:
@@ -28,19 +28,8 @@ class container_get(Resource):
   def get(self, container_id):
     if container_id and container_id.isalnum():
       try:
-        for container in docker_client.containers.list(all=True, filters={"label": "com.docker.compose.project=" + os.environ['COMPOSE_PROJECT_NAME'], "id": container_id}):
+        for container in docker_client.containers.list(all=True, filters={"id": container_id}):
           return container.attrs
-      except Exception as e:
-          return jsonify(type='danger', msg=e)
-    else:
-      return jsonify(type='danger', msg='no or invalid id defined')
-
-class container_logs(Resource):
-  def get(self, container_id, lines):
-    if container_id and container_id.isalnum() and lines:
-      try:
-        for container in docker_client.containers.list(all=True, filters={"label": "com.docker.compose.project=" + os.environ['COMPOSE_PROJECT_NAME'], "id": container_id}):
-          return container.logs(stdout=True, stderr=True, stream=False, tail=lines)
       except Exception as e:
           return jsonify(type='danger', msg=e)
     else:
@@ -51,7 +40,7 @@ class container_post(Resource):
     if container_id and container_id.isalnum() and post_action:
       if post_action == 'stop':
         try:
-          for container in docker_client.containers.list(all=True, filters={"label": "com.docker.compose.project=" + os.environ['COMPOSE_PROJECT_NAME'], "id": container_id}):
+          for container in docker_client.containers.list(all=True, filters={"id": container_id}):
             container.stop()
           return jsonify(type='success', msg='command completed successfully')
         except Exception as e:
@@ -59,7 +48,7 @@ class container_post(Resource):
 
       elif post_action == 'start':
         try:
-          for container in docker_client.containers.list(all=True, filters={"label": "com.docker.compose.project=" + os.environ['COMPOSE_PROJECT_NAME'], "id": container_id}):
+          for container in docker_client.containers.list(all=True, filters={"id": container_id}):
             container.start()
           return jsonify(type='success', msg='command completed successfully')
         except Exception as e:
@@ -67,7 +56,7 @@ class container_post(Resource):
 
       elif post_action == 'restart':
         try:
-          for container in docker_client.containers.list(all=True, filters={"label": "com.docker.compose.project=" + os.environ['COMPOSE_PROJECT_NAME'], "id": container_id}):
+          for container in docker_client.containers.list(all=True, filters={"id": container_id}):
             container.restart()
           return jsonify(type='success', msg='command completed successfully')
         except Exception as e:
@@ -80,19 +69,19 @@ class container_post(Resource):
 
         if request.json['cmd'] == 'sieve_list' and request.json['username']:
           try:
-            for container in docker_client.containers.list(filters={"label": "com.docker.compose.project=" + os.environ['COMPOSE_PROJECT_NAME'], "id": container_id}):
+            for container in docker_client.containers.list(filters={"id": container_id}):
               return container.exec_run(["/bin/bash", "-c", "/usr/local/bin/doveadm sieve list -u '" + request.json['username'].replace("'", "'\\''") + "'"], user='vmail')
           except Exception as e:
             return jsonify(type='danger', msg=e)
         elif request.json['cmd'] == 'sieve_print' and request.json['script_name'] and request.json['username']:
           try:
-            for container in docker_client.containers.list(filters={"label": "com.docker.compose.project=" + os.environ['COMPOSE_PROJECT_NAME'], "id": container_id}):
+            for container in docker_client.containers.list(filters={"id": container_id}):
               return container.exec_run(["/bin/bash", "-c", "/usr/local/bin/doveadm sieve get -u '" + request.json['username'].replace("'", "'\\''") + "' '" + request.json['script_name'].replace("'", "'\\''") + "'"], user='vmail')
           except Exception as e:
             return jsonify(type='danger', msg=e)
         elif request.json['cmd'] == 'worker_password' and request.json['raw']:
           try:
-            for container in docker_client.containers.list(filters={"label": "com.docker.compose.project=" + os.environ['COMPOSE_PROJECT_NAME'], "id": container_id}):
+            for container in docker_client.containers.list(filters={"id": container_id}):
               hash = container.exec_run(["/bin/bash", "-c", "/usr/bin/rspamadm pw -e -p '" + request.json['raw'].replace("'", "'\\''") + "'"], user='_rspamd')
               f = open("/access.inc", "w")
               f.write('enable_password = "' + re.sub('[^0-9a-zA-Z\$]+', '', hash.rstrip()) + '";\n')
@@ -125,7 +114,6 @@ def startFlaskAPI():
 
 api.add_resource(containers_get, '/containers/json')
 api.add_resource(container_get, '/containers/<string:container_id>/json')
-api.add_resource(container_logs, '/containers/<string:container_id>/logs/<int:lines>')
 api.add_resource(container_post, '/containers/<string:container_id>/<string:post_action>')
 
 if __name__ == '__main__':
@@ -138,3 +126,4 @@ if __name__ == '__main__':
     if killer.kill_now:
       break
   print "Stopping dockerapi-mailcow"
+
