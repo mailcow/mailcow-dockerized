@@ -85,7 +85,8 @@ while ($row = $sth->fetchrow_arrayref()) {
 	"--host2", "localhost",
 	"--user2", $user2 . '*' . trim($master_user),
 	"--passfile2", $passfile2->filename,
-	'--no-modulesversion'], ">", \my $stdout;
+	'--no-modulesversion',
+	'--noreleasecheck'], ">", \my $stdout;
 
   $update = $dbh->prepare("UPDATE imapsync SET returned_text = ?, last_run = NOW(), is_running = 0 WHERE id = ?");
   $update->bind_param( 1, ${stdout} );
