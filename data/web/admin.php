@@ -249,7 +249,7 @@ $tfa_data = get_tfa();
         ?>
 
         <legend style="margin-top:40px"><?=$lang['admin']['dkim_add_key'];?></legend>
-        <form class="form-inline" data-id="dkim" role="form" method="post">
+        <form class="form" data-id="dkim" role="form" method="post">
           <div class="form-group">
             <label for="domain">Domain</label>
             <input class="form-control" id="domain" name="domain" placeholder="example.org" required>
@@ -310,7 +310,7 @@ $tfa_data = get_tfa();
         </div>
         <legend><?=$lang['admin']['add_forwarding_host'];?></legend>
         <p class="help-block"><?=$lang['admin']['forwarding_hosts_add_hint'];?></p>
-        <form class="form-inline" data-id="fwdhost" role="form" method="post">
+        <form class="form" data-id="fwdhost" role="form" method="post">
           <div class="form-group">
             <label for="hostname"><?=$lang['admin']['host'];?></label>
             <input class="form-control" id="hostname" name="hostname" placeholder="example.org" required>
@@ -377,7 +377,7 @@ $tfa_data = get_tfa();
         </div>
         <legend><?=$lang['admin']['add_relayhost'];?></legend>
         <p class="help-block"><?=$lang['admin']['add_relayhost_add_hint'];?></p>
-        <form class="form-inline" data-id="rlyhost" role="form" method="post">
+        <form class="form" data-id="rlyhost" role="form" method="post">
           <div class="form-group">
             <label for="hostname"><?=$lang['admin']['host'];?></label>
             <input class="form-control" id="hostname" name="hostname" required>
