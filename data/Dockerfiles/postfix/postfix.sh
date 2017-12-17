@@ -83,6 +83,9 @@ query = SELECT CONCAT_WS(':', username, password) AS auth_data FROM relayhosts
   WHERE id IN (
     SELECT relayhost FROM domain
       WHERE CONCAT('@', domain) = '%s'
+      OR '%s' IN (
+        SELECT CONCAT('@', alias_domain) FROM alias_domain
+      )
   );
 EOF
 
