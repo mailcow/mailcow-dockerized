@@ -110,7 +110,7 @@ class GracefulKiller:
     self.kill_now = True
 
 def startFlaskAPI():
-  app.run(debug=False, host='0.0.0.0', port='8080', threaded=True)
+  app.run(debug=False, host='0.0.0.0', port=8080, threaded=True)
 
 api.add_resource(containers_get, '/containers/json')
 api.add_resource(container_get, '/containers/<string:container_id>/json')
