@@ -193,6 +193,7 @@ jQuery(function($){
       "filtering": {
         "enabled": true,
         "position": "left",
+        "connectors": false,
         "placeholder": lang.filter_table
       },
       "sorting": {
@@ -263,6 +264,7 @@ jQuery(function($){
       "filtering": {
         "enabled": true,
         "position": "left",
+        "connectors": false,
         "placeholder": lang.filter_table
       },
       "sorting": {
@@ -307,6 +309,7 @@ jQuery(function($){
       "filtering": {
         "enabled": true,
         "position": "left",
+        "connectors": false,
         "placeholder": lang.filter_table
       },
       "sorting": {
@@ -357,6 +360,7 @@ jQuery(function($){
       "filtering": {
         "enabled": true,
         "position": "left",
+        "connectors": false,
         "placeholder": lang.filter_table
       },
       "sorting": {
@@ -409,6 +413,7 @@ jQuery(function($){
       "filtering": {
         "enabled": true,
         "position": "left",
+        "connectors": false,
         "placeholder": lang.filter_table
       },
       "sorting": {
@@ -452,6 +457,7 @@ jQuery(function($){
       "filtering": {
         "enabled": true,
         "position": "left",
+        "connectors": false,
         "placeholder": lang.filter_table
       },
       "sorting": {
@@ -511,6 +517,7 @@ jQuery(function($){
       "filtering": {
         "enabled": true,
         "position": "left",
+        "connectors": false,
         "placeholder": lang.filter_table
       },
       "sorting": {
@@ -564,6 +571,7 @@ jQuery(function($){
       "filtering": {
         "enabled": true,
         "position": "left",
+        "connectors": false,
         "placeholder": lang.filter_table
       },
       "sorting": {
