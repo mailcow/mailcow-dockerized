@@ -37,6 +37,7 @@ RUN apt-get update && apt-get -y install \
 	libio-tee-perl \
 	libipc-run-perl \
 	liblockfile-simple-perl \
+	libldap2-dev \
 	liblz-dev \
 	liblz4-dev \
 	liblzma-dev \
@@ -64,7 +65,7 @@ RUN apt-get update && apt-get -y install \
 
 RUN curl https://www.dovecot.org/releases/2.2/dovecot-$DOVECOT_VERSION.tar.gz | tar xvz  \
 	&& cd dovecot-$DOVECOT_VERSION \
-	&& ./configure --with-mysql --with-lzma --with-lz4 --with-ssl=openssl --with-notify=inotify --with-storages=mdbox,sdbox,maildir,mbox,imapc,pop3c --with-bzlib --with-zlib \
+	&& ./configure --with-mysql --with-ldap --with-lzma --with-lz4 --with-ssl=openssl --with-notify=inotify --with-storages=mdbox,sdbox,maildir,mbox,imapc,pop3c --with-bzlib --with-zlib \
 	&& make -j3 \
 	&& make install \
 	&& make clean \

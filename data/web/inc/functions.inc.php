@@ -47,7 +47,11 @@ function hasMailboxObjectAccess($username, $role, $object) {
 	}
 	if ($username == $object) {
 		return true;
-	}
+  }
+  $ldap = ldap_user_search($object);
+  if (isset($ldap[0])) {
+    return hasDomainAccess($username, $role, $ldap[0]['domain']);
+  }
 	try {
 		$stmt = $pdo->prepare("SELECT `domain` FROM `mailbox` WHERE `username` = :object");
 		$stmt->execute(array(':object' => $object));
@@ -193,7 +197,13 @@ function check_login($user, $pass) {
         return "domainadmin";
       }
 		}
-	}
+  }
+  
+  if (ldap_check_login($user, $pass)) {
+    unset($_SESSION['ldelay']);
+    return "user";
+  }
+
 	$stmt = $pdo->prepare("SELECT `password` FROM `mailbox`
 			WHERE `kind` NOT REGEXP 'location|thing|group'
         AND `active`='1'
@@ -236,10 +246,21 @@ function set_acl() {
     $stmt->execute(array(':username' => $username));
     $acl['acl'] = $stmt->fetch(PDO::FETCH_ASSOC);
     unset($acl['acl']['username']);
+
+    // no entry? get default values
+    if (!$acl['acl']) {
+      $stmt = $pdo->query("SHOW COLUMNS FROM `user_acl` WHERE `Field` != 'username';");
+      $acl_all = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      while ($row = array_shift($acl_all)) {
+        $acl['acl'][$row['Field']] = $row['Default'];
+      }
+
+      $_SESSION = array_merge($_SESSION, $acl);
+    }
   }
   if (!empty($acl)) {
     $_SESSION = array_merge($_SESSION, $acl);
-  }
+  } 
   else {
     return false;
   }
@@ -1175,5 +1196,75 @@ function get_logs($container, $lines = false) {
     return false;
   }
   return false;
+}
+function ldap_user_search($username = NULL) {
+  global $ldap_config;
+
+  $ds = ldap_connect($ldap_config['host'], 389);
+  ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
+
+  if (!$ds || !ldap_bind($ds, $ldap_config['bind_dn'], $ldap_config['bind_pw'])) {
+    ldap_close($ds);
+    return false;
+  }
+
+  $sr = ldap_search(
+    $ds, 
+    $ldap_config['search_dn'], 
+    $ldap_config['mail_attr'] . "=" . ($username != NULL ? $username : "*"), 
+    array($ldap_config['mail_attr'], $ldap_config['id_attr'], $ldap_config['quota_attr'], $ldap_config['name_attr'])
+  ); 
+  if (!$sr) {
+    ldap_close($ds);
+    return false;
+  }
+
+  $info = array();
+  $ldap = ldap_get_entries($ds, $sr);
+  for($i = 0; $i < $ldap['count']; ++$i) {
+    $entry = array();
+    $mail = explode("@", $ldap[$i][$ldap_config['mail_attr']][0]);
+
+    $entry['id'] = $ldap[$i][$ldap_config['id_attr']][0];
+    $entry['username'] = $mail[0] . "@" . $mail[1];
+    $entry['name'] = $ldap[$i][$ldap_config['name_attr']][0];
+    $entry['domain'] = $mail[1];
+    $entry['quota'] = $ldap[$i][$ldap_config['quota_attr']][0];
+
+    // todo: this should probably come from ldap
+    $entry['active'] = 1;
+
+    // mark this as a readonly mailbox
+    $entry['read_only'] = 1; 
+
+    $info[] = $entry;
+  }
+
+  ldap_close($ds);
+  return $info;
+}
+
+function ldap_check_login($username, $password) {
+  global $ldap_config;
+
+  $ldap = ldap_user_search($username);
+  if (!isset($ldap[0])) {
+    return false;
+  }
+
+  $ds = ldap_connect($ldap_config['host'], 389);
+  ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
+  if (!$ds) {
+    ldap_close($ds);
+    return false;
+  }
+
+  if(!ldap_bind($ds, $ldap_config['id_attr'] . "=" . $ldap[0]['id'] . "," . $ldap_config['search_dn'], $password)) {
+    ldap_close($ds);
+    return false;
+  }
+
+  ldap_close($ds);
+  return true;
 }
 ?>

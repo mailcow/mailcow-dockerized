@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	libsasl2-modules \
 	postfix \
 	postfix-mysql \
+	postfix-ldap \
 	postfix-pcre \
 	python-gpgme \
 	sasl2-bin \

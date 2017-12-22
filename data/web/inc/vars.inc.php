@@ -14,6 +14,18 @@ $database_user = getenv('DBUSER');
 $database_pass = getenv('DBPASS');
 $database_name = getenv('DBNAME');
 
+// ldap connection vars
+$ldap_config = array(
+  'host' => getenv('LDAP_HOST'),
+  'bind_dn' => getenv('LDAP_BIND_DN'),
+  'bind_pw' => getenv('LDAP_BIND_PW'),
+  'search_dn' => getenv('LDAP_SEARCH_DN'),
+  'id_attr' => getenv('LDAP_ID_ATTR'),
+  'mail_attr' => getenv('LDAP_MAIL_ATTR'),
+  'name_attr' => getenv('LDAP_NAME_ATTR'),
+  'quota_attr' => getenv('LDAP_QUOTA_ATTR'),
+);
+
 // Other variables
 $mailcow_hostname = getenv('MAILCOW_HOSTNAME');
 

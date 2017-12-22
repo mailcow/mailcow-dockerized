@@ -106,6 +106,14 @@ services:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
+        - LDAP_HOST=${LDAP_HOST}
+        - LDAP_BIND_DN=${LDAP_BIND_DN}
+        - LDAP_BIND_PW=${LDAP_BIND_PW}
+        - LDAP_SEARCH_DN=${LDAP_SEARCH_DN}
+        - LDAP_ID_ATTR=${LDAP_ID_ATTR}
+        - LDAP_MAIL_ATTR=${LDAP_MAIL_ATTR}
+        - LDAP_NAME_ATTR=${LDAP_NAME_ATTR}
+        - LDAP_QUOTA_ATTR=${LDAP_QUOTA_ATTR}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
         - IMAP_PORT=${IMAP_PORT:-143}
         - IMAPS_PORT=${IMAPS_PORT:-993}
@@ -130,6 +138,14 @@ services:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
+        - LDAP_HOST=${LDAP_HOST}
+        - LDAP_BIND_DN=${LDAP_BIND_DN}
+        - LDAP_BIND_PW=${LDAP_BIND_PW}
+        - LDAP_SEARCH_DN=${LDAP_SEARCH_DN}
+        - LDAP_ID_ATTR=${LDAP_ID_ATTR}
+        - LDAP_MAIL_ATTR=${LDAP_MAIL_ATTR}
+        - LDAP_NAME_ATTR=${LDAP_NAME_ATTR}
+        - LDAP_QUOTA_ATTR=${LDAP_QUOTA_ATTR}
         - TZ=${TZ}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
       volumes:
@@ -158,6 +174,14 @@ services:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
+        - LDAP_HOST=${LDAP_HOST}
+        - LDAP_BIND_DN=${LDAP_BIND_DN}
+        - LDAP_BIND_PW=${LDAP_BIND_PW}
+        - LDAP_SEARCH_DN=${LDAP_SEARCH_DN}
+        - LDAP_ID_ATTR=${LDAP_ID_ATTR}
+        - LDAP_MAIL_ATTR=${LDAP_MAIL_ATTR}
+        - LDAP_NAME_ATTR=${LDAP_NAME_ATTR}
+        - LDAP_QUOTA_ATTR=${LDAP_QUOTA_ATTR}
         - TZ=${TZ}
       ports:
         - "${DOVEADM_PORT:-127.0.0.1:19991}:12345"
@@ -193,6 +217,14 @@ services:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
+        - LDAP_HOST=${LDAP_HOST}
+        - LDAP_BIND_DN=${LDAP_BIND_DN}
+        - LDAP_BIND_PW=${LDAP_BIND_PW}
+        - LDAP_SEARCH_DN=${LDAP_SEARCH_DN}
+        - LDAP_ID_ATTR=${LDAP_ID_ATTR}
+        - LDAP_MAIL_ATTR=${LDAP_MAIL_ATTR}
+        - LDAP_NAME_ATTR=${LDAP_NAME_ATTR}
+        - LDAP_QUOTA_ATTR=${LDAP_QUOTA_ATTR}
       ports:
         - "${SMTP_PORT:-25}:25"
         - "${SMTPS_PORT:-465}:465"

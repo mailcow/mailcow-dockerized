@@ -101,6 +101,18 @@ USE_WATCHDOG=n
 # Send notifications by mail (no DKIM signature, sent from watchdog@MAILCOW_HOSTNAME)
 #WATCHDOG_NOTIFY_EMAIL=
 
+# enable ldap support 
+# todo: actually use this
+ENABLE_LDAP=y
+
+LDAP_HOST=ldap.example.org
+LDAP_BIND_DN=cn=admin,dc=example,dc=org
+LDAP_BIND_PW=password
+LDAP_SEARCH_DN=ou=Users,dc=example,dc=org
+LDAP_ID_ATTR=cn
+LDAP_MAIL_ATTR=mail
+LDAP_NAME_ATTR=displayname
+LDAP_QUOTA_ATTR=mailuserquota
 EOF
 
 mkdir -p data/assets/ssl

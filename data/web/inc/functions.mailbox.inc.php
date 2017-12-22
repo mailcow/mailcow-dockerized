@@ -40,6 +40,11 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             $stmt = $pdo->prepare("SELECT `domain` FROM `mailbox` WHERE `username` = :username");
             $stmt->execute(array(':username' => $_SESSION['mailcow_cc_username']));
             $domain = $stmt->fetch(PDO::FETCH_ASSOC)['domain'];
+
+            if(!isset($domain)) {
+              $ldap = ldap_user_search();
+              $domain = $ldap[0]['domain'];
+            } 
           }
           catch (PDOException $e) {
             $_SESSION['return'] = array(
@@ -2290,6 +2295,11 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             return false;
           }
           elseif (isset($_data) && hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
+            $ldap = ldap_user_search("*@" . $_data);
+            while($mailbox = array_shift($ldap)) {
+              $mailboxes[] = $mailbox['username'];
+            }
+
             try {
               $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `kind` NOT REGEXP 'location|thing|group' AND `domain` != 'ALL' AND `domain` = :domain");
               $stmt->execute(array(
@@ -2309,6 +2319,11 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             }
           }
           else {
+            $ldap = ldap_user_search();
+            while($mailbox = array_shift($ldap)) {
+              $mailboxes[] = $mailbox['username'];
+            }
+
             try {
               $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `kind` NOT REGEXP 'location|thing|group' AND (`domain` IN (SELECT `domain` FROM `domain_admins` WHERE `active` = '1' AND `username` = :username) OR 'admin' = :role)");
               $stmt->execute(array(
@@ -2986,6 +3001,70 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             return false;
           }
           $mailboxdata = array();
+
+          $ldap = ldap_user_search($_data);
+          if(isset($ldap[0]))
+          {
+            $mailboxdata['username'] = $ldap[0]['username'];
+            $mailboxdata['name'] = $ldap[0]['name'];
+            $mailboxdata['domain'] = $ldap[0]['domain'];
+            $mailboxdata['active_int'] = $ldap[0]['active'];
+            $mailboxdata['active'] = $mailboxdata['active_int'] ? $lang['mailbox']['yes'] : $lang['mailbox']['no'];
+            $mailboxdata['quota'] = $ldap[0]['quota'];
+
+            try {
+              $stmt = $pdo->prepare("SELECT
+                  `domain`.`domain`,
+                  `domain`.`backupmx`,
+                  `quota2`.`bytes`,
+                  `quota2`.`messages`
+                    FROM `quota2`, `domain`
+                      WHERE `domain`.`domain` = :domain AND `quota2`.`username` = :mailbox");
+              $stmt->execute(array(
+                ':mailbox' => $_data,
+                ':domain' => $mailboxdata['domain'],
+              ));
+              $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+              $stmt = $pdo->prepare("SELECT `maxquota`, `quota` FROM  `domain` WHERE `domain` = :domain");
+              $stmt->execute(array(':domain' => $row['domain']));
+              $DomainQuota  = $stmt->fetch(PDO::FETCH_ASSOC);
+
+              $stmt = $pdo->prepare("SELECT IFNULL(COUNT(`address`), 0) AS `sa_count` FROM `spamalias` WHERE `goto` = :address AND `validity` >= :unixnow");
+              $stmt->execute(array(':address' => $_data, ':unixnow' => time()));
+              $SpamaliasUsage	= $stmt->fetch(PDO::FETCH_ASSOC);
+
+              $mailboxdata['max_new_quota'] = ($DomainQuota['quota'] * 1048576);
+              if ($mailboxdata['max_new_quota'] > ($DomainQuota['maxquota'] * 1048576)) {
+                $mailboxdata['max_new_quota'] = ($DomainQuota['maxquota'] * 1048576);
+              }
+              
+              $mailboxdata['is_relayed'] = $row['backupmx'];
+              $mailboxdata['quota_used'] = intval($row['bytes']);
+              $mailboxdata['percent_in_use'] = round((intval($row['bytes']) / intval($mailboxdata['quota'])) * 100);
+              $mailboxdata['messages'] = $row['messages'];
+              $mailboxdata['spam_aliases'] = $SpamaliasUsage['sa_count'];
+              if ($mailboxdata['percent_in_use'] >= 90) {
+                $mailboxdata['percent_class'] = "danger";
+              }
+              elseif ($mailboxdata['percent_in_use'] >= 75) {
+                $mailboxdata['percent_class'] = "warning";
+              }
+              else {
+                $mailboxdata['percent_class'] = "success";
+              }
+            }
+            catch (PDOException $e) {
+              $_SESSION['return'] = array(
+                'type' => 'danger',
+                'msg' => 'MySQL: '.$e
+              );
+              return false;
+            }
+            
+            return $mailboxdata;
+          }
+
           try {
             $stmt = $pdo->prepare("SELECT
                 `domain`.`backupmx`,

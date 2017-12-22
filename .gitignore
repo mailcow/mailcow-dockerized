@@ -7,6 +7,8 @@ data/conf/nginx/listen*active
 data/conf/nginx/server_name.active
 data/conf/postfix/sql
 data/conf/dovecot/sql
+data/conf/postfix/ldap
+data/conf/dovecot/ldap
 data/conf/nextcloud-*.bak
 data/web/inc/vars.local.inc.php
 data/assets/ssl/*
