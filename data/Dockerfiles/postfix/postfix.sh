@@ -86,7 +86,8 @@ query = SELECT CONCAT_WS(':', username, password) AS auth_data FROM relayhosts
       OR '%s' IN (
         SELECT CONCAT('@', alias_domain) FROM alias_domain
       )
-  );
+  )
+  AND username != '';
 EOF
 
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_alias_domain_catchall_maps.cf
