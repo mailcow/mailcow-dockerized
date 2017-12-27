@@ -10,6 +10,9 @@ RUN ["/bin/bash", "-c", "cp /opt/solr/example/files/conf/{protwords.txt,stopword
 
 RUN chown -R solr:solr /opt/solr/server/solr/dovecot
 
+RUN mkdir "/opt/solr/server/solr/dovecot/data" && \
+  chown -R solr:solr "/opt/solr/server/solr/dovecot/data"
+
 # higher heap size to handle large mailboxes
 RUN sed -i 's/#SOLR_HEAP="512m"/SOLR_HEAP="4096m"/g' /opt/solr/bin/solr.in.sh
 
