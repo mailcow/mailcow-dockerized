@@ -1,4 +1,4 @@
-FROM solr:latest
+FROM solr:7.2
 
 ADD solr_core /opt/solr/server/solr/dovecot
 
