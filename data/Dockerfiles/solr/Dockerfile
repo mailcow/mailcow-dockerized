@@ -14,6 +14,6 @@ RUN mkdir "/opt/solr/server/solr/dovecot/data" && \
   chown -R solr:solr "/opt/solr/server/solr/dovecot/data"
 
 # higher heap size to handle large mailboxes
-RUN sed -i 's/#SOLR_HEAP="512m"/SOLR_HEAP="4096m"/g' /opt/solr/bin/solr.in.sh
+RUN sed -i 's/#SOLR_HEAP="512m"/SOLR_HEAP="'${JAVA_HEAPSIZE:-4096}'m"/g' /opt/solr/bin/solr.in.sh
 
 USER solr

@@ -347,6 +347,8 @@ services:
       dns:
         - 172.22.1.254
       dns_search: mailcow-network
+      environment:
+        - JAVA_HEAPSIZE=${JAVA_HEAPSIZE:-4096}
       networks:
         mailcow-network:
           aliases:
