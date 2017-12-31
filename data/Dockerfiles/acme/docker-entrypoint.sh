@@ -128,13 +128,7 @@ while true; do
   declare -a VALIDATED_CONFIG_DOMAINS
   declare -a ADDITIONAL_VALIDATED_SAN
   IFS=',' read -r -a ADDITIONAL_SAN_ARR <<< "${ADDITIONAL_SAN}"
-  until [[ ${IPV4} == ${EXTERNAL_IPV4} ]]; do
-    IPV4=$(get_ipv4)
-    if [[ ${IPV4} != ${EXTERNAL_IPV4} ]]; then
-      echo "Waiting for correct source ip..."
-      sleep 30s
-    fi
-  done
+  IPV4=$(get_ipv4)
   # Container ids may have changed
   CONTAINERS_RESTART=($(curl --silent http://dockerapi:8080/containers/json | jq -r '.[] | {name: .Config.Labels["com.docker.compose.service"], id: .Id}' | jq -rc 'select( .name | tostring | contains("nginx-mailcow") or contains("postfix-mailcow") or contains("dovecot-mailcow")) | .id' | tr "\n" " "))
 
