@@ -473,6 +473,7 @@ jQuery(function($){
         {"sorted": true,"name":"id","title":"ID","style":{"maxWidth":"60px","width":"60px","text-align":"center"}},
         {"name":"user2","title":lang.owner},
         {"name":"server_w_port","title":"Server","breakpoints":"xs"},
+        {"name":"exclude","title":lang.excludes,"breakpoints":"all"},
         {"name":"mins_interval","title":lang.mins_interval,"breakpoints":"all"},
         {"name":"last_run","title":lang.last_run,"breakpoints":"all"},
         {"name":"log","title":"Log"},
@@ -491,7 +492,11 @@ jQuery(function($){
         success: function (data) {
           $.each(data, function (i, item) {
             item.log = '<a href="#syncjobLogModal" data-toggle="modal" data-syncjob-id="' + encodeURI(item.id) + '">Open logs</a>'
-            item.exclude = '<code>' + item.exclude + '</code>'
+            if (!item.exclude > 0) {
+              item.exclude = '-';
+            } else {
+              item.exclude  = '<code>' + item.exclude + '</code>';
+            }
             item.server_w_port = item.user1 + '@' + item.host1 + ':' + item.port1;
             item.action = '<div class="btn-group">' +
               '<a href="/edit.php?syncjob=' + item.id + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
