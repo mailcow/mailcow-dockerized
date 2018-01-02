@@ -124,7 +124,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.11
+      image: mailcow/sogo:1.12
       build: ./data/Dockerfiles/sogo
       environment:
         - DBNAME=${DBNAME}
@@ -256,7 +256,7 @@ services:
       depends_on:
         - nginx-mailcow
         - mysql-mailcow
-      image: mailcow/acme:1.25
+      image: mailcow/acme:1.26
       build: ./data/Dockerfiles/acme
       dns:
         - 172.22.1.254
