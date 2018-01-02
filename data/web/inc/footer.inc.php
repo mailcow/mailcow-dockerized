@@ -188,7 +188,7 @@ $(document).ready(function() {
       $.ajax({
         method: 'get',
         url: '/inc/ajax/container_ctrl.php',
-        timeout: 3000,
+        timeout: 10000,
         data: {
           'service': container,
           'action': 'restart'

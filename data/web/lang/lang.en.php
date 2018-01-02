@@ -552,6 +552,9 @@ $lang['diagnostics']['dns_records_name'] = 'Name';
 $lang['diagnostics']['dns_records_type'] = 'Type';
 $lang['diagnostics']['dns_records_data'] = 'Correct Data';
 $lang['diagnostics']['dns_records_status'] = 'Current State';
+$lang['diagnostics']['optional'] = 'This record is optional.';
+$lang['diagnostics']['cname_from_a'] = 'Value derived from A/AAAA record. This is supported as long as the record points to the correct resource.';
+
 $lang['admin']['relay_from'] = '"From:" address';
 $lang['admin']['api_allow_from'] = "Allow API access from these IPs";
 $lang['admin']['api_key'] = "API key";
