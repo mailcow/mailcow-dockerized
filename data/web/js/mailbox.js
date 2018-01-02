@@ -58,6 +58,7 @@ $(document).ready(function() {
   // Log modal
   $('#dnsInfoModal').on('show.bs.modal', function(e) {
     var domain = $(e.relatedTarget).data('domain');
+    $('.dns-modal-body').html('<center><span style="font-size:18pt;margin:50px" class="glyphicon glyphicon-refresh glyphicon-spin"></span></center>');
     $.ajax({
       url: '/inc/ajax/dns_diagnostics.php',
       data: { domain: domain },
@@ -443,7 +444,7 @@ jQuery(function($){
         {"sorted": true,"name":"alias_domain","title":lang.alias,"style":{"width":"250px"}},
         {"name":"target_domain","title":lang.target_domain},
         {"name":"active","filterable": false,"style":{"maxWidth":"50px","width":"70px"},"title":lang.active},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
+        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"250px","width":"250px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
       "empty": lang.empty,
       "rows": $.ajax({
@@ -458,6 +459,7 @@ jQuery(function($){
             item.action = '<div class="btn-group">' +
               '<a href="/edit.php?aliasdomain=' + encodeURI(item.alias_domain) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
               '<a href="#" id="delete_selected" data-id="single-alias-domain" data-api-url="delete/alias-domain" data-item="' + encodeURI(item.alias_domain) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+              '<a href="#dnsInfoModal" class="btn btn-xs btn-info" data-toggle="modal" data-domain="' + encodeURI(item.alias_domain) + '"><span class="glyphicon glyphicon-question-sign"></span> DNS</a></div>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="alias-domain" name="multi_select" value="' + item.alias_domain + '" />';
           });

@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "29112017_1515";
+    $db_version = "02012018_1515";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -540,12 +540,13 @@ function init_db_schema() {
           "c_sn" => "VARCHAR(255)",
           "c_screenname" => "VARCHAR(255)",
           "c_l" => "VARCHAR(255)",
-          "c_mail" => "VARCHAR(255)",
+          "c_mail" => "TEXT",
           "c_o" => "VARCHAR(255)",
           "c_ou" => "VARCHAR(255)",
           "c_telephonenumber" => "VARCHAR(255)",
           "c_categories" => "VARCHAR(255)",
-          "c_component" => "VARCHAR(10) NOT NULL"
+          "c_component" => "VARCHAR(10) NOT NULL",
+          "c_hascertificate" => "INT4 DEFAULT 0"
         ),
         "keys" => array(
           "primary" => array(
@@ -588,8 +589,8 @@ function init_db_schema() {
       "sogo_user_profile" => array(
         "cols" => array(
           "c_uid" => "VARCHAR(255) NOT NULL",
-          "c_defaults" => "TEXT",
-          "c_settings" => "TEXT"
+          "c_defaults" => "LONGTEXT",
+          "c_settings" => "LONGTEXT"
         ),
         "keys" => array(
           "primary" => array(
