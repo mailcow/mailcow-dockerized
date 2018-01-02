@@ -73,13 +73,16 @@ $records[] = array('_' . $autodiscover_config['imap']['port']    . '._tcp.' . $a
 $records[] = array('_' . $autodiscover_config['pop3']['port']    . '._tcp.' . $autodiscover_config['pop3']['server'], 'TLSA', generate_tlsa_digest($autodiscover_config['pop3']['server'], $autodiscover_config['pop3']['port']));
 $records[] = array('_' . $autodiscover_config['sieve']['port']   . '._tcp.' . $autodiscover_config['sieve']['server'], 'TLSA', generate_tlsa_digest($autodiscover_config['sieve']['server'], $autodiscover_config['sieve']['port'], 1));
 
+$spf_link = '<a href="http://www.openspf.org/SPF_Record_Syntax" target="_blank">SPF Record Syntax</a>';
+$dmarc_link = '<a href="http://www.kitterman.com/dmarc/assistant.html" target="_blank">DMARC Assistant</a>';
+
 foreach ($domains as $domain) {
   $records[] = array($domain, 'MX', $mailcow_hostname);
   $records[] = array('autodiscover.' . $domain, 'CNAME', $mailcow_hostname);
   $records[] = array('_autodiscover._tcp.' . $domain, 'SRV', $mailcow_hostname . ' ' . $https_port);
   $records[] = array('autoconfig.' . $domain, 'CNAME', $mailcow_hostname);
-  $records[] = array($domain, 'TXT', '<a href="http://www.openspf.org/SPF_Record_Syntax" target="_blank">SPF Record Syntax</a>', state_optional);
-  $records[] = array('_dmarc.' . $domain, 'TXT', '<a href="http://www.kitterman.com/dmarc/assistant.html" target="_blank">DMARC Assistant</a>', state_optional);
+  $records[] = array($domain, 'TXT', $spf_link, state_optional);
+  $records[] = array('_dmarc.' . $domain, 'TXT', $dmarc_link, state_optional);
   
   if (!empty($dkim = dkim('details', $domain))) {
     $records[] = array($dkim['dkim_selector'] . '._domainkey.' . $domain, 'TXT', $dkim['dkim_txt']);
@@ -200,14 +203,14 @@ foreach ($records as $record)
       continue;
     }
     
-    elseif ($current['type'] == 'TXT' && strpos($current['txt'], 'v=DMARC1') === 0) {
+    elseif ($current['type'] == 'TXT' && strpos($current['txt'], 'v=DMARC1') === 0 && $record[2] == $dmarc_link) {
       $current['txt'] = str_replace(' ', '', $current['txt']);
       $state = state_optional . '<br />' . $current[$data_field[$current['type']]];
     }
-    else if ($current['type'] == 'TXT' && strpos($current['txt'], 'v=spf1') === 0) {
+    else if ($current['type'] == 'TXT' && strpos($current['txt'], 'v=spf1') === 0 && $record[2] == $spf_link) {
       $state = state_optional . '<br />' . $current[$data_field[$current['type']]];
     }
-    else if ($current['type'] == 'TXT' && strpos($current['txt'], 'v=DKIM1') === 0) {
+    else if ($current['type'] == 'TXT' && strpos($current['txt'], 'v=DKIM1') === 0 && strpos($record[2], 'v=DKIM1') === 0) {
       $current['txt'] = str_replace(' ', '', $current['txt']);
       if ($current[$data_field[$current['type']]] == $record[2])
         $state = state_good;
