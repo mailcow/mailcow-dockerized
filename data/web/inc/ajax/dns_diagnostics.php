@@ -1,14 +1,13 @@
 <?php
-require_once 'inc/prerequisites.inc.php';
-require_once 'inc/spf.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/spf.inc.php';
 
-define('state_good',  "&#10003;");
-define('state_missing',   "&#x2717;");
+define('state_good', '<span class="text-success">OK</span>');
+define('state_missing', "&#x2717;");
 define('state_nomatch', "?");
-define('state_optional', "(optional)");
+define('state_optional', " <sup>2</sup>");
 
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admin") {
-require_once("inc/header.inc.php");
 
 $ch = curl_init('http://ip4.mailcow.email');
 curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
@@ -80,7 +79,7 @@ foreach ($domains as $domain) {
   $records[] = array('autoconfig.' . $domain, 'CNAME', $mailcow_hostname);
   $records[] = array($domain, 'TXT', '<a href="http://www.openspf.org/SPF_Record_Syntax" target="_blank">SPF Record Syntax</a>', state_optional);
   $records[] = array('_dmarc.' . $domain, 'TXT', '<a href="http://www.kitterman.com/dmarc/assistant.html" target="_blank">DMARC Assistant</a>', state_optional);
-  
+
   if (!empty($dkim = dkim('details', $domain))) {
     $records[] = array($dkim['dkim_selector'] . '._domainkey.' . $domain, 'TXT', $dkim['dkim_txt']);
   }
@@ -138,15 +137,11 @@ $data_field = array(
   'TXT' => 'txt',
 );
 ?>
-<div class="container">
-  <h3><?=$lang['diagnostics']['dns_records'];?></h3>
-  <p><?=$lang['diagnostics']['dns_records_24hours'];?></p>
   <div class="table-responsive" id="dnstable">
     <table class="table table-striped">
       <tr> <th><?=$lang['diagnostics']['dns_records_name'];?></th> <th><?=$lang['diagnostics']['dns_records_type'];?></th> <th><?=$lang['diagnostics']['dns_records_data'];?></th ><th><?=$lang['diagnostics']['dns_records_status'];?></th> </tr>
 <?php
-foreach ($records as $record)
-{
+foreach ($records as $record) {
   $record[1] = strtoupper($record[1]);
   $state = state_missing;
   if ($record[1] == 'TLSA') {
@@ -173,8 +168,15 @@ foreach ($records as $record)
       }
       unset($current);
     }
+    elseif ($record[1] == 'TXT') {
+      foreach ($currents as &$current) {
+        if ($current['host'] != $record[0]) {
+          $current['type'] = false;
+        }
+      }
+    }
   }
-  
+
   if ($record[1] == 'CNAME' && count($currents) == 0) {
     // A and AAAA are also valid instead of CNAME
     $a = dns_get_record($record[0], DNS_A);
@@ -182,44 +184,51 @@ foreach ($records as $record)
     if (count($a) > 0 && count($cname) > 0) {
       if ($a[0]['ip'] == $cname[0]['ip']) {
         $currents = array(array('host' => $record[0], 'class' => 'IN', 'type' => 'CNAME', 'target' => $record[2]));
-      
         $aaaa = dns_get_record($record[0], DNS_AAAA);
         $cname = dns_get_record($record[2], DNS_AAAA);
         if (count($aaaa) == 0 || count($cname) == 0 || $aaaa[0]['ipv6'] != $cname[0]['ipv6']) {
-          $currents[0]['target'] = $aaaa[0]['ipv6'];
+          $currents[0]['target'] = $aaaa[0]['ipv6'] . ' <sup>1</sup>';
         }
-      } else {
-        $currents = array(array('host' => $record[0], 'class' => 'IN', 'type' => 'CNAME', 'target' => $a[0]['ip']));
+      }
+      else {
+        $currents = array(array('host' => $record[0], 'class' => 'IN', 'type' => 'CNAME', 'target' => $a[0]['ip'] . ' <sup>1</sup>'));
       }
     }
   }
-  
+
   foreach ($currents as &$current) {
-    if ($current['type'] != $record[1])
-    {
+    if ($current['type'] != $record[1]) {
+      unset($current);
       continue;
     }
-    
-    elseif ($current['type'] == 'TXT' && strpos($current['txt'], 'v=DMARC1') === 0) {
-      $current['txt'] = str_replace(' ', '', $current['txt']);
-      $state = state_optional . '<br />' . $current[$data_field[$current['type']]];
+    elseif ($current['type'] == 'TXT' &&
+      stripos($current['txt'], 'v=dmarc') === 0 &&
+      stripos($current['host'], '_dmarc') === 0) {
+        $current['txt'] = str_replace(' ', '', $current['txt']);
+        $state = state_optional . '<br />' . $current[$data_field[$current['type']]];
     }
-    else if ($current['type'] == 'TXT' && strpos($current['txt'], 'v=spf1') === 0) {
-      $state = state_optional . '<br />' . $current[$data_field[$current['type']]];
+    elseif ($current['type'] == 'TXT' &&
+      stripos($current['host'], '_dmarc') !== 0 &&
+      stripos($current['txt'], 'v=spf') === 0) {
+        $state = state_optional . '<br />' . $current[$data_field[$current['type']]];
     }
-    else if ($current['type'] == 'TXT' && strpos($current['txt'], 'v=DKIM1') === 0) {
-      $current['txt'] = str_replace(' ', '', $current['txt']);
-      if ($current[$data_field[$current['type']]] == $record[2])
-        $state = state_good;
+    elseif ($current['type'] == 'TXT' &&
+      stripos($current['txt'], 'v=dkim') === 0) {
+        $current['txt'] = str_replace(' ', '', $current['txt']);
+        if ($current[$data_field[$current['type']]] == $record[2]) {
+          $state = state_good;
+        }
     }
-    else if ($current['type'] != 'TXT' && isset($data_field[$current['type']]) && $state != state_good) {
-      $state = state_nomatch;
-      if ($current[$data_field[$current['type']]] == $record[2])
-        $state = state_good;
+    elseif ($current['type'] != 'TXT' &&
+      isset($data_field[$current['type']]) && $state != state_good) {
+        $state = state_nomatch;
+        if ($current[$data_field[$current['type']]] == $record[2]) {
+          $state = state_good;
+        }
     }
   }
   unset($current);
-  
+
   if (isset($record[3]) && $record[3] == state_optional && ($state == state_missing || $state == state_nomatch)) {
     $state = state_optional;
   }
@@ -231,15 +240,21 @@ foreach ($records as $record)
     }
     $state = implode('<br />', $state);
   }
-
-  echo sprintf('<tr><td>%s</td><td>%s</td><td style="max-width: 300px; word-break: break-all">%s</td><td style="max-width: 150px; word-break: break-all">%s</td></tr>', $record[0], $record[1], $record[2], $state);
+  echo sprintf('<tr>
+    <td>%s</td>
+    <td>%s</td>
+    <td class="dns-found">%s</td>
+    <td class="dns-recommended">%s</td>
+  </tr>', $record[0], $record[1], $record[2], $state);
 }
 ?>
     </table>
 	</div>
-</div>
+  <p class="help-block">
+  <sup>1</sup> Found A/AAAA record instead of a CNAME. This is supported as long as the A records destination points to the correct resource.<br />
+  <sup>2</sup> This record is optional.
+  </p>
 <?php
-require_once("inc/footer.inc.php");
 } else {
   header('Location: index.php');
   exit();

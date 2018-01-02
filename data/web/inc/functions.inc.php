@@ -75,15 +75,15 @@ function generate_tlsa_digest($hostname, $port, $starttls = null) {
   }
   if (empty($starttls)) {
     $context = stream_context_create(array("ssl" => array("capture_peer_cert" => true, 'verify_peer' => false, 'allow_self_signed' => true)));
-    $stream = stream_socket_client('tls://' . $hostname . ':' . $port, $error_nr, $error_msg, 5, STREAM_CLIENT_CONNECT, $context);
-    // error_nr can be 0, so checking against error_msg
-    if ($error_msg) {
+    $stream = stream_socket_client('ssl://' . $hostname . ':' . $port, $error_nr, $error_msg, 5, STREAM_CLIENT_CONNECT, $context);
+    if (!$stream) {
+      $error_msg = isset($error_msg) ? $error_msg : '-';
       return $error_nr . ': ' . $error_msg;
     }
   }
   else {
     $stream = stream_socket_client('tcp://' . $hostname . ':' . $port, $error_nr, $error_msg, 5);
-    if ($error_msg) {
+    if (!$stream) {
       return $error_nr . ': ' . $error_msg;
     }
     $banner = fread($stream, 512 );
