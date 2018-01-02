@@ -55,6 +55,22 @@ $(document).ready(function() {
     });
   });
 
+  // Log modal
+  $('#dnsInfoModal').on('show.bs.modal', function(e) {
+    var domain = $(e.relatedTarget).data('domain');
+    $.ajax({
+      url: '/inc/ajax/dns_diagnostics.php',
+      data: { domain: domain },
+      dataType: 'text',
+      success: function(data){
+        $('.dns-modal-body').html(data);
+      },
+      error: function(xhr, status, error) {
+        $('.dns-modal-body').html(xhr.responseText);
+      }
+    });
+  });
+
   // Sieve data modal
   $('#sieveDataModal').on('show.bs.modal', function(e) {
     var sieveScript = $(e.relatedTarget).data('sieve-script');
@@ -154,7 +170,7 @@ jQuery(function($){
         {"name":"max_quota_for_mbox","title":lang.mailbox_quota,"breakpoints":"xs sm"},
         {"name":"backupmx","filterable": false,"style":{"maxWidth":"120px","width":"120px"},"title":lang.backup_mx,"breakpoints":"xs sm"},
         {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
+        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"240px","width":"240px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
       "rows": $.ajax({
         dataType: 'json',
@@ -170,17 +186,15 @@ jQuery(function($){
             item.quota = item.quota_used_in_domain + "/" + item.max_quota_for_domain;
             item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
             item.chkbox = '<input type="checkbox" data-id="domain" name="multi_select" value="' + item.domain_name + '" />';
+            item.action = '<div class="btn-group">';
             if (role == "admin") {
-              item.action = '<div class="btn-group">' +
-                '<a href="/edit.php?domain=' + encodeURI(item.domain_name) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-                '<a href="#" id="delete_selected" data-id="single-domain" data-api-url="delete/domain" data-item="' + encodeURI(item.domain_name) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
-                '</div>';
+              item.action += '<a href="/edit.php?domain=' + encodeURI(item.domain_name) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+                '<a href="#" id="delete_selected" data-id="single-domain" data-api-url="delete/domain" data-item="' + encodeURI(item.domain_name) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>';
             }
             else {
-              item.action = '<div class="btn-group">' +
-                '<a href="/edit.php?domain=' + encodeURI(item.domain_name) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-                '</div>';
+              item.action += '<a href="/edit.php?domain=' + encodeURI(item.domain_name) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>';
             }
+            item.action += '<a href="#dnsInfoModal" class="btn btn-xs btn-info" data-toggle="modal" data-domain="' + encodeURI(item.domain_name) + '"><span class="glyphicon glyphicon-question-sign"></span> DNS</a></div>';
           });
         }
       }),

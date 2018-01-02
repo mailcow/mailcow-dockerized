@@ -584,3 +584,15 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
     </div>
   </div>
 </div><!-- log modal -->
+<!-- DNS info modal -->
+<div class="modal fade" id="dnsInfoModal" tabindex="-1" role="dialog" aria-labelledby="dnsInfoModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header"><h4 class="modal-title"><?=$lang['diagnostics']['dns_records'];?></h4></div>
+      <div class="modal-body">
+        <p><?=$lang['diagnostics']['dns_records_24hours'];?></p>
+        <div class="dns-modal-body"></div>
+      </div>
+    </div>
+  </div>
+</div><!-- DNS info modal -->
