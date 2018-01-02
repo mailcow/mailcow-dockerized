@@ -194,18 +194,23 @@ foreach ($records as $record)
     }
   }
   
-  foreach ($currents as $current) {
-    $current['type'] == strtoupper($current['type']);
+  foreach ($currents as &$current) {
     if ($current['type'] != $record[1])
     {
       continue;
     }
     
-    elseif ($current['type'] == 'TXT' && strpos($record[0], '_dmarc.') === 0) {
+    elseif ($current['type'] == 'TXT' && strpos($current['txt'], 'v=DMARC1') === 0) {
+      $current['txt'] = str_replace(' ', '', $current['txt']);
       $state = state_optional . '<br />' . $current[$data_field[$current['type']]];
     }
     else if ($current['type'] == 'TXT' && strpos($current['txt'], 'v=spf1') === 0) {
       $state = state_optional . '<br />' . $current[$data_field[$current['type']]];
+    }
+    else if ($current['type'] == 'TXT' && strpos($current['txt'], 'v=DKIM1') === 0) {
+      $current['txt'] = str_replace(' ', '', $current['txt']);
+      if ($current[$data_field[$current['type']]] == $record[2])
+        $state = state_good;
     }
     else if ($current['type'] != 'TXT' && isset($data_field[$current['type']]) && $state != state_good) {
       $state = state_nomatch;
@@ -213,6 +218,7 @@ foreach ($records as $record)
         $state = state_good;
     }
   }
+  unset($current);
   
   if (isset($record[3]) && $record[3] == state_optional && ($state == state_missing || $state == state_nomatch)) {
     $state = state_optional;
