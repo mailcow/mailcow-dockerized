@@ -2,16 +2,30 @@
 set -o pipefail
 exec 5>&1
 
+log_f() {
+  if [[ ${2} == "no_nl" ]]; then
+    echo -n "$(date) - ${1}"
+  elif [[ ${2} == "no_date" ]]; then
+    echo "${1}"
+  elif [[ ${2} != "redis_only" ]]; then
+    echo "$(date) - ${1}"
+  fi
+  redis-cli -h redis LPUSH ACME_LOG "{\"time\":\"$(date +%s)\",\"message\":\"$(printf '%s' "${1}" | \
+    tr '%&;$"_[]{}-\r\n' ' ')\"}" > /dev/null
+  redis-cli -h redis LTRIM ACME_LOG 0 9999 > /dev/null
+}
+
 if [[ "${SKIP_LETS_ENCRYPT}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   log_f "SKIP_LETS_ENCRYPT=y, skipping Let's Encrypt..."
   sleep 365d
   exec $(readlink -f "$0")
 fi
 
-echo "Waiting for Docker API..."
+log_f "Waiting for Docker API..." no_nl
 until ping dockerapi -c1 > /dev/null; do
   sleep 1
 done
+log_f "Found Docker API" no_date
 
 ACME_BASE=/var/lib/acme
 SSL_EXAMPLE=/var/lib/ssl-example
@@ -20,19 +34,10 @@ mkdir -p ${ACME_BASE}/acme/private
 
 restart_containers(){
   for container in $*; do
-    echo "Restarting ${container}..."
-    curl -X POST http://dockerapi:8080/containers/${container}/restart
+    log_f "Restarting ${container}..." no_nl
+    C_REST_OUT=$(curl -X POST http://dockerapi:8080/containers/${container}/restart | jq -r '.msg')
+    log_f "${C_REST_OUT}" no_date
   done
-}
-
-log_f() {
-  if [[ ${2} == "no_nl" ]]; then
-    echo -n "$(date) - ${1}"
-  elif [[ ${2} == "no_date" ]]; then
-    echo "${1}"
-  else
-    echo "$(date) - ${1}"
-  fi
 }
 
 array_diff() {
@@ -127,12 +132,13 @@ while true; do
   # Container ids may have changed
   CONTAINERS_RESTART=($(curl --silent http://dockerapi:8080/containers/json | jq -r '.[] | {name: .Config.Labels["com.docker.compose.service"], id: .Id}' | jq -rc 'select( .name | tostring | contains("nginx-mailcow") or contains("postfix-mailcow") or contains("dovecot-mailcow")) | .id' | tr "\n" " "))
 
-  log_f "Waiting for domain tables... " no_nl
+  log_f "Waiting for domain table... " no_nl
   while [[ -z ${DOMAIN_TABLE} ]]; do
+    curl --silent http://nginx/ >/dev/null 2>&1
     DOMAIN_TABLE=$(mysql -h mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SHOW TABLES LIKE 'domain'" -Bs)
     [[ -z ${DOMAIN_TABLE} ]] && sleep 10
   done
-  log_f "OK" no_date
+  log_f "Found domain tables." no_date
 
   while read domains; do
     SQL_DOMAIN_ARR+=("${domains}")
@@ -226,6 +232,7 @@ while true; do
 
   case "$?" in
     0) # new certs
+      log_f "${ACME_RESPONSE}" redis_only
       # cp the new certificates and keys
       cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
       cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
@@ -239,6 +246,7 @@ while true; do
       restart_containers ${CONTAINERS_RESTART[*]}
       ;;
     1) # failure
+      log_f "${ACME_RESPONSE}" redis_only
       if [[ $ACME_RESPONSE =~ "No registration exists" ]]; then
         log_f "Registration keys are invalid, deleting old keys and restarting..."
         rm ${ACME_BASE}/acme/private/account.key
@@ -268,6 +276,7 @@ while true; do
       exec $(readlink -f "$0")
       ;;
     2) # no change
+      log_f "${ACME_RESPONSE}" redis_only
       if ! diff ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem; then
         log_f "Certificate was not changed, but active certificate does not match the verified certificate, fixing and restarting containers..."
         cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
@@ -280,9 +289,11 @@ while true; do
         cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
         TRIGGER_RESTART=1
       fi
+      log_f "Certificate was not changed"
       [[ ${TRIGGER_RESTART} == 1 ]] && restart_containers ${CONTAINERS_RESTART[*]}
       ;;
     *) # unspecified
+      log_f "${ACME_RESPONSE}" redis_only
       if [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]]; then
         log_f "Error requesting certificate, restoring previous certificate from backup and restarting containers...."
         cp ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ${ACME_BASE}/cert.pem

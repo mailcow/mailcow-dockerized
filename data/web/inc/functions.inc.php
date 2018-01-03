@@ -75,15 +75,15 @@ function generate_tlsa_digest($hostname, $port, $starttls = null) {
   }
   if (empty($starttls)) {
     $context = stream_context_create(array("ssl" => array("capture_peer_cert" => true, 'verify_peer' => false, 'allow_self_signed' => true)));
-    $stream = stream_socket_client('tls://' . $hostname . ':' . $port, $error_nr, $error_msg, 5, STREAM_CLIENT_CONNECT, $context);
-    // error_nr can be 0, so checking against error_msg
-    if ($error_msg) {
+    $stream = stream_socket_client('ssl://' . $hostname . ':' . $port, $error_nr, $error_msg, 5, STREAM_CLIENT_CONNECT, $context);
+    if (!$stream) {
+      $error_msg = isset($error_msg) ? $error_msg : '-';
       return $error_nr . ': ' . $error_msg;
     }
   }
   else {
     $stream = stream_socket_client('tcp://' . $hostname . ':' . $port, $error_nr, $error_msg, 5);
-    if ($error_msg) {
+    if (!$stream) {
       return $error_nr . ': ' . $error_msg;
     }
     $banner = fread($stream, 512 );
@@ -443,14 +443,31 @@ function user_get_alias_details($username) {
   }
   try {
     $data['address'] = $username;
-    $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(`address` SEPARATOR ', '), '&#10008;') AS `aliases` FROM `alias`
+    $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(`address` SEPARATOR ', '), '&#10008;') AS `shared_aliases` FROM `alias`
       WHERE `goto` REGEXP :username_goto
       AND `address` NOT LIKE '@%'
+      AND `goto` != :username_goto2
       AND `address` != :username_address");
-    $stmt->execute(array(':username_goto' => '(^|,)'.$username.'($|,)', ':username_address' => $username));
+    $stmt->execute(array(
+      ':username_goto' => '(^|,)'.$username.'($|,)',
+      ':username_goto2' => $username,
+      ':username_address' => $username
+      ));
     $run = $stmt->fetchAll(PDO::FETCH_ASSOC);
     while ($row = array_shift($run)) {
-      $data['aliases'] = $row['aliases'];
+      $data['shared_aliases'] = $row['shared_aliases'];
+    }
+    $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(`address` SEPARATOR ', '), '&#10008;') AS `direct_aliases` FROM `alias`
+      WHERE `goto` = :username_goto
+      AND `address` != :username_address");
+    $stmt->execute(
+      array(
+      ':username_goto' => $username,
+      ':username_address' => $username
+      ));
+    $run = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    while ($row = array_shift($run)) {
+      $data['direct_aliases'] = $row['direct_aliases'];
     }
     $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(local_part, '@', alias_domain SEPARATOR ', '), '&#10008;') AS `ad_alias` FROM `mailbox`
       LEFT OUTER JOIN `alias_domain` on `target_domain` = `domain`
@@ -466,7 +483,7 @@ function user_get_alias_details($username) {
     while ($row = array_shift($run)) {
       $data['aliases_also_send_as'] = $row['send_as'];
     }
-    $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(`send_as` SEPARATOR ', '), '&#10008;') AS `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `send_as` LIKE '@%';");
+    $stmt = $pdo->prepare("SELECT IFNULL(CONCAT(GROUP_CONCAT(DISTINCT `send_as` SEPARATOR ', '), ', ', GROUP_CONCAT(DISTINCT CONCAT('@',`alias_domain`) SEPARATOR ', ')), '&#10008;') AS `send_as` FROM `sender_acl` LEFT JOIN `alias_domain` ON `alias_domain`.`target_domain` =  TRIM(LEADING '@' FROM `send_as`) WHERE `logged_in_as` = :username AND `send_as` LIKE '@%';");
     $stmt->execute(array(':username' => $username));
     $run = $stmt->fetchAll(PDO::FETCH_ASSOC);
     while ($row = array_shift($run)) {
@@ -851,6 +868,135 @@ function verify_tfa_login($username, $token) {
 	}
   return false;
 }
+function admin_api($action, $data = null) {
+	global $pdo;
+	global $lang;
+	if ($_SESSION['mailcow_cc_role'] != "admin") {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['access_denied'])
+		);
+		return false;
+	}
+	switch ($action) {
+		case "edit":
+      $regen_key = $data['admin_api_regen_key'];
+      $active = (isset($data['active'])) ? 1 : 0;
+      $allow_from = array_map('trim', preg_split( "/( |,|;|\n)/", $data['allow_from']));
+      foreach ($allow_from as $key => $val) {
+        if (!filter_var($val, FILTER_VALIDATE_IP)) {
+          unset($allow_from[$key]);
+          continue;
+        }
+      }
+      $allow_from = implode(',', array_unique(array_filter($allow_from)));
+      if (empty($allow_from)) {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => 'List of allowed IPs cannot be empty'
+        );
+        return false;
+      }
+      $api_key = implode('-', array(
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3)))
+      ));
+      $stmt = $pdo->prepare("INSERT INTO `api` (`username`, `api_key`, `active`, `allow_from`)
+        SELECT `username`, :api_key, :active, :allow_from FROM `admin` WHERE `superadmin`='1' AND `active`='1'
+        ON DUPLICATE KEY UPDATE `active` = :active_u, `allow_from` = :allow_from_u ;");
+      $stmt->execute(array(
+        ':api_key' => $api_key,
+        ':active' => $active,
+        ':active_u' => $active,
+        ':allow_from' => $allow_from,
+        ':allow_from_u' => $allow_from
+      ));
+    break;
+    case "regen_key":
+      $api_key = implode('-', array(
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3)))
+      ));
+      $stmt = $pdo->prepare("UPDATE `api` SET `api_key` = :api_key WHERE `username` IN
+        (SELECT `username` FROM `admin` WHERE `superadmin`='1' AND `active`='1')");
+      $stmt->execute(array(
+        ':api_key' => $api_key
+      ));
+    break;
+  }
+	$_SESSION['return'] = array(
+		'type' => 'success',
+		'msg' => sprintf($lang['success']['admin_modified'])
+	);
+}
+function rspamd_ui($action, $data = null) {
+	global $lang;
+	if ($_SESSION['mailcow_cc_role'] != "admin") {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['access_denied'])
+		);
+		return false;
+	}
+	switch ($action) {
+		case "edit":
+      $rspamd_ui_pass = $data['rspamd_ui_pass'];
+      $rspamd_ui_pass2 = $data['rspamd_ui_pass2'];
+      if (empty($rspamd_ui_pass) || empty($rspamd_ui_pass2)) {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => 'Password cannot be empty'
+        );
+        return false;
+      }
+      if ($rspamd_ui_pass != $rspamd_ui_pass2) {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => 'Passwords do not match'
+        );
+        return false;
+      }
+      if (strlen($rspamd_ui_pass) < 6) {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => 'Please use at least 6 characters for your password'
+        );
+        return false;
+      }
+      $docker_return = docker('rspamd-mailcow', 'post', 'exec', array('cmd' => 'worker_password', 'raw' => $rspamd_ui_pass), array('Content-Type: application/json'));
+      if ($docker_return_array = json_decode($docker_return, true)) {
+        if ($docker_return_array['type'] == 'success') {
+          $_SESSION['return'] = array(
+            'type' => 'success',
+            'msg' => 'Rspamd UI password set successfully'
+          );
+          return true;
+        }
+        else {
+          $_SESSION['return'] = array(
+            'type' => $docker_return_array['type'],
+            'msg' => $docker_return_array['msg']
+          );
+          return false;
+        }
+      }
+      else {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => 'Unknown error'
+        );
+        return false;
+      }
+    break;
+  }
+
+}
 function get_admin_details() {
   // No parameter to be given, only one admin should exist
 	global $pdo;
@@ -860,8 +1006,10 @@ function get_admin_details() {
     return false;
   }
   try {
-    $stmt = $pdo->prepare("SELECT `username`, `modified`, `created` FROM `admin` WHERE `superadmin`='1' AND active='1'");
-    $stmt->execute();
+    $stmt = $pdo->query("SELECT `admin`.`username`, `api`.`active` AS `api_active`, `api`.`api_key`, `api`.`allow_from` FROM `admin`
+      INNER JOIN `api` ON `admin`.`username` = `api`.`username`
+      WHERE `admin`.`superadmin`='1'
+        AND `admin`.`active`='1'");
     $data = $stmt->fetch(PDO::FETCH_ASSOC);
   }
   catch(PDOException $e) {
@@ -924,6 +1072,51 @@ function get_logs($container, $lines = false) {
     }
     else {
       $data = $redis->lRange('SOGO_LOG', 0, intval($lines));
+    }
+    if ($data) {
+      foreach ($data as $json_line) {
+        $data_array[] = json_decode($json_line, true);
+      }
+      return $data_array;
+    }
+  }
+  if ($container == "watchdog-mailcow") {
+    if (!is_numeric($lines)) {
+      list ($from, $to) = explode('-', $lines);
+      $data = $redis->lRange('WATCHDOG_LOG', intval($from), intval($to));
+    }
+    else {
+      $data = $redis->lRange('WATCHDOG_LOG', 0, intval($lines));
+    }
+    if ($data) {
+      foreach ($data as $json_line) {
+        $data_array[] = json_decode($json_line, true);
+      }
+      return $data_array;
+    }
+  }
+  if ($container == "acme-mailcow") {
+    if (!is_numeric($lines)) {
+      list ($from, $to) = explode('-', $lines);
+      $data = $redis->lRange('ACME_LOG', intval($from), intval($to));
+    }
+    else {
+      $data = $redis->lRange('ACME_LOG', 0, intval($lines));
+    }
+    if ($data) {
+      foreach ($data as $json_line) {
+        $data_array[] = json_decode($json_line, true);
+      }
+      return $data_array;
+    }
+  }
+  if ($container == "api-mailcow") {
+    if (!is_numeric($lines)) {
+      list ($from, $to) = explode('-', $lines);
+      $data = $redis->lRange('API_LOG', intval($from), intval($to));
+    }
+    else {
+      $data = $redis->lRange('API_LOG', 0, intval($lines));
     }
     if ($data) {
       foreach ($data as $json_line) {

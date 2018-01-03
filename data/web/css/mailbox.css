@@ -35,3 +35,11 @@ table.footable>tbody>tr.footable-empty>td {
 .inputMissingAttr {
   border-color: #FF4136;
 }
+.dns-found {
+  max-width: 300px;
+  word-break: break-all;
+}
+.dns-recommended {
+  max-width: 150px;
+  word-break: break-all;
+}

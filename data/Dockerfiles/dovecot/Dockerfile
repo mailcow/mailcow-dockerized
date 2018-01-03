@@ -14,6 +14,16 @@ RUN apt-get update && apt-get -y install \
 	cpanminus \
 	curl \
 	default-libmysqlclient-dev \
+  libjson-webtoken-perl \
+  libcgi-pm-perl \
+  libcrypt-openssl-rsa-perl \
+  libdata-uniqid-perl \
+  libhtml-parser-perl \
+  libmail-imapclient-perl \
+  libparse-recdescent-perl \
+  libsys-meminfo-perl \
+  libtest-mockobject-perl \
+  libwww-perl \
 	libauthen-ntlm-perl \
 	libbz2-dev \
 	libcrypt-ssleay-perl \
