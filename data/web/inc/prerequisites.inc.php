@@ -55,7 +55,7 @@ exit;
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
 
 // Set language
-if (!isset($_SESSION['mailcow_locale'])) {
+if (!isset($_SESSION['mailcow_locale']) && !isset($_COOKIE['mailcow_locale'])) {
   if ($DETECT_LANGUAGE && isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
     $header_lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
     foreach ($AVAILABLE_LANGUAGES as $available_lang) {
@@ -68,8 +68,12 @@ if (!isset($_SESSION['mailcow_locale'])) {
     $_SESSION['mailcow_locale'] = strtolower(trim($DEFAULT_LANG));
   }
 }
+if (isset($_COOKIE['mailcow_locale'])) {
+  $_SESSION['mailcow_locale'] = $_COOKIE['mailcow_locale'];
+}
 if (isset($_GET['lang']) && in_array($_GET['lang'], $AVAILABLE_LANGUAGES)) {
   $_SESSION['mailcow_locale'] = $_GET['lang'];
+  setcookie("mailcow_locale", $_GET['lang'], time()+30758400); // one year
 }
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lang/lang.en.php';
