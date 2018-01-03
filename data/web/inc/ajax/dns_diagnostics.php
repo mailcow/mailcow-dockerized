@@ -73,6 +73,9 @@ if (!isset($autodiscover_config['sieve'])) {
 }
 
 // Init records array
+$spf_link = '<a href="http://www.openspf.org/SPF_Record_Syntax" target="_blank">SPF Record Syntax</a>';
+$dmarc_link = '<a href="http://www.kitterman.com/dmarc/assistant.html" target="_blank">DMARC Assistant</a>';
+
 $records = array();
 $records[] = array(
   $mailcow_hostname,
@@ -164,13 +167,13 @@ $records[] = array(
 $records[] = array(
 	$domain,
 	'TXT',
-	'<a href="http://www.openspf.org/SPF_Record_Syntax" target="_blank">SPF Record Syntax</a>',
+	$spf_link,
 	state_optional
 );
 $records[] = array(
 	'_dmarc.' . $domain,
 	'TXT',
-	'<a href="http://www.kitterman.com/dmarc/assistant.html" target="_blank">DMARC Assistant</a>',
+	$dmarc_link,
 	state_optional
 );
 
