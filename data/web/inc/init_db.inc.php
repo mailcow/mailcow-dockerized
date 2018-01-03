@@ -3,9 +3,9 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "18052017_1017";
+    $db_version = "14112017_2103";
 
-    $stmt = $pdo->query("SHOW TABLES LIKE 'versions'"); 
+    $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
     if ($num_results != 0) {
       $stmt = $pdo->query("SELECT `version` FROM `versions`");
@@ -27,7 +27,13 @@ function init_db_schema() {
       GROUP BY logged_in_as;",
     "grouped_domain_alias_address" => "CREATE VIEW grouped_domain_alias_address (username, ad_alias) AS
       SELECT username, IFNULL(GROUP_CONCAT(local_part, '@', alias_domain SEPARATOR ' '), '') AS ad_alias FROM mailbox
-      LEFT OUTER JOIN alias_domain on target_domain=domain GROUP BY username;"
+      LEFT OUTER JOIN alias_domain on target_domain=domain GROUP BY username;",
+    "sieve_before" => "CREATE VIEW sieve_before (id, username, script_name, script_data) AS
+      SELECT md5(script_data), username, script_name, script_data FROM sieve_filters
+      WHERE filter_type = 'prefilter';",
+    "sieve_after" => "CREATE VIEW sieve_after (id, username, script_name, script_data) AS
+      SELECT md5(script_data), username, script_name, script_data FROM sieve_filters
+      WHERE filter_type = 'postfilter';"
     );
 
     $tables = array(
@@ -56,6 +62,24 @@ function init_db_schema() {
         "keys" => array(
           "primary" => array(
             "" => array("username")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "relayhosts" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "hostname" => "VARCHAR(255) NOT NULL",
+          "username" => "VARCHAR(255) NOT NULL",
+          "password" => "VARCHAR(255) NOT NULL",
+          "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "key" => array(
+            "hostname" => array("hostname")
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
@@ -95,7 +119,7 @@ function init_db_schema() {
           "mailboxes" => "INT(10) NOT NULL DEFAULT '0'",
           "maxquota" => "BIGINT(20) NOT NULL DEFAULT '0'",
           "quota" => "BIGINT(20) NOT NULL DEFAULT '102400'",
-          "transport" => "VARCHAR(255) NOT NULL",
+          "relayhost" => "VARCHAR(255) NOT NULL DEFAULT '0'",
           "backupmx" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "relay_all_recipients" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
@@ -105,6 +129,88 @@ function init_db_schema() {
         "keys" => array(
           "primary" => array(
             "" => array("domain")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "mailbox" => array(
+        "cols" => array(
+          "username" => "VARCHAR(255) NOT NULL",
+          "password" => "VARCHAR(255) NOT NULL",
+          "name" => "VARCHAR(255)",
+          "maildir" => "VARCHAR(255) NOT NULL",
+          "quota" => "BIGINT(20) NOT NULL DEFAULT '102400'",
+          "local_part" => "VARCHAR(255) NOT NULL",
+          "domain" => "VARCHAR(255) NOT NULL",
+          "tls_enforce_in" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "tls_enforce_out" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "kind" => "VARCHAR(100) NOT NULL DEFAULT ''",
+          "multiple_bookings" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "wants_tagged_subject" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
+          "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("username")
+          ),
+          "key" => array(
+            "domain" => array("domain")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "sieve_filters" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "username" => "VARCHAR(255) NOT NULL",
+          "script_desc" => "VARCHAR(255) NOT NULL",
+          "script_name" => "ENUM('active','inactive')",
+          "script_data" => "TEXT NOT NULL",
+          "filter_type" => "ENUM('postfilter','prefilter')",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "key" => array(
+            "username" => array("username"),
+            "script_desc" => array("script_desc")
+          ),
+          "fkey" => array(
+            "fk_username_sieve_global_before" => array(
+              "col" => "username",
+              "ref" => "mailbox.username",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "user_acl" => array(
+        "cols" => array(
+          "username" => "VARCHAR(255) NOT NULL",
+          "spam_alias" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "tls_policy" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "spam_score" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "spam_policy" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "delimiter_action" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "syncjobs" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "eas_reset" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "filters" => "TINYINT(1) NOT NULL DEFAULT '1'",
+        ),
+        "keys" => array(
+          "fkey" => array(
+            "fk_username" => array(
+              "col" => "username",
+              "ref" => "mailbox.username",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
@@ -171,34 +277,6 @@ function init_db_schema() {
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
-      "mailbox" => array(
-        "cols" => array(
-          "username" => "VARCHAR(255) NOT NULL",
-          "password" => "VARCHAR(255) NOT NULL",
-          "name" => "VARCHAR(255)",
-          "maildir" => "VARCHAR(255) NOT NULL",
-          "quota" => "BIGINT(20) NOT NULL DEFAULT '102400'",
-          "local_part" => "VARCHAR(255) NOT NULL",
-          "domain" => "VARCHAR(255) NOT NULL",
-          "tls_enforce_in" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "tls_enforce_out" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "kind" => "VARCHAR(100) NOT NULL DEFAULT ''",
-          "multiple_bookings" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "wants_tagged_subject" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
-          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
-          "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
-        ),
-        "keys" => array(
-          "primary" => array(
-            "" => array("username")
-          ),
-          "key" => array(
-            "domain" => array("domain")
-          )
-        ),
-        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
-      ),
       "domain_admins" => array(
         "cols" => array(
           "username" => "VARCHAR(255) NOT NULL",
@@ -232,6 +310,8 @@ function init_db_schema() {
           "enc1" => "ENUM('TLS','SSL','PLAIN') DEFAULT 'TLS'",
           "delete2duplicates" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "delete1" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "delete2" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "is_running" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "returned_text" => "TEXT",
           "last_run" => "TIMESTAMP NULL DEFAULT NULL",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
@@ -333,7 +413,7 @@ function init_db_schema() {
           "c_path3" => "VARCHAR(255) DEFAULT NULL",
           "c_path4" => "VARCHAR(255) DEFAULT NULL",
           "c_foldername" => "VARCHAR(255) NOT NULL",
-          "c_location" => "INT NULL",
+          "c_location" => "VARCHAR(2048) DEFAULT NULL",
           "c_quick_location" => "VARCHAR(2048) DEFAULT NULL",
           "c_acl_location" => "VARCHAR(2048) DEFAULT NULL",
           "c_folder_type" => "VARCHAR(255) NOT NULL"
@@ -455,6 +535,13 @@ function init_db_schema() {
       $stmt = $pdo->query("SHOW TABLES LIKE '" . $table . "'"); 
       $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
       if ($num_results != 0) {
+        $stmt = $pdo->prepare("SELECT CONCAT('ALTER TABLE ', `table_schema`, '.', `table_name`, ' DROP FOREIGN KEY ', `constraint_name`, ';') AS `FKEY_DROP` FROM `information_schema`.`table_constraints`
+          WHERE `constraint_type` = 'FOREIGN KEY' AND `table_name` = :table;");
+        $stmt->execute(array(':table' => $table));
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        while ($row = array_shift($rows)) {
+          $pdo->query($row['FKEY_DROP']);
+        }
         foreach($properties['cols'] as $column => $type) {
           $stmt = $pdo->query("SHOW COLUMNS FROM `" . $table . "` LIKE '" . $column . "'"); 
           $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -493,6 +580,19 @@ function init_db_schema() {
               $pdo->query("ALTER TABLE `" . $table . "` " . $is_drop . "ADD UNIQUE KEY `" . $key_name . "` (" . $fields . ")");
             }
           }
+          if (strtolower($key_type) == 'fkey') {
+            foreach ($key_content as $key_name => $key_values) {
+              $fields = "`" . implode("`, `", $key_values) . "`";
+              $stmt = $pdo->query("SHOW KEYS FROM `" . $table . "` WHERE Key_name = '" . $key_name . "'"); 
+              $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+              if ($num_results != 0) {
+                $pdo->query("ALTER TABLE `" . $table . "` DROP INDEX `" . $key_name . "`");
+              }
+              @list($table_ref, $field_ref) = explode('.', $key_values['ref']);
+              $pdo->query("ALTER TABLE `" . $table . "` ADD FOREIGN KEY `" . $key_name . "` (" . $key_values['col'] . ") REFERENCES `" . $table_ref . "` (`" . $field_ref . "`)
+                ON DELETE " . $key_values['delete'] . " ON UPDATE " . $key_values['update']);
+            }
+          }
         }
         // Drop all vanished columns
         $stmt = $pdo->query("SHOW COLUMNS FROM `" . $table . "`"); 
@@ -514,6 +614,12 @@ function init_db_schema() {
         }
         if (isset($properties['keys']['key']) && is_array($properties['keys']['key'])) {
           foreach ($properties['keys']['key'] as $key_name => $key_values) {
+             $keys_to_exist[] = $key_name;
+          }
+        }
+        // Index for foreign key must exist
+        if (isset($properties['keys']['fkey']) && is_array($properties['keys']['fkey'])) {
+          foreach ($properties['keys']['fkey'] as $key_name => $key_values) {
              $keys_to_exist[] = $key_name;
           }
         }
@@ -557,6 +663,14 @@ function init_db_schema() {
               $sql .= "UNIQUE KEY `" . $key_name . "` (" . $fields . ")" . ",";
             }
           }
+          elseif (strtolower($key_type) == 'fkey') {
+            foreach ($key_content as $key_name => $key_values) {
+              @list($table_ref, $field_ref) = explode('.', $key_values['ref']);
+              $fields = "`" . implode("`, `", $key_values) . "`";
+              $sql .= "FOREIGN KEY `" . $key_name . "` (" . $key_values['col'] . ") REFERENCES `" . $table_ref . "` (`" . $field_ref . "`)
+                ON DELETE " . $key_values['delete'] . " ON UPDATE " . $key_values['update'] . ",";
+            }
+          }
         }
         $sql = rtrim($sql, ",");
         $sql .= ") " . $properties['attr'];
@@ -573,14 +687,16 @@ function init_db_schema() {
     }
 
     // Inject admin if not exists
+    $stmt = $pdo->query("SELECT NULL FROM `admin`"); 
+    $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+    if ($num_results == 0) {
     $stmt = $pdo->query("INSERT INTO `admin` (`username`, `password`, `superadmin`, `created`, `modified`, `active`)
-      SELECT 'admin', '{SSHA256}K8eVJ6YsZbQCfuJvSUbaQRLr0HPLz5rC9IAp0PAFl0tmNDBkMDc0NDAyOTAxN2Rk', 1, NOW(), NOW(), 1
-        WHERE NOT EXISTS (SELECT * FROM `admin`);");
+      VALUES ('admin', '{SSHA256}K8eVJ6YsZbQCfuJvSUbaQRLr0HPLz5rC9IAp0PAFl0tmNDBkMDc0NDAyOTAxN2Rk', 1, NOW(), NOW(), 1)");
     $stmt = $pdo->query("INSERT INTO `domain_admins` (`username`, `domain`, `created`, `active`)
         SELECT `username`, 'ALL', NOW(), 1 FROM `admin`
           WHERE superadmin='1' AND `username` NOT IN (SELECT `username` FROM `domain_admins`);");
     $stmt = $pdo->query("DELETE FROM `admin` WHERE `username` NOT IN  (SELECT `username` FROM `domain_admins`);");
-
+    }
     // Insert new DB schema version
     $stmt = $pdo->query("REPLACE INTO `versions` (`application`, `version`) VALUES ('db_schema', '" . $db_version . "');"); 
 
@@ -588,6 +704,9 @@ function init_db_schema() {
       'type' => 'success',
       'msg' => 'Database initialisation completed'
     );
+
+    // Fix user_acl
+    $stmt = $pdo->query("INSERT INTO `user_acl` (`username`) SELECT `username` FROM `mailbox` WHERE `kind` = '' AND NOT EXISTS (SELECT `username` FROM `user_acl`);");
   }
   catch (PDOException $e) {
     $_SESSION['return'] = array(

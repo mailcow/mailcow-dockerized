@@ -1,0 +1,21 @@
+<?xml version='1.0' standalone='yes'?>
+
+<extension name="imapflags">
+
+	<command name="mark" />
+
+	<command name="unmark" />
+
+	<command name="setflag">
+		<parameter type="stringlist" name="flag list" />
+	</command>
+
+	<command name="addflag">
+		<parameter type="stringlist" name="flag list" />
+	</command>
+
+	<command name="removeflag">
+		<parameter type="stringlist" name="flag list" />
+	</command>
+
+</extension>

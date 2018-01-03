@@ -4,8 +4,8 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 	exit();
 }
 ?>
-<div class="modal fade" id="addDomainAdminModal" tabindex="-1" role="dialog" aria-hidden="true">
 <!-- add domain admin modal -->
+<div class="modal fade" id="addDomainAdminModal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
@@ -62,3 +62,46 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
     </div>
   </div>
 </div><!-- add domain admin modal -->
+<!-- test relayhost modal -->
+<div class="modal fade" id="testRelayhostModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <h3 class="modal-title"><span class="glyphicon glyphicon-stats"></span> Relayhost</h3>
+      </div>
+      <div class="modal-body">
+          <form class="form-horizontal" id="test_relayhost_form" role="form" method="post">
+            <input type="hidden" class="form-control" name="relayhost_id" id="relayhost_id">
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="mail_from"><?=$lang['admin']['relay_from'];?></label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" name="mail_from" id="mail_from" placeholder="relay@example.org">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <button class="btn btn-default" id="test_relayhost" href="#"><?=$lang['admin']['relay_run'];?></button>
+              </div>
+            </div>
+          </form>
+          <hr>
+          <div id="test_relayhost_result" style="font-size:10pt">-</div>
+      </div>
+    </div>
+  </div>
+</div><!-- test relayhost modal -->
+<!-- priv key modal -->
+<div class="modal fade" id="showDKIMprivKey" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <h3 class="modal-title"><span class="glyphicon glyphicon-lock"></span> Private key</h3>
+      </div>
+      <div class="modal-body">
+      <pre id="priv_key_pre"></pre>
+      </div>
+    </div>
+  </div>
+</div><!-- priv key modal -->

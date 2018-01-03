@@ -1,8 +1,10 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/vars.inc.php';
+$default_autodiscover_config = $autodiscover_config;
 if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/inc/vars.local.inc.php')) {
   include_once $_SERVER['DOCUMENT_ROOT'] . '/inc/vars.local.inc.php';
 }
+$autodiscover_config = array_merge($default_autodiscover_config, $autodiscover_config);
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
 
@@ -13,6 +15,9 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/Yubico.php';
 
 // Autoload composer
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/vendor/autoload.php';
+
+// Load Sieve
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/sieve/SieveParser.php';
 
 // U2F API + T/HOTP API
 $u2f = new u2flib_server\U2F('https://' . $_SERVER['HTTP_HOST']);
@@ -61,10 +66,17 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/lang/lang.en.php';
 include $_SERVER['DOCUMENT_ROOT'] . '/lang/lang.'.$_SESSION['mailcow_locale'].'.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.mailbox.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.customize.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.domain_admin.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.policy.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.dkim.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.fwdhost.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.relayhost.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.fail2ban.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.docker.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/init_db.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/triggers.inc.php';
 init_db_schema();
+if (isset($_SESSION['mailcow_cc_role'])) {
+  set_acl();
+}

@@ -6,10 +6,15 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/footer.php';
 <script src="/js/bootstrap-switch.min.js"></script>
 <script src="/js/bootstrap-slider.min.js"></script>
 <script src="/js/bootstrap-select.min.js"></script>
+<script src="/js/bootstrap-filestyle.min.js"></script>
 <script src="/js/notifications.min.js"></script>
+<script src="/js/numberedtextarea.min.js"></script>
 <script src="/js/u2f-api.js"></script>
 <script src="/js/api.js"></script>
 <script>
+$(window).scroll(function() {
+  sessionStorage.scrollTop = $(this).scrollTop();
+});
 // Select language and reopen active URL without POST
 function setLang(sel) {
   $.post( "<?= $_SERVER['REQUEST_URI']; ?>", {lang: sel} );
@@ -17,11 +22,17 @@ function setLang(sel) {
 }
 
 $(document).ready(function() {
-  function mailcow_alert_box(message, type) {
-    $.notify({message: message},{type: type,placement: {from: "bottom",align: "right"},animate: {enter: 'animated fadeInUp',exit: 'animated fadeOutDown'}});
+  window.mailcow_alert_box = function(message, type) {
+    msg = $('<span/>').html(message).text();
+    if (type == 'danger') {
+      auto_hide = 0;
+    } else {
+      auto_hide = 5000;
+    }
+    $.notify({message: msg},{z_index: 20000, delay: auto_hide, type: type,placement: {from: "bottom",align: "right"},animate: {enter: 'animated fadeInUp',exit: 'animated fadeOutDown'}});
   }
   <?php if (isset($_SESSION['return'])): ?>
-  mailcow_alert_box("<?= $_SESSION['return']['msg']; ?>",  "<?= $_SESSION['return']['type']; ?>");
+  mailcow_alert_box(<?=json_encode($_SESSION['return']['msg']); ?>,  "<?= $_SESSION['return']['type']; ?>");
   <?php endif; unset($_SESSION['return']); ?>
   // Confirm TFA modal
   <?php if (isset($_SESSION['pending_tfa_method'])):?>
@@ -165,7 +176,7 @@ $(document).ready(function() {
     $('#statusTriggerRestartSogo').text('Stopping SOGo workers, this may take a while... ');
     $.ajax({
       method: 'get',
-      url: '/inc/call_sogo_ctrl.php',
+      url: '/inc/ajax/sogo_ctrl.php',
       data: {
         'ajax': true,
         'ACTION': 'stop'
@@ -175,7 +186,7 @@ $(document).ready(function() {
         $('#statusTriggerRestartSogo').append('<br>Starting SOGo...');
         $.ajax({
           method: 'get',
-          url: '/inc/call_sogo_ctrl.php',
+          url: '/inc/ajax/sogo_ctrl.php',
           data: {
             'ajax': true,
             'ACTION': 'start'
@@ -191,6 +202,9 @@ $(document).ready(function() {
 
   // CSRF
   $('<input type="hidden" value="<?= $_SESSION['CSRF']['TOKEN']; ?>">').attr('id', 'csrf_token').attr('name', 'csrf_token').appendTo('form');
+  if (sessionStorage.scrollTop != "undefined") {
+    $(window).scrollTop(sessionStorage.scrollTop);
+  }
 });
 </script>
 

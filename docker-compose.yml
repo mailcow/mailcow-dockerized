@@ -5,14 +5,6 @@ services:
       image: mailcow/unbound:1.0
       build: ./data/Dockerfiles/unbound
       command: /usr/sbin/unbound
-      depends_on:
-        mysql-mailcow:
-          condition: service_healthy
-      healthcheck:
-        test: ["CMD", "nslookup", "google.com", "127.0.0.1"]
-        interval: 30s
-        timeout: 3s
-        retries: 10
       volumes:
         - ./data/conf/unbound/unbound.conf:/etc/unbound/unbound.conf:ro
       restart: always
@@ -23,13 +15,8 @@ services:
             - unbound
 
     mysql-mailcow:
-      image: mariadb:10.1
-      command: mysqld --max_allowed_packet=128M
-      healthcheck:
-        test: ["CMD", "mysqladmin", "ping", "--host", "localhost", "--silent"]
-        interval: 5s
-        timeout: 5s
-        retries: 10
+      image: mariadb:10.2
+      command: mysqld --max_allowed_packet=192M --max-connections=1500 --innodb-strict-mode=0 --skip-host-cache --skip-name-resolve --log-warnings=0
       volumes:
         - mysql-vol-1:/var/lib/mysql/
         - ./data/conf/mysql/:/etc/mysql/conf.d/:ro
@@ -41,7 +28,6 @@ services:
       restart: always
       dns:
         - 172.22.1.254
-      dns_search: mailcow-network
       networks:
         mailcow-network:
           ipv4_address: 172.22.1.250
@@ -50,15 +36,11 @@ services:
 
     redis-mailcow:
       image: redis:alpine
-      depends_on:
-        unbound-mailcow:
-          condition: service_healthy
       volumes:
         - redis-vol-1:/data/
       restart: always
       dns:
         - 172.22.1.254
-      dns_search: mailcow-network
       networks:
         mailcow-network:
           ipv4_address: 172.22.1.249
@@ -66,30 +48,26 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.1
+      image: mailcow/clamd:1.5
       build: ./data/Dockerfiles/clamd
       restart: always
       environment:
         - SKIP_CLAMD=${SKIP_CLAMD:-n}
       dns:
         - 172.22.1.254
-      dns_search: mailcow-network
       networks:
         mailcow-network:
           aliases:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.3
+      image: mailcow/rspamd:1.14
       build: ./data/Dockerfiles/rspamd
-      command: > 
-        /bin/bash -c "
-        sleep 5;
-        /usr/bin/rspamd -f -u _rspamd -g _rspamd
-        "
+      stop_grace_period: 30s
       depends_on:
         - nginx-mailcow
       volumes:
+        - ./data/conf/rspamd/custom/:/etc/rspamd/custom:ro
         - ./data/conf/rspamd/override.d/:/etc/rspamd/override.d:ro
         - ./data/conf/rspamd/local.d/:/etc/rspamd/local.d:ro
         - ./data/conf/rspamd/lua/:/etc/rspamd/lua/:ro
@@ -98,7 +76,6 @@ services:
       restart: always
       dns:
         - 172.22.1.254
-      dns_search: mailcow-network
       hostname: rspamd
       networks:
         mailcow-network:
@@ -107,13 +84,13 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.0
+      image: mailcow/phpfpm:1.5
       build: ./data/Dockerfiles/phpfpm
-      command: "php-fpm -d date.timezone=${TZ}"
+      command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
       volumes:
-        - ./data/web:/web:ro
+        - ./data/web:/web:rw
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
         - dkim-vol-1:/data/dkim
       environment:
@@ -132,18 +109,14 @@ services:
       restart: always
       dns:
         - 172.22.1.254
-      dns_search: mailcow-network
       networks:
         mailcow-network:
           aliases:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.3
+      image: mailcow/sogo:1.10
       build: ./data/Dockerfiles/sogo
-      depends_on:
-        unbound-mailcow:
-          condition: service_healthy
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -155,7 +128,6 @@ services:
       restart: always
       dns:
         - 172.22.1.254
-      dns_search: mailcow-network
       networks:
         mailcow-network:
           ipv4_address: 172.22.1.252
@@ -163,11 +135,10 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.4
+      image: mailcow/dovecot:1.12
       build: ./data/Dockerfiles/dovecot
-      depends_on:
-        unbound-mailcow:
-          condition: service_healthy
+      cap_add:
+        - NET_BIND_SERVICE
       volumes:
         - ./data/conf/dovecot:/usr/local/etc/dovecot
         - ./data/assets/ssl:/etc/ssl/mail/:ro
@@ -186,9 +157,13 @@ services:
         - "${POPS_PORT:-995}:995"
         - "${SIEVE_PORT:-4190}:4190"
       restart: always
+      ulimits:
+        nproc: 65535
+        nofile:
+          soft: 20000
+          hard: 40000
       dns:
         - 172.22.1.254
-      dns_search: mailcow-network
       hostname: ${MAILCOW_HOSTNAME}
       networks:
         mailcow-network:
@@ -196,11 +171,8 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.2
+      image: mailcow/postfix:1.7
       build: ./data/Dockerfiles/postfix
-      depends_on:
-        unbound-mailcow:
-          condition: service_healthy
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
         - ./data/assets/ssl:/etc/ssl/mail/:ro
@@ -217,7 +189,6 @@ services:
       restart: always
       dns:
         - 172.22.1.254
-      dns_search: mailcow-network
       hostname: ${MAILCOW_HOSTNAME}
       networks:
         mailcow-network:
@@ -226,13 +197,9 @@ services:
 
     memcached-mailcow:
       image: memcached:alpine
-      depends_on:
-        unbound-mailcow:
-          condition: service_healthy
       restart: always
       dns:
         - 172.22.1.254
-      dns_search: mailcow-network
       networks:
         mailcow-network:
           aliases:
@@ -242,16 +209,16 @@ services:
       depends_on:
         - sogo-mailcow
         - php-fpm-mailcow
+        - redis-mailcow
       image: nginx:mainline-alpine
-      healthcheck:
-        test: ["CMD", "ping", "php-fpm-mailcow", "-c", "5"]
-        interval: 5s
-        timeout: 5s
-        retries: 10
       command: /bin/sh -c "envsubst < /etc/nginx/conf.d/templates/listen_plain.template > /etc/nginx/conf.d/listen_plain.active &&
         envsubst < /etc/nginx/conf.d/templates/listen_ssl.template > /etc/nginx/conf.d/listen_ssl.active &&
         envsubst < /etc/nginx/conf.d/templates/server_name.template > /etc/nginx/conf.d/server_name.active &&
-        nginx -g 'daemon off;'"
+        nginx -qt &&
+        until ping phpfpm -c1 > /dev/null; do sleep 1; done &&
+        until ping sogo -c1 > /dev/null; do sleep 1; done &&
+        until ping redis -c1 > /dev/null; do sleep 1; done &&
+        exec nginx -g 'daemon off;'"
       environment:
         - HTTPS_PORT=${HTTPS_PORT:-443}
         - HTTP_PORT=${HTTP_PORT:-80}
@@ -267,7 +234,6 @@ services:
       restart: always
       dns:
         - 172.22.1.254
-      dns_search: mailcow-network
       networks:
         mailcow-network:
           ipv4_address: 172.22.1.251
@@ -277,11 +243,11 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.12
+        - mysql-mailcow
+      image: mailcow/acme:1.24
       build: ./data/Dockerfiles/acme
       dns:
         - 172.22.1.254
-      dns_search: mailcow-network
       environment:
         - ADDITIONAL_SAN=${ADDITIONAL_SAN}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
@@ -294,17 +260,16 @@ services:
         - ./data/web/.well-known/acme-challenge:/var/www/acme:rw
         - ./data/assets/ssl:/var/lib/acme/:rw
         - ./data/assets/ssl-example:/var/lib/ssl-example/:ro
-        - /var/run/docker.sock:/var/run/docker.sock:ro
-      # do not restart the container too often. Things get worse when we hit let's encrypt's ratelimit.
-      restart: on-failure:1
+      restart: always
       networks:
         mailcow-network:
           aliases:
             - acme
 
     fail2ban-mailcow:
-      image: mailcow/fail2ban:1.5
+      image: mailcow/fail2ban:1.9
       build: ./data/Dockerfiles/fail2ban
+      stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
         - postfix-mailcow
@@ -315,13 +280,43 @@ services:
       privileged: true
       environment:
         - TZ=${TZ}
-        - SKIP_FAIL2BAN=${SKIP_FAIL2BAN:-no}
+        - SKIP_FAIL2BAN=${SKIP_FAIL2BAN:-n}
       network_mode: "host"
       dns:
         - 172.22.1.254
-      dns_search: mailcow-network
       volumes:
         - /lib/modules:/lib/modules:ro
+
+    watchdog-mailcow:
+      image: mailcow/watchdog:1.10
+      build: ./data/Dockerfiles/watchdog
+      volumes:
+        - vmail-vol-1:/vmail:ro
+      restart: always
+      environment:
+        - DBNAME=${DBNAME}
+        - DBUSER=${DBUSER}
+        - DBPASS=${DBPASS}
+        - USE_WATCHDOG=${USE_WATCHDOG:-n}
+        - WATCHDOG_NOTIFY_EMAIL=${WATCHDOG_NOTIFY_EMAIL}
+        - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
+      networks:
+        mailcow-network:
+          ipv4_address: 172.22.1.248
+          aliases:
+            - watchdog
+
+    dockerapi-mailcow:
+      image: mailcow/dockerapi:1.2
+      restart: always
+      build: ./data/Dockerfiles/dockerapi
+      oom_score_adj: -10
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock:ro
+      networks:
+        mailcow-network:
+          aliases:
+            - dockerapi
 
     ipv6nat:
       image: robbertkl/ipv6nat

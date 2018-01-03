@@ -83,6 +83,9 @@ body.modal-open {
   overflow: inherit;
   padding-right: inherit !important;
 }
+body {
+  font-size:11pt;
+}
 #mailcow-alert {
   position: fixed;
   bottom: 8px;
@@ -98,4 +101,13 @@ legend {
   -ms-user-select: none
   -o-user-select: none;
   user-select: none;
+}
+.navbar .navbar-brand {
+  padding-top: 5px;
+}
+.navbar .navbar-brand img {
+  height: 40px;
+}
+.mailcow-logo img {
+  max-width: 250px;
 }

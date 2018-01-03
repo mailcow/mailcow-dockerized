@@ -1,0 +1,29 @@
+<?xml version='1.0' standalone='yes'?>
+
+<extension name="notify">
+
+	<command name="notify">
+		<parameter type="tag" name="method" regex="method" occurrence="optional">
+			<parameter type="string" name="method-name" />
+		</parameter>
+
+		<parameter type="tag" name="id" regex="id" occurrence="optional">
+			<parameter type="string" name="message-id" />
+		</parameter>
+
+		<parameter type="tag" name="priority" regex="(low|normal|high)" occurrence="optional" />
+
+		<parameter type="tag" name="message" regex="message" occurrence="optional">
+			<parameter type="string" name="message-text" />
+		</parameter>
+	</command>
+
+	<command name="denotify">
+		<parameter type="matchtype" occurrence="optional">
+			<parameter type="string" name="message-id" />
+		</parameter>
+
+		<parameter type="tag" name="priority" regex="(low|normal|high)" occurrence="optional" />
+	</command>
+
+</extension>

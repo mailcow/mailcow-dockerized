@@ -14,7 +14,7 @@ $(document).ready(function() {
     });
     return o;
   };
-  // Collect values of input fields with name "multi_select" an same data-id to js array multi_data[data-id]
+  // Collect values of input fields with name "multi_select" and same data-id to js array multi_data[data-id]
   var multi_data = [];
   $(document).on('change', 'input[name=multi_select]:checkbox', function() {
     if ($(this).is(':checked') && $(this).data('id')) {
@@ -61,11 +61,46 @@ $(document).ready(function() {
     var id = $(this).data('id');
     var api_url = $(this).data('api-url');
     var api_attr = $(this).data('api-attr');
+    if (typeof $(this).data('api-reload-window') !== 'undefined') {
+      api_reload_window = $(this).data('api-reload-window');
+    } else {
+      api_reload_window = true;
+    }
     // If clicked element #edit_selected is in a form with the same data-id as the button,
     // we merge all input fields by {"name":"value"} into api-attr
     if ($(this).closest("form").data('id') == id) {
-      var attr_to_merge = $(this).closest("form").serializeObject();
-      var api_attr = $.extend(api_attr, attr_to_merge)
+      var req_empty = false;
+      $(this).closest("form").find('select, textarea, input').each(function() {
+        if ($(this).prop('required')) {
+          if (!$(this).val() && $(this).prop('disabled') === false) {
+            req_empty = true;
+            $(this).addClass('inputMissingAttr');
+          } else {
+            $(this).removeClass('inputMissingAttr');
+          }
+        }
+        if ($(this).attr("max")) {
+          if ($(this).val() > $(this).attr("max")) {
+            invalid = true;
+            $(this).addClass('inputMissingAttr');
+          } else {
+            if ($(this).attr("min")) {
+              if ($(this).val() < $(this).attr("min")) {
+                invalid = true;
+                $(this).addClass('inputMissingAttr');
+              } else {
+                $(this).removeClass('inputMissingAttr');
+              }
+            }
+          }
+        }
+      });
+      if (!req_empty) {
+        var attr_to_merge = $(this).closest("form").serializeObject();
+        var api_attr = $.extend(api_attr, attr_to_merge)
+      } else {
+        return false;
+      }
     }
     // If clicked element #edit_selected has data-item attribute, it is added to "items"
     if (typeof $(this).data('item') !== 'undefined') {
@@ -77,6 +112,7 @@ $(document).ready(function() {
     }
     if (typeof multi_data[id] == "undefined") return;
     api_items = multi_data[id];
+    // alert(JSON.stringify(api_attr));
     if (Object.keys(api_items).length !== 0) {
       $.ajax({
         type: "POST",
@@ -89,10 +125,11 @@ $(document).ready(function() {
         url: '/api/v1/' + api_url,
         jsonp: false,
         complete: function(data) {
-          // var reponse = (JSON.parse(data.responseText));
-          // console.log(reponse.type);
-          // console.log(reponse.msg);
-          window.location = window.location.href.split("#")[0];
+          var response = (data.responseText);
+          response_obj = JSON.parse(response);
+          if (api_reload_window === true) {
+            window.location = window.location.href.split("#")[0];
+          }
         }
       });
     }
@@ -107,24 +144,40 @@ $(document).ready(function() {
     // If clicked button is in a form with the same data-id as the button,
     // we merge all input fields by {"name":"value"} into api-attr
     if ($(this).closest("form").data('id') == id) {
-      var req_empty = false;
+      var invalid = false;
       $(this).closest("form").find('select, textarea, input').each(function() {
         if ($(this).prop('required')) {
-          if (!$(this).val()) {
-            req_empty = true;
+          if (!$(this).val() && $(this).prop('disabled') === false) {
+            invalid = true;
             $(this).addClass('inputMissingAttr');
           } else {
             $(this).removeClass('inputMissingAttr');
           }
         }
+        if ($(this).attr("max")) {
+          if ($(this).val() > $(this).attr("max")) {
+            invalid = true;
+            $(this).addClass('inputMissingAttr');
+          } else {
+            if ($(this).attr("min")) {
+              if ($(this).val() < $(this).attr("min")) {
+                invalid = true;
+                $(this).addClass('inputMissingAttr');
+              } else {
+                $(this).removeClass('inputMissingAttr');
+              }
+            }
+          }
+        }
       });
-      if (!req_empty) {
+      if (!invalid) {
         var attr_to_merge = $(this).closest("form").serializeObject();
         var api_attr = $.extend(api_attr, attr_to_merge)
       } else {
         return false;
       }
     }
+    // alert(JSON.stringify(api_attr));
     $.ajax({
       type: "POST",
       dataType: "json",

@@ -1,0 +1,14 @@
+<?xml version='1.0' standalone='yes'?>
+
+<extension name="relational">
+
+	<matchtype name="count">
+		<requires type="comparator" name="i;ascii-numeric" regex="i;ascii-numeric" />
+		<parameter type="string" name="relation string" regex="(lt|le|eq|ge|gt|ne)" />
+	</matchtype>
+
+	<matchtype name="value">
+		<parameter type="string" name="relation string" regex="(lt|le|eq|ge|gt|ne)" />
+	</matchtype>
+
+</extension>

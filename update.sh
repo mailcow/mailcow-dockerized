@@ -1,13 +1,10 @@
 #!/bin/bash
 
-if [[ -z $(which curl) ]]; then echo "Cannot find curl, exiting."; exit 1; fi
-if [[ -z $(which docker-compose) ]]; then echo "Cannot find docker-compose, exiting."; exit 1; fi
-if [[ -z $(which docker) ]]; then echo "Cannot find docker, exiting."; exit 1; fi
-if [[ -z $(which git) ]]; then echo "Cannot find git, exiting."; exit 1; fi
-if [[ -z $(which awk) ]]; then echo "Cannot find awk, exiting."; exit 1; fi
-if [[ -z $(which sha1sum) ]]; then echo "Cannot find sha1sum, exiting."; exit 1; fi
+for bin in curl docker-compose docker git awk sha1sum; do
+	if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
+done
 
-CONFIG_ARRAY=("SKIP_LETS_ENCRYPT" "SKIP_CLAMD" "SKIP_IP_CHECK" "SKIP_FAIL2BAN" "ADDITIONAL_SAN" "DOVEADM_PORT")
+CONFIG_ARRAY=("SKIP_LETS_ENCRYPT" "USE_WATCHDOG" "WATCHDOG_NOTIFY_EMAIL" "SKIP_CLAMD" "SKIP_IP_CHECK" "SKIP_FAIL2BAN" "ADDITIONAL_SAN" "DOVEADM_PORT")
 echo >> mailcow.conf
 for option in ${CONFIG_ARRAY[@]}; do
 	if [[ ${option} == "ADDITIONAL_SAN" ]]; then
@@ -24,6 +21,11 @@ for option in ${CONFIG_ARRAY[@]}; do
 		if ! grep -q ${option} mailcow.conf; then
 			echo "Adding new option \"${option}\" to mailcow.conf"
 			echo "DOVEADM_PORT=127.0.0.1:19991" >> mailcow.conf
+		fi
+	elif [[ ${option} == "WATCHDOG_NOTIFY_EMAIL" ]]; then
+		if ! grep -q ${option} mailcow.conf; then
+			echo "Adding new option \"${option}\" to mailcow.conf"
+			echo "WATCHDOG_NOTIFY_EMAIL=" >> mailcow.conf
 		fi
 	elif ! grep -q ${option} mailcow.conf; then
 		echo "Adding new option \"${option}\" to mailcow.conf"
@@ -51,10 +53,11 @@ case "${1}" in
 		git fetch origin ${BRANCH}
 		if ! git diff origin/${BRANCH} --quiet; then
 			echo "Updated code is available."
+			exit 0
 		else
 			echo "No updates available."
+			exit 3
 		fi
-		exit 0
 	;;
 esac
 
@@ -94,6 +97,7 @@ git commit -am "Before update on ${DATE}" > /dev/null
 echo -e "\e[32mFetching updated code from remote...\e[0m"
 git fetch origin ${BRANCH}
 echo -e "\e[32mMerging local with remote code (recursive, options: \"theirs\", \"patience\"...\e[0m"
+git config merge.defaultToUpstream true
 git merge -Xtheirs -Xpatience -m "After update on ${DATE}"
 # Need to use a variable to not pass return codes of if checks
 MERGE_RETURN=$?
@@ -149,6 +153,11 @@ for container in $(grep -oP "image: \Kmailcow.+" docker-compose.yml); do
 	for existing_tag in ${EXISTING_TAGS[@]}; do
 		V_MAIN_EXISTING=${existing_tag/*.}
 		V_SUB_EXISTING=${existing_tag/*.}
+
+		# Not an integer
+		[[ ! $V_MAIN_EXISTING =~ ^[0-9]+$ ]] && continue
+		[[ ! $V_SUB_EXISTING =~ ^[0-9]+$ ]] && continue
+
 		if [[ $V_MAIN_EXISTING == "latest" ]]; then
 			echo "Found deprecated label \"latest\" for repository $REPOSITORY, it should be deleted."
 			IMGS_TO_DELETE+=($REPOSITORY:$existing_tag)
@@ -166,7 +175,7 @@ if [[ ! -z ${IMGS_TO_DELETE[*]} ]]; then
 	echo
 	echo "    docker rmi ${IMGS_TO_DELETE[*]}"
 	echo
-	read -r -p "Do you want to delete old image tags right now? [Y/n] " response
+	read -r -p "Do you want to delete old image tags right now? [y/N] " response
 	if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 		docker rmi ${IMGS_TO_DELETE[*]}
 	else

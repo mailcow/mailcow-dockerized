@@ -17,6 +17,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 		syslog-ng-core \
 		syslog-ng-mod-redis \
 		dirmngr \
+		netcat \
+		psmisc \
 		wget \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
@@ -26,8 +28,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN mkdir /usr/share/doc/sogo \
 	&& touch /usr/share/doc/sogo/empty.sh \
-	&& apt-key adv --keyserver sks.labs.nic.cz --recv-key A04BE668 \
-	&& echo "deb http://www.axis.cz/linux/debian stretch sogo-v3" > /etc/apt/sources.list.d/sogo.list \
+	&& apt-key adv --keyserver keys.gnupg.net --recv-key 0x810273C4 \
+	&& echo "deb http://packages.inverse.ca/SOGo/nightly/3/debian/ stretch stretch" > /etc/apt/sources.list.d/sogo.list \
 	&& apt-get update && apt-get install -y --force-yes \
 		sogo \
 		sogo-activesync \
@@ -37,7 +39,7 @@ RUN mkdir /usr/share/doc/sogo \
 	&& echo '0 0 * * *   sogo   /usr/sbin/sogo-tool update-autoreply -p /etc/sogo/sieve.creds' >> /etc/cron.d/sogo \
 	&& touch /etc/default/locale
 
-COPY ./reconf-domains.sh /
+COPY ./bootstrap-sogo.sh /
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 

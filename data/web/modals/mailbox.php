@@ -31,7 +31,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
               ?>
               </select>
             </div>
-          </div> 
+          </div>
           <div class="form-group">
             <label class="control-label col-sm-2" for="name"><?=$lang['add']['full_name'];?></label>
             <div class="col-sm-10">
@@ -44,6 +44,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             </label>
             <div class="col-sm-10">
             <input type="text" class="form-control" name="quota" min="1" max="" id="addInputQuota" disabled value="<?=$lang['add']['select_domain'];?>" required>
+            <small class="help-block">min. 1</small>
             </div>
           </div>
           <div class="form-group">
@@ -234,7 +235,10 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="goto"><?=$lang['add']['target_address'];?></label>
 						<div class="col-sm-10">
-							<textarea autocorrect="off" autocapitalize="none" class="form-control" rows="5" id="goto" name="goto" required></textarea>
+							<textarea id="textarea_alias_goto" autocorrect="off" autocapitalize="none" class="form-control" rows="5" id="goto" name="goto" required></textarea>
+							<div class="checkbox">
+                <label><input id="goto_null" type="checkbox" value="1" name="goto_null"> <?=$lang['add']['goto_null'];?></label>
+							</div>
 							<p><?=$lang['add']['target_address_info'];?></p>
 						</div>
 					</div>
@@ -302,3 +306,217 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
     </div>
   </div>
 </div><!-- add domain alias modal -->
+<!-- add sync job modal -->
+<div class="modal fade" id="addSyncJobModalAdmin" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <h3 class="modal-title"><?=$lang['add']['syncjob'];?></h3>
+      </div>
+      <div class="modal-body">
+        <p class="help-block"><?=$lang['add']['syncjob_hint'];?></p>
+				<form class="form-horizontal" role="form" data-id="add_syncjob">
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="username"><?=$lang['add']['username'];?>:</label>
+            <div class="col-sm-10">
+              <select id="addSelectUsername" name="username" id="username" required>
+              <?php
+              $domains = mailbox('get', 'domains');
+              if (!empty($domains)) {
+                foreach ($domains as $domain) {
+                  $mailboxes = mailbox('get', 'mailboxes', $domain);
+                  foreach ($mailboxes as $mailbox) {
+                    echo "<option>".htmlspecialchars($mailbox)."</option>";
+                  }
+                }
+              }
+              ?>
+              </select>
+            </div>
+          </div> 
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="host1"><?=$lang['add']['hostname'];?></label>
+						<div class="col-sm-10">
+						<input type="text" class="form-control" name="host1" id="host1" required>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="port1"><?=$lang['add']['port'];?></label>
+						<div class="col-sm-10">
+						<input type="number" class="form-control" name="port1" id="port1" min="1" max="65535" value="143" required>
+            <small class="help-block">1-65535</small>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="user1"><?=$lang['add']['username'];?></label>
+						<div class="col-sm-10">
+						<input type="text" class="form-control" name="user1" id="user1" required>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="password1"><?=$lang['add']['password'];?></label>
+						<div class="col-sm-10">
+						<input type="password" class="form-control" name="password1" id="password1" required>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="enc1"><?=$lang['add']['enc_method'];?></label>
+						<div class="col-sm-10">
+							<select name="enc1" id="enc1" title="<?=$lang['add']['select'];?>" required>
+                <option selected>TLS</option>
+                <option>SSL</option>
+                <option>PLAIN</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="mins_interval"><?=$lang['add']['mins_interval'];?></label>
+						<div class="col-sm-10">
+              <input type="number" class="form-control" name="mins_interval" min="10" max="3600" value="20" required>
+              <small class="help-block">10-3600</small>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="subfolder2"><?=$lang['edit']['subfolder2'];?></label>
+						<div class="col-sm-10">
+						<input type="text" class="form-control" name="subfolder2" id="subfolder2" value="External">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="maxage"><?=$lang['edit']['maxage'];?></label>
+						<div class="col-sm-10">
+						<input type="number" class="form-control" name="maxage" id="maxage" min="0" max="32000" value="0">
+            <small class="help-block">0-32000</small>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="exclude"><?=$lang['add']['exclude'];?></label>
+						<div class="col-sm-10">
+						<input type="text" class="form-control" name="exclude" id="exclude" value="(?i)spam|(?i)junk">
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<div class="checkbox">
+							<label><input type="checkbox" value="1" name="delete2duplicates" checked> <?=$lang['add']['delete2duplicates'];?></label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<div class="checkbox">
+							<label><input type="checkbox" value="1" name="delete1"> <?=$lang['add']['delete1'];?></label>
+							</div>
+						</div>
+					</div>
+          <div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<div class="checkbox">
+							<label><input type="checkbox" value="1" name="delete2"> <?=$lang['add']['delete2'];?></label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<div class="checkbox">
+							<label><input type="checkbox" value="1" name="delete2"> <?=$lang['add']['delete2'];?></label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<div class="checkbox">
+							<label><input type="checkbox" value="1" name="active" checked> <?=$lang['add']['active'];?></label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+              <button class="btn btn-default" id="add_item" data-id="add_syncjob" data-api-url='add/syncjob' data-api-attr='{}' href="#"><?=$lang['admin']['add'];?></button>
+						</div>
+					</div>
+				</form>
+      </div>
+    </div>
+  </div>
+</div><!-- add sync job modal -->
+<!-- add add_filter modal -->
+<div class="modal fade" id="addFilterModalAdmin" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <h3 class="modal-title">Filter</h3>
+      </div>
+      <div class="modal-body">
+				<form class="form-horizontal" role="form" data-id="add_filter">
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="username"><?=$lang['add']['username'];?>:</label>
+            <div class="col-sm-10">
+              <select id="addSelectUsername" name="username" id="username" required>
+              <?php
+              $domains = mailbox('get', 'domains');
+              if (!empty($domains)) {
+                foreach ($domains as $domain) {
+                  $mailboxes = mailbox('get', 'mailboxes', $domain);
+                  foreach ($mailboxes as $mailbox) {
+                    echo "<option>".htmlspecialchars($mailbox)."</option>";
+                  }
+                }
+              }
+              ?>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="filter_type"><?=$lang['add']['sieve_type'];?>:</label>
+            <div class="col-sm-10">
+              <select id="addFilterType" name="filter_type" id="filter_type" required>
+                <option value="prefilter">Prefilter</option>
+                <option value="postfilter">Postfilter</option>
+              </select>
+            </div>
+          </div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="script_desc"><?=$lang['add']['sieve_desc'];?>:</label>
+						<div class="col-sm-10">
+						<input type="text" class="form-control" name="script_desc" id="script_desc" required maxlength="255">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="script_data">Script:</label>
+						<div class="col-sm-10">
+							<textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control" rows="20" id="script_data" name="script_data" required></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+              <p class="help-block"><?=$lang['add']['activate_filter_warn'];?></p>
+							<div class="checkbox">
+							<label><input type="checkbox" value="1" name="active" checked> <?=$lang['add']['active'];?></label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10" id="add_filter_btns">
+              <button class="btn btn-default" id="validate_sieve" href="#"><?=$lang['add']['validate'];?></button>
+              <button class="btn btn-success" id="add_item" data-id="add_filter" data-api-url='add/filter' data-api-attr='{}' href="#" disabled><?=$lang['admin']['add'];?></button>
+						</div>
+					</div>
+				</form>
+      </div>
+    </div>
+  </div>
+</div><!-- add add_filter modal -->
+<!-- log modal -->
+<div class="modal fade" id="syncjobLogModal" tabindex="-1" role="dialog" aria-labelledby="syncjobLogModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header"><h4 class="modal-title">Log</h4></div>
+      <div class="modal-body">
+        <textarea class="form-control" rows="20" id="logText" spellcheck="false"></textarea>
+      </div>
+    </div>
+  </div>
+</div><!-- log modal -->

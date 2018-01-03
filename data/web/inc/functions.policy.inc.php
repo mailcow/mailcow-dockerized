@@ -1,5 +1,4 @@
 <?php
-
 function policy($_action, $_scope, $_data = null) {
 	global $pdo;
 	global $redis;
@@ -33,7 +32,7 @@ function policy($_action, $_scope, $_data = null) {
             $object_list = "whitelist_from";
           }
           $object_from = preg_replace('/\.+/', '.', rtrim(preg_replace("/\.\*/", "*", trim(strtolower($_data['object_from']))), '.'));
-          if (!ctype_alnum(str_replace(array('@', '.', '-', '*'), '', $object_from))) {
+          if (!ctype_alnum(str_replace(array('@', '_', '.', '-', '*'), '', $object_from))) {
             $_SESSION['return'] = array(
               'type' => 'danger',
               'msg' => sprintf($lang['danger']['policy_list_from_invalid'])
@@ -99,6 +98,13 @@ function policy($_action, $_scope, $_data = null) {
             );
             return false;
           }
+          if (!isset($_SESSION['acl']['spam_policy']) || $_SESSION['acl']['spam_policy'] != "1" ) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => sprintf($lang['danger']['access_denied'])
+            );
+            return false;
+          }
           if ($_data['object_list'] == "bl") {
             $object_list = "blacklist_from";
           }
@@ -106,7 +112,7 @@ function policy($_action, $_scope, $_data = null) {
             $object_list = "whitelist_from";
           }
           $object_from = preg_replace('/\.+/', '.', rtrim(preg_replace("/\.\*/", "*", trim(strtolower($_data['object_from']))), '.'));
-          if (!ctype_alnum(str_replace(array('@', '.', '-', '*'), '', $object_from))) {
+          if (!ctype_alnum(str_replace(array('@', '_', '.', '-', '*'), '', $object_from))) {
             $_SESSION['return'] = array(
               'type' => 'danger',
               'msg' => sprintf($lang['danger']['policy_list_from_invalid'])
@@ -232,6 +238,13 @@ function policy($_action, $_scope, $_data = null) {
           }
           else {
             $prefids = $_data['prefid'];
+          }
+          if (!isset($_SESSION['acl']['spam_policy']) || $_SESSION['acl']['spam_policy'] != "1" ) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => sprintf($lang['danger']['access_denied'])
+            );
+            return false;
           }
           foreach ($prefids as $prefid) {
             if (!is_numeric($prefid)) {

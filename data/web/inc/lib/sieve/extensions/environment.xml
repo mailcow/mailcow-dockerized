@@ -1,0 +1,13 @@
+<?xml version='1.0' standalone='yes'?>
+
+<extension name="environment">
+
+	<test name="environment">
+		<parameter type="matchtype" occurrence="optional" />
+		<parameter type="comparator" occurrence="optional" />
+		<parameter type="string" name="name"
+		 regex="(domain|host|location|name|phase|remote-host|remote-ip|version|vnd\..+)" />
+		<parameter type="stringlist" name="key-list" />
+	</test>
+
+</extension>

@@ -1,0 +1,9 @@
+<?xml version='1.0' standalone='yes'?>
+
+<extension name="fileinto">
+
+	<command name="fileinto">
+		<parameter type="string" name="folder" />
+	</command>
+
+</extension>

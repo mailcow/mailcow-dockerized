@@ -1,0 +1,28 @@
+<?xml version='1.0' standalone='yes'?>
+
+<extension name="date">
+
+	<test name="date">
+		<parameter type="matchtype" occurrence="optional" />
+		<parameter type="comparator" occurrence="optional" />
+		<parameter type="tag" name="zone" regex="(zone|originalzone)" occurrence="optional">
+			<parameter type="string" name="time-zone" follows="zone" />
+		</parameter>
+		<parameter type="string" name="header-name" />
+		<parameter type="string" case="ignore" name="date-part"
+		 regex="(year|month|day|date|julian|hour|minute|second|time|iso8601|std11|zone|weekday)" />
+		<parameter type="stringlist" name="key-list" />
+	</test>
+
+	<test name="currentdate">
+		<parameter type="matchtype" occurrence="optional" />
+		<parameter type="comparator" occurrence="optional" />
+		<parameter type="tag" name="zone" regex="zone" occurrence="optional">
+			<parameter type="string" name="time-zone" />
+		</parameter>
+		<parameter type="string" case="ignore" name="date-part"
+		 regex="(year|month|day|date|julian|hour|minute|second|time|iso8601|std11|zone|weekday)" />
+		<parameter type="stringlist" name="key-list" />
+	</test>
+
+</extension>

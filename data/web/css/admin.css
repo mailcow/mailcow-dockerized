@@ -42,3 +42,18 @@ body.modal-open {
   -webkit-transform:rotateX(180deg);
   transform:rotateX(180deg);
 }
+.anchor {
+  display: block;
+  height: 65px;
+  margin-top: -65px;
+  visibility: hidden;
+}
+.scrollboxFixed {
+  position: fixed;
+  top: 65px;
+  z-index: 1;
+}
+.thumbnail img {
+  min-height:100px;
+  height:100px;
+}

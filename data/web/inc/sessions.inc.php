@@ -1,6 +1,8 @@
 <?php
 // Start session
 ini_set("session.cookie_httponly", 1);
+ini_set('session.gc_maxlifetime', $SESSION_LIFETIME);
+
 if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && 
   strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) == "https") {
   ini_set("session.cookie_secure", 1);
@@ -13,7 +15,7 @@ elseif (isset($_SERVER['HTTPS'])) {
 else {
   $IS_HTTPS = false;
 }
-session_set_cookie_params($SESSION_LIFETIME, '/', '', $IS_HTTPS, true);
+// session_set_cookie_params($SESSION_LIFETIME, '/', '', $IS_HTTPS, true);
 session_start();
 if (!isset($_SESSION['CSRF']['TOKEN'])) {
   $_SESSION['CSRF']['TOKEN'] = bin2hex(random_bytes(32));
@@ -23,6 +25,9 @@ if (!isset($_SESSION['CSRF']['TOKEN'])) {
 if (!isset($_SESSION['SESS_REMOTE_UA'])) {
   $_SESSION['SESS_REMOTE_UA'] = $_SERVER['HTTP_USER_AGENT'];
 }
+
+// Update session cookie
+// setcookie(session_name() ,session_id(), time() + $SESSION_LIFETIME);
 
 // Check session
 function session_check() {
@@ -48,6 +53,7 @@ if (isset($_SESSION['mailcow_cc_role']) && session_check() === false) {
     'msg' => 'Form token invalid or timed out'
   );
   $_POST = array();
+  $_FILES = array();
 }
 
 // Handle logouts
@@ -56,6 +62,8 @@ if (isset($_POST["logout"])) {
     $_SESSION["mailcow_cc_username"] = $_SESSION["dual-login"]["username"];
     $_SESSION["mailcow_cc_role"] = $_SESSION["dual-login"]["role"];
     unset($_SESSION["dual-login"]);
+    header("Location: /mailbox.php");
+    exit();
   }
   else {
     session_regenerate_id(true);

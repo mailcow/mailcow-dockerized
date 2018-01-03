@@ -1,0 +1,29 @@
+<?xml version='1.0' standalone='yes'?>
+
+<extension name="imap4flags">
+
+	<command name="setflag">
+		<parameter type="stringlist" name="flag list" />
+	</command>
+
+	<command name="addflag">
+		<parameter type="stringlist" name="flag list" />
+	</command>
+
+	<command name="removeflag">
+		<parameter type="stringlist" name="flag list" />
+	</command>
+
+	<test name="hasflag">
+		<parameter type="matchtype" occurrence="optional" />
+		<parameter type="comparator" occurrence="optional" />
+		<parameter type="stringlist" name="flag list" />
+	</test>
+
+	<tagged-argument extends="(fileinto|keep)">
+		<parameter type="tag" name="flags" regex="flags" occurrence="optional">
+			<parameter type="stringlist" name="flag list" />
+		</parameter>
+	</tagged-argument>
+
+</extension>
