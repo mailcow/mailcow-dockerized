@@ -6,8 +6,11 @@ from threading import Thread
 import docker
 import signal
 import time
+import os
+import re
+import sys
 
-docker_client = docker.DockerClient(base_url='unix://var/run/docker.sock')
+docker_client = docker.DockerClient(base_url='unix://var/run/docker.sock', version='auto')
 app = Flask(__name__)
 api = Api(app)
 
@@ -76,6 +79,18 @@ class container_post(Resource):
               return container.exec_run(["/bin/bash", "-c", "/usr/local/bin/doveadm sieve get -u '" + request.json['username'].replace("'", "'\\''") + "' '" + request.json['script_name'].replace("'", "'\\''") + "'"], user='vmail')
           except Exception as e:
             return jsonify(type='danger', msg=e)
+        elif request.json['cmd'] == 'worker_password' and request.json['raw']:
+          try:
+            for container in docker_client.containers.list(filters={"id": container_id}):
+              hash = container.exec_run(["/bin/bash", "-c", "/usr/bin/rspamadm pw -e -p '" + request.json['raw'].replace("'", "'\\''") + "'"], user='_rspamd')
+              f = open("/access.inc", "w")
+              f.write('enable_password = "' + re.sub('[^0-9a-zA-Z\$]+', '', hash.rstrip()) + '";\n')
+              f.close()
+              container.restart()
+              return jsonify(type='success', msg='command completed successfully')
+          except Exception as e:
+            return jsonify(type='danger', msg=e)
+
         else:
           return jsonify(type='danger', msg='Unknown command')
 
@@ -95,7 +110,7 @@ class GracefulKiller:
     self.kill_now = True
 
 def startFlaskAPI():
-  app.run(debug=False, host='0.0.0.0', port='8080', threaded=True)
+  app.run(debug=False, host='0.0.0.0', port=8080, threaded=True)
 
 api.add_resource(containers_get, '/containers/json')
 api.add_resource(container_get, '/containers/<string:container_id>/json')
@@ -111,3 +126,4 @@ if __name__ == '__main__':
     if killer.kill_now:
       break
   print "Stopping dockerapi-mailcow"
+

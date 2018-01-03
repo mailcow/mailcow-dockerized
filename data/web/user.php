@@ -23,7 +23,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'doma
     </div>
     <hr>
     <div class="row">
-      <div class="col-md-3 col-xs-5 text-right"><?=$lang['tfa']['tfa'];?></div>
+      <div class="col-sm-3 col-xs-5 text-right"><?=$lang['tfa']['tfa'];?></div>
         <div class="col-sm-9 col-xs-7">
           <p id="tfa_pretty"><?=$tfa_data['pretty'];?></p>
             <div id="tfa_additional">
@@ -40,8 +40,8 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'doma
         </div>
     </div>
     <div class="row">
-      <div class="col-md-3 col-xs-5 text-right"><?=$lang['tfa']['set_tfa'];?></div>
-      <div class="col-md-9 col-xs-7">
+      <div class="col-sm-3 col-xs-5 text-right"><?=$lang['tfa']['set_tfa'];?></div>
+      <div class="col-sm-9 col-xs-7">
         <select id="selectTFA" class="selectpicker" title="<?=$lang['tfa']['select'];?>">
           <option value="yubi_otp"><?=$lang['tfa']['yubi_otp'];?></option>
           <option value="u2f"><?=$lang['tfa']['u2f'];?></option>
@@ -105,11 +105,18 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
   $user_get_alias_details = user_get_alias_details($username);
   ?>
   <div class="row">
-    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['aliases'];?>:</div>
+    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['direct_aliases'];?>:</div>
     <div class="col-md-9 col-xs-7">
-    <p><?=$user_get_alias_details['aliases'];?></p>
+    <p><?=$user_get_alias_details['direct_aliases'];?></p>
     </div>
   </div>
+  <div class="row">
+    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['shared_aliases'];?>:</div>
+    <div class="col-md-9 col-xs-7">
+    <p><?=$user_get_alias_details['shared_aliases'];?></p>
+    </div>
+  </div>
+  <hr>
   <div class="row">
     <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['domain_aliases'];?>:</div>
     <div class="col-md-9 col-xs-7">

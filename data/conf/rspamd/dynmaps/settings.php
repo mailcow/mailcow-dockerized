@@ -17,7 +17,7 @@ $opt = [
 ];
 try {
   $pdo = new PDO($dsn, $database_user, $database_pass, $opt);
-  $stmt = $pdo->query("SELECT * FROM `filterconf`");
+  $stmt = $pdo->query("SELECT '1' FROM `filterconf`");
 }
 catch (PDOException $e) {
   echo 'settings { }';

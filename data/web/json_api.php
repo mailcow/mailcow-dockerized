@@ -15,6 +15,41 @@ delete/alias => POST data:
 header('Content-Type: application/json');
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 error_reporting(0);
+
+function api_log($postarray) {
+  global $redis;
+  $data_var = array();
+  foreach ($postarray as $data => &$value) {
+    if ($data == 'csrf_token') {
+      continue;
+    }
+    if ($value = json_decode($value, true)) {
+      unset($value["csrf_token"]);
+      $value = json_encode($value);
+    }
+    $data_var[] = $data . "='" . $value . "'";
+  }
+  try {
+    $log_line = array(
+      'time' => time(),
+      'uri' => $_SERVER['REQUEST_URI'],
+      'method' => $_SERVER['REQUEST_METHOD'],
+      'remote' => $_SERVER['REMOTE_ADDR'],
+      'data' => implode(', ', $data_var)
+    );
+    $redis->lPush('API_LOG', json_encode($log_line));
+  }
+  catch (RedisException $e) {
+    $_SESSION['return'] = array(
+      'type' => 'danger',
+      'msg' => 'Redis: '.$e
+    );
+    return false;
+  }
+}
+
+api_log($_POST);
+
 if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_username'])) {
   if (isset($_GET['query'])) {
 
@@ -522,6 +557,39 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               ));
             }
           break;
+          case "bcc":
+            if (isset($_POST['attr'])) {
+              $attr = (array)json_decode($_POST['attr'], true);
+              if (bcc('add', $attr) === false) {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'error',
+                    'msg' => 'Cannot add item'
+                  ));
+                }
+              }
+              else {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'success',
+                    'msg' => 'Task completed'
+                  ));
+                }
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Cannot find attributes in post data'
+              ));
+            }
+          break;
         }
       break;
       case "get":
@@ -719,6 +787,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               break;
             }
           break;
+
           case "relayhost":
             switch ($object) {
               case "all":
@@ -829,6 +898,54 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 }
                 else {
                   $logs = get_logs('sogo-mailcow');
+                }
+                if (isset($logs) && !empty($logs)) {
+                  echo json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                }
+                else {
+                  echo '{}';
+                }
+              break;
+              case "watchdog":
+                // 0 is first record, so empty is fine
+                if (isset($extra)) {
+                  $extra = preg_replace('/[^\d\-]/i', '', $extra);
+                  $logs = get_logs('watchdog-mailcow', $extra);
+                }
+                else {
+                  $logs = get_logs('watchdog-mailcow');
+                }
+                if (isset($logs) && !empty($logs)) {
+                  echo json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                }
+                else {
+                  echo '{}';
+                }
+              break;
+              case "acme":
+                // 0 is first record, so empty is fine
+                if (isset($extra)) {
+                  $extra = preg_replace('/[^\d\-]/i', '', $extra);
+                  $logs = get_logs('acme-mailcow', $extra);
+                }
+                else {
+                  $logs = get_logs('acme-mailcow');
+                }
+                if (isset($logs) && !empty($logs)) {
+                  echo json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                }
+                else {
+                  echo '{}';
+                }
+              break;
+              case "api":
+                // 0 is first record, so empty is fine
+                if (isset($extra)) {
+                  $extra = preg_replace('/[^\d\-]/i', '', $extra);
+                  $logs = get_logs('api-mailcow', $extra);
+                }
+                else {
+                  $logs = get_logs('api-mailcow');
                 }
                 if (isset($logs) && !empty($logs)) {
                   echo json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
@@ -1034,6 +1151,41 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               break;
             }
           break;
+          case "bcc":
+            switch ($object) {
+              case "all":
+                $bcc_items = bcc('get');
+                if (!empty($bcc_items)) {
+                  foreach ($bcc_items as $bcc_item) {
+                    if ($details = bcc('details', $bcc_item)) {
+                      $data[] = $details;
+                    }
+                    else {
+                      continue;
+                    }
+                  }
+                }
+                if (!isset($data) || empty($data)) {
+                  echo '{}';
+                }
+                else {
+                  echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                }
+              break;
+              default:
+                $data = bcc('details', $object);
+                if (!empty($data)) {
+                  $data[] = $details;
+                }
+                if (!isset($data) || empty($data)) {
+                  echo '{}';
+                }
+                else {
+                  echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                }
+              break;
+            }
+          break;
           case "policy_wl_mailbox":
             switch ($object) {
               default:
@@ -1152,6 +1304,29 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               break;
               default:
                 $data = fwdhost('details', $object);
+                if (!isset($data) || empty($data)) {
+                  echo '{}';
+                }
+                else {
+                  echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                }
+              break;
+            }
+          break;
+          case "quarantaine":
+            // "all" will not print details
+            switch ($object) {
+              case "all":
+                $data = quarantaine('get');
+                if (!isset($data) || empty($data)) {
+                  echo '{}';
+                }
+                else {
+                  echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                }
+              break;
+              default:
+                $data = quarantaine('details', $object);
                 if (!isset($data) || empty($data)) {
                   echo '{}';
                 }
@@ -1428,6 +1603,88 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               $items = (array)json_decode($_POST['items'], true);
               if (is_array($items)) {
                 if (mailbox('delete', 'filter', array('id' => $items)) === false) {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'error',
+                      'msg' => 'Deletion of items/s failed'
+                    ));
+                  }
+                }
+                else {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'success',
+                      'msg' => 'Task completed'
+                    ));
+                  }
+                }
+              }
+              else {
+                echo json_encode(array(
+                  'type' => 'error',
+                  'msg' => 'Cannot find id array in post data'
+                ));
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Cannot find items in post data'
+              ));
+            }
+          break;
+          case "qitem":
+            if (isset($_POST['items'])) {
+              $items = (array)json_decode($_POST['items'], true);
+              if (is_array($items)) {
+                if (quarantaine('delete', array('id' => $items)) === false) {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'error',
+                      'msg' => 'Deletion of items/s failed'
+                    ));
+                  }
+                }
+                else {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'success',
+                      'msg' => 'Task completed'
+                    ));
+                  }
+                }
+              }
+              else {
+                echo json_encode(array(
+                  'type' => 'error',
+                  'msg' => 'Cannot find id array in post data'
+                ));
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Cannot find items in post data'
+              ));
+            }
+          break;
+          case "bcc":
+            if (isset($_POST['items'])) {
+              $items = (array)json_decode($_POST['items'], true);
+              if (is_array($items)) {
+                if (bcc('delete', array('id' => $items)) === false) {
                   if (isset($_SESSION['return'])) {
                     echo json_encode($_SESSION['return']);
                   }
@@ -1919,6 +2176,50 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
       break;
       case "edit":
         switch ($category) {
+          case "bcc":
+            if (isset($_POST['items']) && isset($_POST['attr'])) {
+              $items = (array)json_decode($_POST['items'], true);
+              $attr = (array)json_decode($_POST['attr'], true);
+              $postarray = array_merge(array('id' => $items), $attr);
+              if (is_array($postarray['id'])) {
+                if (bcc('edit', $postarray) === false) {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'error',
+                      'msg' => 'Edit failed'
+                    ));
+                  }
+                  exit();
+                }
+                else {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'success',
+                      'msg' => 'Task completed'
+                    ));
+                  }
+                }
+              }
+              else {
+                echo json_encode(array(
+                  'type' => 'error',
+                  'msg' => 'Incomplete post data'
+                ));
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Incomplete post data'
+              ));
+            }
+          break;
           case "alias":
             if (isset($_POST['items']) && isset($_POST['attr'])) {
               $items = (array)json_decode($_POST['items'], true);
@@ -2128,6 +2429,85 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                   'type' => 'error',
                   'msg' => 'Incomplete post data'
                 ));
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Incomplete post data'
+              ));
+            }
+          break;
+          case "qitem":
+            if (isset($_POST['items']) && isset($_POST['attr'])) {
+              $items = (array)json_decode($_POST['items'], true);
+              $attr = (array)json_decode($_POST['attr'], true);
+              $postarray = array_merge(array('id' => $items), $attr);
+              if (is_array($postarray['id'])) {
+                if (quarantaine('edit', $postarray) === false) {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'error',
+                      'msg' => 'Edit failed'
+                    ));
+                  }
+                  exit();
+                }
+                else {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'success',
+                      'msg' => 'Task completed'
+                    ));
+                  }
+                }
+              }
+              else {
+                echo json_encode(array(
+                  'type' => 'error',
+                  'msg' => 'Incomplete post data'
+                ));
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Incomplete post data'
+              ));
+            }
+          break;
+          case "quarantaine":
+            // Edit settings, does not need IDs
+            if (isset($_POST['attr'])) {
+              $postarray = json_decode($_POST['attr'], true);
+              if (quarantaine('edit', $postarray) === false) {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'error',
+                    'msg' => 'Edit failed'
+                  ));
+                }
+                exit();
+              }
+              else {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'success',
+                    'msg' => 'Task completed'
+                  ));
+                }
               }
             }
             else {
@@ -2364,7 +2744,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               $attr = (array)json_decode($_POST['attr'], true);
               $postarray = array_merge(array('domain' => $items), $attr);
               if (is_array($postarray['domain'])) {
-                if (mailbox('edit', 'domain', $postarray) === false) {
+                if (mailbox('edit', 'domain', $postarray)) {
                   if (isset($_SESSION['return'])) {
                     echo json_encode($_SESSION['return']);
                   }
@@ -2627,6 +3007,41 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             if (isset($_POST['attr'])) {
               $attr = (array)json_decode($_POST['attr'], true);
               if (fail2ban('edit', $attr) === false) {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'error',
+                    'msg' => 'Edit failed'
+                  ));
+                }
+                exit();
+              }
+              else {
+                if (isset($_SESSION['return'])) {
+                  echo json_encode($_SESSION['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'success',
+                    'msg' => 'Task completed'
+                  ));
+                }
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Incomplete post data'
+              ));
+            }
+          break;
+          case "ui_texts":
+            // No items
+            if (isset($_POST['attr'])) {
+              $attr = (array)json_decode($_POST['attr'], true);
+              if (customize('edit', 'ui_texts', $attr) === false) {
                 if (isset($_SESSION['return'])) {
                   echo json_encode($_SESSION['return']);
                 }
