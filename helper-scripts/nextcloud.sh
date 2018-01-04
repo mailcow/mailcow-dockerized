@@ -83,7 +83,7 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
 	  /web/nextcloud/occ config:system:set trusted_proxies 1 --value=172.22.1.0/24; \
 	  /web/nextcloud/occ config:system:set overwritewebroot --value=/nextcloud; \
 	  /web/nextcloud/occ config:system:set overwritehost --value=${MAILCOW_HOSTNAME}; \
-	  /web/nextcloud/occ config:system:set overwriteprotocol --value=https \
+	  /web/nextcloud/occ config:system:set overwriteprotocol --value=https; \
 	  /web/nextcloud/occ config:system:set mail_smtpmode --value=smtp; \
 	  /web/nextcloud/occ config:system:set mail_smtpauthtype --value=LOGIN; \
 	  /web/nextcloud/occ config:system:set mail_from_address --value=nextcloud; \
