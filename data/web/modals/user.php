@@ -161,17 +161,3 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
     </div>
   </div>
 </div><!-- pw change modal -->
-<!-- sieve filter modal -->
-<div class="modal fade" id="userFilterModal" tabindex="-1" role="dialog" aria-labelledby="pwChangeModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
-        <h3 class="modal-title"><?=$lang['user']['active_sieve'];?></h3>
-      </div>
-      <div class="modal-body">
-      <pre id="user_sieve_filter"></pre>
-      </div>
-    </div>
-  </div>
-</div><!-- sieve filter modal -->

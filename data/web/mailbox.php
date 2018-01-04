@@ -20,6 +20,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
       </ul>
     </li>
     <li role="presentation"><a href="#tab-syncjobs" aria-controls="tab-syncjobs" role="tab" data-toggle="tab"><?=$lang['mailbox']['sync_jobs'];?></a></li>
+    <li role="presentation"><a href="#tab-user-filters" aria-controls="tab-user-filters" role="tab" data-toggle="tab"><?=$lang['mailbox']['user_filters'];?></a></li>
     <li role="presentation"><a href="#tab-filters" aria-controls="tab-filters" role="tab" data-toggle="tab"><?=$lang['mailbox']['filters'];?></a></li>
     <li role="presentation"><a href="#tab-bcc" aria-controls="tab-filters" role="tab" data-toggle="tab"><?=$lang['mailbox']['bcc_maps'];?></a></li>
   </ul>
@@ -179,6 +180,25 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             </div>
           </div>
         </div>
+
+        <div role="tabpanel" class="tab-pane" id="tab-user-filters">
+    		<div class="table-responsive">
+                <table class="table table-striped" id="user_filter_table"></table>
+    		</div>
+            <div class="mass-actions-user">
+              <div class="btn-group">
+                <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="user_filter" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
+                <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a id="edit_selected" data-id="user_filter" data-api-url='edit/user_filter' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
+                  <li><a id="edit_selected" data-id="user_filter" data-api-url='edit/user_filter' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a id="delete_selected" data-text="<?=$lang['mailbox']['remove'];?>?" data-id="user_filter" data-api-url='delete/user_filter' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+                </ul>
+                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addFilterModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['create_filter'];?></a>
+              </div>
+            </div>
+    	</div>
 
         <div role="tabpanel" class="tab-pane" id="tab-filters">
           <div class="panel panel-default">
