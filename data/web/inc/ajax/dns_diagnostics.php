@@ -73,6 +73,9 @@ if (!isset($autodiscover_config['sieve'])) {
 }
 
 // Init records array
+$spf_link = '<a href="http://www.openspf.org/SPF_Record_Syntax" target="_blank">SPF Record Syntax</a>';
+$dmarc_link = '<a href="http://www.kitterman.com/dmarc/assistant.html" target="_blank">DMARC Assistant</a>';
+
 $records = array();
 $records[] = array(
   $mailcow_hostname,
@@ -164,13 +167,13 @@ $records[] = array(
 $records[] = array(
 	$domain,
 	'TXT',
-	'<a href="http://www.openspf.org/SPF_Record_Syntax" target="_blank">SPF Record Syntax</a>',
+	$spf_link,
 	state_optional
 );
 $records[] = array(
 	'_dmarc.' . $domain,
 	'TXT',
-	'<a href="http://www.kitterman.com/dmarc/assistant.html" target="_blank">DMARC Assistant</a>',
+	$dmarc_link,
 	state_optional
 );
 
@@ -337,16 +340,18 @@ foreach ($records as $record) {
   foreach ($currents as &$current) {
     if ($current['type'] == 'TXT' &&
       stripos($current['txt'], 'v=dmarc') === 0 &&
-      stripos($current['host'], '_dmarc') === 0) {
+      $record[2] == $dmarc_link) {
         $current['txt'] = str_replace(' ', '', $current['txt']);
         $state = $current[$data_field[$current['type']]] . state_optional;
     }
     elseif ($current['type'] == 'TXT' &&
-      stripos($current['txt'], 'v=spf') === 0) {
+      stripos($current['txt'], 'v=spf' &&
+      $record[2] == $spf_link) === 0) {
         $state = $current[$data_field[$current['type']]] . state_optional;
     }
     elseif ($current['type'] == 'TXT' &&
-      stripos($current['txt'], 'v=dkim') === 0) {
+      stripos($current['txt'], 'v=dkim') === 0 &&
+      stripos($record[2], 'v=dkim') === 0) {
         $current['txt'] = str_replace(' ', '', $current['txt']);
         if ($current[$data_field[$current['type']]] == $record[2]) {
           $state = state_good;
