@@ -1,7 +1,10 @@
 #!/bin/bash
 
 # Wait for MySQL to warm-up
-while mysqladmin ping --host mysql -u${DBUSER} -p${DBPASS}${DBPASS} --silent; do
+while ! mysqladmin ping --host mysql -u${DBUSER} -p${DBPASS} --silent; do
+  echo "Waiting for database to come up..."
+  sleep 2
+done
 
 # Wait until port becomes free and send sig
 until ! nc -z sogo-mailcow 20000;
@@ -101,5 +104,3 @@ chown sogo:sogo -R /var/lib/sogo/
 chmod 600 /var/lib/sogo/GNUstep/Defaults/sogod.plist
 
 exec gosu sogo /usr/sbin/sogod
-
-done
