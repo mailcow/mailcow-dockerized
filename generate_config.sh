@@ -101,6 +101,8 @@ USE_WATCHDOG=n
 # Send notifications by mail (no DKIM signature, sent from watchdog@MAILCOW_HOSTNAME)
 #WATCHDOG_NOTIFY_EMAIL=
 
+LOG_LINES=9999
+
 EOF
 
 mkdir -p data/assets/ssl
