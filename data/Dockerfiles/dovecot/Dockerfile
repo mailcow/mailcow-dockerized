@@ -6,7 +6,7 @@ ENV LC_ALL C
 ENV DOVECOT_VERSION 2.2.33.2
 ENV PIGEONHOLE_VERSION 0.4.21
 
-RUN apt-get update && apt-get -y install \
+RUN apt-get update && apt-get -y --no-install-recommends install \
 	automake \
 	autotools-dev \
 	build-essential \
@@ -56,6 +56,7 @@ RUN apt-get update && apt-get -y install \
 	make \
   procps \
 	supervisor \
+  cron \
 	syslog-ng \
 	syslog-ng-core \
 	syslog-ng-mod-redis \

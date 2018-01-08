@@ -91,7 +91,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.6
+      image: mailcow/phpfpm:1.7
       build: ./data/Dockerfiles/phpfpm
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
@@ -102,6 +102,7 @@ services:
         - dkim-vol-1:/data/dkim
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro
       environment:
+        - LOG_LINES=${LOG_LINES}
         - TZ=${TZ}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -124,13 +125,14 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.12
+      image: mailcow/sogo:1.13
       build: ./data/Dockerfiles/sogo
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
         - TZ=${TZ}
+        - LOG_LINES=${LOG_LINES}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
       volumes:
         - ./data/conf/sogo/:/etc/sogo/
@@ -144,7 +146,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.13
+      image: mailcow/dovecot:1.14
       build: ./data/Dockerfiles/dovecot
       cap_add:
         - NET_BIND_SERVICE
@@ -155,6 +157,7 @@ services:
         - vmail-vol-1:/var/vmail
         - crypt-vol-1:/mail_crypt/
       environment:
+        - LOG_LINES=${LOG_LINES}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
@@ -181,7 +184,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.10
+      image: mailcow/postfix:1.11
       build: ./data/Dockerfiles/postfix
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
@@ -189,6 +192,7 @@ services:
         - postfix-vol-1:/var/spool/postfix
         - crypt-vol-1:/var/lib/zeyple
       environment:
+        - LOG_LINES=${LOG_LINES}
         - TZ=${TZ}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -256,11 +260,12 @@ services:
       depends_on:
         - nginx-mailcow
         - mysql-mailcow
-      image: mailcow/acme:1.26
+      image: mailcow/acme:1.27
       build: ./data/Dockerfiles/acme
       dns:
         - 172.22.1.254
       environment:
+        - LOG_LINES=${LOG_LINES}
         - ADDITIONAL_SAN=${ADDITIONAL_SAN}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
         - DBNAME=${DBNAME}
@@ -300,12 +305,13 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.11
+      image: mailcow/watchdog:1.12
       build: ./data/Dockerfiles/watchdog
       volumes:
         - vmail-vol-1:/vmail:ro
       restart: always
       environment:
+        - LOG_LINES=${LOG_LINES}
         - TZ=${TZ}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}

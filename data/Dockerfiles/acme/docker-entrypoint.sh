@@ -12,7 +12,7 @@ log_f() {
   fi
   redis-cli -h redis LPUSH ACME_LOG "{\"time\":\"$(date +%s)\",\"message\":\"$(printf '%s' "${1}" | \
     tr '%&;$"_[]{}-\r\n' ' ')\"}" > /dev/null
-  redis-cli -h redis LTRIM ACME_LOG 0 9999 > /dev/null
+  redis-cli -h redis LTRIM ACME_LOG 0 ${LOG_LINES} > /dev/null
 }
 
 if [[ "${SKIP_LETS_ENCRYPT}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
