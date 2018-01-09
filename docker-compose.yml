@@ -306,6 +306,8 @@ services:
 
     watchdog-mailcow:
       image: mailcow/watchdog:1.12
+      # Debug
+      #command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog
       volumes:
         - vmail-vol-1:/vmail:ro
