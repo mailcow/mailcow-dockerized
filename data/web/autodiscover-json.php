@@ -12,7 +12,7 @@ if ($_GET['Protocol'] == 'ActiveSync') {
   echo '{"Protocol":"ActiveSync","Url":"' . $autodiscover_config['activesync']['url'] . '"}';
 }
 elseif ($_GET['Protocol'] == 'AutodiscoverV1') {
-  echo '{"Protocol":"AutodiscoverV1","Url":"https://' . $_SERVER['HTTP_HOST'] . '/autodiscover/autodiscover.xml"}';
+  echo '{"Protocol":"AutodiscoverV1","Url":"https://' . $_SERVER['HTTP_HOST'] . '/Autodiscover/Autodiscover.xml"}';
 }
 else {
   http_response_code(400);
