@@ -13,6 +13,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/footer.php';
 <script src="/js/u2f-api.js"></script>
 <script src="/js/api.js"></script>
 <script>
+var loading_text = '<?= $lang['footer']['loading']; ?>'
 $(window).scroll(function() {
   sessionStorage.scrollTop = $(this).scrollTop();
 });
@@ -157,7 +158,7 @@ $(document).ready(function() {
     }
   })();
 
-  // Disable submit after submitting form
+  // Disable submit after submitting form (not API driven buttons)
   $('form').submit(function() {
     if ($('form button[type="submit"]').data('submitted') == '1') {
       return false;
