@@ -333,6 +333,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
           $aliases			= $_data['aliases'];
           $mailboxes    = $_data['mailboxes'];
           $maxquota			= $_data['maxquota'];
+          $restart_sogo = $_data['restart_sogo'];
           $quota				= $_data['quota'];
           if ($maxquota > $quota) {
             $_SESSION['return'] = array(
@@ -416,10 +417,21 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               );
               return false;
             }
-            $_SESSION['return'] = array(
-              'type' => 'success',
-              'msg' => sprintf($lang['success']['domain_added'], htmlspecialchars($domain))
-            );
+            if (!empty($restart_sogo)) {
+              $restart_reponse = json_decode(docker('sogo-mailcow', 'post', 'restart'), true);
+              if ($restart_reponse['type'] == "success") {
+                $_SESSION['return'] = array(
+                  'type' => 'success',
+                  'msg' => sprintf($lang['success']['domain_added'], htmlspecialchars($domain))
+                );
+              }
+              else {
+                $_SESSION['return'] = array(
+                  'type' => 'warning',
+                  'msg' => 'Added domain but failed to restart SOGo, please check your server logs.'
+                );
+              }
+            }
           }
           catch (PDOException $e) {
             mailbox('delete', 'domain', array('domain' => $domain));

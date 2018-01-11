@@ -1,4 +1,15 @@
 $(document).ready(function() {
+  function is_active(elem) {
+    if ($(elem).data('submitted') == '1') {
+      return true;
+    } else {
+      $(elem).text(loading_text);
+      $(elem).attr('data-submitted', '1');
+      function disableF5(e) { if ((e.which || e.keyCode) == 116 || (e.which || e.keyCode) == 82) e.preventDefault(); };
+      $(document).on("keydown", disableF5);
+      return false;
+    }
+  }
   $.fn.serializeObject = function() {
     var o = {};
     var a = this.serializeArray();
@@ -115,6 +126,7 @@ $(document).ready(function() {
     api_items = multi_data[id];
     // alert(JSON.stringify(api_attr));
     if (Object.keys(api_items).length !== 0) {
+      if (is_active($(this))) { return false; }
       $.ajax({
         type: "POST",
         dataType: "json",
@@ -185,6 +197,7 @@ $(document).ready(function() {
         return false;
       }
     }
+    if (is_active($(this))) { return false; }
     // alert(JSON.stringify(api_attr));
     $.ajax({
       type: "POST",
