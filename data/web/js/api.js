@@ -91,12 +91,12 @@ $(document).ready(function() {
           }
         }
         if ($(this).attr("max")) {
-          if ($(this).val() > $(this).attr("max")) {
+          if (Number($(this).val()) > Number($(this).attr("max"))) {
             invalid = true;
             $(this).addClass('inputMissingAttr');
           } else {
             if ($(this).attr("min")) {
-              if ($(this).val() < $(this).attr("min")) {
+              if (Number($(this).val()) < Number($(this).attr("min"))) {
                 invalid = true;
                 $(this).addClass('inputMissingAttr');
               } else {
@@ -175,12 +175,13 @@ $(document).ready(function() {
           }
         }
         if ($(this).attr("max")) {
-          if ($(this).val() > $(this).attr("max")) {
+          if (Number($(this).val()) > Number($(this).attr("max"))) {
+            alert($(this).attr("max"))
             invalid = true;
             $(this).addClass('inputMissingAttr');
           } else {
             if ($(this).attr("min")) {
-              if ($(this).val() < $(this).attr("min")) {
+              if (Number($(this).val()) < Number($(this).attr("min"))) {
                 invalid = true;
                 $(this).addClass('inputMissingAttr');
               } else {
