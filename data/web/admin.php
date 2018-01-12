@@ -79,7 +79,7 @@ $tfa_data = get_tfa();
       </div>
     </div>
 
-    <div class="panel panel-primary">
+    <div class="hidden panel panel-primary">
       <div class="panel-heading">API</div>
       <div class="panel-body">
         <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
