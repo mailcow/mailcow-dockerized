@@ -65,6 +65,8 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
 
 RUN curl https://www.dovecot.org/releases/2.3/dovecot-$DOVECOT_VERSION.tar.gz | tar xvz  \
 	&& cd dovecot-ce-$DOVECOT_VERSION \
+  && curl -L -o src/lib-compression/ostream-zlib.c https://raw.githubusercontent.com/dovecot/core/master/src/lib-compression/ostream-zlib.c \
+  && curl -L -o src/doveadm/doveadm-zlib.c https://raw.githubusercontent.com/dovecot/core/43a6cdb3561dcfc5950542ce62509a7747a977ae/src/doveadm/doveadm-zlib.c \
 	&& ./configure --with-mysql --with-lzma --with-lz4 --with-ssl=openssl --with-notify=inotify --with-storages=mdbox,sdbox,maildir,mbox,imapc,pop3c --with-bzlib --with-zlib \
 	&& make -j3 \
 	&& make install \
