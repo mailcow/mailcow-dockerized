@@ -21,6 +21,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
     </li>
     <li role="presentation"><a href="#tab-syncjobs" aria-controls="tab-syncjobs" role="tab" data-toggle="tab"><?=$lang['mailbox']['sync_jobs'];?></a></li>
     <li role="presentation"><a href="#tab-filters" aria-controls="tab-filters" role="tab" data-toggle="tab"><?=$lang['mailbox']['filters'];?></a></li>
+    <li role="presentation"><a href="#tab-bcc" aria-controls="tab-filters" role="tab" data-toggle="tab"><?=$lang['mailbox']['bcc_maps'];?></a></li>
   </ul>
 
 	<div class="row">
@@ -207,6 +208,33 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
           </div>
         </div>
 
+        <div role="tabpanel" class="tab-pane" id="tab-bcc">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title"><?=$lang['mailbox']['bcc_maps'];?></h3>
+            </div>
+            <p style="margin:10px" class="help-block"><?=$lang['mailbox']['bcc_info'];?></p>
+            <div class="table-responsive">
+              <table class="table table-striped" id="bcc_table"></table>
+            </div>
+            <div class="mass-actions-mailbox">
+              <div class="btn-group">
+                <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="bcc" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
+                <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a id="edit_selected" data-id="bcc" data-api-url='edit/bcc' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
+                  <li><a id="edit_selected" data-id="bcc" data-api-url='edit/bcc' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a id="edit_selected" data-id="bcc" data-api-url='edit/bcc' data-api-attr='{"type":"sender"}' href="#"><?=$lang['mailbox']['bcc_to_sender'];?></a></li>
+                  <li><a id="edit_selected" data-id="bcc" data-api-url='edit/bcc' data-api-attr='{"type":"rcpt"}' href="#"><?=$lang['mailbox']['bcc_to_rcpt'];?></a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a id="delete_selected" data-id="bcc" data-api-url='delete/bcc' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+                </ul>
+                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addBCCModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_bcc_entry'];?></a>
+              </div>
+            </div>
+          </div>
+        </div>
       </div> <!-- /tab-content -->
     </div> <!-- /col-md-12 -->
   </div> <!-- /row -->

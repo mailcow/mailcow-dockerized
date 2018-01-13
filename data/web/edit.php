@@ -608,6 +608,52 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         <?php
         }
     }
+    elseif (isset($_GET['bcc']) && !empty($_GET["bcc"])) {
+        $bcc = intval($_GET["bcc"]);
+        $result = bcc('details', $bcc);
+        if (!empty($result)) {
+          ?>
+          <h4>BCC map</h4>
+          <br />
+          <form class="form-horizontal" data-id="editbcc" role="form" method="post">
+            <input type="hidden" value="0" name="active">
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="bcc_dest">BCC destination</label>
+              <div class="col-sm-10">
+                <textarea id="bcc_dest" class="form-control" autocapitalize="none" autocorrect="off" rows="10" id="bcc_dest" name="bcc_dest" required><?=$result['bcc_dest'];?></textarea>
+                <small>BCC destinations can only be valid email addresses. Separated by whitespace, semicolon, new line or comma.</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="type">Type:</label>
+              <div class="col-sm-10">
+                <select id="addFilterType" name="type" id="type" required>
+                  <option value="sender" <?=($result['type'] == 'sender') ? 'selected' : null;?>>Sender map</option>
+                  <option value="rcpt" <?=($result['type'] == 'rcpt') ? 'selected' : null;?>>Recipient map</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <div class="checkbox">
+                <label><input type="checkbox" value="1" name="active" <?php if (isset($result['active_int']) && $result['active_int']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['active'];?></label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <button class="btn btn-success" id="edit_selected" data-id="editbcc" data-item="<?=$bcc;?>" data-api-url='edit/bcc' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
+              </div>
+            </div>
+          </form>
+        <?php
+        }
+        else {
+        ?>
+          <div class="alert alert-info" role="alert"><?=$lang['info']['no_action'];?></div>
+        <?php
+        }
+    }
   }
   if ($_SESSION['mailcow_cc_role'] == "admin"  || $_SESSION['mailcow_cc_role'] == "domainadmin" || $_SESSION['mailcow_cc_role'] == "user") {
     if (isset($_GET['syncjob']) &&
@@ -722,9 +768,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         <?php
         }
       }
-  }
-  if ($_SESSION['mailcow_cc_role'] == "admin"  || $_SESSION['mailcow_cc_role'] == "domainadmin" || $_SESSION['mailcow_cc_role'] == "user") {
-    if (isset($_GET['filter']) &&
+    elseif (isset($_GET['filter']) &&
       is_numeric($_GET['filter'])) {
         $id = $_GET["filter"];
         $result = mailbox('get', 'filter_details', $id);
@@ -774,7 +818,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           <div class="alert alert-info" role="alert"><?=$lang['info']['no_action'];?></div>
         <?php
         }
-      }
+    }
   }
 }
 else {

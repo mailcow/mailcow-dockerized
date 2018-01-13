@@ -1,5 +1,12 @@
 <?php
-function docker($service_name, $action, $post_action = null, $post_fields = null) {
+function docker($service_name, $action, $attr1 = null, $attr2 = null, $extra_headers = null) {
+  if ($_SESSION['mailcow_cc_role'] != "admin") {
+    $_SESSION['return'] = array(
+      'type' => 'danger',
+      'msg' => sprintf($lang['danger']['access_denied'])
+    );
+    return false;
+  }
   $curl = curl_init();
   curl_setopt($curl, CURLOPT_HTTPHEADER,array( 'Content-Type: application/json' ));
   switch($action) {
@@ -53,13 +60,16 @@ function docker($service_name, $action, $post_action = null, $post_fields = null
       }
     break;
     case 'post':
-      if (!empty($post_action)) {
+      if (!empty($attr1)) {
         $container_id = docker($service_name, 'get_id');
-        if (ctype_xdigit($container_id) && ctype_alnum($post_action)) {
-          curl_setopt($curl, CURLOPT_URL, 'http://dockerapi:8080/containers/' . $container_id . '/' . $post_action);
+        if (ctype_xdigit($container_id) && ctype_alnum($attr1)) {
+          curl_setopt($curl, CURLOPT_URL, 'http://dockerapi:8080/containers/' . $container_id . '/' . $attr1);
           curl_setopt($curl, CURLOPT_POST, 1);
-          if (!empty($post_fields)) {
-            curl_setopt( $curl, CURLOPT_POSTFIELDS, json_encode($post_fields));
+          if (!empty($attr2)) {
+            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($attr2));
+          }
+          if (!empty($extra_headers) && is_array($extra_headers)) {
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $extra_headers);
           }
           curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
           $response = curl_exec($curl);

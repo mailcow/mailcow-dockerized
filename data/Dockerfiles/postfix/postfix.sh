@@ -83,7 +83,11 @@ query = SELECT CONCAT_WS(':', username, password) AS auth_data FROM relayhosts
   WHERE id IN (
     SELECT relayhost FROM domain
       WHERE CONCAT('@', domain) = '%s'
-  );
+      OR '%s' IN (
+        SELECT CONCAT('@', alias_domain) FROM alias_domain
+      )
+  )
+  AND username != '';
 EOF
 
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_alias_domain_catchall_maps.cf
@@ -116,6 +120,28 @@ hosts = mysql
 dbname = ${DBNAME}
 query = SELECT goto FROM alias
   WHERE address='%s'
+    AND active='1';
+EOF
+
+cat <<EOF > /opt/postfix/conf/sql/mysql_recipient_bcc_maps.cf
+user = ${DBUSER}
+password = ${DBPASS}
+hosts = mysql
+dbname = ${DBNAME}
+query = SELECT bcc_dest FROM bcc_maps
+  WHERE local_dest='%s'
+    AND type='rcpt'
+    AND active='1';
+EOF
+
+cat <<EOF > /opt/postfix/conf/sql/mysql_sender_bcc_maps.cf
+user = ${DBUSER}
+password = ${DBPASS}
+hosts = mysql
+dbname = ${DBNAME}
+query = SELECT bcc_dest FROM bcc_maps
+  WHERE local_dest='%s'
+    AND type='sender'
     AND active='1';
 EOF
 

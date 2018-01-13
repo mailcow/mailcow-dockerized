@@ -1,5 +1,4 @@
 <?php
-
 function customize($_action, $_item, $_data = null) {
 	global $redis;
 	global $lang;
@@ -19,7 +18,7 @@ function customize($_action, $_item, $_data = null) {
               if (file_exists($_data['main_logo']['tmp_name']) !== true) {
                 $_SESSION['return'] = array(
                   'type' => 'danger',
-                  'msg' => 'Cannot validate image file: Temporary file not found'
+                  'msg' => $lang['danger']['img_tmp_missing']
                 );
                 return false;
               }
@@ -27,7 +26,7 @@ function customize($_action, $_item, $_data = null) {
               if ($image->valid() !== true) {
                 $_SESSION['return'] = array(
                   'type' => 'danger',
-                  'msg' => 'Cannot validate image file'
+                  'msg' => $lang['danger']['img_invalid']
                 );
                 return false;
               }
@@ -36,7 +35,7 @@ function customize($_action, $_item, $_data = null) {
             catch (ImagickException $e) {
               $_SESSION['return'] = array(
                 'type' => 'danger',
-                'msg' => 'Cannot validate image file'
+                'msg' => $lang['danger']['img_invalid']
               );
               return false;
             }
@@ -44,7 +43,7 @@ function customize($_action, $_item, $_data = null) {
           else {
             $_SESSION['return'] = array(
               'type' => 'danger',
-              'msg' => 'Invalid mime type'
+              'msg' => $lang['danger']['invalid_mime_type']
             );
             return false;
           }
@@ -60,7 +59,7 @@ function customize($_action, $_item, $_data = null) {
           }
           $_SESSION['return'] = array(
             'type' => 'success',
-            'msg' => 'File uploaded successfully'
+            'msg' => $lang['success']['upload_success']
           );
         break;
       }
@@ -78,7 +77,7 @@ function customize($_action, $_item, $_data = null) {
           $apps = (array)$_data['app'];
           $links = (array)$_data['href'];
           $out = array();
-          if (count($apps) == count($links)) {;
+          if (count($apps) == count($links)) {
             for ($i = 0; $i < count($apps); $i++) {
               $out[] = array($apps[$i] => $links[$i]);
             }
@@ -95,7 +94,28 @@ function customize($_action, $_item, $_data = null) {
           }
           $_SESSION['return'] = array(
             'type' => 'success',
-            'msg' => 'Saved changes to app links'
+            'msg' => $lang['success']['app_links']
+          );
+        break;
+        case 'ui_texts':
+          $main_name = $_data['main_name'];
+          $apps_name = $_data['apps_name'];
+          $help_text = $_data['help_text'];
+          try {
+            $redis->set('MAIN_NAME', htmlspecialchars($main_name));
+            $redis->set('APPS_NAME', htmlspecialchars($apps_name));
+            $redis->set('HELP_TEXT', $help_text);
+          }
+          catch (RedisException $e) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => 'Redis: '.$e
+            );
+            return false;
+          }
+          $_SESSION['return'] = array(
+            'type' => 'success',
+            'msg' => $lang['success']['ui_texts']
           );
         break;
       }
@@ -114,7 +134,7 @@ function customize($_action, $_item, $_data = null) {
             if ($redis->del('MAIN_LOGO')) {
               $_SESSION['return'] = array(
                 'type' => 'success',
-                'msg' => 'Reset default logo'
+                'msg' => $lang['success']['reset_main_logo']
               );
               return true;
             }
@@ -156,6 +176,21 @@ function customize($_action, $_item, $_data = null) {
             return false;
           }
         break;
+        case 'ui_texts':
+          try {
+            $data['main_name'] = ($main_name = $redis->get('MAIN_NAME')) ? $main_name : 'mailcow UI';
+            $data['apps_name'] = ($apps_name = $redis->get('APPS_NAME')) ? $apps_name : 'mailcow Apps';
+            $data['help_text'] = ($help_text = $redis->get('HELP_TEXT')) ? $help_text : false;
+            return $data;
+          }
+          catch (RedisException $e) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => 'Redis: '.$e
+            );
+            return false;
+          }
+        break;
         case 'main_logo_specs':
           try {
             $image = new Imagick();
@@ -168,7 +203,7 @@ function customize($_action, $_item, $_data = null) {
           catch (ImagickException $e) {
             $_SESSION['return'] = array(
               'type' => 'danger',
-              'msg' => 'Error: Imagick exception while reading image'
+              'msg' => $lang['danger']['imagick_exception']
             );
             return false;
           }

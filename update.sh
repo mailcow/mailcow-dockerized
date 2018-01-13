@@ -4,8 +4,10 @@ for bin in curl docker-compose docker git awk sha1sum; do
 	if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
 done
 
+[[ ! -f mailcow.conf ]] && { echo "mailcow.conf is missing"; exit 1;}
+
 CONFIG_ARRAY=("SKIP_LETS_ENCRYPT" "USE_WATCHDOG" "WATCHDOG_NOTIFY_EMAIL" "SKIP_CLAMD" "SKIP_IP_CHECK" "SKIP_FAIL2BAN" "ADDITIONAL_SAN" "DOVEADM_PORT")
-echo >> mailcow.conf
+sed -i '$a\' mailcow.conf
 for option in ${CONFIG_ARRAY[@]}; do
 	if [[ ${option} == "ADDITIONAL_SAN" ]]; then
 		if ! grep -q ${option} mailcow.conf; then
@@ -27,6 +29,11 @@ for option in ${CONFIG_ARRAY[@]}; do
 			echo "Adding new option \"${option}\" to mailcow.conf"
 			echo "WATCHDOG_NOTIFY_EMAIL=" >> mailcow.conf
 		fi
+  elif [[ ${option} == "LOG_LINES" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo "LOG_LINES=9999" >> mailcow.conf
+    fi
 	elif ! grep -q ${option} mailcow.conf; then
 		echo "Adding new option \"${option}\" to mailcow.conf"
 		echo "${option}=n" >> mailcow.conf
