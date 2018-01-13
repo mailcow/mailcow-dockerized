@@ -61,7 +61,7 @@ function backup() {
         debian:stretch-slim /bin/tar -cvpzf /backup/backup_vmail.tar.gz /vmail
       ;;&
     redis|all)
-      docker exec -it $(docker ps -qf name=redis) redis-cli save
+      docker exec $(docker ps -qf name=redis) redis-cli save
       docker run --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
         -v $(docker volume ls -qf name=redis):/redis \
@@ -74,14 +74,14 @@ function backup() {
         debian:stretch-slim /bin/tar -cvpzf /backup/backup_rspamd.tar.gz /rspamd
       ;;&
     postfix|all)
-      docker run -it --rm \
+      docker run --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
         -v $(docker volume ls -qf name=postfix):/postfix \
         debian:stretch-slim /bin/tar -cvpzf /backup/backup_postfix.tar.gz /postfix
       ;;&
     mysql|all)
       SQLIMAGE=$(grep -iEo '(mysql|mariadb)\:.+' ${COMPOSE_FILE})
-      docker run -it --rm \
+      docker run --rm \
         --network $(docker network ls -qf name=mailcow) \
         -v $(docker volume ls -qf name=mysql):/var/lib/mysql/ \
         --entrypoint= \
