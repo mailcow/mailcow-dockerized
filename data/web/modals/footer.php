@@ -49,7 +49,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
             <input type="password" class="form-control" name="confirm_password" id="confirm_password" placeholder="<?=$lang['user']['password_now'];?>" autocomplete="off" required>
           </div>
           <hr>
-          <p><?=$lang['tfa']['waiting_usb_register'];?></p>
+          <p id="u2f_status_reg"></p>
           <div class="alert alert-danger" style="display:none" id="u2f_return_code"></div>
           <input type="hidden" name="token" id="u2f_register_data"/>
           <input type="hidden" name="tfa_method" value="u2f">
@@ -146,7 +146,7 @@ if (isset($_SESSION['pending_tfa_method'])):
         case "u2f":
       ?>
         <form role="form" method="post" id="u2f_auth_form">
-          <p><?=$lang['tfa']['waiting_usb_auth'];?></p>
+          <p id="u2f_status_auth"></p>
           <div class="alert alert-danger" style="display:none" id="u2f_return_code"></div>
           <input type="hidden" name="token" id="u2f_auth_data"/>
           <input type="hidden" name="tfa_method" value="u2f">
@@ -183,19 +183,19 @@ if (isset($_SESSION['pending_tfa_method'])):
 endif;
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'admin'):
 ?>
-<div id="RestartSOGo" class="modal fade" role="dialog">
+<div id="RestartContainer" class="modal fade" role="dialog">
   <div class="modal-dialog">
     <div class="modal-content">
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal">&times;</button>
-      <h4 class="modal-title"><?= $lang['footer']['restart_sogo']; ?></h4>
+      <h4 class="modal-title"><?= $lang['footer']['restart_container']; ?> (<code id="containerName"></code>)</h4>
     </div>
     <div class="modal-body">
-      <p><?= $lang['footer']['restart_sogo_info']; ?></p>
+      <p><?= $lang['footer']['restart_container_info']; ?></p>
       <hr>
-      <button class="btn btn-md btn-primary" id="triggerRestartSogo"><?= $lang['footer']['restart_now']; ?></button>
+      <button class="btn btn-md btn-primary" id="triggerRestartContainer"><?= $lang['footer']['restart_now']; ?></button>
       <br><br>
-      <div id="statusTriggerRestartSogo"></div>
+      <div id="statusTriggerRestartContainer"></div>
     </div>
     </div>
   </div>

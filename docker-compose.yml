@@ -2,9 +2,11 @@ version: '2.1'
 services:
 
     unbound-mailcow:
-      image: mailcow/unbound:1.0
+      image: mailcow/unbound:1.1
       build: ./data/Dockerfiles/unbound
       command: /usr/sbin/unbound
+      environment:
+        - TZ=${TZ}
       volumes:
         - ./data/conf/unbound/unbound.conf:/etc/unbound/unbound.conf:ro
       restart: always
@@ -16,11 +18,11 @@ services:
 
     mysql-mailcow:
       image: mariadb:10.2
-      command: mysqld --max_allowed_packet=192M --max-connections=1500 --innodb-strict-mode=0 --skip-host-cache --skip-name-resolve --log-warnings=0
       volumes:
         - mysql-vol-1:/var/lib/mysql/
         - ./data/conf/mysql/:/etc/mysql/conf.d/:ro
       environment:
+        - TZ=${TZ}
         - MYSQL_ROOT_PASSWORD=${DBROOT}
         - MYSQL_DATABASE=${DBNAME}
         - MYSQL_USER=${DBUSER}
@@ -39,6 +41,8 @@ services:
       volumes:
         - redis-vol-1:/data/
       restart: always
+      environment:
+        - TZ=${TZ}
       dns:
         - 172.22.1.254
       networks:
@@ -48,11 +52,12 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.5
+      image: mailcow/clamd:1.6
       build: ./data/Dockerfiles/clamd
       restart: always
       environment:
         - SKIP_CLAMD=${SKIP_CLAMD:-n}
+        - TZ=${TZ}
       dns:
         - 172.22.1.254
       networks:
@@ -61,11 +66,13 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.14
+      image: mailcow/rspamd:1.15
       build: ./data/Dockerfiles/rspamd
       stop_grace_period: 30s
       depends_on:
         - nginx-mailcow
+      environment:
+        - TZ=${TZ}
       volumes:
         - ./data/conf/rspamd/custom/:/etc/rspamd/custom:ro
         - ./data/conf/rspamd/override.d/:/etc/rspamd/override.d:ro
@@ -84,7 +91,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.5
+      image: mailcow/phpfpm:1.7
       build: ./data/Dockerfiles/phpfpm
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
@@ -93,7 +100,10 @@ services:
         - ./data/web:/web:rw
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
         - dkim-vol-1:/data/dkim
+        - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro
       environment:
+        - LOG_LINES=${LOG_LINES}
+        - TZ=${TZ}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
@@ -115,13 +125,14 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.10
+      image: mailcow/sogo:1.13
       build: ./data/Dockerfiles/sogo
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
         - TZ=${TZ}
+        - LOG_LINES=${LOG_LINES}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
       volumes:
         - ./data/conf/sogo/:/etc/sogo/
@@ -135,7 +146,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.12
+      image: mailcow/dovecot:1.14
       build: ./data/Dockerfiles/dovecot
       cap_add:
         - NET_BIND_SERVICE
@@ -146,9 +157,11 @@ services:
         - vmail-vol-1:/var/vmail
         - crypt-vol-1:/mail_crypt/
       environment:
+        - LOG_LINES=${LOG_LINES}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
+        - TZ=${TZ}
       ports:
         - "${DOVEADM_PORT:-127.0.0.1:19991}:12345"
         - "${IMAP_PORT:-143}:143"
@@ -171,7 +184,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.7
+      image: mailcow/postfix:1.11
       build: ./data/Dockerfiles/postfix
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
@@ -179,6 +192,8 @@ services:
         - postfix-vol-1:/var/spool/postfix
         - crypt-vol-1:/var/lib/zeyple
       environment:
+        - LOG_LINES=${LOG_LINES}
+        - TZ=${TZ}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
@@ -228,6 +243,7 @@ services:
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
         - ./data/assets/ssl/:/etc/ssl/mail/:ro
         - ./data/conf/nginx/:/etc/nginx/conf.d/:rw
+        - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro
       ports:
         - "${HTTPS_BIND:-0.0.0.0}:${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
         - "${HTTP_BIND:-0.0.0.0}:${HTTP_PORT:-80}:${HTTP_PORT:-80}"
@@ -244,11 +260,12 @@ services:
       depends_on:
         - nginx-mailcow
         - mysql-mailcow
-      image: mailcow/acme:1.24
+      image: mailcow/acme:1.27
       build: ./data/Dockerfiles/acme
       dns:
         - 172.22.1.254
       environment:
+        - LOG_LINES=${LOG_LINES}
         - ADDITIONAL_SAN=${ADDITIONAL_SAN}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
         - DBNAME=${DBNAME}
@@ -267,7 +284,7 @@ services:
             - acme
 
     fail2ban-mailcow:
-      image: mailcow/fail2ban:1.9
+      image: mailcow/fail2ban:1.10
       build: ./data/Dockerfiles/fail2ban
       stop_grace_period: 30s
       depends_on:
@@ -288,12 +305,16 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.10
+      image: mailcow/watchdog:1.12
+      # Debug
+      #command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog
       volumes:
         - vmail-vol-1:/vmail:ro
       restart: always
       environment:
+        - LOG_LINES=${LOG_LINES}
+        - TZ=${TZ}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
@@ -307,12 +328,15 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:1.2
+      image: mailcow/dockerapi:1.4
       restart: always
       build: ./data/Dockerfiles/dockerapi
       oom_score_adj: -10
+      environment:
+        - TZ=${TZ}
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
+        - ./data/conf/rspamd/override.d/worker-controller-password.inc:/access.inc:rw
       networks:
         mailcow-network:
           aliases:

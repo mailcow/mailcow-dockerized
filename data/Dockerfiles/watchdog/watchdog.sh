@@ -28,19 +28,17 @@ progress() {
   [[ ${CURRENT} -gt ${TOTAL} ]] && return
   [[ ${CURRENT} -lt 0 ]] && CURRENT=0
   PERCENT=$(( 200 * ${CURRENT} / ${TOTAL} % 2 + 100 * ${CURRENT} / ${TOTAL} ))
-  log_msg "${SERVICE} health level: ${PERCENT}% (${CURRENT}/${TOTAL}), health trend: ${DIFF}"
-  log_data "$(printf "%d,%d,%d,%d" ${PERCENT} ${CURRENT} ${TOTAL} ${DIFF})" "${SERVICE}"
+  redis-cli -h redis LPUSH WATCHDOG_LOG "{\"time\":\"$(date +%s)\",\"service\":\"${SERVICE}\",\"lvl\":\"${PERCENT}\",\"hpnow\":\"${CURRENT}\",\"hptotal\":\"${TOTAL}\",\"hpdiff\":\"${DIFF}\"}" > /dev/null
+  log_msg "${SERVICE} health level: ${PERCENT}% (${CURRENT}/${TOTAL}), health trend: ${DIFF}" no_redis
 }
 
 log_msg() {
-	redis-cli -h redis LPUSH WATCHDOG_LOG "{\"time\":\"$(date +%s)\",\"message\":\"$(printf '%s' "${1}")\"}" > /dev/null
+  if [[ ${2} != "no_redis" ]]; then
+    redis-cli -h redis LPUSH WATCHDOG_LOG "{\"time\":\"$(date +%s)\",\"message\":\"$(printf '%s' "${1}" | \
+      tr '%&;$"_[]{}-\r\n' ' ')\"}" > /dev/null
+  fi
+  redis-cli -h redis LTRIM WATCHDOG_LOG 0 ${LOG_LINES} > /dev/null
   echo $(date) $(printf '%s\n' "${1}")
-}
-
-log_data() {
-  [[ -z ${1} ]] && return 1
-  [[ -z ${2} ]] && return 2
-	redis-cli -h redis LPUSH WATCHDOG_DATA "{\"time\":\"$(date +%s)\",\"service\":\"data\",\"$(printf '%s' "${2}")\":\"$(printf '%s' "${1}")\"}" > /dev/null
 }
 
 function mail_error() {
@@ -149,7 +147,7 @@ postfix_checks() {
   while [ ${err_count} -lt ${THRESHOLD} ]; do
 	host_ip=$(get_container_ip postfix-mailcow)
     err_c_cur=${err_count}
-    /usr/lib/nagios/plugins/check_smtp -4 -H ${host_ip} -p 589 -f watchdog -C "RCPT TO:null@localhost" -C DATA -C . -R 250 1>&2; err_count=$(( ${err_count} + $? ))
+    /usr/lib/nagios/plugins/check_smtp -4 -H ${host_ip} -p 589 -f "watchdog@invalid" -C "RCPT TO:null@localhost" -C DATA -C . -R 250 1>&2; err_count=$(( ${err_count} + $? ))
     /usr/lib/nagios/plugins/check_smtp -4 -H ${host_ip} -p 589 -S 1>&2; err_count=$(( ${err_count} + $? ))
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
     [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
@@ -169,7 +167,7 @@ dovecot_checks() {
   while [ ${err_count} -lt ${THRESHOLD} ]; do
     host_ip=$(get_container_ip dovecot-mailcow)
     err_c_cur=${err_count}
-    /usr/lib/nagios/plugins/check_smtp -4 -H ${host_ip} -p 24 -f "watchdog" -C "RCPT TO:<watchdog@invalid>" -L -R "User doesn't exist" 1>&2; err_count=$(( ${err_count} + $? ))
+    /usr/lib/nagios/plugins/check_smtp -4 -H ${host_ip} -p 24 -f "watchdog@invalid" -C "RCPT TO:<watchdog@invalid>" -L -R "User doesn't exist" 1>&2; err_count=$(( ${err_count} + $? ))
     /usr/lib/nagios/plugins/check_imap -4 -H ${host_ip} -p 993 -S -e "OK " 1>&2; err_count=$(( ${err_count} + $? ))
     /usr/lib/nagios/plugins/check_imap -4 -H ${host_ip} -p 143 -e "OK " 1>&2; err_count=$(( ${err_count} + $? ))
     /usr/lib/nagios/plugins/check_tcp -4 -H ${host_ip} -p 10001 -e "VERSION" 1>&2; err_count=$(( ${err_count} + $? ))
@@ -228,27 +226,6 @@ Empty
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
     [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
     progress "Rspamd" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
-    diff_c=0
-    sleep $(( ( RANDOM % 30 )  + 10 ))
-  done
-  return 1
-}
-
-dns_checks() {
-  err_count=0
-  diff_c=0
-  THRESHOLD=28
-  # Reduce error count by 2 after restarting an unhealthy container
-  trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
-  while [ ${err_count} -lt ${THRESHOLD} ]; do
-    host_ip=$(get_container_ip unbound-mailcow)
-    err_c_cur=${err_count}
-    /usr/lib/nagios/plugins/check_dns -H google.com 1>&2; err_count=$(( ${err_count} + ($? * 2)))
-    /usr/lib/nagios/plugins/check_dns -s ${host_ip} -H google.com 1>&2; err_count=$(( ${err_count} + ($? * 2)))
-    dig +dnssec org. @${host_ip} | grep -E 'flags:.+ad' 1>&2; err_count=$(( ${err_count} + ($? * 2)))
-    [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
-    [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
-    progress "Unbound" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
     diff_c=0
     sleep $(( ( RANDOM % 30 )  + 10 ))
   done
@@ -317,17 +294,6 @@ while true; do
     log_msg "Dovecot hit error limit"
     [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${WATCHDOG_NOTIFY_EMAIL}" "dovecot-mailcow"
     echo dovecot-mailcow > /tmp/com_pipe
-  fi
-done
-) &
-BACKGROUND_TASKS+=($!)
-
-(
-while true; do
-  if ! dns_checks; then
-    log_msg "Unbound hit error limit"
-    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${WATCHDOG_NOTIFY_EMAIL}" "unbound-mailcow"
-    #echo unbound-mailcow > /tmp/com_pipe
   fi
 done
 ) &

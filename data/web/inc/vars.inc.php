@@ -68,8 +68,12 @@ $autodiscover_config = array(
 );
 unset($https_port);
 
+// If false, we will use DEFAULT_LANG
+// Uses HTTP_ACCEPT_LANGUAGE header
+$DETECT_LANGUAGE = true;
+
 // Change default language, "de", "en", "es", "nl", "pt", "ru"
-$DEFAULT_LANG = 'en';
+$DEFAULT_LANG = 'de';
 
 // Available languages
 $AVAILABLE_LANGUAGES = array('de', 'en', 'es', 'fr', 'nl', 'pl', 'pt', 'ru', 'it');
@@ -92,13 +96,7 @@ $MAILCOW_APPS = array(
   array(
     'name' => 'SOGo',
     'link' => '/SOGo/',
-    'description' => 'SOGo is a web-based client for email, address book and calendar.'
-  ),
-  // array(
-    // 'name' => 'Roundcube',
-    // 'link' => '/rc/',
-    // 'description' => 'Roundcube is a web-based email client.',
-  // ),
+  )
 );
 
 // Rows until pagination begins
@@ -118,3 +116,7 @@ $OTP_LABEL = "mailcow UI";
 
 // Default "to" address in relay test tool
 $RELAY_TO = "null@hosted.mailcow.de";
+
+// Quarantaine data age in days to keep
+$QUARANTAINE_AGE = 10;
+

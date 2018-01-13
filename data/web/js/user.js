@@ -86,14 +86,14 @@ jQuery(function($){
   function draw_sync_job_table() {
     ft_syncjob_table = FooTable.init('#sync_job_table', {
       "columns": [
-        {"name":"chkbox","title":"","style":{"maxWidth":"40px","width":"40px","text-align":"center"},"filterable": false,"sortable": false,"type":"html"},
+        {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px","text-align":"center"},"filterable": false,"sortable": false,"type":"html"},
         {"sorted": true,"name":"id","title":"ID","style":{"maxWidth":"60px","width":"60px","text-align":"center"}},
         {"name":"server_w_port","title":"Server"},
         {"name":"enc1","title":lang.encryption,"breakpoints":"xs sm"},
         {"name":"user1","title":lang.username},
-        {"name":"exclude","title":lang.excludes,"breakpoints":"xs sm"},
-        {"name":"mins_interval","title":lang.interval + " (min)"},
-        {"name":"last_run","title":lang.last_run,"breakpoints":"xs sm"},
+        {"name":"exclude","title":lang.excludes,"breakpoints":"all"},
+        {"name":"mins_interval","title":lang.interval + " (min)","breakpoints":"all"},
+        {"name":"last_run","title":lang.last_run,"breakpoints":"all"},
         {"name":"log","title":"Log"},
         {"name":"active","filterable": false,"style":{"maxWidth":"70px","width":"70px"},"title":lang.active},
         {"name":"is_running","filterable": false,"style":{"maxWidth":"120px","width":"100px"},"title":lang.status},
