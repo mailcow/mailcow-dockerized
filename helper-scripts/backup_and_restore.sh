@@ -57,33 +57,33 @@ function backup() {
     vmail|all)
       docker run --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
-        -v $(docker volume ls -qf name=vmail):/vmail \
+        -v $(docker volume ls -qf name=vmail-vol-1):/vmail \
         debian:stretch-slim /bin/tar -cvpzf /backup/backup_vmail.tar.gz /vmail
       ;;&
     redis|all)
-      docker exec $(docker ps -qf name=redis) redis-cli save
+      docker exec $(docker ps -qf name=redis-mailcow) redis-cli save
       docker run --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
-        -v $(docker volume ls -qf name=redis):/redis \
+        -v $(docker volume ls -qf name=redis-vol-1):/redis \
         debian:stretch-slim /bin/tar -cvpzf /backup/backup_redis.tar.gz /redis
       ;;&
     rspamd|all)
       docker run --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
-        -v $(docker volume ls -qf name=rspamd):/rspamd \
+        -v $(docker volume ls -qf name=rspamd-vol-1):/rspamd \
         debian:stretch-slim /bin/tar -cvpzf /backup/backup_rspamd.tar.gz /rspamd
       ;;&
     postfix|all)
       docker run --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
-        -v $(docker volume ls -qf name=postfix):/postfix \
+        -v $(docker volume ls -qf name=postfix-vol-1):/postfix \
         debian:stretch-slim /bin/tar -cvpzf /backup/backup_postfix.tar.gz /postfix
       ;;&
     mysql|all)
       SQLIMAGE=$(grep -iEo '(mysql|mariadb)\:.+' ${COMPOSE_FILE})
       docker run --rm \
         --network $(docker network ls -qf name=mailcow) \
-        -v $(docker volume ls -qf name=mysql):/var/lib/mysql/ \
+        -v $(docker volume ls -qf name=mysql-vol-1):/var/lib/mysql/ \
         --entrypoint= \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
         ${SQLIMAGE} /bin/sh -c "mysqldump -hmysql -uroot -p${DBROOT} --all-databases | gzip > /backup/backup_mysql.gz"
