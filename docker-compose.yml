@@ -146,7 +146,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.15
+      image: mailcow/dovecot:1.16
       build: ./data/Dockerfiles/dovecot
       cap_add:
         - NET_BIND_SERVICE
@@ -260,7 +260,7 @@ services:
       depends_on:
         - nginx-mailcow
         - mysql-mailcow
-      image: mailcow/acme:1.27
+      image: mailcow/acme:1.28
       build: ./data/Dockerfiles/acme
       dns:
         - 172.22.1.254

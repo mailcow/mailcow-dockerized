@@ -225,6 +225,7 @@ while true; do
 
   ACME_RESPONSE=$(acme-client \
     -v -e -b -N -n \
+    -a 'https://letsencrypt.org/documents/LE-SA-v1.2-November-15-2017.pdf' \
     -f ${ACME_BASE}/acme/private/account.key \
     -k ${ACME_BASE}/acme/private/privkey.pem \
     -c ${ACME_BASE}/acme \
