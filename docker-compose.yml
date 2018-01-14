@@ -328,7 +328,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:1.4
+      image: mailcow/dockerapi:1.5
       restart: always
       build: ./data/Dockerfiles/dockerapi
       oom_score_adj: -10
