@@ -82,7 +82,7 @@ class container_post(Resource):
         elif request.json['cmd'] == 'worker_password' and request.json['raw']:
           try:
             for container in docker_client.containers.list(filters={"id": container_id}):
-              hash = container.exec_run(["/bin/bash", "-c", "/usr/bin/rspamadm pw -e -p '" + request.json['raw'].replace("'", "'\\''") + "'"], user='_rspamd')
+              hash = container.exec_run(["/bin/bash", "-c", "/usr/bin/rspamadm pw -e -p '" + request.json['raw'].replace("'", "'\\''") + "' 2> /dev/null"], user='_rspamd')
               f = open("/access.inc", "w")
               f.write('enable_password = "' + re.sub('[^0-9a-zA-Z\$]+', '', hash.rstrip()) + '";\n')
               f.close()
