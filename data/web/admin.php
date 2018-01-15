@@ -397,26 +397,26 @@ $tfa_data = get_tfa();
 
     <span class="anchor" id="quarantaine"></span>
     <div class="panel panel-default">
-      <div class="panel-heading">Quarantäne</div>
+      <div class="panel-heading"><?=$lang['admin']['quarantine'];?></div>
       <div class="panel-body">
        <?php $q_data = quarantaine('settings'); ?>
         <form class="form" data-id="quarantaine" role="form" method="post">
           <div class="row">
             <div class="col-sm-6">
               <div class="form-group">
-                <label for="retention_size">Rückhaltungen pro Mailbox:</label>
+                <label for="retention_size"><?=$lang['admin']['quarantine_retention_size'];?></label>
                 <input type="number" class="form-control" id="retention_size" name="retention_size" value="<?=$q_data['retention_size'];?>" required>
               </div>
             </div>
             <div class="col-sm-6">
               <div class="form-group">
-                <label for="max_size">Maximale Größe in MiB (größere Elemente werden verworfen):</label>
+                <label for="max_size"><?=$lang['admin']['quarantine_max_size'];?></label>
                 <input type="number" class="form-control" id="max_size" name="max_size" value="<?=$q_data['max_size'];?>" required>
               </div>
             </div>
           </div>
           <div class="form-group">
-            <label for="exclude_domains">Domains und Alias-Domains ausschließen:</label><br />
+            <label for="exclude_domains"><?=$lang['admin']['quarantine_exclude_domains'];?></label><br />
             <select data-width="100%" id="exclude_domains" name="exclude_domains" class="selectpicker" title="<?=$lang['tfa']['select'];?>" multiple>
               <?php
               foreach (array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains')) as $domain):
