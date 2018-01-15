@@ -73,7 +73,7 @@ if (!isset($autodiscover_config['sieve'])) {
 }
 
 // Init records array
-$spf_link = '<a href="http://www.openspf.org/SPF_Record_Syntax" target="_blank">SPF Record Syntax</a>';
+$spf_link = '<a href="http://www.openspf.org/SPF_Record_Syntax" target="_blank">SPF Record Syntax</a><br /><small>'.$lang['diagnostics']['allow'].' '.$ip.'<br />'.$lang['diagnostics']['allow'].' '.$ip6.'</small>';
 $dmarc_link = '<a href="http://www.kitterman.com/dmarc/assistant.html" target="_blank">DMARC Assistant</a>';
 
 $records = array();
@@ -348,9 +348,14 @@ foreach ($records as $record) {
         $state = $current[$data_field[$current['type']]] . state_optional;
     }
     elseif ($current['type'] == 'TXT' &&
-      stripos($current['txt'], 'v=spf' &&
-      $record[2] == $spf_link) === 0) {
-        $state = $current[$data_field[$current['type']]] . state_optional;
+      stripos($current['txt'], 'v=spf') === 0 &&
+      $record[2] == $spf_link) {
+        $state = state_nomatch;
+        $rslt = get_spf_allowed_hosts($record[0]);
+        if(in_array($ip, $rslt) && in_array($ip6, $rslt)){
+            $state = state_good;
+        }
+        $state .= '<br />' . $current[$data_field[$current['type']]].state_optional;
     }
     elseif ($current['type'] == 'TXT' &&
       stripos($current['txt'], 'v=dkim') === 0 &&
