@@ -541,6 +541,12 @@ $lang['admin']['api_allow_from'] = "IP-Adressen für Zugriff";
 $lang['admin']['api_key'] = "API-Key";
 $lang['admin']['activate_api'] = "API aktivieren";
 $lang['admin']['regen_api_key'] = "API-Key regenerieren";
+
+$lang['admin']['quarantine'] = "Quarantäne";
+$lang['admin']['quarantine_retention_size'] = "Rückhaltungen pro Mailbox:";
+$lang['admin']['quarantine_max_size'] = "Maximale Größe in MiB (größere Elemente werden verworfen):";
+$lang['admin']['quarantine_exclude_domains'] = "Domains und Alias-Domains ausschließen:";
+
 $lang['delete']['remove_forwardinghost_warning'] = '<b>Warnung:</b> Sie entfernen den Weiterleitungs-Host <b>%s</b>!';
 $lang['success']['forwarding_host_removed'] = "Weiterleitungs-Host %s wurde entfernt";
 $lang['success']['forwarding_host_added'] = "Weiterleitungs-Host %s wurde hinzugefügt";

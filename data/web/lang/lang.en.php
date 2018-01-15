@@ -563,6 +563,11 @@ $lang['admin']['api_key'] = "API key";
 $lang['admin']['activate_api'] = "Activate API";
 $lang['admin']['regen_api_key'] = "Regenerate API key";
 
+$lang['admin']['quarantine'] = "Quarantine";
+$lang['admin']['quarantine_retention_size'] = "Retentions per mailbox:";
+$lang['admin']['quarantine_max_size'] = "Maximum size in MiB (larger elements are discarded):";
+$lang['admin']['quarantine_exclude_domains'] = "Exclude domains and alias-domains:";
+
 $lang['admin']['ui_texts'] = "UI labels and texts";
 $lang['admin']['help_text'] = "Override help text below login mask (HTML allowed)";
 $lang['admin']['main_name'] = '"mailcow UI" name';
