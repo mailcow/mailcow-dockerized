@@ -49,7 +49,7 @@
         <?php
         if (isset($_SESSION['mailcow_locale'])) {
         ?>
-        <li class="dropdown">
+        <li class="dropdown<?=(isset($_SESSION['mailcow_locale']) && count($AVAILABLE_LANGUAGES) === 1) ? ' lang-link-disabled"' : '' ?>">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="lang-sm lang-lbl" lang="<?= $_SESSION['mailcow_locale']; ?>"></span><span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
             <?php
