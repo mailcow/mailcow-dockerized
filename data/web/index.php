@@ -43,7 +43,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             <div class="form-group">
               <button type="submit" class="btn btn-success" value="Login"><?= $lang['login']['login']; ?></button>
               <div class="btn-group pull-right">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button type="button" <?=(isset($_SESSION['mailcow_locale']) && count($AVAILABLE_LANGUAGES) === 1) ? 'disabled="true"' : '' ?> class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <span class="lang-sm lang-lbl" lang="<?= $_SESSION['mailcow_locale']; ?>"></span> <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu">
