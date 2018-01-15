@@ -111,3 +111,9 @@ legend {
 .mailcow-logo img {
   max-width: 250px;
 }
+.lang-link-disabled a  {
+	pointer-events: none;
+}
+.lang-link-disabled  {
+	cursor: not-allowed;
+}
