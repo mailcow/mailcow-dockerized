@@ -186,6 +186,7 @@ $(document).ready(function() {
       $(this).prop("disabled",true);
       $(this).html('<span class="glyphicon glyphicon-refresh glyphicon-spin"></span> ');
       $('#statusTriggerRestartContainer').text('Restarting container, this may take a while... ');
+      $('#statusTriggerRestartContainer2').text('Reloading webpage... ');
       $.ajax({
         method: 'get',
         url: '/inc/ajax/container_ctrl.php',
@@ -200,6 +201,9 @@ $(document).ready(function() {
         success: function(data) {
           $('#statusTriggerRestartContainer').append(data);
           $('#triggerRestartContainer').html('<span class="glyphicon glyphicon-ok"></span> ');
+          $('#statusTriggerRestartContainer2').append(data);
+          $('#triggerRestartContainer').html('<span class="glyphicon glyphicon-ok"></span> ');
+          location.reload();
         }
       });
     });

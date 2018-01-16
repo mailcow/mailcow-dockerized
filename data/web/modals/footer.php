@@ -196,6 +196,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'admi
       <button class="btn btn-md btn-primary" id="triggerRestartContainer"><?= $lang['footer']['restart_now']; ?></button>
       <br><br>
       <div id="statusTriggerRestartContainer"></div>
+      <div id="statusTriggerRestartContainer2"></div>
     </div>
     </div>
   </div>
