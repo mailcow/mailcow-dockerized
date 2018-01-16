@@ -1287,6 +1287,18 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
                 return false;
               }
             }
+            else if (isset($_data['tagged_mail_handler']) && $_data['tagged_mail_handler'] == "subfolder") {
+              try {
+                $redis->hSet('RCPT_WANTS_SUBJECT_TAG', $username, 2);
+              }
+              catch (RedisException $e) {
+                $_SESSION['return'] = array(
+                  'type' => 'danger',
+                  'msg' => 'Redis: '.$e
+                );
+                return false;
+              }
+            }
             else {
               try {
                 $redis->hDel('RCPT_WANTS_SUBJECT_TAG', $username);
@@ -2599,11 +2611,15 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             $_data = $_SESSION['mailcow_cc_username'];
           }
           try {
-            if ($redis->hGet('RCPT_WANTS_SUBJECT_TAG', $_data)) {
+            $wants_subject_tag = $redis->hGet('RCPT_WANTS_SUBJECT_TAG', $_data);
+            if ($wants_subject_tag == 1) {
               return "subject";
             }
-            else {
+            elseif ($wants_subject_tag == 2) {
               return "subfolder";
+            }
+            else {
+              return "none";
             }
           }
           catch (RedisException $e) {

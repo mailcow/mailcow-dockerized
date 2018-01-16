@@ -169,6 +169,7 @@ $lang['user']['misc_delete_profile'] = 'Ustawienia innego profilu';
 $lang['user']['tag_handling'] = 'Ustaw obsługę znaczników pocztowych';
 $lang['user']['tag_in_subfolder'] = 'W podfolderze';
 $lang['user']['tag_in_subject'] = 'W temacie';
+$lang['user']['tag_in_none'] = 'Nic nie robić';
 $lang['user']['tag_help_explain'] = 'W podfolderze: tworzy nowy podfolder z nazwą taką jak etykieta, który zostanie umieszczony pod Skrzynką odbiorczą ("Skrzynka odbiorcza/Facebook").<br>
 W temacie: nazwy etykiet zostaną dodane na początku tematów wiadomości, np.: "[Facebook] Moje wiadomości".';
 $lang['user']['tag_help_example'] = 'Przykład adresu email z etykietą: ja<b>+Facebook</b>@example.org';

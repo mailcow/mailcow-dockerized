@@ -167,6 +167,7 @@ $lang['user']['misc_delete_profile'] = 'Impostazioni di altri profili';
 $lang['user']['tag_handling'] = 'Imposta le gestione della mail evidenziate';
 $lang['user']['tag_in_subfolder'] = 'Nella sotto cartella';
 $lang['user']['tag_in_subject'] = 'Nell\'oggetto';
+$lang['user']['tag_in_none'] = "Fare niente";
 $lang['user']['tag_help_explain'] = 'In sotto cartelle: Una nuova cartella dal nome del tag verrà creata sotto INBOX ("INBOX/Facebook").<br />
 Nell\'oggetto: Il nome del tag verrà aggiunto all\'inizio dell\'oggetto mail, esempio: "[Facebook] Meine Neuigkeiten".';
 $lang['user']['tag_help_example'] = 'Esempio di mail con tag: ich<b>+Facebook</b>@example.org';
