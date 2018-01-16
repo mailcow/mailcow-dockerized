@@ -176,6 +176,7 @@ $lang['user']['misc_delete_profile'] = 'Sonstige Kontoeinstellungen';
 $lang['user']['tag_handling'] = 'Umgang mit getaggten E-Mails steuern';
 $lang['user']['tag_in_subfolder'] = 'In Unterordner';
 $lang['user']['tag_in_subject'] = 'In Betreff';
+$lang['user']['tag_in_none'] = 'Nichts tun';
 $lang['user']['tag_help_explain'] = 'Als Unterordner: Es wird ein Ordner mit dem Namen des Tags unterhalb der Inbox erstellt ("INBOX/Facebook").<br>
 In Betreff: Der Name des Tags wird dem Betreff angefügt, etwa "[Facebook] Meine Neuigkeiten".';
 $lang['user']['tag_help_example'] = 'Beispiel für eine getaggte E-Mail-Adresse: ich<b>+Facebook</b>@example.org';
@@ -576,6 +577,7 @@ $lang['admin']['merged_vars_hint'] = 'Ausgegraute Zeilen wurden aus der Datei <c
 $lang['mailbox']['waiting'] = "Wartend";
 $lang['mailbox']['status'] = "Status";
 $lang['mailbox']['running'] = "In Ausführung";
+<<<<<<< HEAD
 
 $lang['admin']['ui_texts'] = "UI Label und Texte";
 $lang['admin']['help_text'] = "Hilfstext unter Login-Maske (HTML zulässig)";
@@ -652,3 +654,5 @@ $lang['mailbox']['bcc_to_rcpt'] = "Map empfängerabhängig verwenden";
 $lang['mailbox']['add_bcc_entry'] = "BCC-Eintrag hinzufügen";
 $lang['mailbox']['bcc_info'] = "Eine empfängerabhängige Map wird verwendet, wenn die BCC-Map Eintragung auf den Eingang einer E-Mail auf das lokale Ziel reagieren soll. Senderabhängige Maps verfahren nach dem gleichen Prinzip.<br/>
   Das lokale Ziel wird bei Fehlzustellungen an ein BCC-Ziel nicht informiert.";
+=======
+>>>>>>> subject_none

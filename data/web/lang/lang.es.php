@@ -144,6 +144,7 @@ $lang['user']['misc_delete_profile'] = 'Otras configuraciones de usuario';
 $lang['user']['tag_handling'] = 'Establecer manejo para el correo etiquetado';
 $lang['user']['tag_in_subfolder'] = 'En subcarpeta';
 $lang['user']['tag_in_subject'] = 'En asunto';
+$lang['user']['tag_in_none'] = 'Hacer nada';
 $lang['user']['tag_help_explain'] = 'En subcarpeta: una nueva subcarpeta llamada como la etiqueta será creada debajo de INBOX ("INBOX/Facebook").<br>
 En asunto: los nombres de las etiquetas serán añadidos al asunto de los correos, ejemplo: "[Facebook] Mis Noticias".';
 $lang['user']['tag_help_example'] = 'Ejemplo de una dirección email etiquetada: mi<b>+Facebook</b>@ejemplo.org';
