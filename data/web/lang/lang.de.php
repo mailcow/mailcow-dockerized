@@ -613,8 +613,7 @@ $lang['success']['items_released'] = "Ausgewählte Objekte wurden an Mailbox ver
 $lang['danger']['imagick_exception'] = "Fataler Bildverarbeitungsfehler";
 
 $lang['quarantaine']['quarantaine'] = "Quarantäne";
-$lang['quarantaine']['qinfo'] = "Das Quarantänesystem speichert abgelehnte Nachrichten in der Datenbank. Dem Sender wird <em>nicht</em> signalisiert, dass seine E-Mail zugestellt wurde.<br />
-  E-Mails mit einer maximalen Größe von 10 MiB werden gespeichert.";
+$lang['quarantaine']['qinfo'] = "Das Quarantänesystem speichert abgelehnte Nachrichten in der Datenbank. Dem Sender wird <em>nicht</em> signalisiert, dass seine E-Mail zugestellt wurde.";
 $lang['quarantaine']['release'] = "Freigeben";
 $lang['quarantaine']['empty'] = 'Keine Einträge';
 $lang['quarantaine']['toggle_all'] = 'Alle auswählen';

@@ -238,7 +238,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             );
             return false;
           }
-          if (!filter_var($mins_interval, FILTER_VALIDATE_INT, array('options' => array('min_range' => 10, 'max_range' => 3600)))) {
+          if (!filter_var($mins_interval, FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 3600)))) {
             $_SESSION['return'] = array(
               'type' => 'danger',
               'msg' => sprintf($lang['danger']['access_denied'])
@@ -1448,7 +1448,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               );
               return false;
             }
-            if (!filter_var($mins_interval, FILTER_VALIDATE_INT, array('options' => array('min_range' => 10, 'max_range' => 3600)))) {
+            if (!filter_var($mins_interval, FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 3600)))) {
               $_SESSION['return'] = array(
                 'type' => 'danger',
                 'msg' => sprintf($lang['danger']['access_denied'])

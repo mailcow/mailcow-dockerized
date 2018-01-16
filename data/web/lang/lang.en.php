@@ -556,6 +556,7 @@ $lang['diagnostics']['dns_records_data'] = 'Correct Data';
 $lang['diagnostics']['dns_records_status'] = 'Current State';
 $lang['diagnostics']['optional'] = 'This record is optional.';
 $lang['diagnostics']['cname_from_a'] = 'Value derived from A/AAAA record. This is supported as long as the record points to the correct resource.';
+$lang['diagnostics']['allow'] = 'Allow %s';
 
 $lang['admin']['relay_from'] = '"From:" address';
 $lang['admin']['api_allow_from'] = "Allow API access from these IPs";
@@ -607,8 +608,7 @@ $lang['success']['items_released'] = "Selected items were released";
 $lang['danger']['imagick_exception'] = "Error: Imagick exception while reading image";
 
 $lang['quarantaine']['quarantaine'] = "Quarantaine";
-$lang['quarantaine']['qinfo'] = "The quarantaine system will save rejected mail to the database, while the sender will <em>not</em> be given the impression of a delivered mail.<br />
-  Only mails up to 10 MiB will be saved in the quarantaine.";
+$lang['quarantaine']['qinfo'] = "The quarantaine system will save rejected mail to the database, while the sender will <em>not</em> be given the impression of a delivered mail.";
 $lang['quarantaine']['release'] = "Release";
 $lang['quarantaine']['empty'] = 'No results';
 $lang['quarantaine']['toggle_all'] = 'Toggle all';
