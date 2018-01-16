@@ -73,111 +73,120 @@ if (!isset($autodiscover_config['sieve'])) {
 }
 
 // Init records array
-$spf_link = '<a href="http://www.openspf.org/SPF_Record_Syntax" target="_blank">SPF Record Syntax</a><br /><small>'.$lang['diagnostics']['allow'].' '.$ip.'<br />'.$lang['diagnostics']['allow'].' '.$ip6.'</small>';
+$spf_link = '<a href="http://www.openspf.org/SPF_Record_Syntax" target="_blank">SPF Record Syntax</a><br />
+  <small>' . sprintf($lang['diagnostics']['allow'], $ip) . '<br />' . sprintf($lang['diagnostics']['allow'], $ip6) . '</small>';
 $dmarc_link = '<a href="http://www.kitterman.com/dmarc/assistant.html" target="_blank">DMARC Assistant</a>';
 
 $records = array();
-if($_SESSION['mailcow_cc_role'] == "admin")
-{
+if ($_SESSION['mailcow_cc_role'] == "admin") {
+  $records[] = array(
+    $mailcow_hostname,
+    'A',
+    $ip
+  );
+  $records[] = array(
+    $ptr,
+    'PTR',
+    $mailcow_hostname
+  );
+  if (!empty($ip6)) {
     $records[] = array(
       $mailcow_hostname,
-      'A',
-      $ip
+      'AAAA',
+      $ip6
     );
     $records[] = array(
-      $ptr,
+      $ptr6,
       'PTR',
       $mailcow_hostname
     );
-    if (!empty($ip6)) {
-      $records[] = array(
-        $mailcow_hostname,
-        'AAAA',
-        $ip6
-      );
-      $records[] = array(
-        $ptr6,
-        'PTR',
-        $mailcow_hostname
-      );
-    }
-    $records[] = array(
-    	'_25._tcp.' . $autodiscover_config['smtp']['server'],
-    	'TLSA',
-    	generate_tlsa_digest($autodiscover_config['smtp']['server'], 25, 1)
-    );
-    $records[] = array(
-    	'_' . $https_port . '._tcp.' . $mailcow_hostname,
-    	'TLSA',
-    	generate_tlsa_digest($mailcow_hostname, $https_port)
-    );
-    $records[] = array(
-    	'_' . $autodiscover_config['pop3']['tlsport'] . '._tcp.' . $autodiscover_config['pop3']['server'],
-    	'TLSA',
-    	generate_tlsa_digest($autodiscover_config['pop3']['server'], $autodiscover_config['pop3']['tlsport'], 1)
-    );
-    $records[] = array(
-    	'_' . $autodiscover_config['imap']['tlsport'] . '._tcp.' . $autodiscover_config['imap']['server'],
-    	'TLSA',
-    	generate_tlsa_digest($autodiscover_config['imap']['server'], $autodiscover_config['imap']['tlsport'], 1)
-    );
-    $records[] = array(
-    	'_' . $autodiscover_config['smtp']['port'] . '._tcp.' . $autodiscover_config['smtp']['server'],
-    	'TLSA',
-    	generate_tlsa_digest($autodiscover_config['smtp']['server'], $autodiscover_config['smtp']['port'])
-    );
-    $records[] = array(
-    	'_' . $autodiscover_config['smtp']['tlsport'] . '._tcp.' . $autodiscover_config['smtp']['server'],
-    	'TLSA',
-    	generate_tlsa_digest($autodiscover_config['smtp']['server'], $autodiscover_config['smtp']['tlsport'], 1)
-    );
-    $records[] = array(
-    	'_' . $autodiscover_config['imap']['port'] . '._tcp.' . $autodiscover_config['imap']['server'],
-    	'TLSA',
-    	generate_tlsa_digest($autodiscover_config['imap']['server'], $autodiscover_config['imap']['port'])
-    );
-    $records[] = array(
-    	'_' . $autodiscover_config['pop3']['port'] . '._tcp.' . $autodiscover_config['pop3']['server'],
-    	'TLSA',
-    	generate_tlsa_digest($autodiscover_config['pop3']['server'], $autodiscover_config['pop3']['port'])
-    );
-    $records[] = array(
-    	'_' . $autodiscover_config['sieve']['port'] . '._tcp.' . $autodiscover_config['sieve']['server'],
-    	'TLSA',
-    	generate_tlsa_digest($autodiscover_config['sieve']['server'], $autodiscover_config['sieve']['port'], 1)
-    );
+  }
+  $records[] = array(
+    '_25._tcp.'.$autodiscover_config['smtp']['server'],
+    'TLSA',
+    generate_tlsa_digest($autodiscover_config['smtp']['server'], 25, 1)
+  );
+  $records[] = array(
+    '_'.$https_port.
+    '._tcp.'.$mailcow_hostname,
+    'TLSA',
+    generate_tlsa_digest($mailcow_hostname, $https_port)
+  );
+  $records[] = array(
+    '_'.$autodiscover_config['pop3']['tlsport'].
+    '._tcp.'.$autodiscover_config['pop3']['server'],
+    'TLSA',
+    generate_tlsa_digest($autodiscover_config['pop3']['server'], $autodiscover_config['pop3']['tlsport'], 1)
+  );
+  $records[] = array(
+    '_'.$autodiscover_config['imap']['tlsport'].
+    '._tcp.'.$autodiscover_config['imap']['server'],
+    'TLSA',
+    generate_tlsa_digest($autodiscover_config['imap']['server'], $autodiscover_config['imap']['tlsport'], 1)
+  );
+  $records[] = array(
+    '_'.$autodiscover_config['smtp']['port'].
+    '._tcp.'.$autodiscover_config['smtp']['server'],
+    'TLSA',
+    generate_tlsa_digest($autodiscover_config['smtp']['server'], $autodiscover_config['smtp']['port'])
+  );
+  $records[] = array(
+    '_'.$autodiscover_config['smtp']['tlsport'].
+    '._tcp.'.$autodiscover_config['smtp']['server'],
+    'TLSA',
+    generate_tlsa_digest($autodiscover_config['smtp']['server'], $autodiscover_config['smtp']['tlsport'], 1)
+  );
+  $records[] = array(
+    '_'.$autodiscover_config['imap']['port'].
+    '._tcp.'.$autodiscover_config['imap']['server'],
+    'TLSA',
+    generate_tlsa_digest($autodiscover_config['imap']['server'], $autodiscover_config['imap']['port'])
+  );
+  $records[] = array(
+    '_'.$autodiscover_config['pop3']['port'].
+    '._tcp.'.$autodiscover_config['pop3']['server'],
+    'TLSA',
+    generate_tlsa_digest($autodiscover_config['pop3']['server'], $autodiscover_config['pop3']['port'])
+  );
+  $records[] = array(
+    '_'.$autodiscover_config['sieve']['port'].
+    '._tcp.'.$autodiscover_config['sieve']['server'],
+    'TLSA',
+    generate_tlsa_digest($autodiscover_config['sieve']['server'], $autodiscover_config['sieve']['port'], 1)
+  );
 }
 $records[] = array(
-	$domain,
-	'MX',
-	$mailcow_hostname
+  $domain,
+  'MX',
+  $mailcow_hostname
 );
 $records[] = array(
-	'autodiscover.' . $domain,
-	'CNAME',
-	$mailcow_hostname
+  'autodiscover.'.$domain,
+  'CNAME',
+  $mailcow_hostname
 );
 $records[] = array(
-	'_autodiscover._tcp.' . $domain,
-	'SRV',
-	$mailcow_hostname . ' ' . $https_port
+  '_autodiscover._tcp.'.$domain,
+  'SRV',
+  $mailcow_hostname.
+  ' '.$https_port
 );
 $records[] = array(
-	'autoconfig.' . $domain,
-	'CNAME',
-	$mailcow_hostname
+  'autoconfig.'.$domain,
+  'CNAME',
+  $mailcow_hostname
 );
 $records[] = array(
-	$domain,
-	'TXT',
-	$spf_link,
-	state_optional
+  $domain,
+  'TXT',
+  $spf_link,
+  state_optional
 );
 $records[] = array(
-	'_dmarc.' . $domain,
-	'TXT',
-	$dmarc_link,
-	state_optional
+  '_dmarc.'.$domain,
+  'TXT',
+  $dmarc_link,
+  state_optional
 );
 
 if (!empty($dkim = dkim('details', $domain))) {
