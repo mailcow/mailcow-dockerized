@@ -147,7 +147,7 @@ $tfa_data = get_tfa();
         <a href="#fwdhosts" class="list-group-item"><?=$lang['admin']['forwarding_hosts'];?></a>
         <a href="#f2bparams" class="list-group-item"><?=$lang['admin']['f2b_parameters'];?></a>
         <a href="#relayhosts" class="list-group-item">Relayhosts</a>
-        <a href="#quarantaine" class="list-group-item">Quarantaine</a>
+        <a href="#quarantaine" class="list-group-item"><?=$lang['admin']['quarantine'];?></a>
         <a href="#customize" class="list-group-item"><?=$lang['admin']['customize'];?></a>
         <a href="#top" class="list-group-item" style="border-top:1px dashed #dadada">↸ <?=$lang['admin']['to_top'];?></a>
       </div>
