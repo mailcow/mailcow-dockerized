@@ -73,8 +73,7 @@ if (!isset($autodiscover_config['sieve'])) {
 }
 
 // Init records array
-$spf_link = '<a href="http://www.openspf.org/SPF_Record_Syntax" target="_blank">SPF Record Syntax</a><br />
-  <small>' . sprintf($lang['diagnostics']['allow'], $ip) . '<br />' . sprintf($lang['diagnostics']['allow'], $ip6) . '</small>';
+$spf_link = '<a href="http://www.openspf.org/SPF_Record_Syntax" target="_blank">SPF Record Syntax</a><br />;
 $dmarc_link = '<a href="http://www.kitterman.com/dmarc/assistant.html" target="_blank">DMARC Assistant</a>';
 
 $records = array();
