@@ -1298,6 +1298,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             if (isset($_data['tagged_mail_handler']) && $_data['tagged_mail_handler'] == "subject") {
               try {
                 $redis->hSet('RCPT_WANTS_SUBJECT_TAG', $username, 1);
+                $redis->hDel('RCPT_WANTS_SUBFOLDER_TAG', $username);
               }
               catch (RedisException $e) {
                 $_SESSION['return'] = array(
@@ -1309,7 +1310,8 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             }
             else if (isset($_data['tagged_mail_handler']) && $_data['tagged_mail_handler'] == "subfolder") {
               try {
-                $redis->hSet('RCPT_WANTS_SUBJECT_TAG', $username, 2);
+                $redis->hSet('RCPT_WANTS_SUBFOLDER_TAG', $username, 1);
+                $redis->hDel('RCPT_WANTS_SUBJECT_TAG', $username);
               }
               catch (RedisException $e) {
                 $_SESSION['return'] = array(
@@ -1322,6 +1324,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             else {
               try {
                 $redis->hDel('RCPT_WANTS_SUBJECT_TAG', $username);
+                $redis->hDel('RCPT_WANTS_SUBFOLDER_TAG', $username);
               }
               catch (RedisException $e) {
                 $_SESSION['return'] = array(
@@ -2631,11 +2634,10 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             $_data = $_SESSION['mailcow_cc_username'];
           }
           try {
-            $wants_subject_tag = $redis->hGet('RCPT_WANTS_SUBJECT_TAG', $_data);
-            if ($wants_subject_tag == 1) {
+            if ($redis->hGet('RCPT_WANTS_SUBJECT_TAG', $_data)) {
               return "subject";
             }
-            elseif ($wants_subject_tag == 2) {
+            elseif ($redis->hGet('RCPT_WANTS_SUBFOLDER_TAG', $_data)) {
               return "subfolder";
             }
             else {
