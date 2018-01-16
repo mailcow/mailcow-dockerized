@@ -25,6 +25,11 @@ function api_log($postarray) {
     }
     if ($value = json_decode($value, true)) {
       unset($value["csrf_token"]);
+      foreach ($value as $key => &$val) {
+        if(preg_match("/pass/i", $key)) {
+          $val = '********';
+        }
+      }
       $value = json_encode($value);
     }
     $data_var[] = $data . "='" . $value . "'";
