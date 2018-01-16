@@ -140,6 +140,7 @@ $lang['user']['misc_delete_profile'] = 'Andere profielinstellingen';
 $lang['user']['tag_handling'] = 'Omgaan met e-mail tags';
 $lang['user']['tag_in_subfolder'] = 'In onderliggende map';
 $lang['user']['tag_in_subject'] = 'In onderwerp';
+$lang['user']['tag_in_none'] = 'Niets doen';
 $lang['user']['tag_help_explain'] = 'In onderliggende map: maakt onder INBOX een nieuwe map aan met de naam van de tag (bijv.: "INBOX/Facebook").<br>
 In onderwerp: de tag wordt vóór het oorspronkelijke e-mail onderwerp geplaatst (bijv.: "[Facebook] Mijn nieuws").';
 $lang['user']['tag_help_example'] = 'Voorbeeld van een e-mailadres met tag: ik<b>+Facebook</b>@voorbeeld.org';

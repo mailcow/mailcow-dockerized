@@ -167,6 +167,7 @@ $lang['user']['misc_delete_profile'] = "Autre paramètres de profil";
 $lang['user']['tag_handling'] = "Définir la gestion des courriel étiquetés";
 $lang['user']['tag_in_subfolder'] = "Dans un sous-dossier";
 $lang['user']['tag_in_subject'] = "Dans l'objet";
+$lang['user']['tag_in_none'] = "Ne fais rien";
 $lang['user']['tag_help_explain'] = "Dans un sous-dossier : a nouveau sous-dossier portant le nom de l'étiquette sera crée sous INBOX (\"INBOX/Facebook\").<br>Dans l'objet : le nom de l'étiquette sera accolé à l'objet du courriel. Par exemple : \"[Facebook] Mes Nouvelles\".";
 $lang['user']['tag_help_example'] = "Exemple pour une adresse de courriel étiquetée : moi<b>+Facebook</b>@exemple.org";
 $lang['user']['eas_reset'] = "Réinitialiser le cache de l'appareil ActiveSync";
