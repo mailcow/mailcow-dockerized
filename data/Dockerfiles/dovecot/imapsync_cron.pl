@@ -33,7 +33,7 @@ open my $file, '<', "/etc/sogo/sieve.creds";
 my $creds = <$file>; 
 close $file;
 my ($master_user, $master_pass) = split /:/, $creds;
-my $sth = $dbh->prepare("SELECT id, user1, user2, host1, authmech1, password1, exclude, port1, enc1, delete2duplicates, maxage, subfolder2, delete1, delete2 FROM imapsync WHERE active = 1 AND (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(last_run) > mins_interval * 60 OR last_run IS NULL) ORDER BY last_run");
+my $sth = $dbh->prepare("SELECT id, user1, user2, host1, authmech1, password1, exclude, port1, enc1, delete2duplicates, maxage, subfolder2, delete1, delete2, mins_interval FROM imapsync WHERE active = 1 AND (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(last_run) > mins_interval * 60 OR last_run IS NULL) ORDER BY last_run");
 $sth->execute();
 my $row;
 
@@ -53,6 +53,7 @@ while ($row = $sth->fetchrow_arrayref()) {
   $subfolder2         = @$row[11];
   $delete1            = @$row[12];
   $delete2            = @$row[13];
+  $mins_interval      = @$row[14];
 
   $is_running = $dbh->prepare("UPDATE imapsync SET is_running = 1 WHERE id = ?");
   $is_running->bind_param( 1, ${id} );
@@ -68,7 +69,7 @@ while ($row = $sth->fetchrow_arrayref()) {
   print $passfile2 trim($master_pass) . "\n";
 
   run [ "/usr/local/bin/imapsync",
-	"--timeout1", "10",
+	"--timeout1", $mins_interval,
 	"--tmpdir", "/tmp",
 	"--subscribeall",
 	($exclude eq ""	? () : ("--exclude", $exclude)),
