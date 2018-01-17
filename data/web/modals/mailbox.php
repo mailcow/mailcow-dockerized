@@ -96,7 +96,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="description"><?=$lang['add']['description'];?></label>
 						<div class="col-sm-10">
-						<input type="text" class="form-control" name="description" id="description" required>
+						<input type="text" class="form-control" name="description" id="description">
 						</div>
 					</div>
 					<div class="form-group">
