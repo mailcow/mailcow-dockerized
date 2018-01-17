@@ -120,3 +120,6 @@ $RELAY_TO = "null@hosted.mailcow.de";
 // Quarantaine data age in days to keep
 $QUARANTAINE_AGE = 10;
 
+// Page Title
+$PAGE_TITLE = "mailcow UI";
+
