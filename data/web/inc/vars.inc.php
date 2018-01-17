@@ -30,6 +30,9 @@ if ($https_port === FALSE) {
 //$https_port = 1234;
 // Other settings =>
 $autodiscover_config = array(
+  // Defines the names Names that are shown in the Client´s Server Section
+  'displayName' => 'A mailcow mail server',
+  'displayShortName' => 'mail server',
   // General autodiscover service type: "activesync" or "imap"
   // emClient uses autodiscover, but does not support ActiveSync. mailcow excludes emClient from ActiveSync.
   'autodiscoverType' => 'activesync',
