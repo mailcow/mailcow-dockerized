@@ -709,6 +709,16 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               );
               return false;
             }
+            try {
+              $redis->hSet('DOMAIN_MAP', $alias_domain, 1);
+            }
+            catch (RedisException $e) {
+              $_SESSION['return'] = array(
+                'type' => 'danger',
+                'msg' => 'Redis: '.$e
+              );
+              return false;
+            }
           }
           $_SESSION['return'] = array(
             'type' => 'success',
@@ -3511,6 +3521,16 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               $_SESSION['return'] = array(
                 'type' => 'danger',
                 'msg' => 'MySQL: '.$e
+              );
+              return false;
+            }
+            try {
+              $redis->hDel('DOMAIN_MAP', $alias_domain);
+            }
+            catch (RedisException $e) {
+              $_SESSION['return'] = array(
+                'type' => 'danger',
+                'msg' => 'Redis: '.$e
               );
               return false;
             }
