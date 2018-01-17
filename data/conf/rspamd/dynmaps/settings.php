@@ -47,7 +47,7 @@ function ucl_rcpts($object, $type) {
       $local = parse_email($row['address'])['local'];
       $domain = parse_email($row['address'])['domain'];
       if (!empty($local) && !empty($domain)) {
-        $rcpt[] = '/' . $local . '\+.*' . $domain . '/i';
+        $rcpt[] = '/' . $local . '[+].*' . $domain . '/i';
       }
       $rcpt[] = $row['address'];
     }
@@ -65,7 +65,7 @@ function ucl_rcpts($object, $type) {
         $local = parse_email($row['alias'])['local'];
         $domain = parse_email($row['alias'])['domain'];
         if (!empty($local) && !empty($domain)) {
-          $rcpt[] = '/' . $local . '\+.*' . $domain . '/i';
+          $rcpt[] = '/' . $local . '[+].*' . $domain . '/i';
         }
       $rcpt[] = $row['alias'];
       }
@@ -74,7 +74,7 @@ function ucl_rcpts($object, $type) {
     $local = parse_email($row['object'])['local'];
     $domain = parse_email($row['object'])['domain'];
     if (!empty($local) && !empty($domain)) {
-      $rcpt[] = '/' . $local . '\+.*' . $domain . '/i';
+      $rcpt[] = '/' . $local . '[+].*' . $domain . '/i';
     }
     $rcpt[] = $object;
   }
