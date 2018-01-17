@@ -94,13 +94,6 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
     </div>
   </div>
   <hr>
-  <div class="row">
-    <div class="col-md-3 col-xs-5 text-right">  <span class="glyphicon glyphicon-filter"></span></div>
-    <div class="col-md-9 col-xs-7">
-    <p><a href="#userFilterModal" data-toggle="modal">[Show active user sieve filter]</a></p>
-    </div>
-  </div>
-  <hr>
   <?php // Get user information about aliases
   $user_get_alias_details = user_get_alias_details($username);
   ?>
@@ -234,6 +227,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 <ul class="nav nav-pills nav-justified" role="tablist">
 	<li role="presentation" class="active"><a href="#SpamAliases" aria-controls="SpamAliases" role="tab" data-toggle="tab"><?=$lang['user']['spam_aliases'];?></a></li>
 	<li role="presentation"><a href="#Spamfilter" aria-controls="Spamfilter" role="tab" data-toggle="tab"><?=$lang['user']['spamfilter'];?></a></li>
+	<li role="presentation"><a href="#Filters" aria-controls="Filters" role="tab" data-toggle="tab"><?=$lang['user']['filter'];?></a></li>
 	<li role="presentation"><a href="#Syncjobs" aria-controls="Syncjobs" role="tab" data-toggle="tab"><?=$lang['user']['sync_jobs'];?></a></li>
 </ul>
 <hr>
@@ -380,6 +374,31 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
       </div>
     </div>
   </div>
+
+    <div role="tabpanel" class="tab-pane" id="Filters">
+		<div class="table-responsive">
+            <table class="table table-striped" id="user_filter_table"></table>
+		</div>
+        <?php
+        if ($_SESSION['acl']['filters'] == 1):
+        ?>
+        <div class="mass-actions-user">
+          <div class="btn-group">
+            <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="user_filter" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
+            <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a id="edit_selected" data-id="user_filter" data-api-url='edit/user_filter' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
+              <li><a id="edit_selected" data-id="user_filter" data-api-url='edit/user_filter' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
+              <li role="separator" class="divider"></li>
+              <li><a id="delete_selected" data-text="<?=$lang['mailbox']['remove'];?>?" data-id="user_filter" data-api-url='delete/user_filter' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+            </ul>
+            <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addFilterModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['create_filter'];?></a>
+          </div>
+        </div>
+        <?php
+        endif;
+        ?>
+	</div>
 
 	<div role="tabpanel" class="tab-pane" id="Syncjobs">
 		<div class="table-responsive">

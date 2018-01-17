@@ -221,3 +221,120 @@ endif;
     </div>
   </div>
 </div>
+
+<!-- user filter modal -->
+<div class="modal fade" id="addFilterModal" tabindex="-1" role="dialog" aria-labelledby="pwAddFilterModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <h3 class="modal-title"><?=$lang['user']['create_filter'];?></h3>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form" data-id="add_filter">
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="filterName"><?=$lang['add']['filter_name'];?></label>
+                <div class="col-sm-10">
+                   <input type="text" class="form-control" name="rulename" id="filterName" required>
+                </div>
+            </div>
+            <?php
+            if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "admin" || $_SESSION['mailcow_cc_role'] == "domainadmin")):
+            ?>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="filterUsername"><?=$lang['add']['username'];?>:</label>
+                <div class="col-sm-10">
+                    <select name="username" id="filterUsername" required>
+                    <?php
+                    $domains = mailbox('get', 'domains');
+                    if (!empty($domains)) {
+                        foreach ($domains as $domain) {
+                          $mailboxes = mailbox('get', 'mailboxes', $domain);
+                          foreach ($mailboxes as $mailbox) {
+                            echo "<option>".htmlspecialchars($mailbox)."</option>";
+                          }
+                        }
+                    }
+                    ?>
+                    </select>
+                </div>
+            </div>
+            <?php endif; ?>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="filterSearchterm"><?=$lang['add']['filter_condition'];?></label>
+                <div class="col-sm-10">
+                    <div class="input-group">
+                        <select name="source" required>
+                            <option value="subject"><?=$lang['add']['filter_source_subject'];?></option>
+                            <option value="from"><?=$lang['add']['filter_source_from'];?></option>
+                            <option value="to"><?=$lang['add']['filter_source_to'];?></option>
+                        </select>
+                        <select name="op" required>
+                            <option value="contains"><?=$lang['add']['filter_op_contains'];?></option>
+                            <option value="is"><?=$lang['add']['filter_op_is'];?></option>
+                            <option value="begins"><?=$lang['add']['filter_op_begins'];?></option>
+                            <option value="ends"><?=$lang['add']['filter_op_ends'];?></option>
+                        </select>
+                        <input type="text" name="searchterm" id="filterSearchterm" class="form-control" required>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="filterAction"><?=$lang['add']['filter_action'];?></label>
+                <div class="col-sm-10">
+                    <div class="input-group">
+                        <select name="action" id="filterAction" required>
+                            <option value="move"><?=$lang['add']['filter_action_move'];?></option>
+                            <option value="delete"><?=$lang['add']['filter_action_delete'];?></option>
+                        </select>
+                        <? if($_SESSION['mailcow_cc_role'] == 'user'){ ?>
+                        <select name="target" id="filterTarget" required>
+                            <?
+                                $folders = getActiveMailboxFolders();
+                                foreach($folders as $folder => $name){
+                                    echo '<option value="'.$folder.'">'.$name.'</option>';
+                                }
+                            ?>
+                        </select>
+                        <? } else { ?>
+                        <input type="text" name="target" id="filterTarget" class="form-control" required>
+                        <? } ?>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <div class="checkbox">
+                        <label><input type="checkbox" value="1" name="active" checked> <?=$lang['add']['active'];?></label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button class="btn btn-default" id="add_item" data-id="add_filter" data-api-url='add/user_filter' data-api-attr='{}' href="#"><?=$lang['admin']['add'];?></button>
+                </div>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- user filter modal -->
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#filterAction").change(function(){
+            var v = $(this).val();
+            var o = $("#filterTarget");
+            if(v != 'delete'){
+                o.show();
+                o.attr("required", "required");
+                o.parent(".bootstrap-select").show();
+            }else{
+                o.hide();
+                o.removeAttr("required");
+                o.parent(".bootstrap-select").hide();
+            }
+        });
+    });
+</script>

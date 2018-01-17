@@ -237,6 +237,33 @@ function init_db_schema() {
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
+      "user_filter" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "username" => "VARCHAR(255) NOT NULL",
+          "rulename" => "VARCHAR(64) NOT NULL",
+          "source" => "VARCHAR(255) NOT NULL",
+          "searchterm" => "VARCHAR(255) NOT NULL",
+          "op" => "VARCHAR(255) NOT NULL",
+          "action" => "VARCHAR(255) NOT NULL",
+          "target" => "VARCHAR(255) DEFAULT NULL",
+          "active" => "TINYINT(1) NOT NULL DEFAULT 0"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "fkey" => array(
+            "fk_username_user_filters" => array(
+              "col" => "username",
+              "ref" => "mailbox.username",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
       "user_acl" => array(
         "cols" => array(
           "username" => "VARCHAR(255) NOT NULL",

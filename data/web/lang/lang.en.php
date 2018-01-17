@@ -99,6 +99,9 @@ $lang['danger']['domain_not_empty'] = "Cannot remove non-empty domain";
 $lang['warning']['spam_alias_temp_error'] = "Temporary error: Cannot add spam alias, please try again later.";
 $lang['danger']['spam_alias_max_exceeded'] = "Max. allowed spam alias addresses exceeded";
 $lang['danger']['validity_missing'] = 'Please assign a period of validity';
+$lang['success']['filter_added'] = 'Filter has been successfully added';
+$lang['danger']['filter_name_missing'] = 'Please fill in the filter name';
+$lang['success']['deleted_user_filters'] = 'Filter ID %s has been successfully deleted';
 $lang['user']['loading'] = "Loading...";
 $lang['user']['active_sieve'] = "Active filter";
 $lang['user']['no_active_filter'] = "No active filter available";
@@ -162,6 +165,8 @@ $lang['user']['spamfilter_table_domain_policy'] = "n/a (domain policy)";
 $lang['user']['waiting'] = "Waiting";
 $lang['user']['status'] = "Status";
 $lang['user']['running'] = "Running";
+$lang['user']['filter'] = 'Filters';
+$lang['user']['create_filter'] = 'Create filter';
 
 $lang['user']['tls_policy_warning'] = '<strong>Warning:</strong> If you decide to enforce encrypted mail transfer, you may lose emails.<br>Messages to not satisfy the policy will be bounced with a hard fail by the mail system.<br>This option applies to your primary email address (login name), all addresses derived from alias domains as well as alias addresses <b>with only this single mailbox</b> as target.';
 $lang['user']['tls_policy'] = 'Encryption policy';
@@ -194,6 +199,19 @@ $lang['user']['edit'] = 'Edit';
 $lang['user']['remove'] = 'Remove';
 $lang['user']['delete_now'] = 'Remove now';
 $lang['user']['create_syncjob'] = 'Create new sync job';
+
+$lang['user']['filter_name'] = 'Filter name';
+$lang['user']['filter_condition'] = 'Condition';
+$lang['user']['filter_source_subject'] = 'Subject';
+$lang['user']['filter_source_from'] = 'Sender';
+$lang['user']['filter_source_to'] = 'Recipient';
+$lang['user']['filter_op_contains'] = 'contains';
+$lang['user']['filter_op_is'] = 'is';
+$lang['user']['filter_op_begins'] = 'begins';
+$lang['user']['filter_op_ends'] = 'ends';
+$lang['user']['filter_action'] = 'Action';
+$lang['user']['filter_action_move'] = 'Move to';
+$lang['user']['filter_action_delete'] = 'Delete';
 
 $lang['start']['dashboard'] = '%s - dashboard';
 $lang['start']['start_rc'] = 'Open Roundcube';
@@ -249,6 +267,7 @@ $lang['mailbox']['target_domain'] = 'Target domain';
 $lang['mailbox']['target_address'] = 'Goto address';
 $lang['mailbox']['username'] = 'Username';
 $lang['mailbox']['fname'] = 'Full name';
+$lang['mailbox']['user_filters'] = 'User filters';
 $lang['mailbox']['filter_table'] = 'Filter table';
 $lang['mailbox']['yes'] = '&#10004;';
 $lang['mailbox']['no'] = '&#10008;';
@@ -276,6 +295,20 @@ $lang['mailbox']['mins_interval'] = 'Interval (min)';
 $lang['mailbox']['last_run'] = 'Last run';
 $lang['mailbox']['excludes'] = 'Excludes';
 $lang['mailbox']['last_run_reset'] = 'Schedule next';
+
+$lang['mailbox']['filter_name'] = 'Filter name';
+$lang['mailbox']['filter_condition'] = 'Condition';
+$lang['mailbox']['filter_source_subject'] = 'Subject';
+$lang['mailbox']['filter_source_from'] = 'Sender';
+$lang['mailbox']['filter_source_to'] = 'Recipient';
+$lang['mailbox']['filter_op_contains'] = 'contains';
+$lang['mailbox']['filter_op_is'] = 'is';
+$lang['mailbox']['filter_op_begins'] = 'begins';
+$lang['mailbox']['filter_op_ends'] = 'ends';
+$lang['mailbox']['filter_action'] = 'Action';
+$lang['mailbox']['filter_action_move'] = 'Move to';
+$lang['mailbox']['filter_action_delete'] = 'Delete';
+
 $lang['mailbox']['sieve_info'] = 'You can store multiple filters per user, but only one prefilter and one postfilter can be active at the same time.<br>
 Each filter will be processed in the described order. Neither a failed script nor an issued "keep;" will stop processing of further scripts.<br>
 Prefilter → User scripts → Postfilter → <a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/sieve_after" target="_blank">global sieve postfilter</a>';
@@ -405,6 +438,20 @@ $lang['add']['goto_null'] = 'Silently discard mail';
 $lang['add']['validation_success'] = 'Validated successfully';
 $lang['add']['activate_filter_warn'] = 'All other filters will be deactivated, when active is checked.';
 $lang['add']['validate'] = 'Validate';
+
+$lang['add']['filter_name'] = 'Filter name:';
+$lang['add']['filter_condition'] = 'Condition:';
+$lang['add']['filter_source_subject'] = 'Subject';
+$lang['add']['filter_source_from'] = 'Sender';
+$lang['add']['filter_source_to'] = 'Recipient';
+$lang['add']['filter_op_contains'] = 'contains';
+$lang['add']['filter_op_is'] = 'is';
+$lang['add']['filter_op_begins'] = 'begins';
+$lang['add']['filter_op_ends'] = 'ends';
+$lang['add']['filter_action'] = 'Action:';
+$lang['add']['filter_action_move'] = 'Move to';
+$lang['add']['filter_action_delete'] = 'Delete';
+
 $lang['mailbox']['add_filter'] = 'Add filter';
 $lang['add']['sieve_desc'] = 'Short description';
 $lang['edit']['sieve_desc'] = 'Short description';

@@ -202,6 +202,9 @@ function check_login($user, $pass) {
 	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	foreach ($rows as $row) {
 		if (verify_ssha256($row['password'], $pass) !== false) {
+    		// save pass to session
+    		// used for listing IMAP folders in filters section
+    		$_SESSION['pass'] = $pass;
 			unset($_SESSION['ldelay']);
 			return "user";
 		}

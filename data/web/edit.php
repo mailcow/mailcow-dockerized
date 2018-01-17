@@ -768,7 +768,114 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         <?php
         }
       }
-    elseif (isset($_GET['filter']) &&
+  }
+  if ($_SESSION['mailcow_cc_role'] == "admin"  || $_SESSION['mailcow_cc_role'] == "domainadmin" || $_SESSION['mailcow_cc_role'] == "user") {
+    if (isset($_GET['user_filter']) &&
+      is_numeric($_GET['user_filter'])) {
+        $id = $_GET["user_filter"];
+        $result = getMailboxUserFilter($id);
+        if (!empty($result)) {
+        ?>
+          <h4><?=$lang['edit']['user_filter'];?></h4>
+          <form class="form-horizontal" data-id="user_filter" role="form" method="post">
+            <input type="hidden" value="0" name="active">
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="filterName"><?=$lang['add']['filter_name'];?></label>
+                <div class="col-sm-10">
+                   <input type="text" class="form-control" name="rulename" id="filterName" value="<?=htmlspecialchars($result['rulename'], ENT_QUOTES, 'UTF-8');?>" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="filterSearchterm"><?=$lang['add']['filter_condition'];?></label>
+                <div class="col-sm-10">
+                    <div class="input-group">
+                        <select name="source" required>
+                            <option value="subject"<?=($result['source'] == "subject") ? " selected" : null;?>><?=$lang['add']['filter_source_subject'];?></option>
+                            <option value="from"<?=($result['source'] == "from") ? " selected" : null;?>><?=$lang['add']['filter_source_from'];?></option>
+                            <option value="to"<?=($result['source'] == "to") ? " selected" : null;?>><?=$lang['add']['filter_source_to'];?></option>
+                        </select>
+                        <select name="op" required>
+                            <option value="contains"<?=($result['op'] == "contains") ? " selected" : null;?>><?=$lang['add']['filter_op_contains'];?></option>
+                            <option value="is"<?=($result['op'] == "is") ? " selected" : null;?>><?=$lang['add']['filter_op_is'];?></option>
+                            <option value="begins"<?=($result['op'] == "begins") ? " selected" : null;?>><?=$lang['add']['filter_op_begins'];?></option>
+                            <option value="ends"<?=($result['op'] == "ends") ? " selected" : null;?>><?=$lang['add']['filter_op_ends'];?></option>
+                        </select>
+                        <input type="text" name="searchterm" id="filterSearchterm" class="form-control" value="<?=htmlspecialchars($result['searchterm'], ENT_QUOTES, 'UTF-8');?>" required>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="filterAction"><?=$lang['add']['filter_action'];?></label>
+                <div class="col-sm-10">
+                    <div class="input-group">
+                        <select name="action" id="filterAction" required>
+                            <option value="move"<?=($result['action'] == "move") ? " selected" : null;?>><?=$lang['add']['filter_action_move'];?></option>
+                            <option value="delete"<?=($result['action'] == "delete") ? " selected" : null;?>><?=$lang['add']['filter_action_delete'];?></option>
+                        </select>
+                        <? if($_SESSION['mailcow_cc_role'] == 'user'){ ?>
+                        <select name="target" id="filterTarget" required>
+                            <?
+                                $folders = getActiveMailboxFolders();
+                                foreach($folders as $folder => $name){
+                                    $selected = ($result['target'] == $folder) ? ' selected' : '';
+                                    echo '<option value="'.$folder.'"'.$selected.'>'.$name.'</option>';
+                                }
+                            ?>
+                        </select>
+                        <? } else { ?>
+                        <input type="text" name="target" id="filterTarget" class="form-control" value="<?=htmlspecialchars($result['target'], ENT_QUOTES, 'UTF-8');?>" required>
+                        <? } ?>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <div class="checkbox">
+                <label><input type="checkbox" value="1" name="active" <?=($result['active']=="1") ? "checked" : "";?>> <?=$lang['edit']['active'];?></label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <button class="btn btn-success" id="edit_selected" data-id="user_filter" data-item="<?=htmlspecialchars($result['id']);?>" data-api-url='edit/user_filter' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
+              </div>
+            </div>
+          </form>
+          <script type="text/javascript">
+            $(document).ready(function(){
+                setTimeout(function(){
+                    toggleUserFilterTarget($("#filterAction option:selected").val());
+                }, 200);
+                $("#filterAction").change(function(){
+                    var v = $(this).val();
+                    toggleUserFilterTarget(v);
+                });
+                                
+                function toggleUserFilterTarget(v){
+                    var o = $("#filterTarget");
+                    if(v != 'delete'){
+                        o.show();
+                        o.attr("required", "required");
+                        o.parent(".bootstrap-select").show();
+                    }else{
+                        o.hide();
+                        o.removeAttr("required");
+                        o.parent(".bootstrap-select").hide();
+                    }
+                }
+            });
+        </script>
+        <?php
+        }
+        else {
+        ?>
+          <div class="alert alert-info" role="alert"><?=$lang['info']['no_action'];?></div>
+        <?php
+        }
+      }
+  }
+  if ($_SESSION['mailcow_cc_role'] == "admin"  || $_SESSION['mailcow_cc_role'] == "domainadmin" || $_SESSION['mailcow_cc_role'] == "user") {
+    if (isset($_GET['filter']) &&
       is_numeric($_GET['filter'])) {
         $id = $_GET["filter"];
         $result = mailbox('get', 'filter_details', $id);

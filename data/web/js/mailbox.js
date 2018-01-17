@@ -539,6 +539,64 @@ jQuery(function($){
         "enabled": true,
         "position": "left",
         "connectors": false,
+      },
+      "sorting": {
+        "enabled": true
+      }
+    });
+  }
+  
+  function draw_user_filter_table() {
+    ft_uf_table = FooTable.init('#user_filter_table', {
+      "columns": [
+        {"name":"chkbox","title":"","style":{"maxWidth":"40px","width":"40px","text-align":"center"},"filterable": false,"sortable": false,"type":"html"},
+        {"sorted": true,"name":"rulename","title":lang.filter_name},
+        {"name":"username","title":lang.owner},
+        {"name":"condition","title":lang.filter_condition,"breakpoints":"xs sm"},
+        {"name":"action","title":lang.filter_action,"breakpoints":"xs sm"},
+        {"name":"active","filterable": false,"style":{"maxWidth":"70px","width":"70px"},"title":lang.active},
+        {"name":"tableAction","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
+      ],
+      "empty": lang.empty,
+      "rows": $.ajax({
+        dataType: 'json',
+        url: '/api/v1/get/user_filters/all',
+        jsonp: false,
+        error: function () {
+          console.log('Cannot draw user filter table');
+        },
+        success: function (data) {
+          $.each(data, function (i, item) {
+            item.condition = lang['filter_source_'+item.source] + '&nbsp;' + lang['filter_op_'+item.op] + '&nbsp;<i>' + item.searchterm + '</i>';
+            
+            if(item.action == 'move') {
+                item.action = lang['filter_action_'+item.action] + '&nbsp;<i>' + item.target + '</i>';
+            } else {
+                item.action = lang['filter_action_'+item.action];
+            }
+            
+            if(item.active) {
+                item.active = '&#10004;';
+            } else {
+                item.active = '&#10008;';
+            }
+            
+            item.tableAction = '<div class="btn-group">' +
+                '<a href="/edit.php?user_filter=' + item.id + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+                '<a href="#" id="delete_selected" data-id="single-user_filter" data-api-url="delete/user_filter" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+                '</div>';
+            item.chkbox = '<input type="checkbox" data-id="user_filter" name="multi_select" value="' + item.id + '" />';
+          });
+        }
+      }),
+      "paging": {
+        "enabled": true,
+        "limit": 5,
+        "size": pagination_size
+      },
+      "filtering": {
+        "enabled": true,
+        "position": "left",
         "placeholder": lang.filter_table
       },
       "sorting": {
@@ -607,6 +665,7 @@ jQuery(function($){
   draw_alias_table();
   draw_aliasdomain_table();
   draw_sync_job_table();
+  draw_user_filter_table();
   draw_filter_table();
   draw_bcc_table();
 
