@@ -1,12 +1,5 @@
 <?php
 function docker($service_name, $action, $attr1 = null, $attr2 = null, $extra_headers = null) {
-  if ($_SESSION['mailcow_cc_role'] != "admin") {
-    $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => sprintf($lang['danger']['access_denied'])
-    );
-    return false;
-  }
   $curl = curl_init();
   curl_setopt($curl, CURLOPT_HTTPHEADER,array( 'Content-Type: application/json' ));
   switch($action) {
