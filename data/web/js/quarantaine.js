@@ -15,7 +15,7 @@ jQuery(function($){
         {"name":"sender","title":lang.sender,"breakpoints":"xs sm"},
         {"name":"rcpt","title":lang.rcpt, "type": "text"},
         {"name":"created","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},"title":lang.received,"style":{"width":"170px"}},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right"},"style":{"width":"205px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
+        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right"},"style":{"width":"220px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
       "rows": $.ajax({
         dataType: 'json',
