@@ -167,6 +167,7 @@ $lang['user']['misc_delete_profile'] = 'Другие настройки проф
 $lang['user']['tag_handling'] = 'Set handling for tagged mail';
 $lang['user']['tag_in_subfolder'] = 'В подпапку';
 $lang['user']['tag_in_subject'] = 'В теме';
+$lang['user']['tag_in_none'] = 'Ничего не делать';
 $lang['user']['tag_help_explain'] = 'In subfolder: a new subfolder named after the tag will be created below INBOX ("INBOX/Facebook").<br>
 In subject: the tags name will be prepended to the mails subject, example: "[Facebook] Meine Neuigkeiten".';
 $lang['user']['tag_help_example'] = 'Example for a tagged email address: ich<b>+Facebook</b>@example.org';

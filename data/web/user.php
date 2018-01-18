@@ -178,6 +178,13 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
         data-api-url='edit/delimiter_action'
         data-api-attr='{"tagged_mail_handler":"subject"}'><?=$lang['user']['tag_in_subject'];?></button>
 
+      <button type="button" class="btn btn-sm btn-default <?=($get_tagging_options == "none") ? 'active' : null; ?>"
+        id="edit_selected"
+        data-item="<?= $username; ?>"
+        data-id="delimiter_action"
+        data-api-url='edit/delimiter_action'
+        data-api-attr='{"tagged_mail_handler":"none"}'><?=$lang['user']['tag_in_none'];?></button>
+
     </div>
     <p class="help-block"><?=$lang['user']['tag_help_explain'];?></p>
     <p class="help-block"><?=$lang['user']['tag_help_example'];?></p>

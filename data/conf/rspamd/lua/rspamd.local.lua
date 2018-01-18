@@ -30,6 +30,7 @@ rspamd_config:register_symbol({
       end
 
       local wants_subject_tag = task:get_symbol("RCPT_WANTS_SUBJECT_TAG")
+      local wants_subfolder_tag = task:get_symbol("RCPT_WANTS_SUBFOLDER_TAG")
 
       if wants_subject_tag then
         rspamd_logger.infox("user wants subject modified for tagged mail")
@@ -39,7 +40,7 @@ rspamd_config:register_symbol({
           remove_headers = {['Subject'] = 1},
           add_headers = {['Subject'] = new_sbj}
         })
-      else
+      elseif wants_subfolder_tag then
         rspamd_logger.infox("Add X-Moo-Tag header")
         task:set_milter_reply({
           add_headers = {['X-Moo-Tag'] = 'YES'}
