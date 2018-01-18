@@ -98,10 +98,12 @@ function customize($_action, $_item, $_data = null) {
           );
         break;
         case 'ui_texts':
+          $title_name = $_data['title_name'];
           $main_name = $_data['main_name'];
           $apps_name = $_data['apps_name'];
           $help_text = $_data['help_text'];
           try {
+            $redis->set('TITLE_NAME', htmlspecialchars($title_name));
             $redis->set('MAIN_NAME', htmlspecialchars($main_name));
             $redis->set('APPS_NAME', htmlspecialchars($apps_name));
             $redis->set('HELP_TEXT', $help_text);
@@ -178,6 +180,7 @@ function customize($_action, $_item, $_data = null) {
         break;
         case 'ui_texts':
           try {
+            $data['title_name'] = ($title_name = $redis->get('TITLE_NAME')) ? $title_name : 'mailcow UI';
             $data['main_name'] = ($main_name = $redis->get('MAIN_NAME')) ? $main_name : 'mailcow UI';
             $data['apps_name'] = ($apps_name = $redis->get('APPS_NAME')) ? $apps_name : 'mailcow Apps';
             $data['help_text'] = ($help_text = $redis->get('HELP_TEXT')) ? $help_text : false;
