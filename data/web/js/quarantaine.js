@@ -38,44 +38,46 @@ jQuery(function($){
       "paging": {"enabled": true,"limit": 5,"size": pagination_size},
       "sorting": {"enabled": true},
       "on": {
-        "ready.ft.table": function(ev, ft){
-          $('.show_qid_info').on('click', function (e) {
-            e.preventDefault();
-            var qitem = $(this).data('item');
-            $('#qidDetailModal').modal('show');
-            $( "#qid_error" ).hide();
-            $.ajax({
-              url: '/inc/ajax/qitem_details.php',
-              data: { id: qitem },
-              dataType: 'json',
-              success: function(data){
-                if (typeof data.error !== 'undefined') {
-                  $( "#qid_error" ).text(data.error);
-                  $( "#qid_error" ).show();
-                }
-                $('#qid_detail_subj').text(escapeHtml(data.subject));
-                $('#qid_detail_text').text(escapeHtml(data.text_plain));
-                if (typeof data.attachments !== 'undefined') {
-                  $( "#qid_detail_atts" ).text('');
-                  $.each(data.attachments, function( index, value ) {
-                    $( "#qid_detail_atts" ).append(
-                      '<p><a href="/inc/ajax/qitem_details.php?id=' + qitem + '&att=' + index + '" target="_blank">' + value[0] + '</a> (' + value[1] + ')' +
-                      ' - <small><a href="' + value[3] + '" target="_blank">' + lang.check_hash + '</a></small></p>'
-                    );
-                  });
-                }
-                else {
-                  $( "#qid_detail_atts" ).text('-');
-                }
-              }
-            });
-          })
-        }
+        "ready.ft.table": btn_group_quarantaine,
+        "after.ft.paging": btn_group_quarantaine
       },
       "filtering": {"enabled": true,"position": "left","connectors": false,"placeholder": lang.filter_table},
     });
   }
 
+  btn_group_quarantaine = function(ev, ft){
+    $('.show_qid_info').on('click', function (e) {
+      e.preventDefault();
+      var qitem = $(this).data('item');
+      $('#qidDetailModal').modal('show');
+      $( "#qid_error" ).hide();
+      $.ajax({
+        url: '/inc/ajax/qitem_details.php',
+        data: { id: qitem },
+        dataType: 'json',
+        success: function(data){
+          if (typeof data.error !== 'undefined') {
+            $( "#qid_error" ).text(data.error);
+            $( "#qid_error" ).show();
+          }
+          $('#qid_detail_subj').text(escapeHtml(data.subject));
+          $('#qid_detail_text').text(escapeHtml(data.text_plain));
+          if (typeof data.attachments !== 'undefined') {
+            $( "#qid_detail_atts" ).text('');
+            $.each(data.attachments, function( index, value ) {
+              $( "#qid_detail_atts" ).append(
+                '<p><a href="/inc/ajax/qitem_details.php?id=' + qitem + '&att=' + index + '" target="_blank">' + value[0] + '</a> (' + value[1] + ')' +
+                ' - <small><a href="' + value[3] + '" target="_blank">' + lang.check_hash + '</a></small></p>'
+              );
+            });
+          }
+          else {
+            $( "#qid_detail_atts" ).text('-');
+          }
+        }
+      });
+    })
+  }
   // Initial table drawings
   draw_quarantaine_table();
 
