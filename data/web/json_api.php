@@ -1453,10 +1453,13 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "u2f-registration":
             header('Content-Type: application/javascript');
             if (($_SESSION["mailcow_cc_role"] == "admin" || $_SESSION["mailcow_cc_role"] == "domainadmin") && $_SESSION["mailcow_cc_username"] == $object) {
-              $data = $u2f->getRegisterData(get_u2f_registrations($object));
-              list($req, $sigs) = $data;
+              list($req, $sigs) = $u2f->getRegisterData(get_u2f_registrations($object));
               $_SESSION['regReq'] = json_encode($req);
-              echo 'var req = ' . json_encode($req) . '; var sigs = ' . json_encode($sigs) . ';';
+              $_SESSION['regSigs'] = json_encode($sigs);
+              echo 'var req = ' . json_encode($req) . ';';
+              echo 'var registeredKeys = ' . json_encode($sigs) . ';';
+              echo 'var appId = req.appId;';
+              echo 'var registerRequests = [{version: req.version, challenge: req.challenge}];';
             }
             else {
               return;
@@ -1465,9 +1468,19 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "u2f-authentication":
             header('Content-Type: application/javascript');
             if (isset($_SESSION['pending_mailcow_cc_username']) && $_SESSION['pending_mailcow_cc_username'] == $object) {
-              $reqs = json_encode($u2f->getAuthenticateData(get_u2f_registrations($object)));
-              $_SESSION['authReq']  = $reqs;
-              echo 'var req = ' . $reqs . ';';
+              $auth_data = $u2f->getAuthenticateData(get_u2f_registrations($object));
+              $challenge = $auth_data[0]->challenge;
+              $appId = $auth_data[0]->appId;
+              foreach ($auth_data as $each) {
+                $key = array(); // Empty array
+                $key['version']   = $each->version;
+                $key['keyHandle'] = $each->keyHandle;
+                $registeredKey[]  = $key;
+              }
+              $_SESSION['authReq']  = json_encode($auth_data);
+              echo 'var appId = "' . $appId . '";';
+              echo 'var challenge = ' . json_encode($challenge) . ';';
+              echo 'var registeredKeys = ' . json_encode($registeredKey) . ';';
             }
             else {
               return;
