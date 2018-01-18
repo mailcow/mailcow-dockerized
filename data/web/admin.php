@@ -511,6 +511,10 @@ $tfa_data = get_tfa();
         ?>
         <form class="form" data-id="uitexts" role="form" method="post">
           <div class="form-group">
+            <label for="title_name"><?=$lang['admin']['title_name'];?>:</label>
+            <input type="text" class="form-control" id="title_name" name="title_name" placeholder="mailcow UI" value="<?=$ui_texts['title_name'];?>">
+          </div>
+          <div class="form-group">
             <label for="main_name"><?=$lang['admin']['main_name'];?>:</label>
             <input type="text" class="form-control" id="main_name" name="main_name" placeholder="mailcow UI" value="<?=$ui_texts['main_name'];?>">
           </div>
