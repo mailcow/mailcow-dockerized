@@ -1,0 +1,10 @@
+# EditorConfig is awesome: http://EditorConfig.org
+
+# don't add newlines to test files
+[*]
+insert_final_newline = false
+trim_trailing_whitespace = false
+
+[**.txt]
+insert_final_newline = false
+trim_trailing_whitespace = false

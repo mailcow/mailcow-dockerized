@@ -1,186 +1,17 @@
 [
     {
-        "name": "robthree/twofactorauth",
-        "version": "1.6",
-        "version_normalized": "1.6.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/RobThree/TwoFactorAuth.git",
-            "reference": "5093ab230cd8f1296d792afb6a49545f37e7fd5a"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/RobThree/TwoFactorAuth/zipball/5093ab230cd8f1296d792afb6a49545f37e7fd5a",
-            "reference": "5093ab230cd8f1296d792afb6a49545f37e7fd5a",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.0"
-        },
-        "require-dev": {
-            "phpunit/phpunit": "@stable"
-        },
-        "time": "2017-02-17T15:24:54+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "RobThree\\Auth\\": "lib"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Rob Janssen",
-                "homepage": "http://robiii.me",
-                "role": "Developer"
-            }
-        ],
-        "description": "Two Factor Authentication",
-        "homepage": "https://github.com/RobThree/TwoFactorAuth",
-        "keywords": [
-            "Authentication",
-            "MFA",
-            "Multi Factor Authentication",
-            "Two Factor Authentication",
-            "authenticator",
-            "authy",
-            "php",
-            "tfa"
-        ]
-    },
-    {
-        "name": "yubico/u2flib-server",
-        "version": "1.0.1",
-        "version_normalized": "1.0.1.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/Yubico/php-u2flib-server.git",
-            "reference": "dc318c80b59e62921c210f31b014def26ceebbab"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/Yubico/php-u2flib-server/zipball/dc318c80b59e62921c210f31b014def26ceebbab",
-            "reference": "dc318c80b59e62921c210f31b014def26ceebbab",
-            "shasum": ""
-        },
-        "require": {
-            "ext-openssl": "*",
-            "php": ">=5.6"
-        },
-        "require-dev": {
-            "phpunit/phpunit": "~5.7"
-        },
-        "time": "2017-05-09T07:33:58+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "classmap": [
-                "src/"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "BSD-2-Clause"
-        ],
-        "description": "Library for U2F implementation",
-        "homepage": "https://developers.yubico.com/php-u2flib-server"
-    },
-    {
-        "name": "phpmailer/phpmailer",
-        "version": "v5.2.25",
-        "version_normalized": "5.2.25.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/PHPMailer/PHPMailer.git",
-            "reference": "2baf20b01690fba8cf720c1ebcf9b988eda50915"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/2baf20b01690fba8cf720c1ebcf9b988eda50915",
-            "reference": "2baf20b01690fba8cf720c1ebcf9b988eda50915",
-            "shasum": ""
-        },
-        "require": {
-            "ext-ctype": "*",
-            "php": ">=5.0.0"
-        },
-        "require-dev": {
-            "doctrine/annotations": "1.2.*",
-            "jms/serializer": "0.16.*",
-            "phpdocumentor/phpdocumentor": "2.*",
-            "phpunit/phpunit": "4.8.*",
-            "symfony/debug": "2.8.*",
-            "symfony/filesystem": "2.8.*",
-            "symfony/translation": "2.8.*",
-            "symfony/yaml": "2.8.*",
-            "zendframework/zend-cache": "2.5.1",
-            "zendframework/zend-config": "2.5.1",
-            "zendframework/zend-eventmanager": "2.5.1",
-            "zendframework/zend-filter": "2.5.1",
-            "zendframework/zend-i18n": "2.5.1",
-            "zendframework/zend-json": "2.5.1",
-            "zendframework/zend-math": "2.5.1",
-            "zendframework/zend-serializer": "2.5.*",
-            "zendframework/zend-servicemanager": "2.5.*",
-            "zendframework/zend-stdlib": "2.5.1"
-        },
-        "suggest": {
-            "league/oauth2-google": "Needed for Google XOAUTH2 authentication"
-        },
-        "time": "2017-08-28T11:12:07+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "classmap": [
-                "class.phpmailer.php",
-                "class.phpmaileroauth.php",
-                "class.phpmaileroauthgoogle.php",
-                "class.smtp.php",
-                "class.pop3.php",
-                "extras/EasyPeasyICS.php",
-                "extras/ntlm_sasl_client.php"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "LGPL-2.1"
-        ],
-        "authors": [
-            {
-                "name": "Jim Jagielski",
-                "email": "jimjag@gmail.com"
-            },
-            {
-                "name": "Marcus Bointon",
-                "email": "phpmailer@synchromedia.co.uk"
-            },
-            {
-                "name": "Andy Prevost",
-                "email": "codeworxtech@users.sourceforge.net"
-            },
-            {
-                "name": "Brent R. Matzelle"
-            }
-        ],
-        "description": "PHPMailer is a full-featured email creation and transfer class for PHP"
-    },
-    {
         "name": "php-mime-mail-parser/php-mime-mail-parser",
-        "version": "2.9.3",
-        "version_normalized": "2.9.3.0",
+        "version": "2.9.5",
+        "version_normalized": "2.9.5.0",
         "source": {
             "type": "git",
             "url": "https://github.com/php-mime-mail-parser/php-mime-mail-parser.git",
-            "reference": "c6884c7bc77adbf55979db99841195b232fd30f1"
+            "reference": "fbb424e77de2837dc6d8a110656d3c10f2fc9353"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/php-mime-mail-parser/php-mime-mail-parser/zipball/c6884c7bc77adbf55979db99841195b232fd30f1",
-            "reference": "c6884c7bc77adbf55979db99841195b232fd30f1",
+            "url": "https://api.github.com/repos/php-mime-mail-parser/php-mime-mail-parser/zipball/fbb424e77de2837dc6d8a110656d3c10f2fc9353",
+            "reference": "fbb424e77de2837dc6d8a110656d3c10f2fc9353",
             "shasum": ""
         },
         "require": {
@@ -197,7 +28,7 @@
             "satooshi/php-coveralls": "0.*",
             "squizlabs/php_codesniffer": "2.*"
         },
-        "time": "2017-11-02T05:49:00+00:00",
+        "time": "2018-01-16T18:38:20+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -249,5 +80,226 @@
             "mailparse",
             "mime"
         ]
+    },
+    {
+        "name": "phpmailer/phpmailer",
+        "version": "v5.2.26",
+        "version_normalized": "5.2.26.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/PHPMailer/PHPMailer.git",
+            "reference": "70362997bda4376378be7d92d81e2200550923f7"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/70362997bda4376378be7d92d81e2200550923f7",
+            "reference": "70362997bda4376378be7d92d81e2200550923f7",
+            "shasum": ""
+        },
+        "require": {
+            "ext-ctype": "*",
+            "php": ">=5.0.0"
+        },
+        "require-dev": {
+            "doctrine/annotations": "1.2.*",
+            "jms/serializer": "0.16.*",
+            "phpdocumentor/phpdocumentor": "2.*",
+            "phpunit/phpunit": "4.8.*",
+            "symfony/debug": "2.8.*",
+            "symfony/filesystem": "2.8.*",
+            "symfony/translation": "2.8.*",
+            "symfony/yaml": "2.8.*",
+            "zendframework/zend-cache": "2.5.1",
+            "zendframework/zend-config": "2.5.1",
+            "zendframework/zend-eventmanager": "2.5.1",
+            "zendframework/zend-filter": "2.5.1",
+            "zendframework/zend-i18n": "2.5.1",
+            "zendframework/zend-json": "2.5.1",
+            "zendframework/zend-math": "2.5.1",
+            "zendframework/zend-serializer": "2.5.*",
+            "zendframework/zend-servicemanager": "2.5.*",
+            "zendframework/zend-stdlib": "2.5.1"
+        },
+        "suggest": {
+            "league/oauth2-google": "Needed for Google XOAUTH2 authentication"
+        },
+        "time": "2017-11-04T09:26:05+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "class.phpmailer.php",
+                "class.phpmaileroauth.php",
+                "class.phpmaileroauthgoogle.php",
+                "class.smtp.php",
+                "class.pop3.php",
+                "extras/EasyPeasyICS.php",
+                "extras/ntlm_sasl_client.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "LGPL-2.1"
+        ],
+        "authors": [
+            {
+                "name": "Jim Jagielski",
+                "email": "jimjag@gmail.com"
+            },
+            {
+                "name": "Marcus Bointon",
+                "email": "phpmailer@synchromedia.co.uk"
+            },
+            {
+                "name": "Andy Prevost",
+                "email": "codeworxtech@users.sourceforge.net"
+            },
+            {
+                "name": "Brent R. Matzelle"
+            }
+        ],
+        "description": "PHPMailer is a full-featured email creation and transfer class for PHP"
+    },
+    {
+        "name": "robthree/twofactorauth",
+        "version": "1.6.1",
+        "version_normalized": "1.6.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/RobThree/TwoFactorAuth.git",
+            "reference": "a77e7d822343bb88112baef808839cfae7bc5abb"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/RobThree/TwoFactorAuth/zipball/a77e7d822343bb88112baef808839cfae7bc5abb",
+            "reference": "a77e7d822343bb88112baef808839cfae7bc5abb",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "@stable"
+        },
+        "time": "2017-11-06T17:55:56+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "RobThree\\Auth\\": "lib"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Rob Janssen",
+                "homepage": "http://robiii.me",
+                "role": "Developer"
+            }
+        ],
+        "description": "Two Factor Authentication",
+        "homepage": "https://github.com/RobThree/TwoFactorAuth",
+        "keywords": [
+            "Authentication",
+            "MFA",
+            "Multi Factor Authentication",
+            "Two Factor Authentication",
+            "authenticator",
+            "authy",
+            "php",
+            "tfa"
+        ]
+    },
+    {
+        "name": "soundasleep/html2text",
+        "version": "0.5.0",
+        "version_normalized": "0.5.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/soundasleep/html2text.git",
+            "reference": "cdb89f6ffa2c4cc78f8ed9ea6ee0594a9133ccad"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/soundasleep/html2text/zipball/cdb89f6ffa2c4cc78f8ed9ea6ee0594a9133ccad",
+            "reference": "cdb89f6ffa2c4cc78f8ed9ea6ee0594a9133ccad",
+            "shasum": ""
+        },
+        "require": {
+            "ext-dom": "*",
+            "ext-libxml": "*",
+            "php": ">=5.3.2"
+        },
+        "require-dev": {
+            "phpunit/phpunit": ">=4.0",
+            "soundasleep/component-tests": "dev-master"
+        },
+        "time": "2017-04-19T22:01:50+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Html2Text\\": "src"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "EPL-1.0"
+        ],
+        "authors": [
+            {
+                "name": "Jevon Wright",
+                "homepage": "https://jevon.org",
+                "role": "Developer"
+            }
+        ],
+        "description": "A PHP script to convert HTML into a plain text format",
+        "homepage": "https://github.com/soundasleep/html2text",
+        "keywords": [
+            "email",
+            "html",
+            "php",
+            "text"
+        ]
+    },
+    {
+        "name": "yubico/u2flib-server",
+        "version": "1.0.1",
+        "version_normalized": "1.0.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/Yubico/php-u2flib-server.git",
+            "reference": "dc318c80b59e62921c210f31b014def26ceebbab"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/Yubico/php-u2flib-server/zipball/dc318c80b59e62921c210f31b014def26ceebbab",
+            "reference": "dc318c80b59e62921c210f31b014def26ceebbab",
+            "shasum": ""
+        },
+        "require": {
+            "ext-openssl": "*",
+            "php": ">=5.6"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "~5.7"
+        },
+        "time": "2017-05-09T07:33:58+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "src/"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-2-Clause"
+        ],
+        "description": "Library for U2F implementation",
+        "homepage": "https://developers.yubico.com/php-u2flib-server"
     }
 ]

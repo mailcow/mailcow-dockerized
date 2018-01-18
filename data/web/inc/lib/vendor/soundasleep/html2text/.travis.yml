@@ -1,0 +1,10 @@
+language: php
+php:
+  - 5.5
+group: stable
+before_install:
+  - composer self-update
+install:
+  - composer install
+script:
+  - ./vendor/bin/phpunit

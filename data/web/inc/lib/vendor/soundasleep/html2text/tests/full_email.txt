@@ -1,0 +1,54 @@
+http://localhost/home	16 December 2015
+Account 123
+
+Hi Susan
+
+Here is your cat report.
+
+You have found 5 cats less than anyone else
+
+[Find more cats](http://localhost/cats)
+
+Down the road
+
+Across the hall
+
+Your achievements
+
+You're currently finding about
+12 cats
+per day
+
+[Number of cats found]
+---------------------------------------------------------------
+
+Your last cat was found two days ago.
+
+One type of cat is a kitten.
+
+Special account  A1
+
+12.345
+
+http://localhost/logout
+
+How can you find more cats?
+
+Look in trash cans
+
+Start meowing
+
+Eat cat food
+
+Some cats like to hang out in trash cans. Some cats do not.	Some cats are attracted to similar tones.	So one day your tears may smell like cat food, attracting more cats.
+https://localhost/about	https://localhost/about	https://localhost/about
+[Cats are great.](https://github.com/soundasleep/html2text_ruby)	[Find more cats.](https://github.com/soundasleep/html2text_ruby)	[Do more things.](https://github.com/soundasleep/html2text_ruby)
+
+[Contact us](http://localhost/contact)
+
+cats@cats.com
+Monday and Friday
+
+https://github.com/soundasleep/html2text https://github.com/soundasleep/html2text_ruby
+
+Having trouble seeing this email? [View it online](http://localhost/view_it_online).

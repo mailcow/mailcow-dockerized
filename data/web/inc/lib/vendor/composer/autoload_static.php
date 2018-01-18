@@ -15,6 +15,10 @@ class ComposerStaticInit873464e4bd965a3168f133248b1b218b
         array (
             'PhpMimeMailParser\\' => 18,
         ),
+        'H' => 
+        array (
+            'Html2Text\\' => 10,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -25,6 +29,10 @@ class ComposerStaticInit873464e4bd965a3168f133248b1b218b
         'PhpMimeMailParser\\' => 
         array (
             0 => __DIR__ . '/..' . '/php-mime-mail-parser/php-mime-mail-parser/src',
+        ),
+        'Html2Text\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/soundasleep/html2text/src',
         ),
     );
 

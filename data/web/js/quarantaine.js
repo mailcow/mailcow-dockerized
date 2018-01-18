@@ -60,8 +60,9 @@ jQuery(function($){
             $( "#qid_error" ).text(data.error);
             $( "#qid_error" ).show();
           }
-          $('#qid_detail_subj').text(escapeHtml(data.subject));
-          $('#qid_detail_text').text(escapeHtml(data.text_plain));
+          $('#qid_detail_subj').text(data.subject);
+          $('#qid_detail_text').text(data.text_plain);
+          $('#qid_detail_text_from_html').text(data.text_html);
           if (typeof data.attachments !== 'undefined') {
             $( "#qid_detail_atts" ).text('');
             $.each(data.attachments, function( index, value ) {
@@ -80,5 +81,4 @@ jQuery(function($){
   }
   // Initial table drawings
   draw_quarantaine_table();
-
 });

@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "ee4c9e269c29282221ce88bc23f1bda9",
+    "content-hash": "3edeec2e3fa875d4f9d5e7f22a8179be",
     "packages": [
         {
             "name": "php-mime-mail-parser/php-mime-mail-parser",
-            "version": "2.9.3",
+            "version": "2.9.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-mime-mail-parser/php-mime-mail-parser.git",
-                "reference": "c6884c7bc77adbf55979db99841195b232fd30f1"
+                "reference": "fbb424e77de2837dc6d8a110656d3c10f2fc9353"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-mime-mail-parser/php-mime-mail-parser/zipball/c6884c7bc77adbf55979db99841195b232fd30f1",
-                "reference": "c6884c7bc77adbf55979db99841195b232fd30f1",
+                "url": "https://api.github.com/repos/php-mime-mail-parser/php-mime-mail-parser/zipball/fbb424e77de2837dc6d8a110656d3c10f2fc9353",
+                "reference": "fbb424e77de2837dc6d8a110656d3c10f2fc9353",
                 "shasum": ""
             },
             "require": {
@@ -84,20 +84,20 @@
                 "mailparse",
                 "mime"
             ],
-            "time": "2017-11-02T05:49:00+00:00"
+            "time": "2018-01-16T18:38:20+00:00"
         },
         {
             "name": "phpmailer/phpmailer",
-            "version": "v5.2.25",
+            "version": "v5.2.26",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "2baf20b01690fba8cf720c1ebcf9b988eda50915"
+                "reference": "70362997bda4376378be7d92d81e2200550923f7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/2baf20b01690fba8cf720c1ebcf9b988eda50915",
-                "reference": "2baf20b01690fba8cf720c1ebcf9b988eda50915",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/70362997bda4376378be7d92d81e2200550923f7",
+                "reference": "70362997bda4376378be7d92d81e2200550923f7",
                 "shasum": ""
             },
             "require": {
@@ -161,20 +161,20 @@
                 }
             ],
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
-            "time": "2017-08-28T11:12:07+00:00"
+            "time": "2017-11-04T09:26:05+00:00"
         },
         {
             "name": "robthree/twofactorauth",
-            "version": "1.6",
+            "version": "1.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/RobThree/TwoFactorAuth.git",
-                "reference": "5093ab230cd8f1296d792afb6a49545f37e7fd5a"
+                "reference": "a77e7d822343bb88112baef808839cfae7bc5abb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/RobThree/TwoFactorAuth/zipball/5093ab230cd8f1296d792afb6a49545f37e7fd5a",
-                "reference": "5093ab230cd8f1296d792afb6a49545f37e7fd5a",
+                "url": "https://api.github.com/repos/RobThree/TwoFactorAuth/zipball/a77e7d822343bb88112baef808839cfae7bc5abb",
+                "reference": "a77e7d822343bb88112baef808839cfae7bc5abb",
                 "shasum": ""
             },
             "require": {
@@ -212,7 +212,57 @@
                 "php",
                 "tfa"
             ],
-            "time": "2017-02-17T15:24:54+00:00"
+            "time": "2017-11-06T17:55:56+00:00"
+        },
+        {
+            "name": "soundasleep/html2text",
+            "version": "0.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/soundasleep/html2text.git",
+                "reference": "cdb89f6ffa2c4cc78f8ed9ea6ee0594a9133ccad"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/soundasleep/html2text/zipball/cdb89f6ffa2c4cc78f8ed9ea6ee0594a9133ccad",
+                "reference": "cdb89f6ffa2c4cc78f8ed9ea6ee0594a9133ccad",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-libxml": "*",
+                "php": ">=5.3.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": ">=4.0",
+                "soundasleep/component-tests": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Html2Text\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "EPL-1.0"
+            ],
+            "authors": [
+                {
+                    "name": "Jevon Wright",
+                    "homepage": "https://jevon.org",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A PHP script to convert HTML into a plain text format",
+            "homepage": "https://github.com/soundasleep/html2text",
+            "keywords": [
+                "email",
+                "html",
+                "php",
+                "text"
+            ],
+            "time": "2017-04-19T22:01:50+00:00"
         },
         {
             "name": "yubico/u2flib-server",
