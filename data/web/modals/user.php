@@ -162,7 +162,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
   </div>
 </div><!-- pw change modal -->
 <!-- sieve filter modal -->
-<div class="modal fade" id="userFilterModal" tabindex="-1" role="dialog" aria-labelledby="pwChangeModalLabel">
+<div class="modal fade" id="userFilterModal" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
