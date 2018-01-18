@@ -629,6 +629,7 @@ $lang['quarantaine']['check_hash'] = "Checksumme auf VirusTotal suchen";
 $lang['quarantaine']['qitem'] = "Quarantäneeintrag";
 $lang['quarantaine']['subj'] = "Betreff";
 $lang['quarantaine']['text_plain_content'] = "Inhalt (text/plain)";
+$lang['quarantaine']['text_from_html_content'] = "Inhalt (html, konvertiert)";
 $lang['quarantaine']['atts'] = "Anhänge";
 
 $lang['header']['quarantaine'] = "Quarantäne";

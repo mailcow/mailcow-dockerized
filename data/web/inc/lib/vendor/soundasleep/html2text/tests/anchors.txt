@@ -1,0 +1,5 @@
+A document without any HTML open/closing tags.
+---------------------------------------------------------------
+We try and use the representation given by common browsers of the HTML document, so that it looks similar when converted to plain text. [visit foo.com](http://foo.com) - or http://www.foo.com [link](http://foo.com)
+
+[An anchor which will not appear]

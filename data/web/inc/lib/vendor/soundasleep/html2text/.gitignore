@@ -1,0 +1,4 @@
+tests/*.output
+*.sublime-project
+*.sublime-workspace
+vendor/

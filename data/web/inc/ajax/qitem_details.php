@@ -33,12 +33,17 @@ if (!empty($_GET['id']) && ctype_alnum($_GET['id'])) {
     $data = array();
     // Init parser
     $mail_parser = new PhpMimeMailParser\Parser();
+    $html2text = new Html2Text\Html2Text();
     // Load msg to parser
     $mail_parser->setText($mailc['msg']);
     // Get text/plain content
     $data['text_plain'] = $mail_parser->getMessageBody('text');
+    // Get html content and convert to text
+    $data['text_html'] = $html2text->convert($mail_parser->getMessageBody('html'));
+    (empty($data['text_plain'])) ? $data['text_plain'] = '-' : null;
     // Get subject
     $data['subject'] = $mail_parser->getHeader('subject');
+    (empty($data['subject'])) ? $data['subject'] = '-' : null;
     // Get attachments
     if (is_dir($tmpdir)) {
       rrmdir($tmpdir);

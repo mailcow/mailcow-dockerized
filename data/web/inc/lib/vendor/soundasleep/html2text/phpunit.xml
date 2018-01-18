@@ -1,0 +1,8 @@
+<phpunit stop-on-failure="true" stop-on-error="true">
+	<testsuites>
+		<testsuite name="Tests">
+			<!-- loads all *Test.php -->
+			<directory>tests</directory>
+		</testsuite>
+	</testsuites>
+</phpunit>

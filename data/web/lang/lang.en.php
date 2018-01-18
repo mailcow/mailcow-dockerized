@@ -624,6 +624,7 @@ $lang['quarantaine']['check_hash'] = "Search file hash @ VT";
 $lang['quarantaine']['qitem'] = "Quarantaine item";
 $lang['quarantaine']['subj'] = "Subject";
 $lang['quarantaine']['text_plain_content'] = "Content (text/plain)";
+$lang['quarantaine']['text_from_html_content'] = "Content (converted html)";
 $lang['quarantaine']['atts'] = "Attachments";
 
 $lang['header']['quarantaine'] = "Quarantaine";

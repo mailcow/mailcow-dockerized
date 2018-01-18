@@ -1,0 +1,7 @@
+Anchor tests
+
+Visit http://openiaml.org or openiaml.org or http://openiaml.org.
+
+To visit with SSL, visit https://openiaml.org or openiaml.org or https://openiaml.org.
+
+To mail, email support@openiaml.org or mailto:support@openiaml.org or support@openiaml.org or mailto:support@openiaml.org.
