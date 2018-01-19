@@ -580,6 +580,7 @@ $lang['mailbox']['running'] = "In Ausführung";
 
 $lang['admin']['ui_texts'] = "UI Label und Texte";
 $lang['admin']['help_text'] = "Hilfstext unter Login-Maske (HTML zulässig)";
+$lang['admin']['title_name'] = '"mailcow UI" Webseiten Titel';
 $lang['admin']['main_name'] = '"mailcow UI" Name';
 $lang['admin']['apps_name'] = '"mailcow Apps" Name';
 

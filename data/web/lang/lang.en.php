@@ -572,6 +572,7 @@ $lang['admin']['quarantine_exclude_domains'] = "Exclude domains and alias-domain
 
 $lang['admin']['ui_texts'] = "UI labels and texts";
 $lang['admin']['help_text'] = "Override help text below login mask (HTML allowed)";
+$lang['admin']['title_name'] = '"mailcow UI" website title';
 $lang['admin']['main_name'] = '"mailcow UI" name';
 $lang['admin']['apps_name'] = '"mailcow Apps" name';
 
