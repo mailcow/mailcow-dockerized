@@ -95,7 +95,7 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
 
 	if [[ ${NC_TYPE} == "subdomain" ]]; then
 		docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) /web/nextcloud/occ config:system:set overwritewebroot --value=/
-		docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) /web/nextcloud/occ config:system:set overwritehost --value=nextcloud.develcow.de
+		docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) /web/nextcloud/occ config:system:set overwritehost --value=${NC_SUBD}
 		cp ./data/assets/nextcloud/nextcloud.conf ./data/conf/nginx/
 		sed -i 's/NC_SUBD/${NC_SUBD}/g' ./data/conf/nginx/nextcloud.conf
 	elif [[ ${NC_TYPE} == "subfolder" ]]; then
