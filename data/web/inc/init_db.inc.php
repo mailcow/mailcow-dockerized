@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "02012018_1515";
+    $db_version = "21012018_1317";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -21,13 +21,14 @@ function init_db_schema() {
       AND active = '1'
       AND address NOT LIKE '@%'
       GROUP BY goto;",
-    "grouped_sender_acl" => "CREATE VIEW grouped_sender_acl (username, send_as) AS
-      SELECT logged_in_as, IFNULL(GROUP_CONCAT(send_as SEPARATOR ' '), '') AS send_as FROM sender_acl
+    "grouped_sender_acl" => "CREATE VIEW grouped_sender_acl (username, send_as_acl) AS
+      SELECT logged_in_as, IFNULL(GROUP_CONCAT(send_as SEPARATOR ' '), '') AS send_as_acl FROM sender_acl
       WHERE send_as NOT LIKE '@%'
       GROUP BY logged_in_as;",
     "grouped_domain_alias_address" => "CREATE VIEW grouped_domain_alias_address (username, ad_alias) AS
       SELECT username, IFNULL(GROUP_CONCAT(local_part, '@', alias_domain SEPARATOR ' '), '') AS ad_alias FROM mailbox
-      LEFT OUTER JOIN alias_domain on target_domain=domain GROUP BY username;",
+      LEFT OUTER JOIN alias_domain ON target_domain=domain
+      GROUP BY username;",
     "sieve_before" => "CREATE VIEW sieve_before (id, username, script_name, script_data) AS
       SELECT md5(script_data), username, script_name, script_data FROM sieve_filters
       WHERE filter_type = 'prefilter';",
