@@ -53,7 +53,9 @@ set -o pipefail
 export LC_ALL=C
 DATE=$(date +%Y-%m-%d_%H_%M_%S)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
+declare -a DC_PARAMS
 
+while (($#)); do
 case "${1}" in
 	--check|-c)
 		echo "Checking remote code for updates..."
@@ -66,7 +68,11 @@ case "${1}" in
 			exit 3
 		fi
 	;;
+  --no-start)
+    DC_PARAMS=(${DC_PARAMS[@]} "--no-start")
+  ;;
 esac
+done
 
 echo -e "\e[32mChecking for newer update script...\e[0m"
 SHA1_1=$(sha1sum update.sh)
@@ -146,7 +152,7 @@ cp -n data/assets/ssl-example/*.pem data/assets/ssl/
 
 echo -e "\e[32mStarting mailcow...\e[0m"
 sleep 2
-docker-compose up -d --remove-orphans
+docker-compose up -d --remove-orphans ${DC_PARAMS[@]}
 
 echo -e "\e[32mCollecting garbage...\e[0m"
 IMGS_TO_DELETE=()
