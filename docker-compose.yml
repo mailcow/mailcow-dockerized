@@ -32,7 +32,6 @@ services:
         - 172.22.1.254
       networks:
         mailcow-network:
-          ipv4_address: 172.22.1.250
           aliases:
             - mysql
 
@@ -66,7 +65,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.15
+      image: mailcow/rspamd:1.16
       build: ./data/Dockerfiles/rspamd
       stop_grace_period: 30s
       depends_on:
@@ -86,12 +85,11 @@ services:
       hostname: rspamd
       networks:
         mailcow-network:
-          ipv4_address: 172.22.1.253
           aliases:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.8
+      image: mailcow/phpfpm:1.9
       build: ./data/Dockerfiles/phpfpm
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
@@ -101,6 +99,9 @@ services:
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
         - dkim-vol-1:/data/dkim
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro
+        - ./data/conf/phpfpm/php-fpm.d/www.conf:/usr/local/etc/php-fpm.d/www.conf
+        - ./data/conf/phpfpm/php-fpm.d/system.conf:/usr/local/etc/php-fpm.d/system.conf
+        - ./data/conf/phpfpm/php-conf.d/opcache-recommended.ini:/usr/local/etc/php/conf.d/opcache-recommended.ini
       environment:
         - LOG_LINES=${LOG_LINES}
         - TZ=${TZ}
@@ -125,7 +126,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.13
+      image: mailcow/sogo:1.14
       build: ./data/Dockerfiles/sogo
       environment:
         - DBNAME=${DBNAME}
@@ -141,7 +142,6 @@ services:
         - 172.22.1.254
       networks:
         mailcow-network:
-          ipv4_address: 172.22.1.252
           aliases:
             - sogo
 
@@ -184,7 +184,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.11
+      image: mailcow/postfix:1.12
       build: ./data/Dockerfiles/postfix
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
@@ -252,7 +252,6 @@ services:
         - 172.22.1.254
       networks:
         mailcow-network:
-          ipv4_address: 172.22.1.251
           aliases:
             - nginx
 
@@ -305,7 +304,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.12
+      image: mailcow/watchdog:1.13
       # Debug
       #command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog
@@ -323,7 +322,6 @@ services:
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
       networks:
         mailcow-network:
-          ipv4_address: 172.22.1.248
           aliases:
             - watchdog
 
