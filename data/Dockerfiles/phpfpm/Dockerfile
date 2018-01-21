@@ -59,6 +59,11 @@ RUN apk add -U --no-cache libxml2-dev \
   echo 'opcache.revalidate_freq=1'; \
 } > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
+RUN sed -i 's/pm.max_children = 5/pm.max_children = 30/' /usr/local/etc/php-fpm.d/www.conf
+RUN sed -i 's/pm.start_servers = 2/pm.start_servers = 10/' /usr/local/etc/php-fpm.d/www.conf
+RUN sed -i 's/pm.min_spare_servers = 1/pm.min_spare_servers = 5/' /usr/local/etc/php-fpm.d/www.conf
+RUN sed -i 's/pm.max_spare_servers = 3/pm.max_spare_servers = 10/' /usr/local/etc/php-fpm.d/www.conf
+
 COPY ./docker-entrypoint.sh /
 
 EXPOSE 9000
