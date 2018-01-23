@@ -654,6 +654,43 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         <?php
         }
     }
+    elseif (isset($_GET['recipient_map']) && !empty($_GET["recipient_map"])) {
+        $map = intval($_GET["recipient_map"]);
+        $result = recipient_map('details', $map);
+        if (!empty($result)) {
+          ?>
+          <h4>Recipient map: <?=$result['recipient_map_old'];?></h4>
+          <br />
+          <form class="form-horizontal" data-id="editrecipient_map" role="form" method="post">
+            <input type="hidden" value="0" name="active">
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="recipient_map_new">New destination</label>
+              <div class="col-sm-10">
+                <textarea id="recipient_map_new" class="form-control" autocapitalize="none" autocorrect="off" rows="10" id="recipient_map_new" name="recipient_map_new" required><?=$result['recipient_map_new'];?></textarea>
+                <small>Recipient map destinations can only be valid email addresses. Separated by whitespace, semicolon, new line or comma.</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <div class="checkbox">
+                <label><input type="checkbox" value="1" name="active" <?php if (isset($result['active_int']) && $result['active_int']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['active'];?></label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <button class="btn btn-success" id="edit_selected" data-id="editrecipient_map" data-item="<?=$map;?>" data-api-url='edit/recipient_map' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
+              </div>
+            </div>
+          </form>
+        <?php
+        }
+        else {
+        ?>
+          <div class="alert alert-info" role="alert"><?=$lang['info']['no_action'];?></div>
+        <?php
+        }
+    }
   }
   if ($_SESSION['mailcow_cc_role'] == "admin"  || $_SESSION['mailcow_cc_role'] == "domainadmin" || $_SESSION['mailcow_cc_role'] == "user") {
     if (isset($_GET['syncjob']) &&
