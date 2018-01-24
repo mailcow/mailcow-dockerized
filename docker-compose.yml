@@ -12,7 +12,7 @@ services:
       restart: always
       networks:
         mailcow-network:
-          ipv4_address: 172.22.1.254
+          ipv4_address: ${IPV4_NETWORK}.254
           aliases:
             - unbound
 
@@ -29,7 +29,7 @@ services:
         - MYSQL_PASSWORD=${DBPASS}
       restart: always
       dns:
-        - 172.22.1.254
+        - ${IPV4_NETWORK}.254
       networks:
         mailcow-network:
           aliases:
@@ -43,22 +43,24 @@ services:
       environment:
         - TZ=${TZ}
       dns:
-        - 172.22.1.254
+        - ${IPV4_NETWORK}.254
       networks:
         mailcow-network:
-          ipv4_address: 172.22.1.249
+          ipv4_address: ${IPV4_NETWORK}.249
           aliases:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.6
+      image: mailcow/clamd:1.7
       build: ./data/Dockerfiles/clamd
       restart: always
       environment:
-        - SKIP_CLAMD=${SKIP_CLAMD:-n}
         - TZ=${TZ}
+        - SKIP_CLAMD=${SKIP_CLAMD:-n}
+      volumes:
+        - ./data/conf/clamav/:/etc/clamav/
       dns:
-        - 172.22.1.254
+        - ${IPV4_NETWORK}.254
       networks:
         mailcow-network:
           aliases:
@@ -81,7 +83,7 @@ services:
         - rspamd-vol-1:/var/lib/rspamd
       restart: always
       dns:
-        - 172.22.1.254
+        - ${IPV4_NETWORK}.254
       hostname: rspamd
       networks:
         mailcow-network:
@@ -119,7 +121,7 @@ services:
         - SMTP_PORT=${SMTP_PORT:-25}
       restart: always
       dns:
-        - 172.22.1.254
+        - ${IPV4_NETWORK}.254
       networks:
         mailcow-network:
           aliases:
@@ -139,7 +141,7 @@ services:
         - ./data/conf/sogo/:/etc/sogo/
       restart: always
       dns:
-        - 172.22.1.254
+        - ${IPV4_NETWORK}.254
       networks:
         mailcow-network:
           aliases:
@@ -176,7 +178,7 @@ services:
           soft: 20000
           hard: 40000
       dns:
-        - 172.22.1.254
+        - ${IPV4_NETWORK}.254
       hostname: ${MAILCOW_HOSTNAME}
       networks:
         mailcow-network:
@@ -184,7 +186,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.12
+      image: mailcow/postfix:1.13
       build: ./data/Dockerfiles/postfix
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
@@ -203,7 +205,7 @@ services:
         - "${SUBMISSION_PORT:-587}:587"
       restart: always
       dns:
-        - 172.22.1.254
+        - ${IPV4_NETWORK}.254
       hostname: ${MAILCOW_HOSTNAME}
       networks:
         mailcow-network:
@@ -214,7 +216,7 @@ services:
       image: memcached:alpine
       restart: always
       dns:
-        - 172.22.1.254
+        - ${IPV4_NETWORK}.254
       networks:
         mailcow-network:
           aliases:
@@ -249,7 +251,7 @@ services:
         - "${HTTP_BIND:-0.0.0.0}:${HTTP_PORT:-80}:${HTTP_PORT:-80}"
       restart: always
       dns:
-        - 172.22.1.254
+        - ${IPV4_NETWORK}.254
       networks:
         mailcow-network:
           aliases:
@@ -262,7 +264,7 @@ services:
       image: mailcow/acme:1.28
       build: ./data/Dockerfiles/acme
       dns:
-        - 172.22.1.254
+        - ${IPV4_NETWORK}.254
       environment:
         - LOG_LINES=${LOG_LINES}
         - ADDITIONAL_SAN=${ADDITIONAL_SAN}
@@ -283,7 +285,7 @@ services:
             - acme
 
     fail2ban-mailcow:
-      image: mailcow/fail2ban:1.10
+      image: mailcow/fail2ban:1.11
       build: ./data/Dockerfiles/fail2ban
       stop_grace_period: 30s
       depends_on:
@@ -297,16 +299,17 @@ services:
       environment:
         - TZ=${TZ}
         - SKIP_FAIL2BAN=${SKIP_FAIL2BAN:-n}
+        - IPV4_NETWORK=${IPV4_NETWORK}
       network_mode: "host"
       dns:
-        - 172.22.1.254
+        - ${IPV4_NETWORK}.254
       volumes:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
       image: mailcow/watchdog:1.13
       # Debug
-      #command: /watchdog.sh
+      command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog
       volumes:
         - vmail-vol-1:/vmail:ro
@@ -356,8 +359,8 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: 172.22.1.0/24
-        - subnet: fd4d:6169:6c63:6f77::/64
+        - subnet: ${IPV4_NETWORK}.0/24
+        - subnet: ${IPV6_NETWORK}
 
 volumes:
   vmail-vol-1:
