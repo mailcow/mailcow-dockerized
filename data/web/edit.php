@@ -661,12 +661,15 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         $id = $_GET["syncjob"];
         $result = mailbox('get', 'syncjob_details', $id);
         if (!empty($result)) {
+          print_r($result);
         ?>
           <h4><?=$lang['edit']['syncjob'];?></h4>
           <form class="form-horizontal" data-id="editsyncjob" role="form" method="post">
             <input type="hidden" value="0" name="delete2duplicates">
             <input type="hidden" value="0" name="delete1">
             <input type="hidden" value="0" name="delete2">
+            <input type="hidden" value="0" name="automap">
+            <input type="hidden" value="0" name="skipcrossduplicates">
             <input type="hidden" value="0" name="active">
             <div class="form-group">
               <label class="control-label col-sm-2" for="host1"><?=$lang['edit']['hostname'];?></label>
@@ -706,6 +709,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               <label class="control-label col-sm-2" for="mins_interval"><?=$lang['edit']['mins_interval'];?></label>
               <div class="col-sm-10">
                 <input type="number" class="form-control" name="mins_interval" min="1" max="3600" value="<?=htmlspecialchars($result['mins_interval'], ENT_QUOTES, 'UTF-8');?>" required>
+                <small class="help-block">10-3600</small>
               </div>
             </div>
             <div class="form-group">
@@ -717,7 +721,15 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <label class="control-label col-sm-2" for="maxage"><?=$lang['edit']['maxage'];?></label>
               <div class="col-sm-10">
-              <input type="number" class="form-control" name="maxage" id="maxage" value="<?=htmlspecialchars($result['maxage'], ENT_QUOTES, 'UTF-8');?>">
+              <input type="number" class="form-control" name="maxage" id="maxage" min="0" max="32000" value="<?=htmlspecialchars($result['maxage'], ENT_QUOTES, 'UTF-8');?>">
+              <small class="help-block">0-32000</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="maxbytespersecond"><?=$lang['edit']['maxbytespersecond'];?></label>
+              <div class="col-sm-10">
+              <input type="number" class="form-control" name="maxbytespersecond" id="maxbytespersecond" min="0" max="125000000" value="<?=htmlspecialchars($result['maxbytespersecond'], ENT_QUOTES, 'UTF-8');?>">
+              <small class="help-block">0-125000000</small>
               </div>
             </div>
             <div class="form-group">
@@ -744,6 +756,20 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               <div class="col-sm-offset-2 col-sm-10">
                 <div class="checkbox">
                 <label><input type="checkbox" value="1" name="delete2" <?=($result['delete2']=="1") ? "checked" : "";?>> <?=$lang['edit']['delete2'];?></label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <div class="checkbox">
+                <label><input type="checkbox" value="1" name="automap" <?=($result['automap']=="1") ? "checked" : "";?>> <?=$lang['edit']['automap'];?></label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <div class="checkbox">
+                <label><input type="checkbox" value="1" name="skipcrossduplicates" <?=($result['skipcrossduplicates']=="1") ? "checked" : "";?>> <?=$lang['edit']['skipcrossduplicates'];?></label>
                 </div>
               </div>
             </div>
