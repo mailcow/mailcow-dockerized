@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "21012018_1317";
+    $db_version = "24012018_1219";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -354,12 +354,15 @@ function init_db_schema() {
           "password1" => "VARCHAR(255) NOT NULL",
           "exclude" => "VARCHAR(500) NOT NULL DEFAULT ''",
           "maxage" => "SMALLINT NOT NULL DEFAULT '0'",
-          "mins_interval" => "VARCHAR(50) NOT NULL",
+          "mins_interval" => "VARCHAR(50) NOT NULL DEFAULT '0'",
+          "maxbytespersecond" => "VARCHAR(50) NOT NULL DEFAULT '0'",
           "port1" => "SMALLINT NOT NULL",
           "enc1" => "ENUM('TLS','SSL','PLAIN') DEFAULT 'TLS'",
           "delete2duplicates" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "delete1" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "delete2" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "automap" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "skipcrossduplicates" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "is_running" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "returned_text" => "TEXT",
           "last_run" => "TIMESTAMP NULL DEFAULT NULL",
