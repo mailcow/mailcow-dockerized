@@ -12,14 +12,7 @@ RUN apk add --update \
 	&& set -ex; /bin/bash /dl_files.sh \
 	&& mkdir /run/clamav \
 	&& chown clamav:clamav /run/clamav \
-	&& chmod 750 /run/clamav \
-	&& sed -i '/Foreground yes/s/^#//g' /etc/clamav/clamd.conf \
-	&& sed -i '/TCPSocket 3310/s/^#//g' /etc/clamav/clamd.conf \
-  && sed -i 's#LogFile /var/log/clamav/clamd.log#LogFile /tmp/logpipe_clamd#g' /etc/clamav/clamd.conf \
-	&& sed -i 's/#PhishingSignatures yes/PhishingSignatures no/g' /etc/clamav/clamd.conf \
-	&& sed -i 's/#PhishingScanURLs yes/PhishingScanURLs no/g' /etc/clamav/clamd.conf \
-  && sed -i 's#UpdateLogFile /var/log/clamav/freshclam.log#UpdateLogFile /tmp/logpipe_freshclam#g' /etc/clamav/freshclam.conf \
-	&& sed -i '/Foreground yes/s/^#//g' /etc/clamav/freshclam.conf
+	&& chmod 750 /run/clamav
 
 # Port provision
 EXPOSE 3310
