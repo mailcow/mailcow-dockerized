@@ -347,6 +347,20 @@ $tfa_data = get_tfa();
             <input type="number" class="form-control" id="retry_window" name="retry_window" value="<?=$f2b_data['retry_window'];?>" required>
           </div>
           <div class="form-group">
+            <label for="netban_ipv4"><?=$lang['admin']['f2b_netban_ipv4'];?>:</label>
+            <div class="input-group">
+              <span class="input-group-addon">/</span>
+              <input type="number" class="form-control" id="netban_ipv4" name="netban_ipv4" value="<?=$f2b_data['netban_ipv4'];?>" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="netban_ipv6"><?=$lang['admin']['f2b_netban_ipv6'];?>:</label>
+            <div class="input-group">
+              <span class="input-group-addon">/</span>
+              <input type="number" class="form-control" id="netban_ipv6" name="netban_ipv6" value="<?=$f2b_data['netban_ipv6'];?>" required>
+            </div>
+          </div>
+          <div class="form-group">
             <label for="whitelist"><?=$lang['admin']['f2b_whitelist'];?>:</label>
             <textarea class="form-control" id="whitelist" name="whitelist" rows="5"><?=$f2b_data['whitelist'];?></textarea>
           </div>
