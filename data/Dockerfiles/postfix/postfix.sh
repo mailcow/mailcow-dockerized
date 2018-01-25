@@ -43,6 +43,14 @@ query = SELECT IF(EXISTS(
   ), 'reject_plaintext_session', NULL) AS 'tls_enforce_in';
 EOF
 
+cat <<EOF > /opt/postfix/conf/sql/mysql_transport_maps.cf
+user = ${DBUSER}
+password = ${DBPASS}
+hosts = mysql
+dbname = ${DBNAME}
+query = SELECT nexthop FROM transport_routes WHERE domain = '%s'
+EOF
+
 cat <<EOF > /opt/postfix/conf/sql/mysql_sender_dependent_default_transport_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
