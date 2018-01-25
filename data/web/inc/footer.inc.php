@@ -22,7 +22,9 @@ function setLang(sel) {
   $.post( "<?= $_SERVER['REQUEST_URI']; ?>", {lang: sel} );
   window.location.href = window.location.pathname + window.location.search;
 }
-
+$(window).load(function() {
+  $(".overlay").hide();
+});
 $(document).ready(function() {
   window.mailcow_alert_box = function(message, type) {
     msg = $('<span/>').html(message).text();
