@@ -394,6 +394,19 @@ function init_db_schema() {
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
+      "transport_routes" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "domain" => "VARCHAR(255) NOT NULL",
+          "nexthop" => "VARCHAR(255) NOT NULL"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
       "tfa" => array(
         "cols" => array(
           "id" => "INT NOT NULL AUTO_INCREMENT",
