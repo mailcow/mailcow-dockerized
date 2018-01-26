@@ -201,27 +201,27 @@ function relay($_action, $_data = null, $attr = null) {
     //     'msg' => 'BCC map entry edited'
     //   );
     // break;
-    // case 'details':
-    //   $relaydata = array();
-    //   $id = intval($_data);
-    //   try {
-    //     $stmt = $pdo->prepare("SELECT `id`, `domain`, `nexthop` FROM `transport_maps` WHERE `id` = :id");
-    //     $stmt->execute(array(':id' => $id));
-    //     $relaydata = $stmt->fetch(PDO::FETCH_ASSOC);
-    //   }
-    //   catch(PDOException $e) {
-    //     $_SESSION['return'] = array(
-    //       'type' => 'danger',
-    //       'msg' => 'MySQL: '.$e
-    //     );
-    //     return false;
-    //   }
-    //   if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $relaydata['domain'])) {
-    //     $relaydata = null;
-    //     return false;
-    //   }
-    //   return $relaydata;
-    // break;
+    case 'details':
+      $relaydata = array();
+      $id = intval($_data);
+      try {
+        $stmt = $pdo->prepare("SELECT `id`, `domain`, `nexthop` FROM `transport_maps` WHERE `id` = :id");
+        $stmt->execute(array(':id' => $id));
+        $relaydata = $stmt->fetch(PDO::FETCH_ASSOC);
+      }
+      catch(PDOException $e) {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => 'MySQL: '.$e
+        );
+        return false;
+      }
+      if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $relaydata['domain'])) {
+        $relaydata = null;
+        return false;
+      }
+      return $relaydata;
+    break;
     case 'get':
       $relaydata = array();
       $all_items = array();
