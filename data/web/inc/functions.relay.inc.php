@@ -170,39 +170,39 @@ function relay($_action, $_data = null, $attr = null) {
       $all_items = null;
       return $relaydata;
     break;
-    // case 'delete':
-    //   $ids = (array)$_data['id'];
-    //   foreach ($ids as $id) {
-    //     if (!is_numeric($id)) {
-    //       return false;
-    //     }
-    //     try {
-    //       $stmt = $pdo->prepare("SELECT `domain` FROM `bcc_maps` WHERE id = :id");
-    //       $stmt->execute(array(':id' => $id));
-    //       $domain = $stmt->fetch(PDO::FETCH_ASSOC)['domain'];
-    //       if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
-    //         $_SESSION['return'] = array(
-    //           'type' => 'danger',
-    //           'msg' => sprintf($lang['danger']['access_denied'])
-    //         );
-    //         return false;
-    //       }
-    //       $stmt = $pdo->prepare("DELETE FROM `bcc_maps` WHERE `id`= :id");
-    //       $stmt->execute(array(':id' => $id));
-    //     }
-    //     catch (PDOException $e) {
-    //       $_SESSION['return'] = array(
-    //         'type' => 'danger',
-    //         'msg' => 'MySQL: '.$e
-    //       );
-    //       return false;
-    //     }
-    //   }
-    //   $_SESSION['return'] = array(
-    //     'type' => 'success',
-    //     'msg' => 'Deleted BCC map id/s ' . implode(', ', $ids)
-    //   );
-    //   return true;
-    // break;
+    case 'delete':
+      $ids = (array)$_data['id'];
+      foreach ($ids as $id) {
+        if (!is_numeric($id)) {
+          return false;
+        }
+        try {
+          $stmt = $pdo->prepare("SELECT `domain` FROM `transport_maps` WHERE id = :id");
+          $stmt->execute(array(':id' => $id));
+          $domain = $stmt->fetch(PDO::FETCH_ASSOC)['domain'];
+          if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => sprintf($lang['danger']['access_denied'])
+            );
+            return false;
+          }
+          $stmt = $pdo->prepare("DELETE FROM `transport_maps` WHERE `id`= :id");
+          $stmt->execute(array(':id' => $id));
+        }
+        catch (PDOException $e) {
+          $_SESSION['return'] = array(
+            'type' => 'danger',
+            'msg' => 'MySQL: '.$e
+          );
+          return false;
+        }
+      }
+      $_SESSION['return'] = array(
+        'type' => 'success',
+        'msg' => 'Deleted transport map id/s ' . implode(', ', $ids)
+      );
+      return true;
+    break;
   }
 }
