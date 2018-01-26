@@ -48,7 +48,7 @@ user = ${DBUSER}
 password = ${DBPASS}
 hosts = mysql
 dbname = ${DBNAME}
-query = SELECT nexthop FROM transport_maps WHERE domain = '%s'
+query = SELECT nexthop FROM transport_maps WHERE domain = '%s';
 EOF
 
 cat <<EOF > /opt/postfix/conf/sql/mysql_sender_dependent_default_transport_maps.cf
