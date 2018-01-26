@@ -230,7 +230,7 @@ function relay($_action, $_data = null, $attr = null) {
         $stmt = $pdo->query("SELECT `id`, `domain`, `nexthop` FROM `transport_maps`");
         $all_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
       }
-      return $all_items;
+      return {"status": "success"}
       // catch(PDOException $e) {
       //   $_SESSION['return'] = array(
       //     'type' => 'danger',
