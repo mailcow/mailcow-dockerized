@@ -583,7 +583,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
         <h3 class="modal-title">Relay Domain</h3>
       </div>
       <div class="modal-body">
-				<form class="form-horizontal" data-cached-form="true" role="form" data-id="add_bcc">
+				<form class="form-horizontal" data-cached-form="true" role="form" data-id="add_relay">
           <div class="form-group">
             <label class="control-label col-sm-2" for="domain">Domain:</label>
             <div class="col-sm-10">
