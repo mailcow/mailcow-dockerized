@@ -257,7 +257,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <li><a id="edit_selected" data-id="bcc" data-api-url='edit/bcc' data-api-attr='{"type":"sender"}' href="#"><?=$lang['mailbox']['bcc_to_sender'];?></a></li>
                   <li><a id="edit_selected" data-id="bcc" data-api-url='edit/bcc' data-api-attr='{"type":"rcpt"}' href="#"><?=$lang['mailbox']['bcc_to_rcpt'];?></a></li>
                   <li role="separator" class="divider"></li> -->
-                  <li><a id="delete_selected" data-id="bcc" data-api-url='delete/bcc' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+                  <li><a id="delete_selected" data-id="relay" data-api-url='delete/relay' href="#"><?=$lang['mailbox']['remove'];?></a></li>
                 </ul>
                 <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addRelayModalAdmin"><span class="glyphicon glyphicon-plus"></span> Relay Domain hinzufügen</a>
               </div>

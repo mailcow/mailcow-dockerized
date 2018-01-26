@@ -605,7 +605,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
       </div>
     </div>
   </div>
-</div><!-- add add_bcc modal -->
+</div><!-- add add_relay modal -->
 <!-- log modal -->
 <div class="modal fade" id="syncjobLogModal" tabindex="-1" role="dialog" aria-labelledby="syncjobLogModalLabel">
   <div class="modal-dialog modal-lg" role="document">
