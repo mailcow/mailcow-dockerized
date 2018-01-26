@@ -648,25 +648,32 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           </form>
         <?php
         }
-        elseif (isset($_GET['relay']) && !empty($_GET["relay"])) {
+        else {
+        ?>
+          <div class="alert alert-info" role="alert"><?=$lang['info']['no_action'];?></div>
+        <?php
+        }
+    }
+    elseif (isset($_GET['relay']) && !empty($_GET["relay"])) {
         $relay = intval($_GET["relay"]);
         $result = relay('details', $relay);
         if (!empty($result)) {
           ?>
           <h4>Relay Domain</h4>
           <br />
-          <form class="form-horizontal" data-id="editrelay" role="form" method="post">
+          <form class="form-horizontal" data-id="editbcc" role="form" method="post">
             <input type="hidden" value="0" name="active">
             <div class="form-group">
               <label class="control-label col-sm-2" for="domain">Domain</label>
               <div class="col-sm-10">
-                <input id="domain" class="form-control" id="domain" name="domain" required><?=$result['domain'];?></textarea>
+                <input type="text" class="form-control" id="domain" name="domain">
               </div>
             </div>
             <div class="form-group">
               <label class="control-label col-sm-2" for="nexthop">Nexthop:</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" id="nexthop" name="nexthop">
+                <select id="addFilterType" name="type" id="type" required>
+                <input type="text" class="form-control" id="domain" name="domain">
               </div>
             </div>
             <div class="form-group">
