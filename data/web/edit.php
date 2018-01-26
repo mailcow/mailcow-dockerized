@@ -666,14 +666,13 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <label class="control-label col-sm-2" for="domain">Domain</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" id="domain" name="domain">
+                <input type="text" class="form-control" id="domain" name="domain" value="<?=$result['domain'];?>">
               </div>
             </div>
             <div class="form-group">
               <label class="control-label col-sm-2" for="nexthop">Nexthop:</label>
               <div class="col-sm-10">
-                <select id="addFilterType" name="type" id="type" required>
-                <input type="text" class="form-control" id="domain" name="domain">
+                <input type="text" class="form-control" id="nexthop" name="nexthop" value="<?=$result['nexthop'];?>">
               </div>
             </div>
             <div class="form-group">
