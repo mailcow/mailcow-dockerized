@@ -661,7 +661,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           ?>
           <h4>Relay Domain</h4>
           <br />
-          <form class="form-horizontal" data-id="editbcc" role="form" method="post">
+          <form class="form-horizontal" data-id="editrelay" role="form" method="post">
             <input type="hidden" value="0" name="active">
             <div class="form-group">
               <label class="control-label col-sm-2" for="domain">Domain</label>
