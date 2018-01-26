@@ -657,5 +657,6 @@ jQuery(function($){
   draw_sync_job_table();
   draw_filter_table();
   draw_bcc_table();
+  draw_relay_table();
 
 });
