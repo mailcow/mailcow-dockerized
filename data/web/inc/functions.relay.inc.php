@@ -7,6 +7,7 @@ function relay($_action, $_data = null, $attr = null) {
   }
   switch ($_action) {
     case 'add':
+      return 'hello world';
       $domain = strtolower(trim($_data['domain']));
       $nexthop = strtolower(trim($_data['nexthop']));
       if (empty($domain)) {
