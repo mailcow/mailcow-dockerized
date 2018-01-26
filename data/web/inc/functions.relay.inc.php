@@ -47,6 +47,7 @@ function relay($_action, $_data = null, $attr = null) {
       foreach ($ids as $id) {
         $is_now = relay('details', $id);
         if (!empty($is_now)) {
+          $id = $is_now['id'];
           $domain = $is_now['domain'];
           $nexthop = $is_now['nexthop'];
         }
@@ -61,7 +62,8 @@ function relay($_action, $_data = null, $attr = null) {
           $stmt = $pdo->prepare("UPDATE `transport_maps` SET `domain` = :domain, `nexthop` = :nexthop WHERE `id`= :id");
           $stmt->execute(array(
             ':domain' => $domain,
-            ':nexthop' => $nexthop
+            ':nexthop' => $nexthop,
+            ':id' => $id
           ));
         }
         catch (PDOException $e) {
