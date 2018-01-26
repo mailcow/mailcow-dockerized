@@ -230,21 +230,20 @@ function relay($_action, $_data = null, $attr = null) {
         $stmt = $pdo->query("SELECT `id`, `domain`, `nexthop` FROM `transport_maps`");
         $all_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
       }
-      return {"status": "success"}
-      // catch(PDOException $e) {
-      //   $_SESSION['return'] = array(
-      //     'type' => 'danger',
-      //     'msg' => 'MySQL: '.$e
-      //   );
-      //   return false;
-      // }
-      // foreach ($all_items as $i) {
-      //   if (hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $i['domain'])) {
-      //     $relaydata[] = $i['id'];
-      //   }
-      // }
-      // $all_items = null;
-      // return $relaydata;
+      catch(PDOException $e) {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => 'MySQL: '.$e
+        );
+        return false;
+      }
+      foreach ($all_items as $i) {
+        if (hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $i['domain'])) {
+          $relaydata[] = $i['id'];
+        }
+      }
+      $all_items = null;
+      return $relaydata;
     break;
     // case 'delete':
     //   $ids = (array)$_data['id'];
