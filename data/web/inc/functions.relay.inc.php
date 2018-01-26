@@ -43,89 +43,41 @@ function relay($_action, $_data = null, $attr = null) {
         'msg' => 'Relay domain entry saved'
       );
     break;
-    // case 'edit':
-    //   if (!isset($_SESSION['acl']['bcc_maps']) || $_SESSION['acl']['bcc_maps'] != "1" ) {
-    //     $_SESSION['return'] = array(
-    //       'type' => 'danger',
-    //       'msg' => sprintf($lang['danger']['access_denied'])
-    //     );
-    //     return false;
-    //   }
-    //   $ids = (array)$_data['id'];
-    //   foreach ($ids as $id) {
-    //     $is_now = bcc('details', $id);
-    //     if (!empty($is_now)) {
-    //       $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
-    //       $bcc_dest = (!empty($_data['bcc_dest'])) ? $_data['bcc_dest'] : $is_now['bcc_dest'];
-    //       $local_dest = $is_now['local_dest'];
-    //       $type = (!empty($_data['type'])) ? $_data['type'] : $is_now['type'];
-    //     }
-    //     else {
-    //       $_SESSION['return'] = array(
-    //         'type' => 'danger',
-    //         'msg' => sprintf($lang['danger']['access_denied'])
-    //       );
-    //       return false;
-    //     }
-    //     $bcc_dest = array_map('trim', preg_split( "/( |,|;|\n)/", $bcc_dest));
-    //     $active = intval($_data['active']);
-    //     foreach ($bcc_dest as &$bcc_dest_e) {
-    //       if (!filter_var($bcc_dest_e, FILTER_VALIDATE_EMAIL)) {
-    //         $bcc_dest_e = null;;
-    //       }
-    //       $bcc_dest_e = strtolower($bcc_dest_e);
-    //     }
-    //     $bcc_dest = array_filter($bcc_dest);
-    //     $bcc_dest = implode(",", $bcc_dest);
-    //     if (empty($bcc_dest)) {
-    //       $_SESSION['return'] = array(
-    //         'type' => 'danger',
-    //         'msg' => 'BCC map destination cannot be empty'
-    //       );
-    //       return false;
-    //     }
-    //     try {
-    //       $stmt = $pdo->prepare("SELECT `id` FROM `bcc_maps`
-    //         WHERE `local_dest` = :local_dest AND `type` = :type");
-    //       $stmt->execute(array(':local_dest' => $local_dest, ':type' => $type));
-    //       $id_now = $stmt->fetch(PDO::FETCH_ASSOC)['id'];
-    //     }
-    //     catch(PDOException $e) {
-    //       $_SESSION['return'] = array(
-    //         'type' => 'danger',
-    //         'msg' => 'MySQL: '.$e
-    //       );
-    //       return false;
-    //     }
-    //     if (isset($id_now) && $id_now != $id) {
-    //       $_SESSION['return'] = array(
-    //         'type' => 'danger',
-    //         'msg' => 'A BCC map entry ' . htmlspecialchars($local_dest) . ' exists for this type'
-    //       );
-    //       return false;
-    //     }
-    //     try {
-    //       $stmt = $pdo->prepare("UPDATE `bcc_maps` SET `bcc_dest` = :bcc_dest, `active` = :active, `type` = :type WHERE `id`= :id");
-    //       $stmt->execute(array(
-    //         ':bcc_dest' => $bcc_dest,
-    //         ':active' => $active,
-    //         ':type' => $type,
-    //         ':id' => $id
-    //       ));
-    //     }
-    //     catch (PDOException $e) {
-    //       $_SESSION['return'] = array(
-    //         'type' => 'danger',
-    //         'msg' => 'MySQL: '.$e
-    //       );
-    //       return false;
-    //     }
-    //   }
-    //   $_SESSION['return'] = array(
-    //     'type' => 'success',
-    //     'msg' => 'BCC map entry edited'
-    //   );
-    // break;
+    case 'edit':
+      $ids = (array)$_data['id'];
+      foreach ($ids as $id) {
+        $is_now = relay('details', $id);
+        if (!empty($is_now)) {
+          $domain = $is_now['domain'];
+          $nexthop = $is_now['nexthop'];
+        }
+        else {
+          $_SESSION['return'] = array(
+            'type' => 'danger',
+            'msg' => sprintf($lang['danger']['access_denied'])
+          );
+          return false;
+        }
+        try {
+          $stmt = $pdo->prepare("UPDATE `transport_maps` SET `domain` = :domain, `nexthop` = :nexthop WHERE `id`= :id");
+          $stmt->execute(array(
+            ':domain' => $domain,
+            ':nexthop' => $nexthop
+          ));
+        }
+        catch (PDOException $e) {
+          $_SESSION['return'] = array(
+            'type' => 'danger',
+            'msg' => 'MySQL: '.$e
+          );
+          return false;
+        }
+      }
+      $_SESSION['return'] = array(
+        'type' => 'success',
+        'msg' => 'Transport map entry edited'
+      );
+    break;
     case 'details':
       $relaydata = array();
       $id = intval($_data);
