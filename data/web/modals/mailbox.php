@@ -574,6 +574,38 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
     </div>
   </div>
 </div><!-- add add_bcc modal -->
+<!-- add add_relay modal -->
+<div class="modal fade" id="addRelayModalAdmin" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <h3 class="modal-title">Relay Domain</h3>
+      </div>
+      <div class="modal-body">
+				<form class="form-horizontal" data-cached-form="true" role="form" data-id="add_bcc">
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="domain">Domain:</label>
+            <div class="col-sm-10">
+              <input type="text" name="domain">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="nexthop">Nexthop:</label>
+            <div class="col-sm-10">
+              <input type="text" name="nexthop">
+            </div>
+          </div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+              <button class="btn btn-success" id="add_item" data-id="add_relay" data-api-url='add/relay' data-api-attr='{}' href="#">Relay Domain hinzufügen</button>
+						</div>
+					</div>
+				</form>
+      </div>
+    </div>
+  </div>
+</div><!-- add add_bcc modal -->
 <!-- log modal -->
 <div class="modal fade" id="syncjobLogModal" tabindex="-1" role="dialog" aria-labelledby="syncjobLogModalLabel">
   <div class="modal-dialog modal-lg" role="document">

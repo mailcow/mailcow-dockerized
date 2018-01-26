@@ -407,11 +407,6 @@ jQuery(function($){
               '<a href="#" id="delete_selected" data-id="single-relay" data-api-url="delete/relay" data-item="' + item.id + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="bcc" name="multi_select" value="' + item.id + '" />';
-            if (item.type == 'sender') {
-              item.type = '<span id="active-script" class="label label-success">Sender</span>';
-            } else {
-              item.type = '<span id="inactive-script" class="label label-warning">Recipient</span>';
-            }
           });
         }
       }),
