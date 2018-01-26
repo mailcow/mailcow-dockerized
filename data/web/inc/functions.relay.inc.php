@@ -202,21 +202,12 @@ function relay($_action, $_data = null, $attr = null) {
       );
     break;
     case 'details':
-      $bccdata = array();
+      $relaydata = array();
       $id = intval($_data);
       try {
-        $stmt = $pdo->prepare("SELECT `id`,
-          `local_dest`,
-          `bcc_dest`,
-          `active` AS `active_int`,
-          CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`,
-          `type`,
-          `created`,
-          `domain`,
-          `modified` FROM `bcc_maps`
-            WHERE `id` = :id");
+        $stmt = $pdo->prepare("SELECT `id`, `domain`, `nexthop` FROM `transport_maps` WHERE `id` = :id");
         $stmt->execute(array(':id' => $id));
-        $bccdata = $stmt->fetch(PDO::FETCH_ASSOC);
+        $relaydata = $stmt->fetch(PDO::FETCH_ASSOC);
       }
       catch(PDOException $e) {
         $_SESSION['return'] = array(
@@ -225,11 +216,11 @@ function relay($_action, $_data = null, $attr = null) {
         );
         return false;
       }
-      if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $bccdata['domain'])) {
-        $bccdata = null;
+      if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $relaydata['domain'])) {
+        $relaydata = null;
         return false;
       }
-      return $bccdata;
+      return $relaydata;
     break;
     case 'get':
       $relaydata = array();
