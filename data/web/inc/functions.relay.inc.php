@@ -24,7 +24,7 @@ function relay($_action, $_data = null, $attr = null) {
       }
       try {
         $stmt = $pdo->prepare("INSERT INTO `transport_maps` (`domain`, `nexthop`) VALUES
-          (:domain, :nexthop");
+          (:domain, :nexthop)");
         $stmt->execute(array(
           ':domain' => $domain,
           ':nexthop' => $nexthop
