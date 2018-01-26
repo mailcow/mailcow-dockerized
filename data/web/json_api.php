@@ -1191,6 +1191,41 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               break;
             }
           break;
+          case "relay":
+            switch ($object) {
+              case "all":
+                $relay_items = relay('get');
+                if (!empty($relay_items)) {
+                  foreach ($relay_items as $relay_item) {
+                    if ($details = relay('details', $relay_item)) {
+                      $data[] = $details;
+                    }
+                    else {
+                      continue;
+                    }
+                  }
+                }
+                if (!isset($data) || empty($data)) {
+                  echo '{}';
+                }
+                else {
+                  echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                }
+              break;
+              default:
+                $data = relay('details', $object);
+                if (!empty($data)) {
+                  $data[] = $details;
+                }
+                if (!isset($data) || empty($data)) {
+                  echo '{}';
+                }
+                else {
+                  echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                }
+              break;
+            }
+          break;
           case "policy_wl_mailbox":
             switch ($object) {
               default:
