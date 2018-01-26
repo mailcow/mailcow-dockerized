@@ -335,7 +335,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
               ?>
               </select>
             </div>
-          </div> 
+          </div>
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="host1"><?=$lang['add']['hostname'];?></label>
 						<div class="col-sm-10">
@@ -580,25 +580,25 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
-        <h3 class="modal-title">Relay Domain</h3>
+        <h3 class="modal-title"><?=$lang['mailbox']['transport_map'];?></h3>
       </div>
       <div class="modal-body">
 				<form class="form-horizontal" data-cached-form="true" role="form" data-id="add_relay">
           <div class="form-group">
-            <label class="control-label col-sm-2" for="domain">Domain:</label>
+            <label class="control-label col-sm-2" for="domain"><?=$lang['mailbox']['domain'];?>:</label>
             <div class="col-sm-10">
               <input type="text" name="domain" class="form-control">
             </div>
           </div>
           <div class="form-group">
-            <label class="control-label col-sm-2" for="nexthop">Nexthop:</label>
+            <label class="control-label col-sm-2" for="nexthop"><?=$lang['mailbox']['transport_map_dest'];?>:</label>
             <div class="col-sm-10">
               <input type="text" name="nexthop" class="form-control">
             </div>
           </div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
-              <button class="btn btn-success" id="add_item" data-id="add_relay" data-api-url='add/relay' data-api-attr='{}' href="#">Relay Domain hinzufügen</button>
+              <button class="btn btn-success" id="add_item" data-id="add_relay" data-api-url='add/relay' data-api-attr='{}' href="#"><?=$lang['mailbox']['transport_map_add_domain'];?></button>
 						</div>
 					</div>
 				</form>

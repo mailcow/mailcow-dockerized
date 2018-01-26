@@ -655,3 +655,8 @@ $lang['mailbox']['bcc_to_rcpt'] = "Map empfängerabhängig verwenden";
 $lang['mailbox']['add_bcc_entry'] = "BCC-Eintrag hinzufügen";
 $lang['mailbox']['bcc_info'] = "Eine empfängerabhängige Map wird verwendet, wenn die BCC-Map Eintragung auf den Eingang einer E-Mail auf das lokale Ziel reagieren soll. Senderabhängige Maps verfahren nach dem gleichen Prinzip.<br/>
   Das lokale Ziel wird bei Fehlzustellungen an ein BCC-Ziel nicht informiert.";
+
+$lang['mailbox']['transport_map'] = "Transport Maps";
+$lang['mailbox']['transport_map_dest'] = "Zielserver";
+$lang['mailbox']['transport_map_add_domain'] = "Relay Domain hinzufügen";
+$lang['mailbox']['transport_map_desc'] = "Transport Maps werden direkt auf den hinterlegten Server weitergeleitet.";

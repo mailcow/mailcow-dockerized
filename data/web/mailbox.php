@@ -22,7 +22,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
     <li role="presentation"><a href="#tab-syncjobs" aria-controls="tab-syncjobs" role="tab" data-toggle="tab"><?=$lang['mailbox']['sync_jobs'];?></a></li>
     <li role="presentation"><a href="#tab-filters" aria-controls="tab-filters" role="tab" data-toggle="tab"><?=$lang['mailbox']['filters'];?></a></li>
     <li role="presentation"><a href="#tab-bcc" aria-controls="tab-filters" role="tab" data-toggle="tab"><?=$lang['mailbox']['bcc_maps'];?></a></li>
-    <li role="presentation"><a href="#tab-relay" aria-controls="tab-relay" role="tab" data-toggle="tab">Relay Domains</a></li>
+    <li role="presentation"><a href="#tab-relay" aria-controls="tab-relay" role="tab" data-toggle="tab"><?=$lang['mailbox']['transport_map'];?></a></li>
   </ul>
 
 	<div class="row">
@@ -240,9 +240,9 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
         <div role="tabpanel" class="tab-pane" id="tab-relay">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Relay Domains</h3>
+              <h3 class="panel-title"><?=$lang['mailbox']['transport_map'];?></h3>
             </div>
-            <p style="margin:10px" class="help-block">Lorem ipsum</p>
+            <p style="margin:10px" class="help-block"><?=$lang['mailbox']['transport_map_desc'];?></p>
             <div class="table-responsive">
               <table class="table table-striped" id="relay_table"></table>
             </div>
@@ -251,15 +251,9 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                 <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="bcc" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
                 <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <!-- <li><a id="edit_selected" data-id="bcc" data-api-url='edit/bcc' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
-                  <li><a id="edit_selected" data-id="bcc" data-api-url='edit/bcc' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
-                  <li role="separator" class="divider"></li>
-                  <li><a id="edit_selected" data-id="bcc" data-api-url='edit/bcc' data-api-attr='{"type":"sender"}' href="#"><?=$lang['mailbox']['bcc_to_sender'];?></a></li>
-                  <li><a id="edit_selected" data-id="bcc" data-api-url='edit/bcc' data-api-attr='{"type":"rcpt"}' href="#"><?=$lang['mailbox']['bcc_to_rcpt'];?></a></li>
-                  <li role="separator" class="divider"></li> -->
                   <li><a id="delete_selected" data-id="relay" data-api-url='delete/relay' href="#"><?=$lang['mailbox']['remove'];?></a></li>
                 </ul>
-                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addRelayModalAdmin"><span class="glyphicon glyphicon-plus"></span> Relay Domain hinzufügen</a>
+                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addRelayModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['transport_map_add_domain'];?></a>
               </div>
             </div>
           </div>

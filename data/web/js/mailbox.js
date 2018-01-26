@@ -388,8 +388,8 @@ jQuery(function($){
       "columns": [
         {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"sorted": true,"name":"id","title":"ID","style":{"maxWidth":"60px","width":"60px","text-align":"center"}},
-        {"name":"domain","title":"Domain"},
-        {"name":"nexthop","title":"Nexthop","breakpoints":"xs sm"},
+        {"name":"domain","title":lang.domain},
+        {"name":"nexthop","title":lang.transport_map_dest,"breakpoints":"xs sm"},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
       "empty": lang.empty,
