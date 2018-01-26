@@ -43,20 +43,19 @@ function relay($_action, $_data = null, $attr = null) {
       );
     break;
     case 'edit':
+      // if (!isset($_SESSION['acl']['bcc_maps']) || $_SESSION['acl']['bcc_maps'] != "1" ) {
+      //   $_SESSION['return'] = array(
+      //     'type' => 'danger',
+      //     'msg' => sprintf($lang['danger']['access_denied'])
+      //   );
+      //   return false;
+      // }
       $ids = (array)$_data['id'];
       foreach ($ids as $id) {
         $is_now = relay('details', $id);
         if (!empty($is_now)) {
-          $id = $is_now['id'];
-          $domain = $is_now['domain'];
-          $nexthop = $is_now['nexthop'];
-        }
-        else {
-          $_SESSION['return'] = array(
-            'type' => 'danger',
-            'msg' => sprintf($lang['danger']['access_denied'])
-          );
-          return false;
+          $domain = (isset($_data['domain'])) ? $_data['domain'] : $is_now['domain'];
+          $nexthop = (isset($_data['nexthop'])) ? $_data['nexthop'] : $is_now['nexthop'];
         }
         try {
           $stmt = $pdo->prepare("UPDATE `transport_maps` SET `domain` = :domain, `nexthop` = :nexthop WHERE `id`= :id");
