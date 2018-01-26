@@ -143,7 +143,7 @@ $(document).ready(function() {
             response_obj = JSON.parse(response);
           }
           if (api_reload_window === true) {
-            // window.location = window.location.href.split("#")[0];
+            window.location = window.location.href.split("#")[0];
           }
         }
       });
@@ -222,7 +222,7 @@ $(document).ready(function() {
           }
         }
         if (api_reload_window === true) {
-          // window.location = window.location.href.split("#")[0];
+          window.location = window.location.href.split("#")[0];
         }
       }
     });
@@ -270,7 +270,7 @@ $(document).ready(function() {
           url: '/api/v1/' + api_url,
           jsonp: false,
           complete: function(data) {
-            // window.location = window.location.href.split("#")[0];
+            window.location = window.location.href.split("#")[0];
           }
         });
       })
