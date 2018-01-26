@@ -659,4 +659,4 @@ $lang['mailbox']['bcc_info'] = "Eine empfängerabhängige Map wird verwendet, we
 $lang['mailbox']['transport_map'] = "Transport Maps";
 $lang['mailbox']['transport_map_dest'] = "Zielserver";
 $lang['mailbox']['transport_map_add_domain'] = "Relay Domain hinzufügen";
-$lang['mailbox']['transport_map_desc'] = "Transport Maps werden direkt auf den hinterlegten Server weitergeleitet.";
+$lang['mailbox']['transport_map_desc'] = "Lorem ipsum.";
