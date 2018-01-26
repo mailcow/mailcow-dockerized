@@ -587,13 +587,13 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
           <div class="form-group">
             <label class="control-label col-sm-2" for="domain">Domain:</label>
             <div class="col-sm-10">
-              <input type="text" name="domain">
+              <input type="text" name="domain" class="form-control">
             </div>
           </div>
           <div class="form-group">
             <label class="control-label col-sm-2" for="nexthop">Nexthop:</label>
             <div class="col-sm-10">
-              <input type="text" name="nexthop">
+              <input type="text" name="nexthop" class="form-control">
             </div>
           </div>
 					<div class="form-group">
