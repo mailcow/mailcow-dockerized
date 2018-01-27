@@ -661,7 +661,6 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         $id = $_GET["syncjob"];
         $result = mailbox('get', 'syncjob_details', $id);
         if (!empty($result)) {
-          print_r($result);
         ?>
           <h4><?=$lang['edit']['syncjob'];?></h4>
           <form class="form-horizontal" data-id="editsyncjob" role="form" method="post">
