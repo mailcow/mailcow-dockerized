@@ -168,29 +168,31 @@ $tfa_data = get_tfa();
             if (!empty($dkim = dkim('details', $domain))) {
           ?>
             <div class="row">
-              <div class="col-xs-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" /></div>
-              <div class="col-xs-2">
+              <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" /></div>
+              <div class="col-md-3">
                 <p>Domain: <strong><?=htmlspecialchars($domain);?></strong>
-                  <p><span class="label label-success"><?=$lang['admin']['dkim_key_valid'];?></span></p>
-                  <p><span class="label label-primary">Selector '<?=$dkim['dkim_selector'];?>'</span></p>
-                  <p><span class="label label-info"><?=$dkim['length'];?> bit</span></p>
+                  <p class="dkim-label"><span class="label label-success"><?=$lang['admin']['dkim_key_valid'];?></span></p>
+                  <p class="dkim-label"><span class="label label-primary">Selector '<?=$dkim['dkim_selector'];?>'</span></p>
+                  <p class="dkim-label"><span class="label label-info"><?=$dkim['length'];?> bit</span></p>
                 </p>
               </div>
-              <div class="col-xs-9">
+              <div class="col-md-8">
                   <pre><?=$dkim['dkim_txt'];?></pre>
                   <p data-toggle="modal" data-target="#showDKIMprivKey" id="dkim_priv" style="cursor:pointer;margin-top:-8pt" data-priv-key="<?=$dkim['privkey'];?>"><small>↪ Private key</small></p>
               </div>
+              <hr class="visible-xs visible-sm">
             </div>
           <?php
           }
           else {
           ?>
           <div class="row">
-              <div class="col-xs-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" disabled /></div>
-            <div class="col-xs-2">
+              <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" disabled /></div>
+            <div class="col-md-3">
               <p>Domain: <strong><?=htmlspecialchars($domain);?></strong><br /><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
             </div>
-            <div class="col-xs-9"><pre>-</pre></div>
+            <div class="col-md-8"><pre>-</pre></div>
+              <hr class="visible-xs visible-sm">
           </div>
           <?php
           }
@@ -198,29 +200,31 @@ $tfa_data = get_tfa();
             if (!empty($dkim = dkim('details', $alias_domain))) {
             ?>
               <div class="row">
-              <div class="col-xs-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$alias_domain;?>" /></div>
-                <div class="col-xs-1 col-xs-offset-1">
+              <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$alias_domain;?>" /></div>
+                <div class="col-md-2 col-md-offset-1">
                   <p><small>↳ Alias-Domain: <strong><?=htmlspecialchars($alias_domain);?></strong></small>
-                    <p><span class="label label-success"><?=$lang['admin']['dkim_key_valid'];?></span></p>
-                    <p><span class="label label-primary">Selector '<?=$dkim['dkim_selector'];?>'</span></p>
-                    <p><span class="label label-info"><?=$dkim['length'];?> bit</span></p>
+                    <p class="dkim-label"><span class="label label-success"><?=$lang['admin']['dkim_key_valid'];?></span></p>
+                    <p class="dkim-label"><span class="label label-primary">Selector '<?=$dkim['dkim_selector'];?>'</span></p>
+                    <p class="dkim-label"><span class="label label-info"><?=$dkim['length'];?> bit</span></p>
                 </p>
                 </div>
-                <div class="col-xs-9">
+                <div class="col-md-8">
                   <pre><?=$dkim['dkim_txt'];?></pre>
                   <p data-toggle="modal" data-target="#showDKIMprivKey" id="dkim_priv" style="cursor:pointer;margin-top:-8pt" data-priv-key="<?=$dkim['privkey'];?>"><small>↪ Private key</small></p>
                 </div>
+              <hr class="visible-xs visible-sm">
               </div>
             <?php
             }
             else {
             ?>
             <div class="row">
-              <div class="col-xs-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" disabled /></div>
-              <div class="col-xs-1 col-xs-offset-1">
+              <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" disabled /></div>
+              <div class="col-md-2 col-md-offset-1">
                 <p><small>↳ Alias-Domain: <strong><?=htmlspecialchars($alias_domain);?></strong><br /></small><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
               </div>
-              <div class="col-xs-9"><pre>-</pre></div>
+              <div class="col-md-8"><pre>-</pre></div>
+              <hr class="visible-xs visible-sm">
             </div>
             <?php
             }
@@ -230,18 +234,19 @@ $tfa_data = get_tfa();
           if (!empty($dkim = dkim('details', $blind))) {
           ?>
             <div class="row">
-              <div class="col-xs-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$blind;?>" /></div>
-              <div class="col-xs-2">
+              <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$blind;?>" /></div>
+              <div class="col-md-3">
                 <p>Domain: <strong><?=htmlspecialchars($blind);?></strong>
-                  <p><span class="label label-warning"><?=$lang['admin']['dkim_key_unused'];?></span></p>
-                  <p><span class="label label-primary">Selector '<?=$dkim['dkim_selector'];?>'</span></p>
-                  <p><span class="label label-info"><?=$dkim['length'];?> bit</span></p>
+                  <p class="dkim-label"><span class="label label-warning"><?=$lang['admin']['dkim_key_unused'];?></span></p>
+                  <p class="dkim-label"><span class="label label-primary">Selector '<?=$dkim['dkim_selector'];?>'</span></p>
+                  <p class="dkim-label"><span class="label label-info"><?=$dkim['length'];?> bit</span></p>
                 </p>
                 </div>
-                <div class="col-xs-9">
+                <div class="col-md-8">
                   <pre><?=$dkim['dkim_txt'];?></pre>
                   <p data-toggle="modal" data-target="#showDKIMprivKey" id="dkim_priv" style="cursor:pointer;margin-top:-8pt" data-priv-key="<?=$dkim['privkey'];?>"><small>↪ Private key</small></p>
                 </div>
+                <hr class="visible-xs visible-sm">
             </div>
           <?php
           }
@@ -347,6 +352,20 @@ $tfa_data = get_tfa();
             <input type="number" class="form-control" id="retry_window" name="retry_window" value="<?=$f2b_data['retry_window'];?>" required>
           </div>
           <div class="form-group">
+            <label for="netban_ipv4"><?=$lang['admin']['f2b_netban_ipv4'];?>:</label>
+            <div class="input-group">
+              <span class="input-group-addon">/</span>
+              <input type="number" class="form-control" id="netban_ipv4" name="netban_ipv4" value="<?=$f2b_data['netban_ipv4'];?>" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="netban_ipv6"><?=$lang['admin']['f2b_netban_ipv6'];?>:</label>
+            <div class="input-group">
+              <span class="input-group-addon">/</span>
+              <input type="number" class="form-control" id="netban_ipv6" name="netban_ipv6" value="<?=$f2b_data['netban_ipv6'];?>" required>
+            </div>
+          </div>
+          <div class="form-group">
             <label for="whitelist"><?=$lang['admin']['f2b_whitelist'];?>:</label>
             <textarea class="form-control" id="whitelist" name="whitelist" rows="5"><?=$f2b_data['whitelist'];?></textarea>
           </div>
@@ -427,7 +446,7 @@ $tfa_data = get_tfa();
               ?>
             </select>
           </div>
-          <button class="btn btn-success" id="edit_selected" data-item="self" data-id="quarantaine" data-api-url='edit/quarantaine' data-api-attr='{"action":"settings"}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+          <button class="btn btn-default" id="edit_selected" data-item="self" data-id="quarantaine" data-api-url='edit/quarantaine' data-api-attr='{"action":"settings"}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
         </form>
       </div>
     </div>
@@ -441,7 +460,7 @@ $tfa_data = get_tfa();
         <form class="form-inline" role="form" method="post" enctype="multipart/form-data">
           <p>
             <input type="file" name="main_logo" class="filestyle" data-buttonName="btn-default" data-buttonText="Select" accept="image/gif, image/jpeg, image/pjpeg, image/x-png, image/png, image/svg+xml">
-            <button name="submit_main_logo" type="submit" class="btn btn-success"><span class="glyphicon glyphicon-cloud-upload"></span> <?=$lang['admin']['upload'];?></button>
+            <button name="submit_main_logo" type="submit" class="btn btn-default"><span class="glyphicon glyphicon-cloud-upload"></span> <?=$lang['admin']['upload'];?></button>
           </p>
         </form>
         <?php
@@ -501,7 +520,7 @@ $tfa_data = get_tfa();
             ?>
           </table>
           <p><div class="btn-group">
-            <button class="btn btn-sm btn-success" id="edit_selected" data-item="admin" data-id="app_links" data-reload="no" data-api-url='edit/app_links' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+            <button class="btn btn-sm btn-default" id="edit_selected" data-item="admin" data-id="app_links" data-reload="no" data-api-url='edit/app_links' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
             <button class="btn btn-sm btn-default" type="button" id="add_app_link_row"><?=$lang['admin']['add_row'];?></button>
           </div></p>
         </form>
@@ -526,7 +545,7 @@ $tfa_data = get_tfa();
             <label for="help_text"><?=$lang['admin']['help_text'];?>:</label>
             <textarea class="form-control" id="help_text" name="help_text" rows="7"><?=$ui_texts['help_text'];?></textarea>
           </div>
-          <button class="btn btn-success" id="edit_selected" data-item="ui" data-id="uitexts" data-api-url='edit/ui_texts' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+          <button class="btn btn-default" id="edit_selected" data-item="ui" data-id="uitexts" data-api-url='edit/ui_texts' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
         </form>
       </div>
     </div>

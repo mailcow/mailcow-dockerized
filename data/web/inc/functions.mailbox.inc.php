@@ -213,23 +213,29 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             return false;
           }
           $active  = intval($_data['active']);
-          $delete2duplicates = intval($_data['delete2duplicates']);
-          $delete1  = intval($_data['delete1']);
-          $delete2  = intval($_data['delete2']);
-          $port1            = $_data['port1'];
-          $host1            = strtolower($_data['host1']);
-          $password1        = $_data['password1'];
-          $exclude          = $_data['exclude'];
-          $maxage           = $_data['maxage'];
-          $subfolder2       = $_data['subfolder2'];
-          $user1            = $_data['user1'];
-          $mins_interval    = $_data['mins_interval'];
-          $enc1             = $_data['enc1'];
+          $delete2duplicates    = intval($_data['delete2duplicates']);
+          $delete1              = intval($_data['delete1']);
+          $delete2              = intval($_data['delete2']);
+          $skipcrossduplicates  = intval($_data['skipcrossduplicates']);
+          $automap              = intval($_data['automap']);
+          $port1                = $_data['port1'];
+          $host1                = strtolower($_data['host1']);
+          $password1            = $_data['password1'];
+          $exclude              = $_data['exclude'];
+          $maxage               = $_data['maxage'];
+          $maxbytespersecond    = $_data['maxbytespersecond'];
+          $subfolder2           = $_data['subfolder2'];
+          $user1                = $_data['user1'];
+          $mins_interval        = $_data['mins_interval'];
+          $enc1                = $_data['enc1'];
           if (empty($subfolder2)) {
             $subfolder2 = "";
           }
           if (!isset($maxage) || !filter_var($maxage, FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 32767)))) {
             $maxage = "0";
+          }
+          if (!isset($maxbytespersecond) || !filter_var($maxbytespersecond, FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 125000000)))) {
+            $maxbytespersecond = "0";
           }
           if (!filter_var($port1, FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 65535)))) {
             $_SESSION['return'] = array(
@@ -287,14 +293,17 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             return false;
           }
           try {
-            $stmt = $pdo->prepare("INSERT INTO `imapsync` (`user2`, `exclude`, `delete1`, `delete2`, `maxage`, `subfolder2`, `host1`, `authmech1`, `user1`, `password1`, `mins_interval`, `port1`, `enc1`, `delete2duplicates`, `active`)
-              VALUES (:user2, :exclude, :delete1, :delete2, :maxage, :subfolder2, :host1, :authmech1, :user1, :password1, :mins_interval, :port1, :enc1, :delete2duplicates, :active)");
+            $stmt = $pdo->prepare("INSERT INTO `imapsync` (`user2`, `exclude`, `delete1`, `delete2`, `automap`, `skipcrossduplicates`, `maxbytespersecond`, `maxage`, `subfolder2`, `host1`, `authmech1`, `user1`, `password1`, `mins_interval`, `port1`, `enc1`, `delete2duplicates`, `active`)
+              VALUES (:user2, :exclude, :delete1, :delete2, :automap, :skipcrossduplicates, :maxbytespersecond, :maxage, :subfolder2, :host1, :authmech1, :user1, :password1, :mins_interval, :port1, :enc1, :delete2duplicates, :active)");
             $stmt->execute(array(
               ':user2' => $username,
               ':exclude' => $exclude,
               ':maxage' => $maxage,
               ':delete1' => $delete1,
               ':delete2' => $delete2,
+              ':automap' => $automap,
+              ':skipcrossduplicates' => $skipcrossduplicates,
+              ':maxbytespersecond' => $maxbytespersecond,
               ':subfolder2' => $subfolder2,
               ':host1' => $host1,
               ':authmech1' => 'PLAIN',
@@ -1444,6 +1453,8 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               $delete2duplicates = (isset($_data['delete2duplicates'])) ? intval($_data['delete2duplicates']) : $is_now['delete2duplicates'];
               $delete1 = (isset($_data['delete1'])) ? intval($_data['delete1']) : $is_now['delete1'];
               $delete2 = (isset($_data['delete2'])) ? intval($_data['delete2']) : $is_now['delete2'];
+              $automap = (isset($_data['automap'])) ? intval($_data['automap']) : $is_now['automap'];
+              $skipcrossduplicates = (isset($_data['skipcrossduplicates'])) ? intval($_data['skipcrossduplicates']) : $is_now['skipcrossduplicates'];
               $port1 = (!empty($_data['port1'])) ? $_data['port1'] : $is_now['port1'];
               $password1 = (!empty($_data['password1'])) ? $_data['password1'] : $is_now['password1'];
               $host1 = (!empty($_data['host1'])) ? $_data['host1'] : $is_now['host1'];
@@ -1452,6 +1463,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               $mins_interval = (!empty($_data['mins_interval'])) ? $_data['mins_interval'] : $is_now['mins_interval'];
               $exclude = (!empty($_data['exclude'])) ? $_data['exclude'] : $is_now['exclude'];
               $maxage = (isset($_data['maxage']) && $_data['maxage'] != "") ? intval($_data['maxage']) : $is_now['maxage'];
+              $maxbytespersecond = (isset($_data['maxbytespersecond']) && $_data['maxbytespersecond'] != "") ? intval($_data['maxbytespersecond']) : $is_now['maxbytespersecond'];
             }
             else {
               $_SESSION['return'] = array(
@@ -1465,6 +1477,9 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             }
             if (!isset($maxage) || !filter_var($maxage, FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 32767)))) {
               $maxage = "0";
+            }
+            if (!isset($maxbytespersecond) || !filter_var($maxbytespersecond, FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 125000000)))) {
+              $maxbytespersecond = "0";
             }
             if (!filter_var($port1, FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 65535)))) {
               $_SESSION['return'] = array(
@@ -1502,14 +1517,33 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               return false;
             }
             try {
-              $stmt = $pdo->prepare("UPDATE `imapsync` SET `delete1` = :delete1, `delete2` = :delete2, `maxage` = :maxage, `subfolder2` = :subfolder2, `exclude` = :exclude, `host1` = :host1, `last_run` = :last_run, `user1` = :user1, `password1` = :password1, `mins_interval` = :mins_interval, `port1` = :port1, `enc1` = :enc1, `delete2duplicates` = :delete2duplicates, `active` = :active
-                WHERE `id` = :id");
+              $stmt = $pdo->prepare("UPDATE `imapsync` SET `delete1` = :delete1,
+                `delete2` = :delete2,
+                `automap` = :automap,
+                `skipcrossduplicates` = :skipcrossduplicates,
+                `maxage` = :maxage,
+                `maxbytespersecond` = :maxbytespersecond,
+                `subfolder2` = :subfolder2,
+                `exclude` = :exclude,
+                `host1` = :host1,
+                `last_run` = :last_run,
+                `user1` = :user1,
+                `password1` = :password1,
+                `mins_interval` = :mins_interval,
+                `port1` = :port1,
+                `enc1` = :enc1,
+                `delete2duplicates` = :delete2duplicates,
+                `active` = :active
+                  WHERE `id` = :id");
               $stmt->execute(array(
                 ':delete1' => $delete1,
                 ':delete2' => $delete2,
+                ':automap' => $automap,
+                ':skipcrossduplicates' => $skipcrossduplicates,
                 ':id' => $id,
                 ':exclude' => $exclude,
                 ':maxage' => $maxage,
+                ':maxbytespersecond' => $maxbytespersecond,
                 ':subfolder2' => $subfolder2,
                 ':host1' => $host1,
                 ':user1' => $user1,
