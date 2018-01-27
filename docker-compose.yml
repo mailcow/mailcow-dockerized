@@ -12,7 +12,7 @@ services:
       restart: always
       networks:
         mailcow-network:
-          ipv4_address: ${IPV4_NETWORK}.254
+          ipv4_address: ${IPV4_NETWORK:-172.22.1}.254
           aliases:
             - unbound
 
@@ -29,7 +29,7 @@ services:
         - MYSQL_PASSWORD=${DBPASS}
       restart: always
       dns:
-        - ${IPV4_NETWORK}.254
+        - ${IPV4_NETWORK:-172.22.1}.254
       networks:
         mailcow-network:
           aliases:
@@ -43,10 +43,10 @@ services:
       environment:
         - TZ=${TZ}
       dns:
-        - ${IPV4_NETWORK}.254
+        - ${IPV4_NETWORK:-172.22.1}.254
       networks:
         mailcow-network:
-          ipv4_address: ${IPV4_NETWORK}.249
+          ipv4_address: ${IPV4_NETWORK:-172.22.1}.249
           aliases:
             - redis
 
@@ -60,7 +60,7 @@ services:
       volumes:
         - ./data/conf/clamav/:/etc/clamav/
       dns:
-        - ${IPV4_NETWORK}.254
+        - ${IPV4_NETWORK:-172.22.1}.254
       networks:
         mailcow-network:
           aliases:
@@ -83,7 +83,7 @@ services:
         - rspamd-vol-1:/var/lib/rspamd
       restart: always
       dns:
-        - ${IPV4_NETWORK}.254
+        - ${IPV4_NETWORK:-172.22.1}.254
       hostname: rspamd
       networks:
         mailcow-network:
@@ -105,7 +105,7 @@ services:
         - ./data/conf/phpfpm/php-fpm.d/system.conf:/usr/local/etc/php-fpm.d/system.conf
         - ./data/conf/phpfpm/php-conf.d/opcache-recommended.ini:/usr/local/etc/php/conf.d/opcache-recommended.ini
       environment:
-        - LOG_LINES=${LOG_LINES}
+        - LOG_LINES=${LOG_LINES:-9999}
         - TZ=${TZ}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -121,7 +121,7 @@ services:
         - SMTP_PORT=${SMTP_PORT:-25}
       restart: always
       dns:
-        - ${IPV4_NETWORK}.254
+        - ${IPV4_NETWORK:-172.22.1}.254
       networks:
         mailcow-network:
           aliases:
@@ -135,13 +135,13 @@ services:
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
         - TZ=${TZ}
-        - LOG_LINES=${LOG_LINES}
+        - LOG_LINES=${LOG_LINES:-9999}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
       volumes:
         - ./data/conf/sogo/:/etc/sogo/
       restart: always
       dns:
-        - ${IPV4_NETWORK}.254
+        - ${IPV4_NETWORK:-172.22.1}.254
       networks:
         mailcow-network:
           aliases:
@@ -159,7 +159,7 @@ services:
         - vmail-vol-1:/var/vmail
         - crypt-vol-1:/mail_crypt/
       environment:
-        - LOG_LINES=${LOG_LINES}
+        - LOG_LINES=${LOG_LINES:-9999}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
@@ -178,7 +178,7 @@ services:
           soft: 20000
           hard: 40000
       dns:
-        - ${IPV4_NETWORK}.254
+        - ${IPV4_NETWORK:-172.22.1}.254
       hostname: ${MAILCOW_HOSTNAME}
       networks:
         mailcow-network:
@@ -194,7 +194,7 @@ services:
         - postfix-vol-1:/var/spool/postfix
         - crypt-vol-1:/var/lib/zeyple
       environment:
-        - LOG_LINES=${LOG_LINES}
+        - LOG_LINES=${LOG_LINES:-9999}
         - TZ=${TZ}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -207,7 +207,7 @@ services:
         - "${SUBMISSION_PORT:-587}:587"
       restart: always
       dns:
-        - ${IPV4_NETWORK}.254
+        - ${IPV4_NETWORK:-172.22.1}.254
       hostname: ${MAILCOW_HOSTNAME}
       networks:
         mailcow-network:
@@ -218,7 +218,7 @@ services:
       image: memcached:alpine
       restart: always
       dns:
-        - ${IPV4_NETWORK}.254
+        - ${IPV4_NETWORK:-172.22.1}.254
       networks:
         mailcow-network:
           aliases:
@@ -253,7 +253,7 @@ services:
         - "${HTTP_BIND:-0.0.0.0}:${HTTP_PORT:-80}:${HTTP_PORT:-80}"
       restart: always
       dns:
-        - ${IPV4_NETWORK}.254
+        - ${IPV4_NETWORK:-172.22.1}.254
       networks:
         mailcow-network:
           aliases:
@@ -266,9 +266,9 @@ services:
       image: mailcow/acme:1.28
       build: ./data/Dockerfiles/acme
       dns:
-        - ${IPV4_NETWORK}.254
+        - ${IPV4_NETWORK:-172.22.1}.254
       environment:
-        - LOG_LINES=${LOG_LINES}
+        - LOG_LINES=${LOG_LINES:-9999}
         - ADDITIONAL_SAN=${ADDITIONAL_SAN}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
         - DBNAME=${DBNAME}
@@ -301,10 +301,10 @@ services:
       environment:
         - TZ=${TZ}
         - SKIP_FAIL2BAN=${SKIP_FAIL2BAN:-n}
-        - IPV4_NETWORK=${IPV4_NETWORK}
+        - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
       network_mode: "host"
       dns:
-        - ${IPV4_NETWORK}.254
+        - ${IPV4_NETWORK:-172.22.1}.254
       volumes:
         - /lib/modules:/lib/modules:ro
 
@@ -317,7 +317,7 @@ services:
         - vmail-vol-1:/vmail:ro
       restart: always
       environment:
-        - LOG_LINES=${LOG_LINES}
+        - LOG_LINES=${LOG_LINES:-9999}
         - TZ=${TZ}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -361,8 +361,8 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: ${IPV4_NETWORK}.0/24
-        - subnet: ${IPV6_NETWORK}
+        - subnet: ${IPV4_NETWORK:-172.22.1}.0/24
+        - subnet: ${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
 
 volumes:
   vmail-vol-1:
