@@ -459,8 +459,9 @@ function user_get_alias_details($username) {
     while ($row = array_shift($run)) {
       $data['shared_aliases'] = $row['shared_aliases'];
     }
-    $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(`address` SEPARATOR ', '), '&#10008;') AS `direct_aliases` FROM `alias`
+    $stmt = $pdo->prepare("SELECT GROUP_CONCAT(`address` SEPARATOR ', ') AS `direct_aliases` FROM `alias`
       WHERE `goto` = :username_goto
+      AND `address` NOT LIKE '@%'
       AND `address` != :username_address");
     $stmt->execute(
       array(
@@ -477,7 +478,13 @@ function user_get_alias_details($username) {
     $stmt->execute(array(':username' => $username));
     $run = $stmt->fetchAll(PDO::FETCH_ASSOC);
     while ($row = array_shift($run)) {
-      $data['ad_alias'] = $row['ad_alias'];
+      if (empty($data['direct_aliases'])) {
+        $data['direct_aliases'] = $row['ad_alias'];
+      }
+      else {
+        // Probably faster than imploding
+        $data['direct_aliases'] .= ', ' . $row['ad_alias'];
+      }
     }
     $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(`send_as` SEPARATOR ', '), '&#10008;') AS `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `send_as` NOT LIKE '@%';");
     $stmt->execute(array(':username' => $username));

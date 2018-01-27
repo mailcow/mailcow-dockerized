@@ -79,10 +79,12 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
 	  /web/nextcloud/occ config:system:set redis port --value=6379 --type=integer; \
 	  /web/nextcloud/occ config:system:set memcache.locking --value='\OC\Memcache\Redis' --type=string; \
 	  /web/nextcloud/occ config:system:set memcache.local --value='\OC\Memcache\Redis' --type=string; \
-	  /web/nextcloud/occ config:system:set trusted_proxies 0 --value=fd4d:6169:6c63:6f77::1; \
-	  /web/nextcloud/occ config:system:set trusted_proxies 1 --value=172.22.1.0/24; \
+	  /web/nextcloud/occ config:system:set trusted_domains 1 --value=${MAILCOW_HOSTNAME}; \
+    /web/nextcloud/occ config:system:set trusted_proxies 0 --value=${IPV6_NETWORK}; \
+	  /web/nextcloud/occ config:system:set trusted_proxies 1 --value=${IPV4_NETWORK}.0/24; \
 	  /web/nextcloud/occ config:system:set overwritewebroot --value=/nextcloud; \
 	  /web/nextcloud/occ config:system:set overwritehost --value=${MAILCOW_HOSTNAME}; \
+	  /web/nextcloud/occ config:system:set overwriteprotocol --value=https; \
 	  /web/nextcloud/occ config:system:set mail_smtpmode --value=smtp; \
 	  /web/nextcloud/occ config:system:set mail_smtpauthtype --value=LOGIN; \
 	  /web/nextcloud/occ config:system:set mail_from_address --value=nextcloud; \
@@ -94,10 +96,11 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
 	  /web/nextcloud/occ config:system:set user_backends 0 class --value=OC_User_IMAP"
 
 	if [[ ${NC_TYPE} == "subdomain" ]]; then
+		docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) /web/nextcloud/occ config:system:set trusted_domains 1 --value=${NC_SUBD}
 		docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) /web/nextcloud/occ config:system:set overwritewebroot --value=/
 		docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) /web/nextcloud/occ config:system:set overwritehost --value=${NC_SUBD}
 		cp ./data/assets/nextcloud/nextcloud.conf ./data/conf/nginx/
-		sed -i 's/NC_SUBD/${NC_SUBD}/g' ./data/conf/nginx/nextcloud.conf
+		sed -i "s/NC_SUBD/${NC_SUBD}/g" ./data/conf/nginx/nextcloud.conf
 	elif [[ ${NC_TYPE} == "subfolder" ]]; then
 		cp ./data/assets/nextcloud/site.nextcloud.custom ./data/conf/nginx/
 	fi

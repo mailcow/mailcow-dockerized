@@ -117,3 +117,22 @@ legend {
 .lang-link-disabled  {
 	cursor: not-allowed;
 }
+.dkim-label {
+  margin: 0 0 2px !important;
+}
+.overlay {
+  background: #fff;
+  position: absolute;
+  z-index: 10000;
+  top: 0; right: 0; bottom: 0; left: 0;
+  opacity: 0.7;
+}
+nav .glyphicon {
+  font-size: 12px !important;
+}
+.logged-in-as {
+  border-left: 1px solid #E7E7E7;
+}
+#top {
+  padding-top: 70px;
+}

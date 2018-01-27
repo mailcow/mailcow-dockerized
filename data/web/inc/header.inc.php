@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Referrer-Policy" content="same-origin">
 <title><?=$UI_TEXTS['title_name'];?></title>
 <!--[if lt IE 9]>
   <script src="/js/html5shiv.min.js"></script>
@@ -33,7 +34,8 @@
 <link rel="shortcut icon" href="/favicon.png" type="image/png">
 <link rel="icon" href="/favicon.png" type="image/png">
 </head>
-<body style="padding-top: 70px;" id="top">
+<body id="top">
+<div class="overlay"></div>
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container-fluid">
     <div class="navbar-header">
@@ -93,12 +95,12 @@
         <?php
         if (isset($_SESSION['mailcow_cc_role'])) {
         ?>
-        <li<?= (preg_match("/quarantaine/i", $_SERVER['REQUEST_URI'])) ? ' class="active"' : ''; ?>><a href="/quarantaine.php"><span style="font-size: 12px;" class="glyphicon glyphicon-briefcase"></span> <?= $lang['header']['quarantaine']; ?></a></li>
+        <li<?= (preg_match("/quarantaine/i", $_SERVER['REQUEST_URI'])) ? ' class="active"' : ''; ?>><a href="/quarantaine.php"><span class="glyphicon glyphicon-briefcase"></span> <?= $lang['header']['quarantaine']; ?></a></li>
         <?php
         }
         if ($_SESSION['mailcow_cc_role'] == 'admin') {
         ?>
-        <li><a href data-toggle="modal" data-container="sogo-mailcow" data-target="#RestartContainer"><span style="font-size: 12px;" class="glyphicon glyphicon-refresh"></span> <?= $lang['header']['restart_sogo']; ?></a></li>
+        <li><a href data-toggle="modal" data-container="sogo-mailcow" data-target="#RestartContainer"><span class="glyphicon glyphicon-refresh"></span> <?= $lang['header']['restart_sogo']; ?></a></li>
         <?php
         }
         ?>
@@ -126,11 +128,11 @@
         }
         if (!isset($_SESSION['dual-login']) && isset($_SESSION['mailcow_cc_username'])):
         ?>
-          <li><a href="#" style="border-left: 1px solid #E7E7E7;" onclick="logout.submit()"><?= sprintf($lang['header']['logged_in_as_logout'], $_SESSION['mailcow_cc_username']); ?></a></li>
+          <li class="logged-in-as"><a href="#" onclick="logout.submit()"><b><?= $_SESSION['mailcow_cc_username']; ?></b> <span class="glyphicon glyphicon-log-out"></span></a></li>
         <?php
         elseif (isset($_SESSION['dual-login'])):
         ?>
-          <li><a href="#" style="border-left: 1px solid #E7E7E7;" onclick="logout.submit()"><?= sprintf($lang['header']['logged_in_as_logout_dual'], $_SESSION['mailcow_cc_username'], $_SESSION['dual-login']['username']); ?></a></li>
+          <li class="logged-in-as"><a href="#" onclick="logout.submit()"><b><?= $_SESSION['mailcow_cc_username']; ?> <span class="text-info">(<?= $_SESSION['dual-login']['username']; ?>)</span> </b><span class="glyphicon glyphicon-log-out"></span></a></li>
         <?php
         endif;
         ?>
