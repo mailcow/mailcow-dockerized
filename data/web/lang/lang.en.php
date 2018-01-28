@@ -576,10 +576,10 @@ $lang['admin']['api_key'] = "API key";
 $lang['admin']['activate_api'] = "Activate API";
 $lang['admin']['regen_api_key'] = "Regenerate API key";
 
-$lang['admin']['quarantine'] = "Quarantaine";
-$lang['admin']['quarantine_retention_size'] = "Retentions per mailbox:";
-$lang['admin']['quarantine_max_size'] = "Maximum size in MiB (larger elements are discarded):";
-$lang['admin']['quarantine_exclude_domains'] = "Exclude domains and alias-domains:";
+$lang['admin']['quarantaine'] = "Quarantine";
+$lang['admin']['quarantaine_retention_size'] = "Retentions per mailbox:";
+$lang['admin']['quarantaine_max_size'] = "Maximum size in MiB (larger elements are discarded):";
+$lang['admin']['quarantaine_exclude_domains'] = "Exclude domains and alias-domains:";
 
 $lang['admin']['ui_texts'] = "UI labels and texts";
 $lang['admin']['help_text'] = "Override help text below login mask (HTML allowed)";
@@ -620,8 +620,8 @@ $lang['success']['reset_main_logo'] = "Reset to default logo";
 $lang['success']['items_released'] = "Selected items were released";
 $lang['danger']['imagick_exception'] = "Error: Imagick exception while reading image";
 
-$lang['quarantaine']['quarantaine'] = "Quarantaine";
-$lang['quarantaine']['qinfo'] = "The quarantaine system will save rejected mail to the database, while the sender will <em>not</em> be given the impression of a delivered mail.";
+$lang['quarantaine']['quarantaine'] = "Quarantine";
+$lang['quarantaine']['qinfo'] = "The quarantine system will save rejected mail to the database, while the sender will <em>not</em> be given the impression of a delivered mail.";
 $lang['quarantaine']['release'] = "Release";
 $lang['quarantaine']['empty'] = 'No results';
 $lang['quarantaine']['toggle_all'] = 'Toggle all';
@@ -634,18 +634,18 @@ $lang['quarantaine']['qid'] = "Rspamd QID";
 $lang['quarantaine']['sender'] = "Sender";
 $lang['quarantaine']['show_item'] = "Show item";
 $lang['quarantaine']['check_hash'] = "Search file hash @ VT";
-$lang['quarantaine']['qitem'] = "Quarantaine item";
+$lang['quarantaine']['qitem'] = "Quarantine item";
 $lang['quarantaine']['subj'] = "Subject";
 $lang['quarantaine']['text_plain_content'] = "Content (text/plain)";
 $lang['quarantaine']['text_from_html_content'] = "Content (converted html)";
 $lang['quarantaine']['atts'] = "Attachments";
 
-$lang['header']['quarantaine'] = "Quarantaine";
+$lang['header']['quarantaine'] = "Quarantine";
 $lang['header']['debug'] = "Debug";
 
 $lang['quarantaine']['release_body'] = "We have attached your message as eml file to this message.";
 $lang['danger']['release_send_failed'] = "Message could not be released: %s";
-$lang['quarantaine']['release_subject'] = "Potentially damaging quarantaine item %s";
+$lang['quarantaine']['release_subject'] = "Potentially damaging quarantine item %s";
 
 $lang['mailbox']['bcc_map_type'] = "BCC type";
 $lang['mailbox']['bcc_type'] = "BCC type";
