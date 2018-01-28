@@ -383,6 +383,52 @@ jQuery(function($){
       }
     });
   }
+  function draw_recipient_map_table() {
+    ft_recipient_map_table = FooTable.init('#recipient_map_table', {
+      "columns": [
+        {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
+        {"sorted": true,"name":"id","title":"ID","style":{"maxWidth":"60px","width":"60px","text-align":"center"}},
+        {"name":"recipient_map_old","title":lang.recipient_map_old},
+        {"name":"recipient_map_new","title":lang.recipient_map_new},
+        {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active},
+        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":(role == "admin" ? lang.action : ""),"breakpoints":"xs sm"}
+      ],
+      "empty": lang.empty,
+      "rows": $.ajax({
+        dataType: 'json',
+        url: '/api/v1/get/recipient_map/all',
+        jsonp: false,
+        error: function () {
+          console.log('Cannot draw recipient map table');
+        },
+        success: function (data) {
+          if (role == "admin") {
+            $.each(data, function (i, item) {
+              item.action = '<div class="btn-group">' +
+                '<a href="/edit.php?recipient_map=' + item.id + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+                '<a href="#" id="delete_selected" data-id="single-recipient_map" data-api-url="delete/recipient_map" data-item="' + item.id + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+                '</div>';
+              item.chkbox = '<input type="checkbox" data-id="recipient_map" name="multi_select" value="' + item.id + '" />';
+            });
+          }
+        }
+      }),
+      "paging": {
+        "enabled": true,
+        "limit": 5,
+        "size": pagination_size
+      },
+      "filtering": {
+        "enabled": true,
+        "position": "left",
+        "connectors": false,
+        "placeholder": lang.filter_table
+      },
+      "sorting": {
+        "enabled": true
+      }
+    });
+  }
   function draw_alias_table() {
     ft_alias_table = FooTable.init('#alias_table', {
       "columns": [
@@ -609,5 +655,6 @@ jQuery(function($){
   draw_sync_job_table();
   draw_filter_table();
   draw_bcc_table();
+  draw_recipient_map_table();
 
 });

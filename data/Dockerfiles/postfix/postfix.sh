@@ -145,6 +145,16 @@ query = SELECT bcc_dest FROM bcc_maps
     AND active='1';
 EOF
 
+cat <<EOF > /opt/postfix/conf/sql/mysql_recipient_canonical_maps.cf
+user = ${DBUSER}
+password = ${DBPASS}
+hosts = mysql
+dbname = ${DBNAME}
+query = SELECT new_dest FROM recipient_maps
+  WHERE old_dest='%s'
+    AND active='1';
+EOF
+
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_domains_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
