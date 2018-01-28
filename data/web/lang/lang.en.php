@@ -659,5 +659,11 @@ $lang['mailbox']['bcc_maps'] = "BCC maps";
 $lang['mailbox']['bcc_to_sender'] = "Switch to sender map type";
 $lang['mailbox']['bcc_to_rcpt'] = "Switch to recipient map type";
 $lang['mailbox']['add_bcc_entry'] = "Add BCC map";
-$lang['mailbox']['bcc_info'] = "A recipient map type entry is used, when the local destination acts as recipient of a mail. Sender maps conform to the same principle.<br/>
+$lang['mailbox']['bcc_info'] = "BCC maps are used to silently forward copies of all messages to another address. A recipient map type entry is used, when the local destination acts as recipient of a mail. Sender maps conform to the same principle.<br/>
   The local destination will not be informed about a failed delivery.";
+$lang['mailbox']['address_rewriting'] = 'Address rewriting';
+$lang['mailbox']['recipient_maps'] = 'Recipient maps';
+$lang['mailbox']['recipient_map_info'] = 'Recipient maps are used to replace the destination address on a message before it is delivered.';
+$lang['mailbox']['recipient_map_old'] = 'Original recipient';
+$lang['mailbox']['recipient_map_new'] = 'New recipient';
+$lang['mailbox']['add_recipient_map_entry'] = 'Add recipient map';
