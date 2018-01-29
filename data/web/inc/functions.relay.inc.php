@@ -51,7 +51,35 @@ function relay($_action, $_data = null, $attr = null) {
         if (!empty($is_now)) {
           $domain = (isset($_data['domain'])) ? $_data['domain'] : $is_now['domain'];
           $nexthop = (isset($_data['nexthop'])) ? $_data['nexthop'] : $is_now['nexthop'];
-					$active = (isset($_data['active'])) ? 1 : 0;
+          $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
+        }
+        else {
+          $_SESSION['return'] = array(
+            'type' => 'danger',
+            'msg' => sprintf($lang['danger']['access_denied'])
+          );
+          return false;
+        }
+        $active = intval($_data['active']);
+        try {
+          $stmt = $pdo->prepare("SELECT `id` FROM `transport_maps`
+            WHERE `domain` = :domain AND `nexthop` = :nexthop");
+          $stmt->execute(array(':domain' => $domain, ':nexthop' => $nexthop));
+          $id_now = $stmt->fetch(PDO::FETCH_ASSOC)['id'];
+        }
+        catch(PDOException $e) {
+          $_SESSION['return'] = array(
+            'type' => 'danger',
+            'msg' => 'MySQL: '.$e
+          );
+          return false;
+        }
+        if (isset($id_now) && $id_now != $id) {
+          $_SESSION['return'] = array(
+            'type' => 'danger',
+            'msg' => 'A transport map entry ' . htmlspecialchars($local_dest) . ' exists for this type'
+          );
+          return false;
         }
         try {
           $stmt = $pdo->prepare("UPDATE `transport_maps` SET `domain` = :domain, `nexthop` = :nexthop, `active` = :active WHERE `id`= :id");
