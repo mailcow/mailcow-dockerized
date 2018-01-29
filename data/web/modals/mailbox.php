@@ -609,22 +609,22 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             <label class="control-label col-sm-2" for="domain"><?=$lang['mailbox']['domain'];?>:</label>
             <div class="col-sm-10">
 <!--              <input type="text" name="domain" class="form-control">-->
-<!--              <select id="addSelectLocalDest" name="domain" id="domain" required>-->
-<!--                --><?php
-//                $domains = mailbox('get', 'domains');
-//                if (!empty($domains)) {
-//                  foreach ($domains as $domain) {
-//                    echo "<option value='".$domain."'>".htmlspecialchars($domain)."</option>";
-//                  }
-//                }
-//                ?>
-<!--              </select>-->
+              <select id="addSelectLocalDest" name="domain" id="domain" required>
+                <?php
+                $domains = mailbox('get', 'domains');
+                if (!empty($domains)) {
+                  foreach ($domains as $domain) {
+                    echo "<option value='".$domain."'>".htmlspecialchars($domain)."</option>";
+                  }
+                }
+                ?>
+              </select>
             </div>
           </div>
           <div class="form-group">
             <label class="control-label col-sm-2" for="nexthop"><?=$lang['mailbox']['transport_map_dest'];?>:</label>
             <div class="col-sm-10">
-              <input type="text" name="nexthop" class="form-control">
+              <input type="text" name="nexthop" class="form-control" required>
           </div>
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
@@ -632,12 +632,12 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
                 <label><input type="checkbox" value="1" name="active" checked> <?=$lang['add']['active'];?></label>
               </div>
             </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <button class="btn btn-success" id="add_item" data-id="add_relay" data-api-url='add/relay' data-api-attr='{}' href="#"><?=$lang['mailbox']['transport_map_add_domain'];?></button>
             </div>
-            <div class="form-group">
-              <div class="col-sm-offset-2 col-sm-10">
-                <button class="btn btn-success" id="add_item" data-id="add_relay" data-api-url='add/relay' data-api-attr='{}' href="#"><?=$lang['mailbox']['transport_map_add_domain'];?></button>
-              </div>
-            </div>
+          </div>
         </form>
       </div>
     </div>
