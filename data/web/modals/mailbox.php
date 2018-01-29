@@ -608,14 +608,24 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
           <div class="form-group">
             <label class="control-label col-sm-2" for="domain"><?=$lang['mailbox']['domain'];?>:</label>
             <div class="col-sm-10">
-              <input type="text" name="domain" class="form-control">
+<!--              <input type="text" name="domain" class="form-control">-->
+              <select id="addSelectLocalDest" name="nexthop" id="nexthop" required>
+                <?php
+                $domains = mailbox('get', 'domains');
+                if (!empty($domains)) {
+                  foreach ($domains as $domain) {
+                    echo "<option>".htmlspecialchars($domain)."</option>";
+                  }
+                }
+                ?>
+              </select>
+            </div>
             </div>
           </div>
           <div class="form-group">
             <label class="control-label col-sm-2" for="nexthop"><?=$lang['mailbox']['transport_map_dest'];?>:</label>
             <div class="col-sm-10">
               <input type="text" name="nexthop" class="form-control">
-            </div>
           </div>
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
