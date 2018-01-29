@@ -625,6 +625,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             <label class="control-label col-sm-2" for="nexthop"><?=$lang['mailbox']['transport_map_dest'];?>:</label>
             <div class="col-sm-10">
               <input type="text" name="nexthop" class="form-control" required>
+            </div>
           </div>
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
