@@ -676,6 +676,13 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             </div>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
+                <div class="checkbox">
+                  <label><input type="checkbox" value="1" name="active" <?php if (isset($result['active_int']) && $result['active_int']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['active'];?></label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
                 <button class="btn btn-success" id="edit_selected" data-id="editrelay" data-item="<?=$relay;?>" data-api-url='edit/relay' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
               </div>
             </div>

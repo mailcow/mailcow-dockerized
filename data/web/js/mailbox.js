@@ -390,6 +390,7 @@ jQuery(function($){
         {"sorted": true,"name":"id","title":"ID","style":{"maxWidth":"60px","width":"60px","text-align":"center"}},
         {"name":"domain","title":lang.domain},
         {"name":"nexthop","title":lang.transport_map_dest,"breakpoints":"xs sm"},
+        {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
       "empty": lang.empty,
@@ -406,7 +407,7 @@ jQuery(function($){
               '<a href="/edit.php?relay=' + item.id + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
               '<a href="#" id="delete_selected" data-id="single-relay" data-api-url="delete/relay" data-item="' + item.id + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
               '</div>';
-            item.chkbox = '<input type="checkbox" data-id="bcc" name="multi_select" value="' + item.id + '" />';
+            item.chkbox = '<input type="checkbox" data-id="relay" name="multi_select" value="' + item.id + '" />';
           });
         }
       }),

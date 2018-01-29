@@ -617,12 +617,19 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
               <input type="text" name="nexthop" class="form-control">
             </div>
           </div>
-					<div class="form-group">
-						<div class="col-sm-offset-2 col-sm-10">
-              <button class="btn btn-success" id="add_item" data-id="add_relay" data-api-url='add/relay' data-api-attr='{}' href="#"><?=$lang['mailbox']['transport_map_add_domain'];?></button>
-						</div>
-					</div>
-				</form>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <div class="checkbox">
+                <label><input type="checkbox" value="1" name="active" checked> <?=$lang['add']['active'];?></label>
+              </div>
+            </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <button class="btn btn-success" id="add_item" data-id="add_relay" data-api-url='add/relay' data-api-attr='{}' href="#"><?=$lang['mailbox']['transport_map_add_domain'];?></button>
+              </div>
+            </div>
+        </form>
       </div>
     </div>
   </div>
