@@ -82,7 +82,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.mailbox.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.customize.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.bcc.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.relay.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.transportmaps.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.domain_admin.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.quarantaine.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.policy.inc.php';

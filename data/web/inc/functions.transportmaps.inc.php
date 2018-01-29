@@ -47,7 +47,7 @@ function transport_map($_action, $_data = null, $attr = null) {
     case 'edit':
       $ids = (array)$_data['id'];
       foreach ($ids as $id) {
-        $is_now = relay('details', $id);
+        $is_now = transport_map('details', $id);
         if (!empty($is_now)) {
           $local_dest = (isset($_data['local_dest'])) ? $_data['local_dest'] : $is_now['local_dest'];
           $nexthop = (isset($_data['nexthop'])) ? $_data['nexthop'] : $is_now['nexthop'];
