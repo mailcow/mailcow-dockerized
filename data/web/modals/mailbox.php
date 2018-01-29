@@ -609,12 +609,12 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             <label class="control-label col-sm-2" for="domain"><?=$lang['mailbox']['domain'];?>:</label>
             <div class="col-sm-10">
 <!--              <input type="text" name="domain" class="form-control">-->
-              <select id="addSelectLocalDest" name="nexthop" id="nexthop" required>
+              <select id="addSelectLocalDest" name="domain" id="domain" required>
                 <?php
                 $domains = mailbox('get', 'domains');
                 if (!empty($domains)) {
                   foreach ($domains as $domain) {
-                    echo "<option>".htmlspecialchars($domain)."</option>";
+                    echo "<option value='".$domain."'>".htmlspecialchars($domain)."</option>";
                   }
                 }
                 ?>
