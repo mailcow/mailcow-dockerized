@@ -38,7 +38,7 @@ COPY zeyple.py /usr/local/bin/zeyple.py
 COPY zeyple.conf /etc/zeyple.conf
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
-COPY postfix.sh /opt/postfix.sh
+COPY postfix.sh /opt/postfix_2.sh
 COPY whitelist_forwardinghosts.sh /usr/local/bin/whitelist_forwardinghosts.sh
 
 EXPOSE 588
