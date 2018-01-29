@@ -663,6 +663,7 @@ $lang['mailbox']['bcc_info'] = "A recipient map type entry is used, when the loc
   The local destination will not be informed about a failed delivery.";
 
 $lang['mailbox']['transport_map'] = "Transport Maps";
-$lang['mailbox']['transport_map_dest'] = "Destination Server";
-$lang['mailbox']['transport_map_add_domain'] = "Add relay domain";
-$lang['mailbox']['transport_map_desc'] = "Lorem ipsum.";
+$lang['mailbox']['transport_map_local_dest'] = "Local destination";
+$lang['mailbox']['transport_map_remote_dest'] = "Remote destination";
+$lang['mailbox']['add_transport_map_entry'] = "Add transport map entry";
+$lang['mailbox']['transport_map_info'] = "Lorem ipsum.";

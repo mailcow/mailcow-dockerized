@@ -256,7 +256,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <li role="separator" class="divider"></li>
                   <li><a id="delete_selected" data-id="transport_map" data-api-url='delete/transport_map' href="#"><?=$lang['mailbox']['remove'];?></a></li>
                 </ul>
-                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addTransportMapModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['transport_map_add_entry'];?></a>
+                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addTransportMapModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_transport_map_entry'];?></a>
               </div>
             </div>
           </div>
