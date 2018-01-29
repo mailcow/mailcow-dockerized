@@ -655,13 +655,13 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         }
     }
     elseif (isset($_GET['transport_map']) && !empty($_GET["transport_map"])) {
-        $relay = intval($_GET["transport_map"]);
-        $result = transport_map('details', $relay);
+        $transport_map = intval($_GET["transport_map"]);
+        $result = transport_map('details', $transport_map);
         if (!empty($result)) {
           ?>
           <h4>Transport Map</h4>
           <br />
-          <form class="form-horizontal" data-id="editrelay" role="form" method="post">
+          <form class="form-horizontal" data-id="edittransport_map" role="form" method="post">
             <input type="hidden" value="0" name="active">
             <div class="form-group">
               <label class="control-label col-sm-2" for="local_dest"><?=$lang['mailbox']['transport_map_local_dest'];?></label>
@@ -684,7 +684,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             </div>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
-                <button class="btn btn-success" id="edit_selected" data-id="edittransport_map" data-item="<?=$relay;?>" data-api-url='edit/transport_map' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
+                <button class="btn btn-success" id="edit_selected" data-id="edittransport_map" data-item="<?=$transport_map;?>" data-api-url='edit/transport_map' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
               </div>
             </div>
           </form>
