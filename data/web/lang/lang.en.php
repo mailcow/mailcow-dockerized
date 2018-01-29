@@ -661,3 +661,8 @@ $lang['mailbox']['bcc_to_rcpt'] = "Switch to recipient map type";
 $lang['mailbox']['add_bcc_entry'] = "Add BCC map";
 $lang['mailbox']['bcc_info'] = "A recipient map type entry is used, when the local destination acts as recipient of a mail. Sender maps conform to the same principle.<br/>
   The local destination will not be informed about a failed delivery.";
+
+$lang['mailbox']['transport_map'] = "Transport Maps";
+$lang['mailbox']['transport_map_dest'] = "Destination Server";
+$lang['mailbox']['transport_map_add_domain'] = "Add relay domain";
+$lang['mailbox']['transport_map_desc'] = "Lorem ipsum.";
