@@ -51,7 +51,7 @@ function relay($_action, $_data = null, $attr = null) {
         if (!empty($is_now)) {
           $domain = (isset($_data['domain'])) ? $_data['domain'] : $is_now['domain'];
           $nexthop = (isset($_data['nexthop'])) ? $_data['nexthop'] : $is_now['nexthop'];
-					$active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
+					$active = (isset($_data['active'])) ? 1 : 0;
         }
         try {
           $stmt = $pdo->prepare("UPDATE `transport_maps` SET `domain` = :domain, `nexthop` = :nexthop, `active` = :active WHERE `id`= :id");
