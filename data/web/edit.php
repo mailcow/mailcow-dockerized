@@ -662,10 +662,11 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           <h4>Transport Map</h4>
           <br />
           <form class="form-horizontal" data-id="editrelay" role="form" method="post">
+            <input type="hidden" value="0" name="active">
             <div class="form-group">
               <label class="control-label col-sm-2" for="local_dest"><?=$lang['mailbox']['transport_map'];?></label>
               <div class="col-sm-10">
-                <input type="text" name="local_dest" id="local_dest" readonly>
+                <input type="text" class="form-control" name="local_dest" id="local_dest" readonly>
               </div>
             </div>
             <div class="form-group">

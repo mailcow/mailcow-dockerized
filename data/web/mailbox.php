@@ -248,7 +248,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             </div>
             <div class="mass-actions-mailbox">
               <div class="btn-group">
-                <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="relay" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
+                <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="transport_map" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
                 <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li><a id="edit_selected" data-id="transport_map" data-api-url='edit/transport_map' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
