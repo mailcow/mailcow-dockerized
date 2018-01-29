@@ -668,6 +668,7 @@ $lang['mailbox']['bcc_info'] = "Eine empfängerabhängige Map wird verwendet, we
   Das lokale Ziel wird bei Fehlzustellungen an ein BCC-Ziel nicht informiert.";
 
 $lang['mailbox']['transport_map'] = "Transport Maps";
-$lang['mailbox']['transport_map_dest'] = "Zielserver";
-$lang['mailbox']['transport_map_add_domain'] = "Relay Domain hinzufügen";
-$lang['mailbox']['transport_map_desc'] = "Lorem ipsum.";
+$lang['mailbox']['transport_map_local_dest'] = "Lokales Ziel";
+$lang['mailbox']['transport_map_remote_dest'] = "Entferntes Ziel";
+$lang['mailbox']['add_transport_map_entry'] = "Relay Domain hinzufügen";
+$lang['mailbox']['transport_map_info'] = "Lorem ipsum.";

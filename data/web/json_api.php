@@ -595,10 +595,10 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               ));
             }
           break;
-          case "relay":
+          case "transport_map":
             if (isset($_POST['attr'])) {
               $attr = (array)json_decode($_POST['attr'], true);
-              if (relay('add', $attr) === false) {
+              if (transport_map('add', $attr) === false) {
                 if (isset($_SESSION['return'])) {
                   echo json_encode($_SESSION['return']);
                 }
@@ -1224,13 +1224,13 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               break;
             }
           break;
-          case "relay":
+          case "transport_map":
             switch ($object) {
               case "all":
-                $relay_items = relay('get');
-                if (!empty($relay_items)) {
-                  foreach ($relay_items as $relay_item) {
-                    if ($details = relay('details', $relay_item)) {
+                $transport_map_items = transport_map('get');
+                if (!empty($transport_map_items)) {
+                  foreach ($transport_map_items as $transport_map_item) {
+                    if ($details = transport_map('details', $transport_map_item)) {
                       $data[] = $details;
                     }
                     else {
@@ -1246,7 +1246,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 }
               break;
               default:
-                $data = relay('details', $object);
+                $data = transport_map('details', $object);
                 if (!empty($data)) {
                   $data[] = $details;
                 }
@@ -1807,11 +1807,11 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               ));
             }
           break;
-          case "relay":
+          case "transport_map":
             if (isset($_POST['items'])) {
               $items = (array)json_decode($_POST['items'], true);
               if (is_array($items)) {
-                if (relay('delete', array('id' => $items)) === false) {
+                if (transport_map('delete', array('id' => $items)) === false) {
                   if (isset($_SESSION['return'])) {
                     echo json_encode($_SESSION['return']);
                   }
@@ -2347,13 +2347,13 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               ));
             }
           break;
-          case "relay":
+          case "transport_map":
             if (isset($_POST['items']) && isset($_POST['attr'])) {
               $items = (array)json_decode($_POST['items'], true);
               $attr = (array)json_decode($_POST['attr'], true);
               $postarray = array_merge(array('id' => $items), $attr);
               if (is_array($postarray['id'])) {
-                if (relay('edit', $postarray) === false) {
+                if (transport_map('edit', $postarray) === false) {
                   if (isset($_SESSION['return'])) {
                     echo json_encode($_SESSION['return']);
                   }

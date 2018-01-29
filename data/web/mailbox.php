@@ -237,26 +237,26 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
           </div>
         </div>
 
-        <div role="tabpanel" class="tab-pane" id="tab-relay">
+        <div role="tabpanel" class="tab-pane" id="tab-transport_map">
           <div class="panel panel-default">
             <div class="panel-heading">
               <h3 class="panel-title"><?=$lang['mailbox']['transport_map'];?></h3>
             </div>
-            <p style="margin:10px" class="help-block"><?=$lang['mailbox']['transport_map_desc'];?></p>
+            <p style="margin:10px" class="help-block"><?=$lang['mailbox']['transport_map_info'];?></p>
             <div class="table-responsive">
-              <table class="table table-striped" id="relay_table"></table>
+              <table class="table table-striped" id="transport_map_table"></table>
             </div>
             <div class="mass-actions-mailbox">
               <div class="btn-group">
                 <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="relay" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
                 <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a id="edit_selected" data-id="relay" data-api-url='edit/relay' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
-                  <li><a id="edit_selected" data-id="relay" data-api-url='edit/relay' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
+                  <li><a id="edit_selected" data-id="transport_map" data-api-url='edit/transport_map' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
+                  <li><a id="edit_selected" data-id="transport_map" data-api-url='edit/transport_map' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
                   <li role="separator" class="divider"></li>
-                  <li><a id="delete_selected" data-id="relay" data-api-url='delete/relay' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+                  <li><a id="delete_selected" data-id="transport_map" data-api-url='delete/transport_map' href="#"><?=$lang['mailbox']['remove'];?></a></li>
                 </ul>
-                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addRelayModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['transport_map_add_domain'];?></a>
+                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addTransportMapModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['transport_map_add_entry'];?></a>
               </div>
             </div>
           </div>

@@ -654,22 +654,22 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         <?php
         }
     }
-    elseif (isset($_GET['relay']) && !empty($_GET["relay"])) {
-        $relay = intval($_GET["relay"]);
-        $result = relay('details', $relay);
+    elseif (isset($_GET['transport_map']) && !empty($_GET["transport_map"])) {
+        $relay = intval($_GET["transport_map"]);
+        $result = transport_map('details', $relay);
         if (!empty($result)) {
           ?>
-          <h4>Relay Domain</h4>
+          <h4>Transport Map</h4>
           <br />
           <form class="form-horizontal" data-id="editrelay" role="form" method="post">
             <div class="form-group">
-              <label class="control-label col-sm-2" for="domain"><?=$lang['mailbox']['domain'];?></label>
+              <label class="control-label col-sm-2" for="local_dest"><?=$lang['mailbox']['transport_map'];?></label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" id="domain" name="domain" value="<?=$result['domain'];?>">
+                <input type="text" name="local_dest" id="local_dest" readonly>
               </div>
             </div>
             <div class="form-group">
-              <label class="control-label col-sm-2" for="nexthop"><?=$lang['mailbox']['transport_map_dest'];?>:</label>
+              <label class="control-label col-sm-2" for="nexthop"><?=$lang['mailbox']['transport_map_remote_dest'];?>:</label>
               <div class="col-sm-10">
                 <input type="text" class="form-control" id="nexthop" name="nexthop" value="<?=$result['nexthop'];?>">
               </div>
@@ -683,7 +683,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             </div>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
-                <button class="btn btn-success" id="edit_selected" data-id="editrelay" data-item="<?=$relay;?>" data-api-url='edit/relay' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
+                <button class="btn btn-success" id="edit_selected" data-id="edittransport_map" data-item="<?=$relay;?>" data-api-url='edit/transport_map' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
               </div>
             </div>
           </form>

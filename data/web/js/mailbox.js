@@ -383,20 +383,20 @@ jQuery(function($){
       }
     });
   }
-  function draw_relay_table() {
-    ft_bcc_table = FooTable.init('#relay_table', {
+  function draw_transport_map_table() {
+    ft_bcc_table = FooTable.init('#transport_map_table', {
       "columns": [
         {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"sorted": true,"name":"id","title":"ID","style":{"maxWidth":"60px","width":"60px","text-align":"center"}},
-        {"name":"domain","title":lang.domain},
-        {"name":"nexthop","title":lang.transport_map_dest,"breakpoints":"xs sm"},
+        {"name":"local_dest","title":lang.transport_map_local_dest},
+        {"name":"nexthop","title":lang.transport_map_remote_dest,"breakpoints":"xs sm"},
         {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
       "empty": lang.empty,
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/relay/all',
+        url: '/api/v1/get/transport_map/all',
         jsonp: false,
         error: function () {
           console.log('Cannot draw relay table');
@@ -404,10 +404,10 @@ jQuery(function($){
         success: function (data) {
           $.each(data, function (i, item) {
             item.action = '<div class="btn-group">' +
-              '<a href="/edit.php?relay=' + item.id + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-              '<a href="#" id="delete_selected" data-id="single-relay" data-api-url="delete/relay" data-item="' + item.id + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+              '<a href="/edit.php?transport_map=' + item.id + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+              '<a href="#" id="delete_selected" data-id="single-transport_map" data-api-url="delete/transport_map" data-item="' + item.id + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
               '</div>';
-            item.chkbox = '<input type="checkbox" data-id="relay" name="multi_select" value="' + item.id + '" />';
+            item.chkbox = '<input type="checkbox" data-id="transport_map" name="multi_select" value="' + item.id + '" />';
           });
         }
       }),
@@ -653,6 +653,6 @@ jQuery(function($){
   draw_sync_job_table();
   draw_filter_table();
   draw_bcc_table();
-  draw_relay_table();
+  draw_transport_map_table();
 
 });

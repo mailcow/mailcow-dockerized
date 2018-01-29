@@ -1,19 +1,19 @@
 <?php
-function relay($_action, $_data = null, $attr = null) {
+function transport_map($_action, $_data = null, $attr = null) {
 	global $pdo;
 	global $lang;
-  if ($_SESSION['mailcow_cc_role'] != "admin" && $_SESSION['mailcow_cc_role'] != "domainadmin") {
+  if ($_SESSION['mailcow_cc_role'] != "admin") {
     return false;
   }
   switch ($_action) {
     case 'add':
-      $domain = strtolower(trim($_data['domain']));
+      $local_dest = strtolower(trim($_data['local_dest']));
       $nexthop = strtolower(trim($_data['nexthop']));
       $active = intval($_data['active']);
-      if (empty($domain)) {
+      if (empty($local_dest)) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'Domain cannot be empty'
+          'msg' => 'Local destination cannot be empty'
         );
         return false;
       } elseif (empty($nexthop)) {
@@ -24,10 +24,10 @@ function relay($_action, $_data = null, $attr = null) {
         return false;
       }
       try {
-        $stmt = $pdo->prepare("INSERT INTO `transport_maps` (`domain`, `nexthop`, `active`) VALUES
-          (:domain, :nexthop, :active)");
+        $stmt = $pdo->prepare("INSERT INTO `transport_maps` (`local_dest`, `nexthop`, `active`) VALUES
+          (:local_dest, :nexthop, :active)");
         $stmt->execute(array(
-          ':domain' => $domain,
+          ':local_dest' => $local_dest,
           ':nexthop' => $nexthop,
 					':active' => $active
         ));
@@ -41,7 +41,7 @@ function relay($_action, $_data = null, $attr = null) {
       }
       $_SESSION['return'] = array(
         'type' => 'success',
-        'msg' => 'Relay domain entry saved'
+        'msg' => 'Transport map entry saved'
       );
     break;
     case 'edit':
@@ -49,7 +49,7 @@ function relay($_action, $_data = null, $attr = null) {
       foreach ($ids as $id) {
         $is_now = relay('details', $id);
         if (!empty($is_now)) {
-          $domain = (isset($_data['domain'])) ? $_data['domain'] : $is_now['domain'];
+          $local_dest = (isset($_data['local_dest'])) ? $_data['local_dest'] : $is_now['local_dest'];
           $nexthop = (isset($_data['nexthop'])) ? $_data['nexthop'] : $is_now['nexthop'];
           $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
         }
@@ -63,8 +63,8 @@ function relay($_action, $_data = null, $attr = null) {
         $active = intval($_data['active']);
         try {
           $stmt = $pdo->prepare("SELECT `id` FROM `transport_maps`
-            WHERE `domain` = :domain AND `nexthop` = :nexthop");
-          $stmt->execute(array(':domain' => $domain, ':nexthop' => $nexthop));
+            WHERE `local_dest` = :local_dest AND `nexthop` = :nexthop");
+          $stmt->execute(array(':local_dest' => $local_dest, ':nexthop' => $nexthop));
           $id_now = $stmt->fetch(PDO::FETCH_ASSOC)['id'];
         }
         catch(PDOException $e) {
@@ -77,14 +77,14 @@ function relay($_action, $_data = null, $attr = null) {
         if (isset($id_now) && $id_now != $id) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => 'A transport map entry ' . htmlspecialchars($local_dest) . ' exists for this type'
+            'msg' => 'A transport map entry for' . htmlspecialchars($local_dest) . ' exists'
           );
           return false;
         }
         try {
-          $stmt = $pdo->prepare("UPDATE `transport_maps` SET `domain` = :domain, `nexthop` = :nexthop, `active` = :active WHERE `id`= :id");
+          $stmt = $pdo->prepare("UPDATE `transport_maps` SET `local_dest` = :local_dest, `nexthop` = :nexthop, `active` = :active WHERE `id`= :id");
           $stmt->execute(array(
-            ':domain' => $domain,
+            ':local_dest' => $local_dest,
             ':nexthop' => $nexthop,
 						':active' => $active,
             ':id' => $id
@@ -108,7 +108,7 @@ function relay($_action, $_data = null, $attr = null) {
       $id = intval($_data);
       try {
         $stmt = $pdo->prepare("SELECT `id`,
-					`domain`,
+					`local_dest`,
 					`nexthop`,
 					`active` AS `active_int`,
 					CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`,
@@ -125,10 +125,6 @@ function relay($_action, $_data = null, $attr = null) {
         );
         return false;
       }
-      if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $relaydata['domain'])) {
-        $relaydata = null;
-        return false;
-      }
       return $relaydata;
     break;
     case 'get':
@@ -136,7 +132,7 @@ function relay($_action, $_data = null, $attr = null) {
       $all_items = array();
       $id = intval($_data);
       try {
-        $stmt = $pdo->query("SELECT `id`, `domain`, `nexthop` FROM `transport_maps`");
+        $stmt = $pdo->query("SELECT `id` FROM `transport_maps`");
         $all_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
       }
       catch(PDOException $e) {
@@ -147,9 +143,7 @@ function relay($_action, $_data = null, $attr = null) {
         return false;
       }
       foreach ($all_items as $i) {
-        if (hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $i['domain'])) {
-          $relaydata[] = $i['id'];
-        }
+        $relaydata[] = $i['id'];
       }
       $all_items = null;
       return $relaydata;
@@ -161,16 +155,6 @@ function relay($_action, $_data = null, $attr = null) {
           return false;
         }
         try {
-          $stmt = $pdo->prepare("SELECT `domain` FROM `transport_maps` WHERE id = :id");
-          $stmt->execute(array(':id' => $id));
-          $domain = $stmt->fetch(PDO::FETCH_ASSOC)['domain'];
-          if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
-            $_SESSION['return'] = array(
-              'type' => 'danger',
-              'msg' => sprintf($lang['danger']['access_denied'])
-            );
-            return false;
-          }
           $stmt = $pdo->prepare("DELETE FROM `transport_maps` WHERE `id`= :id");
           $stmt->execute(array(':id' => $id));
         }
