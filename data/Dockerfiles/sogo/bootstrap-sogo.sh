@@ -9,8 +9,8 @@ done
 # Wait until port becomes free and send sig
 until ! nc -z sogo-mailcow 20000;
 do
-	killall -TERM sogod
-	sleep 3
+        killall -TERM sogod
+        sleep 3
 done
 
 # Recreate view
@@ -18,10 +18,9 @@ done
 mysql --host mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "DROP VIEW IF EXISTS sogo_view"
 
 mysql --host mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
-CREATE VIEW sogo_view (c_uid, domain, c_name, c_password, c_cn, mail, aliases, sa_aliases, ad_aliases, home, kind, multiple_bookings) AS
-SELECT mailbox.username, mailbox.domain, mailbox.username, mailbox.password, mailbox.name, mailbox.username, IFNULL(GROUP_CONCAT(ga.aliases SEPARATOR ' '), ''), IFNULL(gsa.send_as_acl, ''), IFNULL(gda.ad_alias, ''), CONCAT('/var/vmail/', maildir), mailbox.kind, mailbox.multiple_bookings FROM mailbox
+CREATE VIEW sogo_view (c_uid, domain, c_name, c_password, c_cn, mail, aliases, ad_aliases, home, kind, multiple_bookings) AS
+SELECT mailbox.username, mailbox.domain, mailbox.username, mailbox.password, mailbox.name, mailbox.username, IFNULL(GROUP_CONCAT(ga.aliases SEPARATOR ' '), ''), IFNULL(gda.ad_alias, ''), CONCAT('/var/vmail/', maildir), mailbox.kind, mailbox.multiple_bookings FROM mailbox
 LEFT OUTER JOIN grouped_mail_aliases ga ON ga.username REGEXP CONCAT('(^|,)', mailbox.username, '($|,)')
-LEFT OUTER JOIN grouped_sender_acl gsa ON gsa.username = mailbox.username
 LEFT OUTER JOIN grouped_domain_alias_address gda ON gda.username = mailbox.username
 WHERE mailbox.active = '1'
 GROUP BY mailbox.username;
@@ -58,8 +57,8 @@ EOF
 
 # Generate multi-domain setup
 while read line
-	do
-	echo "        <key>${line}</key>
+        do
+        echo "        <key>${line}</key>
         <dict>
             <key>SOGoMailDomain</key>
             <string>${line}</string>
@@ -69,7 +68,6 @@ while read line
                     <key>MailFieldNames</key>
                     <array>
                         <string>aliases</string>
-                        <string>sa_aliases</string>
                         <string>ad_aliases</string>
                     </array>
                     <key>KindFieldName</key>
