@@ -22,7 +22,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
     <li role="presentation"><a href="#tab-syncjobs" aria-controls="tab-syncjobs" role="tab" data-toggle="tab"><?=$lang['mailbox']['sync_jobs'];?></a></li>
     <li role="presentation"><a href="#tab-filters" aria-controls="tab-filters" role="tab" data-toggle="tab"><?=$lang['mailbox']['filters'];?></a></li>
     <li role="presentation"><a href="#tab-bcc" aria-controls="tab-filters" role="tab" data-toggle="tab"><?=$lang['mailbox']['bcc_maps'];?></a></li>
-    <li role="presentation"><a href="#tab-relay" aria-controls="tab-relay" role="tab" data-toggle="tab"><?=$lang['mailbox']['transport_map'];?></a></li>
+    <li role="presentation"><a href="#tab-transport_map" aria-controls="tab-transport_map" role="tab" data-toggle="tab"><?=$lang['mailbox']['transport_map'];?></a></li>
   </ul>
 
 	<div class="row">
