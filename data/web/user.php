@@ -97,7 +97,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
   <div class="row">
     <div class="col-md-3 col-xs-5 text-right">  <span class="glyphicon glyphicon-filter"></span></div>
     <div class="col-md-9 col-xs-7">
-    <p><a href="#userFilterModal" data-toggle="modal">[Show active user sieve filter]</a></p>
+    <p><a href="#userFilterModal" data-toggle="modal">[<?=$lang['user']['show_sieve_filters'];?>]</a></p>
     </div>
   </div>
   <hr>
@@ -105,24 +105,22 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
   $user_get_alias_details = user_get_alias_details($username);
   ?>
   <div class="row">
-    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['direct_aliases'];?>:</div>
+    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['direct_aliases'];?>:
+      <p class="small"><?=$lang['user']['direct_aliases_desc'];?></p>
+    </div>
     <div class="col-md-9 col-xs-7">
     <p><?=$user_get_alias_details['direct_aliases'];?></p>
     </div>
   </div>
   <div class="row">
-    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['shared_aliases'];?>:</div>
+    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['shared_aliases'];?>:
+      <p class="small"><?=$lang['user']['shared_aliases_desc'];?></p>
+    </div>
     <div class="col-md-9 col-xs-7">
     <p><?=$user_get_alias_details['shared_aliases'];?></p>
     </div>
   </div>
   <hr>
-  <div class="row">
-    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['domain_aliases'];?>:</div>
-    <div class="col-md-9 col-xs-7">
-    <p><?=$user_get_alias_details['ad_alias'];?></p>
-    </div>
-  </div>
   <div class="row">
     <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['aliases_also_send_as'];?>:</div>
     <div class="col-md-9 col-xs-7">

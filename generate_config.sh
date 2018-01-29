@@ -101,7 +101,15 @@ USE_WATCHDOG=n
 # Send notifications by mail (no DKIM signature, sent from watchdog@MAILCOW_HOSTNAME)
 #WATCHDOG_NOTIFY_EMAIL=
 
+# Max log lines per service to keep in Redis logs
 LOG_LINES=9999
+
+# Internal IPv4 /24 subnet, format n.n.n. (expands to n.n.n.0/24)
+IPV4_NETWORK=172.22.1
+
+# Internal IPv6 subnet in fd00::/8
+IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
+
 
 EOF
 

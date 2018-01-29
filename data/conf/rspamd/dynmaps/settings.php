@@ -196,7 +196,7 @@ while ($row = array_shift($rows)) {
 	}
 	whitelist_header_<?=$username_sane;?> {
 <?php
-	$stmt = $pdo->prepare("SELECT GROUP_CONCAT(REPLACE(CONCAT('^', `value`, '$'), '*', '.*') SEPARATOR '|') AS `value` FROM `filterconf`
+	$stmt = $pdo->prepare("SELECT GROUP_CONCAT(REPLACE(CONCAT('\<', `value`, '\>'), '*', '.*') SEPARATOR '|') AS `value` FROM `filterconf`
 		WHERE `object`= :object
 			AND `option` = 'whitelist_from'");
 	$stmt->execute(array(':object' => $row['object']));
@@ -288,7 +288,7 @@ while ($row = array_shift($rows)) {
 	}
 	blacklist_header_<?=$username_sane;?> {
 <?php
-	$stmt = $pdo->prepare("SELECT GROUP_CONCAT(REPLACE(CONCAT('^', `value`, '$'), '*', '.*') SEPARATOR '|') AS `value` FROM `filterconf`
+	$stmt = $pdo->prepare("SELECT GROUP_CONCAT(REPLACE(CONCAT('\<', `value`, '\>'), '*', '.*') SEPARATOR '|') AS `value` FROM `filterconf`
 		WHERE `object`= :object
 			AND `option` = 'blacklist_from'");
 	$stmt->execute(array(':object' => $row['object']));

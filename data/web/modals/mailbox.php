@@ -392,6 +392,13 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 						</div>
 					</div>
 					<div class="form-group">
+						<label class="control-label col-sm-2" for="maxbytespersecond"><?=$lang['edit']['maxbytespersecond'];?></label>
+						<div class="col-sm-10">
+						<input type="number" class="form-control" name="maxbytespersecond" id="maxbytespersecond" min="0" max="125000000" value="0">
+            <small class="help-block">0-125000000</small>
+						</div>
+					</div>
+					<div class="form-group">
 						<label class="control-label col-sm-2" for="exclude"><?=$lang['add']['exclude'];?></label>
 						<div class="col-sm-10">
 						<input type="text" class="form-control" name="exclude" id="exclude" value="(?i)spam|(?i)junk">
@@ -415,6 +422,20 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">
 							<label><input type="checkbox" value="1" name="delete2"> <?=$lang['add']['delete2'];?></label>
+							</div>
+						</div>
+					</div>
+          <div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<div class="checkbox">
+							<label><input type="checkbox" value="1" name="automap"> <?=$lang['add']['automap'];?></label>
+							</div>
+						</div>
+					</div>
+          <div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<div class="checkbox">
+							<label><input type="checkbox" value="1" name="skipcrossduplicates"> <?=$lang['add']['skipcrossduplicates'];?></label>
 							</div>
 						</div>
 					</div>
