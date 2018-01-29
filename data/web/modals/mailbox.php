@@ -620,7 +620,6 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
                 ?>
               </select>
             </div>
-            </div>
           </div>
           <div class="form-group">
             <label class="control-label col-sm-2" for="nexthop"><?=$lang['mailbox']['transport_map_dest'];?>:</label>
