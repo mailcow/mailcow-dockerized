@@ -663,13 +663,13 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           <br />
           <form class="form-horizontal" data-id="editrelay" role="form" method="post">
             <div class="form-group">
-              <label class="control-label col-sm-2" for="domain">Domain</label>
+              <label class="control-label col-sm-2" for="domain"><?=$lang['mailbox']['domain'];?></label>
               <div class="col-sm-10">
                 <input type="text" class="form-control" id="domain" name="domain" value="<?=$result['domain'];?>">
               </div>
             </div>
             <div class="form-group">
-              <label class="control-label col-sm-2" for="nexthop">Nexthop:</label>
+              <label class="control-label col-sm-2" for="nexthop"><?=$lang['mailbox']['transport_map_dest'];?>:</label>
               <div class="col-sm-10">
                 <input type="text" class="form-control" id="nexthop" name="nexthop" value="<?=$result['nexthop'];?>">
               </div>
