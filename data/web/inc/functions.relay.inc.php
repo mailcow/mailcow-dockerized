@@ -9,6 +9,7 @@ function relay($_action, $_data = null, $attr = null) {
     case 'add':
       $domain = strtolower(trim($_data['domain']));
       $nexthop = strtolower(trim($_data['nexthop']));
+      $active = intval($_data['active']);
       if (empty($domain)) {
         $_SESSION['return'] = array(
           'type' => 'danger',
@@ -23,11 +24,12 @@ function relay($_action, $_data = null, $attr = null) {
         return false;
       }
       try {
-        $stmt = $pdo->prepare("INSERT INTO `transport_maps` (`domain`, `nexthop`) VALUES
-          (:domain, :nexthop)");
+        $stmt = $pdo->prepare("INSERT INTO `transport_maps` (`domain`, `nexthop`, `active`) VALUES
+          (:domain, :nexthop, :active)");
         $stmt->execute(array(
           ':domain' => $domain,
-          ':nexthop' => $nexthop
+          ':nexthop' => $nexthop,
+					':active' => $active
         ));
       }
       catch (PDOException $e) {
@@ -43,25 +45,20 @@ function relay($_action, $_data = null, $attr = null) {
       );
     break;
     case 'edit':
-      // if (!isset($_SESSION['acl']['bcc_maps']) || $_SESSION['acl']['bcc_maps'] != "1" ) {
-      //   $_SESSION['return'] = array(
-      //     'type' => 'danger',
-      //     'msg' => sprintf($lang['danger']['access_denied'])
-      //   );
-      //   return false;
-      // }
       $ids = (array)$_data['id'];
       foreach ($ids as $id) {
         $is_now = relay('details', $id);
         if (!empty($is_now)) {
           $domain = (isset($_data['domain'])) ? $_data['domain'] : $is_now['domain'];
           $nexthop = (isset($_data['nexthop'])) ? $_data['nexthop'] : $is_now['nexthop'];
+					$active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
         }
         try {
-          $stmt = $pdo->prepare("UPDATE `transport_maps` SET `domain` = :domain, `nexthop` = :nexthop WHERE `id`= :id");
+          $stmt = $pdo->prepare("UPDATE `transport_maps` SET `domain` = :domain, `nexthop` = :nexthop, `active` = :active WHERE `id`= :id");
           $stmt->execute(array(
             ':domain' => $domain,
             ':nexthop' => $nexthop,
+						':active' => $active,
             ':id' => $id
           ));
         }
@@ -82,7 +79,14 @@ function relay($_action, $_data = null, $attr = null) {
       $relaydata = array();
       $id = intval($_data);
       try {
-        $stmt = $pdo->prepare("SELECT `id`, `domain`, `nexthop` FROM `transport_maps` WHERE `id` = :id");
+        $stmt = $pdo->prepare("SELECT `id`,
+					`domain`,
+					`nexthop`,
+					`active` AS `active_int`,
+					CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`,
+					`created`,
+					`modified` FROM `transport_maps`
+						WHERE `id` = :id");
         $stmt->execute(array(':id' => $id));
         $relaydata = $stmt->fetch(PDO::FETCH_ASSOC);
       }
