@@ -402,7 +402,10 @@ function init_db_schema() {
         "cols" => array(
           "id" => "INT NOT NULL AUTO_INCREMENT",
           "domain" => "VARCHAR(255) NOT NULL",
-          "nexthop" => "VARCHAR(255) NOT NULL"
+          "nexthop" => "VARCHAR(255) NOT NULL",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
+          "active" => "TINYINT(1) NOT NULL DEFAULT '0'"
         ),
         "keys" => array(
           "primary" => array(
@@ -619,7 +622,7 @@ function init_db_schema() {
     );
 
     foreach ($tables as $table => $properties) {
-      $stmt = $pdo->query("SHOW TABLES LIKE '" . $table . "'"); 
+      $stmt = $pdo->query("SHOW TABLES LIKE '" . $table . "'");
       $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
       if ($num_results != 0) {
         $stmt = $pdo->prepare("SELECT CONCAT('ALTER TABLE ', `table_schema`, '.', `table_name`, ' DROP FOREIGN KEY ', `constraint_name`, ';') AS `FKEY_DROP` FROM `information_schema`.`table_constraints`
@@ -630,7 +633,7 @@ function init_db_schema() {
           $pdo->query($row['FKEY_DROP']);
         }
         foreach($properties['cols'] as $column => $type) {
-          $stmt = $pdo->query("SHOW COLUMNS FROM `" . $table . "` LIKE '" . $column . "'"); 
+          $stmt = $pdo->query("SHOW COLUMNS FROM `" . $table . "` LIKE '" . $column . "'");
           $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
           if ($num_results == 0) {
             $pdo->query("ALTER TABLE `" . $table . "` ADD `" . $column . "` " . $type);
@@ -643,7 +646,7 @@ function init_db_schema() {
           if (strtolower($key_type) == 'primary') {
             foreach ($key_content as $key_values) {
               $fields = "`" . implode("`, `", $key_values) . "`";
-              $stmt = $pdo->query("SHOW KEYS FROM `" . $table . "` WHERE Key_name = 'PRIMARY'"); 
+              $stmt = $pdo->query("SHOW KEYS FROM `" . $table . "` WHERE Key_name = 'PRIMARY'");
               $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
               $is_drop = ($num_results != 0) ? "DROP PRIMARY KEY, " : "";
               $pdo->query("ALTER TABLE `" . $table . "` " . $is_drop . "ADD PRIMARY KEY (" . $fields . ")");
@@ -652,7 +655,7 @@ function init_db_schema() {
           if (strtolower($key_type) == 'key') {
             foreach ($key_content as $key_name => $key_values) {
               $fields = "`" . implode("`, `", $key_values) . "`";
-              $stmt = $pdo->query("SHOW KEYS FROM `" . $table . "` WHERE Key_name = '" . $key_name . "'"); 
+              $stmt = $pdo->query("SHOW KEYS FROM `" . $table . "` WHERE Key_name = '" . $key_name . "'");
               $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
               $is_drop = ($num_results != 0) ? "DROP INDEX `" . $key_name . "`, " : "";
               $pdo->query("ALTER TABLE `" . $table . "` " . $is_drop . "ADD KEY `" . $key_name . "` (" . $fields . ")");
@@ -661,7 +664,7 @@ function init_db_schema() {
           if (strtolower($key_type) == 'unique') {
             foreach ($key_content as $key_name => $key_values) {
               $fields = "`" . implode("`, `", $key_values) . "`";
-              $stmt = $pdo->query("SHOW KEYS FROM `" . $table . "` WHERE Key_name = '" . $key_name . "'"); 
+              $stmt = $pdo->query("SHOW KEYS FROM `" . $table . "` WHERE Key_name = '" . $key_name . "'");
               $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
               $is_drop = ($num_results != 0) ? "DROP INDEX `" . $key_name . "`, " : "";
               $pdo->query("ALTER TABLE `" . $table . "` " . $is_drop . "ADD UNIQUE KEY `" . $key_name . "` (" . $fields . ")");
@@ -670,7 +673,7 @@ function init_db_schema() {
           if (strtolower($key_type) == 'fkey') {
             foreach ($key_content as $key_name => $key_values) {
               $fields = "`" . implode("`, `", $key_values) . "`";
-              $stmt = $pdo->query("SHOW KEYS FROM `" . $table . "` WHERE Key_name = '" . $key_name . "'"); 
+              $stmt = $pdo->query("SHOW KEYS FROM `" . $table . "` WHERE Key_name = '" . $key_name . "'");
               $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
               if ($num_results != 0) {
                 $pdo->query("ALTER TABLE `" . $table . "` DROP INDEX `" . $key_name . "`");
@@ -682,8 +685,8 @@ function init_db_schema() {
           }
         }
         // Drop all vanished columns
-        $stmt = $pdo->query("SHOW COLUMNS FROM `" . $table . "`"); 
-        $cols_in_table = $stmt->fetchAll(PDO::FETCH_ASSOC); 
+        $stmt = $pdo->query("SHOW COLUMNS FROM `" . $table . "`");
+        $cols_in_table = $stmt->fetchAll(PDO::FETCH_ASSOC);
         while ($row = array_shift($cols_in_table)) {
           if (!array_key_exists($row['Field'], $properties['cols'])) {
             $pdo->query("ALTER TABLE `" . $table . "` DROP COLUMN `" . $row['Field'] . "`;");
@@ -691,8 +694,8 @@ function init_db_schema() {
         }
 
         // Step 1: Get all non-primary keys, that currently exist and those that should exist
-        $stmt = $pdo->query("SHOW KEYS FROM `" . $table . "` WHERE `Key_name` != 'PRIMARY'"); 
-        $keys_in_table = $stmt->fetchAll(PDO::FETCH_ASSOC); 
+        $stmt = $pdo->query("SHOW KEYS FROM `" . $table . "` WHERE `Key_name` != 'PRIMARY'");
+        $keys_in_table = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $keys_to_exist = array();
         if (isset($properties['keys']['unique']) && is_array($properties['keys']['unique'])) {
           foreach ($properties['keys']['unique'] as $key_name => $key_values) {
@@ -718,7 +721,7 @@ function init_db_schema() {
         }
         // Step 3: Drop all vanished primary keys
         if (!isset($properties['keys']['primary'])) {
-          $stmt = $pdo->query("SHOW KEYS FROM `" . $table . "` WHERE Key_name = 'PRIMARY'"); 
+          $stmt = $pdo->query("SHOW KEYS FROM `" . $table . "` WHERE Key_name = 'PRIMARY'");
           $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
           if ($num_results != 0) {
             $pdo->query("ALTER TABLE `" . $table . "` DROP PRIMARY KEY");
@@ -776,8 +779,8 @@ function init_db_schema() {
     // Create events to clean database
     $events[] = 'DROP EVENT IF EXISTS clean_spamalias;
 DELIMITER //
-CREATE EVENT clean_spamalias 
-ON SCHEDULE EVERY 1 DAY DO 
+CREATE EVENT clean_spamalias
+ON SCHEDULE EVERY 1 DAY DO
 BEGIN
   DELETE FROM spamalias WHERE validity < UNIX_TIMESTAMP();
 END;
@@ -788,7 +791,7 @@ DELIMITER ;';
     }
 
     // Inject admin if not exists
-    $stmt = $pdo->query("SELECT NULL FROM `admin`"); 
+    $stmt = $pdo->query("SELECT NULL FROM `admin`");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
     if ($num_results == 0) {
     $stmt = $pdo->query("INSERT INTO `admin` (`username`, `password`, `superadmin`, `created`, `modified`, `active`)
@@ -799,7 +802,7 @@ DELIMITER ;';
     $stmt = $pdo->query("DELETE FROM `admin` WHERE `username` NOT IN  (SELECT `username` FROM `domain_admins`);");
     }
     // Insert new DB schema version
-    $stmt = $pdo->query("REPLACE INTO `versions` (`application`, `version`) VALUES ('db_schema', '" . $db_version . "');"); 
+    $stmt = $pdo->query("REPLACE INTO `versions` (`application`, `version`) VALUES ('db_schema', '" . $db_version . "');");
 
     $_SESSION['return'] = array(
       'type' => 'success',
