@@ -73,7 +73,7 @@ while (($#)); do
     --check|-c)
       echo "Checking remote code for updates..."
       git fetch origin ${BRANCH}
-      if [[ $(git branch ${BRANCH} --contains $(git rev-parse origin/${BRANCH}) > /dev/null 2> /dev/null; echo $?) != 0 ]]; then
+      if [[ -z $(git log HEAD --pretty=format:"%H" | grep $(git rev-parse origin/${BRANCH})) ]]; then
         echo "Updated code is available."
         exit 0
       else
