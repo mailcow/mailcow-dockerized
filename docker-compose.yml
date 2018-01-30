@@ -104,6 +104,7 @@ services:
         - ./data/conf/phpfpm/php-fpm.d/www.conf:/usr/local/etc/php-fpm.d/www.conf
         - ./data/conf/phpfpm/php-fpm.d/system.conf:/usr/local/etc/php-fpm.d/system.conf
         - ./data/conf/phpfpm/php-conf.d/opcache-recommended.ini:/usr/local/etc/php/conf.d/opcache-recommended.ini
+        - ./data/conf/phpfpm/php-conf.d/upload.ini:/usr/local/etc/php/conf.d/upload.ini
       environment:
         - LOG_LINES=${LOG_LINES}
         - TZ=${TZ}
@@ -128,7 +129,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.14
+      image: mailcow/sogo:1.15
       build: ./data/Dockerfiles/sogo
       environment:
         - DBNAME=${DBNAME}
@@ -186,7 +187,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.13
+      image: mailcow/postfix:1.14
       build: ./data/Dockerfiles/postfix
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
@@ -311,7 +312,7 @@ services:
     watchdog-mailcow:
       image: mailcow/watchdog:1.13
       # Debug
-      command: /watchdog.sh
+      #command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog
       volumes:
         - vmail-vol-1:/vmail:ro
@@ -331,7 +332,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:1.5
+      image: mailcow/dockerapi:1.6
       restart: always
       build: ./data/Dockerfiles/dockerapi
       oom_score_adj: -10
