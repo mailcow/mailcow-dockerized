@@ -46,6 +46,7 @@ CONFIG_ARRAY=(
   "IPV6_NETWORK"
   "LOG_LINES"
   "SNAT_TO_SOURCE"
+  "SYSCTL_IPV6_DISABLED"
 )
 
 sed -i '$a\' mailcow.conf
@@ -54,6 +55,15 @@ for option in ${CONFIG_ARRAY[@]}; do
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo "${option}=" >> mailcow.conf
+    fi
+  if [[ ${option} == "SYSCTL_IPV6_DISABLED" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo "# Disable IPv6" >> mailcow.conf
+      echo "# mailcow-network will still be created as IPv6 enabled, all containers will be created" >> mailcow.conf
+      echo "# without IPv6 support." >> mailcow.conf
+      echo "# Use 1 for disabled, 0 for enabled" >> mailcow.conf
+      echo "SYSCTL_IPV6_DISABLED=0" >> mailcow.conf
     fi
   elif [[ ${option} == "COMPOSE_PROJECT_NAME" ]]; then
     if ! grep -q ${option} mailcow.conf; then
