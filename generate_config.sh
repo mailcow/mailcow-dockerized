@@ -108,6 +108,11 @@ IPV4_NETWORK=172.22.1
 # Internal IPv6 subnet in fc00::/7
 IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
 
+# Disable IPv6
+# mailcow-network will still be created as IPv6 enabled, all containers will be created
+# without IPv6 support.
+# Use 1 for disabled, 0 for enabled
+SYSCTL_IPV6_DISABLED=0
 
 EOF
 
