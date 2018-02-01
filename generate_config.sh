@@ -87,11 +87,9 @@ ADDITIONAL_SAN=
 
 # Skip running ACME (acme-mailcow, Let's Encrypt certs) - y/n
 SKIP_LETS_ENCRYPT=n
+
 # Skip IPv4 check in ACME container - y/n
 SKIP_IP_CHECK=n
-
-# Skip Fail2ban implementation (fail2ban-mailcow) - y/n
-SKIP_FAIL2BAN=n
 
 # Skip ClamAV (clamd-mailcow) anti-virus (Rspamd will auto-detect a missing ClamAV container) - y/n
 SKIP_CLAMD=n
@@ -107,7 +105,7 @@ LOG_LINES=9999
 # Internal IPv4 /24 subnet, format n.n.n. (expands to n.n.n.0/24)
 IPV4_NETWORK=172.22.1
 
-# Internal IPv6 subnet in fd00::/8
+# Internal IPv6 subnet in fc00::/7
 IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
 
 
