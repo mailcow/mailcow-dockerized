@@ -22,7 +22,7 @@ class containers_get(Resource):
         containers.update({container.attrs['Id']: container.attrs})
       return containers
     except Exception as e:
-      return jsonify(type='danger', msg=e)
+      return jsonify(type='danger', msg=str(e))
 
 class container_get(Resource):
   def get(self, container_id):
@@ -31,7 +31,7 @@ class container_get(Resource):
         for container in docker_client.containers.list(all=True, filters={"id": container_id}):
           return container.attrs
       except Exception as e:
-          return jsonify(type='danger', msg=e)
+          return jsonify(type='danger', msg=str(e))
     else:
       return jsonify(type='danger', msg='no or invalid id defined')
 
@@ -44,7 +44,7 @@ class container_post(Resource):
             container.stop()
           return jsonify(type='success', msg='command completed successfully')
         except Exception as e:
-          return jsonify(type='danger', msg=e)
+          return jsonify(type='danger', msg=str(e))
 
       elif post_action == 'start':
         try:
@@ -52,7 +52,7 @@ class container_post(Resource):
             container.start()
           return jsonify(type='success', msg='command completed successfully')
         except Exception as e:
-          return jsonify(type='danger', msg=e)
+          return jsonify(type='danger', msg=str(e))
 
       elif post_action == 'restart':
         try:
@@ -60,7 +60,7 @@ class container_post(Resource):
             container.restart()
           return jsonify(type='success', msg='command completed successfully')
         except Exception as e:
-          return jsonify(type='danger', msg=e)
+          return jsonify(type='danger', msg=str(e))
 
       elif post_action == 'exec':
 
@@ -72,13 +72,13 @@ class container_post(Resource):
             for container in docker_client.containers.list(filters={"id": container_id}):
               return container.exec_run(["/bin/bash", "-c", "/usr/local/bin/doveadm sieve list -u '" + request.json['username'].replace("'", "'\\''") + "'"], user='vmail')
           except Exception as e:
-            return jsonify(type='danger', msg=e)
+            return jsonify(type='danger', msg=str(e))
         elif request.json['cmd'] == 'sieve_print' and request.json['script_name'] and request.json['username']:
           try:
             for container in docker_client.containers.list(filters={"id": container_id}):
               return container.exec_run(["/bin/bash", "-c", "/usr/local/bin/doveadm sieve get -u '" + request.json['username'].replace("'", "'\\''") + "' '" + request.json['script_name'].replace("'", "'\\''") + "'"], user='vmail')
           except Exception as e:
-            return jsonify(type='danger', msg=e)
+            return jsonify(type='danger', msg=str(e))
         elif request.json['cmd'] == 'worker_password' and request.json['raw']:
           try:
             for container in docker_client.containers.list(filters={"id": container_id}):
@@ -89,7 +89,7 @@ class container_post(Resource):
               container.restart()
               return jsonify(type='success', msg='command completed successfully')
           except Exception as e:
-            return jsonify(type='danger', msg=e)
+            return jsonify(type='danger', msg=str(e))
 
         else:
           return jsonify(type='danger', msg='Unknown command')
