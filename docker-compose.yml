@@ -91,7 +91,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.9
+      image: mailcow/phpfpm:1.10
       build: ./data/Dockerfiles/phpfpm
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
@@ -287,9 +287,9 @@ services:
           aliases:
             - acme
 
-    fail2ban-mailcow:
-      image: mailcow/fail2ban:1.11
-      build: ./data/Dockerfiles/fail2ban
+    netfilter-mailcow:
+      image: mailcow/netfilter:1.11
+      build: ./data/Dockerfiles/netfilter
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -301,8 +301,8 @@ services:
       privileged: true
       environment:
         - TZ=${TZ}
-        - SKIP_FAIL2BAN=${SKIP_FAIL2BAN:-n}
         - IPV4_NETWORK=${IPV4_NETWORK}
+        - SNAT_TO_SOURCE=${SNAT_TO_SOURCE:-n}
       network_mode: "host"
       dns:
         - ${IPV4_NETWORK}.254
