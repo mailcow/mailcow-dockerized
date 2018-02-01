@@ -40,7 +40,6 @@ CONFIG_ARRAY=(
   "WATCHDOG_NOTIFY_EMAIL"
   "SKIP_CLAMD"
   "SKIP_IP_CHECK"
-  "SKIP_NETFILTER"
   "ADDITIONAL_SAN"
   "DOVEADM_PORT"
   "IPV4_NETWORK"
@@ -100,8 +99,6 @@ for option in ${CONFIG_ARRAY[@]}; do
     echo "${option}=n" >> mailcow.conf
   fi
 done
-
-sed -i 's#SKIP_FAIL2BAN#SKIP_NETFILTER#g' mailcow.conf
 
 echo -en "Checking internet connection... "
 curl -o /dev/null google.com -sm3
