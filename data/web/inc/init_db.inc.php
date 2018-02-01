@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "27012018_1721";
+    $db_version = "30012018_1521";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -21,10 +21,6 @@ function init_db_schema() {
       AND active = '1'
       AND address NOT LIKE '@%'
       GROUP BY goto;",
-    "grouped_sender_acl" => "CREATE VIEW grouped_sender_acl (username, send_as_acl) AS
-      SELECT logged_in_as, IFNULL(GROUP_CONCAT(send_as SEPARATOR ' '), '') AS send_as_acl FROM sender_acl
-      WHERE send_as NOT LIKE '@%'
-      GROUP BY logged_in_as;",
     "grouped_domain_alias_address" => "CREATE VIEW grouped_domain_alias_address (username, ad_alias) AS
       SELECT username, IFNULL(GROUP_CONCAT(local_part, '@', alias_domain SEPARATOR ' '), '') AS ad_alias FROM mailbox
       LEFT OUTER JOIN alias_domain ON target_domain=domain
@@ -193,7 +189,6 @@ function init_db_schema() {
           "tls_enforce_out" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "kind" => "VARCHAR(100) NOT NULL DEFAULT ''",
           "multiple_bookings" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "wants_tagged_subject" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
           "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
@@ -250,7 +245,8 @@ function init_db_schema() {
           "eas_reset" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "filters" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "quarantaine" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "bcc_maps" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "bcc_maps" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "recipient_maps" => "TINYINT(1) NOT NULL DEFAULT '0'",
         ),
         "keys" => array(
           "fkey" => array(

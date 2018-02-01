@@ -661,7 +661,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           ?>
           <h4>Recipient map: <?=$result['recipient_map_old'];?></h4>
           <br />
-          <form class="form-horizontal" data-id="editrecipient_map" role="form" method="post">
+          <form class="form-horizontal" data-id="edit_recipient_map" role="form" method="post">
             <input type="hidden" value="0" name="active">
             <div class="form-group">
               <label class="control-label col-sm-2" for="recipient_map_new">New destination</label>
@@ -679,7 +679,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             </div>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
-                <button class="btn btn-success" id="edit_selected" data-id="editrecipient_map" data-item="<?=$map;?>" data-api-url='edit/recipient_map' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
+                <button class="btn btn-success" id="edit_selected" data-id="edit_recipient_map" data-item="<?=$map;?>" data-api-url='edit/recipient_map' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
               </div>
             </div>
           </form>

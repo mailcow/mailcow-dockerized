@@ -666,3 +666,14 @@ $lang['mailbox']['bcc_to_rcpt'] = "Map empfängerabhängig verwenden";
 $lang['mailbox']['add_bcc_entry'] = "BCC-Eintrag hinzufügen";
 $lang['mailbox']['bcc_info'] = "Eine empfängerabhängige Map wird verwendet, wenn die BCC-Map Eintragung auf den Eingang einer E-Mail auf das lokale Ziel reagieren soll. Senderabhängige Maps verfahren nach dem gleichen Prinzip.<br/>
   Das lokale Ziel wird bei Fehlzustellungen an ein BCC-Ziel nicht informiert.";
+$lang['mailbox']['address_rewriting'] = 'Adressumschreibung';
+$lang['mailbox']['recipient_maps'] = 'Empfängerumschreibungen';
+$lang['mailbox']['recipient_map_info'] = 'Empfängerumschreibung ersetzen den Empfänger einer E-Mail vor dem Versand.';
+$lang['mailbox']['recipient_map_old'] = 'Original Empfänger';
+$lang['mailbox']['recipient_map_new'] = 'Neuer Empfänger';
+$lang['mailbox']['add_recipient_map_entry'] = 'Empfängerumschreibung hinzufügen';
+$lang['mailbox']['sender_maps'] = 'Senderumschreibungen';
+$lang['mailbox']['sender_map_info'] = 'Senderumschreibungen werden verwendet, um den Absender einer E-Mail noch vor dem Versand umzuschreiben.';
+$lang['mailbox']['sender_map_old'] = 'Original Absender';
+$lang['mailbox']['sender_map_new'] = 'Neuer Absender';
+$lang['mailbox']['add_sender_map_entry'] = 'Senderumschreibung hinzufügen';

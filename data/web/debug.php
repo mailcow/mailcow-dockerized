@@ -23,7 +23,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
         <li role="presentation"><a href="#tab-postfix-logs" aria-controls="tab-postfix-logs" role="tab" data-toggle="tab">Postfix</a></li>
         <li role="presentation"><a href="#tab-dovecot-logs" aria-controls="tab-dovecot-logs" role="tab" data-toggle="tab">Dovecot</a></li>
         <li role="presentation"><a href="#tab-sogo-logs" aria-controls="tab-sogo-logs" role="tab" data-toggle="tab">SOGo</a></li>
-        <li role="presentation"><a href="#tab-fail2ban-logs" aria-controls="tab-fail2ban-logs" role="tab" data-toggle="tab">Fail2ban</a></li>
+        <li role="presentation"><a href="#tab-netfilter-logs" aria-controls="tab-netfilter-logs" role="tab" data-toggle="tab">Netfilter</a></li>
         <li role="presentation"><a href="#tab-rspamd-history" aria-controls="tab-rspamd-history" role="tab" data-toggle="tab">Rspamd</a></li>
         <li role="presentation"><a href="#tab-autodiscover-logs" aria-controls="tab-autodiscover-logs" role="tab" data-toggle="tab">Autodiscover</a></li>
         <li role="presentation"><a href="#tab-watchdog-logs" aria-controls="tab-watchdog-logs" role="tab" data-toggle="tab">Watchdog</a></li>
@@ -112,7 +112,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               'redis-mailcow',
               'php-fpm-mailcow',
               'mysql-mailcow',
-              'fail2ban-mailcow',
+              'netfilter-mailcow',
               'clamd-mailcow'
             );
             foreach ($container_array as $container) {
@@ -123,21 +123,26 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                 <?php
                 date_default_timezone_set('UTC');
                 $StartedAt = date_parse($container_stats['State']['StartedAt']);
-                $date = new \DateTime();
-                $date->setTimestamp(mktime(
-                  $StartedAt['hour'],
-                  $StartedAt['minute'],
-                  $StartedAt['second'],
-                  $StartedAt['month'],
-                  $StartedAt['day'],
-                  $StartedAt['year']));
-                $user_tz = new DateTimeZone(getenv('TZ'));
-                $date->setTimezone($user_tz);
-                $started = $date->format('r');
+                if ($StartedAt['hour'] !== false) {
+                  $date = new \DateTime();
+                  $date->setTimestamp(mktime(
+                    $StartedAt['hour'],
+                    $StartedAt['minute'],
+                    $StartedAt['second'],
+                    $StartedAt['month'],
+                    $StartedAt['day'],
+                    $StartedAt['year']));
+                  $user_tz = new DateTimeZone(getenv('TZ'));
+                  $date->setTimezone($user_tz);
+                  $started = $date->format('r');
+                }
+                else {
+                  $started = '?';
+                }
                 ?>
                 <small>(Started on <?=$started;?>),
                 <a href data-toggle="modal" data-container="<?=$container;?>" data-target="#RestartContainer">Restart</a></small>
-                <span class="pull-right label label-<?=($container_stats['State']['Running'] == 1) ? 'success' : 'danger';?>">&nbsp;&nbsp;&nbsp;</span>
+                <span class="pull-right label label-<?=($container_stats !== false && !empty($container_stats)) ? (($container_stats['State']['Running'] == 1) ? 'success' : 'danger') : 'default'; ?>">&nbsp;&nbsp;&nbsp;</span>
                 </li>
               <?php
               }
@@ -198,18 +203,18 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
           </div>
         </div>
 
-        <div role="tabpanel" class="tab-pane" id="tab-fail2ban-logs">
+        <div role="tabpanel" class="tab-pane" id="tab-netfilter-logs">
           <div class="panel panel-default">
-            <div class="panel-heading">Fail2ban <span class="badge badge-info log-lines"></span>
+            <div class="panel-heading">Netfilter <span class="badge badge-info log-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="fail2ban_log" data-log-url="fail2ban" data-nrows="100">+ 100</button>
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="fail2ban_log" data-log-url="fail2ban" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default" id="refresh_fail2ban_log"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="netfilter_log" data-log-url="netfilter" data-nrows="100">+ 100</button>
+                <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="netfilter_log" data-log-url="netfilter" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-default" id="refresh_netfilter_log"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
               <div class="table-responsive">
-                <table class="table table-striped table-condensed" id="fail2ban_log"></table>
+                <table class="table table-striped table-condensed" id="netfilter_log"></table>
               </div>
             </div>
           </div>

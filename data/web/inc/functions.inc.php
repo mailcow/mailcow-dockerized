@@ -1134,13 +1134,13 @@ function get_logs($container, $lines = false) {
       return $data_array;
     }
   }
-  if ($container == "fail2ban-mailcow") {
+  if ($container == "netfilter-mailcow") {
     if (!is_numeric($lines)) {
       list ($from, $to) = explode('-', $lines);
-      $data = $redis->lRange('F2B_LOG', intval($from), intval($to));
+      $data = $redis->lRange('NETFILTER_LOG', intval($from), intval($to));
     }
     else {
-      $data = $redis->lRange('F2B_LOG', 0, intval($lines));
+      $data = $redis->lRange('NETFILTER_LOG', 0, intval($lines));
     }
     if ($data) {
       foreach ($data as $json_line) {
