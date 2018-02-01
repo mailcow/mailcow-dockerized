@@ -4,9 +4,51 @@ for bin in curl docker-compose docker git awk sha1sum; do
   if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
 done
 
+set -o pipefail
+export LC_ALL=C
+DATE=$(date +%Y-%m-%d_%H_%M_%S)
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+declare -a DC_PARAMS
+
+while (($#)); do
+  case "${1}" in
+    --check|-c)
+      echo "Checking remote code for updates..."
+      git fetch origin ${BRANCH}
+      if [[ -z $(git log HEAD --pretty=format:"%H" | grep $(git rev-parse origin/${BRANCH})) ]]; then
+        echo "Updated code is available."
+        exit 0
+      else
+        echo "No updates available."
+        exit 3
+      fi
+    ;;
+    --no-start)
+      DC_PARAMS=(${DC_PARAMS[@]} "--no-start")
+    ;;
+    --ours)
+      MERGE_STRATEGY=ours
+    ;;
+  esac
+done
+
 [[ ! -f mailcow.conf ]] && { echo "mailcow.conf is missing"; exit 1;}
 
-CONFIG_ARRAY=("SKIP_LETS_ENCRYPT" "USE_WATCHDOG" "WATCHDOG_NOTIFY_EMAIL" "SKIP_CLAMD" "SKIP_IP_CHECK" "SKIP_FAIL2BAN" "ADDITIONAL_SAN" "DOVEADM_PORT" "IPV4_NETWORK" "IPV6_NETWORK" "LOG_LINES")
+CONFIG_ARRAY=(
+  "SKIP_LETS_ENCRYPT"
+  "USE_WATCHDOG"
+  "WATCHDOG_NOTIFY_EMAIL"
+  "SKIP_CLAMD"
+  "SKIP_IP_CHECK"
+  "SKIP_NETFILTER"
+  "ADDITIONAL_SAN"
+  "DOVEADM_PORT"
+  "IPV4_NETWORK"
+  "IPV6_NETWORK"
+  "LOG_LINES"
+  "SNAT_TO_SOURCE"
+)
+
 sed -i '$a\' mailcow.conf
 for option in ${CONFIG_ARRAY[@]}; do
   if [[ ${option} == "ADDITIONAL_SAN" ]]; then
@@ -44,14 +86,22 @@ for option in ${CONFIG_ARRAY[@]}; do
   elif [[ ${option} == "IPV6_NETWORK" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
-      echo '# Internal IPv6 subnet in fd00::/8' >> mailcow.conf
+      echo '# Internal IPv6 subnet in fc00::/7' >> mailcow.conf
       echo "IPV6_NETWORK=fd4d:6169:6c63:6f77::/64" >> mailcow.conf
+    fi
+  elif [[ ${option} == "SNAT_TO_SOURCE" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Use this IP for outgoing connections (SNAT)' >> mailcow.conf
+      echo "#SNAT_TO_SOURCE=" >> mailcow.conf
     fi
   elif ! grep -q ${option} mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"
     echo "${option}=n" >> mailcow.conf
   fi
 done
+
+sed -i 's#SKIP_FAIL2BAN#SKIP_NETFILTER#g' mailcow.conf
 
 echo -en "Checking internet connection... "
 curl -o /dev/null google.com -sm3
@@ -61,31 +111,6 @@ if [[ $? != 0 ]]; then
   else
   echo -e "\e[32mOK\e[0m"
 fi
-
-set -o pipefail
-export LC_ALL=C
-DATE=$(date +%Y-%m-%d_%H_%M_%S)
-BRANCH=$(git rev-parse --abbrev-ref HEAD)
-declare -a DC_PARAMS
-
-while (($#)); do
-  case "${1}" in
-    --check|-c)
-      echo "Checking remote code for updates..."
-      git fetch origin ${BRANCH}
-      if [[ -z $(git log HEAD --pretty=format:"%H" | grep $(git rev-parse origin/${BRANCH})) ]]; then
-        echo "Updated code is available."
-        exit 0
-      else
-        echo "No updates available."
-        exit 3
-      fi
-    ;;
-    --no-start)
-      DC_PARAMS=(${DC_PARAMS[@]} "--no-start")
-    ;;
-  esac
-done
 
 echo -e "\e[32mChecking for newer update script...\e[0m"
 SHA1_1=$(sha1sum update.sh)
@@ -122,9 +147,9 @@ git add -u
 git commit -am "Before update on ${DATE}" > /dev/null
 echo -e "\e[32mFetching updated code from remote...\e[0m"
 git fetch origin ${BRANCH}
-echo -e "\e[32mMerging local with remote code (recursive, options: \"theirs\", \"patience\"...\e[0m"
+echo -e "\e[32mMerging local with remote code (recursive, strategy: \"${MERGE_STRATEGY:-theirs}\", options: \"patience\"...\e[0m"
 git config merge.defaultToUpstream true
-git merge -Xtheirs -Xpatience -m "After update on ${DATE}"
+git merge -X${MERGE_STRATEGY:-theirs} -Xpatience -m "After update on ${DATE}"
 # Need to use a variable to not pass return codes of if checks
 MERGE_RETURN=$?
 if [[ ${MERGE_RETURN} == 128 ]]; then
