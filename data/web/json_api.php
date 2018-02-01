@@ -880,14 +880,14 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                   echo '{}';
                 }
               break;
-              case "fail2ban":
+              case "netfilter":
                 // 0 is first record, so empty is fine
                 if (isset($extra)) {
                   $extra = preg_replace('/[^\d\-]/i', '', $extra);
-                  $logs = get_logs('fail2ban-mailcow', $extra);
+                  $logs = get_logs('netfilter-mailcow', $extra);
                 }
                 else {
-                  $logs = get_logs('fail2ban-mailcow');
+                  $logs = get_logs('netfilter-mailcow');
                 }
                 if (isset($logs) && !empty($logs)) {
                   echo json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
