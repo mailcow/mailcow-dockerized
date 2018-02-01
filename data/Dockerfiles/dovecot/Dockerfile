@@ -65,6 +65,7 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
 
 RUN curl https://www.dovecot.org/releases/2.2/dovecot-$DOVECOT_VERSION.tar.gz | tar xvz  \
   && cd dovecot-$DOVECOT_VERSION \
+  && sed '/call_callback(request, AUTH_REQUEST_STATUS_ABORT, NULL, NULL);/a   pool_unref(&request->pool);' src/lib-auth/auth-client-request.c \
   && ./configure --with-mysql --with-lzma --with-lz4 --with-ssl=openssl --with-notify=inotify --with-storages=mdbox,sdbox,maildir,mbox,imapc,pop3c --with-bzlib --with-zlib \
   && make -j3 \
   && make install \
