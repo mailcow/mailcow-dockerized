@@ -621,7 +621,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               <label class="control-label col-sm-2" for="bcc_dest">BCC destination</label>
               <div class="col-sm-10">
                 <textarea id="bcc_dest" class="form-control" autocapitalize="none" autocorrect="off" rows="10" id="bcc_dest" name="bcc_dest" required><?=$result['bcc_dest'];?></textarea>
-                <small>BCC destinations can only be valid email addresses. Separated by whitespace, semicolon, new line or comma.</small>
+                <small>BCC destination must be a single valid email address.</small>
               </div>
             </div>
             <div class="form-group">
