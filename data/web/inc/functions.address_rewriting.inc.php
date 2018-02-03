@@ -15,7 +15,7 @@ function bcc($_action, $_data = null, $attr = null) {
         return false;
       }
       $local_dest = strtolower(trim($_data['local_dest']));
-      $bcc_dest = array_map('trim', preg_split( "/( |,|;|\n)/", $_data['bcc_dest']));
+      $bcc_dest = $_data['bcc_dest'];
       $active = intval($_data['active']);
       $type = $_data['type'];
       if ($type != 'sender' && $type != 'rcpt') {
@@ -60,18 +60,10 @@ function bcc($_action, $_data = null, $attr = null) {
       else {
         return false;
       }
-      foreach ($bcc_dest as &$bcc_dest_e) {
-        if (!filter_var($bcc_dest_e, FILTER_VALIDATE_EMAIL)) {
-          $bcc_dest_e = null;;
-        }
-        $bcc_dest_e = strtolower($bcc_dest_e);
-      }
-      $bcc_dest = array_filter($bcc_dest);
-      $bcc_dest = implode(",", $bcc_dest);
-      if (empty($bcc_dest)) {
+      if (!filter_var($bcc_dest, FILTER_VALIDATE_EMAIL)) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'BCC map destination cannot be empty'
+          'msg' => 'BCC map must be a valid email address'
         );
         return false;
       }
@@ -142,16 +134,14 @@ function bcc($_action, $_data = null, $attr = null) {
           );
           return false;
         }
-        $bcc_dest = array_map('trim', preg_split( "/( |,|;|\n)/", $bcc_dest));
         $active = intval($_data['active']);
-        foreach ($bcc_dest as &$bcc_dest_e) {
-          if (!filter_var($bcc_dest_e, FILTER_VALIDATE_EMAIL)) {
-            $bcc_dest_e = null;;
-          }
-          $bcc_dest_e = strtolower($bcc_dest_e);
+        if (!filter_var($bcc_dest, FILTER_VALIDATE_EMAIL)) {
+          $_SESSION['return'] = array(
+            'type' => 'danger',
+            'msg' => 'BCC map must be a valid email address'
+          );
+          return false;
         }
-        $bcc_dest = array_filter($bcc_dest);
-        $bcc_dest = implode(",", $bcc_dest);
         if (empty($bcc_dest)) {
           $_SESSION['return'] = array(
             'type' => 'danger',
