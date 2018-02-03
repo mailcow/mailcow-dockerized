@@ -13,22 +13,22 @@ $domains = mailbox('get', 'domains');
 foreach(mailbox('get', 'domains') as $dn) {
   $domains = array_merge($domains, mailbox('get', 'alias_domains', $dn));
 }
-
-if (isset($_GET['domain'])) {
-  if (is_valid_domain_name($_GET['domain'])) {
-    if (in_array($_GET['domain'], $domains)) {
       $domain = $_GET['domain'];
-    }
-    else {
-      echo "No such domain in context";
-      die();
-    }
-  }
-  else {
-    echo "Invalid domain name";
-    die();
-  }
-}
+
+// if (isset($_GET['domain'])) {
+  // if (is_valid_domain_name($_GET['domain'])) {
+    // if (in_array($_GET['domain'], $domains)) {
+    // }
+    // else {
+      // echo "No such domain in context";
+      // die();
+    // }
+  // }
+  // else {
+    // echo "Invalid domain name";
+    // die();
+  // }
+// }
 
 $ch = curl_init('http://ip4.mailcow.email');
 curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
