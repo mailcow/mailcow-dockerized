@@ -32,6 +32,8 @@ services:
       restart: always
       dns:
         - ${IPV4_NETWORK}.254
+      ports:
+        - "${SQL_PORT:-127.0.0.1:13306}:3306"
       sysctls:
         - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       networks:

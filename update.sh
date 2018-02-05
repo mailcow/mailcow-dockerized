@@ -43,6 +43,7 @@ CONFIG_ARRAY=(
   "LOG_LINES"
   "SNAT_TO_SOURCE"
   "SYSCTL_IPV6_DISABLED"
+  "SQL_PORT"
 )
 
 sed -i '$a\' mailcow.conf
@@ -93,6 +94,12 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo '# Internal IPv6 subnet in fc00::/7' >> mailcow.conf
       echo "IPV6_NETWORK=fd4d:6169:6c63:6f77::/64" >> mailcow.conf
+    fi
+  elif [[ ${option} == "SQL_PORT" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Bind SQL to 127.0.0.1 on port 13306' >> mailcow.conf
+      echo "SQL_PORT=127.0.0.1:13306" >> mailcow.conf
     fi
   elif [[ ${option} == "SNAT_TO_SOURCE" ]]; then
     if ! grep -q ${option} mailcow.conf; then

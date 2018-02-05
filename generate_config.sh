@@ -74,6 +74,7 @@ POP_PORT=110
 POPS_PORT=995
 SIEVE_PORT=4190
 DOVEADM_PORT=127.0.0.1:19991
+SQL_PORT=127.0.0.1:13306
 
 # Your timezone
 TZ=${TZ}
@@ -107,6 +108,9 @@ IPV4_NETWORK=172.22.1
 
 # Internal IPv6 subnet in fc00::/7
 IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
+
+# Use this IP for outgoing connections (SNAT)' >> mailcow.conf
+#SNAT_TO_SOURCE=" >> mailcow.conf
 
 # Disable IPv6
 # mailcow-network will still be created as IPv6 enabled, all containers will be created
