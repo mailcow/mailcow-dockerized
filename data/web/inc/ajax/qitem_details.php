@@ -23,7 +23,7 @@ function rrmdir($src) {
 }
 if (!empty($_GET['id']) && ctype_alnum($_GET['id'])) {
   $tmpdir = '/tmp/' . $_GET['id'] . '/';
-  $mailc = quarantaine('details', $_GET['id']);
+  $mailc = quarantine('details', $_GET['id']);
   if (strlen($mailc['msg']) > 10485760) {
     echo json_encode(array('error' => 'Message size exceeds 10 MiB.'));
     exit;
