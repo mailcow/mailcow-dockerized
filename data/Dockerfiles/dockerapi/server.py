@@ -83,11 +83,15 @@ class container_post(Resource):
           try:
             for container in docker_client.containers.list(filters={"id": container_id}):
               hash = container.exec_run(["/bin/bash", "-c", "/usr/bin/rspamadm pw -e -p '" + request.json['raw'].replace("'", "'\\''") + "' 2> /dev/null"], user='_rspamd')
-              f = open("/access.inc", "w")
-              f.write('enable_password = "' + re.sub('[^0-9a-zA-Z\$]+', '', hash.rstrip()) + '";\n')
-              f.close()
-              container.restart()
-              return jsonify(type='success', msg='command completed successfully')
+              if hash.exit_code == 0:
+                hash = str(hash.output)
+                f = open("/access.inc", "w")
+                f.write('enable_password = "' + re.sub('[^0-9a-zA-Z\$]+', '', hash.rstrip()) + '";\n')
+                f.close()
+                container.restart()
+                return jsonify(type='success', msg='command completed successfully')
+              else:
+                return jsonify(type='danger', msg='command did not complete, exit code was ' + int(hash.exit_code))
           except Exception as e:
             return jsonify(type='danger', msg=str(e))
 
