@@ -28,6 +28,8 @@ else
   read -p "Timezone: " -ei ${TZ} TZ
 fi
 
+[[ ! -f ./data/conf/rspamd/override.d/worker-controller-password.inc ]] && echo '# Placeholder' > ./data/conf/rspamd/override.d/worker-controller-password.inc
+
 cat << EOF > mailcow.conf
 # ------------------------------
 # mailcow web ui configuration
