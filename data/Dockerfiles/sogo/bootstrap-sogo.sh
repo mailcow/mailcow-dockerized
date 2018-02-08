@@ -9,8 +9,8 @@ done
 # Wait until port becomes free and send sig
 until ! nc -z sogo-mailcow 20000;
 do
-	killall -TERM sogod
-	sleep 3
+        killall -TERM sogod
+        sleep 3
 done
 
 # Recreate view
@@ -57,8 +57,8 @@ EOF
 
 # Generate multi-domain setup
 while read line
-	do
-	echo "        <key>${line}</key>
+        do
+        echo "        <key>${line}</key>
         <dict>
             <key>SOGoMailDomain</key>
             <string>${line}</string>
