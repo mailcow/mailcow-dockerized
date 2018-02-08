@@ -133,12 +133,12 @@ foreach (json_decode($rcpts, true) as $rcpt) {
 
       // Loop through all found gotos
       foreach ($gotos_array as $index => &$goto) {
-        error_log("quarantaine pipe: query " . $goto . " as username from mailbox");
+        error_log("quarantine pipe: query " . $goto . " as username from mailbox");
         $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `username` = :goto AND `active`= '1';");
         $stmt->execute(array(':goto' => $goto));
         $username = $stmt->fetch(PDO::FETCH_ASSOC)['username'];
         if (!empty($username)) {
-          error_log("quarantaine pipe: mailbox found: " . $username);
+          error_log("quarantine pipe: mailbox found: " . $username);
           // Current goto is a mailbox, save to rcpt_final_mailboxes if not a duplicate
           if (!in_array($username, $rcpt_final_mailboxes)) {
             $rcpt_final_mailboxes[] = $username;
@@ -153,7 +153,7 @@ foreach (json_decode($rcpts, true) as $rcpt) {
             $stmt = $pdo->prepare("SELECT `goto` FROM `alias` WHERE `address` = :goto AND `active` = '1'");
             $stmt->execute(array(':goto' => $goto));
             $goto_branch = $stmt->fetch(PDO::FETCH_ASSOC)['goto'];
-            error_log("quarantaine pipe: goto address " . $goto . " is a alias branch for " . $goto_branch);
+            error_log("quarantine pipe: goto address " . $goto . " is a alias branch for " . $goto_branch);
             $goto_branch_array = explode(',', $goto_branch);
           }
         }
@@ -173,7 +173,7 @@ foreach (json_decode($rcpts, true) as $rcpt) {
       // Force exit if loop cannot be solved
       // Postfix does not allow for alias loops, so this should never happen.
       $loop_c++;
-      error_log("quarantaine pipe: goto array count on loop #". $loop_c . " is " . count($gotos_array));
+      error_log("quarantine pipe: goto array count on loop #". $loop_c . " is " . count($gotos_array));
     }
   }
   catch (PDOException $e) {
@@ -184,9 +184,9 @@ foreach (json_decode($rcpts, true) as $rcpt) {
 }
 
 foreach ($rcpt_final_mailboxes as $rcpt) {
-  error_log("quarantaine pipe: processing quarantaine message for rcpt " . $rcpt);
+  error_log("quarantine pipe: processing quarantine message for rcpt " . $rcpt);
   try {
-    $stmt = $pdo->prepare("INSERT INTO `quarantaine` (`qid`, `score`, `sender`, `rcpt`, `symbols`, `user`, `ip`, `msg`, `action`)
+    $stmt = $pdo->prepare("INSERT INTO `quarantine` (`qid`, `score`, `sender`, `rcpt`, `symbols`, `user`, `ip`, `msg`, `action`)
       VALUES (:qid, :score, :sender, :rcpt, :symbols, :user, :ip, :msg, :action)");
     $stmt->execute(array(
       ':qid' => $qid,
@@ -199,11 +199,11 @@ foreach ($rcpt_final_mailboxes as $rcpt) {
       ':msg' => $raw_data,
       ':action' => $action
     ));
-    $stmt = $pdo->prepare('DELETE FROM `quarantaine` WHERE `rcpt` = :rcpt AND `id` NOT IN (
+    $stmt = $pdo->prepare('DELETE FROM `quarantine` WHERE `rcpt` = :rcpt AND `id` NOT IN (
       SELECT `id`
       FROM (
         SELECT `id`
-        FROM `quarantaine`
+        FROM `quarantine`
         WHERE `rcpt` = :rcpt2
         ORDER BY id DESC
         LIMIT :retention_size

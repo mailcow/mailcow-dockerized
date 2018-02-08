@@ -30,7 +30,7 @@
 <?= (preg_match("/admin.php/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/admin.css">' : null; ?>
 <?= (preg_match("/user.php/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/user.css">' : null; ?>
 <?= (preg_match("/edit.php/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/edit.css">' : null; ?>
-<?= (preg_match("/quarantaine.php/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/quarantaine.css">' : null; ?>
+<?= (preg_match("/quarantine.php/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/quarantine.css">' : null; ?>
 <?= (preg_match("/debug.php/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/debug.css">' : null; ?>
 <link rel="shortcut icon" href="/favicon.png" type="image/png">
 <link rel="icon" href="/favicon.png" type="image/png">
@@ -96,7 +96,7 @@
         <?php
         if (isset($_SESSION['mailcow_cc_role'])) {
         ?>
-        <li<?= (preg_match("/quarantaine/i", $_SERVER['REQUEST_URI'])) ? ' class="active"' : ''; ?>><a href="/quarantaine.php"><span class="glyphicon glyphicon-briefcase"></span> <?= $lang['header']['quarantaine']; ?></a></li>
+        <li<?= (preg_match("/quarantine/i", $_SERVER['REQUEST_URI'])) ? ' class="active"' : ''; ?>><a href="/quarantine.php"><span class="glyphicon glyphicon-briefcase"></span> <?= $lang['header']['quarantine']; ?></a></li>
         <?php
         }
         if ($_SESSION['mailcow_cc_role'] == 'admin') {

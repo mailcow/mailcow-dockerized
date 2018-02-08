@@ -1386,11 +1386,11 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               break;
             }
           break;
-          case "quarantaine":
+          case "quarantine":
             // "all" will not print details
             switch ($object) {
               case "all":
-                $data = quarantaine('get');
+                $data = quarantine('get');
                 if (!isset($data) || empty($data)) {
                   echo '{}';
                 }
@@ -1399,7 +1399,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 }
               break;
               default:
-                $data = quarantaine('details', $object);
+                $data = quarantine('details', $object);
                 if (!isset($data) || empty($data)) {
                   echo '{}';
                 }
@@ -1729,7 +1729,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             if (isset($_POST['items'])) {
               $items = (array)json_decode($_POST['items'], true);
               if (is_array($items)) {
-                if (quarantaine('delete', array('id' => $items)) === false) {
+                if (quarantine('delete', array('id' => $items)) === false) {
                   if (isset($_SESSION['return'])) {
                     echo json_encode($_SESSION['return']);
                   }
@@ -2615,7 +2615,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               $attr = (array)json_decode($_POST['attr'], true);
               $postarray = array_merge(array('id' => $items), $attr);
               if (is_array($postarray['id'])) {
-                if (quarantaine('edit', $postarray) === false) {
+                if (quarantine('edit', $postarray) === false) {
                   if (isset($_SESSION['return'])) {
                     echo json_encode($_SESSION['return']);
                   }
@@ -2653,11 +2653,11 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               ));
             }
           break;
-          case "quarantaine":
+          case "quarantine":
             // Edit settings, does not need IDs
             if (isset($_POST['attr'])) {
               $postarray = json_decode($_POST['attr'], true);
-              if (quarantaine('edit', $postarray) === false) {
+              if (quarantine('edit', $postarray) === false) {
                 if (isset($_SESSION['return'])) {
                   echo json_encode($_SESSION['return']);
                 }

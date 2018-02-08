@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "08022018_1219";
+    $db_version = "08022018_2019";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -154,7 +154,7 @@ function init_db_schema() {
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
-      "quarantaine" => array(
+      "quarantine" => array(
         "cols" => array(
           "id" => "INT NOT NULL AUTO_INCREMENT",
           "qid" => "VARCHAR(30) NOT NULL",
@@ -244,7 +244,7 @@ function init_db_schema() {
           "syncjobs" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "eas_reset" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "filters" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "quarantaine" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "quarantine" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "bcc_maps" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "recipient_maps" => "TINYINT(1) NOT NULL DEFAULT '0'",
         ),
@@ -621,7 +621,14 @@ function init_db_schema() {
     );
 
     foreach ($tables as $table => $properties) {
-      $stmt = $pdo->query("SHOW TABLES LIKE '" . $table . "'"); 
+      if ($table == 'quarantine') {
+        $stmt = $pdo->query("SHOW TABLES LIKE 'quarantaine'");
+        $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+        if ($num_results != 0) {
+          $pdo->query("RENAME TABLE `quarantaine` TO `quarantine`");
+        }
+      }
+      $stmt = $pdo->query("SHOW TABLES LIKE '" . $table . "'");
       $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
       if ($num_results != 0) {
         $stmt = $pdo->prepare("SELECT CONCAT('ALTER TABLE ', `table_schema`, '.', `table_name`, ' DROP FOREIGN KEY ', `constraint_name`, ';') AS `FKEY_DROP` FROM `information_schema`.`table_constraints`
