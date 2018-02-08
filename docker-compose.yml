@@ -77,7 +77,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.16
+      image: mailcow/rspamd:1.17
       build: ./data/Dockerfiles/rspamd
       stop_grace_period: 30s
       depends_on:
@@ -86,11 +86,10 @@ services:
         - TZ=${TZ}
       volumes:
         - ./data/conf/rspamd/custom/:/etc/rspamd/custom:ro
-        - ./data/conf/rspamd/override.d/:/etc/rspamd/override.d:ro
+        - ./data/conf/rspamd/override.d/:/etc/rspamd/override.d:rw
         - ./data/conf/rspamd/local.d/:/etc/rspamd/local.d:ro
         - ./data/conf/rspamd/lua/:/etc/rspamd/lua/:ro
-        - dkim-vol-1:/data/dkim
-        - rspamd-vol-1:/var/lib/rspamd
+        - rspamd-sock:/rspamd-sock
       restart: always
       sysctls:
         - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
@@ -111,7 +110,7 @@ services:
       volumes:
         - ./data/web:/web:rw
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
-        - dkim-vol-1:/data/dkim
+        - rspamd-sock:/rspamd-sock
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro
         - ./data/conf/phpfpm/php-fpm.d/www.conf:/usr/local/etc/php-fpm.d/www.conf
         - ./data/conf/phpfpm/php-fpm.d/system.conf:/usr/local/etc/php-fpm.d/system.conf
@@ -165,7 +164,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.20
+      image: mailcow/dovecot:1.21
       build: ./data/Dockerfiles/dovecot
       cap_add:
         - NET_BIND_SERVICE
@@ -175,6 +174,7 @@ services:
         - ./data/conf/sogo/:/etc/sogo/
         - vmail-vol-1:/var/vmail
         - crypt-vol-1:/mail_crypt/
+        - rspamd-sock:/rspamd-sock
       environment:
         - LOG_LINES=${LOG_LINES}
         - DBNAME=${DBNAME}
@@ -338,7 +338,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.13
+      image: mailcow/watchdog:1.14
       # Debug
       #command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog
@@ -346,6 +346,7 @@ services:
         - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       volumes:
         - vmail-vol-1:/vmail:ro
+        - rspamd-sock:/rspamd-sock
       restart: always
       environment:
         - LOG_LINES=${LOG_LINES}
@@ -362,7 +363,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:1.7
+      image: mailcow/dockerapi:1.8
       restart: always
       build: ./data/Dockerfiles/dockerapi
       sysctls:
@@ -400,8 +401,8 @@ networks:
 volumes:
   vmail-vol-1:
   mysql-vol-1:
-  dkim-vol-1:
   redis-vol-1:
   rspamd-vol-1:
   postfix-vol-1:
   crypt-vol-1:
+  rspamd-sock:
