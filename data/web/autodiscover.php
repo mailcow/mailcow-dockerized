@@ -148,7 +148,7 @@ else {
 ?>
   <Response xmlns="http://schemas.microsoft.com/exchange/autodiscover/outlook/responseschema/2006a">
     <User>
-      <DisplayName><?=$displayname;?></DisplayName>
+      <DisplayName><?=htmlspecialchars($displayname, ENT_XML1 | ENT_QUOTES, 'UTF-8');?></DisplayName>
     </User>
     <Account>
       <AccountType>email</AccountType>
@@ -196,7 +196,7 @@ else {
   <Response xmlns="http://schemas.microsoft.com/exchange/autodiscover/mobilesync/responseschema/2006">
     <Culture>en:en</Culture>
     <User>
-      <DisplayName><?=$displayname;?></DisplayName>
+      <DisplayName><?=htmlspecialchars($displayname, ENT_XML1 | ENT_QUOTES, 'UTF-8');?></DisplayName>
       <EMailAddress><?=$email;?></EMailAddress>
     </User>
     <Action>
