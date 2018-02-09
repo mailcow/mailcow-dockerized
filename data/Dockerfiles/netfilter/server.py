@@ -25,11 +25,17 @@ RULES[5] = 'SOGo.+ Login from \'([0-9a-f\.:]+)\' for user .+ might not have work
 RULES[6] = 'mailcow UI: Invalid password for .+ by ([0-9a-f\.:]+)'
 
 if not r.get('F2B_OPTIONS'):
-  f2options['ban_time'] = int(r.get('F2B_BAN_TIME')) or 1800
-  f2options['max_attempts'] = int(r.get('F2B_MAX_ATTEMPTS')) or 10
-  f2options['retry_window'] = int(r.get('F2B_RETRY_WINDOW')) or 600
-  f2options['netban_ipv4'] = int(r.get('F2B_NETBAN_IPV4')) or 24
-  f2options['netban_ipv6'] = int(r.get('F2B_NETBAN_IPV6')) or 64
+  f2options = {}
+  f2options['ban_time'] = int
+  f2options['max_attempts'] = int
+  f2options['retry_window'] = int
+  f2options['netban_ipv4'] = int
+  f2options['netban_ipv6'] = int
+  f2options['ban_time'] = r.get('F2B_BAN_TIME') or 1800
+  f2options['max_attempts'] = r.get('F2B_MAX_ATTEMPTS') or 10
+  f2options['retry_window'] = r.get('F2B_RETRY_WINDOW') or 600
+  f2options['netban_ipv4'] = r.get('F2B_NETBAN_IPV4') or 24
+  f2options['netban_ipv6'] = r.get('F2B_NETBAN_IPV6') or 64
   r.set('F2B_OPTIONS', json.dumps(f2options, ensure_ascii=False))
 else:
   try:
@@ -219,8 +225,8 @@ def snat(snat_target):
 
 def autopurge():
   while not quit_now:
-    BAN_TIME = int(r.get('F2B_BAN_TIME'))
-    MAX_ATTEMPTS = int(r.get('F2B_MAX_ATTEMPTS'))
+    BAN_TIME = f2options['ban_time']
+    MAX_ATTEMPTS = f2options['max_attempts']
     QUEUE_UNBAN = r.hgetall('F2B_QUEUE_UNBAN')
     if QUEUE_UNBAN:
       for net in QUEUE_UNBAN:
@@ -246,7 +252,7 @@ if __name__ == '__main__':
   watch_thread.daemon = True
   watch_thread.start()
 
-  if os.getenv('SNAT_TO_SOURCE'):
+  if os.getenv('SNAT_TO_SOURCE') and os.getenv('SNAT_TO_SOURCE') is not 'n':
     try:
       snat_ip = os.getenv('SNAT_TO_SOURCE').decode('ascii')
       snat_ipo = ipaddress.ip_address(snat_ip)
