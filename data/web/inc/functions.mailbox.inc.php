@@ -511,8 +511,8 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             if (in_array($address, $gotos)) {
               continue;
             }
-            $domain       = idn_to_ascii(substr(strstr($address, '@'), 1));
-            $local_part   = strstr($address, '@', true);
+            $domain       = idn_to_ascii(substr(strrchr($address, '@'), 1));
+            $local_part   = substr($address, 0, strripos($address, '@'));
             $address      = $local_part.'@'.$domain;
             $stmt = $pdo->prepare("SELECT `address` FROM `alias`
               WHERE `address`= :address OR `address` IN (
@@ -1713,8 +1713,8 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               $gotos = array_filter($gotos);
               $goto = implode(",", $gotos);
             }
-            $domain = idn_to_ascii(substr(strstr($address, '@'), 1));
-            $local_part = strstr($address, '@', true);
+            $domain       = idn_to_ascii(substr(strrchr($address, '@'), 1));
+            $local_part   = substr($address, 0, strripos($address, '@'));
             if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
               $_SESSION['return'] = array(
                 'type' => 'danger',
@@ -3478,7 +3478,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             $addresses = $_data['address'];
           }
           foreach ($addresses as $address) {
-            $local_part		= strstr($address, '@', true);
+            $local_part   = substr($address, 0, strripos($address, '@'));
             $domain = mailbox('get', 'alias_details', $address)['domain'];
             try {
               $stmt = $pdo->prepare("SELECT `goto` FROM `alias` WHERE `address` = :address");
