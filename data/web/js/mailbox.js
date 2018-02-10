@@ -250,7 +250,6 @@ jQuery(function($){
           $.each(data, function (i, item) {
             item.quota = item.quota_used + "/" + item.quota;
             item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
-            item.username = escapeHtml(item.username);
             item.chkbox = '<input type="checkbox" data-id="mailbox" name="multi_select" value="' + encodeURIComponent(item.username) + '" />';
             if (role == "admin") {
             item.action = '<div class="btn-group">' +
@@ -268,7 +267,7 @@ jQuery(function($){
             item.in_use = '<div class="progress">' +
               '<div class="progress-bar progress-bar-' + item.percent_class + ' role="progressbar" aria-valuenow="' + item.percent_in_use + '" aria-valuemin="0" aria-valuemax="100" ' +
               'style="min-width:2em;width:' + item.percent_in_use + '%">' + item.percent_in_use + '%' + '</div></div>';
-
+            item.username = escapeHtml(item.username);
           });
         }
       }),
@@ -309,12 +308,12 @@ jQuery(function($){
         },
         success: function (data) {
           $.each(data, function (i, item) {
-            item.name = escapeHtml(item.name);
             item.action = '<div class="btn-group">' +
               '<a href="/edit.php?resource=' + encodeURIComponent(item.name) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
               '<a href="#" id="delete_selected" data-id="single-resource" data-api-url="delete/resource" data-item="' + encodeURIComponent(item.name) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="resource" name="multi_select" value="' + encodeURIComponent(item.name) + '" />';
+            item.name = escapeHtml(item.name);
           });
         }
       }),
@@ -461,9 +460,11 @@ jQuery(function($){
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="alias" name="multi_select" value="' + encodeURIComponent(item.address) + '" />';
             item.goto = escapeHtml(item.goto);
-            item.address = escapeHtml(item.address);
             if (item.is_catch_all == 1) {
               item.address = '<div class="label label-default">Catch-All</div> ' + escapeHtml(item.address);
+            }
+            else {
+              item.address = escapeHtml(item.address);
             }
             if (item.goto == "null@localhost") {
               item.goto = '⤷ <span style="font-size:12px" class="glyphicon glyphicon-trash" aria-hidden="true"></span>';
@@ -568,7 +569,7 @@ jQuery(function($){
             } else {
               item.exclude  = '<code>' + item.exclude + '</code>';
             }
-            item.server_w_port = item.user1 + '@' + item.host1 + ':' + item.port1;
+            item.server_w_port = escapeHtml(item.user1) + '@' + item.host1 + ':' + item.port1;
             item.action = '<div class="btn-group">' +
               '<a href="/edit.php?syncjob=' + item.id + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
               '<a href="#" id="delete_selected" data-id="single-syncjob" data-api-url="delete/syncjob" data-item="' + item.id + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +

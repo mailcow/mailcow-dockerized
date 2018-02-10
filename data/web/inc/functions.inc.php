@@ -39,7 +39,7 @@ function hasDomainAccess($username, $role, $domain) {
 }
 function hasMailboxObjectAccess($username, $role, $object) {
 	global $pdo;
-	if (!filter_var($username, FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $username))) {
+	if (!filter_var(html_entity_decode(rawurldecode($username)), FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $username))) {
 		return false;
 	}
 	if ($role != 'admin' && $role != 'domainadmin' && $role != 'user') {
@@ -471,22 +471,18 @@ function user_get_alias_details($username) {
       ));
     $run = $stmt->fetchAll(PDO::FETCH_ASSOC);
     while ($row = array_shift($run)) {
-      $data['direct_aliases'] = $row['direct_aliases'];
+      $data['direct_aliases'][] = $row['direct_aliases'];
     }
-    $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(local_part, '@', alias_domain SEPARATOR ', '), '&#10008;') AS `ad_alias` FROM `mailbox`
+    $stmt = $pdo->prepare("SELECT GROUP_CONCAT(local_part, '@', alias_domain SEPARATOR ', ') AS `ad_alias` FROM `mailbox`
       LEFT OUTER JOIN `alias_domain` on `target_domain` = `domain`
         WHERE `username` = :username ;");
     $stmt->execute(array(':username' => $username));
     $run = $stmt->fetchAll(PDO::FETCH_ASSOC);
     while ($row = array_shift($run)) {
-      if (empty($data['direct_aliases'])) {
-        $data['direct_aliases'] = $row['ad_alias'];
-      }
-      else {
-        // Probably faster than imploding
-        $data['direct_aliases'] .= ', ' . $row['ad_alias'];
-      }
+      $data['direct_aliases'][] = $row['ad_alias'];
     }
+    $data['direct_aliases'] = implode(', ', array_filter($data['direct_aliases']));
+    $data['direct_aliases'] = empty($data['direct_aliases']) ? '&#10008;' : $data['direct_aliases'];
     $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(`send_as` SEPARATOR ', '), '&#10008;') AS `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `send_as` NOT LIKE '@%';");
     $stmt->execute(array(':username' => $username));
     $run = $stmt->fetchAll(PDO::FETCH_ASSOC);
