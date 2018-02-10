@@ -53,7 +53,7 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo "${option}=" >> mailcow.conf
     fi
-  if [[ ${option} == "SYSCTL_IPV6_DISABLED" ]]; then
+  elif [[ ${option} == "SYSCTL_IPV6_DISABLED" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo "# Disable IPv6" >> mailcow.conf
