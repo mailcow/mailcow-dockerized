@@ -20,7 +20,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
   if ($_SESSION['mailcow_cc_role'] == "admin"  || $_SESSION['mailcow_cc_role'] == "domainadmin") {
       if (isset($_GET["alias"]) &&
         !empty($_GET["alias"])) {
-          $alias = $_GET["alias"];
+          $alias = html_entity_decode(rawurldecode($_GET["alias"]));
           $result = mailbox('get', 'alias_details', $alias);
           if (!empty($result)) {
           ?>
@@ -46,7 +46,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               </div>
               <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
-                  <button class="btn btn-success" id="edit_selected" data-id="editalias" data-item="<?=$alias;?>" data-api-url='edit/alias' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
+                  <button class="btn btn-success" id="edit_selected" data-id="editalias" data-item="<?=htmlspecialchars($alias);?>" data-api-url='edit/alias' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
                 </div>
               </div>
             </form>
@@ -313,9 +313,9 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         }
     }
     elseif (isset($_GET['aliasdomain']) &&
-      is_valid_domain_name($_GET["aliasdomain"]) &&
+      is_valid_domain_name(html_entity_decode(rawurldecode($_GET["aliasdomain"]))) &&
       !empty($_GET["aliasdomain"])) {
-        $alias_domain = $_GET["aliasdomain"];
+        $alias_domain = html_entity_decode(rawurldecode($_GET["aliasdomain"]));
         $result = mailbox('get', 'alias_domain_details', $alias_domain);
         $rl = mailbox('get', 'ratelimit', $alias_domain);
         if (!empty($result)) {
@@ -380,8 +380,8 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         <?php
         }
     }
-    elseif (isset($_GET['mailbox']) && filter_var($_GET["mailbox"], FILTER_VALIDATE_EMAIL) && !empty($_GET["mailbox"])) {
-      $mailbox = $_GET["mailbox"];
+    elseif (isset($_GET['mailbox']) && filter_var(html_entity_decode(rawurldecode($_GET["mailbox"])), FILTER_VALIDATE_EMAIL) && !empty($_GET["mailbox"])) {
+      $mailbox = html_entity_decode(rawurldecode($_GET["mailbox"]));
       $result = mailbox('get', 'mailbox_details', $mailbox);
       $rl = mailbox('get', 'ratelimit', $mailbox);
       if (!empty($result)) {
@@ -500,7 +500,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                 </select>
               </div>
               <div class="form-group">
-                <button class="btn btn-default" id="edit_selected" data-id="mboxratelimit" data-item="<?=$mailbox;?>" data-api-url='edit/ratelimit' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
+                <button class="btn btn-default" id="edit_selected" data-id="mboxratelimit" data-item="<?=htmlspecialchars($mailbox);?>" data-api-url='edit/ratelimit' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
               </div>
             </div>
           </div>
@@ -555,8 +555,8 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         <?php
         }
     }
-    elseif (isset($_GET['resource']) && filter_var($_GET["resource"], FILTER_VALIDATE_EMAIL) && !empty($_GET["resource"])) {
-        $resource = $_GET["resource"];
+    elseif (isset($_GET['resource']) && filter_var(html_entity_decode(rawurldecode($_GET["resource"])), FILTER_VALIDATE_EMAIL) && !empty($_GET["resource"])) {
+        $resource = html_entity_decode(rawurldecode($_GET["resource"]));
         $result = mailbox('get', 'resource_details', $resource);
         if (!empty($result)) {
           ?>
