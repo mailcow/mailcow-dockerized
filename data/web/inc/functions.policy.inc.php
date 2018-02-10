@@ -94,7 +94,7 @@ function policy($_action, $_scope, $_data = null) {
           if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $object)) {
             $_SESSION['return'] = array(
               'type' => 'danger',
-              'msg' => sprintf($lang['danger']['access_denied'])
+              'msg' => $object
             );
             return false;
           }
