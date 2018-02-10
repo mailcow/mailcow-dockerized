@@ -250,6 +250,7 @@ jQuery(function($){
           $.each(data, function (i, item) {
             item.quota = item.quota_used + "/" + item.quota;
             item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
+            item.username = escapeHtml(item.username);
             item.chkbox = '<input type="checkbox" data-id="mailbox" name="multi_select" value="' + item.username + '" />';
             if (role == "admin") {
             item.action = '<div class="btn-group">' +
@@ -359,6 +360,8 @@ jQuery(function($){
               '<a href="#" id="delete_selected" data-id="single-bcc" data-api-url="delete/bcc" data-item="' + item.id + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="bcc" name="multi_select" value="' + item.id + '" />';
+            item.local_dest = escapeHtml(item.local_dest);
+            item.bcc_dest = escapeHtml(item.bcc_dest);
             if (item.type == 'sender') {
               item.type = '<span id="active-script" class="label label-success">Sender</span>';
             } else {
@@ -404,6 +407,8 @@ jQuery(function($){
         success: function (data) {
           if (role == "admin") {
             $.each(data, function (i, item) {
+              item.recipient_map_old = escapeHtml(item.recipient_map_old);
+              item.recipient_map_new = escapeHtml(item.recipient_map_new);
               item.action = '<div class="btn-group">' +
                 '<a href="/edit.php?recipient_map=' + item.id + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
                 '<a href="#" id="delete_selected" data-id="single-recipient_map" data-api-url="delete/recipient_map" data-item="' + item.id + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
@@ -454,6 +459,8 @@ jQuery(function($){
               '<a href="#" id="delete_selected" data-id="single-alias" data-api-url="delete/alias" data-item="' + encodeURI(item.address) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="alias" name="multi_select" value="' + item.address + '" />';
+            item.goto = escapeHtml(item.goto);
+            item.address = escapeHtml(item.address);
             if (item.is_catch_all == 1) {
               item.address = '<div class="label label-default">Catch-All</div> ' + item.address;
             }
@@ -554,6 +561,7 @@ jQuery(function($){
         success: function (data) {
           $.each(data, function (i, item) {
             item.log = '<a href="#syncjobLogModal" data-toggle="modal" data-syncjob-id="' + encodeURI(item.id) + '">Open logs</a>'
+            item.user2 = escapeHtml(item.user2);
             if (!item.exclude > 0) {
               item.exclude = '-';
             } else {
