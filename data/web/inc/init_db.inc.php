@@ -625,7 +625,11 @@ function init_db_schema() {
         $stmt = $pdo->query("SHOW TABLES LIKE 'quarantaine'");
         $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
         if ($num_results != 0) {
-          $pdo->query("RENAME TABLE `quarantaine` TO `quarantine`");
+          $stmt = $pdo->query("SHOW TABLES LIKE 'quarantine'");
+          $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+          if ($num_results == 0) {
+            $pdo->query("RENAME TABLE `quarantaine` TO `quarantine`");
+          }
         }
       }
       $stmt = $pdo->query("SHOW TABLES LIKE '" . $table . "'");
