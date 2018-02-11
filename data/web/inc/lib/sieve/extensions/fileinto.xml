@@ -3,6 +3,7 @@
 <extension name="fileinto">
 
 	<command name="fileinto">
+    <parameter type="tag" name="create" regex="create" occurrence="optional" />
 		<parameter type="string" name="folder" />
 	</command>
 
