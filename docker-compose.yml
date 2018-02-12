@@ -14,7 +14,7 @@ services:
         - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       networks:
         mailcow-network:
-          ipv4_address: ${IPV4_NETWORK}.254
+          ipv4_address: ${IPV4_NETWORK:-172.22.1}.254
           aliases:
             - unbound
 
@@ -31,7 +31,7 @@ services:
         - MYSQL_PASSWORD=${DBPASS}
       restart: always
       dns:
-        - ${IPV4_NETWORK}.254
+        - ${IPV4_NETWORK:-172.22.1}.254
       ports:
         - "${SQL_PORT:-127.0.0.1:13306}:3306"
       sysctls:
@@ -49,12 +49,12 @@ services:
       environment:
         - TZ=${TZ}
       dns:
-        - ${IPV4_NETWORK}.254
+        - ${IPV4_NETWORK:-172.22.1}.254
       sysctls:
         - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       networks:
         mailcow-network:
-          ipv4_address: ${IPV4_NETWORK}.249
+          ipv4_address: ${IPV4_NETWORK:-172.22.1}.249
           aliases:
             - redis
 
@@ -68,7 +68,7 @@ services:
       volumes:
         - ./data/conf/clamav/:/etc/clamav/
       dns:
-        - ${IPV4_NETWORK}.254
+        - ${IPV4_NETWORK:-172.22.1}.254
       sysctls:
         - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       networks:
@@ -94,7 +94,7 @@ services:
       sysctls:
         - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       dns:
-        - ${IPV4_NETWORK}.254
+        - ${IPV4_NETWORK:-172.22.1}.254
       hostname: rspamd
       networks:
         mailcow-network:
@@ -135,7 +135,7 @@ services:
       sysctls:
         - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       dns:
-        - ${IPV4_NETWORK}.254
+        - ${IPV4_NETWORK:-172.22.1}.254
       networks:
         mailcow-network:
           aliases:
@@ -157,9 +157,10 @@ services:
       sysctls:
         - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       dns:
-        - ${IPV4_NETWORK}.254
+        - ${IPV4_NETWORK:-172.22.1}.254
       networks:
         mailcow-network:
+          ipv4_address: ${IPV4_NETWORK:-172.22.1}.248
           aliases:
             - sogo
 
@@ -195,7 +196,7 @@ services:
           soft: 20000
           hard: 40000
       dns:
-        - ${IPV4_NETWORK}.254
+        - ${IPV4_NETWORK:-172.22.1}.254
       sysctls:
         - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       hostname: ${MAILCOW_HOSTNAME}
@@ -226,7 +227,7 @@ services:
         - "${SUBMISSION_PORT:-587}:587"
       restart: always
       dns:
-        - ${IPV4_NETWORK}.254
+        - ${IPV4_NETWORK:-172.22.1}.254
       sysctls:
         - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       hostname: ${MAILCOW_HOSTNAME}
@@ -241,7 +242,7 @@ services:
       sysctls:
         - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       dns:
-        - ${IPV4_NETWORK}.254
+        - ${IPV4_NETWORK:-172.22.1}.254
       networks:
         mailcow-network:
           aliases:
@@ -256,6 +257,8 @@ services:
       command: /bin/sh -c "envsubst < /etc/nginx/conf.d/templates/listen_plain.template > /etc/nginx/conf.d/listen_plain.active &&
         envsubst < /etc/nginx/conf.d/templates/listen_ssl.template > /etc/nginx/conf.d/listen_ssl.active &&
         envsubst < /etc/nginx/conf.d/templates/server_name.template > /etc/nginx/conf.d/server_name.active &&
+        envsubst < /etc/nginx/conf.d/templates/sogo.template > /etc/nginx/conf.d/sogo.active &&
+        envsubst < /etc/nginx/conf.d/templates/sogo_eas.template > /etc/nginx/conf.d/sogo_eas.active &&
         nginx -qt &&
         until ping phpfpm -c1 > /dev/null; do sleep 1; done &&
         until ping sogo -c1 > /dev/null; do sleep 1; done &&
@@ -265,6 +268,7 @@ services:
         - HTTPS_PORT=${HTTPS_PORT:-443}
         - HTTP_PORT=${HTTP_PORT:-80}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
+        - IPV4_NETWORK=
       volumes:
         - ./data/web:/web:ro
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
@@ -278,7 +282,7 @@ services:
       sysctls:
         - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       dns:
-        - ${IPV4_NETWORK}.254
+        - ${IPV4_NETWORK:-172.22.1}.254
       networks:
         mailcow-network:
           aliases:
@@ -293,7 +297,7 @@ services:
       sysctls:
         - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       dns:
-        - ${IPV4_NETWORK}.254
+        - ${IPV4_NETWORK:-172.22.1}.254
       environment:
         - LOG_LINES=${LOG_LINES}
         - ADDITIONAL_SAN=${ADDITIONAL_SAN}
@@ -327,13 +331,13 @@ services:
       privileged: true
       environment:
         - TZ=${TZ}
-        - IPV4_NETWORK=${IPV4_NETWORK}
+        - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
         - SNAT_TO_SOURCE=${SNAT_TO_SOURCE:-n}
       network_mode: "host"
       sysctls:
         - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       dns:
-        - ${IPV4_NETWORK}.254
+        - ${IPV4_NETWORK:-172.22.1}.254
       volumes:
         - /lib/modules:/lib/modules:ro
 
@@ -395,8 +399,8 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: ${IPV4_NETWORK}.0/24
-        - subnet: ${IPV6_NETWORK}
+        - subnet: ${IPV4_NETWORK:-172.22.1}.0/24
+        - subnet: ${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
 
 volumes:
   vmail-vol-1:
