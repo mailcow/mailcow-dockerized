@@ -1,10 +1,25 @@
 #!/bin/bash
 
 for bin in curl docker-compose docker git awk sha1sum; do
-  if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
+  if [[ -z $(which ${bin}) ]]; then
+    echo "Cannot find ${bin}, exiting..."
+    exit 1
+  fi
 done
 
-[[ ! -f mailcow.conf ]] && { echo "mailcow.conf is missing"; exit 1;}
+if [[ ! -f mailcow.conf ]] ; then
+  echo "mailcow.conf is missing"
+  exit 1
+fi
+
+if grep --help 2>&1 | head -n 1 | grep -q -i "busybox" ; then
+  echo "BusybBox grep detected, please install gnu grep, \"apk add --upgrade grep\""
+  exit 1
+fi
+if cp --help 2>&1 | head -n 1 | grep -q -i "busybox" ; then
+  echo "BusybBox cp detected, please install coreutils, \"apk add --upgrade coreutils\""
+  exit 1
+fi
 
 CONFIG_ARRAY=("SKIP_LETS_ENCRYPT" "USE_WATCHDOG" "WATCHDOG_NOTIFY_EMAIL" "SKIP_CLAMD" "SKIP_IP_CHECK" "SKIP_FAIL2BAN" "ADDITIONAL_SAN" "DOVEADM_PORT" "IPV4_NETWORK" "IPV6_NETWORK" "LOG_LINES")
 sed -i '$a\' mailcow.conf
@@ -58,7 +73,7 @@ curl -o /dev/null google.com -sm3
 if [[ $? != 0 ]]; then
   echo -e "\e[31mfailed\e[0m"
   exit 1
-  else
+else
   echo -e "\e[32mOK\e[0m"
 fi
 
@@ -100,7 +115,7 @@ fi
 
 if [[ -f mailcow.conf ]]; then
   source mailcow.conf
-  else
+else
   echo -e "\e[31mNo mailcow.conf - is mailcow installed?\e[0m"
   exit 1
 fi
@@ -147,11 +162,16 @@ fi
 
 echo -e "\e[32mFetching new docker-compose version...\e[0m"
 sleep 2
-if [[ $(curl -sL -w "%{http_code}" https://www.servercow.de/docker-compose/latest.php -o /dev/null) == "200" ]]; then
+
+if [[ ! -z $(which pip) && $(pip list --local | grep -c docker-compose) == 1 ]]; then
+  true
+  #prevent breaking a working docker-compose on alpine by running the following
+  #pip install docker-compose -Uq
+elif [[ $(curl -sL -w "%{http_code}" https://www.servercow.de/docker-compose/latest.php -o /dev/null) == "200" ]]; then
   LATEST_COMPOSE=$(curl -#L https://www.servercow.de/docker-compose/latest.php)
   curl -#L https://github.com/docker/compose/releases/download/${LATEST_COMPOSE}/docker-compose-$(uname -s)-$(uname -m) > $(which docker-compose)
   chmod +x $(which docker-compose)
-  else
+else
   echo -e "\e[33mCannot determine latest docker-compose version, skipping...\e[0m"
 fi
 
@@ -160,8 +180,10 @@ sleep 2
 docker-compose pull --parallel
 
 # Fix missing SSL, does not overwrite existing files
-[[ ! -d data/assets/ssl ]] && mkdir -p data/assets/ssl
-cp -n data/assets/ssl-example/*.pem data/assets/ssl/
+if [[ ! -d data/assets/ssl ]] ; then
+  mkdir -p data/assets/ssl
+  cp -n data/assets/ssl-example/*.pem data/assets/ssl/
+fi
 
 echo -e "\e[32mStarting mailcow...\e[0m"
 sleep 2
@@ -179,8 +201,12 @@ for container in $(grep -oP "image: \Kmailcow.+" docker-compose.yml); do
     V_MAIN_EXISTING=${existing_tag/*.}
     V_SUB_EXISTING=${existing_tag/*.}
     # Not an integer
-    [[ ! $V_MAIN_EXISTING =~ ^[0-9]+$ ]] && continue
-    [[ ! $V_SUB_EXISTING =~ ^[0-9]+$ ]] && continue
+    if [[ ! $V_MAIN_EXISTING =~ ^[0-9]+$ ]] ; then
+      continue
+    fi
+    if [[ ! $V_SUB_EXISTING =~ ^[0-9]+$ ]]; then
+      continue
+    fi
 
     if [[ $V_MAIN_EXISTING == "latest" ]]; then
       echo "Found deprecated label \"latest\" for repository $REPOSITORY, it should be deleted."
@@ -203,7 +229,7 @@ if [[ ! -z ${IMGS_TO_DELETE[*]} ]]; then
   read -r -p "Do you want to delete old image tags right now? [y/N] " response
   if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
     docker rmi ${IMGS_TO_DELETE[*]}
-    else
+  else
     echo "OK, skipped."
   fi
 fi
