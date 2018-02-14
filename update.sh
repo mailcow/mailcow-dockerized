@@ -183,11 +183,14 @@ fi
 
 echo -e "\e[32mFetching new docker-compose version...\e[0m"
 sleep 2
-if [[ $(curl -sL -w "%{http_code}" https://www.servercow.de/docker-compose/latest.php -o /dev/null) == "200" ]]; then
+if [[ -f "/etc/alpine-release" ]]; then
+  # Running on Alpine host, use pip to upgrade
+  pip install docker-compose -Uq
+elif [[ $(curl -sL -w "%{http_code}" https://www.servercow.de/docker-compose/latest.php -o /dev/null) == "200" ]]; then
   LATEST_COMPOSE=$(curl -#L https://www.servercow.de/docker-compose/latest.php)
   curl -#L https://github.com/docker/compose/releases/download/${LATEST_COMPOSE}/docker-compose-$(uname -s)-$(uname -m) > $(which docker-compose)
   chmod +x $(which docker-compose)
-  else
+else
   echo -e "\e[33mCannot determine latest docker-compose version, skipping...\e[0m"
 fi
 
