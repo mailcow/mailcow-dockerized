@@ -77,7 +77,7 @@ while ($row = $sth->fetchrow_arrayref()) {
 	"--nofoldersizes",
 	"--skipsize",
 	"--buffersize 8192000",
-	"--skipheader 'X-*",
+	"--skipheader 'X-*'",
 	"--split1 3000",
 	"--split2 3000",
 	"--fastio1",
