@@ -4,34 +4,60 @@ require_once 'inc/prerequisites.inc.php';
 if (empty($mailcow_hostname)) {
   exit();
 }
-if (!isset($_SESSION['mailcow_cc_role']) || $_SESSION['mailcow_cc_role'] != 'user') {
-  header("Location: index.php");
-  die("This page is only available to logged-in users, not admins.");
-}
 
 error_reporting(0);
 
+// mobileconfig.php?user=sales,admin@samedomain.com   (valid=sales@samedomain.com & admin@samedomain.com)
+if (isset($_GET['user']) && (substr_count($_GET['user'], '@') == 1  ) && ( substr_count($_GET['user'], ',') >= 1 )) {
+  list($accounts, $domain) = explode('@', strtolower(trim($_GET['user'])));
+
+  $email_list=[];
+  $domain = preg_replace('/[^\w-.]/', '', $domain);
+  if (($domain === "") || (strpos($domain,'.') === FALSE)) { //validate filtered domain
+    exit();
+  }
+  foreach (explode(',', preg_replace('/[^\w-,]/', '', $accounts)) as $account) {  //generate valid filtered email address list
+    if ($account !== "") {
+      $email_list[] = $account.'@'. $domain;
+    }
+  }
+// mobileconfig.php?user=sales@domain.com,admin@otherdomain.com,,@domain.com   (valid=sales@domain.com & admin@otherdomain.com)
+} elseif (isset($_GET['user']) && (substr_count($_GET['user'], '@') >= 1 ) && ( substr_count($_GET['user'], ',') >= 1 )) {
+  $accounts = explode(',', preg_replace('/[^\w-@.,]/', '', strtolower(trim($_GET['user']))));
+
+  $email_list=[];
+  foreach ($accounts as $account) {  //generate valid filtered email address list
+    list($account, $domain) = explode('@', $account);
+    if (($domain !== "") && (strpos($domain,'.') !== FALSE) && ($account !== "")) { //validate the email address
+      $email_list[] = $account.'@'.$domain;
+    }
+  }
+  $domain = strtolower($mailcow_hostname);
+//mobileconfig.php or mobileconfig.php?user=sales@domain.com (valid=sales@domain.com)
+} else {
+  $email_list=[];
+  if (isset($_GET['user'])) {
+    $account=preg_replace('/[^\w-@.]/', '', strtolower(trim( $_GET['user'])));
+  } else {
+    if (!isset($_SESSION['mailcow_cc_role']) || $_SESSION['mailcow_cc_role'] != 'user') { //registered users only
+      header("Location: index.php");
+      die("This page is only available to logged-in users, not admins.");
+    }
+     $account=preg_replace('/[^\w-@.]/', '', strtolower(trim( $_SESSION['mailcow_cc_username'])));
+  }
+  list($account, $domain) = explode('@',$account);
+  if (($domain !== "") && (strpos($domain,'.') !== FALSE) && ($account !== "")) { //validate the email address
+    $email_list[] = $account.'@'.$domain;
+  }
+}
+if (count($email_list) < 1) { //validate email_list contains atleast 1 usable email address
+  exit();
+}
+
+$identifier = implode('.', array_reverse(explode('.', $domain))) . '.iphoneprofile';
+
 header('Content-Type: application/x-apple-aspen-config');
-header('Content-Disposition: attachment; filename="Mailcow.mobileconfig"');
-
-$email = $_SESSION['mailcow_cc_username'];
-$domain = explode('@', $_SESSION['mailcow_cc_username'])[1];
-$identifier = implode('.', array_reverse(explode('.', $domain))) . '.iphoneprofile.mailcow';
-
-try {
-  $stmt = $pdo->prepare("SELECT `name` FROM `mailbox` WHERE `username`= :username");
-  $stmt->execute(array(':username' => $email));
-  $MailboxData = $stmt->fetch(PDO::FETCH_ASSOC);
-}
-catch(PDOException $e) {
-  die("Failed to determine name from SQL");
-}
-if (!empty($MailboxData['name'])) {
-  $displayname = $MailboxData['name'];
-}
-else {
-  $displayname = $email;
-}
+header('Content-Disposition: attachment; filename='.str_replace(array(".", "_"), $domain).'mobileconfig');
 
 echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 ?>
@@ -40,9 +66,26 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 <dict>
 	<key>PayloadContent</key>
 	<array>
+  <?php foreach ($email_list as $email) { ?>
+    <?
+    try {
+      $stmt = $pdo->prepare("SELECT `name` FROM `mailbox` WHERE `username`= :username");
+      $stmt->execute(array(':username' => $email));
+      $MailboxData = $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    catch(PDOException $e) {
+      die("Failed to determine name from SQL");
+    }
+    if (!empty($MailboxData['name'])) {
+      $displayname = utf8_encode($MailboxData['name']);
+    }
+    else {
+      $displayname = $email;
+    }
+    ?>
 		<dict>
 			<key>CalDAVAccountDescription</key>
-			<string><?php echo $domain; ?></string>
+			<string><?php echo $email; ?></string>
 			<key>CalDAVHostName</key>
 			<string><?php echo $autodiscover_config['caldav']['server']; ?></string>
 			<key>CalDAVPort</key>
@@ -64,13 +107,13 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			<key>PayloadType</key>
 			<string>com.apple.caldav.account</string>
 			<key>PayloadUUID</key>
-			<string>FC898573-EBA8-48AF-93BD-BFA0C9778FA7</string>
+			<string><?php echo bin2hex(random_bytes(4)); ?>-ACCB-42D8-9199-<?php echo bin2hex(random_bytes(6)); ?></string>
 			<key>PayloadVersion</key>
 			<integer>1</integer>
 		</dict>
 		<dict>
 			<key>EmailAccountDescription</key>
-			<string><?php echo $domain; ?></string>
+			<string><?php echo $email; ?></string>
 			<key>EmailAccountType</key>
 			<string>EmailTypeIMAP</string>
 			<key>EmailAccountName</key>
@@ -110,7 +153,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			<key>PayloadType</key>
 			<string>com.apple.mail.managed</string>
 			<key>PayloadUUID</key>
-			<string>00294FBB-1016-413E-87B9-652D856D6875</string>
+			<string><?php echo bin2hex(random_bytes(4)); ?>-ACCB-42D8-9199-<?php echo bin2hex(random_bytes(6)); ?></string>
 			<key>PayloadVersion</key>
 			<integer>1</integer>
 			<key>PreventAppSheet</key>
@@ -122,7 +165,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 		</dict>
 		<dict>
 			<key>CardDAVAccountDescription</key>
-			<string><?php echo $domain; ?></string>
+			<string><?php echo $email; ?></string>
 			<key>CardDAVHostName</key>
 			<string><?php echo $autodiscover_config['carddav']['server']; ?></string>
 			<key>CardDAVPort</key>
@@ -144,15 +187,16 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			<key>PayloadType</key>
 			<string>com.apple.carddav.account</string>
 			<key>PayloadUUID</key>
-			<string>0797EF2B-B1F1-4BC7-ABCD-4580862252B4</string>
+			<string><?php echo bin2hex(random_bytes(4)); ?>-ACCB-42D8-9199-<?php echo bin2hex(random_bytes(6)); ?></string>
 			<key>PayloadVersion</key>
 			<integer>1</integer>
 		</dict>
+    <?php } ?>
 	</array>
 	<key>PayloadDescription</key>
 	<string>IMAP, CalDAV, CardDAV</string>
 	<key>PayloadDisplayName</key>
-	<string><?php echo $domain; ?> Mailcow</string>
+	<string><?php echo $domain ?></string>
 	<key>PayloadIdentifier</key>
 	<string><?php echo $identifier; ?></string>
 	<key>PayloadOrganization</key>
@@ -162,7 +206,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 	<key>PayloadType</key>
 	<string>Configuration</string>
 	<key>PayloadUUID</key>
-	<string>5EE248C5-ACCB-42D8-9199-8F8ED08D5624</string>
+	<string><?php echo bin2hex(random_bytes(4)); ?>-ACCB-42D8-9199-<?php echo bin2hex(random_bytes(6)); ?></string>
 	<key>PayloadVersion</key>
 	<integer>1</integer>
 </dict>
