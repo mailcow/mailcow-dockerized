@@ -208,7 +208,7 @@ docker-compose up -d --remove-orphans
 
 echo -e "\e[32mCollecting garbage...\e[0m"
 IMGS_TO_DELETE=()
-for container in $(grep -oP "image: \Kmailcow.+" docker-compose.yml); do
+for container in $(grep -o "image: mailcow.*" docker-compose.yml | cut -d' ' -f2); do
   REPOSITORY=${container/:*}
   TAG=${container/*:}
   V_MAIN=${container/*.}
