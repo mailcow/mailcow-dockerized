@@ -200,7 +200,7 @@ docker-compose pull --parallel
 
 # Fix missing SSL, does not overwrite existing files
 [[ ! -d data/assets/ssl ]] && mkdir -p data/assets/ssl
-cp -n data/assets/ssl-example/*.pem data/assets/ssl/
+false | cp -i data/assets/ssl-example/*.pem data/assets/ssl/ 2>/dev/null
 
 echo -e "\e[32mStarting mailcow...\e[0m"
 sleep 2
