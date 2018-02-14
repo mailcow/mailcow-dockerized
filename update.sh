@@ -183,7 +183,7 @@ fi
 
 echo -e "\e[32mFetching new docker-compose version...\e[0m"
 sleep 2
-if [[ -f "/etc/alpine-release" ]]; then
+if [[ ! -z $(which pip) && $(pip list --local | grep -c docker-compose) == 1 ]]; then
   # Running on Alpine host, use pip to upgrade
   pip install docker-compose -Uq
 elif [[ $(curl -sL -w "%{http_code}" https://www.servercow.de/docker-compose/latest.php -o /dev/null) == "200" ]]; then
