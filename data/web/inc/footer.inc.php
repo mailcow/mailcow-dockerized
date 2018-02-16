@@ -79,6 +79,17 @@ $(document).ready(function() {
         });
       }
   });
+  $('#ConfirmTFAModal').on('hidden.bs.modal', function(){
+      $.ajax({
+        type: "GET",
+        cache: false,
+        dataType: 'script',
+        url: '/inc/ajax/destroy_tfa_auth.php',
+        complete: function(data){
+          window.location = window.location.href.split("#")[0];
+        }
+      });
+  });
   <?php endif; ?>
 
   // Set TFA modals
@@ -205,7 +216,7 @@ $(document).ready(function() {
           $('#triggerRestartContainer').html('<span class="glyphicon glyphicon-ok"></span> ');
           $('#statusTriggerRestartContainer2').append(data);
           $('#triggerRestartContainer').html('<span class="glyphicon glyphicon-ok"></span> ');
-          location.reload();
+          window.location = window.location.href.split("#")[0];
         }
       });
     });
