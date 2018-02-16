@@ -390,6 +390,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         <form class="form-horizontal" data-id="editmailbox" role="form" method="post">
           <input type="hidden" value="0" name="sender_acl">
           <input type="hidden" value="0" name="active">
+          <input type="hidden" value="0" name="force_pw_update">
           <div class="form-group">
             <label class="control-label col-sm-2" for="name"><?=$lang['edit']['full_name'];?>:</label>
             <div class="col-sm-10">
@@ -473,6 +474,13 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="col-sm-offset-2 col-sm-10">
               <div class="checkbox">
               <label><input type="checkbox" value="1" name="active" <?=($result['active_int']=="1") ? "checked" : null;?>> <?=$lang['edit']['active'];?></label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <div class="checkbox">
+              <label><input type="checkbox" value="1" name="force_pw_update" <?=($result['attributes']['force_pw_update']=="1") ? "checked" : null;?>> <?=$lang['edit']['force_pw_update'];?></label>
               </div>
             </div>
           </div>
