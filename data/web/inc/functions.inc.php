@@ -415,7 +415,7 @@ function edit_user_account($postarray) {
 			}
 			$password_hashed = hash_password($password_new);
 			try {
-				$stmt = $pdo->prepare("UPDATE `mailbox` SET `password` = :password_hashed WHERE `username` = :username");
+				$stmt = $pdo->prepare("UPDATE `mailbox` SET `password` = :password_hashed, `attributes` = JSON_SET(`attributes`, '$.force_pw_update', '0') WHERE `username` = :username");
 				$stmt->execute(array(
 					':password_hashed' => $password_hashed,
 					':username' => $username
