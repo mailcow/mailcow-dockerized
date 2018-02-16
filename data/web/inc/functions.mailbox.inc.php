@@ -1954,6 +1954,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             $is_now = mailbox('get', 'mailbox_details', $username);
             if (!empty($is_now)) {
               $active     = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
+              (int)$force_pw_update = (isset($_data['force_pw_update'])) ? intval($_data['force_pw_update']) : intval($is_now['attributes']['force_pw_update']);
               $name       = (!empty($_data['name'])) ? $_data['name'] : $is_now['name'];
               $domain     = $is_now['domain'];
               $quota_m    = (!empty($_data['quota'])) ? $_data['quota'] : ($is_now['quota'] / 1048576);
@@ -2113,24 +2114,11 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               }
               $password_hashed = hash_password($password);
               try {
-                $stmt = $pdo->prepare("UPDATE `alias` SET
-                    `active` = :active
-                      WHERE `address` = :address");
-                $stmt->execute(array(
-                  ':address' => $username,
-                  ':active' => $active
-                ));
                 $stmt = $pdo->prepare("UPDATE `mailbox` SET
-                    `active` = :active,
                     `password` = :password_hashed,
-                    `name`= :name,
-                    `quota` = :quota_b
                       WHERE `username` = :username");
                 $stmt->execute(array(
                   ':password_hashed' => $password_hashed,
-                  ':active' => $active,
-                  ':name' => $name,
-                  ':quota_b' => $quota_b,
                   ':username' => $username
                 ));
               }
@@ -2153,12 +2141,14 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               $stmt = $pdo->prepare("UPDATE `mailbox` SET
                   `active` = :active,
                   `name`= :name,
-                  `quota` = :quota_b
+                  `quota` = :quota_b,
+                  `attributes` = JSON_SET(`attributes`, '$.force_pw_update', :force_pw_update)
                     WHERE `username` = :username");
               $stmt->execute(array(
                 ':active' => $active,
                 ':name' => $name,
                 ':quota_b' => $quota_b,
+                ':force_pw_update' => $force_pw_update,
                 ':username' => $username
               ));
             }
@@ -3070,6 +3060,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
                 `mailbox`.`domain`,
                 `mailbox`.`quota`,
                 `quota2`.`bytes`,
+                `attributes`,
                 `quota2`.`messages`
                   FROM `mailbox`, `quota2`, `domain`
                     WHERE `mailbox`.`kind` NOT REGEXP 'location|thing|group' AND `mailbox`.`username` = `quota2`.`username` AND `domain`.`domain` = `mailbox`.`domain` AND `mailbox`.`username` = :mailbox");
@@ -3097,6 +3088,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             $mailboxdata['active_int'] = $row['active_int'];
             $mailboxdata['domain'] = $row['domain'];
             $mailboxdata['quota'] = $row['quota'];
+            $mailboxdata['attributes'] = json_decode($row['attributes'], true);
             $mailboxdata['quota_used'] = intval($row['bytes']);
             $mailboxdata['percent_in_use'] = round((intval($row['bytes']) / intval($row['quota'])) * 100);
             $mailboxdata['messages'] = $row['messages'];
