@@ -1154,8 +1154,8 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             try {
               $stmt = $pdo->prepare("UPDATE `mailbox` SET `attributes` = JSON_SET(`attributes`, '$.tls_enforce_out', :tls_out), `attributes` = JSON_SET(`attributes`, '$.tls_enforce_in', :tls_in) WHERE `username` = :username");
               $stmt->execute(array(
-                ':tls_out' => $tls_enforce_out,
-                ':tls_in' => $tls_enforce_in,
+                ':tls_out' => intval($tls_enforce_out),
+                ':tls_in' => intval($tls_enforce_in),
                 ':username' => $username
               ));
             }
@@ -2392,7 +2392,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
           return $mailboxes;
         break;
         case 'tls_policy':
-          $policydata = array();
+          $attrs = array();
           if (isset($_data) && filter_var($_data, FILTER_VALIDATE_EMAIL)) {
             if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
               return false;
@@ -2402,9 +2402,9 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             $_data = $_SESSION['mailcow_cc_username'];
           }
           try {
-            $stmt = $pdo->prepare("SELECT JSON_EXTRACT(`attributes`, '$.tls_enforce_out') AS `tls_enforce_out`, JSON_EXTRACT(`attributes`, '$.tls_enforce_in') AS `tls_enforce_in` FROM `mailbox` WHERE `username` = :username");
+            $stmt = $pdo->prepare("SELECT `attributes` FROM `mailbox` WHERE `username` = :username");
             $stmt->execute(array(':username' => $_data));
-            $policydata = $stmt->fetch(PDO::FETCH_ASSOC);
+            $attrs = $stmt->fetch(PDO::FETCH_ASSOC);
           }
           catch(PDOException $e) {
             $_SESSION['return'] = array(
@@ -2413,7 +2413,11 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             );
             return false;
           }
-          return $policydata;
+          $attrs = json_decode($attrs['attributes'], true);
+          return array(
+            'tls_enforce_in' => $attrs['tls_enforce_in'],
+            'tls_enforce_out' => $attrs['tls_enforce_out']
+          );
         break;
         case 'filters':
           $filters = array();
