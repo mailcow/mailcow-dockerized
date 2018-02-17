@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "16022018_1419";
+    $db_version = "17022018_0839";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -21,6 +21,10 @@ function init_db_schema() {
       AND active = '1'
       AND address NOT LIKE '@%'
       GROUP BY goto;",
+    "grouped_sender_acl" => "CREATE VIEW grouped_sender_acl (username, send_as_acl) AS
+      SELECT logged_in_as, IFNULL(GROUP_CONCAT(send_as SEPARATOR ' '), '') AS send_as_acl FROM sender_acl
+      WHERE send_as NOT LIKE '@%'
+      GROUP BY logged_in_as;",
     "grouped_domain_alias_address" => "CREATE VIEW grouped_domain_alias_address (username, ad_alias) AS
       SELECT username, IFNULL(GROUP_CONCAT(local_part, '@', alias_domain SEPARATOR ' '), '') AS ad_alias FROM mailbox
       LEFT OUTER JOIN alias_domain ON target_domain=domain
@@ -154,7 +158,7 @@ function init_db_schema() {
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
-      "quarantine" => array(
+      "quarantaine" => array(
         "cols" => array(
           "id" => "INT NOT NULL AUTO_INCREMENT",
           "qid" => "VARCHAR(30) NOT NULL",
@@ -245,10 +249,10 @@ function init_db_schema() {
           "syncjobs" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "eas_reset" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "filters" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "quarantine" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "bcc_maps" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "quarantaine" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "bcc_maps" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "recipient_maps" => "TINYINT(1) NOT NULL DEFAULT '0'",
-        ),
+          ),
         "keys" => array(
           "fkey" => array(
             "fk_username" => array(
@@ -622,6 +626,7 @@ function init_db_schema() {
     );
 
     foreach ($tables as $table => $properties) {
+      // Migrate to quarantine
       if ($table == 'quarantine') {
         $stmt = $pdo->query("SHOW TABLES LIKE 'quarantaine'");
         $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -633,7 +638,7 @@ function init_db_schema() {
           }
         }
       }
-      $stmt = $pdo->query("SHOW TABLES LIKE '" . $table . "'");
+      $stmt = $pdo->query("SHOW TABLES LIKE '" . $table . "'"); 
       $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
       if ($num_results != 0) {
         $stmt = $pdo->prepare("SELECT CONCAT('ALTER TABLE ', `table_schema`, '.', `table_name`, ' DROP FOREIGN KEY ', `constraint_name`, ';') AS `FKEY_DROP` FROM `information_schema`.`table_constraints`
