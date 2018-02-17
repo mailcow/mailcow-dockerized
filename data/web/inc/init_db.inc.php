@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "17022018_0859";
+    $db_version = "17022018_0839";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -798,14 +798,7 @@ function init_db_schema() {
       }
       // Reset table attributes
       $pdo->query("ALTER TABLE `" . $table . "` " . $properties['attr'] . ";");
-      // Migrate tls_enforce_* options
-      $stmt = $pdo->query("UPDATE `mailbox` SET `attributes` = '{}' WHERE `attributes` IS NULL;");
-      foreach($tls_options as $tls_user => $tls_options) {
-        $stmt = $pdo->prepare("UPDATE `mailbox` SET `attributes` = JSON_SET(`attributes`, '$.tls_enforce_in', :tls_enforce_in),
-          `attributes` = JSON_SET(`attributes`, '$.tls_enforce_out', :tls_enforce_out)
-            WHERE `username` = :username");
-        $stmt->execute(array(':tls_enforce_in' => $tls_options['tls_enforce_in'], ':tls_enforce_out' => $tls_options['tls_enforce_out'], ':username' => $tls_user));
-      }
+
     }
 
     // Recreate SQL views
@@ -842,6 +835,14 @@ DELIMITER ;';
     // Insert new DB schema version
     $stmt = $pdo->query("REPLACE INTO `versions` (`application`, `version`) VALUES ('db_schema', '" . $db_version . "');"); 
 
+    // Migrate tls_enforce_* options
+    $stmt = $pdo->query("UPDATE `mailbox` SET `attributes` = '{}' WHERE `attributes` IS NULL;");
+    foreach($tls_options as $tls_user => $tls_options) {
+      $stmt = $pdo->prepare("UPDATE `mailbox` SET `attributes` = JSON_SET(`attributes`, '$.tls_enforce_in', :tls_enforce_in),
+        `attributes` = JSON_SET(`attributes`, '$.tls_enforce_out', :tls_enforce_out)
+          WHERE `username` = :username");
+      $stmt->execute(array(':tls_enforce_in' => $tls_options['tls_enforce_in'], ':tls_enforce_out' => $tls_options['tls_enforce_out'], ':username' => $tls_user));
+    }
     $_SESSION['return'] = array(
       'type' => 'success',
       'msg' => 'Database initialisation completed'
