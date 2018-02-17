@@ -1152,7 +1152,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               return false;
             }
             try {
-              $stmt = $pdo->prepare("UPDATE `mailbox` SET `tls_enforce_out` = :tls_out, `tls_enforce_in` = :tls_in WHERE `username` = :username");
+              $stmt = $pdo->prepare("UPDATE `mailbox` SET `attributes` = JSON_SET(`attributes`, '$.tls_enforce_out', :tls_out), `attributes` = JSON_SET(`attributes`, '$.tls_enforce_in', :tls_in) WHERE `username` = :username");
               $stmt->execute(array(
                 ':tls_out' => $tls_enforce_out,
                 ':tls_in' => $tls_enforce_in,
@@ -2402,7 +2402,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             $_data = $_SESSION['mailcow_cc_username'];
           }
           try {
-            $stmt = $pdo->prepare("SELECT `tls_enforce_out`, `tls_enforce_in` FROM `mailbox` WHERE `username` = :username");
+            $stmt = $pdo->prepare("SELECT JSON_EXTRACT(`attributes`, '$.tls_enforce_out') AS `tls_enforce_out`, JSON_EXTRACT(`attributes`, '$.tls_enforce_in') AS `tls_enforce_in` FROM `mailbox` WHERE `username` = :username");
             $stmt->execute(array(':username' => $_data));
             $policydata = $stmt->fetch(PDO::FETCH_ASSOC);
           }
