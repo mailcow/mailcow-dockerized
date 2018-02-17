@@ -189,8 +189,6 @@ function init_db_schema() {
           "quota" => "BIGINT(20) NOT NULL DEFAULT '102400'",
           "local_part" => "VARCHAR(255) NOT NULL",
           "domain" => "VARCHAR(255) NOT NULL",
-          "tls_enforce_in" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "tls_enforce_out" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "attributes" => "JSON",
           "kind" => "VARCHAR(100) NOT NULL DEFAULT ''",
           "multiple_bookings" => "TINYINT(1) NOT NULL DEFAULT '0'",
@@ -801,6 +799,7 @@ function init_db_schema() {
       // Reset table attributes
       $pdo->query("ALTER TABLE `" . $table . "` " . $properties['attr'] . ";");
       // Migrate tls_enforce_* options
+      $stmt = $pdo->query("UPDATE `mailbox` SET `attributes` = '{}' WHERE `attributes` IS NULL;");
       foreach($tls_options as $tls_user => $tls_options) {
         $stmt = $pdo->prepare("UPDATE `mailbox` SET `attributes` = JSON_SET(`attributes`, '$.tls_enforce_in', :tls_enforce_in),
           `attributes` = JSON_SET(`attributes`, '$.tls_enforce_out', :tls_enforce_out)
