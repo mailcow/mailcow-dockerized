@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "17022018_0839";
+    $db_version = "17022018_0859";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -191,7 +191,7 @@ function init_db_schema() {
           "domain" => "VARCHAR(255) NOT NULL",
           "tls_enforce_in" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "tls_enforce_out" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "attributes" => "JSON DEFAULT '{}'",
+          "attributes" => "JSON",
           "kind" => "VARCHAR(100) NOT NULL DEFAULT ''",
           "multiple_bookings" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
@@ -638,6 +638,22 @@ function init_db_schema() {
           }
         }
       }
+      // Migrate tls_enforce_* options
+      if ($table == 'mailbox') {
+        $stmt = $pdo->query("SHOW TABLES LIKE 'mailbox'");
+        $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+        if ($num_results != 0) {
+          $stmt = $pdo->query("SHOW COLUMNS FROM `mailbox` LIKE '%tls_enforce%'"); 
+          $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+          if ($num_results != 0) {
+            $stmt = $pdo->query("SELECT `username`, `tls_enforce_in`, `tls_enforce_out` FROM `mailbox`");
+            $tls_options_rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            while ($row = array_shift($tls_options_rows)) {
+              $tls_options[$row['username']] = array('tls_enforce_in' => $row['tls_enforce_in'], 'tls_enforce_out' => $row['tls_enforce_out']);
+            }
+          }
+        }
+      }
       $stmt = $pdo->query("SHOW TABLES LIKE '" . $table . "'"); 
       $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
       if ($num_results != 0) {
@@ -784,6 +800,13 @@ function init_db_schema() {
       }
       // Reset table attributes
       $pdo->query("ALTER TABLE `" . $table . "` " . $properties['attr'] . ";");
+      // Migrate tls_enforce_* options
+      foreach($tls_options as $tls_user => $tls_options) {
+        $stmt = $pdo->prepare("UPDATE `mailbox` SET `attributes` = JSON_SET(`attributes`, '$.tls_enforce_in', :tls_enforce_in),
+          `attributes` = JSON_SET(`attributes`, '$.tls_enforce_out', :tls_enforce_out)
+            WHERE `username` = :username");
+        $stmt->execute(array(':tls_enforce_in' => $tls_options['tls_enforce_in'], ':tls_enforce_out' => $tls_options['tls_enforce_out'], ':username' => $tls_user));
+      }
     }
 
     // Recreate SQL views
