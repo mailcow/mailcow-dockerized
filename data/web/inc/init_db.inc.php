@@ -158,7 +158,7 @@ function init_db_schema() {
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
-      "quarantaine" => array(
+      "quarantine" => array(
         "cols" => array(
           "id" => "INT NOT NULL AUTO_INCREMENT",
           "qid" => "VARCHAR(30) NOT NULL",
@@ -247,7 +247,7 @@ function init_db_schema() {
           "syncjobs" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "eas_reset" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "filters" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "quarantaine" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "quarantine" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "bcc_maps" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "recipient_maps" => "TINYINT(1) NOT NULL DEFAULT '0'",
           ),
