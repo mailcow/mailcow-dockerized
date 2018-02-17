@@ -39,7 +39,7 @@ query = SELECT IF(EXISTS(
           SELECT CONCAT('%u', '@', target_domain) FROM alias_domain
             WHERE alias_domain='%d'
         )
-      ) AND mailbox.tls_enforce_in = '1' AND mailbox.active = '1'
+      ) AND json_extract(`attributes`, '$.tls_enforce_in') = '1' AND mailbox.active = '1'
   ), 'reject_plaintext_session', NULL) AS 'tls_enforce_in';
 EOF
 
@@ -58,7 +58,7 @@ query = SELECT GROUP_CONCAT(transport SEPARATOR '') AS transport_maps
               WHERE alias_domain = '%d'
           )
         )
-        AND mailbox.tls_enforce_out = '1'
+        AND json_extract(`attributes`, '$.tls_enforce_out') = '1'
         AND mailbox.active = '1'
     ), 'smtp_enforced_tls:', 'smtp:') AS 'transport'
     UNION ALL
