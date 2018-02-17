@@ -191,7 +191,7 @@ function init_db_schema() {
           "domain" => "VARCHAR(255) NOT NULL",
           "tls_enforce_in" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "tls_enforce_out" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "attributes" => "JSON DEFAULT '{}'",
+          "attributes" => "JSON",
           "kind" => "VARCHAR(100) NOT NULL DEFAULT ''",
           "multiple_bookings" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
