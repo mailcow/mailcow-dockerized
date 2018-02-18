@@ -33,6 +33,12 @@ RUN apk add -U --no-cache libxml2-dev \
   imagemagick-dev \
   imagemagick \
   libtool \
+  freetype \
+  libpng \
+  libjpeg-turbo \
+  freetype-dev \
+  libpng-dev \
+  libjpeg-turbo-dev\
   gettext-dev \
   openldap-dev \
   librsvg \
@@ -46,10 +52,33 @@ RUN apk add -U --no-cache libxml2-dev \
 	&& docker-php-ext-enable redis apcu memcached imagick mailparse \
 	&& pecl clear-cache \
 	&& docker-php-ext-configure intl \
+  && docker-php-ext-configure gd \
+      --with-gd \
+      --enable-gd-native-ttf \
+      --with-freetype-dir=/usr/include/ \
+      --with-png-dir=/usr/include/ \
+      --with-jpeg-dir=/usr/include/ \
   && docker-php-ext-install -j 4 intl gettext ldap sockets soap pdo pdo_mysql xmlrpc gd zip pcntl opcache \
   && docker-php-ext-configure imap --with-imap --with-imap-ssl \
 	&& docker-php-ext-install -j 4 imap \
-	&& apk del --purge autoconf g++ make libxml2-dev icu-dev imap-dev openssl-dev cyrus-sasl-dev pcre-dev libpng-dev libpng-dev libjpeg-turbo-dev libwebp-dev zlib-dev imagemagick-dev
+	&& apk del --purge autoconf \
+  g++ \
+  make \
+  libxml2-dev \
+  icu-dev \
+  imap-dev \
+  openssl-dev \
+  cyrus-sasl-dev \
+  pcre-dev \
+  libpng-dev \
+  libpng-dev \
+  libjpeg-turbo-dev \
+  libwebp-dev \
+  zlib-dev \
+  imagemagick-dev \
+  freetype-dev \
+  libpng-dev \
+  libjpeg-turbo-dev
 
 COPY ./docker-entrypoint.sh /
 
