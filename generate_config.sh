@@ -1,10 +1,14 @@
 #!/bin/bash
 
-if grep --help 2>&1 | head -n 1 | grep -q -i "busybox" ; then
++#exit on error and pipefail
++set -o errexit
++set -o pipefail
+
+if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then
   echo "BusybBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\""
   exit 1
 fi
-if cp --help 2>&1 | head -n 1 | grep -q -i "busybox" ; then
+if cp --help 2>&1 | head -n 1 | grep -q -i "busybox"; then
   echo "BusybBox cp detected, please install coreutils, \"apk add --no-cache --upgrade coreutils\""
   exit 1
 fi
