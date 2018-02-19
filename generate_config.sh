@@ -1,11 +1,11 @@
 #!/bin/bash
 
 if grep --help 2>&1 | head -n 1 | grep -q -i "busybox" ; then
-  echo "BusybBox grep detected, please install gnu grep, \"apk add --upgrade grep\""
+  echo "BusybBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\""
   exit 1
 fi
 if cp --help 2>&1 | head -n 1 | grep -q -i "busybox" ; then
-  echo "BusybBox cp detected, please install coreutils, \"apk add --upgrade coreutils\""
+  echo "BusybBox cp detected, please install coreutils, \"apk add --no-cache --upgrade coreutils\""
   exit 1
 fi
 
