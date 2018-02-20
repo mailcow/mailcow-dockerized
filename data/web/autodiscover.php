@@ -21,7 +21,7 @@ if (strpos($data, 'autodiscover/outlook/responseschema') !== false) {
     // Office for macOS does not support EAS
     strpos($_SERVER['HTTP_USER_AGENT'], 'Mac') === false &&
     // Outlook 2013 (version 15) or higher
-    preg_match('/(Outlook|Office).+15\./', $_SERVER['HTTP_USER_AGENT'])
+    preg_match('/(Outlook|Office).+1[5-9]\./', $_SERVER['HTTP_USER_AGENT'])
   ) {
     $autodiscover_config['autodiscoverType'] = 'activesync';
   }
