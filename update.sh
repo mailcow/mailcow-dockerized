@@ -183,11 +183,14 @@ fi
 
 echo -e "\e[32mFetching new docker-compose version...\e[0m"
 sleep 2
-if [[ $(curl -sL -w "%{http_code}" https://www.servercow.de/docker-compose/latest.php -o /dev/null) == "200" ]]; then
+if [[ ! -z $(which pip) && $(pip list --local --format=columns | grep -c docker-compose) == 1 ]]; then
+  # Running on Alpine host, use pip to upgrade
+  pip install docker-compose -Uq
+elif [[ $(curl -sL -w "%{http_code}" https://www.servercow.de/docker-compose/latest.php -o /dev/null) == "200" ]]; then
   LATEST_COMPOSE=$(curl -#L https://www.servercow.de/docker-compose/latest.php)
   curl -#L https://github.com/docker/compose/releases/download/${LATEST_COMPOSE}/docker-compose-$(uname -s)-$(uname -m) > $(which docker-compose)
   chmod +x $(which docker-compose)
-  else
+else
   echo -e "\e[33mCannot determine latest docker-compose version, skipping...\e[0m"
 fi
 
@@ -197,7 +200,7 @@ docker-compose pull --parallel
 
 # Fix missing SSL, does not overwrite existing files
 [[ ! -d data/assets/ssl ]] && mkdir -p data/assets/ssl
-cp -n data/assets/ssl-example/*.pem data/assets/ssl/
+false | cp -i data/assets/ssl-example/*.pem data/assets/ssl/ 2>/dev/null
 
 echo -e "\e[32mStarting mailcow...\e[0m"
 sleep 2
@@ -205,7 +208,7 @@ docker-compose up -d --remove-orphans
 
 echo -e "\e[32mCollecting garbage...\e[0m"
 IMGS_TO_DELETE=()
-for container in $(grep -oP "image: \Kmailcow.+" docker-compose.yml); do
+for container in $(grep -o "image: mailcow.*" docker-compose.yml | cut -d' ' -f2); do
   REPOSITORY=${container/:*}
   TAG=${container/*:}
   V_MAIN=${container/*.}
