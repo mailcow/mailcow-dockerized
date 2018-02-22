@@ -117,3 +117,8 @@ mkdir -p data/assets/ssl
 
 # copy but don't overwrite existing certificate
 cp -n data/assets/ssl-example/*.pem data/assets/ssl/
+
+# clamav is trying to write to log files and stucks in a loop
+mkdir -p /var/log/clamav/
+touch /var/log/clamav/clamd.log
+touch /var/log/clamav/freshclam.log
