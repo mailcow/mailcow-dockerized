@@ -16,7 +16,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
         <li role="presentation"><a href="#tab-rspamd-settings" aria-controls="tab-rspamd-settings" role="tab" data-toggle="tab">Rspamd settings map</a></li>
       </ul>
     </li>
-    <li role="presentation"><a href="#tab-containers" aria-controls="tab-containers" role="tab" data-toggle="tab">Containers</a></li>
+    <li role="presentation"><a href="#tab-containers" aria-controls="tab-containers" role="tab" data-toggle="tab">Containers & System</a></li>
     <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Logs
       <span class="caret"></span></a>
       <ul class="dropdown-menu">
@@ -91,7 +91,29 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
           </div>
         </div>
 
+        <?php
+          $exec_fields = array('cmd' => 'df', 'dir' => '/var/vmail');
+          $vmail_df = explode(',', json_decode(docker('dovecot-mailcow', 'post', 'exec', $exec_fields), true));
+        ?>
         <div role="tabpanel" class="tab-pane" id="tab-containers">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Disk usage</h3>
+            </div>
+            <div class="panel-body">
+              <div class="row">
+                <div class="col-sm-3">
+                  <p>/var/vmail on <?=$vmail_df[0];?></p>
+                  <p><?=$vmail_df[2];?> / <?=$vmail_df[1];?> (<?=$vmail_df[4];?>)</p>
+                </div>
+                <div class="col-sm-9">
+                  <div class="progress">
+                    <div class="progress-bar progress-bar-info" role="progressbar" style="width:<?=$vmail_df[4];?>"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="panel panel-default">
             <div class="panel-heading">
               <h3 class="panel-title">Container information</h3>
