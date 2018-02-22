@@ -369,7 +369,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:1.8
+      image: mailcow/dockerapi:1.9
       restart: always
       build: ./data/Dockerfiles/dockerapi
       sysctls:

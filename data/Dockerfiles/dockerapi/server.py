@@ -67,10 +67,23 @@ class container_post(Resource):
         if not request.json or not 'cmd' in request.json:
           return jsonify(type='danger', msg='cmd is missing')
 
-        if request.json['cmd'] == 'sieve_list' and request.json['username']:
+        if request.json['cmd'] == 'df' and request.json['dir']:
           try:
             for container in docker_client.containers.list(filters={"id": container_id}):
-              return container.exec_run(["/bin/bash", "-c", "/usr/local/bin/doveadm sieve list -u '" + request.json['username'].replace("'", "'\\''") + "'"], user='vmail')
+              # Should be changed to be able to validate a path
+              directory = re.sub('[^0-9a-zA-Z/]+', '', request.json['dir'])
+              df_return = container.exec_run(["/bin/bash", "-c", "/bin/df -H " + directory + " | /usr/bin/tail -n1 | /usr/bin/tr -s [:blank:] | /usr/bin/tr ' ' ','"], user='nobody')
+              if df_return.exit_code == 0:
+                return df_return.output.rstrip()
+              else:
+                return "0,0,0,0,0,0"
+          except Exception as e:
+            return jsonify(type='danger', msg=str(e))
+        elif request.json['cmd'] == 'sieve_list' and request.json['username']:
+          try:
+            for container in docker_client.containers.list(filters={"id": container_id}):
+              sieve_return = container.exec_run(["/bin/bash", "-c", "/usr/local/bin/doveadm sieve list -u '" + request.json['username'].replace("'", "'\\''") + "'"], user='vmail')
+              return sieve_return.output
           except Exception as e:
             return jsonify(type='danger', msg=str(e))
         elif request.json['cmd'] == 'sieve_print' and request.json['script_name'] and request.json['username']:
