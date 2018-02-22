@@ -263,6 +263,7 @@ services:
         until ping phpfpm -c1 > /dev/null; do sleep 1; done &&
         until ping sogo -c1 > /dev/null; do sleep 1; done &&
         until ping redis -c1 > /dev/null; do sleep 1; done &&
+        until ping rspamd -c1 > /dev/null; do sleep 1; done &&
         exec nginx -g 'daemon off;'"
       environment:
         - HTTPS_PORT=${HTTPS_PORT:-443}
@@ -349,7 +350,6 @@ services:
       sysctls:
         - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       volumes:
-        - vmail-vol-1:/vmail:ro
         - rspamd-sock:/rspamd-sock
       restart: always
       environment:
