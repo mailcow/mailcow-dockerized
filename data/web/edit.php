@@ -150,6 +150,8 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <input type="hidden" value="0" name="active">
             <input type="hidden" value="0" name="backupmx">
             <input type="hidden" value="0" name="relay_all_recipients">
+            <input type="hidden" value="0" name="relay_sender">
+            <input type="hidden" value="0" name="relay_recipient">
             <div class="form-group">
               <label class="control-label col-sm-2" for="description"><?=$lang['edit']['description'];?></label>
               <div class="col-sm-10">
@@ -206,6 +208,9 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                   <br />
                   <label><input type="checkbox" value="1" name="relay_all_recipients" <?=(isset($result['relay_all_recipients_int']) && $result['relay_all_recipients_int']=="1") ? "checked" : null;?>> <?=$lang['edit']['relay_all'];?></label>
                   <p><?=$lang['edit']['relay_all_info'];?></p>
+                  <label><input type="checkbox" value="1" name="relay_sender" <?=(isset($result['relay_sender_int']) && $result['relay_sender_int']=="1") ? "checked" : null;?>> <?=$lang['edit']['relay_sender'];?></label>
+                  <br />
+                  <label><input type="checkbox" value="1" name="relay_recipient" <?=(isset($result['relay_recipient_int']) && $result['relay_recipient_int']=="1") ? "checked" : null;?>> <?=$lang['edit']['relay_recipient'];?></label>
                 </div>
               </div>
             </div>
