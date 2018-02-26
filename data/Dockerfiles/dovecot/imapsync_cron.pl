@@ -85,7 +85,7 @@ while ($row = $sth->fetchrow_arrayref()) {
 	($exclude eq ""	? () : ("--exclude", $exclude)),
 	($subfolder2 eq "" ? () : ('--subfolder2', $subfolder2)),
 	($maxage eq "0" ? () : ('--maxage', $maxage)),
-  ($maxbytespersecond eq "0" ? () : ('--maxbytespersecond', $maxage)),
+  ($maxbytespersecond eq "0" ? () : ('--maxbytespersecond', $maxbytespersecond)),
 	($delete2duplicates	ne "1" ? () : ('--delete2duplicates')),
 	($delete1	ne "1" ? () : ('--delete')),
   ($delete2 ne "1" ? () : ('--delete2')),
