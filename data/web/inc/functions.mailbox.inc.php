@@ -2115,7 +2115,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               $password_hashed = hash_password($password);
               try {
                 $stmt = $pdo->prepare("UPDATE `mailbox` SET
-                    `password` = :password_hashed,
+                    `password` = :password_hashed
                       WHERE `username` = :username");
                 $stmt->execute(array(
                   ':password_hashed' => $password_hashed,
