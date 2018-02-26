@@ -59,7 +59,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.8
+      image: mailcow/clamd:1.9
       build: ./data/Dockerfiles/clamd
       restart: always
       environment:
