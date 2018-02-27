@@ -165,7 +165,7 @@ jQuery(function($){
         },
         "sortValue": function(value){
           res = value.split("/");
-          return res[0];
+          return Number(res[0]);
         },
         },
         {"name":"max_quota_for_mbox","title":lang.mailbox_quota,"breakpoints":"xs sm"},
@@ -229,7 +229,7 @@ jQuery(function($){
         },
         "sortValue": function(value){
           res = value.split("/");
-          return res[0];
+          return Number(res[0]);
         },
         },
         {"name":"spam_aliases","filterable": false,"title":lang.spam_aliases,"breakpoints":"xs sm md"},
