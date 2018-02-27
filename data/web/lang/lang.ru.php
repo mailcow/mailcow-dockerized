@@ -528,7 +528,7 @@ $lang['admin']['link'] = "Ссылка";
 $lang['admin']['remove_row'] = "Удалить строку";
 $lang['admin']['add_row'] = "Добавить строку";
 $lang['admin']['reset_default'] = "Восстановить по умолчанию";
-$lang['admin']['merged_vars_hint'] = 'Серым цветом выделены строки полученные из <code>vars.inc.(local.)php</code> и не могут быть изменены.';
+$lang['admin']['merged_vars_hint'] = 'Серым цветом выделены строки полученные из <code>vars.(local.)inc.php</code> и не могут быть изменены.';
 
 $lang['edit']['tls_policy'] = "Изменение политики TLS";
 $lang['edit']['spam_score'] = "Задать индивидуальное определение спама";
