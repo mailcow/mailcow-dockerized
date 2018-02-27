@@ -584,7 +584,7 @@ $lang['admin']['link'] = "Link";
 $lang['admin']['remove_row'] = "Zeile entfernen";
 $lang['admin']['add_row'] = "Zeile hinzufügen";
 $lang['admin']['reset_default'] = "Auf Standard zurücksetzen";
-$lang['admin']['merged_vars_hint'] = 'Ausgegraute Zeilen wurden aus der Datei <code>vars.inc.(local.)php</code> gelesen und können nicht mittels UI verändert werden.';
+$lang['admin']['merged_vars_hint'] = 'Ausgegraute Zeilen wurden aus der Datei <code>vars.(local.).inc.php</code> gelesen und können nicht mittels UI verändert werden.';
 $lang['mailbox']['waiting'] = "Wartend";
 $lang['mailbox']['status'] = "Status";
 $lang['mailbox']['running'] = "In Ausführung";
@@ -605,7 +605,7 @@ $lang['admin']['link'] = "Link";
 $lang['admin']['remove_row'] = "Entfernen";
 $lang['admin']['add_row'] = "Reihe hinzufügen";
 $lang['admin']['reset_default'] = "Zurücksetzen auf Standard";
-$lang['admin']['merged_vars_hint'] = 'Ausgegraute Reihen wurden aus der Datei <code>vars.inc.(local.)php</code> gelesen und können hier nicht verändert werden.';
+$lang['admin']['merged_vars_hint'] = 'Ausgegraute Reihen wurden aus der Datei <code>vars.(local.)inc.php</code> gelesen und können hier nicht verändert werden.';
 
 $lang['edit']['tls_policy'] = "TLS Policy ändern";
 $lang['edit']['spam_score'] = "Einen benutzerdefiniterten Spam-Score festlegen";
