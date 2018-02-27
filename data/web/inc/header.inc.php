@@ -74,8 +74,8 @@
             if (isset($_SESSION['mailcow_cc_role'])) {
               if ($_SESSION['mailcow_cc_role'] == 'admin') {
               ?>
-                <li<?= (preg_match("/debug/i", $_SERVER['REQUEST_URI'])) ? ' class="active"' : ''; ?>><a href="/debug.php"><?= $lang['header']['debug']; ?></a></li>
                 <li<?= (preg_match("/admin/i", $_SERVER['REQUEST_URI'])) ? ' class="active"' : ''; ?>><a href="/admin.php"><?= $lang['header']['administration']; ?></a></li>
+                <li<?= (preg_match("/debug/i", $_SERVER['REQUEST_URI'])) ? ' class="active"' : ''; ?>><a href="/debug.php"><?= $lang['header']['debug']; ?></a></li>
               <?php
               }
               if ($_SESSION['mailcow_cc_role'] == 'admin' || $_SESSION['mailcow_cc_role'] == 'domainadmin') {
