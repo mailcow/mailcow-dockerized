@@ -891,8 +891,8 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             return false;
           }
           try {
-            $stmt = $pdo->prepare("INSERT INTO `mailbox` (`username`, `password`, `name`, `maildir`, `quota`, `local_part`, `domain`, `active`) 
-              VALUES (:username, :password_hashed, :name, :maildir, :quota_b, :local_part, :domain, :active)");
+            $stmt = $pdo->prepare("INSERT INTO `mailbox` (`username`, `password`, `name`, `maildir`, `quota`, `local_part`, `domain`, `attributes`, `active`) 
+              VALUES (:username, :password_hashed, :name, :maildir, :quota_b, :local_part, :domain, '{\"force_pw_update\": \"0\", \"tls_enforce_in\": \"0\", \"tls_enforce_out\": \"0\"}', :active)");
             $stmt->execute(array(
               ':username' => $username,
               ':password_hashed' => $password_hashed,
