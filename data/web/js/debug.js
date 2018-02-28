@@ -31,9 +31,9 @@ jQuery(function($){
     e.preventDefault();
     draw_acme_logs();
   });
-  $("#refresh_fail2ban_log").on('click', function(e) {
+  $("#refresh_netfilter_log").on('click', function(e) {
     e.preventDefault();
-    draw_fail2ban_logs();
+    draw_netfilter_logs();
   });
   $("#refresh_rspamd_history").on('click', function(e) {
     e.preventDefault();
@@ -206,8 +206,8 @@ jQuery(function($){
       }
     });
   }
-  function draw_fail2ban_logs() {
-    ft_fail2ban_logs = FooTable.init('#fail2ban_log', {
+  function draw_netfilter_logs() {
+    ft_netfilter_logs = FooTable.init('#netfilter_log', {
       "columns": [
         {"name":"time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},"title":lang.time,"style":{"width":"170px"}},
         {"name":"priority","title":lang.priority,"style":{"width":"80px"}},
@@ -215,10 +215,10 @@ jQuery(function($){
       ],
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/logs/fail2ban',
+        url: '/api/v1/get/logs/netfilter',
         jsonp: false,
         error: function () {
-          console.log('Cannot draw fail2ban log table');
+          console.log('Cannot draw netfilter log table');
         },
         success: function (data) {
           return process_table_data(data, 'general_syslog');
@@ -497,7 +497,7 @@ jQuery(function($){
   draw_watchdog_logs();
   draw_acme_logs();
   draw_api_logs();
-  draw_fail2ban_logs();
+  draw_netfilter_logs();
   draw_rspamd_history();
 
 });

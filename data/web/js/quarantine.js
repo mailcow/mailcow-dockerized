@@ -6,8 +6,8 @@ jQuery(function($){
   function escapeHtml(n){return String(n).replace(/[&<>"'`=\/]/g,function(n){return entityMap[n]})}
   function humanFileSize(i){if(Math.abs(i)<1024)return i+" B";var B=["KiB","MiB","GiB","TiB","PiB","EiB","ZiB","YiB"],e=-1;do{i/=1024,++e}while(Math.abs(i)>=1024&&e<B.length-1);return i.toFixed(1)+" "+B[e]}
 
-  function draw_quarantaine_table() {
-    ft_quarantainetable = FooTable.init('#quarantainetable', {
+  function draw_quarantine_table() {
+    ft_quarantinetable = FooTable.init('#quarantinetable', {
       "columns": [
         {"name":"chkbox","title":"","style":{"maxWidth":"40px","width":"40px"},"filterable": false,"sortable": false,"type":"html"},
         {"name":"id","type":"ID","filterable": false,"sorted": true,"direction":"DESC","title":"ID","style":{"width":"50px"}},
@@ -19,10 +19,10 @@ jQuery(function($){
       ],
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/quarantaine/all',
+        url: '/api/v1/get/quarantine/all',
         jsonp: false,
         error: function () {
-          console.log('Cannot draw quarantaine table');
+          console.log('Cannot draw quarantine table');
         },
         success: function (data) {
           $.each(data, function (i, item) {
@@ -38,14 +38,14 @@ jQuery(function($){
       "paging": {"enabled": true,"limit": 5,"size": pagination_size},
       "sorting": {"enabled": true},
       "on": {
-        "ready.ft.table": btn_group_quarantaine,
-        "after.ft.paging": btn_group_quarantaine
+        "ready.ft.table": btn_group_quarantine,
+        "after.ft.paging": btn_group_quarantine
       },
       "filtering": {"enabled": true,"position": "left","connectors": false,"placeholder": lang.filter_table},
     });
   }
 
-  btn_group_quarantaine = function(ev, ft){
+  btn_group_quarantine = function(ev, ft){
     $('.show_qid_info').on('click', function (e) {
       e.preventDefault();
       var qitem = $(this).data('item');
@@ -80,5 +80,5 @@ jQuery(function($){
     })
   }
   // Initial table drawings
-  draw_quarantaine_table();
+  draw_quarantine_table();
 });

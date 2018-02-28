@@ -165,7 +165,7 @@ jQuery(function($){
         },
         "sortValue": function(value){
           res = value.split("/");
-          return res[0];
+          return Number(res[0]);
         },
         },
         {"name":"max_quota_for_mbox","title":lang.mailbox_quota,"breakpoints":"xs sm"},
@@ -186,16 +186,16 @@ jQuery(function($){
             item.mailboxes = item.mboxes_in_domain + " / " + item.max_num_mboxes_for_domain;
             item.quota = item.quota_used_in_domain + "/" + item.max_quota_for_domain;
             item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
-            item.chkbox = '<input type="checkbox" data-id="domain" name="multi_select" value="' + item.domain_name + '" />';
+            item.chkbox = '<input type="checkbox" data-id="domain" name="multi_select" value="' + encodeURIComponent(item.domain_name) + '" />';
             item.action = '<div class="btn-group">';
             if (role == "admin") {
-              item.action += '<a href="/edit.php?domain=' + encodeURI(item.domain_name) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-                '<a href="#" id="delete_selected" data-id="single-domain" data-api-url="delete/domain" data-item="' + encodeURI(item.domain_name) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>';
+              item.action += '<a href="/edit.php?domain=' + encodeURIComponent(item.domain_name) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+                '<a href="#" id="delete_selected" data-id="single-domain" data-api-url="delete/domain" data-item="' + encodeURIComponent(item.domain_name) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>';
             }
             else {
-              item.action += '<a href="/edit.php?domain=' + encodeURI(item.domain_name) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>';
+              item.action += '<a href="/edit.php?domain=' + encodeURIComponent(item.domain_name) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>';
             }
-            item.action += '<a href="#dnsInfoModal" class="btn btn-xs btn-info" data-toggle="modal" data-domain="' + encodeURI(item.domain_name) + '"><span class="glyphicon glyphicon-question-sign"></span> DNS</a></div>';
+            item.action += '<a href="#dnsInfoModal" class="btn btn-xs btn-info" data-toggle="modal" data-domain="' + encodeURIComponent(item.domain_name) + '"><span class="glyphicon glyphicon-question-sign"></span> DNS</a></div>';
           });
         }
       }),
@@ -229,7 +229,7 @@ jQuery(function($){
         },
         "sortValue": function(value){
           res = value.split("/");
-          return res[0];
+          return Number(res[0]);
         },
         },
         {"name":"spam_aliases","filterable": false,"title":lang.spam_aliases,"breakpoints":"xs sm md"},
@@ -250,24 +250,24 @@ jQuery(function($){
           $.each(data, function (i, item) {
             item.quota = item.quota_used + "/" + item.quota;
             item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
-            item.chkbox = '<input type="checkbox" data-id="mailbox" name="multi_select" value="' + item.username + '" />';
+            item.chkbox = '<input type="checkbox" data-id="mailbox" name="multi_select" value="' + encodeURIComponent(item.username) + '" />';
             if (role == "admin") {
             item.action = '<div class="btn-group">' +
-              '<a href="/edit.php?mailbox=' + encodeURI(item.username) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-              '<a href="#" id="delete_selected" data-id="single-mailbox" data-api-url="delete/mailbox" data-item="' + encodeURI(item.username) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
-              '<a href="/index.php?duallogin=' + encodeURI(item.username) + '" class="btn btn-xs btn-success"><span class="glyphicon glyphicon-user"></span> Login</a>' +
+              '<a href="/edit.php?mailbox=' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+              '<a href="#" id="delete_selected" data-id="single-mailbox" data-api-url="delete/mailbox" data-item="' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+              '<a href="/index.php?duallogin=' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-success"><span class="glyphicon glyphicon-user"></span> Login</a>' +
               '</div>';
             }
             else {
             item.action = '<div class="btn-group">' +
-              '<a href="/edit.php?mailbox=' + encodeURI(item.username) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-              '<a href="#" id="delete_selected" data-id="single-mailbox" data-api-url="delete/mailbox" data-item="' + encodeURI(item.username) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+              '<a href="/edit.php?mailbox=' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+              '<a href="#" id="delete_selected" data-id="single-mailbox" data-api-url="delete/mailbox" data-item="' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
               '</div>';
             }
             item.in_use = '<div class="progress">' +
               '<div class="progress-bar progress-bar-' + item.percent_class + ' role="progressbar" aria-valuenow="' + item.percent_in_use + '" aria-valuemin="0" aria-valuemax="100" ' +
               'style="min-width:2em;width:' + item.percent_in_use + '%">' + item.percent_in_use + '%' + '</div></div>';
-
+            item.username = escapeHtml(item.username);
           });
         }
       }),
@@ -309,10 +309,11 @@ jQuery(function($){
         success: function (data) {
           $.each(data, function (i, item) {
             item.action = '<div class="btn-group">' +
-              '<a href="/edit.php?resource=' + encodeURI(item.name) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-              '<a href="#" id="delete_selected" data-id="single-resource" data-api-url="delete/resource" data-item="' + encodeURI(item.name) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+              '<a href="/edit.php?resource=' + encodeURIComponent(item.name) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+              '<a href="#" id="delete_selected" data-id="single-resource" data-api-url="delete/resource" data-item="' + encodeURIComponent(item.name) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
               '</div>';
-            item.chkbox = '<input type="checkbox" data-id="resource" name="multi_select" value="' + item.name + '" />';
+            item.chkbox = '<input type="checkbox" data-id="resource" name="multi_select" value="' + encodeURIComponent(item.name) + '" />';
+            item.name = escapeHtml(item.name);
           });
         }
       }),
@@ -359,12 +360,62 @@ jQuery(function($){
               '<a href="#" id="delete_selected" data-id="single-bcc" data-api-url="delete/bcc" data-item="' + item.id + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="bcc" name="multi_select" value="' + item.id + '" />';
+            item.local_dest = escapeHtml(item.local_dest);
+            item.bcc_dest = escapeHtml(item.bcc_dest);
             if (item.type == 'sender') {
               item.type = '<span id="active-script" class="label label-success">Sender</span>';
             } else {
               item.type = '<span id="inactive-script" class="label label-warning">Recipient</span>';
             }
           });
+        }
+      }),
+      "paging": {
+        "enabled": true,
+        "limit": 5,
+        "size": pagination_size
+      },
+      "filtering": {
+        "enabled": true,
+        "position": "left",
+        "connectors": false,
+        "placeholder": lang.filter_table
+      },
+      "sorting": {
+        "enabled": true
+      }
+    });
+  }
+  function draw_recipient_map_table() {
+    ft_recipient_map_table = FooTable.init('#recipient_map_table', {
+      "columns": [
+        {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
+        {"sorted": true,"name":"id","title":"ID","style":{"maxWidth":"60px","width":"60px","text-align":"center"}},
+        {"name":"recipient_map_old","title":lang.recipient_map_old},
+        {"name":"recipient_map_new","title":lang.recipient_map_new},
+        {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active},
+        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":(role == "admin" ? lang.action : ""),"breakpoints":"xs sm"}
+      ],
+      "empty": lang.empty,
+      "rows": $.ajax({
+        dataType: 'json',
+        url: '/api/v1/get/recipient_map/all',
+        jsonp: false,
+        error: function () {
+          console.log('Cannot draw recipient map table');
+        },
+        success: function (data) {
+          if (role == "admin") {
+            $.each(data, function (i, item) {
+              item.recipient_map_old = escapeHtml(item.recipient_map_old);
+              item.recipient_map_new = escapeHtml(item.recipient_map_new);
+              item.action = '<div class="btn-group">' +
+                '<a href="/edit.php?recipient_map=' + item.id + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+                '<a href="#" id="delete_selected" data-id="single-recipient_map" data-api-url="delete/recipient_map" data-item="' + item.id + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+                '</div>';
+              item.chkbox = '<input type="checkbox" data-id="recipient_map" name="multi_select" value="' + item.id + '" />';
+            });
+          }
         }
       }),
       "paging": {
@@ -404,12 +455,16 @@ jQuery(function($){
         success: function (data) {
           $.each(data, function (i, item) {
             item.action = '<div class="btn-group">' +
-              '<a href="/edit.php?alias=' + encodeURI(item.address) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-              '<a href="#" id="delete_selected" data-id="single-alias" data-api-url="delete/alias" data-item="' + encodeURI(item.address) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+              '<a href="/edit.php?alias=' + encodeURIComponent(item.address) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+              '<a href="#" id="delete_selected" data-id="single-alias" data-api-url="delete/alias" data-item="' + encodeURIComponent(item.address) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
               '</div>';
-            item.chkbox = '<input type="checkbox" data-id="alias" name="multi_select" value="' + item.address + '" />';
+            item.chkbox = '<input type="checkbox" data-id="alias" name="multi_select" value="' + encodeURIComponent(item.address) + '" />';
+            item.goto = escapeHtml(item.goto);
             if (item.is_catch_all == 1) {
-              item.address = '<div class="label label-default">Catch-All</div> ' + item.address;
+              item.address = '<div class="label label-default">Catch-All</div> ' + escapeHtml(item.address);
+            }
+            else {
+              item.address = escapeHtml(item.address);
             }
             if (item.goto == "null@localhost") {
               item.goto = '⤷ <span style="font-size:12px" class="glyphicon glyphicon-trash" aria-hidden="true"></span>';
@@ -457,11 +512,11 @@ jQuery(function($){
         success: function (data) {
           $.each(data, function (i, item) {
             item.action = '<div class="btn-group">' +
-              '<a href="/edit.php?aliasdomain=' + encodeURI(item.alias_domain) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-              '<a href="#" id="delete_selected" data-id="single-alias-domain" data-api-url="delete/alias-domain" data-item="' + encodeURI(item.alias_domain) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
-              '<a href="#dnsInfoModal" class="btn btn-xs btn-info" data-toggle="modal" data-domain="' + encodeURI(item.alias_domain) + '"><span class="glyphicon glyphicon-question-sign"></span> DNS</a></div>' +
+              '<a href="/edit.php?aliasdomain=' + encodeURIComponent(item.alias_domain) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+              '<a href="#" id="delete_selected" data-id="single-alias-domain" data-api-url="delete/alias-domain" data-item="' + encodeURIComponent(item.alias_domain) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+              '<a href="#dnsInfoModal" class="btn btn-xs btn-info" data-toggle="modal" data-domain="' + encodeURIComponent(item.alias_domain) + '"><span class="glyphicon glyphicon-question-sign"></span> DNS</a></div>' +
               '</div>';
-            item.chkbox = '<input type="checkbox" data-id="alias-domain" name="multi_select" value="' + item.alias_domain + '" />';
+            item.chkbox = '<input type="checkbox" data-id="alias-domain" name="multi_select" value="' + encodeURIComponent(item.alias_domain) + '" />';
           });
         }
       }),
@@ -507,16 +562,17 @@ jQuery(function($){
         },
         success: function (data) {
           $.each(data, function (i, item) {
-            item.log = '<a href="#syncjobLogModal" data-toggle="modal" data-syncjob-id="' + encodeURI(item.id) + '">Open logs</a>'
+            item.log = '<a href="#syncjobLogModal" data-toggle="modal" data-syncjob-id="' + encodeURIComponent(item.id) + '">Open logs</a>'
+            item.user2 = escapeHtml(item.user2);
             if (!item.exclude > 0) {
               item.exclude = '-';
             } else {
               item.exclude  = '<code>' + item.exclude + '</code>';
             }
-            item.server_w_port = item.user1 + '@' + item.host1 + ':' + item.port1;
+            item.server_w_port = escapeHtml(item.user1) + '@' + item.host1 + ':' + item.port1;
             item.action = '<div class="btn-group">' +
               '<a href="/edit.php?syncjob=' + item.id + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-              '<a href="#" id="delete_selected" data-id="single-syncjob" data-api-url="delete/syncjob" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+              '<a href="#" id="delete_selected" data-id="single-syncjob" data-api-url="delete/syncjob" data-item="' + item.id + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="syncjob" name="multi_select" value="' + item.id + '" />';
             if (item.is_running == 1) {
@@ -578,7 +634,7 @@ jQuery(function($){
             item.filter_type = '<div class="label label-default">' + item.filter_type.charAt(0).toUpperCase() + item.filter_type.slice(1).toLowerCase() + '</div>'
             item.action = '<div class="btn-group">' +
               '<a href="/edit.php?filter=' + item.id + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-              '<a href="#" id="delete_selected" data-id="single-filter" data-api-url="delete/filter" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+              '<a href="#" id="delete_selected" data-id="single-filter" data-api-url="delete/filter" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="filter_item" name="multi_select" value="' + item.id + '" />'
           });
@@ -609,5 +665,6 @@ jQuery(function($){
   draw_sync_job_table();
   draw_filter_table();
   draw_bcc_table();
+  draw_recipient_map_table();
 
 });

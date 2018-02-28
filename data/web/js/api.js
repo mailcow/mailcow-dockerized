@@ -124,6 +124,9 @@ $(document).ready(function() {
     }
     if (typeof multi_data[id] == "undefined") return;
     api_items = multi_data[id];
+    for (var i in api_items) {
+      api_items[i] = decodeURIComponent(api_items[i]);
+    }
     // alert(JSON.stringify(api_attr));
     if (Object.keys(api_items).length !== 0) {
       if (is_active($(this))) { return false; }
@@ -251,6 +254,7 @@ $(document).ready(function() {
     $(document).on('show.bs.modal', '#ConfirmDeleteModal', function() {
       $("#ItemsToDelete").empty();
       for (var i in data_array) {
+        data_array[i] = decodeURIComponent(data_array[i]);
         $("#ItemsToDelete").append("<li>" + data_array[i] + "</li>");
       }
     })

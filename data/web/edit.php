@@ -20,7 +20,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
   if ($_SESSION['mailcow_cc_role'] == "admin"  || $_SESSION['mailcow_cc_role'] == "domainadmin") {
       if (isset($_GET["alias"]) &&
         !empty($_GET["alias"])) {
-          $alias = $_GET["alias"];
+          $alias = html_entity_decode(rawurldecode($_GET["alias"]));
           $result = mailbox('get', 'alias_details', $alias);
           if (!empty($result)) {
           ?>
@@ -46,7 +46,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               </div>
               <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
-                  <button class="btn btn-success" id="edit_selected" data-id="editalias" data-item="<?=$alias;?>" data-api-url='edit/alias' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
+                  <button class="btn btn-success" id="edit_selected" data-id="editalias" data-item="<?=htmlspecialchars($alias);?>" data-api-url='edit/alias' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
                 </div>
               </div>
             </form>
@@ -313,9 +313,9 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         }
     }
     elseif (isset($_GET['aliasdomain']) &&
-      is_valid_domain_name($_GET["aliasdomain"]) &&
+      is_valid_domain_name(html_entity_decode(rawurldecode($_GET["aliasdomain"]))) &&
       !empty($_GET["aliasdomain"])) {
-        $alias_domain = $_GET["aliasdomain"];
+        $alias_domain = html_entity_decode(rawurldecode($_GET["aliasdomain"]));
         $result = mailbox('get', 'alias_domain_details', $alias_domain);
         $rl = mailbox('get', 'ratelimit', $alias_domain);
         if (!empty($result)) {
@@ -380,8 +380,8 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         <?php
         }
     }
-    elseif (isset($_GET['mailbox']) && filter_var($_GET["mailbox"], FILTER_VALIDATE_EMAIL) && !empty($_GET["mailbox"])) {
-      $mailbox = $_GET["mailbox"];
+    elseif (isset($_GET['mailbox']) && filter_var(html_entity_decode(rawurldecode($_GET["mailbox"])), FILTER_VALIDATE_EMAIL) && !empty($_GET["mailbox"])) {
+      $mailbox = html_entity_decode(rawurldecode($_GET["mailbox"]));
       $result = mailbox('get', 'mailbox_details', $mailbox);
       $rl = mailbox('get', 'ratelimit', $mailbox);
       if (!empty($result)) {
@@ -390,6 +390,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         <form class="form-horizontal" data-id="editmailbox" role="form" method="post">
           <input type="hidden" value="0" name="sender_acl">
           <input type="hidden" value="0" name="active">
+          <input type="hidden" value="0" name="force_pw_update">
           <div class="form-group">
             <label class="control-label col-sm-2" for="name"><?=$lang['edit']['full_name'];?>:</label>
             <div class="col-sm-10">
@@ -478,6 +479,14 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           </div>
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
+              <div class="checkbox">
+              <label><input type="checkbox" value="1" name="force_pw_update" <?=($result['attributes']['force_pw_update']=="1") ? "checked" : null;?>> <?=$lang['edit']['force_pw_update'];?></label>
+              <small class="help-block"><?=$lang['edit']['force_pw_update_info'];?></small>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
               <button class="btn btn-success" id="edit_selected" data-id="editmailbox" data-item="<?=htmlspecialchars($result['username']);?>" data-api-url='edit/mailbox' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
             </div>
           </div>
@@ -500,7 +509,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                 </select>
               </div>
               <div class="form-group">
-                <button class="btn btn-default" id="edit_selected" data-id="mboxratelimit" data-item="<?=$mailbox;?>" data-api-url='edit/ratelimit' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
+                <button class="btn btn-default" id="edit_selected" data-id="mboxratelimit" data-item="<?=htmlspecialchars($mailbox);?>" data-api-url='edit/ratelimit' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
               </div>
             </div>
           </div>
@@ -555,8 +564,8 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         <?php
         }
     }
-    elseif (isset($_GET['resource']) && filter_var($_GET["resource"], FILTER_VALIDATE_EMAIL) && !empty($_GET["resource"])) {
-        $resource = $_GET["resource"];
+    elseif (isset($_GET['resource']) && filter_var(html_entity_decode(rawurldecode($_GET["resource"])), FILTER_VALIDATE_EMAIL) && !empty($_GET["resource"])) {
+        $resource = html_entity_decode(rawurldecode($_GET["resource"]));
         $result = mailbox('get', 'resource_details', $resource);
         if (!empty($result)) {
           ?>
@@ -621,7 +630,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               <label class="control-label col-sm-2" for="bcc_dest">BCC destination</label>
               <div class="col-sm-10">
                 <textarea id="bcc_dest" class="form-control" autocapitalize="none" autocorrect="off" rows="10" id="bcc_dest" name="bcc_dest" required><?=$result['bcc_dest'];?></textarea>
-                <small>BCC destinations can only be valid email addresses. Separated by whitespace, semicolon, new line or comma.</small>
+                <small>BCC destination must be a single valid email address.</small>
               </div>
             </div>
             <div class="form-group">
@@ -643,6 +652,43 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
                 <button class="btn btn-success" id="edit_selected" data-id="editbcc" data-item="<?=$bcc;?>" data-api-url='edit/bcc' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
+              </div>
+            </div>
+          </form>
+        <?php
+        }
+        else {
+        ?>
+          <div class="alert alert-info" role="alert"><?=$lang['info']['no_action'];?></div>
+        <?php
+        }
+    }
+    elseif (isset($_GET['recipient_map']) && !empty($_GET["recipient_map"])) {
+        $map = intval($_GET["recipient_map"]);
+        $result = recipient_map('details', $map);
+        if (!empty($result)) {
+          ?>
+          <h4>Recipient map: <?=$result['recipient_map_old'];?></h4>
+          <br />
+          <form class="form-horizontal" data-id="edit_recipient_map" role="form" method="post">
+            <input type="hidden" value="0" name="active">
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="recipient_map_new">New destination</label>
+              <div class="col-sm-10">
+                <textarea id="recipient_map_new" class="form-control" autocapitalize="none" autocorrect="off" rows="10" id="recipient_map_new" name="recipient_map_new" required><?=$result['recipient_map_new'];?></textarea>
+                <small>Recipient map destinations can only be valid email addresses. Separated by whitespace, semicolon, new line or comma.</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <div class="checkbox">
+                <label><input type="checkbox" value="1" name="active" <?php if (isset($result['active_int']) && $result['active_int']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['active'];?></label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <button class="btn btn-success" id="edit_selected" data-id="edit_recipient_map" data-item="<?=$map;?>" data-api-url='edit/recipient_map' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
               </div>
             </div>
           </form>

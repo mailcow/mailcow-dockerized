@@ -89,6 +89,9 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 <div class="panel-body">
   <div class="row">
     <div class="col-sm-offset-3 col-sm-9">
+      <?php if ($mailboxdata['attributes']['force_pw_update'] == "1"): ?>
+      <div class="alert alert-danger"><?=$lang['user']['force_pw_update'];?></div>
+      <?php endif; ?>
       <p><a href="#pwChangeModal" data-toggle="modal">[<?=$lang['user']['change_password'];?>]</a></p>
       <p><a target="_blank" href="https://mailcow.github.io/mailcow-dockerized-docs/client/#<?=$clientconfigstr;?>">[<?=$lang['user']['client_configuration'];?>]</a></p>
     </div>
@@ -164,21 +167,21 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 
       <button type="button" class="btn btn-sm btn-default <?=($get_tagging_options == "subfolder") ? 'active' : null; ?>"
         id="edit_selected"
-        data-item="<?= $username; ?>"
+        data-item="<?= htmlentities($username); ?>"
         data-id="delimiter_action"
         data-api-url='edit/delimiter_action'
         data-api-attr='{"tagged_mail_handler":"subfolder"}'><?=$lang['user']['tag_in_subfolder'];?></button>
 
       <button type="button" class="btn btn-sm btn-default <?=($get_tagging_options == "subject") ? 'active' : null; ?>"
         id="edit_selected"
-        data-item="<?= $username; ?>"
+        data-item="<?= htmlentities($username); ?>"
         data-id="delimiter_action"
         data-api-url='edit/delimiter_action'
         data-api-attr='{"tagged_mail_handler":"subject"}'><?=$lang['user']['tag_in_subject'];?></button>
 
       <button type="button" class="btn btn-sm btn-default <?=($get_tagging_options == "none") ? 'active' : null; ?>"
         id="edit_selected"
-        data-item="<?= $username; ?>"
+        data-item="<?= htmlentities($username); ?>"
         data-id="delimiter_action"
         data-api-url='edit/delimiter_action'
         data-api-attr='{"tagged_mail_handler":"none"}'><?=$lang['user']['tag_in_none'];?></button>
@@ -201,14 +204,14 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 
       <button type="button" class="btn btn-sm btn-default <?=($get_tls_policy['tls_enforce_in'] == "1") ? "active" : null;?>"
         id="edit_selected"
-        data-item="<?= $username; ?>"
+        data-item="<?= htmlentities($username); ?>"
         data-id="tls_policy"
         data-api-url='edit/tls_policy'
         data-api-attr='{"tls_enforce_in":<?=($get_tls_policy['tls_enforce_in'] == "1") ? "0" : "1";?>}'><?=$lang['user']['tls_enforce_in'];?></button>
 
       <button type="button" class="btn btn-sm btn-default <?=($get_tls_policy['tls_enforce_out'] == "1") ? "active" : null;?>"
         id="edit_selected"
-        data-item="<?= $username; ?>"
+        data-item="<?= htmlentities($username); ?>"
         data-id="tls_policy"
         data-api-url='edit/tls_policy'
         data-api-attr='{"tls_enforce_out":<?=($get_tls_policy['tls_enforce_out'] == "1") ? "0" : "1";?>}'><?=$lang['user']['tls_enforce_out'];?></button>
@@ -225,7 +228,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
   <div class="row">
     <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['eas_reset'];?>:</div>
     <div class="col-md-9 col-xs-7">
-    <button class="btn btn-xs btn-default" id="delete_selected" data-text="<?=$lang['user']['eas_reset'];?>?" data-item="<?= $username; ?>" data-id="eas_cache" data-api-url='delete/eas_cache' href="#"><?=$lang['user']['eas_reset_now'];?></button>
+    <button class="btn btn-xs btn-default" id="delete_selected" data-text="<?=$lang['user']['eas_reset'];?>?" data-item="<?= htmlentities($username); ?>" data-id="eas_cache" data-api-url='delete/eas_cache' href="#"><?=$lang['user']['eas_reset_now'];?></button>
     <p class="help-block"><?=$lang['user']['eas_reset_help'];?></p>
     </div>
   </div>
@@ -315,7 +318,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
       <div class="form-group">
 				<div class="col-sm-10">
         <button type="button" class="btn btn-sm btn-success" id="edit_selected"
-          data-item="<?= $username; ?>"
+          data-item="<?= htmlentities($username); ?>"
           data-id="spam_score"
           data-api-url='edit/spam-score'
           data-api-attr='{}'><?=$lang['user']['save_changes'];?></button>
@@ -346,7 +349,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
           <div class="input-group">
             <input type="text" class="form-control" name="object_from" id="object_from" placeholder="*@example.org" required>
             <span class="input-group-btn">
-              <button class="btn btn-default" id="add_item" data-id="add_wl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username":"<?= $username; ?>","object_list":"wl"}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['spamfilter_table_add'];?></button>
+              <button class="btn btn-default" id="add_item" data-id="add_wl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username":<?= json_encode($username); ?>,"object_list":"wl"}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['spamfilter_table_add'];?></button>
             </span>
           </div>
         </form>
@@ -372,10 +375,10 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
         <form class="form-inline" data-id="add_bl_policy_mailbox">
           <div class="input-group">
             <input type="text" class="form-control" name="object_from" id="object_from" placeholder="*@example.org" required>
-            <input type="hidden" name="username" value="<?= $username ;?>">
+            <input type="hidden" name="username" value="<?= htmlentities($username) ;?>">
             <input type="hidden" name="object_list" value="bl">
             <span class="input-group-btn">
-              <button class="btn btn-default" id="add_item" data-id="add_bl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username":"<?= $username; ?>","object_list":"bl"}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['spamfilter_table_add'];?></button>
+              <button class="btn btn-default" id="add_item" data-id="add_bl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username":<?= json_encode($username); ?>,"object_list":"bl"}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['spamfilter_table_add'];?></button>
             </span>
           </div>
         </form>

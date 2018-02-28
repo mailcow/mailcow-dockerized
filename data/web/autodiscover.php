@@ -36,9 +36,8 @@ $opt = [
 $pdo = new PDO($dsn, $database_user, $database_pass, $opt);
 $login_user = strtolower(trim($_SERVER['PHP_AUTH_USER']));
 $login_pass = trim(htmlspecialchars_decode($_SERVER['PHP_AUTH_PW']));
-$login_role = check_login($login_user, $login_pass);
 
-if (!isset($_SERVER['PHP_AUTH_USER']) OR $login_role !== "user") {
+if (empty($_SERVER['PHP_AUTH_USER']) || empty($_SERVER['PHP_AUTH_PW'])) {
   try {
     $json = json_encode(
       array(
@@ -62,35 +61,36 @@ if (!isset($_SERVER['PHP_AUTH_USER']) OR $login_role !== "user") {
   header('HTTP/1.0 401 Unauthorized');
   exit(0);
 }
-else {
-  if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
-    if ($login_role === "user") {
-      header("Content-Type: application/xml");
-      echo '<?xml version="1.0" encoding="utf-8" ?>' . PHP_EOL;
+
+$login_role = check_login($login_user, $login_pass);
+
+if ($login_role === "user") {
+  header("Content-Type: application/xml");
+  echo '<?xml version="1.0" encoding="utf-8" ?>' . PHP_EOL;
 ?>
 <Autodiscover xmlns="http://schemas.microsoft.com/exchange/autodiscover/responseschema/2006">
 <?php
-      if(!$data) {
-        try {
-          $json = json_encode(
-            array(
-              "time" => time(),
-              "ua" => $_SERVER['HTTP_USER_AGENT'],
-              "user" => $_SERVER['PHP_AUTH_USER'],
-              "service" => "Error: invalid or missing request data"
-            )
-          );
-          $redis->lPush('AUTODISCOVER_LOG', $json);
-          $redis->lTrim('AUTODISCOVER_LOG', 0, 100);
-        }
-        catch (RedisException $e) {
-          $_SESSION['return'] = array(
-            'type' => 'danger',
-            'msg' => 'Redis: '.$e
-          );
-          return false;
-        }
-        list($usec, $sec) = explode(' ', microtime());
+  if(!$data) {
+    try {
+      $json = json_encode(
+        array(
+          "time" => time(),
+          "ua" => $_SERVER['HTTP_USER_AGENT'],
+          "user" => $_SERVER['PHP_AUTH_USER'],
+          "service" => "Error: invalid or missing request data"
+        )
+      );
+      $redis->lPush('AUTODISCOVER_LOG', $json);
+      $redis->lTrim('AUTODISCOVER_LOG', 0, 100);
+    }
+    catch (RedisException $e) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => 'Redis: '.$e
+      );
+      return false;
+    }
+    list($usec, $sec) = explode(' ', microtime());
 ?>
   <Response>
     <Error Time="<?=date('H:i:s', $sec) . substr($usec, 0, strlen($usec) - 2);?>" Id="2477272013">
@@ -101,54 +101,54 @@ else {
   </Response>
 </Autodiscover>
 <?php
-        exit(0);
-      }
-      try {
-        $discover = new SimpleXMLElement($data);
-        $email = $discover->Request->EMailAddress;
-      } catch (Exception $e) {
-        $email = $_SERVER['PHP_AUTH_USER'];
-      }
+    exit(0);
+  }
+  try {
+    $discover = new SimpleXMLElement($data);
+    $email = $discover->Request->EMailAddress;
+  } catch (Exception $e) {
+    $email = $_SERVER['PHP_AUTH_USER'];
+  }
 
-      $username = trim($email);
-      try {
-        $stmt = $pdo->prepare("SELECT `name` FROM `mailbox` WHERE `username`= :username");
-        $stmt->execute(array(':username' => $username));
-        $MailboxData = $stmt->fetch(PDO::FETCH_ASSOC);
-      }
-      catch(PDOException $e) {
-        die("Failed to determine name from SQL");
-      }
-      if (!empty($MailboxData['name'])) {
-        $displayname = $MailboxData['name'];
-      }
-      else {
-        $displayname = $email;
-      }
-      try {
-        $json = json_encode(
-          array(
-            "time" => time(),
-            "ua" => $_SERVER['HTTP_USER_AGENT'],
-            "user" => $_SERVER['PHP_AUTH_USER'],
-            "service" => $autodiscover_config['autodiscoverType']
-          )
-        );
-        $redis->lPush('AUTODISCOVER_LOG', $json);
-        $redis->lTrim('AUTODISCOVER_LOG', 0, 100);
-      }
-      catch (RedisException $e) {
-        $_SESSION['return'] = array(
-          'type' => 'danger',
-          'msg' => 'Redis: '.$e
-        );
-        return false;
-      }
-      if ($autodiscover_config['autodiscoverType'] == 'imap') {
+  $username = trim($email);
+  try {
+    $stmt = $pdo->prepare("SELECT `name` FROM `mailbox` WHERE `username`= :username");
+    $stmt->execute(array(':username' => $username));
+    $MailboxData = $stmt->fetch(PDO::FETCH_ASSOC);
+  }
+  catch(PDOException $e) {
+    die("Failed to determine name from SQL");
+  }
+  if (!empty($MailboxData['name'])) {
+    $displayname = $MailboxData['name'];
+  }
+  else {
+    $displayname = $email;
+  }
+  try {
+    $json = json_encode(
+      array(
+        "time" => time(),
+        "ua" => $_SERVER['HTTP_USER_AGENT'],
+        "user" => $_SERVER['PHP_AUTH_USER'],
+        "service" => $autodiscover_config['autodiscoverType']
+      )
+    );
+    $redis->lPush('AUTODISCOVER_LOG', $json);
+    $redis->lTrim('AUTODISCOVER_LOG', 0, 100);
+  }
+  catch (RedisException $e) {
+    $_SESSION['return'] = array(
+      'type' => 'danger',
+      'msg' => 'Redis: '.$e
+    );
+    return false;
+  }
+  if ($autodiscover_config['autodiscoverType'] == 'imap') {
 ?>
   <Response xmlns="http://schemas.microsoft.com/exchange/autodiscover/outlook/responseschema/2006a">
     <User>
-      <DisplayName><?=$displayname;?></DisplayName>
+      <DisplayName><?=htmlspecialchars($displayname, ENT_XML1 | ENT_QUOTES, 'UTF-8');?></DisplayName>
     </User>
     <Account>
       <AccountType>email</AccountType>
@@ -190,13 +190,13 @@ else {
     </Account>
   </Response>
 <?php
-      }
-      else if ($autodiscover_config['autodiscoverType'] == 'activesync') {
+  }
+  else if ($autodiscover_config['autodiscoverType'] == 'activesync') {
 ?>
   <Response xmlns="http://schemas.microsoft.com/exchange/autodiscover/mobilesync/responseschema/2006">
     <Culture>en:en</Culture>
     <User>
-      <DisplayName><?=$displayname;?></DisplayName>
+      <DisplayName><?=htmlspecialchars($displayname, ENT_XML1 | ENT_QUOTES, 'UTF-8');?></DisplayName>
       <EMailAddress><?=$email;?></EMailAddress>
     </User>
     <Action>
@@ -210,11 +210,9 @@ else {
     </Action>
   </Response>
 <?php
-      }
+  }
 ?>
 </Autodiscover>
 <?php
-    }
-  }
 }
 ?>

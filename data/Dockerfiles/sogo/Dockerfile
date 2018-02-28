@@ -42,6 +42,9 @@ RUN mkdir /usr/share/doc/sogo \
 COPY ./bootstrap-sogo.sh /
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
 COPY supervisord.conf /etc/supervisor/supervisord.conf
+COPY theme-blue.js /usr/lib/GNUstep/SOGo/WebServerResources/js/theme-blue.js
+COPY theme-green.js /usr/lib/GNUstep/SOGo/WebServerResources/js/theme-green.js
+COPY sogo-full.svg /usr/lib/GNUstep/SOGo/WebServerResources/img/sogo-full.svg
 
 CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 

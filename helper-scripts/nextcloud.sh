@@ -1,23 +1,32 @@
 #!/bin/bash
 
-[[ -z ${1} ]] && { echo "No parameters given"; exit 1; }
-
 for bin in curl dirmngr; do
   if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
 done
+
+[[ -z ${1} ]] && NC_HELP=y
 
 while [ "$1" != '' ]; do
   case "${1}" in
     -p|--purge) NC_PURGE=y && shift;;
     -i|--install) NC_INSTALL=y && shift;;
+    -h|--help) NC_HELP=y && shift;;
     *) echo "Unknown parameter: ${1}" && shift;;
   esac
 done
 
+if [[ ${NC_HELP} == "y" ]]; then
+  printf 'Usage:\n\n'
+  printf '  -p|--purge\n    Purge Nextcloud\n'
+  printf '  -i|--install\n    Install Nextcloud\n\n'
+  exit 0
+fi
+
 [[ ${NC_PURGE} == "y" ]] && [[ ${NC_INSTALL} == "y" ]] && { echo "Cannot use -p and -i at the same time"; }
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-source ${SCRIPT_DIR}/../mailcow.conf
+cd ${SCRIPT_DIR}/../
+source mailcow.conf
 
 if [[ ${NC_PURGE} == "y" ]]; then
 
@@ -55,7 +64,7 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
 
 	ADMIN_NC_PASS=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
 
-	curl -L# -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/latest-12.tar.bz2" \
+	curl -L# -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/latest-13.tar.bz2" || { echo "Failed to download Nextcloud archive."; exit 1; } \
 	  && tar -xjf nextcloud.tar.bz2 -C ./data/web/ \
 	  && rm nextcloud.tar.bz2 \
 	  && rm -rf ./data/web/nextcloud/updater \
