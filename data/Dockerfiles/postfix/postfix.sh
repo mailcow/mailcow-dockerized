@@ -65,6 +65,7 @@ query = SELECT GROUP_CONCAT(transport SEPARATOR '') AS transport_maps
     SELECT hostname AS transport FROM relayhosts
       LEFT OUTER JOIN domain ON domain.relayhost = relayhosts.id
         WHERE relayhosts.active = '1'
+          AND relay_sender = '1'
           AND domain = '%d'
           OR domain IN (
             SELECT target_domain FROM alias_domain
@@ -72,6 +73,48 @@ query = SELECT GROUP_CONCAT(transport SEPARATOR '') AS transport_maps
           )
   )
   AS transport_view;
+EOF
+
+cat <<EOF > /opt/postfix/conf/sql/mysql_recipient_dependent_default_transport_maps.cf
+user = ${DBUSER}
+password = ${DBPASS}
+hosts = mysql
+dbname = ${DBNAME}
+query = SELECT IF(EXISTS(SELECT 'relay' FROM domain
+      WHERE active = '1'
+      AND relay_recipient = '1'
+      AND domain = '%d'
+      OR domain IN (
+        SELECT target_domain FROM alias_domain                                                                                                                                                         WHERE alias_domain = '%d'
+        )
+      ),
+    (SELECT GROUP_CONCAT(transport SEPARATOR '') AS transport_maps
+    FROM (
+      SELECT IF(EXISTS(SELECT 'smtp_type' FROM alias
+          LEFT OUTER JOIN mailbox ON mailbox.username = alias.goto
+          WHERE (address = '%s'
+            OR address IN (
+              SELECT CONCAT('%u', '@', target_domain) FROM alias_domain
+                WHERE alias_domain = '%d'
+              )
+            )
+          AND mailbox.tls_enforce_out = '1'
+          AND mailbox.active = '1'
+          ), 'smtp_enforced_tls:', 'smtp:') AS 'transport', null AS relay
+      UNION ALL
+      SELECT hostname AS transport, domain.relay_recipient AS relay FROM relayhosts
+        LEFT OUTER JOIN domain ON domain.relayhost = relayhosts.id
+          WHERE relayhosts.active = '1'
+          AND relay_recipient = '1'
+          AND domain = '%d'
+          OR domain IN (
+            SELECT target_domain FROM alias_domain
+              WHERE alias_domain = '%d'
+              )
+          )
+          AS transport_view
+    )
+    , null) AS transport_view;
 EOF
 
 cat <<EOF > /opt/postfix/conf/sql/mysql_sasl_passwd_maps.cf
