@@ -90,7 +90,7 @@ services:
         - ./data/conf/rspamd/local.d/:/etc/rspamd/local.d:ro
         - ./data/conf/rspamd/lua/:/etc/rspamd/lua/:ro
         - rspamd-sock:/rspamd-sock
-        - rspamd-vol-1:/var/lib/rspamd/
+        - rspamd-vol-1:/var/lib/rspamd
       restart: always
       sysctls:
         - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
