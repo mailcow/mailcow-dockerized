@@ -25,6 +25,9 @@ if [[ -f mailcow.conf ]]; then
   esac
 fi
 
+if [ -z "$MAILCOW_LANGUAGE" ]; then
+  read -p "WebUI Default Language: " -ei "en/pt/de/nl" MAILCOW_LANGUAGE
+fi
 if [ -z "$MAILCOW_HOSTNAME" ]; then
   read -p "Hostname (FQDN - example.org is not a valid FQDN): " -ei "mx.example.org" MAILCOW_HOSTNAME
 fi
@@ -40,6 +43,17 @@ if [ -z "$TZ" ]; then
 else
   read -p "Timezone: " -ei ${TZ} TZ
 fi
+cat << EOF > data/web/inc/vars.local.inc.php
+<?php
+error_reporting(0);
+/*
+PLEASE USE THIS  FILE TO OVERWRITE "vars.inc.php" SETTINGS AND MAKE THEM PERSISTENT!
+*/
+
+// Change default language, "en", "pt", "de" or "nl"
+$DEFAULT_LANG = "${MAILCOW_LANGUAGE}";
+EOF
+
 
 [[ ! -f ./data/conf/rspamd/override.d/worker-controller-password.inc ]] && echo '# Placeholder' > ./data/conf/rspamd/override.d/worker-controller-password.inc
 
