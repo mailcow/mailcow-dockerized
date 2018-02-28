@@ -39,7 +39,7 @@ query = SELECT IF(EXISTS(
           SELECT CONCAT('%u', '@', target_domain) FROM alias_domain
             WHERE alias_domain='%d'
         )
-      ) AND mailbox.tls_enforce_in = '1' AND mailbox.active = '1'
+      ) AND json_extract(attributes, '$.tls_enforce_in') LIKE '%%1%%' AND mailbox.active = '1'
   ), 'reject_plaintext_session', NULL) AS 'tls_enforce_in';
 EOF
 
@@ -58,7 +58,7 @@ query = SELECT GROUP_CONCAT(transport SEPARATOR '') AS transport_maps
               WHERE alias_domain = '%d'
           )
         )
-        AND mailbox.tls_enforce_out = '1'
+        AND json_extract(attributes, '$.tls_enforce_out') LIKE '%%1%%'
         AND mailbox.active = '1'
     ), 'smtp_enforced_tls:', 'smtp:') AS 'transport'
     UNION ALL
@@ -142,6 +142,16 @@ dbname = ${DBNAME}
 query = SELECT bcc_dest FROM bcc_maps
   WHERE local_dest='%s'
     AND type='sender'
+    AND active='1';
+EOF
+
+cat <<EOF > /opt/postfix/conf/sql/mysql_recipient_canonical_maps.cf
+user = ${DBUSER}
+password = ${DBPASS}
+hosts = mysql
+dbname = ${DBNAME}
+query = SELECT new_dest FROM recipient_maps
+  WHERE old_dest='%s'
     AND active='1';
 EOF
 

@@ -28,7 +28,7 @@ table.footable>tbody>tr.footable-empty>td {
       width: 80%;
   }
 }
-.mass-actions-quarantaine {
+.mass-actions-quarantine {
   user-select: none;
   padding:10px 0 10px 10px;
 }

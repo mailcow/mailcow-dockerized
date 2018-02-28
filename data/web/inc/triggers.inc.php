@@ -43,11 +43,12 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
 
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admin") {
 	if (isset($_GET["duallogin"])) {
-    if (filter_var($_GET["duallogin"], FILTER_VALIDATE_EMAIL)) {
-      if (!empty(mailbox('get', 'mailbox_details', $_GET["duallogin"]))) {
+    $duallogin = html_entity_decode(rawurldecode($_GET["duallogin"]));
+    if (filter_var($duallogin, FILTER_VALIDATE_EMAIL)) {
+      if (!empty(mailbox('get', 'mailbox_details', $duallogin))) {
         $_SESSION["dual-login"]["username"] = $_SESSION['mailcow_cc_username'];
         $_SESSION["dual-login"]["role"]     = $_SESSION['mailcow_cc_role'];
-        $_SESSION['mailcow_cc_username']    = $_GET["duallogin"];
+        $_SESSION['mailcow_cc_username']    = $duallogin;
         $_SESSION['mailcow_cc_role']        = "user";
         header("Location: /user.php");
       }

@@ -21,7 +21,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
     </li>
     <li role="presentation"><a href="#tab-syncjobs" aria-controls="tab-syncjobs" role="tab" data-toggle="tab"><?=$lang['mailbox']['sync_jobs'];?></a></li>
     <li role="presentation"><a href="#tab-filters" aria-controls="tab-filters" role="tab" data-toggle="tab"><?=$lang['mailbox']['filters'];?></a></li>
-    <li role="presentation"><a href="#tab-bcc" aria-controls="tab-filters" role="tab" data-toggle="tab"><?=$lang['mailbox']['bcc_maps'];?></a></li>
+    <li role="presentation"><a href="#tab-bcc" aria-controls="tab-filters" role="tab" data-toggle="tab"><?=$lang['mailbox']['address_rewriting'];?></a></li>
   </ul>
 
 	<div class="row">
@@ -231,6 +231,34 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <li><a id="delete_selected" data-id="bcc" data-api-url='delete/bcc' href="#"><?=$lang['mailbox']['remove'];?></a></li>
                 </ul>
                 <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addBCCModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_bcc_entry'];?></a>
+              </div>
+            </div>
+          </div>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title"><?=$lang['mailbox']['recipient_maps'];?></h3>
+            </div>
+            <p style="margin:10px" class="help-block"><?=$lang['mailbox']['recipient_map_info'];?></p>
+            <div class="table-responsive">
+              <table class="table table-striped" id="recipient_map_table"></table>
+            </div>
+<?php
+if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "admin"))
+  $display = 'block';
+else
+  $display = 'none';
+?>
+            <div class="mass-actions-mailbox" style="display: <?php echo $display; ?>">
+              <div class="btn-group">
+                <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="recipient_map" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
+                <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a id="edit_selected" data-id="recipient_map" data-api-url='edit/recipient_map' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
+                  <li><a id="edit_selected" data-id="recipient_map" data-api-url='edit/recipient_map' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a id="delete_selected" data-id="recipient_map" data-api-url='delete/recipient_map' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+                </ul>
+                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addRecipientMapModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_recipient_map_entry'];?></a>
               </div>
             </div>
           </div>

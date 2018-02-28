@@ -61,7 +61,7 @@ $(document).ready(function() {
           type: "GET",
           cache: false,
           dataType: 'script',
-          url: "/api/v1/get/u2f-authentication/<?= (isset($_SESSION['pending_mailcow_cc_username'])) ? $_SESSION['pending_mailcow_cc_username'] : null; ?>",
+          url: "/api/v1/get/u2f-authentication/<?= (isset($_SESSION['pending_mailcow_cc_username'])) ? rawurlencode($_SESSION['pending_mailcow_cc_username']) : null; ?>",
           complete: function(data){
             $('#u2f_status_auth').html('<?=$lang['tfa']['waiting_usb_auth'];?>');
             data;
@@ -78,6 +78,17 @@ $(document).ready(function() {
           }
         });
       }
+  });
+  $('#ConfirmTFAModal').on('hidden.bs.modal', function(){
+      $.ajax({
+        type: "GET",
+        cache: false,
+        dataType: 'script',
+        url: '/inc/ajax/destroy_tfa_auth.php',
+        complete: function(data){
+          window.location = window.location.href.split("#")[0];
+        }
+      });
   });
   <?php endif; ?>
 
@@ -100,7 +111,7 @@ $(document).ready(function() {
         type: "GET",
         cache: false,
         dataType: 'script',
-        url: "/api/v1/get/u2f-registration/<?= (isset($_SESSION['mailcow_cc_username'])) ? $_SESSION['mailcow_cc_username'] : null; ?>",
+        url: "/api/v1/get/u2f-registration/<?= (isset($_SESSION['mailcow_cc_username'])) ? rawurlencode($_SESSION['mailcow_cc_username']) : null; ?>",
         complete: function(data){
           data;
           setTimeout(function() {
@@ -205,7 +216,7 @@ $(document).ready(function() {
           $('#triggerRestartContainer').html('<span class="glyphicon glyphicon-ok"></span> ');
           $('#statusTriggerRestartContainer2').append(data);
           $('#triggerRestartContainer').html('<span class="glyphicon glyphicon-ok"></span> ');
-          location.reload();
+          window.location = window.location.href.split("#")[0];
         }
       });
     });

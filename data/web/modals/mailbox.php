@@ -595,6 +595,45 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
     </div>
   </div>
 </div><!-- add add_bcc modal -->
+<!-- add add_recipient_map modal -->
+<div class="modal fade" id="addRecipientMapModalAdmin" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <h3 class="modal-title"><?=$lang['mailbox']['recipient_maps'];?></h3>
+      </div>
+      <div class="modal-body">
+				<form class="form-horizontal" data-cached-form="true" role="form" data-id="add_recipient_map">
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="recipient_map_old"><?=$lang['mailbox']['recipient_map_old'];?>:</label>
+						<div class="col-sm-10">
+							<textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control" rows="2" id="recipient_map_old" name="recipient_map_old" required></textarea>
+						</div>
+          </div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="recipient_map_new"><?=$lang['mailbox']['recipient_map_new'];?>:</label>
+						<div class="col-sm-10">
+							<textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control" rows="2" id="recipient_map_new" name="recipient_map_new" required></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<div class="checkbox">
+							<label><input type="checkbox" value="1" name="active" checked> <?=$lang['add']['active'];?></label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+              <button class="btn btn-success" id="add_item" data-id="add_recipient_map" data-api-url='add/recipient_map' data-api-attr='{}' href="#"><?=$lang['admin']['add'];?></button>
+						</div>
+					</div>
+				</form>
+      </div>
+    </div>
+  </div>
+</div><!-- add add_recipient_map modal -->
 <!-- log modal -->
 <div class="modal fade" id="syncjobLogModal" tabindex="-1" role="dialog" aria-labelledby="syncjobLogModalLabel">
   <div class="modal-dialog modal-lg" role="document">

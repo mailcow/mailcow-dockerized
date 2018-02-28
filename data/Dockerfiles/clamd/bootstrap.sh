@@ -7,6 +7,7 @@ if [[ "${SKIP_CLAMD}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 fi
 
 # Create log pipes
+mkdir /var/log/clamav
 touch /var/log/clamav/clamd.log /var/log/clamav/freshclam.log
 mkfifo -m 600 /tmp/logpipe_clamd
 mkfifo -m 600 /tmp/logpipe_freshclam
