@@ -391,7 +391,7 @@ $lang['admin']['link'] = "Lien";
 $lang['admin']['remove_row'] = "Retirer la ligne";
 $lang['admin']['add_row'] = "Ajouter une ligne";
 $lang['admin']['reset_default'] = "Remise à zéro par défaut";
-$lang['admin']['merged_vars_hint'] = "Les lignes grisées ont été importées depuis <code>vars.inc.(local.)php</code> et ne peuvent pas être modifiées.";
+$lang['admin']['merged_vars_hint'] = "Les lignes grisées ont été importées depuis <code>vars.(local.)inc.php</code> et ne peuvent pas être modifiées.";
 
 $lang['edit']['spam_score'] = "Définir un score personnalisé de pourriel";
 $lang['edit']['spam_policy'] = "Ajouter ou retirer des éléments des listes blanches/noires";
