@@ -1,7 +1,6 @@
 #!/bin/bash
 
 #exit on error and pipefail
-set -o errexit
 set -o pipefail
 
 for bin in curl docker-compose docker git awk sha1sum; do
