@@ -335,8 +335,6 @@ services:
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
         - SNAT_TO_SOURCE=${SNAT_TO_SOURCE:-n}
       network_mode: "host"
-      sysctls:
-        - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       volumes:
