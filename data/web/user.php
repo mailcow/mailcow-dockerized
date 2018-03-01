@@ -23,7 +23,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'doma
     </div>
     <hr>
     <div class="row">
-      <div class="col-md-3 col-xs-5 text-right"><?=$lang['tfa']['tfa'];?></div>
+      <div class="col-sm-3 col-xs-5 text-right"><?=$lang['tfa']['tfa'];?></div>
         <div class="col-sm-9 col-xs-7">
           <p id="tfa_pretty"><?=$tfa_data['pretty'];?></p>
             <div id="tfa_additional">
@@ -40,8 +40,8 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'doma
         </div>
     </div>
     <div class="row">
-      <div class="col-md-3 col-xs-5 text-right"><?=$lang['tfa']['set_tfa'];?></div>
-      <div class="col-md-9 col-xs-7">
+      <div class="col-sm-3 col-xs-5 text-right"><?=$lang['tfa']['set_tfa'];?></div>
+      <div class="col-sm-9 col-xs-7">
         <select id="selectTFA" class="selectpicker" title="<?=$lang['tfa']['select'];?>">
           <option value="yubi_otp"><?=$lang['tfa']['yubi_otp'];?></option>
           <option value="u2f"><?=$lang['tfa']['u2f'];?></option>
@@ -60,10 +60,26 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
   / USER
   */
 
-	require_once("inc/header.inc.php");
-	$_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
-	$username = $_SESSION['mailcow_cc_username'];
+  require_once("inc/header.inc.php");
+  $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
+  $username = $_SESSION['mailcow_cc_username'];
   $mailboxdata = mailbox('get', 'mailbox_details', $username);
+
+  $clientconfigstr = "host=" . urlencode($mailcow_hostname) . "&email=" . urlencode($username) . "&name=" . urlencode($mailboxdata['name']) . "&port=" . urlencode($autodiscover_config['caldav']['port']);
+  if ($autodiscover_config['useEASforOutlook'] == 'yes')
+  $clientconfigstr .= "&outlookEAS=1";
+  if (file_exists('thunderbird-plugins/version.csv')) {
+    $fh = fopen('thunderbird-plugins/version.csv', 'r');
+    if ($fh) {
+      while (($row = fgetcsv($fh, 1000, ';')) !== FALSE) {
+        if ($row[0] == 'sogo-integrator@inverse.ca') {
+          $clientconfigstr .= "&integrator=" . urlencode($row[1]);
+        }
+      }
+      fclose($fh);
+    }
+  }
+
 ?>
 <div class="container">
 <h3><?=$lang['user']['user_settings'];?></h3>
@@ -73,7 +89,18 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 <div class="panel-body">
   <div class="row">
     <div class="col-sm-offset-3 col-sm-9">
+      <?php if ($mailboxdata['attributes']['force_pw_update'] == "1"): ?>
+      <div class="alert alert-danger"><?=$lang['user']['force_pw_update'];?></div>
+      <?php endif; ?>
       <p><a href="#pwChangeModal" data-toggle="modal">[<?=$lang['user']['change_password'];?>]</a></p>
+      <p><a target="_blank" href="https://mailcow.github.io/mailcow-dockerized-docs/client/#<?=$clientconfigstr;?>">[<?=$lang['user']['client_configuration'];?>]</a></p>
+    </div>
+  </div>
+  <hr>
+  <div class="row">
+    <div class="col-md-3 col-xs-5 text-right">  <span class="glyphicon glyphicon-filter"></span></div>
+    <div class="col-md-9 col-xs-7">
+    <p><a href="#userFilterModal" data-toggle="modal">[<?=$lang['user']['show_sieve_filters'];?>]</a></p>
     </div>
   </div>
   <hr>
@@ -81,17 +108,22 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
   $user_get_alias_details = user_get_alias_details($username);
   ?>
   <div class="row">
-    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['aliases'];?>:</div>
+    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['direct_aliases'];?>:
+      <p class="small"><?=$lang['user']['direct_aliases_desc'];?></p>
+    </div>
     <div class="col-md-9 col-xs-7">
-    <p><?=$user_get_alias_details['aliases'];?></p>
+    <p><?=$user_get_alias_details['direct_aliases'];?></p>
     </div>
   </div>
   <div class="row">
-    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['domain_aliases'];?>:</div>
+    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['shared_aliases'];?>:
+      <p class="small"><?=$lang['user']['shared_aliases_desc'];?></p>
+    </div>
     <div class="col-md-9 col-xs-7">
-    <p><?=$user_get_alias_details['ad_alias'];?></p>
+    <p><?=$user_get_alias_details['shared_aliases'];?></p>
     </div>
   </div>
+  <hr>
   <div class="row">
     <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['aliases_also_send_as'];?>:</div>
     <div class="col-md-9 col-xs-7">
@@ -135,17 +167,24 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 
       <button type="button" class="btn btn-sm btn-default <?=($get_tagging_options == "subfolder") ? 'active' : null; ?>"
         id="edit_selected"
-        data-item="<?= $username; ?>"
+        data-item="<?= htmlentities($username); ?>"
         data-id="delimiter_action"
         data-api-url='edit/delimiter_action'
         data-api-attr='{"tagged_mail_handler":"subfolder"}'><?=$lang['user']['tag_in_subfolder'];?></button>
 
       <button type="button" class="btn btn-sm btn-default <?=($get_tagging_options == "subject") ? 'active' : null; ?>"
         id="edit_selected"
-        data-item="<?= $username; ?>"
+        data-item="<?= htmlentities($username); ?>"
         data-id="delimiter_action"
         data-api-url='edit/delimiter_action'
         data-api-attr='{"tagged_mail_handler":"subject"}'><?=$lang['user']['tag_in_subject'];?></button>
+
+      <button type="button" class="btn btn-sm btn-default <?=($get_tagging_options == "none") ? 'active' : null; ?>"
+        id="edit_selected"
+        data-item="<?= htmlentities($username); ?>"
+        data-id="delimiter_action"
+        data-api-url='edit/delimiter_action'
+        data-api-attr='{"tagged_mail_handler":"none"}'><?=$lang['user']['tag_in_none'];?></button>
 
     </div>
     <p class="help-block"><?=$lang['user']['tag_help_explain'];?></p>
@@ -165,14 +204,14 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 
       <button type="button" class="btn btn-sm btn-default <?=($get_tls_policy['tls_enforce_in'] == "1") ? "active" : null;?>"
         id="edit_selected"
-        data-item="<?= $username; ?>"
+        data-item="<?= htmlentities($username); ?>"
         data-id="tls_policy"
         data-api-url='edit/tls_policy'
         data-api-attr='{"tls_enforce_in":<?=($get_tls_policy['tls_enforce_in'] == "1") ? "0" : "1";?>}'><?=$lang['user']['tls_enforce_in'];?></button>
 
       <button type="button" class="btn btn-sm btn-default <?=($get_tls_policy['tls_enforce_out'] == "1") ? "active" : null;?>"
         id="edit_selected"
-        data-item="<?= $username; ?>"
+        data-item="<?= htmlentities($username); ?>"
         data-id="tls_policy"
         data-api-url='edit/tls_policy'
         data-api-attr='{"tls_enforce_out":<?=($get_tls_policy['tls_enforce_out'] == "1") ? "0" : "1";?>}'><?=$lang['user']['tls_enforce_out'];?></button>
@@ -189,7 +228,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
   <div class="row">
     <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['eas_reset'];?>:</div>
     <div class="col-md-9 col-xs-7">
-    <button class="btn btn-xs btn-default" id="delete_selected" data-text="<?=$lang['user']['eas_reset'];?>?" data-item="<?= $username; ?>" data-id="eas_cache" data-api-url='delete/eas_cache' href="#"><?=$lang['user']['eas_reset_now'];?></button>
+    <button class="btn btn-xs btn-default" id="delete_selected" data-text="<?=$lang['user']['eas_reset'];?>?" data-item="<?= htmlentities($username); ?>" data-id="eas_cache" data-api-url='delete/eas_cache' href="#"><?=$lang['user']['eas_reset_now'];?></button>
     <p class="help-block"><?=$lang['user']['eas_reset_help'];?></p>
     </div>
   </div>
@@ -251,8 +290,8 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 		<h4><?=$lang['user']['spamfilter_behavior'];?></h4>
 		<form class="form-horizontal" role="form" data-id="spam_score" method="post">
 			<div class="form-group">
-				<div class="col-sm-12">
-					<input name="spam_score" id="spam_score" type="text" style="width: 100% !important;"
+				<div class="col-lg-6 col-sm-12">
+					<input name="spam_score" id="spam_score" type="text" style="width: 100%;"
 						data-provide="slider"
 						data-slider-min="1"
 						data-slider-max="2000"
@@ -279,7 +318,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
       <div class="form-group">
 				<div class="col-sm-10">
         <button type="button" class="btn btn-sm btn-success" id="edit_selected"
-          data-item="<?= $username; ?>"
+          data-item="<?= htmlentities($username); ?>"
           data-id="spam_score"
           data-api-url='edit/spam-score'
           data-api-attr='{}'><?=$lang['user']['save_changes'];?></button>
@@ -304,14 +343,13 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
           <div class="btn-group">
             <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="policy_wl_mailbox" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
             <a class="btn btn-sm btn-danger" id="delete_selected" data-id="policy_wl_mailbox" data-api-url='delete/mailbox-policy' href="#"><?=$lang['mailbox']['remove'];?></a></li>
-            </ul>
           </div>
         </div>
         <form class="form-inline" data-id="add_wl_policy_mailbox">
           <div class="input-group">
             <input type="text" class="form-control" name="object_from" id="object_from" placeholder="*@example.org" required>
             <span class="input-group-btn">
-              <button class="btn btn-success" id="add_item" data-id="add_wl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username":"<?= $username; ?>","object_list":"wl"}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['spamfilter_table_add'];?></button>
+              <button class="btn btn-default" id="add_item" data-id="add_wl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username":<?= json_encode($username); ?>,"object_list":"wl"}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['spamfilter_table_add'];?></button>
             </span>
           </div>
         </form>
@@ -332,16 +370,15 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
           <div class="btn-group">
             <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="policy_bl_mailbox" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
             <a class="btn btn-sm btn-danger" id="delete_selected" data-id="policy_bl_mailbox" data-api-url='delete/mailbox-policy' href="#"><?=$lang['mailbox']['remove'];?></a></li>
-            </ul>
           </div>
         </div>
         <form class="form-inline" data-id="add_bl_policy_mailbox">
           <div class="input-group">
             <input type="text" class="form-control" name="object_from" id="object_from" placeholder="*@example.org" required>
-            <input type="hidden" name="username" value="<?= $username ;?>">
+            <input type="hidden" name="username" value="<?= htmlentities($username) ;?>">
             <input type="hidden" name="object_list" value="bl">
             <span class="input-group-btn">
-              <button class="btn btn-success" id="add_item" data-id="add_bl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username":"<?= $username; ?>","object_list":"bl"}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['spamfilter_table_add'];?></button>
+              <button class="btn btn-default" id="add_item" data-id="add_bl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username":<?= json_encode($username); ?>,"object_list":"bl"}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['spamfilter_table_add'];?></button>
             </span>
           </div>
         </form>

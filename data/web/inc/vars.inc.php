@@ -30,10 +30,12 @@ if ($https_port === FALSE) {
 //$https_port = 1234;
 // Other settings =>
 $autodiscover_config = array(
-  // Enable the autodiscover service for Outlook desktop clients
-  'useEASforOutlook' => 'yes',
   // General autodiscover service type: "activesync" or "imap"
+  // emClient uses autodiscover, but does not support ActiveSync. mailcow excludes emClient from ActiveSync.
   'autodiscoverType' => 'activesync',
+  // If autodiscoverType => activesync, also use ActiveSync (EAS) for Outlook desktop clients (>= Outlook 2013 on Windows)
+  // Outlook for Mac does not support ActiveSync
+  'useEASforOutlook' => 'yes',
   // Please don't use STARTTLS-enabled service ports in the "port" variable.
   // The autodiscover service will always point to SMTPS and IMAPS (TLS-wrapped services).
   // The autoconfig service will additionally announce the STARTTLS-enabled ports, specified in the "tlsport" variable.
@@ -66,11 +68,15 @@ $autodiscover_config = array(
 );
 unset($https_port);
 
+// If false, we will use DEFAULT_LANG
+// Uses HTTP_ACCEPT_LANGUAGE header
+$DETECT_LANGUAGE = true;
+
 // Change default language, "de", "en", "es", "nl", "pt", "ru"
-$DEFAULT_LANG = 'en';
+$DEFAULT_LANG = 'de';
 
 // Available languages
-$AVAILABLE_LANGUAGES = array('de', 'en', 'es', 'nl', 'pl', 'pt', 'ru', 'it');
+$AVAILABLE_LANGUAGES = array('de', 'en', 'es', 'fr', 'nl', 'pl', 'pt', 'ru', 'it', 'ca');
 
 // Change theme (default: lumen)
 // Needs to be one of those: cerulean, cosmo, cyborg, darkly, flatly, journal, lumen, paper, readable, sandstone,
@@ -82,22 +88,22 @@ $DEFAULT_THEME = 'lumen';
 // Password complexity as regular expression
 $PASSWD_REGEP = '.{4,}';
 
+// Show DKIM private keys - false by default
+$SHOW_DKIM_PRIV_KEYS = false;
+
 // mailcow Apps - buttons on login screen
 $MAILCOW_APPS = array(
   array(
     'name' => 'SOGo',
     'link' => '/SOGo/',
-    'description' => 'SOGo is a web-based client for email, address book and calendar.'
-  ),
-  // array(
-    // 'name' => 'Roundcube',
-    // 'link' => '/rc/',
-    // 'description' => 'Roundcube is a web-based email client.',
-  // ),
+  )
 );
 
 // Rows until pagination begins
-$PAGINATION_SIZE = 10;
+$PAGINATION_SIZE = 20;
+
+// Default number of rows/lines to display (log table)
+$LOG_LINES = 100;
 
 // Rows until pagination begins (log table)
 $LOG_PAGINATION_SIZE = 30;

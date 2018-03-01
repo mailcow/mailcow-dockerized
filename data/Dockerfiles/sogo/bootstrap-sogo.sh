@@ -1,13 +1,16 @@
 #!/bin/bash
 
 # Wait for MySQL to warm-up
-while mysqladmin ping --host mysql -u${DBUSER} -p${DBPASS}${DBPASS} --silent; do
+while ! mysqladmin ping --host mysql -u${DBUSER} -p${DBPASS} --silent; do
+  echo "Waiting for database to come up..."
+  sleep 2
+done
 
 # Wait until port becomes free and send sig
 until ! nc -z sogo-mailcow 20000;
 do
-	killall -TERM sogod
-	sleep 3
+        killall -TERM sogod
+        sleep 3
 done
 
 # Recreate view
@@ -16,12 +19,12 @@ mysql --host mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "DROP VIEW IF EXISTS so
 
 mysql --host mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
 CREATE VIEW sogo_view (c_uid, domain, c_name, c_password, c_cn, mail, aliases, ad_aliases, home, kind, multiple_bookings) AS
-SELECT mailbox.username, mailbox.domain, mailbox.username, mailbox.password, mailbox.name, mailbox.username, IFNULL(ga.aliases, ''), IFNULL(gda.ad_alias, ''), CONCAT('/var/vmail/', maildir), mailbox.kind, mailbox.multiple_bookings FROM mailbox
-LEFT OUTER JOIN grouped_mail_aliases ga ON ga.username = mailbox.username
+SELECT mailbox.username, mailbox.domain, mailbox.username, if(json_extract(attributes, '$.force_pw_update') LIKE '%0%', password, 'invalid'), mailbox.name, mailbox.username, IFNULL(GROUP_CONCAT(ga.aliases SEPARATOR ' '), ''), IFNULL(gda.ad_alias, ''), CONCAT('/var/vmail/', maildir), mailbox.kind, mailbox.multiple_bookings FROM mailbox
+LEFT OUTER JOIN grouped_mail_aliases ga ON ga.username REGEXP CONCAT('(^|,)', mailbox.username, '($|,)')
 LEFT OUTER JOIN grouped_domain_alias_address gda ON gda.username = mailbox.username
-WHERE mailbox.active = '1';
+WHERE mailbox.active = '1'
+GROUP BY mailbox.username;
 EOF
-
 
 mkdir -p /var/lib/sogo/GNUstep/Defaults/
 
@@ -53,8 +56,8 @@ EOF
 
 # Generate multi-domain setup
 while read line
-	do
-	echo "        <key>${line}</key>
+        do
+        echo "        <key>${line}</key>
         <dict>
             <key>SOGoMailDomain</key>
             <string>${line}</string>
@@ -101,5 +104,3 @@ chown sogo:sogo -R /var/lib/sogo/
 chmod 600 /var/lib/sogo/GNUstep/Defaults/sogod.plist
 
 exec gosu sogo /usr/sbin/sogod
-
-done

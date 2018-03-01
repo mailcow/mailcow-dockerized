@@ -13,7 +13,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
         <h3 class="modal-title"><?=$lang['mailbox']['add_mailbox'];?></h3>
       </div>
       <div class="modal-body">
-        <form class="form-horizontal" data-id="add_mailbox" role="form">
+        <form class="form-horizontal" data-cached-form="true" data-id="add_mailbox" role="form">
           <div class="form-group">
             <label class="control-label col-sm-2" for="local_part"><?=$lang['add']['mailbox_username'];?></label>
             <div class="col-sm-10">
@@ -44,6 +44,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             </label>
             <div class="col-sm-10">
             <input type="text" class="form-control" name="quota" min="1" max="" id="addInputQuota" disabled value="<?=$lang['add']['select_domain'];?>" required>
+            <small class="help-block">min. 1</small>
             </div>
           </div>
           <div class="form-group">
@@ -85,7 +86,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
         <h3 class="modal-title"><?=$lang['mailbox']['add_domain'];?></h3>
       </div>
       <div class="modal-body">
-				<form class="form-horizontal" data-id="add_domain" role="form">
+				<form class="form-horizontal" data-cached-form="true" data-id="add_domain" role="form">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="domain"><?=$lang['add']['domain'];?>:</label>
 						<div class="col-sm-10">
@@ -95,7 +96,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="description"><?=$lang['add']['description'];?></label>
 						<div class="col-sm-10">
-						<input type="text" class="form-control" name="description" id="description">
+						<input type="text" class="form-control" name="description" id="description" required>
 						</div>
 					</div>
 					<div class="form-group">
@@ -142,7 +143,8 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
-              <button class="btn btn-default" id="add_item" data-id="add_domain" data-api-url='add/domain' data-api-attr='{}' href="#"><?=$lang['admin']['add'];?></button>
+              <button class="btn btn-default" id="add_item" data-id="add_domain" data-api-url='add/domain' data-api-attr='{}' href="#"><?=$lang['add']['add_domain_only'];?></button>
+              <button class="btn btn-default" id="add_item" data-id="add_domain" data-api-url='add/domain' data-api-attr='{"restart_sogo":"1"}' href="#"><?=$lang['add']['add_domain_restart'];?></button>
 						</div>
 					</div>
 					<p><span class="glyphicon glyphicon-exclamation-sign text-danger"></span> <?=$lang['add']['restart_sogo_hint'];?></p>
@@ -160,7 +162,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
         <h3 class="modal-title"><?=$lang['mailbox']['add_resource'];?></h3>
       </div>
       <div class="modal-body">
-				<form class="form-horizontal" role="form" data-id="add_resource">
+				<form class="form-horizontal" data-cached-form="true" role="form" data-id="add_resource">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="description"><?=$lang['add']['description'];?></label>
 						<div class="col-sm-10">
@@ -222,7 +224,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
         <h3 class="modal-title"><?=$lang['mailbox']['add_alias'];?></h3>
       </div>
       <div class="modal-body">
-				<form class="form-horizontal" role="form" data-id="add_alias">
+				<form class="form-horizontal" data-cached-form="true" role="form" data-id="add_alias">
 					<input type="hidden" value="0" name="active">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="address"><?=$lang['add']['alias_address'];?></label>
@@ -234,7 +236,10 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="goto"><?=$lang['add']['target_address'];?></label>
 						<div class="col-sm-10">
-							<textarea autocorrect="off" autocapitalize="none" class="form-control" rows="5" id="goto" name="goto" required></textarea>
+							<textarea id="textarea_alias_goto" autocorrect="off" autocapitalize="none" class="form-control" rows="5" id="goto" name="goto" required></textarea>
+							<div class="checkbox">
+                <label><input id="goto_null" type="checkbox" value="1" name="goto_null"> <?=$lang['add']['goto_null'];?></label>
+							</div>
 							<p><?=$lang['add']['target_address_info'];?></p>
 						</div>
 					</div>
@@ -264,7 +269,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
         <h3 class="modal-title"><?=$lang['mailbox']['add_domain_alias'];?></h3>
       </div>
       <div class="modal-body">
-				<form class="form-horizontal" role="form" data-id="add_alias_domain">
+				<form class="form-horizontal" data-cached-form="true" role="form" data-id="add_alias_domain">
 					<input type="hidden" value="0" name="active">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="alias_domain"><?=$lang['add']['alias_domain'];?></label>
@@ -311,8 +316,8 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
         <h3 class="modal-title"><?=$lang['add']['syncjob'];?></h3>
       </div>
       <div class="modal-body">
-        <p><?=$lang['add']['syncjob_hint'];?></p>
-				<form class="form-horizontal" role="form" data-id="add_syncjob">
+        <p class="help-block"><?=$lang['add']['syncjob_hint'];?></p>
+				<form class="form-horizontal" data-cached-form="true" role="form" data-id="add_syncjob">
           <div class="form-group">
             <label class="control-label col-sm-2" for="username"><?=$lang['add']['username'];?>:</label>
             <div class="col-sm-10">
@@ -341,6 +346,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 						<label class="control-label col-sm-2" for="port1"><?=$lang['add']['port'];?></label>
 						<div class="col-sm-10">
 						<input type="number" class="form-control" name="port1" id="port1" min="1" max="65535" value="143" required>
+            <small class="help-block">1-65535</small>
 						</div>
 					</div>
 					<div class="form-group">
@@ -368,7 +374,8 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="mins_interval"><?=$lang['add']['mins_interval'];?></label>
 						<div class="col-sm-10">
-              <input type="number" class="form-control" name="mins_interval" min="10" max="3600" value="20" required>
+              <input type="number" class="form-control" name="mins_interval" min="1" max="3600" value="20" required>
+              <small class="help-block">10-3600</small>
 						</div>
 					</div>
 					<div class="form-group">
@@ -381,6 +388,14 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 						<label class="control-label col-sm-2" for="maxage"><?=$lang['edit']['maxage'];?></label>
 						<div class="col-sm-10">
 						<input type="number" class="form-control" name="maxage" id="maxage" min="0" max="32000" value="0">
+            <small class="help-block">0-32000</small>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="maxbytespersecond"><?=$lang['edit']['maxbytespersecond'];?></label>
+						<div class="col-sm-10">
+						<input type="number" class="form-control" name="maxbytespersecond" id="maxbytespersecond" min="0" max="125000000" value="0">
+            <small class="help-block">0-125000000</small>
 						</div>
 					</div>
 					<div class="form-group">
@@ -403,6 +418,27 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 							</div>
 						</div>
 					</div>
+          <div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<div class="checkbox">
+							<label><input type="checkbox" value="1" name="delete2"> <?=$lang['add']['delete2'];?></label>
+							</div>
+						</div>
+					</div>
+          <div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<div class="checkbox">
+							<label><input type="checkbox" value="1" name="automap"> <?=$lang['add']['automap'];?></label>
+							</div>
+						</div>
+					</div>
+          <div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<div class="checkbox">
+							<label><input type="checkbox" value="1" name="skipcrossduplicates"> <?=$lang['add']['skipcrossduplicates'];?></label>
+							</div>
+						</div>
+					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">
@@ -420,13 +456,204 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
     </div>
   </div>
 </div><!-- add sync job modal -->
-<!-- log modal -->
-<div class="modal fade" id="logModal" tabindex="-1" role="dialog" aria-labelledby="logTextLabel">
-  <div class="modal-dialog" style="width:90%" role="document">
+<!-- add add_filter modal -->
+<div class="modal fade" id="addFilterModalAdmin" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <h3 class="modal-title">Filter</h3>
+      </div>
       <div class="modal-body">
-        <span id="logText"></span>
+				<form class="form-horizontal" data-cached-form="true" role="form" data-id="add_filter">
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="username"><?=$lang['add']['username'];?>:</label>
+            <div class="col-sm-10">
+              <select id="addSelectUsername" name="username" id="username" required>
+              <?php
+              $domains = mailbox('get', 'domains');
+              if (!empty($domains)) {
+                foreach ($domains as $domain) {
+                  $mailboxes = mailbox('get', 'mailboxes', $domain);
+                  foreach ($mailboxes as $mailbox) {
+                    echo "<option>".htmlspecialchars($mailbox)."</option>";
+                  }
+                }
+              }
+              ?>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="filter_type"><?=$lang['add']['sieve_type'];?>:</label>
+            <div class="col-sm-10">
+              <select id="addFilterType" name="filter_type" id="filter_type" required>
+                <option value="prefilter">Prefilter</option>
+                <option value="postfilter">Postfilter</option>
+              </select>
+            </div>
+          </div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="script_desc"><?=$lang['add']['sieve_desc'];?>:</label>
+						<div class="col-sm-10">
+						<input type="text" class="form-control" name="script_desc" id="script_desc" required maxlength="255">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="script_data">Script:</label>
+						<div class="col-sm-10">
+							<textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control" rows="20" id="script_data" name="script_data" required></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+              <p class="help-block"><?=$lang['add']['activate_filter_warn'];?></p>
+							<div class="checkbox">
+							<label><input type="checkbox" value="1" name="active" checked> <?=$lang['add']['active'];?></label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10" id="add_filter_btns">
+              <button class="btn btn-default" id="validate_sieve" href="#"><?=$lang['add']['validate'];?></button>
+              <button class="btn btn-success" id="add_item" data-id="add_filter" data-api-url='add/filter' data-api-attr='{}' href="#" disabled><?=$lang['admin']['add'];?></button>
+						</div>
+					</div>
+				</form>
+      </div>
+    </div>
+  </div>
+</div><!-- add add_filter modal -->
+<!-- add add_bcc modal -->
+<div class="modal fade" id="addBCCModalAdmin" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <h3 class="modal-title"><?=$lang['mailbox']['bcc_maps'];?></h3>
+      </div>
+      <div class="modal-body">
+				<form class="form-horizontal" data-cached-form="true" role="form" data-id="add_bcc">
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="local_dest"><?=$lang['mailbox']['bcc_local_dest'];?>:</label>
+            <div class="col-sm-10">
+              <select id="addSelectLocalDest" name="local_dest" id="local_dest" required>
+              <?php
+              $domains = mailbox('get', 'domains');
+              $alias_domains = mailbox('get', 'alias_domains');
+              if (!empty($domains)) {
+                foreach ($domains as $domain) {
+                  echo "<option>".htmlspecialchars($domain)."</option>";
+                }
+              }
+              if (!empty($alias_domains)) {
+                foreach ($alias_domains as $alias_domain) {
+                  echo "<option>".htmlspecialchars($alias_domain)."</option>";
+                }
+              }
+              if (!empty($domains)) {
+                foreach ($domains as $domain) {
+                  $mailboxes = mailbox('get', 'mailboxes', $domain);
+                  foreach ($mailboxes as $mailbox) {
+                    echo "<option>".htmlspecialchars($mailbox)."</option>";
+                  }
+                }
+              }
+              ?>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="type"><?=$lang['mailbox']['bcc_map_type'];?>:</label>
+            <div class="col-sm-10">
+              <select id="addFBCCType" name="type" id="type" required>
+                <option value="sender"><?=$lang['mailbox']['bcc_sender_map'];?></option>
+                <option value="rcpt"><?=$lang['mailbox']['bcc_rcpt_map'];?></option>
+              </select>
+            </div>
+          </div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="bcc_dest"><?=$lang['mailbox']['bcc_destinations'];?>:</label>
+						<div class="col-sm-10">
+							<textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control" rows="20" id="bcc_dest" name="bcc_dest" required></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<div class="checkbox">
+							<label><input type="checkbox" value="1" name="active" checked> <?=$lang['add']['active'];?></label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+              <button class="btn btn-success" id="add_item" data-id="add_bcc" data-api-url='add/bcc' data-api-attr='{}' href="#"><?=$lang['admin']['add'];?></button>
+						</div>
+					</div>
+				</form>
+      </div>
+    </div>
+  </div>
+</div><!-- add add_bcc modal -->
+<!-- add add_recipient_map modal -->
+<div class="modal fade" id="addRecipientMapModalAdmin" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <h3 class="modal-title"><?=$lang['mailbox']['recipient_maps'];?></h3>
+      </div>
+      <div class="modal-body">
+				<form class="form-horizontal" data-cached-form="true" role="form" data-id="add_recipient_map">
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="recipient_map_old"><?=$lang['mailbox']['recipient_map_old'];?>:</label>
+						<div class="col-sm-10">
+							<textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control" rows="2" id="recipient_map_old" name="recipient_map_old" required></textarea>
+						</div>
+          </div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="recipient_map_new"><?=$lang['mailbox']['recipient_map_new'];?>:</label>
+						<div class="col-sm-10">
+							<textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control" rows="2" id="recipient_map_new" name="recipient_map_new" required></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<div class="checkbox">
+							<label><input type="checkbox" value="1" name="active" checked> <?=$lang['add']['active'];?></label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+              <button class="btn btn-success" id="add_item" data-id="add_recipient_map" data-api-url='add/recipient_map' data-api-attr='{}' href="#"><?=$lang['admin']['add'];?></button>
+						</div>
+					</div>
+				</form>
+      </div>
+    </div>
+  </div>
+</div><!-- add add_recipient_map modal -->
+<!-- log modal -->
+<div class="modal fade" id="syncjobLogModal" tabindex="-1" role="dialog" aria-labelledby="syncjobLogModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header"><h4 class="modal-title">Log</h4></div>
+      <div class="modal-body">
+        <textarea class="form-control" rows="20" id="logText" spellcheck="false"></textarea>
       </div>
     </div>
   </div>
 </div><!-- log modal -->
+<!-- DNS info modal -->
+<div class="modal fade" id="dnsInfoModal" tabindex="-1" role="dialog" aria-labelledby="dnsInfoModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header"><h4 class="modal-title"><?=$lang['diagnostics']['dns_records'];?></h4></div>
+      <div class="modal-body">
+        <p><?=$lang['diagnostics']['dns_records_24hours'];?></p>
+        <div class="dns-modal-body"></div>
+      </div>
+    </div>
+  </div>
+</div><!-- DNS info modal -->

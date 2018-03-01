@@ -26,7 +26,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	syslog-ng-core \
 	syslog-ng-mod-redis \
 	&& rm -rf /var/lib/apt/lists/* \
-	&& touch /etc/default/locale
+	&& touch /etc/default/locale \
+  && printf '#!/bin/bash\n/usr/sbin/postconf -c /opt/postfix/conf "$@"' > /usr/local/sbin/postconf \
+  && chmod +x /usr/local/sbin/postconf
 
 RUN addgroup --system --gid 600 zeyple
 RUN adduser --system --home /var/lib/zeyple --no-create-home --uid 600 --gid 600 --disabled-login zeyple

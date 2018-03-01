@@ -32,7 +32,7 @@ function policy($_action, $_scope, $_data = null) {
             $object_list = "whitelist_from";
           }
           $object_from = preg_replace('/\.+/', '.', rtrim(preg_replace("/\.\*/", "*", trim(strtolower($_data['object_from']))), '.'));
-          if (!ctype_alnum(str_replace(array('@', '.', '-', '*'), '', $object_from))) {
+          if (!ctype_alnum(str_replace(array('@', '_', '.', '-', '*'), '', $object_from))) {
             $_SESSION['return'] = array(
               'type' => 'danger',
               'msg' => sprintf($lang['danger']['policy_list_from_invalid'])
@@ -94,7 +94,7 @@ function policy($_action, $_scope, $_data = null) {
           if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $object)) {
             $_SESSION['return'] = array(
               'type' => 'danger',
-              'msg' => sprintf($lang['danger']['access_denied'])
+              'msg' => $object
             );
             return false;
           }
@@ -112,7 +112,7 @@ function policy($_action, $_scope, $_data = null) {
             $object_list = "whitelist_from";
           }
           $object_from = preg_replace('/\.+/', '.', rtrim(preg_replace("/\.\*/", "*", trim(strtolower($_data['object_from']))), '.'));
-          if (!ctype_alnum(str_replace(array('@', '.', '-', '*'), '', $object_from))) {
+          if (!ctype_alnum(str_replace(array('@', '_', '.', '-', '*'), '', $object_from))) {
             $_SESSION['return'] = array(
               'type' => 'danger',
               'msg' => sprintf($lang['danger']['policy_list_from_invalid'])

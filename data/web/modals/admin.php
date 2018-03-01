@@ -13,7 +13,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
         <h3 class="modal-title"><?=$lang['admin']['add_domain_admin'];?></h3>
       </div>
       <div class="modal-body">
-          <form class="form-horizontal" data-id="domain_admin" role="form" method="post">
+          <form class="form-horizontal" data-cached-form="true" data-id="domain_admin" role="form" method="post">
             <div class="form-group">
               <label class="control-label col-sm-2" for="username"><?=$lang['admin']['username'];?>:</label>
               <div class="col-sm-10">
@@ -71,7 +71,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
         <h3 class="modal-title"><span class="glyphicon glyphicon-stats"></span> Relayhost</h3>
       </div>
       <div class="modal-body">
-          <form class="form-horizontal" id="test_relayhost_form" role="form" method="post">
+          <form class="form-horizontal" data-cached-form="true" id="test_relayhost_form" role="form" method="post">
             <input type="hidden" class="form-control" name="relayhost_id" id="relayhost_id">
             <div class="form-group">
               <label class="control-label col-sm-2" for="mail_from"><?=$lang['admin']['relay_from'];?></label>
@@ -91,3 +91,17 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
     </div>
   </div>
 </div><!-- test relayhost modal -->
+<!-- priv key modal -->
+<div class="modal fade" id="showDKIMprivKey" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <h3 class="modal-title"><span class="glyphicon glyphicon-lock"></span> Private key</h3>
+      </div>
+      <div class="modal-body">
+      <pre id="priv_key_pre"></pre>
+      </div>
+    </div>
+  </div>
+</div><!-- priv key modal -->

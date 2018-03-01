@@ -1,11 +1,18 @@
 language: php
 
+dist: trusty
+matrix:
+  include:
+    - php: 5.3
+      dist: precise
+
 php:
-  - 5.3
   - 5.4
   - 5.5
   - 5.6
-  - 7
+  - 7.0
+  - 7.1
   - hhvm
 
-script: phpunit --coverage-text tests
+script:
+  - if [[ "$TRAVIS_PHP_VERSION" == '5.6' ]]; then phpunit --coverage-text tests ; fi

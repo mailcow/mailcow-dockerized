@@ -7,4 +7,6 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'RobThree\\Auth\\' => array($vendorDir . '/robthree/twofactorauth/lib'),
+    'PhpMimeMailParser\\' => array($vendorDir . '/php-mime-mail-parser/php-mime-mail-parser/src'),
+    'Html2Text\\' => array($vendorDir . '/soundasleep/html2text/src'),
 );

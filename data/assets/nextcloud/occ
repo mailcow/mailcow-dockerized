@@ -1,0 +1,2 @@
+#!/bin/bash
+docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) /web/nextcloud/occ ${@}

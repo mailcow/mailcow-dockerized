@@ -27,7 +27,7 @@ function relayhost($_action, $_data = null) {
         $stmt->execute(array(
           ':hostname' => $hostname,
           ':username' => $username,
-          ':password' => $password,
+          ':password' => str_replace(':', '\:', $password),
           ':active' => '1'
         ));
       }
@@ -56,8 +56,8 @@ function relayhost($_action, $_data = null) {
         $is_now = relayhost('details', $id);
         if (!empty($is_now)) {
           $hostname = (!empty($_data['hostname'])) ? trim($_data['hostname']) : $is_now['hostname'];
-          $username = (!empty($_data['username'])) ? trim($_data['username']) : $is_now['username'];
-          $password = (!empty($_data['password'])) ? trim($_data['password']) : $is_now['password'];
+          $username = (isset($_data['username'])) ? trim($_data['username']) : $is_now['username'];
+          $password = (isset($_data['password'])) ? trim($_data['password']) : $is_now['password'];
           $active   = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
         }
         else {

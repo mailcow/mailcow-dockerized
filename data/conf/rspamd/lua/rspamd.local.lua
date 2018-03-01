@@ -17,7 +17,7 @@ rspamd_config:register_symbol({
     local tagged_rcpt = task:get_symbol("TAGGED_RCPT")
     local mailcow_domain = task:get_symbol("RCPT_MAILCOW_DOMAIN")
 
-    if tagged_rcpt and mailcow_domain then
+    if tagged_rcpt and tagged_rcpt[1].options and mailcow_domain then
       local tag = tagged_rcpt[1].options[1]
       rspamd_logger.infox("found tag: %s", tag)
       local action = task:get_metric_action('default')
@@ -30,6 +30,7 @@ rspamd_config:register_symbol({
       end
 
       local wants_subject_tag = task:get_symbol("RCPT_WANTS_SUBJECT_TAG")
+      local wants_subfolder_tag = task:get_symbol("RCPT_WANTS_SUBFOLDER_TAG")
 
       if wants_subject_tag then
         rspamd_logger.infox("user wants subject modified for tagged mail")
@@ -39,7 +40,7 @@ rspamd_config:register_symbol({
           remove_headers = {['Subject'] = 1},
           add_headers = {['Subject'] = new_sbj}
         })
-      else
+      elseif wants_subfolder_tag then
         rspamd_logger.infox("Add X-Moo-Tag header")
         task:set_milter_reply({
           add_headers = {['X-Moo-Tag'] = 'YES'}
@@ -58,6 +59,9 @@ rspamd_config:register_symbol({
     local redis_params = rspamd_parse_redis_server('dyn_rl')
     local rspamd_logger = require "rspamd_logger"
     local envfrom = task:get_from(1)
+    if not envfrom then
+      return false
+    end
     local env_from_domain = envfrom[1].domain:lower() -- get smtp from domain in lower case
     local env_from_addr = envfrom[1].addr:lower() -- get smtp from addr in lower case
 
@@ -107,4 +111,16 @@ rspamd_config:register_symbol({
     return true
   end,
   priority = 20
+})
+
+rspamd_config:register_symbol({
+  name = 'NO_LOG_STAT',
+  type = 'postfilter',
+  callback = function(task)
+    local from = task:get_header('From')
+    if from and (from == 'monitoring-system@everycloudtech.us' or from == 'watchdog@localhost') then
+      task:set_flag('no_log')
+      task:set_flag('no_stat')
+    end
+  end
 })

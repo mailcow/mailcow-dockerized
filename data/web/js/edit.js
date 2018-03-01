@@ -1,3 +1,18 @@
+$(document).ready(function() {
+  if ($("#goto_null").is(":checked")) {
+    $('#textarea_alias_goto').prop('disabled', true);
+  }
+  $("#goto_null").click(function( event ) {
+    if ($("#goto_null").is(":checked")) {
+      $('#textarea_alias_goto').prop('disabled', true);
+    }
+    else {
+      $("#textarea_alias_goto").removeAttr('disabled');
+    }
+  });
+  $("#script_data").numberedtextarea({allowTabChar: true});
+});
+
 jQuery(function($){
   // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
   function validateEmail(email) {

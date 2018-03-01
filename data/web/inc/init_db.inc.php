@@ -3,9 +3,9 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "15092017_0754";
+    $db_version = "19022018_0839";
 
-    $stmt = $pdo->query("SHOW TABLES LIKE 'versions'"); 
+    $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
     if ($num_results != 0) {
       $stmt = $pdo->query("SELECT `version` FROM `versions`");
@@ -21,13 +21,20 @@ function init_db_schema() {
       AND active = '1'
       AND address NOT LIKE '@%'
       GROUP BY goto;",
-    "grouped_sender_acl" => "CREATE VIEW grouped_sender_acl (username, send_as) AS
-      SELECT logged_in_as, IFNULL(GROUP_CONCAT(send_as SEPARATOR ' '), '') AS send_as FROM sender_acl
+    "grouped_sender_acl" => "CREATE VIEW grouped_sender_acl (username, send_as_acl) AS
+      SELECT logged_in_as, IFNULL(GROUP_CONCAT(send_as SEPARATOR ' '), '') AS send_as_acl FROM sender_acl
       WHERE send_as NOT LIKE '@%'
       GROUP BY logged_in_as;",
     "grouped_domain_alias_address" => "CREATE VIEW grouped_domain_alias_address (username, ad_alias) AS
       SELECT username, IFNULL(GROUP_CONCAT(local_part, '@', alias_domain SEPARATOR ' '), '') AS ad_alias FROM mailbox
-      LEFT OUTER JOIN alias_domain on target_domain=domain GROUP BY username;"
+      LEFT OUTER JOIN alias_domain ON target_domain=domain
+      GROUP BY username;",
+    "sieve_before" => "CREATE VIEW sieve_before (id, username, script_name, script_data) AS
+      SELECT md5(script_data), username, script_name, script_data FROM sieve_filters
+      WHERE filter_type = 'prefilter';",
+    "sieve_after" => "CREATE VIEW sieve_after (id, username, script_name, script_data) AS
+      SELECT md5(script_data), username, script_name, script_data FROM sieve_filters
+      WHERE filter_type = 'postfilter';"
     );
 
     $tables = array(
@@ -97,6 +104,30 @@ function init_db_schema() {
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
+      "api" => array(
+        "cols" => array(
+          "username" => "VARCHAR(255) NOT NULL",
+          "api_key" => "VARCHAR(255) NOT NULL",
+          "allow_from" => "VARCHAR(512) NOT NULL",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE NOW(0)",
+          "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("username")
+          ),
+          "fkey" => array(
+            "fk_username_api" => array(
+              "col" => "username",
+              "ref" => "admin.username",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
       "sender_acl" => array(
         "cols" => array(
           "logged_in_as" => "VARCHAR(255) NOT NULL",
@@ -127,6 +158,28 @@ function init_db_schema() {
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
+      "quarantine" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "qid" => "VARCHAR(30) NOT NULL",
+          "score" => "FLOAT(8,2)",
+          "ip" => "VARBINARY(16)",
+          "action" => "CHAR(20) NOT NULL DEFAULT 'unknown'",
+          "symbols" => "JSON",
+          "sender" => "VARCHAR(255) NOT NULL DEFAULT 'unknown'",
+          "rcpt" => "VARCHAR(255)",
+          "msg" => "LONGTEXT",
+          "domain" => "VARCHAR(255)",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "user" => "VARCHAR(255) NOT NULL DEFAULT 'unknown'",
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
       "mailbox" => array(
         "cols" => array(
           "username" => "VARCHAR(255) NOT NULL",
@@ -136,11 +189,9 @@ function init_db_schema() {
           "quota" => "BIGINT(20) NOT NULL DEFAULT '102400'",
           "local_part" => "VARCHAR(255) NOT NULL",
           "domain" => "VARCHAR(255) NOT NULL",
-          "tls_enforce_in" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "tls_enforce_out" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "attributes" => "JSON",
           "kind" => "VARCHAR(100) NOT NULL DEFAULT ''",
           "multiple_bookings" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "wants_tagged_subject" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
           "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
@@ -155,6 +206,36 @@ function init_db_schema() {
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
+      "sieve_filters" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "username" => "VARCHAR(255) NOT NULL",
+          "script_desc" => "VARCHAR(255) NOT NULL",
+          "script_name" => "ENUM('active','inactive')",
+          "script_data" => "TEXT NOT NULL",
+          "filter_type" => "ENUM('postfilter','prefilter')",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "key" => array(
+            "username" => array("username"),
+            "script_desc" => array("script_desc")
+          ),
+          "fkey" => array(
+            "fk_username_sieve_global_before" => array(
+              "col" => "username",
+              "ref" => "mailbox.username",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
       "user_acl" => array(
         "cols" => array(
           "username" => "VARCHAR(255) NOT NULL",
@@ -165,8 +246,11 @@ function init_db_schema() {
           "delimiter_action" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "syncjobs" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "eas_reset" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "eas_autoconfig" => "TINYINT(1) NOT NULL DEFAULT '1'"
-        ),
+          "filters" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "quarantine" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "bcc_maps" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "recipient_maps" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          ),
         "keys" => array(
           "fkey" => array(
             "fk_username" => array(
@@ -269,13 +353,17 @@ function init_db_schema() {
           "password1" => "VARCHAR(255) NOT NULL",
           "exclude" => "VARCHAR(500) NOT NULL DEFAULT ''",
           "maxage" => "SMALLINT NOT NULL DEFAULT '0'",
-          "mins_interval" => "VARCHAR(50) NOT NULL",
+          "mins_interval" => "VARCHAR(50) NOT NULL DEFAULT '0'",
+          "maxbytespersecond" => "VARCHAR(50) NOT NULL DEFAULT '0'",
           "port1" => "SMALLINT NOT NULL",
           "enc1" => "ENUM('TLS','SSL','PLAIN') DEFAULT 'TLS'",
           "delete2duplicates" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "delete1" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "delete2" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "returned_text" => "TEXT",
+          "automap" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "skipcrossduplicates" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "is_running" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "returned_text" => "MEDIUMTEXT",
           "last_run" => "TIMESTAMP NULL DEFAULT NULL",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
@@ -284,6 +372,46 @@ function init_db_schema() {
         "keys" => array(
           "primary" => array(
             "" => array("id")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "bcc_maps" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "local_dest" => "VARCHAR(255) NOT NULL",
+          "bcc_dest" => "VARCHAR(255) NOT NULL",
+          "domain" => "VARCHAR(255) NOT NULL",
+          "type" => "ENUM('sender','rcpt')",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
+          "active" => "TINYINT(1) NOT NULL DEFAULT '0'"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "key" => array(
+            "local_dest" => array("local_dest"),
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "recipient_maps" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "old_dest" => "VARCHAR(255) NOT NULL",
+          "new_dest" => "VARCHAR(255) NOT NULL",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
+          "active" => "TINYINT(1) NOT NULL DEFAULT '0'"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "key" => array(
+            "local_dest" => array("old_dest"),
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
@@ -434,12 +562,13 @@ function init_db_schema() {
           "c_sn" => "VARCHAR(255)",
           "c_screenname" => "VARCHAR(255)",
           "c_l" => "VARCHAR(255)",
-          "c_mail" => "VARCHAR(255)",
+          "c_mail" => "TEXT",
           "c_o" => "VARCHAR(255)",
           "c_ou" => "VARCHAR(255)",
           "c_telephonenumber" => "VARCHAR(255)",
           "c_categories" => "VARCHAR(255)",
-          "c_component" => "VARCHAR(10) NOT NULL"
+          "c_component" => "VARCHAR(10) NOT NULL",
+          "c_hascertificate" => "INT4 DEFAULT 0"
         ),
         "keys" => array(
           "primary" => array(
@@ -482,8 +611,8 @@ function init_db_schema() {
       "sogo_user_profile" => array(
         "cols" => array(
           "c_uid" => "VARCHAR(255) NOT NULL",
-          "c_defaults" => "TEXT",
-          "c_settings" => "TEXT"
+          "c_defaults" => "LONGTEXT",
+          "c_settings" => "LONGTEXT"
         ),
         "keys" => array(
           "primary" => array(
@@ -495,9 +624,44 @@ function init_db_schema() {
     );
 
     foreach ($tables as $table => $properties) {
+      // Migrate to quarantine
+      if ($table == 'quarantine') {
+        $stmt = $pdo->query("SHOW TABLES LIKE 'quarantaine'");
+        $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+        if ($num_results != 0) {
+          $stmt = $pdo->query("SHOW TABLES LIKE 'quarantine'");
+          $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+          if ($num_results == 0) {
+            $pdo->query("RENAME TABLE `quarantaine` TO `quarantine`");
+          }
+        }
+      }
+      // Migrate tls_enforce_* options
+      if ($table == 'mailbox') {
+        $stmt = $pdo->query("SHOW TABLES LIKE 'mailbox'");
+        $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+        if ($num_results != 0) {
+          $stmt = $pdo->query("SHOW COLUMNS FROM `mailbox` LIKE '%tls_enforce%'"); 
+          $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+          if ($num_results != 0) {
+            $stmt = $pdo->query("SELECT `username`, `tls_enforce_in`, `tls_enforce_out` FROM `mailbox`");
+            $tls_options_rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            while ($row = array_shift($tls_options_rows)) {
+              $tls_options[$row['username']] = array('tls_enforce_in' => $row['tls_enforce_in'], 'tls_enforce_out' => $row['tls_enforce_out']);
+            }
+          }
+        }
+      }
       $stmt = $pdo->query("SHOW TABLES LIKE '" . $table . "'"); 
       $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
       if ($num_results != 0) {
+        $stmt = $pdo->prepare("SELECT CONCAT('ALTER TABLE ', `table_schema`, '.', `table_name`, ' DROP FOREIGN KEY ', `constraint_name`, ';') AS `FKEY_DROP` FROM `information_schema`.`table_constraints`
+          WHERE `constraint_type` = 'FOREIGN KEY' AND `table_name` = :table;");
+        $stmt->execute(array(':table' => $table));
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        while ($row = array_shift($rows)) {
+          $pdo->query($row['FKEY_DROP']);
+        }
         foreach($properties['cols'] as $column => $type) {
           $stmt = $pdo->query("SHOW COLUMNS FROM `" . $table . "` LIKE '" . $column . "'"); 
           $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -542,7 +706,7 @@ function init_db_schema() {
               $stmt = $pdo->query("SHOW KEYS FROM `" . $table . "` WHERE Key_name = '" . $key_name . "'"); 
               $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
               if ($num_results != 0) {
-                $pdo->query("ALTER TABLE `" . $table . "` DROP FOREIGN KEY `" . $key_name . "`");
+                $pdo->query("ALTER TABLE `" . $table . "` DROP INDEX `" . $key_name . "`");
               }
               @list($table_ref, $field_ref) = explode('.', $key_values['ref']);
               $pdo->query("ALTER TABLE `" . $table . "` ADD FOREIGN KEY `" . $key_name . "` (" . $key_values['col'] . ") REFERENCES `" . $table_ref . "` (`" . $field_ref . "`)
@@ -582,12 +746,7 @@ function init_db_schema() {
         // Step 2: Drop all vanished indexes
         while ($row = array_shift($keys_in_table)) {
           if (!in_array($row['Key_name'], $keys_to_exist)) {
-            try {
-              $pdo->query("ALTER TABLE `" . $table . "` DROP FOREIGN KEY `" . $row['Key_name'] . "`");
-            }
-            finally {
-              $pdo->query("ALTER TABLE `" . $table . "` DROP INDEX `" . $row['Key_name'] . "`");
-            }
+            $pdo->query("ALTER TABLE `" . $table . "` DROP INDEX `" . $row['Key_name'] . "`");
           }
         }
         // Step 3: Drop all vanished primary keys
@@ -639,12 +798,27 @@ function init_db_schema() {
       }
       // Reset table attributes
       $pdo->query("ALTER TABLE `" . $table . "` " . $properties['attr'] . ";");
+
     }
 
     // Recreate SQL views
     foreach ($views as $view => $create) {
       $pdo->query("DROP VIEW IF EXISTS `" . $view . "`;");
       $pdo->query($create);
+    }
+
+    // Create events to clean database
+    $events[] = 'DROP EVENT IF EXISTS clean_spamalias;
+DELIMITER //
+CREATE EVENT clean_spamalias 
+ON SCHEDULE EVERY 1 DAY DO 
+BEGIN
+  DELETE FROM spamalias WHERE validity < UNIX_TIMESTAMP();
+END;
+//
+DELIMITER ;';
+    foreach ($events as $event) {
+      $pdo->exec($event);
     }
 
     // Inject admin if not exists
@@ -661,6 +835,15 @@ function init_db_schema() {
     // Insert new DB schema version
     $stmt = $pdo->query("REPLACE INTO `versions` (`application`, `version`) VALUES ('db_schema', '" . $db_version . "');"); 
 
+    // Migrate tls_enforce_* options and add force_pw_update attribute
+    $stmt = $pdo->query("UPDATE `mailbox` SET `attributes` = '{}' WHERE `attributes` IS NULL;");
+    $stmt = $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.force_pw_update', 0) WHERE JSON_EXTRACT(`attributes`, '$.force_pw_update') IS NULL;");
+    foreach($tls_options as $tls_user => $tls_options) {
+      $stmt = $pdo->prepare("UPDATE `mailbox` SET `attributes` = JSON_SET(`attributes`, '$.tls_enforce_in', :tls_enforce_in),
+        `attributes` = JSON_SET(`attributes`, '$.tls_enforce_out', :tls_enforce_out)
+          WHERE `username` = :username");
+      $stmt->execute(array(':tls_enforce_in' => $tls_options['tls_enforce_in'], ':tls_enforce_out' => $tls_options['tls_enforce_out'], ':username' => $tls_user));
+    }
     $_SESSION['return'] = array(
       'type' => 'success',
       'msg' => 'Database initialisation completed'
