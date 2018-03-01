@@ -1,19 +1,16 @@
 FROM solr:7
 
-ADD solr_core /opt/solr/server/solr/dovecot
-
+ADD ./scripts/ /
+ADD https://raw.githubusercontent.com/dovecot/core/master-2.2/doc/solr-schema.xml /opt/solr/conf/schema.xml
 USER root
-
-RUN cp -R /opt/solr/example/files/conf/lang /opt/solr/server/solr/dovecot/conf/
-
-RUN ["/bin/bash", "-c", "cp /opt/solr/example/files/conf/{protwords.txt,stopwords.txt,synonyms.txt,currency.xml,elevate.xml} /opt/solr/server/solr/dovecot/conf/"]
-
-RUN chown -R solr:solr /opt/solr/server/solr/dovecot
-
-RUN mkdir "/opt/solr/server/solr/dovecot/data" && \
-  chown -R solr:solr "/opt/solr/server/solr/dovecot/data"
-
+RUN chown solr:solr /opt/solr/conf/schema.xml
 # higher heap size to handle large mailboxes
 RUN sed -i 's/#SOLR_HEAP="512m"/SOLR_HEAP="'${JAVA_HEAPSIZE:-4096}'m"/g' /opt/solr/bin/solr.in.sh
 
+# make solr config script executablle
+RUN chown solr:solr /startup.sh && \
+    chmod 744 /startup.sh
+
 USER solr
+
+RUN ["/bin/bash", "-c", "/startup.sh -c dovecot"]
