@@ -1,8 +1,6 @@
 #!/bin/bash
 
-+#exit on error and pipefail
-+set -o errexit
-+set -o pipefail
+set -o pipefail
 
 if grep --help 2>&1 | grep -q -i "busybox"; then
   echo "BusybBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\""
