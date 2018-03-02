@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	dirmngr \
 	gnupg \
 	libsasl2-modules \
+	perl \
 	postfix \
 	postfix-mysql \
 	postfix-pcre \
