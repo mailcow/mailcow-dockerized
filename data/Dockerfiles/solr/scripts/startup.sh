@@ -47,103 +47,119 @@ else
 	"positionIncrementGap": 100,
 	"indexAnalyser": {
 	    "tokenizer": {
-		"class": "solr.StandardTokenizerFactory",
-		"filter": {
-		    "class": "solr.WordDelimiterFilterFactory",
-		    "generateWordParts": 1,
-		    "generateNumberParts": 1,
-		    "catenateWorks": 1,
-		    "catenateNumbers": 1,
-		    "catenateAll": 0
-		}
+		"class": "solr.StandardTokenizerFactory"
+	    },
+	    "filter": {
+		"class": "solr.WordDelimiterFilterFactory",
+		"generateWordParts": 1,
+		"generateNumberParts": 1,
+		"catenateWorks": 1,
+		"catenateNumbers": 1,
+		"catenateAll": 0
+	    },
+	    "filter": {
+		"class": "solr.LowerCaseFilterFactory"
+	    },
+	    "filter": {
+		"class": "solr.KeywordMarkerFilterFactory",
+		"protected": "protwords.txt"
 	    }
 	},
 	"queryAnalyzer":{
 	    "tokenizer":{
 		"class": "solr.StandardTokenizerFactory"
 	    },
-	    "filter":{
+	    "filter": {
 		"synonyms": "synonyms.txt",
 		"ignoreCase": true,
 		"expand": true
 	    },
-	    "filter":{
+	    "filter": {
 		"class": "solr.LowerCaseFilterFactory"
+	    },
+	    "filter": {
+		"class": "solr.WordDelimiterFilterFactory",
+		"generateWordParts": 1,
+		"generateNumberParts": 1,
+		"catenateWords": 0,
+		"catenateNumbers": 0,
+		"catenateAll": 0,
+		"splitOnCaseChange": 1
 	    }
 	}
     },
     "add-field":
     {
-        "name": "uid",
-        "type": "long",
-        "indexed": true,
-        "stored": true,
-        "required": true
+	"name": "uid",
+	"type": "long",
+	"indexed": true,
+	"stored": true,
+	"required": true
     },
     "add-field":
     {
-        "name": "box",
-        "type": "string",
-        "indexed": true,
-        "stored": true,
-        "required": true
+	"name": "box",
+	"type": "string",
+	"indexed": true,
+	"stored": true,
+	"required": true
     },
     "add-field":
     {
-        "name": "user",
-        "type": "string",
-        "indexed": true,
-        "stored": true,
-        "required": true
+	"name": "user",
+	"type": "string",
+	"indexed": true,
+	"stored": true,
+	"required": true
     },
     "add-field":
     {
-        "name": "hdr",
-        "type": "text",
-        "indexed": true,
-        "stored": false,
+	"name": "hdr",
+	"type": "text",
+	"indexed": true,
+	"stored": false,
     },
     "add-field":
     {
-        "name": "body",
-        "type": "text",
-        "indexed": true,
-        "stored": false
+	"name": "body",
+	"type": "text",
+	"indexed": true,
+	"stored": false
     },
     "add-field":
     {
-        "name": "from",
-        "type": "text",
-        "indexed": true,
-        "stored": false
+	"name": "from",
+	"type": "text",
+	"indexed": true,
+	"stored": false
     },
     "add-field":
     {
-        "name": "to",
-        "type": "text",
-        "indexed": true,
-        "stored": false
+	"name": "to",
+	"type": "text",
+	"indexed": true,
+	"stored": false
     },
     "add-field":
     {
-        "name": "cc",
-        "type": "text",
-        "indexed": true,
-        "stored": false
+	"name": "cc",
+	"type": "text",
+	"indexed": true,
+	"stored": false
     },
     "add-field":
     {
-        "name": "bcc",
-        "type": "text",
-        "indexed": true,
-        "stored": false
+	"name": "bcc",
+	"type": "text",
+	"indexed": true,
+	"stored": false
     },
     "add-field":
     {
-        "name": "subject",
-        "type": "text",
-        "indexed": true,
-        "stored": false
+	"name": "subject",
+	"type": "text",
+	"indexed": true,
+	"stored": false
     }
 }' http://localhost:8983/solr/dovecot/schema
 
