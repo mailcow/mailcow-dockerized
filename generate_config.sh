@@ -120,7 +120,7 @@ SKIP_LETS_ENCRYPT=n
 SKIP_IP_CHECK=n
 
 # Skip ClamAV (clamd-mailcow) anti-virus (Rspamd will auto-detect a missing ClamAV container) - y/n
-SKIP_CLAMD=n
+SKIP_CLAMD=$(SKIP_CLAMD)
 
 # Enable watchdog (watchdog-mailcow) to restart unhealthy containers (experimental)
 USE_WATCHDOG=n
