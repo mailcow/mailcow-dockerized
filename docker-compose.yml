@@ -185,11 +185,11 @@ services:
         - TZ=${TZ}
       ports:
         - "${DOVEADM_PORT:-127.0.0.1:19991}:12345"
-        - "${IMAP_PORT:-143}:143"
-        - "${IMAPS_PORT:-993}:993"
-        - "${POP_PORT:-110}:110"
-        - "${POPS_PORT:-995}:995"
-        - "${SIEVE_PORT:-4190}:4190"
+#        - "${IMAP_PORT:-143}:143"
+#        - "${IMAPS_PORT:-993}:993"
+#        - "${POP_PORT:-110}:110"
+#        - "${POPS_PORT:-995}:995"
+#        - "${SIEVE_PORT:-4190}:4190"
       restart: always
       ulimits:
         nproc: 65535
@@ -207,7 +207,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.14
+      image: mailcow/postfix:1.15
       build: ./data/Dockerfiles/postfix
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
@@ -277,9 +277,20 @@ services:
         - ./data/assets/ssl/:/etc/ssl/mail/:ro
         - ./data/conf/nginx/:/etc/nginx/conf.d/:rw
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro
-      ports:
-        - "${HTTPS_BIND:-0.0.0.0}:${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
-        - "${HTTP_BIND:-0.0.0.0}:${HTTP_PORT:-80}:${HTTP_PORT:-80}"
+#      ports:
+#        - "${HTTPS_BIND:-0.0.0.0}:${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
+#        - "${HTTP_BIND:-0.0.0.0}:${HTTP_PORT:-80}:${HTTP_PORT:-80}"
+      labels:
+        - "traefik.enable=true"
+        - "traefik.backend=mailcow-docker"
+        - "traefik.frontend.entryPoints=https"
+        - "traefik.frontend.headers.SSLRedirect=true"
+        - "traefik.frontend.headers.STSSeconds=15768000"
+        - "traefik.frontend.headers.STSIncludeSubdomains=false"
+        - "traefik.frontend.headers.forceSTSHeader=true"
+        - "traefik.http.port=${HTTP_PORT:-80}"
+        - "traefik.http.frontend.rule=Host:${MAILCOW_HOSTNAME}"
+        - "traefik.docker.network=web"
       restart: always
       sysctls:
         - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
@@ -289,6 +300,9 @@ services:
         mailcow-network:
           aliases:
             - nginx
+        web:
+          aliases:
+            - nginx-mailcow
 
     acme-mailcow:
       depends_on:
@@ -402,12 +416,30 @@ networks:
       config:
         - subnet: ${IPV4_NETWORK:-172.22.1}.0/24
         - subnet: ${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
+  web:
+    external:
+      name: web
 
 volumes:
   vmail-vol-1:
+    external:
+      name: mailcow_vmail
   mysql-vol-1:
+    external:
+      name: mailcow_mysql
+  dkim-vol-1:
+    external:
+      name: mailcow_dkim
   redis-vol-1:
+    external:
+      name: mailcow_redis
   rspamd-vol-1:
+    external:
+      name: mailcow_rspamd
   postfix-vol-1:
+    external:
+      name: mailcow_postfix
   crypt-vol-1:
+    external:
+      name: mailcow_crypt
   rspamd-sock:
