@@ -30,13 +30,27 @@ fi
 if [[ -a /etc/timezone ]]; then
   TZ=$(cat /etc/timezone)
 elif  [[ -a /etc/localtime ]]; then
-   TZ=$(readlink /etc/localtime|sed -n 's|^.*zoneinfo/||p')
+  TZ=$(readlink /etc/localtime|sed -n 's|^.*zoneinfo/||p')
 fi
 
 if [ -z "$TZ" ]; then
   read -p "Timezone: " -ei "Europe/Berlin" TZ
 else
   read -p "Timezone: " -ei ${TZ} TZ
+fi
+
+if [ $(awk '/MemTotal/ {print $2}' /proc/meminfo) -le "1572864" ]; then  #this is 1500Mib converted into kb which /proc/meminfo reports in
+ read -r -p "The server you're using don't have enough RAM to run ClamAV in stable conditions! Do you want to disable the service? You can enable it in mailcow.conf later. [Y/n] " response
+  case $response in
+    [nN][oO]|[nN])
+      SKIP_CLAMD=n
+      ;;
+    *)
+      SKIP_CLAMD=y
+    ;;
+  esac
+else
+ SKIP_CLAMD=y
 fi
 
 [[ ! -f ./data/conf/rspamd/override.d/worker-controller-password.inc ]] && echo '# Placeholder' > ./data/conf/rspamd/override.d/worker-controller-password.inc
