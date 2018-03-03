@@ -50,7 +50,7 @@ if [ $(awk '/MemTotal/ {print $2}' /proc/meminfo) -le "1572864" ]; then  #this i
     ;;
   esac
 else
- SKIP_CLAMD=y
+ SKIP_CLAMD=n
 fi
 
 [[ ! -f ./data/conf/rspamd/override.d/worker-controller-password.inc ]] && echo '# Placeholder' > ./data/conf/rspamd/override.d/worker-controller-password.inc
@@ -111,7 +111,6 @@ COMPOSE_PROJECT_NAME=mailcow-dockerized
 
 # Additional SAN for the certificate
 ADDITIONAL_SAN=
-
 
 # Skip running ACME (acme-mailcow, Let's Encrypt certs) - y/n
 SKIP_LETS_ENCRYPT=n
