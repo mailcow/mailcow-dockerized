@@ -90,6 +90,7 @@ services:
         - ./data/conf/rspamd/local.d/:/etc/rspamd/local.d:ro
         - ./data/conf/rspamd/lua/:/etc/rspamd/lua/:ro
         - rspamd-sock:/rspamd-sock
+        - rspamd-vol-1:/var/lib/rspamd
       restart: always
       sysctls:
         - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
@@ -117,7 +118,7 @@ services:
         - ./data/conf/phpfpm/php-conf.d/opcache-recommended.ini:/usr/local/etc/php/conf.d/opcache-recommended.ini
         - ./data/conf/phpfpm/php-conf.d/upload.ini:/usr/local/etc/php/conf.d/upload.ini
       environment:
-        - LOG_LINES=${LOG_LINES}
+        - LOG_LINES=${LOG_LINES:-9999}
         - TZ=${TZ}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -149,7 +150,7 @@ services:
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
         - TZ=${TZ}
-        - LOG_LINES=${LOG_LINES}
+        - LOG_LINES=${LOG_LINES:-9999}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
       volumes:
         - ./data/conf/sogo/:/etc/sogo/
@@ -177,7 +178,7 @@ services:
         - crypt-vol-1:/mail_crypt/
         - rspamd-sock:/rspamd-sock
       environment:
-        - LOG_LINES=${LOG_LINES}
+        - LOG_LINES=${LOG_LINES:-9999}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
@@ -215,7 +216,7 @@ services:
         - crypt-vol-1:/var/lib/zeyple
         - mailman-vol-1:/opt/mailman
       environment:
-        - LOG_LINES=${LOG_LINES}
+        - LOG_LINES=${LOG_LINES:-9999}
         - TZ=${TZ}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -304,7 +305,7 @@ services:
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
-        - LOG_LINES=${LOG_LINES}
+        - LOG_LINES=${LOG_LINES:-9999}
         - ADDITIONAL_SAN=${ADDITIONAL_SAN}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
         - DBNAME=${DBNAME}
@@ -339,8 +340,6 @@ services:
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
         - SNAT_TO_SOURCE=${SNAT_TO_SOURCE:-n}
       network_mode: "host"
-      sysctls:
-        - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       volumes:
@@ -357,7 +356,7 @@ services:
         - rspamd-sock:/rspamd-sock
       restart: always
       environment:
-        - LOG_LINES=${LOG_LINES}
+        - LOG_LINES=${LOG_LINES:-9999}
         - TZ=${TZ}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
