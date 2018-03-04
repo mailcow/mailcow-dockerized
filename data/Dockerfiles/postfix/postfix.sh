@@ -98,7 +98,7 @@ query = SELECT IF(EXISTS(SELECT 'relay' FROM domain
                 WHERE alias_domain = '%d'
               )
             )
-          AND mailbox.tls_enforce_out = '1'
+          AND json_extract(attributes, '$.tls_enforce_out') LIKE '%%1%%'
           AND mailbox.active = '1'
           ), 'smtp_enforced_tls:', 'smtp:') AS 'transport', null AS relay
       UNION ALL
