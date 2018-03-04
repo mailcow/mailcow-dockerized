@@ -22,7 +22,7 @@ not_used = []
 not_used_in_php.each do |string|
   section = string.scan(/([a-z]+)/)[0][0]
   key     = string.scan(/([a-z]+)/)[1][0]
-  %x[git grep lang.#{key} -- #{DIR}/data/web/js/#{section}.js]
+  %x[git grep lang.#{key} -- #{DIR}/data/web/js/#{section}.js #{DIR}/data/web/js/debug.js]
   if $?.exitstatus > 0
     not_used << string
   end
