@@ -30,7 +30,7 @@ import os
 import socket
 import dj_database_url
 import string
-import sha3
+import hashlib
 import time
 from random import *
 min_char = 8
@@ -79,9 +79,9 @@ while MAILMAN_HOST_IP_AUTO is None:
 MAILMAN_REST_API_URL = 'http://mm-core:8001'
 MAILMAN_REST_API_USER = 'restadmin'
 MRAP_RAW='ws_' + os.environ.get('DBPASS') + '_' + os.environ.get('MAILCOW_HOSTNAME')
-MAILMAN_REST_API_PASS = sha3.sha3_224(MRAP_RAW.encode('utf-8')).hexdigest()
+MAILMAN_REST_API_PASS = hashlib.sha256(MRAP_RAW).hexdigest()[0:16]
 MAK_RAW='hk_' + os.environ.get('DBPASS') + '_' + os.environ.get('MAILCOW_HOSTNAME')
-MAILMAN_ARCHIVER_KEY = sha3.sha3_224(MAK_RAW.encode('utf-8')).hexdigest()
+MAILMAN_ARCHIVER_KEY = hashlib.sha256(MAK_RAW).hexdigest()[0:16]
 MAILMAN_ARCHIVER_FROM = (MAILMAN_HOST_IP_AUTO)
 
 # Application definition

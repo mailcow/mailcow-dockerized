@@ -20,7 +20,7 @@ RUN set -ex \
     dj-database-url \
     mysqlclient \
     django==1.11 \
-    pysha3 \
+  && easy_install hashlib \
   && apk del .build-deps \
   && addgroup -S mailman \
   && adduser -S -G mailman mailman
