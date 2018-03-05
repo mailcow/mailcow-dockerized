@@ -1,9 +1,9 @@
-FROM php:7.1-fpm-alpine
+FROM php:7.2-fpm-alpine
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 ENV REDIS_PECL 3.1.6
 ENV MEMCACHED_PECL 3.0.4
-ENV APCU_PECL 5.1.9
+ENV APCU_PECL 5.1.10
 ENV IMAGICK_PECL 3.4.3
 ENV MAILPARSE_PECL 3.0.2
 
@@ -20,8 +20,8 @@ RUN apk add -U --no-cache libxml2-dev \
 	autoconf \
 	g++ \
 	make \
-	openssl \
-	openssl-dev \
+	libressl \
+	libressl-dev \
 	samba-client \
 	libpng \
 	libpng-dev \
@@ -67,7 +67,7 @@ RUN apk add -U --no-cache libxml2-dev \
   libxml2-dev \
   icu-dev \
   imap-dev \
-  openssl-dev \
+  libressl-dev \
   cyrus-sasl-dev \
   pcre-dev \
   libpng-dev \
