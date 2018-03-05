@@ -154,6 +154,7 @@ $lang['mailbox']['in_use'] = 'In gebruik (%)';
 $lang['mailbox']['msg_num'] = 'Berichten #';
 $lang['mailbox']['remove'] = 'Verwijder';
 $lang['mailbox']['edit'] = 'Wijzig';
+$lang['mailbox']['no_record'] = 'Geen vermelding';
 $lang['mailbox']['add_domain'] = 'Toevoegen domein';
 $lang['mailbox']['add_domain_alias'] = 'Toevoegen domein-alias';
 $lang['mailbox']['add_mailbox'] = 'Toevoegen postvak';
