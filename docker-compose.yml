@@ -206,7 +206,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.14
+      image: mailcow/postfix:1.15
       build: ./data/Dockerfiles/postfix
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
