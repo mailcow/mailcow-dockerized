@@ -262,7 +262,6 @@ services:
         envsubst < /etc/nginx/conf.d/templates/sogo_eas.template > /etc/nginx/conf.d/sogo_eas.active &&
         nginx -qt &&
         until ping phpfpm -c1 > /dev/null; do sleep 1; done &&
-        until ping mm-web -c1 > /dev/null; do sleep 1; done &&
         until ping sogo -c1 > /dev/null; do sleep 1; done &&
         until ping redis -c1 > /dev/null; do sleep 1; done &&
         until ping rspamd -c1 > /dev/null; do sleep 1; done &&
@@ -278,8 +277,6 @@ services:
         - ./data/assets/ssl/:/etc/ssl/mail/:ro
         - ./data/conf/nginx/:/etc/nginx/conf.d/:rw
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro
-      volumes_from:
-        - mm-web-mailcow:ro
       ports:
         - "${HTTPS_BIND:-0.0.0.0}:${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
         - "${HTTP_BIND:-0.0.0.0}:${HTTP_PORT:-80}:${HTTP_PORT:-80}"
@@ -386,55 +383,6 @@ services:
         mailcow-network:
           aliases:
             - dockerapi
-
-    mm-core-mailcow:
-      image: mailcow/mm-core:1.0
-      build: ./data/Dockerfiles/mailman-core
-      depends_on:
-        - mysql-mailcow
-      volumes:
-        - mailman-vol-1:/opt/mailman
-        - ./data/conf/mailman/extra.conf:/opt/extra-mailman/mailman-extra.cfg
-      restart: always
-      environment:
-        - TZ=${TZ}
-        - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
-        - DATABASE_URL=mysql://${DBUSER}:${DBPASS}@mysql/${DBNAME}_mm
-        - DBNAME=${DBNAME}
-        - DBUSER=${DBUSER}
-        - DBROOT=${DBROOT}
-        - DBPASS=${DBPASS}
-      sysctls:
-        - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
-      networks:
-        mailcow-network:
-          aliases:
-            - mm-core
-
-    mm-web-mailcow:
-      image: mailcow/mm-web:1.0
-      build: ./data/Dockerfiles/mailman-web
-      depends_on:
-        - mysql-mailcow
-      volumes:
-        - ./data/conf/mailman/uwsgi.ini:/opt/mm_web/uwsgi.ini
-        - ./data/conf/mailman/settings.py:/opt/mm_web/settings.py
-        - ./data/conf/mailman/urls.py:/opt/mm_web/urls.py
-      restart: always
-      environment:
-        - TZ=${TZ}
-        - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
-        - DATABASE_URL=mysql://${DBUSER}:${DBPASS}@mysql/${DBNAME}_mm
-        - DBNAME=${DBNAME}
-        - DBUSER=${DBUSER}
-        - DBROOT=${DBROOT}
-        - DBPASS=${DBPASS}
-      sysctls:
-        - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
-      networks:
-        mailcow-network:
-          aliases:
-            - mm-web
 
     ipv6nat:
       image: robbertkl/ipv6nat
