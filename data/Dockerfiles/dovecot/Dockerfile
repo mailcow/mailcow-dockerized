@@ -27,9 +27,11 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
   libauthen-ntlm-perl \
   libbz2-dev \
   libcrypt-ssleay-perl \
+  libcurl4-openssl-dev \
   libdbd-mysql-perl \
   libdbi-perl \
   libdigest-hmac-perl \
+  libexpat1-dev \
   libfile-copy-recursive-perl \
   libio-compress-perl \
   libio-socket-inet6-perl \
@@ -68,7 +70,7 @@ RUN curl https://www.dovecot.org/releases/2.2/dovecot-$DOVECOT_VERSION.tar.gz | 
   && curl -o src/lib-auth/auth-client-request.c https://mailcow.email/dovecot-patch1/auth-client-request.c \
   && curl -o src/lib-auth/auth-server-connection.c https://mailcow.email/dovecot-patch1/auth-server-connection.c \
   && curl -o src/lib-auth/auth-server-connection.h https://mailcow.email/dovecot-patch1/auth-server-connection.h \
-  && ./configure --with-mysql --with-lzma --with-lz4 --with-ssl=openssl --with-notify=inotify --with-storages=mdbox,sdbox,maildir,mbox,imapc,pop3c --with-bzlib --with-zlib \
+  && ./configure --with-solr --with-mysql --with-lzma --with-lz4 --with-ssl=openssl --with-notify=inotify --with-storages=mdbox,sdbox,maildir,mbox,imapc,pop3c --with-bzlib --with-zlib \
   && make -j3 \
   && make install \
   && make clean \
@@ -85,6 +87,8 @@ RUN curl https://www.dovecot.org/releases/2.2/dovecot-$DOVECOT_VERSION.tar.gz | 
 RUN cpanm Data::Uniqid Mail::IMAPClient String::Util
 RUN echo '* * * * *   root   /usr/local/bin/imapsync_cron.pl' > /etc/cron.d/imapsync
 RUN echo '30 3 * * *   vmail  /usr/local/bin/doveadm quota recalc -A' > /etc/cron.d/dovecot-sync
+RUN echo '@daily   root   curl http://solr:8983/solr/dovecot/update?optimize=true' > /etc/cron.d/solr-optimize
+RUN echo '@hourly   root   curl http://solr:8983/solr/dovecot/update?commit=true' > /etc/cron.d/solr-commit
 
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
 COPY imapsync /usr/local/bin/imapsync
