@@ -113,8 +113,7 @@ services:
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
         - rspamd-sock:/rspamd-sock
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro
-        - ./data/conf/phpfpm/php-fpm.d/www.conf:/usr/local/etc/php-fpm.d/www.conf
-        - ./data/conf/phpfpm/php-fpm.d/system.conf:/usr/local/etc/php-fpm.d/system.conf
+        - ./data/conf/phpfpm/php-fpm.d/pools.conf:/usr/local/etc/php-fpm.d/z-pools.conf
         - ./data/conf/phpfpm/php-conf.d/opcache-recommended.ini:/usr/local/etc/php/conf.d/opcache-recommended.ini
         - ./data/conf/phpfpm/php-conf.d/upload.ini:/usr/local/etc/php/conf.d/upload.ini
       environment:
@@ -346,7 +345,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.14
+      image: mailcow/watchdog:1.15
       # Debug
       #command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog
