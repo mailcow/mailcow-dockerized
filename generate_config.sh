@@ -30,13 +30,28 @@ fi
 if [[ -a /etc/timezone ]]; then
   TZ=$(cat /etc/timezone)
 elif  [[ -a /etc/localtime ]]; then
-   TZ=$(readlink /etc/localtime|sed -n 's|^.*zoneinfo/||p')
+  TZ=$(readlink /etc/localtime|sed -n 's|^.*zoneinfo/||p')
 fi
 
 if [ -z "$TZ" ]; then
   read -p "Timezone: " -ei "Europe/Berlin" TZ
 else
   read -p "Timezone: " -ei ${TZ} TZ
+fi
+
+if [ $(awk '/MemTotal/ {print $2}' /proc/meminfo) -le "1572864" ]; then  #this is 1500Mib converted into kb which /proc/meminfo reports in
+  echo "Installed memory is less than 1500 MiB. It is recommended to disable ClamAV to prevent out-of-memory situations."
+  read -r -p  "Do you want to disable ClamAV now? ClamAV can be re-enabled by setting SKIP_CLAMD=n in mailcow.conf. [Y/n] " response
+  case $response in
+    [nN][oO]|[nN])
+      SKIP_CLAMD=n
+      ;;
+    *)
+      SKIP_CLAMD=y
+    ;;
+  esac
+else
+ SKIP_CLAMD=n
 fi
 
 [[ ! -f ./data/conf/rspamd/override.d/worker-controller-password.inc ]] && echo '# Placeholder' > ./data/conf/rspamd/override.d/worker-controller-password.inc
@@ -98,7 +113,6 @@ COMPOSE_PROJECT_NAME=mailcow-dockerized
 # Additional SAN for the certificate
 ADDITIONAL_SAN=
 
-
 # Skip running ACME (acme-mailcow, Let's Encrypt certs) - y/n
 SKIP_LETS_ENCRYPT=n
 
@@ -106,7 +120,7 @@ SKIP_LETS_ENCRYPT=n
 SKIP_IP_CHECK=n
 
 # Skip ClamAV (clamd-mailcow) anti-virus (Rspamd will auto-detect a missing ClamAV container) - y/n
-SKIP_CLAMD=n
+SKIP_CLAMD=$(SKIP_CLAMD)
 
 # Enable watchdog (watchdog-mailcow) to restart unhealthy containers (experimental)
 USE_WATCHDOG=n
