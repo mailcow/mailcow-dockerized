@@ -40,7 +40,8 @@ else
 fi
 
 if [ $(awk '/MemTotal/ {print $2}' /proc/meminfo) -le "1572864" ]; then  #this is 1500Mib converted into kb which /proc/meminfo reports in
- read -r -p "The server you're using don't have enough RAM to run ClamAV in stable conditions! Do you want to disable the service? You can enable it in mailcow.conf later. [Y/n] " response
+  echo "Installed memory is less than 1500 MiB. It is recommended to disable ClamAV to prevent out-of-memory situations."
+  read -r -p  "Do you want to disable ClamAV now? ClamAV can be re-enabled by setting SKIP_CLAMD=n in mailcow.conf. [Y/n] " response
   case $response in
     [nN][oO]|[nN])
       SKIP_CLAMD=n
