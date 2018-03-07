@@ -140,7 +140,7 @@ SKIP_IP_CHECK=n
 # Skip ClamAV (clamd-mailcow) anti-virus (Rspamd will auto-detect a missing ClamAV container) - y/n
 SKIP_CLAMD=$(echo ${SKIP_CLAMD})
 
-# Skip ClamAV (clamd-mailcow) anti-virus (Rspamd will auto-detect a missing ClamAV container) - y/n
+# Skip Solr - y/n
 SKIP_SOLR=$(echo ${SKIP_SOLR})
 
 # Enable watchdog (watchdog-mailcow) to restart unhealthy containers (experimental)
