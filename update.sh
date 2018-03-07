@@ -118,7 +118,7 @@ for option in ${CONFIG_ARRAY[@]}; do
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo '# Solr heap size, there is no recommendation, please see Solr docs.' >> mailcow.conf
-      echo 'Solr is a prone to run OOM and should be monitored. Unmonitred Solr setups are not recommended.' >> mailcow.conf
+      echo '# Solr is a prone to run OOM and should be monitored. Unmonitored Solr setups are not recommended.' >> mailcow.conf
       echo "SKIP_SOLR=y" >> mailcow.conf
     fi
   elif [[ ${option} == "SOLR_HEAP" ]]; then
