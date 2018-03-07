@@ -1,6 +1,10 @@
 #!/bin/bash
-#
-# This script starts Solr on localhost, creates a core with "solr create"
+
+if [[ "${SKIP_SOLR}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  echo "SKIP_SOLR=y, skipping Solr..."
+  sleep 365d
+  exit 0
+fi
 
 set -e
 
