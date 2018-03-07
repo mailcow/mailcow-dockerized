@@ -12,7 +12,7 @@ if cp --help 2>&1 | grep -q -i "busybox"; then
 fi
 
 if [[ -f mailcow.conf ]]; then
-  read -r -p "A config file exists and will be overwritten, are you sure you want to contine? [y/N] " response
+  read -r -p "A config file exists and will be overwritten, are you sure you want to continue? [y/N] " response
   case $response in
     [yY][eE][sS]|[yY])
       mv mailcow.conf mailcow.conf_backup
@@ -30,13 +30,46 @@ fi
 if [[ -a /etc/timezone ]]; then
   TZ=$(cat /etc/timezone)
 elif  [[ -a /etc/localtime ]]; then
-   TZ=$(readlink /etc/localtime|sed -n 's|^.*zoneinfo/||p')
+  TZ=$(readlink /etc/localtime|sed -n 's|^.*zoneinfo/||p')
 fi
 
 if [ -z "$TZ" ]; then
   read -p "Timezone: " -ei "Europe/Berlin" TZ
 else
   read -p "Timezone: " -ei ${TZ} TZ
+fi
+
+MEM_TOTAL=$(awk '/MemTotal/ {print $2}' /proc/meminfo)
+
+if [ ${MEM_TOTAL} -le "1572864" ]; then
+  echo "Installed memory is less than 1.5 GiB. It is recommended to disable ClamAV to prevent out-of-memory situations."
+  read -r -p  "Do you want to disable ClamAV now? ClamAV can be re-enabled by setting SKIP_CLAMD=n in mailcow.conf. [Y/n] " response
+  case $response in
+    [nN][oO]|[nN])
+      SKIP_CLAMD=n
+      ;;
+    *)
+      SKIP_CLAMD=y
+    ;;
+  esac
+else
+ SKIP_CLAMD=n
+fi
+
+if [ ${MEM_TOTAL} -le "6815744" ]; then
+  echo "Installed memory is less than 6.5 GiB. It is highly recommended to disable Solr to prevent out-of-memory situations."
+  echo "Solr is a prone to run OOM and should be monitored. The default Solr heap size is 3072 MiB and should be set according to your expected load in mailcow.conf."
+  read -r -p  "Do you want to disable Solr now (recommended)? Solr can be re-enabled by setting SKIP_SOLR=n in mailcow.conf. [Y/n] " response
+  case $response in
+    [nN][oO]|[nN])
+      SKIP_SOLR=n
+      ;;
+    *)
+      SKIP_SOLR=y
+    ;;
+  esac
+else
+ SKIP_SOLR=n
 fi
 
 [[ ! -f ./data/conf/rspamd/override.d/worker-controller-password.inc ]] && echo '# Placeholder' > ./data/conf/rspamd/override.d/worker-controller-password.inc
@@ -98,7 +131,6 @@ COMPOSE_PROJECT_NAME=mailcow-dockerized
 # Additional SAN for the certificate
 ADDITIONAL_SAN=
 
-
 # Skip running ACME (acme-mailcow, Let's Encrypt certs) - y/n
 SKIP_LETS_ENCRYPT=n
 
@@ -106,7 +138,10 @@ SKIP_LETS_ENCRYPT=n
 SKIP_IP_CHECK=n
 
 # Skip ClamAV (clamd-mailcow) anti-virus (Rspamd will auto-detect a missing ClamAV container) - y/n
-SKIP_CLAMD=n
+SKIP_CLAMD=$(echo ${SKIP_CLAMD})
+
+# Skip Solr - y/n
+SKIP_SOLR=$(echo ${SKIP_SOLR})
 
 # Enable watchdog (watchdog-mailcow) to restart unhealthy containers (experimental)
 USE_WATCHDOG=n
@@ -122,8 +157,8 @@ IPV4_NETWORK=172.22.1
 # Internal IPv6 subnet in fc00::/7
 IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
 
-# Use this IP for outgoing connections (SNAT)' >> mailcow.conf
-#SNAT_TO_SOURCE=" >> mailcow.conf
+# Use this IP for outgoing connections (SNAT)
+#SNAT_TO_SOURCE=
 
 # Disable IPv6
 # mailcow-network will still be created as IPv6 enabled, all containers will be created
