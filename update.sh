@@ -40,6 +40,7 @@ CONFIG_ARRAY=(
   "USE_WATCHDOG"
   "WATCHDOG_NOTIFY_EMAIL"
   "SKIP_CLAMD"
+  "SKIP_SOLR"
   "SKIP_IP_CHECK"
   "ADDITIONAL_SAN"
   "DOVEADM_PORT"
@@ -49,6 +50,7 @@ CONFIG_ARRAY=(
   "SNAT_TO_SOURCE"
   "SYSCTL_IPV6_DISABLED"
   "SQL_PORT"
+  "SOLR_HEAP"
 )
 
 sed -i '$a\' mailcow.conf
@@ -111,6 +113,19 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo '# Use this IP for outgoing connections (SNAT)' >> mailcow.conf
       echo "#SNAT_TO_SOURCE=" >> mailcow.conf
+    fi
+  elif [[ ${option} == "SKIP_SOLR" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Solr heap size, there is no recommendation, please see Solr docs.' >> mailcow.conf
+      echo 'Solr is a prone to run OOM and should be monitored. Unmonitred Solr setups are not recommended.' >> mailcow.conf
+      echo "SKIP_SOLR=y" >> mailcow.conf
+    fi
+  elif [[ ${option} == "SOLR_HEAP" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Solr heap size, there is no recommendation, please see Solr docs.' >> mailcow.conf
+      echo "SOLR_SIZE=3072" >> mailcow.conf
     fi
   elif ! grep -q ${option} mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"

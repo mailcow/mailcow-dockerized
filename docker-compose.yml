@@ -165,7 +165,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.24
+      image: mailcow/dovecot:1.25
       build: ./data/Dockerfiles/dovecot
       cap_add:
         - NET_BIND_SERVICE
@@ -393,7 +393,8 @@ services:
         - /lib/modules:/lib/modules:ro
 
 
-    solr:
+    solr-mailcow:
+      image: mailcow/solr:1.0
       build: ./data/Dockerfiles/solr
       restart: always
       volumes:
@@ -402,7 +403,8 @@ services:
         - 172.22.1.254
       dns_search: mailcow-network
       environment:
-        - JAVA_HEAPSIZE=${JAVA_HEAPSIZE:-4096}
+        - SOLR_HEAP=${SOLR_HEAP:-3072}
+        - SKIP_SOLR=${SKIP_SOLR:-y}
       networks:
         mailcow-network:
           aliases:

@@ -39,8 +39,10 @@ else
   read -p "Timezone: " -ei ${TZ} TZ
 fi
 
-if [ $(awk '/MemTotal/ {print $2}' /proc/meminfo) -le "1572864" ]; then  #this is 1500Mib converted into kb which /proc/meminfo reports in
-  echo "Installed memory is less than 1500 MiB. It is recommended to disable ClamAV to prevent out-of-memory situations."
+MEM_TOTAL=$(awk '/MemTotal/ {print $2}' /proc/meminfo)
+
+if [ ${MEM_TOTAL} -le "1572864" ]; then
+  echo "Installed memory is less than 1.5 GiB. It is recommended to disable ClamAV to prevent out-of-memory situations."
   read -r -p  "Do you want to disable ClamAV now? ClamAV can be re-enabled by setting SKIP_CLAMD=n in mailcow.conf. [Y/n] " response
   case $response in
     [nN][oO]|[nN])
@@ -52,6 +54,22 @@ if [ $(awk '/MemTotal/ {print $2}' /proc/meminfo) -le "1572864" ]; then  #this i
   esac
 else
  SKIP_CLAMD=n
+fi
+
+if [ ${MEM_TOTAL} -le "6815744" ]; then
+  echo "Installed memory is less than 6.5 GiB. It is highly recommended to disable Solr to prevent out-of-memory situations."
+  echo "Solr is a prone to run OOM and should be monitored. The default Solr heap size is 3072 MiB and should be set according to your expected load in mailcow.conf."
+  read -r -p  "Do you want to disable Solr now (recommended)? Solr can be re-enabled by setting SKIP_SOLR=n in mailcow.conf. [Y/n] " response
+  case $response in
+    [nN][oO]|[nN])
+      SKIP_SOLR=n
+      ;;
+    *)
+      SKIP_SOLR=y
+    ;;
+  esac
+else
+ SKIP_SOLR=n
 fi
 
 [[ ! -f ./data/conf/rspamd/override.d/worker-controller-password.inc ]] && echo '# Placeholder' > ./data/conf/rspamd/override.d/worker-controller-password.inc
@@ -121,6 +139,9 @@ SKIP_IP_CHECK=n
 
 # Skip ClamAV (clamd-mailcow) anti-virus (Rspamd will auto-detect a missing ClamAV container) - y/n
 SKIP_CLAMD=$(SKIP_CLAMD)
+
+# Skip ClamAV (clamd-mailcow) anti-virus (Rspamd will auto-detect a missing ClamAV container) - y/n
+SKIP_SOLR=$(SKIP_SOLR)
 
 # Enable watchdog (watchdog-mailcow) to restart unhealthy containers (experimental)
 USE_WATCHDOG=n

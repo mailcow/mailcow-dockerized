@@ -1,15 +1,9 @@
-FROM solr:7
-
-ADD ./scripts/ /
+FROM solr:7-alpine
 USER root
-# higher heap size to handle large mailboxes
+COPY docker-entrypoint.sh /
 
-RUN sed -i 's/#SOLR_HEAP="512m"/SOLR_HEAP="'${JAVA_HEAPSIZE:-4096}'m"/g' /opt/solr/bin/solr.in.sh
+RUN apk --no-cache add su-exec curl \
+  && chmod +x /docker-entrypoint.sh \
+  && /docker-entrypoint.sh --bootstrap
 
-# make solr config script executablle
-RUN chown solr:solr /startup.sh && \
-    chmod 744 /startup.sh
-
-USER solr
-
-RUN ["/bin/bash", "-c", "/startup.sh -c dovecot"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
