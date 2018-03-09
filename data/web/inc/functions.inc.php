@@ -39,7 +39,7 @@ function hasDomainAccess($username, $role, $domain) {
 }
 function hasMailboxObjectAccess($username, $role, $object) {
 	global $pdo;
-	if (!filter_var($username, FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $username))) {
+	if (!filter_var(html_entity_decode(rawurldecode($username)), FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $username))) {
 		return false;
 	}
 	if ($role != 'admin' && $role != 'domainadmin' && $role != 'user') {
@@ -74,7 +74,7 @@ function generate_tlsa_digest($hostname, $port, $starttls = null) {
     return "Not a valid hostname";
   }
   if (empty($starttls)) {
-    $context = stream_context_create(array("ssl" => array("capture_peer_cert" => true, 'verify_peer' => false, 'allow_self_signed' => true)));
+    $context = stream_context_create(array("ssl" => array("capture_peer_cert" => true, 'verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true)));
     $stream = stream_socket_client('ssl://' . $hostname . ':' . $port, $error_nr, $error_msg, 5, STREAM_CLIENT_CONNECT, $context);
     if (!$stream) {
       $error_msg = isset($error_msg) ? $error_msg : '-';
@@ -112,6 +112,7 @@ function generate_tlsa_digest($hostname, $port, $starttls = null) {
     stream_set_blocking($stream, true);
     stream_context_set_option($stream, 'ssl', 'capture_peer_cert', true);
     stream_context_set_option($stream, 'ssl', 'verify_peer', false);
+    stream_context_set_option($stream, 'ssl', 'verify_peer_name', false);
     stream_context_set_option($stream, 'ssl', 'allow_self_signed', true);
     stream_socket_enable_crypto($stream, true, STREAM_CRYPTO_METHOD_ANY_CLIENT);
     stream_set_blocking($stream, false);
@@ -414,7 +415,7 @@ function edit_user_account($postarray) {
 			}
 			$password_hashed = hash_password($password_new);
 			try {
-				$stmt = $pdo->prepare("UPDATE `mailbox` SET `password` = :password_hashed WHERE `username` = :username");
+				$stmt = $pdo->prepare("UPDATE `mailbox` SET `password` = :password_hashed, `attributes` = JSON_SET(`attributes`, '$.force_pw_update', '0') WHERE `username` = :username");
 				$stmt->execute(array(
 					':password_hashed' => $password_hashed,
 					':username' => $username
@@ -470,22 +471,18 @@ function user_get_alias_details($username) {
       ));
     $run = $stmt->fetchAll(PDO::FETCH_ASSOC);
     while ($row = array_shift($run)) {
-      $data['direct_aliases'] = $row['direct_aliases'];
+      $data['direct_aliases'][] = $row['direct_aliases'];
     }
-    $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(local_part, '@', alias_domain SEPARATOR ', '), '&#10008;') AS `ad_alias` FROM `mailbox`
+    $stmt = $pdo->prepare("SELECT GROUP_CONCAT(local_part, '@', alias_domain SEPARATOR ', ') AS `ad_alias` FROM `mailbox`
       LEFT OUTER JOIN `alias_domain` on `target_domain` = `domain`
         WHERE `username` = :username ;");
     $stmt->execute(array(':username' => $username));
     $run = $stmt->fetchAll(PDO::FETCH_ASSOC);
     while ($row = array_shift($run)) {
-      if (empty($data['direct_aliases'])) {
-        $data['direct_aliases'] = $row['ad_alias'];
-      }
-      else {
-        // Probably faster than imploding
-        $data['direct_aliases'] .= ', ' . $row['ad_alias'];
-      }
+      $data['direct_aliases'][] = $row['ad_alias'];
     }
+    $data['direct_aliases'] = implode(', ', array_filter($data['direct_aliases']));
+    $data['direct_aliases'] = empty($data['direct_aliases']) ? '&#10008;' : $data['direct_aliases'];
     $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(`send_as` SEPARATOR ', '), '&#10008;') AS `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `send_as` NOT LIKE '@%';");
     $stmt->execute(array(':username' => $username));
     $run = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -1134,13 +1131,13 @@ function get_logs($container, $lines = false) {
       return $data_array;
     }
   }
-  if ($container == "fail2ban-mailcow") {
+  if ($container == "netfilter-mailcow") {
     if (!is_numeric($lines)) {
       list ($from, $to) = explode('-', $lines);
-      $data = $redis->lRange('F2B_LOG', intval($from), intval($to));
+      $data = $redis->lRange('NETFILTER_LOG', intval($from), intval($to));
     }
     else {
-      $data = $redis->lRange('F2B_LOG', 0, intval($lines));
+      $data = $redis->lRange('NETFILTER_LOG', 0, intval($lines));
     }
     if ($data) {
       foreach ($data as $json_line) {
@@ -1166,12 +1163,13 @@ function get_logs($container, $lines = false) {
   }
   if ($container == "rspamd-history") {
     $curl = curl_init();
+    curl_setopt($curl, CURLOPT_UNIX_SOCKET_PATH, '/rspamd-sock/rspamd.sock');
     if (!is_numeric($lines)) {
       list ($from, $to) = explode('-', $lines);
-      curl_setopt($curl, CURLOPT_URL,"http://rspamd-mailcow:11334/history?from=" . intval($from) . "&to=" . intval($to));
+      curl_setopt($curl, CURLOPT_URL,"http://rspamd/history?from=" . intval($from) . "&to=" . intval($to));
     }
     else {
-      curl_setopt($curl, CURLOPT_URL,"http://rspamd-mailcow:11334/history?to=" . intval($lines));
+      curl_setopt($curl, CURLOPT_URL,"http://rspamd/history?to=" . intval($lines));
     }
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
     $history = curl_exec($curl);

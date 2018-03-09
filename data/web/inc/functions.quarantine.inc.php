@@ -1,5 +1,5 @@
 <?php
-function quarantaine($_action, $_data = null) {
+function quarantine($_action, $_data = null) {
 	global $pdo;
 	global $redis;
 	global $lang;
@@ -12,7 +12,7 @@ function quarantaine($_action, $_data = null) {
       else {
         $ids = $_data['id'];
       }
-      if (!isset($_SESSION['acl']['quarantaine']) || $_SESSION['acl']['quarantaine'] != "1" ) {
+      if (!isset($_SESSION['acl']['quarantine']) || $_SESSION['acl']['quarantine'] != "1" ) {
         $_SESSION['return'] = array(
           'type' => 'danger',
           'msg' => sprintf($lang['danger']['access_denied'])
@@ -28,12 +28,12 @@ function quarantaine($_action, $_data = null) {
           return false;
         }
         try {
-          $stmt = $pdo->prepare('SELECT `rcpt` FROM `quarantaine` WHERE `id` = :id');
+          $stmt = $pdo->prepare('SELECT `rcpt` FROM `quarantine` WHERE `id` = :id');
           $stmt->execute(array(':id' => $id));
           $row = $stmt->fetch(PDO::FETCH_ASSOC);
           if (hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $row['rcpt'])) {
             try {
-              $stmt = $pdo->prepare("DELETE FROM `quarantaine` WHERE `id` = :id");
+              $stmt = $pdo->prepare("DELETE FROM `quarantine` WHERE `id` = :id");
               $stmt->execute(array(
                 ':id' => $id
               ));
@@ -67,7 +67,7 @@ function quarantaine($_action, $_data = null) {
       );
     break;
     case 'edit':
-      if (!isset($_SESSION['acl']['quarantaine']) || $_SESSION['acl']['quarantaine'] != "1" ) {
+      if (!isset($_SESSION['acl']['quarantine']) || $_SESSION['acl']['quarantine'] != "1" ) {
         $_SESSION['return'] = array(
           'type' => 'danger',
           'msg' => sprintf($lang['danger']['access_denied'])
@@ -121,7 +121,7 @@ function quarantaine($_action, $_data = null) {
             return false;
           }
           try {
-            $stmt = $pdo->prepare('SELECT `msg`, `qid`, `sender`, `rcpt` FROM `quarantaine` WHERE `id` = :id');
+            $stmt = $pdo->prepare('SELECT `msg`, `qid`, `sender`, `rcpt` FROM `quarantine` WHERE `id` = :id');
             $stmt->execute(array(':id' => $id));
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $row['rcpt'])) {
@@ -167,13 +167,13 @@ function quarantaine($_action, $_data = null) {
             $mail->Port = 590;
             $mail->setFrom($sender);
             $mail->CharSet = 'UTF-8';
-            $mail->Subject = sprintf($lang['quarantaine']['release_subject'], $row['qid']);
+            $mail->Subject = sprintf($lang['quarantine']['release_subject'], $row['qid']);
             $mail->addAddress($row['rcpt']);
             $mail->IsHTML(false);
             $msg_tmpf = tempnam("/tmp", $row['qid']);
             file_put_contents($msg_tmpf, $row['msg']);
             $mail->addAttachment($msg_tmpf, $row['qid'] . '.eml');
-            $mail->Body = sprintf($lang['quarantaine']['release_body']);
+            $mail->Body = sprintf($lang['quarantine']['release_body']);
             $mail->send();
             unlink($msg_tmpf);
           }
@@ -186,7 +186,7 @@ function quarantaine($_action, $_data = null) {
             return false;
           }
           try {
-            $stmt = $pdo->prepare("DELETE FROM `quarantaine` WHERE `id` = :id");
+            $stmt = $pdo->prepare("DELETE FROM `quarantine` WHERE `id` = :id");
             $stmt->execute(array(
               ':id' => $id
             ));
@@ -209,7 +209,7 @@ function quarantaine($_action, $_data = null) {
     case 'get':
       try {
         if ($_SESSION['mailcow_cc_role'] == "user") {
-          $stmt = $pdo->prepare('SELECT `id`, `qid`, `rcpt`, `sender`, UNIX_TIMESTAMP(`created`) AS `created` FROM `quarantaine` WHERE `rcpt` = :mbox');
+          $stmt = $pdo->prepare('SELECT `id`, `qid`, `rcpt`, `sender`, UNIX_TIMESTAMP(`created`) AS `created` FROM `quarantine` WHERE `rcpt` = :mbox');
           $stmt->execute(array(':mbox' => $_SESSION['mailcow_cc_username']));
           $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
           while($row = array_shift($rows)) {
@@ -217,7 +217,7 @@ function quarantaine($_action, $_data = null) {
           }
         }
         elseif ($_SESSION['mailcow_cc_role'] == "admin") {
-          $stmt = $pdo->query('SELECT `id`, `qid`, `rcpt`, `sender`, UNIX_TIMESTAMP(`created`) AS `created` FROM `quarantaine`');
+          $stmt = $pdo->query('SELECT `id`, `qid`, `rcpt`, `sender`, UNIX_TIMESTAMP(`created`) AS `created` FROM `quarantine`');
           $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
           while($row = array_shift($rows)) {
             $q_meta[] = $row;
@@ -226,7 +226,7 @@ function quarantaine($_action, $_data = null) {
         else {
           $domains = array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains'));
           foreach ($domains as $domain) {
-            $stmt = $pdo->prepare('SELECT `id`, `qid`, `rcpt`, `sender`, UNIX_TIMESTAMP(`created`) AS `created` FROM `quarantaine` WHERE `rcpt` REGEXP :domain');
+            $stmt = $pdo->prepare('SELECT `id`, `qid`, `rcpt`, `sender`, UNIX_TIMESTAMP(`created`) AS `created` FROM `quarantine` WHERE `rcpt` REGEXP :domain');
             $stmt->execute(array(':domain' => '@' . $domain . '$'));
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
             while($row = array_shift($rows)) {
@@ -270,7 +270,7 @@ function quarantaine($_action, $_data = null) {
         return false;
       }
       try {
-        $stmt = $pdo->prepare('SELECT `rcpt`, `symbols`, `msg`, `domain` FROM `quarantaine` WHERE `id`= :id');
+        $stmt = $pdo->prepare('SELECT `rcpt`, `symbols`, `msg`, `domain` FROM `quarantine` WHERE `id`= :id');
         $stmt->execute(array(':id' => $_data));
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if (hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $row['rcpt'])) {

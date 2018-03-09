@@ -1,18 +1,71 @@
 #!/bin/bash
 
+#exit on error and pipefail
+set -o pipefail
+
 for bin in curl docker-compose docker git awk sha1sum; do
   if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
 done
 
+export LC_ALL=C
+DATE=$(date +%Y-%m-%d_%H_%M_%S)
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+while (($#)); do
+  case "${1}" in
+    --check|-c)
+      echo "Checking remote code for updates..."
+      git fetch origin ${BRANCH}
+      if [[ -z $(git log HEAD --pretty=format:"%H" | grep $(git rev-parse origin/${BRANCH})) ]]; then
+        echo "Updated code is available."
+        exit 0
+      else
+        echo "No updates available."
+        exit 3
+      fi
+    ;;
+    --ours)
+      MERGE_STRATEGY=ours
+    ;;
+  esac
+done
+
 [[ ! -f mailcow.conf ]] && { echo "mailcow.conf is missing"; exit 1;}
 
-CONFIG_ARRAY=("SKIP_LETS_ENCRYPT" "USE_WATCHDOG" "WATCHDOG_NOTIFY_EMAIL" "SKIP_CLAMD" "SKIP_IP_CHECK" "SKIP_FAIL2BAN" "ADDITIONAL_SAN" "DOVEADM_PORT" "IPV4_NETWORK" "IPV6_NETWORK" "LOG_LINES")
+if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusybBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\""; exit 1; fi
+if cp --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusybBox cp detected, please install coreutils, \"apk add --no-cache --upgrade coreutils\""; exit 1; fi
+
+CONFIG_ARRAY=(
+  "SKIP_LETS_ENCRYPT"
+  "USE_WATCHDOG"
+  "WATCHDOG_NOTIFY_EMAIL"
+  "SKIP_CLAMD"
+  "SKIP_IP_CHECK"
+  "ADDITIONAL_SAN"
+  "DOVEADM_PORT"
+  "IPV4_NETWORK"
+  "IPV6_NETWORK"
+  "LOG_LINES"
+  "SNAT_TO_SOURCE"
+  "SYSCTL_IPV6_DISABLED"
+  "SQL_PORT"
+)
+
 sed -i '$a\' mailcow.conf
 for option in ${CONFIG_ARRAY[@]}; do
   if [[ ${option} == "ADDITIONAL_SAN" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo "${option}=" >> mailcow.conf
+    fi
+  elif [[ ${option} == "SYSCTL_IPV6_DISABLED" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo "# Disable IPv6" >> mailcow.conf
+      echo "# mailcow-network will still be created as IPv6 enabled, all containers will be created" >> mailcow.conf
+      echo "# without IPv6 support." >> mailcow.conf
+      echo "# Use 1 for disabled, 0 for enabled" >> mailcow.conf
+      echo "SYSCTL_IPV6_DISABLED=0" >> mailcow.conf
     fi
   elif [[ ${option} == "COMPOSE_PROJECT_NAME" ]]; then
     if ! grep -q ${option} mailcow.conf; then
@@ -44,8 +97,20 @@ for option in ${CONFIG_ARRAY[@]}; do
   elif [[ ${option} == "IPV6_NETWORK" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
-      echo '# Internal IPv6 subnet in fd00::/8' >> mailcow.conf
+      echo '# Internal IPv6 subnet in fc00::/7' >> mailcow.conf
       echo "IPV6_NETWORK=fd4d:6169:6c63:6f77::/64" >> mailcow.conf
+    fi
+  elif [[ ${option} == "SQL_PORT" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Bind SQL to 127.0.0.1 on port 13306' >> mailcow.conf
+      echo "SQL_PORT=127.0.0.1:13306" >> mailcow.conf
+    fi
+  elif [[ ${option} == "SNAT_TO_SOURCE" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Use this IP for outgoing connections (SNAT)' >> mailcow.conf
+      echo "#SNAT_TO_SOURCE=" >> mailcow.conf
     fi
   elif ! grep -q ${option} mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"
@@ -58,34 +123,9 @@ curl -o /dev/null google.com -sm3
 if [[ $? != 0 ]]; then
   echo -e "\e[31mfailed\e[0m"
   exit 1
-  else
+else
   echo -e "\e[32mOK\e[0m"
 fi
-
-set -o pipefail
-export LC_ALL=C
-DATE=$(date +%Y-%m-%d_%H_%M_%S)
-BRANCH=$(git rev-parse --abbrev-ref HEAD)
-declare -a DC_PARAMS
-
-while (($#)); do
-  case "${1}" in
-    --check|-c)
-      echo "Checking remote code for updates..."
-      git fetch origin ${BRANCH}
-      if [[ $(git branch ${BRANCH} --contains $(git rev-parse origin/${BRANCH}) > /dev/null 2> /dev/null; echo $?) != 0 ]]; then
-        echo "Updated code is available."
-        exit 0
-      else
-        echo "No updates available."
-        exit 3
-      fi
-    ;;
-    --no-start)
-      DC_PARAMS=(${DC_PARAMS[@]} "--no-start")
-    ;;
-  esac
-done
 
 echo -e "\e[32mChecking for newer update script...\e[0m"
 SHA1_1=$(sha1sum update.sh)
@@ -100,7 +140,7 @@ fi
 
 if [[ -f mailcow.conf ]]; then
   source mailcow.conf
-  else
+else
   echo -e "\e[31mNo mailcow.conf - is mailcow installed?\e[0m"
   exit 1
 fi
@@ -118,13 +158,14 @@ docker-compose down
 # Silently fixing remote url from andryyy to mailcow
 git remote set-url origin https://github.com/mailcow/mailcow-dockerized
 echo -e "\e[32mCommitting current status...\e[0m"
+git update-index --assume-unchanged data/conf/rspamd/override.d/worker-controller-password.inc
 git add -u
 git commit -am "Before update on ${DATE}" > /dev/null
 echo -e "\e[32mFetching updated code from remote...\e[0m"
 git fetch origin ${BRANCH}
-echo -e "\e[32mMerging local with remote code (recursive, options: \"theirs\", \"patience\"...\e[0m"
+echo -e "\e[32mMerging local with remote code (recursive, strategy: \"${MERGE_STRATEGY:-theirs}\", options: \"patience\"...\e[0m"
 git config merge.defaultToUpstream true
-git merge -Xtheirs -Xpatience -m "After update on ${DATE}"
+git merge -X${MERGE_STRATEGY:-theirs} -Xpatience -m "After update on ${DATE}"
 # Need to use a variable to not pass return codes of if checks
 MERGE_RETURN=$?
 if [[ ${MERGE_RETURN} == 128 ]]; then
@@ -147,11 +188,14 @@ fi
 
 echo -e "\e[32mFetching new docker-compose version...\e[0m"
 sleep 2
-if [[ $(curl -sL -w "%{http_code}" https://www.servercow.de/docker-compose/latest.php -o /dev/null) == "200" ]]; then
+if [[ ! -z $(which pip) && $(pip list --local | grep -c docker-compose) == 1 ]]; then
+  true
+  #prevent breaking a working docker-compose installed with pip
+elif [[ $(curl -sL -w "%{http_code}" https://www.servercow.de/docker-compose/latest.php -o /dev/null) == "200" ]]; then
   LATEST_COMPOSE=$(curl -#L https://www.servercow.de/docker-compose/latest.php)
   curl -#L https://github.com/docker/compose/releases/download/${LATEST_COMPOSE}/docker-compose-$(uname -s)-$(uname -m) > $(which docker-compose)
   chmod +x $(which docker-compose)
-  else
+else
   echo -e "\e[33mCannot determine latest docker-compose version, skipping...\e[0m"
 fi
 
@@ -165,7 +209,7 @@ cp -n data/assets/ssl-example/*.pem data/assets/ssl/
 
 echo -e "\e[32mStarting mailcow...\e[0m"
 sleep 2
-docker-compose up -d --remove-orphans ${DC_PARAMS[@]}
+docker-compose up -d --remove-orphans
 
 echo -e "\e[32mCollecting garbage...\e[0m"
 IMGS_TO_DELETE=()
@@ -203,7 +247,7 @@ if [[ ! -z ${IMGS_TO_DELETE[*]} ]]; then
   read -r -p "Do you want to delete old image tags right now? [y/N] " response
   if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
     docker rmi ${IMGS_TO_DELETE[*]}
-    else
+  else
     echo "OK, skipped."
   fi
 fi

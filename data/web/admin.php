@@ -147,7 +147,7 @@ $tfa_data = get_tfa();
         <a href="#fwdhosts" class="list-group-item"><?=$lang['admin']['forwarding_hosts'];?></a>
         <a href="#f2bparams" class="list-group-item"><?=$lang['admin']['f2b_parameters'];?></a>
         <a href="#relayhosts" class="list-group-item">Relayhosts</a>
-        <a href="#quarantaine" class="list-group-item"><?=$lang['admin']['quarantaine'];?></a>
+        <a href="#quarantine" class="list-group-item"><?=$lang['admin']['quarantine'];?></a>
         <a href="#customize" class="list-group-item"><?=$lang['admin']['customize'];?></a>
         <a href="#top" class="list-group-item" style="border-top:1px dashed #dadada">↸ <?=$lang['admin']['to_top'];?></a>
       </div>
@@ -414,28 +414,28 @@ $tfa_data = get_tfa();
       </div>
     </div>
 
-    <span class="anchor" id="quarantaine"></span>
+    <span class="anchor" id="quarantine"></span>
     <div class="panel panel-default">
-      <div class="panel-heading"><?=$lang['admin']['quarantaine'];?></div>
+      <div class="panel-heading"><?=$lang['admin']['quarantine'];?></div>
       <div class="panel-body">
-       <?php $q_data = quarantaine('settings'); ?>
-        <form class="form" data-id="quarantaine" role="form" method="post">
+       <?php $q_data = quarantine('settings'); ?>
+        <form class="form" data-id="quarantine" role="form" method="post">
           <div class="row">
             <div class="col-sm-6">
               <div class="form-group">
-                <label for="retention_size"><?=$lang['admin']['quarantaine_retention_size'];?></label>
+                <label for="retention_size"><?=$lang['admin']['quarantine_retention_size'];?></label>
                 <input type="number" class="form-control" id="retention_size" name="retention_size" value="<?=$q_data['retention_size'];?>" required>
               </div>
             </div>
             <div class="col-sm-6">
               <div class="form-group">
-                <label for="max_size"><?=$lang['admin']['quarantaine_max_size'];?></label>
+                <label for="max_size"><?=$lang['admin']['quarantine_max_size'];?></label>
                 <input type="number" class="form-control" id="max_size" name="max_size" value="<?=$q_data['max_size'];?>" required>
               </div>
             </div>
           </div>
           <div class="form-group">
-            <label for="exclude_domains"><?=$lang['admin']['quarantaine_exclude_domains'];?></label><br />
+            <label for="exclude_domains"><?=$lang['admin']['quarantine_exclude_domains'];?></label><br />
             <select data-width="100%" id="exclude_domains" name="exclude_domains" class="selectpicker" title="<?=$lang['tfa']['select'];?>" multiple>
               <?php
               foreach (array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains')) as $domain):
@@ -446,7 +446,7 @@ $tfa_data = get_tfa();
               ?>
             </select>
           </div>
-          <button class="btn btn-default" id="edit_selected" data-item="self" data-id="quarantaine" data-api-url='edit/quarantaine' data-api-attr='{"action":"settings"}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+          <button class="btn btn-default" id="edit_selected" data-item="self" data-id="quarantine" data-api-url='edit/quarantine' data-api-attr='{"action":"settings"}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
         </form>
       </div>
     </div>

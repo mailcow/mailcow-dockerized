@@ -29,7 +29,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN mkdir /usr/share/doc/sogo \
 	&& touch /usr/share/doc/sogo/empty.sh \
 	&& apt-key adv --keyserver keys.gnupg.net --recv-key 0x810273C4 \
-	&& echo "deb http://packages.inverse.ca/SOGo/nightly/3/debian/ stretch stretch" > /etc/apt/sources.list.d/sogo.list \
+	&& echo "deb http://packages.inverse.ca/SOGo/nightly/4/debian/ stretch stretch" > /etc/apt/sources.list.d/sogo.list \
 	&& apt-get update && apt-get install -y --force-yes \
 		sogo \
 		sogo-activesync \
@@ -42,6 +42,9 @@ RUN mkdir /usr/share/doc/sogo \
 COPY ./bootstrap-sogo.sh /
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
 COPY supervisord.conf /etc/supervisor/supervisord.conf
+COPY theme-blue.js /usr/lib/GNUstep/SOGo/WebServerResources/js/theme-blue.js
+COPY theme-green.js /usr/lib/GNUstep/SOGo/WebServerResources/js/theme-green.js
+COPY sogo-full.svg /usr/lib/GNUstep/SOGo/WebServerResources/img/sogo-full.svg
 
 CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 

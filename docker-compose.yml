@@ -10,6 +10,8 @@ services:
       volumes:
         - ./data/conf/unbound/unbound.conf:/etc/unbound/unbound.conf:ro
       restart: always
+      sysctls:
+        - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       networks:
         mailcow-network:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.254
@@ -30,6 +32,10 @@ services:
       restart: always
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
+      ports:
+        - "${SQL_PORT:-127.0.0.1:13306}:3306"
+      sysctls:
+        - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       networks:
         mailcow-network:
           aliases:
@@ -44,6 +50,8 @@ services:
         - TZ=${TZ}
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
+      sysctls:
+        - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       networks:
         mailcow-network:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.249
@@ -51,7 +59,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.8
+      image: mailcow/clamd:1.9
       build: ./data/Dockerfiles/clamd
       restart: always
       environment:
@@ -61,13 +69,15 @@ services:
         - ./data/conf/clamav/:/etc/clamav/
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
+      sysctls:
+        - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       networks:
         mailcow-network:
           aliases:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.16
+      image: mailcow/rspamd:1.17
       build: ./data/Dockerfiles/rspamd
       stop_grace_period: 30s
       depends_on:
@@ -76,12 +86,14 @@ services:
         - TZ=${TZ}
       volumes:
         - ./data/conf/rspamd/custom/:/etc/rspamd/custom:ro
-        - ./data/conf/rspamd/override.d/:/etc/rspamd/override.d:ro
+        - ./data/conf/rspamd/override.d/:/etc/rspamd/override.d:rw
         - ./data/conf/rspamd/local.d/:/etc/rspamd/local.d:ro
         - ./data/conf/rspamd/lua/:/etc/rspamd/lua/:ro
-        - dkim-vol-1:/data/dkim
+        - rspamd-sock:/rspamd-sock
         - rspamd-vol-1:/var/lib/rspamd
       restart: always
+      sysctls:
+        - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       hostname: rspamd
@@ -91,7 +103,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.9
+      image: mailcow/phpfpm:1.12
       build: ./data/Dockerfiles/phpfpm
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
@@ -99,11 +111,12 @@ services:
       volumes:
         - ./data/web:/web:rw
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
-        - dkim-vol-1:/data/dkim
+        - rspamd-sock:/rspamd-sock
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro
         - ./data/conf/phpfpm/php-fpm.d/www.conf:/usr/local/etc/php-fpm.d/www.conf
         - ./data/conf/phpfpm/php-fpm.d/system.conf:/usr/local/etc/php-fpm.d/system.conf
         - ./data/conf/phpfpm/php-conf.d/opcache-recommended.ini:/usr/local/etc/php/conf.d/opcache-recommended.ini
+        - ./data/conf/phpfpm/php-conf.d/upload.ini:/usr/local/etc/php/conf.d/upload.ini
       environment:
         - LOG_LINES=${LOG_LINES:-9999}
         - TZ=${TZ}
@@ -120,6 +133,8 @@ services:
         - SMTPS_PORT=${SMTPS_PORT:-465}
         - SMTP_PORT=${SMTP_PORT:-25}
       restart: always
+      sysctls:
+        - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       networks:
@@ -128,7 +143,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.16
+      image: mailcow/sogo:1.20
       build: ./data/Dockerfiles/sogo
       environment:
         - DBNAME=${DBNAME}
@@ -140,6 +155,8 @@ services:
       volumes:
         - ./data/conf/sogo/:/etc/sogo/
       restart: always
+      sysctls:
+        - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       networks:
@@ -149,7 +166,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.20
+      image: mailcow/dovecot:1.24
       build: ./data/Dockerfiles/dovecot
       cap_add:
         - NET_BIND_SERVICE
@@ -159,6 +176,7 @@ services:
         - ./data/conf/sogo/:/etc/sogo/
         - vmail-vol-1:/var/vmail
         - crypt-vol-1:/mail_crypt/
+        - rspamd-sock:/rspamd-sock
       environment:
         - LOG_LINES=${LOG_LINES:-9999}
         - DBNAME=${DBNAME}
@@ -180,6 +198,8 @@ services:
           hard: 40000
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
+      sysctls:
+        - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       hostname: ${MAILCOW_HOSTNAME}
       networks:
         mailcow-network:
@@ -187,7 +207,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.13
+      image: mailcow/postfix:1.14
       build: ./data/Dockerfiles/postfix
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
@@ -209,6 +229,8 @@ services:
       restart: always
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
+      sysctls:
+        - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       hostname: ${MAILCOW_HOSTNAME}
       networks:
         mailcow-network:
@@ -218,6 +240,8 @@ services:
     memcached-mailcow:
       image: memcached:alpine
       restart: always
+      sysctls:
+        - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       networks:
@@ -240,6 +264,7 @@ services:
         until ping phpfpm -c1 > /dev/null; do sleep 1; done &&
         until ping sogo -c1 > /dev/null; do sleep 1; done &&
         until ping redis -c1 > /dev/null; do sleep 1; done &&
+        until ping rspamd -c1 > /dev/null; do sleep 1; done &&
         exec nginx -g 'daemon off;'"
       environment:
         - HTTPS_PORT=${HTTPS_PORT:-443}
@@ -256,6 +281,8 @@ services:
         - "${HTTPS_BIND:-0.0.0.0}:${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
         - "${HTTP_BIND:-0.0.0.0}:${HTTP_PORT:-80}:${HTTP_PORT:-80}"
       restart: always
+      sysctls:
+        - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       networks:
@@ -269,6 +296,8 @@ services:
         - mysql-mailcow
       image: mailcow/acme:1.28
       build: ./data/Dockerfiles/acme
+      sysctls:
+        - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -290,9 +319,9 @@ services:
           aliases:
             - acme
 
-    fail2ban-mailcow:
-      image: mailcow/fail2ban:1.11
-      build: ./data/Dockerfiles/fail2ban
+    netfilter-mailcow:
+      image: mailcow/netfilter:1.11
+      build: ./data/Dockerfiles/netfilter
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -304,8 +333,8 @@ services:
       privileged: true
       environment:
         - TZ=${TZ}
-        - SKIP_FAIL2BAN=${SKIP_FAIL2BAN:-n}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
+        - SNAT_TO_SOURCE=${SNAT_TO_SOURCE:-n}
       network_mode: "host"
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -313,12 +342,14 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.13
+      image: mailcow/watchdog:1.14
       # Debug
-      command: /watchdog.sh
+      #command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog
+      sysctls:
+        - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       volumes:
-        - vmail-vol-1:/vmail:ro
+        - rspamd-sock:/rspamd-sock
       restart: always
       environment:
         - LOG_LINES=${LOG_LINES:-9999}
@@ -337,9 +368,11 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:1.5
+      image: mailcow/dockerapi:1.9
       restart: always
       build: ./data/Dockerfiles/dockerapi
+      sysctls:
+        - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
       oom_score_adj: -10
       environment:
         - TZ=${TZ}
@@ -373,8 +406,8 @@ networks:
 volumes:
   vmail-vol-1:
   mysql-vol-1:
-  dkim-vol-1:
   redis-vol-1:
   rspamd-vol-1:
   postfix-vol-1:
   crypt-vol-1:
+  rspamd-sock:

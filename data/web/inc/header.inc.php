@@ -1,9 +1,10 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="<?= $_SESSION['mailcow_locale'] ?>">
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#F5D76E"/>
 <meta http-equiv="Referrer-Policy" content="same-origin">
 <title><?=$UI_TEXTS['title_name'];?></title>
 <!--[if lt IE 9]>
@@ -29,7 +30,7 @@
 <?= (preg_match("/admin.php/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/admin.css">' : null; ?>
 <?= (preg_match("/user.php/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/user.css">' : null; ?>
 <?= (preg_match("/edit.php/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/edit.css">' : null; ?>
-<?= (preg_match("/quarantaine.php/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/quarantaine.css">' : null; ?>
+<?= (preg_match("/quarantine.php/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/quarantine.css">' : null; ?>
 <?= (preg_match("/debug.php/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/debug.css">' : null; ?>
 <link rel="shortcut icon" href="/favicon.png" type="image/png">
 <link rel="icon" href="/favicon.png" type="image/png">
@@ -74,8 +75,8 @@
             if (isset($_SESSION['mailcow_cc_role'])) {
               if ($_SESSION['mailcow_cc_role'] == 'admin') {
               ?>
-                <li<?= (preg_match("/debug/i", $_SERVER['REQUEST_URI'])) ? ' class="active"' : ''; ?>><a href="/debug.php"><?= $lang['header']['debug']; ?></a></li>
                 <li<?= (preg_match("/admin/i", $_SERVER['REQUEST_URI'])) ? ' class="active"' : ''; ?>><a href="/admin.php"><?= $lang['header']['administration']; ?></a></li>
+                <li<?= (preg_match("/debug/i", $_SERVER['REQUEST_URI'])) ? ' class="active"' : ''; ?>><a href="/debug.php"><?= $lang['header']['debug']; ?></a></li>
               <?php
               }
               if ($_SESSION['mailcow_cc_role'] == 'admin' || $_SESSION['mailcow_cc_role'] == 'domainadmin') {
@@ -95,7 +96,7 @@
         <?php
         if (isset($_SESSION['mailcow_cc_role'])) {
         ?>
-        <li<?= (preg_match("/quarantaine/i", $_SERVER['REQUEST_URI'])) ? ' class="active"' : ''; ?>><a href="/quarantaine.php"><span class="glyphicon glyphicon-briefcase"></span> <?= $lang['header']['quarantaine']; ?></a></li>
+        <li<?= (preg_match("/quarantine/i", $_SERVER['REQUEST_URI'])) ? ' class="active"' : ''; ?>><a href="/quarantine.php"><span class="glyphicon glyphicon-briefcase"></span> <?= $lang['header']['quarantine']; ?></a></li>
         <?php
         }
         if ($_SESSION['mailcow_cc_role'] == 'admin') {
@@ -118,7 +119,7 @@
             foreach ($row as $key => $val):
           ?>
             <li><a href="<?= htmlspecialchars($val); ?>"><?= htmlspecialchars($key); ?></a></li>
-          <?php 
+          <?php
             endforeach;
           }
           ?>
@@ -128,11 +129,11 @@
         }
         if (!isset($_SESSION['dual-login']) && isset($_SESSION['mailcow_cc_username'])):
         ?>
-          <li class="logged-in-as"><a href="#" onclick="logout.submit()"><b><?= $_SESSION['mailcow_cc_username']; ?></b> <span class="glyphicon glyphicon-log-out"></span></a></li>
+          <li class="logged-in-as"><a href="#" onclick="logout.submit()"><b><?= htmlspecialchars($_SESSION['mailcow_cc_username']); ?></b> <span class="glyphicon glyphicon-log-out"></span></a></li>
         <?php
         elseif (isset($_SESSION['dual-login'])):
         ?>
-          <li class="logged-in-as"><a href="#" onclick="logout.submit()"><b><?= $_SESSION['mailcow_cc_username']; ?> <span class="text-info">(<?= $_SESSION['dual-login']['username']; ?>)</span> </b><span class="glyphicon glyphicon-log-out"></span></a></li>
+          <li class="logged-in-as"><a href="#" onclick="logout.submit()"><b><?= htmlspecialchars($_SESSION['mailcow_cc_username']); ?> <span class="text-info">(<?= htmlspecialchars($_SESSION['dual-login']['username']); ?>)</span> </b><span class="glyphicon glyphicon-log-out"></span></a></li>
         <?php
         endif;
         ?>

@@ -251,7 +251,6 @@ while true; do
       if [[ $ACME_RESPONSE =~ "No registration exists" ]]; then
         log_f "Registration keys are invalid, deleting old keys and restarting..."
         rm ${ACME_BASE}/acme/private/account.key
-        rm ${ACME_BASE}/acme/private/privkey.pem
         exec $(readlink -f "$0")
       fi
       if [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]]; then

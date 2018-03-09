@@ -891,8 +891,8 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             return false;
           }
           try {
-            $stmt = $pdo->prepare("INSERT INTO `mailbox` (`username`, `password`, `name`, `maildir`, `quota`, `local_part`, `domain`, `active`) 
-              VALUES (:username, :password_hashed, :name, :maildir, :quota_b, :local_part, :domain, :active)");
+            $stmt = $pdo->prepare("INSERT INTO `mailbox` (`username`, `password`, `name`, `maildir`, `quota`, `local_part`, `domain`, `attributes`, `active`) 
+              VALUES (:username, :password_hashed, :name, :maildir, :quota_b, :local_part, :domain, '{\"force_pw_update\": \"0\", \"tls_enforce_in\": \"0\", \"tls_enforce_out\": \"0\"}', :active)");
             $stmt->execute(array(
               ':username' => $username,
               ':password_hashed' => $password_hashed,
@@ -1152,10 +1152,10 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               return false;
             }
             try {
-              $stmt = $pdo->prepare("UPDATE `mailbox` SET `tls_enforce_out` = :tls_out, `tls_enforce_in` = :tls_in WHERE `username` = :username");
+              $stmt = $pdo->prepare("UPDATE `mailbox` SET `attributes` = JSON_SET(`attributes`, '$.tls_enforce_out', :tls_out), `attributes` = JSON_SET(`attributes`, '$.tls_enforce_in', :tls_in) WHERE `username` = :username");
               $stmt->execute(array(
-                ':tls_out' => $tls_enforce_out,
-                ':tls_in' => $tls_enforce_in,
+                ':tls_out' => intval($tls_enforce_out),
+                ':tls_in' => intval($tls_enforce_in),
                 ':username' => $username
               ));
             }
@@ -1461,7 +1461,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               $subfolder2 = (isset($_data['subfolder2'])) ? $_data['subfolder2'] : $is_now['subfolder2'];
               $enc1 = (!empty($_data['enc1'])) ? $_data['enc1'] : $is_now['enc1'];
               $mins_interval = (!empty($_data['mins_interval'])) ? $_data['mins_interval'] : $is_now['mins_interval'];
-              $exclude = (!empty($_data['exclude'])) ? $_data['exclude'] : $is_now['exclude'];
+              $exclude = (isset($_data['exclude'])) ? $_data['exclude'] : $is_now['exclude'];
               $maxage = (isset($_data['maxage']) && $_data['maxage'] != "") ? intval($_data['maxage']) : $is_now['maxage'];
               $maxbytespersecond = (isset($_data['maxbytespersecond']) && $_data['maxbytespersecond'] != "") ? intval($_data['maxbytespersecond']) : $is_now['maxbytespersecond'];
             }
@@ -1954,6 +1954,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             $is_now = mailbox('get', 'mailbox_details', $username);
             if (!empty($is_now)) {
               $active     = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
+              (int)$force_pw_update = (isset($_data['force_pw_update'])) ? intval($_data['force_pw_update']) : intval($is_now['attributes']['force_pw_update']);
               $name       = (!empty($_data['name'])) ? $_data['name'] : $is_now['name'];
               $domain     = $is_now['domain'];
               $quota_m    = (!empty($_data['quota'])) ? $_data['quota'] : ($is_now['quota'] / 1048576);
@@ -2113,24 +2114,11 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               }
               $password_hashed = hash_password($password);
               try {
-                $stmt = $pdo->prepare("UPDATE `alias` SET
-                    `active` = :active
-                      WHERE `address` = :address");
-                $stmt->execute(array(
-                  ':address' => $username,
-                  ':active' => $active
-                ));
                 $stmt = $pdo->prepare("UPDATE `mailbox` SET
-                    `active` = :active,
-                    `password` = :password_hashed,
-                    `name`= :name,
-                    `quota` = :quota_b
+                    `password` = :password_hashed
                       WHERE `username` = :username");
                 $stmt->execute(array(
                   ':password_hashed' => $password_hashed,
-                  ':active' => $active,
-                  ':name' => $name,
-                  ':quota_b' => $quota_b,
                   ':username' => $username
                 ));
               }
@@ -2153,12 +2141,14 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               $stmt = $pdo->prepare("UPDATE `mailbox` SET
                   `active` = :active,
                   `name`= :name,
-                  `quota` = :quota_b
+                  `quota` = :quota_b,
+                  `attributes` = JSON_SET(`attributes`, '$.force_pw_update', :force_pw_update)
                     WHERE `username` = :username");
               $stmt->execute(array(
                 ':active' => $active,
                 ':name' => $name,
                 ':quota_b' => $quota_b,
+                ':force_pw_update' => $force_pw_update,
                 ':username' => $username
               ));
             }
@@ -2402,7 +2392,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
           return $mailboxes;
         break;
         case 'tls_policy':
-          $policydata = array();
+          $attrs = array();
           if (isset($_data) && filter_var($_data, FILTER_VALIDATE_EMAIL)) {
             if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
               return false;
@@ -2412,9 +2402,9 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             $_data = $_SESSION['mailcow_cc_username'];
           }
           try {
-            $stmt = $pdo->prepare("SELECT `tls_enforce_out`, `tls_enforce_in` FROM `mailbox` WHERE `username` = :username");
+            $stmt = $pdo->prepare("SELECT `attributes` FROM `mailbox` WHERE `username` = :username");
             $stmt->execute(array(':username' => $_data));
-            $policydata = $stmt->fetch(PDO::FETCH_ASSOC);
+            $attrs = $stmt->fetch(PDO::FETCH_ASSOC);
           }
           catch(PDOException $e) {
             $_SESSION['return'] = array(
@@ -2423,7 +2413,11 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             );
             return false;
           }
-          return $policydata;
+          $attrs = json_decode($attrs['attributes'], true);
+          return array(
+            'tls_enforce_in' => $attrs['tls_enforce_in'],
+            'tls_enforce_out' => $attrs['tls_enforce_out']
+          );
         break;
         case 'filters':
           $filters = array();
@@ -3070,6 +3064,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
                 `mailbox`.`domain`,
                 `mailbox`.`quota`,
                 `quota2`.`bytes`,
+                `attributes`,
                 `quota2`.`messages`
                   FROM `mailbox`, `quota2`, `domain`
                     WHERE `mailbox`.`kind` NOT REGEXP 'location|thing|group' AND `mailbox`.`username` = `quota2`.`username` AND `domain`.`domain` = `mailbox`.`domain` AND `mailbox`.`username` = :mailbox");
@@ -3097,6 +3092,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             $mailboxdata['active_int'] = $row['active_int'];
             $mailboxdata['domain'] = $row['domain'];
             $mailboxdata['quota'] = $row['quota'];
+            $mailboxdata['attributes'] = json_decode($row['attributes'], true);
             $mailboxdata['quota_used'] = intval($row['bytes']);
             $mailboxdata['percent_in_use'] = round((intval($row['bytes']) / intval($row['quota'])) * 100);
             $mailboxdata['messages'] = $row['messages'];

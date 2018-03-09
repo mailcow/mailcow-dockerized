@@ -17,15 +17,22 @@ done
 
 mysql --host mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "DROP VIEW IF EXISTS sogo_view"
 
-mysql --host mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
+while [[ ${VIEW_OK} != 'OK' ]]; do
+  mysql --host mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
 CREATE VIEW sogo_view (c_uid, domain, c_name, c_password, c_cn, mail, aliases, ad_aliases, home, kind, multiple_bookings) AS
-SELECT mailbox.username, mailbox.domain, mailbox.username, mailbox.password, mailbox.name, mailbox.username, IFNULL(GROUP_CONCAT(ga.aliases SEPARATOR ' '), ''), IFNULL(gda.ad_alias, ''), CONCAT('/var/vmail/', maildir), mailbox.kind, mailbox.multiple_bookings FROM mailbox
+SELECT mailbox.username, mailbox.domain, mailbox.username, if(json_extract(attributes, '$.force_pw_update') LIKE '%0%', password, 'invalid'), mailbox.name, mailbox.username, IFNULL(GROUP_CONCAT(ga.aliases SEPARATOR ' '), ''), IFNULL(gda.ad_alias, ''), CONCAT('/var/vmail/', maildir), mailbox.kind, mailbox.multiple_bookings FROM mailbox
 LEFT OUTER JOIN grouped_mail_aliases ga ON ga.username REGEXP CONCAT('(^|,)', mailbox.username, '($|,)')
 LEFT OUTER JOIN grouped_domain_alias_address gda ON gda.username = mailbox.username
 WHERE mailbox.active = '1'
 GROUP BY mailbox.username;
 EOF
-
+  if [[ ! -z $(mysql --host mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "SELECT 'OK' FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'sogo_view'") ]]; then
+    VIEW_OK=OK
+  else
+    echo "Will retry to setup SOGo view in 3s"
+    sleep 3
+  fi
+done
 
 mkdir -p /var/lib/sogo/GNUstep/Defaults/
 

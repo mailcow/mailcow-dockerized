@@ -1,4 +1,4 @@
 #!/bin/bash
-/usr/bin/curl -s --data-binary @- http://rspamd:11334/learnspam < /dev/stdin
+/usr/bin/curl -s --data-binary @- --unix-socket /rspamd-sock/rspamd.sock http://rspamd/learnspam < /dev/stdin
 # Always return 0 to satisfy Dovecot...
 exit 0
