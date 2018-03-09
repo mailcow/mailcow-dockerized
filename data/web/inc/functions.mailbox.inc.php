@@ -1461,7 +1461,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               $subfolder2 = (isset($_data['subfolder2'])) ? $_data['subfolder2'] : $is_now['subfolder2'];
               $enc1 = (!empty($_data['enc1'])) ? $_data['enc1'] : $is_now['enc1'];
               $mins_interval = (!empty($_data['mins_interval'])) ? $_data['mins_interval'] : $is_now['mins_interval'];
-              $exclude = (!empty($_data['exclude'])) ? $_data['exclude'] : $is_now['exclude'];
+              $exclude = (isset($_data['exclude'])) ? $_data['exclude'] : $is_now['exclude'];
               $maxage = (isset($_data['maxage']) && $_data['maxage'] != "") ? intval($_data['maxage']) : $is_now['maxage'];
               $maxbytespersecond = (isset($_data['maxbytespersecond']) && $_data['maxbytespersecond'] != "") ? intval($_data['maxbytespersecond']) : $is_now['maxbytespersecond'];
             }
