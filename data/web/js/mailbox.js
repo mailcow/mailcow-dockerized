@@ -709,10 +709,7 @@ jQuery(function($){
   draw_sync_job_table();
   draw_filter_table();
   draw_bcc_table();
-<<<<<<< HEAD
   draw_transport_map_table();
-=======
   draw_recipient_map_table();
->>>>>>> d3ff84cf3f3864402770b95ee107f4f50bef8844
 
 });
