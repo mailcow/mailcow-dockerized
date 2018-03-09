@@ -310,7 +310,7 @@ jQuery(function($){
           $.each(data, function (i, item) {
             item.action = '<div class="btn-group">' +
               '<a href="/edit.php?resource=' + encodeURIComponent(item.name) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-              '<a href="#" id="delete_selected" data-id="single-resource" data-api-url="delete/resource" data-item="' + encodeURIComponent(item.name) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+              '<a href="#" id="delete_selected" data-id="single-resource" data-api-url="delete/resource" data-item="' + item.name + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="resource" name="multi_select" value="' + encodeURIComponent(item.name) + '" />';
             item.name = escapeHtml(item.name);
