@@ -8,22 +8,32 @@ function transport_map($_action, $_data = null, $attr = null) {
   switch ($_action) {
     case 'add':
       $local_dest = strtolower(trim($_data['local_dest']));
-      $nexthop = strtolower(trim($_data['nexthop']));
+      $protocol = strtolower(trim($_data['protocol']));
+      $ip = strtolower(trim($_data['ip']));
+      $port = strtolower(trim($_data['port']));
       $active = intval($_data['active']);
+
       if (empty($local_dest)) {
         $_SESSION['return'] = array(
           'type' => 'danger',
           'msg' => 'Local destination cannot be empty'
         );
         return false;
-      } elseif (empty($nexthop)) {
+      } elseif (empty($protocol)) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'Nexthop cannot be empty'
+          'msg' => 'Protocol cannot be empty'
+        );
+        return false;
+      } elseif (empty($ip)) {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => 'Domain/IP cannot be empty'
         );
         return false;
       }
       try {
+        $nexthop = $protocol . $ip . $port;
         $stmt = $pdo->prepare("INSERT INTO `transport_maps` (`local_dest`, `nexthop`, `active`) VALUES
           (:local_dest, :nexthop, :active)");
         $stmt->execute(array(
