@@ -33,7 +33,7 @@ function transport_map($_action, $_data = null, $attr = null) {
         return false;
       }
       try {
-        $nexthop = $protocol . $ip . $port;
+        $nexthop = $protocol . $ip . ':' . $port;
         $stmt = $pdo->prepare("INSERT INTO `transport_maps` (`local_dest`, `nexthop`, `active`) VALUES
           (:local_dest, :nexthop, :active)");
         $stmt->execute(array(
