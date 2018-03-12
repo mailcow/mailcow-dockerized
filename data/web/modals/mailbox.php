@@ -641,6 +641,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 								<option value="smtp:" selected>SMTP</option>
 								<option value="smtps:">SMTPS</option>
 								<option value="lmtp:">LMTP</option>
+								<option value="lmtps:">LMTPS</option>
 							</select>
             </div>
           </div>
