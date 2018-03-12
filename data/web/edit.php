@@ -679,10 +679,26 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               </div>
             </div>
             <div class="form-group">
-              <label class="control-label col-sm-2" for="nexthop"><?=$lang['mailbox']['transport_map_remote_dest'];?>:</label>
+              <label class="control-label col-sm-2" for="nexthop"><?= $lang['mailbox']['transport_map_remote_dest']; ?>:</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" id="nexthop" name="nexthop" value="<?=$result['nexthop'];?>">
-                </div>
+                <select name="protocol" id="protocol">
+                  <option value="smtp:" <?php if ($result['protocol'] === 'smtp:') { echo "selected"; } ?>>SMTP</option>
+                  <option value="smtps:" <?php if ($result['protocol'] === 'smtps:') { echo "selected"; } ?>>SMTPS</option>
+                  <option value="lmtp:" <?php if ($result['protocol'] === 'lmtp:') { echo "selected"; } ?>>LMTP</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="ip"><?= $lang['add']['domain']; ?>/IP:</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" name="ip" id="ip" value="<?=$result['ip']; ?>">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="port"><?= $lang['add']['port']; ?>:</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" name="port" id="port" value="<?= $result['port']; ?>">
+              </div>
             </div>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
