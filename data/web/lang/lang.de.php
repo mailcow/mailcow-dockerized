@@ -528,7 +528,10 @@ $lang['mailbox']['transport_map'] = "Transport Maps";
 $lang['mailbox']['transport_map_local_dest'] = "Lokales Ziel";
 $lang['mailbox']['transport_map_remote_dest'] = "Entferntes Ziel";
 $lang['mailbox']['add_transport_map_entry'] = "Transport Map Eintrag hinzufügen";
-$lang['mailbox']['transport_map_info'] = "Lorem ipsum.";
+$lang['mailbox']['transport_map_info'] = "Transport Maps werden verwendet, um E-Mails über einen anderen E-Mail Server zu versenden/empfangen.";
+$lang['mailbox']['transport_map_protocol'] = "Protokoll";
+$lang['mailbox']['transport_map_ip'] = "Domain/IP";
+$lang['mailbox']['transport_map_port'] = "Port";
 
 $lang['mailbox']['address_rewriting'] = 'Adressumschreibung';
 $lang['mailbox']['recipient_maps'] = 'Empfängerumschreibungen';

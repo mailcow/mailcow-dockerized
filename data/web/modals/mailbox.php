@@ -635,7 +635,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             </div>
           </div>
 					<div class="form-group">
-            <label class="control-label col-sm-2" for="nexthop"><?= $lang['mailbox']['transport_map_remote_dest']; ?>:</label>
+            <label class="control-label col-sm-2" for="nexthop"><?= $lang['mailbox']['transport_map_protocol']; ?>:</label>
             <div class="col-sm-10">
 							<select name="protocol" id="protocol">
 								<option value="smtp:" selected>SMTP</option>
@@ -645,15 +645,17 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             </div>
           </div>
 					<div class="form-group">
-            <label class="control-label col-sm-2" for="ip"><?= $lang['add']['domain']; ?>/IP:</label>
+            <label class="control-label col-sm-2" for="ip"><?= $lang['mailbox']['transport_map_ip']; ?>:</label>
 						<div class="col-sm-10">
             	<input type="text" class="form-control" name="ip" id="ip">
+							<small class="help-block">Use brackets to avoid mx lookups. ([example.com])</small>
 						</div>
           </div>
 					<div class="form-group">
-            <label class="control-label col-sm-2" for="port"><?= $lang['add']['port']; ?>:</label>
+            <label class="control-label col-sm-2" for="port"><?= $lang['mailbox']['transport_map_port']; ?>:</label>
 						<div class="col-sm-10">
             	<input type="text" class="form-control" name="port" id="port">
+							<small class="help-block">Optional</small>
 						</div>
           </div>
           <div class="form-group">
