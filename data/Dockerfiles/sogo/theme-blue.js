@@ -16,16 +16,16 @@
      * Define the Alternative theme
      */
     $mdThemingProvider.theme('mailcow')
-      .primaryPalette('indigo', {
+      .primaryPalette('blue', {
         'default': '700',  // top toolbar
-        'hue-1': '400',
-        'hue-2': '600',    // sidebar toolbar
+        'hue-1': '500',
+        'hue-2': '700',    // sidebar toolbar
         'hue-3': 'A700'
       })
-      .accentPalette('indigo', {
-        'default': '500',  // fab buttons
+      .accentPalette('blue', {
+        'default': '700',  // fab buttons
         'hue-1': '50',     // center list toolbar
-        'hue-2': '400',
+        'hue-2': '600',
         'hue-3': 'A700'
       })
       .backgroundPalette('grey', {
@@ -35,16 +35,16 @@
         'hue-3': '300'
       });
     $mdThemingProvider.theme('default')
-      .primaryPalette('indigo', {
+      .primaryPalette('blue', {
         'default': '700',  // top toolbar
-        'hue-1': '400',
-        'hue-2': '600',    // sidebar toolbar
+        'hue-1': '500',
+        'hue-2': '700',    // sidebar toolbar
         'hue-3': 'A700'
       })
-      .accentPalette('indigo', {
-        'default': '500',  // fab buttons
+      .accentPalette('blue', {
+        'default': '700',  // fab buttons
         'hue-1': '50',     // center list toolbar
-        'hue-2': '400',
+        'hue-2': '600',
         'hue-3': 'A700'
       })
       .backgroundPalette('grey', {
