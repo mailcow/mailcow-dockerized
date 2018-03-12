@@ -686,6 +686,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                   <option value="smtp:" <?php if ($nexthop[0] === 'smtp') { echo "selected"; } ?>>SMTP</option>
                   <option value="smtps:" <?php if ($nexthop[0] === 'smtps') { echo "selected"; } ?>>SMTPS</option>
                   <option value="lmtp:" <?php if ($nexthop[0] === 'lmtp') { echo "selected"; } ?>>LMTP</option>
+                  <option value="lmtps:" <?php if ($nexthop[0] === 'lmtps') { echo "selected"; } ?>>LMTPS</option>
                 </select>
               </div>
             </div>
