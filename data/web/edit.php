@@ -666,6 +666,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
     elseif (isset($_GET['transport_map']) && !empty($_GET["transport_map"])) {
         $transport_map = intval($_GET["transport_map"]);
         $result = transport_map('details', $transport_map);
+        $nexthop = explode(':', $result['nexthop']);
         if (!empty($result)) {
           ?>
           <h4>Transport Map</h4>
@@ -682,22 +683,22 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               <label class="control-label col-sm-2" for="nexthop"><?= $lang['mailbox']['transport_map_remote_dest']; ?>:</label>
               <div class="col-sm-10">
                 <select name="protocol" id="protocol">
-                  <option value="smtp:" <?php if ($result['protocol'] === 'smtp:') { echo "selected"; } ?>>SMTP</option>
-                  <option value="smtps:" <?php if ($result['protocol'] === 'smtps:') { echo "selected"; } ?>>SMTPS</option>
-                  <option value="lmtp:" <?php if ($result['protocol'] === 'lmtp:') { echo "selected"; } ?>>LMTP</option>
+                  <option value="smtp:" <?php if ($nexthop[0] === 'smtp') { echo "selected"; } ?>>SMTP</option>
+                  <option value="smtps:" <?php if ($nexthop[0] === 'smtps') { echo "selected"; } ?>>SMTPS</option>
+                  <option value="lmtp:" <?php if ($nexthop[0] === 'lmtp') { echo "selected"; } ?>>LMTP</option>
                 </select>
               </div>
             </div>
             <div class="form-group">
               <label class="control-label col-sm-2" for="ip"><?= $lang['add']['domain']; ?>/IP:</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" name="ip" id="ip" value="<?=$result['ip']; ?>">
+                <input type="text" class="form-control" name="ip" id="ip" value="<?=$nexthop[1]; ?>">
               </div>
             </div>
             <div class="form-group">
               <label class="control-label col-sm-2" for="port"><?= $lang['add']['port']; ?>:</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" name="port" id="port" value="<?= $result['port']; ?>">
+                <input type="text" class="form-control" name="port" id="port" value="<?= $nexthop[2]; ?>">
               </div>
             </div>
             <div class="form-group">
