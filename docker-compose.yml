@@ -420,7 +420,7 @@ services:
             - mm-web
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:1.9
+      image: mailcow/dockerapi:1.10
       restart: always
       build: ./data/Dockerfiles/dockerapi
       sysctls:
@@ -477,9 +477,9 @@ volumes:
   vmail-vol-1:
   mysql-vol-1:
   redis-vol-1:
-  solr-vol-1:
   rspamd-vol-1:
   postfix-vol-1:
   crypt-vol-1:
+  solr-vol-1:
   rspamd-sock:
   mailman-vol-1:

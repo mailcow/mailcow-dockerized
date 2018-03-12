@@ -292,13 +292,13 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <div class="form-group">
                     <label class="control-label col-sm-3" for="rspamd_ui_pass"><?=$lang['admin']['password'];?>:</label>
                     <div class="col-sm-9">
-                    <input type="password" class="form-control" name="rspamd_ui_pass" id="rspamd_ui_pass">
+                    <input type="password" class="form-control" name="rspamd_ui_pass" id="rspamd_ui_pass" required>
                     </div>
                   </div>
                   <div class="form-group">
                     <label class="control-label col-sm-3" for="rspamd_ui_pass2"><?=$lang['admin']['password_repeat'];?>:</label>
                     <div class="col-sm-9">
-                    <input type="password" class="form-control" name="rspamd_ui_pass2" id="rspamd_ui_pass2">
+                    <input type="password" class="form-control" name="rspamd_ui_pass2" id="rspamd_ui_pass2" required>
                     </div>
                   </div>
                   <div class="form-group">

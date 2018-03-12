@@ -107,6 +107,16 @@ class container_post(Resource):
                 return jsonify(type='danger', msg='command did not complete, exit code was ' + int(hash.exit_code))
           except Exception as e:
             return jsonify(type='danger', msg=str(e))
+        elif request.json['cmd'] == 'mailman_password' and request.json['email'] and request.json['passwd']:
+          try:
+            for container in docker_client.containers.list(filters={"id": container_id}):
+              add_su = container.exec_run(["/bin/bash", "-c", "/opt/mm_web/add_su.py '" + request.json['passwd'].replace("'", "'\\''") + "' '" + request.json['email'].replace("'", "'\\''") + "'"], user='mailman')
+              if add_su.exit_code == 0:
+                return jsonify(type='success', msg='command completed successfully')
+              else:
+                return jsonify(type='danger', msg='command did not complete, exit code was ' + int(add_su.exit_code))
+          except Exception as e:
+            return jsonify(type='danger', msg=str(e))
 
         else:
           return jsonify(type='danger', msg='Unknown command')

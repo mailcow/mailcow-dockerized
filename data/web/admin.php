@@ -10,6 +10,7 @@ $tfa_data = get_tfa();
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#tab-access" aria-controls="tab-access" role="tab" data-toggle="tab"><?=$lang['admin']['access'];?></a></li>
     <li role="presentation"><a href="#tab-config" aria-controls="tab-config" role="tab" data-toggle="tab"><?=$lang['admin']['configuration'];?></a></li>
+    <li role="presentation"><a href="#tab-mm" aria-controls="tab-mm" role="tab" data-toggle="tab">Mailman</a></li>
   </ul>
 
   <div class="tab-content" style="padding-top:20px">
@@ -551,6 +552,61 @@ $tfa_data = get_tfa();
     </div>
   </div>
   </div>
+  </div>
+
+  <div role="tabpanel" class="tab-pane active" id="tab-mm">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Mailman Postorius/Hyperkitty</h3>
+            </div>
+            <div class="panel-body">
+              <div class="row">
+                <div class="col-sm-9">
+                <form class="form-horizontal" autocapitalize="none" data-id="admin" autocorrect="off" role="form" method="post">
+                  <div class="form-group">
+                    <div class="col-sm-offset-3 col-sm-9">
+                      <label>
+                        <a href="/lists/" target="_blank"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span> mailman Postorius/Hyperkitty</a>
+                      </label>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="mailman_ui_user"><?=$lang['admin']['username'];?>:</label>
+                    <div class="col-sm-9">
+                    <input type="text" class="form-control" id="mailman_ui_user" value="admin" disabled>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="mailman_ui_mail">Email address:</label>
+                    <div class="col-sm-9">
+                    <input type="email" class="form-control" name="mailman_ui_mail" id="mailman_ui_mail" required>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="mailman_ui_pass"><?=$lang['admin']['password'];?>:</label>
+                    <div class="col-sm-9">
+                    <input type="password" class="form-control" name="mailman_ui_pass" id="mailman_ui_pass" required>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-3" for="mailman_ui_pass2"><?=$lang['admin']['password_repeat'];?>:</label>
+                    <div class="col-sm-9">
+                    <input type="password" class="form-control" name="mailman_ui_pass2" id="mailman_ui_pass2" required>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="col-sm-offset-3 col-sm-9">
+                      <button type="submit" class="btn btn-default" id="mailman_ui" name="mailman_ui" href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+                    </div>
+                  </div>
+                </form>
+                </div>
+                <div class="col-sm-3">
+                  <img class="img-responsive" src="/img/mailman_logo.png" alt="mailman" />
+                </div>
+              </div>
+            </div>
+          </div>
   </div>
 
   </div>

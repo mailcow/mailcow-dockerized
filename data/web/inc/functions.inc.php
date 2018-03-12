@@ -1001,7 +1001,79 @@ function rspamd_ui($action, $data = null) {
       }
     break;
   }
-
+}
+function mailman_ui($action, $data = null) {
+	global $lang;
+	if ($_SESSION['mailcow_cc_role'] != "admin") {
+		$_SESSION['return'] = array(
+			'type' => 'danger',
+			'msg' => sprintf($lang['danger']['access_denied'])
+		);
+		return false;
+	}
+	switch ($action) {
+		case "edit":
+      $mailman_ui_mail = $data['mailman_ui_mail'];
+      $mailman_ui_pass = $data['mailman_ui_pass'];
+      $mailman_ui_pass2 = $data['mailman_ui_pass2'];
+      if (empty($mailman_ui_mail) || filter_var($mailman_ui_mail, FILTER_VALIDATE_EMAIL) === false) {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => 'Email address is invalid'
+        );
+        return false;
+      }
+      if (empty($mailman_ui_pass) || empty($mailman_ui_pass2)) {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => 'Password cannot be empty'
+        );
+        return false;
+      }
+      if ($mailman_ui_pass != $mailman_ui_pass2) {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => 'Passwords do not match'
+        );
+        return false;
+      }
+      if (strlen($mailman_ui_pass) < 6) {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => 'Please use at least 6 characters for your password'
+        );
+        return false;
+      }
+      $docker_return = docker('mm-web-mailcow', 'post', 'exec', array(
+        'cmd' => 'mailman_password',
+        'email' => $mailman_ui_mail,
+        'passwd' => $mailman_ui_pass
+      ), array('Content-Type: application/json'));
+      if ($docker_return_array = json_decode($docker_return, true)) {
+        if ($docker_return_array['type'] == 'success') {
+          $_SESSION['return'] = array(
+            'type' => 'success',
+            'msg' => 'mailman password set successfully'
+          );
+          return true;
+        }
+        else {
+          $_SESSION['return'] = array(
+            'type' => $docker_return_array['type'],
+            'msg' => $docker_return_array['msg']
+          );
+          return false;
+        }
+      }
+      else {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => 'Unknown error'
+        );
+        return false;
+      }
+    break;
+  }
 }
 function get_admin_details() {
   // No parameter to be given, only one admin should exist

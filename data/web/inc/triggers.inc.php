@@ -85,5 +85,8 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
 	if (isset($_POST["rspamd_ui"])) {
 		rspamd_ui('edit', $_POST);
 	}
+	if (isset($_POST["mailman_ui"])) {
+		mailman_ui('edit', $_POST);
+	}
 }
 ?>
