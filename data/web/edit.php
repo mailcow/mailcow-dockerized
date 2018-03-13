@@ -694,12 +694,14 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               <label class="control-label col-sm-2" for="ip"><?= $lang['mailbox']['transport_map_ip']; ?>:</label>
               <div class="col-sm-10">
                 <input type="text" class="form-control" name="ip" id="ip" value="<?=$nexthop[1]; ?>">
+                <small class="help-block">Use brackets to avoid mx lookups. ([example.com])</small>
               </div>
             </div>
             <div class="form-group">
               <label class="control-label col-sm-2" for="port"><?= $lang['mailbox']['transport_map_port']; ?>:</label>
               <div class="col-sm-10">
                 <input type="text" class="form-control" name="port" id="port" value="<?= $nexthop[2]; ?>">
+                <small class="help-block">Optional</small>
               </div>
             </div>
             <div class="form-group">
