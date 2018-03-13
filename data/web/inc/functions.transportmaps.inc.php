@@ -60,7 +60,7 @@ function transport_map($_action, $_data = null, $attr = null) {
         $is_now = transport_map('details', $id);
         if (!empty($is_now)) {
           $local_dest = (isset($_data['local_dest'])) ? $_data['local_dest'] : $is_now['local_dest'];
-          if (isset($_data['protocol']) && isset($_data['ip']) && isset($_data['port'])) {
+          if (isset($_data['protocol']) && isset($_data['ip']) && (isset($_data['port']) && ! empty($_data['port']) )) {
             $nexthop = $_data['protocol'] . $_data['ip'] . ':' . $_data['port'];
           } elseif (isset($_data['protocol']) && isset($_data['ip'])) {
             $nexthop = $_data['protocol'] . $_data['ip'];
