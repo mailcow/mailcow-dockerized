@@ -648,7 +648,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 					<div class="form-group">
             <label class="control-label col-sm-2" for="ip"><?= $lang['mailbox']['transport_map_ip']; ?>:</label>
 						<div class="col-sm-10">
-            	<input type="text" class="form-control" name="ip" id="ip">
+            	<input type="text" class="form-control" name="ip" id="ip" required>
 							<small class="help-block">Use brackets to avoid mx lookups. ([example.com])</small>
 						</div>
           </div>
