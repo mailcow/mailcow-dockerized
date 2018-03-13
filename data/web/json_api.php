@@ -143,6 +143,39 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "bcc":
             process_add_return(bcc('add', $attr));
           break;
+          case "transport_map":
+            if (isset($_POST['attr'])) {
+              $attr = (array)json_decode($_POST['attr'], true);
+              if (transport_map('add', $attr) === false) {
+                if (isset( $_SESSION ['return'])) {
+                  echo json_encode( $_SESSION ['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'error',
+                    'msg' => 'Cannot add item'
+                  ));
+                }
+              }
+              else {
+                if (isset( $_SESSION ['return'])) {
+                  echo json_encode( $_SESSION ['return']);
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'success',
+                    'msg' => 'Task completed'
+                  ));
+                }
+              }
+            }
+            else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Cannot find attributes in post data'
+              ));
+            }
+          break;
           case "recipient_map":
             process_add_return(recipient_map('add', $attr));
           break;
@@ -630,6 +663,38 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               break;
             }
           break;
+          case "transport_map":
+            switch ($object) {
+              case "all":
+                $transport_map_items = transport_map('get');
+                if (!empty($transport_map_items)) {
+                  foreach ($transport_map_items as $transport_map_item) {
+                    if ($details = transport_map('details', $transport_map_item)) {
+                      $data[] = $details;
+                    } else {
+                      continue;
+                    }
+                  }
+                }
+                if (!isset($data) || empty($data)) {
+                  echo '{}';
+                } else {
+                  echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                }
+                break;
+              default:
+                $data = transport_map('details', $object);
+                if (!empty($data)) {
+                  $data[] = $details;
+                }
+                if (!isset($data) || empty($data)) {
+                  echo '{}';
+                } else {
+                  echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                }
+                break;
+            }
+            break;
           case "recipient_map":
             switch ($object) {
               case "all":
@@ -907,6 +972,42 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "bcc":
             process_delete_return(bcc('delete', array('id' => $items)));
           break;
+          case "transport_map":
+            if (isset($_POST['items'])) {
+              $items = (array)json_decode($_POST['items'], true);
+              if (is_array($items)) {
+                if (transport_map('delete', array('id' => $items)) === false) {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  } else {
+                    echo json_encode(array(
+                      'type' => 'error',
+                      'msg' => 'Deletion of items/s failed'
+                    ));
+                  }
+                } else {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  } else {
+                    echo json_encode(array(
+                      'type' => 'success',
+                      'msg' => 'Task completed'
+                    ));
+                  }
+                }
+              } else {
+                echo json_encode(array(
+                  'type' => 'error',
+                  'msg' => 'Cannot find id array in post data'
+                ));
+              }
+            } else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Cannot find items in post data'
+              ));
+            }
+          break;
           case "recipient_map":
             process_delete_return(recipient_map('delete', array('id' => $items)));
           break;
@@ -973,6 +1074,45 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
         switch ($category) {
           case "bcc":
             process_edit_return(bcc('edit', array_merge(array('id' => $items), $attr)));
+          break;
+          case "transport_map":
+            if (isset($_POST['items']) && isset($_POST['attr'])) {
+              $items = (array)json_decode($_POST['items'], true);
+              $attr = (array)json_decode($_POST['attr'], true);
+              $postarray = array_merge(array('id' => $items), $attr);
+              if (is_array($postarray['id'])) {
+                if (transport_map('edit', $postarray) === false) {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  } else {
+                    echo json_encode(array(
+                      'type' => 'error',
+                      'msg' => 'Edit failed'
+                    ));
+                  }
+                  exit();
+                } else {
+                  if (isset($_SESSION['return'])) {
+                    echo json_encode($_SESSION['return']);
+                  } else {
+                    echo json_encode(array(
+                      'type' => 'success',
+                      'msg' => 'Task completed'
+                    ));
+                  }
+                }
+              } else {
+                echo json_encode(array(
+                  'type' => 'error',
+                  'msg' => 'Incomplete post data'
+                ));
+              }
+            } else {
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'Incomplete post data'
+              ));
+            }
           break;
           case "recipient_map":
             process_edit_return(recipient_map('edit', array_merge(array('id' => $items), $attr)));

@@ -663,6 +663,68 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         <?php
         }
     }
+    elseif (isset($_GET['transport_map']) && !empty($_GET["transport_map"])) {
+        $transport_map = intval($_GET["transport_map"]);
+        $result = transport_map('details', $transport_map);
+        $nexthop = explode(':', $result['nexthop']);
+        if (!empty($result)) {
+          ?>
+          <h4>Transport Map</h4>
+          <br />
+          <form class="form-horizontal" data-id="edittransport_map" role="form" method="post">
+            <input type="hidden" value="0" name="active">
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="local_dest"><?=$lang['mailbox']['transport_map_local_dest'];?></label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" name="local_dest" id="local_dest" value="<?=$result['local_dest'];?>" readonly>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="nexthop"><?= $lang['mailbox']['transport_map_protocol']; ?>:</label>
+              <div class="col-sm-10">
+                <select name="protocol" id="protocol">
+                  <option value="smtp:" <?php if ($nexthop[0] === 'smtp') { echo "selected"; } ?>>SMTP</option>
+                  <option value="smtps:" <?php if ($nexthop[0] === 'smtps') { echo "selected"; } ?>>SMTPS</option>
+                  <option value="lmtp:" <?php if ($nexthop[0] === 'lmtp') { echo "selected"; } ?>>LMTP</option>
+                  <option value="lmtps:" <?php if ($nexthop[0] === 'lmtps') { echo "selected"; } ?>>LMTPS</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="ip"><?= $lang['mailbox']['transport_map_ip']; ?>:</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" name="ip" id="ip" value="<?=$nexthop[1]; ?>" required>
+                <small class="help-block">Use brackets to avoid mx lookups. ([example.com])</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="port"><?= $lang['mailbox']['transport_map_port']; ?>:</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" name="port" id="port" value="<?= $nexthop[2]; ?>">
+                <small class="help-block">Optional</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <div class="checkbox">
+                  <label><input type="checkbox" value="1" name="active" <?php if (isset($result['active_int']) && $result['active_int'] == "1") {echo "checked";}; ?>> <?= $lang['edit']['active']; ?></label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <button class="btn btn-success" id="edit_selected" data-id="edittransport_map" data-item="<?= $transport_map; ?>" data-api-url='edit/transport_map' data-api-attr='{}' href="#"><?= $lang['edit']['save']; ?></button>
+              </div>
+            </div>
+          </form>
+          <?php
+        }
+        else {
+        ?>
+          <div class="alert alert-info" role="alert"><?= $lang['info']['no_action']; ?></div>
+        <?php
+        }
+    }
     elseif (isset($_GET['recipient_map']) && !empty($_GET["recipient_map"])) {
         $map = intval($_GET["recipient_map"]);
         $result = recipient_map('details', $map);
@@ -682,7 +744,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
                 <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active" <?php if (isset($result['active_int']) && $result['active_int']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['active'];?></label>
+                  <label><input type="checkbox" value="1" name="active" <?php if (isset($result['active_int']) && $result['active_int']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['active'];?></label>
                 </div>
               </div>
             </div>

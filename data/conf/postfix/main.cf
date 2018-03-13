@@ -45,6 +45,7 @@ proxy_read_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_sender_acl.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_tls_enforce_in_policy.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_sender_bcc_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_recipient_bcc_maps.cf,
+  proxy:mysql:/opt/postfix/conf/sql/mysql_transport_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_recipient_canonical_maps.cf,
   $local_recipient_maps,
   $mydestination,
@@ -112,6 +113,7 @@ sender_bcc_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_sender_bcc_maps.cf
 recipient_canonical_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_recipient_canonical_maps.cf
 recipient_canonical_classes = envelope_recipient
 virtual_mailbox_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_mailbox_maps.cf
+transport_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_transport_maps.cf
 virtual_minimum_uid = 104
 virtual_transport = lmtp:inet:dovecot:24
 virtual_uid_maps = static:5000

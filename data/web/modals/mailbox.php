@@ -335,7 +335,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
               ?>
               </select>
             </div>
-          </div> 
+          </div>
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="host1"><?=$lang['add']['hostname'];?></label>
 						<div class="col-sm-10">
@@ -595,6 +595,88 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
     </div>
   </div>
 </div><!-- add add_bcc modal -->
+<!-- add add_relay modal -->
+<div class="modal fade" id="addTransportMapModalAdmin" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+					<h3 class="modal-title"><?= $lang['mailbox']['transport_map']; ?></h3>
+      </div>
+      <div class="modal-body">
+				<form class="form-horizontal" data-cached-form="true" role="form" data-id="add_transport_map">
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="local_dest"><?= $lang['mailbox']['transport_map_local_dest']; ?>:</label>
+            <div class="col-sm-10">
+              <select id="addSelectLocalDest" name="local_dest" id="local_dest" required>
+                <?php
+									$domains = mailbox('get', 'domains');
+									$alias_domains = mailbox('get', 'alias_domains');
+									if (!empty($domains)) {
+										foreach ($domains as $domain) {
+											echo "<option>" . htmlspecialchars($domain) . "</option>";
+										}
+									}
+									if (!empty($alias_domains)) {
+										foreach ($alias_domains as $alias_domain) {
+											echo "<option>" . htmlspecialchars($alias_domain) . "</option>";
+										}
+									}
+									if (!empty($domains)) {
+										foreach ($domains as $domain) {
+											$mailboxes = mailbox('get', 'mailboxes', $domain);
+											foreach ($mailboxes as $mailbox) {
+												echo "<option>" . htmlspecialchars($mailbox) . "</option>";
+											}
+										}
+									}
+								?>
+              </select>
+            </div>
+          </div>
+					<div class="form-group">
+            <label class="control-label col-sm-2" for="nexthop"><?= $lang['mailbox']['transport_map_protocol']; ?>:</label>
+            <div class="col-sm-10">
+							<select name="protocol" id="protocol">
+								<option value="smtp:" selected>SMTP</option>
+								<option value="smtps:">SMTPS</option>
+								<option value="lmtp:">LMTP</option>
+								<option value="lmtps:">LMTPS</option>
+							</select>
+            </div>
+          </div>
+					<div class="form-group">
+            <label class="control-label col-sm-2" for="ip"><?= $lang['mailbox']['transport_map_ip']; ?>:</label>
+						<div class="col-sm-10">
+            	<input type="text" class="form-control" name="ip" id="ip" required>
+							<small class="help-block">Use brackets to avoid mx lookups. ([example.com])</small>
+						</div>
+          </div>
+					<div class="form-group">
+            <label class="control-label col-sm-2" for="port"><?= $lang['mailbox']['transport_map_port']; ?>:</label>
+						<div class="col-sm-10">
+            	<input type="text" class="form-control" name="port" id="port">
+							<small class="help-block">Optional</small>
+						</div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <div class="checkbox">
+                <label><input type="checkbox" value="1" name="active" checked> <?= $lang['add']['active']; ?></label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <button class="btn btn-success" id="add_item" data-id="add_transport_map" data-api-url='add/transport_map' data-api-attr='{}' href="#"><?= $lang['mailbox']['add_transport_map_entry']; ?></button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div><!-- add add_relay modal -->
+
 <!-- add add_recipient_map modal -->
 <div class="modal fade" id="addRecipientMapModalAdmin" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-lg">

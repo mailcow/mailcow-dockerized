@@ -21,6 +21,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
     </li>
     <li role="presentation"><a href="#tab-syncjobs" aria-controls="tab-syncjobs" role="tab" data-toggle="tab"><?=$lang['mailbox']['sync_jobs'];?></a></li>
     <li role="presentation"><a href="#tab-filters" aria-controls="tab-filters" role="tab" data-toggle="tab"><?=$lang['mailbox']['filters'];?></a></li>
+    <li role="presentation"><a href="#tab-transport_map" aria-controls="tab-transport_map" role="tab" data-toggle="tab"><?=$lang['mailbox']['transport_map'];?></a></li>
     <li role="presentation"><a href="#tab-bcc" aria-controls="tab-filters" role="tab" data-toggle="tab"><?=$lang['mailbox']['address_rewriting'];?></a></li>
   </ul>
 
@@ -259,6 +260,31 @@ else
                   <li><a id="delete_selected" data-id="recipient_map" data-api-url='delete/recipient_map' href="#"><?=$lang['mailbox']['remove'];?></a></li>
                 </ul>
                 <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addRecipientMapModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_recipient_map_entry'];?></a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div role="tabpanel" class="tab-pane" id="tab-transport_map">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title"><?=$lang['mailbox']['transport_map'];?></h3>
+            </div>
+            <p style="margin:10px" class="help-block"><?=$lang['mailbox']['transport_map_info'];?></p>
+            <div class="table-responsive">
+              <table class="table table-striped" id="transport_map_table"></table>
+            </div>
+            <div class="mass-actions-mailbox">
+              <div class="btn-group">
+                <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="transport_map" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
+                <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a id="edit_selected" data-id="transport_map" data-api-url='edit/transport_map' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
+                  <li><a id="edit_selected" data-id="transport_map" data-api-url='edit/transport_map' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a id="delete_selected" data-id="transport_map" data-api-url='delete/transport_map' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+                </ul>
+                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addTransportMapModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_transport_map_entry'];?></a>
               </div>
             </div>
           </div>

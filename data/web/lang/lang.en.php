@@ -528,6 +528,16 @@ $lang['mailbox']['bcc_to_rcpt'] = "Switch to recipient map type";
 $lang['mailbox']['add_bcc_entry'] = "Add BCC map";
 $lang['mailbox']['bcc_info'] = "BCC maps are used to silently forward copies of all messages to another address. A recipient map type entry is used, when the local destination acts as recipient of a mail. Sender maps conform to the same principle.<br/>
   The local destination will not be informed about a failed delivery.";
+
+$lang['mailbox']['transport_map'] = "Transport Maps";
+$lang['mailbox']['transport_map_local_dest'] = "Local destination";
+$lang['mailbox']['transport_map_remote_dest'] = "Remote destination";
+$lang['mailbox']['add_transport_map_entry'] = "Add transport map entry";
+$lang['mailbox']['transport_map_info'] = "Transport maps are used to send/receive emails via another email server.";
+$lang['mailbox']['transport_map_protocol'] = "Protocol";
+$lang['mailbox']['transport_map_ip'] = "Domain/IP";
+$lang['mailbox']['transport_map_port'] = "Port";
+
 $lang['mailbox']['address_rewriting'] = 'Address rewriting';
 $lang['mailbox']['recipient_maps'] = 'Recipient maps';
 $lang['mailbox']['recipient_map_info'] = 'Recipient maps are used to replace the destination address on a message before it is delivered.';
