@@ -57,8 +57,8 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
       $mail->SMTPAuth = true;
       $mail->Username = $username;
       $mail->Password = $password;
-      $mail->Port = $port;
     }
+    $mail->Port = $port;
     $mail->setFrom($mail_from, 'Mailer');
     $mail->Subject = 'A subject for a SMTP test';
     $mail->addAddress($RELAY_TO, 'Joe Null');
