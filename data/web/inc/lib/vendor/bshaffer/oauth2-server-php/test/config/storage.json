@@ -1,0 +1,188 @@
+{
+    "authorization_codes": {
+        "testcode": {
+            "client_id": "Test Client ID",
+            "user_id": "",
+            "redirect_uri": "",
+            "expires": "9999999999",
+            "id_token": "IDTOKEN"
+        },
+        "testcode-with-scope": {
+            "client_id": "Test Client ID",
+            "user_id": "",
+            "redirect_uri": "",
+            "expires": "9999999999",
+            "scope": "scope1 scope2"
+        },
+        "testcode-expired": {
+            "client_id": "Test Client ID",
+            "user_id": "",
+            "redirect_uri": "",
+            "expires": "1356998400"
+        },
+        "testcode-empty-secret": {
+            "client_id": "Test Client ID Empty Secret",
+            "user_id": "",
+            "redirect_uri": "",
+            "expires": "9999999999"
+        },
+        "testcode-openid": {
+            "client_id": "Test Client ID",
+            "user_id": "",
+            "redirect_uri": "",
+            "expires": "9999999999",
+            "id_token": "test_id_token"
+        },
+        "testcode-redirect-uri": {
+            "client_id": "Test Client ID",
+            "user_id": "",
+            "redirect_uri": "http://brentertainment.com/voil%C3%A0",
+            "expires": "9999999999",
+            "id_token": "IDTOKEN"
+        }
+    },
+    "client_credentials" : {
+        "Test Client ID": {
+            "client_secret": "TestSecret"
+        },
+        "Test Client ID with Redirect Uri": {
+            "client_secret": "TestSecret2",
+            "redirect_uri": "http://brentertainment.com"
+        },
+        "Test Client ID with Buggy Redirect Uri": {
+            "client_secret": "TestSecret2",
+            "redirect_uri": "  http://brentertainment.com"
+        },
+        "Test Client ID with Multiple Redirect Uris": {
+            "client_secret": "TestSecret3",
+            "redirect_uri": "http://brentertainment.com http://morehazards.com"
+        },
+        "Test Client ID with Redirect Uri Parts": {
+            "client_secret": "TestSecret4",
+            "redirect_uri": "http://user:pass@brentertainment.com:2222/authorize/cb?auth_type=oauth&test=true"
+        },
+        "Test Some Other Client": {
+            "client_secret": "TestSecret3"
+        },
+        "Test Client ID Empty Secret": {
+            "client_secret": ""
+        },
+         "Test Client ID For Password Grant": {
+            "grant_types": "password",
+            "client_secret": ""
+        },
+        "Client ID With User ID": {
+            "client_secret": "TestSecret",
+            "user_id": "brent@brentertainment.com"
+        },
+        "oauth_test_client": {
+            "client_secret": "testpass",
+            "grant_types": "implicit password"
+        }
+    },
+    "user_credentials" : {
+        "test-username": {
+            "password": "testpass"
+        },
+        "testusername":  {
+            "password": "testpass"
+        },
+        "testuser": {
+            "password": "password",
+            "email": "testuser@test.com",
+            "email_verified": true
+        },
+        "johndoe": {
+            "password": "password"
+        }
+    },
+    "refresh_tokens" : {
+        "test-refreshtoken": {
+            "refresh_token": "test-refreshtoken",
+            "client_id": "Test Client ID",
+            "user_id": "test-username",
+            "expires": 0,
+            "scope": null
+        },
+        "test-refreshtoken-with-scope": {
+            "refresh_token": "test-refreshtoken",
+            "client_id": "Test Client ID",
+            "user_id": "test-username",
+            "expires": 0,
+            "scope": "scope1 scope2"
+        }
+    },
+    "access_tokens" : {
+        "accesstoken-expired": {
+            "access_token": "accesstoken-expired",
+            "client_id": "Test Client ID",
+            "expires": 1234567,
+            "scope": null
+        },
+        "accesstoken-scope": {
+            "access_token": "accesstoken-scope",
+            "client_id": "Test Client ID",
+            "expires": 99999999900,
+            "scope": "testscope"
+        },
+        "accesstoken-openid-connect": {
+            "access_token": "accesstoken-openid-connect",
+            "client_id": "Test Client ID",
+            "user_id": "testuser",
+            "expires": 99999999900,
+            "scope": "openid email"
+        },
+        "accesstoken-malformed": {
+            "access_token": "accesstoken-mallformed",
+            "expires": 99999999900,
+            "scope": "testscope"
+        }
+    },
+    "jwt": {
+        "Test Client ID": {
+            "key": "-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC5/SxVlE8gnpFqCxgl2wjhzY7u\ncEi00s0kUg3xp7lVEvgLgYcAnHiWp+gtSjOFfH2zsvpiWm6Lz5f743j/FEzHIO1o\nwR0p4d9pOaJK07d01+RzoQLOIQAgXrr4T1CCWUesncwwPBVCyy2Mw3Nmhmr9MrF8\nUlvdRKBxriRnlP3qJQIDAQAB\n-----END PUBLIC KEY-----",
+            "subject": "testuser@ourdomain.com"
+        },
+        "Test Client ID PHP-5.2": {
+            "key": "mysecretkey",
+            "subject": "testuser@ourdomain.com"
+        },
+        "Missing Key Client": {
+            "key": null,
+            "subject": "testuser@ourdomain.com"
+        },
+        "Missing Key Client PHP-5.2": {
+            "key": null,
+            "subject": "testuser@ourdomain.com"
+        },
+        "oauth_test_client": {
+            "key": "-----BEGIN CERTIFICATE-----\nMIICiDCCAfGgAwIBAgIBADANBgkqhkiG9w0BAQQFADA9MQswCQYDVQQGEwJVUzEL\nMAkGA1UECBMCVVQxITAfBgNVBAoTGFZpZ25ldHRlIENvcnBvcmF0aW9uIFNCWDAe\nFw0xMTEwMTUwMzE4MjdaFw0zMTEwMTAwMzE4MjdaMD0xCzAJBgNVBAYTAlVTMQsw\nCQYDVQQIEwJVVDEhMB8GA1UEChMYVmlnbmV0dGUgQ29ycG9yYXRpb24gU0JYMIGf\nMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC8fpi06NfVYHAOAnxNMVnTXr/ptsLs\nNjP+uAt2eO0cc5J9H5XV8lFVujOrRu/JWi1TDmAvOaf/6A3BphIA1Pwp0AAqlZdw\nizIum8j0KzpsGYH5qReNQDwF3oUSKMsQCCGCDHrDYifG/pRi9bN1ZVjEXPr35HJu\nBe+FQpZTs8DewwIDAQABo4GXMIGUMB0GA1UdDgQWBBRe8hrEXm+Yim4YlD5Nx+1K\nvCYs9DBlBgNVHSMEXjBcgBRe8hrEXm+Yim4YlD5Nx+1KvCYs9KFBpD8wPTELMAkG\nA1UEBhMCVVMxCzAJBgNVBAgTAlVUMSEwHwYDVQQKExhWaWduZXR0ZSBDb3Jwb3Jh\ndGlvbiBTQliCAQAwDAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQQFAAOBgQBjhyRD\nlM7vnLn6drgQVftW5V9nDFAyPAuiGvMIKFSbiAf1PxXCRn5sfJquwWKsJUi4ZGNl\naViXdFmN6/F13PSM+yg63tpKy0fYqMbTM+Oe5WuSHkSW1VuYNHV+24adgNk/FRDL\nFRrlM1f6s9VTLWvwGItjfrof0Ba8Uq7ZDSb9Xg==\n-----END CERTIFICATE-----",
+            "subject": "test_subject"
+        }
+    },
+    "jti": [
+        {
+            "issuer": "Test Client ID",
+            "subject": "testuser@ourdomain.com",
+            "audience": "http://myapp.com/oauth/auth",
+            "expires": 99999999900,
+            "jti": "used_jti"
+        }
+    ],
+    "supported_scopes" : [
+        "scope1",
+        "scope2",
+        "scope3",
+        "clientscope1",
+        "clientscope2",
+        "clientscope3",
+        "supportedscope1",
+        "supportedscope2",
+        "supportedscope3",
+        "supportedscope4"
+    ],
+    "keys": {
+        "public_key": "-----BEGIN CERTIFICATE-----\nMIICiDCCAfGgAwIBAgIBADANBgkqhkiG9w0BAQQFADA9MQswCQYDVQQGEwJVUzEL\nMAkGA1UECBMCVVQxITAfBgNVBAoTGFZpZ25ldHRlIENvcnBvcmF0aW9uIFNCWDAe\nFw0xMTEwMTUwMzE4MjdaFw0zMTEwMTAwMzE4MjdaMD0xCzAJBgNVBAYTAlVTMQsw\nCQYDVQQIEwJVVDEhMB8GA1UEChMYVmlnbmV0dGUgQ29ycG9yYXRpb24gU0JYMIGf\nMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC8fpi06NfVYHAOAnxNMVnTXr/ptsLs\nNjP+uAt2eO0cc5J9H5XV8lFVujOrRu/JWi1TDmAvOaf/6A3BphIA1Pwp0AAqlZdw\nizIum8j0KzpsGYH5qReNQDwF3oUSKMsQCCGCDHrDYifG/pRi9bN1ZVjEXPr35HJu\nBe+FQpZTs8DewwIDAQABo4GXMIGUMB0GA1UdDgQWBBRe8hrEXm+Yim4YlD5Nx+1K\nvCYs9DBlBgNVHSMEXjBcgBRe8hrEXm+Yim4YlD5Nx+1KvCYs9KFBpD8wPTELMAkG\nA1UEBhMCVVMxCzAJBgNVBAgTAlVUMSEwHwYDVQQKExhWaWduZXR0ZSBDb3Jwb3Jh\ndGlvbiBTQliCAQAwDAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQQFAAOBgQBjhyRD\nlM7vnLn6drgQVftW5V9nDFAyPAuiGvMIKFSbiAf1PxXCRn5sfJquwWKsJUi4ZGNl\naViXdFmN6/F13PSM+yg63tpKy0fYqMbTM+Oe5WuSHkSW1VuYNHV+24adgNk/FRDL\nFRrlM1f6s9VTLWvwGItjfrof0Ba8Uq7ZDSb9Xg==\n-----END CERTIFICATE-----",
+        "private_key": "-----BEGIN RSA PRIVATE KEY-----\nMIICXQIBAAKBgQC8fpi06NfVYHAOAnxNMVnTXr/ptsLsNjP+uAt2eO0cc5J9H5XV\n8lFVujOrRu/JWi1TDmAvOaf/6A3BphIA1Pwp0AAqlZdwizIum8j0KzpsGYH5qReN\nQDwF3oUSKMsQCCGCDHrDYifG/pRi9bN1ZVjEXPr35HJuBe+FQpZTs8DewwIDAQAB\nAoGARfNxNknmtx/n1bskZ/01iZRzAge6BLEE0LV6Q4gS7mkRZu/Oyiv39Sl5vUlA\n+WdGxLjkBwKNjxGN8Vxw9/ASd8rSsqeAUYIwAeifXrHhj5DBPQT/pDPkeFnp9B1w\nC6jo+3AbBQ4/b0ONSIEnCL2xGGglSIAxO17T1ViXp7lzXPECQQDe63nkRdWM0OCb\noaHQPT3E26224maIstrGFUdt9yw3yJf4bOF7TtiPLlLuHsTTge3z+fG6ntC0xG56\n1cl37C3ZAkEA2HdVcRGugNp/qmVz4LJTpD+WZKi73PLAO47wDOrYh9Pn2I6fcEH0\nCPnggt1ko4ujvGzFTvRH64HXa6aPCv1j+wJBAMQMah3VQPNf/DlDVFEUmw9XeBZg\nVHaifX851aEjgXLp6qVj9IYCmLiLsAmVa9rr6P7p8asD418nZlaHUHE0eDkCQQCr\nuxis6GMx1Ka971jcJX2X696LoxXPd0KsvXySMupv79yagKPa8mgBiwPjrnK+EPVo\ncj6iochA/bSCshP/mwFrAkBHEKPi6V6gb94JinCT7x3weahbdp6bJ6/nzBH/p9VA\nHoT1JtwNFhGv9BCjmDydshQHfSWpY9NxlccBKL7ITm8R\n-----END RSA PRIVATE KEY-----"
+    }
+}
