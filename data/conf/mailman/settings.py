@@ -33,14 +33,12 @@ import string
 import hashlib
 import time
 from random import *
-min_char = 8
-max_char = 12
-allchar = string.ascii_letters + string.punctuation + string.digits
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "".join(choice(allchar) for x in range(randint(min_char, max_char)))
+with open('/opt/mailman/django_secret.key', 'r') as myfile:
+    SECRET_KEY=myfile.read().replace('\n', '')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -110,11 +108,11 @@ INSTALLED_APPS = (
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    #'django_mailman3.lib.auth.fedora',
-    #'allauth.socialaccount.providers.openid',
-    #'allauth.socialaccount.providers.github',
-    #'allauth.socialaccount.providers.gitlab',
-    #'allauth.socialaccount.providers.google',
+    'django_mailman3.lib.auth.fedora',
+    'allauth.socialaccount.providers.openid',
+    'allauth.socialaccount.providers.github',
+    'allauth.socialaccount.providers.gitlab',
+    'allauth.socialaccount.providers.google',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -263,32 +261,32 @@ ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
 ACCOUNT_UNIQUE_EMAIL  = True
 
-#SOCIALACCOUNT_PROVIDERS = {
-#    'openid': {
-#        'SERVERS': [
-#            dict(id='yahoo',
-#                 name='Yahoo',
-#                 openid_url='http://me.yahoo.com'),
-#        ],
-#    },
-#    'google': {
-#        'SCOPE': ['profile', 'email'],
-#        'AUTH_PARAMS': {'access_type': 'online'},
-#    },
-#    'facebook': {
-#       'METHOD': 'oauth2',
-#       'SCOPE': ['email'],
-#       'FIELDS': [
-#           'email',
-#           'name',
-#           'first_name',
-#           'last_name',
-#           'locale',
-#           'timezone',
-#           ],
-#       'VERSION': 'v2.4',
-#    },
-#}
+SOCIALACCOUNT_PROVIDERS = {
+    'openid': {
+        'SERVERS': [
+            dict(id='yahoo',
+                 name='Yahoo',
+                 openid_url='http://me.yahoo.com'),
+        ],
+    },
+    'google': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+    },
+    'facebook': {
+       'METHOD': 'oauth2',
+       'SCOPE': ['email'],
+       'FIELDS': [
+           'email',
+           'name',
+           'first_name',
+           'last_name',
+           'locale',
+           'timezone',
+           ],
+       'VERSION': 'v2.4',
+    },
+}
 
 
 # django-compressor
