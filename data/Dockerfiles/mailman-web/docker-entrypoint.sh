@@ -13,12 +13,13 @@ EOF
 
 export DBROOT=
 
+[[ ! -f /opt/mailman/django_secret.key ]] && { cat /dev/urandom | tr -dc A-Za-z0-9 | head -c 28 > /opt/mailman/django_secret.key; }
+
 mkdir -p /opt/mm_web
 touch /opt/mm_web/uwsgi.log
 touch /opt/mm_web/django.log
 mkdir -p /opt/mm_web-data/
-chown -R mailman:mailman /opt/mm_web
-chown -R mailman:mailman /opt/mm_web-data
+chown -R mailman:mailman /opt/mm_web /opt/mm_web-data /opt/mailman/django_secret.key
 chmod +x /opt/mm_web/manage.py
 
 su-exec mailman python /opt/mm_web/manage.py makemigrations --merge
