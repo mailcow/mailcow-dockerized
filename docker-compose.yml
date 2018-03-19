@@ -77,7 +77,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.18
+      image: mailcow/rspamd:1.19
       build: ./data/Dockerfiles/rspamd
       stop_grace_period: 30s
       depends_on:
@@ -206,7 +206,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.15
+      image: mailcow/postfix:1.16
       build: ./data/Dockerfiles/postfix
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
@@ -323,7 +323,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.11
+      image: mailcow/netfilter:1.12
       build: ./data/Dockerfiles/netfilter
       stop_grace_period: 30s
       depends_on:
@@ -403,6 +403,7 @@ services:
         - ./data/conf/mailman/uwsgi.ini:/opt/mm_web/uwsgi.ini
         - ./data/conf/mailman/settings.py:/opt/mm_web/settings.py
         - ./data/conf/mailman/urls.py:/opt/mm_web/urls.py
+        - mailman-vol-1:/opt/mailman
       restart: always
       environment:
         - TZ=${TZ}
