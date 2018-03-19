@@ -1,6 +1,7 @@
 <?php
 function mailbox($_action, $_type, $_data = null, $attr = null) {
 	global $pdo;
+	global $pdo_mm;
 	global $redis;
 	global $lang;
   switch ($_action) {
@@ -378,24 +379,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               return false;
             }
           }
-          try {
-            $stmt = $pdo->prepare("SELECT `domain` FROM `domain`
-              WHERE `domain` = :domain");
-            $stmt->execute(array(':domain' => $domain));
-            $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-            $stmt = $pdo->prepare("SELECT `alias_domain` FROM `alias_domain`
-              WHERE `alias_domain` = :domain");
-            $stmt->execute(array(':domain' => $domain));
-            $num_results = $num_results + count($stmt->fetchAll(PDO::FETCH_ASSOC));
-          }
-          catch(PDOException $e) {
-            $_SESSION['return'] = array(
-              'type' => 'danger',
-              'msg' => 'MySQL: '.$e
-            );
-            return false;
-          }
-          if ($num_results != 0) {
+          if (in_array($domain, array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains')))) {
             $_SESSION['return'] = array(
               'type' => 'danger',
               'msg' => sprintf($lang['danger']['domain_exists'], htmlspecialchars($domain))
@@ -2953,6 +2937,13 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             while($row = array_shift($rows)) {
               $domains[] = $row['domain'];
             }
+            if ($_SESSION['mailcow_cc_role'] == "admin") {
+              $stmt = $pdo_mm->query("SELECT `mail_host` FROM `domain`");
+              $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+              while($row = array_shift($rows)) {
+                $domains[] = $row['mail_host'];
+              }
+            }
           }
           catch (PDOException $e) {
             $_SESSION['return'] = array(
@@ -2997,48 +2988,58 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               ':domain' => $_data
             ));
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (empty($row)) { 
-              return false;
+            if (empty($row)) {
+              $stmt = $pdo_mm->prepare("SELECT `description`
+                    FROM `domain` WHERE `mail_host`= :mail_host");
+              $stmt->execute(array(
+                ':mail_host' => $_data
+              ));
+              $domaindata['domain_name']= $_data;
+              $domaindata['description']= $row['description'];
+              $domaindata['is_list'] = true;
             }
-            $stmt = $pdo->prepare("SELECT COUNT(*) AS `count`,
-              COALESCE(SUM(`quota`), 0) AS `in_use`
-                FROM `mailbox`
-                  WHERE `kind` NOT REGEXP 'location|thing|group'
-                    AND `domain` = :domain");
-            $stmt->execute(array(':domain' => $row['domain']));
-            $MailboxDataDomain	= $stmt->fetch(PDO::FETCH_ASSOC);
-            $domaindata['max_new_mailbox_quota']	= ($row['quota'] * 1048576) - $MailboxDataDomain['in_use'];
-            if ($domaindata['max_new_mailbox_quota'] > ($row['maxquota'] * 1048576)) {
-              $domaindata['max_new_mailbox_quota'] = ($row['maxquota'] * 1048576);
+            else {
+              $stmt = $pdo->prepare("SELECT COUNT(*) AS `count`,
+                COALESCE(SUM(`quota`), 0) AS `in_use`
+                  FROM `mailbox`
+                    WHERE `kind` NOT REGEXP 'location|thing|group'
+                      AND `domain` = :domain");
+              $stmt->execute(array(':domain' => $row['domain']));
+              $MailboxDataDomain	= $stmt->fetch(PDO::FETCH_ASSOC);
+              $domaindata['max_new_mailbox_quota']	= ($row['quota'] * 1048576) - $MailboxDataDomain['in_use'];
+              if ($domaindata['max_new_mailbox_quota'] > ($row['maxquota'] * 1048576)) {
+                $domaindata['max_new_mailbox_quota'] = ($row['maxquota'] * 1048576);
+              }
+              $domaindata['quota_used_in_domain'] = $MailboxDataDomain['in_use'];
+              $domaindata['mboxes_in_domain'] = $MailboxDataDomain['count'];
+              $domaindata['mboxes_left'] = $row['mailboxes']	- $MailboxDataDomain['count'];
+              $domaindata['domain_name'] = $row['domain'];
+              $domaindata['is_list'] = false;
+              $domaindata['description'] = $row['description'];
+              $domaindata['max_num_aliases_for_domain'] = $row['aliases'];
+              $domaindata['max_num_mboxes_for_domain'] = $row['mailboxes'];
+              $domaindata['max_quota_for_mbox'] = $row['maxquota'] * 1048576;
+              $domaindata['max_quota_for_domain'] = $row['quota'] * 1048576;
+              $domaindata['relayhost'] = $row['relayhost'];
+              $domaindata['backupmx'] = $row['backupmx'];
+              $domaindata['backupmx_int'] = $row['backupmx_int'];
+              $domaindata['active'] = $row['active'];
+              $domaindata['active_int'] = $row['active_int'];
+              $domaindata['relay_all_recipients'] = $row['relay_all_recipients'];
+              $domaindata['relay_all_recipients_int'] = $row['relay_all_recipients_int'];
+              $stmt = $pdo->prepare("SELECT COUNT(*) AS `alias_count` FROM `alias`
+                WHERE (`domain`= :domain OR `domain` IN (SELECT `alias_domain` FROM `alias_domain` WHERE `target_domain` = :domain2))
+                  AND `address` NOT IN (
+                    SELECT `username` FROM `mailbox`
+                  )");
+              $stmt->execute(array(
+                ':domain' => $_data,
+                ':domain2' => $_data
+              ));
+              $AliasDataDomain = $stmt->fetch(PDO::FETCH_ASSOC);
+              (isset($AliasDataDomain['alias_count'])) ? $domaindata['aliases_in_domain'] = $AliasDataDomain['alias_count'] : $domaindata['aliases_in_domain'] = "0";
+              $domaindata['aliases_left'] = $row['aliases']	- $AliasDataDomain['alias_count'];
             }
-            $domaindata['quota_used_in_domain'] = $MailboxDataDomain['in_use'];
-            $domaindata['mboxes_in_domain'] = $MailboxDataDomain['count'];
-            $domaindata['mboxes_left'] = $row['mailboxes']	- $MailboxDataDomain['count'];
-            $domaindata['domain_name'] = $row['domain'];
-            $domaindata['description'] = $row['description'];
-            $domaindata['max_num_aliases_for_domain'] = $row['aliases'];
-            $domaindata['max_num_mboxes_for_domain'] = $row['mailboxes'];
-            $domaindata['max_quota_for_mbox'] = $row['maxquota'] * 1048576;
-            $domaindata['max_quota_for_domain'] = $row['quota'] * 1048576;
-            $domaindata['relayhost'] = $row['relayhost'];
-            $domaindata['backupmx'] = $row['backupmx'];
-            $domaindata['backupmx_int'] = $row['backupmx_int'];
-            $domaindata['active'] = $row['active'];
-            $domaindata['active_int'] = $row['active_int'];
-            $domaindata['relay_all_recipients'] = $row['relay_all_recipients'];
-            $domaindata['relay_all_recipients_int'] = $row['relay_all_recipients_int'];
-            $stmt = $pdo->prepare("SELECT COUNT(*) AS `alias_count` FROM `alias`
-              WHERE (`domain`= :domain OR `domain` IN (SELECT `alias_domain` FROM `alias_domain` WHERE `target_domain` = :domain2))
-                AND `address` NOT IN (
-                  SELECT `username` FROM `mailbox`
-                )");
-            $stmt->execute(array(
-              ':domain' => $_data,
-              ':domain2' => $_data
-            ));
-            $AliasDataDomain = $stmt->fetch(PDO::FETCH_ASSOC);
-            (isset($AliasDataDomain['alias_count'])) ? $domaindata['aliases_in_domain'] = $AliasDataDomain['alias_count'] : $domaindata['aliases_in_domain'] = "0";
-            $domaindata['aliases_left'] = $row['aliases']	- $AliasDataDomain['alias_count'];
           }
           catch (PDOException $e) {
             $_SESSION['return'] = array(

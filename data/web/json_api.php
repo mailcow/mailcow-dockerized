@@ -358,6 +358,34 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               break;
             }
           break;
+
+          case "oauth2-client":
+            switch ($object) {
+              case "all":
+                $clients = oauth2('get', 'clients');
+                if (!empty($clients)) {
+                  foreach ($clients as $client) {
+                    if ($details = oauth2('details', 'client', $client)) {
+                      $data[] = $details;
+                    }
+                    else {
+                      continue;
+                    }
+                  }
+                  process_get_return($data);
+                }
+                else {
+                  echo '{}';
+                }
+              break;
+
+              default:
+                $data = oauth2('details', 'client', $object);
+                process_get_return($data);
+              break;
+            }
+          break;
+
           case "logs":
             switch ($object) {
               case "dovecot":
@@ -880,12 +908,11 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_success;
           }
         }
-        if (!isset($_POST['attr']) || !isset($_POST['items'])) {
+        if (!isset($_POST['items'])) {
           echo $request_incomplete;
           exit;
         }
         else {
-          $attr = (array)json_decode($_POST['attr'], true);
           $items = (array)json_decode($_POST['items'], true);
         }
         switch ($category) {
@@ -917,6 +944,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             process_delete_return(dkim('delete', array('domains' => $items)));
           break;
           case "domain":
+            file_put_contents('/tmp/dssaa', $items);
             process_delete_return(mailbox('delete', 'domain', array('domain' => $items)));
           break;
           case "alias-domain":
@@ -973,6 +1001,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
         switch ($category) {
           case "bcc":
             process_edit_return(bcc('edit', array_merge(array('id' => $items), $attr)));
+          break;
+          case "oauth2-client":
+            process_edit_return(oauth2('edit', 'client', array_merge(array('id' => $items), $attr)));
           break;
           case "recipient_map":
             process_edit_return(recipient_map('edit', array_merge(array('id' => $items), $attr)));

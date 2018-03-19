@@ -25,6 +25,7 @@ $tfa = new RobThree\Auth\TwoFactorAuth($OTP_LABEL);
 $redis = new Redis();
 $redis->connect('redis-mailcow', 6379);
 
+
 // PDO
 // Calculate offset
 $now = new DateTime();
@@ -35,7 +36,8 @@ $hrs = floor($mins / 60);
 $mins -= $hrs * 60;
 $offset = sprintf('%+d:%02d', $hrs*$sgn, $mins);
 
-$dsn = $database_type . ":host=" . $database_host . ";dbname=" . $database_name;
+$dsn_mc = $database_type . ":host=" . $database_host . ";dbname=" . $database_name;
+$dsn_mm = $database_type . ":host=" . $database_host . ";dbname=" . $database_name . '_mm';
 $opt = [
   PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
   PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -43,7 +45,8 @@ $opt = [
   PDO::MYSQL_ATTR_INIT_COMMAND => "SET time_zone = '" . $offset . "', group_concat_max_len = 3423543543;",
 ];
 try {
-  $pdo = new PDO($dsn, $database_user, $database_pass, $opt);
+  $pdo = new PDO($dsn_mc, $database_user, $database_pass, $opt);
+  $pdo_mm = new PDO($dsn_mm, $database_user, $database_pass, $opt);
 }
 catch (PDOException $e) {
 ?>
@@ -51,6 +54,33 @@ catch (PDOException $e) {
 <?php
 exit;
 }
+
+// OAuth2
+class mailcowPdo extends OAuth2\Storage\Pdo {
+  public function __construct($connection, $config = array()) {
+    parent::__construct($connection, $config);
+    $this->config['user_table'] = 'mailbox';
+  }
+  public function checkUserCredentials($username, $password) {
+    if (check_login($username, $password) == 'user') {
+      return true;
+    }
+    return false;
+  }
+  public function getUserDetails($username) {
+    return $this->getUser($username);
+  }
+}
+$oauth2_scope_storage = new OAuth2\Storage\Memory(array('default_scope' => 'profile', 'supported_scopes' => array('profile')));
+$oauth2_storage = new mailcowPdo(array('dsn' => $dsn_mc, 'username' => $database_user, 'password' => $database_pass));
+$oauth2_server = new OAuth2\Server($oauth2_storage, array(
+    'always_issue_new_refresh_token' => true,
+    'refresh_token_lifetime'         => 2678400,
+));
+$oauth2_server->setScopeUtil(new OAuth2\Scope($oauth2_scope_storage));
+$oauth2_server->addGrantType(new OAuth2\GrantType\AuthorizationCode($oauth2_storage));
+$oauth2_server->addGrantType(new OAuth2\GrantType\UserCredentials($oauth2_storage));
+$oauth2_server->addGrantType(new OAuth2\GrantType\RefreshToken($oauth2_storage));
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
 
@@ -89,6 +119,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.dkim.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.fwdhost.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.relayhost.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.fail2ban.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.oauth2.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.docker.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/init_db.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/triggers.inc.php';

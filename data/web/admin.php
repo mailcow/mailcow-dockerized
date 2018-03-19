@@ -80,7 +80,31 @@ $tfa_data = get_tfa();
       </div>
     </div>
 
-    <div class="hidden panel panel-primary">
+    <div class="panel panel-default">
+    <div class="panel-heading"><?=$lang['admin']['domain_admins'];?></div>
+        <div class="panel-body">
+          <div class="table-responsive">
+            <table class="table table-striped" id="domainadminstable"></table>
+          </div>
+          <div class="mass-actions-admin">
+            <div class="btn-group">
+              <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="domain_admins" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
+              <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a id="edit_selected" data-id="domain_admins" data-api-url='edit/domain-admin' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
+                <li><a id="edit_selected" data-id="domain_admins" data-api-url='edit/domain-admin' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
+                <li role="separator" class="divider"></li>
+                <li><a id="edit_selected" data-id="domain_admins" data-api-url='edit/domain-admin' data-api-attr='{"disable_tfa":"1"}' href="#"><?=$lang['tfa']['disable_tfa'];?></a></li>
+                <li role="separator" class="divider"></li>
+                <li><a id="delete_selected" data-id="domain_admins" data-api-url='delete/domain-admin' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+              </ul>
+              <a class="btn btn-sm btn-success" data-id="add_domain_admin" data-toggle="modal" data-target="#addDomainAdminModal" href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add_domain_admin'];?></a>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
       <div class="panel-heading">API</div>
       <div class="panel-body">
         <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
@@ -106,8 +130,8 @@ $tfa_data = get_tfa();
           <div class="form-group">
             <div class="col-sm-offset-3 col-sm-9">
               <div class="btn-group">
-                <button class="btn btn-default" name="admin_api" type="submit" href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
-                <button class="btn btn-info" name="admin_api_regen_key" type="submit" href="#"><?=$lang['admin']['regen_api_key'];?></button>
+                <button class="btn btn-sm btn-default" name="admin_api" type="submit" href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+                <button class="btn btn-sm btn-info" name="admin_api_regen_key" type="submit" href="#"><?=$lang['admin']['regen_api_key'];?></button>
               </div>
             </div>
           </div>
@@ -116,30 +140,28 @@ $tfa_data = get_tfa();
     </div>
 
     <div class="panel panel-default">
-    <div class="panel-heading"><?=$lang['admin']['domain_admins'];?></div>
+    <div class="panel-heading">OAuth2 Clients</div>
         <div class="panel-body">
+          <p>Supported grant types are "Authorization Code" (authorization_code), "User Credentials" (password) and "Refresh Token" (refresh_token).</p>
+          <p>The default scope is <b>profile</b> and only allowed for mailbox users. If the scope parameter is omitted, it falls back to "profile".</p>
+          <p>A <b>state</b> parameter is required to be sent by the client.</p>
           <div class="table-responsive">
-            <table class="table table-striped" id="domainadminstable"></table>
+            <table class="table table-striped" id="oauth2clientstable"></table>
           </div>
           <div class="mass-actions-admin">
             <div class="btn-group">
-              <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="domain_admins" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
+              <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="oauth2_clients" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
               <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
               <ul class="dropdown-menu">
-                <li><a id="edit_selected" data-id="domain_admins" data-api-url='edit/domain-admin' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
-                <li><a id="edit_selected" data-id="domain_admins" data-api-url='edit/domain-admin' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
-                <li role="separator" class="divider"></li>
-                <li><a id="edit_selected" data-id="domain_admins" data-api-url='edit/domain-admin' data-api-attr='{"disable_tfa":"1"}' href="#"><?=$lang['tfa']['disable_tfa'];?></a></li>
-                <li role="separator" class="divider"></li>
-                <li><a id="delete_selected" data-id="domain_admins" data-api-url='delete/domain-admin' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+                <li><a id="delete_selected" data-id="oauth2_clients" data-api-url='delete/oauth2-client' href="#"><?=$lang['mailbox']['remove'];?></a></li>
               </ul>
-              <a class="btn btn-sm btn-success" data-id="add_domain_admin" data-toggle="modal" data-target="#addDomainAdminModal" href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add_domain_admin'];?></a>
+              <a class="btn btn-sm btn-success" data-id="add_oauth2_client" data-toggle="modal" data-target="#addOAuth2ClientModal" href="#"><span class="glyphicon glyphicon-plus"></span> Add OAuth2 client</a>
             </div>
           </div>
         </div>
     </div>
   </div>
-
+  
   <div role="tabpanel" class="tab-pane" id="tab-config">
     <div class="row">
     <div id="sidebar-admin" class="col-sm-2 hidden-xs">
@@ -366,9 +388,14 @@ $tfa_data = get_tfa();
               <input type="number" class="form-control" id="netban_ipv6" name="netban_ipv6" value="<?=$f2b_data['netban_ipv6'];?>" required>
             </div>
           </div>
+          <p class="help-block"><?=$lang['admin']['f2b_list_info'];?></p>
           <div class="form-group">
             <label for="whitelist"><?=$lang['admin']['f2b_whitelist'];?>:</label>
             <textarea class="form-control" id="whitelist" name="whitelist" rows="5"><?=$f2b_data['whitelist'];?></textarea>
+          </div>
+          <div class="form-group">
+            <label for="blacklist"><?=$lang['admin']['f2b_blacklist'];?>:</label>
+            <textarea class="form-control" id="blacklist" name="blacklist" rows="5"><?=$f2b_data['blacklist'];?></textarea>
           </div>
           <button class="btn btn-default" id="add_item" data-id="f2b" data-api-url='edit/fail2ban' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
         </form>
@@ -554,59 +581,59 @@ $tfa_data = get_tfa();
   </div>
   </div>
 
-  <div role="tabpanel" class="tab-pane active" id="tab-mm">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 class="panel-title">Mailman Postorius/Hyperkitty</h3>
-            </div>
-            <div class="panel-body">
-              <div class="row">
-                <div class="col-sm-9">
-                <form class="form-horizontal" autocapitalize="none" data-id="admin" autocorrect="off" role="form" method="post">
-                  <div class="form-group">
-                    <div class="col-sm-offset-3 col-sm-9">
-                      <label>
-                        <a href="/lists/" target="_blank"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span> mailman Postorius/Hyperkitty</a>
-                      </label>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label class="control-label col-sm-3" for="mailman_ui_user"><?=$lang['admin']['username'];?>:</label>
-                    <div class="col-sm-9">
-                    <input type="text" class="form-control" id="mailman_ui_user" value="admin" disabled>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label class="control-label col-sm-3" for="mailman_ui_mail">Email address:</label>
-                    <div class="col-sm-9">
-                    <input type="email" class="form-control" name="mailman_ui_mail" id="mailman_ui_mail" required>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label class="control-label col-sm-3" for="mailman_ui_pass"><?=$lang['admin']['password'];?>:</label>
-                    <div class="col-sm-9">
-                    <input type="password" class="form-control" name="mailman_ui_pass" id="mailman_ui_pass" required>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label class="control-label col-sm-3" for="mailman_ui_pass2"><?=$lang['admin']['password_repeat'];?>:</label>
-                    <div class="col-sm-9">
-                    <input type="password" class="form-control" name="mailman_ui_pass2" id="mailman_ui_pass2" required>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <div class="col-sm-offset-3 col-sm-9">
-                      <button type="submit" class="btn btn-default" id="mailman_ui" name="mailman_ui" href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
-                    </div>
-                  </div>
-                </form>
-                </div>
-                <div class="col-sm-3">
-                  <img class="img-responsive" src="/img/mailman_logo.png" alt="mailman" />
-                </div>
+  <div role="tabpanel" class="tab-pane" id="tab-mm">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Mailman Postorius/Hyperkitty</h3>
+      </div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-9">
+          <form class="form-horizontal" autocapitalize="none" data-id="admin" autocorrect="off" role="form" method="post">
+            <div class="form-group">
+              <div class="col-sm-offset-3 col-sm-9">
+                <label>
+                  <a href="/lists/" target="_blank"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span> mailman Postorius/Hyperkitty</a>
+                </label>
               </div>
             </div>
+            <div class="form-group">
+              <label class="control-label col-sm-3" for="mailman_ui_user"><?=$lang['admin']['username'];?>:</label>
+              <div class="col-sm-9">
+              <input type="text" class="form-control" id="mailman_ui_user" value="admin" disabled>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-3" for="mailman_ui_mail">Email address:</label>
+              <div class="col-sm-9">
+              <input type="email" class="form-control" name="mailman_ui_mail" id="mailman_ui_mail" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-3" for="mailman_ui_pass"><?=$lang['admin']['password'];?>:</label>
+              <div class="col-sm-9">
+              <input type="password" class="form-control" name="mailman_ui_pass" id="mailman_ui_pass" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-3" for="mailman_ui_pass2"><?=$lang['admin']['password_repeat'];?>:</label>
+              <div class="col-sm-9">
+              <input type="password" class="form-control" name="mailman_ui_pass2" id="mailman_ui_pass2" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-3 col-sm-9">
+                <button type="submit" class="btn btn-default" id="mailman_ui" name="mailman_ui" href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+              </div>
+            </div>
+          </form>
           </div>
+          <div class="col-sm-3">
+            <img class="img-responsive" src="/img/mailman_logo.png" alt="mailman" />
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   </div>

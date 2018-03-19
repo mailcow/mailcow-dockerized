@@ -1,6 +1,11 @@
 <?php
 require_once 'inc/prerequisites.inc.php';
-
+if (isset($_SESSION['mailcow_cc_role']) && isset($_SESSION['oauth2_request'])) {
+  $oauth2_request = $_SESSION['oauth2_request'];
+  unset($_SESSION['oauth2_request']);
+  header('Location: ' . $oauth2_request);
+  exit();
+}
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'admin') {
   header('Location: /admin.php');
   exit();
@@ -15,7 +20,6 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 }
 require_once 'inc/header.inc.php';
 $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
-
 ?>
 <div class="container">
   <div class="row">
@@ -25,7 +29,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
         <div class="panel-body">
           <div class="text-center mailcow-logo"><img src="<?=($main_logo = customize('get', 'main_logo')) ? $main_logo : '/img/cow_mailcow.svg';?>" alt="mailcow"></div>
           <legend><?=$UI_TEXTS['main_name'];?></legend>
-            <form method="post" autofill="off">
+            <form method="post" autofill="off" action="">
             <div class="form-group">
               <label class="sr-only" for="login_user"><?= $lang['login']['username']; ?></label>
               <div class="input-group">

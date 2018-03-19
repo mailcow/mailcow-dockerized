@@ -235,7 +235,11 @@ $lang['info']['no_action'] = 'No action applicable';
 
 
 $lang['edit']['syncjob'] = 'Edit sync job';
-$lang['edit']['username'] = 'Username';
+$lang['edit']['client_id'] = 'Client ID';
+$lang['edit']['client_secret'] = 'Client secret';
+$lang['edit']['scope'] = 'Scope';
+$lang['edit']['grant_types'] = 'Grant types';
+$lang['edit']['redirect_uri'] = 'Redirect/Callback URL';
 $lang['edit']['hostname'] = 'Hostname';
 $lang['edit']['encryption'] = 'Encryption';
 $lang['edit']['maxage'] = 'Maximum age of messages in days that will be polled from remote<br><small>(0 = ignore age)</small>';
@@ -377,6 +381,8 @@ $lang['admin']['f2b_retry_window'] = 'Retry window (s) for max. attempts';
 $lang['admin']['f2b_netban_ipv4'] = 'IPv4 subnet size to apply ban on (8-32)';
 $lang['admin']['f2b_netban_ipv6'] = 'IPv6 subnet size to apply ban on (8-128)';
 $lang['admin']['f2b_whitelist'] = 'Whitelisted networks/hosts';
+$lang['admin']['f2b_blacklist'] = 'Blacklisted networks/hosts';
+$lang['admin']['f2b_list_info'] = 'A blacklisted host or network will always outweigh a whitelist entity. Blacklist records are created at boot-time of the container. Whitelist records are read each time a ban is about to be applied.';
 $lang['admin']['search_domain_da'] = 'Search domains';
 $lang['admin']['r_inactive'] = 'Inactive restrictions';
 $lang['admin']['r_active'] = 'Active restrictions';
@@ -535,3 +541,11 @@ $lang['mailbox']['recipient_map_old'] = 'Original recipient';
 $lang['mailbox']['recipient_map_new'] = 'New recipient';
 $lang['mailbox']['add_recipient_map_entry'] = 'Add recipient map';
 $lang['mailbox']['add_sender_map_entry'] = 'Add sender map';
+
+$lang['oauth2']['scope_ask_permission'] = 'An application asked for the following permissions';
+$lang['oauth2']['profile'] = 'Profile';
+$lang['oauth2']['profile_desc'] = 'View personal information: username, full name, created, modified, active';
+$lang['oauth2']['permit'] = 'Authorize application';
+$lang['oauth2']['authorize_app'] = 'Authorize application';
+$lang['oauth2']['deny'] = 'Deny';
+$lang['oauth2']['access_denied'] = 'Please login as mailbox owner to grant access via OAuth2.';

@@ -160,8 +160,11 @@ jQuery(function($){
         {"name":"aliases","title":lang.aliases,"breakpoints":"xs sm"},
         {"name":"mailboxes","title":lang.mailboxes},
         {"name":"quota","style":{"whiteSpace":"nowrap"},"title":lang.domain_quota,"formatter": function(value){
-          res = value.split("/");
-          return humanFileSize(res[0]) + " / " + humanFileSize(res[1]);
+          if (value != '-') {
+            res = value.split("/");
+            return humanFileSize(res[0]) + " / " + humanFileSize(res[1]);
+          }
+          return ' ';
         },
         "sortValue": function(value){
           res = value.split("/");
@@ -182,20 +185,31 @@ jQuery(function($){
         },
         success: function (data) {
           $.each(data, function (i, item) {
-            item.aliases = item.aliases_in_domain + " / " + item.max_num_aliases_for_domain;
-            item.mailboxes = item.mboxes_in_domain + " / " + item.max_num_mboxes_for_domain;
-            item.quota = item.quota_used_in_domain + "/" + item.max_quota_for_domain;
-            item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
-            item.chkbox = '<input type="checkbox" data-id="domain" name="multi_select" value="' + encodeURIComponent(item.domain_name) + '" />';
-            item.action = '<div class="btn-group">';
-            if (role == "admin") {
-              item.action += '<a href="/edit.php?domain=' + encodeURIComponent(item.domain_name) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-                '<a href="#" id="delete_selected" data-id="single-domain" data-api-url="delete/domain" data-item="' + encodeURIComponent(item.domain_name) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>';
+            if (item.is_list === true) {
+              item.mailboxes = '';
+              item.domain_name = '<span class="glyphicon glyphicon-list-alt"></span> ' + item.domain_name;
+              item.quota = '-';
+              item.max_quota_for_mbox = '';
+              item.chkbox = '';
+              item.action = '';
+              item.aliases = '';
             }
             else {
-              item.action += '<a href="/edit.php?domain=' + encodeURIComponent(item.domain_name) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>';
+              item.aliases = item.aliases_in_domain + " / " + item.max_num_aliases_for_domain;
+              item.mailboxes = item.mboxes_in_domain + " / " + item.max_num_mboxes_for_domain;
+              item.quota = item.quota_used_in_domain + "/" + item.max_quota_for_domain;
+              item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
+              item.chkbox = '<input type="checkbox" data-id="domain" name="multi_select" value="' + encodeURIComponent(item.domain_name) + '" />';
+              item.action = '<div class="btn-group">';
+              if (role == "admin") {
+                item.action += '<a href="/edit.php?domain=' + encodeURIComponent(item.domain_name) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+                  '<a href="#" id="delete_selected" data-id="single-domain" data-api-url="delete/domain" data-item="' + encodeURIComponent(item.domain_name) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>';
+              }
+              else {
+                item.action += '<a href="/edit.php?domain=' + encodeURIComponent(item.domain_name) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>';
+              }
+              item.action += '<a href="#dnsInfoModal" class="btn btn-xs btn-info" data-toggle="modal" data-domain="' + encodeURIComponent(item.domain_name) + '"><span class="glyphicon glyphicon-question-sign"></span> DNS</a></div>';
             }
-            item.action += '<a href="#dnsInfoModal" class="btn btn-xs btn-info" data-toggle="modal" data-domain="' + encodeURIComponent(item.domain_name) + '"><span class="glyphicon glyphicon-question-sign"></span> DNS</a></div>';
           });
         }
       }),
