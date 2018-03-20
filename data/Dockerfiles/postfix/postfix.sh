@@ -8,23 +8,22 @@ if [[ -z $(grep null /etc/aliases) ]]; then
   newaliases;
 fi
 
-cat <<EOF > /opt/postfix/conf/sql/mysql_relay_recipient_maps.cf
-user = ${DBUSER}
-password = ${DBPASS}
-hosts = mysql
-dbname = ${DBNAME}
-query = SELECT DISTINCT
-  CASE WHEN '%d' IN (
-    SELECT domain FROM domain
-      WHERE relay_all_recipients=1
-        AND domain='%d'
-        AND backupmx=1
-  )
-  THEN '%s' ELSE (
-    SELECT goto FROM alias WHERE address='%s' AND active='1'
-  )
-  END AS result;
-EOF
+# cat <<EOF > /opt/postfix/conf/sql/mysql_relay_recipient_maps.cf
+# user = ${DBUSER}
+# password = ${DBPASS}
+# hosts = mysql
+# dbname = ${DBNAME}
+# query = SELECT DISTINCT
+#   CASE WHEN '%d' IN (
+#     SELECT domain FROM domain
+#       WHERE domain='%d'
+#       AND nexthop <> 'lmtp:[dovecot]'
+#   )
+#   THEN '%s' ELSE (
+#     SELECT goto FROM alias WHERE address='%s' AND active='1'
+#   )
+#   END AS result;
+# EOF
 
 cat <<EOF > /opt/postfix/conf/sql/mysql_tls_enforce_in_policy.cf
 user = ${DBUSER}
@@ -168,12 +167,9 @@ user = ${DBUSER}
 password = ${DBPASS}
 hosts = mysql
 dbname = ${DBNAME}
-query = SELECT alias_domain from alias_domain WHERE alias_domain='%s' AND active='1'
-  UNION
-  SELECT domain FROM domain
-    WHERE domain='%s'
-      AND active = '1'
-      AND backupmx = '0'
+query = SELECT alias_domain from alias_domain
+        WHERE alias_domain='%s'
+          AND active='1';
 EOF
 
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_mailbox_maps.cf
@@ -181,7 +177,9 @@ user = ${DBUSER}
 password = ${DBPASS}
 hosts = mysql
 dbname = ${DBNAME}
-query = SELECT maildir FROM mailbox WHERE username='%s' AND active = '1'
+query = SELECT maildir FROM mailbox
+        WHERE username='%s'
+          AND active = '1'
 EOF
 
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_relay_domain_maps.cf
@@ -189,7 +187,30 @@ user = ${DBUSER}
 password = ${DBPASS}
 hosts = mysql
 dbname = ${DBNAME}
-query = SELECT domain FROM domain WHERE domain='%s' AND backupmx = '1' AND active = '1'
+query = SELECT domain FROM domain
+        WHERE domain='%s'
+          AND active = '1';
+EOF
+
+cat <<EOF > /opt/postfix/conf/sql/mysql_transport_domains_maps.cf
+user = ${DBUSER}
+password = ${DBPASS}
+hosts = mysql
+dbname = ${DBNAME}
+query = SELECT nexthop FROM domain
+        WHERE domain='%s'
+          AND active = '1';
+EOF
+
+cat <<EOF > /opt/postfix/conf/sql/mysql_transport_all_recipients_maps.cf
+user = ${DBUSER}
+password = ${DBPASS}
+hosts = mysql
+dbname = ${DBNAME}
+query = SELECT domain FROM domain
+        WHERE domain='%d'
+          AND nexthop <> 'lmtp:[dovecot]'
+          AND active = '1';
 EOF
 
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_sender_acl.cf

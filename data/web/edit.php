@@ -184,7 +184,13 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               </div>
             </div>
             <div class="form-group">
-              <label class="control-label col-sm-2" for="quota">Relayhost</label>
+              <label class="control-label col-sm-2" for="nexthop">Nexthop</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" name="nexthop" id="nexthop" value="<?=htmlspecialchars($result['nexthop']);?>">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="relayhost">Relayhost</label>
               <div class="col-sm-10">
                 <select name="relayhost" id="relayhost" class="form-control">
                   <?php
@@ -198,7 +204,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                 </select>
               </div>
             </div>
-            <div class="form-group">
+            <!-- <div class="form-group">
               <label class="control-label col-sm-2"><?=$lang['edit']['backup_mx_options'];?></label>
               <div class="col-sm-10">
                 <div class="checkbox">
@@ -208,7 +214,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                   <p><?=$lang['edit']['relay_all_info'];?></p>
                 </div>
               </div>
-            </div>
+            </div> -->
             <?php
             }
             ?>
@@ -664,7 +670,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         }
     }
     elseif (isset($_GET['transport_map']) && !empty($_GET["transport_map"])) {
-        $transport_map = intval($_GET["transport_map"]);
+        $transport_map = $_GET["transport_map"];
         $result = transport_map('details', $transport_map);
         $nexthop = explode(':', $result['nexthop']);
         if (!empty($result)) {

@@ -7,16 +7,17 @@ function transport_map($_action, $_data = null, $attr = null) {
   }
   switch ($_action) {
     case 'add':
-      $local_dest = strtolower(trim($_data['local_dest']));
+      $mailbox_name = strtolower(trim($_data['mailbox_name']));
+      $domain = strtolower(trim($_data['domain']));
       $protocol = strtolower(trim($_data['protocol']));
       $ip = strtolower(trim($_data['ip']));
       $port = strtolower(trim($_data['port']));
       $active = intval($_data['active']);
 
-      if (empty($local_dest)) {
+      if (empty($domain)) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'Local destination cannot be empty'
+          'msg' => 'Local domain part cannot be empty'
         );
         return false;
       } elseif (empty($protocol)) {
@@ -28,7 +29,32 @@ function transport_map($_action, $_data = null, $attr = null) {
       } elseif (empty($ip)) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'Domain/IP cannot be empty'
+          'msg' => 'Domain part cannot be empty'
+        );
+        return false;
+      } elseif (empty($mailbox_name)) {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => 'User part cannot be empty'
+        );
+        return false;
+      }
+      try {
+        $stmt = $pdo->prepare("SELECT `local_dest` FROM `transport_maps` WHERE `local_dest` = :local_dest");
+        $stmt->execute(array(':local_dest' => $mailbox_name . '@' . $domain));
+        $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+      }
+      catch (PDOException $e) {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => 'MySQL: '.$e
+        );
+        return false;
+      }
+      if ($num_results != 0) {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => 'Entry for this transport map already exists'
         );
         return false;
       }
@@ -37,7 +63,7 @@ function transport_map($_action, $_data = null, $attr = null) {
         $stmt = $pdo->prepare("INSERT INTO `transport_maps` (`local_dest`, `nexthop`, `active`) VALUES
           (:local_dest, :nexthop, :active)");
         $stmt->execute(array(
-          ':local_dest' => $local_dest,
+          ':local_dest' => $mailbox_name . '@' . $domain,
           ':nexthop' => $nexthop,
 					':active' => $active
         ));
@@ -55,11 +81,11 @@ function transport_map($_action, $_data = null, $attr = null) {
       );
     break;
     case 'edit':
-      $ids = (array)$_data['id'];
-      foreach ($ids as $id) {
-        $is_now = transport_map('details', $id);
+      $transport_maps = (array)$_data['transport_map'];
+      foreach ($transport_maps as $transport_map) {
+        $is_now = transport_map('details', $transport_map);
         if (!empty($is_now)) {
-          $local_dest = (isset($_data['local_dest'])) ? $_data['local_dest'] : $is_now['local_dest'];
+          $local_dest = $is_now['local_dest'];
           if (isset($_data['protocol']) && isset($_data['ip']) && (isset($_data['port']) && ! empty($_data['port']) )) {
             $nexthop = $_data['protocol'] . $_data['ip'] . ':' . $_data['port'];
           } elseif (isset($_data['protocol']) && isset($_data['ip'])) {
@@ -78,10 +104,10 @@ function transport_map($_action, $_data = null, $attr = null) {
         }
         $active = intval($_data['active']);
         try {
-          $stmt = $pdo->prepare("SELECT `id` FROM `transport_maps`
+          $stmt = $pdo->prepare("SELECT `local_dest` FROM `transport_maps`
             WHERE `local_dest` = :local_dest AND `nexthop` = :nexthop");
           $stmt->execute(array(':local_dest' => $local_dest, ':nexthop' => $nexthop));
-          $id_now = $stmt->fetch(PDO::FETCH_ASSOC)['id'];
+          $transport_map_now = $stmt->fetch(PDO::FETCH_ASSOC)['local_dest'];
         }
         catch(PDOException $e) {
           $_SESSION['return'] = array(
@@ -90,7 +116,7 @@ function transport_map($_action, $_data = null, $attr = null) {
           );
           return false;
         }
-        if (isset($id_now) && $id_now != $id) {
+        if (isset($transport_map_now) && $transport_map_now != $transport_map) {
           $_SESSION['return'] = array(
             'type' => 'danger',
             'msg' => 'A transport map entry for' . htmlspecialchars($local_dest) . ' exists'
@@ -98,12 +124,11 @@ function transport_map($_action, $_data = null, $attr = null) {
           return false;
         }
         try {
-          $stmt = $pdo->prepare("UPDATE `transport_maps` SET `local_dest` = :local_dest, `nexthop` = :nexthop, `active` = :active WHERE `id`= :id");
+          $stmt = $pdo->prepare("UPDATE `transport_maps` SET `nexthop` = :nexthop, `active` = :active WHERE `local_dest`= :local_dest");
           $stmt->execute(array(
             ':local_dest' => $local_dest,
             ':nexthop' => $nexthop,
-						':active' => $active,
-            ':id' => $id
+						':active' => $active
           ));
         }
         catch (PDOException $e) {
@@ -121,17 +146,17 @@ function transport_map($_action, $_data = null, $attr = null) {
     break;
     case 'details':
       $relaydata = array();
-      $id = intval($_data);
+      $transport_map = $_data;
       try {
-        $stmt = $pdo->prepare("SELECT `id`,
+        $stmt = $pdo->prepare("SELECT
 					`local_dest`,
 					`nexthop`,
 					`active` AS `active_int`,
 					CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`,
 					`created`,
 					`modified` FROM `transport_maps`
-						WHERE `id` = :id");
-        $stmt->execute(array(':id' => $id));
+						WHERE `local_dest` = :local_dest");
+        $stmt->execute(array(':local_dest' => $transport_map));
         $relaydata = $stmt->fetch(PDO::FETCH_ASSOC);
       }
       catch(PDOException $e) {
@@ -146,9 +171,8 @@ function transport_map($_action, $_data = null, $attr = null) {
     case 'get':
       $relaydata = array();
       $all_items = array();
-      $id = intval($_data);
       try {
-        $stmt = $pdo->query("SELECT `id` FROM `transport_maps`");
+        $stmt = $pdo->query("SELECT `local_dest` FROM `transport_maps`");
         $all_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
       }
       catch(PDOException $e) {
@@ -159,20 +183,17 @@ function transport_map($_action, $_data = null, $attr = null) {
         return false;
       }
       foreach ($all_items as $i) {
-        $relaydata[] = $i['id'];
+        $relaydata[] = $i['local_dest'];
       }
       $all_items = null;
       return $relaydata;
     break;
     case 'delete':
-      $ids = (array)$_data['id'];
-      foreach ($ids as $id) {
-        if (!is_numeric($id)) {
-          return false;
-        }
+      $transport_maps = (array)$_data['transport_maps'];
+      foreach ($transport_maps as $transport_map) {
         try {
-          $stmt = $pdo->prepare("DELETE FROM `transport_maps` WHERE `id`= :id");
-          $stmt->execute(array(':id' => $id));
+          $stmt = $pdo->prepare("DELETE FROM `transport_maps` WHERE `local_dest`= :transport_map");
+          $stmt->execute(array(':transport_map' => $transport_map));
         }
         catch (PDOException $e) {
           $_SESSION['return'] = array(
@@ -184,7 +205,7 @@ function transport_map($_action, $_data = null, $attr = null) {
       }
       $_SESSION['return'] = array(
         'type' => 'success',
-        'msg' => 'Deleted transport map id/s ' . implode(', ', $ids)
+        'msg' => 'Deleted transport map(s) ' . implode(', ', $transport_maps)
       );
       return true;
     break;

@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "09032018_1157";
+    $db_version = "19032018_1344";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -145,8 +145,7 @@ function init_db_schema() {
           "maxquota" => "BIGINT(20) NOT NULL DEFAULT '0'",
           "quota" => "BIGINT(20) NOT NULL DEFAULT '102400'",
           "relayhost" => "VARCHAR(255) NOT NULL DEFAULT '0'",
-          "backupmx" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "relay_all_recipients" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "nexthop" => "VARCHAR(255) NOT NULL DEFAULT 'lmtp:[dovecot]'",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
           "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
@@ -399,7 +398,6 @@ function init_db_schema() {
       ),
       "transport_maps" => array(
         "cols" => array(
-          "id" => "INT NOT NULL AUTO_INCREMENT",
           "local_dest" => "VARCHAR(255) NOT NULL",
           "nexthop" => "VARCHAR(255) NOT NULL",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
@@ -408,7 +406,7 @@ function init_db_schema() {
         ),
         "keys" => array(
           "primary" => array(
-            "" => array("id")
+            "" => array("local_dest")
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"

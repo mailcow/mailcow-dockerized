@@ -169,7 +169,7 @@ jQuery(function($){
         },
         },
         {"name":"max_quota_for_mbox","title":lang.mailbox_quota,"breakpoints":"xs sm"},
-        {"name":"backupmx","filterable": false,"style":{"maxWidth":"120px","width":"120px"},"title":lang.backup_mx,"breakpoints":"xs sm"},
+        {"name":"nexthop","title":"Nexthop","breakpoints":"xs sm"},
         {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"240px","width":"240px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
@@ -390,8 +390,7 @@ jQuery(function($){
     ft_bcc_table = FooTable.init('#transport_map_table', {
       "columns": [
         {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
-        {"sorted": true,"name":"id","title":"ID","style":{"maxWidth":"60px","width":"60px","text-align":"center"}},
-        {"name":"local_dest","title":lang.transport_map_local_dest},
+        {"sorted": true, "name":"local_dest","title":lang.transport_map_local_dest},
         {"name":"nexthop","title":lang.transport_map_remote_dest,"breakpoints":"xs sm"},
         {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
@@ -407,10 +406,10 @@ jQuery(function($){
         success: function (data) {
           $.each(data, function (i, item) {
             item.action = '<div class="btn-group">' +
-              '<a href="/edit.php?transport_map=' + item.id + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-              '<a href="#" id="delete_selected" data-id="single-transport_map" data-api-url="delete/transport_map" data-item="' + item.id + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+              '<a href="/edit.php?transport_map=' + item.local_dest + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+              '<a href="#" id="delete_selected" data-id="single-transport_map" data-api-url="delete/transport_map" data-item="' + item.local_dest + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
               '</div>';
-            item.chkbox = '<input type="checkbox" data-id="transport_map" name="multi_select" value="' + item.id + '" />';
+            item.chkbox = '<input type="checkbox" data-id="transport_map" name="multi_select" value="' + item.local_dest + '" />';
           });
         }
       }),

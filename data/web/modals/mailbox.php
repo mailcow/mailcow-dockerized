@@ -124,17 +124,6 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="control-label col-sm-2"><?=$lang['add']['backup_mx_options'];?></label>
-						<div class="col-sm-10">
-							<div class="checkbox">
-							<label><input type="checkbox" value="1" name="backupmx"> <?=$lang['add']['relay_domain'];?></label>
-							<br />
-							<label><input type="checkbox" value="1" name="relay_all_recipients"> <?=$lang['add']['relay_all'];?></label>
-							<p><?=$lang['add']['relay_all_info'];?></p>
-							</div>
-						</div>
-					</div>
-					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">
 							<label><input type="checkbox" value="1" name="active" checked> <?=$lang['add']['active'];?></label>
@@ -606,32 +595,28 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
       <div class="modal-body">
 				<form class="form-horizontal" data-cached-form="true" role="form" data-id="add_transport_map">
           <div class="form-group">
-            <label class="control-label col-sm-2" for="local_dest"><?= $lang['mailbox']['transport_map_local_dest']; ?>:</label>
+            <label class="control-label col-sm-2" for="domain"><?= $lang['mailbox']['transport_map_local_dest']; ?>:</label>
             <div class="col-sm-10">
-              <select id="addSelectLocalDest" name="local_dest" id="local_dest" required>
-                <?php
-									$domains = mailbox('get', 'domains');
-									$alias_domains = mailbox('get', 'alias_domains');
-									if (!empty($domains)) {
-										foreach ($domains as $domain) {
-											echo "<option>" . htmlspecialchars($domain) . "</option>";
-										}
-									}
-									if (!empty($alias_domains)) {
-										foreach ($alias_domains as $alias_domain) {
-											echo "<option>" . htmlspecialchars($alias_domain) . "</option>";
-										}
-									}
-									if (!empty($domains)) {
-										foreach ($domains as $domain) {
-											$mailboxes = mailbox('get', 'mailboxes', $domain);
-											foreach ($mailboxes as $mailbox) {
-												echo "<option>" . htmlspecialchars($mailbox) . "</option>";
-											}
-										}
-									}
-								?>
-              </select>
+              <div class="input-group">
+                <input class="form-control" name="mailbox_name" required></input>
+                <span class="input-group-addon">@</span>
+                <select id="addSelectLocalDest" name="domain" id="domain" required>
+                  <?php
+                    $domains = mailbox('get', 'domains');
+                    $alias_domains = mailbox('get', 'alias_domains');
+                    if (!empty($domains)) {
+                      foreach ($domains as $domain) {
+                        echo "<option>" . htmlspecialchars($domain) . "</option>";
+                      }
+                    }
+                    if (!empty($alias_domains)) {
+                      foreach ($alias_domains as $alias_domain) {
+                        echo "<option>" . htmlspecialchars($alias_domain) . "</option>";
+                      }
+                    }
+                  ?>
+                </select>
+              </div>
             </div>
           </div>
 					<div class="form-group">

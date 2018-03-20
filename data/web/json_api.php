@@ -1876,7 +1876,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             if (isset($_POST['items'])) {
               $items = (array)json_decode($_POST['items'], true);
               if (is_array($items)) {
-                if (transport_map('delete', array('id' => $items)) === false) {
+                if (transport_map('delete', array('transport_maps' => $items)) === false) {
                   if (isset($_SESSION['return'])) {
                     echo json_encode($_SESSION['return']);
                   } else {
@@ -2452,8 +2452,8 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             if (isset($_POST['items']) && isset($_POST['attr'])) {
               $items = (array)json_decode($_POST['items'], true);
               $attr = (array)json_decode($_POST['attr'], true);
-              $postarray = array_merge(array('id' => $items), $attr);
-              if (is_array($postarray['id'])) {
+              $postarray = array_merge(array('transport_map' => $items), $attr);
+              if (is_array($postarray['transport_map'])) {
                 if (transport_map('edit', $postarray) === false) {
                   if (isset($_SESSION['return'])) {
                     echo json_encode($_SESSION['return']);

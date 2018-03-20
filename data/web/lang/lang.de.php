@@ -524,10 +524,10 @@ $lang['mailbox']['add_bcc_entry'] = "BCC-Eintrag hinzufügen";
 $lang['mailbox']['bcc_info'] = "Eine empfängerabhängige Map wird verwendet, wenn die BCC-Map Eintragung auf den Eingang einer E-Mail auf das lokale Ziel reagieren soll. Senderabhängige Maps verfahren nach dem gleichen Prinzip.<br/>
   Das lokale Ziel wird bei Fehlzustellungen an ein BCC-Ziel nicht informiert.";
 
-$lang['mailbox']['transport_map'] = "Transport Maps";
+$lang['mailbox']['transport_map'] = "Transport Routes";
 $lang['mailbox']['transport_map_local_dest'] = "Lokales Ziel";
 $lang['mailbox']['transport_map_remote_dest'] = "Entferntes Ziel";
-$lang['mailbox']['add_transport_map_entry'] = "Transport Map Eintrag hinzufügen";
+$lang['mailbox']['add_transport_map_entry'] = "Transport Route Eintrag hinzufügen";
 $lang['mailbox']['transport_map_info'] = "Transport Maps werden verwendet, um E-Mails über einen anderen E-Mail Server zu versenden/empfangen.";
 $lang['mailbox']['transport_map_protocol'] = "Protokoll";
 $lang['mailbox']['transport_map_ip'] = "Domain/IP";
