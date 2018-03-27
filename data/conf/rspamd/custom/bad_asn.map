@@ -1,13 +1,13 @@
 # High spam networks
-201942:7 #Soltia Consulting SL - ipinfo.io
-16276:7 #OVH
-12876:7 #ONLINE S.A.S
-31034:7
-12874:7
-30823:7
-197071:7
-42831:6 #UK Dedicated Servers Ltd
-29119:6 #Aire Networks del Mediterraneo S.L.U.
+201942:5 #Soltia Consulting SL - ipinfo.io
+16276:5 #OVH
+12876:5 #ONLINE S.A.S
+31034:5
+12874:5
+30823:5
+197071:5
+42831:5 #UK Dedicated Servers Ltd
+29119:5 #Aire Networks del Mediterraneo S.L.U.
 13335:5 #Cloudflare
 28753:5 #Leaseweb
 61272:5 #Informacines sistemos ir technologijos
@@ -17,7 +17,6 @@
 14061:4 #Digitalocean
 55293:4 #A2 Hosting
 63018:4 #US Dedicated
-8560:4 #OneAndOne
 197518:2
 44493:2
 46606:2
