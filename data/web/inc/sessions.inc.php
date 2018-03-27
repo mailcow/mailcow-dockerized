@@ -28,7 +28,7 @@ if (!isset($_SESSION['SESS_REMOTE_UA'])) {
 
 // API
 if (!empty($_SERVER['HTTP_X_API_KEY'])) {
-  $stmt = $pdo->prepare("SELECT `username`, `allow_from` FROM `api` WHERE `api_key` = :api_key AND `active` = '1';");
+  $stmt = $pdo->prepare("SELECT `api`.`username`, `api`.`allow_from`, `admin`.`superadmin` FROM `api` INNER JOIN `admin` ON `admin`.`username` = `api`.`username` WHERE `api_key` = :api_key AND `api`.`active` = '1' AND `admin`.`active` = '1';");
   $stmt->execute(array(
     ':api_key' => preg_replace('/[^A-Z0-9-]/', '', $_SERVER['HTTP_X_API_KEY'])
   ));
@@ -36,7 +36,7 @@ if (!empty($_SERVER['HTTP_X_API_KEY'])) {
   if (!empty($api_return['username'])) {
     if (in_array($_SERVER['REMOTE_ADDR'], explode(',', $api_return['allow_from']))) {
       $_SESSION['mailcow_cc_username'] = $api_return['username'];
-      $_SESSION['mailcow_cc_role'] = 'admin';
+      $_SESSION['mailcow_cc_role'] = $api_return['superadmin'] ? 'admin' : 'domainadmin';
       $_SESSION['mailcow_cc_api'] = true;
     }
   }
