@@ -118,7 +118,7 @@ rspamd_config:register_symbol({
   type = 'postfilter',
   callback = function(task)
     local from = task:get_header('From')
-    if from and (from == 'monitoring-system@everycloudtech.us' or from == 'watchdog@localhost') then
+    if from and (string.find(from, 'monitoring-system@everycloudtech.us', 1, true) or from == 'watchdog@localhost') then
       task:set_flag('no_log')
       task:set_flag('no_stat')
     end
