@@ -3,8 +3,8 @@ LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL C
-ENV DOVECOT_VERSION 2.2.35
-ENV PIGEONHOLE_VERSION 0.4.23
+ENV DOVECOT_VERSION 2.3.1
+ENV PIGEONHOLE_VERSION 0.5.1
 
 RUN apt-get update && apt-get -y --no-install-recommends install \
   automake \
@@ -65,21 +65,21 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
   && rm -rf /var/lib/apt/lists/*
 
 
-RUN curl https://www.dovecot.org/releases/2.2/dovecot-$DOVECOT_VERSION.tar.gz | tar xvz  \
+RUN curl https://www.dovecot.org/releases/2.3/dovecot-$DOVECOT_VERSION.tar.gz | tar xvz  \
   && cd dovecot-$DOVECOT_VERSION \
   && ./configure --with-solr --with-mysql --with-lzma --with-lz4 --with-ssl=openssl --with-notify=inotify --with-storages=mdbox,sdbox,maildir,mbox,imapc,pop3c --with-bzlib --with-zlib \
   && make -j3 \
   && make install \
   && make clean \
   && cd .. && rm -rf dovecot-$DOVECOT_VERSION \
-  && curl https://pigeonhole.dovecot.org/releases/2.2/dovecot-2.2-pigeonhole-$PIGEONHOLE_VERSION.tar.gz | tar xvz  \
-  && cd dovecot-2.2-pigeonhole-$PIGEONHOLE_VERSION \
+  && curl https://pigeonhole.dovecot.org/releases/2.3/dovecot-2.3-pigeonhole-$PIGEONHOLE_VERSION.tar.gz | tar xvz  \
+  && cd dovecot-2.3-pigeonhole-$PIGEONHOLE_VERSION \
   && ./configure \
   && make -j3 \
   && make install \
   && make clean \
   && cd .. \
-  && rm -rf dovecot-2.2-pigeonhole-$PIGEONHOLE_VERSION
+  && rm -rf dovecot-2.3-pigeonhole-$PIGEONHOLE_VERSION
 
 RUN cpanm Data::Uniqid Mail::IMAPClient String::Util
 RUN echo '* * * * *   root   /usr/local/bin/imapsync_cron.pl' > /etc/cron.d/imapsync
