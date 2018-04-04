@@ -163,8 +163,20 @@ while true; do
   declare -a SQL_DOMAIN_ARR
   declare -a VALIDATED_CONFIG_DOMAINS
   declare -a ADDITIONAL_VALIDATED_SAN
-  IFS=',' read -r -a ADDITIONAL_SAN_ARR <<< "${ADDITIONAL_SAN}"
+  IFS=',' read -r -a TMP_ARR <<< "${ADDITIONAL_SAN}"
   log_f "Detecting IP addresses... " no_nl
+
+  unset ADDITIONAL_WC_ARR
+  unset ADDITIONAL_SAN_ARR
+  for i in "${TMP_ARR[@]}" ; do
+    if [[ "$i" =~ \.\*$ ]]; then
+      ADDITIONAL_WC_ARR+=(${i::-2})
+    else
+      ADDITIONAL_SAN_ARR+=($i)
+    fi
+  done
+  ADDITIONAL_WC_ARR+=('autodiscover')
+
   IPV4=$(get_ipv4)
   IPV6=$(get_ipv6)
   log_f "OK" no_date
@@ -195,31 +207,37 @@ while true; do
   done < <(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM domain WHERE backupmx=0" -Bs)
 
   for SQL_DOMAIN in "${SQL_DOMAIN_ARR[@]}"; do
-    A_DISCOVER=$(dig A autodiscover.${SQL_DOMAIN} +short | tail -n 1)
-    AAAA_DISCOVER=$(dig AAAA autodiscover.${SQL_DOMAIN} +short | tail -n 1)
-    # Check if CNAME without v6 enabled target
-    if [[ ! -z ${AAAA_DISCOVER} ]] && [[ -z $(echo ${AAAA_DISCOVER} | grep "^\([0-9a-fA-F]\{0,4\}:\)\{1,7\}[0-9a-fA-F]\{0,4\}$") ]]; then
-      AAAA_DISCOVER=
-    fi
-    if [[ ! -z ${AAAA_DISCOVER} ]]; then
-      log_f "Found AAAA record for autodiscover.${SQL_DOMAIN}: ${AAAA_DISCOVER} - skipping A record check"
-      if [[ $(expand ${IPV6:-"0000:0000:0000:0000:0000:0000:0000:0000"}) == $(expand ${AAAA_DISCOVER}) ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
-        log_f "Confirmed AAAA record autodiscover.${SQL_DOMAIN}"
-        VALIDATED_CONFIG_DOMAINS+=("autodiscover.${SQL_DOMAIN}")
+    for SUBDOMAIN in "${ADDITIONAL_WC_ARR[@]}"; do
+      if [[  "${SUBDOMAIN}.${SQL_DOMAIN}" == ${MAILCOW_HOSTNAME} ]]; then
+        log_f "Skipping mailcow hostname (${MAILCOW_HOSTNAME}), will be added anyway"
       else
-        log_f "Cannot match your IP ${IPV6:-NO_IPV6_LINK} against hostname autodiscover.${SQL_DOMAIN} ($(expand ${AAAA_DISCOVER}))"
+        A_SUBDOMAIN=$(dig A ${SUBDOMAIN}.${SQL_DOMAIN} +short | tail -n 1)
+        AAAA_SUBDOMAIN=$(dig AAAA ${SUBDOMAIN}.${SQL_DOMAIN} +short | tail -n 1)
+        # Check if CNAME without v6 enabled target
+        if [[ ! -z ${AAAA_SUBDOMAIN} ]] && [[ -z $(echo ${AAAA_SUBDOMAIN} | grep "^\([0-9a-fA-F]\{0,4\}:\)\{1,7\}[0-9a-fA-F]\{0,4\}$") ]]; then
+          AAAA_SUBDOMAIN=
+        fi
+        if [[ ! -z ${AAAA_SUBDOMAIN} ]]; then
+          log_f "Found AAAA record for ${SUBDOMAIN}.${SQL_DOMAIN}: ${AAAA_SUBDOMAIN} - skipping A record check"
+          if [[ $(expand ${IPV6:-"0000:0000:0000:0000:0000:0000:0000:0000"}) == $(expand ${AAAA_SUBDOMAIN}) ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
+            log_f "Confirmed AAAA record ${SUBDOMAIN}.${SQL_DOMAIN}"
+            VALIDATED_CONFIG_DOMAINS+=("${SUBDOMAIN}.${SQL_DOMAIN}")
+          else
+            log_f "Cannot match your IP ${IPV6:-NO_IPV6_LINK} against hostname ${SUBDOMAIN}.${SQL_DOMAIN} ($(expand ${AAAA_SUBDOMAIN}))"
+          fi
+        elif [[ ! -z ${A_SUBDOMAIN} ]]; then
+          log_f "Found A record for ${SUBDOMAIN}.${SQL_DOMAIN}: ${A_SUBDOMAIN}"
+          if [[ ${IPV4:-ERR} == ${A_SUBDOMAIN} ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
+            log_f "Confirmed A record ${SUBDOMAIN}.${SQL_DOMAIN}"
+            VALIDATED_CONFIG_DOMAINS+=("${SUBDOMAIN}.${SQL_DOMAIN}")
+          else
+            log_f "Cannot match your IP ${IPV4} against hostname ${SUBDOMAIN}.${SQL_DOMAIN} (${A_SUBDOMAIN})"
+          fi
+        else
+          log_f "No A or AAAA record found for hostname ${SUBDOMAIN}.${SQL_DOMAIN}"
+        fi
       fi
-    elif [[ ! -z ${A_DISCOVER} ]]; then
-      log_f "Found A record for autodiscover.${SQL_DOMAIN}: ${A_DISCOVER}"
-      if [[ ${IPV4:-ERR} == ${A_DISCOVER} ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
-        log_f "Confirmed A record autodiscover.${SQL_DOMAIN}"
-        VALIDATED_CONFIG_DOMAINS+=("autodiscover.${SQL_DOMAIN}")
-      else
-        log_f "Cannot match your IP ${IPV4} against hostname autodiscover.${SQL_DOMAIN} (${A_DISCOVER})"
-      fi
-    else
-      log_f "No A or AAAA record found for hostname autodiscover.${SQL_DOMAIN}"
-    fi
+    done
   done
 
   A_MAILCOW_HOSTNAME=$(dig A ${MAILCOW_HOSTNAME} +short | tail -n 1)
