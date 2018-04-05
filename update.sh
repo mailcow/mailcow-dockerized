@@ -208,8 +208,16 @@ if [[ ! -z $(which pip) && $(pip list --local | grep -c docker-compose) == 1 ]];
   #prevent breaking a working docker-compose installed with pip
 elif [[ $(curl -sL -w "%{http_code}" https://www.servercow.de/docker-compose/latest.php -o /dev/null) == "200" ]]; then
   LATEST_COMPOSE=$(curl -#L https://www.servercow.de/docker-compose/latest.php)
-  curl -#L https://github.com/docker/compose/releases/download/${LATEST_COMPOSE}/docker-compose-$(uname -s)-$(uname -m) > $(which docker-compose)
-  chmod +x $(which docker-compose)
+  COMPOSE_VERSION=$(docker-compose version --short)
+  if [[ "$LATEST_COMPOSE" != "$COMPOSE_VERSION" ]]; then
+    if [[ -w $(which docker-compose) ]]; then
+      curl -#L https://github.com/docker/compose/releases/download/${LATEST_COMPOSE}/docker-compose-$(uname -s)-$(uname -m) > $(which docker-compose)
+      chmod +x $(which docker-compose)
+    else
+      echo -e "\e[33mWARNING: $(which docker-compose) is not writable, but new version $LATEST_COMPOSE is available (installed: $COMPOSE_VERSION)\e[0m"
+    fi
+  fi
+
 else
   echo -e "\e[33mCannot determine latest docker-compose version, skipping...\e[0m"
 fi
