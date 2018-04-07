@@ -16,6 +16,7 @@ $database_name = getenv('DBNAME');
 
 // Other variables
 $mailcow_hostname = getenv('MAILCOW_HOSTNAME');
+$admin_default_pass = getenv('DEFAULTPASS');
 
 // Autodiscover settings
 // ===

@@ -74,13 +74,15 @@ fi
 
 [[ ! -f ./data/conf/rspamd/override.d/worker-controller-password.inc ]] && echo '# Placeholder' > ./data/conf/rspamd/override.d/worker-controller-password.inc
 
+DEFAULTPASS=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 15)
+
 cat << EOF > mailcow.conf
 # ------------------------------
 # mailcow web ui configuration
 # ------------------------------
 # example.org is _not_ a valid hostname, use a fqdn here.
 # Default admin user is "admin"
-# Default password is "moohoo"
+# Default password is "${DEFAULTPASS}"
 MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
 
 # ------------------------------
@@ -88,6 +90,11 @@ MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
 # ------------------------------
 DBNAME=mailcow
 DBUSER=mailcow
+
+# ------------------------------
+# Web Admin Password
+# ------------------------------
+DEFAULTPASS=${DEFAULTPASS}
 
 # Please use long, random alphanumeric strings (A-Za-z0-9)
 DBPASS=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
@@ -172,3 +179,8 @@ mkdir -p data/assets/ssl
 
 # copy but don't overwrite existing certificate
 cp -n data/assets/ssl-example/*.pem data/assets/ssl/
+
+echo
+echo
+echo "The default admin password will be: ${DEFAULTPASS}"
+echo

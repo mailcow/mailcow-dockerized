@@ -1,5 +1,5 @@
 <?php
-function init_db_schema() {
+function init_db_schema($admin_default_pass) {
   try {
     global $pdo;
 
@@ -892,8 +892,9 @@ DELIMITER ;';
     $stmt = $pdo->query("SELECT NULL FROM `admin`"); 
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
     if ($num_results == 0) {
-    $stmt = $pdo->query("INSERT INTO `admin` (`username`, `password`, `superadmin`, `created`, `modified`, `active`)
-      VALUES ('admin', '{SSHA256}K8eVJ6YsZbQCfuJvSUbaQRLr0HPLz5rC9IAp0PAFl0tmNDBkMDc0NDAyOTAxN2Rk', 1, NOW(), NOW(), 1)");
+    $stmt = $pdo->prepare("INSERT INTO `admin` (`username`, `password`, `superadmin`, `created`, `modified`, `active`)
+      VALUES ('admin', :password, 1, NOW(), NOW(), 1)");
+    $stmt->execute(array(':password' => hash_password($admin_default_pass)));
     $stmt = $pdo->query("INSERT INTO `domain_admins` (`username`, `domain`, `created`, `active`)
         SELECT `username`, 'ALL', NOW(), 1 FROM `admin`
           WHERE superadmin='1' AND `username` NOT IN (SELECT `username` FROM `domain_admins`);");

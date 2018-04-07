@@ -122,6 +122,7 @@ services:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
+        - DEFAULTPASS=${DEFAULTPASS}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
         - IMAP_PORT=${IMAP_PORT:-143}
         - IMAPS_PORT=${IMAPS_PORT:-993}

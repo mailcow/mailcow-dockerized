@@ -123,7 +123,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.oauth2.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.docker.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/init_db.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/triggers.inc.php';
-init_db_schema();
+init_db_schema($admin_default_pass);
 if (isset($_SESSION['mailcow_cc_role'])) {
   set_acl();
 }
