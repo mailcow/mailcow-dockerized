@@ -91,6 +91,10 @@ MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
 DBNAME=mailcow
 DBUSER=mailcow
 
+# Please use long, random alphanumeric strings (A-Za-z0-9)
+DBPASS=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
+DBROOT=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
+
 # ------------------------------
 # Web Admin Password
 # DEFAULTPASS defines the default admin password to be injected when no superadmin was found.
@@ -98,10 +102,6 @@ DBUSER=mailcow
 # You are able to change your administrators credentials using the web interface.
 # ------------------------------
 DEFAULTPASS=${DEFAULTPASS}
-
-# Please use long, random alphanumeric strings (A-Za-z0-9)
-DBPASS=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
-DBROOT=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
 
 # ------------------------------
 # HTTP/S Bindings
