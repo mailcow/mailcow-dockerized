@@ -16,6 +16,7 @@ $database_name = getenv('DBNAME');
 
 // Other variables
 $mailcow_hostname = getenv('MAILCOW_HOSTNAME');
+// This has no effect after the first database initialization and can be ignored
 $admin_default_pass = getenv('DEFAULTPASS');
 
 // Autodiscover settings
