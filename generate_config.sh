@@ -93,6 +93,9 @@ DBUSER=mailcow
 
 # ------------------------------
 # Web Admin Password
+# DEFAULTPASS defines the default admin password to be injected when no superadmin was found.
+# This parameters value has no effect after the first database initialization.
+# You are able to change your administrators credentials using the web interface.
 # ------------------------------
 DEFAULTPASS=${DEFAULTPASS}
 
@@ -182,5 +185,8 @@ cp -n data/assets/ssl-example/*.pem data/assets/ssl/
 
 echo
 echo
-echo "The default admin password will be: ${DEFAULTPASS}"
+echo "Initial credentials"
+echo "---------------------------------"
+echo "Username: admin"
+echo "Password: ${DEFAULTPASS}"
 echo
