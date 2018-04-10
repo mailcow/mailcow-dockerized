@@ -8,23 +8,6 @@ if [[ -z $(grep null /etc/aliases) ]]; then
   newaliases;
 fi
 
-# cat <<EOF > /opt/postfix/conf/sql/mysql_relay_recipient_maps.cf
-# user = ${DBUSER}
-# password = ${DBPASS}
-# hosts = mysql
-# dbname = ${DBNAME}
-# query = SELECT DISTINCT
-#   CASE WHEN '%d' IN (
-#     SELECT domain FROM domain
-#       WHERE domain='%d'
-#       AND nexthop <> 'lmtp:[dovecot]'
-#   )
-#   THEN '%s' ELSE (
-#     SELECT goto FROM alias WHERE address='%s' AND active='1'
-#   )
-#   END AS result;
-# EOF
-
 cat <<EOF > /opt/postfix/conf/sql/mysql_tls_enforce_in_policy.cf
 user = ${DBUSER}
 password = ${DBPASS}
