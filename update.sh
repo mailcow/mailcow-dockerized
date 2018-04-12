@@ -207,6 +207,10 @@ docker-compose pull --parallel
 [[ ! -d data/assets/ssl ]] && mkdir -p data/assets/ssl
 cp -n data/assets/ssl-example/*.pem data/assets/ssl/
 
+echo -e "Fix project name by removing dashes and underscores... "
+sed -i '/COMPOSE_PROJECT_NAME=.*/{s/-//}' mailcow.conf
+sed -i '/COMPOSE_PROJECT_NAME=.*/{s/_//}' mailcow.conf
+
 echo -e "\e[32mStarting mailcow...\e[0m"
 sleep 2
 docker-compose up -d --remove-orphans
