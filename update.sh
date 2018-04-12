@@ -207,7 +207,8 @@ docker-compose pull --parallel
 [[ ! -d data/assets/ssl ]] && mkdir -p data/assets/ssl
 cp -n data/assets/ssl-example/*.pem data/assets/ssl/
 
-echo -e "Fix project name by removing dashes and underscores... "
+echo -e "Fixing project name... "
+sed -i 's/COMPOSEPROJECT_NAME/COMPOSE_PROJECT_NAME/g' mailcow.conf
 sed -i '/COMPOSE_PROJECT_NAME=.*/{s/-//}' mailcow.conf
 sed -i '/COMPOSE_PROJECT_NAME=.*/{s/_//}' mailcow.conf
 
