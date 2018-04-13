@@ -103,7 +103,7 @@ function restore() {
       docker stop $(docker ps -qf name=dovecot-mailcow)
       docker run -it --rm \
         -v ${RESTORE_LOCATION}:/backup \
-        -v $(docker volume ls -qf name=vmail):/vmail \
+        -v $(docker volume ls -qf name=vmail-vol-1):/vmail \
         debian:stretch-slim /bin/tar -xvzf /backup/backup_vmail.tar.gz
       docker start $(docker ps -aqf name=dovecot-mailcow)
       echo
@@ -122,7 +122,7 @@ function restore() {
       docker stop $(docker ps -qf name=redis-mailcow)
       docker run -it --rm \
         -v ${RESTORE_LOCATION}:/backup \
-        -v $(docker volume ls -qf name=redis):/redis \
+        -v $(docker volume ls -qf name=redis-vol-1):/redis \
         debian:stretch-slim /bin/tar -xvzf /backup/backup_redis.tar.gz
       docker start $(docker ps -aqf name=redis-mailcow)
       ;;
@@ -130,7 +130,7 @@ function restore() {
       docker stop $(docker ps -qf name=rspamd-mailcow)
       docker run -it --rm \
         -v ${RESTORE_LOCATION}:/backup \
-        -v $(docker volume ls -qf name=rspamd):/rspamd \
+        -v $(docker volume ls -qf name=rspamd-vol-1):/rspamd \
         debian:stretch-slim /bin/tar -xvzf /backup/backup_rspamd.tar.gz
       docker start $(docker ps -aqf name=rspamd-mailcow)
       ;;
@@ -138,7 +138,7 @@ function restore() {
       docker stop $(docker ps -qf name=postfix-mailcow)
       docker run -it --rm \
         -v ${RESTORE_LOCATION}:/backup \
-        -v $(docker volume ls -qf name=postfix):/postfix \
+        -v $(docker volume ls -qf name=postfix-vol-1):/postfix \
         debian:stretch-slim /bin/tar -xvzf /backup/backup_postfix.tar.gz
       docker start $(docker ps -aqf name=postfix-mailcow)
       ;;
@@ -147,7 +147,7 @@ function restore() {
       docker stop $(docker ps -qf name=mysql-mailcow)
       docker run \
         -it --rm \
-        -v $(docker volume ls -qf name=mysql):/var/lib/mysql/ \
+        -v $(docker volume ls -qf name=mysql-vol-1):/var/lib/mysql/ \
         --entrypoint= \
         -u mysql \
         -v ${RESTORE_LOCATION}:/backup \
