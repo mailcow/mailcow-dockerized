@@ -70,7 +70,7 @@ for option in ${CONFIG_ARRAY[@]}; do
   elif [[ ${option} == "COMPOSE_PROJECT_NAME" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
-      echo "COMPOSE_PROJECT_NAME=mailcow-dockerized" >> mailcow.conf
+      echo "COMPOSE_PROJECT_NAME=mailcowdockerized" >> mailcow.conf
     fi
   elif [[ ${option} == "DOVEADM_PORT" ]]; then
     if ! grep -q ${option} mailcow.conf; then
