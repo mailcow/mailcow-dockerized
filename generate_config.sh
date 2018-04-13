@@ -93,7 +93,7 @@ SQL_PORT=127.0.0.1:13306
 TZ=${TZ}
 
 # Fixed project name
-COMPOSE_PROJECT_NAME=mailcow-dockerized
+COMPOSE_PROJECT_NAME=mailcowdockerized
 
 # Additional SAN for the certificate
 ADDITIONAL_SAN=
