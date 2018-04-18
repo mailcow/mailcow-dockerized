@@ -230,7 +230,7 @@ docker-compose pull --parallel
 cp -n data/assets/ssl-example/*.pem data/assets/ssl/
 
 echo -e "Fixing project name... "
-sed -ie 's#COMPOSEPROJECT_NAME#COMPOSE_PROJECT_NAME#g' mailcow.conf
+sed -i 's#COMPOSEPROJECT_NAME#COMPOSE_PROJECT_NAME#g' mailcow.conf
 sed -i '/COMPOSE_PROJECT_NAME=/s/-//g' mailcow.conf
 
 echo -e "\e[32mStarting mailcow...\e[0m"
