@@ -1,5 +1,12 @@
 #!/bin/bash
 
+#This script is intended to be executed on target Mailcow machine 
+#to perform a big syncjob one mailbox after other.
+#To perform a batch syncjob, first you must get source server's Dovecot master user and password
+#If source server is running on Mailcow, to get masteruser:password please use  this command as root:
+#docker exec -it $(docker ps -qf name=dovecot-mailcow) cat /etc/sogo/sieve.creds
+
+
 Imapsync="docker run gilleslamiral/imapsync imapsync"
 GetCredentials=`docker exec -it $(docker ps -qf name=dovecot-mailcow) cat /etc/sogo/sieve.creds`
 TimeFormat="%Y-%m-%d %H:%M:%S"
