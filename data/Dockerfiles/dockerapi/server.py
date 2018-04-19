@@ -97,7 +97,10 @@ class container_post(Resource):
             for container in docker_client.containers.list(filters={"id": container_id}):
               hash = container.exec_run(["/bin/bash", "-c", "/usr/bin/rspamadm pw -e -p '" + request.json['raw'].replace("'", "'\\''") + "' 2> /dev/null"], user='_rspamd')
               if hash.exit_code == 0:
-                hash = str(hash.output)
+                hash_stdout = str(hash.output)
+                for line in hash_stdout.split("\n"):
+                  if '$2$' in line:
+                    hash = line.strip()
                 f = open("/access.inc", "w")
                 f.write('enable_password = "' + re.sub('[^0-9a-zA-Z\$]+', '', hash.rstrip()) + '";\n')
                 f.close()
