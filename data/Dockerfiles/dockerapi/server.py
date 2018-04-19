@@ -97,7 +97,10 @@ class container_post(Resource):
             for container in docker_client.containers.list(filters={"id": container_id}):
               hash = container.exec_run(["/bin/bash", "-c", "/usr/bin/rspamadm pw -e -p '" + request.json['raw'].replace("'", "'\\''") + "' 2> /dev/null"], user='_rspamd')
               if hash.exit_code == 0:
-                hash = str(hash.output)
+                hash_stdout = str(hash.output)
+                for line in hash_stdout.split("\n"):
+                  if '$2$' in line:
+                    hash = line.strip()
                 f = open("/access.inc", "w")
                 f.write('enable_password = "' + re.sub('[^0-9a-zA-Z\$]+', '', hash.rstrip()) + '";\n')
                 f.close()
@@ -105,6 +108,16 @@ class container_post(Resource):
                 return jsonify(type='success', msg='command completed successfully')
               else:
                 return jsonify(type='danger', msg='command did not complete, exit code was ' + int(hash.exit_code))
+          except Exception as e:
+            return jsonify(type='danger', msg=str(e))
+        elif request.json['cmd'] == 'mailman_password' and request.json['email'] and request.json['passwd']:
+          try:
+            for container in docker_client.containers.list(filters={"id": container_id}):
+              add_su = container.exec_run(["/bin/bash", "-c", "/opt/mm_web/add_su.py '" + request.json['passwd'].replace("'", "'\\''") + "' '" + request.json['email'].replace("'", "'\\''") + "'"], user='mailman')
+              if add_su.exit_code == 0:
+                return jsonify(type='success', msg='command completed successfully')
+              else:
+                return jsonify(type='danger', msg='command did not complete, exit code was ' + int(add_su.exit_code))
           except Exception as e:
             return jsonify(type='danger', msg=str(e))
 
