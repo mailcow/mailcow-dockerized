@@ -19,7 +19,10 @@
       fastcgi_pass phpfpm:9002;
       fastcgi_intercept_errors on;
       fastcgi_request_buffering off;
-      client_max_body_size 10G;
+      client_max_body_size 0;
+      fastcgi_param PHP_VALUE "max_execution_time = 1200
+                               max_input_time = 1200";
+      fastcgi_read_timeout 1200;
     }
     location ~ ^/nextcloud/(?:updater|ocs-provider)(?:$|/) {
       try_files $uri/ =404;
