@@ -13,22 +13,15 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
     <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Logs
       <span class="caret"></span></a>
       <ul class="dropdown-menu">
-        <li role="presentation"><a href="#tab-postfix-logs" aria-controls="tab-postfix-logs" role="tab" data-toggle="tab">Postfix</a></li>
-        <li role="presentation"><a href="#tab-dovecot-logs" aria-controls="tab-dovecot-logs" role="tab" data-toggle="tab">Dovecot</a></li>
-        <li role="presentation"><a href="#tab-sogo-logs" aria-controls="tab-sogo-logs" role="tab" data-toggle="tab">SOGo</a></li>
-        <li role="presentation"><a href="#tab-netfilter-logs" aria-controls="tab-netfilter-logs" role="tab" data-toggle="tab">Netfilter</a></li>
-        <li role="presentation"><a href="#tab-rspamd-history" aria-controls="tab-rspamd-history" role="tab" data-toggle="tab">Rspamd</a></li>
-        <li role="presentation"><a href="#tab-autodiscover-logs" aria-controls="tab-autodiscover-logs" role="tab" data-toggle="tab">Autodiscover</a></li>
-        <li role="presentation"><a href="#tab-watchdog-logs" aria-controls="tab-watchdog-logs" role="tab" data-toggle="tab">Watchdog</a></li>
         <li role="presentation"><a href="#tab-acme-logs" aria-controls="tab-acme-logs" role="tab" data-toggle="tab">ACME</a></li>
         <li role="presentation"><a href="#tab-api-logs" aria-controls="tab-api-logs" role="tab" data-toggle="tab">API</a></li>
-      </ul>
-    </li>
-    <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Rspamd
-      <span class="caret"></span></a>
-      <ul class="dropdown-menu">
-        <li role="presentation"><a href="#tab-rspamd-ui" aria-controls="tab-rspamd-ui" role="tab" data-toggle="tab">Rspamd UI</a></li>
-        <li role="presentation"><a href="#tab-rspamd-settings" aria-controls="tab-rspamd-settings" role="tab" data-toggle="tab">Rspamd settings map</a></li>
+        <li role="presentation"><a href="#tab-autodiscover-logs" aria-controls="tab-autodiscover-logs" role="tab" data-toggle="tab">Autodiscover</a></li>
+        <li role="presentation"><a href="#tab-dovecot-logs" aria-controls="tab-dovecot-logs" role="tab" data-toggle="tab">Dovecot</a></li>
+        <li role="presentation"><a href="#tab-netfilter-logs" aria-controls="tab-netfilter-logs" role="tab" data-toggle="tab">Netfilter</a></li>
+        <li role="presentation"><a href="#tab-postfix-logs" aria-controls="tab-postfix-logs" role="tab" data-toggle="tab">Postfix</a></li>
+        <li role="presentation"><a href="#tab-rspamd-history" aria-controls="tab-rspamd-history" role="tab" data-toggle="tab">Rspamd</a></li>
+        <li role="presentation"><a href="#tab-sogo-logs" aria-controls="tab-sogo-logs" role="tab" data-toggle="tab">SOGo</a></li>
+        <li role="presentation"><a href="#tab-watchdog-logs" aria-controls="tab-watchdog-logs" role="tab" data-toggle="tab">Watchdog</a></li>
       </ul>
     </li>
   </ul>
@@ -68,20 +61,25 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             <ul class="list-group">
             <?php
             $container_array = array(
-              'nginx-mailcow',
-              'rspamd-mailcow',
-              'postfix-mailcow',
-              'dovecot-mailcow',
-              'sogo-mailcow',
               'acme-mailcow',
+              'clamd-mailcow',
+              'dockerapi-mailcow',
+              'dovecot-mailcow',
+              'ipv6nat',
               'memcached-mailcow',
-              'watchdog-mailcow',
-              'unbound-mailcow',
-              'redis-mailcow',
-              'php-fpm-mailcow',
+              'mm-core-mailcow',
+              'mm-web-mailcow',
               'mysql-mailcow',
               'netfilter-mailcow',
-              'clamd-mailcow'
+              'nginx-mailcow',
+              'php-fpm-mailcow',
+              'postfix-mailcow',
+              'redis-mailcow',
+              'rspamd-mailcow',
+              'sogo-mailcow',
+              'solr-mailcow',
+              'unbound-mailcow',
+              'watchdog-mailcow'
             );
             foreach ($container_array as $container) {
                 $container_stats = docker($container, 'info');
@@ -269,60 +267,6 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               <div class="table-responsive">
                 <table class="table table-striped table-condensed" id="api_log"></table>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <div role="tabpanel" class="tab-pane" id="tab-rspamd-ui">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 class="panel-title">Rspamd UI</h3>
-            </div>
-            <div class="panel-body">
-              <div class="row">
-                <div class="col-sm-9">
-                <form class="form-horizontal" autocapitalize="none" data-id="admin" autocorrect="off" role="form" method="post">
-                  <div class="form-group">
-                    <div class="col-sm-offset-3 col-sm-9">
-                      <label>
-                        <a href="/rspamd/" target="_blank"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span> Rspamd UI</a>
-                      </label>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label class="control-label col-sm-3" for="rspamd_ui_pass"><?=$lang['admin']['password'];?>:</label>
-                    <div class="col-sm-9">
-                    <input type="password" class="form-control" name="rspamd_ui_pass" id="rspamd_ui_pass" required>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label class="control-label col-sm-3" for="rspamd_ui_pass2"><?=$lang['admin']['password_repeat'];?>:</label>
-                    <div class="col-sm-9">
-                    <input type="password" class="form-control" name="rspamd_ui_pass2" id="rspamd_ui_pass2" required>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <div class="col-sm-offset-3 col-sm-9">
-                      <button type="submit" class="btn btn-default" id="rspamd_ui" name="rspamd_ui" href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
-                    </div>
-                  </div>
-                </form>
-                </div>
-                <div class="col-sm-3">
-                  <img class="img-responsive" src="/img/rspamd_logo.png" alt="Rspamd UI" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div role="tabpanel" class="tab-pane" id="tab-rspamd-settings">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 class="panel-title">Rspamd settings map</h3>
-            </div>
-            <div class="panel-body">
-            <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control" rows="20" id="settings_map" name="settings_map" readonly><?=file_get_contents('http://nginx:8081/settings.php');?></textarea>
             </div>
           </div>
         </div>
