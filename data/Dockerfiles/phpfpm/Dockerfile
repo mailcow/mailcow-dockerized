@@ -22,7 +22,6 @@ RUN apk add -U --no-cache autoconf \
   imap-dev \
   libjpeg-turbo \
   libjpeg-turbo-dev \
-  libjpeg-turbo-dev\
   libmemcached-dev \
   libpng \
   libpng-dev \
