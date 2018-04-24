@@ -66,7 +66,7 @@ RUN apk add -U --no-cache autoconf \
     icu-dev \
     imagemagick-dev \
     imap-dev \
-    libjpeg-turbo-dev
+    libjpeg-turbo-dev \
     libpng-dev \
     libressl-dev \
     libwebp-dev \
