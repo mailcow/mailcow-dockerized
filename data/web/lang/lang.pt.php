@@ -146,6 +146,7 @@ $lang['mailbox']['in_use'] = 'Em uso (%)';
 $lang['mailbox']['msg_num'] = 'Mensagens';
 $lang['mailbox']['remove'] = 'Remover';
 $lang['mailbox']['edit'] = 'Alterar';
+$lang['mailbox']['no_record'] = 'Nenhum registro';
 $lang['mailbox']['add_domain'] = 'Adicionar Domínio';
 $lang['mailbox']['add_domain_alias'] = 'Adicionar Apelido de Domínio';
 $lang['mailbox']['add_mailbox'] = 'Adicionar Conta de Email';
