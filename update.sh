@@ -15,7 +15,7 @@ while (($#)); do
   case "${1}" in
     --check|-c)
       echo "Checking remote code for updates..."
-      git fetch origin ${BRANCH}:${BRANCH}
+      git fetch origin ${BRANCH}
       if [[ -z $(git log HEAD --pretty=format:"%H" | grep $(git rev-parse origin/${BRANCH})) ]]; then
         echo "Updated code is available."
         exit 0
@@ -129,7 +129,7 @@ fi
 
 echo -e "\e[32mChecking for newer update script...\e[0m"
 SHA1_1=$(sha1sum update.sh)
-git fetch origin ${BRANCH}:${BRANCH}
+git fetch origin ${BRANCH}
 git checkout origin/${BRANCH} update.sh
 SHA1_2=$(sha1sum update.sh)
 if [[ ${SHA1_1} != ${SHA1_2} ]]; then
@@ -162,7 +162,7 @@ git update-index --assume-unchanged data/conf/rspamd/override.d/worker-controlle
 git add -u
 git commit -am "Before update on ${DATE}" > /dev/null
 echo -e "\e[32mFetching updated code from remote...\e[0m"
-git fetch origin ${BRANCH}:${BRANCH}
+git fetch origin ${BRANCH}
 echo -e "\e[32mMerging local with remote code (recursive, strategy: \"${MERGE_STRATEGY:-theirs}\", options: \"patience\"...\e[0m"
 git config merge.defaultToUpstream true
 git merge -X${MERGE_STRATEGY:-theirs} -Xpatience -m "After update on ${DATE}"
