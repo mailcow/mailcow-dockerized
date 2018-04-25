@@ -365,9 +365,14 @@ $tfa_data = get_tfa();
               <input type="number" class="form-control" id="netban_ipv6" name="netban_ipv6" value="<?=$f2b_data['netban_ipv6'];?>" required>
             </div>
           </div>
+          <p class="help-block"><?=$lang['admin']['f2b_list_info'];?></p>
           <div class="form-group">
             <label for="whitelist"><?=$lang['admin']['f2b_whitelist'];?>:</label>
             <textarea class="form-control" id="whitelist" name="whitelist" rows="5"><?=$f2b_data['whitelist'];?></textarea>
+          </div>
+          <div class="form-group">
+            <label for="blacklist"><?=$lang['admin']['f2b_blacklist'];?>:</label>
+            <textarea class="form-control" id="blacklist" name="blacklist" rows="5"><?=$f2b_data['blacklist'];?></textarea>
           </div>
           <button class="btn btn-default" id="add_item" data-id="f2b" data-api-url='edit/fail2ban' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
         </form>
