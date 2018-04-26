@@ -36,6 +36,7 @@ RUN apk add -U --no-cache autoconf \
   mysql-client \
   openldap-dev \
   pcre-dev \
+  re2c \
   redis \
   samba-client \
   zlib-dev \
