@@ -104,7 +104,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.12
+      image: mailcow/phpfpm:1.13
       build: ./data/Dockerfiles/phpfpm
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
@@ -114,8 +114,7 @@ services:
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
         - rspamd-sock:/rspamd-sock
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro
-        - ./data/conf/phpfpm/php-fpm.d/www.conf:/usr/local/etc/php-fpm.d/www.conf
-        - ./data/conf/phpfpm/php-fpm.d/system.conf:/usr/local/etc/php-fpm.d/system.conf
+        - ./data/conf/phpfpm/php-fpm.d/pools.conf:/usr/local/etc/php-fpm.d/z-pools.conf
         - ./data/conf/phpfpm/php-conf.d/opcache-recommended.ini:/usr/local/etc/php/conf.d/opcache-recommended.ini
         - ./data/conf/phpfpm/php-conf.d/upload.ini:/usr/local/etc/php/conf.d/upload.ini
       environment:
@@ -144,7 +143,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.20
+      image: mailcow/sogo:1.21
       build: ./data/Dockerfiles/sogo
       environment:
         - DBNAME=${DBNAME}
@@ -343,7 +342,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.14
+      image: mailcow/watchdog:1.15
       # Debug
       #command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog
