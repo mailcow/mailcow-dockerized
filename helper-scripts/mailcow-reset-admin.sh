@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 [[ -f mailcow.conf ]] && source mailcow.conf
 [[ -f ../mailcow.conf ]] && source ../mailcow.conf
 
