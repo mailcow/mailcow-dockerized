@@ -7,18 +7,20 @@ if [[ "${SKIP_CLAMD}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 fi
 
 # Create log pipes
-mkdir /var/log/clamav
+mkdir -p /var/log/clamav
 touch /var/log/clamav/clamd.log /var/log/clamav/freshclam.log
-mkfifo -m 600 /tmp/logpipe_clamd
-mkfifo -m 600 /tmp/logpipe_freshclam
-chown -R clamav:clamav /var/log/clamav/ /tmp/logpipe_*
-cat <> /tmp/logpipe_clamd 1>&2 &
-cat <> /tmp/logpipe_freshclam 1>&2 &
+chown -R clamav:clamav /var/log/clamav/
 
 # Prepare
 BACKGROUND_TASKS=()
 
-freshclam -d &
+(
+while true; do
+  sleep 1m
+  freshclam
+  sleep 1h
+done
+) &
 BACKGROUND_TASKS+=($!)
 
 clamd &
