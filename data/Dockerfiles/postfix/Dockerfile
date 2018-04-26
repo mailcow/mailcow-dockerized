@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	dirmngr \
 	gnupg \
 	libsasl2-modules \
+	perl \
 	postfix \
 	postfix-mysql \
 	postfix-pcre \
@@ -30,9 +31,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && printf '#!/bin/bash\n/usr/sbin/postconf -c /opt/postfix/conf "$@"' > /usr/local/sbin/postconf \
   && chmod +x /usr/local/sbin/postconf
 
-RUN addgroup --system --gid 600 zeyple
-RUN adduser --system --home /var/lib/zeyple --no-create-home --uid 600 --gid 600 --disabled-login zeyple
-RUN touch /var/log/zeyple.log && chown zeyple: /var/log/zeyple.log
+RUN addgroup --system --gid 600 zeyple \
+  && adduser --system --home /var/lib/zeyple --no-create-home --uid 600 --gid 600 --disabled-login zeyple \
+  && touch /var/log/zeyple.log \
+  && chown zeyple: /var/log/zeyple.log \
+  && mkdir -p /opt/mailman/var/data \
+  && touch /opt/mailman/var/data/postfix_lmtp \
+  && touch /opt/mailman/var/data/postfix_domains
 
 COPY zeyple.py /usr/local/bin/zeyple.py
 COPY zeyple.conf /etc/zeyple.conf
