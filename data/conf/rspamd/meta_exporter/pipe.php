@@ -44,7 +44,8 @@ if (!function_exists('getallheaders'))  {
   }
 }
 
-$raw_data = file_get_contents('php://input');
+$raw_data_content = file_get_contents('php://input');
+$raw_data = mb_convert_encoding($raw_data_content, 'HTML-ENTITIES', "UTF-8");
 $headers = getallheaders();
 
 $qid      = $headers['X-Rspamd-Qid'];

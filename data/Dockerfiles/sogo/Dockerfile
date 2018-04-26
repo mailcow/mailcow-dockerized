@@ -28,7 +28,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN mkdir /usr/share/doc/sogo \
 	&& touch /usr/share/doc/sogo/empty.sh \
-	&& apt-key adv --keyserver keys.gnupg.net --recv-key 0x810273C4 \
+	&& apt-key adv --keyserver keyserver.ubuntu.com --recv-key 0x810273C4 \
 	&& echo "deb http://packages.inverse.ca/SOGo/nightly/4/debian/ stretch stretch" > /etc/apt/sources.list.d/sogo.list \
 	&& apt-get update && apt-get install -y --force-yes \
 		sogo \
