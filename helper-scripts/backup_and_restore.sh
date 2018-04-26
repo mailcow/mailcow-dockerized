@@ -47,6 +47,7 @@ COMPOSE_FILE=${SCRIPT_DIR}/../docker-compose.yml
 echo "Using ${BACKUP_LOCATION} as backup/restore location."
 echo
 source ${SCRIPT_DIR}/../mailcow.conf
+CMPS_PRJ=$(echo $COMPOSE_PROJECT_NAME | tr -cd "[A-Za-z-_]")
 
 function backup() {
   DATE=$(date +"%Y-%m-%d-%H-%M-%S")
@@ -57,33 +58,33 @@ function backup() {
     vmail|all)
       docker run --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
-        -v $(docker volume ls -qf name=vmail-vol-1):/vmail \
+        -v $(docker volume ls -qf name=${CMPS_PRJ}_vmail-vol-1):/vmail \
         debian:stretch-slim /bin/tar -cvpzf /backup/backup_vmail.tar.gz /vmail
       ;;&
     redis|all)
       docker exec $(docker ps -qf name=redis-mailcow) redis-cli save
       docker run --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
-        -v $(docker volume ls -qf name=redis-vol-1):/redis \
+        -v $(docker volume ls -qf name=${CMPS_PRJ}_redis-vol-1):/redis \
         debian:stretch-slim /bin/tar -cvpzf /backup/backup_redis.tar.gz /redis
       ;;&
     rspamd|all)
       docker run --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
-        -v $(docker volume ls -qf name=rspamd-vol-1):/rspamd \
+        -v $(docker volume ls -qf name=${CMPS_PRJ}_rspamd-vol-1):/rspamd \
         debian:stretch-slim /bin/tar -cvpzf /backup/backup_rspamd.tar.gz /rspamd
       ;;&
     postfix|all)
       docker run --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
-        -v $(docker volume ls -qf name=postfix-vol-1):/postfix \
+        -v $(docker volume ls -qf name=${CMPS_PRJ}_postfix-vol-1):/postfix \
         debian:stretch-slim /bin/tar -cvpzf /backup/backup_postfix.tar.gz /postfix
       ;;&
     mysql|all)
       SQLIMAGE=$(grep -iEo '(mysql|mariadb)\:.+' ${COMPOSE_FILE})
       docker run --rm \
-        --network $(docker network ls -qf name=mailcow) \
-        -v $(docker volume ls -qf name=mysql-vol-1):/var/lib/mysql/ \
+        --network $(docker network ls -qf name=${CMPS_PRJ}_mailcow-network) \
+        -v $(docker volume ls -qf name=${CMPS_PRJ}_mysql-vol-1):/var/lib/mysql/ \
         --entrypoint= \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
         ${SQLIMAGE} /bin/sh -c "mysqldump -hmysql -uroot -p${DBROOT} --all-databases | gzip > /backup/backup_mysql.gz"
@@ -103,7 +104,7 @@ function restore() {
       docker stop $(docker ps -qf name=dovecot-mailcow)
       docker run -it --rm \
         -v ${RESTORE_LOCATION}:/backup \
-        -v $(docker volume ls -qf name=vmail):/vmail \
+        -v $(docker volume ls -qf name=${CMPS_PRJ}_vmail-vol-1):/vmail \
         debian:stretch-slim /bin/tar -xvzf /backup/backup_vmail.tar.gz
       docker start $(docker ps -aqf name=dovecot-mailcow)
       echo
@@ -122,7 +123,7 @@ function restore() {
       docker stop $(docker ps -qf name=redis-mailcow)
       docker run -it --rm \
         -v ${RESTORE_LOCATION}:/backup \
-        -v $(docker volume ls -qf name=redis):/redis \
+        -v $(docker volume ls -qf name=${CMPS_PRJ}_redis-vol-1):/redis \
         debian:stretch-slim /bin/tar -xvzf /backup/backup_redis.tar.gz
       docker start $(docker ps -aqf name=redis-mailcow)
       ;;
@@ -130,7 +131,7 @@ function restore() {
       docker stop $(docker ps -qf name=rspamd-mailcow)
       docker run -it --rm \
         -v ${RESTORE_LOCATION}:/backup \
-        -v $(docker volume ls -qf name=rspamd):/rspamd \
+        -v $(docker volume ls -qf name=${CMPS_PRJ}_rspamd-vol-1):/rspamd \
         debian:stretch-slim /bin/tar -xvzf /backup/backup_rspamd.tar.gz
       docker start $(docker ps -aqf name=rspamd-mailcow)
       ;;
@@ -138,7 +139,7 @@ function restore() {
       docker stop $(docker ps -qf name=postfix-mailcow)
       docker run -it --rm \
         -v ${RESTORE_LOCATION}:/backup \
-        -v $(docker volume ls -qf name=postfix):/postfix \
+        -v $(docker volume ls -qf name=${CMPS_PRJ}_postfix-vol-1):/postfix \
         debian:stretch-slim /bin/tar -xvzf /backup/backup_postfix.tar.gz
       docker start $(docker ps -aqf name=postfix-mailcow)
       ;;
@@ -147,7 +148,7 @@ function restore() {
       docker stop $(docker ps -qf name=mysql-mailcow)
       docker run \
         -it --rm \
-        -v $(docker volume ls -qf name=mysql):/var/lib/mysql/ \
+        -v $(docker volume ls -qf name=${CMPS_PRJ}_mysql-vol-1):/var/lib/mysql/ \
         --entrypoint= \
         -u mysql \
         -v ${RESTORE_LOCATION}:/backup \
