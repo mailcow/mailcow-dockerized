@@ -59,16 +59,16 @@ rspamd_config:register_symbol({
     local redis_params = rspamd_parse_redis_server('dyn_rl')
     local rspamd_logger = require "rspamd_logger"
     local envfrom = task:get_from(1)
-    if not envfrom then
+    local uname = task:get_user():lower()
+    if not envfrom or not uname then
       return false
     end
     local env_from_domain = envfrom[1].domain:lower() -- get smtp from domain in lower case
-    local env_from_addr = envfrom[1].addr:lower() -- get smtp from addr in lower case
 
     local function redis_cb_user(err, data)
 
       if err or type(data) ~= 'string' then
-        rspamd_logger.infox(rspamd_config, "dynamic ratelimit request for user %s returned invalid or empty data (\"%s\") or error (\"%s\") - trying dynamic ratelimit for domain...", env_from_addr, data, err)
+        rspamd_logger.infox(rspamd_config, "dynamic ratelimit request for user %s returned invalid or empty data (\"%s\") or error (\"%s\") - trying dynamic ratelimit for domain...", uname, data, err)
 
         local function redis_key_cb_domain(err, data)
           if err or type(data) ~= 'string' then
@@ -91,7 +91,7 @@ rspamd_config:register_symbol({
           rspamd_logger.infox(rspamd_config, "cannot make request to load ratelimit for domain")
         end
       else
-        rspamd_logger.infox(rspamd_config, "found dynamic ratelimit in redis for user %s with value %s", env_from_addr, data)
+        rspamd_logger.infox(rspamd_config, "found dynamic ratelimit in redis for user %s with value %s", uname, data)
         task:insert_result('DYN_RL', 0.0, data)
       end
 
@@ -99,11 +99,11 @@ rspamd_config:register_symbol({
 
     local redis_ret_user = rspamd_redis_make_request(task,
       redis_params, -- connect params
-      env_from_addr, -- hash key
+      uname, -- hash key
       false, -- is write
       redis_cb_user, --callback
       'HGET', -- command
-      {'RL_VALUE', env_from_addr} -- arguments
+      {'RL_VALUE', uname} -- arguments
     )
     if not redis_ret_user then
       rspamd_logger.infox(rspamd_config, "cannot make request to load ratelimit for user")
