@@ -211,6 +211,10 @@ echo -e "Fixing project name... "
 sed -i 's#COMPOSEPROJECT_NAME#COMPOSE_PROJECT_NAME#g' mailcow.conf
 sed -i '/COMPOSE_PROJECT_NAME=/s/-//g' mailcow.conf
 
+echo -e "Fixing PHP-FPM worker ports for Nginx sites..."
+sed -i 's#9000#9002#g' data/conf/nginx/*.conf
+sed -i 's#9000#9002#g' data/conf/nginx/*.custom
+
 echo -e "\e[32mStarting mailcow...\e[0m"
 sleep 2
 docker-compose up -d --remove-orphans
