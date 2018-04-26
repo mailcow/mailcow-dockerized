@@ -7,7 +7,7 @@ function docker($service_name, $action, $attr1 = null, $attr2 = null, $extra_hea
       curl_setopt($curl, CURLOPT_URL, 'http://dockerapi:8080/containers/json');
       curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
       curl_setopt($curl, CURLOPT_POST, 0);
-      curl_setopt($curl, CURLOPT_TIMEOUT, 4);
+      curl_setopt($curl, CURLOPT_TIMEOUT, 10);
       $response = curl_exec($curl);
       if ($response === false) {
         $err = curl_error($curl);
@@ -33,7 +33,7 @@ function docker($service_name, $action, $attr1 = null, $attr2 = null, $extra_hea
         curl_setopt($curl, CURLOPT_URL, 'http://dockerapi:8080/containers/' . $container_id . '/json');
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_POST, 0);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 4);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 10);
         $response = curl_exec($curl);
         if ($response === false) {
           $err = curl_error($curl);
@@ -60,7 +60,7 @@ function docker($service_name, $action, $attr1 = null, $attr2 = null, $extra_hea
         if (ctype_xdigit($container_id) && ctype_alnum($attr1)) {
           curl_setopt($curl, CURLOPT_URL, 'http://dockerapi:8080/containers/' . $container_id . '/' . $attr1);
           curl_setopt($curl, CURLOPT_POST, 1);
-          curl_setopt($curl, CURLOPT_TIMEOUT, 4);
+          curl_setopt($curl, CURLOPT_TIMEOUT, 10);
           if (!empty($attr2)) {
             curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($attr2));
           }
