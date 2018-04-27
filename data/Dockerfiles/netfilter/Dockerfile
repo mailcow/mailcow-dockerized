@@ -1,4 +1,4 @@
-FROM alpine:3.7
+FROM alpine:3.6
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 RUN apk add -U python2 python-dev py-pip gcc musl-dev iptables ip6tables \
