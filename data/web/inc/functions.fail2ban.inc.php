@@ -16,6 +16,7 @@ function fail2ban($_action, $_data = null) {
             $tmp_wl_data[] = $key;
           }
           if (isset($tmp_wl_data)) {
+            sort($tmp_wl_data);
             $f2b_options['whitelist'] = implode(PHP_EOL, $tmp_wl_data);
           }
           else {
@@ -31,6 +32,7 @@ function fail2ban($_action, $_data = null) {
             $tmp_bl_data[] = $key;
           }
           if (isset($tmp_bl_data)) {
+            sort($tmp_bl_data);
             $f2b_options['blacklist'] = implode(PHP_EOL, $tmp_bl_data);
           }
           else {
