@@ -159,13 +159,13 @@ docker-compose down
 # Silently fixing remote url from andryyy to mailcow
 git remote set-url origin https://github.com/mailcow/mailcow-dockerized
 echo -e "\e[32mCommitting current status...\e[0m"
-git update-index --assume-unchanged data/conf/rspamd/override.d/worker-controller-password.inc
 git add -u
 git commit -am "Before update on ${DATE}" > /dev/null
 echo -e "\e[32mFetching updated code from remote...\e[0m"
 git fetch origin #${BRANCH}
 echo -e "\e[32mMerging local with remote code (recursive, strategy: \"${MERGE_STRATEGY:-theirs}\", options: \"patience\"...\e[0m"
 git config merge.defaultToUpstream true
+git rm --cached data/conf/rspamd/override.d/worker-controller-password.inc
 git merge -X${MERGE_STRATEGY:-theirs} -Xpatience -m "After update on ${DATE}"
 # Need to use a variable to not pass return codes of if checks
 MERGE_RETURN=$?
@@ -194,15 +194,22 @@ if [[ ! -z $(which pip) && $(pip list --local | grep -c docker-compose) == 1 ]];
   #prevent breaking a working docker-compose installed with pip
 elif [[ $(curl -sL -w "%{http_code}" https://www.servercow.de/docker-compose/latest.php -o /dev/null) == "200" ]]; then
   LATEST_COMPOSE=$(curl -#L https://www.servercow.de/docker-compose/latest.php)
-  curl -#L https://github.com/docker/compose/releases/download/${LATEST_COMPOSE}/docker-compose-$(uname -s)-$(uname -m) > $(which docker-compose)
-  chmod +x $(which docker-compose)
+  COMPOSE_VERSION=$(docker-compose version --short)
+  if [[ "$LATEST_COMPOSE" != "$COMPOSE_VERSION" ]]; then
+    if [[ -w $(which docker-compose) ]]; then
+      curl -#L https://github.com/docker/compose/releases/download/${LATEST_COMPOSE}/docker-compose-$(uname -s)-$(uname -m) > $(which docker-compose)
+      chmod +x $(which docker-compose)
+    else
+      echo -e "\e[33mWARNING: $(which docker-compose) is not writable, but new version $LATEST_COMPOSE is available (installed: $COMPOSE_VERSION)\e[0m"
+    fi
+  fi
 else
   echo -e "\e[33mCannot determine latest docker-compose version, skipping...\e[0m"
 fi
 
 echo -e "\e[32mFetching new images, if any...\e[0m"
 sleep 2
-docker-compose pull --parallel
+docker-compose pull
 
 # Fix missing SSL, does not overwrite existing files
 [[ ! -d data/assets/ssl ]] && mkdir -p data/assets/ssl
