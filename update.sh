@@ -245,7 +245,6 @@ echo "Setting Nextcloud Redis timeout to 0.0..."
 docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ config:system:set redis timeout --value=0.0 --type=integer"
 fi
 
-
 echo -e "\e[32mStarting mailcow...\e[0m"
 sleep 2
 docker-compose up -d --remove-orphans
