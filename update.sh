@@ -48,8 +48,8 @@ CONFIG_ARRAY=(
   "LOG_LINES"
   "SNAT_TO_SOURCE"
   "SYSCTL_IPV6_DISABLED"
-  "SQL_PORT"
   "COMPOSE_PROJECT_NAME"
+  "SQL_PORT"
 )
 
 sed -i '$a\' mailcow.conf
