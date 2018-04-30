@@ -235,9 +235,9 @@ sed -i 's#COMPOSEPROJECT_NAME#COMPOSE_PROJECT_NAME#g' mailcow.conf
 sed -i '/COMPOSE_PROJECT_NAME=/s/-//g' mailcow.conf
 
 echo -e "Fixing PHP-FPM worker ports for Nginx sites..."
-sed -i 's#9000#9002#g' data/conf/nginx/*.conf
+sed -i 's#phpfpm:9000#phpfpm:9002#g' data/conf/nginx/*.conf
 if ls data/conf/nginx/*.custom 1> /dev/null 2>&1; then
-  sed -i 's#9000#9002#g' data/conf/nginx/*.custom
+  sed -i 's#phpfpm:9000#phpfpm:9002#g' data/conf/nginx/*.custom
 fi
 
 if [[ -f "data/web/nextcloud/occ" ]]; then
