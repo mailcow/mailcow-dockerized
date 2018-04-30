@@ -159,13 +159,13 @@ docker-compose down
 # Silently fixing remote url from andryyy to mailcow
 git remote set-url origin https://github.com/mailcow/mailcow-dockerized
 echo -e "\e[32mCommitting current status...\e[0m"
+git update-index --assume-unchanged data/conf/rspamd/override.d/worker-controller-password.inc
 git add -u
 git commit -am "Before update on ${DATE}" > /dev/null
 echo -e "\e[32mFetching updated code from remote...\e[0m"
 git fetch origin #${BRANCH}
 echo -e "\e[32mMerging local with remote code (recursive, strategy: \"${MERGE_STRATEGY:-theirs}\", options: \"patience\"...\e[0m"
 git config merge.defaultToUpstream true
-git rm --cached data/conf/rspamd/override.d/worker-controller-password.inc
 git merge -X${MERGE_STRATEGY:-theirs} -Xpatience -m "After update on ${DATE}"
 # Need to use a variable to not pass return codes of if checks
 MERGE_RETURN=$?
