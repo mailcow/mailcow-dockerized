@@ -59,10 +59,12 @@ rspamd_config:register_symbol({
     local redis_params = rspamd_parse_redis_server('dyn_rl')
     local rspamd_logger = require "rspamd_logger"
     local envfrom = task:get_from(1)
-    local uname = task:get_user():lower()
+    local uname = task:get_user()
     if not envfrom or not uname then
       return false
     end
+    local uname = uname:lower()
+
     local env_from_domain = envfrom[1].domain:lower() -- get smtp from domain in lower case
 
     local function redis_cb_user(err, data)
