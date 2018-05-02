@@ -59,7 +59,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.10
+      image: mailcow/clamd:1.11
       build: ./data/Dockerfiles/clamd
       restart: always
       tty: true

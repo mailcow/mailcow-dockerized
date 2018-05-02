@@ -10,6 +10,8 @@ fi
 mkdir -p /var/log/clamav
 touch /var/log/clamav/clamd.log /var/log/clamav/freshclam.log
 chown -R clamav:clamav /var/log/clamav/
+chown root:tty /dev/console
+chmod g+rw /dev/console
 
 # Prepare
 BACKGROUND_TASKS=()
