@@ -122,8 +122,8 @@ IPV4_NETWORK=172.22.1
 # Internal IPv6 subnet in fc00::/7
 IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
 
-# Use this IP for outgoing connections (SNAT)' >> mailcow.conf
-#SNAT_TO_SOURCE=" >> mailcow.conf
+# Use this IP for outgoing connections (SNAT)
+#SNAT_TO_SOURCE=
 
 # Disable IPv6
 # mailcow-network will still be created as IPv6 enabled, all containers will be created
