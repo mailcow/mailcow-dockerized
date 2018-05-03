@@ -300,6 +300,7 @@ $lang['edit']['delete2duplicates'] = 'Delete duplicates on destination';
 $lang['edit']['delete1'] = 'Delete from source when completed';
 $lang['edit']['delete2'] = 'Delete messages on destination that are not on source';
 
+$lang['add']['domain_matches_hostname'] = 'Domain %s matches hostname';
 $lang['add']['domain'] = 'Domain';
 $lang['add']['active'] = 'Active';
 $lang['add']['multiple_bookings'] = 'Multiple bookings';

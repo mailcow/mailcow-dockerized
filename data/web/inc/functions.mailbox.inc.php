@@ -402,6 +402,13 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             );
             return false;
           }
+          if ($domain == $MAILCOW_HOSTNAME) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => sprintf($lang['danger']['domain_matches_hostname'], htmlspecialchars($domain))
+            );
+            return false;
+          }
           try {
             $stmt = $pdo->prepare("INSERT INTO `domain` (`domain`, `description`, `aliases`, `mailboxes`, `maxquota`, `quota`, `backupmx`, `active`, `relay_all_recipients`)
               VALUES (:domain, :description, :aliases, :mailboxes, :maxquota, :quota, :backupmx, :active, :relay_all_recipients)");
