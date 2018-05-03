@@ -296,6 +296,7 @@ $lang['edit']['delete2duplicates'] = 'Lösche Duplikate im Ziel';
 $lang['edit']['delete1'] = 'Lösche Nachricht nach Übertragung vom Quell-Server';
 $lang['edit']['delete2'] = 'Lösche Nachrichten von Ziel-Server, die nicht auf Quell-Server vorhanden sind';
 
+$lang['add']['domain_matches_hostname'] = 'Domain %s darf nicht dem Hostnamen entsprechen';
 $lang['add']['domain'] = 'Domain';
 $lang['add']['active'] = 'Aktiv';
 $lang['add']['multiple_bookings'] = 'Mehrfaches Buchen möglich';
