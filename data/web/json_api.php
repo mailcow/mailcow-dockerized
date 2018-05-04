@@ -1032,7 +1032,16 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                     echo '{}';
                   }
                   else {
-                    echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                    $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT);
+
+                    if ($json) {
+                      echo $json;
+                    } else {
+                      echo json_encode(array(
+                        'type' => 'error',
+                        'msg' => json_last_error_msg(
+                      ));
+                    }
                   }
                 }
                 else {
