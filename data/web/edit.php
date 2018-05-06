@@ -572,7 +572,6 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           <h4><?=$lang['edit']['resource'];?></h4>
           <form class="form-horizontal" role="form" method="post" data-id="editresource">
             <input type="hidden" value="0" name="active">
-            <input type="hidden" value="0" name="multiple_bookings">
             <div class="form-group">
               <label class="control-label col-sm-2" for="description"><?=$lang['add']['description'];?></label>
               <div class="col-sm-10">
@@ -590,16 +589,24 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               </div>
             </div>
             <div class="form-group">
-              <div class="col-sm-offset-2 col-sm-10">
-                <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active" <?=($result['active_int']=="1") ? "checked" : null;?>> <?=$lang['edit']['active'];?></label>
+              <label class="control-label col-sm-2" for="multiple_bookings_select"><?=$lang['add']['multiple_bookings'];?>:</label>
+              <div class="col-sm-10">
+                <select name="multiple_bookings_select" id="multiple_bookings_select" title="<?=$lang['add']['select'];?>" required>
+                  <option value="0" <?=($result['multiple_bookings'] == 0) ? "selected" : null;?>><?=$lang['mailbox']['booking_0'];?></option>
+                  <option value="-1" <?=($result['multiple_bookings'] == -1) ? "selected" : null;?>><?=$lang['mailbox']['booking_lt0'];?></option>
+                  <option value="custom" <?=($result['multiple_bookings'] >= 1) ? "selected" : null;?>><?=$lang['mailbox']['booking_custom'];?></option>
+                </select>
+                <div style="display:none" id="multiple_bookings_custom_div">
+                  <hr>
+                  <input type="number" class="form-control" name="multiple_bookings_custom" id="multiple_bookings_custom" value="<?=($result['multiple_bookings'] >= 1) ? $result['multiple_bookings'] : null;?>">
                 </div>
+                <input type="hidden" name="multiple_bookings" id="multiple_bookings">
               </div>
             </div>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
                 <div class="checkbox">
-                <label><input type="checkbox" value="1" name="multiple_bookings" <?=($result['multiple_bookings_int']=="1") ? "checked" : null;?>> <?=$lang['edit']['multiple_bookings'];?></label>
+                <label><input type="checkbox" value="1" name="active" <?=($result['active_int']=="1") ? "checked" : null;?>> <?=$lang['edit']['active'];?></label>
                 </div>
               </div>
             </div>
