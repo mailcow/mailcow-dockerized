@@ -238,6 +238,7 @@ function init_db_schema() {
       ),
       "user_acl" => array(
         "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
           "username" => "VARCHAR(255) NOT NULL",
           "spam_alias" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "tls_policy" => "TINYINT(1) NOT NULL DEFAULT '1'",
@@ -252,6 +253,9 @@ function init_db_schema() {
           "recipient_maps" => "TINYINT(1) NOT NULL DEFAULT '0'",
           ),
         "keys" => array(
+          "primary" => array(
+            "" => array("username")
+          ),
           "fkey" => array(
             "fk_username" => array(
               "col" => "username",
@@ -327,12 +331,16 @@ function init_db_schema() {
       ),
       "domain_admins" => array(
         "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
           "username" => "VARCHAR(255) NOT NULL",
           "domain" => "VARCHAR(255) NOT NULL",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
         ),
         "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
           "key" => array(
             "username" => array("username")
           )
@@ -762,7 +770,7 @@ function init_db_schema() {
         // Create table if it is missing
         $sql = "CREATE TABLE IF NOT EXISTS `" . $table . "` (";
         foreach($properties['cols'] as $column => $type) {
-          $sql .= $column . " " . $type . ",";
+          $sql .= "`" . $column . "` " . $type . ",";
         }
         foreach($properties['keys'] as $key_type => $key_content) {
           if (strtolower($key_type) == 'primary') {
