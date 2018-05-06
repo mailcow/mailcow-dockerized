@@ -192,16 +192,24 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 						</div>
 					</div>
 					<div class="form-group">
-						<div class="col-sm-offset-2 col-sm-10">
-							<div class="checkbox">
-							<label><input type="checkbox" value="1" name="active" checked> <?=$lang['add']['active'];?></label>
-							</div>
+						<label class="control-label col-sm-2" for="multiple_bookings_select"><?=$lang['add']['multiple_bookings'];?>:</label>
+						<div class="col-sm-10">
+							<select name="multiple_bookings_select" id="multiple_bookings_select" title="<?=$lang['add']['select'];?>" required>
+								<option value="0"><?=$lang['mailbox']['booking_0'];?></option>
+								<option value="-1" selected><?=$lang['mailbox']['booking_lt0'];?></option>
+								<option value="custom"><?=$lang['mailbox']['booking_custom'];?></option>
+							</select>
+              <div style="display:none" id="multiple_bookings_custom_div">
+                <hr>
+                <input type="number" class="form-control" name="multiple_bookings_custom" id="multiple_bookings_custom">
+              </div>
+              <input type="hidden" name="multiple_bookings" id="multiple_bookings">
 						</div>
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">
-							<label><input type="checkbox" value="1" name="multiple_bookings" checked> <?=$lang['add']['multiple_bookings'];?></label>
+							<label><input type="checkbox" value="1" name="active" checked> <?=$lang['add']['active'];?></label>
 							</div>
 						</div>
 					</div>
@@ -657,3 +665,24 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
     </div>
   </div>
 </div><!-- DNS info modal -->
+<script>
+$('#addResourceModal').on('shown.bs.modal', function() {
+  $("#multiple_bookings").val($("#multiple_bookings_select").val());
+  if ($("#multiple_bookings").val() == "custom") {
+    $("#multiple_bookings_custom_div").show();
+    $("#multiple_bookings").val($("#multiple_bookings_custom").val());
+  }
+})
+$("#multiple_bookings_select").change(function() {
+  $("#multiple_bookings").val($("#multiple_bookings_select").val());
+  if ($("#multiple_bookings").val() == "custom") {
+    $("#multiple_bookings_custom_div").show();
+  }
+  else {
+    $("#multiple_bookings_custom_div").hide();
+  }
+});
+$("#multiple_bookings_custom").bind ("change keypress keyup blur", function () {
+  $("#multiple_bookings").val($("#multiple_bookings_custom").val());
+});
+</script>

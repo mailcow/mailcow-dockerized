@@ -936,8 +936,8 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
           $local_part         = preg_replace('/[^\da-z]/i', '', preg_quote($description, '/'));
           $name               = $local_part . '@' . $domain;
           $kind               = $_data['kind'];
+          $multiple_bookings  = intval($_data['multiple_bookings']);
           $active = intval($_data['active']);
-          $multiple_bookings = intval($_data['multiple_bookings']);
           if (!filter_var($name, FILTER_VALIDATE_EMAIL)) {
             $_SESSION['return'] = array(
               'type' => 'danger',
@@ -952,7 +952,9 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             );
             return false;
           }
-          
+          if (!isset($multiple_bookings) || $multiple_bookings < -1) {
+            $multiple_bookings = -1;
+          }
           if ($kind != 'location' && $kind != 'group' && $kind != 'thing') {
             $_SESSION['return'] = array(
               'type' => 'danger',
@@ -2175,7 +2177,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             $is_now = mailbox('get', 'resource_details', $name);
             if (!empty($is_now)) {
               $active             = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
-              $multiple_bookings  = (isset($_data['multiple_bookings'])) ? intval($_data['multiple_bookings']) : $is_now['multiple_bookings_int'];
+              $multiple_bookings  = (isset($_data['multiple_bookings'])) ? intval($_data['multiple_bookings']) : $is_now['multiple_bookings'];
               $description        = (!empty($_data['description'])) ? $_data['description'] : $is_now['description'];
               $kind               = (!empty($_data['kind'])) ? $_data['kind'] : $is_now['kind'];
             }
@@ -2192,6 +2194,9 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
                 'msg' => sprintf($lang['danger']['resource_invalid'])
               );
               return false;
+            }
+            if (!isset($multiple_bookings) || $multiple_bookings < -1) {
+              $multiple_bookings = -1;
             }
             if (empty($description)) {
               $_SESSION['return'] = array(
@@ -3141,10 +3146,9 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
                 `username`,
                 `name`,
                 `kind`,
-                `multiple_bookings` AS `multiple_bookings_int`,
+                `multiple_bookings`,
                 `local_part`,
                 `active` AS `active_int`,
-                CASE `multiple_bookings` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `multiple_bookings`,
                 CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`,
                 `domain`
                   FROM `mailbox` WHERE `kind` REGEXP 'location|thing|group' AND `username` = :resource");
@@ -3155,7 +3159,6 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             $resourcedata['name'] = $row['username'];
             $resourcedata['kind'] = $row['kind'];
             $resourcedata['multiple_bookings'] = $row['multiple_bookings'];
-            $resourcedata['multiple_bookings_int'] = $row['multiple_bookings_int'];
             $resourcedata['description'] = $row['name'];
             $resourcedata['active'] = $row['active'];
             $resourcedata['active_int'] = $row['active_int'];
