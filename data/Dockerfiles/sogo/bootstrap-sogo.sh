@@ -83,6 +83,8 @@ while read line
                     <string>domain</string>
                     <key>MultipleBookingsFieldName</key>
                     <string>multiple_bookings</string>
+                    <key>listRequiresDot</key>
+                    <string>NO</string>
                     <key>canAuthenticate</key>
                     <string>YES</string>
                     <key>displayName</key>
