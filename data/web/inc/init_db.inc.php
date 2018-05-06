@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "06052018_1239";
+    $db_version = "06052018_1839";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -191,7 +191,7 @@ function init_db_schema() {
           "domain" => "VARCHAR(255) NOT NULL",
           "attributes" => "JSON",
           "kind" => "VARCHAR(100) NOT NULL DEFAULT ''",
-          "multiple_bookings" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "multiple_bookings" => "INT NOT NULL DEFAULT -1",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
           "active" => "TINYINT(1) NOT NULL DEFAULT '1'"

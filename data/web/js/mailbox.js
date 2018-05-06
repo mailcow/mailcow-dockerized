@@ -294,7 +294,7 @@ jQuery(function($){
         {"sorted": true,"name":"description","title":lang.description,"style":{"width":"250px"}},
         {"name":"kind","title":lang.kind},
         {"name":"domain","title":lang.domain,"breakpoints":"xs sm"},
-        {"name":"multiple_bookings","filterable": false,"style":{"maxWidth":"120px","width":"120px"},"title":lang.multiple_bookings,"breakpoints":"xs sm"},
+        {"name":"multiple_bookings","filterable": false,"style":{"maxWidth":"150px","width":"140px"},"title":lang.multiple_bookings,"breakpoints":"xs sm"},
         {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
@@ -308,6 +308,13 @@ jQuery(function($){
         },
         success: function (data) {
           $.each(data, function (i, item) {
+            if (item.multiple_bookings == '0') {
+              item.multiple_bookings = '<span id="active-script" class="label label-success">' + lang.booking_0_short + '</span>';
+            } else if (item.multiple_bookings == '-1') {
+              item.multiple_bookings = '<span id="active-script" class="label label-warning">' + lang.booking_lt0_short + '</span>';
+            } else {
+              item.multiple_bookings = '<span id="active-script" class="label label-danger">' + lang.booking_custom_short + ' (' + item.multiple_bookings + ')</span>';
+            }
             item.action = '<div class="btn-group">' +
               '<a href="/edit.php?resource=' + encodeURIComponent(item.name) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
               '<a href="#" id="delete_selected" data-id="single-resource" data-api-url="delete/resource" data-item="' + item.name + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +

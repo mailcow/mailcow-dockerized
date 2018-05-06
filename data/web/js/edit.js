@@ -12,7 +12,22 @@ $(document).ready(function() {
   });
   $("#script_data").numberedtextarea({allowTabChar: true});
 });
-
+if ($("#multiple_bookings_select").val() == "custom") {
+  $("#multiple_bookings_custom_div").show();
+  $("#multiple_bookings").val($("#multiple_bookings_custom").val());
+}
+$("#multiple_bookings_select").change(function() {
+  $("#multiple_bookings").val($("#multiple_bookings_select").val());
+  if ($("#multiple_bookings").val() == "custom") {
+    $("#multiple_bookings_custom_div").show();
+  }
+  else {
+    $("#multiple_bookings_custom_div").hide();
+  }
+});
+$("#multiple_bookings_custom").bind("change keypress keyup blur", function() {
+  $("#multiple_bookings").val($("#multiple_bookings_custom").val());
+});
 jQuery(function($){
   // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
   function validateEmail(email) {

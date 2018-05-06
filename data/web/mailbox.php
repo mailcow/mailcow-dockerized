@@ -100,6 +100,12 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                 <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addResourceModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_resource'];?></a>
               </div>
             </div>
+            <hr>
+            <div class="panel-body help-block">
+            <p><span class="label label-success"><?=$lang['mailbox']['booking_0_short'];?></span> - <?=$lang['mailbox']['booking_0'];?></p>
+            <p><span class="label label-warning"><?=$lang['mailbox']['booking_lt0_short'];?></span> - <?=$lang['mailbox']['booking_lt0'];?></p>
+            <p><span class="label label-danger"><?=$lang['mailbox']['booking_custom_short'];?></span> - <?=$lang['mailbox']['booking_custom'];?></p>
+            </div>
           </div>
         </div>
 
