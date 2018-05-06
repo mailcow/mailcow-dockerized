@@ -198,10 +198,11 @@ function init_db_schema() {
         ),
         "keys" => array(
           "primary" => array(
-            "" => array("username")
+            "" => array("id")
           ),
           "key" => array(
-            "domain" => array("domain")
+            "domain" => array("domain"),
+            "username" => array("username")
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
