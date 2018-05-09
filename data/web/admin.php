@@ -517,7 +517,7 @@ $tfa_data = get_tfa();
         <legend><?=$lang['admin']['app_links'];?></legend>
         <p class="help-block"><?=$lang['admin']['merged_vars_hint'];?></p>
         <form class="form-inline" data-id="app_links" role="form" method="post">
-          <table class="table table-condensed" style="width:1%;white-space: nowrap;" id="app_link_table">
+          <table class="table table-condensed" style="white-space: nowrap;" id="app_link_table">
             <tr>
               <th><?=$lang['admin']['app_name'];?></th>
               <th><?=$lang['admin']['link'];?></th>
