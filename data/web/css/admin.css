@@ -60,3 +60,6 @@ body.modal-open {
 .bootstrap-select {
   width: auto!important;
 }
+.table-condensed .input-sm {
+  width: 100%!important;  
+}
