@@ -3,9 +3,9 @@ set -e
 
 # SQL connection data
 HOST=mysql
-USER=mailcow
-PWD="iZMukr8FyWrvFAIcU3IrMXhZLo29"
-DBNAME=mailcow
+USER=${DBUSER}
+PWD="${DBPASS}"
+DBNAME=${DBNAME}
 TBLNAME="expires"
 # expunge messages older than this (days)
 TTL=30
