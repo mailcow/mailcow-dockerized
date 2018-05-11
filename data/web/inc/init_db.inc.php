@@ -854,6 +854,10 @@ DELIMITER ;';
 
     // Fix user_acl
     $stmt = $pdo->query("INSERT INTO `user_acl` (`username`) SELECT `username` FROM `mailbox` WHERE `kind` = '' AND NOT EXISTS (SELECT `username` FROM `user_acl`);");
+
+    // Create table for autoexpunge if not exists
+    $stmt = $pdo->query("CREATE TABLE IF NOT EXISTS `expires` (`username` varchar(75) not null, `mailbox` varchar(255) not null, `expire_stamp` integer not null, primary key (`username`, `mailbox`));");
+  
   }
   catch (PDOException $e) {
     $_SESSION['return'] = array(
