@@ -62,6 +62,7 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
   syslog-ng \
   syslog-ng-core \
   syslog-ng-mod-redis \
+  mysql-client \
   && rm -rf /var/lib/apt/lists/*
 
 
