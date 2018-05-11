@@ -57,3 +57,9 @@ body.modal-open {
   min-height:100px;
   height:100px;
 }
+.bootstrap-select {
+  width: auto!important;
+}
+.table-condensed .input-sm {
+  width: 100%!important;  
+}
