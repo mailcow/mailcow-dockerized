@@ -148,6 +148,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           <h4><?=$lang['edit']['domain'];?></h4>
           <form data-id="editdomain" class="form-horizontal" role="form" method="post">
             <input type="hidden" value="0" name="active">
+            <input type="hidden" value="0" name="auto_expunge">
             <input type="hidden" value="0" name="backupmx">
             <input type="hidden" value="0" name="relay_all_recipients">
             <div class="form-group">
@@ -212,6 +213,15 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <?php
             }
             ?>
+            <!-------------------------------------this is me----------------------------------->
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <div class="checkbox">
+                  <label><input type="checkbox" value="1" name="auto_expunge" <?=(isset($result['auto_expunge_int']) && $result['auto_expunge_int']=="1") ? "checked" : null;?> <?=($_SESSION['mailcow_cc_role'] == "admin") ? null : "disabled";?>> Auto expunge Junk/Trash folders in all mailbox</label>
+                </div>
+              </div>
+            </div>
+            <!----------------------------this is me-------------------------------------------->
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
                 <div class="checkbox">
@@ -708,6 +718,44 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         }
     }
   }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   if ($_SESSION['mailcow_cc_role'] == "admin"  || $_SESSION['mailcow_cc_role'] == "domainadmin" || $_SESSION['mailcow_cc_role'] == "user") {
     if (isset($_GET['syncjob']) &&
       is_numeric($_GET['syncjob'])) {
