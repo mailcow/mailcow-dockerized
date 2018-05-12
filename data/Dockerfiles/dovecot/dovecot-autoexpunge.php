@@ -29,12 +29,13 @@ foreach(array_filter(explode(PHP_EOL, shell_exec("echo \"$expiredsql\" | mysql -
     WHERE domain='$domain'
     LIMIT 1;
 EOF;
-  
+
   $domainAE=intval(shell_exec("echo \"$domainaesql\" | mysql -h $HOST -P $PORT -u $USER -p$PWD -N"));
 
-  # Check if mailbox name is empty. Just in case.
   if(!empty($mailbox) && $domainAE===1) {
     echo "Expunging: $row\n";
     shell_exec("doveadm expunge -u $username mailbox $mailbox savedbefore $TTL".'d');
+  } elseif($domainAE!==1) {
+    echo "Skipping \"$row\" as per domain-wide policy\n";
   }
 }
