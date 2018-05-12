@@ -63,6 +63,7 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
   syslog-ng-core \
   syslog-ng-mod-redis \
   mysql-client \
+  php-cli \
   && rm -rf /var/lib/apt/lists/*
 
 
