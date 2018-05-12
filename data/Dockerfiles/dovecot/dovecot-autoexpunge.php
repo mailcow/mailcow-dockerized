@@ -35,6 +35,6 @@ EOF;
   # Check if mailbox name is empty. Just in case.
   if(!empty($mailbox) && $domainAE===1) {
     echo "Expunging: $row\n";
-    #shell_exec("doveadm expunge -u $username mailbox $mailbox savedbefore $TTL".'d');
+    shell_exec("doveadm expunge -u $username mailbox $mailbox savedbefore $TTL".'d');
   }
 }
