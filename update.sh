@@ -157,7 +157,7 @@ sleep 2
 docker-compose down
 
 # Silently fixing remote url from andryyy to mailcow
-git remote set-url origin https://github.com/mailcow/mailcow-dockerized
+git remote set-url origin https://github.com/PhoenixPeca/mailcow-dockerized
 echo -e "\e[32mCommitting current status...\e[0m"
 git update-index --assume-unchanged data/conf/rspamd/override.d/worker-controller-password.inc
 git add -u
