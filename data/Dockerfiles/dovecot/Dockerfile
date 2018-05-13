@@ -97,7 +97,7 @@ COPY rspamd-pipe-ham /usr/local/lib/dovecot/sieve/rspamd-pipe-ham
 COPY rspamd-pipe-spam /usr/local/lib/dovecot/sieve/rspamd-pipe-spam
 COPY docker-entrypoint.sh /
 COPY supervisord.conf /etc/supervisor/supervisord.conf
-COPY dovecot-autoexpunge.sh /etc/cron.daily/dovecot-autoexpunge.php
+COPY dovecot-autoexpunge.php /etc/cron.daily/dovecot-autoexpunge.php
 
 RUN chmod +x /usr/local/lib/dovecot/sieve/rspamd-pipe-ham \
   /usr/local/lib/dovecot/sieve/rspamd-pipe-spam \
