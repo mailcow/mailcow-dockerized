@@ -149,11 +149,25 @@ function init_db_schema() {
           "relay_all_recipients" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
-          "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
+          "active" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "auto_expunge" => "TINYINT(1) NOT NULL DEFAULT '0'"
         ),
         "keys" => array(
           "primary" => array(
             "" => array("domain")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "expires" => array(
+        "cols" => array(
+          "username" => "VARCHAR(255) NOT NULL",
+          "mailbox" => "VARCHAR(255) NOT NULL",
+          "expire_stamp" => "INTEGER NOT NULL"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("username", "mailbox")
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
