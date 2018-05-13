@@ -361,6 +361,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
           $active = intval($_data['active']);
           $relay_all_recipients = intval($_data['relay_all_recipients']);
           $backupmx = intval($_data['backupmx']);
+          $auto_expunge = intval($_data['auto_expunge']);
           ($relay_all_recipients == 1) ? $backupmx = '1' : null;
           if (!is_valid_domain_name($domain)) {
             $_SESSION['return'] = array(
@@ -410,8 +411,8 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             return false;
           }
           try {
-            $stmt = $pdo->prepare("INSERT INTO `domain` (`domain`, `description`, `aliases`, `mailboxes`, `maxquota`, `quota`, `backupmx`, `active`, `relay_all_recipients`)
-              VALUES (:domain, :description, :aliases, :mailboxes, :maxquota, :quota, :backupmx, :active, :relay_all_recipients)");
+            $stmt = $pdo->prepare("INSERT INTO `domain` (`domain`, `description`, `aliases`, `mailboxes`, `maxquota`, `quota`, `backupmx`, `auto_expunge`, `active`, `relay_all_recipients`)
+              VALUES (:domain, :description, :aliases, :mailboxes, :maxquota, :quota, :backupmx, :auto_expunge, :active, :relay_all_recipients)");
             $stmt->execute(array(
               ':domain' => $domain,
               ':description' => $description,
@@ -420,6 +421,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               ':maxquota' => $maxquota,
               ':quota' => $quota,
               ':backupmx' => $backupmx,
+              ':auto_expunge' => $auto_expunge,
               ':active' => $active,
               ':relay_all_recipients' => $relay_all_recipients
             ));
@@ -1819,6 +1821,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               $is_now = mailbox('get', 'domain_details', $domain);
               if (!empty($is_now)) {
                 $active               = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
+                $auto_expunge         = (isset($_data['auto_expunge'])) ? intval($_data['auto_expunge']) : $is_now['auto_expunge_int'];
                 $backupmx             = (isset($_data['backupmx'])) ? intval($_data['backupmx']) : $is_now['backupmx_int'];
                 $relay_all_recipients = (isset($_data['relay_all_recipients'])) ? intval($_data['relay_all_recipients']) : $is_now['relay_all_recipients_int'];
                 $relayhost            = (isset($_data['relayhost'])) ? intval($_data['relayhost']) : $is_now['relayhost'];
@@ -1909,6 +1912,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
                 $stmt = $pdo->prepare("UPDATE `domain` SET 
                 `relay_all_recipients` = :relay_all_recipients,
                 `backupmx` = :backupmx,
+                `auto_expunge` = :auto_expunge,
                 `active` = :active,
                 `quota` = :quota,
                 `maxquota` = :maxquota,
@@ -1920,6 +1924,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
                 $stmt->execute(array(
                   ':relay_all_recipients' => $relay_all_recipients,
                   ':backupmx' => $backupmx,
+                  ':auto_expunge' => $auto_expunge,
                   ':active' => $active,
                   ':quota' => $quota,
                   ':maxquota' => $maxquota,
@@ -3000,9 +3005,11 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
                 `relayhost`,
                 `relay_all_recipients` as `relay_all_recipients_int`,
                 `backupmx` as `backupmx_int`,
+                `auto_expunge` as `auto_expunge_int`,
                 `active` as `active_int`,
                 CASE `relay_all_recipients` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `relay_all_recipients`,
                 CASE `backupmx` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `backupmx`,
+                CASE `auto_expunge` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `auto_expunge`,
                 CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`
                   FROM `domain` WHERE `domain`= :domain");
             $stmt->execute(array(
@@ -3035,6 +3042,8 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             $domaindata['relayhost'] = $row['relayhost'];
             $domaindata['backupmx'] = $row['backupmx'];
             $domaindata['backupmx_int'] = $row['backupmx_int'];
+            $domaindata['auto_expunge'] = $row['auto_expunge'];
+            $domaindata['auto_expunge_int'] = $row['auto_expunge_int'];
             $domaindata['active'] = $row['active'];
             $domaindata['active_int'] = $row['active_int'];
             $domaindata['relay_all_recipients'] = $row['relay_all_recipients'];
