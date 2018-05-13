@@ -62,6 +62,8 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
   syslog-ng \
   syslog-ng-core \
   syslog-ng-mod-redis \
+  mysql-client \
+  php-cli \
   && rm -rf /var/lib/apt/lists/*
 
 
@@ -95,12 +97,14 @@ COPY rspamd-pipe-ham /usr/local/lib/dovecot/sieve/rspamd-pipe-ham
 COPY rspamd-pipe-spam /usr/local/lib/dovecot/sieve/rspamd-pipe-spam
 COPY docker-entrypoint.sh /
 COPY supervisord.conf /etc/supervisor/supervisord.conf
+COPY dovecot-autoexpunge.php /etc/cron.daily/dovecot-autoexpunge.php
 
 RUN chmod +x /usr/local/lib/dovecot/sieve/rspamd-pipe-ham \
   /usr/local/lib/dovecot/sieve/rspamd-pipe-spam \
   /usr/local/bin/imapsync_cron.pl \
   /usr/local/bin/postlogin.sh \
-  /usr/local/bin/imapsync
+  /usr/local/bin/imapsync \
+  /etc/cron.daily/dovecot-autoexpunge.php
 
 RUN groupadd -g 5000 vmail \
   && groupadd -g 401 dovecot \
