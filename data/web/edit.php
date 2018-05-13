@@ -215,6 +215,13 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
                 <div class="checkbox">
+                  <label><input type="checkbox" value="1" name="auto_expunge" <?=(isset($result['auto_expunge_int']) && $result['auto_expunge_int']=="1") ? "checked" : null;?> <?=($_SESSION['mailcow_cc_role'] == "admin") ? null : "disabled";?>> Auto expunge Junk/Trash folders</label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <div class="checkbox">
                   <label><input type="checkbox" value="1" name="active" <?=(isset($result['active_int']) && $result['active_int']=="1") ? "checked" : null;?> <?=($_SESSION['mailcow_cc_role'] == "admin") ? null : "disabled";?>> <?=$lang['edit']['active'];?></label>
                 </div>
               </div>
