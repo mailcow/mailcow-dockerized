@@ -2,7 +2,8 @@
 <?php
 
 # SQL connection data
-$HOST=mysql;
+$HOST='mysql';
+$PORT='3306';
 $USER=getenv('DBUSER');
 $PWD=getenv('DBPASS');
 $DBNAME=getenv('DBNAME');
