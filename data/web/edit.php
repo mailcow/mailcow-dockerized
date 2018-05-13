@@ -149,6 +149,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           <form data-id="editdomain" class="form-horizontal" role="form" method="post">
             <input type="hidden" value="0" name="active">
             <input type="hidden" value="0" name="backupmx">
+            <input type="hidden" value="0" name="auto_expunge">
             <input type="hidden" value="0" name="relay_all_recipients">
             <div class="form-group">
               <label class="control-label col-sm-2" for="description"><?=$lang['edit']['description'];?></label>
