@@ -290,6 +290,7 @@ $lang['edit']['dont_check_sender_acl'] = "Disable sender check for domain %s + a
 $lang['edit']['multiple_bookings'] = 'Multiple bookings';
 $lang['edit']['kind'] = 'Kind';
 $lang['edit']['resource'] = 'Resource';
+$lang['edit']['auto_expunge'] = 'Auto expunge mailboxes';
 
 $lang['add']['syncjob'] = 'Add sync job';
 $lang['add']['syncjob_hint'] = 'Be aware that passwords need to be saved plain-text!';
@@ -548,6 +549,7 @@ $lang['mailbox']['recipient_map_old'] = 'Original recipient';
 $lang['mailbox']['recipient_map_new'] = 'New recipient';
 $lang['mailbox']['add_recipient_map_entry'] = 'Add recipient map';
 $lang['mailbox']['add_sender_map_entry'] = 'Add sender map';
+$lang['mailbox']['auto_expunge'] = 'Auto expunge mailboxes';
 
 $lang['oauth2']['scope_ask_permission'] = 'An application asked for the following permissions';
 $lang['oauth2']['profile'] = 'Profile';
