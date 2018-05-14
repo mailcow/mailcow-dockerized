@@ -137,7 +137,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">
-							<label><input type="checkbox" value="1" name="auto_expunge"> Auto expunge Junk/Trash folder</label>
+							<label><input type="checkbox" value="1" name="auto_expunge"> <?=$lang['add']['auto_expunge'];?></label>
 							</div>
 						</div>
 					</div>
