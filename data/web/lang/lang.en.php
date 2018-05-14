@@ -318,6 +318,7 @@ $lang['add']['mailbox_quota_m'] = 'Max. quota per mailbox (MiB)';
 $lang['add']['domain_quota_m'] = 'Total domain quota (MiB)';
 $lang['add']['backup_mx_options'] = 'Backup MX options';
 $lang['add']['relay_all'] = 'Relay all recipients';
+$lang['add']['auto_expunge'] = 'Auto expunge mailboxes';
 $lang['add']['relay_domain'] = 'Relay this domain';
 $lang['add']['relay_all_info'] = '<small>If you choose <b>not</b> to relay all recipients, you will need to add a ("blind") mailbox for every single recipient that should be relayed.</small>';
 $lang['add']['alias_address'] = 'Alias address/es';
@@ -549,7 +550,6 @@ $lang['mailbox']['recipient_map_old'] = 'Original recipient';
 $lang['mailbox']['recipient_map_new'] = 'New recipient';
 $lang['mailbox']['add_recipient_map_entry'] = 'Add recipient map';
 $lang['mailbox']['add_sender_map_entry'] = 'Add sender map';
-$lang['mailbox']['auto_expunge'] = 'Auto expunge mailboxes';
 
 $lang['oauth2']['scope_ask_permission'] = 'An application asked for the following permissions';
 $lang['oauth2']['profile'] = 'Profile';
