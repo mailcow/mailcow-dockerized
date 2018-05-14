@@ -217,6 +217,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               <div class="col-sm-offset-2 col-sm-10">
                 <div class="checkbox">
                   <label><input type="checkbox" value="1" name="auto_expunge" <?=(isset($result['auto_expunge_int']) && $result['auto_expunge_int']=="1") ? "checked" : null;?> <?=($_SESSION['mailcow_cc_role'] == "admin") ? null : "disabled";?>> <?=$lang['edit']['auto_expunge'];?></label>
+				  <p><?=$lang['edit']['auto_expunge_info'];?></p>
                 </div>
               </div>
             </div>
