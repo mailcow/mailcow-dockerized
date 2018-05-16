@@ -31,21 +31,6 @@ map {
 }
 EOF
 
-# Create expire dict for Dovecot
-cat <<EOF > /usr/local/etc/dovecot/sql/dovecot-dict-sql-expire.conf
-connect = "host=mysql dbname=${DBNAME} user=${DBUSER} password=${DBPASS}"
-map {
-  pattern = shared/expire/\$user/\$mailbox
-  table = expires
-  value_field = expire_stamp
-
-  fields {
-    username = \$user
-    mailbox = \$mailbox
-  }
-}
-EOF
-
 # Create dict used for sieve pre and postfilters
 cat <<EOF > /usr/local/etc/dovecot/sql/dovecot-dict-sql-sieve_before.conf
 connect = "host=mysql dbname=${DBNAME} user=${DBUSER} password=${DBPASS}"

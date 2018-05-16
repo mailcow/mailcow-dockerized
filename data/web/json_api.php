@@ -432,22 +432,6 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 }
                 echo (isset($logs) && !empty($logs)) ? json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '{}';
               break;
-              case "autoexpunge":
-                // 0 is first record, so empty is fine
-                if (isset($extra)) {
-                  $extra = preg_replace('/[^\d\-]/i', '', $extra);
-                  $logs = get_logs('autoexpunge-mailcow', $extra);
-                }
-                else {
-                  $logs = get_logs('autoexpunge-mailcow');
-                }
-                if (isset($logs) && !empty($logs)) {
-                  echo json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-                }
-                else {
-                  echo '{}';
-                }
-              break;
               case "sogo":
                 // 0 is first record, so empty is fine
                 if (isset($extra)) {
