@@ -11,6 +11,10 @@ $TBLNAME="expires";
 # expunge messages older than this (days)
 $TTL=30;
 
+// Redis
+$redis = new Redis();
+$redis->connect('redis-mailcow', 6379);
+
 $expiredsql=<<<EOF
   USE $DBNAME;
   SELECT CONCAT(username, '~', mailbox)
@@ -34,9 +38,45 @@ EOF;
   $domainAE=intval(shell_exec("echo \"$domainaesql\" | mysql -h $HOST -P $PORT -u $USER -p$PWD -N"));
 
   if(!empty($mailbox) && $domainAE===1) {
-    echo "Expunging: $row\n";
-    shell_exec("doveadm expunge -u $username mailbox $mailbox savedbefore $TTL".'d');
+    try {
+      $json = json_encode(
+        array(
+          "time" => time(),
+          "priority" => 'warn',
+          "message" => "Expunging: $row"
+        )
+      );
+      $redis->lPush('AUTOEXPUNGE_LOG', $json);
+      $redis->lTrim('AUTOEXPUNGE_LOG', 0, 100);
+      echo "Expunging: $row\n";
+      shell_exec("doveadm expunge -u $username mailbox $mailbox savedbefore $TTL".'d');
+    }
+    catch (RedisException $e) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => 'Redis: '.$e
+      );
+      return false;
+    }
   } elseif($domainAE!==1) {
-    echo "Skipping \"$row\" as per domain-wide policy\n";
+    try {
+      $json = json_encode(
+        array(
+          "time" => time(),
+          "priority" => 'info',
+          "message" => "Skipping \"$row\" as per domain-wide policy"
+        )
+      );
+      $redis->lPush('AUTOEXPUNGE_LOG', $json);
+      $redis->lTrim('AUTOEXPUNGE_LOG', 0, 100);
+      echo "Skipping \"$row\" as per domain-wide policy\n";
+    }
+    catch (RedisException $e) {
+      $_SESSION['return'] = array(
+        'type' => 'danger',
+        'msg' => 'Redis: '.$e
+      );
+      return false;
+    }
   }
 }
