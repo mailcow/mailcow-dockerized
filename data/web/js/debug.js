@@ -35,6 +35,10 @@ jQuery(function($){
     e.preventDefault();
     draw_netfilter_logs();
   });
+  $("#refresh_autoexpunge_log").on('click', function(e) {
+    e.preventDefault();
+    draw_autoexpunge_logs();
+  });
   $("#refresh_rspamd_history").on('click', function(e) {
     e.preventDefault();
     draw_rspamd_history();
@@ -219,6 +223,39 @@ jQuery(function($){
         jsonp: false,
         error: function () {
           console.log('Cannot draw netfilter log table');
+        },
+        success: function (data) {
+          return process_table_data(data, 'general_syslog');
+        }
+      }),
+      "empty": lang.empty,
+      "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
+      "filtering": {"enabled": true,"position": "left","connectors": false,"placeholder": lang.filter_table},
+      "sorting": {"enabled": true},
+      "on": {
+        "ready.ft.table": function(e, ft){
+          heading = ft.$el.parents('.tab-pane').find('.panel-heading')
+          $(heading).children('.log-lines').text(function(){
+            var ft_paging = ft.use(FooTable.Paging)
+            return ft_paging.totalRows;
+          })
+        }
+      }
+    });
+  }
+  function draw_autoexpunge_logs() {
+    ft_autoexpunge_logs = FooTable.init('#autoexpunge_log', {
+      "columns": [
+        {"name":"time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},"title":lang.time,"style":{"width":"170px"}},
+        {"name":"priority","title":lang.priority,"style":{"width":"80px"}},
+        {"name":"message","title":lang.message},
+      ],
+      "rows": $.ajax({
+        dataType: 'json',
+        url: '/api/v1/get/logs/autoexpunge',
+        jsonp: false,
+        error: function () {
+          console.log('Cannot draw autoexpunge log table');
         },
         success: function (data) {
           return process_table_data(data, 'general_syslog');
@@ -498,6 +535,7 @@ jQuery(function($){
   draw_acme_logs();
   draw_api_logs();
   draw_netfilter_logs();
+  draw_autoexpunge_logs();
   draw_rspamd_history();
 
 });
