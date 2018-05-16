@@ -19,7 +19,6 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
         <li role="presentation"><a href="#tab-netfilter-logs" aria-controls="tab-netfilter-logs" role="tab" data-toggle="tab">Netfilter</a></li>
         <li role="presentation"><a href="#tab-rspamd-history" aria-controls="tab-rspamd-history" role="tab" data-toggle="tab">Rspamd</a></li>
         <li role="presentation"><a href="#tab-autodiscover-logs" aria-controls="tab-autodiscover-logs" role="tab" data-toggle="tab">Autodiscover</a></li>
-        <li role="presentation"><a href="#tab-autoexpunge-logs" aria-controls="tab-autoexpunge-logs" role="tab" data-toggle="tab">Auto Expunge</a></li>
         <li role="presentation"><a href="#tab-watchdog-logs" aria-controls="tab-watchdog-logs" role="tab" data-toggle="tab">Watchdog</a></li>
         <li role="presentation"><a href="#tab-acme-logs" aria-controls="tab-acme-logs" role="tab" data-toggle="tab">ACME</a></li>
         <li role="presentation"><a href="#tab-api-logs" aria-controls="tab-api-logs" role="tab" data-toggle="tab">API</a></li>
@@ -312,23 +311,6 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                 <div class="col-sm-3">
                   <img class="img-responsive" src="/img/rspamd_logo.png" alt="Rspamd UI" />
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div role="tabpanel" class="tab-pane" id="tab-autoexpunge-logs">
-          <div class="panel panel-default">
-            <div class="panel-heading">Auto Expunge <span class="badge badge-info log-lines"></span>
-              <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="autoexpunge_log" data-log-url="autoexpunge" data-nrows="100">+ 100</button>
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="autoexpunge_log" data-log-url="autoexpunge" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default" id="refresh_autoexpunge_log"><?=$lang['admin']['refresh'];?></button>
-              </div>
-            </div>
-            <div class="panel-body">
-              <div class="table-responsive">
-                <table class="table table-striped table-condensed" id="autoexpunge_log"></table>
               </div>
             </div>
           </div>

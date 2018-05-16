@@ -1218,21 +1218,6 @@ function get_logs($container, $lines = false) {
       return $data_array;
     }
   }
-  if ($container == "autoexpunge-mailcow") {
-    if (!is_numeric($lines)) {
-      list ($from, $to) = explode('-', $lines);
-      $data = $redis->lRange('AUTOEXPUNGE_LOG', intval($from), intval($to));
-    }
-    else {
-      $data = $redis->lRange('AUTOEXPUNGE_LOG', 0, intval($lines));
-    }
-    if ($data) {
-      foreach ($data as $json_line) {
-        $data_array[] = json_decode($json_line, true);
-      }
-      return $data_array;
-    }
-  }
   if ($container == "autodiscover-mailcow") {
     if (!is_numeric($lines)) {
       list ($from, $to) = explode('-', $lines);
