@@ -149,6 +149,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           <form data-id="editdomain" class="form-horizontal" role="form" method="post">
             <input type="hidden" value="0" name="active">
             <input type="hidden" value="0" name="backupmx">
+            <input type="hidden" value="0" name="auto_expunge">
             <input type="hidden" value="0" name="relay_all_recipients">
             <div class="form-group">
               <label class="control-label col-sm-2" for="description"><?=$lang['edit']['description'];?></label>
@@ -212,6 +213,14 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <?php
             }
             ?>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <div class="checkbox">
+                  <label><input type="checkbox" value="1" name="auto_expunge" <?=(isset($result['auto_expunge_int']) && $result['auto_expunge_int']=="1") ? "checked" : null;?> <?=($_SESSION['mailcow_cc_role'] == "admin") ? null : "disabled";?>> <?=$lang['edit']['auto_expunge'];?></label>
+				  <p><?=$lang['edit']['auto_expunge_info'];?></p>
+                </div>
+              </div>
+            </div>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
                 <div class="checkbox">
