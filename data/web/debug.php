@@ -83,14 +83,15 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               'netfilter-mailcow',
               'clamd-mailcow'
             );
+            $container_states = (docker($container, 'states'));
             foreach ($container_array as $container) {
-                $container_stats = docker($container, 'info');
+                $container_state = $container_states[$container];
                 ?>
                 <li class="list-group-item">
                 <?=$container;?>
                 <?php
                 date_default_timezone_set('UTC');
-                $StartedAt = date_parse($container_stats['State']['StartedAt']);
+                $StartedAt = date_parse($container_state['StartedAt']);
                 if ($StartedAt['hour'] !== false) {
                   $date = new \DateTime();
                   $date->setTimestamp(mktime(
@@ -110,7 +111,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                 ?>
                 <small>(Started on <?=$started;?>),
                 <a href data-toggle="modal" data-container="<?=$container;?>" data-target="#RestartContainer">Restart</a></small>
-                <span class="pull-right label label-<?=($container_stats !== false && !empty($container_stats)) ? (($container_stats['State']['Running'] == 1) ? 'success' : 'danger') : 'default'; ?>">&nbsp;&nbsp;&nbsp;</span>
+                <span class="pull-right label label-<?=($container_state !== false && !empty($container_state)) ? (($container_state['Running'] == 1) ? 'success' : 'danger') : 'default'; ?>">&nbsp;&nbsp;&nbsp;</span>
                 </li>
               <?php
               }
@@ -198,6 +199,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               </div>
             </div>
             <div class="panel-body">
+              <div id="rspamd_donut" style="height:400px;width:100%; "></div>
               <div class="table-responsive">
                 <table class="table table-striped table-condensed log-table" id="rspamd_history"></table>
               </div>
