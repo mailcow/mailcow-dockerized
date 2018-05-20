@@ -634,10 +634,21 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
         switch ($category) {
           case "rspamd":
             switch ($object) {
-              case "stat":
-                $data = file_get_contents('http://rspamd-mailcow:11334/stat');
-                if (!empty($data)) {
-                  echo $data;
+              case "actions":
+                $curl = curl_init();
+                curl_setopt($curl, CURLOPT_UNIX_SOCKET_PATH, '/rspamd-sock/rspamd.sock');
+                curl_setopt($curl, CURLOPT_URL,"http://rspamd/stat");
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                $data = curl_exec($curl);
+                if ($data) {
+                  $return = array();
+                  $stats_array = json_decode($data, true)['actions'];
+                  $stats_array['soft reject'] = $stats_array['soft reject'] + $stats_array['greylist'];
+                  unset($stats_array['greylist']);
+                  foreach ($stats_array as $action => $count) {
+                    $return[] = array($action, $count);
+                  }
+                  echo json_encode($return, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
                 }
                 elseif (!isset($data) || empty($data)) {
                   echo '{}';
