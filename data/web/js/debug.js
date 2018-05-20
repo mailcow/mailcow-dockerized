@@ -346,6 +346,40 @@ jQuery(function($){
         }
       }
     });
+    $.ajax({
+      url: '/api/v1/get/rspamd/actions',
+      success: function(data){
+        var total = 0;
+        $(data).map(function(){total += this[1];})
+        rspamd_labels = $.makeArray($(data).map(function(){return "<h5>" + this[0] + " (" + this[1] + ") " + Math.round(this[1]/total * 100) + "%</h5>";}));
+        window.rspamd_donut = $.jqplot('rspamd_donut', [data], 
+          {
+            seriesDefaults: {
+              renderer: jQuery.jqplot.DonutRenderer,
+              rendererOptions: {
+                showDataLabels: true,
+                dataLabels: rspamd_labels,
+                dataLabelThreshold: 1,
+                sliceMargin: 5,
+                totalLabel: true
+              },
+              shadow: false,
+              seriesColors: ['#FF4136', '#75CAEB', '#FF851B', '#FF851B', '#28B62C']
+            },
+            legend: {
+              show:false,
+            },
+            grid: {
+              drawGridLines: true,
+              gridLineColor: '#efefef',
+              background: '#ffffff',
+              borderWidth: 0,
+              shadow: false,
+            }
+          }
+        );
+      }
+    });
   }
 
   function process_table_data(data, table) {
@@ -499,5 +533,11 @@ jQuery(function($){
   draw_api_logs();
   draw_netfilter_logs();
   draw_rspamd_history();
-
+  $(window).resize(function () {
+      var timer;
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        rspamd_donut.replot({});
+      }, 500);
+  });
 });
