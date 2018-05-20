@@ -9,6 +9,8 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/footer.php';
 <script src="/js/bootstrap-filestyle.min.js"></script>
 <script src="/js/notifications.min.js"></script>
 <script src="/js/formcache.min.js"></script>
+<script src="/js/jquery.jqplot.min.js"></script>
+<script src="/js/jqplot.donutRenderer.js"></script>
 <script src="/js/numberedtextarea.min.js"></script>
 <script src="/js/u2f-api.js"></script>
 <script src="/js/api.js"></script>
