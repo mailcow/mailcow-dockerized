@@ -26,6 +26,28 @@ function docker($service_name, $action, $attr1 = null, $attr2 = null, $extra_hea
         }
       }
       return false;
+    case 'states':
+      curl_setopt($curl, CURLOPT_URL, 'http://dockerapi:8080/containers/json');
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+      curl_setopt($curl, CURLOPT_POST, 0);
+      curl_setopt($curl, CURLOPT_TIMEOUT, 10);
+      $response = curl_exec($curl);
+      if ($response === false) {
+        $err = curl_error($curl);
+        curl_close($curl);
+        return $err;
+      }
+      else {
+        curl_close($curl);
+        $containers = json_decode($response, true);
+        if (!empty($containers)) {
+          foreach ($containers as $container) {
+            $out[$container['Config']['Labels']['com.docker.compose.service']] = $container['State'];
+          }
+        }
+        return (!empty($out)) ? $out : false;
+      }
+      return false;
     break;
     case 'info':
       $container_id = docker($service_name, 'get_id');
