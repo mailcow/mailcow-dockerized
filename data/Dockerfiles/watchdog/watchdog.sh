@@ -70,7 +70,7 @@ get_container_ip() {
     sleep 1
     CONTAINER_ID=$(curl --silent http://dockerapi:8080/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], id: .Id}" | jq -rc "select( .name | tostring | contains(\"${1}\")) | .id")
     if [[ ! -z ${CONTAINER_ID} ]]; then
-      CONTAINER_IP=$(curl --silent http://dockerapi:8080/containers/${CONTAINER_ID}/json | jq -r '.NetworkSettings.Networks[].IPAddress')
+      CONTAINER_IP=$(curl --silent http://dockerapi:8080/containers/${CONTAINER_ID}/json | jq -r '[.NetworkSettings.Networks[].IPAddress] | last')
     fi
     LOOP_C=$((LOOP_C + 1))
   done
