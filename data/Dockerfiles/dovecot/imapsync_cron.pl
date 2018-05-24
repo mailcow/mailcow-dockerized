@@ -71,7 +71,7 @@ while ($row = $sth->fetchrow_arrayref()) {
   print $passfile2 trim($master_pass) . "\n";
 
   run [ "/usr/local/bin/imapsync",
-	"--timeout1", "10",
+	"--timeout1", "600",
 	"--tmpdir", "/tmp",
 	"--subscribeall",
 	"--nofoldersizes",
