@@ -60,23 +60,6 @@ function mail_error() {
   log_msg "Sent notification email to ${1}"
 }
 
-
-get_container_ip() {
-  # ${1} is container
-  CONTAINER_ID=
-  CONTAINER_IP=
-  LOOP_C=1
-  until [[ ${CONTAINER_IP} =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]] || [[ ${LOOP_C} -gt 5 ]]; do
-    sleep 1
-    CONTAINER_ID=$(curl --silent http://dockerapi:8080/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], id: .Id}" | jq -rc "select( .name | tostring | contains(\"${1}\")) | .id")
-    if [[ ! -z ${CONTAINER_ID} ]]; then
-      CONTAINER_IP=$(curl --silent http://dockerapi:8080/containers/${CONTAINER_ID}/json | jq -r '.NetworkSettings.Networks[].IPAddress')
-    fi
-    LOOP_C=$((LOOP_C + 1))
-  done
-  [[ ${LOOP_C} -gt 5 ]] && echo 240.0.0.0 || echo ${CONTAINER_IP}
-}
-
 # Check functions
 nginx_checks() {
   err_count=0
@@ -85,7 +68,7 @@ nginx_checks() {
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
-    host_ip=$(get_container_ip nginx-mailcow)
+    host_ip=$(nginx)
     err_c_cur=${err_count}
     /usr/lib/nagios/plugins/check_ping -4 -H ${host_ip} -w 2000,10% -c 4000,100% -p2 1>&2; err_count=$(( ${err_count} + $? ))
     /usr/lib/nagios/plugins/check_http -4 -H ${host_ip} -u / -p 8081 1>&2; err_count=$(( ${err_count} + $? ))
@@ -105,7 +88,7 @@ mysql_checks() {
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
-    host_ip=$(get_container_ip mysql-mailcow)
+    host_ip=$(mysql)
     err_c_cur=${err_count}
     /usr/lib/nagios/plugins/check_mysql -H ${host_ip} -P 3306 -u ${DBUSER} -p ${DBPASS} -d ${DBNAME} 1>&2; err_count=$(( ${err_count} + $? ))
     /usr/lib/nagios/plugins/check_mysql_query -H ${host_ip} -P 3306 -u ${DBUSER} -p ${DBPASS} -d ${DBNAME} -q "SELECT COUNT(*) FROM information_schema.tables" 1>&2; err_count=$(( ${err_count} + $? ))
@@ -125,7 +108,7 @@ sogo_checks() {
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
-    host_ip=$(get_container_ip sogo-mailcow)
+    host_ip=$(sogo)
     err_c_cur=${err_count}
     /usr/lib/nagios/plugins/check_http -4 -H ${host_ip} -u /WebServerResources/css/theme-default.css -p 9192 -R md-default-theme 1>&2; err_count=$(( ${err_count} + $? ))
     /usr/lib/nagios/plugins/check_http -4 -H ${host_ip} -u /SOGo.index/ -p 20000 -R "SOGo\.MainUI" 1>&2; err_count=$(( ${err_count} + $? ))
@@ -145,7 +128,7 @@ postfix_checks() {
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
-	host_ip=$(get_container_ip postfix-mailcow)
+	host_ip=$(postfix)
     err_c_cur=${err_count}
     /usr/lib/nagios/plugins/check_smtp -4 -H ${host_ip} -p 589 -f "watchdog@invalid" -C "RCPT TO:null@localhost" -C DATA -C . -R 250 1>&2; err_count=$(( ${err_count} + $? ))
     /usr/lib/nagios/plugins/check_smtp -4 -H ${host_ip} -p 589 -S 1>&2; err_count=$(( ${err_count} + $? ))
@@ -165,7 +148,7 @@ dovecot_checks() {
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
-    host_ip=$(get_container_ip dovecot-mailcow)
+    host_ip=$(dovecot)
     err_c_cur=${err_count}
     /usr/lib/nagios/plugins/check_smtp -4 -H ${host_ip} -p 24 -f "watchdog@invalid" -C "RCPT TO:<watchdog@invalid>" -L -R "User doesn't exist" 1>&2; err_count=$(( ${err_count} + $? ))
     /usr/lib/nagios/plugins/check_imap -4 -H ${host_ip} -p 993 -S -e "OK " 1>&2; err_count=$(( ${err_count} + $? ))
@@ -188,7 +171,7 @@ phpfpm_checks() {
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
-    host_ip=$(get_container_ip php-fpm-mailcow)
+    host_ip=$(phpfpm)
     err_c_cur=${err_count}
     nc -z ${host_ip} 9001 ; err_count=$(( ${err_count} + ($? * 2)))
     nc -z ${host_ip} 9002 ; err_count=$(( ${err_count} + ($? * 2)))
@@ -209,7 +192,7 @@ rspamd_checks() {
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
-    host_ip=$(get_container_ip rspamd-mailcow)
+    host_ip=$(rspamd)
     err_c_cur=${err_count}
     SCORE=$(/usr/bin/curl -s --data-binary @- --unix-socket /rspamd-sock/rspamd.sock http://rspamd/scan -d '
 To: null@localhost
