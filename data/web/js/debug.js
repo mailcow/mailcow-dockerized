@@ -533,6 +533,7 @@ jQuery(function($){
   draw_api_logs();
   draw_netfilter_logs();
   draw_rspamd_history();
+  rspamd_donut.replot({});
   $(window).resize(function () {
       var timer;
       clearTimeout(timer);
