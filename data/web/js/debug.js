@@ -352,7 +352,7 @@ jQuery(function($){
         var total = 0;
         $(data).map(function(){total += this[1];})
         rspamd_labels = $.makeArray($(data).map(function(){return "<h5>" + this[0] + " (" + this[1] + ") " + Math.round(this[1]/total * 100) + "%</h5>";}));
-        window.rspamd_donut = $.jqplot('rspamd_donut', [data], 
+        window.rspamd_donut = $.jqplot('rspamd_donut', [data],
           {
             seriesDefaults: {
               renderer: jQuery.jqplot.DonutRenderer,
@@ -378,6 +378,7 @@ jQuery(function($){
             }
           }
         );
+        window.rspamd_donut.replot({});
       }
     });
   }
@@ -533,7 +534,6 @@ jQuery(function($){
   draw_api_logs();
   draw_netfilter_logs();
   draw_rspamd_history();
-  rspamd_donut.replot({});
   $(window).resize(function () {
       var timer;
       clearTimeout(timer);
