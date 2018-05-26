@@ -344,7 +344,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.16
+      image: mailcow/watchdog:1.17
       # Debug
       #command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog
@@ -362,6 +362,7 @@ services:
         - USE_WATCHDOG=${USE_WATCHDOG:-n}
         - WATCHDOG_NOTIFY_EMAIL=${WATCHDOG_NOTIFY_EMAIL}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
+        - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       networks:

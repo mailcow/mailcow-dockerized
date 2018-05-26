@@ -63,14 +63,26 @@ function mail_error() {
 
 get_container_ip() {
   # ${1} is container
-  CONTAINER_ID=
+  CONTAINER_ID=()
   CONTAINER_IP=
   LOOP_C=1
   until [[ ${CONTAINER_IP} =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]] || [[ ${LOOP_C} -gt 5 ]]; do
-    sleep 1
-    CONTAINER_ID=$(curl --silent http://dockerapi:8080/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], id: .Id}" | jq -rc "select( .name | tostring | contains(\"${1}\")) | .id")
+    sleep 0.5
+    # get long container id for exact match
+    CONTAINER_ID=($(curl --silent http://dockerapi:8080/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], id: .Id}" | jq -rc "select( .name | tostring == \"${1}\") | .id"))
+    # returned id can have multiple elements (if scaled), shuffle for random test
+    CONTAINER_ID=($(printf "%s\n" "${CONTAINER_ID[@]}" | shuf))
     if [[ ! -z ${CONTAINER_ID} ]]; then
-      CONTAINER_IP=$(curl --silent http://dockerapi:8080/containers/${CONTAINER_ID}/json | jq -r '.NetworkSettings.Networks[].IPAddress')
+      for matched_container in "${CONTAINER_ID[@]}"; do
+        CONTAINER_IP=$(curl --silent http://dockerapi:8080/containers/${matched_container}/json | jq -r '.NetworkSettings.Networks[].IPAddress')
+        # grep will do nothing if one of these vars is empty
+        [[ -z ${CONTAINER_IP} ]] && continue
+        [[ -z ${IPV4_NETWORK} ]] && continue
+        # only return ips that are part of our network
+        if ! grep -q ${IPV4_NETWORK} <(echo ${CONTAINER_IP}); then
+          CONTAINER_IP=
+        fi
+      done
     fi
     LOOP_C=$((LOOP_C + 1))
   done
