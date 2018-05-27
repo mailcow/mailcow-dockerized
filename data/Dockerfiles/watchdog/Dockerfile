@@ -18,6 +18,7 @@ RUN apk add --update \
   redis \
   perl \
   perl-io-socket-ssl \
+  perl-io-socket-inet6 \
   perl-socket \
   perl-socket6 \
   perl-mime-lite \
