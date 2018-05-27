@@ -110,7 +110,6 @@ services:
       depends_on:
         - redis-mailcow
       volumes:
-        - ./.git/logs/HEAD:/git_head
         - ./data/web:/web:rw
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
         - rspamd-sock:/rspamd-sock
