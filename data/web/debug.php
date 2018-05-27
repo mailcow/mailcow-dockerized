@@ -4,7 +4,6 @@ require_once "inc/prerequisites.inc.php";
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admin") {
 require_once "inc/header.inc.php";
 $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
-$git_last = array_pop(file('/git_head'));
 
 ?>
 <div class="container">
@@ -43,21 +42,6 @@ $git_last = array_pop(file('/git_head'));
           $vmail_df = explode(',', json_decode(docker('dovecot-mailcow', 'post', 'exec', $exec_fields), true));
         ?>
         <div role="tabpanel" class="tab-pane active" id="tab-containers">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 class="panel-title">Version information</h3>
-            </div>
-            <div class="panel-body">
-              <div class="row">
-                <div class="col-sm-3">
-                  <p>Git head</p>
-                </div>
-                <div class="col-sm-9">
-                  <a target="_blank" href="https://github.com/mailcow/mailcow-dockerized/commit/<?=explode(' ', $git_last)[1];?>"><?=explode(' ', $git_last)[1];?></a>
-                </div>
-              </div>
-            </div>
-          </div>
           <div class="panel panel-default">
             <div class="panel-heading">
               <h3 class="panel-title">Disk usage</h3>
