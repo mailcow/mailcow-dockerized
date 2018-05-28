@@ -57,3 +57,6 @@ body.modal-open {
   min-height:100px;
   height:100px;
 }
+.nav-tabs>li>a {
+  z-index: 1;
+}
