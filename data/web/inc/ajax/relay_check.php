@@ -24,6 +24,13 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
 
     $mail = new PHPMailer;
     $mail->Timeout = 10;
+    $mail->SMTPOptions = array(
+      'ssl' => array(
+        'verify_peer' => false,
+        'verify_peer_name' => false,
+        'allow_self_signed' => true
+      )
+    );
     $mail->SMTPDebug = 3;
     $mail->Debugoutput = function($str, $level) {
       foreach(preg_split("/((\r?\n)|(\r\n?)|\n)/", $str) as $line){
