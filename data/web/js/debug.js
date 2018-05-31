@@ -346,13 +346,15 @@ jQuery(function($){
         }
       }
     });
+  }
+  function plot_rspamd() {
     $.ajax({
       url: '/api/v1/get/rspamd/actions',
       success: function(data){
         var total = 0;
         $(data).map(function(){total += this[1];})
         rspamd_labels = $.makeArray($(data).map(function(){return "<h5>" + this[0] + " (" + this[1] + ") " + Math.round(this[1]/total * 100) + "%</h5>";}));
-        window.rspamd_donut = $.jqplot('rspamd_donut', [data],
+        rspamd_donut = $.jqplot('rspamd_donut', [data],
           {
             seriesDefaults: {
               renderer: jQuery.jqplot.DonutRenderer,
@@ -378,11 +380,9 @@ jQuery(function($){
             }
           }
         );
-        window.rspamd_donut.replot({});
       }
     });
   }
-
   function process_table_data(data, table) {
     if (table == 'rspamd_history') {
     $.each(data, function (i, item) {
@@ -538,7 +538,15 @@ jQuery(function($){
       var timer;
       clearTimeout(timer);
       timer = setTimeout(function () {
-        rspamd_donut.replot({});
+        if (typeof rspamd_donut !== 'undefined') {
+          rspamd_donut.replot({});
+        }
       }, 500);
+  });
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    var target = $(e.target).attr("href");
+    if ((target == '#tab-rspamd-history')) {
+      plot_rspamd();
+    }
   });
 });
