@@ -234,7 +234,7 @@ jQuery(function($){
         },
         {"name":"spam_aliases","filterable": false,"title":lang.spam_aliases,"breakpoints":"xs sm md"},
         {"name":"in_use","filterable": false,"type":"html","title":lang.in_use,"sortValue": function(value){
-          return $(value).find(".progress-bar").attr('aria-valuenow');
+          return Number($(value).find(".progress-bar").attr('aria-valuenow'));
         },
         },
         {"name":"messages","filterable": false,"title":lang.msg_num,"breakpoints":"xs sm md"},
