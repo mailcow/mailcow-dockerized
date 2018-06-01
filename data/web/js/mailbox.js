@@ -233,7 +233,10 @@ jQuery(function($){
         },
         },
         {"name":"spam_aliases","filterable": false,"title":lang.spam_aliases,"breakpoints":"xs sm md"},
-        {"name":"in_use","filterable": false,"type":"html","title":lang.in_use},
+        {"name":"in_use","filterable": false,"type":"html","title":lang.in_use,"sortValue": function(value){
+          return $(value).find(".progress-bar").attr('aria-valuenow');
+        },
+        },
         {"name":"messages","filterable": false,"title":lang.msg_num,"breakpoints":"xs sm md"},
         {"name":"active","filterable": false,"title":lang.active},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"250px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
