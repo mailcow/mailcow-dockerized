@@ -1,6 +1,12 @@
 #!/bin/bash
 set -e
 
+# Wait for MySQL to warm-up
+while ! mysqladmin ping --host mysql -u${DBUSER} -p${DBPASS} --silent; do
+  echo "Waiting for database to come up..."
+  sleep 2
+done
+
 # Hard-code env vars to imapsync due to cron not passing them to the perl script
 sed -i "/^\$DBUSER/c\\\$DBUSER='${DBUSER}';" /usr/local/bin/imapsync_cron.pl
 sed -i "/^\$DBPASS/c\\\$DBPASS='${DBPASS}';" /usr/local/bin/imapsync_cron.pl
@@ -122,5 +128,9 @@ touch /etc/crontab /etc/cron.*/*
 
 # Clean old PID if any
 [[ -f /usr/local/var/run/dovecot/master.pid ]] && rm /usr/local/var/run/dovecot/master.pid
+
+# Clean stopped imapsync jobs
+IMAPSYNC_TABLE=$(mysql -h mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SHOW TABLES LIKE 'imapsync'" -Bs)
+[[ ! -z ${IMAPSYNC_TABLE} ]] && mysql -h mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "UPDATE imapsync SET is_running='0'"
 
 exec "$@"
