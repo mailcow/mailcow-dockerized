@@ -56,6 +56,7 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
   liburi-perl \
   lzma-dev \
   make \
+  mysql-client \
   procps \
   supervisor \
   cron \
