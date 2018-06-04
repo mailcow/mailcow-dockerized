@@ -101,6 +101,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "relayhost":
             process_add_return(relayhost('add', $attr));
           break;
+          case "rsetting":
+            process_add_return(rsettings('add', $attr));
+          break;
           case "mailbox":
             process_add_return(mailbox('add', 'mailbox', $attr));
           break;
@@ -354,6 +357,33 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
 
               default:
                 $data = relayhost('details', $object);
+                process_get_return($data);
+              break;
+            }
+          break;
+
+          case "rsetting":
+            switch ($object) {
+              case "all":
+                $rsettings = rsettings('get');
+                if (!empty($rsettings)) {
+                  foreach ($rsettings as $rsetting) {
+                    if ($details = rsettings('details', $rsetting['id'])) {
+                      $data[] = $details;
+                    }
+                    else {
+                      continue;
+                    }
+                  }
+                  process_get_return($data);
+                }
+                else {
+                  echo '{}';
+                }
+              break;
+
+              default:
+                $data = rsetting('details', $object);
                 process_get_return($data);
               break;
             }
@@ -922,6 +952,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "relayhost":
             process_delete_return(relayhost('delete', array('id' => $items)));
           break;
+          case "rsetting":
+            process_delete_return(rsettings('delete', array('id' => $items)));
+          break;
           case "syncjob":
             process_delete_return(mailbox('delete', 'syncjob', array('id' => $items)));
           break;
@@ -1016,6 +1049,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           break;
           case "relayhost":
             process_edit_return(relayhost('edit', array_merge(array('id' => $items), $attr)));
+          break;
+          case "rsetting":
+            process_edit_return(rsettings('edit', array_merge(array('id' => $items), $attr)));
           break;
           case "delimiter_action":
             process_edit_return(mailbox('edit', 'delimiter_action', array_merge(array('username' => $items), $attr)));
