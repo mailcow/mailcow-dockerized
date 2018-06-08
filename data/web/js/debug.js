@@ -343,43 +343,41 @@ jQuery(function($){
             var ft_paging = ft.use(FooTable.Paging)
             return ft_paging.totalRows;
           })
-        }
-      }
-    });
-  }
-  function plot_rspamd() {
-    $.ajax({
-      url: '/api/v1/get/rspamd/actions',
-      success: function(data){
-        var total = 0;
-        $(data).map(function(){total += this[1];})
-        rspamd_labels = $.makeArray($(data).map(function(){return "<h5>" + this[0] + " (" + this[1] + ") " + Math.round(this[1]/total * 100) + "%</h5>";}));
-        rspamd_donut = $.jqplot('rspamd_donut', [data],
-          {
-            seriesDefaults: {
-              renderer: jQuery.jqplot.DonutRenderer,
-              rendererOptions: {
-                showDataLabels: true,
-                dataLabels: rspamd_labels,
-                dataLabelThreshold: 1,
-                sliceMargin: 5,
-                totalLabel: true
-              },
-              shadow: false,
-              seriesColors: ['#FF4136', '#75CAEB', '#FF851B', '#FF851B', '#28B62C']
-            },
-            legend: {
-              show:false,
-            },
-            grid: {
-              drawGridLines: true,
-              gridLineColor: '#efefef',
-              background: '#ffffff',
-              borderWidth: 0,
-              shadow: false,
+          $.ajax({
+            url: '/api/v1/get/rspamd/actions',
+            success: function(data){
+              var total = 0;
+              $(data).map(function(){total += this[1];})
+              rspamd_labels = $.makeArray($(data).map(function(){return "<h5>" + this[0] + " (" + this[1] + ") " + Math.round(this[1]/total * 100) + "%</h5>";}));
+              rspamd_donut_plot = $.jqplot('rspamd_donut', [data],
+                {
+                  seriesDefaults: {
+                    renderer: jQuery.jqplot.DonutRenderer,
+                    rendererOptions: {
+                      showDataLabels: true,
+                      dataLabels: rspamd_labels,
+                      dataLabelThreshold: 1,
+                      sliceMargin: 5,
+                      totalLabel: true
+                    },
+                    shadow: false,
+                    seriesColors: ['#FF4136', '#75CAEB', '#FF851B', '#FF851B', '#28B62C']
+                  },
+                  legend: {
+                    show:false,
+                  },
+                  grid: {
+                    drawGridLines: true,
+                    gridLineColor: '#efefef',
+                    background: '#ffffff',
+                    borderWidth: 0,
+                    shadow: false,
+                  }
+                }
+              );
             }
-          }
-        );
+          });
+        }
       }
     });
   }
@@ -538,8 +536,8 @@ jQuery(function($){
       var timer;
       clearTimeout(timer);
       timer = setTimeout(function () {
-        if (typeof rspamd_donut !== 'undefined') {
-          rspamd_donut.replot({});
+        if (typeof rspamd_donut_plot !== 'undefined') {
+          rspamd_donut_plot.replot({});
         }
       }, 500);
   });
