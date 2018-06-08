@@ -131,6 +131,11 @@ IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
 # Use 1 for disabled, 0 for enabled
 SYSCTL_IPV6_DISABLED=0
 
+# Create or override API key for web uI
+# You _must_ define API_ALLOW_FROM, which is a comma separated list of IPs
+#API_KEY=
+#ÀPI_ALLOW_FROM=127.0.0.1,1.2.3.4
+
 EOF
 
 mkdir -p data/assets/ssl

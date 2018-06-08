@@ -1,11 +1,9 @@
 #!/bin/bash
 set -e
 
-if [[ ! -d "/data/dkim/txt" || ! -d "/data/dkim/keys" ]] ; then mkdir -p /data/dkim/{txt,keys} ; chown -R www-data:www-data /data/dkim; fi
-if [[ $(stat -c %U /data/dkim/) != "www-data" ]] ; then chown -R www-data:www-data /data/dkim ; fi
+function array_by_comma { local IFS=","; echo "$*"; }
 
 # Wait for containers
-
 while ! mysqladmin ping --host mysql -u${DBUSER} -p${DBPASS} --silent; do
   sleep 2
 done
@@ -26,11 +24,33 @@ do
   DOMAIN_ARR+=("$line")
 done < <(mysql -h mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT alias_domain FROM alias_domain" -Bs)
 
-
 if [[ ! -z ${DOMAIN_ARR} ]]; then
 for domain in "${DOMAIN_ARR[@]}"; do
   redis-cli -h redis-mailcow HSET DOMAIN_MAP ${domain} 1
 done
+fi
+
+# Set API options if env vars are not empty
+
+if [[ ! -z ${API_ALLOW_FROM} ]] && [[ ! -z ${API_KEY} ]]; then
+  IFS=',' read -r -a API_ALLOW_FROM_ARR <<< "${API_ALLOW_FROM}"
+  declare -a VALIDATED_API_ALLOW_FROM_ARR
+  REGEX_IP6='^([0-9a-fA-F]{0,4}:){1,7}[0-9a-fA-F]{0,4}$'
+  REGEX_IP4='^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'
+
+  for IP in "${API_ALLOW_FROM_ARR[@]}"; do
+    if [[ ${IP} =~ ${REGEX_IP6} ]] || [[ ${IP} =~ ${REGEX_IP4} ]]; then
+      VALIDATED_API_ALLOW_FROM_ARR+=("${IP}")
+    fi
+  done
+  VALIDATED_IPS=$(array_by_comma ${VALIDATED_API_ALLOW_FROM_ARR[*]})
+  if [[ ! -z ${VALIDATED_IPS} ]]; then
+    mysql --host mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
+INSERT INTO api (username, api_key, active, allow_from)
+SELECT username, "${API_KEY}", '1', "${VALIDATED_IPS}" FROM admin WHERE superadmin='1' AND active='1'
+ON DUPLICATE KEY UPDATE active = '1', allow_from = "${VALIDATED_IPS}", api_key = "${API_KEY}";
+EOF
+  fi
 fi
 
 exec "$@"
