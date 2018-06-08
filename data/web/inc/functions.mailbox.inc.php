@@ -2800,7 +2800,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             return false;
           }
           try {
-            $stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `address` != `goto` AND `domain` = :domain");
+            $stmt = $pdo->prepare("SELECT REPLACE(`address`, ',', ' ') AS `address` FROM `alias` WHERE `address` != `goto` AND `domain` = :domain");
             $stmt->execute(array(
               ':domain' => $_data,
             ));
