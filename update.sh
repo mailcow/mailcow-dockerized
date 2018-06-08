@@ -50,6 +50,8 @@ CONFIG_ARRAY=(
   "SYSCTL_IPV6_DISABLED"
   "COMPOSE_PROJECT_NAME"
   "SQL_PORT"
+  "API_KEY"
+  "API_ALLOW_FROM"
 )
 
 sed -i '$a\' mailcow.conf
@@ -106,6 +108,18 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo '# Bind SQL to 127.0.0.1 on port 13306' >> mailcow.conf
       echo "SQL_PORT=127.0.0.1:13306" >> mailcow.conf
+    fi
+  elif [[ ${option} == "API_KEY" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Create or override API key for web UI' >> mailcow.conf
+      echo "#API_KEY=" >> mailcow.conf
+    fi
+  elif [[ ${option} == "API_ALLOW_FROM" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Must be set for API_KEY to be active' >> mailcow.conf
+      echo "#API_ALLOW_FROM=" >> mailcow.conf
     fi
   elif [[ ${option} == "SNAT_TO_SOURCE" ]]; then
     if ! grep -q ${option} mailcow.conf; then
