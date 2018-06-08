@@ -469,7 +469,7 @@ jQuery(function($){
               '<a href="#" id="delete_selected" data-id="single-alias" data-api-url="delete/alias" data-item="' + encodeURIComponent(item.address) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="alias" name="multi_select" value="' + encodeURIComponent(item.address) + '" />';
-            item.goto = escapeHtml(item.goto);
+            item.goto = escapeHtml(item.goto.replace(/,/g, " "));
             if (item.is_catch_all == 1) {
               item.address = '<div class="label label-default">Catch-All</div> ' + escapeHtml(item.address);
             }
