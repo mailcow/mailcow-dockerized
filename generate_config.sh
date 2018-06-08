@@ -134,7 +134,7 @@ SYSCTL_IPV6_DISABLED=0
 # Create or override API key for web uI
 # You _must_ define API_ALLOW_FROM, which is a comma separated list of IPs
 #API_KEY=
-#ÀPI_ALLOW_FROM=127.0.0.1,1.2.3.4
+#API_ALLOW_FROM=127.0.0.1,1.2.3.4
 
 EOF
 
