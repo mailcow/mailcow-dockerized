@@ -104,7 +104,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.15
+      image: mailcow/phpfpm:1.16
       build: ./data/Dockerfiles/phpfpm
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
@@ -133,8 +133,8 @@ services:
         - SUBMISSION_PORT=${SUBMISSION_PORT:-587}
         - SMTPS_PORT=${SMTPS_PORT:-465}
         - SMTP_PORT=${SMTP_PORT:-25}
-        - API_KEY=${API_KEY:-}
-        - API_ALLOW_FROM=${API_ALLOW_FROM:-}
+        - API_KEY=${API_KEY:-invalid}
+        - API_ALLOW_FROM=${API_ALLOW_FROM:-invalid}
       restart: always
       sysctls:
         - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
