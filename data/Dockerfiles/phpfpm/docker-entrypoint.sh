@@ -32,7 +32,10 @@ fi
 
 # Set API options if env vars are not empty
 
-if [[ ! -z ${API_ALLOW_FROM} ]] && [[ ! -z ${API_KEY} ]]; then
+if [[ ${API_ALLOW_FROM} != "invalid" ]] && \
+  [[ ${API_KEY} != "invalid" ]] && \
+  [[ ! -z ${API_KEY} ]] && \
+  [[ ! -z ${API_ALLOW_FROM} ]]; then
   IFS=',' read -r -a API_ALLOW_FROM_ARR <<< "${API_ALLOW_FROM}"
   declare -a VALIDATED_API_ALLOW_FROM_ARR
   REGEX_IP6='^([0-9a-fA-F]{0,4}:){1,7}[0-9a-fA-F]{0,4}$'
