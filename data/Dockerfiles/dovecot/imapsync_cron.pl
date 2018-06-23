@@ -33,7 +33,7 @@ open my $file, '<', "/etc/sogo/sieve.creds";
 my $creds = <$file>; 
 close $file;
 my ($master_user, $master_pass) = split /:/, $creds;
-my $sth = $dbh->prepare("SELECT id, user1, user2, host1, authmech1, password1, exclude, port1, enc1, delete2duplicates, maxage, subfolder2, delete1, delete2, automap, skipcrossduplicates, maxbytespersecond FROM imapsync WHERE active = 1 AND is_running = 0 AND (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(last_run) > mins_interval * 60 OR last_run IS NULL) ORDER BY last_run");
+my $sth = $dbh->prepare("SELECT id, user1, user2, host1, authmech1, password1, exclude, port1, enc1, delete2duplicates, maxage, subfolder2, delete1, delete2, automap, skipcrossduplicates, maxbytespersecond, authuser1 FROM imapsync WHERE active = 1 AND is_running = 0 AND (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(last_run) > mins_interval * 60 OR last_run IS NULL) ORDER BY last_run");
 $sth->execute();
 my $row;
 
@@ -56,6 +56,7 @@ while ($row = $sth->fetchrow_arrayref()) {
   $automap             = @$row[14];
   $skipcrossduplicates = @$row[15];
   $maxbytespersecond   = @$row[16];
+  $authuser1           = @$row[17];
 
   $is_running = $dbh->prepare("UPDATE imapsync SET is_running = 1 WHERE id = ?");
   $is_running->bind_param( 1, ${id} );
@@ -93,6 +94,7 @@ while ($row = $sth->fetchrow_arrayref()) {
 	(!defined($enc1) ? () : ($enc1)),
 	"--host1", $host1,
 	"--user1", $user1,
+	($authuser1 eq "" ? () : ('--authuser1', $authuser1)),
 	"--passfile1", $passfile1->filename,
 	"--port1", $port1,
 	"--host2", "localhost",

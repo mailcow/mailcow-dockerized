@@ -796,6 +796,12 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               </div>
             </div>
             <div class="form-group">
+              <label class="control-label col-sm-2" for="authuser1"><?=$lang['edit']['authuser'];?></label>
+              <div class="col-sm-10">
+              <input type="text" class="form-control" name="authuser1" id="authuser1" value="<?=htmlspecialchars($result['authuser1'], ENT_QUOTES, 'UTF-8');?>">
+              </div>
+            </div>
+            <div class="form-group">
               <label class="control-label col-sm-2" for="password1"><?=$lang['edit']['password'];?></label>
               <div class="col-sm-10">
               <input type="password" class="form-control" name="password1" id="password1" value="<?=htmlspecialchars($result['password1'], ENT_QUOTES, 'UTF-8');?>">

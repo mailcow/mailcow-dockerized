@@ -227,6 +227,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
           $maxbytespersecond    = $_data['maxbytespersecond'];
           $subfolder2           = $_data['subfolder2'];
           $user1                = $_data['user1'];
+          $authuser1            = $_data['authuser1'];
           $mins_interval        = $_data['mins_interval'];
           $enc1                = $_data['enc1'];
           if (empty($subfolder2)) {
@@ -294,8 +295,8 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             return false;
           }
           try {
-            $stmt = $pdo->prepare("INSERT INTO `imapsync` (`user2`, `exclude`, `delete1`, `delete2`, `automap`, `skipcrossduplicates`, `maxbytespersecond`, `maxage`, `subfolder2`, `host1`, `authmech1`, `user1`, `password1`, `mins_interval`, `port1`, `enc1`, `delete2duplicates`, `active`)
-              VALUES (:user2, :exclude, :delete1, :delete2, :automap, :skipcrossduplicates, :maxbytespersecond, :maxage, :subfolder2, :host1, :authmech1, :user1, :password1, :mins_interval, :port1, :enc1, :delete2duplicates, :active)");
+            $stmt = $pdo->prepare("INSERT INTO `imapsync` (`user2`, `exclude`, `delete1`, `delete2`, `automap`, `skipcrossduplicates`, `maxbytespersecond`, `maxage`, `subfolder2`, `host1`, `authmech1`, `user1`, `authuser1`, `password1`, `mins_interval`, `port1`, `enc1`, `delete2duplicates`, `active`)
+              VALUES (:user2, :exclude, :delete1, :delete2, :automap, :skipcrossduplicates, :maxbytespersecond, :maxage, :subfolder2, :host1, :authmech1, :user1, :authuser1, :password1, :mins_interval, :port1, :enc1, :delete2duplicates, :active)");
             $stmt->execute(array(
               ':user2' => $username,
               ':exclude' => $exclude,
@@ -309,6 +310,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               ':host1' => $host1,
               ':authmech1' => 'PLAIN',
               ':user1' => $user1,
+              ':authuser1' => $authuser1,
               ':password1' => $password1,
               ':mins_interval' => $mins_interval,
               ':port1' => $port1,
@@ -1448,6 +1450,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             if (!empty($is_now)) {
               $username = $is_now['user2'];
               $user1 = (!empty($_data['user1'])) ? $_data['user1'] : $is_now['user1'];
+              $authuser1 = (!empty($_data['authuser1'])) ? $_data['authuser1'] : $is_now['authuser1'];
               $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
               $last_run = (isset($_data['last_run'])) ? NULL : $is_now['last_run'];
               $delete2duplicates = (isset($_data['delete2duplicates'])) ? intval($_data['delete2duplicates']) : $is_now['delete2duplicates'];
@@ -1528,6 +1531,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
                 `host1` = :host1,
                 `last_run` = :last_run,
                 `user1` = :user1,
+                `authuser1` = :authuser1,
                 `password1` = :password1,
                 `mins_interval` = :mins_interval,
                 `port1` = :port1,
@@ -1547,6 +1551,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
                 ':subfolder2' => $subfolder2,
                 ':host1' => $host1,
                 ':user1' => $user1,
+                ':authuser1' => $authuser1,
                 ':password1' => $password1,
                 ':last_run' => $last_run,
                 ':mins_interval' => $mins_interval,

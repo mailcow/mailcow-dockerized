@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "06052018_1839";
+    $db_version = "06052023_1612";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -353,6 +353,7 @@ function init_db_schema() {
           "domain2" => "VARCHAR(255) NOT NULL DEFAULT ''",
           "subfolder2" => "VARCHAR(255) NOT NULL DEFAULT ''",
           "user1" => "VARCHAR(255) NOT NULL",
+          "authuser1" => "VARCHAR(255)",
           "password1" => "VARCHAR(255) NOT NULL",
           "exclude" => "VARCHAR(500) NOT NULL DEFAULT ''",
           "maxage" => "SMALLINT NOT NULL DEFAULT '0'",
