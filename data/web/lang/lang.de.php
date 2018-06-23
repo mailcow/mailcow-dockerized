@@ -373,6 +373,9 @@ $lang['tfa']['scan_qr_code'] = "Bitte scannen Sie jetzt den angezeigten QR-Code:
 $lang['tfa']['enter_qr_code'] = "Falls Sie den angezeigten QR-Code nicht scannen können, verwenden Sie bitte nachstehenden Sicherheitsschlüssel";
 $lang['tfa']['confirm_totp_token'] = "Bitte bestätigen Sie die Änderung durch Eingabe eines generierten Tokens";
 
+$lang['admin']['rspamd-com_settings'] = '<a href="https://rspamd.com/doc/configuration/settings.html#settings-structure" target="_blank">Rspamd docs</a>
+  - Ein Name wird automatisch generiert. Beispielinhalte zur Einsicht stehen nachstehend bereit.';
+  
 $lang['admin']['no_new_rows'] = 'Keine weiteren Zeilen vorhanden';
 $lang['admin']['additional_rows'] = ' zusätzliche Zeilen geladen'; // parses to 'n additional rows were added'
 $lang['admin']['private_key'] = 'Private Key';
@@ -404,6 +407,15 @@ $lang['admin']['active'] = 'Aktiv';
 $lang['admin']['inactive'] = 'Inaktiv';
 $lang['admin']['action'] = 'Aktion';
 $lang['admin']['add_domain_admin'] = 'Domain-Administrator hinzufügen';
+$lang['admin']['add_settings_rule'] = 'Rspamd Setting hinzufügen';
+$lang['admin']['rsetting_desc'] = 'Kurze Beschreibung';
+$lang['admin']['rsetting_content'] = 'Regelinhalt';
+$lang['admin']['rsetting_none'] = 'Keine Regel hinterlegt';
+$lang['admin']['rsetting_no_selection'] = 'Bitte eine Regel auswählen';
+$lang['admin']['rsettings_preset_1'] = 'Alles außer DKIM and Ratelimits für authentifizierte Benutzer deaktivieren"';
+$lang['admin']['rsettings_preset_2'] = 'Spam an Postmaster-Addressen nicht blockieren';
+$lang['admin']['rsettings_insert_preset'] = 'Beispiel "%s" laden';
+$lang['admin']['rsetting_add_rule'] = 'Regel hinzufügen';
 $lang['admin']['admin_domains'] = 'Domain-Zuweisungen';
 $lang['admin']['domain_admins'] = 'Domain-Administratoren';
 $lang['admin']['username'] = 'Benutzername';
@@ -440,8 +452,8 @@ $lang['admin']['activate_api'] = "API aktivieren";
 $lang['admin']['regen_api_key'] = "API-Key regenerieren";
 
 $lang['admin']['quarantine'] = "Quarantäne";
-$lang['admin']['quarantine_retention_size'] = "Rückhaltungen pro Mailbox:";
-$lang['admin']['quarantine_max_size'] = "Maximale Größe in MiB (größere Elemente werden verworfen):";
+$lang['admin']['quarantine_retention_size'] = "Rückhaltungen pro Mailbox<br />0 bedeutet <b>inaktiv</b>!";
+$lang['admin']['quarantine_max_size'] = "Maximale Größe in MiB (größere Elemente werden verworfen)<br />0 bedeutet <b>nicht</b> unlimitert!";
 $lang['admin']['quarantine_exclude_domains'] = "Domains und Alias-Domains ausschließen:";
 
 $lang['success']['forwarding_host_removed'] = "Weiterleitungs-Host %s wurde entfernt";

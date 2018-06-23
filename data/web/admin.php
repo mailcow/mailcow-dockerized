@@ -137,6 +137,47 @@ $tfa_data = get_tfa();
           </div>
         </div>
     </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Rspamd UI</h3>
+      </div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-9">
+          <form class="form-horizontal" autocapitalize="none" data-id="admin" autocorrect="off" role="form" method="post">
+            <div class="form-group">
+              <div class="col-sm-offset-3 col-sm-9">
+                <label>
+                  <a href="/rspamd/" target="_blank"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span> Rspamd UI</a>
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-3" for="rspamd_ui_pass"><?=$lang['admin']['password'];?>:</label>
+              <div class="col-sm-9">
+              <input type="password" class="form-control" name="rspamd_ui_pass" id="rspamd_ui_pass" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-3" for="rspamd_ui_pass2"><?=$lang['admin']['password_repeat'];?>:</label>
+              <div class="col-sm-9">
+              <input type="password" class="form-control" name="rspamd_ui_pass2" id="rspamd_ui_pass2" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-3 col-sm-9">
+                <button type="submit" class="btn btn-default" id="rspamd_ui" name="rspamd_ui" href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+              </div>
+            </div>
+          </form>
+          </div>
+          <div class="col-sm-3">
+            <img class="img-responsive" src="/img/rspamd_logo.png" alt="Rspamd UI" />
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div role="tabpanel" class="tab-pane" id="tab-config">
@@ -148,6 +189,7 @@ $tfa_data = get_tfa();
         <a href="#f2bparams" class="list-group-item"><?=$lang['admin']['f2b_parameters'];?></a>
         <a href="#relayhosts" class="list-group-item">Relayhosts</a>
         <a href="#quarantine" class="list-group-item"><?=$lang['admin']['quarantine'];?></a>
+        <a href="#rsettings" class="list-group-item">Rspamd settings map</a>
         <a href="#customize" class="list-group-item"><?=$lang['admin']['customize'];?></a>
         <a href="#top" class="list-group-item" style="border-top:1px dashed #dadada">↸ <?=$lang['admin']['to_top'];?></a>
       </div>
@@ -429,13 +471,13 @@ $tfa_data = get_tfa();
             <div class="col-sm-6">
               <div class="form-group">
                 <label for="retention_size"><?=$lang['admin']['quarantine_retention_size'];?></label>
-                <input type="number" class="form-control" id="retention_size" name="retention_size" value="<?=$q_data['retention_size'];?>" required>
+                <input type="number" class="form-control" id="retention_size" name="retention_size" value="<?=$q_data['retention_size'];?>" placeholder="0" required>
               </div>
             </div>
             <div class="col-sm-6">
               <div class="form-group">
                 <label for="max_size"><?=$lang['admin']['quarantine_max_size'];?></label>
-                <input type="number" class="form-control" id="max_size" name="max_size" value="<?=$q_data['max_size'];?>" required>
+                <input type="number" class="form-control" id="max_size" name="max_size" value="<?=$q_data['max_size'];?>" placeholder="0" required>
               </div>
             </div>
           </div>
@@ -452,6 +494,89 @@ $tfa_data = get_tfa();
             </select>
           </div>
           <button class="btn btn-default" id="edit_selected" data-item="self" data-id="quarantine" data-api-url='edit/quarantine' data-api-attr='{"action":"settings"}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+        </form>
+      </div>
+    </div>
+
+    <span class="anchor" id="rsettings"></span>
+    <div class="panel panel-default">
+      <div class="panel-heading">Rspamd settings map</div>
+      <div class="panel-body">
+      <legend>Active settings map</legend>
+      <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control" rows="20" id="settings_map" name="settings_map" readonly><?=file_get_contents('http://nginx:8081/settings.php');?></textarea>
+      <hr>
+      <?php $rsettings = rsettings('get'); ?>
+        <form class="form" data-id="rsettings" role="form" method="post">
+          <div class="row">
+            <div class="col-sm-3">
+              <div class="list-group">
+                <?php
+                if (empty($rsettings)):
+                ?>
+                  <span class="list-group-item"><em><?=$lang['admin']['rsetting_none'];?></em></span>
+                <?php
+                else:
+                foreach ($rsettings as $rsetting):
+                  $rsetting_details = rsettings('details', $rsetting['id']);
+                ?>
+                  <a href="#<?=$rsetting_details['id'];?>" class="list-group-item list-group-item-<?=($rsetting_details['active_int'] == '1') ? 'success' : ''; ?>" data-dont-remember="1" data-toggle="tab"><?=$rsetting_details['desc'];?> (ID #<?=$rsetting['id'];?>)</a>
+                <?php
+                endforeach;
+                endif;
+                ?>
+                  <a href="#" class="list-group-item list-group-item-default"
+                    data-id="add_domain_admin"
+                    data-toggle="modal"
+                    data-dont-remember="1"
+                    data-target="#addRsettingModal"
+                    data-toggle="tab"><?=$lang['admin']['rsetting_add_rule'];?></a>
+              </div>
+            </div>
+            <div class="col-sm-9">
+              <div class="tab-content">
+                <?php
+                if (empty($rsettings)):
+                ?>
+                <div id="none" class="tab-pane active">
+                  <p class="help-block"><?=$lang['admin']['rsetting_none'];?></p>
+                </div>
+                <?php
+                else:
+                ?>
+                <div id="none" class="tab-pane active">
+                  <p class="help-block"><?=$lang['admin']['rsetting_no_selection'];?></p>
+                </div>
+                <?php
+                foreach ($rsettings as $rsetting):
+                  $rsetting_details = rsettings('details', $rsetting['id']);
+                ?>
+                <div id="<?=$rsetting_details['id'];?>" class="tab-pane">
+                  <form class="form" data-id="rsettings" role="form" method="post">
+                    <input type="hidden" name="active" value="0">
+                    <div class="form-group">
+                      <label for="desc"><?=$lang['admin']['rsetting_desc'];?>:</label>
+                      <input type="text" class="form-control" id="desc" name="desc" value="<?=$rsetting_details['desc'];?>">
+                    </div>
+                    <div class="form-group">
+                      <label for="content"><?=$lang['admin']['rsetting_content'];?>:</label>
+                      <textarea class="form-control" id="content" name="content" rows="10"><?=$rsetting_details['content'];?></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label>
+                        <input type="checkbox" name="active" value="1" <?=($rsetting_details['active_int'] == 1) ? 'checked' : null;?>> <?=$lang['admin']['active'];?>
+                      </label>
+                    </div>
+                    <button class="btn btn-default" id="edit_selected" data-item="<?=$rsetting_details['id'];?>" data-id="rsettings" data-api-url='edit/rsetting' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+                    <button class="btn btn-danger" id="delete_selected" data-item="<?=$rsetting_details['id'];?>" data-id="rsettings" data-api-url="delete/rsetting" data-api-attr='{}' href="#"><?=$lang['admin']['remove'];?></button>
+                  </form>
+                </div>
+                <?php
+                endforeach;
+                endif;
+                ?>
+              </div>
+            </div>
+          </div>
         </form>
       </div>
     </div>

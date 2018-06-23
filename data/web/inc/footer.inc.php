@@ -152,6 +152,9 @@ $(document).ready(function() {
     'use strict';
     if ($('a[data-toggle="tab"]').length) {
       $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        if ($(this).data('dont-remember') == 1) {
+          return true;
+        }
         var id = $(this).parents('[role="tablist"]').attr('id');
         var key = 'lastTag';
         if (id) {

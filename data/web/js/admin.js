@@ -9,6 +9,16 @@ jQuery(function($){
     e.preventDefault();
     $('#import_dkim_arrow').toggleClass("animation"); 
   });
+  $("#rspamd_preset_1").on('click', function(e) {
+    e.preventDefault();
+    $("form[data-id=rsetting]").find("#desc").val(lang.rsettings_preset_1);
+    $("form[data-id=rsetting]").find("#content").val('priority = 10;\nauthenticated = yes;\napply "default" {\n  symbols_enabled = ["DKIM_SIGNED", "DYN_RL_CHECK", "HISTORY_SAVE", "MILTER_HEADERS", "ARC_SIGNED"];\n}');
+  });
+  $("#rspamd_preset_2").on('click', function(e) {
+    e.preventDefault();
+    $("form[data-id=rsetting]").find("#desc").val(lang.rsettings_preset_2);
+    $("form[data-id=rsetting]").find("#content").val('priority = 10;\nrcpt = "/postmaster@.*/";\nwant_spam = yes;');
+  });
   function draw_domain_admins() {
     ft_domainadmins = FooTable.init('#domainadminstable', {
       "columns": [
@@ -182,6 +192,9 @@ jQuery(function($){
 $(window).load(function(){
   initial_width = $("#sidebar-admin").width();
   $("#scrollbox").css("width", initial_width);
+  if (sessionStorage.scrollTop > 70) {
+    $('#scrollbox').addClass('scrollboxFixed');
+  }
   $(window).bind('scroll', function() {
     if ($(window).scrollTop() > 70) {
       $('#scrollbox').addClass('scrollboxFixed');
