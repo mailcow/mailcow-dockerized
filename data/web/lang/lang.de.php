@@ -243,6 +243,7 @@ $lang['info']['no_action'] = 'Keine Aktion anwendbar';
 $lang['edit']['syncjob'] = 'Sync-Job bearbeiten';
 $lang['edit']['save'] = 'Änderungen speichern';
 $lang['edit']['username'] = 'Benutzername';
+$lang['edit']['authuser'] = 'Login Name (kann vom Benutzernamen abweichen)';
 $lang['edit']['hostname'] = 'Servername';
 $lang['edit']['encryption'] = 'Verschlüsselung';
 $lang['edit']['maxage'] = 'Maximales Alter in Tagen einer Nachricht, die kopiert werden soll</br ><small>(0 = alle Nachrichten kopieren)</small>';

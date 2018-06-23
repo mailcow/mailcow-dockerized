@@ -247,6 +247,8 @@ $lang['edit']['scope'] = 'Scope';
 $lang['edit']['grant_types'] = 'Grant types';
 $lang['edit']['redirect_uri'] = 'Redirect/Callback URL';
 $lang['edit']['hostname'] = 'Hostname';
+$lang['edit']['username'] = 'Username';
+$lang['edit']['authuser'] = 'Login Name (possibly differs to the Username)';
 $lang['edit']['encryption'] = 'Encryption';
 $lang['edit']['maxage'] = 'Maximum age of messages in days that will be polled from remote<br><small>(0 = ignore age)</small>';
 $lang['edit']['maxbytespersecond'] = 'Max. bytes per second (0 equals to unlimited)';
