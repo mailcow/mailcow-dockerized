@@ -244,6 +244,7 @@ $lang['edit']['syncjob'] = 'Sync-Job bearbeiten';
 $lang['edit']['save'] = 'Änderungen speichern';
 $lang['edit']['username'] = 'Benutzername';
 $lang['edit']['authuser'] = 'Login Name (kann vom Benutzernamen abweichen)';
+$lang['edit']['authuser_info'] = 'Der Login Name kann verwendet werden um sich anstelle des Benutzernamens zu authentifizieren (z.B. als Administrator).';
 $lang['edit']['hostname'] = 'Servername';
 $lang['edit']['encryption'] = 'Verschlüsselung';
 $lang['edit']['maxage'] = 'Maximales Alter in Tagen einer Nachricht, die kopiert werden soll</br ><small>(0 = alle Nachrichten kopieren)</small>';

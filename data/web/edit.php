@@ -799,6 +799,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               <label class="control-label col-sm-2" for="authuser1"><?=$lang['edit']['authuser'];?></label>
               <div class="col-sm-10">
               <input type="text" class="form-control" name="authuser1" id="authuser1" value="<?=htmlspecialchars($result['authuser1'], ENT_QUOTES, 'UTF-8');?>">
+              <small class="help-block"><?=$lang['edit']['authuser_info'];?></small>
               </div>
             </div>
             <div class="form-group">
