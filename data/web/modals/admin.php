@@ -4,6 +4,49 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 	exit();
 }
 ?>
+<!-- add settings rule modal -->
+<div class="modal fade" id="addRsettingModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <h3 class="modal-title"><?=$lang['admin']['add_settings_rule'];?></h3>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" data-cached-form="true" data-id="rsetting" role="form" method="post">
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="desc"><?=$lang['admin']['rsetting_desc'];?>:</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" name="desc" id="desc" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="content"><?=$lang['admin']['rsetting_content'];?>:</label>
+            <div class="col-sm-10">
+              <textarea class="form-control" id="content" name="content" rows="10"><?=$rsetting_details['content'];?></textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <div class="checkbox">
+              <label><input type="checkbox" value="1" name="active" checked> <?=$lang['admin']['active'];?></label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <button class="btn btn-default" id="add_item" data-id="rsetting" data-api-url='add/rsetting' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> <?=$lang['admin']['add'];?></button>
+            </div>
+          </div>
+        </form>
+        <hr>
+        <p><?=$lang['admin']['rspamd-com_settings'];?></p>
+        <a href="#" class="small" id="rspamd_preset_1"><?=sprintf($lang['admin']['rsettings_insert_preset'], $lang['admin']['rsettings_preset_1']);?></a><br />
+        <a href="#" class="small" id="rspamd_preset_2"><?=sprintf($lang['admin']['rsettings_insert_preset'], $lang['admin']['rsettings_preset_2']);?></a>
+      </div>
+    </div>
+  </div>
+</div><!-- add settings rule modal -->
 <!-- add domain admin modal -->
 <div class="modal fade" id="addDomainAdminModal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-lg">

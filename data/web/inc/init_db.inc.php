@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "06052018_1839";
+    $db_version = "05062018_2039";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -130,10 +130,15 @@ function init_db_schema() {
       ),
       "sender_acl" => array(
         "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
           "logged_in_as" => "VARCHAR(255) NOT NULL",
           "send_as" => "VARCHAR(255) NOT NULL"
         ),
-        "keys" => array(),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          )
+        ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
       "domain" => array(
@@ -303,6 +308,8 @@ function init_db_schema() {
           "object" => "VARCHAR(255) NOT NULL DEFAULT ''",
           "option" => "VARCHAR(50) NOT NULL DEFAULT ''",
           "value" => "VARCHAR(100) NOT NULL DEFAULT ''",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
           "prefid" => "INT(11) NOT NULL AUTO_INCREMENT"
         ),
         "keys" => array(
@@ -311,6 +318,22 @@ function init_db_schema() {
           ),
           "key" => array(
             "object" => array("object")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "settingsmap" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "desc" => "VARCHAR(255) NOT NULL",
+          "content" => "LONGTEXT NOT NULL",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
+          "active" => "TINYINT(1) NOT NULL DEFAULT '0'"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
@@ -330,12 +353,16 @@ function init_db_schema() {
       ),
       "domain_admins" => array(
         "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
           "username" => "VARCHAR(255) NOT NULL",
           "domain" => "VARCHAR(255) NOT NULL",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
         ),
         "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
           "key" => array(
             "username" => array("username")
           )
@@ -454,12 +481,16 @@ function init_db_schema() {
       ),
       "sogo_acl" => array(
         "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
           "c_folder_id" => "INT NOT NULL",
           "c_object" => "VARCHAR(255) NOT NULL",
           "c_uid" => "VARCHAR(255) NOT NULL",
           "c_role" => "VARCHAR(80) NOT NULL"
         ),
         "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
           "key" => array(
             "sogo_acl_c_folder_id_idx" => array("c_folder_id"),
             "sogo_acl_c_uid_idx" => array("c_uid")
@@ -469,6 +500,7 @@ function init_db_schema() {
       ),
       "sogo_alarms_folder" => array(
         "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
           "c_path" => "VARCHAR(255) NOT NULL",
           "c_name" => "VARCHAR(255) NOT NULL",
           "c_uid" => "VARCHAR(255) NOT NULL",
@@ -476,7 +508,11 @@ function init_db_schema() {
           "c_alarm_number" => "INT(11) NOT NULL",
           "c_alarm_date" => "INT(11) NOT NULL"
         ),
-        "keys" => array(),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          )
+        ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
       "sogo_cache_folder" => array(
@@ -669,6 +705,9 @@ function init_db_schema() {
           $stmt = $pdo->query("SHOW COLUMNS FROM `" . $table . "` LIKE '" . $column . "'"); 
           $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
           if ($num_results == 0) {
+            if (strpos($type, 'AUTO_INCREMENT') !== false) {
+              $type = $type . ' PRIMARY KEY ';
+            }
             $pdo->query("ALTER TABLE `" . $table . "` ADD `" . $column . "` " . $type);
           }
           else {

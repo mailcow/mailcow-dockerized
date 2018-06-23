@@ -376,6 +376,9 @@ $lang['tfa']['scan_qr_code'] = "Please scan the following code with your authent
 $lang['tfa']['enter_qr_code'] = "Your TOTP code if your device cannot scan QR codes";
 $lang['tfa']['confirm_totp_token'] = "Please confirm your changes by entering the generated token";
 
+$lang['admin']['rspamd-com_settings'] = '<a href="https://rspamd.com/doc/configuration/settings.html#settings-structure" target="_blank">Rspamd docs</a>
+  - A setting name will be auto-generated, please see the example presets below.';
+
 $lang['admin']['no_new_rows'] = 'No further rows available';
 $lang['admin']['additional_rows'] = ' additional rows were added'; // parses to 'n additional rows were added'
 $lang['admin']['private_key'] = 'Private key';
@@ -410,6 +413,15 @@ $lang['admin']['active'] = 'Active';
 $lang['admin']['inactive'] = 'Inactive';
 $lang['admin']['action'] = 'Action';
 $lang['admin']['add_domain_admin'] = 'Add domain administrator';
+$lang['admin']['add_settings_rule'] = 'Add settings rule';
+$lang['admin']['rsetting_desc'] = 'Short description';
+$lang['admin']['rsetting_content'] = 'Rule content';
+$lang['admin']['rsetting_none'] = 'No rule available';
+$lang['admin']['rsetting_no_selection'] = 'Please select a rule';
+$lang['admin']['rsettings_preset_1'] = 'Disable all but DKIM and ratelimit for authenticated users"';
+$lang['admin']['rsettings_preset_2'] = 'Postmasters want spam';
+$lang['admin']['rsettings_insert_preset'] = 'Insert example preset "%s"';
+$lang['admin']['rsetting_add_rule'] = 'Add rule';
 $lang['admin']['admin_domains'] = 'Domain assignments';
 $lang['admin']['domain_admins'] = 'Domain administrators';
 $lang['admin']['username'] = 'Username';
@@ -461,8 +473,8 @@ $lang['admin']['activate_api'] = "Activate API";
 $lang['admin']['regen_api_key'] = "Regenerate API key";
 
 $lang['admin']['quarantine'] = "Quarantine";
-$lang['admin']['quarantine_retention_size'] = "Retentions per mailbox:";
-$lang['admin']['quarantine_max_size'] = "Maximum size in MiB (larger elements are discarded):";
+$lang['admin']['quarantine_retention_size'] = "Retentions per mailbox<br />0 indicates <b>inactive</b>!";
+$lang['admin']['quarantine_max_size'] = "Maximum size in MiB (larger elements are discarded)<br />0 does <b>not</b> indicate unlimited!";
 $lang['admin']['quarantine_exclude_domains'] = "Exclude domains and alias-domains:";
 
 $lang['admin']['ui_texts'] = "UI labels and texts";
