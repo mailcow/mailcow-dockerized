@@ -80,15 +80,15 @@ function ucl_rcpts($object, $type) {
   }
   elseif ($type == 'domain') {
     // Domain self
-		$rcpt[] = '/.*@' . $object . '/i';
-		$stmt = $pdo->prepare("SELECT `alias_domain` FROM `alias_domain`
-			WHERE `target_domain` = :object");
-		$stmt->execute(array(':object' => $object));
-		$alias_domains = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		array_filter($alias_domains);
-		while ($row = array_shift($alias_domains)) {
+    $rcpt[] = '/.*@' . $object . '/i';
+    $stmt = $pdo->prepare("SELECT `alias_domain` FROM `alias_domain`
+      WHERE `target_domain` = :object");
+    $stmt->execute(array(':object' => $object));
+    $alias_domains = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    array_filter($alias_domains);
+    while ($row = array_shift($alias_domains)) {
       $rcpt[] = '/.*@' . $row['alias_domain'] . '/i';
-		}
+    }
   }
   if (!empty($rcpt)) {
     return $rcpt;
@@ -97,18 +97,18 @@ function ucl_rcpts($object, $type) {
 }
 ?>
 settings {
-	watchdog {
-		priority = 10;
-		rcpt = "/null@localhost/i";
-		from = "/watchdog@localhost/i";
-		apply "default" {
-			actions {
-				reject = 9999.0;
-				greylist = 9998.0;
-				"add header" = 9997.0;
-			}
-		}
-	}
+  watchdog {
+    priority = 10;
+    rcpt = "/null@localhost/i";
+    from = "/watchdog@localhost/i";
+    apply "default" {
+      actions {
+        reject = 9999.0;
+        greylist = 9998.0;
+        "add header" = 9997.0;
+      }
+    }
+  }
 <?php
 
 /*
@@ -119,30 +119,30 @@ $stmt = $pdo->query("SELECT DISTINCT `object` FROM `filterconf` WHERE `option` =
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 while ($row = array_shift($rows)) {
-	$username_sane = preg_replace("/[^a-zA-Z0-9]+/", "", $row['object']);
+  $username_sane = preg_replace("/[^a-zA-Z0-9]+/", "", $row['object']);
 ?>
-	score_<?=$username_sane;?> {
-		priority = 4;
+  score_<?=$username_sane;?> {
+    priority = 4;
 <?php
   foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
-		rcpt = <?=json_encode($rcpt);?>;
+    rcpt = <?=json_encode($rcpt);?>;
 <?php
   }
-	$stmt = $pdo->prepare("SELECT `option`, `value` FROM `filterconf` 
-		WHERE (`option` = 'highspamlevel' OR `option` = 'lowspamlevel')
-			AND `object`= :object");
-	$stmt->execute(array(':object' => $row['object']));
-	$spamscore = $stmt->fetchAll(PDO::FETCH_COLUMN|PDO::FETCH_GROUP);
+  $stmt = $pdo->prepare("SELECT `option`, `value` FROM `filterconf` 
+    WHERE (`option` = 'highspamlevel' OR `option` = 'lowspamlevel')
+      AND `object`= :object");
+  $stmt->execute(array(':object' => $row['object']));
+  $spamscore = $stmt->fetchAll(PDO::FETCH_COLUMN|PDO::FETCH_GROUP);
 ?>
-		apply "default" {
-			actions {
-				reject = <?=$spamscore['highspamlevel'][0];?>;
-				greylist = <?=$spamscore['lowspamlevel'][0] - 1;?>;
-				"add header" = <?=$spamscore['lowspamlevel'][0];?>;
-			}
-		}
-	}
+    apply "default" {
+      actions {
+        reject = <?=$spamscore['highspamlevel'][0];?>;
+        greylist = <?=$spamscore['lowspamlevel'][0] - 1;?>;
+        "add header" = <?=$spamscore['lowspamlevel'][0];?>;
+      }
+    }
+  }
 <?php
 }
 
@@ -153,88 +153,88 @@ while ($row = array_shift($rows)) {
 $stmt = $pdo->query("SELECT DISTINCT `object` FROM `filterconf` WHERE `option` = 'whitelist_from'");
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 while ($row = array_shift($rows)) {
-	$username_sane = preg_replace("/[^a-zA-Z0-9]+/", "", $row['object']);
+  $username_sane = preg_replace("/[^a-zA-Z0-9]+/", "", $row['object']);
 ?>
-	whitelist_<?=$username_sane;?> {
+  whitelist_<?=$username_sane;?> {
 <?php
-	$stmt = $pdo->prepare("SELECT GROUP_CONCAT(REPLACE(CONCAT('^', `value`, '$'), '*', '.*') SEPARATOR '|') AS `value` FROM `filterconf`
-		WHERE `object`= :object
-			AND `option` = 'whitelist_from'");
-	$stmt->execute(array(':object' => $row['object']));
-	$grouped_lists = $stmt->fetchAll(PDO::FETCH_COLUMN);
-	$value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
+  $stmt = $pdo->prepare("SELECT GROUP_CONCAT(REPLACE(CONCAT('^', `value`, '$'), '*', '.*') SEPARATOR '|') AS `value` FROM `filterconf`
+    WHERE `object`= :object
+      AND `option` = 'whitelist_from'");
+  $stmt->execute(array(':object' => $row['object']));
+  $grouped_lists = $stmt->fetchAll(PDO::FETCH_COLUMN);
+  $value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
 ?>
-		from = "/(<?=$value_sane;?>)/i";
+    from = "/(<?=$value_sane;?>)/i";
 <?php
-	if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
+  if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
 ?>
-		priority = 5;
+    priority = 5;
 <?php
-		foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
+    foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
-		rcpt = <?=json_encode($rcpt);?>;
+    rcpt = <?=json_encode($rcpt);?>;
 <?php
-		}
-	}
-	else {
+    }
+  }
+  else {
 ?>
-		priority = 6;
+    priority = 6;
 <?php
-		foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
+    foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
-		rcpt = <?=json_encode($rcpt);?>;
+    rcpt = <?=json_encode($rcpt);?>;
 <?php
-		}
-	}
+    }
+  }
 ?>
-		apply "default" {
-			MAILCOW_WHITE = -999.0;
-		}
-		symbols [
-			"MAILCOW_WHITE"
-		]
-	}
-	whitelist_header_<?=$username_sane;?> {
+    apply "default" {
+      MAILCOW_WHITE = -999.0;
+    }
+    symbols [
+      "MAILCOW_WHITE"
+    ]
+  }
+  whitelist_header_<?=$username_sane;?> {
 <?php
-	$stmt = $pdo->prepare("SELECT GROUP_CONCAT(REPLACE(CONCAT('\<', `value`, '\>'), '*', '.*') SEPARATOR '|') AS `value` FROM `filterconf`
-		WHERE `object`= :object
-			AND `option` = 'whitelist_from'");
-	$stmt->execute(array(':object' => $row['object']));
-	$grouped_lists = $stmt->fetchAll(PDO::FETCH_COLUMN);
-	$value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
+  $stmt = $pdo->prepare("SELECT GROUP_CONCAT(REPLACE(CONCAT('\<', `value`, '\>'), '*', '.*') SEPARATOR '|') AS `value` FROM `filterconf`
+    WHERE `object`= :object
+      AND `option` = 'whitelist_from'");
+  $stmt->execute(array(':object' => $row['object']));
+  $grouped_lists = $stmt->fetchAll(PDO::FETCH_COLUMN);
+  $value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
 ?>
-		header = {
-			"From" = "/(<?=$value_sane;?>)/i";
-		}
+    header = {
+      "From" = "/(<?=$value_sane;?>)/i";
+    }
 <?php
-	if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
+  if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
 ?>
-		priority = 5;
+    priority = 5;
 <?php
-		foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
+    foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
-		rcpt = <?=json_encode($rcpt);?>;
+    rcpt = <?=json_encode($rcpt);?>;
 <?php
-		}
-	}
-	else {
+    }
+  }
+  else {
 ?>
-		priority = 6;
+    priority = 6;
 <?php
-		foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
+    foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
-		rcpt = <?=json_encode($rcpt);?>;
+    rcpt = <?=json_encode($rcpt);?>;
 <?php
-		}
-	}
+    }
+  }
 ?>
-		apply "default" {
-			MAILCOW_WHITE = -999.0;
-		}
-		symbols [
-			"MAILCOW_WHITE"
-		]
-	}
+    apply "default" {
+      MAILCOW_WHITE = -999.0;
+    }
+    symbols [
+      "MAILCOW_WHITE"
+    ]
+  }
 <?php
 }
 
@@ -245,89 +245,104 @@ while ($row = array_shift($rows)) {
 $stmt = $pdo->query("SELECT DISTINCT `object` FROM `filterconf` WHERE `option` = 'blacklist_from'");
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 while ($row = array_shift($rows)) {
-	$username_sane = preg_replace("/[^a-zA-Z0-9]+/", "", $row['object']);
+  $username_sane = preg_replace("/[^a-zA-Z0-9]+/", "", $row['object']);
 ?>
-	blacklist_<?=$username_sane;?> {
+  blacklist_<?=$username_sane;?> {
 <?php
-	$stmt = $pdo->prepare("SELECT GROUP_CONCAT(REPLACE(CONCAT('^', `value`, '$'), '*', '.*') SEPARATOR '|') AS `value` FROM `filterconf`
-		WHERE `object`= :object
-			AND `option` = 'blacklist_from'");
-	$stmt->execute(array(':object' => $row['object']));
-	$grouped_lists = $stmt->fetchAll(PDO::FETCH_COLUMN);
-	$value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
+  $stmt = $pdo->prepare("SELECT GROUP_CONCAT(REPLACE(CONCAT('^', `value`, '$'), '*', '.*') SEPARATOR '|') AS `value` FROM `filterconf`
+    WHERE `object`= :object
+      AND `option` = 'blacklist_from'");
+  $stmt->execute(array(':object' => $row['object']));
+  $grouped_lists = $stmt->fetchAll(PDO::FETCH_COLUMN);
+  $value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
 ?>
-		from = "/(<?=$value_sane;?>)/i";
+    from = "/(<?=$value_sane;?>)/i";
 <?php
-	if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
+  if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
 ?>
-		priority = 5;
+    priority = 5;
 <?php
-		foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
+    foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
-		rcpt = <?=json_encode($rcpt);?>;
+    rcpt = <?=json_encode($rcpt);?>;
 <?php
-		}
-	}
-	else {
+    }
+  }
+  else {
 ?>
-		priority = 6;
+    priority = 6;
 <?php
-		foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
+    foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
-		rcpt = <?=json_encode($rcpt);?>;
+    rcpt = <?=json_encode($rcpt);?>;
 <?php
-		}
-	}
+    }
+  }
 ?>
-		apply "default" {
-			MAILCOW_BLACK = 999.0;
-		}
-		symbols [
-			"MAILCOW_BLACK"
-		]
-	}
-	blacklist_header_<?=$username_sane;?> {
+    apply "default" {
+      MAILCOW_BLACK = 999.0;
+    }
+    symbols [
+      "MAILCOW_BLACK"
+    ]
+  }
+  blacklist_header_<?=$username_sane;?> {
 <?php
-	$stmt = $pdo->prepare("SELECT GROUP_CONCAT(REPLACE(CONCAT('\<', `value`, '\>'), '*', '.*') SEPARATOR '|') AS `value` FROM `filterconf`
-		WHERE `object`= :object
-			AND `option` = 'blacklist_from'");
-	$stmt->execute(array(':object' => $row['object']));
-	$grouped_lists = $stmt->fetchAll(PDO::FETCH_COLUMN);
-	$value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
+  $stmt = $pdo->prepare("SELECT GROUP_CONCAT(REPLACE(CONCAT('\<', `value`, '\>'), '*', '.*') SEPARATOR '|') AS `value` FROM `filterconf`
+    WHERE `object`= :object
+      AND `option` = 'blacklist_from'");
+  $stmt->execute(array(':object' => $row['object']));
+  $grouped_lists = $stmt->fetchAll(PDO::FETCH_COLUMN);
+  $value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
 ?>
-		header = {
-			"From" = "/(<?=$value_sane;?>)/i";
-		}
+    header = {
+      "From" = "/(<?=$value_sane;?>)/i";
+    }
 <?php
-	if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
+  if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
 ?>
-		priority = 5;
+    priority = 5;
 <?php
-		foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
+    foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
-		rcpt = <?=json_encode($rcpt);?>;
+    rcpt = <?=json_encode($rcpt);?>;
 <?php
-		}
-	}
-	else {
+    }
+  }
+  else {
 ?>
-		priority = 6;
+    priority = 6;
 <?php
-		foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
+    foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
-		rcpt = <?=json_encode($rcpt);?>;
+    rcpt = <?=json_encode($rcpt);?>;
 <?php
-		}
-	}
+    }
+  }
 ?>
-		apply "default" {
-			MAILCOW_BLACK = 999.0;
-		}
-		symbols [
-			"MAILCOW_BLACK"
-		]
-	}
+    apply "default" {
+      MAILCOW_BLACK = 999.0;
+    }
+    symbols [
+      "MAILCOW_BLACK"
+    ]
+  }
 <?php
+}
+
+// Start additional content
+
+$stmt = $pdo->query("SELECT `id`, `content` FROM `settingsmap` WHERE `active` = '1'");
+$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+while ($row = array_shift($rows)) {
+  $username_sane = preg_replace("/[^a-zA-Z0-9]+/", "", $row['id']);
+?>
+  additional_settings_<?=intval($row['id']);?> {
+<?php
+    $content = preg_split('/\r\n|\r|\n/', $row['content']);
+    foreach ($content as $line) {
+      echo '    ' . $line . PHP_EOL;
+    }
 }
 ?>
 }
