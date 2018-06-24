@@ -12,7 +12,7 @@ jQuery(function($){
         {"name":"chkbox","title":"","style":{"maxWidth":"40px","width":"40px"},"filterable": false,"sortable": false,"type":"html"},
         {"name":"id","type":"ID","filterable": false,"sorted": true,"direction":"DESC","title":"ID","style":{"width":"50px"}},
         {"name":"qid","type":"text","title":lang.qid,"style":{"width":"125px"}},
-        {"name":"sender","title":lang.sender,"breakpoints":"xs sm"},
+        {"name":"sender","style":{"word-break":"break-all"},"title":lang.sender,"breakpoints":"xs sm"},
         {"name":"rcpt","title":lang.rcpt, "type": "text"},
         {"name":"created","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},"title":lang.received,"style":{"width":"170px"}},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right"},"style":{"width":"220px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
