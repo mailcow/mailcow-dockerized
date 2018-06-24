@@ -60,3 +60,8 @@ body.modal-open {
 .nav-tabs>li>a {
   z-index: 1;
 }
+#settings_map {
+  font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+  font-size:9pt;
+  background:transparent;
+}
