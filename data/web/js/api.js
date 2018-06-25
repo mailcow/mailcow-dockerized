@@ -120,6 +120,7 @@ $(document).ready(function() {
       if (typeof multi_data[id] == "undefined") {
         multi_data[id] = [];
       }
+      multi_data[id].splice($.inArray($(this).data('item'), multi_data[id]), 1);
       multi_data[id].push($(this).data('item'));
     }
     if (typeof multi_data[id] == "undefined") return;
