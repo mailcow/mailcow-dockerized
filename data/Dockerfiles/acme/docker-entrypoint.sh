@@ -28,7 +28,7 @@ log_f "Waiting for Docker API..." no_nl
 until ping dockerapi -c1 > /dev/null; do
   sleep 1
 done
-log_f "Found Docker API" no_date
+log_f "OK" no_date
 
 ACME_BASE=/var/lib/acme
 SSL_EXAMPLE=/var/lib/ssl-example
@@ -135,6 +135,8 @@ log_f "Waiting for database... "
 while ! mysqladmin ping --host mysql -u${DBUSER} -p${DBPASS} --silent; do
   sleep 2
 done
+log_f "Initializing, please wait... "
+
 
 while true; do
   if [[ "${SKIP_IP_CHECK}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
@@ -214,16 +216,25 @@ while true; do
   done
 
   A_MAILCOW_HOSTNAME=$(dig A ${MAILCOW_HOSTNAME} +short | tail -n 1)
-  if [[ ! -z ${A_MAILCOW_HOSTNAME} ]]; then
-    log_f "Found A record for ${MAILCOW_HOSTNAME}: ${A_MAILCOW_HOSTNAME}"
-    if [[ ${IPV4:-ERR} == ${A_MAILCOW_HOSTNAME} ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
-      log_f "Confirmed A record ${MAILCOW_HOSTNAME}"
+  AAAA_MAILCOW_HOSTNAME=$(dig AAAA ${MAILCOW_HOSTNAME} +short | tail -n 1)
+  if [[ ! -z ${AAAA_MAILCOW_HOSTNAME} ]]; then
+    log_f "Found AAAA record for ${MAILCOW_HOSTNAME}: ${AAAA_MAILCOW_HOSTNAME} - skipping A record check"
+    if [[ $(expand ${IPV6:-"0000:0000:0000:0000:0000:0000:0000:0000"}) == $(expand ${AAAA_MAILCOW_HOSTNAME}) ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
+      log_f "Confirmed AAAA record ${MAILCOW_HOSTNAME}"
       VALIDATED_MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
     else
-      log_f "Cannot match your IP ${IPV4} against hostname ${MAILCOW_HOSTNAME} (${A_MAILCOW_HOSTNAME}) "
+      log_f "Cannot match your IP ${IPV6:-NO_IPV6_LINK} against hostname ${MAILCOW_HOSTNAME} ($(expand ${AAAA_MAILCOW_HOSTNAME}))"
+    fi
+  elif [[ ! -z ${A_MAILCOW_HOSTNAME} ]]; then
+    log_f "Found A record for ${MAILCOW_HOSTNAME}: ${A_MAILCOW_HOSTNAME}"
+    if [[ ${IPV4:-ERR} == ${A_MAILCOW_HOSTNAME} ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
+      log_f "Confirmed A record ${A_MAILCOW_HOSTNAME}"
+      VALIDATED_MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
+    else
+      log_f "Cannot match your IP ${IPV4} against hostname ${MAILCOW_HOSTNAME} (${A_MAILCOW_HOSTNAME})"
     fi
   else
-    log_f "No A record for ${MAILCOW_HOSTNAME} found"
+    log_f "No A or AAAA record found for hostname ${MAILCOW_HOSTNAME}"
   fi
 
   for SAN in "${ADDITIONAL_SAN_ARR[@]}"; do
