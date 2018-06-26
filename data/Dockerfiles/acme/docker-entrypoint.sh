@@ -2,6 +2,9 @@
 set -o pipefail
 exec 5>&1
 
+# Thanks to https://github.com/cvmiller -> https://github.com/cvmiller/expand6
+source /srv/expand6.sh
+
 log_f() {
   if [[ ${2} == "no_nl" ]]; then
     echo -n "$(date) - ${1}"
@@ -69,13 +72,29 @@ get_ipv4(){
   IPV4_SRCS[2]="icanhazip.com"
   IPV4_SRCS[3]="v4.ident.me"
   IPV4_SRCS[4]="ipecho.net/plain"
-  IPV4_SRCS[5]="mailcow.email/ip.php"
-  until [[ ! -z ${IPV4} ]] || [[ ${TRY} -ge 100 ]]; do
+  IPV4_SRCS[5]="ip4.mailcow.email"
+  until [[ ! -z ${IPV4} ]] || [[ ${TRY} -ge 10 ]]; do
     IPV4=$(curl --connect-timeout 3 -m 10 -L4s ${IPV4_SRCS[$RANDOM % ${#IPV4_SRCS[@]} ]} | grep -E "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")
     [[ ! -z ${TRY} ]] && sleep 1
     TRY=$((TRY+1))
   done
   echo ${IPV4}
+}
+
+get_ipv6(){
+  local IPV6=
+  local IPV6_SRCS=
+  local TRY=
+  IPV6_SRCS[0]="ifconfig.co"
+  IPV6_SRCS[1]="icanhazip.com"
+  IPV6_SRCS[2]="v6.ident.me"
+  IPV6_SRCS[3]="ip6.mailcow.email"
+  until [[ ! -z ${IPV6} ]] || [[ ${TRY} -ge 10 ]]; do
+    IPV6=$(curl --connect-timeout 3 -m 10 -L6s ${IPV6_SRCS[$RANDOM % ${#IPV6_SRCS[@]} ]} | grep "^\([0-9a-fA-F]\{0,4\}:\)\{1,7\}[0-9a-fA-F]\{0,4\}$")
+    [[ ! -z ${TRY} ]] && sleep 1
+    TRY=$((TRY+1))
+  done
+  echo ${IPV6}
 }
 
 [[ ! -f ${ACME_BASE}/dhparams.pem ]] && cp ${SSL_EXAMPLE}/dhparams.pem ${ACME_BASE}/dhparams.pem
@@ -112,8 +131,8 @@ else
   fi
 fi
 
+log_f "Waiting for database... "
 while ! mysqladmin ping --host mysql -u${DBUSER} -p${DBPASS} --silent; do
-  echo "Waiting for database to come up..."
   sleep 2
 done
 
@@ -128,7 +147,11 @@ while true; do
   declare -a VALIDATED_CONFIG_DOMAINS
   declare -a ADDITIONAL_VALIDATED_SAN
   IFS=',' read -r -a ADDITIONAL_SAN_ARR <<< "${ADDITIONAL_SAN}"
+  log_f "Detecting IP addresses... " no_nl
   IPV4=$(get_ipv4)
+  IPV6=$(get_ipv6)
+  log_f "OK" no_date
+
   # Container ids may have changed
   CONTAINERS_RESTART=($(curl --silent http://dockerapi:8080/containers/json | jq -r '.[] | {name: .Config.Labels["com.docker.compose.service"], id: .Id}' | jq -rc 'select( .name | tostring | contains("nginx-mailcow") or contains("postfix-mailcow") or contains("dovecot-mailcow")) | .id' | tr "\n" " "))
 
@@ -138,7 +161,7 @@ while true; do
     DOMAIN_TABLE=$(mysql -h mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SHOW TABLES LIKE 'domain'" -Bs)
     [[ -z ${DOMAIN_TABLE} ]] && sleep 10
   done
-  log_f "Found domain tables." no_date
+  log_f "OK" no_date
 
   while read domains; do
     SQL_DOMAIN_ARR+=("${domains}")
@@ -146,7 +169,16 @@ while true; do
 
   for SQL_DOMAIN in "${SQL_DOMAIN_ARR[@]}"; do
     A_CONFIG=$(dig A autoconfig.${SQL_DOMAIN} +short | tail -n 1)
-    if [[ ! -z ${A_CONFIG} ]]; then
+    AAAA_CONFIG=$(dig AAAA autoconfig.${SQL_DOMAIN} +short | tail -n 1)
+    if [[ ! -z ${AAAA_CONFIG} ]]; then
+      log_f "Found AAAA record for autoconfig.${SQL_DOMAIN}: ${AAAA_CONFIG} - skipping A record check"
+      if [[ $(expand ${IPV6:-"0000:0000:0000:0000:0000:0000:0000:0000"}) == $(expand ${AAAA_CONFIG}) ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
+        log_f "Confirmed AAAA record autoconfig.${SQL_DOMAIN}"
+        VALIDATED_CONFIG_DOMAINS+=("autoconfig.${SQL_DOMAIN}")
+      else
+        log_f "Cannot match your IP ${IPV6:-NO_IPV6_LINK} against hostname autoconfig.${SQL_DOMAIN} ($(expand ${AAAA_CONFIG}))"
+      fi
+    elif [[ ! -z ${A_CONFIG} ]]; then
       log_f "Found A record for autoconfig.${SQL_DOMAIN}: ${A_CONFIG}"
       if [[ ${IPV4:-ERR} == ${A_CONFIG} ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
         log_f "Confirmed A record autoconfig.${SQL_DOMAIN}"
@@ -155,11 +187,20 @@ while true; do
         log_f "Cannot match your IP ${IPV4} against hostname autoconfig.${SQL_DOMAIN} (${A_CONFIG})"
       fi
     else
-      log_f "No A record for autoconfig.${SQL_DOMAIN} found"
+      log_f "No A or AAAA record found for hostname autoconfig.${SQL_DOMAIN}"
     fi
 
-        A_DISCOVER=$(dig A autodiscover.${SQL_DOMAIN} +short | tail -n 1)
-    if [[ ! -z ${A_DISCOVER} ]]; then
+    A_DISCOVER=$(dig A autodiscover.${SQL_DOMAIN} +short | tail -n 1)
+    AAAA_DISCOVER=$(dig AAAA autodiscover.${SQL_DOMAIN} +short | tail -n 1)
+    if [[ ! -z ${AAAA_DISCOVER} ]]; then
+      log_f "Found AAAA record for autodiscover.${SQL_DOMAIN}: ${AAAA_DISCOVER} - skipping A record check"
+      if [[ $(expand ${IPV6:-"0000:0000:0000:0000:0000:0000:0000:0000"}) == $(expand ${AAAA_DISCOVER}) ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
+        log_f "Confirmed AAAA record autodiscover.${SQL_DOMAIN}"
+        VALIDATED_CONFIG_DOMAINS+=("autodiscover.${SQL_DOMAIN}")
+      else
+        log_f "Cannot match your IP ${IPV6:-NO_IPV6_LINK} against hostname autodiscover.${SQL_DOMAIN} ($(expand ${AAAA_DISCOVER}))"
+      fi
+    elif [[ ! -z ${A_DISCOVER} ]]; then
       log_f "Found A record for autodiscover.${SQL_DOMAIN}: ${A_DISCOVER}"
       if [[ ${IPV4:-ERR} == ${A_DISCOVER} ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
         log_f "Confirmed A record autodiscover.${SQL_DOMAIN}"
@@ -168,7 +209,7 @@ while true; do
         log_f "Cannot match your IP ${IPV4} against hostname autodiscover.${SQL_DOMAIN} (${A_DISCOVER})"
       fi
     else
-      log_f "No A record for autodiscover.${SQL_DOMAIN} found"
+      log_f "No A or AAAA record found for hostname autodiscover.${SQL_DOMAIN}"
     fi
   done
 
