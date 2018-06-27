@@ -1,11 +1,11 @@
 FROM php:7.2-fpm-alpine3.7
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
-ENV APCU_PECL 5.1.10
+ENV APCU_PECL 5.1.11
 ENV IMAGICK_PECL 3.4.3
 ENV MAILPARSE_PECL 3.0.2
 ENV MEMCACHED_PECL 3.0.4
-ENV REDIS_PECL 3.1.6
+ENV REDIS_PECL 4.0.2
 
 RUN apk add -U --no-cache autoconf \
   bash \
@@ -40,6 +40,7 @@ RUN apk add -U --no-cache autoconf \
   redis \
   samba-client \
   zlib-dev \
+  tzdata \
   && pear install channel://pear.php.net/Net_IDNA2-0.2.0 \
     channel://pear.php.net/Auth_SASL-1.1.0 \
     Net_IMAP \
