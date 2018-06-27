@@ -9,7 +9,7 @@ COPY dl_files.sh bootstrap.sh ./
 ENV CLAMAV 0.100.0
 
 RUN apk add --no-cache --virtual build-dependencies alpine-sdk ncurses-dev zlib-dev bzip2-dev pcre-dev linux-headers fts-dev libxml2-dev libressl-dev \
-  && apk add --no-cache curl bash tini libxml2 libbz2 pcre fts libressl \
+  && apk add --no-cache curl bash tini libxml2 libbz2 pcre fts libressl tzdata \
   && wget -O - https://www.clamav.net/downloads/production/clamav-${CLAMAV}.tar.gz | tar xfvz - \
   && cd clamav-${CLAMAV} \
   && LIBS=-lfts ./configure \

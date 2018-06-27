@@ -24,6 +24,7 @@ RUN apk add --update \
   perl-mime-lite \
   perl-term-readkey \
   tini \
+  tzdata \
   && curl https://raw.githubusercontent.com/mludvig/smtp-cli/v3.9/smtp-cli -o /smtp-cli \
   && chmod +x smtp-cli
 
