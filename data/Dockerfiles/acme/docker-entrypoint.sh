@@ -242,16 +242,25 @@ while true; do
       continue
     fi
     A_SAN=$(dig A ${SAN} +short | tail -n 1)
-    if [[ ! -z ${A_SAN} ]]; then
+    AAAA_SAN=$(dig AAAA ${SAN} +short | tail -n 1)
+    if [[ ! -z ${AAAA_SAN} ]]; then
+      log_f "Found AAAA record for ${SAN}: ${AAAA_SAN} - skipping A record check"
+      if [[ $(expand ${IPV6:-"0000:0000:0000:0000:0000:0000:0000:0000"}) == $(expand ${AAAA_SAN}) ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
+        log_f "Confirmed AAAA record ${SAN}"
+        ADDITIONAL_VALIDATED_SAN=${SAN}
+      else
+        log_f "Cannot match your IP ${IPV6:-NO_IPV6_LINK} against hostname ${SAN} ($(expand ${AAAA_SAN}))"
+      fi
+    elif [[ ! -z ${A_SAN} ]]; then
       log_f "Found A record for ${SAN}: ${A_SAN}"
       if [[ ${IPV4:-ERR} == ${A_SAN} ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
-        log_f "Confirmed A record ${SAN}"
-        ADDITIONAL_VALIDATED_SAN+=("${SAN}")
+        log_f "Confirmed A record ${A_SAN}"
+        ADDITIONAL_VALIDATED_SAN=${SAN}
       else
-        log_f "Cannot match your IP against hostname ${SAN}"
+        log_f "Cannot match your IP ${IPV4} against hostname ${SAN} (${A_SAN})"
       fi
     else
-      log_f "No A record for ${SAN} found"
+      log_f "No A or AAAA record found for hostname ${SAN}"
     fi
   done
 
