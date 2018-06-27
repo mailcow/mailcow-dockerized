@@ -59,7 +59,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.11
+      image: mailcow/clamd:1.12
       build: ./data/Dockerfiles/clamd
       restart: always
       tty: true
@@ -104,7 +104,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.16
+      image: mailcow/phpfpm:1.17
       build: ./data/Dockerfiles/phpfpm
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
@@ -274,6 +274,7 @@ services:
         - HTTP_PORT=${HTTP_PORT:-80}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
+        - TZ=${TZ}
       volumes:
         - ./data/web:/web:ro
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
@@ -297,7 +298,7 @@ services:
       depends_on:
         - nginx-mailcow
         - mysql-mailcow
-      image: mailcow/acme:1.31
+      image: mailcow/acme:1.32
       build: ./data/Dockerfiles/acme
       sysctls:
         - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
@@ -312,6 +313,7 @@ services:
         - DBPASS=${DBPASS}
         - SKIP_LETS_ENCRYPT=${SKIP_LETS_ENCRYPT:-n}
         - SKIP_IP_CHECK=${SKIP_IP_CHECK:-n}
+        - TZ=${TZ}
       volumes:
         - ./data/web/.well-known/acme-challenge:/var/www/acme:rw
         - ./data/assets/ssl:/var/lib/acme/:rw
@@ -345,7 +347,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.18
+      image: mailcow/watchdog:1.19
       # Debug
       #command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog
@@ -372,7 +374,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:1.12
+      image: mailcow/dockerapi:1.13
       restart: always
       build: ./data/Dockerfiles/dockerapi
       sysctls:
