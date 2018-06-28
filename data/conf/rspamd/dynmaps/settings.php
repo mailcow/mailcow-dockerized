@@ -47,7 +47,7 @@ function ucl_rcpts($object, $type) {
       if (!empty($local) && !empty($domain)) {
         $rcpt[] = '/' . str_replace('/', '\/', $local) . '[+].*' . str_replace('/', '\/', $domain) . '/i';
       }
-      $rcpt[] = str_replace('/', '\/', $row['address']);
+      $rcpt[] = '/' . str_replace('/', '\/', $row['address']) . '/i';
     }
     // Aliases by alias domains
     $stmt = $pdo->prepare("SELECT CONCAT(`local_part`, '@', `alias_domain`.`alias_domain`) AS `alias` FROM `mailbox` 
@@ -63,9 +63,9 @@ function ucl_rcpts($object, $type) {
         $local = parse_email($row['alias'])['local'];
         $domain = parse_email($row['alias'])['domain'];
         if (!empty($local) && !empty($domain)) {
-          $rcpt[] = '/' . $local . '[+].*' . $domain . '/i';
+          $rcpt[] = '/' . str_replace('/', '\/', $local) . '[+].*' . str_replace('/', '\/', $domain) . '/i';
         }
-      $rcpt[] = $row['alias'];
+      $rcpt[] = '/' . str_replace('/', '\/', $row['alias']) . '/i';
       }
     }
   }

@@ -298,7 +298,7 @@ services:
       depends_on:
         - nginx-mailcow
         - mysql-mailcow
-      image: mailcow/acme:1.32
+      image: mailcow/acme:1.33
       build: ./data/Dockerfiles/acme
       sysctls:
         - net.ipv6.conf.all.disable_ipv6=${SYSCTL_IPV6_DISABLED:-0}
