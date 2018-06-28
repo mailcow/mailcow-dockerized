@@ -35,21 +35,19 @@ function ucl_rcpts($object, $type) {
   if ($type == 'mailbox') {
     // Standard aliases
     $stmt = $pdo->prepare("SELECT `address` FROM `alias`
-      WHERE `goto` LIKE :object_goto
-        AND `address` NOT LIKE '@%'
-        AND `address` != :object_address");
+      WHERE `goto` = :object_goto
+        AND `address` NOT LIKE '@%'");
     $stmt->execute(array(
-      ':object_goto' => '%' . $object . '%',
-      ':object_address' => $object
+      ':object_goto' => $object
     ));
     $standard_aliases = $stmt->fetchAll(PDO::FETCH_ASSOC);
     while ($row = array_shift($standard_aliases)) {
       $local = parse_email($row['address'])['local'];
       $domain = parse_email($row['address'])['domain'];
       if (!empty($local) && !empty($domain)) {
-        $rcpt[] = '/' . $local . '[+].*' . $domain . '/i';
+        $rcpt[] = '/' . str_replace('/', '\/', $local) . '[+].*' . str_replace('/', '\/', $domain) . '/i';
       }
-      $rcpt[] = $row['address'];
+      $rcpt[] = str_replace('/', '\/', $row['address']);
     }
     // Aliases by alias domains
     $stmt = $pdo->prepare("SELECT CONCAT(`local_part`, '@', `alias_domain`.`alias_domain`) AS `alias` FROM `mailbox` 
@@ -70,13 +68,6 @@ function ucl_rcpts($object, $type) {
       $rcpt[] = $row['alias'];
       }
     }
-    // Mailbox self
-    $local = parse_email($row['object'])['local'];
-    $domain = parse_email($row['object'])['domain'];
-    if (!empty($local) && !empty($domain)) {
-      $rcpt[] = '/' . $local . '[+].*' . $domain . '/i';
-    }
-    $rcpt[] = $object;
   }
   elseif ($type == 'domain') {
     // Domain self
@@ -126,7 +117,7 @@ while ($row = array_shift($rows)) {
 <?php
   foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
-    rcpt = <?=json_encode($rcpt);?>;
+    rcpt = <?=json_encode($rcpt, JSON_UNESCAPED_SLASHES);?>;
 <?php
   }
   $stmt = $pdo->prepare("SELECT `option`, `value` FROM `filterconf` 
@@ -172,7 +163,7 @@ while ($row = array_shift($rows)) {
 <?php
     foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
-    rcpt = <?=json_encode($rcpt);?>;
+    rcpt = <?=json_encode($rcpt, JSON_UNESCAPED_SLASHES);?>;
 <?php
     }
   }
@@ -182,7 +173,7 @@ while ($row = array_shift($rows)) {
 <?php
     foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
-    rcpt = <?=json_encode($rcpt);?>;
+    rcpt = <?=json_encode($rcpt, JSON_UNESCAPED_SLASHES);?>;
 <?php
     }
   }
@@ -213,7 +204,7 @@ while ($row = array_shift($rows)) {
 <?php
     foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
-    rcpt = <?=json_encode($rcpt);?>;
+    rcpt = <?=json_encode($rcpt, JSON_UNESCAPED_SLASHES);?>;
 <?php
     }
   }
@@ -223,7 +214,7 @@ while ($row = array_shift($rows)) {
 <?php
     foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
-    rcpt = <?=json_encode($rcpt);?>;
+    rcpt = <?=json_encode($rcpt, JSON_UNESCAPED_SLASHES);?>;
 <?php
     }
   }
@@ -264,7 +255,7 @@ while ($row = array_shift($rows)) {
 <?php
     foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
-    rcpt = <?=json_encode($rcpt);?>;
+    rcpt = <?=json_encode($rcpt, JSON_UNESCAPED_SLASHES);?>;
 <?php
     }
   }
@@ -274,7 +265,7 @@ while ($row = array_shift($rows)) {
 <?php
     foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
-    rcpt = <?=json_encode($rcpt);?>;
+    rcpt = <?=json_encode($rcpt, JSON_UNESCAPED_SLASHES);?>;
 <?php
     }
   }
@@ -305,7 +296,7 @@ while ($row = array_shift($rows)) {
 <?php
     foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
-    rcpt = <?=json_encode($rcpt);?>;
+    rcpt = <?=json_encode($rcpt, JSON_UNESCAPED_SLASHES);?>;
 <?php
     }
   }
@@ -315,7 +306,7 @@ while ($row = array_shift($rows)) {
 <?php
     foreach (ucl_rcpts($row['object'], strpos($row['object'], '@') === FALSE ? 'domain' : 'mailbox') as $rcpt) {
 ?>
-    rcpt = <?=json_encode($rcpt);?>;
+    rcpt = <?=json_encode($rcpt, JSON_UNESCAPED_SLASHES);?>;
 <?php
     }
   }
