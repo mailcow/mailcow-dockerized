@@ -172,6 +172,10 @@ while true; do
   for SQL_DOMAIN in "${SQL_DOMAIN_ARR[@]}"; do
     A_CONFIG=$(dig A autoconfig.${SQL_DOMAIN} +short | tail -n 1)
     AAAA_CONFIG=$(dig AAAA autoconfig.${SQL_DOMAIN} +short | tail -n 1)
+    # Check if CNAME without v6 enabled target
+    if [[ ! -z ${AAAA_CONFIG} ]] && [[ -z $(echo ${AAAA_CONFIG} | grep "^\([0-9a-fA-F]\{0,4\}:\)\{1,7\}[0-9a-fA-F]\{0,4\}$") ]]; then
+      AAAA_CONFIG=
+    fi
     if [[ ! -z ${AAAA_CONFIG} ]]; then
       log_f "Found AAAA record for autoconfig.${SQL_DOMAIN}: ${AAAA_CONFIG} - skipping A record check"
       if [[ $(expand ${IPV6:-"0000:0000:0000:0000:0000:0000:0000:0000"}) == $(expand ${AAAA_CONFIG}) ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
@@ -194,6 +198,10 @@ while true; do
 
     A_DISCOVER=$(dig A autodiscover.${SQL_DOMAIN} +short | tail -n 1)
     AAAA_DISCOVER=$(dig AAAA autodiscover.${SQL_DOMAIN} +short | tail -n 1)
+    # Check if CNAME without v6 enabled target
+    if [[ ! -z ${AAAA_DISCOVER} ]] && [[ -z $(echo ${AAAA_DISCOVER} | grep "^\([0-9a-fA-F]\{0,4\}:\)\{1,7\}[0-9a-fA-F]\{0,4\}$") ]]; then
+      AAAA_DISCOVER=
+    fi
     if [[ ! -z ${AAAA_DISCOVER} ]]; then
       log_f "Found AAAA record for autodiscover.${SQL_DOMAIN}: ${AAAA_DISCOVER} - skipping A record check"
       if [[ $(expand ${IPV6:-"0000:0000:0000:0000:0000:0000:0000:0000"}) == $(expand ${AAAA_DISCOVER}) ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
@@ -217,6 +225,10 @@ while true; do
 
   A_MAILCOW_HOSTNAME=$(dig A ${MAILCOW_HOSTNAME} +short | tail -n 1)
   AAAA_MAILCOW_HOSTNAME=$(dig AAAA ${MAILCOW_HOSTNAME} +short | tail -n 1)
+  # Check if CNAME without v6 enabled target
+  if [[ ! -z ${AAAA_MAILCOW_HOSTNAME} ]] && [[ -z $(echo ${AAAA_MAILCOW_HOSTNAME} | grep "^\([0-9a-fA-F]\{0,4\}:\)\{1,7\}[0-9a-fA-F]\{0,4\}$") ]]; then
+    AAAA_MAILCOW_HOSTNAME=
+  fi
   if [[ ! -z ${AAAA_MAILCOW_HOSTNAME} ]]; then
     log_f "Found AAAA record for ${MAILCOW_HOSTNAME}: ${AAAA_MAILCOW_HOSTNAME} - skipping A record check"
     if [[ $(expand ${IPV6:-"0000:0000:0000:0000:0000:0000:0000:0000"}) == $(expand ${AAAA_MAILCOW_HOSTNAME}) ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
@@ -243,6 +255,10 @@ while true; do
     fi
     A_SAN=$(dig A ${SAN} +short | tail -n 1)
     AAAA_SAN=$(dig AAAA ${SAN} +short | tail -n 1)
+    # Check if CNAME without v6 enabled target
+    if [[ ! -z ${AAAA_SAN} ]] && [[ -z $(echo ${AAAA_SAN} | grep "^\([0-9a-fA-F]\{0,4\}:\)\{1,7\}[0-9a-fA-F]\{0,4\}$") ]]; then
+      AAAA_SAN=
+    fi
     if [[ ! -z ${AAAA_SAN} ]]; then
       log_f "Found AAAA record for ${SAN}: ${AAAA_SAN} - skipping A record check"
       if [[ $(expand ${IPV6:-"0000:0000:0000:0000:0000:0000:0000:0000"}) == $(expand ${AAAA_SAN}) ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
