@@ -127,3 +127,4 @@ smtp_sasl_auth_enable = yes
 smtp_sasl_password_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps.cf
 smtp_sasl_security_options = 
 smtp_sasl_mechanism_filter = plain, login
+smtp_header_checks = pcre:/opt/postfix/conf/header_anonymize_ip.pcre
