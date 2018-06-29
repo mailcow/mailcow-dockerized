@@ -263,7 +263,7 @@ while true; do
       log_f "Found AAAA record for ${SAN}: ${AAAA_SAN} - skipping A record check"
       if [[ $(expand ${IPV6:-"0000:0000:0000:0000:0000:0000:0000:0000"}) == $(expand ${AAAA_SAN}) ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
         log_f "Confirmed AAAA record ${SAN}"
-        ADDITIONAL_VALIDATED_SAN=${SAN}
+        ADDITIONAL_VALIDATED_SAN+=("${SAN}")
       else
         log_f "Cannot match your IP ${IPV6:-NO_IPV6_LINK} against hostname ${SAN} ($(expand ${AAAA_SAN}))"
       fi
@@ -271,7 +271,7 @@ while true; do
       log_f "Found A record for ${SAN}: ${A_SAN}"
       if [[ ${IPV4:-ERR} == ${A_SAN} ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
         log_f "Confirmed A record ${A_SAN}"
-        ADDITIONAL_VALIDATED_SAN=${SAN}
+        ADDITIONAL_VALIDATED_SAN+=("${SAN}")
       else
         log_f "Cannot match your IP ${IPV4} against hostname ${SAN} (${A_SAN})"
       fi
