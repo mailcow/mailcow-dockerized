@@ -148,15 +148,15 @@ def ban(address):
     print '%d more attempts in the next %d seconds until %s is banned' % (MAX_ATTEMPTS - bans[net]['attempts'], RETRY_WINDOW, net)
 
 def unban(net):
-  log['time'] = int(round(time.time()))
+  log['time'] = int(round(time.time())) 
   log['priority'] = 'info'
   r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-  #if not net in bans:
-  #  log['message'] = '%s is not banned, skipping unban and deleting from queue (if any)' % net
-  #  r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-  #  print '%s is not banned, skipping unban and deleting from queue (if any)' % net
-  #  r.hdel('F2B_QUEUE_UNBAN', '%s' % net)
-  #  return
+  if not net in bans:
+   log['message'] = '%s is not banned, skipping unban and deleting from queue (if any)' % net
+   r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
+   print '%s is not banned, skipping unban and deleting from queue (if any)' % net
+   r.hdel('F2B_QUEUE_UNBAN', '%s' % net)
+   return
   log['message'] = 'Unbanning %s' % net
   r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
   print 'Unbanning %s' % net
@@ -243,7 +243,6 @@ def watch():
 def snat(snat_target):
   def get_snat_rule():
     rule = iptc.Rule()
-    rule.position = 1
     rule.src = os.getenv('IPV4_NETWORK', '172.22.1') + '.0/24'
     rule.dst = '!' + rule.src
     target = rule.create_target("SNAT")
@@ -252,6 +251,7 @@ def snat(snat_target):
 
   while True:
     table = iptc.Table('nat')
+    table.refresh()
     table.autocommit = False
     chain = iptc.Chain(table, 'POSTROUTING')
     if get_snat_rule() not in chain.rules:
@@ -262,7 +262,12 @@ def snat(snat_target):
       print log['message']
       chain.insert_rule(get_snat_rule())
       table.commit()
-      table.refresh()
+    else:
+      for i, rule in enumerate(chain.rules):
+        if rule == get_snat_rule():
+          if i != 0:
+            chain.delete_rule(get_snat_rule())
+            table.commit()
     time.sleep(10)
 
 def autopurge():
