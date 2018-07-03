@@ -1119,7 +1119,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             process_edit_return(fwdhost('edit', array_merge(array('fwdhost' => $items), $attr)));
           break;
           case "fail2ban":
-            process_edit_return(fail2ban('edit', $attr));
+            process_edit_return(fail2ban('edit', array_merge(array('network' => $items), $attr)));
           break;
           case "ui_texts":
             process_edit_return(customize('edit', 'ui_texts', $attr));
