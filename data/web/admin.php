@@ -416,8 +416,36 @@ $tfa_data = get_tfa();
             <label for="blacklist"><?=$lang['admin']['f2b_blacklist'];?>:</label>
             <textarea class="form-control" id="blacklist" name="blacklist" rows="5"><?=$f2b_data['blacklist'];?></textarea>
           </div>
-          <button class="btn btn-default" id="add_item" data-id="f2b" data-api-url='edit/fail2ban' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+          <button class="btn btn-default" id="edit_selected" data-item="self" data-id="f2b" data-api-url='edit/fail2ban' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
         </form>
+        <hr>
+        <p class="help-block"><?=$lang['admin']['ban_list_info'];?></p>
+        <?php
+        if (empty($f2b_data['active_bans'])):
+        ?>
+        <i><?=$lang['admin']['no_active_bans'];?></i>
+        <?php
+        endif;
+        foreach ($f2b_data['active_bans'] as $active_bans):
+        ?>
+        <p><span class="label label-info" style="padding:4px;font-size:85%;"><span class="glyphicon glyphicon-filter"></span> <?=$active_bans['network'];?> (<?=$active_bans['banned_until'];?>) - 
+          <?php
+          if ($active_bans['queued_for_unban'] == 0):
+          ?>
+          <a id="edit_selected" data-item="<?=$active_bans['network'];?>" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"unban"}' href="#">[<?=$lang['admin']['queue_unban'];?>]</a>
+          <a id="edit_selected" data-item="<?=$active_bans['network'];?>" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"whitelist"}' href="#">[whitelist]</a>
+          <a id="edit_selected" data-item="<?=$active_bans['network'];?>" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"blacklist"}' href="#">[blacklist]</a>
+          <?php
+          else:
+          ?>
+          <i><?=$lang['admin']['unban_pending'];?></i>
+          <?php
+          endif;
+          ?>
+        </span></p>
+        <?php
+        endforeach;
+        ?>
       </div>
     </div>
 
