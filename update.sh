@@ -28,6 +28,7 @@ while (($#)); do
       MERGE_STRATEGY=ours
     ;;
   esac
+  shift
 done
 
 [[ ! -f mailcow.conf ]] && { echo "mailcow.conf is missing"; exit 1;}
