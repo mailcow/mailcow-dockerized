@@ -8,7 +8,7 @@ while ! mysqladmin ping --host mysql -u${DBUSER} -p${DBPASS} --silent; do
   sleep 2
 done
 
-until [ $(redis-cli -h redis-mailcow PING) == "PONG" ]; do
+until [[ $(redis-cli -h redis-mailcow PING) == "PONG" ]]; do
   sleep 2
 done
 
