@@ -110,7 +110,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "domain":
             process_add_return(mailbox('add', 'domain', $attr));
           break;
-          case "domain":
+          case "resource":
             process_add_return(mailbox('add', 'resource', $attr));
           break;
           case "alias":
