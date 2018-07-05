@@ -348,8 +348,8 @@ $lang['edit']['validate_save'] = 'Valideer en sla op';
 
 $lang['login']['username'] = 'Gebruikersnaam';
 $lang['login']['password'] = 'Wachtwoord';
-$lang['login']['login'] = 'Login';
-$lang['login']['delayed'] = 'Login werd vertraagd met %s seconden.';
+$lang['login']['login'] = 'Aanmelden';
+$lang['login']['delayed'] = 'Aanmelding werd vertraagd met %s seconden.';
 
 $lang['tfa']['tfa'] = "Tweefactorauthenticatie";
 $lang['tfa']['set_tfa'] = "Kies tweefactorauthenticatie-methode";
