@@ -325,7 +325,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.15
+      image: mailcow/netfilter:1.16
       build: ./data/Dockerfiles/netfilter
       stop_grace_period: 30s
       depends_on:
