@@ -24,8 +24,13 @@ RULES[4] = '-login: Aborted login \(tried to use disallowed .+\): user=.+, rip=(
 RULES[5] = 'SOGo.+ Login from \'([0-9a-f\.:]+)\' for user .+ might not have worked'
 RULES[6] = 'mailcow UI: Invalid password for .+ by ([0-9a-f\.:]+)'
 
-def refresh_f2boptions():
+bans = {}
+log = {}
+quit_now = False
+
+def refreshF2boptions():
   global f2boptions
+  global quit_now
   if not r.get('F2B_OPTIONS'):
     f2boptions = {}
     f2boptions['ban_time'] = int
@@ -45,38 +50,44 @@ def refresh_f2boptions():
       f2boptions = json.loads(r.get('F2B_OPTIONS'))
     except ValueError, e:
       print 'Error loading F2B options: F2B_OPTIONS is not json'
-      global quit_now
       quit_now = True
 
 if r.exists('F2B_LOG'):
   r.rename('F2B_LOG', 'NETFILTER_LOG')
 
-bans = {}
-log = {}
-quit_now = False
-
 def checkChainOrder():
-  filter4_table = iptc.Table(iptc.Table.FILTER)
-  filter6_table = iptc.Table6(iptc.Table6.FILTER)
-  for f in [filter4_table, filter6_table]:
-    forward_chain = iptc.Chain(f, 'FORWARD')
-    for position, item in enumerate(forward_chain.rules):
-      if item.target.name == 'MAILCOW':
-        mc_position = position
-      if item.target.name == 'DOCKER':
-        docker_position = position
-    if 'mc_position' in locals() and 'docker_position' in locals():
-      if int(mc_position) > int(docker_position):
-        log['time'] = int(round(time.time()))
-        log['priority'] = 'crit'
-        log['message'] = 'Error in chain order, restarting container'
-        r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-        print 'Error in chain order, restarting container...'
-        global quit_now
-        quit_now = True
+  global quit_now
+  while not quit_now:
+    time.sleep(20)
+    filter4_table = iptc.Table(iptc.Table.FILTER)
+    filter6_table = iptc.Table6(iptc.Table6.FILTER)
+    filter4_table.refresh()
+    filter6_table.refresh()
+    for f in [filter4_table, filter6_table]:
+      forward_chain = iptc.Chain(f, 'FORWARD')
+      input_chain = iptc.Chain(f, 'INPUT')
+      for chain in [forward_chain, input_chain]:
+        target_found = False
+        for position, item in enumerate(chain.rules):
+          if item.target.name == 'MAILCOW':
+            target_found = True
+            if position != 0:
+              log['time'] = int(round(time.time()))
+              log['priority'] = 'crit'
+              log['message'] = 'Error in ' + chain.name + ' chain order, restarting container'
+              r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
+              print log['message']
+              quit_now = True
+        if not target_found:
+          log['time'] = int(round(time.time()))
+          log['priority'] = 'crit'
+          log['message'] = 'Error in ' + chain.name + ' chain: target not found, restarting container'
+          r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
+          print log['message']
+          quit_now = True
 
 def ban(address):
-  refresh_f2boptions()
+  refreshF2boptions()
   BAN_TIME = int(f2boptions['ban_time'])
   MAX_ATTEMPTS = int(f2boptions['max_attempts'])
   RETRY_WINDOW = int(f2boptions['retry_window'])
@@ -214,6 +225,7 @@ def clear():
     filter_table.refresh()
     filter_table.autocommit = True
   r.delete('F2B_ACTIVE_BANS')
+  r.delete('F2B_PERM_BANS')
   pubsub.unsubscribe()
 
 def watch():
@@ -223,7 +235,7 @@ def watch():
   r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
   pubsub.subscribe('F2B_CHANNEL')
   print 'Subscribing to Redis channel F2B_CHANNEL'
-  while True:
+  while not quit_now:
     for item in pubsub.listen():
       for rule_id, rule_regex in RULES.iteritems():
         if item['data'] and item['type'] == 'message':
@@ -248,8 +260,8 @@ def snat(snat_target):
     target = rule.create_target("SNAT")
     target.to_source = snat_target
     return rule
-
-  while True:
+  while not quit_now:
+    time.sleep(5)
     table = iptc.Table('nat')
     table.refresh()
     table.autocommit = False
@@ -263,17 +275,16 @@ def snat(snat_target):
       chain.insert_rule(get_snat_rule())
       table.commit()
     else:
-      for i, rule in enumerate(chain.rules):
-        if rule == get_snat_rule():
-          if i != 0:
+      for position, item in enumerate(chain.rules):
+        if item == get_snat_rule():
+          if position != 0:
             chain.delete_rule(get_snat_rule())
             table.commit()
-    time.sleep(10)
 
 def autopurge():
   while not quit_now:
-    checkChainOrder()
-    refresh_f2boptions()
+    time.sleep(10)
+    refreshF2boptions()
     BAN_TIME = f2boptions['ban_time']
     MAX_ATTEMPTS = f2boptions['max_attempts']
     QUEUE_UNBAN = r.hgetall('F2B_QUEUE_UNBAN')
@@ -284,7 +295,6 @@ def autopurge():
       if bans[net]['attempts'] >= MAX_ATTEMPTS:
         if time.time() - bans[net]['last_attempt'] > BAN_TIME:
           unban(net)
-    time.sleep(10)
 
 def initChain():
   print "Initializing mailcow netfilter chain"
@@ -323,7 +333,13 @@ def initChain():
         target = iptc.Target(rule, "REJECT")
         rule.target = target
         if rule not in chain.rules:
+          log['time'] = int(round(time.time()))
+          log['priority'] = 'crit'
+          log['message'] = 'Blacklisting host/network %s' % bl_key
+          r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
+          print log['message']
           chain.insert_rule(rule)
+          r.hset('F2B_PERM_BANS', '%s' % bl_key, int(round(time.time())))
       else:
         chain = iptc.Chain(iptc.Table6(iptc.Table6.FILTER), 'MAILCOW')
         rule = iptc.Rule6()
@@ -331,7 +347,14 @@ def initChain():
         target = iptc.Target(rule, "REJECT")
         rule.target = target
         if rule not in chain.rules:
+          log['time'] = int(round(time.time()))
+          log['priority'] = 'crit'
+          log['message'] = 'Blacklisting host/network %s' % bl_key
+          r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
+          print log['message']
           chain.insert_rule(rule)
+          r.hset('F2B_PERM_BANS', '%s' % bl_key, int(round(time.time())))
+
 
 if __name__ == '__main__':
 
@@ -358,6 +381,10 @@ if __name__ == '__main__':
   autopurge_thread = Thread(target=autopurge)
   autopurge_thread.daemon = True
   autopurge_thread.start()
+
+  chainwatch_thread = Thread(target=checkChainOrder)
+  chainwatch_thread.daemon = True
+  chainwatch_thread.start()
 
   signal.signal(signal.SIGTERM, quit)
   atexit.register(clear)

@@ -52,6 +52,15 @@ function fail2ban($_action, $_data = null) {
         else {
           $f2b_options['blacklist'] = "";
         }
+        $pb = $redis->hGetAll('F2B_PERM_BANS');
+        if (is_array($pb)) {
+          foreach ($pb as $key => $value) {
+            $f2b_options['perm_bans'][] = $key;
+          }
+        }
+        else {
+          $f2b_options['perm_bans'] = "";
+        }
         $active_bans = $redis->hGetAll('F2B_ACTIVE_BANS');
         $queue_unban = $redis->hGetAll('F2B_QUEUE_UNBAN');
         if (is_array($active_bans)) {
