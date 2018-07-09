@@ -59,26 +59,26 @@ function backup() {
       docker run --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
         -v $(docker volume ls -qf name=${CMPS_PRJ}_vmail-vol-1):/vmail \
-        debian:stretch-slim /bin/tar -cvpzf /backup/backup_vmail.tar.gz /vmail
+        debian:stretch-slim /bin/tar --warning='no-file-ignored' -Pcvpzf /backup/backup_vmail.tar.gz /vmail
       ;;&
     redis|all)
       docker exec $(docker ps -qf name=redis-mailcow) redis-cli save
       docker run --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
         -v $(docker volume ls -qf name=${CMPS_PRJ}_redis-vol-1):/redis \
-        debian:stretch-slim /bin/tar -cvpzf /backup/backup_redis.tar.gz /redis
+        debian:stretch-slim /bin/tar --warning='no-file-ignored' -Pcvpzf /backup/backup_redis.tar.gz /redis
       ;;&
     rspamd|all)
       docker run --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
         -v $(docker volume ls -qf name=${CMPS_PRJ}_rspamd-vol-1):/rspamd \
-        debian:stretch-slim /bin/tar -cvpzf /backup/backup_rspamd.tar.gz /rspamd
+        debian:stretch-slim /bin/tar --warning='no-file-ignored' -Pcvpzf /backup/backup_rspamd.tar.gz /rspamd
       ;;&
     postfix|all)
       docker run --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
         -v $(docker volume ls -qf name=${CMPS_PRJ}_postfix-vol-1):/postfix \
-        debian:stretch-slim /bin/tar -cvpzf /backup/backup_postfix.tar.gz /postfix
+        debian:stretch-slim /bin/tar --warning='no-file-ignored' -Pcvpzf /backup/backup_postfix.tar.gz /postfix
       ;;&
     mysql|all)
       SQLIMAGE=$(grep -iEo '(mysql|mariadb)\:.+' ${COMPOSE_FILE})
@@ -105,7 +105,7 @@ function restore() {
       docker run -it --rm \
         -v ${RESTORE_LOCATION}:/backup \
         -v $(docker volume ls -qf name=${CMPS_PRJ}_vmail-vol-1):/vmail \
-        debian:stretch-slim /bin/tar -xvzf /backup/backup_vmail.tar.gz
+        debian:stretch-slim /bin/tar -Pxvzf /backup/backup_vmail.tar.gz
       docker start $(docker ps -aqf name=dovecot-mailcow)
       echo
       echo "In most cases it is not required to run a full resync, you can run the command printed below at any time after testing wether the restore process broke a mailbox:"
@@ -124,7 +124,7 @@ function restore() {
       docker run -it --rm \
         -v ${RESTORE_LOCATION}:/backup \
         -v $(docker volume ls -qf name=${CMPS_PRJ}_redis-vol-1):/redis \
-        debian:stretch-slim /bin/tar -xvzf /backup/backup_redis.tar.gz
+        debian:stretch-slim /bin/tar -Pxvzf /backup/backup_redis.tar.gz
       docker start $(docker ps -aqf name=redis-mailcow)
       ;;
     rspamd)
@@ -132,7 +132,7 @@ function restore() {
       docker run -it --rm \
         -v ${RESTORE_LOCATION}:/backup \
         -v $(docker volume ls -qf name=${CMPS_PRJ}_rspamd-vol-1):/rspamd \
-        debian:stretch-slim /bin/tar -xvzf /backup/backup_rspamd.tar.gz
+        debian:stretch-slim /bin/tar -Pxvzf /backup/backup_rspamd.tar.gz
       docker start $(docker ps -aqf name=rspamd-mailcow)
       ;;
     postfix)
@@ -140,7 +140,7 @@ function restore() {
       docker run -it --rm \
         -v ${RESTORE_LOCATION}:/backup \
         -v $(docker volume ls -qf name=${CMPS_PRJ}_postfix-vol-1):/postfix \
-        debian:stretch-slim /bin/tar -xvzf /backup/backup_postfix.tar.gz
+        debian:stretch-slim /bin/tar -Pxvzf /backup/backup_postfix.tar.gz
       docker start $(docker ps -aqf name=postfix-mailcow)
       ;;
     mysql)
