@@ -5,6 +5,7 @@
 
 $lang['footer']['loading'] = "Even geduld aub...";
 $lang['header']['restart_sogo'] = 'Herstart SOGo';
+$lang['header']['restart_netfilter'] = 'Herstart netfilter';
 $lang['footer']['restart_container'] = 'Herstart container';
 $lang['footer']['restart_now'] = 'Nu herstarten';
 $lang['footer']['restart_container_info'] = '<b>Belangrijk:</b> Een herstart kan enige tijd in beslag nemen, wacht aub totdat dit proces voltooid is.';
@@ -465,7 +466,7 @@ $lang['admin']['api_allow_from'] = "Sta API-toegang toe vanaf deze IP-adressen";
 $lang['admin']['api_key'] = "API-sleutel";
 $lang['admin']['activate_api'] = "Activeer API";
 $lang['admin']['regen_api_key'] = "Vernieuw API-sleutel";
-$lang['admin']['ban_list_info'] = "Bekijk een lijst met verbannen IP-adressen hieronder: <b>netwerk (resterende tijd) - [actions]</b>.<br />IP-adressen gemarkeerd om te worden toegestaan, zullen worden verwijderd van de verbanningslijst binnen enkele seconden.";
+$lang['admin']['ban_list_info'] = "Bekijk een lijst met verbannen IP-adressen hieronder: <b>netwerk (resterende tijd) - [actions]</b>.<br />IP-adressen gemarkeerd om te worden toegestaan, zullen worden verwijderd van de verbanningslijst binnen enkele seconden.<br />Rode labels geven een permanente verbanning aan.";
 $lang['admin']['unban_pending'] = "bezig met toestaan";
 $lang['admin']['queue_unban'] = "markeer om toe te staan";
 $lang['admin']['no_active_bans'] = "Geen actieve verbanningen";
