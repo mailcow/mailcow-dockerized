@@ -185,7 +185,6 @@ services:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
-        - ADDITIONAL_HASH_SCHEME=${ADDITIONAL_HASH_SCHEME:-SHA512-CRYPT}
         - TZ=${TZ}
       ports:
         - "${DOVEADM_PORT:-127.0.0.1:19991}:12345"
