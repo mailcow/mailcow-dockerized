@@ -91,19 +91,11 @@ user_query = SELECT CONCAT('maildir:/var/vmail/',maildir) AS mail, 5000 AS uid, 
 iterate_query = SELECT username FROM mailbox WHERE active='1';
 EOF
 
-# Create default pass dict for Dovecot
-cat <<EOF > /usr/local/etc/dovecot/sql/dovecot-dict-sql-ssha256-passdb.conf
+# Create pass dict for Dovecot
+cat <<EOF > /usr/local/etc/dovecot/sql/dovecot-dict-sql-passdb.conf
 driver = mysql
 connect = "host=mysql dbname=${DBNAME} user=${DBUSER} password=${DBPASS}"
 default_pass_scheme = SSHA256
-password_query = SELECT password FROM mailbox WHERE username = '%u' AND domain IN (SELECT domain FROM domain WHERE domain='%d' AND active='1') AND JSON_EXTRACT(attributes, '$.force_pw_update') NOT LIKE '%%1%%'
-EOF
-
-# Create additional passdb dict for Dovecot
-cat <<EOF > /usr/local/etc/dovecot/sql/dovecot-dict-sql-additional-passdb.conf
-driver = mysql
-connect = "host=mysql dbname=${DBNAME} user=${DBUSER} password=${DBPASS}"
-default_pass_scheme = ${ADDITIONAL_HASH_SCHEME}
 password_query = SELECT password FROM mailbox WHERE username = '%u' AND domain IN (SELECT domain FROM domain WHERE domain='%d' AND active='1') AND JSON_EXTRACT(attributes, '$.force_pw_update') NOT LIKE '%%1%%'
 EOF
 
