@@ -6,8 +6,9 @@ import time
 import atexit
 import signal
 import ipaddress
-import subprocess
+from random import randint
 from threading import Thread
+from threading import Lock
 import redis
 import time
 import json
@@ -27,6 +28,7 @@ RULES[6] = 'mailcow UI: Invalid password for .+ by ([0-9a-f\.:]+)'
 bans = {}
 log = {}
 quit_now = False
+lock = Lock()
 
 def refreshF2boptions():
   global f2boptions
@@ -55,38 +57,41 @@ def refreshF2boptions():
 if r.exists('F2B_LOG'):
   r.rename('F2B_LOG', 'NETFILTER_LOG')
 
-def checkChainOrder():
+def mailcowChainOrder():
+  global lock
   global quit_now
   while not quit_now:
-    time.sleep(20)
-    filter4_table = iptc.Table(iptc.Table.FILTER)
-    filter6_table = iptc.Table6(iptc.Table6.FILTER)
-    filter4_table.refresh()
-    filter6_table.refresh()
-    for f in [filter4_table, filter6_table]:
-      forward_chain = iptc.Chain(f, 'FORWARD')
-      input_chain = iptc.Chain(f, 'INPUT')
-      for chain in [forward_chain, input_chain]:
-        target_found = False
-        for position, item in enumerate(chain.rules):
-          if item.target.name == 'MAILCOW':
-            target_found = True
-            if position != 0:
-              log['time'] = int(round(time.time()))
-              log['priority'] = 'crit'
-              log['message'] = 'Error in ' + chain.name + ' chain order, restarting container'
-              r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-              print log['message']
-              quit_now = True
-        if not target_found:
-          log['time'] = int(round(time.time()))
-          log['priority'] = 'crit'
-          log['message'] = 'Error in ' + chain.name + ' chain: target not found, restarting container'
-          r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-          print log['message']
-          quit_now = True
+    time.sleep(10)
+    with lock:
+      filter4_table = iptc.Table(iptc.Table.FILTER)
+      filter6_table = iptc.Table6(iptc.Table6.FILTER)
+      filter4_table.refresh()
+      filter6_table.refresh()
+      for f in [filter4_table, filter6_table]:
+        forward_chain = iptc.Chain(f, 'FORWARD')
+        input_chain = iptc.Chain(f, 'INPUT')
+        for chain in [forward_chain, input_chain]:
+          target_found = False
+          for position, item in enumerate(chain.rules):
+            if item.target.name == 'MAILCOW':
+              target_found = True
+              if position != 0:
+                log['time'] = int(round(time.time()))
+                log['priority'] = 'crit'
+                log['message'] = 'Error in ' + chain.name + ' chain order, restarting container'
+                r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
+                print log['message']
+                quit_now = True
+          if not target_found:
+            log['time'] = int(round(time.time()))
+            log['priority'] = 'crit'
+            log['message'] = 'Error in ' + chain.name + ' chain: MAILCOW target not found, restarting container'
+            r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
+            print log['message']
+            quit_now = True
 
 def ban(address):
+  global lock
   refreshF2boptions()
   BAN_TIME = int(f2boptions['ban_time'])
   MAX_ATTEMPTS = int(f2boptions['max_attempts'])
@@ -135,21 +140,23 @@ def ban(address):
     r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
     print 'Banning %s for %d minutes' % (net, BAN_TIME / 60)
     if type(ip) is ipaddress.IPv4Address:
-      chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), 'MAILCOW')
-      rule = iptc.Rule()
-      rule.src = net
-      target = iptc.Target(rule, "REJECT")
-      rule.target = target
-      if rule not in chain.rules:
-        chain.insert_rule(rule)
+      with lock:
+        chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), 'MAILCOW')
+        rule = iptc.Rule()
+        rule.src = net
+        target = iptc.Target(rule, "REJECT")
+        rule.target = target
+        if rule not in chain.rules:
+          chain.insert_rule(rule)
     else:
-      chain = iptc.Chain(iptc.Table6(iptc.Table6.FILTER), 'MAILCOW')
-      rule = iptc.Rule6()
-      rule.src = net
-      target = iptc.Target(rule, "REJECT")
-      rule.target = target
-      if rule not in chain.rules:
-        chain.insert_rule(rule)
+      with lock:
+        chain = iptc.Chain(iptc.Table6(iptc.Table6.FILTER), 'MAILCOW')
+        rule = iptc.Rule6()
+        rule.src = net
+        target = iptc.Target(rule, "REJECT")
+        rule.target = target
+        if rule not in chain.rules:
+          chain.insert_rule(rule)
     r.hset('F2B_ACTIVE_BANS', '%s' % net, log['time'] + BAN_TIME)
   else:
     log['time'] = int(round(time.time()))
@@ -159,6 +166,7 @@ def ban(address):
     print '%d more attempts in the next %d seconds until %s is banned' % (MAX_ATTEMPTS - bans[net]['attempts'], RETRY_WINDOW, net)
 
 def unban(net):
+  global lock
   log['time'] = int(round(time.time())) 
   log['priority'] = 'info'
   r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
@@ -172,21 +180,23 @@ def unban(net):
   r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
   print 'Unbanning %s' % net
   if type(ipaddress.ip_network(net.decode('ascii'))) is ipaddress.IPv4Network:
-    chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), 'MAILCOW')
-    rule = iptc.Rule()
-    rule.src = net
-    target = iptc.Target(rule, "REJECT")
-    rule.target = target
-    if rule in chain.rules:
-      chain.delete_rule(rule)
+    with lock:
+      chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), 'MAILCOW')
+      rule = iptc.Rule()
+      rule.src = net
+      target = iptc.Target(rule, "REJECT")
+      rule.target = target
+      if rule in chain.rules:
+        chain.delete_rule(rule)
   else:
-    chain = iptc.Chain(iptc.Table6(iptc.Table6.FILTER), 'MAILCOW')
-    rule = iptc.Rule6()
-    rule.src = net
-    target = iptc.Target(rule, "REJECT")
-    rule.target = target
-    if rule in chain.rules:
-      chain.delete_rule(rule)
+    with lock:
+      chain = iptc.Chain(iptc.Table6(iptc.Table6.FILTER), 'MAILCOW')
+      rule = iptc.Rule6()
+      rule.src = net
+      target = iptc.Target(rule, "REJECT")
+      rule.target = target
+      if rule in chain.rules:
+        chain.delete_rule(rule)
   r.hdel('F2B_ACTIVE_BANS', '%s' % net)
   r.hdel('F2B_QUEUE_UNBAN', '%s' % net)
   if net in bans:
@@ -197,6 +207,7 @@ def quit(signum, frame):
   quit_now = True
 
 def clear():
+  global lock
   log['time'] = int(round(time.time()))
   log['priority'] = 'info'
   log['message'] = 'Clearing all bans'
@@ -204,29 +215,30 @@ def clear():
   print 'Clearing all bans'
   for net in bans.copy():
     unban(net)
-  filter4_table = iptc.Table(iptc.Table.FILTER)
-  filter6_table = iptc.Table6(iptc.Table6.FILTER)
-  for filter_table in [filter4_table, filter6_table]:
-    filter_table.autocommit = False
-    forward_chain = iptc.Chain(filter_table, "FORWARD")
-    input_chain = iptc.Chain(filter_table, "INPUT")
-    mailcow_chain = iptc.Chain(filter_table, "MAILCOW")
-    if mailcow_chain in filter_table.chains:
-      for rule in mailcow_chain.rules:
-        mailcow_chain.delete_rule(rule)
-      for rule in forward_chain.rules:
-        if rule.target.name == 'MAILCOW':
-          forward_chain.delete_rule(rule)
-      for rule in input_chain.rules:
-        if rule.target.name == 'MAILCOW':
-          input_chain.delete_rule(rule)
-      filter_table.delete_chain("MAILCOW")
-    filter_table.commit()
-    filter_table.refresh()
-    filter_table.autocommit = True
-  r.delete('F2B_ACTIVE_BANS')
-  r.delete('F2B_PERM_BANS')
-  pubsub.unsubscribe()
+  with lock:
+    filter4_table = iptc.Table(iptc.Table.FILTER)
+    filter6_table = iptc.Table6(iptc.Table6.FILTER)
+    for filter_table in [filter4_table, filter6_table]:
+      filter_table.autocommit = False
+      forward_chain = iptc.Chain(filter_table, "FORWARD")
+      input_chain = iptc.Chain(filter_table, "INPUT")
+      mailcow_chain = iptc.Chain(filter_table, "MAILCOW")
+      if mailcow_chain in filter_table.chains:
+        for rule in mailcow_chain.rules:
+          mailcow_chain.delete_rule(rule)
+        for rule in forward_chain.rules:
+          if rule.target.name == 'MAILCOW':
+            forward_chain.delete_rule(rule)
+        for rule in input_chain.rules:
+          if rule.target.name == 'MAILCOW':
+            input_chain.delete_rule(rule)
+        filter_table.delete_chain("MAILCOW")
+      filter_table.commit()
+      filter_table.refresh()
+      filter_table.autocommit = True
+    r.delete('F2B_ACTIVE_BANS')
+    r.delete('F2B_PERM_BANS')
+    pubsub.unsubscribe()
 
 def watch():
   log['time'] = int(round(time.time()))
@@ -235,6 +247,7 @@ def watch():
   r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
   pubsub.subscribe('F2B_CHANNEL')
   print 'Subscribing to Redis channel F2B_CHANNEL'
+
   while not quit_now:
     for item in pubsub.listen():
       for rule_id, rule_regex in RULES.iteritems():
@@ -252,34 +265,81 @@ def watch():
             r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
             ban(addr)
 
-def snat(snat_target):
-  def get_snat_rule():
+def snat4(snat_target):
+  global lock
+  global quit_now
+
+  def get_snat4_rule():
     rule = iptc.Rule()
     rule.src = os.getenv('IPV4_NETWORK', '172.22.1') + '.0/24'
     rule.dst = '!' + rule.src
     target = rule.create_target("SNAT")
     target.to_source = snat_target
     return rule
+
   while not quit_now:
-    time.sleep(5)
-    table = iptc.Table('nat')
-    table.refresh()
-    table.autocommit = False
-    chain = iptc.Chain(table, 'POSTROUTING')
-    if get_snat_rule() not in chain.rules:
-      log['time'] = int(round(time.time()))
-      log['priority'] = 'info'
-      log['message'] = 'Added POSTROUTING rule for source network ' + get_snat_rule().src + ' to SNAT target ' + snat_target
-      r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-      print log['message']
-      chain.insert_rule(get_snat_rule())
-      table.commit()
-    else:
-      for position, item in enumerate(chain.rules):
-        if item == get_snat_rule():
-          if position != 0:
-            chain.delete_rule(get_snat_rule())
-            table.commit()
+    time.sleep(10)
+    with lock:
+      try:
+        table = iptc.Table('nat')
+        table.refresh()
+        chain = iptc.Chain(table, 'POSTROUTING')
+        table.autocommit = False
+        if get_snat4_rule() not in chain.rules:
+          log['time'] = int(round(time.time()))
+          log['priority'] = 'info'
+          log['message'] = 'Added POSTROUTING rule for source network ' + get_snat4_rule().src + ' to SNAT target ' + snat_target
+          r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
+          print log['message']
+          chain.insert_rule(get_snat4_rule())
+          table.commit()
+        else:
+          for position, item in enumerate(chain.rules):
+            if item == get_snat4_rule():
+              if position != 0:
+                chain.delete_rule(get_snat4_rule())
+          table.commit()
+        table.autocommit = True
+      except:
+        print 'Error running SNAT4, retrying...' 
+
+def snat6(snat_target):
+  global lock
+  global quit_now
+
+  def get_snat6_rule():
+    rule = iptc.Rule6()
+    rule.src = os.getenv('IPV6_NETWORK', 'fd4d:6169:6c63:6f77::/64')
+    rule.dst = '!' + rule.src
+    target = rule.create_target("SNAT")
+    target.to_source = snat_target
+    return rule
+
+  while not quit_now:
+    time.sleep(10)
+    with lock:
+      try:
+        table = iptc.Table6('nat')
+        table.refresh()
+        chain = iptc.Chain(table, 'POSTROUTING')
+        table.autocommit = False
+        if get_snat6_rule() not in chain.rules:
+          log['time'] = int(round(time.time()))
+          log['priority'] = 'info'
+          log['message'] = 'Added POSTROUTING rule for source network ' + get_snat6_rule().src + ' to SNAT target ' + snat_target
+          r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
+          print log['message']
+          chain.insert_rule(get_snat6_rule())
+          table.commit()
+        else:
+          for position, item in enumerate(chain.rules):
+            if item == get_snat6_rule():
+              if position != 0:
+                chain.delete_rule(get_snat6_rule())
+          table.commit()
+        table.autocommit = True
+      except:
+        print 'Error running SNAT6, retrying...' 
 
 def autopurge():
   while not quit_now:
@@ -297,6 +357,7 @@ def autopurge():
           unban(net)
 
 def initChain():
+  # Is called before threads start, no locking
   print "Initializing mailcow netfilter chain"
   # IPv4
   if not iptc.Chain(iptc.Table(iptc.Table.FILTER), "MAILCOW") in iptc.Table(iptc.Table.FILTER).chains:
@@ -355,7 +416,6 @@ def initChain():
           chain.insert_rule(rule)
           r.hset('F2B_PERM_BANS', '%s' % bl_key, int(round(time.time())))
 
-
 if __name__ == '__main__':
 
   # In case a previous session was killed without cleanup
@@ -372,19 +432,30 @@ if __name__ == '__main__':
       snat_ip = os.getenv('SNAT_TO_SOURCE').decode('ascii')
       snat_ipo = ipaddress.ip_address(snat_ip)
       if type(snat_ipo) is ipaddress.IPv4Address:
-        snat_thread = Thread(target=snat,args=(snat_ip,))
-        snat_thread.daemon = True
-        snat_thread.start()
+        snat4_thread = Thread(target=snat4,args=(snat_ip,))
+        snat4_thread.daemon = True
+        snat4_thread.start()
     except ValueError:
       print os.getenv('SNAT_TO_SOURCE') + ' is not a valid IPv4 address'
+
+  if os.getenv('SNAT6_TO_SOURCE') and os.getenv('SNAT6_TO_SOURCE') is not 'n':
+    try:
+      snat_ip = os.getenv('SNAT6_TO_SOURCE').decode('ascii')
+      snat_ipo = ipaddress.ip_address(snat_ip)
+      if type(snat_ipo) is ipaddress.IPv6Address:
+        snat6_thread = Thread(target=snat6,args=(snat_ip,))
+        snat6_thread.daemon = True
+        snat6_thread.start()
+    except ValueError:
+      print os.getenv('SNAT6_TO_SOURCE') + ' is not a valid IPv6 address'
 
   autopurge_thread = Thread(target=autopurge)
   autopurge_thread.daemon = True
   autopurge_thread.start()
 
-  chainwatch_thread = Thread(target=checkChainOrder)
-  chainwatch_thread.daemon = True
-  chainwatch_thread.start()
+  mailcowchainwatch_thread = Thread(target=mailcowChainOrder)
+  mailcowchainwatch_thread.daemon = True
+  mailcowchainwatch_thread.start()
 
   signal.signal(signal.SIGTERM, quit)
   atexit.register(clear)

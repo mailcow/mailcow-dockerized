@@ -48,6 +48,7 @@ CONFIG_ARRAY=(
   "IPV6_NETWORK"
   "LOG_LINES"
   "SNAT_TO_SOURCE"
+  "SNAT6_TO_SOURCE"
   "SYSCTL_IPV6_DISABLED"
   "COMPOSE_PROJECT_NAME"
   "SQL_PORT"
@@ -125,8 +126,14 @@ for option in ${CONFIG_ARRAY[@]}; do
   elif [[ ${option} == "SNAT_TO_SOURCE" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
-      echo '# Use this IP for outgoing connections (SNAT)' >> mailcow.conf
+      echo '# Use this IPv4 for outgoing connections (SNAT)' >> mailcow.conf
       echo "#SNAT_TO_SOURCE=" >> mailcow.conf
+    fi
+  elif [[ ${option} == "SNAT6_TO_SOURCE" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Use this IPv6 for outgoing connections (SNAT)' >> mailcow.conf
+      echo "#SNAT6_TO_SOURCE=" >> mailcow.conf
     fi
   elif ! grep -q ${option} mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"
