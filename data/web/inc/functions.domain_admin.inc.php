@@ -318,7 +318,7 @@ function domain_admin($_action, $_data = null) {
             WHERE `username` = :user");
         $stmt->execute(array(':user' => $username));
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!verify_ssha256($row['password'], $password_old)) {
+        if (!verify_hash($row['password'], $password_old)) {
           $_SESSION['return'] = array(
             'type' => 'danger',
             'msg' => sprintf($lang['danger']['access_denied'])

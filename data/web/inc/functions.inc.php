@@ -128,22 +128,32 @@ function generate_tlsa_digest($hostname, $port, $starttls = null) {
     return 'Error: Cannot read peer certificate';
   }
 }
-function verify_ssha256($hash, $password) {
-	// Remove tag if any
+//function verify_hash($hash, $password) {
+function verify_hash($hash, $password) {
+  // Remove tag if any
   $hash = preg_replace('/^{SSHA256}/i', '', $hash);
-	// Decode hash
-	$dhash = base64_decode($hash);
-	// Get first 32 bytes of binary which equals a SHA256 hash
-	$ohash = substr($dhash, 0, 32);
-	// Remove SHA256 hash from decoded hash to get original salt string
-	$osalt = str_replace($ohash, '', $dhash);
-	// Check single salted SHA256 hash against extracted hash
-	if (hash('sha256', $password . $osalt, true) == $ohash) {
-		return true;
-	}
-	else {
-		return false;
-	}
+  // Decode hash
+  $dhash = base64_decode($hash);
+  // Get first 32 bytes of binary which equals a SHA256 hash
+  $ohash = substr($dhash, 0, 32);
+  // Remove SHA256 hash from decoded hash to get original salt string
+  $osalt = str_replace($ohash, '', $dhash);
+  // Check single salted SHA256 hash against extracted hash
+  if (hash_equals(hash('sha256', $password . $osalt, true), $ohash)) {
+    return true;
+  }
+  else {
+    // Remove tag if any
+    $hash = preg_replace('/^{SHA512-CRYPT}/i', '', $hash);
+    // Decode hash
+    preg_match('/\\$6\\$(.*)\\$(.*)/i', $hash, $hash_array);
+    $osalt = $hash_array[1];
+    $ohash = $hash_array[2];
+    if (hash_equals(crypt($password, '$6$' . $osalt . '$'), $hash)) {
+      return true;
+    }
+  }
+  return false;
 }
 function check_login($user, $pass) {
 	global $pdo;
@@ -158,7 +168,7 @@ function check_login($user, $pass) {
 	$stmt->execute(array(':user' => $user));
 	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	foreach ($rows as $row) {
-		if (verify_ssha256($row['password'], $pass)) {
+		if (verify_hash($row['password'], $pass)) {
       if (get_tfa($user)['name'] != "none") {
         $_SESSION['pending_mailcow_cc_username'] = $user;
         $_SESSION['pending_mailcow_cc_role'] = "admin";
@@ -179,7 +189,7 @@ function check_login($user, $pass) {
 	$stmt->execute(array(':user' => $user));
 	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	foreach ($rows as $row) {
-		if (verify_ssha256($row['password'], $pass) !== false) {
+		if (verify_hash($row['password'], $pass) !== false) {
       if (get_tfa($user)['name'] != "none") {
         $_SESSION['pending_mailcow_cc_username'] = $user;
         $_SESSION['pending_mailcow_cc_role'] = "domainadmin";
@@ -202,7 +212,7 @@ function check_login($user, $pass) {
 	$stmt->execute(array(':user' => $user));
 	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	foreach ($rows as $row) {
-		if (verify_ssha256($row['password'], $pass) !== false) {
+		if (verify_hash($row['password'], $pass) !== false) {
 			unset($_SESSION['ldelay']);
 			return "user";
 		}
@@ -388,7 +398,7 @@ function edit_user_account($postarray) {
         AND `username` = :user");
 	$stmt->execute(array(':user' => $username));
 	$row = $stmt->fetch(PDO::FETCH_ASSOC);
-  if (!verify_ssha256($row['password'], $password_old)) {
+  if (!verify_hash($row['password'], $password_old)) {
     $_SESSION['return'] = array(
       'type' => 'danger',
       'msg' => sprintf($lang['danger']['access_denied'])
@@ -538,7 +548,7 @@ function set_tfa($postarray) {
       WHERE `username` = :user");
   $stmt->execute(array(':user' => $username));
   $row = $stmt->fetch(PDO::FETCH_ASSOC);
-  if (!verify_ssha256($row['password'], $postarray["confirm_password"])) {
+  if (!verify_hash($row['password'], $postarray["confirm_password"])) {
     $_SESSION['return'] = array(
       'type' => 'danger',
       'msg' => sprintf($lang['danger']['access_denied'])
