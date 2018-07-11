@@ -130,9 +130,7 @@ function generate_tlsa_digest($hostname, $port, $starttls = null) {
 }
 function verify_ssha256($hash, $password) {
 	// Remove tag if any
-  if (substr($hash, 0, strlen('{SSHA256}')) == '{SSHA256}') {
-    $hash = substr($hash, strlen('{SSHA256}'));
-  }
+  $hash = preg_replace('/^{SSHA256}/i', '', $hash);
 	// Decode hash
 	$dhash = base64_decode($hash);
 	// Get first 32 bytes of binary which equals a SHA256 hash
