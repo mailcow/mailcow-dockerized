@@ -1,4 +1,4 @@
-FROM alpine:3.6
+FROM alpine:3.8
 
 LABEL maintainer "André Peters <andre.peters@servercow.de>"
 
@@ -6,7 +6,7 @@ LABEL maintainer "André Peters <andre.peters@servercow.de>"
 COPY dl_files.sh bootstrap.sh ./
 
 # Installation
-ENV CLAMAV 0.100.0
+ENV CLAMAV 0.100.1
 
 RUN apk add --no-cache --virtual build-dependencies alpine-sdk ncurses-dev zlib-dev bzip2-dev pcre-dev linux-headers fts-dev libxml2-dev libressl-dev \
   && apk add --no-cache curl bash tini libxml2 libbz2 pcre fts libressl tzdata \
