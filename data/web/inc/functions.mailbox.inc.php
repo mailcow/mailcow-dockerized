@@ -1,15 +1,4 @@
 <?php
-function update_sogo_static_view() {
-  global $pdo;
-  global $lang;
-  $stmt = $pdo->query("SELECT 'OK' FROM INFORMATION_SCHEMA.TABLES
-    WHERE TABLE_NAME = 'sogo_view'");
-  $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-  if ($num_results != 0) {
-    $stmt = $pdo->query("REPLACE INTO _sogo_static_view SELECT * from sogo_view");
-    $stmt = $pdo->query("DELETE FROM _sogo_static_view WHERE `c_uid` NOT IN (SELECT `username` FROM `mailbox` WHERE `active` = '1');");
-  }
-}
 function mailbox($_action, $_type, $_data = null, $attr = null) {
   global $pdo;
   global $redis;

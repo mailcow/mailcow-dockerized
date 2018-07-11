@@ -130,19 +130,21 @@ function generate_tlsa_digest($hostname, $port, $starttls = null) {
 }
 //function verify_hash($hash, $password) {
 function verify_hash($hash, $password) {
-  // Remove tag if any
-  $hash = preg_replace('/^{SSHA256}/i', '', $hash);
-  // Decode hash
-  $dhash = base64_decode($hash);
-  // Get first 32 bytes of binary which equals a SHA256 hash
-  $ohash = substr($dhash, 0, 32);
-  // Remove SHA256 hash from decoded hash to get original salt string
-  $osalt = str_replace($ohash, '', $dhash);
-  // Check single salted SHA256 hash against extracted hash
-  if (hash_equals(hash('sha256', $password . $osalt, true), $ohash)) {
-    return true;
+  if (preg_match('/^{SSHA256}/i', $hash)) {
+    // Remove tag if any
+    $hash = preg_replace('/^{SSHA256}/i', '', $hash);
+    // Decode hash
+    $dhash = base64_decode($hash);
+    // Get first 32 bytes of binary which equals a SHA256 hash
+    $ohash = substr($dhash, 0, 32);
+    // Remove SHA256 hash from decoded hash to get original salt string
+    $osalt = str_replace($ohash, '', $dhash);
+    // Check single salted SHA256 hash against extracted hash
+    if (hash_equals(hash('sha256', $password . $osalt, true), $ohash)) {
+      return true;
+    }
   }
-  else {
+  elseif (preg_match('/^{SHA512-CRYPT}/i', $hash)) {
     // Remove tag if any
     $hash = preg_replace('/^{SHA512-CRYPT}/i', '', $hash);
     // Decode hash
@@ -150,6 +152,19 @@ function verify_hash($hash, $password) {
     $osalt = $hash_array[1];
     $ohash = $hash_array[2];
     if (hash_equals(crypt($password, '$6$' . $osalt . '$'), $hash)) {
+      return true;
+    }
+  }
+  elseif (preg_match('/^{SSHA512}/i', $hash)) {
+    $hash = preg_replace('/^{SSHA512}/i', '', $hash);
+    // Decode hash
+    $dhash = base64_decode($hash);
+    // Get first 64 bytes of binary which equals a SHA512 hash
+    $ohash = substr($dhash, 0, 64);
+    // Remove SHA512 hash from decoded hash to get original salt string
+    $osalt = str_replace($ohash, '', $dhash);
+    // Check single salted SHA512 hash against extracted hash
+    if (hash_equals(hash('sha512', $password . $osalt, true), $ohash)) {
       return true;
     }
   }
@@ -376,6 +391,17 @@ function edit_admin_account($postarray) {
 		'msg' => sprintf($lang['success']['admin_modified'])
 	);
 }
+function update_sogo_static_view() {
+  global $pdo;
+  global $lang;
+  $stmt = $pdo->query("SELECT 'OK' FROM INFORMATION_SCHEMA.TABLES
+    WHERE TABLE_NAME = 'sogo_view'");
+  $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+  if ($num_results != 0) {
+    $stmt = $pdo->query("REPLACE INTO _sogo_static_view SELECT * from sogo_view");
+    $stmt = $pdo->query("DELETE FROM _sogo_static_view WHERE `c_uid` NOT IN (SELECT `username` FROM `mailbox` WHERE `active` = '1');");
+  }
+}
 function edit_user_account($postarray) {
 	global $lang;
 	global $pdo;
@@ -438,6 +464,7 @@ function edit_user_account($postarray) {
 			}
 		}
 	}
+  update_sogo_static_view();
 	$_SESSION['return'] = array(
 		'type' => 'success',
 		'msg' => sprintf($lang['success']['mailbox_modified'], htmlspecialchars($username))
