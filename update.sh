@@ -32,6 +32,13 @@ while (($#)); do
 done
 
 [[ ! -f mailcow.conf ]] && { echo "mailcow.conf is missing"; exit 1;}
+source mailcow.conf
+DOTS=${MAILCOW_HOSTNAME//[^.]};
+if [ ${#DOTS} -lt 2 ]; then
+  echo "MAILCOW_HOSTNAME (${MAILCOW_HOSTNAME}) is not a FQDN!"
+  echo "Please change it to a FQDN and run docker-compose down followed by docker-compose up -d"
+  exit 1
+fi
 
 if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusybBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\""; exit 1; fi
 if cp --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusybBox cp detected, please install coreutils, \"apk add --no-cache --upgrade coreutils\""; exit 1; fi
