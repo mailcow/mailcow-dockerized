@@ -41,7 +41,7 @@ while [[ ${STATIC_VIEW_OK} != 'OK' ]]; do
     STATIC_VIEW_OK=OK
     echo "Updating _sogo_static_view content..."
     mysql --host mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "REPLACE INTO _sogo_static_view SELECT * from sogo_view"
-    mysql --host mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "DELETE FROM _sogo_static_view WHERE c_uid NOT IN (SELECT username FROM mailbox WHERE active = '1'"
+    mysql --host mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "DELETE FROM _sogo_static_view WHERE c_uid NOT IN (SELECT username FROM mailbox WHERE active = '1')"
   else
     echo "Waiting for database initialization..."
     sleep 3
