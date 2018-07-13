@@ -12,7 +12,7 @@ jQuery(function($){
   $("#rspamd_preset_1").on('click', function(e) {
     e.preventDefault();
     $("form[data-id=rsetting]").find("#desc").val(lang.rsettings_preset_1);
-    $("form[data-id=rsetting]").find("#content").val('priority = 10;\nauthenticated = yes;\napply "default" {\n  symbols_enabled = ["DKIM_SIGNED", "DYN_RL_CHECK", "HISTORY_SAVE", "MILTER_HEADERS", "ARC_SIGNED"];\n}');
+    $("form[data-id=rsetting]").find("#content").val('priority = 10;\nauthenticated = yes;\napply "default" {\n  symbols_enabled = ["DKIM_SIGNED", "RATELIMIT_UPDATE", "RATELIMIT_CHECK", "DYN_RL_CHECK", "HISTORY_SAVE", "MILTER_HEADERS", "ARC_SIGNED"];\n}');
   });
   $("#rspamd_preset_2").on('click', function(e) {
     e.preventDefault();
