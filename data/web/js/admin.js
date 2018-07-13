@@ -79,7 +79,7 @@ jQuery(function($){
         {"name":"id","type":"text","title":"ID","style":{"width":"50px"}},
         {"name":"hostname","type":"text","title":lang.host,"style":{"width":"250px"}},
         {"name":"username","title":lang.username,"breakpoints":"xs sm"},
-        {"name":"used_by_domains","title":lang.in_use_by, "type": "text","breakpoints":"xs sm"},
+        {"name":"used_by_domains","title":lang.in_use_by,"style":{"width":"110px"}, "type": "text","breakpoints":"xs sm"},
         {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"280px","width":"280px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
