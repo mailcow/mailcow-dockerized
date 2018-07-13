@@ -24,7 +24,8 @@ if [[ -f mailcow.conf ]]; then
 fi
 
 while [ -z "${MAILCOW_HOSTNAME}" ]; do
-  read -p "Hostname (FQDN): " -ei "mx.example.org" MAILCOW_HOSTNAME
+  read -p "Hostname (FQDN): " -e MAILCOW_HOSTNAME
+  [ -z "${MAILCOW_HOSTNAME}" ] && MAILCOW_HOSTNAME='mx.example.org'
   DOTS=${MAILCOW_HOSTNAME//[^.]};
   if [ ${#DOTS} -lt 2 ]; then
     echo "${MAILCOW_HOSTNAME} is not a FQDN"
@@ -39,9 +40,11 @@ elif  [[ -a /etc/localtime ]]; then
 fi
 
 if [ -z "$TZ" ]; then
-  read -p "Timezone: " -ei "Europe/Berlin" TZ
+  read -p "Timezone: " -e MAILCOW_TZ
+  [ -z "${MAILCOW_TZ}" ] && MAILCOW_TZ='Europe/Berlin'
 else
-  read -p "Timezone: " -ei ${TZ} TZ
+  read -p "Timezone: " -e MAILCOW_TZ
+  [ -z "${MAILCOW_TZ}" ] && MAILCOW_TZ=${TZ}
 fi
 
 [[ ! -f ./data/conf/rspamd/override.d/worker-controller-password.inc ]] && echo '# Placeholder' > ./data/conf/rspamd/override.d/worker-controller-password.inc
@@ -62,8 +65,8 @@ DBNAME=mailcow
 DBUSER=mailcow
 
 # Please use long, random alphanumeric strings (A-Za-z0-9)
-DBPASS=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
-DBROOT=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
+DBPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 | head -c 28)
+DBROOT=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 | head -c 28)
 
 # ------------------------------
 # HTTP/S Bindings
@@ -95,7 +98,7 @@ DOVEADM_PORT=127.0.0.1:19991
 SQL_PORT=127.0.0.1:13306
 
 # Your timezone
-TZ=${TZ}
+TZ=${MAILCOW_TZ}
 
 # Fixed project name
 COMPOSE_PROJECT_NAME=mailcowdockerized
