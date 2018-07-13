@@ -3,6 +3,8 @@
 #exit on error and pipefail
 set -o pipefail
 
+umask 0022
+
 for bin in curl docker-compose docker git awk sha1sum; do
   if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
 done
