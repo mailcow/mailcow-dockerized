@@ -146,7 +146,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.28
+      image: mailcow/sogo:1.29
       build: ./data/Dockerfiles/sogo
       environment:
         - DBNAME=${DBNAME}
