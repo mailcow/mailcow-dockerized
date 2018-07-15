@@ -13,7 +13,7 @@ function rsettings($_action, $_data = null) {
       }
       $content = $_data['content'];
       $desc = $_data['desc'];
-      $active = $_data['active'];
+      $active = intval($_data['active']);
       if (empty($content)) {
         $_SESSION['return'] = array(
           'type' => 'danger',
