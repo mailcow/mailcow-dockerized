@@ -1,25 +1,16 @@
-local custom_keywords = {
-  ['customrl'] = {},
-}
+local custom_keywords = {}
 
-function custom_keywords.customrl.get_value(task)
-  local rspamd_logger = require "rspamd_logger"
-  if task:has_symbol('DYN_RL') then
-    rspamd_logger.infox(rspamd_config, "task has a dynamic ratelimit symbol, processing...")
-    return "check"
-  else
-    rspamd_logger.infox(rspamd_config, "task has no dynamic ratelimit symbol, skipping...")
-    return
-  end
-end
-function custom_keywords.customrl.get_limit(task)
+custom_keywords.mailcow = function(task)
   local rspamd_logger = require "rspamd_logger"
   local dyn_rl_symbol = task:get_symbol("DYN_RL")
   if dyn_rl_symbol then
     local rl_value = dyn_rl_symbol[1].options[1]
-    rspamd_logger.infox(rspamd_config, "dynamic ratelimit symbol has option %s, returning...", rl_value)
-    return rl_value
+    local rl_object = dyn_rl_symbol[1].options[2]
+    if rl_value and rl_object then
+      rspamd_logger.infox(rspamd_config, "DYN_RL symbol has value %s for object %s, returning %s...", rl_value, rl_object, "rs_dynrl_" .. rl_object)
+      return "rs_dynrl_" .. rl_object, rl_value
+    end
   end
 end
--- returning custom keywords
+
 return custom_keywords
