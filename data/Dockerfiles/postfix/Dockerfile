@@ -26,6 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	syslog-ng \
 	syslog-ng-core \
 	syslog-ng-mod-redis \
+  tzdata \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& touch /etc/default/locale \
   && printf '#!/bin/bash\n/usr/sbin/postconf -c /opt/postfix/conf "$@"' > /usr/local/sbin/postconf \
