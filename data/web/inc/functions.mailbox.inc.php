@@ -1,8 +1,8 @@
 <?php
 function mailbox($_action, $_type, $_data = null, $attr = null) {
-	global $pdo;
-	global $redis;
-	global $lang;
+  global $pdo;
+  global $redis;
+  global $lang;
   switch ($_action) {
     case 'add':
       switch ($_type) {
@@ -180,7 +180,6 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             'type' => 'success',
             'msg' => sprintf($lang['success']['mailbox_modified'], $username)
           );
-          return true;
         break;
         case 'syncjob':
           if (!isset($_SESSION['acl']['syncjobs']) || $_SESSION['acl']['syncjobs'] != "1" ) {
@@ -327,7 +326,6 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             'type' => 'success',
             'msg' => sprintf($lang['success']['mailbox_modified'], $username)
           );
-          return true;
         break;
         case 'domain':
           if ($_SESSION['mailcow_cc_role'] != "admin") {
@@ -1577,7 +1575,6 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             'type' => 'success',
             'msg' => sprintf($lang['success']['mailbox_modified'], $username)
           );
-          return true;
         break;
         case 'filter':
           $sieve = new Sieve\SieveParser();
@@ -1671,7 +1668,6 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             'type' => 'success',
             'msg' => sprintf($lang['success']['mailbox_modified'], $username)
           );
-          return true;
         break;
         case 'alias':
           if (!is_array($_data['address'])) {
@@ -3219,7 +3215,6 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             'type' => 'success',
             'msg' => 'Deleted syncjob id/s ' . implode(', ', $ids)
           );
-          return true;
         break;
         case 'filter':
           if (!is_array($_data['id'])) {
@@ -3266,7 +3261,6 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             'type' => 'success',
             'msg' => 'Deleted filter id/s ' . implode(', ', $ids)
           );
-          return true;
         break;
         case 'time_limited_alias':
           if (!is_array($_data['address'])) {
@@ -3473,7 +3467,6 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             'type' => 'success',
             'msg' => sprintf($lang['success']['domain_removed'], htmlspecialchars(implode(', ', $domains)))
           );
-          return true;
         break;
         case 'alias':
           if (!is_array($_data['address'])) {
@@ -3786,5 +3779,8 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
         break;
       }
     break;
+  }
+  if ($_action != 'get' && in_array($_type, array('domain', 'alias', 'alias_domain', 'mailbox'))) {
+    update_sogo_static_view();
   }
 }

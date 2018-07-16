@@ -23,9 +23,14 @@ if [[ -f mailcow.conf ]]; then
   esac
 fi
 
-if [ -z "$MAILCOW_HOSTNAME" ]; then
-  read -p "Hostname (FQDN - example.org is not a valid FQDN): " -ei "mx.example.org" MAILCOW_HOSTNAME
-fi
+while [ -z "${MAILCOW_HOSTNAME}" ]; do
+  read -p "Hostname (FQDN): " -ei "mx.example.org" MAILCOW_HOSTNAME
+  DOTS=${MAILCOW_HOSTNAME//[^.]};
+  if [ ${#DOTS} -lt 2 ]; then
+    echo "${MAILCOW_HOSTNAME} is not a FQDN"
+    MAILCOW_HOSTNAME=
+  fi
+done
 
 if [[ -a /etc/timezone ]]; then
   TZ=$(cat /etc/timezone)
@@ -122,8 +127,11 @@ IPV4_NETWORK=172.22.1
 # Internal IPv6 subnet in fc00::/7
 IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
 
-# Use this IP for outgoing connections (SNAT)
+# Use this IPv4 for outgoing connections (SNAT)
 #SNAT_TO_SOURCE=
+
+# Use this IPv6 for outgoing connections (SNAT)
+#SNAT6_TO_SOURCE=
 
 # Disable IPv6
 # mailcow-network will still be created as IPv6 enabled, all containers will be created

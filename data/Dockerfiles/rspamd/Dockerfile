@@ -21,10 +21,8 @@ RUN apt-get update && apt-get install -y \
 	&& chown _rspamd:_rspamd /run/rspamd
 
 COPY settings.conf /etc/rspamd/modules.d/settings.conf
-#COPY ratelimit.lua /usr/share/rspamd/lua/ratelimit.lua
-#COPY lua_util.lua /usr/share/rspamd/lib/lua_util.lua
+COPY ratelimit.lua /usr/share/rspamd/lua/ratelimit.lua
 COPY docker-entrypoint.sh /docker-entrypoint.sh
-COPY tini /sbin/tini
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 

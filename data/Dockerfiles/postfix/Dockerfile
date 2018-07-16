@@ -1,4 +1,4 @@
-FROM debian:stretch-slim
+FROM ubuntu:bionic
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	postfix \
 	postfix-mysql \
 	postfix-pcre \
-	python-gpgme \
+	python-gpg \
 	sasl2-bin \
 	sudo \
 	supervisor \

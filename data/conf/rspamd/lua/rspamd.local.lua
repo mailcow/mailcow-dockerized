@@ -77,7 +77,7 @@ rspamd_config:register_symbol({
             rspamd_logger.infox(rspamd_config, "dynamic ratelimit request for domain %s returned invalid or empty data (\"%s\") or error (\"%s\")", env_from_domain, data, err)
           else
             rspamd_logger.infox(rspamd_config, "found dynamic ratelimit in redis for domain %s with value %s", env_from_domain, data)
-            task:insert_result('DYN_RL', 0.0, data)
+            task:insert_result('DYN_RL', 0.0, data, env_from_domain)
           end
         end
 
@@ -94,7 +94,7 @@ rspamd_config:register_symbol({
         end
       else
         rspamd_logger.infox(rspamd_config, "found dynamic ratelimit in redis for user %s with value %s", uname, data)
-        task:insert_result('DYN_RL', 0.0, data)
+        task:insert_result('DYN_RL', 0.0, data, uname)
       end
 
     end

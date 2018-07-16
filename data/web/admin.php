@@ -416,12 +416,15 @@ $tfa_data = get_tfa();
             <label for="blacklist"><?=$lang['admin']['f2b_blacklist'];?>:</label>
             <textarea class="form-control" id="blacklist" name="blacklist" rows="5"><?=$f2b_data['blacklist'];?></textarea>
           </div>
-          <button class="btn btn-default" id="edit_selected" data-item="self" data-id="f2b" data-api-url='edit/fail2ban' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+          <div class="btn-group">
+            <button class="btn btn-default" id="edit_selected" data-item="self" data-id="f2b" data-api-url='edit/fail2ban' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+            <a href="#" role="button" class="btn btn-default" data-toggle="modal" data-container="netfilter-mailcow" data-target="#RestartContainer"><span class="glyphicon glyphicon-refresh"></span> <?= $lang['header']['restart_netfilter']; ?></a>
+          </div>
         </form>
         <hr>
         <p class="help-block"><?=$lang['admin']['ban_list_info'];?></p>
         <?php
-        if (empty($f2b_data['active_bans'])):
+        if (empty($f2b_data['active_bans']) && empty($f2b_data['perm_bans'])):
         ?>
         <i><?=$lang['admin']['no_active_bans'];?></i>
         <?php
@@ -443,6 +446,13 @@ $tfa_data = get_tfa();
           endif;
           ?>
         </span></p>
+        <?php
+        endforeach;
+        foreach ($f2b_data['perm_bans'] as $perm_bans):
+        ?>
+        <p>
+        <span class="label label-danger" style="padding:4px;font-size:85%;"><span class="glyphicon glyphicon-filter"></span> <?=$perm_bans?></span>
+        </p>
         <?php
         endforeach;
         ?>
@@ -647,7 +657,7 @@ $tfa_data = get_tfa();
         <legend><?=$lang['admin']['app_links'];?></legend>
         <p class="help-block"><?=$lang['admin']['merged_vars_hint'];?></p>
         <form class="form-inline" data-id="app_links" role="form" method="post">
-          <table class="table table-condensed" style="width:1%;white-space: nowrap;" id="app_link_table">
+          <table class="table table-condensed" style="white-space: nowrap;" id="app_link_table">
             <tr>
               <th><?=$lang['admin']['app_name'];?></th>
               <th><?=$lang['admin']['link'];?></th>

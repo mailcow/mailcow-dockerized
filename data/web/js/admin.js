@@ -12,7 +12,7 @@ jQuery(function($){
   $("#rspamd_preset_1").on('click', function(e) {
     e.preventDefault();
     $("form[data-id=rsetting]").find("#desc").val(lang.rsettings_preset_1);
-    $("form[data-id=rsetting]").find("#content").val('priority = 10;\nauthenticated = yes;\napply "default" {\n  symbols_enabled = ["DKIM_SIGNED", "DYN_RL_CHECK", "HISTORY_SAVE", "MILTER_HEADERS", "ARC_SIGNED"];\n}');
+    $("form[data-id=rsetting]").find("#content").val('priority = 10;\nauthenticated = yes;\napply "default" {\n  symbols_enabled = ["DKIM_SIGNED", "RATELIMIT_UPDATE", "RATELIMIT_CHECK", "DYN_RL_CHECK", "HISTORY_SAVE", "MILTER_HEADERS", "ARC_SIGNED"];\n}');
   });
   $("#rspamd_preset_2").on('click', function(e) {
     e.preventDefault();
@@ -79,7 +79,7 @@ jQuery(function($){
         {"name":"id","type":"text","title":"ID","style":{"width":"50px"}},
         {"name":"hostname","type":"text","title":lang.host,"style":{"width":"250px"}},
         {"name":"username","title":lang.username,"breakpoints":"xs sm"},
-        {"name":"used_by_domains","title":lang.in_use_by, "type": "text","breakpoints":"xs sm"},
+        {"name":"used_by_domains","title":lang.in_use_by,"style":{"width":"110px"}, "type": "text","breakpoints":"xs sm"},
         {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"280px","width":"280px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],

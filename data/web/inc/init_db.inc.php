@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "05062018_2039";
+    $db_version = "04072018_2119";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -63,6 +63,31 @@ function init_db_schema() {
         "keys" => array(
           "primary" => array(
             "" => array("username")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "_sogo_static_view" => array(
+        "cols" => array(
+          "c_uid" => "VARCHAR(255) NOT NULL",
+          "domain" => "VARCHAR(255) NOT NULL",
+          "c_name" => "VARCHAR(255) NOT NULL",
+          "c_password" => "VARCHAR(255) NOT NULL DEFAULT ''",
+          "c_cn" => "VARCHAR(255)",
+          "mail" => "VARCHAR(255) NOT NULL",
+          // TODO -> use TEXT and check if SOGo login breaks on empty aliases
+          "aliases" => "VARCHAR(6144) NOT NULL DEFAULT ''",
+          "ad_aliases" => "VARCHAR(6144) NOT NULL DEFAULT ''",
+          "home" => "VARCHAR(255)",
+          "kind" => "VARCHAR(100) NOT NULL DEFAULT ''",
+          "multiple_bookings" => "INT NOT NULL DEFAULT -1"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("c_uid")
+          ),
+          "key" => array(
+            "domain" => array("domain")
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"

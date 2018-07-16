@@ -5,6 +5,7 @@
 
 $lang['footer']['loading'] = "Please wait...";
 $lang['header']['restart_sogo'] = 'Restart SOGo';
+$lang['header']['restart_netfilter'] = 'Restart netfilter';
 $lang['footer']['restart_container'] = 'Restart container';
 $lang['footer']['restart_now'] = 'Restart now';
 $lang['footer']['restart_container_info'] = '<b>Important:</b> A graceful restart may take a while to complete, please wait for it to finish.';
@@ -103,7 +104,7 @@ $lang['user']['new_password_description'] = 'Requirement: 6 characters long, let
 $lang['user']['spam_aliases'] = 'Temporary email aliases';
 $lang['user']['alias'] = 'Alias';
 $lang['user']['shared_aliases'] = 'Shared alias addresses';
-$lang['user']['shared_aliases_desc'] = 'A shared alias address is not affected by any user specific settings. A custom spam filter setting can be archived by a domain-wide policy set by an administrator..';
+$lang['user']['shared_aliases_desc'] = 'Shared aliases are not affected by user specific settings such as the spam filter or encryption policy. Corresponding spam filters can only be made by an administrator as a domain-wide policy..';
 $lang['user']['direct_aliases'] = 'Direct alias addresses';
 $lang['user']['direct_aliases_desc'] = 'Direct alias addresses are affected by spam filter and TLS policy settings.';
 $lang['user']['is_catch_all'] = 'Catch-all for domain/s';
@@ -471,7 +472,7 @@ $lang['admin']['api_allow_from'] = "Allow API access from these IPs";
 $lang['admin']['api_key'] = "API key";
 $lang['admin']['activate_api'] = "Activate API";
 $lang['admin']['regen_api_key'] = "Regenerate API key";
-$lang['admin']['ban_list_info'] = "See a list of banned IPs below: <b>network (remaining ban time) - [actions]</b>.<br />IPs queued to be unbanned, will be removed from the active ban list within a few seconds.";
+$lang['admin']['ban_list_info'] = "See a list of banned IPs below: <b>network (remaining ban time) - [actions]</b>.<br />IPs queued to be unbanned, will be removed from the active ban list within a few seconds.<br />Red labels indicate active permanent bans by blacklisting.";
 $lang['admin']['unban_pending'] = "unban pending";
 $lang['admin']['queue_unban'] = "queue unban";
 $lang['admin']['no_active_bans'] = "No active bans";

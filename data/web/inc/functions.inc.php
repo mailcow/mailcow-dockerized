@@ -128,24 +128,47 @@ function generate_tlsa_digest($hostname, $port, $starttls = null) {
     return 'Error: Cannot read peer certificate';
   }
 }
-function verify_ssha256($hash, $password) {
-	// Remove tag if any
-  if (substr($hash, 0, strlen('{SSHA256}')) == '{SSHA256}') {
-    $hash = substr($hash, strlen('{SSHA256}'));
+//function verify_hash($hash, $password) {
+function verify_hash($hash, $password) {
+  if (preg_match('/^{SSHA256}/i', $hash)) {
+    // Remove tag if any
+    $hash = preg_replace('/^{SSHA256}/i', '', $hash);
+    // Decode hash
+    $dhash = base64_decode($hash);
+    // Get first 32 bytes of binary which equals a SHA256 hash
+    $ohash = substr($dhash, 0, 32);
+    // Remove SHA256 hash from decoded hash to get original salt string
+    $osalt = str_replace($ohash, '', $dhash);
+    // Check single salted SHA256 hash against extracted hash
+    if (hash_equals(hash('sha256', $password . $osalt, true), $ohash)) {
+      return true;
+    }
   }
-	// Decode hash
-	$dhash = base64_decode($hash);
-	// Get first 32 bytes of binary which equals a SHA256 hash
-	$ohash = substr($dhash, 0, 32);
-	// Remove SHA256 hash from decoded hash to get original salt string
-	$osalt = str_replace($ohash, '', $dhash);
-	// Check single salted SHA256 hash against extracted hash
-	if (hash('sha256', $password . $osalt, true) == $ohash) {
-		return true;
-	}
-	else {
-		return false;
-	}
+  elseif (preg_match('/^{SHA512-CRYPT}/i', $hash)) {
+    // Remove tag if any
+    $hash = preg_replace('/^{SHA512-CRYPT}/i', '', $hash);
+    // Decode hash
+    preg_match('/\\$6\\$(.*)\\$(.*)/i', $hash, $hash_array);
+    $osalt = $hash_array[1];
+    $ohash = $hash_array[2];
+    if (hash_equals(crypt($password, '$6$' . $osalt . '$'), $hash)) {
+      return true;
+    }
+  }
+  elseif (preg_match('/^{SSHA512}/i', $hash)) {
+    $hash = preg_replace('/^{SSHA512}/i', '', $hash);
+    // Decode hash
+    $dhash = base64_decode($hash);
+    // Get first 64 bytes of binary which equals a SHA512 hash
+    $ohash = substr($dhash, 0, 64);
+    // Remove SHA512 hash from decoded hash to get original salt string
+    $osalt = str_replace($ohash, '', $dhash);
+    // Check single salted SHA512 hash against extracted hash
+    if (hash_equals(hash('sha512', $password . $osalt, true), $ohash)) {
+      return true;
+    }
+  }
+  return false;
 }
 function check_login($user, $pass) {
 	global $pdo;
@@ -160,7 +183,7 @@ function check_login($user, $pass) {
 	$stmt->execute(array(':user' => $user));
 	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	foreach ($rows as $row) {
-		if (verify_ssha256($row['password'], $pass)) {
+		if (verify_hash($row['password'], $pass)) {
       if (get_tfa($user)['name'] != "none") {
         $_SESSION['pending_mailcow_cc_username'] = $user;
         $_SESSION['pending_mailcow_cc_role'] = "admin";
@@ -181,7 +204,7 @@ function check_login($user, $pass) {
 	$stmt->execute(array(':user' => $user));
 	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	foreach ($rows as $row) {
-		if (verify_ssha256($row['password'], $pass) !== false) {
+		if (verify_hash($row['password'], $pass) !== false) {
       if (get_tfa($user)['name'] != "none") {
         $_SESSION['pending_mailcow_cc_username'] = $user;
         $_SESSION['pending_mailcow_cc_role'] = "domainadmin";
@@ -204,7 +227,7 @@ function check_login($user, $pass) {
 	$stmt->execute(array(':user' => $user));
 	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	foreach ($rows as $row) {
-		if (verify_ssha256($row['password'], $pass) !== false) {
+		if (verify_hash($row['password'], $pass) !== false) {
 			unset($_SESSION['ldelay']);
 			return "user";
 		}
@@ -368,6 +391,17 @@ function edit_admin_account($postarray) {
 		'msg' => sprintf($lang['success']['admin_modified'])
 	);
 }
+function update_sogo_static_view() {
+  global $pdo;
+  global $lang;
+  $stmt = $pdo->query("SELECT 'OK' FROM INFORMATION_SCHEMA.TABLES
+    WHERE TABLE_NAME = 'sogo_view'");
+  $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+  if ($num_results != 0) {
+    $stmt = $pdo->query("REPLACE INTO _sogo_static_view SELECT * from sogo_view");
+    $stmt = $pdo->query("DELETE FROM _sogo_static_view WHERE `c_uid` NOT IN (SELECT `username` FROM `mailbox` WHERE `active` = '1');");
+  }
+}
 function edit_user_account($postarray) {
 	global $lang;
 	global $pdo;
@@ -390,7 +424,7 @@ function edit_user_account($postarray) {
         AND `username` = :user");
 	$stmt->execute(array(':user' => $username));
 	$row = $stmt->fetch(PDO::FETCH_ASSOC);
-  if (!verify_ssha256($row['password'], $password_old)) {
+  if (!verify_hash($row['password'], $password_old)) {
     $_SESSION['return'] = array(
       'type' => 'danger',
       'msg' => sprintf($lang['danger']['access_denied'])
@@ -430,6 +464,7 @@ function edit_user_account($postarray) {
 			}
 		}
 	}
+  update_sogo_static_view();
 	$_SESSION['return'] = array(
 		'type' => 'success',
 		'msg' => sprintf($lang['success']['mailbox_modified'], htmlspecialchars($username))
@@ -540,7 +575,7 @@ function set_tfa($postarray) {
       WHERE `username` = :user");
   $stmt->execute(array(':user' => $username));
   $row = $stmt->fetch(PDO::FETCH_ASSOC);
-  if (!verify_ssha256($row['password'], $postarray["confirm_password"])) {
+  if (!verify_hash($row['password'], $postarray["confirm_password"])) {
     $_SESSION['return'] = array(
       'type' => 'danger',
       'msg' => sprintf($lang['danger']['access_denied'])

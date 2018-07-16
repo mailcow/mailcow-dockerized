@@ -9,8 +9,8 @@ done
 # Wait until port becomes free and send sig
 until ! nc -z sogo-mailcow 20000;
 do
-        killall -TERM sogod
-        sleep 3
+  killall -TERM sogod
+  sleep 3
 done
 
 # Recreate view
@@ -33,6 +33,44 @@ EOF
     sleep 3
   fi
 done
+
+# Wait for static view table if missing after update and update content
+
+while [[ ${STATIC_VIEW_OK} != 'OK' ]]; do
+  if [[ ! -z $(mysql --host mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "SELECT 'OK' FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '_sogo_static_view'") ]]; then
+    STATIC_VIEW_OK=OK
+    echo "Updating _sogo_static_view content..."
+    mysql --host mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "REPLACE INTO _sogo_static_view SELECT * from sogo_view"
+    mysql --host mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "DELETE FROM _sogo_static_view WHERE c_uid NOT IN (SELECT username FROM mailbox WHERE active = '1')"
+  else
+    echo "Waiting for database initialization..."
+    sleep 3
+  fi
+done
+
+# Recreate password update trigger
+
+mysql --host mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "DROP TRIGGER IF EXISTS sogo_update_password"
+
+while [[ ${TRIGGER_OK} != 'OK' ]]; do
+  mysql --host mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
+DELIMITER -
+CREATE TRIGGER sogo_update_password AFTER UPDATE ON _sogo_static_view
+FOR EACH ROW
+BEGIN
+UPDATE mailbox SET password = NEW.c_password WHERE NEW.c_uid = username;
+END;
+-
+DELIMITER ;
+EOF
+  if [[ ! -z $(mysql --host mysql -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "SELECT 'OK' FROM INFORMATION_SCHEMA.TRIGGERS WHERE TRIGGER_NAME = 'sogo_update_password'") ]]; then
+    TRIGGER_OK=OK
+  else
+    echo "Will retry to setup SOGo password update trigger in 3s"
+    sleep 3
+  fi
+done
+
 
 mkdir -p /var/lib/sogo/GNUstep/Defaults/
 
@@ -97,8 +135,10 @@ while read line
                     <string>sql</string>
                     <key>userPasswordAlgorithm</key>
                     <string>ssha256</string>
+                    <key>prependPasswordScheme</key>
+                    <string>YES</string>
                     <key>viewURL</key>
-                    <string>mysql://${DBUSER}:${DBPASS}@mysql:3306/${DBNAME}/sogo_view</string>
+                    <string>mysql://${DBUSER}:${DBPASS}@mysql:3306/${DBNAME}/_sogo_static_view</string>
                 </dict>
             </array>
         </dict>" >> /var/lib/sogo/GNUstep/Defaults/sogod.plist
