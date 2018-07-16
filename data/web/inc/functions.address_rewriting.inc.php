@@ -314,7 +314,7 @@ function recipient_map($_action, $_data = null, $attr = null) {
       }
       foreach ($new_dest as &$new_dest_e) {
         if (!filter_var($new_dest_e, FILTER_VALIDATE_EMAIL)) {
-          $new_dest_e = null;;
+          $new_dest_e = null;
         }
         $new_dest_e = strtolower($new_dest_e);
       }
