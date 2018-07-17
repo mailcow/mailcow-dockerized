@@ -560,11 +560,18 @@ $lang['mailbox']['bcc_info'] = "BCC maps are used to silently forward copies of 
   The local destination will not be informed about a failed delivery.";
 $lang['mailbox']['address_rewriting'] = 'Address rewriting';
 $lang['mailbox']['recipient_maps'] = 'Recipient maps';
+$lang['mailbox']['recipient_map'] = 'Recipient map';
 $lang['mailbox']['recipient_map_info'] = 'Recipient maps are used to replace the destination address on a message before it is delivered.';
+$lang['mailbox']['recipient_map_old_info'] = 'A recipient maps original destination must be valid email addresses or a domain name.';
+$lang['mailbox']['recipient_map_new_info'] = 'Recipient map destination must be a valid email address.';
 $lang['mailbox']['recipient_map_old'] = 'Original recipient';
 $lang['mailbox']['recipient_map_new'] = 'New recipient';
+$lang['danger']['invalid_recipient_map_new'] = 'Invalid new recipient specified: %s';
+$lang['danger']['invalid_recipient_map_old'] = 'Invalid original recipient specified: %s';
+$lang['danger']['recipient_map_entry_exists'] = 'A Recipient map entry for %s exists';
+$lang['success']['recipient_map_entry_saved'] = 'Recipient map entry for %s has been saved';
+$lang['success']['recipient_map_entry_deleted'] = 'Recipient map entry for %s has been deleted';
 $lang['mailbox']['add_recipient_map_entry'] = 'Add recipient map';
-$lang['mailbox']['add_sender_map_entry'] = 'Add sender map';
 
 $lang['oauth2']['scope_ask_permission'] = 'An application asked for the following permissions';
 $lang['oauth2']['profile'] = 'Profile';
