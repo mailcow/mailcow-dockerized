@@ -553,9 +553,18 @@ $lang['mailbox']['add_bcc_entry'] = "BCC-Eintrag hinzufügen";
 $lang['mailbox']['bcc_info'] = "Eine empfängerabhängige Map wird verwendet, wenn die BCC-Map Eintragung auf den Eingang einer E-Mail auf das lokale Ziel reagieren soll. Senderabhängige Maps verfahren nach dem gleichen Prinzip.<br/>
   Das lokale Ziel wird bei Fehlzustellungen an ein BCC-Ziel nicht informiert.";
 $lang['mailbox']['address_rewriting'] = 'Adressumschreibung';
+
 $lang['mailbox']['recipient_maps'] = 'Empfängerumschreibungen';
+$lang['mailbox']['recipient_map'] = 'Empfängerumschreibung';
 $lang['mailbox']['recipient_map_info'] = 'Empfängerumschreibung ersetzen den Empfänger einer E-Mail vor dem Versand.';
+$lang['mailbox']['recipient_map_old_info'] = 'Der originale Empfänger muss eine E-Mail-Adresse oder ein Domainname sein.';
+$lang['mailbox']['recipient_map_new_info'] = 'Der neue Empfänger muss eine E-Mail-Adresse sein.';
 $lang['mailbox']['recipient_map_old'] = 'Original Empfänger';
 $lang['mailbox']['recipient_map_new'] = 'Neuer Empfänger';
 $lang['mailbox']['add_recipient_map_entry'] = 'Empfängerumschreibung hinzufügen';
-$lang['mailbox']['add_sender_map_entry'] = 'Senderumschreibung hinzufügen';
+$lang['danger']['invalid_recipient_map_new'] = 'Neuer Empfänger %s ist ungültig';
+$lang['danger']['invalid_recipient_map_old'] = 'Originaler Empfänger %s ist ungültig';
+$lang['danger']['recipient_map_entry_exists'] = 'Eine Empfängerumschreibung für %s existiert bereits';
+$lang['success']['recipient_map_entry_saved'] = 'Empfängerumschreibung für Objekt %s wurde gespeichert';
+$lang['success']['recipient_map_entry_deleted'] = 'Empfängerumschreibung für Objekt %s wurde gelöscht';
+

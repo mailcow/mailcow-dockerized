@@ -290,15 +290,11 @@ function recipient_map($_action, $_data = null, $attr = null) {
   switch ($_action) {
     case 'add':
       $old_dest = strtolower(trim($_data['recipient_map_old']));
-      $new_dest = array_map('trim', preg_split( "/( |,|;|\n)/", $_data['recipient_map_new']));
-      $active = intval($_data['active']);
-      if (empty($new_dest)) {
-        $_SESSION['return'] = array(
-          'type' => 'danger',
-          'msg' => 'Recipient map destination cannot be empty'
-        );
-        return false;
+      if (substr($old_dest, 0, 1) == '@') {
+        $old_dest = substr($old_dest, 1);
       }
+      $new_dest = strtolower(trim($_data['recipient_map_new']));
+      $active = intval($_data['active']);
       if (is_valid_domain_name($old_dest)) {
         $old_dest_sane = '@' . idn_to_ascii($old_dest);
       }
@@ -308,42 +304,25 @@ function recipient_map($_action, $_data = null, $attr = null) {
       else {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'Invalid original recipient specified: ' . $old_dest
+          'msg' => sprintf($lang['danger']['invalid_recipient_map_old'], htmlspecialchars($old_dest))
         );
         return false;
       }
-      foreach ($new_dest as &$new_dest_e) {
-        if (!filter_var($new_dest_e, FILTER_VALIDATE_EMAIL)) {
-          $new_dest_e = null;
-        }
-        $new_dest_e = strtolower($new_dest_e);
-      }
-      $new_dest = array_filter($new_dest);
-      $new_dest = implode(",", $new_dest);
-      if (empty($new_dest)) {
+      if (!filter_var($new_dest, FILTER_VALIDATE_EMAIL)) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'Recipient map destination cannot be empty'
+          'msg' => sprintf($lang['danger']['invalid_recipient_map_new'], htmlspecialchars($new_dest))
         );
         return false;
       }
-      try {
-        $stmt = $pdo->prepare("SELECT `id` FROM `recipient_maps`
-          WHERE `old_dest` = :old_dest");
-        $stmt->execute(array(':old_dest' => $old_dest_sane));
-        $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+      $rmaps = recipient_map('get');
+      foreach ($rmaps as $rmap) {
+        $old_dests_existing[] = recipient_map('details', $rmap)['recipient_map_old'];
       }
-      catch(PDOException $e) {
+      if (in_array($old_dest_sane, $old_dests_existing)) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'MySQL: '.$e
-        );
-        return false;
-      }
-      if ($num_results != 0) {
-        $_SESSION['return'] = array(
-          'type' => 'danger',
-          'msg' => 'A Recipient map entry "' . htmlspecialchars($old_dest_sane) . '" exists'
+          'msg' => sprintf($lang['danger']['recipient_map_entry_exists'], htmlspecialchars($old_dest))
         );
         return false;
       }
@@ -365,7 +344,7 @@ function recipient_map($_action, $_data = null, $attr = null) {
       }
       $_SESSION['return'] = array(
         'type' => 'success',
-        'msg' => 'Recipient map entry saved'
+        'msg' => sprintf($lang['success']['recipient_map_entry_saved'], htmlspecialchars($old_dest_sane))
       );
     break;
     case 'edit':
@@ -375,7 +354,10 @@ function recipient_map($_action, $_data = null, $attr = null) {
         if (!empty($is_now)) {
           $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
           $new_dest = (!empty($_data['recipient_map_new'])) ? $_data['recipient_map_new'] : $is_now['recipient_map_new'];
-          $old_dest = $is_now['old_dest'];
+          $old_dest = (!empty($_data['recipient_map_old'])) ? $_data['recipient_map_old'] : $is_now['recipient_map_old'];
+          if (substr($old_dest, 0, 1) == '@') {
+            $old_dest = substr($old_dest, 1);
+          }
         }
         else {
           $_SESSION['return'] = array(
@@ -384,46 +366,47 @@ function recipient_map($_action, $_data = null, $attr = null) {
           );
           return false;
         }
-        $new_dest = array_map('trim', preg_split( "/( |,|;|\n)/", $new_dest));
+        if (is_valid_domain_name($old_dest)) {
+          $old_dest_sane = '@' . idn_to_ascii($old_dest);
+        }
+        elseif (filter_var($old_dest, FILTER_VALIDATE_EMAIL)) {
+          $old_dest_sane = $old_dest;
+        }
+        else {
+          $_SESSION['return'] = array(
+            'type' => 'danger',
+            'msg' => sprintf($lang['danger']['invalid_recipient_map_old'], htmlspecialchars($old_dest))
+          );
+          return false;
+        }
         $active = intval($_data['active']);
-        foreach ($new_dest as &$new_dest_e) {
-          if (!filter_var($new_dest_e, FILTER_VALIDATE_EMAIL)) {
-            $new_dest_e = null;;
-          }
-          $new_dest_e = strtolower($new_dest_e);
-        }
-        $new_dest = array_filter($new_dest);
-        $new_dest = implode(",", $new_dest);
-        if (empty($new_dest)) {
+        if (!filter_var($new_dest, FILTER_VALIDATE_EMAIL)) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => 'Recipient map destination cannot be empty'
+            'msg' => sprintf($lang['danger']['invalid_recipient_map_new'], htmlspecialchars($new_dest))
           );
           return false;
+        }
+        $rmaps = recipient_map('get');
+        foreach ($rmaps as $rmap) {
+          $old_dests_existing[] = recipient_map('details', $rmap)['recipient_map_old'];
+        }
+        if (in_array($old_dest_sane, $old_dests_existing) &&
+          recipient_map('details', $id)['recipient_map_old'] != $old_dest_sane) {
+            $_SESSION['return'] = array(
+              'type' => 'danger',
+              'msg' => sprintf($lang['danger']['recipient_map_entry_exists'], htmlspecialchars($old_dest_sane))
+            );
+            return false;
         }
         try {
-          $stmt = $pdo->prepare("SELECT `id` FROM `recipient_maps`
-            WHERE `old_dest` = :old_dest");
-          $stmt->execute(array(':old_dest' => $old_dest));
-          $id_now = $stmt->fetch(PDO::FETCH_ASSOC)['id'];
-        }
-        catch(PDOException $e) {
-          $_SESSION['return'] = array(
-            'type' => 'danger',
-            'msg' => 'MySQL: '.$e
-          );
-          return false;
-        }
-        if (isset($id_now) && $id_now != $id) {
-          $_SESSION['return'] = array(
-            'type' => 'danger',
-            'msg' => 'A Recipient map entry ' . htmlspecialchars($old_dest) . ' exists'
-          );
-          return false;
-        }
-        try {
-          $stmt = $pdo->prepare("UPDATE `recipient_maps` SET `new_dest` = :new_dest, `active` = :active WHERE `id`= :id");
+          $stmt = $pdo->prepare("UPDATE `recipient_maps` SET
+            `old_dest` = :old_dest,
+            `new_dest` = :new_dest,
+            `active` = :active
+              WHERE `id`= :id");
           $stmt->execute(array(
+            ':old_dest' => $old_dest_sane,
             ':new_dest' => $new_dest,
             ':active' => $active,
             ':id' => $id
@@ -439,7 +422,7 @@ function recipient_map($_action, $_data = null, $attr = null) {
       }
       $_SESSION['return'] = array(
         'type' => 'success',
-        'msg' => 'Recipient map entry edited'
+        'msg' => sprintf($lang['success']['recipient_map_entry_saved'], htmlspecialchars($old_dest))
       );
     break;
     case 'details':
@@ -507,7 +490,7 @@ function recipient_map($_action, $_data = null, $attr = null) {
       }
       $_SESSION['return'] = array(
         'type' => 'success',
-        'msg' => 'Deleted Recipient map id/s ' . implode(', ', $ids)
+        'msg' => sprintf($lang['success']['recipient_map_entry_deleted'], htmlspecialchars($old_dest))
       );
       return true;
     break;

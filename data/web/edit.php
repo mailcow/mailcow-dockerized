@@ -673,17 +673,27 @@ if (isset($_SESSION['mailcow_cc_role'])) {
     elseif (isset($_GET['recipient_map']) && !empty($_GET["recipient_map"])) {
         $map = intval($_GET["recipient_map"]);
         $result = recipient_map('details', $map);
+        if (substr($result['recipient_map_old'], 0, 1) == '@') {
+          $result['recipient_map_old'] = substr($result['recipient_map_old'], 1);
+        }
         if (!empty($result)) {
           ?>
-          <h4>Recipient map: <?=$result['recipient_map_old'];?></h4>
+          <h4><?=$lang['mailbox']['recipient_map']?>: <?=$result['recipient_map_old'];?></h4>
           <br />
           <form class="form-horizontal" data-id="edit_recipient_map" role="form" method="post">
             <input type="hidden" value="0" name="active">
             <div class="form-group">
-              <label class="control-label col-sm-2" for="recipient_map_new">New destination</label>
+              <label class="control-label col-sm-2" for="recipient_map_new"><?=$lang['mailbox']['recipient_map_old'];?></label>
               <div class="col-sm-10">
-                <textarea id="recipient_map_new" class="form-control" autocapitalize="none" autocorrect="off" rows="10" id="recipient_map_new" name="recipient_map_new" required><?=$result['recipient_map_new'];?></textarea>
-                <small>Recipient map destinations can only be valid email addresses. Separated by whitespace, semicolon, new line or comma.</small>
+                <input value="<?=$result['recipient_map_old'];?>" type="text" class="form-control" name="recipient_map_old" id="recipient_map_old">
+                <small><?=$lang['mailbox']['recipient_map_old_info'];?></small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="recipient_map_new"><?=$lang['mailbox']['recipient_map_new'];?></label>
+              <div class="col-sm-10">
+                <input value="<?=$result['recipient_map_new'];?>" type="text" class="form-control" name="recipient_map_new" id="recipient_map_new">
+                <small><?=$lang['mailbox']['recipient_map_new_info'];?></small>
               </div>
             </div>
             <div class="form-group">
