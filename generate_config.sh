@@ -11,7 +11,7 @@ if cp --help 2>&1 | grep -q -i "busybox"; then
   exit 1
 fi
 
-if [[ -f mailcow.conf ]]; then
+if [ -f mailcow.conf ]; then
   read -r -p "A config file exists and will be overwritten, are you sure you want to contine? [y/N] " response
   case $response in
     [yY][eE][sS]|[yY])
@@ -23,28 +23,32 @@ if [[ -f mailcow.conf ]]; then
   esac
 fi
 
+echo "Press enter to confirm the detected value '[value]' where applicable or enter a custom value."
 while [ -z "${MAILCOW_HOSTNAME}" ]; do
-  read -p "Hostname (FQDN): " -ei "mx.example.org" MAILCOW_HOSTNAME
+  read -p "Hostname (FQDN): " -e MAILCOW_HOSTNAME
   DOTS=${MAILCOW_HOSTNAME//[^.]};
-  if [ ${#DOTS} -lt 2 ]; then
+  if [ ${#DOTS} -lt 2 ] && [ ! -z ${MAILCOW_HOSTNAME} ]; then
     echo "${MAILCOW_HOSTNAME} is not a FQDN"
     MAILCOW_HOSTNAME=
   fi
 done
 
-if [[ -a /etc/timezone ]]; then
-  TZ=$(cat /etc/timezone)
-elif  [[ -a /etc/localtime ]]; then
-   TZ=$(readlink /etc/localtime|sed -n 's|^.*zoneinfo/||p')
+if [ -a /etc/timezone ]; then
+  DETECTED_TZ=$(cat /etc/timezone)
+elif [ -a /etc/localtime ]; then
+  DETECTED_TZ=$(readlink /etc/localtime|sed -n 's|^.*zoneinfo/||p')
 fi
 
-if [ -z "$TZ" ]; then
-  read -p "Timezone: " -ei "Europe/Berlin" TZ
-else
-  read -p "Timezone: " -ei ${TZ} TZ
-fi
+while [ -z "${MAILCOW_TZ}" ]; do
+  if [ -z "${DETECTED_TZ}" ]; then
+    read -p "Timezone: " -e MAILCOW_TZ
+  else
+    read -p "Timezone [${DETECTED_TZ}]: " -e MAILCOW_TZ
+    [ -z "${MAILCOW_TZ}" ] && MAILCOW_TZ=${DETECTED_TZ}
+  fi
+done
 
-[[ ! -f ./data/conf/rspamd/override.d/worker-controller-password.inc ]] && echo '# Placeholder' > ./data/conf/rspamd/override.d/worker-controller-password.inc
+[ ! -f ./data/conf/rspamd/override.d/worker-controller-password.inc ] && echo '# Placeholder' > ./data/conf/rspamd/override.d/worker-controller-password.inc
 
 cat << EOF > mailcow.conf
 # ------------------------------
@@ -62,8 +66,8 @@ DBNAME=mailcow
 DBUSER=mailcow
 
 # Please use long, random alphanumeric strings (A-Za-z0-9)
-DBPASS=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
-DBROOT=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
+DBPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 | head -c 28)
+DBROOT=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 | head -c 28)
 
 # ------------------------------
 # HTTP/S Bindings
@@ -95,14 +99,13 @@ DOVEADM_PORT=127.0.0.1:19991
 SQL_PORT=127.0.0.1:13306
 
 # Your timezone
-TZ=${TZ}
+TZ=${MAILCOW_TZ}
 
 # Fixed project name
 COMPOSE_PROJECT_NAME=mailcowdockerized
 
 # Additional SAN for the certificate
 ADDITIONAL_SAN=
-
 
 # Skip running ACME (acme-mailcow, Let's Encrypt certs) - y/n
 SKIP_LETS_ENCRYPT=n
