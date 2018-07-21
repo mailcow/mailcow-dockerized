@@ -42,7 +42,7 @@ jQuery(function($){
       }),
       "empty": lang.empty,
       "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "filtering": {"enabled": true,"position": "left","connectors": false,"placeholder": lang.filter_table
+      "filtering": {"enabled": true,"delay": 1,"position": "left","connectors": false,"placeholder": lang.filter_table
       },
       "sorting": {"enabled": true}
     });
