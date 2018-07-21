@@ -1,4 +1,63 @@
 $(document).ready(function() {
+  FooTable.domainFilter = FooTable.Filtering.extend({
+    construct: function(instance){
+      this._super(instance);
+      var domain_list = [];
+      $.ajax({
+        dataType: 'json',
+        'async': false,
+        url: '/api/v1/get/domain/all',
+        jsonp: false,
+        error: function () {
+          domain_list.push('Cannot read domain list');
+        },
+        success: function (data) {
+          $.each(data, function (i, item) {
+            domain_list.push(item.domain_name);
+          });
+        }
+      });
+      this.domains = domain_list;
+      this.def = 'All Domains';
+      this.$domain = null;
+    },
+    $create: function(){
+      this._super();
+      var self = this,
+      $form_grp = $('<div/>', {'class': 'form-group'})
+        .append($('<label/>', {'class': 'sr-only', text: 'Domain'}))
+        .prependTo(self.$form);
+      self.$domain = $('<select/>', { 'class': 'form-control' })
+        .on('change', {self: self}, self._onDomainDropdownChanged)
+        .append($('<option/>', {text: self.def}))
+        .appendTo($form_grp);
+
+      $.each(self.domains, function(i, domain){
+        self.$domain.append($('<option/>').text(domain));
+      });
+    },
+    _onDomainDropdownChanged: function(e){
+      var self = e.data.self,
+        selected = $(this).val();
+      if (selected !== self.def){
+        self.addFilter('domain', selected, ['domain']);
+      } else {
+        self.removeFilter('domain');
+      }
+      self.filter();
+    },
+    draw: function(){
+      this._super();
+      var domain = this.find('domain');
+      if (domain instanceof FooTable.Filter){
+        this.$domain.val(domain.query.val());
+      } else {
+        this.$domain.val(this.def);
+      }
+      $(this.$domain).closest("select").selectpicker();
+    }
+  });
+
   // Auto-fill domain quota when adding new domain
   auto_fill_quota = function(domain) {
 		$.get("/api/v1/get/domain/" + domain, function(data){
@@ -207,6 +266,7 @@ jQuery(function($){
       },
       "filtering": {
         "enabled": true,
+        "delay": 100,
         "position": "left",
         "connectors": false,
         "placeholder": lang.filter_table
@@ -281,9 +341,13 @@ jQuery(function($){
       },
       "filtering": {
         "enabled": true,
+        "delay": 100,
         "position": "left",
         "connectors": false,
         "placeholder": lang.filter_table
+      },
+      "components": {
+        "filtering": FooTable.domainFilter
       },
       "sorting": {
         "enabled": true
@@ -334,9 +398,13 @@ jQuery(function($){
       },
       "filtering": {
         "enabled": true,
+        "delay": 100,
         "position": "left",
         "connectors": false,
         "placeholder": lang.filter_table
+      },
+      "components": {
+        "filtering": FooTable.domainFilter
       },
       "sorting": {
         "enabled": true
@@ -387,6 +455,7 @@ jQuery(function($){
       },
       "filtering": {
         "enabled": true,
+        "delay": 100,
         "position": "left",
         "connectors": false,
         "placeholder": lang.filter_table
@@ -435,6 +504,7 @@ jQuery(function($){
       },
       "filtering": {
         "enabled": true,
+        "delay": 100,
         "position": "left",
         "connectors": false,
         "placeholder": lang.filter_table
@@ -492,9 +562,13 @@ jQuery(function($){
       },
       "filtering": {
         "enabled": true,
+        "delay": 100,
         "position": "left",
         "connectors": false,
         "placeholder": lang.filter_table
+      },
+      "components": {
+        "filtering": FooTable.domainFilter
       },
       "sorting": {
         "enabled": true
@@ -537,9 +611,13 @@ jQuery(function($){
       },
       "filtering": {
         "enabled": true,
+        "delay": 100,
         "position": "left",
         "connectors": false,
         "placeholder": lang.filter_table
+      },
+      "components": {
+        "filtering": FooTable.domainFilter
       },
       "sorting": {
         "enabled": true
@@ -603,6 +681,7 @@ jQuery(function($){
       },
       "filtering": {
         "enabled": true,
+        "delay": 100,
         "position": "left",
         "connectors": false,
         "placeholder": lang.filter_table
@@ -657,6 +736,7 @@ jQuery(function($){
       },
       "filtering": {
         "enabled": true,
+        "delay": 100,
         "position": "left",
         "connectors": false,
         "placeholder": lang.filter_table
