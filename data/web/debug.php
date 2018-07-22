@@ -116,11 +116,11 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 
         <div role="tabpanel" class="tab-pane" id="tab-postfix-logs">
           <div class="panel panel-default">
-            <div class="panel-heading">Postfix <span class="badge badge-info log-lines"></span>
+            <div class="panel-heading">Postfix <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="postfix_log" data-log-url="postfix" data-nrows="100">+ 100</button>
                 <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="postfix_log" data-log-url="postfix" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default" id="refresh_postfix_log"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_postfix_logs" data-table="postfix_log"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -133,11 +133,11 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 
         <div role="tabpanel" class="tab-pane" id="tab-dovecot-logs">
           <div class="panel panel-default">
-            <div class="panel-heading">Dovecot <span class="badge badge-info log-lines"></span>
+            <div class="panel-heading">Dovecot <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="dovecot_log" data-log-url="dovecot" data-nrows="100">+ 100</button>
                 <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="dovecot_log" data-log-url="dovecot" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default" id="refresh_dovecot_log"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_dovecot_logs" data-table="dovecot_log"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -150,11 +150,11 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 
         <div role="tabpanel" class="tab-pane" id="tab-sogo-logs">
           <div class="panel panel-default">
-            <div class="panel-heading">SOGo <span class="badge badge-info log-lines"></span>
+            <div class="panel-heading">SOGo <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="sogo_log" data-log-url="sogo" data-nrows="100">+ 100</button>
                 <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="sogo_log" data-log-url="sogo" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default" id="refresh_sogo_log"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_sogo_logs" data-table="sogo_log"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -167,11 +167,11 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 
         <div role="tabpanel" class="tab-pane" id="tab-netfilter-logs">
           <div class="panel panel-default">
-            <div class="panel-heading">Netfilter <span class="badge badge-info log-lines"></span>
+            <div class="panel-heading">Netfilter <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="netfilter_log" data-log-url="netfilter" data-nrows="100">+ 100</button>
                 <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="netfilter_log" data-log-url="netfilter" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default" id="refresh_netfilter_log"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_netfilter_logs" data-table="netfilter_log"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -184,11 +184,11 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 
         <div role="tabpanel" class="tab-pane" id="tab-rspamd-history">
           <div class="panel panel-default">
-            <div class="panel-heading">Rspamd history <span class="badge badge-info log-lines"></span>
+            <div class="panel-heading">Rspamd history <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default add_log_lines" data-post-process="rspamd_history" data-table="rspamd_history" data-log-url="rspamd-history" data-nrows="100">+ 100</button>
                 <button class="btn btn-xs btn-default add_log_lines" data-post-process="rspamd_history" data-table="rspamd_history" data-log-url="rspamd-history" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default" id="refresh_rspamd_history"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_rspamd_history" data-table="rspamd_history"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -202,11 +202,11 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 
         <div role="tabpanel" class="tab-pane" id="tab-autodiscover-logs">
           <div class="panel panel-default">
-            <div class="panel-heading">Autodiscover <span class="badge badge-info log-lines"></span>
+            <div class="panel-heading">Autodiscover <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default add_log_lines" data-post-process="autodiscover_log" data-table="autodiscover_log" data-log-url="autodiscover" data-nrows="100">+ 100</button>
                 <button class="btn btn-xs btn-default add_log_lines" data-post-process="autodiscover_log" data-table="autodiscover_log" data-log-url="autodiscover" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default" id="refresh_autodiscover_log"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_autodiscover_logs" data-table="autodiscover_log"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -219,11 +219,11 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 
         <div role="tabpanel" class="tab-pane" id="tab-watchdog-logs">
           <div class="panel panel-default">
-            <div class="panel-heading">Watchdog <span class="badge badge-info log-lines"></span>
+            <div class="panel-heading">Watchdog <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default add_log_lines" data-post-process="watchdog" data-table="watchdog_log" data-log-url="watchdog" data-nrows="100">+ 100</button>
                 <button class="btn btn-xs btn-default add_log_lines" data-post-process="watchdog" data-table="watchdog_log" data-log-url="watchdog" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default" id="refresh_watchdog_log"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_watchdog_logs" data-table="watchdog_log"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -236,11 +236,11 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 
         <div role="tabpanel" class="tab-pane" id="tab-acme-logs">
           <div class="panel panel-default">
-            <div class="panel-heading">ACME <span class="badge badge-info log-lines"></span>
+            <div class="panel-heading">ACME <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="acme_log" data-log-url="acme" data-nrows="100">+ 100</button>
                 <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="acme_log" data-log-url="acme" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default" id="refresh_acme_log"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_acme_logs" data-table="acme_log"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -253,11 +253,11 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 
         <div role="tabpanel" class="tab-pane" id="tab-api-logs">
           <div class="panel panel-default">
-            <div class="panel-heading">API <span class="badge badge-info log-lines"></span>
+            <div class="panel-heading">API <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default add_log_lines" data-post-process="apilog" data-table="api_log" data-log-url="api" data-nrows="100">+ 100</button>
                 <button class="btn btn-xs btn-default add_log_lines" data-post-process="apilog" data-table="api_log" data-log-url="api" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default" id="refresh_api_log"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_api_logs" data-table="api_log"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">

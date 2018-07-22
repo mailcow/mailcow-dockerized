@@ -1,44 +1,35 @@
 jQuery(function($){
+  if (localStorage.getItem("current_page") === null) {
+    var current_page = {};
+  } else {
+    var current_page = JSON.parse(localStorage.getItem('current_page'));
+  }
   // http://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery
   var entityMap={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;","/":"&#x2F;","`":"&#x60;","=":"&#x3D;"};
   function escapeHtml(n){return String(n).replace(/[&<>"'`=\/]/g,function(n){return entityMap[n]})}
   function humanFileSize(i){if(Math.abs(i)<1024)return i+" B";var B=["KiB","MiB","GiB","TiB","PiB","EiB","ZiB","YiB"],e=-1;do{i/=1024,++e}while(Math.abs(i)>=1024&&e<B.length-1);return i.toFixed(1)+" "+B[e]}
-  $("#refresh_postfix_log").on('click', function(e) {
+  $(".refresh_table").on('click', function(e) {
     e.preventDefault();
-    draw_postfix_logs();
+    var table_name = $(this).data('table');
+    $('#' + table_name).find("tr.footable-empty").remove();
+    draw_table = $(this).data('draw');
+    eval(draw_table + '()');
   });
-  $("#refresh_autodiscover_log").on('click', function(e) {
-    e.preventDefault();
-    draw_autodiscover_logs();
-  });
-  $("#refresh_dovecot_log").on('click', function(e) {
-    e.preventDefault();
-    draw_dovecot_logs();
-  });
-  $("#refresh_sogo_log").on('click', function(e) {
-    e.preventDefault();
-    draw_sogo_logs();
-  });
-  $("#refresh_watchdog_log").on('click', function(e) {
-    e.preventDefault();
-    draw_watchdog_logs();
-  });
-  $("#refresh_api_log").on('click', function(e) {
-    e.preventDefault();
-    draw_api_logs();
-  });
-  $("#refresh_acme_log").on('click', function(e) {
-    e.preventDefault();
-    draw_acme_logs();
-  });
-  $("#refresh_netfilter_log").on('click', function(e) {
-    e.preventDefault();
-    draw_netfilter_logs();
-  });
-  $("#refresh_rspamd_history").on('click', function(e) {
-    e.preventDefault();
-    draw_rspamd_history();
-  });
+  function table_log_ready(ft, name) {
+    heading = ft.$el.parents('.tab-pane').find('.panel-heading')
+    var ft_paging = ft.use(FooTable.Paging)
+    $(heading).children('.table-lines').text(function(){
+      return ft_paging.totalRows;
+    })
+    if (current_page[name]) {
+      ft_paging.goto(parseInt(current_page[name]))
+    }
+  }
+  function table_log_paging(ft, name) {
+    var ft_paging = ft.use(FooTable.Paging)
+    current_page[name] = ft_paging.current;
+    localStorage.setItem('current_page', JSON.stringify(current_page));
+  }
   function draw_autodiscover_logs() {
     ft_autodiscover_logs = FooTable.init('#autodiscover_log', {
       "columns": [
@@ -62,12 +53,12 @@ jQuery(function($){
       "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
       "filtering": {"enabled": true,"delay": 1,"position": "left","placeholder": lang.filter_table},
       "sorting": {"enabled": true},
-      "on": {"ready.ft.table": function(e, ft){
-          heading = ft.$el.parents('.tab-pane').find('.panel-heading')
-          $(heading).children('.log-lines').text(function(){
-            var ft_paging = ft.use(FooTable.Paging)
-            return ft_paging.totalRows;
-          })
+      "on": {
+        "ready.ft.table": function(e, ft){
+          table_log_ready(ft, 'autodiscover_logs');
+        },
+        "after.ft.paging": function(e, ft){
+          table_log_paging(ft, 'autodiscover_logs');
         }
       }
     });
@@ -96,11 +87,10 @@ jQuery(function($){
       "sorting": {"enabled": true},
       "on": {
         "ready.ft.table": function(e, ft){
-          heading = ft.$el.parents('.tab-pane').find('.panel-heading')
-          $(heading).children('.log-lines').text(function(){
-            var ft_paging = ft.use(FooTable.Paging)
-            return ft_paging.totalRows;
-          })
+          table_log_ready(ft, 'postfix_logs');
+        },
+        "after.ft.paging": function(e, ft){
+          table_log_paging(ft, 'postfix_logs');
         }
       }
     });
@@ -130,11 +120,10 @@ jQuery(function($){
       "sorting": {"enabled": true},
       "on": {
         "ready.ft.table": function(e, ft){
-          heading = ft.$el.parents('.tab-pane').find('.panel-heading')
-          $(heading).children('.log-lines').text(function(){
-            var ft_paging = ft.use(FooTable.Paging)
-            return ft_paging.totalRows;
-          })
+          table_log_ready(ft, 'postfix_logs');
+        },
+        "after.ft.paging": function(e, ft){
+          table_log_paging(ft, 'postfix_logs');
         }
       }
     });
@@ -165,11 +154,10 @@ jQuery(function($){
       "sorting": {"enabled": true},
       "on": {
         "ready.ft.table": function(e, ft){
-          heading = ft.$el.parents('.tab-pane').find('.panel-heading')
-          $(heading).children('.log-lines').text(function(){
-            var ft_paging = ft.use(FooTable.Paging)
-            return ft_paging.totalRows;
-          })
+          table_log_ready(ft, 'api_logs');
+        },
+        "after.ft.paging": function(e, ft){
+          table_log_paging(ft, 'api_logs');
         }
       }
     });
@@ -197,11 +185,10 @@ jQuery(function($){
       "sorting": {"enabled": true},
       "on": {
         "ready.ft.table": function(e, ft){
-          heading = ft.$el.parents('.tab-pane').find('.panel-heading')
-          $(heading).children('.log-lines').text(function(){
-            var ft_paging = ft.use(FooTable.Paging)
-            return ft_paging.totalRows;
-          })
+          table_log_ready(ft, 'acme_logs');
+        },
+        "after.ft.paging": function(e, ft){
+          table_log_paging(ft, 'acme_logs');
         }
       }
     });
@@ -230,11 +217,10 @@ jQuery(function($){
       "sorting": {"enabled": true},
       "on": {
         "ready.ft.table": function(e, ft){
-          heading = ft.$el.parents('.tab-pane').find('.panel-heading')
-          $(heading).children('.log-lines').text(function(){
-            var ft_paging = ft.use(FooTable.Paging)
-            return ft_paging.totalRows;
-          })
+          table_log_ready(ft, 'netfilter_logs');
+        },
+        "after.ft.paging": function(e, ft){
+          table_log_paging(ft, 'netfilter_logs');
         }
       }
     });
@@ -263,11 +249,10 @@ jQuery(function($){
       "sorting": {"enabled": true},
       "on": {
         "ready.ft.table": function(e, ft){
-          heading = ft.$el.parents('.tab-pane').find('.panel-heading')
-          $(heading).children('.log-lines').text(function(){
-            var ft_paging = ft.use(FooTable.Paging)
-            return ft_paging.totalRows;
-          })
+          table_log_ready(ft, 'sogo_logs');
+        },
+        "after.ft.paging": function(e, ft){
+          table_log_paging(ft, 'sogo_logs');
         }
       }
     });
@@ -296,11 +281,10 @@ jQuery(function($){
       "sorting": {"enabled": true},
       "on": {
         "ready.ft.table": function(e, ft){
-          heading = ft.$el.parents('.tab-pane').find('.panel-heading')
-          $(heading).children('.log-lines').text(function(){
-            var ft_paging = ft.use(FooTable.Paging)
-            return ft_paging.totalRows;
-          })
+          table_log_ready(ft, 'dovecot_logs');
+        },
+        "after.ft.paging": function(e, ft){
+          table_log_paging(ft, 'dovecot_logs');
         }
       }
     });
@@ -338,8 +322,9 @@ jQuery(function($){
       "sorting": {"enabled": true},
       "on": {
         "ready.ft.table": function(e, ft){
+          table_log_ready(ft, 'rspamd_history');
           heading = ft.$el.parents('.tab-pane').find('.panel-heading')
-          $(heading).children('.log-lines').text(function(){
+          $(heading).children('.table-lines').text(function(){
             var ft_paging = ft.use(FooTable.Paging)
             return ft_paging.totalRows;
           })
@@ -377,6 +362,9 @@ jQuery(function($){
               );
             }
           });
+        },
+        "after.ft.paging": function(e, ft){
+          table_log_paging(ft, 'rspamd_history');
         }
       }
     });
@@ -516,7 +504,7 @@ jQuery(function($){
         if (data.length === undefined) { mailcow_alert_box(lang.no_new_rows, "info"); return; }
         var rows = process_table_data(data, post_process);
         var rows_now = (ft_paging.totalRows + data.length);
-        $(heading).children('.log-lines').text(rows_now)
+        $(heading).children('.table-lines').text(rows_now)
         mailcow_alert_box(data.length + lang.additional_rows, "success");
         ft.rows.load(rows, true);
       });

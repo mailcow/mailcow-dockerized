@@ -43,3 +43,6 @@ table.footable>tbody>tr.footable-empty>td {
   max-width: 150px;
   word-break: break-all;
 }
+.table-lines {
+  vertical-align: inherit;
+}
