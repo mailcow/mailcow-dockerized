@@ -30,7 +30,10 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
         <div role="tabpanel" class="tab-pane active" id="tab-domains">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title"><?=$lang['mailbox']['domains'];?></h3>
+              <?=$lang['mailbox']['domains'];?> <span class="badge badge-info table-lines"></span>
+              <div class="btn-group pull-right">
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_domain_table" data-table="domain_table"><?=$lang['admin']['refresh'];?></button>
+              </div>
             </div>
             <div class="table-responsive">
               <table id="domain_table" class="table table-striped"></table>
@@ -58,7 +61,10 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
         <div role="tabpanel" class="tab-pane" id="tab-mailboxes">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title"><?=$lang['mailbox']['mailboxes'];?></h3>
+              <?=$lang['mailbox']['mailboxes'];?> <span class="badge badge-info table-lines"></span>
+              <div class="btn-group pull-right">
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_mailbox_table" data-table="mailbox_table"><?=$lang['admin']['refresh'];?></button>
+              </div>
             </div>
             <div class="table-responsive">
               <table id="mailbox_table" class="table table-striped"></table>
@@ -82,7 +88,10 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
         <div role="tabpanel" class="tab-pane" id="tab-resources">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title"><?=$lang['mailbox']['resources'];?></h3>
+              <?=$lang['mailbox']['resources'];?> <span class="badge badge-info table-lines"></span>
+              <div class="btn-group pull-right">
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_resource_table" data-table="resource_table"><?=$lang['admin']['refresh'];?></button>
+              </div>
             </div>
             <div class="table-responsive">
               <table id="resource_table" class="table table-striped"></table>
@@ -112,10 +121,10 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
         <div role="tabpanel" class="tab-pane" id="tab-domain-aliases">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <div class="pull-right">
-                <a href="#" data-toggle="modal" data-target="#addAliasDomainModal" ><span class="glyphicon glyphicon-plus"></span></a>
+              <?=$lang['mailbox']['domain_aliases'];?> <span class="badge badge-info table-lines"></span>
+              <div class="btn-group pull-right">
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_aliasdomain_table" data-table="aliasdomain_table"><?=$lang['admin']['refresh'];?></button>
               </div>
-              <h3 class="panel-title"><?=$lang['mailbox']['domain_aliases'];?></h3>
             </div>
             <div class="table-responsive">
               <table id="aliasdomain_table" class="table table-striped"></table>
@@ -139,7 +148,10 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
         <div role="tabpanel" class="tab-pane" id="tab-mbox-aliases">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title"><?=$lang['mailbox']['aliases'];?></h3>
+              <?=$lang['mailbox']['aliases'];?> <span class="badge badge-info table-lines"></span>
+              <div class="btn-group pull-right">
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_alias_table" data-table="alias_table"><?=$lang['admin']['refresh'];?></button>
+              </div>
             </div>
             <div class="table-responsive">
               <table id="alias_table" class="table table-striped"></table>
@@ -163,7 +175,10 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
         <div role="tabpanel" class="tab-pane" id="tab-syncjobs">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title"><?=$lang['mailbox']['sync_jobs'];?></h3>
+              <?=$lang['mailbox']['sync_jobs'];?> <span class="badge badge-info table-lines"></span>
+              <div class="btn-group pull-right">
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_sync_job_table" data-table="sync_job_table"><?=$lang['admin']['refresh'];?></button>
+              </div>
             </div>
             <div class="table-responsive">
               <table class="table table-striped" id="sync_job_table"></table>
@@ -189,7 +204,10 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
         <div role="tabpanel" class="tab-pane" id="tab-filters">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title"><?=$lang['mailbox']['filters'];?></h3>
+              <?=$lang['mailbox']['filters'];?> <span class="badge badge-info table-lines"></span>
+              <div class="btn-group pull-right">
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_filter_table" data-table="filter_table"><?=$lang['admin']['refresh'];?></button>
+              </div>
             </div>
             <p style="margin:10px" class="help-block"><?=$lang['mailbox']['sieve_info'];?></p>
             <div class="table-responsive">
@@ -217,7 +235,10 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
         <div role="tabpanel" class="tab-pane" id="tab-bcc">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title"><?=$lang['mailbox']['bcc_maps'];?></h3>
+              <?=$lang['mailbox']['bcc_maps'];?> <span class="badge badge-info table-lines"></span>
+              <div class="btn-group pull-right">
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_bcc_table" data-table="bcc_table"><?=$lang['admin']['refresh'];?></button>
+              </div>
             </div>
             <p style="margin:10px" class="help-block"><?=$lang['mailbox']['bcc_info'];?></p>
             <div class="table-responsive">
@@ -242,7 +263,10 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
           </div>
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title"><?=$lang['mailbox']['recipient_maps'];?></h3>
+              <?=$lang['mailbox']['recipient_maps'];?> <span class="badge badge-info table-lines"></span>
+              <div class="btn-group pull-right">
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_recipient_map_table" data-table="recipient_map_table"><?=$lang['admin']['refresh'];?></button>
+              </div>
             </div>
             <p style="margin:10px" class="help-block"><?=$lang['mailbox']['recipient_map_info'];?></p>
             <div class="table-responsive">
