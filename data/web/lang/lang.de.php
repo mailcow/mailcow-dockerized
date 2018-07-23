@@ -8,7 +8,8 @@ $lang['header']['restart_sogo'] = 'SOGo neustarten';
 $lang['header']['restart_netfilter'] = 'Netfilter neustarten';
 $lang['footer']['restart_container'] = 'Container neustarten';
 $lang['footer']['restart_now'] = 'Jetzt neustarten';
-$lang['footer']['restart_container_info'] = '<b>Wichtig:</b> Ein korrekter Neustart eines Containers kann eine Weile in Anspruch nehmen, bitte warten Sie, bis der Prozess vollständig beendet wurde.';
+$lang['footer']['restarting_container'] = 'Container wird neugestartet, bitte warten...';
+$lang['footer']['restart_container_info'] = '<b>Wichtig:</b> Der Neustart eines Containers kann eine Weile in Anspruch nehmen, bitte warten Sie, bis der Prozess vollständig beendet wurde.<br>Die Website wird neugeladen, wenn der Vorgang erfolgreich ist.';
 
 $lang['footer']['confirm_delete'] = 'Löschen bestätigen';
 $lang['footer']['delete_these_items'] = 'Sind Sie sicher, dass die Änderungen an Elementen mit folgender ID durchgeführt werden sollen?';

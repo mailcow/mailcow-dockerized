@@ -8,7 +8,8 @@ $lang['header']['restart_sogo'] = 'Restart SOGo';
 $lang['header']['restart_netfilter'] = 'Restart netfilter';
 $lang['footer']['restart_container'] = 'Restart container';
 $lang['footer']['restart_now'] = 'Restart now';
-$lang['footer']['restart_container_info'] = '<b>Important:</b> A graceful restart may take a while to complete, please wait for it to finish.';
+$lang['footer']['restarting_container'] = 'Restarting container, this may take a while...';
+$lang['footer']['restart_container_info'] = '<b>Important:</b> A graceful restart may take a while to complete, please wait for it to finish.<br>This website will reload if the process succeeded.';
 
 $lang['footer']['confirm_delete'] = 'Confirm deletion';
 $lang['footer']['delete_these_items'] = 'Please confirm your changes to the following object id:';
