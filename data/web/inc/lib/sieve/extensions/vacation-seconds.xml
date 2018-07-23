@@ -1,0 +1,32 @@
+<?xml version='1.0' standalone='yes'?>
+
+<extension name="vacation-seconds">
+
+	<command name="vacation">
+
+		<parameter type="tag" name="seconds" occurrence="optional" regex="seconds">
+			<parameter type="number" name="period" />
+		</parameter>
+
+		<parameter type="tag" name="addresses" occurrence="optional" regex="addresses">
+			<parameter type="stringlist" name="address strings" />
+		</parameter>
+
+		<parameter type="tag" name="subject" occurrence="optional" regex="subject">
+			<parameter type="string" name="subject string" />
+		</parameter>
+
+		<parameter type="tag" name="from" occurrence="optional" regex="from">
+			<parameter type="string" name="from string" />
+		</parameter>
+
+		<parameter type="tag" name="handle" occurrence="optional" regex="handle">
+			<parameter type="string" name="handle string" />
+		</parameter>
+
+		<parameter type="tag" name="mime" occurrence="optional" regex="mime" />
+
+		<parameter type="string" name="reason" />
+	</command>
+
+</extension>

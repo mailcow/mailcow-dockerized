@@ -80,7 +80,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <label class="control-label col-sm-2" for="domains"><?=$lang['edit']['domains'];?></label>
               <div class="col-sm-10">
-                <select id="domains" name="domains" multiple required>
+                <select data-live-search="true" id="domains" name="domains" multiple required>
                 <?php
                 foreach ($result['selected_domains'] as $domain):
                 ?>
@@ -186,7 +186,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <label class="control-label col-sm-2" for="quota">Relayhost</label>
               <div class="col-sm-10">
-                <select name="relayhost" id="relayhost" class="form-control">
+                <select data-live-search="true" name="relayhost" id="relayhost" class="form-control">
                   <?php
                   foreach ($rlyhosts as $rlyhost) {
                   ?>
@@ -408,7 +408,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           <div class="form-group">
             <label class="control-label col-sm-2" for="sender_acl"><?=$lang['edit']['sender_acl'];?>:</label>
             <div class="col-sm-10">
-              <select data-width="100%" style="width:100%" id="sender_acl" name="sender_acl" size="10" multiple>
+              <select data-live-search="true" data-width="100%" style="width:100%" id="sender_acl" name="sender_acl" size="10" multiple>
               <?php
               $sender_acl_handles = mailbox('get', 'sender_acl_handles', $mailbox);
 

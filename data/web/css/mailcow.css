@@ -136,3 +136,6 @@ nav .glyphicon {
 #top {
   padding-top: 70px;
 }
+.bootstrap-select.btn-group .no-results {
+  display: none;
+}
