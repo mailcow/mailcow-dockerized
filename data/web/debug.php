@@ -192,7 +192,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               </div>
             </div>
             <div class="panel-body">
-              <div id="rspamd_donut" style="height:400px;width:100%; "></div>
+              <div id="rspamd_donut" style="height: 300px;"></div>
               <div class="table-responsive">
                 <table class="table table-striped table-condensed log-table" id="rspamd_history"></table>
               </div>
