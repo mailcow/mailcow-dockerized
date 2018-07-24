@@ -302,8 +302,8 @@ jQuery(function($){
           var data = google.visualization.arrayToDataTable(graphdata);
 
           var options = {
-            title: 'Rspamd Visualization Chart',
             is3D: true,
+            sliceVisibilityThreshold: 0,
             pieSliceText: 'percentage',
             chartArea: {
               left: 0,
@@ -312,6 +312,7 @@ jQuery(function($){
               width: '100%',
               height: '100%'
             },
+      
             slices: {
               0: { color: '#DC3023' },
               1: { color: '#59ABE3' },
