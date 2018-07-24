@@ -330,36 +330,39 @@ jQuery(function($){
           })
           $.ajax({
             url: '/api/v1/get/rspamd/actions',
-            success: function(data){
-              var total = 0;
-              $(data).map(function(){total += this[1];})
-              rspamd_labels = $.makeArray($(data).map(function(){return "<h5>" + this[0] + " (" + this[1] + ") " + Math.round(this[1]/total * 100) + "%</h5>";}));
-              rspamd_donut_plot = $.jqplot('rspamd_donut', [data],
-                {
-                  seriesDefaults: {
-                    renderer: jQuery.jqplot.DonutRenderer,
-                    rendererOptions: {
-                      showDataLabels: true,
-                      dataLabels: rspamd_labels,
-                      dataLabelThreshold: 1,
-                      sliceMargin: 5,
-                      totalLabel: true
-                    },
-                    shadow: false,
-                    seriesColors: ['#FF4136', '#75CAEB', '#FF851B', '#FF851B', '#28B62C']
+            success: function(graphdata){
+              graphdata.unshift(['Type', 'Count']);
+              google.charts.load('current', {'packages':['corechart']});
+              google.charts.setOnLoadCallback(drawChart);
+
+              function drawChart() {
+
+                var data = google.visualization.arrayToDataTable(graphdata);
+
+                var options = {
+                  title: 'Rspamd Visualization Chart',
+                  is3D: true,
+                  pieSliceText: 'percentage',
+                  chartArea: {
+                    left: 0,
+                    right: 0,
+                    top: 20,
+                    width: '100%',
+                    height: '100%'
                   },
-                  legend: {
-                    show:false,
-                  },
-                  grid: {
-                    drawGridLines: true,
-                    gridLineColor: '#efefef',
-                    background: '#ffffff',
-                    borderWidth: 0,
-                    shadow: false,
+                  slices: {
+                    0: { color: '#DC3023' },
+                    1: { color: '#59ABE3' },
+                    2: { color: '#FFA400' },
+                    3: { color: '#FFA400' },
+                    4: { color: '#26A65B' }
                   }
-                }
-              );
+                };
+
+                var chart = new google.visualization.PieChart(document.getElementById('rspamd_donut'));
+
+                chart.draw(data, options);
+              }
             }
           });
         },
