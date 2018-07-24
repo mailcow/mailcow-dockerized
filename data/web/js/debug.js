@@ -289,6 +289,45 @@ jQuery(function($){
       }
     });
   }
+  function rspamd_pie_graph() {
+    $.ajax({
+      url: '/api/v1/get/rspamd/actions',
+      success: function(graphdata){
+        graphdata.unshift(['Type', 'Count']);
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+
+          var data = google.visualization.arrayToDataTable(graphdata);
+
+          var options = {
+            title: 'Rspamd Visualization Chart',
+            is3D: true,
+            pieSliceText: 'percentage',
+            chartArea: {
+              left: 0,
+              right: 0,
+              top: 20,
+              width: '100%',
+              height: '100%'
+            },
+            slices: {
+              0: { color: '#DC3023' },
+              1: { color: '#59ABE3' },
+              2: { color: '#FFA400' },
+              3: { color: '#FFA400' },
+              4: { color: '#26A65B' }
+            }
+          };
+
+          var chart = new google.visualization.PieChart(document.getElementById('rspamd_donut'));
+
+          chart.draw(data, options);
+        }
+      }
+    });
+  }
   function draw_rspamd_history() {
     ft_rspamd_history = FooTable.init('#rspamd_history', {
       "columns": [
@@ -328,43 +367,7 @@ jQuery(function($){
             var ft_paging = ft.use(FooTable.Paging)
             return ft_paging.totalRows;
           })
-          $.ajax({
-            url: '/api/v1/get/rspamd/actions',
-            success: function(graphdata){
-              graphdata.unshift(['Type', 'Count']);
-              google.charts.load('current', {'packages':['corechart']});
-              google.charts.setOnLoadCallback(drawChart);
-
-              function drawChart() {
-
-                var data = google.visualization.arrayToDataTable(graphdata);
-
-                var options = {
-                  title: 'Rspamd Visualization Chart',
-                  is3D: true,
-                  pieSliceText: 'percentage',
-                  chartArea: {
-                    left: 0,
-                    right: 0,
-                    top: 20,
-                    width: '100%',
-                    height: '100%'
-                  },
-                  slices: {
-                    0: { color: '#DC3023' },
-                    1: { color: '#59ABE3' },
-                    2: { color: '#FFA400' },
-                    3: { color: '#FFA400' },
-                    4: { color: '#26A65B' }
-                  }
-                };
-
-                var chart = new google.visualization.PieChart(document.getElementById('rspamd_donut'));
-
-                chart.draw(data, options);
-              }
-            }
-          });
+          rspamd_pie_graph();
         },
         "after.ft.paging": function(e, ft){
           table_log_paging(ft, 'rspamd_history');
@@ -527,15 +530,13 @@ jQuery(function($){
       var timer;
       clearTimeout(timer);
       timer = setTimeout(function () {
-        if (typeof rspamd_donut_plot !== 'undefined') {
-          rspamd_donut_plot.replot({});
-        }
+        rspamd_pie_graph();
       }, 500);
   });
   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
     var target = $(e.target).attr("href");
     if ((target == '#tab-rspamd-history')) {
-      rspamd_donut_plot.replot({});
+      rspamd_pie_graph();
     }
   });
 });
