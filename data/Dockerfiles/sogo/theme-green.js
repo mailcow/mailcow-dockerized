@@ -57,5 +57,6 @@
 
     $mdThemingProvider.setDefaultTheme('mailcow');
     $mdThemingProvider.generateThemesOnDemand(false);
+    $mdThemingProvider.alwaysWatchTheme(true);
   }
 })();
