@@ -211,10 +211,13 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             );
             return false;
           }
-          $active  = intval($_data['active']);
+          $active               = intval($_data['active']);
+          $subscribeall         = intval($_data['subscribeall']);
           $delete2duplicates    = intval($_data['delete2duplicates']);
           $delete1              = intval($_data['delete1']);
           $delete2              = intval($_data['delete2']);
+          $timeout1             = intval($_data['timeout1']);
+          $timeout2             = intval($_data['timeout2']);
           $skipcrossduplicates  = intval($_data['skipcrossduplicates']);
           $automap              = intval($_data['automap']);
           $port1                = $_data['port1'];
@@ -226,12 +229,19 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
           $subfolder2           = $_data['subfolder2'];
           $user1                = $_data['user1'];
           $mins_interval        = $_data['mins_interval'];
-          $enc1                = $_data['enc1'];
+          $enc1                 = $_data['enc1'];
+          $custom_params        = (empty(trim($_data['custom_params']))) ? '' : trim($_data['custom_params']);
           if (empty($subfolder2)) {
             $subfolder2 = "";
           }
-          if (!isset($maxage) || !filter_var($maxage, FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 32767)))) {
+          if (!isset($maxage) || !filter_var($maxage, FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 32000)))) {
             $maxage = "0";
+          }
+          if (!isset($timeout1) || !filter_var($timeout1, FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 32000)))) {
+            $timeout1 = "600";
+          }
+          if (!isset($timeout2) || !filter_var($timeout2, FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 32000)))) {
+            $timeout2 = "600";
           }
           if (!isset($maxbytespersecond) || !filter_var($maxbytespersecond, FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 125000000)))) {
             $maxbytespersecond = "0";
@@ -292,17 +302,21 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             return false;
           }
           try {
-            $stmt = $pdo->prepare("INSERT INTO `imapsync` (`user2`, `exclude`, `delete1`, `delete2`, `automap`, `skipcrossduplicates`, `maxbytespersecond`, `maxage`, `subfolder2`, `host1`, `authmech1`, `user1`, `password1`, `mins_interval`, `port1`, `enc1`, `delete2duplicates`, `active`)
-              VALUES (:user2, :exclude, :delete1, :delete2, :automap, :skipcrossduplicates, :maxbytespersecond, :maxage, :subfolder2, :host1, :authmech1, :user1, :password1, :mins_interval, :port1, :enc1, :delete2duplicates, :active)");
+            $stmt = $pdo->prepare("INSERT INTO `imapsync` (`user2`, `exclude`, `delete1`, `delete2`, `timeout1`, `timeout2`, `automap`, `skipcrossduplicates`, `maxbytespersecond`, `subscribeall`, `maxage`, `subfolder2`, `host1`, `authmech1`, `user1`, `password1`, `mins_interval`, `port1`, `enc1`, `delete2duplicates`, `custom_params`, `active`)
+              VALUES (:user2, :exclude, :delete1, :delete2, :timeout1, :timeout2, :automap, :skipcrossduplicates, :maxbytespersecond, :subscribeall, :maxage, :subfolder2, :host1, :authmech1, :user1, :password1, :mins_interval, :port1, :enc1, :delete2duplicates, :custom_params, :active)");
             $stmt->execute(array(
               ':user2' => $username,
+              ':custom_params' => $custom_params,
               ':exclude' => $exclude,
               ':maxage' => $maxage,
               ':delete1' => $delete1,
               ':delete2' => $delete2,
+              ':timeout1' => $timeout1,
+              ':timeout2' => $timeout2,
               ':automap' => $automap,
               ':skipcrossduplicates' => $skipcrossduplicates,
               ':maxbytespersecond' => $maxbytespersecond,
+              ':subscribeall' => $subscribeall,
               ':subfolder2' => $subfolder2,
               ':host1' => $host1,
               ':authmech1' => 'PLAIN',
@@ -1458,6 +1472,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
               $last_run = (isset($_data['last_run'])) ? NULL : $is_now['last_run'];
               $delete2duplicates = (isset($_data['delete2duplicates'])) ? intval($_data['delete2duplicates']) : $is_now['delete2duplicates'];
+              $subscribeall = (isset($_data['subscribeall'])) ? intval($_data['subscribeall']) : $is_now['subscribeall'];
               $delete1 = (isset($_data['delete1'])) ? intval($_data['delete1']) : $is_now['delete1'];
               $delete2 = (isset($_data['delete2'])) ? intval($_data['delete2']) : $is_now['delete2'];
               $automap = (isset($_data['automap'])) ? intval($_data['automap']) : $is_now['automap'];
@@ -1469,8 +1484,11 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               $enc1 = (!empty($_data['enc1'])) ? $_data['enc1'] : $is_now['enc1'];
               $mins_interval = (!empty($_data['mins_interval'])) ? $_data['mins_interval'] : $is_now['mins_interval'];
               $exclude = (isset($_data['exclude'])) ? $_data['exclude'] : $is_now['exclude'];
+              $custom_params = (isset($_data['custom_params'])) ? $_data['custom_params'] : $is_now['custom_params'];
               $maxage = (isset($_data['maxage']) && $_data['maxage'] != "") ? intval($_data['maxage']) : $is_now['maxage'];
               $maxbytespersecond = (isset($_data['maxbytespersecond']) && $_data['maxbytespersecond'] != "") ? intval($_data['maxbytespersecond']) : $is_now['maxbytespersecond'];
+              $timeout1 = (isset($_data['timeout1']) && $_data['timeout1'] != "") ? intval($_data['timeout1']) : $is_now['timeout1'];
+              $timeout2 = (isset($_data['timeout2']) && $_data['timeout2'] != "") ? intval($_data['timeout2']) : $is_now['timeout2'];
             }
             else {
               $_SESSION['return'] = array(
@@ -1482,8 +1500,14 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             if (empty($subfolder2)) {
               $subfolder2 = "";
             }
-            if (!isset($maxage) || !filter_var($maxage, FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 32767)))) {
+            if (!isset($maxage) || !filter_var($maxage, FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 32000)))) {
               $maxage = "0";
+            }
+            if (!isset($timeout1) || !filter_var($timeout1, FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 32000)))) {
+              $timeout1 = "600";
+            }
+            if (!isset($timeout2) || !filter_var($timeout2, FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 32000)))) {
+              $timeout2 = "600";
             }
             if (!isset($maxbytespersecond) || !filter_var($maxbytespersecond, FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 125000000)))) {
               $maxbytespersecond = "0";
@@ -1540,6 +1564,10 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
                 `port1` = :port1,
                 `enc1` = :enc1,
                 `delete2duplicates` = :delete2duplicates,
+                `custom_params` = :custom_params,
+                `timeout1` = :timeout1,
+                `timeout2` = :timeout2,
+                `subscribeall` = :subscribeall,
                 `active` = :active
                   WHERE `id` = :id");
               $stmt->execute(array(
@@ -1560,6 +1588,10 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
                 ':port1' => $port1,
                 ':enc1' => $enc1,
                 ':delete2duplicates' => $delete2duplicates,
+                ':custom_params' => $custom_params,
+                ':timeout1' => $timeout1,
+                ':timeout2' => $timeout2,
+                ':subscribeall' => $subscribeall,
                 ':active' => $active,
               ));
             }
