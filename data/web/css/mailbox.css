@@ -41,3 +41,7 @@ table.footable>tbody>tr.footable-empty>td {
 .table-lines {
   vertical-align: inherit;
 }
+#logText {
+  font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+  font-size:smaller;
+}

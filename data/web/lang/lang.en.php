@@ -251,7 +251,7 @@ $lang['edit']['redirect_uri'] = 'Redirect/Callback URL';
 $lang['edit']['hostname'] = 'Hostname';
 $lang['edit']['encryption'] = 'Encryption';
 $lang['edit']['maxage'] = 'Maximum age of messages in days that will be polled from remote<br><small>(0 = ignore age)</small>';
-$lang['edit']['maxbytespersecond'] = 'Max. bytes per second (0 equals to unlimited)';
+$lang['edit']['maxbytespersecond'] = 'Max. bytes per second <br><small>(0 = unlimited)</small>';
 $lang['edit']['automap'] = 'Try to automap folders ("Sent items", "Sent" => "Sent" etc.)';
 $lang['edit']['skipcrossduplicates'] = 'Skip duplicate messages across folders (first come, first serve)';
 $lang['add']['automap'] = 'Try to automap folders ("Sent items", "Sent" => "Sent" etc.)';
@@ -260,6 +260,7 @@ $lang['edit']['subfolder2'] = 'Sync into subfolder on destination<br><small>(emp
 $lang['edit']['mins_interval'] = 'Interval (min)';
 $lang['edit']['exclude'] = 'Exclude objects (regex)';
 $lang['edit']['save'] = 'Save changes';
+$lang['edit']['username'] = 'Username';
 $lang['edit']['max_mailboxes'] = 'Max. possible mailboxes';
 $lang['edit']['title'] = 'Edit object';
 $lang['edit']['target_address'] = 'Goto address/es <small>(comma-separated)</small>';
@@ -304,6 +305,11 @@ $lang['add']['exclude'] = 'Exclude objects (regex)';
 $lang['add']['delete2duplicates'] = 'Delete duplicates on destination';
 $lang['add']['delete1'] = 'Delete from source when completed';
 $lang['add']['delete2'] = 'Delete messages on destination that are not on source';
+$lang['add']['custom_params'] = 'Custom parameters';
+$lang['add']['subscribeall'] = 'Subscribe all folders';
+$lang['add']['timeout1'] = 'Timeout for connection to remote host';
+$lang['add']['timeout2'] = 'Timeout for connection to local host';
+
 $lang['edit']['delete2duplicates'] = 'Delete duplicates on destination';
 $lang['edit']['delete1'] = 'Delete from source when completed';
 $lang['edit']['delete2'] = 'Delete messages on destination that are not on source';
