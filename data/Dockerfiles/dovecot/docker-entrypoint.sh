@@ -136,6 +136,7 @@ touch /etc/crontab /etc/cron.*/*
 [[ -f /usr/local/var/run/dovecot/master.pid ]] && rm /usr/local/var/run/dovecot/master.pid
 
 # Clean stopped imapsync jobs
+rm -f /tmp/imapsync_busy.lock
 IMAPSYNC_TABLE=$(mysql -h mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SHOW TABLES LIKE 'imapsync'" -Bs)
 [[ ! -z ${IMAPSYNC_TABLE} ]] && mysql -h mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "UPDATE imapsync SET is_running='0'"
 

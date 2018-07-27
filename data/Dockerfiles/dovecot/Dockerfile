@@ -51,6 +51,7 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
   libterm-readkey-perl \
   libtest-pod-perl \
   libtest-simple-perl \
+  libtry-tiny-perl \
   libunicode-string-perl \
   libproc-processtable-perl \
   liburi-perl \
