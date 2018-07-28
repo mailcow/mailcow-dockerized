@@ -321,6 +321,29 @@ while ($row = array_shift($rows)) {
 <?php
 }
 
+/*
+// Start traps
+*/
+
+?>
+  traps {
+<?php
+  foreach (ucl_rcpts('spam@localhost', 'mailbox') as $rcpt) {
+?>
+    rcpt = <?=json_encode($rcpt, JSON_UNESCAPED_SLASHES);?>;
+<?php
+  }
+  foreach (ucl_rcpts('ham@localhost', 'mailbox') as $rcpt) {
+?>
+    rcpt = <?=json_encode($rcpt, JSON_UNESCAPED_SLASHES);?>;
+<?php
+  }
+?>
+    priority = 9;
+    want_spam = yes;
+  }
+
+<?php
 // Start additional content
 
 $stmt = $pdo->query("SELECT `id`, `content` FROM `settingsmap` WHERE `active` = '1'");
