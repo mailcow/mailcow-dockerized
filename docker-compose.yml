@@ -125,6 +125,7 @@ services:
         - SMTP_PORT=${SMTP_PORT:-25}
         - API_KEY=${API_KEY:-invalid}
         - API_ALLOW_FROM=${API_ALLOW_FROM:-invalid}
+        - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-mailcow-dockerized}
       restart: always
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -330,6 +331,7 @@ services:
       # Debug
       #command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog
+      oom_kill_disable: true
       volumes:
         - rspamd-sock:/rspamd-sock
       restart: always
@@ -354,7 +356,7 @@ services:
       image: mailcow/dockerapi:1.13
       restart: always
       build: ./data/Dockerfiles/dockerapi
-      oom_score_adj: -10
+      oom_kill_disable: true
       environment:
         - TZ=${TZ}
       volumes:
