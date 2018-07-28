@@ -4,10 +4,11 @@ trap "postfix stop" EXIT
 
 [[ ! -d /opt/postfix/conf/sql/ ]] && mkdir -p /opt/postfix/conf/sql/
 
-cat /dev/null > /etc/aliases;
-echo 'null: /dev/null' >> /etc/aliases;
-echo '"ham: "|/usr/bin/curl -s --data-binary @- --unix-socket /rspamd-sock/rspamd.sock http://rspamd/learnham"' >> /etc/aliases;
-echo 'spam: "|/usr/bin/curl -s --data-binary @- --unix-socket /rspamd-sock/rspamd.sock http://rspamd/learnspam"' >> /etc/aliases;
+cat <<EOF > /etc/aliases
+null: /dev/null
+ham: "|/usr/local/bin/rspamd-pipe-ham"
+spam: "|/usr/local/bin/rspamd-pipe-spam"
+EOF
 newaliases;
 
 cat <<EOF > /opt/postfix/conf/sql/mysql_relay_recipient_maps.cf
