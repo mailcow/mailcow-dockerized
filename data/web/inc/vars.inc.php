@@ -119,3 +119,4 @@ $RELAY_TO = "null@hosted.mailcow.de";
 
 // How long to wait (in s) for cURL Docker requests
 $DOCKER_TIMEOUT = 60;
+

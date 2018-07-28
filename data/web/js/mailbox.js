@@ -89,8 +89,17 @@ $(document).ready(function() {
     $('#password2').val(random_passwd);
   });
 
-  $("#goto_null").click(function( event ) {
-    if ($("#goto_null").is(":checked")) {
+  $(".goto_checkbox").click(function( event ) {
+   $("form[data-id='add_alias'] .goto_checkbox").not(this).prop('checked', false);
+    if ($("form[data-id='add_alias'] .goto_checkbox:checked").length > 0) {
+      $('#textarea_alias_goto').prop('disabled', true);
+    }
+    else {
+      $("#textarea_alias_goto").removeAttr('disabled');
+    }
+  });
+  $('#addAliasModal').on('show.bs.modal', function(e) {
+    if ($("form[data-id='add_alias'] .goto_checkbox:checked").length > 0) {
       $('#textarea_alias_goto').prop('disabled', true);
     }
     else {
@@ -615,6 +624,12 @@ jQuery(function($){
             }
             if (item.goto == "null@localhost") {
               item.goto = '⤷ <span style="font-size:12px" class="glyphicon glyphicon-trash" aria-hidden="true"></span>';
+            }
+            else if (item.goto == "spam@localhost") {
+              item.goto = '<span class="label label-danger">Learn as spam</span>';
+            }
+            else if (item.goto == "ham@localhost") {
+              item.goto = '<span class="label label-success">Learn as ham</span>';
             }
             if (item.in_primary_domain !== "") {
               item.domain = "↳ " + item.domain + " (" + item.in_primary_domain + ")";

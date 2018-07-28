@@ -344,6 +344,8 @@ $lang['add']['password'] = 'Password';
 $lang['add']['password_repeat'] = 'Confirmation password (repeat)';
 $lang['add']['restart_sogo_hint'] = 'You will need to restart the SOGo service container after adding a new domain!';
 $lang['add']['goto_null'] = 'Silently discard mail';
+$lang['add']['goto_ham'] = 'Learn as <span class="text-success"><b>ham</b></span>';
+$lang['add']['goto_spam'] = 'Learn as <span class="text-danger"><b>spam</b></span>';
 $lang['add']['validation_success'] = 'Validated successfully';
 $lang['add']['activate_filter_warn'] = 'All other filters will be deactivated, when active is checked.';
 $lang['add']['validate'] = 'Validate';

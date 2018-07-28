@@ -414,10 +414,10 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             );
             return false;
           }
-          if ($domain == $MAILCOW_HOSTNAME) {
+          if ($domain == getenv('MAILCOW_HOSTNAME')) {
             $_SESSION['return'] = array(
               'type' => 'danger',
-              'msg' => sprintf($lang['danger']['domain_matches_hostname'], htmlspecialchars($domain))
+              'msg' => 'Domain cannot match hostname'
             );
             return false;
           }
@@ -446,7 +446,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
               return false;
             }
             if (!empty($restart_sogo)) {
-              $restart_reponse = json_decode(docker('sogo-mailcow', 'post', 'restart'), true);
+              $restart_reponse = json_decode(docker('post', 'sogo-mailcow', 'restart'), true);
               if ($restart_reponse['type'] == "success") {
                 $_SESSION['return'] = array(
                   'type' => 'success',
@@ -475,6 +475,8 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
           $gotos      = array_map('trim', preg_split( "/( |,|;|\n)/", $_data['goto']));
           $active = intval($_data['active']);
           $goto_null = intval($_data['goto_null']);
+          $goto_spam = intval($_data['goto_spam']);
+          $goto_ham = intval($_data['goto_ham']);
           if (empty($addresses[0])) {
             $_SESSION['return'] = array(
               'type' => 'danger',
@@ -491,6 +493,12 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
           }
           if ($goto_null == "1") {
             $goto = "null@localhost";
+          }
+          elseif ($goto_spam == "1") {
+            $goto = "spam@localhost";
+          }
+          elseif ($goto_ham == "1") {
+            $goto = "ham@localhost";
           }
           else {
             foreach ($gotos as &$goto) {
@@ -1714,6 +1722,8 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             if (!empty($is_now)) {
               $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
               $goto_null = (isset($_data['goto_null'])) ? intval($_data['goto_null']) : $is_now['goto_null'];
+              $goto_spam = (isset($_data['goto_spam'])) ? intval($_data['goto_spam']) : $is_now['goto_spam'];
+              $goto_ham = (isset($_data['goto_ham'])) ? intval($_data['goto_ham']) : $is_now['goto_ham'];
               $goto   = (!empty($_data['goto'])) ? $_data['goto'] : $is_now['goto'];
             }
             else {
@@ -1725,6 +1735,12 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             }
             if ($goto_null == "1") {
               $goto = "null@localhost";
+            }
+            elseif ($goto_spam == "1") {
+              $goto = "spam@localhost";
+            }
+            elseif ($goto_ham == "1") {
+              $goto = "ham@localhost";
             }
             else {
               $gotos = array_map('trim', preg_split( "/( |,|;|\n)/", $_data['goto']));
@@ -2529,7 +2545,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             'cmd' => 'sieve_list',
             'username' => $_data
           );
-          $filters = json_decode(docker('dovecot-mailcow', 'post', 'exec', $exec_fields), true);
+          $filters = json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields), true);
           $filters = array_filter(explode(PHP_EOL, $filters));
           foreach ($filters as $filter) {
             if (preg_match('/.+ ACTIVE/i', $filter)) {
@@ -2538,7 +2554,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
                 'script_name' => substr($filter, 0, -7),
                 'username' => $_data
               );
-              $filters = json_decode(docker('dovecot-mailcow', 'post', 'exec', $exec_fields), true);
+              $filters = json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields), true);
               return preg_replace('/^.+\n/', '', $filters);
             }
           }
