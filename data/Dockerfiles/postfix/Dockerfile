@@ -45,6 +45,8 @@ COPY zeyple.conf /etc/zeyple.conf
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
 COPY postfix.sh /opt/postfix.sh
+COPY rspamd-pipe-ham /usr/local/bin/rspamd-pipe-ham
+COPY rspamd-pipe-spam /usr/local/bin/rspamd-pipe-spam
 COPY whitelist_forwardinghosts.sh /usr/local/bin/whitelist_forwardinghosts.sh
 
 EXPOSE 588
