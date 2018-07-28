@@ -76,28 +76,6 @@
       'contrastDarkColors': undefined
     });
 
-    /**
-     * Define the Alternative theme
-     */
-    $mdThemingProvider.theme('mailcow')
-      .primaryPalette('mailcow-blue', {
-        'default': '700',  // top toolbar
-        'hue-1': '500',
-        'hue-2': '700',    // sidebar toolbar
-        'hue-3': 'A700'
-      })
-      .accentPalette('mailcow-blue', {
-        'default': '800',  // fab buttons
-        'hue-1': '50',     // center list toolbar
-        'hue-2': '500',
-        'hue-3': 'A700'
-      })
-      .backgroundPalette('grey', {
-        'default': '50',   // center list background
-        'hue-1': '100',
-        'hue-2': '200',
-        'hue-3': '300'
-      });
     $mdThemingProvider.theme('default')
       .primaryPalette('mailcow-blue', {
         'default': '700',  // top toolbar
@@ -118,7 +96,7 @@
         'hue-3': '300'
       });
 
-    $mdThemingProvider.setDefaultTheme('mailcow');
+    $mdThemingProvider.setDefaultTheme('default');
     $mdThemingProvider.generateThemesOnDemand(false);
     $mdThemingProvider.alwaysWatchTheme(true);
   }

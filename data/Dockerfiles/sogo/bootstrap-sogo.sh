@@ -153,7 +153,4 @@ echo '    </dict>
 chown sogo:sogo -R /var/lib/sogo/
 chmod 600 /var/lib/sogo/GNUstep/Defaults/sogod.plist
 
-# Inject md-theme to hopefully fix theme swtiching
-sed -i 's/<main class/<main md-theme="mailcow" class/g' /usr/lib/GNUstep/SOGo/Templates/MainUI/SOGoRootPage.wox
-
 exec gosu sogo /usr/sbin/sogod
