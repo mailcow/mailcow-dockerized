@@ -339,6 +339,8 @@ $lang['add']['password'] = 'Passwort';
 $lang['add']['password_repeat'] = 'Passwort (Wiederholung)';
 $lang['add']['restart_sogo_hint'] = 'Der SOGo Container muss nach dem Hinzufügen einer neuen Domain neugestartet werden!';
 $lang['add']['goto_null'] = 'Nachrichten sofort verwerfen';
+$lang['add']['goto_ham'] = 'Nachrichten als <span class="text-success"><b>Ham</b></span> lernen';
+$lang['add']['goto_spam'] = 'Nachrichten als <span class="text-danger"><b>Spam</b></span> lernen';
 $lang['add']['validation_success'] = 'Erfolgreich validiert';
 $lang['add']['activate_filter_warn'] = 'Alle anderen Filter diesen Typs werden deaktiviert, falls dieses Script aktiv markiert wird.';
 $lang['add']['validate'] = 'Validieren';

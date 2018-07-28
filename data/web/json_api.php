@@ -167,7 +167,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 if ($data) {
                   $return = array();
                   $stats_array = json_decode($data, true)['actions'];
-                  $stats_array['soft reject'] = $stats_array['soft reject'] + $stats_array['greylist'];
+                  if (!empty($stats_array['soft reject']) || !empty($stats_array['greylist'])) {
+                    $stats_array['soft reject'] = $stats_array['soft reject'] + $stats_array['greylist'];
+                  }
                   unset($stats_array['greylist']);
                   foreach ($stats_array as $action => $count) {
                     $return[] = array($action, $count);
@@ -176,154 +178,6 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 }
                 elseif (!isset($data) || empty($data)) {
                   echo '{}';
-                }
-              break;
-              case "stat":
-                $data = file_get_contents('http://rspamd-mailcow:11334/stat');
-                process_get_return($data);
-              break;
-              case "graph":
-                switch ($extra) {
-                  case "hourly":
-                    $data = file_get_contents('http://rspamd-mailcow:11334/graph?type=hourly');
-                    if (!empty($data)) {
-                      $data_array = json_decode($data, true);
-                      $rejected['label'] = "reject";
-                      foreach ($data_array[0] as $dataset) {
-                        $rejected['data'][] = $dataset;
-                      }
-                      $temp_reject['label'] = "temp_reject";
-                      foreach ($data_array[1] as $dataset) {
-                        $temp_reject['data'][] = $dataset;
-                      }
-                      $add_header['label'] = "add_header";
-                      foreach ($data_array[2] as $dataset) {
-                        $add_header['data'][] = $dataset;
-                      }
-                      $prob_spam['label'] = "prob_spam";
-                      foreach ($data_array[3] as $dataset) {
-                        $prob_spam['data'][] = $dataset;
-                      }
-                      $greylist['label'] = "greylist";
-                      foreach ($data_array[4] as $dataset) {
-                        $greylist['data'][] = $dataset;
-                      }
-                      $clean['label'] = "clean";
-                      $clean['pointStyle'] = "cross";
-                      foreach ($data_array[5] as $dataset) {
-                        $clean['data'][] = $dataset;
-                      }
-                      echo json_encode(array($rejected, $temp_reject, $add_header, $prob_spam, $greylist, $clean), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-                    }
-                    elseif (!isset($data) || empty($data)) {
-                      echo '{}';
-                    }
-                  break;
-                  case "daily":
-                    $data = file_get_contents('http://rspamd-mailcow:11334/graph?type=daily');
-                    if (!empty($data)) {
-                      $data_array = json_decode($data, true);
-                      $rejected['label'] = "reject";
-                      foreach ($data_array[0] as $dataset) {
-                        $rejected['data'][] = $dataset;
-                      }
-                      $temp_reject['label'] = "temp_reject";
-                      foreach ($data_array[1] as $dataset) {
-                        $temp_reject['data'][] = $dataset;
-                      }
-                      $add_header['label'] = "add_header";
-                      foreach ($data_array[2] as $dataset) {
-                        $add_header['data'][] = $dataset;
-                      }
-                      $prob_spam['label'] = "prob_spam";
-                      foreach ($data_array[3] as $dataset) {
-                        $prob_spam['data'][] = $dataset;
-                      }
-                      $greylist['label'] = "greylist";
-                      foreach ($data_array[4] as $dataset) {
-                        $greylist['data'][] = $dataset;
-                      }
-                      $clean['label'] = "clean";
-                      $clean['pointStyle'] = "cross";
-                      foreach ($data_array[5] as $dataset) {
-                        $clean['data'][] = $dataset;
-                      }
-                      echo json_encode(array($rejected, $temp_reject, $add_header, $prob_spam, $greylist, $clean), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-                    }
-                    elseif (!isset($data) || empty($data)) {
-                      echo '{}';
-                    }
-                  break;
-                  case "weekly":
-                    $data = file_get_contents('http://rspamd-mailcow:11334/graph?type=weekly');
-                    if (!empty($data)) {
-                      $data_array = json_decode($data, true);
-                      $rejected['label'] = "reject";
-                      foreach ($data_array[0] as $dataset) {
-                        $rejected['data'][] = $dataset;
-                      }
-                      $temp_reject['label'] = "temp_reject";
-                      foreach ($data_array[1] as $dataset) {
-                        $temp_reject['data'][] = $dataset;
-                      }
-                      $add_header['label'] = "add_header";
-                      foreach ($data_array[2] as $dataset) {
-                        $add_header['data'][] = $dataset;
-                      }
-                      $prob_spam['label'] = "prob_spam";
-                      foreach ($data_array[3] as $dataset) {
-                        $prob_spam['data'][] = $dataset;
-                      }
-                      $greylist['label'] = "greylist";
-                      foreach ($data_array[4] as $dataset) {
-                        $greylist['data'][] = $dataset;
-                      }
-                      $clean['label'] = "clean";
-                      $clean['pointStyle'] = "cross";
-                      foreach ($data_array[5] as $dataset) {
-                        $clean['data'][] = $dataset;
-                      }
-                      echo json_encode(array($rejected, $temp_reject, $add_header, $prob_spam, $greylist, $clean), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-                    }
-                    elseif (!isset($data) || empty($data)) {
-                      echo '{}';
-                    }
-                  break;
-                  case "monthly":
-                    $data = file_get_contents('http://rspamd-mailcow:11334/graph?type=monthly');
-                    if (!empty($data)) {
-                      $data_array = json_decode($data, true);
-                      $rejected['label'] = "reject";
-                      foreach ($data_array[0] as $dataset) {
-                        $rejected['data'][] = $dataset;
-                      }
-                      $temp_reject['label'] = "temp_reject";
-                      foreach ($data_array[1] as $dataset) {
-                        $temp_reject['data'][] = $dataset;
-                      }
-                      $add_header['label'] = "add_header";
-                      foreach ($data_array[2] as $dataset) {
-                        $add_header['data'][] = $dataset;
-                      }
-                      $prob_spam['label'] = "prob_spam";
-                      foreach ($data_array[3] as $dataset) {
-                        $prob_spam['data'][] = $dataset;
-                      }
-                      $greylist['label'] = "greylist";
-                      foreach ($data_array[4] as $dataset) {
-                        $greylist['data'][] = $dataset;
-                      }
-                      $clean['label'] = "clean";
-                      $clean['pointStyle'] = "cross";
-                      foreach ($data_array[5] as $dataset) {
-                        $clean['data'][] = $dataset;
-                      }
-                      echo json_encode(array($rejected, $temp_reject, $add_header, $prob_spam, $greylist, $clean), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-                    }
-                    elseif (!isset($data) || empty($data)) {
-                      echo '{}';
-                    }
-                  break;
                 }
               break;
             }

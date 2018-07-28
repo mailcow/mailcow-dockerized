@@ -32,7 +32,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 
         <?php
           $exec_fields = array('cmd' => 'df', 'dir' => '/var/vmail');
-          $vmail_df = explode(',', json_decode(docker('dovecot-mailcow', 'post', 'exec', $exec_fields), true));
+          $vmail_df = explode(',', json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields), true));
         ?>
         <div role="tabpanel" class="tab-pane active" id="tab-containers">
           <div class="panel panel-default">
@@ -60,52 +60,35 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             <div class="panel-body">
             <ul class="list-group">
             <?php
-            $container_array = array(
-              'nginx-mailcow',
-              'rspamd-mailcow',
-              'postfix-mailcow',
-              'dovecot-mailcow',
-              'sogo-mailcow',
-              'acme-mailcow',
-              'memcached-mailcow',
-              'watchdog-mailcow',
-              'unbound-mailcow',
-              'redis-mailcow',
-              'php-fpm-mailcow',
-              'mysql-mailcow',
-              'netfilter-mailcow',
-              'clamd-mailcow'
-            );
-            $container_states = (docker($container, 'states'));
-            foreach ($container_array as $container) {
-                $container_state = $container_states[$container];
-                ?>
-                <li class="list-group-item">
-                <?=$container;?>
-                <?php
-                date_default_timezone_set('UTC');
-                $StartedAt = date_parse($container_state['StartedAt']);
-                if ($StartedAt['hour'] !== false) {
-                  $date = new \DateTime();
-                  $date->setTimestamp(mktime(
-                    $StartedAt['hour'],
-                    $StartedAt['minute'],
-                    $StartedAt['second'],
-                    $StartedAt['month'],
-                    $StartedAt['day'],
-                    $StartedAt['year']));
-                  $user_tz = new DateTimeZone(getenv('TZ'));
-                  $date->setTimezone($user_tz);
-                  $started = $date->format('r');
-                }
-                else {
-                  $started = '?';
-                }
-                ?>
-                <small>(Started on <?=$started;?>),
-                <a href data-toggle="modal" data-container="<?=$container;?>" data-target="#RestartContainer">Restart</a></small>
-                <span class="pull-right label label-<?=($container_state !== false && !empty($container_state)) ? (($container_state['Running'] == 1) ? 'success' : 'danger') : 'default'; ?>">&nbsp;&nbsp;&nbsp;</span>
-                </li>
+            $containers = (docker('info'));
+            foreach ($containers as $container => $container_info) {
+              ?>
+              <li class="list-group-item">
+              <?=$container . ' (' . $container_info['Config']['Image'] . ')';?>
+              <?php
+              date_default_timezone_set('UTC');
+              $StartedAt = date_parse($container_info['State']['StartedAt']);
+              if ($StartedAt['hour'] !== false) {
+                $date = new \DateTime();
+                $date->setTimestamp(mktime(
+                  $StartedAt['hour'],
+                  $StartedAt['minute'],
+                  $StartedAt['second'],
+                  $StartedAt['month'],
+                  $StartedAt['day'],
+                  $StartedAt['year']));
+                $user_tz = new DateTimeZone(getenv('TZ'));
+                $date->setTimezone($user_tz);
+                $started = $date->format('r');
+              }
+              else {
+                $started = '?';
+              }
+              ?>
+              <small>(Started on <?=$started;?>),
+              <a href data-toggle="modal" data-container="<?=$container;?>" data-target="#RestartContainer">Restart</a></small>
+              <span class="pull-right label label-<?=($container_info['State'] !== false && !empty($container_info['State'])) ? (($container_info['State']['Running'] == 1) ? 'success' : 'danger') : 'default'; ?>">&nbsp;&nbsp;&nbsp;</span>
+              </li>
               <?php
               }
             ?>

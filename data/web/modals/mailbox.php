@@ -245,10 +245,16 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 						<label class="control-label col-sm-2" for="goto"><?=$lang['add']['target_address'];?></label>
 						<div class="col-sm-10">
 							<textarea id="textarea_alias_goto" autocorrect="off" autocapitalize="none" class="form-control" rows="5" id="goto" name="goto" required></textarea>
-							<div class="checkbox">
-                <label><input id="goto_null" type="checkbox" value="1" name="goto_null"> <?=$lang['add']['goto_null'];?></label>
-							</div>
 							<p><?=$lang['add']['target_address_info'];?></p>
+							<div class="checkbox">
+                <label><input class="goto_checkbox" id="goto_null" type="checkbox" value="1" name="goto_null"> <?=$lang['add']['goto_null'];?></label>
+							</div>
+              <div class="checkbox">
+                <label><input class="goto_checkbox" id="goto_spam" type="checkbox" value="1" name="goto_spam"> <?=$lang['add']['goto_spam'];?></label>
+							</div>
+              <div class="checkbox">
+                <label><input class="goto_checkbox" id="goto_ham" type="checkbox" value="1" name="goto_ham"> <?=$lang['add']['goto_ham'];?></label>
+							</div>
 						</div>
 					</div>
 					<div class="form-group">
