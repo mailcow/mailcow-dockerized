@@ -53,6 +53,7 @@ function backup() {
   DATE=$(date +"%Y-%m-%d-%H-%M-%S")
   mkdir -p "${BACKUP_LOCATION}/mailcow-${DATE}"
   chmod 755 "${BACKUP_LOCATION}/mailcow-${DATE}"
+  cp "${SCRIPT_DIR}/../mailcow.conf" "${BACKUP_LOCATION}/mailcow-${DATE}"
   while (( "$#" )); do
     case "$1" in
     vmail|all)
