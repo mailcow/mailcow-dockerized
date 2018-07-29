@@ -23,7 +23,7 @@ function setLang(sel) {
   $.post( "<?= $_SERVER['REQUEST_URI']; ?>", {lang: sel} );
   window.location.href = window.location.pathname + window.location.search;
 }
-$(window).load(function() {
+$(window).on('load', function() {
   $(".overlay").hide();
 });
 $(document).ready(function() {

@@ -484,7 +484,7 @@ function mailbox($_action, $_type, $_data = null, $attr = null) {
             );
             return false;
           }
-          if (empty($gotos[0]) && $goto_null == 0) {
+          if (empty($gotos[0]) && ($goto_null + $goto_spam + $goto_ham == 0)) {
             $_SESSION['return'] = array(
               'type' => 'danger',
               'msg' => sprintf($lang['danger']['goto_empty'])
