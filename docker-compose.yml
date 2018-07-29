@@ -156,7 +156,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.31
+      image: mailcow/dovecot:1.32
       build: ./data/Dockerfiles/dovecot
       cap_add:
         - NET_BIND_SERVICE
@@ -195,7 +195,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.18
+      image: mailcow/postfix:1.19
       build: ./data/Dockerfiles/postfix
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
