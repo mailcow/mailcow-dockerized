@@ -140,13 +140,46 @@ function fail2ban($_action, $_data = null) {
         return false;
       }
       $f2b_options = array();
-      $f2b_options['ban_time'] = ($ban_time < 60) ? 60 : $ban_time;
-      $f2b_options['netban_ipv4'] = ($netban_ipv4 < 8) ? 8 : $netban_ipv4;
-      $f2b_options['netban_ipv6'] = ($netban_ipv6 < 8) ? 8 : $netban_ipv6;
-      $f2b_options['netban_ipv4'] = ($netban_ipv4 > 32) ? 32 : $netban_ipv4;
-      $f2b_options['netban_ipv6'] = ($netban_ipv6 > 128) ? 128 : $netban_ipv6;
-      $f2b_options['max_attempts'] = ($max_attempts < 1) ? 1 : $max_attempts;
-      $f2b_options['retry_window'] = ($retry_window < 1) ? 1 : $retry_window;
+      $f2b_options['ban_time'] = $ban_time;
+      if($ban_time < 60) {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => 'Ban time should be at least 60 seconds'
+        );
+        return false;
+      }
+      $f2b_options['netban_ipv4'] = $netban_ipv4;
+      if($netban_ipv4 < 8 || $netban_ipv4 > 32) {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => 'IPv4 subnet should be a value within 8-32'
+        );
+        return false;
+      }
+      $f2b_options['netban_ipv6'] = $netban_ipv6;
+      if($netban_ipv6 < 8 || $netban_ipv6 > 128) {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => 'IPv6 subnet should be a value within 8-128'
+        );
+        return false;
+      }
+      $f2b_options['max_attempts'] = $max_attempts;
+      if($max_attempts < 1) {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => 'Max attempts should be at least 1'
+        );
+        return false;
+      }
+      $f2b_options['retry_window'] = $retry_window;
+      if($retry_window < 1) {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'msg' => 'Retry window should be at least 1 second'
+        );
+        return false;
+      }
       try {
         $redis->Set('F2B_OPTIONS', json_encode($f2b_options));
         $redis->Del('F2B_WHITELIST');
