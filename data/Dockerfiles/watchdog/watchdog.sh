@@ -37,7 +37,6 @@ log_msg() {
     redis-cli -h redis LPUSH WATCHDOG_LOG "{\"time\":\"$(date +%s)\",\"message\":\"$(printf '%s' "${1}" | \
       tr '%&;$"_[]{}-\r\n' ' ')\"}" > /dev/null
   fi
-  redis-cli -h redis LTRIM WATCHDOG_LOG 0 ${LOG_LINES} > /dev/null
   echo $(date) $(printf '%s\n' "${1}")
 }
 
