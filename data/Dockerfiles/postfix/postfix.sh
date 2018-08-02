@@ -210,6 +210,7 @@ query = SELECT goto FROM alias
   SELECT logged_in_as FROM sender_acl
     WHERE send_as='@%d'
       OR send_as='%s'
+      OR send_as='*'
       OR send_as IN (
         SELECT CONCAT('@',target_domain) FROM alias_domain
           WHERE alias_domain = '%d')
