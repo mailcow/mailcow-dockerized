@@ -7,10 +7,11 @@ while ! mysqladmin ping --host mysql -u${DBUSER} -p${DBPASS} --silent; do
   sleep 2
 done
 
-# Hard-code env vars to imapsync due to cron not passing them to the perl script
+# Hard-code env vars to scripts due to cron not passing them to the perl script
 sed -i "/^\$DBUSER/c\\\$DBUSER='${DBUSER}';" /usr/local/bin/imapsync_cron.pl
 sed -i "/^\$DBPASS/c\\\$DBPASS='${DBPASS}';" /usr/local/bin/imapsync_cron.pl
 sed -i "/^\$DBNAME/c\\\$DBNAME='${DBNAME}';" /usr/local/bin/imapsync_cron.pl
+sed -i "s/LOG_LINES/${LOG_LINES}/g" /usr/local/bin/trim_logs.sh
 
 # Create missing directories
 [[ ! -d /usr/local/etc/dovecot/sql/ ]] && mkdir -p /usr/local/etc/dovecot/sql/

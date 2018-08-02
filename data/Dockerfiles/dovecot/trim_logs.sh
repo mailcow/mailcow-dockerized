@@ -1,0 +1,7 @@
+#!/bin/bash
+
+redis-cli -h redis LTRIM ACME_LOG 0 LOG_LINES
+redis-cli -h redis LTRIM POSTFIX_MAILLOG 0 LOG_LINES
+redis-cli -h redis LTRIM DOVECOT_MAILLOG 0 LOG_LINES
+redis-cli -h redis LTRIM SOGO_LOG 0 LOG_LINES
+redis-cli -h redis LTRIM NETFILTER_LOG 0 LOG_LINES
