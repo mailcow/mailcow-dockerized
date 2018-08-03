@@ -125,6 +125,7 @@ jQuery(function($){
       });
     } else if (table == 'domainadminstable') {
       $.each(data, function (i, item) {
+        item.selected_domains = escapeHtml(item.selected_domains.toString().replace(/,/g, " "));
         item.chkbox = '<input type="checkbox" data-id="domain_admins" name="multi_select" value="' + item.username + '" />';
         item.action = '<div class="btn-group">' +
           '<a href="/edit.php?domainadmin=' + encodeURI(item.username) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +

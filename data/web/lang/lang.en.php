@@ -9,12 +9,60 @@ $lang['header']['restart_netfilter'] = 'Restart netfilter';
 $lang['footer']['restart_container'] = 'Restart container';
 $lang['footer']['restart_now'] = 'Restart now';
 $lang['footer']['restarting_container'] = 'Restarting container, this may take a while...';
-$lang['footer']['restart_container_info'] = '<b>Important:</b> A graceful restart may take a while to complete, please wait for it to finish.<br>This website will reload if the process succeeded.';
+$lang['footer']['restart_container_info'] = '<b>Important:</b> A graceful restart may take a while to complete, please wait for it to finish.';
 
 $lang['footer']['confirm_delete'] = 'Confirm deletion';
 $lang['footer']['delete_these_items'] = 'Please confirm your changes to the following object id:';
 $lang['footer']['delete_now'] = 'Delete now';
 $lang['footer']['cancel'] = 'Cancel';
+
+$lang['danger']['mysql_error'] = "MySQL error: %s";
+$lang['danger']['redis_error'] = "Redis error: %s";
+$lang['danger']['unknown_tfa_method'] = "Unknown TFA method";
+$lang['danger']['totp_verification_failed'] = "TOTP verification failed";
+$lang['success']['verified_totp_login'] = "Verified TOTP login";
+$lang['danger']['u2f_verification_failed'] = "U2F verification failed: %s";
+$lang['success']['verified_u2f_login'] = "Verified U2F login";
+$lang['success']['verified_yotp_login'] = "Verified Yubico OTP login";
+$lang['danger']['yotp_verification_failed'] = "Yubico OTP verification failed: %s";
+$lang['danger']['ip_list_empty'] = "List of allowed IPs cannot be empty";
+$lang['danger']['rspamd_ui_pw_length'] = "Rspamd UI password should be at least 6 chars long";
+$lang['success']['rspamd_ui_pw_set'] = "Rspamd UI password successfully set";
+$lang['danger']['unknown'] = "An unknown error occured";
+$lang['danger']['malformed_username'] = "Malformed username";
+$lang['info']['awaiting_tfa_confirmation'] = "Awaiting TFA confirmation";
+$lang['success']['logged_in_as'] = "Logged in as %s";
+$lang['danger']['login_failed'] = "Login failed";
+$lang['danger']['set_acl_failed'] = "Failed to set ACL";
+$lang['danger']['no_user_defined'] = "No user defined";
+$lang['danger']['script_empty'] = "Script cannot be empty";
+$lang['danger']['sieve_error'] = "Sieve parser error: %s";
+$lang['danger']['value_missing'] = "Please provide all values";
+$lang['danger']['filter_type'] = "Wrong filter type";
+$lang['danger']['domain_cannot_match_hostname'] = "Domain cannot match hostname";
+$lang['warning']['domain_added_sogo_failed'] = "Added domain but failed to restart SOGo, please check your server logs.";
+$lang['danger']['rl_timeframe'] = "Ratelimit time frame is incorrect";
+$lang['success']['deleted_syncjobs'] = "Deleted syncjobs: %s";
+$lang['success']['delete_filters'] = "Deleted filters: %s";
+$lang['danger']['invalid_bcc_map_type'] = "Invalid BCC map type";
+$lang['danger']['bcc_empty'] = "BCC destination cannot be empty";
+$lang['danger']['bcc_must_be_email'] = "BCC map must be a valid email address";
+$lang['danger']['bcc_exists'] = "A BCC map %s exists for type %s";
+$lang['success']['bcc_saved'] = "BCC map entry saved";
+$lang['success']['bcc_edited'] = "BCC map entry edited";
+$lang['success']['bcc_deleted'] = "BCC map entries deleted: %s";
+$lang['danger']['private_key_error'] = "Private key error: %s";
+$lang['danger']['map_content_empty'] = "Map content cannot be empty";
+$lang['success']['settings_map_added'] = "Added settings map entry";
+$lang['danger']['settings_map_invalid'] = "Settings map invalid";
+$lang['danger']['settings_map_removed'] = "Removed settings map deleted: %s";
+$lang['danger']['invalid_host'] = "Invalid host specified: %s";
+$lang['danger']['relayhost_invalid'] = "Relayhost is invalid";
+$lang['success']['saved_settings'] = "Saved settings";
+$lang['success']['db_init_complete'] = "Database initialization completed";
+
+$lang['warning']['session_ua'] = "Form token invalid: User-Agent validation error";
+$lang['warning']['session_token'] = "Form token invalid: Token mismatch";
 
 $lang['danger']['dkim_domain_or_sel_invalid'] = "DKIM domain or selector invalid";
 $lang['success']['dkim_removed'] = "DKIM key %s has been removed";
@@ -53,7 +101,7 @@ $lang['success']['domain_admin_modified'] = "Changes to domain administrator %s 
 $lang['success']['domain_admin_added'] = "Domain administrator %s has been added";
 $lang['success']['admin_modified'] = "Changes to administrator have been saved";
 $lang['danger']['username_invalid'] = "Username cannot be used";
-$lang['danger']['password_mismatch'] = "Confirmation password is not identical";
+$lang['danger']['password_mismatch'] = "Confirmation password does not match";
 $lang['danger']['password_complexity'] = "Password does not meet the policy";
 $lang['danger']['password_empty'] = "Password must not be empty";
 $lang['danger']['login_failed'] = "Login failed";
@@ -287,9 +335,10 @@ $lang['edit']['relay_all_info'] = '<small>If you choose <b>not</b> to relay all 
 $lang['edit']['full_name'] = 'Full name';
 $lang['edit']['quota_mb'] = 'Quota (MiB)';
 $lang['edit']['sender_acl'] = 'Allow to send as';
+$lang['edit']['sender_acl_disabled'] = '↳ <span class="label label-danger">Sender check is disabled</span>';
 $lang['edit']['previous'] = 'Previous page';
 $lang['edit']['unchanged_if_empty'] = 'If unchanged leave blank';
-$lang['edit']['dont_check_sender_acl'] = "Disable sender check for domain %s + alias domains";
+$lang['edit']['dont_check_sender_acl'] = "Disable sender check for domain %s (+ alias domains)";
 $lang['edit']['multiple_bookings'] = 'Multiple bookings';
 $lang['edit']['kind'] = 'Kind';
 $lang['edit']['resource'] = 'Resource';
@@ -548,6 +597,16 @@ $lang['quarantine']['atts'] = "Attachments";
 
 $lang['header']['quarantine'] = "Quarantine";
 $lang['header']['debug'] = "Debug";
+
+$lang['debug']['log_info'] = '<p>mailcow <b>in-memory logs</b> are collected in Redis lists and trimmed to LOG_LINES (%d) every minute to reduce hammering.
+  <br>In-memory logs are not meant to be persistent. All applications that log in-memory, also log to the Docker daemon and therefore to the default logging driver.
+  <br>The in-memory log type should be used for debugging minor issues with containers.</p>
+  <p><b>External logs</b> are collected via API of the given application.</p>
+  <p><b>Static logs</b> are mostly activity logs, that are not logged to the Dockerd but still need to be persistent (except for API logs).</p>';
+
+$lang['debug']['in_memory_logs'] = 'In-memory logs';
+$lang['debug']['external_logs'] = 'External logs';
+$lang['debug']['static_logs'] = 'Static logs';
 
 $lang['quarantine']['release_body'] = "We have attached your message as eml file to this message.";
 $lang['danger']['release_send_failed'] = "Message could not be released: %s";

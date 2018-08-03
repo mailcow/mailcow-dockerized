@@ -38,3 +38,7 @@ table.footable>tbody>tr.footable-empty>td {
 .table-lines {
   vertical-align: inherit;
 }
+tbody {
+  font-size:14px;
+  color:#333;
+}

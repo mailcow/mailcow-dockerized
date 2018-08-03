@@ -12,6 +12,7 @@ function valid_network($network) {
 function fail2ban($_action, $_data = null) {
   global $redis;
   global $lang;
+  $_data_log = $_data;
   switch ($_action) {
     case 'get':
       $f2b_options = array();
@@ -81,7 +82,8 @@ function fail2ban($_action, $_data = null) {
       catch (RedisException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'Redis: '.$e
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('redis_error', $e)
         );
         return false;
       }
@@ -91,7 +93,8 @@ function fail2ban($_action, $_data = null) {
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['access_denied'])
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'access_denied'
         );
         return false;
       }
@@ -118,7 +121,8 @@ function fail2ban($_action, $_data = null) {
         }
         $_SESSION['return'] = array(
           'type' => 'success',
-          'msg' => sprintf($lang['success']['object_modified'], htmlspecialchars(implode(', ', $networks)))
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('object_modified', htmlspecialchars(implode(', ', $networks)))
         );
         return true;
       }
@@ -135,7 +139,8 @@ function fail2ban($_action, $_data = null) {
       else {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['access_denied'])
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'access_denied'
         );
         return false;
       }
@@ -175,13 +180,15 @@ function fail2ban($_action, $_data = null) {
       catch (RedisException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'Redis: '.$e
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('redis_error', $e)
         );
         return false;
       }
       $_SESSION['return'] = array(
         'type' => 'success',
-        'msg' => sprintf($lang['success']['f2b_modified'])
+        'log' => array(__FUNCTION__, $_action, $_data_log),
+        'msg' => 'f2b_modified'
       );
     break;
   }

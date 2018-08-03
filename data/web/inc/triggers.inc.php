@@ -16,16 +16,19 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
 	if ($as == "admin") {
 		$_SESSION['mailcow_cc_username'] = $login_user;
 		$_SESSION['mailcow_cc_role'] = "admin";
+    $_SESSION['mailcow_cc_last_login'] = last_login($login_user);
 		header("Location: /admin.php");
 	}
 	elseif ($as == "domainadmin") {
 		$_SESSION['mailcow_cc_username'] = $login_user;
 		$_SESSION['mailcow_cc_role'] = "domainadmin";
+    $_SESSION['mailcow_cc_last_login'] = last_login($login_user);
 		header("Location: /mailbox.php");
 	}
 	elseif ($as == "user") {
 		$_SESSION['mailcow_cc_username'] = $login_user;
 		$_SESSION['mailcow_cc_role'] = "user";
+    $_SESSION['mailcow_cc_last_login'] = last_login($login_user);
 		header("Location: /user.php");
 	}
 	elseif ($as != "pending") {
@@ -34,10 +37,6 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
     unset($_SESSION['pending_tfa_method']);
 		unset($_SESSION['mailcow_cc_username']);
 		unset($_SESSION['mailcow_cc_role']);
-		$_SESSION['return'] = array(
-			'type' => 'danger',
-			'msg' => $lang['danger']['login_failed']
-		);
 	}
 }
 

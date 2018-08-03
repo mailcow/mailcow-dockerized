@@ -13,15 +13,19 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
     <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Logs
       <span class="caret"></span></a>
       <ul class="dropdown-menu">
+        <li role="presentation"><span class="dropdown-desc"><?=$lang['debug']['in_memory_logs'];?></span></li>
         <li role="presentation"><a href="#tab-postfix-logs" aria-controls="tab-postfix-logs" role="tab" data-toggle="tab">Postfix</a></li>
         <li role="presentation"><a href="#tab-dovecot-logs" aria-controls="tab-dovecot-logs" role="tab" data-toggle="tab">Dovecot</a></li>
         <li role="presentation"><a href="#tab-sogo-logs" aria-controls="tab-sogo-logs" role="tab" data-toggle="tab">SOGo</a></li>
         <li role="presentation"><a href="#tab-netfilter-logs" aria-controls="tab-netfilter-logs" role="tab" data-toggle="tab">Netfilter</a></li>
-        <li role="presentation"><a href="#tab-rspamd-history" aria-controls="tab-rspamd-history" role="tab" data-toggle="tab">Rspamd</a></li>
         <li role="presentation"><a href="#tab-autodiscover-logs" aria-controls="tab-autodiscover-logs" role="tab" data-toggle="tab">Autodiscover</a></li>
         <li role="presentation"><a href="#tab-watchdog-logs" aria-controls="tab-watchdog-logs" role="tab" data-toggle="tab">Watchdog</a></li>
         <li role="presentation"><a href="#tab-acme-logs" aria-controls="tab-acme-logs" role="tab" data-toggle="tab">ACME</a></li>
         <li role="presentation"><a href="#tab-api-logs" aria-controls="tab-api-logs" role="tab" data-toggle="tab">API</a></li>
+        <li role="presentation"><span class="dropdown-desc"><?=$lang['debug']['external_logs'];?></span></li>
+        <li role="presentation"><a href="#tab-rspamd-history" aria-controls="tab-rspamd-history" role="tab" data-toggle="tab">Rspamd</a></li>
+        <li role="presentation"><span class="dropdown-desc"><?=$lang['debug']['static_logs'];?></span></li>
+        <li role="presentation"><a href="#tab-ui" aria-controls="tab-ui" role="tab" data-toggle="tab">mailcow UI</a></li>
       </ul>
     </li>
   </ul>
@@ -29,7 +33,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 	<div class="row">
 		<div class="col-md-12">
       <div class="tab-content" style="padding-top:20px">
-
+        <div class="debug-log-info"><?=sprintf($lang['debug']['log_info'], getenv('LOG_LINES') + 1);?></div>
         <?php
           $exec_fields = array('cmd' => 'df', 'dir' => '/var/vmail');
           $vmail_df = explode(',', json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields), true));
@@ -109,6 +113,23 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             <div class="panel-body">
               <div class="table-responsive">
                 <table class="table table-striped table-condensed" id="postfix_log"></table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div role="tabpanel" class="tab-pane" id="tab-ui">
+          <div class="panel panel-default">
+            <div class="panel-heading">mailcow UI <span class="badge badge-info table-lines"></span>
+              <div class="btn-group pull-right">
+                <button class="btn btn-xs btn-default add_log_lines" data-post-process="mailcow_ui" data-table="ui_logs" data-log-url="ui" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-default add_log_lines" data-post-process="mailcow_ui" data-table="ui_logs" data-log-url="ui" data-nrows="10000">+ 10000</button>
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_ui_logs" data-table="ui_logs"><?=$lang['admin']['refresh'];?></button>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div class="table-responsive">
+                <table class="table table-striped table-condensed" id="ui_logs"></table>
               </div>
             </div>
           </div>

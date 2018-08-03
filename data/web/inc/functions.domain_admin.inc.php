@@ -3,6 +3,9 @@
 function domain_admin($_action, $_data = null) {
   global $pdo;
   global $lang;
+  $_data_log = $_data;
+  !isset($_data_log['password']) ?: $_data_log['password'] = '*';
+  !isset($_data_log['password2']) ?: $_data_log['password2'] = '*';
   switch ($_action) {
     case 'add':
       $username		= strtolower(trim($_data['username']));
@@ -10,25 +13,27 @@ function domain_admin($_action, $_data = null) {
       $password2  = $_data['password2'];
       $domains    = (array)$_data['domains'];
       $active     = intval($_data['active']);
-
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['access_denied'])
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'access_denied'
         );
         return false;
       }
       if (empty($domains)) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['domain_invalid'])
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'domain_invalid'
         );
         return false;
       }
       if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $username)) || empty ($username)) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['username_invalid'])
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'username_invalid'
         );
         return false;
       }
@@ -51,7 +56,8 @@ function domain_admin($_action, $_data = null) {
       catch(PDOException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'MySQL: '.$e
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('mysql_error', $e)
         );
         return false;
       }
@@ -59,7 +65,8 @@ function domain_admin($_action, $_data = null) {
         if ($num_results_each != 0) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => sprintf($lang['danger']['object_exists'], htmlspecialchars($username))
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => array('object_exists', htmlspecialchars($username))
           );
           return false;
         }
@@ -68,14 +75,16 @@ function domain_admin($_action, $_data = null) {
         if (!preg_match('/' . $GLOBALS['PASSWD_REGEP'] . '/', $password)) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => sprintf($lang['danger']['password_complexity'])
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => 'password_complexity'
           );
           return false;
         }
         if ($password != $password2) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => sprintf($lang['danger']['password_mismatch'])
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => 'password_mismatch'
           );
           return false;
         }
@@ -84,7 +93,8 @@ function domain_admin($_action, $_data = null) {
           if (!is_valid_domain_name($domain)) {
             $_SESSION['return'] = array(
               'type' => 'danger',
-              'msg' => sprintf($lang['danger']['domain_invalid'])
+              'log' => array(__FUNCTION__, $_action, $_data_log),
+              'msg' => 'domain_invalid'
             );
             return false;
           }
@@ -102,7 +112,8 @@ function domain_admin($_action, $_data = null) {
             domain_admin('delete', $username);
             $_SESSION['return'] = array(
               'type' => 'danger',
-              'msg' => 'MySQL: '.$e
+              'log' => array(__FUNCTION__, $_action, $_data_log),
+              'msg' => array('mysql_error', $e)
             );
             return false;
           }
@@ -119,7 +130,8 @@ function domain_admin($_action, $_data = null) {
         catch (PDOException $e) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => 'MySQL: '.$e
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => array('mysql_error', $e)
           );
           return false;
         }
@@ -127,20 +139,23 @@ function domain_admin($_action, $_data = null) {
       else {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['password_empty'])
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'password_empty'
         );
         return false;
       }
       $_SESSION['return'] = array(
         'type' => 'success',
-        'msg' => sprintf($lang['success']['domain_admin_added'], htmlspecialchars($username))
+        'log' => array(__FUNCTION__, $_action, $_data_log),
+        'msg' => array('domain_admin_added', htmlspecialchars($username))
       );
     break;
     case 'edit':
       if ($_SESSION['mailcow_cc_role'] != "admin" && $_SESSION['mailcow_cc_role'] != "domainadmin") {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['access_denied'])
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'access_denied'
         );
         return false;
       }
@@ -164,7 +179,8 @@ function domain_admin($_action, $_data = null) {
           else {
             $_SESSION['return'] = array(
               'type' => 'danger',
-              'msg' => sprintf($lang['danger']['access_denied'])
+              'log' => array(__FUNCTION__, $_action, $_data_log),
+              'msg' => 'access_denied'
             );
             return false;
           }
@@ -176,7 +192,8 @@ function domain_admin($_action, $_data = null) {
               if (!is_valid_domain_name($domain)) {
                 $_SESSION['return'] = array(
                   'type' => 'danger',
-                  'msg' => sprintf($lang['danger']['domain_invalid'])
+                  'log' => array(__FUNCTION__, $_action, $_data_log),
+                  'msg' => 'domain_invalid'
                 );
                 return false;
               }
@@ -185,7 +202,8 @@ function domain_admin($_action, $_data = null) {
           if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $username_new))) {
             $_SESSION['return'] = array(
               'type' => 'danger',
-              'msg' => sprintf($lang['danger']['username_invalid'])
+              'log' => array(__FUNCTION__, $_action, $_data_log),
+              'msg' => 'username_invalid'
             );
             return false;
           }
@@ -193,7 +211,8 @@ function domain_admin($_action, $_data = null) {
             if (!empty(domain_admin('details', $username_new)['username'])) {
               $_SESSION['return'] = array(
                 'type' => 'danger',
-                'msg' => sprintf($lang['danger']['username_invalid'])
+                'log' => array(__FUNCTION__, $_action, $_data_log),
+                'msg' => 'username_invalid'
               );
               return false;
             }
@@ -207,7 +226,8 @@ function domain_admin($_action, $_data = null) {
           catch (PDOException $e) {
             $_SESSION['return'] = array(
               'type' => 'danger',
-              'msg' => 'MySQL: '.$e
+              'log' => array(__FUNCTION__, $_action, $_data_log),
+              'msg' => array('mysql_error', $e)
             );
             return false;
           }
@@ -227,7 +247,8 @@ function domain_admin($_action, $_data = null) {
               catch (PDOException $e) {
                 $_SESSION['return'] = array(
                   'type' => 'danger',
-                  'msg' => 'MySQL: '.$e
+                  'log' => array(__FUNCTION__, $_action, $_data_log),
+                  'msg' => array('mysql_error', $e)
                 );
                 return false;
               }
@@ -238,14 +259,16 @@ function domain_admin($_action, $_data = null) {
             if (!preg_match('/' . $GLOBALS['PASSWD_REGEP'] . '/', $password)) {
               $_SESSION['return'] = array(
                 'type' => 'danger',
-                'msg' => sprintf($lang['danger']['password_complexity'])
+                'log' => array(__FUNCTION__, $_action, $_data_log),
+                'msg' => 'password_complexity'
               );
               return false;
             }
             if ($password != $password2) {
               $_SESSION['return'] = array(
                 'type' => 'danger',
-                'msg' => sprintf($lang['danger']['password_mismatch'])
+                'log' => array(__FUNCTION__, $_action, $_data_log),
+                'msg' => 'password_mismatch'
               );
               return false;
             }
@@ -270,7 +293,8 @@ function domain_admin($_action, $_data = null) {
             catch (PDOException $e) {
               $_SESSION['return'] = array(
                 'type' => 'danger',
-                'msg' => 'MySQL: '.$e
+                'log' => array(__FUNCTION__, $_action, $_data_log),
+                'msg' => array('mysql_error', $e)
               );
               return false;
             }
@@ -295,7 +319,8 @@ function domain_admin($_action, $_data = null) {
             catch (PDOException $e) {
               $_SESSION['return'] = array(
                 'type' => 'danger',
-                'msg' => 'MySQL: '.$e
+                'log' => array(__FUNCTION__, $_action, $_data_log),
+                'msg' => array('mysql_error', $e)
               );
               return false;
             }
@@ -303,7 +328,8 @@ function domain_admin($_action, $_data = null) {
         }
         $_SESSION['return'] = array(
           'type' => 'success',
-          'msg' => sprintf($lang['success']['domain_admin_modified'], htmlspecialchars(implode(', ', $usernames)))
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('domain_admin_modified', htmlspecialchars(implode(', ', $usernames)))
         );
       }
       // Domain administrator
@@ -321,7 +347,8 @@ function domain_admin($_action, $_data = null) {
         if (!verify_hash($row['password'], $password_old)) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => sprintf($lang['danger']['access_denied'])
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => 'access_denied'
           );
           return false;
         }
@@ -330,14 +357,16 @@ function domain_admin($_action, $_data = null) {
           if ($password_new2 != $password_new) {
             $_SESSION['return'] = array(
               'type' => 'danger',
-              'msg' => sprintf($lang['danger']['password_mismatch'])
+              'log' => array(__FUNCTION__, $_action, $_data_log),
+              'msg' => 'password_mismatch'
             );
             return false;
           }
           if (!preg_match('/' . $GLOBALS['PASSWD_REGEP'] . '/', $password_new)) {
             $_SESSION['return'] = array(
               'type' => 'danger',
-              'msg' => sprintf($lang['danger']['password_complexity'])
+              'log' => array(__FUNCTION__, $_action, $_data_log),
+              'msg' => 'password_complexity'
             );
             return false;
           }
@@ -352,7 +381,8 @@ function domain_admin($_action, $_data = null) {
           catch (PDOException $e) {
             $_SESSION['return'] = array(
               'type' => 'danger',
-              'msg' => 'MySQL: '.$e
+              'log' => array(__FUNCTION__, $_action, $_data_log),
+              'msg' => array('mysql_error', $e)
             );
             return false;
           }
@@ -360,7 +390,8 @@ function domain_admin($_action, $_data = null) {
         
         $_SESSION['return'] = array(
           'type' => 'success',
-          'msg' => sprintf($lang['success']['domain_admin_modified'], htmlspecialchars($username))
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('domain_admin_modified', htmlspecialchars($username))
         );
       }
     break;
@@ -368,7 +399,8 @@ function domain_admin($_action, $_data = null) {
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['access_denied'])
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'access_denied'
         );
         return false;
       }
@@ -377,7 +409,8 @@ function domain_admin($_action, $_data = null) {
         if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $username))) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => sprintf($lang['danger']['username_invalid'])
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => 'username_invalid'
           );
           return false;
         }
@@ -394,14 +427,16 @@ function domain_admin($_action, $_data = null) {
         catch (PDOException $e) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => 'MySQL: '.$e
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => array('mysql_error', $e)
           );
           return false;
         }
       }
       $_SESSION['return'] = array(
         'type' => 'success',
-        'msg' => sprintf($lang['success']['domain_admin_removed'], htmlspecialchars(implode(', ', $usernames)))
+        'log' => array(__FUNCTION__, $_action, $_data_log),
+        'msg' => array('domain_admin_removed', htmlspecialchars(implode(', ', $usernames)))
       );
     break;
     case 'get':
@@ -409,7 +444,8 @@ function domain_admin($_action, $_data = null) {
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['access_denied'])
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'access_denied'
         );
         return false;
       }
@@ -429,7 +465,8 @@ function domain_admin($_action, $_data = null) {
       catch(PDOException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'MySQL: '.$e
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('mysql_error', $e)
         );
       }
       return $domainadmins;
@@ -498,7 +535,8 @@ function domain_admin($_action, $_data = null) {
       catch(PDOException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'MySQL: '.$e
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('mysql_error', $e)
         );
       }
       return $domainadmindata;

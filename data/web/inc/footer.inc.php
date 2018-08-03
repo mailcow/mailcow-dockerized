@@ -1,5 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/footer.php';
+logger();
 ?>
 <div style="margin-bottom: 100px;"></div>
 <script src="/js/bootstrap.min.js"></script>
@@ -23,7 +24,7 @@ function setLang(sel) {
   $.post( "<?= $_SERVER['REQUEST_URI']; ?>", {lang: sel} );
   window.location.href = window.location.pathname + window.location.search;
 }
-$(window).on('load', function() {
+$(window).load(function() {
   $(".overlay").hide();
 });
 $(document).ready(function() {
@@ -36,17 +37,18 @@ $(document).ready(function() {
     } else {
       auto_hide = 5000;
     }
-    $.ajax({
-      url: '/inc/ajax/log_driver.php',
-      data: {"type": type,"msg": msg},
-      type: "GET"
-    });
     $.notify({message: msg},{z_index: 20000, delay: auto_hide, type: type,placement: {from: "bottom",align: "right"},animate: {enter: 'animated fadeInUp',exit: 'animated fadeOutDown'}});
   }
+  <?php
+  $alertbox_log_parser = alertbox_log_parser($_SESSION);
+  if (is_array($alertbox_log_parser)) {
+  ?>
+  mailcow_alert_box(<?=$alertbox_log_parser['msg'];?>, <?=$alertbox_log_parser['type'];?>);
+  <?php
+  unset($_SESSION['return']);
+  }
+  ?>
   $('[data-cached-form="true"]').formcache({key: $(this).data('id')});
-  <?php if (isset($_SESSION['return'])): ?>
-  mailcow_alert_box(<?=json_encode($_SESSION['return']['msg']); ?>,  "<?= $_SESSION['return']['type']; ?>");
-  <?php endif; unset($_SESSION['return']); ?>
   // Confirm TFA modal
   <?php if (isset($_SESSION['pending_tfa_method'])):?>
   $('#ConfirmTFAModal').modal({

@@ -139,3 +139,11 @@ nav .glyphicon {
 .bootstrap-select.btn-group .no-results {
   display: none;
 }
+.dropdown-desc {
+  display: block;
+  padding: 3px 10px;
+  clear: both;
+  font-weight: bold;
+  color: #5a5a5a;
+  white-space: nowrap;
+}

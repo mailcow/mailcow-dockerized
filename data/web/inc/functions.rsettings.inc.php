@@ -2,12 +2,14 @@
 function rsettings($_action, $_data = null) {
 	global $pdo;
 	global $lang;
+  $_data_log = $_data;
   switch ($_action) {
     case 'add':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['access_denied'])
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'access_denied'
         );
         return false;
       }
@@ -17,7 +19,8 @@ function rsettings($_action, $_data = null) {
       if (empty($content)) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'Content cannot be empty'
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'map_content_empty'
         );
         return false;
       }
@@ -33,20 +36,23 @@ function rsettings($_action, $_data = null) {
       catch (PDOException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'MySQL: '.$e
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('mysql_error', $e)
         );
         return false;
       }
       $_SESSION['return'] = array(
         'type' => 'success',
-        'msg' => 'Added settings map entry'
+        'log' => array(__FUNCTION__, $_action, $_data_log),
+        'msg' => 'settings_map_added'
       );
     break;
     case 'edit':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['access_denied'])
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'access_denied'
         );
         return false;
       }
@@ -61,7 +67,8 @@ function rsettings($_action, $_data = null) {
         else {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => 'Settings map invalid'
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => 'settings_map_invalid'
           );
           return false;
         }
@@ -82,21 +89,24 @@ function rsettings($_action, $_data = null) {
         catch (PDOException $e) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => 'MySQL: '.$e
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => array('mysql_error', $e)
           );
           return false;
         }
       }
       $_SESSION['return'] = array(
         'type' => 'success',
-        'msg' => sprintf($lang['success']['object_modified'], htmlspecialchars(implode(', ', $ids)))
+        'log' => array(__FUNCTION__, $_action, $_data_log),
+        'msg' => array('object_modified', htmlspecialchars(implode(', ', $ids)))
       );
     break;
     case 'delete':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['access_denied'])
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'access_denied'
         );
         return false;
       }
@@ -109,14 +119,16 @@ function rsettings($_action, $_data = null) {
         catch (PDOException $e) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => 'MySQL: '.$e
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => array('mysql_error', $e)
           );
           return false;
         }
       }
       $_SESSION['return'] = array(
         'type' => 'success',
-        'msg' => 'Removed settings map ID'
+        'log' => array(__FUNCTION__, $_action, $_data_log),
+        'msg' => array('settings_map_removed', htmlspecialchars(implode(', ', $ids)))
       );
     break;
     case 'get':
@@ -131,7 +143,8 @@ function rsettings($_action, $_data = null) {
       catch(PDOException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'MySQL: '.$e
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('mysql_error', $e)
         );
       }
       return $settingsmaps;
@@ -155,7 +168,8 @@ function rsettings($_action, $_data = null) {
       catch(PDOException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'MySQL: '.$e
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('mysql_error', $e)
         );
       }
       return $settingsmapdata;

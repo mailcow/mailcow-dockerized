@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "25072018_1129";
+    $db_version = "31072018_2319";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -355,6 +355,24 @@ function init_db_schema() {
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
           "active" => "TINYINT(1) NOT NULL DEFAULT '0'"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "logs" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "type" => "VARCHAR(32) DEFAULT ''",
+          "msg" => "TEXT",
+          "call" => "TEXT",
+          "user" => "VARCHAR(64) NOT NULL",
+          "role" => "VARCHAR(32) NOT NULL",
+          "remote" => "VARCHAR(32) NOT NULL",
+          "time" => "INT(11) NOT NULL"
         ),
         "keys" => array(
           "primary" => array(
@@ -917,7 +935,8 @@ DELIMITER ;';
     }
     $_SESSION['return'] = array(
       'type' => 'success',
-      'msg' => 'Database initialisation completed'
+      'log' => array(__FUNCTION__),
+      'msg' => 'db_init_complete'
     );
 
     // Fix user_acl
@@ -926,7 +945,8 @@ DELIMITER ;';
   catch (PDOException $e) {
     $_SESSION['return'] = array(
       'type' => 'danger',
-      'msg' => 'Database initialisation failed: ' . $e->getMessage()
+      'log' => array(__FUNCTION__),
+      'msg' => array('mysql_error', $e)
     );
   }
 }

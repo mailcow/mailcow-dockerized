@@ -1,7 +1,7 @@
 {
     "name": "robthree/twofactorauth",
     "description": "Two Factor Authentication",
-    "version": "1.6.1",
+    "version": "1.6.5",
     "type": "library",
     "keywords": [ "Authentication", "Two Factor Authentication", "Multi Factor Authentication", "TFA", "MFA", "PHP", "Authenticator", "Authy" ],
     "homepage": "https://github.com/RobThree/TwoFactorAuth",

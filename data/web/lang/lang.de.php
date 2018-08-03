@@ -9,12 +9,56 @@ $lang['header']['restart_netfilter'] = 'Netfilter neustarten';
 $lang['footer']['restart_container'] = 'Container neustarten';
 $lang['footer']['restart_now'] = 'Jetzt neustarten';
 $lang['footer']['restarting_container'] = 'Container wird neugestartet, bitte warten...';
-$lang['footer']['restart_container_info'] = '<b>Wichtig:</b> Der Neustart eines Containers kann eine Weile in Anspruch nehmen, bitte warten Sie, bis der Prozess vollständig beendet wurde.<br>Die Website wird neugeladen, wenn der Vorgang erfolgreich ist.';
+$lang['footer']['restart_container_info'] = '<b>Wichtig:</b> Der Neustart eines Containers kann eine Weile in Anspruch nehmen.';
 
 $lang['footer']['confirm_delete'] = 'Löschen bestätigen';
 $lang['footer']['delete_these_items'] = 'Sind Sie sicher, dass die Änderungen an Elementen mit folgender ID durchgeführt werden sollen?';
 $lang['footer']['delete_now'] = 'Jetzt löschen';
 $lang['footer']['cancel'] = 'Abbrechen';
+
+$lang['danger']['mysql_error'] = "MySQL Fehler: %s";
+$lang['danger']['redis_error'] = "Redis Fehler: %s";
+$lang['danger']['unknown_tfa_method'] = "Unbekannte TFA Methode";
+$lang['danger']['totp_verification_failed'] = "TOTP Verifizierung fehlgeschlagen";
+$lang['success']['verified_totp_login'] = "TOTP Anmeldung verifiziert";
+$lang['danger']['u2f_verification_failed'] = "U2F Verifizierung fehlgeschlagen: %s";
+$lang['success']['verified_u2f_login'] = "U2F Anmeldung verifiziert";
+$lang['success']['verified_yotp_login'] = "Yubico OTP Anmeldung verifiziert";
+$lang['danger']['yotp_verification_failed'] = "Yubico OTP Verifizierung fehlgeschlagen: %s";
+$lang['danger']['ip_list_empty'] = "Liste erlaubter IPs darf nicht leer sein";
+$lang['danger']['rspamd_ui_pw_length'] = "Rspamd UI Passwort muss mindestens 6 Zeichen lang sein";
+$lang['success']['rspamd_ui_pw_set'] = "Rspamd UI Passwort wurde gesetzt";
+$lang['danger']['unknown'] = "Ein unbekannter Fehler trat auf";
+$lang['danger']['malformed_username'] = "Benutzername hat falsches Format";
+$lang['info']['awaiting_tfa_confirmation'] = "Warte auf TFA Verifizierung";
+$lang['success']['logged_in_as'] = "Eingeloggt als %s";
+$lang['danger']['login_failed'] = "Anmeldung fehlgeschlagen";
+$lang['danger']['set_acl_failed'] = "ACL konnte nicht gesetzt werden";
+$lang['danger']['no_user_defined'] = "Kein Benutzer definiert";
+$lang['danger']['script_empty'] = "Script darf nicht leer sein";
+$lang['danger']['sieve_error'] = "Sieve Parser: %s";
+$lang['danger']['value_missing'] = "Bitte alle Felder ausfüllen";
+$lang['danger']['filter_type'] = "Falscher Filtertyp";
+$lang['danger']['domain_cannot_match_hostname'] = "Domain darf nicht dem Hostnamen entsprechen";
+$lang['warning']['domain_added_sogo_failed'] = "Domain wurde hinzugefügt; SOGo konnte nicht neugestartet werden";
+$lang['danger']['rl_timeframe'] = "Ratelimit Zeitraum ist inkorrekt";
+$lang['success']['deleted_syncjobs'] = "Syncjobs gelöscht: %s";
+$lang['success']['delete_filters'] = "Filter gelöscht: %s";
+$lang['danger']['invalid_bcc_map_type'] = "Ungültiger BCC Map-Typ";
+$lang['danger']['bcc_empty'] = "BCC Ziel darf nicht leer sein";
+$lang['danger']['bcc_must_be_email'] = "BCC Map muss eine gültige E-Mail-Adresse sein";
+$lang['danger']['bcc_exists'] = "Ein BCC Map Eintrag %s existiert bereits als Typ %s";
+$lang['success']['bcc_saved'] = "BCC Map Eintrag wurde gespeichert";
+$lang['success']['bcc_edited'] = "BCC Map Eintrag wurde editiert";
+$lang['success']['bcc_deleted'] = "BCC Map Einträge gelöscht: %s";
+$lang['danger']['private_key_error'] = "Schlüsselfehler: %s";
+$lang['danger']['map_content_empty'] = "Inhalt darf nicht leer sein";
+$lang['success']['settings_map_added'] = "Regel wurde gespeichert";
+$lang['danger']['settings_map_invalid'] = "Regel ist ungültig";
+$lang['danger']['settings_map_removed'] = "Regeln wurden entfernt: %s";
+$lang['danger']['invalid_host'] = "Ungültiger Host: %s";
+$lang['danger']['relayhost_invalid'] = "Relayhost ist ungültig";
+$lang['success']['saved_settings'] = "Regel wurde gespeichert";
 
 $lang['danger']['dkim_domain_or_sel_invalid'] = 'DKIM-Domain oder -Selector nicht korrekt';
 $lang['success']['dkim_removed'] = 'DKIM-Key wurde entfernt';
@@ -416,7 +460,7 @@ $lang['admin']['active'] = 'Aktiv';
 $lang['admin']['inactive'] = 'Inaktiv';
 $lang['admin']['action'] = 'Aktion';
 $lang['admin']['add_domain_admin'] = 'Domain-Administrator hinzufügen';
-$lang['admin']['add_settings_rule'] = 'Rspamd Setting hinzufügen';
+$lang['admin']['add_settings_rule'] = 'Rspamd Regel hinzufügen';
 $lang['admin']['rsetting_desc'] = 'Kurze Beschreibung';
 $lang['admin']['rsetting_content'] = 'Regelinhalt';
 $lang['admin']['rsetting_none'] = 'Keine Regel hinterlegt';
@@ -541,6 +585,16 @@ $lang['quarantine']['atts'] = "Anhänge";
 
 $lang['header']['quarantine'] = "Quarantäne";
 $lang['header']['debug'] = "Debugging";
+
+$lang['debug']['log_info'] = '<p>mailcow <b>in-memory Logs</b> werden in Redis Listen gespeichert, die maximale Anzahl der Einträge pro Anwendung richtet sich nach LOG_LINES (%d).
+  <br>In-memory Logs sind vergänglich und nicht zur ständigen Aufbewahrung bestimmt. Alle Anwendungen, die in-memory protokollieren, schreiben ebenso in den Docker Daemon.
+  <br>Das in-memory Protokoll versteht sich als schnelle Übersicht zum Debugging eines Containers, für komplexere Protokolle sollte der Docker Daemon konsultiert werden.</p>
+  <p><b>Externe Logs</b> werden via API externer Applikationen bezogen.</p>
+  <p><b>Statische Logs</b> sind weitesgehend Aktivitätsprotokolle, die nicht in den Docker Daemon geschrieben werden, jedoch permanent verfügbar sein müssen (ausgeschloßen API Logs).</p>';
+
+$lang['debug']['in_memory_logs'] = 'In-memory Logs';
+$lang['debug']['external_logs'] = 'Externe Logs';
+$lang['debug']['static_logs'] = 'Statische Logs';
 
 $lang['quarantine']['release_body'] = "Die ursprüngliche Nachricht wurde als EML-Datei im Anhang hinterlegt.";
 $lang['danger']['release_send_failed'] = "Die Nachricht konnte nicht versendet werden: %s";

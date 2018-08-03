@@ -16,10 +16,10 @@ header('Content-Type: application/json');
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 error_reporting(0);
 
-function api_log($postarray) {
+function api_log($_data) {
   global $redis;
   $data_var = array();
-  foreach ($postarray as $data => &$value) {
+  foreach ($_data as $data => &$value) {
     if ($data == 'csrf_token') {
       continue;
     }
@@ -27,7 +27,7 @@ function api_log($postarray) {
       unset($value["csrf_token"]);
       foreach ($value as $key => &$val) {
         if(preg_match("/pass/i", $key)) {
-          $val = '********';
+          $val = '*';
         }
       }
       $value = json_encode($value);
@@ -39,7 +39,7 @@ function api_log($postarray) {
       'time' => time(),
       'uri' => $_SERVER['REQUEST_URI'],
       'method' => $_SERVER['REQUEST_METHOD'],
-      'remote' => $_SERVER['REMOTE_ADDR'],
+      'remote' => get_remote_ip(),
       'data' => implode(', ', $data_var)
     );
     $redis->lPush('API_LOG', json_encode($log_line));
@@ -93,6 +93,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
         }
         else {
           $attr = (array)json_decode($_POST['attr'], true);
+          unset($attr['csrf_token']);
         }
         switch ($category) {
           case "time_limited_alias":
@@ -167,9 +168,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 if ($data) {
                   $return = array();
                   $stats_array = json_decode($data, true)['actions'];
-                  if (!empty($stats_array['soft reject']) || !empty($stats_array['greylist'])) {
-                    $stats_array['soft reject'] = $stats_array['soft reject'] + $stats_array['greylist'];
-                  }
+                  $stats_array['soft reject'] = $stats_array['soft reject'] + $stats_array['greylist'];
                   unset($stats_array['greylist']);
                   foreach ($stats_array as $action => $count) {
                     $return[] = array($action, $count);
@@ -344,6 +343,17 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 }
                 else {
                   $logs = get_logs('sogo-mailcow');
+                }
+                echo (isset($logs) && !empty($logs)) ? json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '{}';
+              break;
+              case "ui":
+                // 0 is first record, so empty is fine
+                if (isset($extra)) {
+                  $extra = preg_replace('/[^\d\-]/i', '', $extra);
+                  $logs = get_logs('mailcow-ui', $extra);
+                }
+                else {
+                  $logs = get_logs('mailcow-ui');
                 }
                 echo (isset($logs) && !empty($logs)) ? json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '{}';
               break;
@@ -903,6 +913,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
         }
         else {
           $attr = (array)json_decode($_POST['attr'], true);
+          unset($attr['csrf_token']);
           $items = isset($_POST['items']) ? (array)json_decode($_POST['items'], true) : null;
         }
         switch ($category) {

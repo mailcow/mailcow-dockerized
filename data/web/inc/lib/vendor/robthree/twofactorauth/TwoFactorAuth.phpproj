@@ -38,10 +38,10 @@
     <Compile Include="lib\Providers\Rng\OpenSSLRNGProvider.php" />
     <Compile Include="lib\Providers\Rng\HashRNGProvider.php" />
     <Compile Include="lib\Providers\Rng\RNGException.php" />
-    <Compile Include="lib\Providers\Time\ConvertUnixTimeDotComTimeProvider.php" />
     <Compile Include="lib\Providers\Time\HttpTimeProvider.php" />
     <Compile Include="lib\Providers\Time\ITimeProvider.php" />
     <Compile Include="lib\Providers\Time\LocalMachineTimeProvider.php" />
+    <Compile Include="lib\Providers\Time\NTPTimeProvider.php" />
     <Compile Include="lib\Providers\Time\TimeException.php" />
     <Compile Include="lib\TwoFactorAuth.php" />
     <Compile Include=".gitignore" />
@@ -65,5 +65,6 @@
     <Content Include="logo.png" />
     <Content Include="multifactorauthforeveryone.png" />
     <Content Include="LICENSE" />
+    <Content Include="phpunit.xml" />
   </ItemGroup>
 </Project>

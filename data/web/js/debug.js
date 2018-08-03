@@ -135,7 +135,7 @@ jQuery(function($){
         {"name":"uri","title":"URI","style":{"width":"310px"}},
         {"name":"method","title":"Method","style":{"width":"80px"}},
         {"name":"remote","title":"IP","style":{"width":"80px"}},
-        {"name":"data","title":"Data","style":{"word-break":"break-all"}},
+        {"name":"data","title":"Data","breakpoints": "all","style":{"word-break":"break-all"}},
       ],
       "rows": $.ajax({
         dataType: 'json',
@@ -158,6 +158,42 @@ jQuery(function($){
         },
         "after.ft.paging": function(e, ft){
           table_log_paging(ft, 'api_logs');
+        }
+      }
+    });
+  }
+  function draw_ui_logs() {
+    ft_api_logs = FooTable.init('#ui_logs', {
+      "columns": [
+        {"name":"time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},"title":lang.time,"style":{"width":"170px"}},
+        {"name":"type","title":"Type"},
+        {"name":"user","title":"User"},
+        {"name":"role","title":"Role"},
+        {"name":"remote","title":"IP"},
+        {"name":"msg","title":lang.message},
+        {"name":"call","title":"Call","breakpoints": "all"},
+      ],
+      "rows": $.ajax({
+        dataType: 'json',
+        url: '/api/v1/get/logs/ui',
+        jsonp: false,
+        error: function () {
+          console.log('Cannot draw ui log table');
+        },
+        success: function (data) {
+          return process_table_data(data, 'mailcow_ui');
+        }
+      }),
+      "empty": lang.empty,
+      "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
+      "filtering": {"enabled": true,"delay": 1,"position": "left","connectors": false,"placeholder": lang.filter_table},
+      "sorting": {"enabled": true},
+      "on": {
+        "ready.ft.table": function(e, ft){
+          table_log_ready(ft, 'ui_logs');
+        },
+        "after.ft.paging": function(e, ft){
+          table_log_paging(ft, 'ui_logs');
         }
       }
     });
@@ -466,6 +502,12 @@ jQuery(function($){
           item.service = '';
         }
       });
+    } else if (table == 'mailcow_ui') {
+      $.each(data, function (i, item) {
+        if (item === null) { return true; }
+        item.user = escapeHtml(item.user);
+        item.type = '<span class="label label-' + item.type + '">' + item.type + '</span>';
+      });
     } else if (table == 'general_syslog') {
       $.each(data, function (i, item) {
         if (item === null) { return true; }
@@ -496,7 +538,7 @@ jQuery(function($){
   $('.add_log_lines').on('click', function (e) {
     e.preventDefault();
     var log_table= $(this).data("table")
-    var new_nrows = ($(this).data("nrows") - 1)
+    var new_nrows = $(this).data("nrows")
     var post_process = $(this).data("post-process")
     var log_url = $(this).data("log-url")
     if (log_table === undefined || new_nrows === undefined || post_process === undefined || log_url === undefined) {
@@ -506,7 +548,7 @@ jQuery(function($){
     if (ft = FooTable.get($('#' + log_table))) {
       var heading = ft.$el.parents('.tab-pane').find('.panel-heading')
       var ft_paging = ft.use(FooTable.Paging)
-      var load_rows = ft_paging.totalRows + '-' + (ft_paging.totalRows + new_nrows)
+      var load_rows = (ft_paging.totalRows + 1) + '-' + (ft_paging.totalRows + new_nrows)
       $.get('/api/v1/get/logs/' + log_url + '/' + load_rows).then(function(data){
         if (data.length === undefined) { mailcow_alert_box(lang.no_new_rows, "info"); return; }
         var rows = process_table_data(data, post_process);
@@ -525,6 +567,7 @@ jQuery(function($){
   draw_watchdog_logs();
   draw_acme_logs();
   draw_api_logs();
+  draw_ui_logs();
   draw_netfilter_logs();
   draw_rspamd_history();
   $(window).resize(function () {
