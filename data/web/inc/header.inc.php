@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="<?= $_SESSION['mailcow_locale'] ?>">
 <head>
 <meta charset="utf-8">

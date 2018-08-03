@@ -13,10 +13,19 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
       if ($response === false) {
         $err = curl_error($curl);
         curl_close($curl);
+        // logger(array('return' => array(
+          // 'type' => 'danger',
+          // 'log' => array(__FUNCTION__, $action, $service_name, $attr1, $attr2, $extra_headers),
+          // 'msg' => $err,
+        // )));
         return $err;
       }
       else {
         curl_close($curl);
+        // logger(array('return' => array(
+          // 'type' => 'success',
+          // 'log' => array(__FUNCTION__, $action, $service_name, $attr1, $attr2, $extra_headers),
+        // )));
         $containers = json_decode($response, true);
         if (!empty($containers)) {
           foreach ($containers as $container) {
@@ -37,10 +46,19 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
       if ($response === false) {
         $err = curl_error($curl);
         curl_close($curl);
+        // logger(array('return' => array(
+          // 'type' => 'danger',
+          // 'log' => array(__FUNCTION__, $action, $service_name, $attr1, $attr2, $extra_headers),
+          // 'msg' => $err,
+        // )));
         return $err;
       }
       else {
         curl_close($curl);
+        // logger(array('return' => array(
+          // 'type' => 'success',
+          // 'log' => array(__FUNCTION__, $action, $service_name, $attr1, $attr2, $extra_headers),
+        // )));
         $containers = json_decode($response, true);
         if (!empty($containers)) {
           foreach ($containers as $container) {
@@ -67,6 +85,11 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
           curl_setopt($curl, CURLOPT_URL, 'http://dockerapi:8080/containers/' . $container_id . '/json');
         }
         else {
+          // logger(array('return' => array(
+            // 'type' => 'danger',
+            // 'log' => array(__FUNCTION__, $action, $service_name, $attr1, $attr2, $extra_headers),
+            // 'msg' => 'invalid_container_id'
+          // )));
           return false;
         }
       }
@@ -77,10 +100,19 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
       if ($response === false) {
         $err = curl_error($curl);
         curl_close($curl);
+        // logger(array('return' => array(
+          // 'type' => 'danger',
+          // 'log' => array(__FUNCTION__, $action, $service_name, $attr1, $attr2, $extra_headers),
+          // 'msg' => $err,
+        // )));
         return $err;
       }
       else {
         curl_close($curl);
+        // logger(array('return' => array(
+          // 'type' => 'success',
+          // 'log' => array(__FUNCTION__, $action, $service_name, $attr1, $attr2, $extra_headers),
+        // )));
         $decoded_response = json_decode($response, true);
         if (!empty($decoded_response)) {
           if (empty($service_name)) {
@@ -126,10 +158,19 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
           if ($response === false) {
             $err = curl_error($curl);
             curl_close($curl);
+            logger(array('return' => array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $action, $service_name, $attr1, $attr2, $extra_headers),
+              'msg' => $err,
+            )));
             return $err;
           }
           else {
             curl_close($curl);
+            logger(array('return' => array(
+              'type' => 'success',
+              'log' => array(__FUNCTION__, $action, $service_name, $attr1, $attr2, $extra_headers),
+            )));
             if (empty($response)) {
               return true;
             }

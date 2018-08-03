@@ -98,10 +98,10 @@ $Parser->setStream(fopen("php://stdin", "r"));
 
 // Once we've indicated where to find the mail, we can parse out the data
 $to = $Parser->getHeader('to');             // "test" <test@example.com>, "test2" <test2@example.com>
-$addressesTo = $Parser->getAddresses('to'); //Return an array : [[test, test@example.com, false],[test2, test2@example.com, false]]
+$addressesTo = $Parser->getAddresses('to'); //Return an array : [["display"=>"test", "address"=>"test@example.com", false],["display"=>"test2", "address"=>"test2@example.com", false]]
 
 $from = $Parser->getHeader('from');             // "test" <test@example.com>
-$addressesFrom = $Parser->getAddresses('from'); //Return an array : test, test@example.com, false
+$addressesFrom = $Parser->getAddresses('from'); //Return an array : [["display"=>"test", "address"=>"test@example.com", "is_group"=>false]]
 
 $subject = $Parser->getHeader('subject');
 

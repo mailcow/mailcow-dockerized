@@ -8,7 +8,8 @@ function dkim($_action, $_data = null) {
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['access_denied'])
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => 'access_denied'
         );
         return false;
       }
@@ -18,21 +19,24 @@ function dkim($_action, $_data = null) {
       if (!is_valid_domain_name($domain) || !is_numeric($key_length)) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['dkim_domain_or_sel_invalid'])
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => 'dkim_domain_or_sel_invalid'
         );
         return false;
       }
       if ($redis->hGet('DKIM_PUB_KEYS', $domain)) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => sprintf($lang['danger']['dkim_domain_or_sel_invalid'])
+            'log' => array(__FUNCTION__, $_action, $_data),
+            'msg' => 'dkim_domain_or_sel_invalid'
           );
           return false;
       }
       if (!ctype_alnum($dkim_selector)) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['dkim_domain_or_sel_invalid'])
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => 'dkim_domain_or_sel_invalid'
         );
         return false;
       }
@@ -56,7 +60,8 @@ function dkim($_action, $_data = null) {
         catch (RedisException $e) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => 'Redis: '.$e
+            'log' => array(__FUNCTION__, $_action, $_data),
+            'msg' => array('redis_error', $e)
           );
           return false;
         }
@@ -69,21 +74,24 @@ function dkim($_action, $_data = null) {
           catch (RedisException $e) {
             $_SESSION['return'] = array(
               'type' => 'danger',
-              'msg' => 'Redis: '.$e
+              'log' => array(__FUNCTION__, $_action, $_data),
+              'msg' => array('redis_error', $e)
             );
             return false;
           }
         }
         $_SESSION['return'] = array(
           'type' => 'success',
-          'msg' => sprintf($lang['success']['dkim_added'])
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => 'dkim_added'
         );
         return true;
       }
       else {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['dkim_domain_or_sel_invalid'])
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => 'dkim_domain_or_sel_invalid'
         );
         return false;
       }
@@ -92,7 +100,8 @@ function dkim($_action, $_data = null) {
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['access_denied'])
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => 'access_denied'
         );
         return false;
       }
@@ -102,7 +111,8 @@ function dkim($_action, $_data = null) {
       if ($ssl_error = openssl_error_string()) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'Private key error: ' . $ssl_error
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => array('private_key_error', $ssl_error)
         );
         return false;
       }
@@ -118,21 +128,24 @@ function dkim($_action, $_data = null) {
       if (!is_valid_domain_name($domain)) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['dkim_domain_or_sel_invalid'])
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => 'dkim_domain_or_sel_invalid'
         );
         return false;
       }
       if ($redis->hGet('DKIM_PUB_KEYS', $domain)) {
-          $_SESSION['return'] = array(
-            'type' => 'danger',
-            'msg' => sprintf($lang['danger']['dkim_domain_or_sel_invalid'])
-          );
-          return false;
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => 'dkim_domain_or_sel_invalid'
+        );
+        return false;
       }
       if (!ctype_alnum($dkim_selector)) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['dkim_domain_or_sel_invalid'])
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => 'dkim_domain_or_sel_invalid'
         );
         return false;
       }
@@ -144,7 +157,8 @@ function dkim($_action, $_data = null) {
       catch (RedisException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'Redis: '.$e
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => array('redis_error', $e)
         );
         return false;
       }
@@ -156,13 +170,15 @@ function dkim($_action, $_data = null) {
       catch (RedisException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'Redis: '.$e
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => array('redis_error', $e)
         );
         return false;
       }
       $_SESSION['return'] = array(
         'type' => 'success',
-        'msg' => sprintf($lang['success']['dkim_added'])
+        'log' => array(__FUNCTION__, $_action, $_data),
+        'msg' => 'dkim_added'
       );
       return true;
     break;
@@ -194,12 +210,16 @@ function dkim($_action, $_data = null) {
         else {
           $dkimdata['privkey'] = base64_encode('Please set $SHOW_DKIM_PRIV_KEYS to true to show DKIM private keys.');
         }
-        
       }
       return $dkimdata;
     break;
     case 'blind':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
+        $_SESSION['return'] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => 'access_denied'
+        );
         return false;
       }
       $blinddkim = array();
@@ -213,7 +233,8 @@ function dkim($_action, $_data = null) {
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['access_denied'])
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => 'access_denied'
         );
         return false;
       }
@@ -221,7 +242,8 @@ function dkim($_action, $_data = null) {
         if (!is_valid_domain_name($domain)) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => sprintf($lang['danger']['dkim_domain_or_sel_invalid'])
+            'log' => array(__FUNCTION__, $_action, $_data),
+            'msg' => 'dkim_domain_or_sel_invalid'
           );
           return false;
         }
@@ -234,14 +256,16 @@ function dkim($_action, $_data = null) {
         catch (RedisException $e) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => 'Redis: '.$e
+            'log' => array(__FUNCTION__, $_action, $_data),
+            'msg' => array('redis_error', $e)
           );
           return false;
         }
       }
       $_SESSION['return'] = array(
         'type' => 'success',
-        'msg' => sprintf($lang['success']['dkim_removed'], htmlspecialchars(implode(', ', $domains)))
+        'log' => array(__FUNCTION__, $_action, $_data),
+        'msg' => array('dkim_removed', htmlspecialchars(implode(', ', $domains)))
       );
     break;
   }

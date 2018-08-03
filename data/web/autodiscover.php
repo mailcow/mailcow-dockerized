@@ -38,25 +38,15 @@ $login_user = strtolower(trim($_SERVER['PHP_AUTH_USER']));
 $login_pass = trim(htmlspecialchars_decode($_SERVER['PHP_AUTH_PW']));
 
 if (empty($_SERVER['PHP_AUTH_USER']) || empty($_SERVER['PHP_AUTH_PW'])) {
-  try {
-    $json = json_encode(
-      array(
-        "time" => time(),
-        "ua" => $_SERVER['HTTP_USER_AGENT'],
-        "user" => "none",
-        "service" => "Error: must be authenticated"
-      )
-    );
-    $redis->lPush('AUTODISCOVER_LOG', $json);
-    $redis->lTrim('AUTODISCOVER_LOG', 0, 100);
-  }
-  catch (RedisException $e) {
-    $_SESSION['return'] = array(
-      'type' => 'danger',
-      'msg' => 'Redis: '.$e
-    );
-    return false;
-  }
+  $json = json_encode(
+    array(
+      "time" => time(),
+      "ua" => $_SERVER['HTTP_USER_AGENT'],
+      "user" => "none",
+      "service" => "Error: must be authenticated"
+    )
+  );
+  $redis->lPush('AUTODISCOVER_LOG', $json);
   header('WWW-Authenticate: Basic realm="' . $_SERVER['HTTP_HOST'] . '"');
   header('HTTP/1.0 401 Unauthorized');
   exit(0);

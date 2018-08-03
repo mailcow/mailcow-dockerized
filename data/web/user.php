@@ -19,6 +19,15 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'doma
     <div class="row">
       <div class="col-sm-offset-3 col-sm-9">
         <p><a href="#pwChangeModal" data-toggle="modal">[<?=$lang['user']['change_password'];?>]</a></p>
+        <p><small>
+        <?php
+        if ($_SESSION['mailcow_cc_last_login']['remote']):
+        ?>
+        <span style="margin-right:10px" class="glyphicon glyphicon-log-in"></span> <span data-time="<?=$_SESSION['mailcow_cc_last_login']['time'];?>" class="last_login_date"></span> (<?=$_SESSION['mailcow_cc_last_login']['remote'];?>)
+        <?php
+        else: echo "Last login: -"; endif;
+        ?>
+        </small></p>
       </div>
     </div>
     <hr>
@@ -94,6 +103,15 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
       <?php endif; ?>
       <p><a href="#pwChangeModal" data-toggle="modal">[<?=$lang['user']['change_password'];?>]</a></p>
       <p><a target="_blank" href="https://mailcow.github.io/mailcow-dockerized-docs/client/#<?=$clientconfigstr;?>">[<?=$lang['user']['client_configuration'];?>]</a></p>
+      <p><small>
+      <?php
+      if ($_SESSION['mailcow_cc_last_login']['remote']):
+      ?>
+      <span style="margin-right:10px" class="glyphicon glyphicon-log-in"></span> <span data-time="<?=$_SESSION['mailcow_cc_last_login']['time'];?>" class="last_login_date"></span> (<?=$_SESSION['mailcow_cc_last_login']['remote'];?>)
+      <?php
+      else: echo "Last login: -"; endif;
+      ?>
+      </small></p>
     </div>
   </div>
   <hr>

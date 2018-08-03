@@ -394,7 +394,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         ?>
         <h4><?=$lang['edit']['mailbox'];?></h4>
         <form class="form-horizontal" data-id="editmailbox" role="form" method="post">
-          <input type="hidden" value="0" name="sender_acl">
+          <input type="hidden" value="default" name="sender_acl">
           <input type="hidden" value="0" name="active">
           <input type="hidden" value="0" name="force_pw_update">
           <div class="form-group">
@@ -462,6 +462,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
 
               ?>
               </select>
+              <div style="display:none" id="sender_acl_disabled"><?=$lang['edit']['sender_acl_disabled'];?></div>
             </div>
           </div>
           <div class="form-group">

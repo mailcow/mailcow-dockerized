@@ -1,23 +1,23 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
     "content-hash": "3edeec2e3fa875d4f9d5e7f22a8179be",
     "packages": [
         {
             "name": "php-mime-mail-parser/php-mime-mail-parser",
-            "version": "2.9.5",
+            "version": "2.11.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-mime-mail-parser/php-mime-mail-parser.git",
-                "reference": "fbb424e77de2837dc6d8a110656d3c10f2fc9353"
+                "reference": "4769e942ed0dbbdd7882fc390b119d625463c8af"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-mime-mail-parser/php-mime-mail-parser/zipball/fbb424e77de2837dc6d8a110656d3c10f2fc9353",
-                "reference": "fbb424e77de2837dc6d8a110656d3c10f2fc9353",
+                "url": "https://api.github.com/repos/php-mime-mail-parser/php-mime-mail-parser/zipball/4769e942ed0dbbdd7882fc390b119d625463c8af",
+                "reference": "4769e942ed0dbbdd7882fc390b119d625463c8af",
                 "shasum": ""
             },
             "require": {
@@ -84,7 +84,7 @@
                 "mailparse",
                 "mime"
             ],
-            "time": "2018-01-16T18:38:20+00:00"
+            "time": "2018-04-30T05:55:59+00:00"
         },
         {
             "name": "phpmailer/phpmailer",
@@ -165,16 +165,16 @@
         },
         {
             "name": "robthree/twofactorauth",
-            "version": "1.6.1",
+            "version": "1.6.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/RobThree/TwoFactorAuth.git",
-                "reference": "a77e7d822343bb88112baef808839cfae7bc5abb"
+                "reference": "f5f58a4c62d0336a0e6175856894a51f3565dad2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/RobThree/TwoFactorAuth/zipball/a77e7d822343bb88112baef808839cfae7bc5abb",
-                "reference": "a77e7d822343bb88112baef808839cfae7bc5abb",
+                "url": "https://api.github.com/repos/RobThree/TwoFactorAuth/zipball/f5f58a4c62d0336a0e6175856894a51f3565dad2",
+                "reference": "f5f58a4c62d0336a0e6175856894a51f3565dad2",
                 "shasum": ""
             },
             "require": {
@@ -212,7 +212,7 @@
                 "php",
                 "tfa"
             ],
-            "time": "2017-11-06T17:55:56+00:00"
+            "time": "2018-06-09T10:09:59+00:00"
         },
         {
             "name": "soundasleep/html2text",

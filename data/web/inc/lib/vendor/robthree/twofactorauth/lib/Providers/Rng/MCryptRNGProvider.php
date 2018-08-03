@@ -11,7 +11,7 @@ class MCryptRNGProvider implements IRNGProvider
     }
     
     public function getRandomBytes($bytecount) {
-        $result = mcrypt_create_iv($bytecount, $this->source);
+        $result = @mcrypt_create_iv($bytecount, $this->source);
         if ($result === false)
             throw new \RNGException('mcrypt_create_iv returned an invalid value');
         return $result;

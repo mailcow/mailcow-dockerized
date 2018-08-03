@@ -41,6 +41,8 @@ jQuery(function($){
     return date.toLocaleString();
   }
   acl_data = JSON.parse(acl);
+  var last_login = $('.last_login_date').data('time');
+  $('.last_login_date').text(unix_time_format(last_login));
 
   function draw_tla_table() {
     ft_tla_table = FooTable.init('#tla_table', {

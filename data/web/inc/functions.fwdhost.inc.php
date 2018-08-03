@@ -1,16 +1,17 @@
 <?php
-
 function fwdhost($_action, $_data = null) {
   require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/spf.inc.php';
 	global $redis;
 	global $lang;
+  $_data_log = $_data;
   switch ($_action) {
     case 'add':
       global $lang;
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['access_denied'])
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'access_denied'
         );
         return false;
       }
@@ -29,7 +30,8 @@ function fwdhost($_action, $_data = null) {
       if (empty($hosts)) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'Invalid host specified: '. htmlspecialchars($host)
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('invalid_host', htmlspecialchars($host))
         );
         return false;
       }
@@ -46,14 +48,16 @@ function fwdhost($_action, $_data = null) {
         catch (RedisException $e) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => 'Redis: '.$e
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => array('redis_error', $e)
           );
           return false;
         }
       }
       $_SESSION['return'] = array(
         'type' => 'success',
-        'msg' => sprintf($lang['success']['forwarding_host_added'], htmlspecialchars(implode(', ', $hosts)))
+        'log' => array(__FUNCTION__, $_action, $_data_log),
+        'msg' => array('forwarding_host_added', htmlspecialchars(implode(', ', $hosts)))
       );
     break;
     case 'edit':
@@ -61,7 +65,8 @@ function fwdhost($_action, $_data = null) {
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['access_denied'])
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'access_denied'
         );
         return false;
       }
@@ -74,7 +79,8 @@ function fwdhost($_action, $_data = null) {
         else {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => sprintf($lang['danger']['access_denied'])
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => 'access_denied'
           );
           return false;
         }
@@ -89,14 +95,16 @@ function fwdhost($_action, $_data = null) {
         catch (RedisException $e) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => 'Redis: '.$e
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => array('redis_error', $e)
           );
           return false;
         }
       }
       $_SESSION['return'] = array(
         'type' => 'success',
-        'msg' => sprintf($lang['success']['object_modified'], htmlspecialchars(implode(', ', $fwdhosts)))
+        'log' => array(__FUNCTION__, $_action, $_data_log),
+        'msg' => array('object_modified', htmlspecialchars(implode(', ', $fwdhosts)))
       );
     break;
     case 'delete':
@@ -109,14 +117,16 @@ function fwdhost($_action, $_data = null) {
         catch (RedisException $e) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => 'Redis: '.$e
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => array('redis_error', $e)
           );
           return false;
         }
       }
       $_SESSION['return'] = array(
         'type' => 'success',
-        'msg' => sprintf($lang['success']['forwarding_host_removed'], htmlspecialchars(implode(', ', $hosts)))
+        'log' => array(__FUNCTION__, $_action, $_data_log),
+        'msg' => array('forwarding_host_removed', htmlspecialchars(implode(', ', $hosts)))
       );
     break;
     case 'get':
@@ -140,7 +150,8 @@ function fwdhost($_action, $_data = null) {
       catch (RedisException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'Redis: '.$e
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('redis_error', $e)
         );
         return false;
       }
@@ -161,7 +172,8 @@ function fwdhost($_action, $_data = null) {
       catch (RedisException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'Redis: '.$e
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('redis_error', $e)
         );
         return false;
       }

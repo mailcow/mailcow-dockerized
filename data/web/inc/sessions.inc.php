@@ -30,11 +30,13 @@ if (!isset($_SESSION['SESS_REMOTE_UA'])) {
 if (!empty($_SERVER['HTTP_X_API_KEY'])) {
   $stmt = $pdo->prepare("SELECT `username`, `allow_from` FROM `api` WHERE `api_key` = :api_key AND `active` = '1';");
   $stmt->execute(array(
-    ':api_key' => preg_replace('/[^A-Z0-9-]/', '', $_SERVER['HTTP_X_API_KEY'])
+    ':api_key' => preg_replace('/[^A-Z0-9-]/i', '', $_SERVER['HTTP_X_API_KEY'])
   ));
   $api_return = $stmt->fetch(PDO::FETCH_ASSOC);
   if (!empty($api_return['username'])) {
-    if (in_array($_SERVER['REMOTE_ADDR'], explode(',', $api_return['allow_from']))) {
+    $remote = get_remote_ip(false);
+    $allow_from = array_map('trim', preg_split( "/( |,|;|\n)/", $api_return['allow_from']));
+    if (in_array($remote, $allow_from)) {
       $_SESSION['mailcow_cc_username'] = $api_return['username'];
       $_SESSION['mailcow_cc_role'] = 'admin';
       $_SESSION['mailcow_cc_api'] = true;
@@ -49,16 +51,22 @@ function session_check() {
   if ($_SESSION['mailcow_cc_api'] === true) {
     return true;
   }
-  if (!isset($_SESSION['SESS_REMOTE_UA'])) {
-    return false;
-  }
-  if ($_SESSION['SESS_REMOTE_UA'] != $_SERVER['HTTP_USER_AGENT']) {
+  if (!isset($_SESSION['SESS_REMOTE_UA']) || ($_SESSION['SESS_REMOTE_UA'] != $_SERVER['HTTP_USER_AGENT'])) {
+    $_SESSION['return'] = array(
+      'type' => 'warning',
+      'msg' => 'session_ua'
+    );
     return false;
   }
   if (!empty($_POST)) {
     if ($_SESSION['CSRF']['TOKEN'] != $_POST['csrf_token']) {
+      $_SESSION['return'] = array(
+        'type' => 'warning',
+        'msg' => 'session_token'
+      );
       return false;
     }
+    unset($_POST['csrf_token']);
     $_SESSION['CSRF']['TOKEN'] = bin2hex(random_bytes(32));
     $_SESSION['CSRF']['TIME'] = time();
   }
@@ -66,10 +74,6 @@ function session_check() {
 }
 
 if (isset($_SESSION['mailcow_cc_role']) && session_check() === false) {
-  $_SESSION['return'] = array(
-    'type' => 'warning',
-    'msg' => 'Form token invalid or timed out'
-  );
   $_POST = array();
   $_FILES = array();
 }

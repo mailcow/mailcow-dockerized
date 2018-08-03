@@ -343,7 +343,7 @@ jQuery(function($){
         },
         {"name":"messages","filterable": false,"title":lang.msg_num,"breakpoints":"xs sm md"},
         {"name":"active","filterable": false,"title":lang.active},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
+        {"name":"action","filterable": false,"sortable": false,"style":{"min-width":"250px","text-align":"right"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
       ],
       "empty": lang.empty,
       "rows": $.ajax({

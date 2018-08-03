@@ -3,6 +3,7 @@ function quarantine($_action, $_data = null) {
 	global $pdo;
 	global $redis;
 	global $lang;
+	$_data_log = $_data;
   switch ($_action) {
     case 'delete':
       if (!is_array($_data['id'])) {
@@ -15,7 +16,8 @@ function quarantine($_action, $_data = null) {
       if (!isset($_SESSION['acl']['quarantine']) || $_SESSION['acl']['quarantine'] != "1" ) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['access_denied'])
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'access_denied'
         );
         return false;
       }
@@ -23,7 +25,8 @@ function quarantine($_action, $_data = null) {
         if (!is_numeric($id)) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => sprintf($lang['danger']['access_denied'])
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => 'access_denied'
           );
           return false;
         }
@@ -41,7 +44,8 @@ function quarantine($_action, $_data = null) {
             catch (PDOException $e) {
               $_SESSION['return'] = array(
                 'type' => 'danger',
-                'msg' => 'MySQL: '.$e
+                'log' => array(__FUNCTION__, $_action, $_data_log),
+                'msg' => array('mysql_error', $e)
               );
               return false;
             }
@@ -49,7 +53,8 @@ function quarantine($_action, $_data = null) {
           else {
             $_SESSION['return'] = array(
               'type' => 'danger',
-              'msg' => sprintf($lang['danger']['access_denied'])
+              'log' => array(__FUNCTION__, $_action, $_data_log),
+              'msg' => 'access_denied'
             );
             return false;
           }
@@ -57,20 +62,23 @@ function quarantine($_action, $_data = null) {
         catch(PDOException $e) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => 'MySQL: '.$e
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => array('mysql_error', $e)
           );
         }
       }
       $_SESSION['return'] = array(
         'type' => 'success',
-        'msg' => sprintf($lang['success']['items_deleted'], implode(', ', $ids))
+        'log' => array(__FUNCTION__, $_action, $_data_log),
+        'msg' => array('items_deleted', implode(', ', $ids))
       );
     break;
     case 'edit':
       if (!isset($_SESSION['acl']['quarantine']) || $_SESSION['acl']['quarantine'] != "1" ) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['access_denied'])
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'access_denied'
         );
         return false;
       }
@@ -79,7 +87,8 @@ function quarantine($_action, $_data = null) {
         if ($_SESSION['mailcow_cc_role'] != "admin") {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => sprintf($lang['danger']['access_denied'])
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => 'access_denied'
           );
           return false;
         }
@@ -94,13 +103,15 @@ function quarantine($_action, $_data = null) {
         catch (RedisException $e) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => 'Redis: '.$e
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => array('redis_error', $e)
           );
           return false;
         }
         $_SESSION['return'] = array(
           'type' => 'success',
-          'msg' => 'Saved settings'
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'saved_settings'
         );
       }
       // Release item
@@ -116,7 +127,8 @@ function quarantine($_action, $_data = null) {
           if (!is_numeric($id)) {
             $_SESSION['return'] = array(
               'type' => 'danger',
-              'msg' => sprintf($lang['danger']['access_denied'])
+              'log' => array(__FUNCTION__, $_action, $_data_log),
+              'msg' => 'access_denied'
             );
             return false;
           }
@@ -127,7 +139,7 @@ function quarantine($_action, $_data = null) {
             if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $row['rcpt'])) {
               $_SESSION['return'] = array(
                 'type' => 'danger',
-                'msg' => sprintf($lang['danger']['access_denied'])
+                'msg' => 'access_denied'
               );
               return false;
             }
@@ -135,7 +147,8 @@ function quarantine($_action, $_data = null) {
           catch(PDOException $e) {
             $_SESSION['return'] = array(
               'type' => 'danger',
-              'msg' => 'MySQL: '.$e
+              'log' => array(__FUNCTION__, $_action, $_data_log),
+              'msg' => array('mysql_error', $e)
             );
           }
           $sender = (isset($row['sender'])) ? $row['sender'] : 'sender-unknown@rspamd';
@@ -159,7 +172,8 @@ function quarantine($_action, $_data = null) {
             else {
               $_SESSION['return'] = array(
                 'type' => 'warning',
-                'msg' => sprintf($lang['danger']['release_send_failed'], 'Cannot determine Postfix host')
+                'log' => array(__FUNCTION__, $_action, $_data_log),
+                'msg' => array('release_send_failed', 'Cannot determine Postfix host')
               );
               return false;
             }
@@ -181,7 +195,8 @@ function quarantine($_action, $_data = null) {
             unlink($msg_tmpf);
             $_SESSION['return'] = array(
               'type' => 'warning',
-              'msg' => sprintf($lang['danger']['release_send_failed'], $e->errorMessage())
+              'log' => array(__FUNCTION__, $_action, $_data_log),
+              'msg' => array('release_send_failed', $e->errorMessage())
             );
             return false;
           }
@@ -194,14 +209,16 @@ function quarantine($_action, $_data = null) {
           catch (PDOException $e) {
             $_SESSION['return'] = array(
               'type' => 'danger',
-              'msg' => 'MySQL: '.$e
+              'log' => array(__FUNCTION__, $_action, $_data_log),
+              'msg' => array('mysql_error', $e)
             );
             return false;
           }
         }
         $_SESSION['return'] = array(
           'type' => 'success',
-          'msg' => $lang['success']['items_released']
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'items_released'
         );
       }
       return true;
@@ -238,7 +255,8 @@ function quarantine($_action, $_data = null) {
       catch(PDOException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'MySQL: '.$e
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('mysql_error', $e)
         );
       }
       return $q_meta;
@@ -247,7 +265,8 @@ function quarantine($_action, $_data = null) {
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['access_denied'])
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'access_denied'
         );
         return false;
       }
@@ -259,7 +278,8 @@ function quarantine($_action, $_data = null) {
       catch (RedisException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'Redis: '.$e
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('redis_error', $e)
         );
         return false;
       }
@@ -281,7 +301,8 @@ function quarantine($_action, $_data = null) {
       catch(PDOException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'MySQL: '.$e
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('mysql_error', $e)
         );
       }
       return false;

@@ -2,12 +2,14 @@
 function relayhost($_action, $_data = null) {
 	global $pdo;
 	global $lang;
+  $_data_log = $_data;
   switch ($_action) {
     case 'add':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['access_denied'])
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'access_denied'
         );
         return false;
       }
@@ -17,7 +19,8 @@ function relayhost($_action, $_data = null) {
       if (empty($hostname)) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'Invalid host specified: '. htmlspecialchars($host)
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('invalid_host', htmlspecialchars($host))
         );
         return false;
       }
@@ -34,20 +37,23 @@ function relayhost($_action, $_data = null) {
       catch (PDOException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'MySQL: '.$e
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('mysql_error', $e)
         );
         return false;
       }
       $_SESSION['return'] = array(
         'type' => 'success',
-        'msg' => sprintf($lang['success']['relayhost_added'], htmlspecialchars(implode(', ', $hosts)))
+        'log' => array(__FUNCTION__, $_action, $_data_log),
+        'msg' => array('relayhost_added', htmlspecialchars(implode(', ', $hosts)))
       );
     break;
     case 'edit':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['access_denied'])
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'access_denied'
         );
         return false;
       }
@@ -63,7 +69,8 @@ function relayhost($_action, $_data = null) {
         else {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => 'Relayhost invalid'
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => 'relayhost_invalid'
           );
           return false;
         }
@@ -85,21 +92,24 @@ function relayhost($_action, $_data = null) {
         catch (PDOException $e) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => 'MySQL: '.$e
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => array('mysql_error', $e)
           );
           return false;
         }
       }
       $_SESSION['return'] = array(
         'type' => 'success',
-        'msg' => sprintf($lang['success']['object_modified'], htmlspecialchars(implode(', ', $hostnames)))
+        'log' => array(__FUNCTION__, $_action, $_data_log),
+        'msg' => array('object_modified', htmlspecialchars(implode(', ', $hostnames)))
       );
     break;
     case 'delete':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['access_denied'])
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'access_denied'
         );
         return false;
       }
@@ -114,14 +124,16 @@ function relayhost($_action, $_data = null) {
         catch (PDOException $e) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => 'MySQL: '.$e
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => array('mysql_error', $e)
           );
           return false;
         }
       }
       $_SESSION['return'] = array(
         'type' => 'success',
-        'msg' => sprintf($lang['success']['relayhost_removed'], htmlspecialchars(implode(', ', $hostnames)))
+        'log' => array(__FUNCTION__, $_action, $_data_log),
+        'msg' => array('relayhost_removed', htmlspecialchars(implode(', ', $hostnames)))
       );
     break;
     case 'get':
@@ -136,7 +148,8 @@ function relayhost($_action, $_data = null) {
       catch(PDOException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'MySQL: '.$e
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('mysql_error', $e)
         );
       }
       return $relayhosts;
@@ -170,7 +183,8 @@ function relayhost($_action, $_data = null) {
       catch(PDOException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'MySQL: '.$e
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('mysql_error', $e)
         );
       }
       return $relayhostdata;

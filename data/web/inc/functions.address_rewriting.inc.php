@@ -10,7 +10,8 @@ function bcc($_action, $_data = null, $attr = null) {
       if (!isset($_SESSION['acl']['bcc_maps']) || $_SESSION['acl']['bcc_maps'] != "1" ) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['access_denied'])
+          'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+          'msg' => 'access_denied'
         );
         return false;
       }
@@ -21,14 +22,16 @@ function bcc($_action, $_data = null, $attr = null) {
       if ($type != 'sender' && $type != 'rcpt') {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'Invalid BCC map type'
+          'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+          'msg' => 'invalid_bcc_map_type'
         );
         return false;
       }
       if (empty($bcc_dest)) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'BCC destination cannot be empty'
+          'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+          'msg' => 'bcc_empty'
         );
         return false;
       }
@@ -36,7 +39,8 @@ function bcc($_action, $_data = null, $attr = null) {
         if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $local_dest)) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => sprintf($lang['danger']['access_denied'])
+            'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+            'msg' => 'access_denied'
           );
           return false;
         }
@@ -47,7 +51,8 @@ function bcc($_action, $_data = null, $attr = null) {
         if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $local_dest)) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => sprintf($lang['danger']['access_denied'])
+            'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+            'msg' => 'access_denied'
           );
           return false;
         }
@@ -63,7 +68,8 @@ function bcc($_action, $_data = null, $attr = null) {
       if (!filter_var($bcc_dest, FILTER_VALIDATE_EMAIL)) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'BCC map must be a valid email address'
+          'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+          'msg' => 'bcc_must_be_email'
         );
         return false;
       }
@@ -76,14 +82,16 @@ function bcc($_action, $_data = null, $attr = null) {
       catch(PDOException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'MySQL: '.$e
+          'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+          'msg' => array('mysql_error', $e)
         );
         return false;
       }
       if ($num_results != 0) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'A BCC map entry "' . htmlspecialchars($local_dest_sane) . '" exists for type "' . $type . '"'
+          'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+          'msg' => array('bcc_exists', htmlspecialchars($local_dest_sane), $type)
         );
         return false;
       }
@@ -101,20 +109,23 @@ function bcc($_action, $_data = null, $attr = null) {
       catch (PDOException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'MySQL: '.$e
+          'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+          'msg' => array('mysql_error', $e)
         );
         return false;
       }
       $_SESSION['return'] = array(
         'type' => 'success',
-        'msg' => 'BCC map entry saved'
+        'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+        'msg' => 'bcc_saved'
       );
     break;
     case 'edit':
       if (!isset($_SESSION['acl']['bcc_maps']) || $_SESSION['acl']['bcc_maps'] != "1" ) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['access_denied'])
+          'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+          'msg' => 'access_denied'
         );
         return false;
       }
@@ -130,7 +141,8 @@ function bcc($_action, $_data = null, $attr = null) {
         else {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => sprintf($lang['danger']['access_denied'])
+            'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+            'msg' => 'access_denied'
           );
           return false;
         }
@@ -138,14 +150,16 @@ function bcc($_action, $_data = null, $attr = null) {
         if (!filter_var($bcc_dest, FILTER_VALIDATE_EMAIL)) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => 'BCC map must be a valid email address'
+            'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+            'msg' => 'bcc_must_be_email'
           );
           return false;
         }
         if (empty($bcc_dest)) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => 'BCC map destination cannot be empty'
+            'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+            'msg' => 'bcc_empty'
           );
           return false;
         }
@@ -158,14 +172,16 @@ function bcc($_action, $_data = null, $attr = null) {
         catch(PDOException $e) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => 'MySQL: '.$e
+            'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+            'msg' => array('mysql_error', $e)
           );
           return false;
         }
         if (isset($id_now) && $id_now != $id) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => 'A BCC map entry ' . htmlspecialchars($local_dest) . ' exists for this type'
+            'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+            'msg' => array('bcc_exists', htmlspecialchars($local_dest), $type)
           );
           return false;
         }
@@ -181,14 +197,16 @@ function bcc($_action, $_data = null, $attr = null) {
         catch (PDOException $e) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => 'MySQL: '.$e
+            'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+            'msg' => array('mysql_error', $e)
           );
           return false;
         }
       }
       $_SESSION['return'] = array(
         'type' => 'success',
-        'msg' => 'BCC map entry edited'
+        'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+        'msg' => 'bcc_edited'
       );
     break;
     case 'details':
@@ -211,7 +229,8 @@ function bcc($_action, $_data = null, $attr = null) {
       catch(PDOException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'MySQL: '.$e
+          'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+          'msg' => array('mysql_error', $e)
         );
         return false;
       }
@@ -232,7 +251,8 @@ function bcc($_action, $_data = null, $attr = null) {
       catch(PDOException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'MySQL: '.$e
+          'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+          'msg' => array('mysql_error', $e)
         );
         return false;
       }
@@ -257,7 +277,8 @@ function bcc($_action, $_data = null, $attr = null) {
           if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
             $_SESSION['return'] = array(
               'type' => 'danger',
-              'msg' => sprintf($lang['danger']['access_denied'])
+              'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+              'msg' => 'access_denied'
             );
             return false;
           }
@@ -267,14 +288,16 @@ function bcc($_action, $_data = null, $attr = null) {
         catch (PDOException $e) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => 'MySQL: '.$e
+            'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+            'msg' => array('mysql_error', $e)
           );
           return false;
         }
       }
       $_SESSION['return'] = array(
         'type' => 'success',
-        'msg' => 'Deleted BCC map id/s ' . implode(', ', $ids)
+        'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+        'msg' => array('bcc_deleted', implode(', ', $ids))
       );
       return true;
     break;
@@ -304,14 +327,16 @@ function recipient_map($_action, $_data = null, $attr = null) {
       else {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['invalid_recipient_map_old'], htmlspecialchars($old_dest))
+          'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+          'msg' => array('invalid_recipient_map_old', htmlspecialchars($old_dest))
         );
         return false;
       }
       if (!filter_var($new_dest, FILTER_VALIDATE_EMAIL)) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['invalid_recipient_map_new'], htmlspecialchars($new_dest))
+          'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+          'msg' => array('invalid_recipient_map_new', htmlspecialchars($new_dest))
         );
         return false;
       }
@@ -322,7 +347,8 @@ function recipient_map($_action, $_data = null, $attr = null) {
       if (in_array($old_dest_sane, $old_dests_existing)) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => sprintf($lang['danger']['recipient_map_entry_exists'], htmlspecialchars($old_dest))
+          'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+          'msg' => array('recipient_map_entry_exists', htmlspecialchars($old_dest))
         );
         return false;
       }
@@ -338,13 +364,15 @@ function recipient_map($_action, $_data = null, $attr = null) {
       catch (PDOException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'MySQL: '.$e
+          'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+          'msg' => array('mysql_error', $e)
         );
         return false;
       }
       $_SESSION['return'] = array(
         'type' => 'success',
-        'msg' => sprintf($lang['success']['recipient_map_entry_saved'], htmlspecialchars($old_dest_sane))
+        'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+        'msg' => array('recipient_map_entry_saved', htmlspecialchars($old_dest_sane))
       );
     break;
     case 'edit':
@@ -362,7 +390,8 @@ function recipient_map($_action, $_data = null, $attr = null) {
         else {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => sprintf($lang['danger']['access_denied'])
+            'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+            'msg' => 'access_denied'
           );
           return false;
         }
@@ -375,7 +404,8 @@ function recipient_map($_action, $_data = null, $attr = null) {
         else {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => sprintf($lang['danger']['invalid_recipient_map_old'], htmlspecialchars($old_dest))
+            'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+            'msg' => array('invalid_recipient_map_old', htmlspecialchars($old_dest))
           );
           return false;
         }
@@ -383,7 +413,8 @@ function recipient_map($_action, $_data = null, $attr = null) {
         if (!filter_var($new_dest, FILTER_VALIDATE_EMAIL)) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => sprintf($lang['danger']['invalid_recipient_map_new'], htmlspecialchars($new_dest))
+            'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+            'msg' => array('invalid_recipient_map_new', htmlspecialchars($new_dest))
           );
           return false;
         }
@@ -395,7 +426,8 @@ function recipient_map($_action, $_data = null, $attr = null) {
           recipient_map('details', $id)['recipient_map_old'] != $old_dest_sane) {
             $_SESSION['return'] = array(
               'type' => 'danger',
-              'msg' => sprintf($lang['danger']['recipient_map_entry_exists'], htmlspecialchars($old_dest_sane))
+              'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+              'msg' => array('recipient_map_entry_exists', htmlspecialchars($old_dest_sane))
             );
             return false;
         }
@@ -415,14 +447,16 @@ function recipient_map($_action, $_data = null, $attr = null) {
         catch (PDOException $e) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => 'MySQL: '.$e
+            'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+            'msg' => array('mysql_error', $e)
           );
           return false;
         }
       }
       $_SESSION['return'] = array(
         'type' => 'success',
-        'msg' => sprintf($lang['success']['recipient_map_entry_saved'], htmlspecialchars($old_dest))
+        'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+        'msg' => array('recipient_map_entry_saved', htmlspecialchars($old_dest))
       );
     break;
     case 'details':
@@ -443,7 +477,8 @@ function recipient_map($_action, $_data = null, $attr = null) {
       catch(PDOException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'MySQL: '.$e
+          'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+          'msg' => array('mysql_error', $e)
         );
         return false;
       }
@@ -460,7 +495,8 @@ function recipient_map($_action, $_data = null, $attr = null) {
       catch(PDOException $e) {
         $_SESSION['return'] = array(
           'type' => 'danger',
-          'msg' => 'MySQL: '.$e
+          'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+          'msg' => array('mysql_error', $e)
         );
         return false;
       }
@@ -483,14 +519,15 @@ function recipient_map($_action, $_data = null, $attr = null) {
         catch (PDOException $e) {
           $_SESSION['return'] = array(
             'type' => 'danger',
-            'msg' => 'MySQL: '.$e
+            'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+            'msg' => array('mysql_error', $e)
           );
           return false;
         }
       }
       $_SESSION['return'] = array(
         'type' => 'success',
-        'msg' => sprintf($lang['success']['recipient_map_entry_deleted'], htmlspecialchars($old_dest))
+        'msg' => array('recipient_map_entry_deleted', htmlspecialchars($old_dest))
       );
       return true;
     break;

@@ -6,8 +6,9 @@ function autoconfiguration($_action, $_type, $_data = null) {
     case 'edit':
       if (!isset($_SESSION['acl']['eas_autoconfig']) || $_SESSION['acl']['eas_autoconfig'] != "1" ) {
         $_SESSION['return'] = array(
-        'type' => 'danger',
-        'msg' => sprintf($lang['danger']['access_denied'])
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_type, $_data),
+          'msg' => 'access_denied'
         );
         return false;
       }
@@ -31,7 +32,8 @@ function autoconfiguration($_action, $_type, $_data = null) {
               catch(PDOException $e) {
                 $_SESSION['return'] = array(
                   'type' => 'danger',
-                  'msg' => 'MySQL: '.$e
+                  'log' => array(__FUNCTION__, $_action, $_type, $_data),
+                  'msg' => array('mysql_error', $e)
                 );
                 return false;
               }
@@ -42,7 +44,8 @@ function autoconfiguration($_action, $_type, $_data = null) {
           }
           $_SESSION['return'] = array(
             'type' => 'success',
-            'msg' => sprintf($lang['success']['domain_modified'], htmlspecialchars(implode(', ', $objects)))
+            'log' => array(__FUNCTION__, $_action, $_type, $_data),
+            'msg' => array('domain_modified', htmlspecialchars(implode(', ', $objects)))
           );
         break;
       }
@@ -69,7 +72,8 @@ function autoconfiguration($_action, $_type, $_data = null) {
               catch(PDOException $e) {
                 $_SESSION['return'] = array(
                   'type' => 'danger',
-                  'msg' => 'MySQL: '.$e
+                  'log' => array(__FUNCTION__, $_action, $_type, $_data),
+                  'msg' => array('mysql_error', $e)
                 );
                 return false;
               }
@@ -92,7 +96,8 @@ function autoconfiguration($_action, $_type, $_data = null) {
               catch(PDOException $e) {
                 $_SESSION['return'] = array(
                   'type' => 'danger',
-                  'msg' => 'MySQL: '.$e
+                  'log' => array(__FUNCTION__, $_action, $_type, $_data),
+                  'msg' => array('mysql_error', $e)
                 );
                 return false;
               }
@@ -111,9 +116,4 @@ function autoconfiguration($_action, $_type, $_data = null) {
       }
     break;
   }
-}
-$miau = "Microsoft Office/15.0 (Windows NT 5.1; macOS Outlook 16.0.4734; Pro)";
-preg_match("/^((?!.*Mac|.*emClient).)*(Outlook|Office).+1[5-9].*/i", $miau, $output_array);
-if (empty($output_array)) {
-  echo "imap";
 }
