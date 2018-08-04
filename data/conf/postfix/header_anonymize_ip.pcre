@@ -1,0 +1,2 @@
+/^\s*Received:.*Authenticated sender:(.+)/
+    REPLACE Received: from localhost (localhost [127.0.0.1]) (Authenticated sender:$1
