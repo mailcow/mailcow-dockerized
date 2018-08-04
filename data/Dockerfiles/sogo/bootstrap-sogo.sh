@@ -169,6 +169,7 @@ sed -i \
   -e 's/69f0ae/448AFF/g' \
   -e 's/00e676/2979ff/g' \
   -e 's/00c853/2962ff/g'  \
-  /usr/lib/GNUstep/SOGo/WebServerResources/js/Common/Common.app.js
+  /usr/lib/GNUstep/SOGo/WebServerResources/js/Common/Common.app.js \
+  /usr/lib/GNUstep/SOGo/WebServerResources/js/Common.js
 
 exec gosu sogo /usr/sbin/sogod
