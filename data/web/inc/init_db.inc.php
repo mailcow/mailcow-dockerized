@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "31072018_2319";
+    $db_version = "05072018_2319";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -147,7 +147,7 @@ function init_db_schema() {
               "col" => "username",
               "ref" => "admin.username",
               "delete" => "CASCADE",
-              "update" => "NO ACTION"
+              "update" => "CASCADE"
             )
           )
         ),
