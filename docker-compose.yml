@@ -53,7 +53,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.12
+      image: mailcow/clamd:1.13
       build: ./data/Dockerfiles/clamd
       restart: always
       tty: true
@@ -62,6 +62,7 @@ services:
         - SKIP_CLAMD=${SKIP_CLAMD:-n}
       volumes:
         - ./data/conf/clamav/:/etc/clamav/
+        - ./data/conf/clamav/whitelist.ign2:/var/lib/clamav/whitelist.ign2
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       networks:
@@ -278,7 +279,7 @@ services:
       depends_on:
         - nginx-mailcow
         - mysql-mailcow
-      image: mailcow/acme:1.35
+      image: mailcow/acme:1.36
       build: ./data/Dockerfiles/acme
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
