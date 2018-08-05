@@ -3,48 +3,6 @@ function hash_password($password) {
 	$salt_str = bin2hex(openssl_random_pseudo_bytes(8));
 	return "{SSHA256}".base64_encode(hash('sha256', $password . $salt_str, true) . $salt_str);
 }
-function get_remote_ip($anonymize = null) {
-  global $ANONYMIZE_IPS;
-  if ($anonymize === null) { 
-    $anonymize = $ANONYMIZE_IPS;
-  }
-  elseif ($anonymize !== true && $anonymize !== false)  {
-    $anonymize = true;
-  }
-  $remote = '';
-  if ($_SERVER['HTTP_CLIENT_IP']) {
-    $remote = $_SERVER['HTTP_CLIENT_IP'];
-  }
-  elseif ($_SERVER['HTTP_X_FORWARDED_FOR']) {
-    $remote = $_SERVER['HTTP_X_FORWARDED_FOR'];
-  }
-  elseif ($_SERVER['HTTP_X_FORWARDED']) {
-    $remote = $_SERVER['HTTP_X_FORWARDED'];
-  }
-  elseif ($_SERVER['HTTP_FORWARDED_FOR']) {
-    $remote = $_SERVER['HTTP_FORWARDED_FOR'];
-  }
-  elseif ($_SERVER['HTTP_FORWARDED']) {
-    $remote = $_SERVER['HTTP_FORWARDED'];
-  }
-  elseif ($_SERVER['REMOTE_ADDR']) {
-    $remote = $_SERVER['REMOTE_ADDR'];
-  }
-  if (filter_var($remote, FILTER_VALIDATE_IP) === false) {
-    return '0.0.0.0';
-  }
-  if ($anonymize) {
-    if (strlen(inet_pton($remote)) == 4) {
-      return inet_ntop(inet_pton($remote) & inet_pton("255.255.255.0"));
-    }
-    elseif (strlen(inet_pton($remote)) == 16) {
-      return inet_ntop(inet_pton($remote) & inet_pton('ffff:ffff:ffff:ffff:0000:0000:0000:0000'));
-    }
-  }
-  else {
-    return $remote;
-  }
-}
 function last_login($user) {
   global $pdo;
 	try {
