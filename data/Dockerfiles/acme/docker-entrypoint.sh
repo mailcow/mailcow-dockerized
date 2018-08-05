@@ -67,7 +67,7 @@ get_ipv4(){
   local IPV4_SRCS=
   local TRY=
   IPV4_SRCS[0]="api.ipify.org"
-  IPV4_SRCS[1]="ifconfig.co"-
+  IPV4_SRCS[1]="ifconfig.co"
   IPV4_SRCS[2]="icanhazip.com"
   IPV4_SRCS[3]="v4.ident.me"
   IPV4_SRCS[4]="ipecho.net/plain"
@@ -152,6 +152,19 @@ while true; do
   IPV4=$(get_ipv4)
   IPV6=$(get_ipv6)
   log_f "OK" no_date
+
+  # Hard-fail on CAA errors for MAILCOW_HOSTNAME
+  MH_PARENT_DOMAIN=$(echo ${MAILCOW_HOSTNAME} | cut -d. -f2-)
+  MH_CAAS=( $(dig CAA ${MH_PARENT_DOMAIN} +short | sed -n 's/\d issue "\(.*\)"/\1/p') )
+  if [[ ! -z ${MH_CAAS} ]]; then
+    if [[ ${MH_CAAS[@]} =~ "letsencrypt.org" ]]; then
+      echo "Validated CAA for parent domain ${MH_PARENT_DOMAIN}"
+    else
+      echo "Skipping ACME validation: Lets Encrypt disallowed for ${MAILCOW_HOSTNAME} by CAA record, retrying in 1h..."
+      sleep 1h
+      exec $(readlink -f "$0")
+    fi
+  fi
 
   # Container ids may have changed
   CONTAINERS_RESTART=($(curl --silent http://dockerapi:8080/containers/json | jq -r '.[] | {name: .Config.Labels["com.docker.compose.service"], id: .Id}' | jq -rc 'select( .name | tostring | contains("nginx-mailcow") or contains("postfix-mailcow") or contains("dovecot-mailcow")) | .id' | tr "\n" " "))
@@ -249,6 +262,17 @@ while true; do
   fi
 
   for SAN in "${ADDITIONAL_SAN_ARR[@]}"; do
+    # Skip on CAA errors for SAN
+    SAN_PARENT_DOMAIN=$(echo ${SAN} | cut -d. -f2-)
+    SAN_CAAS=( $(dig CAA ${SAN_PARENT_DOMAIN} +short | sed -n 's/\d issue "\(.*\)"/\1/p') )
+    if [[ ! -z ${SAN_CAAS} ]]; then
+      if [[ ${SAN_CAAS[@]} =~ "letsencrypt.org" ]]; then
+        echo "Validated CAA for parent domain ${SAN_PARENT_DOMAIN} of ${SAN}"
+      else
+        echo "Skipping ACME validation for ${SAN}: Lets Encrypt disallowed for ${SAN} by CAA record"
+        continue
+      fi
+    fi
     if [[ ${SAN} == ${MAILCOW_HOSTNAME} ]]; then
       continue
     fi

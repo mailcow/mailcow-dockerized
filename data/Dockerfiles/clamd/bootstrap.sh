@@ -14,6 +14,10 @@ chown root:tty /dev/console
 chmod g+rw /dev/console
 
 # Prepare
+[[ ! -f /var/lib/clamav/whitelist.ign2 ]] && touch /var/lib/clamav/whitelist.ign2
+dos2unix /var/lib/clamav/whitelist.ign2
+sed -i '/^\s*$/d' /var/lib/clamav/whitelist.ign2
+
 BACKGROUND_TASKS=()
 
 (
