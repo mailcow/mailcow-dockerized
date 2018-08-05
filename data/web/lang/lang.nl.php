@@ -16,7 +16,55 @@ $lang['footer']['delete_these_items'] = 'Bevestig de wijzigingen aan het volgend
 $lang['footer']['delete_now'] = 'Nu verwijderen';
 $lang['footer']['cancel'] = 'Annuleren';
 
-$lang['danger']['dkim_domain_or_sel_invalid'] = "DKIM domain or selector invalid";
+$lang['danger']['mysql_error'] = "MySQL-fout: %s";
+$lang['danger']['redis_error'] = "Redis-fout: %s";
+$lang['danger']['unknown_tfa_method'] = "Onbekende tweefactorauthenticatiemethode";
+$lang['danger']['totp_verification_failed'] = "TOTP-verificatie mislukt";
+$lang['success']['verified_totp_login'] = "TOTP succesvol geverifieerd";
+$lang['danger']['u2f_verification_failed'] = "U2F-verificatie mislukt: %s";
+$lang['success']['verified_u2f_login'] = "U2F succesvol geverifieerd";
+$lang['success']['verified_yotp_login'] = "Yubico OTP succesvol geverifieerd";
+$lang['danger']['yotp_verification_failed'] = "Yubico OTP-verificatie mislukt: %s";
+$lang['danger']['ip_list_empty'] = "Lijst met toegestane IP-adressen kan niet leeg zijn";
+$lang['danger']['rspamd_ui_pw_length'] = "Rspamd-wachtwoord moet minstens 6 tekens lang zijn";
+$lang['success']['rspamd_ui_pw_set'] = "Rspamd-wachtwoord succesvol ingesteld";
+$lang['danger']['unknown'] = "Er is een onbekende fout opgetreden";
+$lang['danger']['malformed_username'] = "Ongeldige gebruikersnaam";
+$lang['info']['awaiting_tfa_confirmation'] = "In afwachting van tweefactorauthenticatie...";
+$lang['success']['logged_in_as'] = "Succesvol ingelogd als %s";
+$lang['danger']['login_failed'] = "Aanmelding mislukt";
+$lang['danger']['set_acl_failed'] = "ALC kon niet worden ingesteld";
+$lang['danger']['no_user_defined'] = "Geen gebruiker gespecificeerd";
+$lang['danger']['script_empty'] = "Script kan niet leeg zijn";
+$lang['danger']['sieve_error'] = "Sieve-fout: %s";
+$lang['danger']['value_missing'] = "Niet alle waarden zijn ingevuld";
+$lang['danger']['filter_type'] = "Verkeerd filtertype";
+$lang['danger']['domain_cannot_match_hostname'] = "Domein kan niet gelijk zijn aan hostname";
+$lang['warning']['domain_added_sogo_failed'] = "Domein is toegevoegd, maar het hestarten van SOGo mislukte. Controleer de serverlogs.";
+$lang['danger']['rl_timeframe'] = "Ratelimit time frame is incorrect";
+$lang['success']['deleted_syncjobs'] = "Synchronisatietaken %s zijn verwijderd";
+$lang['success']['delete_filters'] = "Filters %s zijn verwijderd";
+$lang['danger']['invalid_bcc_map_type'] = "Ongeldig BCC-kaart type";
+$lang['danger']['bcc_empty'] = "BCC-bestemming kan niet leeg zijn";
+$lang['danger']['bcc_must_be_email'] = "BCC-kaart moet een geldig e-mailadres zijn";
+$lang['danger']['bcc_exists'] = "BCC-kaart %s bestaat voor type %s";
+$lang['success']['bcc_saved'] = "BCC-kaart is opgeslagen";
+$lang['success']['bcc_edited'] = "BCC-kaart is gewijzigd";
+$lang['success']['bcc_deleted'] = "BCC-kaarten %s zijn verwijderd";
+$lang['danger']['private_key_error'] = "Privésleutel-fout: %s";
+$lang['danger']['map_content_empty'] = "Inhoud kan niet leeg zijn";
+$lang['success']['settings_map_added'] = "Instellingen toegevoegd";
+$lang['danger']['settings_map_invalid'] = "Instellingen ongeldig";
+$lang['danger']['settings_map_removed'] = "Instellingen verwijderd: %s";
+$lang['danger']['invalid_host'] = "Ongeldige host gespecificeerd: %s";
+$lang['danger']['relayhost_invalid'] = "Relayhost is ongeldig";
+$lang['success']['saved_settings'] = "Instellingen opgeslagen";
+$lang['success']['db_init_complete'] = "Database-initialisatie voltooid";
+
+$lang['warning']['session_ua'] = "Token ongeldig: gebruikersagentvalidatie mislukt";
+$lang['warning']['session_token'] = "Token ongeldig: komt niet overeen";
+
+$lang['danger']['dkim_domain_or_sel_invalid'] = "DKIM-domein ongeldig";
 $lang['success']['dkim_removed'] = "DKIM-sleutel %s is verwijderd";
 $lang['success']['dkim_added'] = "DKIM-sleutel is opgeslagen";
 $lang['danger']['access_denied'] = "Toegang geweigerd of ongeldige gegevens";
@@ -242,10 +290,10 @@ $lang['edit']['client_secret'] = 'Client secret';
 $lang['edit']['scope'] = 'Omvang';
 $lang['edit']['grant_types'] = 'Grant types';
 $lang['edit']['redirect_uri'] = 'Doorstuur/Callback URL';
-$lang['edit']['hostname'] = 'Hostnaam';
+$lang['edit']['hostname'] = 'Hostname';
 $lang['edit']['encryption'] = 'Versleuteling';
 $lang['edit']['maxage'] = 'Maximale leeftijd van berichten (in dagen) die extern worden opgehaald<br><small>(0 = negeer leeftijd)</small>';
-$lang['edit']['maxbytespersecond'] = 'Max. bytes per seconde (0 = onbeperkt)';
+$lang['edit']['maxbytespersecond'] = 'Max. bytes per seconde <br><small>(0 = onbeperkt)</small>';
 $lang['edit']['automap'] = 'Probeer mappen automatisch te koppelen ("Verstuurde items", "Verstuurd" => "Verstuurd" etc.)';
 $lang['edit']['skipcrossduplicates'] = 'Sla duplicaten verspreid over mappen over (wie het eerst komt, het eerst maalt)';
 $lang['add']['automap'] = 'Probeer mappen automatisch te koppelen ("Verstuurde items", "Verstuurd" => "Verstuurd" etc.)';
@@ -254,6 +302,7 @@ $lang['edit']['subfolder2'] = 'Synchroniseer in submap op bestemming<br><small>(
 $lang['edit']['mins_interval'] = 'Interval (min)';
 $lang['edit']['exclude'] = 'Sluit objecten uit (regex)';
 $lang['edit']['save'] = 'Wijzigingen opslaan';
+$lang['edit']['username'] = 'Gebruikersnaam';
 $lang['edit']['max_mailboxes'] = 'Max. mogelijke postvakken';
 $lang['edit']['title'] = 'Wijzig object';
 $lang['edit']['target_address'] = 'Doeladres(sen) <small>(kommagescheiden)</small>';
@@ -280,16 +329,17 @@ $lang['edit']['relay_all_info'] = '<small>Wanneer er wordt gekozen om <b>niet</b
 $lang['edit']['full_name'] = 'Volledige naam';
 $lang['edit']['quota_mb'] = 'Quotum (MiB)';
 $lang['edit']['sender_acl'] = 'Sta toe om te verzenden als';
+$lang['edit']['sender_acl_disabled'] = '↳ <span class="label label-danger">Verzendcontrole is uitgeschakeld</span>';
 $lang['edit']['previous'] = 'Vorige pagina';
 $lang['edit']['unchanged_if_empty'] = 'Laat leeg wanneer onveranderd';
-$lang['edit']['dont_check_sender_acl'] = "Schakel verzendcontrole uit voor domein %s inclusief aliasdomeinen";
+$lang['edit']['dont_check_sender_acl'] = "Schakel verzendcontrole uit voor domein %s (inclusief aliasdomeinen)";
 $lang['edit']['multiple_bookings'] = 'Meerdere boekingen';
 $lang['edit']['kind'] = 'Soort';
 $lang['edit']['resource'] = 'Hulpbron';
 
 $lang['add']['syncjob'] = 'Voeg een nieuwe synchronisatietaak toe';
 $lang['add']['syncjob_hint'] = 'Wees ervan bewust dat wachtwoorden onversleuteld moeten worden opgeslagen.';
-$lang['add']['hostname'] = 'Hostnaam';
+$lang['add']['hostname'] = 'Hostname';
 $lang['add']['port'] = 'Poort';
 $lang['add']['username'] = 'Gebruikersnaam';
 $lang['add']['enc_method'] = 'Versleutelingsmethode';
@@ -301,8 +351,12 @@ $lang['add']['delete2'] = 'Verwijder berichten die zich niet in de oorsprong bev
 $lang['edit']['delete2duplicates'] = 'Verwijder duplicaten op de bestemming';
 $lang['edit']['delete1'] = 'Verwijder van oorsprong wanneer voltooid';
 $lang['edit']['delete2'] = 'Verwijder berichten die zich niet in de oorsprong bevinden';
+$lang['add']['custom_params'] = 'Aangepaste parameters';
+$lang['add']['subscribeall'] = 'Abonneer op alle mappen';
+$lang['add']['timeout1'] = 'Time-out voor verbinding met externe host';
+$lang['add']['timeout2'] = 'Time-out voor verbinding met lokale host';
 
-$lang['add']['domain_matches_hostname'] = 'Domein %s komt overeen met hostnaam';
+$lang['add']['domain_matches_hostname'] = 'Domein %s komt overeen met hostname';
 $lang['add']['domain'] = 'Domein';
 $lang['add']['active'] = 'Actief';
 $lang['add']['multiple_bookings'] = 'Meerdere boekingen';
@@ -332,6 +386,8 @@ $lang['add']['password'] = 'Wachtwoord';
 $lang['add']['password_repeat'] = 'Herhaal wachtwoord';
 $lang['add']['restart_sogo_hint'] = 'SOGo dient opnieuw opgestart te worden nadat een domein is toegevoegd';
 $lang['add']['goto_null'] = 'Houd e-mail achterwege';
+$lang['add']['goto_ham'] = 'Leer als <span class="text-success"><b>ham</b></span>';
+$lang['add']['goto_spam'] = 'Leer als <span class="text-danger"><b>spam</b></span>';
 $lang['add']['validation_success'] = 'Succesvol gevalideerd';
 $lang['add']['activate_filter_warn'] = 'Alle overige filters zullen worden gedeactiveerd zodra deze geactiveerd.';
 $lang['add']['validate'] = 'Valideer';
@@ -534,6 +590,12 @@ $lang['quarantine']['atts'] = "Bijlagen";
 
 $lang['header']['quarantine'] = "Quarantaine";
 $lang['header']['debug'] = "Debug";
+
+$lang['debug']['log_info'] = '<p>Mailcow <b>in-geheugen logs</b> worden verzameld in Redis-lijsten en worden elke minuut bijgesneden naar LOG_LINES (%d) om de stabiliteit te garanderen.<br>Logs in-geheugen zijn niet bedoeld om te blijven staan. Alle applicaties die in-geheugen loggen, worden ook naar het Docker-proces gelogd.<br>De in-geheugen logs zouden gebruikt moeten worden voor het oplossen van kleine problemen met containers.</p><p><b>Externe logs</b> worden verzameld doormiddel van de API van de applicaties.</p><p><b>Statische logs</b> zijn over het algemeen activiteitenlogs, die niet naar het Docker-proces worden gestuurd</p>';
+    
+$lang['debug']['in_memory_logs'] = 'Logs in-geheugen';
+$lang['debug']['external_logs'] = 'Externe logs';
+$lang['debug']['static_logs'] = 'Statische logs';
 
 $lang['quarantine']['release_body'] = "We hebben het oorspronkelijke bericht als eml-bestand meegestuurd.";
 $lang['danger']['release_send_failed'] = "Het volgende bericht kon niet worden vrijgegeven: %s";
