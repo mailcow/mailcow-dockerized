@@ -279,7 +279,7 @@ services:
       depends_on:
         - nginx-mailcow
         - mysql-mailcow
-      image: mailcow/acme:1.36
+      image: mailcow/acme:1.37
       build: ./data/Dockerfiles/acme
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254

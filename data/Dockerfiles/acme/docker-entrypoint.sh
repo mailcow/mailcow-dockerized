@@ -66,12 +66,8 @@ get_ipv4(){
   local IPV4=
   local IPV4_SRCS=
   local TRY=
-  IPV4_SRCS[0]="api.ipify.org"
-  IPV4_SRCS[1]="ifconfig.co"
-  IPV4_SRCS[2]="icanhazip.com"
-  IPV4_SRCS[3]="v4.ident.me"
-  IPV4_SRCS[4]="ipecho.net/plain"
-  IPV4_SRCS[5]="ip4.mailcow.email"
+  IPV4_SRCS[0]="ip4.mailcow.email"
+  IPV4_SRCS[1]="ip4.korves.net"
   until [[ ! -z ${IPV4} ]] || [[ ${TRY} -ge 10 ]]; do
     IPV4=$(curl --connect-timeout 3 -m 10 -L4s ${IPV4_SRCS[$RANDOM % ${#IPV4_SRCS[@]} ]} | grep -E "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")
     [[ ! -z ${TRY} ]] && sleep 1
@@ -84,10 +80,8 @@ get_ipv6(){
   local IPV6=
   local IPV6_SRCS=
   local TRY=
-  IPV6_SRCS[0]="ifconfig.co"
-  IPV6_SRCS[1]="icanhazip.com"
-  IPV6_SRCS[2]="v6.ident.me"
-  IPV6_SRCS[3]="ip6.mailcow.email"
+  IPV6_SRCS[0]="ip6.korves.net"
+  IPV6_SRCS[1]="ip6.mailcow.email"
   until [[ ! -z ${IPV6} ]] || [[ ${TRY} -ge 10 ]]; do
     IPV6=$(curl --connect-timeout 3 -m 10 -L6s ${IPV6_SRCS[$RANDOM % ${#IPV6_SRCS[@]} ]} | grep "^\([0-9a-fA-F]\{0,4\}:\)\{1,7\}[0-9a-fA-F]\{0,4\}$")
     [[ ! -z ${TRY} ]] && sleep 1
