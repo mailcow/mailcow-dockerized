@@ -29,6 +29,12 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <form class="form-horizontal" data-id="editalias" role="form" method="post">
               <input type="hidden" value="0" name="active">
               <div class="form-group">
+                <label class="control-label col-sm-2" for="address"><?=$lang['edit']['alias'];?></label>
+                <div class="col-sm-10">
+                  <input class="form-control" type="text" name="address" value="<?=htmlspecialchars($result['address']);?>" />
+                </div>
+              </div>
+              <div class="form-group">
                 <label class="control-label col-sm-2" for="goto"><?=$lang['edit']['target_address'];?></label>
                 <div class="col-sm-10">
                   <textarea id="textarea_alias_goto" class="form-control" autocapitalize="none" autocorrect="off" rows="10" id="goto" name="goto" required><?= (!preg_match('/^(null|ham|spam)@localhost$/i', $result['goto'])) ? htmlspecialchars($result['goto']) : null; ?></textarea>
@@ -636,23 +642,23 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         $result = bcc('details', $bcc);
         if (!empty($result)) {
           ?>
-          <h4>BCC map</h4>
+          <h4><?=$lang['mailbox']['bcc_map'];?></h4>
           <br />
           <form class="form-horizontal" data-id="editbcc" role="form" method="post">
             <input type="hidden" value="0" name="active">
             <div class="form-group">
-              <label class="control-label col-sm-2" for="bcc_dest">BCC destination</label>
+              <label class="control-label col-sm-2" for="bcc_dest"><?=$lang['mailbox']['bcc_destination'];?></label>
               <div class="col-sm-10">
-                <textarea id="bcc_dest" class="form-control" autocapitalize="none" autocorrect="off" rows="10" id="bcc_dest" name="bcc_dest" required><?=$result['bcc_dest'];?></textarea>
-                <small>BCC destination must be a single valid email address.</small>
+                <input value="<?=$result['bcc_dest'];?>" type="text" class="form-control" name="bcc_dest" id="bcc_dest">
+                <small><?=$lang['edit']['bcc_dest_format'];?></small>
               </div>
             </div>
             <div class="form-group">
-              <label class="control-label col-sm-2" for="type">Type:</label>
+              <label class="control-label col-sm-2" for="type"><?=$lang['mailbox']['bcc_map_type'];?></label>
               <div class="col-sm-10">
                 <select id="addFilterType" name="type" id="type" required>
-                  <option value="sender" <?=($result['type'] == 'sender') ? 'selected' : null;?>>Sender map</option>
-                  <option value="rcpt" <?=($result['type'] == 'rcpt') ? 'selected' : null;?>>Recipient map</option>
+                  <option value="sender" <?=($result['type'] == 'sender') ? 'selected' : null;?>><?=$lang['mailbox']['bcc_sender_map'];?></option>
+                  <option value="rcpt" <?=($result['type'] == 'rcpt') ? 'selected' : null;?>><?=$lang['mailbox']['bcc_rcpt_map'];?></option>
                 </select>
               </div>
             </div>

@@ -45,7 +45,7 @@ function api_log($_data) {
     $redis->lPush('API_LOG', json_encode($log_line));
   }
   catch (RedisException $e) {
-    $_SESSION['return'] = array(
+    $_SESSION['return'][] = array(
       'type' => 'danger',
       'msg' => 'Redis: '.$e
     );
@@ -831,7 +831,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
         }
         switch ($category) {
           case "alias":
-            process_delete_return(mailbox('delete', 'alias', array('address' => $items)));
+            process_delete_return(mailbox('delete', 'alias', array('id' => $items)));
           break;
           case "relayhost":
             process_delete_return(relayhost('delete', array('id' => $items)));
@@ -927,7 +927,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             process_edit_return(recipient_map('edit', array_merge(array('id' => $items), $attr)));
           break;
           case "alias":
-            process_edit_return(mailbox('edit', 'alias', array_merge(array('address' => $items), $attr)));
+            process_edit_return(mailbox('edit', 'alias', array_merge(array('id' => $items), $attr)));
           break;
           case "app_links":
             process_edit_return(customize('edit', 'app_links', $attr));

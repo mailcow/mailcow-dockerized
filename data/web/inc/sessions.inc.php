@@ -52,7 +52,7 @@ function session_check() {
     return true;
   }
   if (!isset($_SESSION['SESS_REMOTE_UA']) || ($_SESSION['SESS_REMOTE_UA'] != $_SERVER['HTTP_USER_AGENT'])) {
-    $_SESSION['return'] = array(
+    $_SESSION['return'][] = array(
       'type' => 'warning',
       'msg' => 'session_ua'
     );
@@ -60,7 +60,7 @@ function session_check() {
   }
   if (!empty($_POST)) {
     if ($_SESSION['CSRF']['TOKEN'] != $_POST['csrf_token']) {
-      $_SESSION['return'] = array(
+      $_SESSION['return'][] = array(
         'type' => 'warning',
         'msg' => 'session_token'
       );

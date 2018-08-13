@@ -158,19 +158,19 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
           if ($response === false) {
             $err = curl_error($curl);
             curl_close($curl);
-            logger(array('return' => array(
+            logger(array('return' => array(array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $action, $service_name, $attr1, $attr2, $extra_headers),
               'msg' => $err,
-            )));
+            ))));
             return $err;
           }
           else {
             curl_close($curl);
-            logger(array('return' => array(
+            logger(array('return' => array(array(
               'type' => 'success',
               'log' => array(__FUNCTION__, $action, $service_name, $attr1, $attr2, $extra_headers),
-            )));
+            ))));
             if (empty($response)) {
               return true;
             }

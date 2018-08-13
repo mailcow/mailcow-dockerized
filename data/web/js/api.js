@@ -3,6 +3,10 @@ $(document).ready(function() {
     if ($(elem).data('submitted') == '1') {
       return true;
     } else {
+      var parent_btn_grp = $(elem).parentsUntil(".btn-group").parent();
+      if (parent_btn_grp.hasClass('btn-group')) {
+        parent_btn_grp.replaceWith('<button class="btn btn-default btn-sm" disabled>' + loading_text + '</a>');
+      }
       $(elem).text(loading_text);
       $(elem).attr('data-submitted', '1');
       function disableF5(e) { if ((e.which || e.keyCode) == 116 || (e.which || e.keyCode) == 82) e.preventDefault(); };
@@ -217,8 +221,23 @@ $(document).ready(function() {
         var response = (data.responseText);
         if (typeof response !== 'undefined' && response.length !== 0) {
           response_obj = JSON.parse(response);
-          if (response_obj.type == 'success') {
+          unset = true;
+          $.each(response_obj, function(i, v) {
+            if (v.type == "danger") {
+              unset = false;
+            }
+          });
+          if (unset === true) {
+            unset = null;
             $('form').formcache('clear');
+            $('form').formcache('destroy');
+            var i = localStorage.length;
+            while(i--) {
+              var key = localStorage.key(i);
+              if(/formcache/.test(key)) {
+                localStorage.removeItem(key);
+              }  
+            }
           }
           else {
             var add_modal = $('.modal.in').attr('id');

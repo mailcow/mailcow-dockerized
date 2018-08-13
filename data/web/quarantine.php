@@ -24,6 +24,8 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             <ul class="dropdown-menu">
               <li><a id="edit_selected" data-id="qitems" data-api-url='edit/qitem' data-api-attr='{"action":"release"}' href="#"><?=$lang['quarantine']['release'];?></a></li>
               <li role="separator" class="divider"></li>
+              <li><a id="edit_selected" data-id="qitems" data-api-url='edit/qitem' data-api-attr='{"action":"learnspam"}' href="#"><?=$lang['quarantine']['learn_spam_delete'];?></a></li>
+              <li role="separator" class="divider"></li>
               <li><a id="delete_selected" data-id="qitems" data-api-url='delete/qitem' href="#"><?=$lang['quarantine']['remove'];?></a></li>
             </ul>
           </div>

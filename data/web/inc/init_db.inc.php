@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "05072018_2319";
+    $db_version = "10082018_2019";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -112,6 +112,7 @@ function init_db_schema() {
       ),
       "alias" => array(
         "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
           "address" => "VARCHAR(255) NOT NULL",
           "goto" => "TEXT NOT NULL",
           "domain" => "VARCHAR(255) NOT NULL",
@@ -121,7 +122,10 @@ function init_db_schema() {
         ),
         "keys" => array(
           "primary" => array(
-            "" => array("address")
+            "" => array("id")
+          ),
+          "unique" => array(
+            "address" => array("address")
           ),
           "key" => array(
             "domain" => array("domain")
@@ -366,6 +370,7 @@ function init_db_schema() {
       "logs" => array(
         "cols" => array(
           "id" => "INT NOT NULL AUTO_INCREMENT",
+          "task" => "CHAR(32) NOT NULL DEFAULT '000000'",
           "type" => "VARCHAR(32) DEFAULT ''",
           "msg" => "TEXT",
           "call" => "TEXT",
@@ -754,6 +759,8 @@ function init_db_schema() {
           if ($num_results == 0) {
             if (strpos($type, 'AUTO_INCREMENT') !== false) {
               $type = $type . ' PRIMARY KEY ';
+              // Adding an AUTO_INCREMENT key, need to drop primary keys first
+              $pdo->query("ALTER TABLE `" . $table . "` DROP PRIMARY KEY");
             }
             $pdo->query("ALTER TABLE `" . $table . "` ADD `" . $column . "` " . $type);
           }
@@ -933,7 +940,7 @@ DELIMITER ;';
           WHERE `username` = :username");
       $stmt->execute(array(':tls_enforce_in' => $tls_options['tls_enforce_in'], ':tls_enforce_out' => $tls_options['tls_enforce_out'], ':username' => $tls_user));
     }
-    $_SESSION['return'] = array(
+    $_SESSION['return'][] = array(
       'type' => 'success',
       'log' => array(__FUNCTION__),
       'msg' => 'db_init_complete'
@@ -943,7 +950,7 @@ DELIMITER ;';
     $stmt = $pdo->query("INSERT INTO `user_acl` (`username`) SELECT `username` FROM `mailbox` WHERE `kind` = '' AND NOT EXISTS (SELECT `username` FROM `user_acl`);");
   }
   catch (PDOException $e) {
-    $_SESSION['return'] = array(
+    $_SESSION['return'][] = array(
       'type' => 'danger',
       'log' => array(__FUNCTION__),
       'msg' => array('mysql_error', $e)
