@@ -29,7 +29,7 @@ $(window).load(function() {
 });
 $(document).ready(function() {
   window.mailcow_alert_box = function(message, type) {
-    msg = $('<span/>').html(message).text();
+    msg = $('<span/>').text(message).text();
     if (type == 'danger') {
       auto_hide = 0;
       $('#' + localStorage.getItem("add_modal")).modal('show');
@@ -42,9 +42,11 @@ $(document).ready(function() {
   <?php
   $alertbox_log_parser = alertbox_log_parser($_SESSION);
   if (is_array($alertbox_log_parser)) {
+    foreach($alertbox_log_parser as $log) {
   ?>
-  mailcow_alert_box(<?=$alertbox_log_parser['msg'];?>, <?=$alertbox_log_parser['type'];?>);
+  mailcow_alert_box(<?=$log['msg'];?>, <?=$log['type'];?>);
   <?php
+    }
   unset($_SESSION['return']);
   }
   ?>

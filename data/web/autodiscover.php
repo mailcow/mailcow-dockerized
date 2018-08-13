@@ -74,7 +74,7 @@ if ($login_role === "user") {
       $redis->lTrim('AUTODISCOVER_LOG', 0, 100);
     }
     catch (RedisException $e) {
-      $_SESSION['return'] = array(
+      $_SESSION['return'][] = array(
         'type' => 'danger',
         'msg' => 'Redis: '.$e
       );
@@ -128,7 +128,7 @@ if ($login_role === "user") {
     $redis->lTrim('AUTODISCOVER_LOG', 0, 100);
   }
   catch (RedisException $e) {
-    $_SESSION['return'] = array(
+    $_SESSION['return'][] = array(
       'type' => 'danger',
       'msg' => 'Redis: '.$e
     );

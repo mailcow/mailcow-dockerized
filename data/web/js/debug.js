@@ -167,6 +167,7 @@ jQuery(function($){
       "columns": [
         {"name":"time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},"title":lang.time,"style":{"width":"170px"}},
         {"name":"type","title":"Type"},
+        {"name":"task","title":"Task"},
         {"name":"user","title":"User"},
         {"name":"role","title":"Role"},
         {"name":"remote","title":"IP"},
@@ -506,6 +507,7 @@ jQuery(function($){
       $.each(data, function (i, item) {
         if (item === null) { return true; }
         item.user = escapeHtml(item.user);
+        item.task = '<code>' + item.task + '</code>';
         item.type = '<span class="label label-' + item.type + '">' + item.type + '</span>';
       });
     } else if (table == 'general_syslog') {

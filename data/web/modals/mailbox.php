@@ -614,9 +614,9 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             </div>
           </div>
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="bcc_dest"><?=$lang['mailbox']['bcc_destinations'];?>:</label>
+						<label class="control-label col-sm-2" for="bcc_dest"><?=$lang['mailbox']['bcc_destination'];?>:</label>
 						<div class="col-sm-10">
-							<textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control" rows="20" id="bcc_dest" name="bcc_dest" required></textarea>
+              <input type="text" class="form-control" name="bcc_dest" id="bcc_dest">
 						</div>
 					</div>
 					<div class="form-group">

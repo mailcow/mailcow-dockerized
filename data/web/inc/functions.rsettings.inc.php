@@ -6,7 +6,7 @@ function rsettings($_action, $_data = null) {
   switch ($_action) {
     case 'add':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
-        $_SESSION['return'] = array(
+        $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
@@ -17,7 +17,7 @@ function rsettings($_action, $_data = null) {
       $desc = $_data['desc'];
       $active = intval($_data['active']);
       if (empty($content)) {
-        $_SESSION['return'] = array(
+        $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'map_content_empty'
@@ -34,14 +34,14 @@ function rsettings($_action, $_data = null) {
         ));
       }
       catch (PDOException $e) {
-        $_SESSION['return'] = array(
+        $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('mysql_error', $e)
         );
         return false;
       }
-      $_SESSION['return'] = array(
+      $_SESSION['return'][] = array(
         'type' => 'success',
         'log' => array(__FUNCTION__, $_action, $_data_log),
         'msg' => 'settings_map_added'
@@ -49,7 +49,7 @@ function rsettings($_action, $_data = null) {
     break;
     case 'edit':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
-        $_SESSION['return'] = array(
+        $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
@@ -65,12 +65,12 @@ function rsettings($_action, $_data = null) {
           $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
         }
         else {
-          $_SESSION['return'] = array(
+          $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data_log),
-            'msg' => 'settings_map_invalid'
+            'msg' => array('settings_map_invalid', $id)
           );
-          return false;
+          continue;
         }
         $content = trim($content);
         try {
@@ -87,23 +87,23 @@ function rsettings($_action, $_data = null) {
           ));
         }
         catch (PDOException $e) {
-          $_SESSION['return'] = array(
+          $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('mysql_error', $e)
           );
-          return false;
+          continue;
         }
+        $_SESSION['return'][] = array(
+          'type' => 'success',
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('object_modified', htmlspecialchars($ids))
+        );
       }
-      $_SESSION['return'] = array(
-        'type' => 'success',
-        'log' => array(__FUNCTION__, $_action, $_data_log),
-        'msg' => array('object_modified', htmlspecialchars(implode(', ', $ids)))
-      );
     break;
     case 'delete':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
-        $_SESSION['return'] = array(
+        $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
@@ -117,36 +117,27 @@ function rsettings($_action, $_data = null) {
           $stmt->execute(array(':id' => $id));
         }
         catch (PDOException $e) {
-          $_SESSION['return'] = array(
+          $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('mysql_error', $e)
           );
           return false;
         }
+        $_SESSION['return'][] = array(
+          'type' => 'success',
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('settings_map_removed', htmlspecialchars($id))
+        );
       }
-      $_SESSION['return'] = array(
-        'type' => 'success',
-        'log' => array(__FUNCTION__, $_action, $_data_log),
-        'msg' => array('settings_map_removed', htmlspecialchars(implode(', ', $ids)))
-      );
     break;
     case 'get':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         return false;
       }
       $settingsmaps = array();
-      try {
-        $stmt = $pdo->query("SELECT `id`, `desc`, `active` FROM `settingsmap`");
-        $settingsmaps = $stmt->fetchAll(PDO::FETCH_ASSOC);
-      }
-      catch(PDOException $e) {
-        $_SESSION['return'] = array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => array('mysql_error', $e)
-        );
-      }
+      $stmt = $pdo->query("SELECT `id`, `desc`, `active` FROM `settingsmap`");
+      $settingsmaps = $stmt->fetchAll(PDO::FETCH_ASSOC);
       return $settingsmaps;
     break;
     case 'details':
@@ -154,24 +145,15 @@ function rsettings($_action, $_data = null) {
         return false;
       }
       $settingsmapdata = array();
-      try {
-        $stmt = $pdo->prepare("SELECT `id`,
-          `desc`,
-          `content`,
-          `active` AS `active_int`,
-          CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`
-            FROM `settingsmap`
-              WHERE `id` = :id");
-        $stmt->execute(array(':id' => $_data));
-        $settingsmapdata = $stmt->fetch(PDO::FETCH_ASSOC);
-      }
-      catch(PDOException $e) {
-        $_SESSION['return'] = array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => array('mysql_error', $e)
-        );
-      }
+      $stmt = $pdo->prepare("SELECT `id`,
+        `desc`,
+        `content`,
+        `active` AS `active_int`,
+        CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`
+          FROM `settingsmap`
+            WHERE `id` = :id");
+      $stmt->execute(array(':id' => $_data));
+      $settingsmapdata = $stmt->fetch(PDO::FETCH_ASSOC);
       return $settingsmapdata;
     break;
   }

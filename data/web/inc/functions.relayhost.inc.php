@@ -6,7 +6,7 @@ function relayhost($_action, $_data = null) {
   switch ($_action) {
     case 'add':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
-        $_SESSION['return'] = array(
+        $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
@@ -17,7 +17,7 @@ function relayhost($_action, $_data = null) {
       $username = str_replace(':', '\:', trim($_data['username']));
       $password = str_replace(':', '\:', trim($_data['password']));
       if (empty($hostname)) {
-        $_SESSION['return'] = array(
+        $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('invalid_host', htmlspecialchars($host))
@@ -35,14 +35,14 @@ function relayhost($_action, $_data = null) {
         ));
       }
       catch (PDOException $e) {
-        $_SESSION['return'] = array(
+        $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('mysql_error', $e)
         );
         return false;
       }
-      $_SESSION['return'] = array(
+      $_SESSION['return'][] = array(
         'type' => 'success',
         'log' => array(__FUNCTION__, $_action, $_data_log),
         'msg' => array('relayhost_added', htmlspecialchars(implode(', ', $hosts)))
@@ -50,7 +50,7 @@ function relayhost($_action, $_data = null) {
     break;
     case 'edit':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
-        $_SESSION['return'] = array(
+        $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
@@ -67,12 +67,12 @@ function relayhost($_action, $_data = null) {
           $active   = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
         }
         else {
-          $_SESSION['return'] = array(
+          $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data_log),
-            'msg' => 'relayhost_invalid'
+            'msg' => array('relayhost_invalid', $id)
           );
-          return false;
+          continue;
         }
         try {
           $stmt = $pdo->prepare("UPDATE `relayhosts` SET
@@ -90,23 +90,23 @@ function relayhost($_action, $_data = null) {
           ));
         }
         catch (PDOException $e) {
-          $_SESSION['return'] = array(
+          $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('mysql_error', $e)
           );
-          return false;
+          continue;
         }
+        $_SESSION['return'][] = array(
+          'type' => 'success',
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('object_modified', htmlspecialchars(implode(', ', $hostnames)))
+        );
       }
-      $_SESSION['return'] = array(
-        'type' => 'success',
-        'log' => array(__FUNCTION__, $_action, $_data_log),
-        'msg' => array('object_modified', htmlspecialchars(implode(', ', $hostnames)))
-      );
     break;
     case 'delete':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
-        $_SESSION['return'] = array(
+        $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
@@ -122,36 +122,27 @@ function relayhost($_action, $_data = null) {
           $stmt->execute(array(':id' => $id));
         }
         catch (PDOException $e) {
-          $_SESSION['return'] = array(
+          $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('mysql_error', $e)
           );
-          return false;
+          continue;
         }
+        $_SESSION['return'][] = array(
+          'type' => 'success',
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('relayhost_removed', htmlspecialchars($id))
+        );
       }
-      $_SESSION['return'] = array(
-        'type' => 'success',
-        'log' => array(__FUNCTION__, $_action, $_data_log),
-        'msg' => array('relayhost_removed', htmlspecialchars(implode(', ', $hostnames)))
-      );
     break;
     case 'get':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         return false;
       }
       $relayhosts = array();
-      try {
-        $stmt = $pdo->query("SELECT `id`, `hostname`, `username` FROM `relayhosts`");
-        $relayhosts = $stmt->fetchAll(PDO::FETCH_ASSOC);
-      }
-      catch(PDOException $e) {
-        $_SESSION['return'] = array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => array('mysql_error', $e)
-        );
-      }
+      $stmt = $pdo->query("SELECT `id`, `hostname`, `username` FROM `relayhosts`");
+      $relayhosts = $stmt->fetchAll(PDO::FETCH_ASSOC);
       return $relayhosts;
     break;
     case 'details':
@@ -159,33 +150,23 @@ function relayhost($_action, $_data = null) {
         return false;
       }
       $relayhostdata = array();
-      try {
-        $stmt = $pdo->prepare("SELECT `id`,
-          `hostname`,
-          `username`,
-          `password`,
-          `active` AS `active_int`,
-          CONCAT(LEFT(`password`, 3), '...') AS `password_short`,
-          CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`
-            FROM `relayhosts`
-              WHERE `id` = :id");
+      $stmt = $pdo->prepare("SELECT `id`,
+        `hostname`,
+        `username`,
+        `password`,
+        `active` AS `active_int`,
+        CONCAT(LEFT(`password`, 3), '...') AS `password_short`,
+        CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`
+          FROM `relayhosts`
+            WHERE `id` = :id");
+      $stmt->execute(array(':id' => $_data));
+      $relayhostdata = $stmt->fetch(PDO::FETCH_ASSOC);
+      if (!empty($relayhostdata)) {
+        $stmt = $pdo->prepare("SELECT GROUP_CONCAT(`domain` SEPARATOR ', ') AS `used_by_domains` FROM `domain` WHERE `relayhost` = :id");
         $stmt->execute(array(':id' => $_data));
-        $relayhostdata = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!empty($relayhostdata)) {
-          $stmt = $pdo->prepare("SELECT GROUP_CONCAT(`domain` SEPARATOR ', ') AS `used_by_domains` FROM `domain` WHERE `relayhost` = :id");
-          $stmt->execute(array(':id' => $_data));
-          $used_by_domains = $stmt->fetch(PDO::FETCH_ASSOC)['used_by_domains'];
-          $used_by_domains = (empty($used_by_domains)) ? '' : $used_by_domains;
-          $relayhostdata['used_by_domains'] = $used_by_domains;
-        }
-      }
-      catch(PDOException $e) {
-        $_SESSION['return'] = array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => array('mysql_error', $e)
-        );
+        $used_by_domains = $stmt->fetch(PDO::FETCH_ASSOC)['used_by_domains'];
+        $used_by_domains = (empty($used_by_domains)) ? '' : $used_by_domains;
+        $relayhostdata['used_by_domains'] = $used_by_domains;
       }
       return $relayhostdata;
     break;

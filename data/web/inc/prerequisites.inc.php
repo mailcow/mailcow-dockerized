@@ -51,6 +51,25 @@ catch (PDOException $e) {
 <?php
 exit;
 }
+function pdo_exception_handler($e) {
+    if ($e instanceof PDOException) {
+      $_SESSION['return'][] = array(
+        'type' => 'danger',
+        'log' => array(__FUNCTION__),
+        'msg' => array('mysql_error', $e)
+      );
+      return false;
+    }
+    else {
+      $_SESSION['return'][] = array(
+        'type' => 'danger',
+        'log' => array(__FUNCTION__),
+        'msg' => array('mysql_error', 'unknown error')
+      );
+      return false;
+    }
+}
+set_exception_handler('pdo_exception_handler');
 
 // TODO: Move function
 function get_remote_ip($anonymize = null) {

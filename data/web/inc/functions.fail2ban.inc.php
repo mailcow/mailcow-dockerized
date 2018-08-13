@@ -80,7 +80,7 @@ function fail2ban($_action, $_data = null) {
         }
       }
       catch (RedisException $e) {
-        $_SESSION['return'] = array(
+        $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('redis_error', $e)
@@ -91,7 +91,7 @@ function fail2ban($_action, $_data = null) {
     break;
     case 'edit':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
-        $_SESSION['return'] = array(
+        $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
@@ -101,29 +101,39 @@ function fail2ban($_action, $_data = null) {
       if (isset($_data['action']) && !empty($_data['network'])) {
         $networks = (array) $_data['network'];
         foreach ($networks as $network) {
-          if ($_data['action'] == "unban") {
-            if (valid_network($network)) {
-              $redis->hSet('F2B_QUEUE_UNBAN', $network, 1);
+          try {
+            if ($_data['action'] == "unban") {
+              if (valid_network($network)) {
+                $redis->hSet('F2B_QUEUE_UNBAN', $network, 1);
+              }
+            }
+            elseif ($_data['action'] == "whitelist") {
+              if (valid_network($network)) {
+                $redis->hSet('F2B_WHITELIST', $network, 1);
+                $redis->hDel('F2B_BLACKLIST', $network, 1);
+                $redis->hSet('F2B_QUEUE_UNBAN', $network, 1);
+              }
+            }
+            elseif ($_data['action'] == "blacklist") {
+              if (valid_network($network)) {
+                $redis->hSet('F2B_BLACKLIST', $network, 1);
+              }
             }
           }
-          elseif ($_data['action'] == "whitelist") {
-            if (valid_network($network)) {
-              $redis->hSet('F2B_WHITELIST', $network, 1);
-              $redis->hDel('F2B_BLACKLIST', $network, 1);
-              $redis->hSet('F2B_QUEUE_UNBAN', $network, 1);
-            }
+          catch (RedisException $e) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_data_log),
+              'msg' => array('redis_error', $e)
+            );
+            continue;
           }
-          elseif ($_data['action'] == "blacklist") {
-            if (valid_network($network)) {
-              $redis->hSet('F2B_BLACKLIST', $network, 1);
-            }
-          }
+          $_SESSION['return'][] = array(
+            'type' => 'success',
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => array('object_modified', htmlspecialchars($network))
+          );
         }
-        $_SESSION['return'] = array(
-          'type' => 'success',
-          'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => array('object_modified', htmlspecialchars(implode(', ', $networks)))
-        );
         return true;
       }
       $is_now = fail2ban('get');
@@ -137,7 +147,7 @@ function fail2ban($_action, $_data = null) {
         $bl = (isset($_data['blacklist'])) ? $_data['blacklist'] : $is_now['blacklist'];
       }
       else {
-        $_SESSION['return'] = array(
+        $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
@@ -178,14 +188,14 @@ function fail2ban($_action, $_data = null) {
         }
       }
       catch (RedisException $e) {
-        $_SESSION['return'] = array(
+        $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('redis_error', $e)
         );
         return false;
       }
-      $_SESSION['return'] = array(
+      $_SESSION['return'][] = array(
         'type' => 'success',
         'log' => array(__FUNCTION__, $_action, $_data_log),
         'msg' => 'f2b_modified'
