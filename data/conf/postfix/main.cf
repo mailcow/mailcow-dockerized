@@ -77,6 +77,7 @@ smtpd_delay_reject = yes
 smtpd_error_sleep_time = 10s
 smtpd_hard_error_limit = ${stress?1}${stress:5}
 smtpd_helo_required = yes
+smtpd_helo_restrictions = permit_sasl_authenticated, permit_mynetworks, reject_non_fqdn_helo_hostname, reject_invalid_helo_hostname
 smtpd_proxy_timeout = 600s
 smtpd_recipient_restrictions = permit_sasl_authenticated, permit_mynetworks, check_recipient_access proxy:mysql:/opt/postfix/conf/sql/mysql_tls_enforce_in_policy.cf, reject_invalid_helo_hostname, reject_unknown_reverse_client_hostname, reject_unauth_destination
 smtpd_sasl_auth_enable = yes
