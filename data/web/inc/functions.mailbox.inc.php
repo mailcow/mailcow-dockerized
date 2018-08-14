@@ -1906,12 +1906,12 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':description' => $description,
                 ':domain' => $domain
               ));
+              $_SESSION['return'][] = array(
+                'type' => 'success',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => array('domain_modified', htmlspecialchars($domain))
+              );
             }
-            $_SESSION['return'][] = array(
-              'type' => 'success',
-              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => array('domain_modified', htmlspecialchars($domain))
-            );
           }
         break;
         case 'mailbox':

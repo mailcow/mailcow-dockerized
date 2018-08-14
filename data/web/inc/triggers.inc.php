@@ -52,6 +52,15 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
         header("Location: /user.php");
       }
     }
+    else {
+      if (!empty(domain_admin('details', $duallogin))) {
+        $_SESSION["dual-login"]["username"] = $_SESSION['mailcow_cc_username'];
+        $_SESSION["dual-login"]["role"]     = $_SESSION['mailcow_cc_role'];
+        $_SESSION['mailcow_cc_username']    = $duallogin;
+        $_SESSION['mailcow_cc_role']        = "domainadmin";
+        header("Location: /user.php");
+      }
+    }
   }
 }
 
