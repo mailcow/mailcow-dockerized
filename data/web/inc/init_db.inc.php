@@ -759,8 +759,12 @@ function init_db_schema() {
           if ($num_results == 0) {
             if (strpos($type, 'AUTO_INCREMENT') !== false) {
               $type = $type . ' PRIMARY KEY ';
-              // Adding an AUTO_INCREMENT key, need to drop primary keys first
-              $pdo->query("ALTER TABLE `" . $table . "` DROP PRIMARY KEY");
+              // Adding an AUTO_INCREMENT key, need to drop primary keys first, if exists
+              $stmt = $pdo->query("SHOW KEYS FROM `" . $table . "` WHERE Key_name = 'PRIMARY'");
+              $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+              if ($num_results != 0) {
+                $pdo->query("ALTER TABLE `" . $table . "` DROP PRIMARY KEY");
+              }
             }
             $pdo->query("ALTER TABLE `" . $table . "` ADD `" . $column . "` " . $type);
           }
