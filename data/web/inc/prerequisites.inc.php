@@ -74,6 +74,7 @@ set_exception_handler('pdo_exception_handler');
 // TODO: Move function
 function get_remote_ip($anonymize = null) {
   global $ANONYMIZE_IPS;
+  global $PROXY_SERVER;
   if ($anonymize === null) { 
     $anonymize = $ANONYMIZE_IPS;
   }
@@ -81,22 +82,22 @@ function get_remote_ip($anonymize = null) {
     $anonymize = true;
   }
   $remote = '';
-  if ($_SERVER['HTTP_CLIENT_IP']) {
-    $remote = $_SERVER['HTTP_CLIENT_IP'];
-  }
-  elseif ($_SERVER['HTTP_X_FORWARDED_FOR']) {
-    $remote = $_SERVER['HTTP_X_FORWARDED_FOR'];
-  }
-  elseif ($_SERVER['HTTP_X_FORWARDED']) {
-    $remote = $_SERVER['HTTP_X_FORWARDED'];
-  }
-  elseif ($_SERVER['HTTP_FORWARDED_FOR']) {
-    $remote = $_SERVER['HTTP_FORWARDED_FOR'];
-  }
-  elseif ($_SERVER['HTTP_FORWARDED']) {
-    $remote = $_SERVER['HTTP_FORWARDED'];
-  }
-  elseif ($_SERVER['REMOTE_ADDR']) {
+  if ($PROXY_SERVER == true) {
+    if ($_SERVER['HTTP_CLIENT_IP']) {
+      $remote = $_SERVER['HTTP_CLIENT_IP'];
+    }
+    elseif ($_SERVER['HTTP_X_FORWARDED_FOR']) {
+      $remote = $_SERVER['HTTP_X_FORWARDED_FOR'];
+    }
+    elseif ($_SERVER['HTTP_X_FORWARDED']) {
+      $remote = $_SERVER['HTTP_X_FORWARDED'];
+    }
+    elseif ($_SERVER['HTTP_FORWARDED_FOR']) {
+      $remote = $_SERVER['HTTP_FORWARDED_FOR'];
+    }
+    elseif ($_SERVER['HTTP_FORWARDED']) {
+      $remote = $_SERVER['HTTP_FORWARDED'];
+  } else {
     $remote = $_SERVER['REMOTE_ADDR'];
   }
   if (filter_var($remote, FILTER_VALIDATE_IP) === false) {
