@@ -122,3 +122,6 @@ $DOCKER_TIMEOUT = 60;
 
 // Anonymize IPs logged via UI
 $ANONYMIZE_IPS = true;
+
+// Reverse Proxy Setting
+$PROXY_SERVER = false;
