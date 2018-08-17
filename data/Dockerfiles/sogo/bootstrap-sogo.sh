@@ -172,4 +172,27 @@ sed -i \
   /usr/lib/GNUstep/SOGo/WebServerResources/js/Common/Common.app.js \
   /usr/lib/GNUstep/SOGo/WebServerResources/js/Common.js
 
+sed -i \
+  -e 's/default: "900"/default: "700"/g' \
+  -e 's/default: "500"/default: "700"/g' \
+  -e 's/"hue-1": "400"/"hue-1": "500"/g' \
+  -e 's/"hue-1": "A100"/"hue-1": "500"/g' \
+  -e 's/"hue-2": "800"/"hue-2": "700"/g' \
+  -e 's/"hue-2": "300"/"hue-2": "700"/g' \
+  -e 's/"hue-3": "A700"/"hue-3": "A200"/' \
+  -e 's/default:"900"/default:"700"/g' \
+  -e 's/default:"500"/default:"700"/g' \
+  -e 's/"hue-1":"400"/"hue-1":"500"/g' \
+  -e 's/"hue-1":"A100"/"hue-1":"500"/g' \
+  -e 's/"hue-2":"800"/"hue-2":"700"/g' \
+  -e 's/"hue-2":"300"/"hue-2":"700"/g' \
+  -e 's/"hue-3":"A700"/"hue-3":"A200"/' \
+  /usr/lib/GNUstep/SOGo/WebServerResources/js/Common/Common.app.js \
+  /usr/lib/GNUstep/SOGo/WebServerResources/js/Common.js
+
+# Patch ACLs (comment this out to enable any or authenticated targets for ACL)
+if patch -sfN --dry-run /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff > /dev/null; then
+  patch /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff;
+fi
+
 exec gosu sogo /usr/sbin/sogod

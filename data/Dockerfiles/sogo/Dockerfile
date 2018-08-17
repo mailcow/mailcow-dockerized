@@ -20,6 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 		netcat \
 		psmisc \
 		wget \
+    patch \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
 	&& wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
@@ -45,7 +46,7 @@ COPY supervisord.conf /etc/supervisor/supervisord.conf
 COPY theme-blue.js /usr/lib/GNUstep/SOGo/WebServerResources/js/theme-blue.js
 COPY theme-blue.css /usr/lib/GNUstep/SOGo/WebServerResources/css/theme-default.css
 COPY sogo-full.svg /usr/lib/GNUstep/SOGo/WebServerResources/img/sogo-full.svg
-
+COPY acl.diff /acl.diff
 CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 
 RUN rm -rf /tmp/* /var/tmp/*
