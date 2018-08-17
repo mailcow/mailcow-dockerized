@@ -80,25 +80,7 @@ function get_remote_ip($anonymize = null) {
   elseif ($anonymize !== true && $anonymize !== false)  {
     $anonymize = true;
   }
-  $remote = '';
-  if ($_SERVER['HTTP_CLIENT_IP']) {
-    $remote = $_SERVER['HTTP_CLIENT_IP'];
-  }
-  elseif ($_SERVER['HTTP_X_FORWARDED_FOR']) {
-    $remote = $_SERVER['HTTP_X_FORWARDED_FOR'];
-  }
-  elseif ($_SERVER['HTTP_X_FORWARDED']) {
-    $remote = $_SERVER['HTTP_X_FORWARDED'];
-  }
-  elseif ($_SERVER['HTTP_FORWARDED_FOR']) {
-    $remote = $_SERVER['HTTP_FORWARDED_FOR'];
-  }
-  elseif ($_SERVER['HTTP_FORWARDED']) {
-    $remote = $_SERVER['HTTP_FORWARDED'];
-  }
-  elseif ($_SERVER['REMOTE_ADDR']) {
-    $remote = $_SERVER['REMOTE_ADDR'];
-  }
+  $remote = $_SERVER['REMOTE_ADDR'];
   if (filter_var($remote, FILTER_VALIDATE_IP) === false) {
     return '0.0.0.0';
   }
