@@ -1,0 +1,11 @@
+--- /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox    2018-08-17 18:29:57.987504204 +0200
++++ /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox    2018-08-17 18:29:35.918291298 +0200
+@@ -46,7 +46,7 @@
+           </md-item-template>
+         </md-autocomplete>
+       </div>
+-      <md-card ng-repeat="user in acl.users | orderBy:['userClass', 'cn']"
++      <md-card ng-repeat="user in acl.users | filter:{ userClass: 'normal' } | orderBy:['cn']"
+                class="sg-collapsed"
+                ng-class="{ 'sg-expanded': user.uid == acl.selectedUid }">
+         <a class="md-flex md-button" ng-click="acl.selectUser(user, $event)">
