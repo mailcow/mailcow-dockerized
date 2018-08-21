@@ -264,6 +264,7 @@ jQuery(function($){
         },
         },
         {"name":"max_quota_for_mbox","title":lang.mailbox_quota,"breakpoints":"xs sm","style":{"width":"125px"}},
+        {"name":"rl","title":"RL","breakpoints":"xs sm md","style":{"width":"125px"}},
         {"name":"backupmx","filterable": false,"style":{"maxWidth":"120px","width":"120px"},"title":lang.backup_mx,"breakpoints":"xs sm"},
         {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"240px","width":"240px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
@@ -280,6 +281,13 @@ jQuery(function($){
             item.aliases = item.aliases_in_domain + " / " + item.max_num_aliases_for_domain;
             item.mailboxes = item.mboxes_in_domain + " / " + item.max_num_mboxes_for_domain;
             item.quota = item.quota_used_in_domain + "/" + item.max_quota_for_domain;
+            if (!item.rl) {
+              item.rl = '∞';
+            } else {
+              item.rl = $.map(item.rl, function(e){
+                return e;
+              }).join('/1');
+            }
             item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
             item.chkbox = '<input type="checkbox" data-id="domain" name="multi_select" value="' + encodeURIComponent(item.domain_name) + '" />';
             item.action = '<div class="btn-group">';
@@ -342,6 +350,7 @@ jQuery(function($){
         },
         },
         {"name":"messages","filterable": false,"title":lang.msg_num,"breakpoints":"xs sm md"},
+        {"name":"rl","title":"RL","breakpoints":"xs sm md","style":{"width":"125px"}},
         {"name":"active","filterable": false,"title":lang.active},
         {"name":"action","filterable": false,"sortable": false,"style":{"min-width":"250px","text-align":"right"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
       ],
@@ -357,6 +366,13 @@ jQuery(function($){
           $.each(data, function (i, item) {
             item.quota = item.quota_used + "/" + item.quota;
             item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
+            if (!item.rl) {
+              item.rl = '∞';
+            } else {
+              item.rl = $.map(item.rl, function(e){
+                return e;
+              }).join('/1');
+            }
             item.chkbox = '<input type="checkbox" data-id="mailbox" name="multi_select" value="' + encodeURIComponent(item.username) + '" />';
             if (role == "admin") {
             item.action = '<div class="btn-group">' +

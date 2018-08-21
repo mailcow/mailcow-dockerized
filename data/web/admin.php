@@ -208,6 +208,8 @@ $tfa_data = get_tfa();
         <?php
         foreach(mailbox('get', 'domains') as $domain) {
             if (!empty($dkim = dkim('details', $domain))) {
+              $dkim_domains[] = $domain;
+              ($GLOBALS['SHOW_DKIM_PRIV_KEYS'] === true) ?: $dkim['privkey'] = base64_encode('Please set $SHOW_DKIM_PRIV_KEYS to true to show DKIM private keys.');
           ?>
             <div class="row">
               <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" /></div>
@@ -229,7 +231,7 @@ $tfa_data = get_tfa();
           else {
           ?>
           <div class="row">
-              <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" disabled /></div>
+              <div class="col-md-1"><input class="dkim_missing" type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" disabled /></div>
             <div class="col-md-3">
               <p>Domain: <strong><?=htmlspecialchars($domain);?></strong><br /><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
             </div>
@@ -240,6 +242,8 @@ $tfa_data = get_tfa();
           }
           foreach(mailbox('get', 'alias_domains', $domain) as $alias_domain) {
             if (!empty($dkim = dkim('details', $alias_domain))) {
+              $dkim_domains[] = $alias_domain;
+              ($GLOBALS['SHOW_DKIM_PRIV_KEYS'] === true) ?: $dkim['privkey'] = base64_encode('Please set $SHOW_DKIM_PRIV_KEYS to true to show DKIM private keys.');
             ?>
               <div class="row">
               <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$alias_domain;?>" /></div>
@@ -261,7 +265,7 @@ $tfa_data = get_tfa();
             else {
             ?>
             <div class="row">
-              <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$alias_domain;?>" disabled /></div>
+              <div class="col-md-1"><input class="dkim_missing" type="checkbox" data-id="dkim" name="multi_select" value="<?=$alias_domain;?>" disabled /></div>
               <div class="col-md-2 col-md-offset-1">
                 <p><small>↳ Alias-Domain: <strong><?=htmlspecialchars($alias_domain);?></strong><br /></small><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
               </div>
@@ -274,6 +278,8 @@ $tfa_data = get_tfa();
         }
         foreach(dkim('blind') as $blind) {
           if (!empty($dkim = dkim('details', $blind))) {
+            $dkim_domains[] = $blind;
+            ($GLOBALS['SHOW_DKIM_PRIV_KEYS'] === true) ?: $dkim['privkey'] = base64_encode('Please set $SHOW_DKIM_PRIV_KEYS to true to show DKIM private keys.');
           ?>
             <div class="row">
               <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$blind;?>" /></div>
@@ -298,40 +304,90 @@ $tfa_data = get_tfa();
         <legend style="margin-top:40px"><?=$lang['admin']['dkim_add_key'];?></legend>
         <form class="form" data-id="dkim" role="form" method="post">
           <div class="form-group">
-            <label for="domain">Domain</label>
-            <input class="form-control" id="domain" name="domain" placeholder="example.org" required>
+            <label for="domain"><?=$lang['admin']['domain_s'];?></label>
+            <input class="form-control input-sm" id="dkim_add_domains" name="domains" placeholder="example.org, example.com" required>
+            <small>↪ <a href="#" id="dkim_missing_keys"><?=$lang['admin']['dkim_domains_wo_keys'];?></a></small>
           </div>
           <div class="form-group">
             <label for="domain">Selector</label>
-            <input class="form-control" id="dkim_selector" name="dkim_selector" value="dkim" required>
+            <input class="form-control input-sm" id="dkim_selector" name="dkim_selector" value="dkim" required>
           </div>
           <div class="form-group">
-            <select data-width="200px" class="form-control" id="key_size" name="key_size" title="<?=$lang['admin']['dkim_key_length'];?>" required>
+            <select data-width="200px" data-style="btn btn-default btn-sm" class="form-control" id="key_size" name="key_size" title="<?=$lang['admin']['dkim_key_length'];?>" required>
               <option data-subtext="bits">1024</option>
               <option data-subtext="bits">2048</option>
             </select>
           </div>
-          <button class="btn btn-default" id="add_item" data-id="dkim" data-api-url='add/dkim' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
+          <button class="btn btn-sm btn-default" id="add_item" data-id="dkim" data-api-url='add/dkim' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
         </form>
 
-        <legend data-target="#import_dkim" style="margin-top:40px;cursor:pointer" id="import_dkim_legend" unselectable="on" data-toggle="collapse"><span id="import_dkim_arrow" class="rotate glyphicon glyphicon-menu-down"></span> <?=$lang['admin']['import_private_key'];?></legend>
+        <legend data-target="#import_dkim" style="margin-top:40px;cursor:pointer" id="import_dkim_legend" unselectable="on" data-toggle="collapse">
+          <span id="import_dkim_arrow" style="font-size:12px" class="rotate glyphicon glyphicon-menu-down"></span> <?=$lang['admin']['import_private_key'];?>
+        </legend>
         <div id="import_dkim" class="collapse">
         <form class="form" data-id="dkim_import" role="form" method="post">
           <div class="form-group">
             <label for="domain">Domain:</label>
-            <input class="form-control" id="domain" name="domain" placeholder="example.org" required>
+            <input class="form-control input-sm" id="domain" name="domain" placeholder="example.org" required>
           </div>
           <div class="form-group">
             <label for="domain">Selector:</label>
-            <input class="form-control" id="dkim_selector" name="dkim_selector" value="dkim" required>
+            <input class="form-control input-sm" id="dkim_selector" name="dkim_selector" value="dkim" required>
           </div>
           <div class="form-group">
             <label for="private_key_file"><?=$lang['admin']['private_key'];?>:</label>
-            <textarea class="form-control" rows="5" name="private_key_file" id="private_key_file" required placeholder="-----BEGIN RSA KEY-----"></textarea>
+            <textarea class="form-control input-sm" rows="10" name="private_key_file" id="private_key_file" required placeholder="-----BEGIN RSA KEY-----"></textarea>
           </div>
-          <button class="btn btn-default" id="add_item" data-id="dkim_import" data-api-url='add/dkim_import' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['import'];?></button>
+          <button class="btn btn-sm btn-default" id="add_item" data-id="dkim_import" data-api-url='add/dkim_import' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['import'];?></button>
         </form>
         </div>
+
+        <legend data-target="#duplicate_dkim" style="margin-top:40px;cursor:pointer" id="duplicate_dkim_legend" unselectable="on" data-toggle="collapse">
+          <span id="duplicate_dkim_arrow" style="font-size:12px" class="rotate glyphicon glyphicon-menu-down"></span> <?=$lang['admin']['duplicate_dkim'];?>
+        </legend>
+        <div id="duplicate_dkim" class="collapse">
+        <form class="form-horizontal" data-id="dkim_duplicate" role="form" method="post">
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="from_domain"><?=$lang['admin']['dkim_from'];?>:</label>
+            <div class="col-sm-10">
+            <select data-style="btn btn-default btn-sm"
+              data-live-search="true"
+              data-id="dkim_duplicate"
+              title="<?=$lang['admin']['dkim_from_title'];?>"
+              name="from_domain" id="from_domain" class="full-width-select form-control" required>
+              <?php
+              foreach ($dkim_domains as $dkim) {
+              ?>
+              <option value="<?=$dkim;?>"><?=$dkim;?></option>
+              <?php
+              }
+              ?>
+            </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="to_domain"><?=$lang['admin']['dkim_to'];?>:</label>
+            <div class="col-sm-10">
+            <select
+              data-live-search="true"
+              data-style="btn btn-default btn-sm"
+              data-id="dkim_duplicate"
+              title="<?=$lang['admin']['dkim_to_title'];?>"
+              name="to_domain" id="to_domain" class="full-width-select form-control" multiple required>
+              <?php
+              foreach (array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains')) as $domain) {
+              ?>
+              <option value="<?=$domain;?>"><?=$domain;?></option>
+              <?php
+              }
+              ?>
+            </select>
+            </div>
+          </div>
+          <button class="btn btn-sm btn-default" id="add_item" data-id="dkim_duplicate" data-api-url='add/dkim_duplicate' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-duplicate"></span> <?=$lang['admin']['duplicate'];?></button>
+        </form>
+        </div>
+
       </div>
     </div>
 

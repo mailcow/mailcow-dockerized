@@ -9,6 +9,10 @@ jQuery(function($){
     e.preventDefault();
     $('#import_dkim_arrow').toggleClass("animation"); 
   });
+  $("#duplicate_dkim_legend").on('click', function(e) {
+    e.preventDefault();
+    $('#duplicate_dkim_arrow').toggleClass("animation"); 
+  });
   $("#rspamd_preset_1").on('click', function(e) {
     e.preventDefault();
     $("form[data-id=rsetting]").find("#desc").val(lang.rsettings_preset_1);
@@ -18,6 +22,14 @@ jQuery(function($){
     e.preventDefault();
     $("form[data-id=rsetting]").find("#desc").val(lang.rsettings_preset_2);
     $("form[data-id=rsetting]").find("#content").val('priority = 10;\nrcpt = "/postmaster@.*/";\nwant_spam = yes;');
+  });
+  $("#dkim_missing_keys").on('click', function(e) {
+    e.preventDefault();
+     var domains = [];
+     $('.dkim_missing').each(function() {
+       domains.push($(this).val());
+     });
+     $('#dkim_add_domains').val(domains);
   });
   function draw_domain_admins() {
     ft_domainadmins = FooTable.init('#domainadminstable', {
