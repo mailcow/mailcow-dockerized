@@ -416,7 +416,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             return false;
           }
           if (!empty(intval($_data['rl_value']))) {
-            ratelimit('edit', 'domain', array('rl_value' => $rl_value, 'rl_frame' => $_data['rl_frame'], 'object' => $domain));
+            ratelimit('edit', 'domain', array('rl_value' => $_data['rl_value'], 'rl_frame' => $_data['rl_frame'], 'object' => $domain));
           }
           if (!empty($restart_sogo)) {
             $restart_reponse = json_decode(docker('post', 'sogo-mailcow', 'restart'), true);
