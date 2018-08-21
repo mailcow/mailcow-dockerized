@@ -135,6 +135,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "dkim":
             process_add_return(dkim('add', $attr));
           break;
+          case "dkim_duplicate":
+            process_add_return(dkim('duplicate', $attr));
+          break;
           case "dkim_import":
             process_add_return(dkim('import', $attr));
           break;
@@ -181,6 +184,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               break;
             }
           break;
+
           case "domain":
             switch ($object) {
               case "all":
@@ -203,6 +207,67 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
 
               default:
                 $data = mailbox('get', 'domain_details', $object);
+                process_get_return($data);
+              break;
+            }
+          break;
+
+          case "rl-domain":
+            switch ($object) {
+              case "all":
+                $domains = array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains'));
+                if (!empty($domains)) {
+                  foreach ($domains as $domain) {
+                    if ($details = ratelimit('get', 'domain', $domain)) {
+                      $details['domain'] = $domain;
+                      $data[] = $details;
+                    }
+                    else {
+                      continue;
+                    }
+                  }
+                  process_get_return($data);
+                }
+                else {
+                  echo '{}';
+                }
+              break;
+
+              default:
+                $data = ratelimit('get', 'domain', $object);
+                process_get_return($data);
+              break;
+            }
+          break;
+
+          case "rl-mbox":
+            switch ($object) {
+              case "all":
+                $domains = mailbox('get', 'domains');
+                if (!empty($domains)) {
+                  foreach ($domains as $domain) {
+                    $mailboxes = mailbox('get', 'mailboxes', $domain);
+                    if (!empty($mailboxes)) {
+                      foreach ($mailboxes as $mailbox) {
+                        if ($details = ratelimit('get', 'mailbox', $mailbox)) {
+                          $details['mailbox'] = $mailbox;
+                          $data[] = $details;
+                        }
+                        else {
+                          continue;
+                        }
+                      }
+                    }
+                  }
+                  process_get_return($data);
+                }
+                else {
+                  echo '{}';
+                }
+              break;
+
+              default:
+                $data = ratelimit('get', 'mailbox', $object);
                 process_get_return($data);
               break;
             }
@@ -968,8 +1033,11 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "domain":
             process_edit_return(mailbox('edit', 'domain', array_merge(array('domain' => $items), $attr)));
           break;
-          case "ratelimit":
-            process_edit_return(mailbox('edit', 'ratelimit', array_merge(array('object' => $items), $attr)));
+          case "rl-domain":
+            process_edit_return(ratelimit('edit', 'domain', array_merge(array('object' => $items), $attr)));
+          break;
+          case "rl-mbox":
+            process_edit_return(ratelimit('edit', 'mailbox', array_merge(array('object' => $items), $attr)));
           break;
           case "alias-domain":
             process_edit_return(mailbox('edit', 'alias_domain', array_merge(array('alias_domain' => $items), $attr)));

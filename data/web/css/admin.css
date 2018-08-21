@@ -71,3 +71,6 @@ body.modal-open {
 .table-condensed .input-sm {
   width: 100%!important;  
 }
+.full-width-select {
+  width: 100%!important;  
+}

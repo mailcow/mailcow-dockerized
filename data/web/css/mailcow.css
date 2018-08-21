@@ -101,6 +101,7 @@ legend {
   -ms-user-select: none
   -o-user-select: none;
   user-select: none;
+  font-size: 12pt;
 }
 .navbar .navbar-brand {
   padding-top: 5px;

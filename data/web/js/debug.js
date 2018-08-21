@@ -171,7 +171,7 @@ jQuery(function($){
         {"name":"user","title":"User"},
         {"name":"role","title":"Role"},
         {"name":"remote","title":"IP"},
-        {"name":"msg","title":lang.message},
+        {"name":"msg","title":lang.message,"style":{"word-break":"break-all"}},
         {"name":"call","title":"Call","breakpoints": "all"},
       ],
       "rows": $.ajax({
