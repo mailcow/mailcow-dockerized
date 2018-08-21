@@ -62,7 +62,7 @@ function ratelimit($_action, $_scope, $_data = null) {
             $_SESSION['return'][] = array(
               'type' => 'success',
               'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
-              'msg' => array('object_modified', $object)
+              'msg' => array('rl_saved', $object)
             );
           }
         break;
@@ -123,7 +123,7 @@ function ratelimit($_action, $_scope, $_data = null) {
             $_SESSION['return'][] = array(
               'type' => 'success',
               'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
-              'msg' => array('object_modified', $object)
+              'msg' => array('rl_saved', $object)
             );
           }
         break;

@@ -42,6 +42,7 @@ $lang['danger']['filter_type'] = "Falscher Filtertyp";
 $lang['danger']['domain_cannot_match_hostname'] = "Domain darf nicht dem Hostnamen entsprechen";
 $lang['warning']['domain_added_sogo_failed'] = "Domain wurde hinzugefügt; SOGo konnte nicht neugestartet werden";
 $lang['danger']['rl_timeframe'] = "Ratelimit Zeitraum ist inkorrekt";
+$lang['success']['rl_saved'] = "Ratelimit für Objekt %s wurde gesetzt";
 $lang['success']['deleted_syncjobs'] = "Syncjobs gelöscht: %s";
 $lang['success']['deleted_syncjob'] = "Syncjobs ID %s gelöscht";
 $lang['success']['delete_filters'] = "Filter gelöscht: %s";

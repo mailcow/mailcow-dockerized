@@ -415,6 +415,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
+          if (!empty(intval($_data['rl_value']))) {
+            ratelimit('edit', 'domain', array('rl_value' => $rl_value, 'rl_frame' => $_data['rl_frame'], 'object' => $domain));
+          }
           if (!empty($restart_sogo)) {
             $restart_reponse = json_decode(docker('post', 'sogo-mailcow', 'restart'), true);
             if ($restart_reponse['type'] == "success") {
@@ -3094,6 +3097,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ));
             try {
               $redis->hDel('DOMAIN_MAP', $domain);
+              $redis->hDel('RL_VALUE', $domain);
             }
             catch (RedisException $e) {
               $_SESSION['return'][] = array(
@@ -3182,6 +3186,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ));
             try {
               $redis->hDel('DOMAIN_MAP', $alias_domain);
+              $redis->hDel('RL_VALUE', $domain);
             }
             catch (RedisException $e) {
               $_SESSION['return'][] = array(
@@ -3300,6 +3305,17 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':goto' => $gotos_rebuild,
                 ':address' => $gotos['address']
               ));
+            }
+            try {
+              $redis->hDel('RL_VALUE', $username);
+            }
+            catch (RedisException $e) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => array('redis_error', $e)
+              );
+              continue;
             }
             $_SESSION['return'][] = array(
               'type' => 'success',

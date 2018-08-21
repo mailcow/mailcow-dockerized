@@ -124,6 +124,28 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 						</div>
 					</div>
 					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<div class="checkbox">
+							<label><input type="checkbox" value="1" name="active" checked> <?=$lang['add']['active'];?></label>
+							</div>
+						</div>
+					</div>
+          <hr>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="quota">Ratelimit</label>
+            <div class="col-sm-7">
+            <input name="rl_value" id="rl_value" type="number" value="<?=(!empty($rl['value'])) ? $rl['value'] : null;?>" class="form-control" placeholder="disabled">
+            </div>
+            <div class="col-sm-3">
+            <select name="rl_frame" id="rl_frame" class="form-control">
+              <option value="s" <?=(isset($rl['frame']) && $rl['frame'] == 's') ? 'selected' : null;?>>msgs / second</option>
+              <option value="m" <?=(isset($rl['frame']) && $rl['frame'] == 'm') ? 'selected' : null;?>>msgs / minute</option>
+              <option value="h" <?=(isset($rl['frame']) && $rl['frame'] == 'h') ? 'selected' : null;?>>msgs / hour</option>
+            </select>
+            </div>
+          </div>
+          <hr>
+					<div class="form-group">
 						<label class="control-label col-sm-2"><?=$lang['add']['backup_mx_options'];?></label>
 						<div class="col-sm-10">
 							<div class="checkbox">
@@ -134,13 +156,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 							</div>
 						</div>
 					</div>
-					<div class="form-group">
-						<div class="col-sm-offset-2 col-sm-10">
-							<div class="checkbox">
-							<label><input type="checkbox" value="1" name="active" checked> <?=$lang['add']['active'];?></label>
-							</div>
-						</div>
-					</div>
+          <hr>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
               <button class="btn btn-default" id="add_item" data-id="add_domain" data-api-url='add/domain' data-api-attr='{}' href="#"><?=$lang['add']['add_domain_only'];?></button>
