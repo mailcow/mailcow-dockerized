@@ -637,7 +637,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
-          foreach ($alias_domains as $i => &$alias_domain) {
+          foreach ($alias_domains as $i => $alias_domain) {
             $alias_domain = idn_to_ascii(strtolower(trim($alias_domain)));
             if (!is_valid_domain_name($alias_domain)) {
               $_SESSION['return'][] = array(
@@ -680,30 +680,30 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
-          }
-          $stmt = $pdo->prepare("INSERT INTO `alias_domain` (`alias_domain`, `target_domain`, `active`)
-            VALUES (:alias_domain, :target_domain, :active)");
-          $stmt->execute(array(
-            ':alias_domain' => $alias_domain,
-            ':target_domain' => $target_domain,
-            ':active' => $active
-          ));
-          try {
-            $redis->hSet('DOMAIN_MAP', $alias_domain, 1);
-          }
-          catch (RedisException $e) {
+            $stmt = $pdo->prepare("INSERT INTO `alias_domain` (`alias_domain`, `target_domain`, `active`)
+              VALUES (:alias_domain, :target_domain, :active)");
+            $stmt->execute(array(
+              ':alias_domain' => $alias_domain,
+              ':target_domain' => $target_domain,
+              ':active' => $active
+            ));
+            try {
+              $redis->hSet('DOMAIN_MAP', $alias_domain, 1);
+            }
+            catch (RedisException $e) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => array('redis_error', $e)
+              );
+              return false;
+            }
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 'success',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => array('redis_error', $e)
+              'msg' => array('aliasd_added', htmlspecialchars($alias_domain))
             );
-            return false;
           }
-          $_SESSION['return'][] = array(
-            'type' => 'success',
-            'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-            'msg' => array('aliasd_added', htmlspecialchars($alias_domain))
-          );
         break;
         case 'mailbox':
           $local_part   = strtolower(trim($_data['local_part']));
