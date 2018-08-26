@@ -139,7 +139,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt = $pdo->prepare("UPDATE `sieve_filters` SET `script_name` = 'inactive' WHERE `username` = :username AND `filter_type` = :filter_type");
             $stmt->execute(array(
               ':username' => $username,
-              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
               ':filter_type' => $filter_type
             ));
           }
