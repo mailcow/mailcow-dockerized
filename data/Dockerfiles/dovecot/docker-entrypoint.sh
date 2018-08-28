@@ -110,8 +110,9 @@ if [[ $(stat -c %U /var/vmail/) != "vmail" ]] ; then chown -R vmail:vmail /var/v
 # Create random master for SOGo sieve features
 RAND_USER=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 16 | head -n 1)
 RAND_PASS=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 24 | head -n 1)
-echo ${RAND_USER}:$(doveadm pw -s SHA1 -p ${RAND_PASS}) > /usr/local/etc/dovecot/dovecot-master.passwd
-echo ${RAND_USER}:${RAND_PASS} > /etc/sogo/sieve.creds
+
+echo ${RAND_USER}@mailcow.local:$(doveadm pw -s SHA1 -p ${RAND_PASS}) > /usr/local/etc/dovecot/dovecot-master.passwd
+echo ${RAND_USER}@mailcow.local:${RAND_PASS} > /etc/sogo/sieve.creds
 
 # 401 is user dovecot
 if [[ ! -f /mail_crypt/ecprivkey.pem || ! -f /mail_crypt/ecpubkey.pem ]]; then
