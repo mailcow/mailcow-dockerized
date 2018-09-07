@@ -136,7 +136,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.35
+      image: mailcow/sogo:1.36
       build: ./data/Dockerfiles/sogo
       environment:
         - DBNAME=${DBNAME}
@@ -264,6 +264,8 @@ services:
         - ./data/assets/ssl/:/etc/ssl/mail/:ro
         - ./data/conf/nginx/:/etc/nginx/conf.d/:rw
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro
+      volumes_from:
+        - sogo-mailcow
       ports:
         - "${HTTPS_BIND:-0.0.0.0}:${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
         - "${HTTP_BIND:-0.0.0.0}:${HTTP_PORT:-80}:${HTTP_PORT:-80}"
