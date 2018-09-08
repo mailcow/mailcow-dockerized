@@ -100,6 +100,13 @@ settings {
       }
     }
   }
+  authenticated {
+    priority = 10;
+    authenticated = yes;
+    apply {
+      symbols_disabled = ["KEEP_SPAM"];
+    }
+  }
 <?php
 
 /*
