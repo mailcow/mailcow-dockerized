@@ -67,7 +67,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <label class="control-label col-sm-2" for="name"><?=$lang['admin']['admin_domains'];?>:</label>
               <div class="col-sm-10">
-                <select title="<?=$lang['admin']['search_domain_da'];?>" style="width:100%" name="domains" size="5" multiple>
+                <select title="<?=$lang['admin']['search_domain_da'];?>" class="full-width-select" name="domains" size="5" multiple>
                 <?php
                 foreach (mailbox('get', 'domains') as $domain) {
                   echo "<option>".htmlspecialchars($domain)."</option>";
@@ -79,7 +79,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <label class="control-label col-sm-2" for="password"><?=$lang['admin']['password'];?>:</label>
               <div class="col-sm-10">
-              <input type="password" class="form-control" name="password" id="password" placeholder="" required>
+              <input type="password" class="form-control" data-hibp="true" name="password" id="password" placeholder="" required>
               </div>
             </div>
             <div class="form-group">

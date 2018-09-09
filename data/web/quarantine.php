@@ -18,7 +18,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
           <table id="quarantinetable" class="table table-striped"></table>
         </div>
         <div class="mass-actions-quarantine">
-          <div class="btn-group">
+          <div class="btn-group" data-acl="<?=$_SESSION['acl']['quarantine'];?>">
             <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="qitems" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['quarantine']['toggle_all'];?></a>
             <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['quarantine']['quick_actions'];?> <span class="caret"></span></a>
             <ul class="dropdown-menu">

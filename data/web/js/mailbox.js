@@ -1,4 +1,5 @@
 $(document).ready(function() {
+  acl_data = JSON.parse(acl);
   FooTable.domainFilter = FooTable.Filtering.extend({
     construct: function(instance){
       this._super(instance);
@@ -82,6 +83,7 @@ $(document).ready(function() {
 
   $(".generate_password").click(function( event ) {
     event.preventDefault();
+    $('[data-hibp]').trigger('input');
     var random_passwd = Math.random().toString(36).slice(-8)
     $('#password').prop('type', 'text');
     $('#password').val(random_passwd);
@@ -233,6 +235,13 @@ jQuery(function($){
     eval(draw_table + '()');
   });
   function table_mailbox_ready(ft, name) {
+    if(is_dual) {
+      $('.login_as').data("toggle", "tooltip")
+        .attr("disabled", true)
+        .removeAttr("href")
+        .attr("title", "Dual login cannot be used twice")
+        .tooltip();
+    }
     heading = ft.$el.parents('.tab-pane').find('.panel-heading')
     var ft_paging = ft.use(FooTable.Paging)
     $(heading).children('.table-lines').text(function(){
@@ -264,10 +273,10 @@ jQuery(function($){
         },
         },
         {"name":"max_quota_for_mbox","title":lang.mailbox_quota,"breakpoints":"xs sm","style":{"width":"125px"}},
-        {"name":"rl","title":"RL","breakpoints":"xs sm md","style":{"width":"125px"}},
-        {"name":"backupmx","filterable": false,"style":{"maxWidth":"120px","width":"120px"},"title":lang.backup_mx,"breakpoints":"xs sm"},
+        {"name":"rl","title":"RL","breakpoints":"xs sm md","style":{"maxWidth":"100px","width":"100px"}},
+        {"name":"backupmx","filterable": false,"style":{"maxWidth":"120px","width":"120px"},"title":lang.backup_mx,"breakpoints":"xs sm md"},
         {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"240px","width":"240px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
+        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"240px","width":"240px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
       ],
       "rows": $.ajax({
         dataType: 'json',
@@ -374,11 +383,11 @@ jQuery(function($){
               }).join('/1');
             }
             item.chkbox = '<input type="checkbox" data-id="mailbox" name="multi_select" value="' + encodeURIComponent(item.username) + '" />';
-            if (role == "admin") {
+            if (acl_data.login_as === 1) {
             item.action = '<div class="btn-group">' +
               '<a href="/edit.php?mailbox=' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
               '<a href="#" id="delete_selected" data-id="single-mailbox" data-api-url="delete/mailbox" data-item="' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
-              '<a href="/index.php?duallogin=' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-success"><span class="glyphicon glyphicon-user"></span> Login</a>' +
+              '<a href="/index.php?duallogin=' + encodeURIComponent(item.username) + '" class="login_as btn btn-xs btn-success"><span class="glyphicon glyphicon-user"></span> Login</a>' +
               '</div>';
             }
             else {

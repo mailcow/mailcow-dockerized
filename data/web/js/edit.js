@@ -61,10 +61,10 @@ jQuery(function($){
       "columns": [
         {"name":"chkbox","title":"","style":{"maxWidth":"40px","width":"40px"},"filterable": false,"sortable": false,"type":"html"},
         {"name":"prefid","style":{"maxWidth":"40px","width":"40px"},"title":"ID","filterable": false,"sortable": false},
-        {"sorted": true,"name":"value","title":lang.spamfilter_table_rule},
+        {"sorted": true,"name":"value","title":lang_user.spamfilter_table_rule},
         {"name":"object","title":"Scope"}
       ],
-      "empty": lang.empty,
+      "empty": lang_user.empty,
       "rows": $.ajax({
         dataType: 'json',
         url: '/api/v1/get/policy_wl_domain/' + table_for_domain,
@@ -78,7 +78,7 @@ jQuery(function($){
               item.chkbox = '<input type="checkbox" data-id="policy_wl_domain" name="multi_select" value="' + item.prefid + '" />';
             }
             else {
-              item.chkbox = '<input type="checkbox" disabled title="' + lang.spamfilter_table_domain_policy + '" />';
+              item.chkbox = '<input type="checkbox" disabled title="' + lang_user.spamfilter_table_domain_policy + '" />';
             }
           });
         }
@@ -98,10 +98,10 @@ jQuery(function($){
       "columns": [
         {"name":"chkbox","title":"","style":{"maxWidth":"40px","width":"40px"},"filterable": false,"sortable": false,"type":"html"},
         {"name":"prefid","style":{"maxWidth":"40px","width":"40px"},"title":"ID","filterable": false,"sortable": false},
-        {"sorted": true,"name":"value","title":lang.spamfilter_table_rule},
+        {"sorted": true,"name":"value","title":lang_user.spamfilter_table_rule},
         {"name":"object","title":"Scope"}
       ],
-      "empty": lang.empty,
+      "empty": lang_user.empty,
       "rows": $.ajax({
         dataType: 'json',
         url: '/api/v1/get/policy_bl_domain/' + table_for_domain,
@@ -115,7 +115,7 @@ jQuery(function($){
               item.chkbox = '<input type="checkbox" data-id="policy_bl_domain" name="multi_select" value="' + item.prefid + '" />';
             }
             else {
-              item.chkbox = '<input type="checkbox" disabled tooltip="' + lang.spamfilter_table_domain_policy + '" />';
+              item.chkbox = '<input type="checkbox" disabled tooltip="' + lang_user.spamfilter_table_domain_policy + '" />';
             }
           });
         }

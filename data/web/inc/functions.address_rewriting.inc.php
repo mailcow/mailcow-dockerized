@@ -233,6 +233,14 @@ function bcc($_action, $_data = null, $attr = null) {
       return $bccdata;
     break;
     case 'delete':
+      if (!isset($_SESSION['acl']['bcc_maps']) || $_SESSION['acl']['bcc_maps'] != "1" ) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }
       $ids = (array)$_data['id'];
       foreach ($ids as $id) {
         if (!is_numeric($id)) {
@@ -279,6 +287,14 @@ function recipient_map($_action, $_data = null, $attr = null) {
   }
   switch ($_action) {
     case 'add':
+      if (!isset($_SESSION['acl']['recipient_maps']) || $_SESSION['acl']['recipient_maps'] != "1" ) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }
       $old_dest = strtolower(trim($_data['recipient_map_old']));
       if (substr($old_dest, 0, 1) == '@') {
         $old_dest = substr($old_dest, 1);
@@ -343,6 +359,14 @@ function recipient_map($_action, $_data = null, $attr = null) {
       );
     break;
     case 'edit':
+      if (!isset($_SESSION['acl']['recipient_maps']) || $_SESSION['acl']['recipient_maps'] != "1" ) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }
       $ids = (array)$_data['id'];
       foreach ($ids as $id) {
         $is_now = recipient_map('details', $id);
@@ -458,6 +482,14 @@ function recipient_map($_action, $_data = null, $attr = null) {
       return $mapdata;
     break;
     case 'delete':
+      if (!isset($_SESSION['acl']['recipient_maps']) || $_SESSION['acl']['recipient_maps'] != "1" ) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }
       $ids = (array)$_data['id'];
       foreach ($ids as $id) {
         if (!is_numeric($id)) {
