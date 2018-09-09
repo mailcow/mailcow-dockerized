@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "19082018_1004";
+    $db_version = "01092018_1902";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -280,10 +280,7 @@ function init_db_schema() {
           "delimiter_action" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "syncjobs" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "eas_reset" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "filters" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "quarantine" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "bcc_maps" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "recipient_maps" => "TINYINT(1) NOT NULL DEFAULT '0'",
           ),
         "keys" => array(
           "primary" => array(
@@ -293,6 +290,32 @@ function init_db_schema() {
             "fk_username" => array(
               "col" => "username",
               "ref" => "mailbox.username",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "da_acl" => array(
+        "cols" => array(
+          "username" => "VARCHAR(255) NOT NULL",
+          "syncjobs" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "quarantine" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "login_as" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "bcc_maps" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "filters" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "ratelimit" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "spam_policy" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("username")
+          ),
+          "fkey" => array(
+            "fk_domain_admin_acl" => array(
+              "col" => "username",
+              "ref" => "domain_admins.username",
               "delete" => "CASCADE",
               "update" => "NO ACTION"
             )
@@ -950,8 +973,9 @@ DELIMITER ;';
       'msg' => 'db_init_complete'
     );
 
-    // Fix user_acl
+    // Fix ACL
     $stmt = $pdo->query("INSERT INTO `user_acl` (`username`) SELECT `username` FROM `mailbox` WHERE `kind` = '' AND NOT EXISTS (SELECT `username` FROM `user_acl`);");
+    $stmt = $pdo->query("INSERT INTO `da_acl` (`username`) SELECT DISTINCT `username` FROM `domain_admins` WHERE `username` != 'admin' AND NOT EXISTS (SELECT `username` FROM `da_acl`);");
   }
   catch (PDOException $e) {
     $_SESSION['return'][] = array(

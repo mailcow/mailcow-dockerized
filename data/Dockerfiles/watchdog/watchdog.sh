@@ -59,10 +59,10 @@ function mail_error() {
   log_msg "Sent notification email to ${1}"
 }
 
-
 get_container_ip() {
   # ${1} is container
   CONTAINER_ID=()
+  CONTAINER_IPS=()
   CONTAINER_IP=
   LOOP_C=1
   until [[ ${CONTAINER_IP} =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]] || [[ ${LOOP_C} -gt 5 ]]; do
@@ -72,15 +72,21 @@ get_container_ip() {
     # returned id can have multiple elements (if scaled), shuffle for random test
     CONTAINER_ID=($(printf "%s\n" "${CONTAINER_ID[@]}" | shuf))
     if [[ ! -z ${CONTAINER_ID} ]]; then
-      for matched_container in "${CONTAINER_ID[@]}"; do
-        CONTAINER_IP=$(curl --silent http://dockerapi:8080/containers/${matched_container}/json | jq -r '.NetworkSettings.Networks[].IPAddress')
-        # grep will do nothing if one of these vars is empty
-        [[ -z ${CONTAINER_IP} ]] && continue
-        [[ -z ${IPV4_NETWORK} ]] && continue
-        # only return ips that are part of our network
-        if ! grep -q ${IPV4_NETWORK} <(echo ${CONTAINER_IP}); then
-          CONTAINER_IP=
-        fi
+      for matched_container in "${CONTAINER_ID[@]}"; do 
+        CONTAINER_IPS=($(curl --silent http://dockerapi:8080/containers/${matched_container}/json | jq -r '.NetworkSettings.Networks[].IPAddress')) 
+        for ip_match in "${CONTAINER_IPS[@]}"; do 
+          # grep will do nothing if one of these vars is empty
+          [[ -z ${ip_match} ]] && continue
+          [[ -z ${IPV4_NETWORK} ]] && continue
+          # only return ips that are part of our network
+          if ! grep -q ${IPV4_NETWORK} <(echo ${ip_match}); then
+            continue
+          else
+            CONTAINER_IP=${ip_match}
+            break
+          fi
+        done
+        [[ ! -z ${CONTAINER_IP} ]] && break
       done
     fi
     LOOP_C=$((LOOP_C + 1))
@@ -88,7 +94,6 @@ get_container_ip() {
   [[ ${LOOP_C} -gt 5 ]] && echo 240.0.0.0 || echo ${CONTAINER_IP}
 }
 
-# Check functions
 nginx_checks() {
   err_count=0
   diff_c=0

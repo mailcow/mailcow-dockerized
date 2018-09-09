@@ -1039,6 +1039,12 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "rl-mbox":
             process_edit_return(ratelimit('edit', 'mailbox', array_merge(array('object' => $items), $attr)));
           break;
+          case "user-acl":
+            process_edit_return(acl('edit', 'user', array_merge(array('username' => $items), $attr)));
+          break;
+          case "da-acl":
+            process_edit_return(acl('edit', 'domainadmin', array_merge(array('username' => $items), $attr)));
+          break;
           case "alias-domain":
             process_edit_return(mailbox('edit', 'alias_domain', array_merge(array('alias_domain' => $items), $attr)));
           break;

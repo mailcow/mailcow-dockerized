@@ -148,3 +148,13 @@ nav .glyphicon {
   color: #5a5a5a;
   white-space: nowrap;
 }
+.haveibeenpwned {
+  cursor: pointer;
+  -webkit-user-select: none;  
+  -moz-user-select: none;    
+  -ms-user-select: none;      
+  user-select: none;
+}
+.full-width-select {
+  width: 100%!important;  
+}

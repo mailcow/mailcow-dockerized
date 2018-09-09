@@ -13,6 +13,10 @@ jQuery(function($){
     e.preventDefault();
     $('#duplicate_dkim_arrow').toggleClass("animation"); 
   });
+  $("#api_legend").on('click', function(e) {
+    e.preventDefault();
+    $('#api_arrow').toggleClass("animation"); 
+  });
   $("#rspamd_preset_1").on('click', function(e) {
     e.preventDefault();
     $("form[data-id=rsetting]").find("#desc").val(lang.rsettings_preset_1);

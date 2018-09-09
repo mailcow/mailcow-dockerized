@@ -49,4 +49,6 @@ COPY sogo-full.svg /usr/lib/GNUstep/SOGo/WebServerResources/img/sogo-full.svg
 COPY acl.diff /acl.diff
 CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 
+VOLUME /usr/lib/GNUstep/SOGo/
+
 RUN rm -rf /tmp/* /var/tmp/*

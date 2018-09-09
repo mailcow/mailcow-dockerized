@@ -373,54 +373,6 @@ function check_login($user, $pass) {
 	sleep($_SESSION['ldelay']);
   return false;
 }
-function set_acl() {
-	global $pdo;
-	if (!isset($_SESSION['mailcow_cc_username'])) {
-		return false;
-	}
-	if ($_SESSION['mailcow_cc_role'] == 'admin' || $_SESSION['mailcow_cc_role'] == 'domainadmin') {
-    $stmt = $pdo->query("SHOW COLUMNS FROM `user_acl` WHERE `Field` != 'username';");
-    $acl_all = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    while ($row = array_shift($acl_all)) {
-      $acl['acl'][$row['Field']] = 1;
-    }
-	}
-  else {
-    $username = strtolower(trim($_SESSION['mailcow_cc_username']));
-    $stmt = $pdo->prepare("SELECT * FROM `user_acl` WHERE `username` = :username");
-    $stmt->execute(array(':username' => $username));
-    $acl['acl'] = $stmt->fetch(PDO::FETCH_ASSOC);
-    unset($acl['acl']['username']);
-  }
-  if (!empty($acl)) {
-    $_SESSION = array_merge($_SESSION, $acl);
-  }
-  else {
-    $_SESSION['return'][] =  array(
-      'type' => 'info',
-      'log' => array(__FUNCTION__),
-      'msg' => 'set_acl_failed'
-    );
-    return false;
-  }
-}
-function get_acl($username) {
-	global $pdo;
-	if ($_SESSION['mailcow_cc_role'] != "admin") {
-		return false;
-	}
-  $username = strtolower(trim($username));
-  $stmt = $pdo->prepare("SELECT * FROM `user_acl` WHERE `username` = :username");
-  $stmt->execute(array(':username' => $username));
-  $acl = $stmt->fetch(PDO::FETCH_ASSOC);
-  unset($acl['username']);
-  if (!empty($acl)) {
-    return $acl;
-  }
-  else {
-    return false;
-  }
-}
 function formatBytes($size, $precision = 2) {
 	if(!is_numeric($size)) {
 		return "0";
@@ -1266,7 +1218,7 @@ function get_admin_details() {
     return false;
   }
   $stmt = $pdo->query("SELECT `admin`.`username`, `api`.`active` AS `api_active`, `api`.`api_key`, `api`.`allow_from` FROM `admin`
-    INNER JOIN `api` ON `admin`.`username` = `api`.`username`
+    LEFT OUTER JOIN `api` ON `admin`.`username` = `api`.`username`
     WHERE `admin`.`superadmin`='1'
       AND `admin`.`active`='1'");
   $data = $stmt->fetch(PDO::FETCH_ASSOC);
