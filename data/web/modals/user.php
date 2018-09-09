@@ -37,7 +37,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="password1"><?=$lang['add']['password'];?></label>
 						<div class="col-sm-10">
-						<input type="password" class="form-control" name="password1" id="password1" required>
+						<input type="password" class="form-control" name="password1" id="password1" data-hibp="true" required>
 						</div>
 					</div>
 					<div class="form-group">
@@ -155,7 +155,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
           <div class="form-group">
             <label class="control-label col-sm-3" for="user_new_pass"><?=$lang['user']['new_password'];?></label>
             <div class="col-sm-5">
-            <input type="password" class="form-control" name="user_new_pass" id="user_new_pass" autocomplete="off" required>
+            <input type="password" data-hibp="true" class="form-control" name="user_new_pass" id="user_new_pass" autocomplete="off" required>
             </div>
           </div>
           <div class="form-group">

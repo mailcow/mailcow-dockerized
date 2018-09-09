@@ -214,7 +214,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               <table class="table table-striped" id="filter_table"></table>
             </div>
             <div class="mass-actions-mailbox">
-              <div class="btn-group">
+              <div class="btn-group" data-acl="<?=$_SESSION['acl']['filters'];?>">
                 <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="filter_item" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
                 <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
@@ -245,7 +245,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               <table class="table table-striped" id="bcc_table"></table>
             </div>
             <div class="mass-actions-mailbox">
-              <div class="btn-group">
+              <div class="btn-group" data-acl="<?=$_SESSION['acl']['bcc_maps'];?>">
                 <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="bcc" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
                 <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
@@ -261,7 +261,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               </div>
             </div>
           </div>
-          <div class="panel panel-default">
+          <div class="panel panel-default <?=($_SESSION['mailcow_cc_role'] == "admin") ?: 'hidden';?>">
             <div class="panel-heading">
               <?=$lang['mailbox']['recipient_maps'];?> <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
@@ -272,12 +272,6 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             <div class="table-responsive">
               <table class="table table-striped" id="recipient_map_table"></table>
             </div>
-<?php
-if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "admin"))
-  $display = 'block';
-else
-  $display = 'none';
-?>
             <div class="mass-actions-mailbox" style="display: <?php echo $display; ?>">
               <div class="btn-group">
                 <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="recipient_map" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
@@ -304,9 +298,12 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/mailbox.php';
 <?php
 $lang_mailbox = json_encode($lang['mailbox']);
 echo "var lang = ". $lang_mailbox . ";\n";
+echo "var acl = '". json_encode($_SESSION['acl']) . "';\n";
 echo "var csrf_token = '". $_SESSION['CSRF']['TOKEN'] . "';\n";
 $role = ($_SESSION['mailcow_cc_role'] == "admin") ? 'admin' : 'domainadmin';
+$is_dual = (!empty($_SESSION["dual-login"]["username"])) ? 'true' : 'false';
 echo "var role = '". $role . "';\n";
+echo "var is_dual = " . $is_dual . ";\n";
 echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
 ?>
 </script>
