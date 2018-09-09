@@ -139,7 +139,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt = $pdo->prepare("UPDATE `sieve_filters` SET `script_name` = 'inactive' WHERE `username` = :username AND `filter_type` = :filter_type");
             $stmt->execute(array(
               ':username' => $username,
-              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
               ':filter_type' => $filter_type
             ));
           }
@@ -1453,14 +1452,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
         break;
         case 'filter':
-          $sieve = new Sieve\SieveParser();
-          if (!is_array($_data['id'])) {
-            $ids = array();
-            $ids[] = $_data['id'];
-          }
-          else {
-            $ids = $_data['id'];
-          }
           if (!isset($_SESSION['acl']['filters']) || $_SESSION['acl']['filters'] != "1" ) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
@@ -1468,6 +1459,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'msg' => 'access_denied'
             );
             return false;
+          }
+          $sieve = new Sieve\SieveParser();
+          if (!is_array($_data['id'])) {
+            $ids = array();
+            $ids[] = $_data['id'];
+          }
+          else {
+            $ids = $_data['id'];
           }
           foreach ($ids as $id) {
             $is_now = mailbox('get', 'filter_details', $id);

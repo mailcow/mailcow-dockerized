@@ -16,6 +16,9 @@ $lang['footer']['delete_these_items'] = 'Sind Sie sicher, dass die Änderungen a
 $lang['footer']['delete_now'] = 'Jetzt löschen';
 $lang['footer']['cancel'] = 'Abbrechen';
 
+$lang['footer']['hibp_nok'] = 'Übereinstimmung gefunden! Dieses Passwort ist potentiell gefährlich!';
+$lang['footer']['hibp_ok'] = 'Keine Übereinstimmung gefunden.';
+
 $lang['danger']['mysql_error'] = "MySQL Fehler: %s";
 $lang['danger']['redis_error'] = "Redis Fehler: %s";
 $lang['danger']['unknown_tfa_method'] = "Unbekannte TFA Methode";
@@ -43,6 +46,7 @@ $lang['danger']['domain_cannot_match_hostname'] = "Domain darf nicht dem Hostnam
 $lang['warning']['domain_added_sogo_failed'] = "Domain wurde hinzugefügt; SOGo konnte nicht neugestartet werden";
 $lang['danger']['rl_timeframe'] = "Ratelimit Zeitraum ist inkorrekt";
 $lang['success']['rl_saved'] = "Ratelimit für Objekt %s wurde gesetzt";
+$lang['success']['acl_saved'] = "ACL für Objekt %s wurde gesetzt";
 $lang['success']['deleted_syncjobs'] = "Syncjobs gelöscht: %s";
 $lang['success']['deleted_syncjob'] = "Syncjobs ID %s gelöscht";
 $lang['success']['delete_filters'] = "Filter gelöscht: %s";
@@ -332,6 +336,8 @@ $lang['edit']['relay_all_info'] = '<small>Wenn Sie <b>nicht</b> alle Empfänger-
 $lang['edit']['full_name'] = 'Voller Name';
 $lang['edit']['quota_mb'] = 'Speicherplatz (MiB)';
 $lang['edit']['sender_acl'] = 'Darf Nachrichten versenden als';
+$lang['edit']['sender_acl_disabled'] = '↳ <span class="label label-danger">Absenderprüfung deaktiviert</span>';
+$lang['user']['sender_acl_disabled'] = '<span class="label label-danger">Absenderprüfung deaktiviert</span>';
 $lang['edit']['previous'] = 'Vorherige Seite';
 $lang['edit']['unchanged_if_empty'] = 'Unverändert, wenn leer';
 $lang['edit']['dont_check_sender_acl'] = 'Absender für Domain %s u. Alias-Dom. nicht prüfen';
@@ -339,7 +345,22 @@ $lang['edit']['multiple_bookings'] = 'Mehrfaches Buchen';
 $lang['edit']['kind'] = 'Art';
 $lang['edit']['resource'] = 'Ressource';
 
-$lang['add']['syncjob'] = 'Sync-Job erstellen';
+$lang['acl']['spam_alias'] = 'Temporäre E-Mail Aliasse';
+$lang['acl']['tls_policy'] = 'Verschlüsselungsrichtlinie';
+$lang['acl']['spam_score'] = 'Spam Bewertung';
+$lang['acl']['spam_policy'] = 'Blacklist/Whitelist';
+$lang['acl']['delimiter_action'] = 'Delimiter Aktionen (tags)';
+$lang['acl']['syncjobs'] = 'Sync Jobs';
+$lang['acl']['eas_reset'] = 'EAS-Cache zurücksetzen';
+$lang['acl']['quarantine'] = 'Quarantäne';
+$lang['acl']['login_as'] = 'Einloggen als Mailbox-Benutzer';
+$lang['acl']['bcc_maps'] = 'BCC Maps';
+$lang['acl']['filters'] = 'Filter';
+$lang['acl']['ratelimit'] = 'Rate limit';
+$lang['acl']['recipient_maps'] = 'Empfängerumschreibungen';
+$lang['acl']['prohibited'] = 'Untersagt durch Richtlinie';
+
+$lang['add']['generate'] = 'generieren';
 $lang['add']['syncjob_hint'] = 'Passwörter werden unverschlüsselt abgelegt!';
 $lang['add']['hostname'] = 'Servername';
 $lang['add']['port'] = 'Port';

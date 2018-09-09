@@ -29,7 +29,7 @@ $tfa_data = get_tfa();
           <div class="form-group">
             <label class="control-label col-sm-3" for="admin_pass"><?=$lang['admin']['password'];?>:</label>
             <div class="col-sm-9">
-            <input type="password" class="form-control" name="admin_pass" id="admin_pass" placeholder="<?=$lang['admin']['unchanged_if_empty'];?>">
+            <input type="password" data-hibp="true" class="form-control" name="admin_pass" id="admin_pass" placeholder="<?=$lang['admin']['unchanged_if_empty'];?>">
             </div>
           </div>
           <div class="form-group">
@@ -44,7 +44,7 @@ $tfa_data = get_tfa();
             </div>
           </div>
         </form>
-        <hr>
+        <legend><?=$lang['tfa']['tfa'];?></legend>
         <div class="row">
           <div class="col-sm-3 col-xs-5 text-right"><?=$lang['tfa']['tfa'];?>:</div>
           <div class="col-sm-9 col-xs-7">
@@ -76,12 +76,10 @@ $tfa_data = get_tfa();
             </select>
           </div>
         </div>
-      </div>
-    </div>
-
-    <div class="hidden panel panel-primary">
-      <div class="panel-heading">API</div>
-      <div class="panel-body">
+        <legend data-target="#api" style="margin-top:40px;cursor:pointer" id="api_legend" unselectable="on" data-toggle="collapse">
+          <span id="api_arrow" style="font-size:12px" class="rotate glyphicon glyphicon-menu-down"></span> API (experimental, work in progress)
+        </legend>
+        <div id="api" class="collapse">
         <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
           <div class="form-group">
             <label class="control-label col-sm-3" for="allow_from"><?=$lang['admin']['api_allow_from'];?>:</label>
@@ -111,6 +109,7 @@ $tfa_data = get_tfa();
             </div>
           </div>
         </form>
+        </div>
       </div>
     </div>
 

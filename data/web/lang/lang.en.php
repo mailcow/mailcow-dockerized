@@ -16,6 +16,9 @@ $lang['footer']['delete_these_items'] = 'Please confirm your changes to the foll
 $lang['footer']['delete_now'] = 'Delete now';
 $lang['footer']['cancel'] = 'Cancel';
 
+$lang['footer']['hibp_nok'] = 'Matched! This is a potentially dangerous password!';
+$lang['footer']['hibp_ok'] = 'No match found.';
+
 $lang['danger']['mysql_error'] = "MySQL error: %s";
 $lang['danger']['redis_error'] = "Redis error: %s";
 $lang['danger']['unknown_tfa_method'] = "Unknown TFA method";
@@ -43,6 +46,7 @@ $lang['danger']['domain_cannot_match_hostname'] = "Domain cannot match hostname"
 $lang['warning']['domain_added_sogo_failed'] = "Added domain but failed to restart SOGo, please check your server logs.";
 $lang['danger']['rl_timeframe'] = "Rate limit time frame is incorrect";
 $lang['success']['rl_saved'] = "Rate limit for object %s saved";
+$lang['success']['acl_saved'] = "ACL for object %s saved";
 $lang['success']['deleted_syncjobs'] = "Deleted syncjobs: %s";
 $lang['success']['deleted_syncjob'] = "Deleted syncjob ID %s";
 $lang['success']['delete_filters'] = "Deleted filters: %s";
@@ -342,6 +346,7 @@ $lang['edit']['full_name'] = 'Full name';
 $lang['edit']['quota_mb'] = 'Quota (MiB)';
 $lang['edit']['sender_acl'] = 'Allow to send as';
 $lang['edit']['sender_acl_disabled'] = '↳ <span class="label label-danger">Sender check is disabled</span>';
+$lang['user']['sender_acl_disabled'] = '<span class="label label-danger">Sender check is disabled</span>';
 $lang['edit']['previous'] = 'Previous page';
 $lang['edit']['unchanged_if_empty'] = 'If unchanged leave blank';
 $lang['edit']['dont_check_sender_acl'] = "Disable sender check for domain %s (+ alias domains)";
@@ -349,6 +354,22 @@ $lang['edit']['multiple_bookings'] = 'Multiple bookings';
 $lang['edit']['kind'] = 'Kind';
 $lang['edit']['resource'] = 'Resource';
 
+$lang['acl']['spam_alias'] = 'Temporary aliases';
+$lang['acl']['tls_policy'] = 'TLS policy';
+$lang['acl']['spam_score'] = 'Spam score';
+$lang['acl']['spam_policy'] = 'Blacklist/Whitelist';
+$lang['acl']['delimiter_action'] = 'Delimiter action';
+$lang['acl']['syncjobs'] = 'Sync jobs';
+$lang['acl']['eas_reset'] = 'Reset EAS devices';
+$lang['acl']['quarantine'] = 'Quarantine';
+$lang['acl']['login_as'] = 'Login as mailbox user';
+$lang['acl']['bcc_maps'] = 'BCC maps';
+$lang['acl']['filters'] = 'Filters';
+$lang['acl']['ratelimit'] = 'Rate limit';
+$lang['acl']['recipient_maps'] = 'Recipient maps';
+$lang['acl']['prohibited'] = 'Prohibited by ACL';
+
+$lang['add']['generate'] = 'generate';
 $lang['add']['syncjob'] = 'Add sync job';
 $lang['add']['syncjob_hint'] = 'Be aware that passwords need to be saved plain-text!';
 $lang['add']['hostname'] = 'Hostname';
