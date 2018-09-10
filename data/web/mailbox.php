@@ -184,7 +184,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               <table class="table table-striped" id="sync_job_table"></table>
             </div>
             <div class="mass-actions-mailbox">
-              <div class="btn-group">
+              <div class="btn-group" data-acl="<?=$_SESSION['acl']['syncjobs'];?>">
                 <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="syncjob" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
                 <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
