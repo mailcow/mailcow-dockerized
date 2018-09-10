@@ -297,32 +297,6 @@ function init_db_schema() {
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
-      "da_acl" => array(
-        "cols" => array(
-          "username" => "VARCHAR(255) NOT NULL",
-          "syncjobs" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "quarantine" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "login_as" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "bcc_maps" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "filters" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "ratelimit" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "spam_policy" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          ),
-        "keys" => array(
-          "primary" => array(
-            "" => array("username")
-          ),
-          "fkey" => array(
-            "fk_domain_admin_acl" => array(
-              "col" => "username",
-              "ref" => "domain_admins.username",
-              "delete" => "CASCADE",
-              "update" => "NO ACTION"
-            )
-          )
-        ),
-        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
-      ),
       "alias_domain" => array(
         "cols" => array(
           "alias_domain" => "VARCHAR(255) NOT NULL",
@@ -436,6 +410,32 @@ function init_db_schema() {
           ),
           "key" => array(
             "username" => array("username")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "da_acl" => array(
+        "cols" => array(
+          "username" => "VARCHAR(255) NOT NULL",
+          "syncjobs" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "quarantine" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "login_as" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "bcc_maps" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "filters" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "ratelimit" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "spam_policy" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("username")
+          ),
+          "fkey" => array(
+            "fk_domain_admin_acl" => array(
+              "col" => "username",
+              "ref" => "domain_admins.username",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"

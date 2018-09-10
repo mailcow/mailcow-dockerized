@@ -52,6 +52,7 @@ catch (PDOException $e) {
 exit;
 }
 function pdo_exception_handler($e) {
+    print_r($e);
     if ($e instanceof PDOException) {
       $_SESSION['return'][] = array(
         'type' => 'danger',
