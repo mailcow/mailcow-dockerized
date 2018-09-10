@@ -64,17 +64,23 @@ function logger($_data = false) {
         $user = 'unauthenticated';
         $role = 'unauthenticated';
       }
-      $stmt = $pdo->prepare("INSERT INTO `logs` (`type`, `task`, `msg`, `call`, `user`, `role`, `remote`, `time`) VALUES
-        (:type, :task, :msg, :call, :user, :role, :remote, UNIX_TIMESTAMP())");
-      $stmt->execute(array(
-        ':type' => $type,
-        ':task' => $task,
-        ':call' => $call,
-        ':msg' => $msg,
-        ':user' => $user,
-        ':role' => $role,
-        ':remote' => get_remote_ip()
-      ));
+      // We cannot log when logs is missing...
+      try {
+        $stmt = $pdo->prepare("INSERT INTO `logs` (`type`, `task`, `msg`, `call`, `user`, `role`, `remote`, `time`) VALUES
+          (:type, :task, :msg, :call, :user, :role, :remote, UNIX_TIMESTAMP())");
+        $stmt->execute(array(
+          ':type' => $type,
+          ':task' => $task,
+          ':call' => $call,
+          ':msg' => $msg,
+          ':user' => $user,
+          ':role' => $role,
+          ':remote' => get_remote_ip()
+        ));
+      }
+      catch (Exception $e) {
+        // Do nothing
+      }
     }
   }
   else {
