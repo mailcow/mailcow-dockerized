@@ -15,13 +15,21 @@ rspamd_config:register_symbol({
     local rspamd_logger = require "rspamd_logger"
     local rspamd_ip = require 'rspamd_ip'
     local uname = task:get_user()
+
     if uname then
       return false
     end
+
     local redis_params = rspamd_parse_redis_server('keep_spam')
     local ip = task:get_from_ip()
+
+    if not ip then
+      return false
+    end
+
     local from_ip_string = ip:to_string()
     ip_check_table = {from_ip_string}
+
     local maxbits = 128
     local minbits = 32
     if ip:get_version() == 4 then
