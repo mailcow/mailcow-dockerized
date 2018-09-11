@@ -64,7 +64,7 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
 
 	ADMIN_NC_PASS=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
 
-	curl -L# -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/latest-13.tar.bz2" || { echo "Failed to download Nextcloud archive."; exit 1; } \
+	curl -L# -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/latest-14.tar.bz2" || { echo "Failed to download Nextcloud archive."; exit 1; } \
 	  && tar -xjf nextcloud.tar.bz2 -C ./data/web/ \
 	  && rm nextcloud.tar.bz2 \
 	  && rm -rf ./data/web/nextcloud/updater \
