@@ -1,5 +1,5 @@
 bind_socket = "*:11334";
-count = 2;
+count = 1;
 secure_ip = "127.0.0.1";
 secure_ip = "::1";
 bind_socket = "/rspamd-sock/rspamd.sock mode=0666 owner=nobody";
