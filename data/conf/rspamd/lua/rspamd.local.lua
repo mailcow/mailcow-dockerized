@@ -23,11 +23,11 @@ rspamd_config:register_symbol({
     local redis_params = rspamd_parse_redis_server('keep_spam')
     local ip = task:get_from_ip()
 
-    if not ip then
+    if not ip:is_valid() then
       return false
     end
 
-    local from_ip_string = ip:to_string()
+    local from_ip_string = tostring(ip)
     ip_check_table = {from_ip_string}
 
     local maxbits = 128
