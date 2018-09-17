@@ -17,6 +17,34 @@ $database_name = getenv('DBNAME');
 // Other variables
 $mailcow_hostname = getenv('MAILCOW_HOSTNAME');
 
+$autoconfig_hostname = $mailcow_hostname;
+
+$additionalSan = getenv('ADDITIONAL_SAN');
+if ($additionalSan) {
+    $arrSan = explode(',', $additionalSan);
+
+    foreach ($arrSan as $i => $san) {
+        if ($san && $_SERVER['HTTP_HOST'] == $san) {
+            $autoconfig_hostname = $san;
+
+            $mapping = getEnv('AUTOCONFIG_MAPPING');
+            $mappingLines = explode(",", $mapping);
+
+            foreach ($mappingLines as $mappingLine) {
+                if (false !== strstr($mappingLine, '->')) {
+                    list($from, $to) = explode('->', trim($mappingLine));
+                    if ($from == $autoconfig_hostname) {
+                        $autoconfig_hostname = $to;
+                        break;
+                    }
+                }
+            }
+            break;
+        }
+    }
+}
+
+
 // Autodiscover settings
 // ===
 // Auto-detect HTTPS port =>
@@ -40,29 +68,29 @@ $autodiscover_config = array(
   // The autodiscover service will always point to SMTPS and IMAPS (TLS-wrapped services).
   // The autoconfig service will additionally announce the STARTTLS-enabled ports, specified in the "tlsport" variable.
   'imap' => array(
-    'server' => $mailcow_hostname,
+    'server' => $autoconfig_hostname,
     'port' => array_pop(explode(':', getenv('IMAPS_PORT'))),
     'tlsport' => array_pop(explode(':', getenv('IMAP_PORT'))),
   ),
   'pop3' => array(
-    'server' => $mailcow_hostname,
+    'server' => $autoconfig_hostname,
     'port' => array_pop(explode(':', getenv('POPS_PORT'))),
     'tlsport' => array_pop(explode(':', getenv('POP_PORT'))),
   ),
   'smtp' => array(
-    'server' => $mailcow_hostname,
+    'server' => $autoconfig_hostname,
     'port' => array_pop(explode(':', getenv('SMTPS_PORT'))),
     'tlsport' => array_pop(explode(':', getenv('SUBMISSION_PORT'))),
   ),
   'activesync' => array(
-    'url' => 'https://'.$mailcow_hostname.($https_port == 443 ? '' : ':'.$https_port).'/Microsoft-Server-ActiveSync',
+    'url' => 'https://'.$autoconfig_hostname.($https_port == 443 ? '' : ':'.$https_port).'/Microsoft-Server-ActiveSync',
   ),
   'caldav' => array(
-    'server' => $mailcow_hostname,
+    'server' => $autoconfig_hostname,
     'port' => $https_port,
   ),
   'carddav' => array(
-    'server' => $mailcow_hostname,
+    'server' => $autoconfig_hostname,
     'port' => $https_port,
   ),
 );

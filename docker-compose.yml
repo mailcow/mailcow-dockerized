@@ -127,6 +127,8 @@ services:
         - API_KEY=${API_KEY:-invalid}
         - API_ALLOW_FROM=${API_ALLOW_FROM:-invalid}
         - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-mailcow-dockerized}
+        - ADDITIONAL_SAN=${ADDITIONAL_SAN:-}
+        - AUTOCONFIG_MAPPING=${AUTOCONFIG_MAPPING:-}
       restart: always
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
