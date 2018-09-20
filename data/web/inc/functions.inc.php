@@ -266,6 +266,12 @@ function verify_hash($hash, $password) {
       return true;
     }
   }
+  elseif (preg_match('/^{MD5-CRYPT}/i', $hash)) {
+    $hash = preg_replace('/^{MD5-CRYPT}/i', '', $hash);
+    if (password_verify($password, $hash)) {
+      return true;
+    }
+  }
   return false;
 }
 function check_login($user, $pass) {
