@@ -21,6 +21,7 @@ services:
       volumes:
         - mysql-vol-1:/var/lib/mysql/
         - ./data/conf/mysql/:/etc/mysql/conf.d/:ro
+        - mysql-sock:/var/run/mysqld/
       environment:
         - TZ=${TZ}
         - MYSQL_ROOT_PASSWORD=${DBROOT}
@@ -168,6 +169,7 @@ services:
         - vmail-vol-1:/var/vmail
         - crypt-vol-1:/mail_crypt/
         - rspamd-sock:/rspamd-sock
+        - mysql-sock:/var/run/mysqld/:ro
       environment:
         - LOG_LINES=${LOG_LINES:-9999}
         - DBNAME=${DBNAME}
@@ -397,3 +399,4 @@ volumes:
   postfix-vol-1:
   crypt-vol-1:
   rspamd-sock:
+  mysql-sock:
