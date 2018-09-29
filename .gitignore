@@ -21,3 +21,4 @@ data/conf/nginx/*.conf
 data/conf/nginx/*.custom
 data/conf/nginx/*.bak
 data/conf/dovecot/extra.conf
+data/conf/rspamd/custom/sa-rules-heinlein
