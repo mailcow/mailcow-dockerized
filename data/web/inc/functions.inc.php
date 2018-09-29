@@ -18,6 +18,17 @@ function last_login($user) {
     return false;
   }
 }
+function flush_memcached() {
+  try {
+    $m = new Memcached();
+    $m->addServer('memcached', 11211);
+    $m->flush();
+  }
+  catch ( Exception $e ) {
+    // Dunno
+  }
+}
+
 function logger($_data = false) {
   /*
   logger() will be called as last function
@@ -510,6 +521,7 @@ function update_sogo_static_view() {
     $stmt = $pdo->query("REPLACE INTO _sogo_static_view SELECT * from sogo_view");
     $stmt = $pdo->query("DELETE FROM _sogo_static_view WHERE `c_uid` NOT IN (SELECT `username` FROM `mailbox` WHERE `active` = '1');");
   }
+  flush_memcached();
 }
 function edit_user_account($_data) {
 	global $lang;

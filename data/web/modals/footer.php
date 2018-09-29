@@ -8,19 +8,19 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
       <div class="modal-body">
       <form role="form" method="post">
         <div class="form-group">
-          <input type="text" class="form-control" name="key_id" id="key_id" placeholder="<?=$lang['tfa']['key_id'];?>" autocomplete="off" required>
+          <input type="text" class="form-control" name="key_id" placeholder="<?=$lang['tfa']['key_id'];?>" autocomplete="off" required>
         </div>
         <hr>
         <p class="help-block"><?=$lang['tfa']['api_register'];?></p>
         <div class="form-group">
-          <input type="text" class="form-control" name="yubico_id" id="yubico_id" placeholder="Yubico API ID" autocomplete="off" required>
+          <input type="text" class="form-control" name="yubico_id" placeholder="Yubico API ID" autocomplete="off" required>
         </div>
         <div class="form-group">
-          <input type="text" class="form-control" name="yubico_key" id="yubico_key" placeholder="Yubico API Key" autocomplete="off" required>
+          <input type="text" class="form-control" name="yubico_key" placeholder="Yubico API Key" autocomplete="off" required>
         </div>
         <hr>
         <div class="form-group">
-          <input type="password" class="form-control" name="confirm_password" id="confirm_password" placeholder="<?=$lang['user']['password_now'];?>" autocomplete="off" required>
+          <input type="password" class="form-control" name="confirm_password" placeholder="<?=$lang['user']['password_now'];?>" autocomplete="off" required>
         </div>
         <div class="form-group">
           <div class="input-group">
@@ -43,10 +43,10 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
       <div class="modal-body">
         <form role="form" method="post" id="u2f_reg_form">
           <div class="form-group">
-            <input type="text" class="form-control" name="key_id" id="key_id" placeholder="<?=$lang['tfa']['key_id'];?>" autocomplete="off" required>
+            <input type="text" class="form-control" name="key_id" placeholder="<?=$lang['tfa']['key_id'];?>" autocomplete="off" required>
           </div>
           <div class="form-group">
-            <input type="password" class="form-control" name="confirm_password" id="confirm_password" placeholder="<?=$lang['user']['password_now'];?>" autocomplete="off" required>
+            <input type="password" class="form-control" name="confirm_password" placeholder="<?=$lang['user']['password_now'];?>" autocomplete="off" required>
           </div>
           <hr>
           <p id="u2f_status_reg"></p>
@@ -67,16 +67,16 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
       <div class="modal-body">
         <form role="form" method="post">
           <div class="form-group">
-            <input type="text" class="form-control" name="key_id" id="key_id" placeholder="<?=$lang['tfa']['key_id_totp'];?>" autocomplete="off" required>
+            <input type="text" class="form-control" name="key_id" placeholder="<?=$lang['tfa']['key_id_totp'];?>" autocomplete="off" required>
           </div>
           <div class="form-group">
-            <input type="password" class="form-control" name="confirm_password" id="confirm_password" placeholder="<?=$lang['user']['password_now'];?>" autocomplete="off" required>
+            <input type="password" class="form-control" name="confirm_password" placeholder="<?=$lang['user']['password_now'];?>" autocomplete="off" required>
           </div>
           <hr>
           <?php
           $totp_secret = $tfa->createSecret();
           ?>
-          <input type="hidden" value="<?=$totp_secret;?>" name="totp_secret" id="totp_secret"/>
+          <input type="hidden" value="<?=$totp_secret;?>" name="totp_secret">
           <input type="hidden" name="tfa_method" value="totp">
           <ol>
             <li>
@@ -88,7 +88,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
             </li>
             <li>
               <p><?=$lang['tfa']['confirm_totp_token'];?>:</p>
-              <p><input type="number" style="width:33%" class="form-control" name="totp_confirm_token" id="totp_confirm_token" autocomplete="off" required></p>
+              <p><input type="number" style="width:33%" class="form-control" name="totp_confirm_token" autocomplete="off" required></p>
               <p><button class="btn btn-default" type="submit" name="set_tfa"><?=$lang['tfa']['confirm'];?></button></p>
             </li>
           </ol>
@@ -105,7 +105,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
       <div class="modal-body">
         <form role="form" method="post">
           <div class="input-group">
-            <input type="password" class="form-control" name="confirm_password" id="confirm_password" placeholder="<?=$lang['user']['password_now'];?>" autocomplete="off" required>
+            <input type="password" class="form-control" name="confirm_password" placeholder="<?=$lang['user']['password_now'];?>" autocomplete="off" required>
             <span class="input-group-btn">
               <input type="hidden" name="tfa_method" value="none">
               <button class="btn btn-danger" type="submit" name="set_tfa"><?=$lang['tfa']['delete_tfa'];?></button>
@@ -135,7 +135,7 @@ if (isset($_SESSION['pending_tfa_method'])):
           <div class="form-group">
             <div class="input-group">
               <span class="input-group-addon" id="yubi-addon"><img alt="Yubicon Icon" src="/img/yubi.ico"></span>
-              <input type="text" name="token" id="token" class="form-control" autocomplete="off" placeholder="Touch Yubikey" aria-describedby="yubi-addon">
+              <input type="text" name="token" class="form-control" autocomplete="off" placeholder="Touch Yubikey" aria-describedby="yubi-addon">
               <input type="hidden" name="tfa_method" value="yubi_otp">
             </div>
           </div>
@@ -160,7 +160,7 @@ if (isset($_SESSION['pending_tfa_method'])):
           <div class="form-group">
             <div class="input-group">
               <span class="input-group-addon" id="tfa-addon"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span></span>
-              <input type="number" min="000000" max="999999" name="token" id="token" class="form-control" placeholder="123456" aria-describedby="tfa-addon">
+              <input type="number" min="000000" max="999999" name="token" class="form-control" placeholder="123456" aria-describedby="tfa-addon">
               <input type="hidden" name="tfa_method" value="totp">
             </div>
           </div>

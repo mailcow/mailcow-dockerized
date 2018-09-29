@@ -68,13 +68,13 @@ get_container_ip() {
   until [[ ${CONTAINER_IP} =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]] || [[ ${LOOP_C} -gt 5 ]]; do
     sleep 0.5
     # get long container id for exact match
-    CONTAINER_ID=($(curl --silent http://dockerapi:8080/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], id: .Id}" | jq -rc "select( .name | tostring == \"${1}\") | .id"))
+    CONTAINER_ID=($(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], id: .Id}" | jq -rc "select( .name | tostring == \"${1}\") | .id"))
     # returned id can have multiple elements (if scaled), shuffle for random test
     CONTAINER_ID=($(printf "%s\n" "${CONTAINER_ID[@]}" | shuf))
     if [[ ! -z ${CONTAINER_ID} ]]; then
-      for matched_container in "${CONTAINER_ID[@]}"; do 
-        CONTAINER_IPS=($(curl --silent http://dockerapi:8080/containers/${matched_container}/json | jq -r '.NetworkSettings.Networks[].IPAddress')) 
-        for ip_match in "${CONTAINER_IPS[@]}"; do 
+      for matched_container in "${CONTAINER_ID[@]}"; do
+        CONTAINER_IPS=($(curl --silent --insecure https://dockerapi/containers/${matched_container}/json | jq -r '.NetworkSettings.Networks[].IPAddress')) 
+        for ip_match in "${CONTAINER_IPS[@]}"; do
           # grep will do nothing if one of these vars is empty
           [[ -z ${ip_match} ]] && continue
           [[ -z ${IPV4_NETWORK} ]] && continue
@@ -123,8 +123,8 @@ mysql_checks() {
   while [ ${err_count} -lt ${THRESHOLD} ]; do
     host_ip=$(get_container_ip mysql-mailcow)
     err_c_cur=${err_count}
-    /usr/lib/nagios/plugins/check_mysql -H ${host_ip} -P 3306 -u ${DBUSER} -p ${DBPASS} -d ${DBNAME} 1>&2; err_count=$(( ${err_count} + $? ))
-    /usr/lib/nagios/plugins/check_mysql_query -H ${host_ip} -P 3306 -u ${DBUSER} -p ${DBPASS} -d ${DBNAME} -q "SELECT COUNT(*) FROM information_schema.tables" 1>&2; err_count=$(( ${err_count} + $? ))
+    /usr/lib/nagios/plugins/check_mysql -s /var/run/mysqld/mysqld.sock -u ${DBUSER} -p ${DBPASS} -d ${DBNAME} 1>&2; err_count=$(( ${err_count} + $? ))
+    /usr/lib/nagios/plugins/check_mysql_query -s /var/run/mysqld/mysqld.sock -u ${DBUSER} -p ${DBPASS} -d ${DBNAME} -q "SELECT COUNT(*) FROM information_schema.tables" 1>&2; err_count=$(( ${err_count} + $? ))
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
     [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
     progress "MySQL/MariaDB" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
@@ -342,12 +342,12 @@ done
 # Monitor dockerapi
 (
 while true; do
-  while nc -z dockerapi 8080; do
+  while nc -z dockerapi 443; do
     sleep 3
   done
   log_msg "Cannot find dockerapi-mailcow, waiting to recover..."
   kill -STOP ${BACKGROUND_TASKS[*]}
-  until nc -z dockerapi 8080; do
+  until nc -z dockerapi 443; do
     sleep 3
   done
   kill -CONT ${BACKGROUND_TASKS[*]}
@@ -362,10 +362,10 @@ while true; do
   if [[ ${com_pipe_answer} =~ .+-mailcow ]]; then
     kill -STOP ${BACKGROUND_TASKS[*]}
     sleep 3
-    CONTAINER_ID=$(curl --silent http://dockerapi:8080/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], id: .Id}" | jq -rc "select( .name | tostring | contains(\"${com_pipe_answer}\")) | .id")
+    CONTAINER_ID=$(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], id: .Id}" | jq -rc "select( .name | tostring | contains(\"${com_pipe_answer}\")) | .id")
     if [[ ! -z ${CONTAINER_ID} ]]; then
       log_msg "Sending restart command to ${CONTAINER_ID}..."
-      curl --silent -XPOST http://dockerapi:8080/containers/${CONTAINER_ID}/restart
+      curl --silent --insecure -XPOST https://dockerapi/containers/${CONTAINER_ID}/restart
     fi
     log_msg "Wait for restarted container to settle and continue watching..."
     sleep 30s

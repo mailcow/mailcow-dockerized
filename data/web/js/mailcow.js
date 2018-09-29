@@ -110,7 +110,7 @@ $(document).ready(function() {
 
   // Disable disallowed inputs
   $('[data-acl="0"]').each(function(){
-    if ($(this).attr('class') == 'btn-group') {
+    if ($(this).hasClass('btn-group')) {
       $(this).find('a').each(function(){
         $(this).removeClass('dropdown-toggle')
           .removeAttr('data-toggle')
@@ -124,7 +124,7 @@ $(document).ready(function() {
       $(this).find('button').each(function() {
         $(this).attr("disabled", true);
       });
-    } else if ($(this).attr('class') == 'input-group') {
+    } else if ($(this).hasClass('input-group')) {
       $(this).find('input').each(function() {
         $(this).removeClass('dropdown-toggle')
           .removeAttr('data-toggle')
