@@ -22,25 +22,25 @@ $tfa_data = get_tfa();
           <div class="form-group">
             <label class="control-label col-sm-3" for="admin_user"><?=$lang['admin']['admin'];?>:</label>
             <div class="col-sm-9">
-              <input type="text" class="form-control" name="admin_user" id="admin_user" value="<?=htmlspecialchars($admindetails['username']);?>" required>
+              <input type="text" class="form-control" name="admin_user" value="<?=htmlspecialchars($admindetails['username']);?>" required>
               &rdsh; <kbd>a-z A-Z - _ .</kbd>
             </div>
           </div>
           <div class="form-group">
             <label class="control-label col-sm-3" for="admin_pass"><?=$lang['admin']['password'];?>:</label>
             <div class="col-sm-9">
-            <input type="password" data-hibp="true" class="form-control" name="admin_pass" id="admin_pass" placeholder="<?=$lang['admin']['unchanged_if_empty'];?>">
+            <input type="password" data-hibp="true" class="form-control" name="admin_pass" placeholder="<?=$lang['admin']['unchanged_if_empty'];?>">
             </div>
           </div>
           <div class="form-group">
             <label class="control-label col-sm-3" for="admin_pass2"><?=$lang['admin']['password_repeat'];?>:</label>
             <div class="col-sm-9">
-            <input type="password" class="form-control" name="admin_pass2" id="admin_pass2">
+            <input type="password" class="form-control" name="admin_pass2">
             </div>
           </div>
           <div class="form-group">
             <div class="col-sm-offset-3 col-sm-9">
-              <button class="btn btn-default" id="edit_selected" data-id="admin" data-item="admin" data-api-url='edit/self' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+              <button class="btn btn-default" data-action="edit_selected" data-id="admin" data-item="admin" data-api-url='edit/self' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
             </div>
           </div>
         </form>
@@ -124,12 +124,12 @@ $tfa_data = get_tfa();
               <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="domain_admins" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
               <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
               <ul class="dropdown-menu">
-                <li><a id="edit_selected" data-id="domain_admins" data-api-url='edit/domain-admin' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
-                <li><a id="edit_selected" data-id="domain_admins" data-api-url='edit/domain-admin' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
+                <li><a data-action="edit_selected" data-id="domain_admins" data-api-url='edit/domain-admin' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
+                <li><a data-action="edit_selected" data-id="domain_admins" data-api-url='edit/domain-admin' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
                 <li role="separator" class="divider"></li>
-                <li><a id="edit_selected" data-id="domain_admins" data-api-url='edit/domain-admin' data-api-attr='{"disable_tfa":"1"}' href="#"><?=$lang['tfa']['disable_tfa'];?></a></li>
+                <li><a data-action="edit_selected" data-id="domain_admins" data-api-url='edit/domain-admin' data-api-attr='{"disable_tfa":"1"}' href="#"><?=$lang['tfa']['disable_tfa'];?></a></li>
                 <li role="separator" class="divider"></li>
-                <li><a id="delete_selected" data-id="domain_admins" data-api-url='delete/domain-admin' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+                <li><a data-action="delete_selected" data-id="domain_admins" data-api-url='delete/domain-admin' href="#"><?=$lang['mailbox']['remove'];?></a></li>
               </ul>
               <a class="btn btn-sm btn-success" data-id="add_domain_admin" data-toggle="modal" data-target="#addDomainAdminModal" href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add_domain_admin'];?></a>
             </div>
@@ -155,13 +155,13 @@ $tfa_data = get_tfa();
             <div class="form-group">
               <label class="control-label col-sm-3" for="rspamd_ui_pass"><?=$lang['admin']['password'];?>:</label>
               <div class="col-sm-9">
-              <input type="password" class="form-control" name="rspamd_ui_pass" id="rspamd_ui_pass" required>
+              <input type="password" class="form-control" name="rspamd_ui_pass" required>
               </div>
             </div>
             <div class="form-group">
               <label class="control-label col-sm-3" for="rspamd_ui_pass2"><?=$lang['admin']['password_repeat'];?>:</label>
               <div class="col-sm-9">
-              <input type="password" class="form-control" name="rspamd_ui_pass2" id="rspamd_ui_pass2" required>
+              <input type="password" class="form-control" name="rspamd_ui_pass2" required>
               </div>
             </div>
             <div class="form-group">
@@ -201,7 +201,7 @@ $tfa_data = get_tfa();
         <div class="mass-actions-admin">
           <div class="btn-group btn-group-sm">
             <button type="button" id="toggle_multi_select_all" data-id="dkim" class="btn btn-default"><?=$lang['mailbox']['toggle_all'];?></button>
-            <button type="button" id="delete_selected" name="delete_selected" data-id="dkim" data-api-url="delete/dkim" class="btn btn-danger"><?=$lang['admin']['remove'];?></button>
+            <button type="button" data-action="delete_selected" name="delete_selected" data-id="dkim" data-api-url="delete/dkim" class="btn btn-danger"><?=$lang['admin']['remove'];?></button>
           </div>
         </div>
         <?php
@@ -309,7 +309,7 @@ $tfa_data = get_tfa();
           </div>
           <div class="form-group">
             <label for="domain">Selector</label>
-            <input class="form-control input-sm" id="dkim_selector" name="dkim_selector" value="dkim" required>
+            <input class="form-control input-sm" name="dkim_selector" value="dkim" required>
           </div>
           <div class="form-group">
             <select data-width="200px" data-style="btn btn-default btn-sm" class="form-control" id="key_size" name="key_size" title="<?=$lang['admin']['dkim_key_length'];?>" required>
@@ -317,7 +317,7 @@ $tfa_data = get_tfa();
               <option data-subtext="bits">2048</option>
             </select>
           </div>
-          <button class="btn btn-sm btn-default" id="add_item" data-id="dkim" data-api-url='add/dkim' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
+          <button class="btn btn-sm btn-default" data-action="add_item" data-id="dkim" data-api-url='add/dkim' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
         </form>
 
         <legend data-target="#import_dkim" style="margin-top:40px;cursor:pointer" id="import_dkim_legend" unselectable="on" data-toggle="collapse">
@@ -327,17 +327,17 @@ $tfa_data = get_tfa();
         <form class="form" data-id="dkim_import" role="form" method="post">
           <div class="form-group">
             <label for="domain">Domain:</label>
-            <input class="form-control input-sm" id="domain" name="domain" placeholder="example.org" required>
+            <input class="form-control input-sm" name="domain" placeholder="example.org" required>
           </div>
           <div class="form-group">
             <label for="domain">Selector:</label>
-            <input class="form-control input-sm" id="dkim_selector" name="dkim_selector" value="dkim" required>
+            <input class="form-control input-sm" name="dkim_selector" value="dkim" required>
           </div>
           <div class="form-group">
             <label for="private_key_file"><?=$lang['admin']['private_key'];?>:</label>
             <textarea class="form-control input-sm" rows="10" name="private_key_file" id="private_key_file" required placeholder="-----BEGIN RSA KEY-----"></textarea>
           </div>
-          <button class="btn btn-sm btn-default" id="add_item" data-id="dkim_import" data-api-url='add/dkim_import' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['import'];?></button>
+          <button class="btn btn-sm btn-default" data-action="add_item" data-id="dkim_import" data-api-url='add/dkim_import' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['import'];?></button>
         </form>
         </div>
 
@@ -383,7 +383,7 @@ $tfa_data = get_tfa();
             </select>
             </div>
           </div>
-          <button class="btn btn-sm btn-default" id="add_item" data-id="dkim_duplicate" data-api-url='add/dkim_duplicate' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-duplicate"></span> <?=$lang['admin']['duplicate'];?></button>
+          <button class="btn btn-sm btn-default" data-action="add_item" data-id="dkim_duplicate" data-api-url='add/dkim_duplicate' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-duplicate"></span> <?=$lang['admin']['duplicate'];?></button>
         </form>
         </div>
 
@@ -403,10 +403,10 @@ $tfa_data = get_tfa();
             <button type="button" id="toggle_multi_select_all" data-id="fwdhosts" class="btn btn-default"><?=$lang['mailbox']['toggle_all'];?></button>
             <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
             <ul class="dropdown-menu">
-              <li><a id="edit_selected" data-id="fwdhosts" data-api-url='edit/fwdhost' data-api-attr='{"keep_spam":"0"}' href="#">Enable spam filter</a></li>
-              <li><a id="edit_selected" data-id="fwdhosts" data-api-url='edit/fwdhost' data-api-attr='{"keep_spam":"1"}' href="#">Disable spam filter</a></li>
+              <li><a data-action="edit_selected" data-id="fwdhosts" data-api-url='edit/fwdhost' data-api-attr='{"keep_spam":"0"}' href="#">Enable spam filter</a></li>
+              <li><a data-action="edit_selected" data-id="fwdhosts" data-api-url='edit/fwdhost' data-api-attr='{"keep_spam":"1"}' href="#">Disable spam filter</a></li>
               <li role="separator" class="divider"></li>
-              <li><a id="delete_selected" data-id="fwdhosts" data-api-url='delete/fwdhost' href="#"><?=$lang['admin']['remove'];?></a></li>
+              <li><a data-action="delete_selected" data-id="fwdhosts" data-api-url='delete/fwdhost' href="#"><?=$lang['admin']['remove'];?></a></li>
             </ul>
           </div>
         </div>
@@ -415,7 +415,7 @@ $tfa_data = get_tfa();
         <form class="form" data-id="fwdhost" role="form" method="post">
           <div class="form-group">
             <label for="hostname"><?=$lang['admin']['host'];?></label>
-            <input class="form-control" id="hostname" name="hostname" placeholder="example.org" required>
+            <input class="form-control" name="hostname" placeholder="example.org" required>
           </div>
           <div class="form-group">
             <select data-width="200px" class="form-control" id="filter_spam" name="filter_spam" title="<?=$lang['user']['spamfilter'];?>" required>
@@ -423,7 +423,7 @@ $tfa_data = get_tfa();
               <option value="0"><?=$lang['admin']['inactive'];?></option>
             </select>
           </div>
-          <button class="btn btn-default" id="add_item" data-id="fwdhost" data-api-url='add/fwdhost' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
+          <button class="btn btn-default" data-action="add_item" data-id="fwdhost" data-api-url='add/fwdhost' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
         </form>
       </div>
     </div>
@@ -438,41 +438,41 @@ $tfa_data = get_tfa();
         <form class="form" data-id="f2b" role="form" method="post">
           <div class="form-group">
             <label for="ban_time"><?=$lang['admin']['f2b_ban_time'];?>:</label>
-            <input type="number" class="form-control" id="ban_time" name="ban_time" value="<?=$f2b_data['ban_time'];?>" required>
+            <input type="number" class="form-control" name="ban_time" value="<?=$f2b_data['ban_time'];?>" required>
           </div>
           <div class="form-group">
             <label for="max_attempts"><?=$lang['admin']['f2b_max_attempts'];?>:</label>
-            <input type="number" class="form-control" id="max_attempts" name="max_attempts" value="<?=$f2b_data['max_attempts'];?>" required>
+            <input type="number" class="form-control" name="max_attempts" value="<?=$f2b_data['max_attempts'];?>" required>
           </div>
           <div class="form-group">
             <label for="retry_window"><?=$lang['admin']['f2b_retry_window'];?>:</label>
-            <input type="number" class="form-control" id="retry_window" name="retry_window" value="<?=$f2b_data['retry_window'];?>" required>
+            <input type="number" class="form-control" name="retry_window" value="<?=$f2b_data['retry_window'];?>" required>
           </div>
           <div class="form-group">
             <label for="netban_ipv4"><?=$lang['admin']['f2b_netban_ipv4'];?>:</label>
             <div class="input-group">
               <span class="input-group-addon">/</span>
-              <input type="number" class="form-control" id="netban_ipv4" name="netban_ipv4" value="<?=$f2b_data['netban_ipv4'];?>" required>
+              <input type="number" class="form-control" name="netban_ipv4" value="<?=$f2b_data['netban_ipv4'];?>" required>
             </div>
           </div>
           <div class="form-group">
             <label for="netban_ipv6"><?=$lang['admin']['f2b_netban_ipv6'];?>:</label>
             <div class="input-group">
               <span class="input-group-addon">/</span>
-              <input type="number" class="form-control" id="netban_ipv6" name="netban_ipv6" value="<?=$f2b_data['netban_ipv6'];?>" required>
+              <input type="number" class="form-control" name="netban_ipv6" value="<?=$f2b_data['netban_ipv6'];?>" required>
             </div>
           </div>
           <p class="help-block"><?=$lang['admin']['f2b_list_info'];?></p>
           <div class="form-group">
             <label for="whitelist"><?=$lang['admin']['f2b_whitelist'];?>:</label>
-            <textarea class="form-control" id="whitelist" name="whitelist" rows="5"><?=$f2b_data['whitelist'];?></textarea>
+            <textarea class="form-control" name="whitelist" rows="5"><?=$f2b_data['whitelist'];?></textarea>
           </div>
           <div class="form-group">
             <label for="blacklist"><?=$lang['admin']['f2b_blacklist'];?>:</label>
-            <textarea class="form-control" id="blacklist" name="blacklist" rows="5"><?=$f2b_data['blacklist'];?></textarea>
+            <textarea class="form-control" name="blacklist" rows="5"><?=$f2b_data['blacklist'];?></textarea>
           </div>
           <div class="btn-group">
-            <button class="btn btn-default" id="edit_selected" data-item="self" data-id="f2b" data-api-url='edit/fail2ban' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+            <button class="btn btn-default" data-action="edit_selected" data-item="self" data-id="f2b" data-api-url='edit/fail2ban' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
             <a href="#" role="button" class="btn btn-default" data-toggle="modal" data-container="netfilter-mailcow" data-target="#RestartContainer"><span class="glyphicon glyphicon-refresh"></span> <?= $lang['header']['restart_netfilter']; ?></a>
           </div>
         </form>
@@ -490,9 +490,9 @@ $tfa_data = get_tfa();
           <?php
           if ($active_bans['queued_for_unban'] == 0):
           ?>
-          <a id="edit_selected" data-item="<?=$active_bans['network'];?>" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"unban"}' href="#">[<?=$lang['admin']['queue_unban'];?>]</a>
-          <a id="edit_selected" data-item="<?=$active_bans['network'];?>" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"whitelist"}' href="#">[whitelist]</a>
-          <a id="edit_selected" data-item="<?=$active_bans['network'];?>" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"blacklist"}' href="#">[blacklist]</a>
+          <a data-action="edit_selected" data-item="<?=$active_bans['network'];?>" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"unban"}' href="#">[<?=$lang['admin']['queue_unban'];?>]</a>
+          <a data-action="edit_selected" data-item="<?=$active_bans['network'];?>" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"whitelist"}' href="#">[whitelist]</a>
+          <a data-action="edit_selected" data-item="<?=$active_bans['network'];?>" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"blacklist"}' href="#">[blacklist]</a>
           <?php
           else:
           ?>
@@ -527,10 +527,10 @@ $tfa_data = get_tfa();
             <button type="button" id="toggle_multi_select_all" data-id="rlyhosts" class="btn btn-default"><?=$lang['mailbox']['toggle_all'];?></button>
             <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
             <ul class="dropdown-menu">
-              <li><a id="edit_selected" data-id="rlyhosts" data-api-url='edit/relayhost' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
-              <li><a id="edit_selected" data-id="rlyhosts" data-api-url='edit/relayhost' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
+              <li><a data-action="edit_selected" data-id="rlyhosts" data-api-url='edit/relayhost' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
+              <li><a data-action="edit_selected" data-id="rlyhosts" data-api-url='edit/relayhost' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
               <li role="separator" class="divider"></li>
-              <li><a id="delete_selected" data-id="rlyhosts" data-api-url='delete/relayhost' href="#"><?=$lang['admin']['remove'];?></a></li>
+              <li><a data-action="delete_selected" data-id="rlyhosts" data-api-url='delete/relayhost' href="#"><?=$lang['admin']['remove'];?></a></li>
             </ul>
           </div>
         </div>
@@ -539,17 +539,17 @@ $tfa_data = get_tfa();
         <form class="form" data-id="rlyhost" role="form" method="post">
           <div class="form-group">
             <label for="hostname"><?=$lang['admin']['host'];?></label>
-            <input class="form-control" id="hostname" name="hostname" required>
+            <input class="form-control" name="hostname" required>
           </div>
           <div class="form-group">
             <label for="hostname"><?=$lang['admin']['username'];?></label>
-            <input class="form-control" id="username" name="username">
+            <input class="form-control" name="username">
           </div>
           <div class="form-group">
             <label for="hostname"><?=$lang['admin']['password'];?></label>
-            <input class="form-control" id="password" name="password">
+            <input class="form-control" name="password">
           </div>
-          <button class="btn btn-default" id="add_item" data-id="rlyhost" data-api-url='add/relayhost' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
+          <button class="btn btn-default" data-action="add_item" data-id="rlyhost" data-api-url='add/relayhost' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
         </form>
       </div>
     </div>
@@ -564,19 +564,19 @@ $tfa_data = get_tfa();
             <div class="col-sm-6">
               <div class="form-group">
                 <label for="retention_size"><?=$lang['admin']['quarantine_retention_size'];?></label>
-                <input type="number" class="form-control" id="retention_size" name="retention_size" value="<?=$q_data['retention_size'];?>" placeholder="0" required>
+                <input type="number" class="form-control" name="retention_size" value="<?=$q_data['retention_size'];?>" placeholder="0" required>
               </div>
             </div>
             <div class="col-sm-6">
               <div class="form-group">
                 <label for="max_size"><?=$lang['admin']['quarantine_max_size'];?></label>
-                <input type="number" class="form-control" id="max_size" name="max_size" value="<?=$q_data['max_size'];?>" placeholder="0" required>
+                <input type="number" class="form-control" name="max_size" value="<?=$q_data['max_size'];?>" placeholder="0" required>
               </div>
             </div>
           </div>
           <div class="form-group">
             <label for="exclude_domains"><?=$lang['admin']['quarantine_exclude_domains'];?></label><br />
-            <select data-width="100%" id="exclude_domains" name="exclude_domains" class="selectpicker" title="<?=$lang['tfa']['select'];?>" multiple>
+            <select data-width="100%" name="exclude_domains" class="selectpicker" title="<?=$lang['tfa']['select'];?>" multiple>
               <?php
               foreach (array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains')) as $domain):
               ?>
@@ -586,7 +586,7 @@ $tfa_data = get_tfa();
               ?>
             </select>
           </div>
-          <button class="btn btn-default" id="edit_selected" data-item="self" data-id="quarantine" data-api-url='edit/quarantine' data-api-attr='{"action":"settings"}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+          <button class="btn btn-default" data-action="edit_selected" data-item="self" data-id="quarantine" data-api-url='edit/quarantine' data-api-attr='{"action":"settings"}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
         </form>
       </div>
     </div>
@@ -648,19 +648,19 @@ $tfa_data = get_tfa();
                     <input type="hidden" name="active" value="0">
                     <div class="form-group">
                       <label for="desc"><?=$lang['admin']['rsetting_desc'];?>:</label>
-                      <input type="text" class="form-control" id="desc" name="desc" value="<?=$rsetting_details['desc'];?>">
+                      <input type="text" class="form-control" name="desc" value="<?=$rsetting_details['desc'];?>">
                     </div>
                     <div class="form-group">
                       <label for="content"><?=$lang['admin']['rsetting_content'];?>:</label>
-                      <textarea class="form-control" id="content" name="content" rows="10"><?=$rsetting_details['content'];?></textarea>
+                      <textarea class="form-control" name="content" rows="10"><?=$rsetting_details['content'];?></textarea>
                     </div>
                     <div class="form-group">
                       <label>
                         <input type="checkbox" name="active" value="1" <?=($rsetting_details['active_int'] == 1) ? 'checked' : null;?>> <?=$lang['admin']['active'];?>
                       </label>
                     </div>
-                    <button class="btn btn-default" id="edit_selected" data-item="<?=$rsetting_details['id'];?>" data-id="rsettings" data-api-url='edit/rsetting' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
-                    <button class="btn btn-danger" id="delete_selected" data-item="<?=$rsetting_details['id'];?>" data-id="rsettings" data-api-url="delete/rsetting" data-api-attr='{}' href="#"><?=$lang['admin']['remove'];?></button>
+                    <button class="btn btn-default" data-action="edit_selected" data-item="<?=$rsetting_details['id'];?>" data-id="rsettings" data-api-url='edit/rsetting' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+                    <button class="btn btn-danger" data-action="delete_selected" data-item="<?=$rsetting_details['id'];?>" data-id="rsettings" data-api-url="delete/rsetting" data-api-attr='{}' href="#"><?=$lang['admin']['remove'];?></button>
                   </form>
                 </div>
                 <?php
@@ -743,7 +743,7 @@ $tfa_data = get_tfa();
             ?>
           </table>
           <p><div class="btn-group">
-            <button class="btn btn-sm btn-default" id="edit_selected" data-item="admin" data-id="app_links" data-reload="no" data-api-url='edit/app_links' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+            <button class="btn btn-sm btn-default" data-action="edit_selected" data-item="admin" data-id="app_links" data-reload="no" data-api-url='edit/app_links' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
             <button class="btn btn-sm btn-default" type="button" id="add_app_link_row"><?=$lang['admin']['add_row'];?></button>
           </div></p>
         </form>
@@ -754,21 +754,21 @@ $tfa_data = get_tfa();
         <form class="form" data-id="uitexts" role="form" method="post">
           <div class="form-group">
             <label for="title_name"><?=$lang['admin']['title_name'];?>:</label>
-            <input type="text" class="form-control" id="title_name" name="title_name" placeholder="mailcow UI" value="<?=$ui_texts['title_name'];?>">
+            <input type="text" class="form-control" name="title_name" placeholder="mailcow UI" value="<?=$ui_texts['title_name'];?>">
           </div>
           <div class="form-group">
             <label for="main_name"><?=$lang['admin']['main_name'];?>:</label>
-            <input type="text" class="form-control" id="main_name" name="main_name" placeholder="mailcow UI" value="<?=$ui_texts['main_name'];?>">
+            <input type="text" class="form-control" name="main_name" placeholder="mailcow UI" value="<?=$ui_texts['main_name'];?>">
           </div>
           <div class="form-group">
             <label for="apps_name"><?=$lang['admin']['apps_name'];?>:</label>
-            <input type="text" class="form-control" id="apps_name" name="apps_name" placeholder="mailcow Apps" value="<?=$ui_texts['apps_name'];?>">
+            <input type="text" class="form-control" name="apps_name" placeholder="mailcow Apps" value="<?=$ui_texts['apps_name'];?>">
           </div>
           <div class="form-group">
             <label for="help_text"><?=$lang['admin']['help_text'];?>:</label>
             <textarea class="form-control" id="help_text" name="help_text" rows="7"><?=$ui_texts['help_text'];?></textarea>
           </div>
-          <button class="btn btn-default" id="edit_selected" data-item="ui" data-id="uitexts" data-api-url='edit/ui_texts' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+          <button class="btn btn-default" data-action="edit_selected" data-item="ui" data-id="uitexts" data-api-url='edit/ui_texts' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
         </form>
       </div>
     </div>

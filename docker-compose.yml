@@ -20,6 +20,7 @@ services:
       image: mariadb:10.2
       volumes:
         - mysql-vol-1:/var/lib/mysql/
+        - mysql-socket-vol-1:/var/run/mysqld/
         - ./data/conf/mysql/:/etc/mysql/conf.d/:ro
       environment:
         - TZ=${TZ}
@@ -71,7 +72,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.24
+      image: mailcow/rspamd:1.27
       build: ./data/Dockerfiles/rspamd
       stop_grace_period: 30s
       depends_on:
@@ -79,9 +80,9 @@ services:
       environment:
         - TZ=${TZ}
       volumes:
-        - ./data/conf/rspamd/custom/:/etc/rspamd/custom:ro
-        - ./data/conf/rspamd/override.d/:/etc/rspamd/override.d:rw
-        - ./data/conf/rspamd/local.d/:/etc/rspamd/local.d:ro
+        - ./data/conf/rspamd/custom/:/etc/rspamd/custom
+        - ./data/conf/rspamd/override.d/:/etc/rspamd/override.d
+        - ./data/conf/rspamd/local.d/:/etc/rspamd/local.d
         - ./data/conf/rspamd/lua/:/etc/rspamd/lua/:ro
         - rspamd-sock:/rspamd-sock
         - rspamd-vol-1:/var/lib/rspamd
@@ -95,7 +96,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.18
+      image: mailcow/phpfpm:1.21
       build: ./data/Dockerfiles/phpfpm
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
@@ -104,6 +105,7 @@ services:
         - ./data/web:/web:rw
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
         - rspamd-sock:/rspamd-sock
+        - mysql-socket-vol-1:/var/run/mysqld/
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro
         - ./data/conf/phpfpm/php-fpm.d/pools.conf:/usr/local/etc/php-fpm.d/z-pools.conf
         - ./data/conf/phpfpm/php-conf.d/opcache-recommended.ini:/usr/local/etc/php/conf.d/opcache-recommended.ini
@@ -136,7 +138,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.36
+      image: mailcow/sogo:1.38
       build: ./data/Dockerfiles/sogo
       environment:
         - DBNAME=${DBNAME}
@@ -147,6 +149,7 @@ services:
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
       volumes:
         - ./data/conf/sogo/:/etc/sogo/
+        - mysql-socket-vol-1:/var/run/mysqld/
       restart: always
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -157,7 +160,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.33
+      image: mailcow/dovecot:1.36
       build: ./data/Dockerfiles/dovecot
       cap_add:
         - NET_BIND_SERVICE
@@ -167,13 +170,16 @@ services:
         - ./data/conf/sogo/:/etc/sogo/
         - vmail-vol-1:/var/vmail
         - crypt-vol-1:/mail_crypt/
+        - ./data/conf/rspamd/custom/:/etc/rspamd/custom
         - rspamd-sock:/rspamd-sock
+        - mysql-socket-vol-1:/var/run/mysqld/
       environment:
         - LOG_LINES=${LOG_LINES:-9999}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
         - TZ=${TZ}
+        - MAILDIR_GC_TIME=${MAILDIR_GC_TIME:-1440}
       ports:
         - "${DOVEADM_PORT:-127.0.0.1:19991}:12345"
         - "${IMAP_PORT:-143}:143"
@@ -196,7 +202,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.21
+      image: mailcow/postfix:1.22
       build: ./data/Dockerfiles/postfix
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
@@ -204,6 +210,7 @@ services:
         - postfix-vol-1:/var/spool/postfix
         - crypt-vol-1:/var/lib/zeyple
         - rspamd-sock:/rspamd-sock
+        - mysql-socket-vol-1:/var/run/mysqld/
       environment:
         - LOG_LINES=${LOG_LINES:-9999}
         - TZ=${TZ}
@@ -280,8 +287,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-        - mysql-mailcow
-      image: mailcow/acme:1.37
+      image: mailcow/acme:1.38
       build: ./data/Dockerfiles/acme
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -299,6 +305,7 @@ services:
         - ./data/web/.well-known/acme-challenge:/var/www/acme:rw
         - ./data/assets/ssl:/var/lib/acme/:rw
         - ./data/assets/ssl-example:/var/lib/ssl-example/:ro
+        - mysql-socket-vol-1:/var/run/mysqld/
       restart: always
       networks:
         mailcow-network:
@@ -330,13 +337,14 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.22
+      image: mailcow/watchdog:1.24
       # Debug
       #command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog
       oom_kill_disable: true
       volumes:
         - rspamd-sock:/rspamd-sock
+        - mysql-socket-vol-1:/var/run/mysqld/
       restart: always
       environment:
         - LOG_LINES=${LOG_LINES:-9999}
@@ -356,7 +364,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:1.14
+      image: mailcow/dockerapi:1.17
       restart: always
       build: ./data/Dockerfiles/dockerapi
       oom_kill_disable: true
@@ -365,6 +373,7 @@ services:
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
         - ./data/conf/rspamd/override.d/worker-controller-password.inc:/access.inc:rw
+        - vmail-vol-1:/var/vmail:ro
       networks:
         mailcow-network:
           aliases:
@@ -392,6 +401,7 @@ networks:
 volumes:
   vmail-vol-1:
   mysql-vol-1:
+  mysql-socket-vol-1:
   redis-vol-1:
   rspamd-vol-1:
   postfix-vol-1:

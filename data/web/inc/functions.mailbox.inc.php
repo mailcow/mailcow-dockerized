@@ -2776,6 +2776,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               `mailbox`.`active` AS `active_int`,
               CASE `mailbox`.`active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`,
               `mailbox`.`domain`,
+              `mailbox`.`maildir`,
               `mailbox`.`quota`,
               `quota2`.`bytes`,
               `attributes`,
@@ -2806,6 +2807,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $mailboxdata['active'] = $row['active'];
           $mailboxdata['active_int'] = $row['active_int'];
           $mailboxdata['domain'] = $row['domain'];
+          $mailboxdata['maildir'] = $row['maildir'];
           $mailboxdata['quota'] = $row['quota'];
           $mailboxdata['attributes'] = json_decode($row['attributes'], true);
           $mailboxdata['quota_used'] = intval($row['bytes']);
@@ -3054,6 +3056,16 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
+            $exec_fields = array('cmd' => 'maildir_cleanup', 'maildir' => $domain);
+            $maildir_gc = json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields), true);
+            if ($maildir_gc['type'] != 'success') {
+              $_SESSION['return'][] = array(
+                'type' => 'warning',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'Could not move maildir to garbage collector: ' . $maildir_gc['msg']
+              );
+            }
+            return false;
             $stmt = $pdo->prepare("DELETE FROM `domain` WHERE `domain` = :domain");
             $stmt->execute(array(
               ':domain' => $domain,
@@ -3078,17 +3090,17 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt->execute(array(
               ':domain' => '%@'.$domain,
             ));
-            $stmt = $pdo->prepare("DELETE FROM `quota2` WHERE `username` = :domain");
+            $stmt = $pdo->prepare("DELETE FROM `quota2` WHERE `username` LIKE :domain");
             $stmt->execute(array(
               ':domain' => '%@'.$domain,
             ));
-            $stmt = $pdo->prepare("DELETE FROM `spamalias` WHERE `address` = :domain");
+            $stmt = $pdo->prepare("DELETE FROM `spamalias` WHERE `address` LIKE :domain");
             $stmt->execute(array(
               ':domain' => '%@'.$domain,
             ));
             $stmt = $pdo->prepare("DELETE FROM `filterconf` WHERE `object` = :domain");
             $stmt->execute(array(
-              ':domain' => '%@'.$domain,
+              ':domain' => $domain,
             ));
             $stmt = $pdo->prepare("DELETE FROM `bcc_maps` WHERE `local_dest` = :domain");
             $stmt->execute(array(
@@ -3226,6 +3238,16 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 'msg' => 'access_denied'
               );
               continue;
+            }
+            $maildir = mailbox('get', 'mailbox_details', $username)['maildir'];
+            $exec_fields = array('cmd' => 'maildir_cleanup', 'maildir' => $maildir);
+            $maildir_gc = json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields), true);
+            if ($maildir_gc['type'] != 'success') {
+              $_SESSION['return'][] = array(
+                'type' => 'warning',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'Could not move maildir to garbage collector: ' . $maildir_gc['msg']
+              );
             }
             $stmt = $pdo->prepare("DELETE FROM `alias` WHERE `goto` = :username");
             $stmt->execute(array(

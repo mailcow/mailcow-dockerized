@@ -59,7 +59,7 @@ $(document).ready(function() {
   });
   $('#u2f_status_auth').html('<p><span class="glyphicon glyphicon-refresh glyphicon-spin"></span> Initializing, please wait...</p>');
   $('#ConfirmTFAModal').on('shown.bs.modal', function(){
-      $(this).find('#token').focus();
+      $(this).find('input[name=token]').focus();
       // If U2F
       if(document.getElementById("u2f_auth_data") !== null) {
         $.ajax({
@@ -146,7 +146,7 @@ $(document).ready(function() {
   });
 
   // CSRF
-  $('<input type="hidden" value="<?= $_SESSION['CSRF']['TOKEN']; ?>">').attr('id', 'csrf_token').attr('name', 'csrf_token').appendTo('form');
+  $('<input type="hidden" value="<?= $_SESSION['CSRF']['TOKEN']; ?>">').attr('name', 'csrf_token').appendTo('form');
   if (sessionStorage.scrollTop != "undefined") {
     $(window).scrollTop(sessionStorage.scrollTop);
   }

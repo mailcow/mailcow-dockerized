@@ -10,37 +10,43 @@ $(document).ready(function() {
   });
   $("#disable_sender_check").click(function( event ) {
     if ($("form[data-id='editmailbox'] #disable_sender_check:checked").length > 0) {
-      $('#sender_acl').prop('disabled', true);
-      $('#sender_acl').selectpicker('refresh');
+      $('#editSelectSenderACL').prop('disabled', true);
+      $('#editSelectSenderACL').selectpicker('refresh');
     }
     else {
-      $('#sender_acl').prop('disabled', false);
-      $('#sender_acl').selectpicker('refresh');
+      $('#editSelectSenderACL').prop('disabled', false);
+      $('#editSelectSenderACL').selectpicker('refresh');
     }
   });
   if ($("form[data-id='editalias'] .goto_checkbox:checked").length > 0) {
     $('#textarea_alias_goto').prop('disabled', true);
   }
+
   $("#script_data").numberedtextarea({allowTabChar: true});
+
+  $("#mailbox-password-warning-close").click(function( event ) {
+    $('#mailbox-passwd-hidden-info').addClass('hidden');
+    $('#mailbox-passwd-form-groups').removeClass('hidden');
+  });
 });
-if ($("#multiple_bookings_select").val() == "custom") {
+if ($("#editSelectMultipleBookings").val() == "custom") {
   $("#multiple_bookings_custom_div").show();
-  $("#multiple_bookings").val($("#multiple_bookings_custom").val());
+  $('input[name=multiple_bookings]').val($("#multiple_bookings_custom").val());
 }
-$("#multiple_bookings_select").change(function() {
-  $("#multiple_bookings").val($("#multiple_bookings_select").val());
-  if ($("#multiple_bookings").val() == "custom") {
+$("#editSelectMultipleBookings").change(function() {
+  $('input[name=multiple_bookings]').val($("#editSelectMultipleBookings").val());
+  if ($('input[name=multiple_bookings]').val() == "custom") {
     $("#multiple_bookings_custom_div").show();
   }
   else {
     $("#multiple_bookings_custom_div").hide();
   }
 });
-if ($("#sender_acl option[value='\*']:selected").length > 0){
+if ($("#editSelectSenderACL option[value='\*']:selected").length > 0){
   $("#sender_acl_disabled").show();
 }
-$('#sender_acl').change(function() {
-  if ($("#sender_acl option[value='\*']:selected").length > 0){
+$('#editSelectSenderACL').change(function() {
+  if ($("#editSelectSenderACL option[value='\*']:selected").length > 0){
     $("#sender_acl_disabled").show();
   }
   else {
@@ -48,7 +54,7 @@ $('#sender_acl').change(function() {
   }
 });
 $("#multiple_bookings_custom").bind("change keypress keyup blur", function() {
-  $("#multiple_bookings").val($("#multiple_bookings_custom").val());
+  $('input[name=multiple_bookings]').val($("#multiple_bookings_custom").val());
 });
 jQuery(function($){
   // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript

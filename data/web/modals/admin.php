@@ -17,13 +17,13 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
           <div class="form-group">
             <label class="control-label col-sm-2" for="desc"><?=$lang['admin']['rsetting_desc'];?>:</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" name="desc" id="desc" required>
+              <input type="text" class="form-control" id="adminRspamdSettingsDesc" name="desc" required>
             </div>
           </div>
           <div class="form-group">
             <label class="control-label col-sm-2" for="content"><?=$lang['admin']['rsetting_content'];?>:</label>
             <div class="col-sm-10">
-              <textarea class="form-control" id="content" name="content" rows="10"><?=$rsetting_details['content'];?></textarea>
+              <textarea class="form-control" id="adminRspamdSettingsContent" name="content" rows="10"><?=$rsetting_details['content'];?></textarea>
             </div>
           </div>
           <div class="form-group">
@@ -35,7 +35,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
           </div>
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-              <button class="btn btn-default" id="add_item" data-id="rsetting" data-api-url='add/rsetting' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> <?=$lang['admin']['add'];?></button>
+              <button class="btn btn-default" data-action="add_item" data-id="rsetting" data-api-url='add/rsetting' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> <?=$lang['admin']['add'];?></button>
             </div>
           </div>
         </form>
@@ -60,7 +60,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <label class="control-label col-sm-2" for="username"><?=$lang['admin']['username'];?>:</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" name="username" id="username" required>
+                <input type="text" class="form-control" name="username" required>
                 &rdsh; <kbd>a-z A-Z - _ .</kbd>
               </div>
             </div>
@@ -79,13 +79,13 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <label class="control-label col-sm-2" for="password"><?=$lang['admin']['password'];?>:</label>
               <div class="col-sm-10">
-              <input type="password" class="form-control" data-hibp="true" name="password" id="password" placeholder="" required>
+              <input type="password" class="form-control" data-hibp="true" name="password" placeholder="" required>
               </div>
             </div>
             <div class="form-group">
               <label class="control-label col-sm-2" for="password2"><?=$lang['admin']['password_repeat'];?>:</label>
               <div class="col-sm-10">
-              <input type="password" class="form-control" name="password2" id="password2" placeholder="" required>
+              <input type="password" class="form-control" name="password2" placeholder="" required>
               </div>
             </div>
             <div class="form-group">
@@ -97,7 +97,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             </div>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
-                <button class="btn btn-default" id="add_item" data-id="add_domain_admin" data-api-url='add/domain-admin' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> <?=$lang['admin']['add'];?></button>
+                <button class="btn btn-default" data-action="add_item" data-id="add_domain_admin" data-api-url='add/domain-admin' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> <?=$lang['admin']['add'];?></button>
               </div>
             </div>
           </form>
@@ -115,11 +115,11 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
       </div>
       <div class="modal-body">
           <form class="form-horizontal" data-cached-form="true" id="test_relayhost_form" role="form" method="post">
-            <input type="hidden" class="form-control" name="relayhost_id" id="relayhost_id">
+            <input type="hidden" class="form-control" name="relayhost_id">
             <div class="form-group">
               <label class="control-label col-sm-2" for="mail_from"><?=$lang['admin']['relay_from'];?></label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" name="mail_from" id="mail_from" placeholder="relay@example.org">
+                <input type="text" class="form-control" name="mail_from" placeholder="relay@example.org">
               </div>
             </div>
             <div class="form-group">

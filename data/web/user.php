@@ -10,6 +10,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'doma
 	$_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
   $tfa_data = get_tfa();
 	$username = $_SESSION['mailcow_cc_username'];
+
 ?>
 <div class="container">
   <h3><?=$lang['user']['user_settings'];?></h3>
@@ -28,6 +29,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'doma
         else: echo "Last login: -"; endif;
         ?>
         </small></p>
+        <p>
       </div>
     </div>
     <hr>
@@ -102,6 +104,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
       <?php endif; ?>
       <p><a href="#pwChangeModal" data-toggle="modal">[<?=$lang['user']['change_password'];?>]</a></p>
       <p><a target="_blank" href="https://mailcow.github.io/mailcow-dockerized-docs/client/#<?=$clientconfigstr;?>">[<?=$lang['user']['client_configuration'];?>]</a></p>
+      <p><a href="#userFilterModal" data-toggle="modal">[<?=$lang['user']['show_sieve_filters'];?>]</a></p>
       <p><small>
       <?php
       if ($_SESSION['mailcow_cc_last_login']['remote']):
@@ -111,13 +114,6 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
       else: echo "Last login: -"; endif;
       ?>
       </small></p>
-    </div>
-  </div>
-  <hr>
-  <div class="row">
-    <div class="col-md-3 col-xs-5 text-right">  <span class="glyphicon glyphicon-filter"></span></div>
-    <div class="col-md-9 col-xs-7">
-    <p><a href="#userFilterModal" data-toggle="modal">[<?=$lang['user']['show_sieve_filters'];?>]</a></p>
     </div>
   </div>
   <hr>
