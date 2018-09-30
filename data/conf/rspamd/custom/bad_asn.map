@@ -1,4 +1,6 @@
 # High spam networks, disabled by default
+# ASN:SCORE DESC
+# Remove comment to enable score
 #201942:5 #Soltia Consulting SL - ipinfo.io
 #16276:2 #OVH
 #12876:2 #ONLINE S.A.S
