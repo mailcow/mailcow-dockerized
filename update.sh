@@ -200,6 +200,14 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# Use this IPv6 for outgoing connections (SNAT)' >> mailcow.conf
       echo "#SNAT6_TO_SOURCE=" >> mailcow.conf
     fi
+  elif [[ ${option} == "MAILDIR_GC_TIME" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Garbage collector cleanup' >> mailcow.conf
+      echo '# Deleted domains and mailboxes are moved to /var/vmail/_garbage/timestamp_sanitizedstring' >> mailcow.conf
+      echo '# How long should objects remain in the garbage until they are being deleted? (value in minutes)' >> mailcow.conf
+      echo 'MAILDIR_GC_TIME=1440' >> mailcow.conf
+    fi
   elif ! grep -q ${option} mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"
     echo "${option}=n" >> mailcow.conf
