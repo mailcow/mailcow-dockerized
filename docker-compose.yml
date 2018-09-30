@@ -84,7 +84,6 @@ services:
         - ./data/conf/rspamd/override.d/:/etc/rspamd/override.d
         - ./data/conf/rspamd/local.d/:/etc/rspamd/local.d
         - ./data/conf/rspamd/lua/:/etc/rspamd/lua/:ro
-        - rspamd-sock:/rspamd-sock
         - rspamd-vol-1:/var/lib/rspamd
       restart: always
       dns:
@@ -104,7 +103,7 @@ services:
       volumes:
         - ./data/web:/web:rw
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
-        - rspamd-sock:/rspamd-sock
+        - rspamd-vol-1:/var/lib/rspamd
         - mysql-socket-vol-1:/var/run/mysqld/
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro
         - ./data/conf/phpfpm/php-fpm.d/pools.conf:/usr/local/etc/php-fpm.d/z-pools.conf
@@ -171,7 +170,7 @@ services:
         - vmail-vol-1:/var/vmail
         - crypt-vol-1:/mail_crypt/
         - ./data/conf/rspamd/custom/:/etc/rspamd/custom
-        - rspamd-sock:/rspamd-sock
+        - rspamd-vol-1:/var/lib/rspamd
         - mysql-socket-vol-1:/var/run/mysqld/
       environment:
         - LOG_LINES=${LOG_LINES:-9999}
@@ -209,7 +208,7 @@ services:
         - ./data/assets/ssl:/etc/ssl/mail/:ro
         - postfix-vol-1:/var/spool/postfix
         - crypt-vol-1:/var/lib/zeyple
-        - rspamd-sock:/rspamd-sock
+        - rspamd-vol-1:/var/lib/rspamd
         - mysql-socket-vol-1:/var/run/mysqld/
       environment:
         - LOG_LINES=${LOG_LINES:-9999}
@@ -343,7 +342,7 @@ services:
       build: ./data/Dockerfiles/watchdog
       oom_kill_disable: true
       volumes:
-        - rspamd-sock:/rspamd-sock
+        - rspamd-vol-1:/var/lib/rspamd
         - mysql-socket-vol-1:/var/run/mysqld/
       restart: always
       environment:
@@ -406,4 +405,3 @@ volumes:
   rspamd-vol-1:
   postfix-vol-1:
   crypt-vol-1:
-  rspamd-sock:

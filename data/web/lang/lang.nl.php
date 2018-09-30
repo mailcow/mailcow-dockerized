@@ -592,7 +592,7 @@ $lang['quarantine']['subj'] = "Onderwerp";
 $lang['quarantine']['text_plain_content'] = "Inhoud (tekst)";
 $lang['quarantine']['text_from_html_content'] = "Inhoud (geconverteerde html)";
 $lang['quarantine']['atts'] = "Bijlagen";
-$lang['danger']['fuzzy_learn_error'] = "Fuzzy hash training-fout: %s";
+$lang['warning']['fuzzy_learn_error'] = "Fuzzy hash training-fout: %s";
 $lang['danger']['spam_learn_error'] = "Spamtraining-fout: %s";
 $lang['success']['qlearn_spam'] = "Bericht %s werd als spam geclassificeerd en is verwijderd";
 
