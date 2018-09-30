@@ -164,7 +164,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             switch ($object) {
               case "actions":
                 $curl = curl_init();
-                curl_setopt($curl, CURLOPT_UNIX_SOCKET_PATH, '/rspamd-sock/rspamd.sock');
+                curl_setopt($curl, CURLOPT_UNIX_SOCKET_PATH, '/var/lib/rspamd/rspamd.sock');
                 curl_setopt($curl, CURLOPT_URL,"http://rspamd/stat");
                 curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
                 $data = curl_exec($curl);

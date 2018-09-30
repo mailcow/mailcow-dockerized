@@ -631,7 +631,7 @@ $lang['quarantine']['subj'] = "Subject";
 $lang['quarantine']['text_plain_content'] = "Content (text/plain)";
 $lang['quarantine']['text_from_html_content'] = "Content (converted html)";
 $lang['quarantine']['atts'] = "Attachments";
-$lang['danger']['fuzzy_learn_error'] = "Fuzzy hash learn error: %s";
+$lang['warning']['fuzzy_learn_error'] = "Fuzzy hash learn error: %s";
 $lang['danger']['spam_learn_error'] = "Spam learn error: %s";
 $lang['success']['qlearn_spam'] = "Message ID %s was learned as spam and deleted";
 

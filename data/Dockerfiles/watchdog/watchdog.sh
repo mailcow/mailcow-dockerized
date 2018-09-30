@@ -226,7 +226,7 @@ rspamd_checks() {
   while [ ${err_count} -lt ${THRESHOLD} ]; do
     host_ip=$(get_container_ip rspamd-mailcow)
     err_c_cur=${err_count}
-    SCORE=$(/usr/bin/curl -s --data-binary @- --unix-socket /rspamd-sock/rspamd.sock http://rspamd/scan -d '
+    SCORE=$(/usr/bin/curl -s --data-binary @- --unix-socket /var/lib/rspamd/rspamd.sock http://rspamd/scan -d '
 To: null@localhost
 From: watchdog@localhost
 
