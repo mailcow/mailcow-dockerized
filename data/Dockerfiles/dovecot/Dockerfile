@@ -92,7 +92,7 @@ RUN cpanm Data::Uniqid Mail::IMAPClient String::Util
 RUN echo '* * * * *   root  /usr/local/bin/imapsync_cron.pl' > /etc/cron.d/imapsync
 RUN echo '30 3 * * *  vmail /usr/local/bin/doveadm quota recalc -A' > /etc/cron.d/dovecot-sync
 RUN echo '* * * * *   vmail /usr/local/bin/trim_logs.sh >> /dev/stdout 2>&1' > /etc/cron.d/trim_logs
-RUN echo '30 2 * * *  vmail /usr/local/bin/maildir_gc.sh >> /dev/stdout 2>&1' > /etc/cron.d/maildir_gc
+RUN echo '25 * * * *  vmail /usr/local/bin/maildir_gc.sh >> /dev/stdout 2>&1' > /etc/cron.d/maildir_gc
 RUN echo '30 1 * * *  root  /usr/local/bin/sa-rules.sh  >> /dev/stdout 2>&1' > /etc/cron.d/sa-rules
 COPY trim_logs.sh /usr/local/bin/trim_logs.sh
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
