@@ -243,17 +243,6 @@ query = SELECT goto FROM spamalias
     AND validity >= UNIX_TIMESTAMP()
 EOF
 
-#cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_email_extension.cf
-#user = ${DBUSER}
-#password = ${DBPASS}
-#hosts = mysql
-#dbname = ${DBNAME}
-#google-style email+wildcardnaming@example.org - first character of regex is wildchard / needs to be escaped by \ when +
-#query = SELECT goto FROM alias WHERE address=(SELECT REGEXP_REPLACE('%s','\+[^@]+@','@')) AND active = '1'
-# Minus--style email-wildcard@example.org
-#query = SELECT goto FROM alias WHERE address=(SELECT REGEXP_REPLACE('%s','\-[^@]+@','@')) AND active = '1'
-#EOF
-
 # Reset GPG key permissions
 mkdir -p /var/lib/zeyple/keys
 chmod 700 /var/lib/zeyple/keys
