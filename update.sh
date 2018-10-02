@@ -206,6 +206,7 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# Garbage collector cleanup' >> mailcow.conf
       echo '# Deleted domains and mailboxes are moved to /var/vmail/_garbage/timestamp_sanitizedstring' >> mailcow.conf
       echo '# How long should objects remain in the garbage until they are being deleted? (value in minutes)' >> mailcow.conf
+      echo '# Check interval is hourly' >> mailcow.conf
       echo 'MAILDIR_GC_TIME=1440' >> mailcow.conf
     fi
   elif ! grep -q ${option} mailcow.conf; then
