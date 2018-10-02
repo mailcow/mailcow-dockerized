@@ -3065,7 +3065,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 'msg' => 'Could not move maildir to garbage collector: ' . $maildir_gc['msg']
               );
             }
-            return false;
             $stmt = $pdo->prepare("DELETE FROM `domain` WHERE `domain` = :domain");
             $stmt->execute(array(
               ':domain' => $domain,
