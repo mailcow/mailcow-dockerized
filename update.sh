@@ -119,6 +119,7 @@ CONFIG_ARRAY=(
   "SQL_PORT"
   "API_KEY"
   "API_ALLOW_FROM"
+  "MAILDIR_GC_TIME"
 )
 
 sed -i '$a\' mailcow.conf
