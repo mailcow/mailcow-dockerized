@@ -3,6 +3,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
   global $pdo;
   global $redis;
   global $lang;
+  global $MAILBOX_DEFAULT_ATTRIBUTES;
   $_data_log = $_data;
   !isset($_data_log['password']) ?: $_data_log['password'] = '*';
   !isset($_data_log['password2']) ?: $_data_log['password2'] = '*';
@@ -734,6 +735,12 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $active = intval($_data['active']);
           $quota_b		= ($quota_m * 1048576);
           $maildir		= $domain . "/" . $local_part . "/";
+          $mailbox_attrs = json_encode(
+            array(
+              'force_pw_update' => strval(intval($MAILBOX_DEFAULT_ATTRIBUTES['force_pw_update'])),
+              'tls_enforce_in' => strval(intval($MAILBOX_DEFAULT_ATTRIBUTES['tls_enforce_in'])),
+              'tls_enforce_out' => strval(intval($MAILBOX_DEFAULT_ATTRIBUTES['tls_enforce_out'])))
+            );
           if (!is_valid_domain_name($domain)) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
@@ -867,7 +874,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             return false;
           }
           $stmt = $pdo->prepare("INSERT INTO `mailbox` (`username`, `password`, `name`, `maildir`, `quota`, `local_part`, `domain`, `attributes`, `active`) 
-            VALUES (:username, :password_hashed, :name, :maildir, :quota_b, :local_part, :domain, '{\"force_pw_update\": \"0\", \"tls_enforce_in\": \"0\", \"tls_enforce_out\": \"0\"}', :active)");
+            VALUES (:username, :password_hashed, :name, :maildir, :quota_b, :local_part, :domain, :mailbox_attrs, :active)");
           $stmt->execute(array(
             ':username' => $username,
             ':password_hashed' => $password_hashed,
@@ -876,6 +883,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ':quota_b' => $quota_b,
             ':local_part' => $local_part,
             ':domain' => $domain,
+            ':mailbox_attrs' => $mailbox_attrs,
             ':active' => $active
           ));
           $stmt = $pdo->prepare("INSERT INTO `quota2` (`username`, `bytes`, `messages`)
