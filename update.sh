@@ -12,7 +12,6 @@ DATE=$(date +%Y-%m-%d_%H_%M_%S)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 docker_garbage() {
-  echo -e "\e[32mCollecting garbage...\e[0m"
   IMGS_TO_DELETE=()
   for container in $(grep -oP "image: \Kmailcow.+" docker-compose.yml); do
     REPOSITORY=${container/:*}
@@ -74,6 +73,7 @@ while (($#)); do
       MERGE_STRATEGY=ours
     ;;
     --gc)
+      echo -e "\e[32mCollecting garbage...\e[0m"
       docker_garbage
       exit 0
     ;;
