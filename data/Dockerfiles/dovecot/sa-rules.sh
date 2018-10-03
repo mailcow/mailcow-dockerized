@@ -21,5 +21,5 @@ if [[ -f /tmp/sa-rules.tar.gz ]]; then
       curl --silent --insecure -XPOST https://dockerapi/containers/${CONTAINER_ID}/restart
     fi
   fi
+  rm -r /tmp/sa-rules-heinlein /tmp/sa-rules.tar.gz
 fi
-rm -r /tmp/sa-rules-heinlein /tmp/sa-rules.tar.gz
