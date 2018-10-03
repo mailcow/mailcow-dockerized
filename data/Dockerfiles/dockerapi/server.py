@@ -132,7 +132,7 @@ class container_post(Resource):
           try:
             for container in docker_client.containers.list(filters={"id": container_id}):
               sane_name = re.sub(r'\W+', '', request.json['maildir'])
-              maildir_cleanup = container.exec_run(["/bin/bash", "-c", "/bin/mv '/var/vmail/" + request.json['maildir'].replace("'", "'\\''") + "' '/var/vmail/_garbage/" + str(int(time.time())) + "_" + sane_name + "'"], user='vmail')
+              maildir_cleanup = container.exec_run(["/bin/bash", "-c", "if [[ -d '/var/vmail/" + request.json['maildir'].replace("'", "'\\''") + "' ]]; then /bin/mv '/var/vmail/" + request.json['maildir'].replace("'", "'\\''") + "' '/var/vmail/_garbage/" + str(int(time.time())) + "_" + sane_name + "'; fi"], user='vmail')
               if maildir_cleanup.exit_code == 0:
                 return jsonify(type='success', msg=str("moved to garbage"))
               else:
