@@ -177,19 +177,19 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
     <div class="col-md-9 col-xs-7">
     <div class="btn-group" data-acl="<?=$_SESSION['acl']['delimiter_action'];?>">
       <button type="button" class="btn btn-sm btn-default <?=($get_tagging_options == "subfolder") ? 'active' : null; ?>"
-        id="edit_selected"
+        data-action="edit_selected"
         data-item="<?= htmlentities($username); ?>"
         data-id="delimiter_action"
         data-api-url='edit/delimiter_action'
         data-api-attr='{"tagged_mail_handler":"subfolder"}'><?=$lang['user']['tag_in_subfolder'];?></button>
       <button type="button" class="btn btn-sm btn-default <?=($get_tagging_options == "subject") ? 'active' : null; ?>"
-        id="edit_selected"
+        data-action="edit_selected"
         data-item="<?= htmlentities($username); ?>"
         data-id="delimiter_action"
         data-api-url='edit/delimiter_action'
         data-api-attr='{"tagged_mail_handler":"subject"}'><?=$lang['user']['tag_in_subject'];?></button>
       <button type="button" class="btn btn-sm btn-default <?=($get_tagging_options == "none") ? 'active' : null; ?>"
-        id="edit_selected"
+        data-action="edit_selected"
         data-item="<?= htmlentities($username); ?>"
         data-id="delimiter_action"
         data-api-url='edit/delimiter_action'
@@ -208,13 +208,13 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
     <div class="col-md-9 col-xs-7">
     <div class="btn-group" data-acl="<?=$_SESSION['acl']['tls_policy'];?>">
       <button type="button" class="btn btn-sm btn-default <?=($get_tls_policy['tls_enforce_in'] == "1") ? "active" : null;?>"
-        id="edit_selected"
+        data-action="edit_selected"
         data-item="<?= htmlentities($username); ?>"
         data-id="tls_policy"
         data-api-url='edit/tls_policy'
         data-api-attr='{"tls_enforce_in":<?=($get_tls_policy['tls_enforce_in'] == "1") ? "0" : "1";?>}'><?=$lang['user']['tls_enforce_in'];?></button>
       <button type="button" class="btn btn-sm btn-default <?=($get_tls_policy['tls_enforce_out'] == "1") ? "active" : null;?>"
-        id="edit_selected"
+        data-action="edit_selected"
         data-item="<?= htmlentities($username); ?>"
         data-id="tls_policy"
         data-api-url='edit/tls_policy'
@@ -227,7 +227,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
   <div class="row">
     <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['eas_reset'];?>:</div>
     <div class="col-md-9 col-xs-7">
-    <button class="btn btn-xs btn-default" data-acl="<?=$_SESSION['acl']['eas_reset'];?>" id="delete_selected" data-text="<?=$lang['user']['eas_reset'];?>?" data-item="<?= htmlentities($username); ?>" data-id="eas_cache" data-api-url='delete/eas_cache' href="#"><?=$lang['user']['eas_reset_now'];?></button>
+    <button class="btn btn-xs btn-default" data-acl="<?=$_SESSION['acl']['eas_reset'];?>" data-action="delete_selected" data-text="<?=$lang['user']['eas_reset'];?>?" data-item="<?= htmlentities($username); ?>" data-id="eas_cache" data-api-url='delete/eas_cache' href="#"><?=$lang['user']['eas_reset_now'];?></button>
     <p class="help-block"><?=$lang['user']['eas_reset_help'];?></p>
     </div>
   </div>
@@ -259,19 +259,19 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
           <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="tla" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
           <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a id="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-time"></span> + 1h</a></li>
+            <li><a data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-time"></span> + 1h</a></li>
             <li role="separator" class="divider"></li>
-            <li><a id="delete_selected" data-id="tla" data-api-url='delete/time_limited_alias' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+            <li><a data-action="delete_selected" data-id="tla" data-api-url='delete/time_limited_alias' href="#"><?=$lang['mailbox']['remove'];?></a></li>
           </ul>
         </div>
         <div class="btn-group">
           <a class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['alias_create_random'];?> <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a id="add_item" data-api-url='add/time_limited_alias' data-api-attr='{"validity":"1"}' href="#">1 <?=$lang['user']['hour'];?></a></li>
-            <li><a id="add_item" data-api-url='add/time_limited_alias' data-api-attr='{"validity":"6"}' href="#">6 <?=$lang['user']['hours'];?></a></li>
-            <li><a id="add_item" data-api-url='add/time_limited_alias' data-api-attr='{"validity":"24"}' href="#">1 <?=$lang['user']['day'];?></a></li>
-            <li><a id="add_item" data-api-url='add/time_limited_alias' data-api-attr='{"validity":"168"}' href="#">1 <?=$lang['user']['week'];?></a></li>
-            <li><a id="add_item" data-api-url='add/time_limited_alias' data-api-attr='{"validity":"672"}' href="#">4 <?=$lang['user']['weeks'];?></a></li>
+            <li><a data-action="add_item" data-api-url='add/time_limited_alias' data-api-attr='{"validity":"1"}' href="#">1 <?=$lang['user']['hour'];?></a></li>
+            <li><a data-action="add_item" data-api-url='add/time_limited_alias' data-api-attr='{"validity":"6"}' href="#">6 <?=$lang['user']['hours'];?></a></li>
+            <li><a data-action="add_item" data-api-url='add/time_limited_alias' data-api-attr='{"validity":"24"}' href="#">1 <?=$lang['user']['day'];?></a></li>
+            <li><a data-action="add_item" data-api-url='add/time_limited_alias' data-api-attr='{"validity":"168"}' href="#">1 <?=$lang['user']['week'];?></a></li>
+            <li><a data-action="add_item" data-api-url='add/time_limited_alias' data-api-attr='{"validity":"672"}' href="#">4 <?=$lang['user']['weeks'];?></a></li>
           </ul>
         </div>
       </div>
@@ -308,7 +308,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 
       <div class="form-group">
 				<div class="col-sm-10">
-        <button data-acl="<?=$_SESSION['acl']['spam_score'];?>" type="button" class="btn btn-sm btn-success" id="edit_selected"
+        <button data-acl="<?=$_SESSION['acl']['spam_score'];?>" type="button" class="btn btn-sm btn-success" data-action="edit_selected"
           data-item="<?= htmlentities($username); ?>"
           data-id="spam_score"
           data-api-url='edit/spam-score'
@@ -329,14 +329,14 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
         <div class="mass-actions-user">
           <div class="btn-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
             <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="policy_wl_mailbox" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
-            <a class="btn btn-sm btn-danger" id="delete_selected" data-id="policy_wl_mailbox" data-api-url='delete/mailbox-policy' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+            <a class="btn btn-sm btn-danger" data-action="delete_selected" data-id="policy_wl_mailbox" data-api-url='delete/mailbox-policy' href="#"><?=$lang['mailbox']['remove'];?></a></li>
           </div>
         </div>
         <form class="form-inline" data-id="add_wl_policy_mailbox">
           <div class="input-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
             <input type="text" class="form-control" name="object_from" id="object_from" placeholder="*@example.org" required>
             <span class="input-group-btn">
-              <button class="btn btn-default" id="add_item" data-id="add_wl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username":<?= json_encode($username); ?>,"object_list":"wl"}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['spamfilter_table_add'];?></button>
+              <button class="btn btn-default" data-action="add_item" data-id="add_wl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username":<?= json_encode($username); ?>,"object_list":"wl"}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['spamfilter_table_add'];?></button>
             </span>
           </div>
         </form>
@@ -352,14 +352,14 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
         <div class="mass-actions-user">
           <div class="btn-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
             <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="policy_bl_mailbox" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
-            <a class="btn btn-sm btn-danger" id="delete_selected" data-id="policy_bl_mailbox" data-api-url='delete/mailbox-policy' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+            <a class="btn btn-sm btn-danger" data-action="delete_selected" data-id="policy_bl_mailbox" data-api-url='delete/mailbox-policy' href="#"><?=$lang['mailbox']['remove'];?></a></li>
           </div>
         </div>
         <form class="form-inline" data-id="add_bl_policy_mailbox">
           <div class="input-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
             <input type="text" class="form-control" name="object_from" id="object_from" placeholder="*@example.org" required>
             <span class="input-group-btn">
-              <button class="btn btn-default" id="add_item" data-id="add_bl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username":<?= json_encode($username); ?>,"object_list":"bl"}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['spamfilter_table_add'];?></button>
+              <button class="btn btn-default" data-action="add_item" data-id="add_bl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username":<?= json_encode($username); ?>,"object_list":"bl"}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['spamfilter_table_add'];?></button>
             </span>
           </div>
         </form>
@@ -378,10 +378,10 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
         <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="syncjob" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
         <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
         <ul class="dropdown-menu">
-          <li><a id="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
-          <li><a id="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
+          <li><a data-action="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
+          <li><a data-action="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
           <li role="separator" class="divider"></li>
-          <li><a id="delete_selected" data-text="<?=$lang['user']['eas_reset'];?>?" data-id="syncjob" data-api-url='delete/syncjob' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+          <li><a data-action="delete_selected" data-text="<?=$lang['user']['eas_reset'];?>?" data-id="syncjob" data-api-url='delete/syncjob' href="#"><?=$lang['mailbox']['remove'];?></a></li>
         </ul>
         <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addSyncJobModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['create_syncjob'];?></a>
       </div>
