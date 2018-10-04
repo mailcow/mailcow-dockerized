@@ -752,7 +752,10 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 <div class="modal fade" id="syncjobLogModal" tabindex="-1" role="dialog" aria-labelledby="syncjobLogModalLabel">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
-      <div class="modal-header"><h4 class="modal-title">Log</h4></div>
+      <div class="modal-header">
+	      <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+	      <h4 class="modal-title">Log</h4>
+      </div>
       <div class="modal-body">
         <textarea class="form-control" rows="20" id="logText" spellcheck="false"></textarea>
       </div>
@@ -763,7 +766,10 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 <div class="modal fade" id="dnsInfoModal" tabindex="-1" role="dialog" aria-labelledby="dnsInfoModalLabel">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
-      <div class="modal-header"><h4 class="modal-title"><?=$lang['diagnostics']['dns_records'];?></h4></div>
+      <div class="modal-header">
+	      <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+	      <h4 class="modal-title"><?=$lang['diagnostics']['dns_records'];?></h4>
+      </div>
       <div class="modal-body">
         <p><?=$lang['diagnostics']['dns_records_24hours'];?></p>
         <div class="dns-modal-body"></div>
