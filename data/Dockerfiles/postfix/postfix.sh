@@ -29,6 +29,14 @@ query = SELECT DISTINCT
   END AS result;
 EOF
 
+cat <<EOF > /opt/postfix/conf/sql/mysql_tls_policy_override_maps.cf
+user = ${DBUSER}
+password = ${DBPASS}
+hosts = unix:/var/run/mysqld/mysqld.sock
+dbname = ${DBNAME}
+query = SELECT CONCAT(policy, ' ', parameters) AS tls_policy FROM tls_policy_override WHERE active = '1' AND dest = '%s'
+EOF
+
 cat <<EOF > /opt/postfix/conf/sql/mysql_tls_enforce_in_policy.cf
 user = ${DBUSER}
 password = ${DBPASS}
