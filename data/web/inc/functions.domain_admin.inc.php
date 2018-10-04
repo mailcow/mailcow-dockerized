@@ -162,15 +162,14 @@ function domain_admin($_action, $_data = null) {
           $password     = $_data['password'];
           $password2    = $_data['password2'];
           if (!empty($domains)) {
-            foreach ($domains as $i => &$domain) {
+            foreach ($domains as $domain) {
               if (!is_valid_domain_name($domain)) {
                 $_SESSION['return'][] = array(
                   'type' => 'danger',
                   'log' => array(__FUNCTION__, $_action, $_data_log),
                   'msg' => array('domain_invalid', htmlspecialchars($domain))
                 );
-                unset($domains[$i]);
-                continue;
+                continue 2;
               }
             }
           }
@@ -208,7 +207,6 @@ function domain_admin($_action, $_data = null) {
               ));
             }
           }
-
           if (!empty($password) && !empty($password2)) {
             if (!preg_match('/' . $GLOBALS['PASSWD_REGEP'] . '/', $password)) {
               $_SESSION['return'][] = array(
