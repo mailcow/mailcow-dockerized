@@ -202,7 +202,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.22
+      image: mailcow/postfix:1.23
       build: ./data/Dockerfiles/postfix
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
