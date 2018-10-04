@@ -66,7 +66,6 @@ $lang['danger']['settings_map_removed'] = "Regeln wurden entfernt: %s";
 $lang['danger']['invalid_host'] = "Ungültiger Host: %s";
 $lang['danger']['relayhost_invalid'] = "Relayhost %s ist ungültig";
 $lang['success']['saved_settings'] = "Regel wurde gespeichert";
-$lang['success']['db_init_complete'] = "Datenbankinitialisierung abgeschlossen";
 
 $lang['danger']['dkim_domain_or_sel_invalid'] = 'DKIM-Domain oder Selektor nicht korrekt: %s';
 $lang['success']['dkim_removed'] = 'DKIM-Key wurde entfernt';
