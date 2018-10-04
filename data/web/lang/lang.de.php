@@ -240,6 +240,17 @@ $lang['header']['mailcow_settings'] = 'Konfiguration';
 $lang['header']['administration'] = 'Administration';
 $lang['header']['mailboxes'] = 'Mailboxen';
 $lang['header']['user_settings'] = 'Benutzereinstellungen';
+$lang['mailbox']['tls_policy_maps'] = 'TLS-Richtlinien';
+$lang['mailbox']['tls_policy_maps_long'] = 'Ausgehende TLS-Richtlinien';
+$lang['mailbox']['tls_policy_maps_info'] = 'Nachstehende Richtlinien erzwingen TLS-Transportregeln unabhängig von TLS-Richtlinieneinstellungen eines Benutzers.<br>
+  Für weitere Informationen zur Syntax sollte <a href="http://www.postfix.org/postconf.5.html#smtp_tls_policy_maps" target="_blank">die "smtp_tls_policy_maps" Dokumentation</a> konsultiert werden.';
+$lang['mailbox']['tls_enforce_in'] = 'Enforce TLS incoming';
+$lang['mailbox']['tls_enforce_out'] = 'Enforce TLS outgoing';
+$lang['mailbox']['tls_map_dest'] = 'Ziel';
+$lang['mailbox']['tls_map_dest_info'] = 'Beispiele: example.org, .example.org, mail@example.org, [mail.example.org]:25';
+$lang['mailbox']['tls_map_policy'] = 'Richtlinie';
+$lang['mailbox']['tls_map_parameters'] = 'Parameter';
+$lang['mailbox']['tls_map_parameters_info'] = 'Leer oder Parameter, Beispiele: protocols=!SSLv2 ciphers=medium exclude=3DES';
 $lang['mailbox']['booking_0'] = 'Immer als verfügbar anzeigen';
 $lang['mailbox']['booking_lt0'] = 'Unbegrenzt, jedoch anzeigen, wenn gebucht';
 $lang['mailbox']['booking_custom'] = 'Benutzerdefiniertes Limit';
@@ -666,9 +677,13 @@ $lang['mailbox']['recipient_map_new_info'] = 'Der neue Empfänger muss eine E-Ma
 $lang['mailbox']['recipient_map_old'] = 'Original Empfänger';
 $lang['mailbox']['recipient_map_new'] = 'Neuer Empfänger';
 $lang['mailbox']['add_recipient_map_entry'] = 'Empfängerumschreibung hinzufügen';
-$lang['danger']['invalid_recipient_map_new'] = 'Neuer Empfänger %s ist ungültig';
-$lang['danger']['invalid_recipient_map_old'] = 'Originaler Empfänger %s ist ungültig';
-$lang['danger']['recipient_map_entry_exists'] = 'Eine Empfängerumschreibung für %s existiert bereits';
-$lang['success']['recipient_map_entry_saved'] = 'Empfängerumschreibung für Objekt %s wurde gespeichert';
-$lang['success']['recipient_map_entry_deleted'] = 'Empfängerumschreibung für Objekt %s wurde gelöscht';
-
+$lang['danger']['invalid_recipient_map_new'] = 'Neuer Empfänger "%s" ist ungültig';
+$lang['danger']['invalid_recipient_map_old'] = 'Originaler Empfänger "%s" ist ungültig';
+$lang['danger']['recipient_map_entry_exists'] = 'Eine Empfängerumschreibung für Objekt "%s" existiert bereits';
+$lang['success']['recipient_map_entry_saved'] = 'Empfängerumschreibung für Objekt "%s" wurde gespeichert';
+$lang['success']['recipient_map_entry_deleted'] = 'Empfängerumschreibung mit der ID %s wurde gelöscht';
+$lang['danger']['tls_policy_map_entry_exists'] = 'Eine TLS-Richtlinie "%s" existiert bereits';
+$lang['success']['tls_policy_map_entry_saved'] = 'TLS-Richtlinieneintrag "%s" wurde gespeichert';
+$lang['success']['tls_policy_map_entry_deleted'] = 'TLS-Richtlinie mit der ID %s wurde gelöscht';
+$lang['mailbox']['add_tls_policy_map'] = "TLS-Richtlinieneintrag hinzufügen";
+$lang['danger']['tls_policy_map_parameter_invalid'] = "Parameter ist ungültig";

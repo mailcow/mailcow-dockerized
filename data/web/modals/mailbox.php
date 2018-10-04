@@ -692,6 +692,62 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
     </div>
   </div>
 </div><!-- add add_recipient_map modal -->
+<!-- add add_tls_policy_map modal -->
+<div class="modal fade" id="addTLSPolicyMapAdmin" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <h3 class="modal-title"><?=$lang['mailbox']['tls_policy_maps'];?></h3>
+      </div>
+      <div class="modal-body">
+				<form class="form-horizontal" data-cached-form="true" role="form" data-id="add_tls_policy_map">
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="dest"><?=$lang['mailbox']['tls_map_dest'];?></label>
+            <div class="col-sm-10">
+            <input type="text" class="form-control" name="dest">
+            <small><?=$lang['mailbox']['tls_map_dest_info'];?></small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="policy"><?=$lang['mailbox']['tls_map_policy'];?>:</label>
+            <div class="col-sm-10">
+              <select class="full-width-select" name="policy" required>
+                <option value="none">none</option>
+                <option value="may">may</option>
+                <option value="encrypt">encrypt</option>
+                <option value="dane">dane</option>
+                <option value="dane-only">dane-only</option>
+                <option value="fingerprint">fingerprint</option>
+                <option value="verify">verify</option>
+                <option value="secure">secure</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="parameters"><?=$lang['mailbox']['tls_map_parameters'];?></label>
+            <div class="col-sm-10">
+            <input type="text" class="form-control" name="parameters">
+            <small><?=$lang['mailbox']['tls_map_parameters_info'];?></small>
+            </div>
+          </div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<div class="checkbox">
+							<label><input type="checkbox" value="1" name="active" checked> <?=$lang['add']['active'];?></label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+              <button class="btn btn-success" data-action="add_item" data-id="add_tls_policy_map" data-api-url='add/tls-policy-map' data-api-attr='{}' href="#"><?=$lang['admin']['add'];?></button>
+						</div>
+					</div>
+				</form>
+      </div>
+    </div>
+  </div>
+</div><!-- add add_tls_policy_map modal -->
 <!-- log modal -->
 <div class="modal fade" id="syncjobLogModal" tabindex="-1" role="dialog" aria-labelledby="syncjobLogModalLabel">
   <div class="modal-dialog modal-lg" role="document">

@@ -394,7 +394,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 <div style="margin-bottom:200px;"></div>
 <?php
 }
-if (isset($_SESSION['mailcow_cc_role'])) {
+if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] != 'admin') {
 require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/user.php';
 ?>
 <script type='text/javascript'>
