@@ -4,7 +4,10 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 <div class="modal fade" id="YubiOTPModal" tabindex="-1" role="dialog" aria-labelledby="YubiOTPModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header"><b><?=$lang['tfa']['yubi_otp'];?></b></div>
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <b><?=$lang['tfa']['yubi_otp'];?></b>
+      </div>
       <div class="modal-body">
       <form role="form" method="post">
         <div class="form-group">
@@ -39,7 +42,10 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 <div class="modal fade" id="U2FModal" tabindex="-1" role="dialog" aria-labelledby="U2FModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header"><b><?=$lang['tfa']['u2f'];?></b></div>
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <b><?=$lang['tfa']['u2f'];?></b>
+      </div>
       <div class="modal-body">
         <form role="form" method="post" id="u2f_reg_form">
           <div class="form-group">
@@ -63,7 +69,10 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 <div class="modal fade" id="TOTPModal" tabindex="-1" role="dialog" aria-labelledby="TOTPModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header"><b><?=$lang['tfa']['totp'];?></b></div>
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <b><?=$lang['tfa']['totp'];?></b>
+      </div>
       <div class="modal-body">
         <form role="form" method="post">
           <div class="form-group">
@@ -101,7 +110,10 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 <div class="modal fade" id="DisableTFAModal" tabindex="-1" role="dialog" aria-labelledby="DisableTFAModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header"><b><?=$lang['tfa']['delete_tfa'];?></b></div>
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <b><?=$lang['tfa']['delete_tfa'];?></b>
+      </div>
       <div class="modal-body">
         <form role="form" method="post">
           <div class="input-group">
@@ -125,7 +137,10 @@ if (isset($_SESSION['pending_tfa_method'])):
 <div class="modal fade" id="ConfirmTFAModal" tabindex="-1" role="dialog" aria-labelledby="ConfirmTFAModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header"><button type="button" class="close" data-dismiss="modal">&times;</button><b><?=$lang['tfa'][$tfa_method];?></b></div>
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button><b>
+        <?=$lang['tfa'][$tfa_method];?></b>
+      </div>
       <div class="modal-body">
       <?php
       switch ($tfa_method) {
