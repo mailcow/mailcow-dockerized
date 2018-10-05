@@ -407,8 +407,8 @@ echo "var mailcow_cc_username = '". $_SESSION['mailcow_cc_username'] . "';\n";
 echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
 ?>
 </script>
-<script src="js/footable.min.js"></script>
-<script src="js/user.js"></script>
+<script src="/js/footable.min.js"></script>
+<script src="/js/user.js"></script>
 <?php
 require_once("inc/footer.inc.php");
 }

@@ -1082,8 +1082,8 @@ echo "var csrf_token = '". $_SESSION['CSRF']['TOKEN'] . "';\n";
 echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
 ?>
 </script>
-<script src="js/footable.min.js"></script>
-<script src="js/edit.js"></script>
+<script src="/js/footable.min.js"></script>
+<script src="/js/edit.js"></script>
 <?php
 require_once("inc/footer.inc.php");
 ?>

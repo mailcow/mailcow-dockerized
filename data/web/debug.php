@@ -288,8 +288,8 @@ echo "var log_pagination_size = '". $LOG_PAGINATION_SIZE . "';\n";
 
 ?>
 </script>
-<script src="js/footable.min.js"></script>
-<script src="js/debug.js"></script>
+<script src="/js/footable.min.js"></script>
+<script src="/js/debug.js"></script>
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
 }
