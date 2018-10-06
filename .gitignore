@@ -23,4 +23,6 @@ data/conf/nginx/*.bak
 data/conf/dovecot/extra.conf
 data/conf/rspamd/custom/*
 data/conf/portainer/
+data/gitea/
+data/gogs/
 docker-compose.override.yml
