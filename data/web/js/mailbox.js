@@ -8,6 +8,7 @@ $(document).ready(function() {
         dataType: 'json',
         url: '/api/v1/get/domain/all',
         jsonp: false,
+        async: false,
         error: function () {
           domain_list.push('Cannot read domain list');
         },
