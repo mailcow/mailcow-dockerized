@@ -5,8 +5,8 @@ if [[ ! ${1} =~ (backup|restore) ]]; then
   exit 1
 fi
 
-if [[ ${1} == "backup" && ! ${2} =~ (vmail|redis|rspamd|postfix|mysql|all) ]]; then
-  echo "Second parameter needs to be 'vmail', 'redis', 'rspamd', 'postfix', 'mysql' or 'all'"
+if [[ ${1} == "backup" && ! ${2} =~ (crypt|vmail|redis|rspamd|postfix|mysql|all) ]]; then
+  echo "Second parameter needs to be 'vmail', 'crypt', 'redis', 'rspamd', 'postfix', 'mysql' or 'all'"
   exit 1
 fi
 
@@ -61,6 +61,12 @@ function backup() {
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
         -v $(docker volume ls -qf name=${CMPS_PRJ}_vmail-vol-1):/vmail \
         debian:stretch-slim /bin/tar --warning='no-file-ignored' -Pcvpzf /backup/backup_vmail.tar.gz /vmail
+      ;;&
+    crypt|all)
+      docker run --rm \
+        -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
+        -v $(docker volume ls -qf name=${CMPS_PRJ}_crypt-vol-1):/crypt \
+        debian:stretch-slim /bin/tar --warning='no-file-ignored' -Pcvpzf /backup/backup_crypt.tar.gz /crypt
       ;;&
     redis|all)
       docker exec $(docker ps -qf name=redis-mailcow) redis-cli save
@@ -128,6 +134,14 @@ function restore() {
         debian:stretch-slim /bin/tar -Pxvzf /backup/backup_redis.tar.gz
       docker start $(docker ps -aqf name=redis-mailcow)
       ;;
+    crypt)
+      docker stop $(docker ps -qf name=dovecot-mailcow)
+      docker run -it --rm \
+        -v ${RESTORE_LOCATION}:/backup \
+        -v $(docker volume ls -qf name=${CMPS_PRJ}_crypt-vol-1):/crypt \
+        debian:stretch-slim /bin/tar -Pxvzf /backup/backup_crypt.tar.gz
+      docker start $(docker ps -aqf name=dovecot-mailcow)
+      ;;
     rspamd)
       docker stop $(docker ps -qf name=rspamd-mailcow)
       docker run -it --rm \
@@ -189,7 +203,7 @@ elif [[ ${1} == "restore" ]]; then
   echo
   declare -A FILE_SELECTION
   RESTORE_POINT="${FOLDER_SELECTION[${input_sel}]}"
-  if [[ -z $(find "${FOLDER_SELECTION[${input_sel}]}" -maxdepth 1 -type f -regex ".*\(redis\|rspamd\|mysql\|vmail\|postfix\).*") ]]; then
+  if [[ -z $(find "${FOLDER_SELECTION[${input_sel}]}" -maxdepth 1 -type f -regex ".*\(redis\|rspamd\|mysql\|crypt\|vmail\|postfix\).*") ]]; then
     echo "No datasets found"
     exit 1
   fi
@@ -197,6 +211,10 @@ elif [[ ${1} == "restore" ]]; then
     if [[ ${file} =~ vmail ]]; then
       echo "[ ${i} ] - Mail directory (/var/vmail)"
       FILE_SELECTION[${i}]="vmail"
+      ((i++))
+    elif [[ ${file} =~ crypt ]]; then
+      echo "[ ${i} ] - Crypt data"
+      FILE_SELECTION[${i}]="crypt"
       ((i++))
     elif [[ ${file} =~ redis ]]; then
       echo "[ ${i} ] - Redis DB"

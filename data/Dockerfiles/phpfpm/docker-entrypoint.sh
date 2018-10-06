@@ -4,11 +4,13 @@ set -e
 function array_by_comma { local IFS=","; echo "$*"; }
 
 # Wait for containers
-while ! mysqladmin ping --host mysql -u${DBUSER} -p${DBPASS} --silent; do
+while ! mysqladmin ping --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
+  echo "Waiting for SQL..."
   sleep 2
 done
 
 until [[ $(redis-cli -h redis-mailcow PING) == "PONG" ]]; do
+  echo "Waiting for Redis..."
   sleep 2
 done
 
@@ -18,11 +20,11 @@ redis-cli -h redis-mailcow DEL DOMAIN_MAP
 while read line
 do
   DOMAIN_ARR+=("$line")
-done < <(mysql -h mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM domain" -Bs)
+done < <(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM domain" -Bs)
 while read line
 do
   DOMAIN_ARR+=("$line")
-done < <(mysql -h mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT alias_domain FROM alias_domain" -Bs)
+done < <(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT alias_domain FROM alias_domain" -Bs)
 
 if [[ ! -z ${DOMAIN_ARR} ]]; then
 for domain in "${DOMAIN_ARR[@]}"; do
@@ -48,7 +50,7 @@ if [[ ${API_ALLOW_FROM} != "invalid" ]] && \
   done
   VALIDATED_IPS=$(array_by_comma ${VALIDATED_API_ALLOW_FROM_ARR[*]})
   if [[ ! -z ${VALIDATED_IPS} ]]; then
-    mysql --host mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
+    mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
 INSERT INTO api (username, api_key, active, allow_from)
 SELECT username, "${API_KEY}", '1', "${VALIDATED_IPS}" FROM admin WHERE superadmin='1' AND active='1'
 ON DUPLICATE KEY UPDATE active = '1', allow_from = "${VALIDATED_IPS}", api_key = "${API_KEY}";

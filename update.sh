@@ -12,7 +12,6 @@ DATE=$(date +%Y-%m-%d_%H_%M_%S)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 docker_garbage() {
-  echo -e "\e[32mCollecting garbage...\e[0m"
   IMGS_TO_DELETE=()
   for container in $(grep -oP "image: \Kmailcow.+" docker-compose.yml); do
     REPOSITORY=${container/:*}
@@ -74,6 +73,7 @@ while (($#)); do
       MERGE_STRATEGY=ours
     ;;
     --gc)
+      echo -e "\e[32mCollecting garbage...\e[0m"
       docker_garbage
       exit 0
     ;;
@@ -119,6 +119,7 @@ CONFIG_ARRAY=(
   "SQL_PORT"
   "API_KEY"
   "API_ALLOW_FROM"
+  "MAILDIR_GC_TIME"
 )
 
 sed -i '$a\' mailcow.conf
@@ -199,6 +200,15 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo '# Use this IPv6 for outgoing connections (SNAT)' >> mailcow.conf
       echo "#SNAT6_TO_SOURCE=" >> mailcow.conf
+    fi
+  elif [[ ${option} == "MAILDIR_GC_TIME" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Garbage collector cleanup' >> mailcow.conf
+      echo '# Deleted domains and mailboxes are moved to /var/vmail/_garbage/timestamp_sanitizedstring' >> mailcow.conf
+      echo '# How long should objects remain in the garbage until they are being deleted? (value in minutes)' >> mailcow.conf
+      echo '# Check interval is hourly' >> mailcow.conf
+      echo 'MAILDIR_GC_TIME=1440' >> mailcow.conf
     fi
   elif ! grep -q ${option} mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"

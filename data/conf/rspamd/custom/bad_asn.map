@@ -1,11 +1,12 @@
 # High spam networks, disabled by default
+# ASN:SCORE DESC
+# Remove comment to enable score
 #201942:5 #Soltia Consulting SL - ipinfo.io
-#16276:5 #OVH
-#12876:5 #ONLINE S.A.S
-#31034:5
-#12874:5
-#30823:5
-#197071:5
+#16276:2 #OVH
+#12876:2 #ONLINE S.A.S
+#31034:5 #ARUBA-ASN, IT
+#12874:5 #FASTWEB, IT
+#30823:3 #PKV spam
 #42831:5 #UK Dedicated Servers Ltd
 #29119:5 #Aire Networks del Mediterraneo S.L.U.
 #13335:5 #Cloudflare
@@ -17,7 +18,7 @@
 #14061:4 #Digitalocean
 #55293:4 #A2 Hosting
 #63018:4 #US Dedicated
-#197518:2
+#197518:2 #RACKMARKT
 #44493:2
 #46606:2
 #49505:2
@@ -25,3 +26,5 @@
 #197695:2
 #198068:2
 #43146:2
+#49100:4
+#39364:4

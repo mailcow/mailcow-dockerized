@@ -18,32 +18,32 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="host1"><?=$lang['add']['hostname'];?></label>
 						<div class="col-sm-10">
-						<input type="text" class="form-control" name="host1" id="host1" required>
+						<input type="text" class="form-control" name="host1" required>
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="port1"><?=$lang['add']['port'];?></label>
 						<div class="col-sm-10">
-						<input type="number" class="form-control" name="port1" id="port1" min="1" max="65535" value="143" required>
+						<input type="number" class="form-control" name="port1" min="1" max="65535" value="143" required>
             <small class="help-block">1-65535</small>
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="user1"><?=$lang['add']['username'];?></label>
 						<div class="col-sm-10">
-						<input type="text" class="form-control" name="user1" id="user1" required>
+						<input type="text" class="form-control" name="user1" required>
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="password1"><?=$lang['add']['password'];?></label>
 						<div class="col-sm-10">
-						<input type="password" class="form-control" name="password1" id="password1" required>
+						<input type="password" class="form-control" name="password1" data-hibp="true" required>
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="enc1"><?=$lang['add']['enc_method'];?></label>
 						<div class="col-sm-10">
-							<select name="enc1" id="enc1" title="<?=$lang['add']['select'];?>" required>
+							<select name="enc1" title="<?=$lang['add']['select'];?>" required>
                 <option selected>TLS</option>
                 <option>SSL</option>
                 <option>PLAIN</option>
@@ -60,27 +60,27 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="subfolder2"><?=$lang['edit']['subfolder2'];?></label>
 						<div class="col-sm-10">
-						<input type="text" class="form-control" name="subfolder2" id="subfolder2" value="External">
+						<input type="text" class="form-control" name="subfolder2" value="External">
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="maxage"><?=$lang['edit']['maxage'];?></label>
 						<div class="col-sm-10">
-						<input type="number" class="form-control" name="maxage" id="maxage" min="0" max="32000" value="0">
+						<input type="number" class="form-control" name="maxage" min="0" max="32000" value="0">
             <small class="help-block">0-32000</small>
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="maxbytespersecond"><?=$lang['edit']['maxbytespersecond'];?></label>
 						<div class="col-sm-10">
-						<input type="number" class="form-control" name="maxbytespersecond" id="maxbytespersecond" min="0" max="125000000" value="0">
+						<input type="number" class="form-control" name="maxbytespersecond" min="0" max="125000000" value="0">
             <small class="help-block">0-125000000</small>
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="exclude"><?=$lang['add']['exclude'];?></label>
 						<div class="col-sm-10">
-						<input type="text" class="form-control" name="exclude" id="exclude" value="(?i)spam|(?i)junk">
+						<input type="text" class="form-control" name="exclude" value="(?i)spam|(?i)junk">
 						</div>
 					</div>
 					<div class="form-group">
@@ -127,7 +127,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
-              <button class="btn btn-default" id="add_item" data-id="add_syncjob" data-api-url='add/syncjob' data-api-attr='{}' href="#"><?=$lang['admin']['add'];?></button>
+              <button class="btn btn-default" data-action="add_item" data-id="add_syncjob" data-api-url='add/syncjob' data-api-attr='{}' href="#"><?=$lang['admin']['add'];?></button>
 						</div>
 					</div>
 				</form>
@@ -155,13 +155,13 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
           <div class="form-group">
             <label class="control-label col-sm-3" for="user_new_pass"><?=$lang['user']['new_password'];?></label>
             <div class="col-sm-5">
-            <input type="password" class="form-control" name="user_new_pass" id="user_new_pass" autocomplete="off" required>
+            <input type="password" data-hibp="true" class="form-control" name="user_new_pass" autocomplete="off" required>
             </div>
           </div>
           <div class="form-group">
             <label class="control-label col-sm-3" for="user_new_pass2"><?=$lang['user']['new_password_repeat'];?></label>
             <div class="col-sm-5">
-            <input type="password" class="form-control" name="user_new_pass2" id="user_new_pass2" autocomplete="off" required>
+            <input type="password" class="form-control" name="user_new_pass2" autocomplete="off" required>
             <p class="help-block"><?=$lang['user']['new_password_description'];?></p>
             </div>
           </div>
@@ -169,12 +169,12 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
           <div class="form-group">
             <label class="control-label col-sm-3" for="user_old_pass"><?=$lang['user']['password_now'];?></label>
             <div class="col-sm-5">
-            <input type="password" class="form-control" name="user_old_pass" id="user_old_pass" autocomplete="off" required>
+            <input type="password" class="form-control" name="user_old_pass" autocomplete="off" required>
             </div>
           </div>
           <div class="form-group">
             <div class="col-sm-offset-3 col-sm-9">
-              <button class="btn btn-default" id="edit_selected" data-id="pwchange" data-item="null" data-api-url='edit/self' data-api-attr='{}' href="#"><?=$lang['user']['change_password'];?></button>
+              <button class="btn btn-default" data-action="edit_selected" data-id="pwchange" data-item="null" data-api-url='edit/self' data-api-attr='{}' href="#"><?=$lang['user']['change_password'];?></button>
             </div>
           </div>
         </form>

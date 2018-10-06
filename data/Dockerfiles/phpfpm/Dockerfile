@@ -1,11 +1,11 @@
 FROM php:7.2-fpm-alpine3.7
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
-ENV APCU_PECL 5.1.11
+ENV APCU_PECL 5.1.12
 ENV IMAGICK_PECL 3.4.3
 ENV MAILPARSE_PECL 3.0.2
 ENV MEMCACHED_PECL 3.0.4
-ENV REDIS_PECL 4.0.2
+ENV REDIS_PECL 4.1.1
 
 RUN apk add -U --no-cache autoconf \
   bash \

@@ -5,9 +5,9 @@ $(document).ready(function() {
     } else {
       var parent_btn_grp = $(elem).parentsUntil(".btn-group").parent();
       if (parent_btn_grp.hasClass('btn-group')) {
-        parent_btn_grp.replaceWith('<button class="btn btn-default btn-sm" disabled>' + loading_text + '</a>');
+        parent_btn_grp.replaceWith('<button class="btn btn-default btn-sm" disabled>' + lang_footer.loading + '</a>');
       }
-      $(elem).text(loading_text);
+      $(elem).text(lang_footer.loading);
       $(elem).attr('data-submitted', '1');
       function disableF5(e) { if ((e.which || e.keyCode) == 116 || (e.which || e.keyCode) == 82) e.preventDefault(); };
       $(document).on("keydown", disableF5);
@@ -71,7 +71,7 @@ $(document).ready(function() {
   });
 
   // General API edit actions
-  $(document).on('click', '#edit_selected', function(e) {
+  $(document).on('click', "[data-action='edit_selected']", function(e) {
     e.preventDefault();
     var id = $(this).data('id');
     var api_url = $(this).data('api-url');
@@ -159,7 +159,7 @@ $(document).ready(function() {
   });
 
   // General API add actions
-  $(document).on('click', '#add_item', function(e) {
+  $(document).on('click', "[data-action='add_item']", function(e) {
     e.preventDefault();
     var id = $(this).data('id');
     var api_url = $(this).data('api-url');
@@ -252,7 +252,7 @@ $(document).ready(function() {
   });
 
   // General API delete actions
-  $(document).on('click', '#delete_selected', function(e) {
+  $(document).on('click', "[data-action='delete_selected']", function(e) {
     e.preventDefault();
     var id = $(this).data('id');
     // If clicked element #delete_selected has data-item attribute, it is added to "items"
@@ -283,6 +283,7 @@ $(document).ready(function() {
         keyboard: false
       })
       .one('click', '#IsConfirmed', function(e) {
+        if (is_active($('#IsConfirmed'))) { return false; }
         $.ajax({
           type: "POST",
           dataType: "json",

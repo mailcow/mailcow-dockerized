@@ -6,6 +6,14 @@ function policy($_action, $_scope, $_data = null) {
 	$_data_log = $_data;
   switch ($_action) {
     case 'add':
+      if (!isset($_SESSION['acl']['spam_policy']) || $_SESSION['acl']['spam_policy'] != "1" ) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }
       switch ($_scope) {
         case 'domain':
           $object = $_data['domain'];
@@ -90,14 +98,6 @@ function policy($_action, $_scope, $_data = null) {
             );
             return false;
           }
-          if (!isset($_SESSION['acl']['spam_policy']) || $_SESSION['acl']['spam_policy'] != "1" ) {
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
-              'msg' => 'access_denied'
-            );
-            return false;
-          }
           if ($_data['object_list'] == "bl") {
             $object_list = "blacklist_from";
           }
@@ -151,6 +151,14 @@ function policy($_action, $_scope, $_data = null) {
       }
     break;
     case 'delete':
+      if (!isset($_SESSION['acl']['spam_policy']) || $_SESSION['acl']['spam_policy'] != "1" ) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }
       switch ($_scope) {
         case 'domain':
           (array)$prefids = $_data['prefid'];
@@ -214,14 +222,6 @@ function policy($_action, $_scope, $_data = null) {
           }
           else {
             $prefids = $_data['prefid'];
-          }
-          if (!isset($_SESSION['acl']['spam_policy']) || $_SESSION['acl']['spam_policy'] != "1" ) {
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
-              'msg' => 'access_denied'
-            );
-            return false;
           }
           foreach ($prefids as $prefid) {
             if (!is_numeric($prefid)) {

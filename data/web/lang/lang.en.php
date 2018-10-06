@@ -16,6 +16,9 @@ $lang['footer']['delete_these_items'] = 'Please confirm your changes to the foll
 $lang['footer']['delete_now'] = 'Delete now';
 $lang['footer']['cancel'] = 'Cancel';
 
+$lang['footer']['hibp_nok'] = 'Matched! This is a potentially dangerous password!';
+$lang['footer']['hibp_ok'] = 'No match found.';
+
 $lang['danger']['mysql_error'] = "MySQL error: %s";
 $lang['danger']['redis_error'] = "Redis error: %s";
 $lang['danger']['unknown_tfa_method'] = "Unknown TFA method";
@@ -43,6 +46,7 @@ $lang['danger']['domain_cannot_match_hostname'] = "Domain cannot match hostname"
 $lang['warning']['domain_added_sogo_failed'] = "Added domain but failed to restart SOGo, please check your server logs.";
 $lang['danger']['rl_timeframe'] = "Rate limit time frame is incorrect";
 $lang['success']['rl_saved'] = "Rate limit for object %s saved";
+$lang['success']['acl_saved'] = "ACL for object %s saved";
 $lang['success']['deleted_syncjobs'] = "Deleted syncjobs: %s";
 $lang['success']['deleted_syncjob'] = "Deleted syncjob ID %s";
 $lang['success']['delete_filters'] = "Deleted filters: %s";
@@ -238,6 +242,17 @@ $lang['header']['mailcow_settings'] = 'Configuration';
 $lang['header']['administration'] = 'Administration';
 $lang['header']['mailboxes'] = 'Mailboxes';
 $lang['header']['user_settings'] = 'User settings';
+$lang['mailbox']['tls_policy_maps'] = 'TLS policy maps';
+$lang['mailbox']['tls_policy_maps_long'] = 'Outgoing TLS policy map overrides';
+$lang['mailbox']['tls_policy_maps_info'] = 'This policy map overrides outgoing TLS transport rules independently of a users TLS policy settings.<br>
+  Please check <a href="http://www.postfix.org/postconf.5.html#smtp_tls_policy_maps" target="_blank">the "smtp_tls_policy_maps" docs</a> for further information.';
+$lang['mailbox']['tls_enforce_in'] = 'Enforce TLS incoming';
+$lang['mailbox']['tls_enforce_out'] = 'Enforce TLS outgoing';
+$lang['mailbox']['tls_map_dest'] = 'Destination';
+$lang['mailbox']['tls_map_dest_info'] = 'Examples: example.org, .example.org, mail@example.org, [mail.example.org]:25';
+$lang['mailbox']['tls_map_policy'] = 'Policy';
+$lang['mailbox']['tls_map_parameters'] = 'Parameters';
+$lang['mailbox']['tls_map_parameters_info'] = 'Empty or parameters, for example: protocols=!SSLv2 ciphers=medium exclude=3DES';
 $lang['mailbox']['booking_0'] = 'Always show as free';
 $lang['mailbox']['booking_lt0'] = 'Unlimited, but show as busy when booked';
 $lang['mailbox']['booking_custom'] = 'Hard-limit to a custom amount of bookings';
@@ -342,6 +357,7 @@ $lang['edit']['full_name'] = 'Full name';
 $lang['edit']['quota_mb'] = 'Quota (MiB)';
 $lang['edit']['sender_acl'] = 'Allow to send as';
 $lang['edit']['sender_acl_disabled'] = '↳ <span class="label label-danger">Sender check is disabled</span>';
+$lang['user']['sender_acl_disabled'] = '<span class="label label-danger">Sender check is disabled</span>';
 $lang['edit']['previous'] = 'Previous page';
 $lang['edit']['unchanged_if_empty'] = 'If unchanged leave blank';
 $lang['edit']['dont_check_sender_acl'] = "Disable sender check for domain %s (+ alias domains)";
@@ -349,6 +365,22 @@ $lang['edit']['multiple_bookings'] = 'Multiple bookings';
 $lang['edit']['kind'] = 'Kind';
 $lang['edit']['resource'] = 'Resource';
 
+$lang['acl']['spam_alias'] = 'Temporary aliases';
+$lang['acl']['tls_policy'] = 'TLS policy';
+$lang['acl']['spam_score'] = 'Spam score';
+$lang['acl']['spam_policy'] = 'Blacklist/Whitelist';
+$lang['acl']['delimiter_action'] = 'Delimiter action';
+$lang['acl']['syncjobs'] = 'Sync jobs';
+$lang['acl']['eas_reset'] = 'Reset EAS devices';
+$lang['acl']['quarantine'] = 'Quarantine';
+$lang['acl']['login_as'] = 'Login as mailbox user';
+$lang['acl']['bcc_maps'] = 'BCC maps';
+$lang['acl']['filters'] = 'Filters';
+$lang['acl']['ratelimit'] = 'Rate limit';
+$lang['acl']['recipient_maps'] = 'Recipient maps';
+$lang['acl']['prohibited'] = 'Prohibited by ACL';
+
+$lang['add']['generate'] = 'generate';
 $lang['add']['syncjob'] = 'Add sync job';
 $lang['add']['syncjob_hint'] = 'Be aware that passwords need to be saved plain-text!';
 $lang['add']['hostname'] = 'Hostname';
@@ -610,7 +642,7 @@ $lang['quarantine']['subj'] = "Subject";
 $lang['quarantine']['text_plain_content'] = "Content (text/plain)";
 $lang['quarantine']['text_from_html_content'] = "Content (converted html)";
 $lang['quarantine']['atts'] = "Attachments";
-$lang['danger']['fuzzy_learn_error'] = "Fuzzy hash learn error: %s";
+$lang['warning']['fuzzy_learn_error'] = "Fuzzy hash learn error: %s";
 $lang['danger']['spam_learn_error'] = "Spam learn error: %s";
 $lang['success']['qlearn_spam'] = "Message ID %s was learned as spam and deleted";
 
@@ -646,6 +678,7 @@ $lang['mailbox']['bcc_maps'] = "BCC maps";
 $lang['mailbox']['bcc_to_sender'] = "Switch to sender map type";
 $lang['mailbox']['bcc_to_rcpt'] = "Switch to recipient map type";
 $lang['mailbox']['add_bcc_entry'] = "Add BCC map";
+$lang['mailbox']['add_tls_policy_map'] = "Add TLS policy map";
 $lang['mailbox']['bcc_info'] = "BCC maps are used to silently forward copies of all messages to another address. A recipient map type entry is used, when the local destination acts as recipient of a mail. Sender maps conform to the same principle.<br/>
   The local destination will not be informed about a failed delivery.";
 $lang['mailbox']['address_rewriting'] = 'Address rewriting';
@@ -658,10 +691,14 @@ $lang['mailbox']['recipient_map_old'] = 'Original recipient';
 $lang['mailbox']['recipient_map_new'] = 'New recipient';
 $lang['danger']['invalid_recipient_map_new'] = 'Invalid new recipient specified: %s';
 $lang['danger']['invalid_recipient_map_old'] = 'Invalid original recipient specified: %s';
-$lang['danger']['recipient_map_entry_exists'] = 'A Recipient map entry for %s exists';
-$lang['success']['recipient_map_entry_saved'] = 'Recipient map entry for %s has been saved';
-$lang['success']['recipient_map_entry_deleted'] = 'Recipient map entry for %s has been deleted';
+$lang['danger']['recipient_map_entry_exists'] = 'A Recipient map entry "%s" exists';
+$lang['success']['recipient_map_entry_saved'] = 'Recipient map entry "%s" has been saved';
+$lang['success']['recipient_map_entry_deleted'] = 'Recipient map ID %s has been deleted';
+$lang['danger']['tls_policy_map_entry_exists'] = 'A TLS policy map entry "%s" exists';
+$lang['success']['tls_policy_map_entry_saved'] = 'TLS policy map entry "%s" has been saved';
+$lang['success']['tls_policy_map_entry_deleted'] = 'TLS policy map ID %s has been deleted';
 $lang['mailbox']['add_recipient_map_entry'] = 'Add recipient map';
+$lang['danger']['tls_policy_map_parameter_invalid'] = "Policy parameter is invalid";
 
 $lang['oauth2']['scope_ask_permission'] = 'An application asked for the following permissions';
 $lang['oauth2']['profile'] = 'Profile';

@@ -16,6 +16,9 @@ $lang['footer']['delete_these_items'] = 'Sind Sie sicher, dass die Änderungen a
 $lang['footer']['delete_now'] = 'Jetzt löschen';
 $lang['footer']['cancel'] = 'Abbrechen';
 
+$lang['footer']['hibp_nok'] = 'Übereinstimmung gefunden! Dieses Passwort ist potentiell gefährlich!';
+$lang['footer']['hibp_ok'] = 'Keine Übereinstimmung gefunden.';
+
 $lang['danger']['mysql_error'] = "MySQL Fehler: %s";
 $lang['danger']['redis_error'] = "Redis Fehler: %s";
 $lang['danger']['unknown_tfa_method'] = "Unbekannte TFA Methode";
@@ -43,6 +46,7 @@ $lang['danger']['domain_cannot_match_hostname'] = "Domain darf nicht dem Hostnam
 $lang['warning']['domain_added_sogo_failed'] = "Domain wurde hinzugefügt; SOGo konnte nicht neugestartet werden";
 $lang['danger']['rl_timeframe'] = "Ratelimit Zeitraum ist inkorrekt";
 $lang['success']['rl_saved'] = "Ratelimit für Objekt %s wurde gesetzt";
+$lang['success']['acl_saved'] = "ACL für Objekt %s wurde gesetzt";
 $lang['success']['deleted_syncjobs'] = "Syncjobs gelöscht: %s";
 $lang['success']['deleted_syncjob'] = "Syncjobs ID %s gelöscht";
 $lang['success']['delete_filters'] = "Filter gelöscht: %s";
@@ -236,6 +240,17 @@ $lang['header']['mailcow_settings'] = 'Konfiguration';
 $lang['header']['administration'] = 'Administration';
 $lang['header']['mailboxes'] = 'Mailboxen';
 $lang['header']['user_settings'] = 'Benutzereinstellungen';
+$lang['mailbox']['tls_policy_maps'] = 'TLS-Richtlinien';
+$lang['mailbox']['tls_policy_maps_long'] = 'Ausgehende TLS-Richtlinien';
+$lang['mailbox']['tls_policy_maps_info'] = 'Nachstehende Richtlinien erzwingen TLS-Transportregeln unabhängig von TLS-Richtlinieneinstellungen eines Benutzers.<br>
+  Für weitere Informationen zur Syntax sollte <a href="http://www.postfix.org/postconf.5.html#smtp_tls_policy_maps" target="_blank">die "smtp_tls_policy_maps" Dokumentation</a> konsultiert werden.';
+$lang['mailbox']['tls_enforce_in'] = 'Enforce TLS incoming';
+$lang['mailbox']['tls_enforce_out'] = 'Enforce TLS outgoing';
+$lang['mailbox']['tls_map_dest'] = 'Ziel';
+$lang['mailbox']['tls_map_dest_info'] = 'Beispiele: example.org, .example.org, mail@example.org, [mail.example.org]:25';
+$lang['mailbox']['tls_map_policy'] = 'Richtlinie';
+$lang['mailbox']['tls_map_parameters'] = 'Parameter';
+$lang['mailbox']['tls_map_parameters_info'] = 'Leer oder Parameter, Beispiele: protocols=!SSLv2 ciphers=medium exclude=3DES';
 $lang['mailbox']['booking_0'] = 'Immer als verfügbar anzeigen';
 $lang['mailbox']['booking_lt0'] = 'Unbegrenzt, jedoch anzeigen, wenn gebucht';
 $lang['mailbox']['booking_custom'] = 'Benutzerdefiniertes Limit';
@@ -332,6 +347,8 @@ $lang['edit']['relay_all_info'] = '<small>Wenn Sie <b>nicht</b> alle Empfänger-
 $lang['edit']['full_name'] = 'Voller Name';
 $lang['edit']['quota_mb'] = 'Speicherplatz (MiB)';
 $lang['edit']['sender_acl'] = 'Darf Nachrichten versenden als';
+$lang['edit']['sender_acl_disabled'] = '↳ <span class="label label-danger">Absenderprüfung deaktiviert</span>';
+$lang['user']['sender_acl_disabled'] = '<span class="label label-danger">Absenderprüfung deaktiviert</span>';
 $lang['edit']['previous'] = 'Vorherige Seite';
 $lang['edit']['unchanged_if_empty'] = 'Unverändert, wenn leer';
 $lang['edit']['dont_check_sender_acl'] = 'Absender für Domain %s u. Alias-Dom. nicht prüfen';
@@ -339,7 +356,22 @@ $lang['edit']['multiple_bookings'] = 'Mehrfaches Buchen';
 $lang['edit']['kind'] = 'Art';
 $lang['edit']['resource'] = 'Ressource';
 
-$lang['add']['syncjob'] = 'Sync-Job erstellen';
+$lang['acl']['spam_alias'] = 'Temporäre E-Mail Aliasse';
+$lang['acl']['tls_policy'] = 'Verschlüsselungsrichtlinie';
+$lang['acl']['spam_score'] = 'Spam Bewertung';
+$lang['acl']['spam_policy'] = 'Blacklist/Whitelist';
+$lang['acl']['delimiter_action'] = 'Delimiter Aktionen (tags)';
+$lang['acl']['syncjobs'] = 'Sync Jobs';
+$lang['acl']['eas_reset'] = 'EAS-Cache zurücksetzen';
+$lang['acl']['quarantine'] = 'Quarantäne';
+$lang['acl']['login_as'] = 'Einloggen als Mailbox-Benutzer';
+$lang['acl']['bcc_maps'] = 'BCC Maps';
+$lang['acl']['filters'] = 'Filter';
+$lang['acl']['ratelimit'] = 'Rate limit';
+$lang['acl']['recipient_maps'] = 'Empfängerumschreibungen';
+$lang['acl']['prohibited'] = 'Untersagt durch Richtlinie';
+
+$lang['add']['generate'] = 'generieren';
 $lang['add']['syncjob_hint'] = 'Passwörter werden unverschlüsselt abgelegt!';
 $lang['add']['hostname'] = 'Servername';
 $lang['add']['port'] = 'Port';
@@ -597,7 +629,7 @@ $lang['quarantine']['subj'] = "Betreff";
 $lang['quarantine']['text_plain_content'] = "Inhalt (text/plain)";
 $lang['quarantine']['text_from_html_content'] = "Inhalt (html, konvertiert)";
 $lang['quarantine']['atts'] = "Anhänge";
-$lang['danger']['fuzzy_learn_error'] = "Fuzzy Lernfehler: %s";
+$lang['warning']['fuzzy_learn_error'] = "Fuzzy Lernfehler: %s";
 $lang['danger']['spam_learn_error'] = "Spam Lernfehler: %s";
 $lang['success']['qlearn_spam'] = "Nachricht ID %s wurde als Spam gelernt und gelöscht";
 
@@ -645,9 +677,13 @@ $lang['mailbox']['recipient_map_new_info'] = 'Der neue Empfänger muss eine E-Ma
 $lang['mailbox']['recipient_map_old'] = 'Original Empfänger';
 $lang['mailbox']['recipient_map_new'] = 'Neuer Empfänger';
 $lang['mailbox']['add_recipient_map_entry'] = 'Empfängerumschreibung hinzufügen';
-$lang['danger']['invalid_recipient_map_new'] = 'Neuer Empfänger %s ist ungültig';
-$lang['danger']['invalid_recipient_map_old'] = 'Originaler Empfänger %s ist ungültig';
-$lang['danger']['recipient_map_entry_exists'] = 'Eine Empfängerumschreibung für %s existiert bereits';
-$lang['success']['recipient_map_entry_saved'] = 'Empfängerumschreibung für Objekt %s wurde gespeichert';
-$lang['success']['recipient_map_entry_deleted'] = 'Empfängerumschreibung für Objekt %s wurde gelöscht';
-
+$lang['danger']['invalid_recipient_map_new'] = 'Neuer Empfänger "%s" ist ungültig';
+$lang['danger']['invalid_recipient_map_old'] = 'Originaler Empfänger "%s" ist ungültig';
+$lang['danger']['recipient_map_entry_exists'] = 'Eine Empfängerumschreibung für Objekt "%s" existiert bereits';
+$lang['success']['recipient_map_entry_saved'] = 'Empfängerumschreibung für Objekt "%s" wurde gespeichert';
+$lang['success']['recipient_map_entry_deleted'] = 'Empfängerumschreibung mit der ID %s wurde gelöscht';
+$lang['danger']['tls_policy_map_entry_exists'] = 'Eine TLS-Richtlinie "%s" existiert bereits';
+$lang['success']['tls_policy_map_entry_saved'] = 'TLS-Richtlinieneintrag "%s" wurde gespeichert';
+$lang['success']['tls_policy_map_entry_deleted'] = 'TLS-Richtlinie mit der ID %s wurde gelöscht';
+$lang['mailbox']['add_tls_policy_map'] = "TLS-Richtlinieneintrag hinzufügen";
+$lang['danger']['tls_policy_map_parameter_invalid'] = "Parameter ist ungültig";

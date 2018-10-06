@@ -27,7 +27,8 @@ if (strpos($data, 'autodiscover/outlook/responseschema') !== false) {
   }
 }
 
-$dsn = $database_type . ":host=" . $database_host . ";dbname=" . $database_name;
+//$dsn = $database_type . ":host=" . $database_host . ";dbname=" . $database_name;
+$dsn = $database_type . ":unix_socket=" . $database_sock . ";dbname=" . $database_name;
 $opt = [
   PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
   PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,

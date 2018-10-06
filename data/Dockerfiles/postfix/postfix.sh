@@ -14,7 +14,7 @@ newaliases;
 cat <<EOF > /opt/postfix/conf/sql/mysql_relay_recipient_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT DISTINCT
   CASE WHEN '%d' IN (
@@ -29,10 +29,18 @@ query = SELECT DISTINCT
   END AS result;
 EOF
 
+cat <<EOF > /opt/postfix/conf/sql/mysql_tls_policy_override_maps.cf
+user = ${DBUSER}
+password = ${DBPASS}
+hosts = unix:/var/run/mysqld/mysqld.sock
+dbname = ${DBNAME}
+query = SELECT CONCAT(policy, ' ', parameters) AS tls_policy FROM tls_policy_override WHERE active = '1' AND dest = '%s'
+EOF
+
 cat <<EOF > /opt/postfix/conf/sql/mysql_tls_enforce_in_policy.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT IF(EXISTS(
   SELECT 'TLS_ACTIVE' FROM alias
@@ -49,7 +57,7 @@ EOF
 cat <<EOF > /opt/postfix/conf/sql/mysql_sender_dependent_default_transport_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT GROUP_CONCAT(transport SEPARATOR '') AS transport_maps
   FROM (
@@ -80,7 +88,7 @@ EOF
 cat <<EOF > /opt/postfix/conf/sql/mysql_sasl_passwd_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT CONCAT_WS(':', username, password) AS auth_data FROM relayhosts
   WHERE id IN (
@@ -96,7 +104,7 @@ EOF
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_alias_domain_catchall_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT goto FROM alias, alias_domain
   WHERE alias_domain.alias_domain = '%d'
@@ -107,7 +115,7 @@ EOF
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_alias_domain_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT username FROM mailbox, alias_domain
   WHERE alias_domain.alias_domain = '%d'
@@ -119,7 +127,7 @@ EOF
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_alias_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT goto FROM alias
   WHERE address='%s'
@@ -129,7 +137,7 @@ EOF
 cat <<EOF > /opt/postfix/conf/sql/mysql_recipient_bcc_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT bcc_dest FROM bcc_maps
   WHERE local_dest='%s'
@@ -140,7 +148,7 @@ EOF
 cat <<EOF > /opt/postfix/conf/sql/mysql_sender_bcc_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT bcc_dest FROM bcc_maps
   WHERE local_dest='%s'
@@ -151,7 +159,7 @@ EOF
 cat <<EOF > /opt/postfix/conf/sql/mysql_recipient_canonical_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT new_dest FROM recipient_maps
   WHERE old_dest='%s'
@@ -161,7 +169,7 @@ EOF
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_domains_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT alias_domain from alias_domain WHERE alias_domain='%s' AND active='1'
   UNION
@@ -174,7 +182,7 @@ EOF
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_mailbox_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT maildir FROM mailbox WHERE username='%s' AND active = '1'
 EOF
@@ -182,7 +190,7 @@ EOF
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_relay_domain_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT domain FROM domain WHERE domain='%s' AND backupmx = '1' AND active = '1'
 EOF
@@ -190,7 +198,7 @@ EOF
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_sender_acl.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 # First select queries domain and alias_domain to determine if domains are active.
 query = SELECT goto FROM alias
@@ -231,7 +239,7 @@ EOF
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_spamalias_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT goto FROM spamalias
   WHERE address='%s'
