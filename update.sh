@@ -3,7 +3,7 @@
 #exit on error and pipefail
 set -o pipefail
 
-for bin in curl docker-compose docker git awk sha1sum; do
+for bin in curl docker git awk sha1sum sha256sum; do
   if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
 done
 
@@ -249,6 +249,52 @@ if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   exit 0
 fi
 
+echo -e "\\e[32mFetching new docker-compose version...\\e[0m"
+sleep 0.2
+COMPOSE_FILE=$(command -v docker-compose)
+if [[ ! -z $(command -v pip) && $(pip list --local | grep -c docker-compose) == 1 ]]; then
+  true
+  #prevents breaking a working docker-compose installed with pip
+else
+  if ! LATEST_RELEASE=$(curl -s --fail-early --fail https://api.github.com/repos/docker/compose/releases/latest | grep 'tag_name' | cut -d '"' -f 4); then
+    echo -e "\\e[33mCannot determine latest docker-compose version, skipping...\\e[0m"
+  else
+  COMPOSE_VERSION=$(docker-compose version --short)
+    if [[ "$LATEST_RELEASE" != "$COMPOSE_VERSION" ]]; then
+      #Checks if compose is writable and even installed
+      if [[ -w $(command -v "$COMPOSE_FILE") ]] || [[ ! -x $(command -v docker-compose) ]]; then
+        #When docker-compose is not installed we try to fix it
+        if [[ ! -x $(command -v docker-compose) ]]; then COMPOSE_FILE="/usr/local/bin/docker-compose" && echo -e "\\e[33mdocker-compose is not installed trying to fix that\\e[0m"; fi
+        echo -e "\\e[33mUpdating docker-compose from $COMPOSE_VERSION to $LATEST_RELEASE \\e[0m"
+        curl -#L --fail-early --fail https://github.com/docker/compose/releases/download/"${LATEST_RELEASE}"/docker-compose-"$(uname -s)"-"$(uname -m)" -o "$COMPOSE_FILE".new
+        curl -#L --fail-early --fail https://github.com/docker/compose/releases/download/"${LATEST_RELEASE}"/docker-compose-"$(uname -s)"-"$(uname -m).sha256" -o "$COMPOSE_FILE".sha256
+        #Comparing Checksums
+        SHA256_LOCAL="$(sha256sum "${COMPOSE_FILE}.new" | cut -c-64)"
+        SHA256_EXPECTED="$(cut -c-64 "${COMPOSE_FILE}.sha256")"
+        if [[ "$SHA256_LOCAL" != "$SHA256_EXPECTED" ]]; then
+          echo -e "\\e[33mERROR: Downloaded file does not match remote checksum\\e[0m"
+          rm "${COMPOSE_FILE}".new
+        else
+          #Installing
+          chmod +x "$COMPOSE_FILE".new
+          mv "$COMPOSE_FILE".new "$COMPOSE_FILE"
+          rm "$COMPOSE_FILE".sha256
+          echo -e "\\e[33mSucessfully updated docker-compose to version $LATEST_RELEASE\\e[0m"
+        fi
+      else
+        echo -e "\\e[33mWARNING: $(command -v docker-compose) is not writable, but new version $LATEST_RELEASE is available (installed: $COMPOSE_VERSION)\\e[0m"
+        echo -e "\\e[33mWARNING: We are user $(whoami) but the file has (owner/group) "$(ls -l "$COMPOSE_FILE" | awk '{print $3, $4 }')" \\e[0m"
+      fi
+    fi
+  fi
+fi
+
+#If something fails to update or install we stop it
+if [[ ! -x $(command -v docker-compose) ]]; 
+  echo -e "\\e[33mWARNING: Unable to update while docker-compose is not correctly installed \\e[0m"
+  exit 1
+fi
+
 echo -e "Stopping mailcow... "
 sleep 2
 docker-compose down
@@ -281,27 +327,6 @@ elif [[ ${MERGE_RETURN} != 0 ]]; then
   echo
   echo "Run docker-compose up -d to restart your stack without updates or try again after fixing the mentioned errors."
   exit 1
-fi
-
-
-echo -e "\e[32mFetching new docker-compose version...\e[0m"
-sleep 2
-if [[ ! -z $(which pip) && $(pip list --local | grep -c docker-compose) == 1 ]]; then
-  true
-  #prevent breaking a working docker-compose installed with pip
-elif [[ $(curl -sL -w "%{http_code}" https://www.servercow.de/docker-compose/latest.php -o /dev/null) == "200" ]]; then
-  LATEST_COMPOSE=$(curl -#L https://www.servercow.de/docker-compose/latest.php)
-  COMPOSE_VERSION=$(docker-compose version --short)
-  if [[ "$LATEST_COMPOSE" != "$COMPOSE_VERSION" ]]; then
-    if [[ -w $(which docker-compose) ]]; then
-      curl -#L https://github.com/docker/compose/releases/download/${LATEST_COMPOSE}/docker-compose-$(uname -s)-$(uname -m) > $(which docker-compose)
-      chmod +x $(which docker-compose)
-    else
-      echo -e "\e[33mWARNING: $(which docker-compose) is not writable, but new version $LATEST_COMPOSE is available (installed: $COMPOSE_VERSION)\e[0m"
-    fi
-  fi
-else
-  echo -e "\e[33mCannot determine latest docker-compose version, skipping...\e[0m"
 fi
 
 echo -e "\e[32mFetching new images, if any...\e[0m"
