@@ -20,7 +20,7 @@ broken_sasl_auth_clients = yes
 disable_vrfy_command = yes
 maximal_backoff_time = 1800s
 maximal_queue_lifetime = 1d
-message_size_limit = 26214400
+message_size_limit = 104857600
 milter_default_action = accept
 milter_protocol = 6
 minimal_backoff_time = 300s
@@ -41,6 +41,7 @@ postscreen_greet_wait = 3s
 postscreen_non_smtp_command_enable = no
 postscreen_pipelining_enable = no
 proxy_read_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_sender_acl.cf,
+  proxy:mysql:/opt/postfix/conf/sql/mysql_tls_policy_override_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_sender_dependent_default_transport_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_tls_enforce_in_policy.cf,
@@ -127,3 +128,4 @@ smtp_sasl_auth_enable = yes
 smtp_sasl_password_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps.cf
 smtp_sasl_security_options = 
 smtp_sasl_mechanism_filter = plain, login
+smtp_tls_policy_maps=proxy:mysql:/opt/postfix/conf/sql/mysql_tls_policy_override_maps.cf

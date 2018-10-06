@@ -104,6 +104,12 @@ TZ=${MAILCOW_TZ}
 # Fixed project name
 COMPOSE_PROJECT_NAME=mailcowdockerized
 
+# Garbage collector cleanup
+# Deleted domains and mailboxes are moved to /var/vmail/_garbage/timestamp_sanitizedstring
+# How long should objects remain in the garbage until they are being deleted? (value in minutes)
+# Check interval is hourly
+MAILDIR_GC_TIME=1440
+
 # Additional SAN for the certificate
 ADDITIONAL_SAN=
 

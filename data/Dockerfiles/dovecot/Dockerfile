@@ -14,6 +14,7 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
   cpanminus \
   curl \
   default-libmysqlclient-dev \
+  dnsutils \
   libjson-webtoken-perl \
   libcgi-pm-perl \
   libcrypt-openssl-rsa-perl \
@@ -88,10 +89,11 @@ RUN curl https://www.dovecot.org/releases/2.3/dovecot-$DOVECOT_VERSION.tar.gz | 
   && rm -rf dovecot-2.3-pigeonhole-$PIGEONHOLE_VERSION
 
 RUN cpanm Data::Uniqid Mail::IMAPClient String::Util
-RUN echo '* * * * *   root   /usr/local/bin/imapsync_cron.pl' > /etc/cron.d/imapsync
-RUN echo '30 3 * * *   vmail  /usr/local/bin/doveadm quota recalc -A' > /etc/cron.d/dovecot-sync
-RUN echo '* * * * *   root  /usr/local/bin/trim_logs.sh >> /dev/stdout 2>&1' > /etc/cron.d/trim_logs
-
+RUN echo '* * * * *   root  /usr/local/bin/imapsync_cron.pl' > /etc/cron.d/imapsync
+RUN echo '30 3 * * *  vmail /usr/local/bin/doveadm quota recalc -A' > /etc/cron.d/dovecot-sync
+RUN echo '* * * * *   vmail /usr/local/bin/trim_logs.sh >> /dev/stdout 2>&1' > /etc/cron.d/trim_logs
+RUN echo '25 * * * *  vmail /usr/local/bin/maildir_gc.sh >> /dev/stdout 2>&1' > /etc/cron.d/maildir_gc
+RUN echo '30 1 * * *  root  /usr/local/bin/sa-rules.sh  >> /dev/stdout 2>&1' > /etc/cron.d/sa-rules
 COPY trim_logs.sh /usr/local/bin/trim_logs.sh
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
 COPY imapsync /usr/local/bin/imapsync
@@ -101,6 +103,8 @@ COPY report-spam.sieve /usr/local/lib/dovecot/sieve/report-spam.sieve
 COPY report-ham.sieve /usr/local/lib/dovecot/sieve/report-ham.sieve
 COPY rspamd-pipe-ham /usr/local/lib/dovecot/sieve/rspamd-pipe-ham
 COPY rspamd-pipe-spam /usr/local/lib/dovecot/sieve/rspamd-pipe-spam
+COPY sa-rules.sh /usr/local/bin/sa-rules.sh
+COPY maildir_gc.sh /usr/local/bin/maildir_gc.sh
 COPY docker-entrypoint.sh /
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 
@@ -109,7 +113,9 @@ RUN chmod +x /usr/local/lib/dovecot/sieve/rspamd-pipe-ham \
   /usr/local/bin/imapsync_cron.pl \
   /usr/local/bin/postlogin.sh \
   /usr/local/bin/imapsync \
-  /usr/local/bin/trim_logs.sh
+  /usr/local/bin/trim_logs.sh \
+  /usr/local/bin/sa-rules.sh \
+  /usr/local/bin/maildir_gc.sh
 
 RUN groupadd -g 5000 vmail \
   && groupadd -g 401 dovecot \

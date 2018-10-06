@@ -18,6 +18,17 @@ function last_login($user) {
     return false;
   }
 }
+function flush_memcached() {
+  try {
+    $m = new Memcached();
+    $m->addServer('memcached', 11211);
+    $m->flush();
+  }
+  catch ( Exception $e ) {
+    // Dunno
+  }
+}
+
 function logger($_data = false) {
   /*
   logger() will be called as last function
@@ -64,17 +75,23 @@ function logger($_data = false) {
         $user = 'unauthenticated';
         $role = 'unauthenticated';
       }
-      $stmt = $pdo->prepare("INSERT INTO `logs` (`type`, `task`, `msg`, `call`, `user`, `role`, `remote`, `time`) VALUES
-        (:type, :task, :msg, :call, :user, :role, :remote, UNIX_TIMESTAMP())");
-      $stmt->execute(array(
-        ':type' => $type,
-        ':task' => $task,
-        ':call' => $call,
-        ':msg' => $msg,
-        ':user' => $user,
-        ':role' => $role,
-        ':remote' => get_remote_ip()
-      ));
+      // We cannot log when logs is missing...
+      try {
+        $stmt = $pdo->prepare("INSERT INTO `logs` (`type`, `task`, `msg`, `call`, `user`, `role`, `remote`, `time`) VALUES
+          (:type, :task, :msg, :call, :user, :role, :remote, UNIX_TIMESTAMP())");
+        $stmt->execute(array(
+          ':type' => $type,
+          ':task' => $task,
+          ':call' => $call,
+          ':msg' => $msg,
+          ':user' => $user,
+          ':role' => $role,
+          ':remote' => get_remote_ip()
+        ));
+      }
+      catch (Exception $e) {
+        // Do nothing
+      }
     }
   }
   else {
@@ -260,6 +277,12 @@ function verify_hash($hash, $password) {
       return true;
     }
   }
+  elseif (preg_match('/^{MD5-CRYPT}/i', $hash)) {
+    $hash = preg_replace('/^{MD5-CRYPT}/i', '', $hash);
+    if (password_verify($password, $hash)) {
+      return true;
+    }
+  }
   return false;
 }
 function check_login($user, $pass) {
@@ -372,54 +395,6 @@ function check_login($user, $pass) {
   );
 	sleep($_SESSION['ldelay']);
   return false;
-}
-function set_acl() {
-	global $pdo;
-	if (!isset($_SESSION['mailcow_cc_username'])) {
-		return false;
-	}
-	if ($_SESSION['mailcow_cc_role'] == 'admin' || $_SESSION['mailcow_cc_role'] == 'domainadmin') {
-    $stmt = $pdo->query("SHOW COLUMNS FROM `user_acl` WHERE `Field` != 'username';");
-    $acl_all = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    while ($row = array_shift($acl_all)) {
-      $acl['acl'][$row['Field']] = 1;
-    }
-	}
-  else {
-    $username = strtolower(trim($_SESSION['mailcow_cc_username']));
-    $stmt = $pdo->prepare("SELECT * FROM `user_acl` WHERE `username` = :username");
-    $stmt->execute(array(':username' => $username));
-    $acl['acl'] = $stmt->fetch(PDO::FETCH_ASSOC);
-    unset($acl['acl']['username']);
-  }
-  if (!empty($acl)) {
-    $_SESSION = array_merge($_SESSION, $acl);
-  }
-  else {
-    $_SESSION['return'][] =  array(
-      'type' => 'info',
-      'log' => array(__FUNCTION__),
-      'msg' => 'set_acl_failed'
-    );
-    return false;
-  }
-}
-function get_acl($username) {
-	global $pdo;
-	if ($_SESSION['mailcow_cc_role'] != "admin") {
-		return false;
-	}
-  $username = strtolower(trim($username));
-  $stmt = $pdo->prepare("SELECT * FROM `user_acl` WHERE `username` = :username");
-  $stmt->execute(array(':username' => $username));
-  $acl = $stmt->fetch(PDO::FETCH_ASSOC);
-  unset($acl['username']);
-  if (!empty($acl)) {
-    return $acl;
-  }
-  else {
-    return false;
-  }
 }
 function formatBytes($size, $precision = 2) {
 	if(!is_numeric($size)) {
@@ -546,6 +521,7 @@ function update_sogo_static_view() {
     $stmt = $pdo->query("REPLACE INTO _sogo_static_view SELECT * from sogo_view");
     $stmt = $pdo->query("DELETE FROM _sogo_static_view WHERE `c_uid` NOT IN (SELECT `username` FROM `mailbox` WHERE `active` = '1');");
   }
+  flush_memcached();
 }
 function edit_user_account($_data) {
 	global $lang;
@@ -1266,7 +1242,7 @@ function get_admin_details() {
     return false;
   }
   $stmt = $pdo->query("SELECT `admin`.`username`, `api`.`active` AS `api_active`, `api`.`api_key`, `api`.`allow_from` FROM `admin`
-    INNER JOIN `api` ON `admin`.`username` = `api`.`username`
+    LEFT OUTER JOIN `api` ON `admin`.`username` = `api`.`username`
     WHERE `admin`.`superadmin`='1'
       AND `admin`.`active`='1'");
   $data = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -1433,7 +1409,7 @@ function get_logs($container, $lines = false) {
   }
   if ($container == "rspamd-history") {
     $curl = curl_init();
-    curl_setopt($curl, CURLOPT_UNIX_SOCKET_PATH, '/rspamd-sock/rspamd.sock');
+    curl_setopt($curl, CURLOPT_UNIX_SOCKET_PATH, '/var/lib/rspamd/rspamd.sock');
     if (!is_numeric($lines)) {
       list ($from, $to) = explode('-', $lines);
       curl_setopt($curl, CURLOPT_URL,"http://rspamd/history?from=" . intval($from) . "&to=" . intval($to));

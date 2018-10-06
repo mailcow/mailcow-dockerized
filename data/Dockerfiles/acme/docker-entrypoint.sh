@@ -37,7 +37,7 @@ mkdir -p ${ACME_BASE}/acme/private
 restart_containers(){
   for container in $*; do
     log_f "Restarting ${container}..." no_nl
-    C_REST_OUT=$(curl -X POST http://dockerapi:8080/containers/${container}/restart | jq -r '.msg')
+    C_REST_OUT=$(curl -X POST --insecure https://dockerapi/containers/${container}/restart | jq -r '.msg')
     log_f "${C_REST_OUT}" no_date
   done
 }
@@ -125,7 +125,7 @@ else
 fi
 
 log_f "Waiting for database... "
-while ! mysqladmin ping --host mysql -u${DBUSER} -p${DBPASS} --silent; do
+while ! mysqladmin ping --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
   sleep 2
 done
 log_f "Initializing, please wait... "
@@ -161,19 +161,19 @@ while true; do
   fi
 
   # Container ids may have changed
-  CONTAINERS_RESTART=($(curl --silent http://dockerapi:8080/containers/json | jq -r '.[] | {name: .Config.Labels["com.docker.compose.service"], id: .Id}' | jq -rc 'select( .name | tostring | contains("nginx-mailcow") or contains("postfix-mailcow") or contains("dovecot-mailcow")) | .id' | tr "\n" " "))
+  CONTAINERS_RESTART=($(curl --silent --insecure https://dockerapi/containers/json | jq -r '.[] | {name: .Config.Labels["com.docker.compose.service"], id: .Id}' | jq -rc 'select( .name | tostring | contains("nginx-mailcow") or contains("postfix-mailcow") or contains("dovecot-mailcow")) | .id' | tr "\n" " "))
 
   log_f "Waiting for domain table... " no_nl
   while [[ -z ${DOMAIN_TABLE} ]]; do
     curl --silent http://nginx/ >/dev/null 2>&1
-    DOMAIN_TABLE=$(mysql -h mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SHOW TABLES LIKE 'domain'" -Bs)
+    DOMAIN_TABLE=$(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SHOW TABLES LIKE 'domain'" -Bs)
     [[ -z ${DOMAIN_TABLE} ]] && sleep 10
   done
   log_f "OK" no_date
 
   while read domains; do
     SQL_DOMAIN_ARR+=("${domains}")
-  done < <(mysql -h mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM domain WHERE backupmx=0 UNION SELECT alias_domain FROM alias_domain" -Bs)
+  done < <(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM domain WHERE backupmx=0 UNION SELECT alias_domain FROM alias_domain" -Bs)
 
   for SQL_DOMAIN in "${SQL_DOMAIN_ARR[@]}"; do
     A_CONFIG=$(dig A autoconfig.${SQL_DOMAIN} +short | tail -n 1)

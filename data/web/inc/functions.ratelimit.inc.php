@@ -5,6 +5,14 @@ function ratelimit($_action, $_scope, $_data = null) {
   $_data_log = $_data;
   switch ($_action) {
     case 'edit':
+      if (!isset($_SESSION['acl']['ratelimit']) || $_SESSION['acl']['ratelimit'] != "1" ) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }
       switch ($_scope) {
         case 'domain':
           if (!is_array($_data['object'])) {

@@ -9,6 +9,7 @@ This file will be reset on upgrades.
 
 // SQL database connection variables
 $database_type = 'mysql';
+$database_sock = '/var/run/mysqld/mysqld.sock';
 $database_host = 'mysql';
 $database_user = getenv('DBUSER');
 $database_pass = getenv('DBPASS');
@@ -122,3 +123,12 @@ $DOCKER_TIMEOUT = 60;
 
 // Anonymize IPs logged via UI
 $ANONYMIZE_IPS = true;
+
+// Force incoming TLS for new mailboxes by default
+$MAILBOX_DEFAULT_ATTRIBUTES['tls_enforce_in'] = false;
+
+// Force outgoing TLS for new mailboxes by default
+$MAILBOX_DEFAULT_ATTRIBUTES['tls_enforce_out'] = false;
+
+// Force password change on next login (only allows login to mailcow UI)
+$MAILBOX_DEFAULT_ATTRIBUTES['force_pw_update'] = false;

@@ -65,12 +65,6 @@ body.modal-open {
   font-size:9pt;
   background:transparent;
 }
-.bootstrap-select {
-  width: auto!important;
-}
 .table-condensed .input-sm {
-  width: 100%!important;  
-}
-.full-width-select {
   width: 100%!important;  
 }
