@@ -115,7 +115,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
       </div>
       <div class="modal-body">
           <form class="form-horizontal" data-cached-form="true" id="test_relayhost_form" role="form" method="post">
-            <input type="hidden" class="form-control" name="relayhost_id">
+            <input type="hidden" class="form-control" name="relayhost_id" id="relayhost_id">
             <div class="form-group">
               <label class="control-label col-sm-2" for="mail_from"><?=$lang['admin']['relay_from'];?></label>
               <div class="col-sm-10">
