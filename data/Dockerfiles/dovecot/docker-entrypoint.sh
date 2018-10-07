@@ -117,7 +117,7 @@ echo ${RAND_USER}@mailcow.local:$(doveadm pw -s SHA1 -p ${RAND_PASS}) > /usr/loc
 echo ${RAND_USER}@mailcow.local:${RAND_PASS} > /etc/sogo/sieve.creds
 
 # 401 is user dovecot
-if [[ ! -f /mail_crypt/ecprivkey.pem || ! -f /mail_crypt/ecpubkey.pem ]]; then
+if [[ ! -s /mail_crypt/ecprivkey.pem || ! -s /mail_crypt/ecpubkey.pem ]]; then
 	openssl ecparam -name prime256v1 -genkey | openssl pkey -out /mail_crypt/ecprivkey.pem
 	openssl pkey -in /mail_crypt/ecprivkey.pem -pubout -out /mail_crypt/ecpubkey.pem
 	chown 401 /mail_crypt/ecprivkey.pem /mail_crypt/ecpubkey.pem
