@@ -22,6 +22,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
     <li role="presentation"><a href="#tab-syncjobs" aria-controls="tab-syncjobs" role="tab" data-toggle="tab"><?=$lang['mailbox']['sync_jobs'];?></a></li>
     <li role="presentation"><a href="#tab-filters" aria-controls="tab-filters" role="tab" data-toggle="tab"><?=$lang['mailbox']['filters'];?></a></li>
     <li role="presentation"><a href="#tab-bcc" aria-controls="tab-filters" role="tab" data-toggle="tab"><?=$lang['mailbox']['address_rewriting'];?></a></li>
+    <li role="presentation"><a href="#tab-tls-policy" aria-controls="tab-tls-policy" role="tab" data-toggle="tab"><?=$lang['mailbox']['tls_policy_maps'];?></a></li>
   </ul>
 
 	<div class="row">
@@ -287,6 +288,34 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             </div>
           </div>
         </div>
+
+        <div role="tabpanel" class="tab-pane <?=($_SESSION['mailcow_cc_role'] == "admin") ?: 'hidden';?>" id="tab-tls-policy">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <?=$lang['mailbox']['tls_policy_maps_long'];?> <span class="badge badge-info table-lines"></span>
+              <div class="btn-group pull-right">
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_tls_policy_table" data-table="tls_policy_table"><?=$lang['admin']['refresh'];?></button>
+              </div>
+            </div>
+            <p style="margin:10px" class="help-block"><?=$lang['mailbox']['tls_policy_maps_info'];?></p>
+            <div class="table-responsive">
+              <table class="table table-striped" id="tls_policy_table"></table>
+            </div>
+            <div class="mass-actions-mailbox">
+              <div class="btn-group">
+                <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="tls-policy-map" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
+                <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a data-action="edit_selected" data-id="tls-policy-map" data-api-url='edit/tls-policy-map' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
+                  <li><a data-action="edit_selected" data-id="tls-policy-map" data-api-url='edit/tls-policy-map' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a data-action="delete_selected" data-id="tls-policy-map" data-api-url='delete/tls-policy-map' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+                </ul>
+                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addTLSPolicyMapAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_tls_policy_map'];?></a>
+              </div>
+            </div>
+          </div>
+        </div>
       </div> <!-- /tab-content -->
     </div> <!-- /col-md-12 -->
   </div> <!-- /row -->
@@ -307,8 +336,8 @@ echo "var is_dual = " . $is_dual . ";\n";
 echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
 ?>
 </script>
-<script src="js/footable.min.js"></script>
-<script src="js/mailbox.js"></script>
+<script src="/js/footable.min.js"></script>
+<script src="/js/mailbox.js"></script>
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
 } else {

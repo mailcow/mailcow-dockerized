@@ -160,7 +160,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.37
+      image: mailcow/dovecot:1.39
       build: ./data/Dockerfiles/dovecot
       cap_add:
         - NET_BIND_SERVICE
@@ -202,7 +202,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.22
+      image: mailcow/postfix:1.23
       build: ./data/Dockerfiles/postfix
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
@@ -364,7 +364,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:1.17
+      image: mailcow/dockerapi:1.19
       restart: always
       build: ./data/Dockerfiles/dockerapi
       oom_kill_disable: true

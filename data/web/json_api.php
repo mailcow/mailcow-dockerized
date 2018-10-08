@@ -153,6 +153,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "recipient_map":
             process_add_return(recipient_map('add', $attr));
           break;
+          case "tls-policy-map":
+            process_add_return(tls_policy_maps('add', $attr));
+          break;
         }
       break;
       case "get":
@@ -662,6 +665,31 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               break;
             }
           break;
+          case "tls-policy-map":
+            switch ($object) {
+              case "all":
+                $tls_policy_maps_items = tls_policy_maps('get');
+                if (!empty($tls_policy_maps_items)) {
+                  foreach ($tls_policy_maps_items as $tls_policy_maps_item) {
+                    if ($details = tls_policy_maps('details', $tls_policy_maps_item)) {
+                      $data[] = $details;
+                    }
+                    else {
+                      continue;
+                    }
+                  }
+                }
+                process_get_return($data);
+              break;
+              default:
+                $data = tls_policy_maps('details', $object);
+                if (!empty($data)) {
+                  $data[] = $details;
+                }
+                process_get_return($data);
+              break;
+            }
+          break;
           case "policy_wl_mailbox":
             switch ($object) {
               default:
@@ -919,6 +947,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "recipient_map":
             process_delete_return(recipient_map('delete', array('id' => $items)));
           break;
+          case "tls-policy-map":
+            process_delete_return(tls_policy_maps('delete', array('id' => $items)));
+          break;
           case "fwdhost":
             process_delete_return(fwdhost('delete', array('forwardinghost' => $items)));
           break;
@@ -990,6 +1021,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           break;
           case "recipient_map":
             process_edit_return(recipient_map('edit', array_merge(array('id' => $items), $attr)));
+          break;
+          case "tls-policy-map":
+            process_edit_return(tls_policy_maps('edit', array_merge(array('id' => $items), $attr)));
           break;
           case "alias":
             process_edit_return(mailbox('edit', 'alias', array_merge(array('id' => $items), $attr)));

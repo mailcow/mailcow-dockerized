@@ -731,7 +731,9 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         <?php
         }
     }
-    elseif (isset($_GET['recipient_map']) && !empty($_GET["recipient_map"])) {
+    elseif (isset($_GET['recipient_map']) &&
+      !empty($_GET["recipient_map"]) &&
+      $_SESSION['mailcow_cc_role'] == "admin") {
         $map = intval($_GET["recipient_map"]);
         $result = recipient_map('details', $map);
         if (substr($result['recipient_map_old'], 0, 1) == '@') {
@@ -767,6 +769,67 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
                 <button class="btn btn-success" data-action="edit_selected" data-id="edit_recipient_map" data-item="<?=$map;?>" data-api-url='edit/recipient_map' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
+              </div>
+            </div>
+          </form>
+        <?php
+        }
+        else {
+        ?>
+          <div class="alert alert-info" role="alert"><?=$lang['info']['no_action'];?></div>
+        <?php
+        }
+    }
+    elseif (isset($_GET['tls_policy_map']) &&
+      !empty($_GET["tls_policy_map"]) &&
+      $_SESSION['mailcow_cc_role'] == "admin") {
+        $map = intval($_GET["tls_policy_map"]);
+        $result = tls_policy_maps('details', $map);
+        if (!empty($result)) {
+          ?>
+          <h4><?=$lang['mailbox']['tls_policy_maps']?>: <?=$result['dest'];?></h4>
+          <br />
+          <form class="form-horizontal" data-id="edit_tls_policy_maps" role="form" method="post">
+            <input type="hidden" value="0" name="active">
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="dest"><?=$lang['mailbox']['tls_map_dest'];?></label>
+              <div class="col-sm-10">
+                <input value="<?=$result['dest'];?>" type="text" class="form-control" name="dest" id="dest">
+                <small><?=$lang['mailbox']['tls_map_dest_info'];?></small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="policy"><?=$lang['mailbox']['tls_map_policy'];?></label>
+              <div class="col-sm-10">
+              <select class="full-width-select" name="policy" required>
+                <option value="none" <?=($result['policy'] != 'none') ?: 'selected';?>>none</option>
+                <option value="may" <?=($result['policy'] != 'may') ?: 'selected';?>>may</option>
+                <option value="encrypt" <?=($result['policy'] != 'encrypt') ?: 'selected';?>>encrypt</option>
+                <option value="dane" <?=($result['policy'] != 'dane') ?: 'selected';?>>dane-only</option>
+                <option value="dane-only" <?=($result['policy'] != 'dane-only') ?: 'selected';?>>dane-only</option>
+                <option value="fingerprint" <?=($result['policy'] != 'fingerprint') ?: 'selected';?>>fingerprint</option>
+                <option value="verify" <?=($result['policy'] != 'verify') ?: 'selected';?>>verify</option>
+                <option value="secure" <?=($result['policy'] != 'secure') ?: 'selected';?>>secure</option>
+              </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="parameters"><?=$lang['mailbox']['tls_map_parameters'];?></label>
+              <div class="col-sm-10">
+                <input value="<?=$result['parameters'];?>" type="text" class="form-control" name="parameters" id="parameters">
+                <small><?=$lang['mailbox']['tls_map_parameters_info'];?></small>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <div class="checkbox">
+                <label><input type="checkbox" value="1" name="active" <?php if (isset($result['active_int']) && $result['active_int']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['active'];?></label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <button class="btn btn-success" data-action="edit_selected" data-id="edit_tls_policy_maps" data-item="<?=$map;?>" data-api-url='edit/tls-policy-map' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
               </div>
             </div>
           </form>
@@ -1019,8 +1082,8 @@ echo "var csrf_token = '". $_SESSION['CSRF']['TOKEN'] . "';\n";
 echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
 ?>
 </script>
-<script src="js/footable.min.js"></script>
-<script src="js/edit.js"></script>
+<script src="/js/footable.min.js"></script>
+<script src="/js/edit.js"></script>
 <?php
 require_once("inc/footer.inc.php");
 ?>
