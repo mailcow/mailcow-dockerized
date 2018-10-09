@@ -893,6 +893,14 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               return;
             }
           break;
+          case "dkim":
+            switch ($object) {
+              default:
+                $data = dkim('details', $object);
+                  process_get_return($data);
+                  break;
+            }
+          break;
           default:
             echo '{}';
           break;
