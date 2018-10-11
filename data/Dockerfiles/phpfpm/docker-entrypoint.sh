@@ -4,7 +4,7 @@ set -e
 function array_by_comma { local IFS=","; echo "$*"; }
 
 # Wait for containers
-while ! mysqladmin ping --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
+while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
   echo "Waiting for SQL..."
   sleep 2
 done
@@ -13,6 +13,10 @@ until [[ $(redis-cli -h redis-mailcow PING) == "PONG" ]]; do
   echo "Waiting for Redis..."
   sleep 2
 done
+
+# Trigger db init
+echo "Running DB init..."
+php -c /usr/local/etc/php -f /web/inc/init_db.inc.php
 
 # Migrate domain map
 declare -a DOMAIN_ARR
@@ -51,9 +55,8 @@ if [[ ${API_ALLOW_FROM} != "invalid" ]] && \
   VALIDATED_IPS=$(array_by_comma ${VALIDATED_API_ALLOW_FROM_ARR[*]})
   if [[ ! -z ${VALIDATED_IPS} ]]; then
     mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
-INSERT INTO api (username, api_key, active, allow_from)
-SELECT username, "${API_KEY}", '1', "${VALIDATED_IPS}" FROM admin WHERE superadmin='1' AND active='1'
-ON DUPLICATE KEY UPDATE active = '1', allow_from = "${VALIDATED_IPS}", api_key = "${API_KEY}";
+DELETE FROM api;
+INSERT INTO api (api_key, active, allow_from) VALUES ("${API_KEY}", "1", "${VALIDATED_IPS}");
 EOF
   fi
 fi
