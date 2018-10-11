@@ -13,8 +13,12 @@ log_f() {
   elif [[ ${2} != "redis_only" ]]; then
     echo "$(date) - ${1}"
   fi
-  redis-cli -h redis LPUSH ACME_LOG "{\"time\":\"$(date +%s)\",\"message\":\"$(printf '%s' "${1}" | \
-    tr '%&;$"_[]{}-\r\n' ' ')\"}" > /dev/null
+  if [[ ${3} == "b64" ]]; then
+    redis-cli -h redis LPUSH ACME_LOG "{\"time\":\"$(date +%s)\",\"message\":\"base64,$(printf '%s' "${1}")\"}" > /dev/null
+  else
+    redis-cli -h redis LPUSH ACME_LOG "{\"time\":\"$(date +%s)\",\"message\":\"$(printf '%s' "${1}" | \
+      tr '%&;$"_[]{}-\r\n' ' ')\"}" > /dev/null
+  fi
 }
 
 if [[ "${SKIP_LETS_ENCRYPT}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
@@ -125,7 +129,7 @@ else
 fi
 
 log_f "Waiting for database... "
-while ! mysqladmin ping --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
+while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
   sleep 2
 done
 log_f "Initializing, please wait... "
@@ -324,10 +328,10 @@ while true; do
     -k ${ACME_BASE}/acme/private/privkey.pem \
     -c ${ACME_BASE}/acme \
     ${ALL_VALIDATED[*]} 2>&1 | tee /dev/fd/5)
-
   case "$?" in
     0) # new certs
-      log_f "${ACME_RESPONSE}" redis_only
+      ACME_RESPONSE_B64=$(echo ${ACME_RESPONSE} | openssl enc -e -A -base64)
+      log_f "${ACME_RESPONSE_B64}" redis_only b64
       # cp the new certificates and keys
       cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
       cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
@@ -341,7 +345,8 @@ while true; do
       restart_containers ${CONTAINERS_RESTART[*]}
       ;;
     1) # failure
-      log_f "${ACME_RESPONSE}" redis_only
+      ACME_RESPONSE_B64=$(echo ${ACME_RESPONSE} | openssl enc -e -A -base64)
+      log_f "${ACME_RESPONSE_B64}" redis_only b64
       if [[ $ACME_RESPONSE =~ "No registration exists" ]]; then
         log_f "Registration keys are invalid, deleting old keys and restarting..."
         rm ${ACME_BASE}/acme/private/account.key
@@ -370,7 +375,8 @@ while true; do
       exec $(readlink -f "$0")
       ;;
     2) # no change
-      log_f "${ACME_RESPONSE}" redis_only
+      ACME_RESPONSE_B64=$(echo ${ACME_RESPONSE} | openssl enc -e -A -base64)
+      log_f "${ACME_RESPONSE_B64}" redis_only b64
       if ! diff ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem; then
         log_f "Certificate was not changed, but active certificate does not match the verified certificate, fixing and restarting containers..."
         cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
@@ -387,7 +393,8 @@ while true; do
       [[ ${TRIGGER_RESTART} == 1 ]] && restart_containers ${CONTAINERS_RESTART[*]}
       ;;
     *) # unspecified
-      log_f "${ACME_RESPONSE}" redis_only
+      ACME_RESPONSE_B64=$(echo ${ACME_RESPONSE} | openssl enc -e -A -base64)
+      log_f "${ACME_RESPONSE_B64}" redis_only b64
       if [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]]; then
         log_f "Error requesting certificate, restoring previous certificate from backup and restarting containers...."
         cp ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ${ACME_BASE}/cert.pem
