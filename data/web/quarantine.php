@@ -1,8 +1,8 @@
 <?php
-require_once "inc/prerequisites.inc.php";
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 
 if (isset($_SESSION['mailcow_cc_role'])) {
-require_once "inc/header.inc.php";
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/header.inc.php';
 $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 
 ?>

@@ -1,8 +1,7 @@
 <?php
-require_once "inc/prerequisites.inc.php";
-
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "admin" || $_SESSION['mailcow_cc_role'] == "domainadmin")) {
-require_once "inc/header.inc.php";
+require_once $_SERVER['DOCUMENT_ROOT'] .  '/inc/header.inc.php';
 $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 ?>
 <div class="container">
@@ -340,7 +339,8 @@ echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
 <script src="/js/mailbox.js"></script>
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
-} else {
+}
+else {
 	header('Location: /');
 	exit();
 }
