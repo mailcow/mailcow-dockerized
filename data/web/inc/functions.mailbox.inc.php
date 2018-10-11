@@ -2277,7 +2277,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             return false;
           }
           elseif (isset($_data) && hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
-            $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `kind` NOT REGEXP 'location|thing|group' AND `domain` != 'ALL' AND `domain` = :domain");
+            $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `kind` NOT REGEXP 'location|thing|group' AND `domain` = :domain");
             $stmt->execute(array(
               ':domain' => $_data,
             ));
@@ -2535,7 +2535,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             return false;
           }
           elseif (isset($_data) && hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
-            $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `kind` REGEXP 'location|thing|group' AND `domain` != 'ALL' AND `domain` = :domain");
+            $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `kind` REGEXP 'location|thing|group' AND `domain` = :domain");
             $stmt->execute(array(
               ':domain' => $_data,
             ));
@@ -2680,8 +2680,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               SELECT `domain` from `domain_admins`
                 WHERE (`active`='1' AND `username` = :username))
               )
-              OR ('admin'= :role)
-              AND `domain` != 'ALL'");
+              OR 'admin'= :role");
           $stmt->execute(array(
             ':username' => $_SESSION['mailcow_cc_username'],
             ':role' => $_SESSION['mailcow_cc_role'],

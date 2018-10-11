@@ -81,6 +81,11 @@ $(document).ready(function() {
     } else {
       api_reload_window = true;
     }
+    if (typeof $(this).data('api-reload-location') !== 'undefined') {
+      api_reload_location = $(this).data('api-reload-location');
+    } else {
+      api_reload_location = '#';
+    }
     // If clicked element #edit_selected is in a form with the same data-id as the button,
     // we merge all input fields by {"name":"value"} into api-attr
     if ($(this).closest("form").data('id') == id) {
@@ -151,7 +156,11 @@ $(document).ready(function() {
             response_obj = JSON.parse(response);
           }
           if (api_reload_window === true) {
-            window.location = window.location.href.split("#")[0];
+            if (api_reload_location != '#') {
+              window.location.replace(api_reload_location)
+            } else {
+              window.location = window.location.href.split("#")[0];
+            }
           }
         }
       });

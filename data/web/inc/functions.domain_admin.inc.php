@@ -1,5 +1,4 @@
 <?php
-
 function domain_admin($_action, $_data = null) {
   global $pdo;
   global $lang;
@@ -195,6 +194,11 @@ function domain_admin($_action, $_data = null) {
           $stmt->execute(array(
             ':username' => $username,
           ));
+          $stmt = $pdo->prepare("UPDATE `da_acl` SET `username` = :username_new WHERE `username` = :username");
+          $stmt->execute(array(
+            ':username_new' => $username_new,
+            ':username' => $username
+          ));
           if (!empty($domains)) {
             foreach ($domains as $domain) {
               $stmt = $pdo->prepare("INSERT INTO `domain_admins` (`username`, `domain`, `created`, `active`)
@@ -277,7 +281,6 @@ function domain_admin($_action, $_data = null) {
             WHERE `username` = :user");
         $stmt->execute(array(':user' => $username));
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
         if (!verify_hash($row['password'], $password_old)) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
@@ -286,7 +289,6 @@ function domain_admin($_action, $_data = null) {
           );
           return false;
         }
-
         if (!empty($password_new2) && !empty($password_new)) {
           if ($password_new2 != $password_new) {
             $_SESSION['return'][] = array(
@@ -329,7 +331,7 @@ function domain_admin($_action, $_data = null) {
       }
       $usernames = (array)$_data['username'];
       foreach ($usernames as $username) {
-        if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $username))) {
+        if (empty(domain_admin('details', $username))) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data_log),
@@ -342,6 +344,10 @@ function domain_admin($_action, $_data = null) {
           ':username' => $username,
         ));
         $stmt = $pdo->prepare("DELETE FROM `admin` WHERE `username` = :username");
+        $stmt->execute(array(
+          ':username' => $username,
+        ));
+        $stmt = $pdo->prepare("DELETE FROM `da_acl` WHERE `username` = :username");
         $stmt->execute(array(
           ':username' => $username,
         ));
@@ -362,7 +368,6 @@ function domain_admin($_action, $_data = null) {
         );
         return false;
       }
-
       $stmt = $pdo->query("SELECT DISTINCT
         `username`
           FROM `domain_admins` 
@@ -374,23 +379,19 @@ function domain_admin($_action, $_data = null) {
       while ($row = array_shift($rows)) {
         $domainadmins[] = $row['username'];
       }
-
       return $domainadmins;
     break;
     case 'details':
       $domainadmindata = array();
-
       if ($_SESSION['mailcow_cc_role'] == "domainadmin" && $_data != $_SESSION['mailcow_cc_username']) {
         return false;
       }
       elseif ($_SESSION['mailcow_cc_role'] != "admin" || !isset($_data)) {
         return false;
       }
-
       if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $_data))) {
         return false;
       }
-
       $stmt = $pdo->prepare("SELECT
         `tfa`.`active` AS `tfa_active_int`,
         CASE `tfa`.`active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `tfa_active`,
@@ -413,7 +414,7 @@ function domain_admin($_action, $_data = null) {
       $domainadmindata['active'] = $row['active'];
       $domainadmindata['tfa_active_int'] = $row['tfa_active_int'];
       $domainadmindata['active_int'] = $row['active_int'];
-      $domainadmindata['modified'] = $row['created'];
+      $domainadmindata['created'] = $row['created'];
       // GET SELECTED
       $stmt = $pdo->prepare("SELECT `domain` FROM `domain`
         WHERE `domain` IN (

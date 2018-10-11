@@ -513,7 +513,13 @@ jQuery(function($){
     } else if (table == 'general_syslog') {
       $.each(data, function (i, item) {
         if (item === null) { return true; }
-        item.message = escapeHtml(item.message);
+        if (item.message.match("^base64,")) {
+          item.message = atob(item.message.slice(7));
+          item.message = item.message.replace(/(?!^)acme-client:/g, '<br>acme-client:')
+          item.message = item.message.replace(/acme-client:/g, '<b>acme-client:</b>')
+        } else {
+          item.message = escapeHtml(item.message);
+        }
         var danger_class = ["emerg", "alert", "crit", "err"];
         var warning_class = ["warning", "warn"];
         var info_class = ["notice", "info", "debug"];
