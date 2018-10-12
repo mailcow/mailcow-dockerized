@@ -690,14 +690,18 @@ $lang['success']['tls_policy_map_entry_deleted'] = 'TLS-Richtlinie mit der ID %s
 $lang['mailbox']['add_tls_policy_map'] = "TLS-Richtlinieneintrag hinzufügen";
 $lang['danger']['tls_policy_map_parameter_invalid'] = "Parameter ist ungültig";
 
-$lang['admin']['sys_mails'] = 'System mails';
-$lang['admin']['subject'] = 'Subject';
-$lang['admin']['from'] = 'From';
-$lang['admin']['include_exclude'] = 'Include/Exclude';
-$lang['admin']['include_exclude_info'] = 'By default - with no selection - <b>all mailboxes</b> are addressed';
-$lang['admin']['excludes'] = 'Excludes these recipients';
-$lang['admin']['includes'] = 'Include these recipients';
+$lang['admin']['sys_mails'] = 'System E-Mails';
+$lang['admin']['subject'] = 'Betreff';
+$lang['admin']['from'] = 'Absender';
+$lang['admin']['include_exclude'] = 'Ein- und Ausschlüsse';
+$lang['admin']['include_exclude_info'] = 'Ohne Auswahl werden alle Mailboxen adressiert.';
+$lang['admin']['excludes'] = 'Diese Empfänger ausschließen';
+$lang['admin']['includes'] = 'Diese Empfänger einschließen';
 $lang['admin']['text'] = 'Text';
-$lang['admin']['activate_send'] = 'Activate send button';
+$lang['admin']['activate_send'] = 'Senden-Button freischalten';
+$lang['admin']['send'] = 'Senden';
 
 $lang['warning']['ip_invalid'] = 'Ungültige IP übersprungen: %s';
+$lang['danger']['text_empty'] = 'Text darf nicht leer sein';
+$lang['danger']['subject_empty'] = 'Betreff darf nicht leer sein';
+$lang['danger']['from_invalid'] = 'From address must be a valid email address';

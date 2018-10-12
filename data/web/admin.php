@@ -10,7 +10,7 @@ $tfa_data = get_tfa();
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#tab-access" aria-controls="tab-access" role="tab" data-toggle="tab"><?=$lang['admin']['access'];?></a></li>
     <li role="presentation"><a href="#tab-config" aria-controls="tab-config" role="tab" data-toggle="tab"><?=$lang['admin']['configuration'];?></a></li>
-    <li role="presentation"><a href="#tab-sys-mails" aria-controls="tab-sys-mails" role="tab" data-toggle="tab">System mails</a></li>
+    <li role="presentation"><a href="#tab-sys-mails" aria-controls="tab-sys-mails" role="tab" data-toggle="tab"><?=$lang['admin']['sys_mails'];?></a></li>
   </ul>
 
   <div class="tab-content" style="padding-top:20px">
@@ -849,7 +849,7 @@ $tfa_data = get_tfa();
           </div>
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-              <button class="btn btn-default" type="submit" id="mass_send" name="mass_send" disabled><span class="glyphicon glyphicon-envelope"></span> Send</button>
+              <button class="btn btn-default" type="submit" id="mass_send" name="mass_send" disabled><span class="glyphicon glyphicon-envelope"></span> <?=$lang['admin']['send'];?></button>
             </div>
           </div>
         </form>

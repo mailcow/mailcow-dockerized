@@ -47,7 +47,7 @@ function sys_mail($_data) {
 		$_SESSION['return'][] =  array(
 			'type' => 'danger',
       'log' => array(__FUNCTION__),
-			'msg' => 'From address must be a valid email address'
+			'msg' => 'from_invalid'
 		);
 		return false;
   }
@@ -55,7 +55,7 @@ function sys_mail($_data) {
 		$_SESSION['return'][] =  array(
 			'type' => 'danger',
       'log' => array(__FUNCTION__),
-			'msg' => 'Subject must not be empty'
+			'msg' => 'subject_empty'
 		);
 		return false;
   }
@@ -63,7 +63,7 @@ function sys_mail($_data) {
 		$_SESSION['return'][] =  array(
 			'type' => 'danger',
       'log' => array(__FUNCTION__),
-			'msg' => 'Text must not be empty'
+			'msg' => 'text_empty'
 		);
 		return false;
   }
