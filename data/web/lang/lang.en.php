@@ -723,5 +723,9 @@ $lang['admin']['excludes'] = 'Excludes these recipients';
 $lang['admin']['includes'] = 'Include these recipients';
 $lang['admin']['text'] = 'Text';
 $lang['admin']['activate_send'] = 'Activate send button';
+$lang['admin']['send'] = 'Send';
 
 $lang['warning']['ip_invalid'] = 'Skipped invalid IP: %s';
+$lang['danger']['text_empty'] = 'Text must not be empty';
+$lang['danger']['subject_empty'] = 'Subject must not be empty';
+$lang['danger']['from_invalid'] = 'Absender darf nicht leer sein';
