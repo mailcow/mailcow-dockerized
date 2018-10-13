@@ -55,7 +55,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.13
+      image: mailcow/clamd:1.14
       build: ./data/Dockerfiles/clamd
       restart: always
       tty: true
@@ -287,7 +287,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.40
+      image: mailcow/acme:1.41
       build: ./data/Dockerfiles/acme
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -337,7 +337,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.24
+      image: mailcow/watchdog:1.25
       # Debug
       #command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog
@@ -356,6 +356,11 @@ services:
         - WATCHDOG_NOTIFY_EMAIL=${WATCHDOG_NOTIFY_EMAIL}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
+        - IP_BY_DOCKER_API=${IP_BY_DOCKER_API:-0}
+        - CHECK_UNBOUND=${CHECK_UNBOUND:-1}
+        - SKIP_CLAMD=${SKIP_CLAMD:-n}
+        - SKIP_LETS_ENCRYPT=${SKIP_LETS_ENCRYPT:-n}
+        - HTTPS_PORT=${HTTPS_PORT:-443}
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       networks:
