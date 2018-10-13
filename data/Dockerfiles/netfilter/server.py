@@ -10,7 +10,6 @@ from random import randint
 from threading import Thread
 from threading import Lock
 import redis
-import time
 import json
 import iptc
 
