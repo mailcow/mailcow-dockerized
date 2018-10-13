@@ -177,7 +177,7 @@ while true; do
 
   while read domains; do
     SQL_DOMAIN_ARR+=("${domains}")
-  done < <(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM domain WHERE backupmx=0 UNION SELECT alias_domain FROM alias_domain" -Bs)
+  done < <(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM domain WHERE backupmx=0" -Bs)
 
   for SQL_DOMAIN in "${SQL_DOMAIN_ARR[@]}"; do
     A_CONFIG=$(dig A autoconfig.${SQL_DOMAIN} +short | tail -n 1)
