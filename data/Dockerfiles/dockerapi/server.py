@@ -86,14 +86,14 @@ class container_post(Resource):
         elif request.json['cmd'] == 'sieve_list' and request.json['username']:
           try:
             for container in docker_client.containers.list(filters={"id": container_id}):
-              sieve_return = container.exec_run(["/bin/bash", "-c", "/usr/local/bin/doveadm sieve list -u '" + request.json['username'].replace("'", "'\\''") + "'"], user='vmail')
+              sieve_return = container.exec_run(["/bin/bash", "-c", "/usr/local/bin/doveadm sieve list -u '" + request.json['username'].replace("'", "'\\''") + "'"])
               return sieve_return.output
           except Exception as e:
             return jsonify(type='danger', msg=str(e))
         elif request.json['cmd'] == 'sieve_print' and request.json['script_name'] and request.json['username']:
           try:
             for container in docker_client.containers.list(filters={"id": container_id}):
-              sieve_return = container.exec_run(["/bin/bash", "-c", "/usr/local/bin/doveadm sieve get -u '" + request.json['username'].replace("'", "'\\''") + "' '" + request.json['script_name'].replace("'", "'\\''") + "'"], user='vmail')
+              sieve_return = container.exec_run(["/bin/bash", "-c", "/usr/local/bin/doveadm sieve get -u '" + request.json['username'].replace("'", "'\\''") + "' '" + request.json['script_name'].replace("'", "'\\''") + "'"])
               return sieve_return.output
           except Exception as e:
             return jsonify(type='danger', msg=str(e))

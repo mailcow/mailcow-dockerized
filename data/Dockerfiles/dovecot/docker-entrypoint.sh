@@ -2,7 +2,7 @@
 set -e
 
 # Wait for MySQL to warm-up
-while ! mysqladmin ping --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
+while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
   echo "Waiting for database to come up..."
   sleep 2
 done
@@ -117,7 +117,7 @@ echo ${RAND_USER}@mailcow.local:$(doveadm pw -s SHA1 -p ${RAND_PASS}) > /usr/loc
 echo ${RAND_USER}@mailcow.local:${RAND_PASS} > /etc/sogo/sieve.creds
 
 # 401 is user dovecot
-if [[ ! -f /mail_crypt/ecprivkey.pem || ! -f /mail_crypt/ecpubkey.pem ]]; then
+if [[ ! -s /mail_crypt/ecprivkey.pem || ! -s /mail_crypt/ecpubkey.pem ]]; then
 	openssl ecparam -name prime256v1 -genkey | openssl pkey -out /mail_crypt/ecprivkey.pem
 	openssl pkey -in /mail_crypt/ecprivkey.pem -pubout -out /mail_crypt/ecpubkey.pem
 	chown 401 /mail_crypt/ecprivkey.pem /mail_crypt/ecpubkey.pem
@@ -131,6 +131,9 @@ sievec /usr/local/lib/dovecot/sieve/report-spam.sieve
 sievec /usr/local/lib/dovecot/sieve/report-ham.sieve
 
 # Fix permissions
+chown root:root /usr/local/etc/dovecot/sql/*.conf
+chown root:dovecot /usr/local/etc/dovecot/sql/dovecot-dict-sql-sieve* /usr/local/etc/dovecot/sql/dovecot-dict-sql-quota*
+chmod 640 /usr/local/etc/dovecot/sql/*.conf
 chown -R vmail:vmail /var/vmail/sieve
 
 # Fix more than 1 hardlink issue

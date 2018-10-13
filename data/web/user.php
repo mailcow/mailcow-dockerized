@@ -1,12 +1,12 @@
 <?php
-require_once("inc/prerequisites.inc.php");
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'domainadmin') {
 
   /*
   / DOMAIN ADMIN
   */
 
-	require_once("inc/header.inc.php");
+	require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/header.inc.php';
 	$_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
   $tfa_data = get_tfa();
 	$username = $_SESSION['mailcow_cc_username'];
@@ -71,7 +71,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
   / USER
   */
 
-  require_once("inc/header.inc.php");
+  require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/header.inc.php';
   $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
   $username = $_SESSION['mailcow_cc_username'];
   $mailboxdata = mailbox('get', 'mailbox_details', $username);
@@ -410,7 +410,7 @@ echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
 <script src="/js/footable.min.js"></script>
 <script src="/js/user.js"></script>
 <?php
-require_once("inc/footer.inc.php");
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
 }
 else {
 	header('Location: /');

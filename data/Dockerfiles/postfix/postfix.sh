@@ -252,6 +252,8 @@ chmod 700 /var/lib/zeyple/keys
 chown -R 600:600 /var/lib/zeyple/keys
 
 # Fix Postfix permissions
+chown -R root:postfix /opt/postfix/conf/sql/
+chmod 640 /opt/postfix/conf/sql/*.cf
 chgrp -R postdrop /var/spool/postfix/public
 chgrp -R postdrop /var/spool/postfix/maildrop
 postfix set-permissions

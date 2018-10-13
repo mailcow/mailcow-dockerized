@@ -35,6 +35,15 @@ jQuery(function($){
      });
      $('#dkim_add_domains').val(domains);
   });
+  $("#mass_exclude").change(function(){ 
+    $("#mass_include").selectpicker('deselectAll');
+  });
+  $("#mass_include").change(function(){ 
+    $("#mass_exclude").selectpicker('deselectAll');
+  });
+  $("#mass_disarm").click(function() {
+    $("#mass_send").attr("disabled", !this.checked);
+  });
   function draw_domain_admins() {
     ft_domainadmins = FooTable.init('#domainadminstable', {
       "columns": [
@@ -60,6 +69,32 @@ jQuery(function($){
       "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
       "filtering": {"enabled": true,"delay": 1,"position": "left","connectors": false,"placeholder": lang.filter_table
       },
+      "sorting": {"enabled": true}
+    });
+  }
+  function draw_admins() {
+    ft_admins = FooTable.init('#adminstable', {
+      "columns": [
+        {"name":"chkbox","title":"","style":{"maxWidth":"40px","width":"40px"},"filterable": false,"sortable": false,"type":"html"},
+        {"sorted": true,"name":"usr","title":lang.username,"style":{"width":"250px"}},
+        {"name":"tfa_active","title":"TFA", "filterable": false,"style":{"maxWidth":"80px","width":"80px"}},
+        {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active},
+        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"250px","width":"250px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
+      ],
+      "rows": $.ajax({
+        dataType: 'json',
+        url: '/api/v1/get/admin/all',
+        jsonp: false,
+        error: function () {
+          console.log('Cannot draw admin table');
+        },
+        success: function (data) {
+          return process_table_data(data, 'adminstable');
+        }
+      }),
+      "empty": lang.empty,
+      "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
+      "filtering": {"enabled": false},
       "sorting": {"enabled": true}
     });
   }
@@ -141,7 +176,8 @@ jQuery(function($){
       });
     } else if (table == 'domainadminstable') {
       $.each(data, function (i, item) {
-        item.selected_domains = escapeHtml(item.selected_domains.toString().replace(/,/g, " "));
+        item.selected_domains = escapeHtml(item.selected_domains);
+        item.selected_domains = item.selected_domains.toString().replace(/,/g, "<br>");
         item.chkbox = '<input type="checkbox" data-id="domain_admins" name="multi_select" value="' + item.username + '" />';
         item.action = '<div class="btn-group">' +
           '<a href="/edit/domainadmin/' + encodeURI(item.username) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
@@ -149,11 +185,25 @@ jQuery(function($){
           '<a href="/index.php?duallogin=' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-success"><span class="glyphicon glyphicon-user"></span> Login</a>' +
           '</div>';
       });
+    } else if (table == 'adminstable') {
+      $.each(data, function (i, item) {
+        if (admin_username == item.username) {
+          item.usr = '→ ' + item.username;
+        } else {
+          item.usr = item.username;
+        }
+        item.chkbox = '<input type="checkbox" data-id="admins" name="multi_select" value="' + item.username + '" />';
+        item.action = '<div class="btn-group">' +
+          '<a href="/edit/admin/' + encodeURI(item.username) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+          '<a href="#" data-action="delete_selected" data-id="single-admin" data-api-url="delete/admin" data-item="' + encodeURI(item.username) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+          '</div>';
+      });
     }
     return data
   };
   // Initial table drawings
   draw_domain_admins();
+  draw_admins();
   draw_fwd_hosts();
   draw_relayhosts();
   // Relayhost
