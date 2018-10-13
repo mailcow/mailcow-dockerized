@@ -1,8 +1,8 @@
 <?php
-require_once("inc/prerequisites.inc.php");
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admin") {
-require_once("inc/header.inc.php");
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/header.inc.php';
 $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 $tfa_data = get_tfa();
 ?>
@@ -10,6 +10,7 @@ $tfa_data = get_tfa();
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#tab-access" aria-controls="tab-access" role="tab" data-toggle="tab"><?=$lang['admin']['access'];?></a></li>
     <li role="presentation"><a href="#tab-config" aria-controls="tab-config" role="tab" data-toggle="tab"><?=$lang['admin']['configuration'];?></a></li>
+    <li role="presentation"><a href="#tab-sys-mails" aria-controls="tab-sys-mails" role="tab" data-toggle="tab"><?=$lang['admin']['sys_mails'];?></a></li>
   </ul>
 
   <div class="tab-content" style="padding-top:20px">
@@ -17,34 +18,28 @@ $tfa_data = get_tfa();
     <div class="panel panel-danger">
       <div class="panel-heading"><?=$lang['admin']['admin_details'];?></div>
       <div class="panel-body">
-        <form class="form-horizontal" autocapitalize="none" data-id="admin" autocorrect="off" role="form" method="post">
-        <?php $admindetails = get_admin_details(); ?>
-          <div class="form-group">
-            <label class="control-label col-sm-3" for="admin_user"><?=$lang['admin']['admin'];?>:</label>
-            <div class="col-sm-9">
-              <input type="text" class="form-control" name="admin_user" value="<?=htmlspecialchars($admindetails['username']);?>" required>
-              &rdsh; <kbd>a-z A-Z - _ .</kbd>
-            </div>
+        <div class="table-responsive">
+          <table class="table table-striped table-condensed" id="adminstable"></table>
+        </div>
+        <div class="mass-actions-admin">
+          <div class="btn-group">
+            <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="admins" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
+            <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a data-action="edit_selected" data-id="admins" data-api-url='edit/admin' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
+              <li><a data-action="edit_selected" data-id="admins" data-api-url='edit/admin' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
+              <li role="separator" class="divider"></li>
+              <li><a data-action="edit_selected" data-id="admins" data-api-url='edit/admin' data-api-attr='{"disable_tfa":"1"}' href="#"><?=$lang['tfa']['disable_tfa'];?></a></li>
+              <li role="separator" class="divider"></li>
+              <li><a data-action="delete_selected" data-id="admins" data-api-url='delete/admin' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+            </ul>
+            <a class="btn btn-sm btn-success" data-id="add_admin" data-toggle="modal" data-target="#addAdminModal" href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add_admin'];?></a>
           </div>
-          <div class="form-group">
-            <label class="control-label col-sm-3" for="admin_pass"><?=$lang['admin']['password'];?>:</label>
-            <div class="col-sm-9">
-            <input type="password" data-hibp="true" class="form-control" name="admin_pass" placeholder="<?=$lang['admin']['unchanged_if_empty'];?>">
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="control-label col-sm-3" for="admin_pass2"><?=$lang['admin']['password_repeat'];?>:</label>
-            <div class="col-sm-9">
-            <input type="password" class="form-control" name="admin_pass2">
-            </div>
-          </div>
-          <div class="form-group">
-            <div class="col-sm-offset-3 col-sm-9">
-              <button class="btn btn-default" data-action="edit_selected" data-id="admin" data-item="admin" data-api-url='edit/self' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
-            </div>
-          </div>
-        </form>
-        <legend><?=$lang['tfa']['tfa'];?></legend>
+        </div>
+        <legend style="margin-top:20px">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="margin-bottom: -5px;">
+          <path d="M17.81 4.47c-.08 0-.16-.02-.23-.06C15.66 3.42 14 3 12.01 3c-1.98 0-3.86.47-5.57 1.41-.24.13-.54.04-.68-.2-.13-.24-.04-.55.2-.68C7.82 2.52 9.86 2 12.01 2c2.13 0 3.99.47 6.03 1.52.25.13.34.43.21.67-.09.18-.26.28-.44.28zM3.5 9.72c-.1 0-.2-.03-.29-.09-.23-.16-.28-.47-.12-.7.99-1.4 2.25-2.5 3.75-3.27C9.98 4.04 14 4.03 17.15 5.65c1.5.77 2.76 1.86 3.75 3.25.16.22.11.54-.12.7-.23.16-.54.11-.7-.12-.9-1.26-2.04-2.25-3.39-2.94-2.87-1.47-6.54-1.47-9.4.01-1.36.7-2.5 1.7-3.4 2.96-.08.14-.23.21-.39.21zm6.25 12.07c-.13 0-.26-.05-.35-.15-.87-.87-1.34-1.43-2.01-2.64-.69-1.23-1.05-2.73-1.05-4.34 0-2.97 2.54-5.39 5.66-5.39s5.66 2.42 5.66 5.39c0 .28-.22.5-.5.5s-.5-.22-.5-.5c0-2.42-2.09-4.39-4.66-4.39-2.57 0-4.66 1.97-4.66 4.39 0 1.44.32 2.77.93 3.85.64 1.15 1.08 1.64 1.85 2.42.19.2.19.51 0 .71-.11.1-.24.15-.37.15zm7.17-1.85c-1.19 0-2.24-.3-3.1-.89-1.49-1.01-2.38-2.65-2.38-4.39 0-.28.22-.5.5-.5s.5.22.5.5c0 1.41.72 2.74 1.94 3.56.71.48 1.54.71 2.54.71.24 0 .64-.03 1.04-.1.27-.05.53.13.58.41.05.27-.13.53-.41.58-.57.11-1.07.12-1.21.12zM14.91 22c-.04 0-.09-.01-.13-.02-1.59-.44-2.63-1.03-3.72-2.1-1.4-1.39-2.17-3.24-2.17-5.22 0-1.62 1.38-2.94 3.08-2.94 1.7 0 3.08 1.32 3.08 2.94 0 1.07.93 1.94 2.08 1.94s2.08-.87 2.08-1.94c0-3.77-3.25-6.83-7.25-6.83-2.84 0-5.44 1.58-6.61 4.03-.39.81-.59 1.76-.59 2.8 0 .78.07 2.01.67 3.61.1.26-.03.55-.29.64-.26.1-.55-.04-.64-.29-.49-1.31-.73-2.61-.73-3.96 0-1.2.23-2.29.68-3.24 1.33-2.79 4.28-4.6 7.51-4.6 4.55 0 8.25 3.51 8.25 7.83 0 1.62-1.38 2.94-3.08 2.94s-3.08-1.32-3.08-2.94c0-1.07-.93-1.94-2.08-1.94s-2.08.87-2.08 1.94c0 1.71.66 3.31 1.87 4.51.95.94 1.86 1.46 3.27 1.85.27.07.42.35.35.61-.05.23-.26.38-.47.38z"/>
+        </svg> <?=$lang['tfa']['tfa'];?></legend>
         <div class="row">
           <div class="col-sm-3 col-xs-5 text-right"><?=$lang['tfa']['tfa'];?>:</div>
           <div class="col-sm-9 col-xs-7">
@@ -68,7 +63,7 @@ $tfa_data = get_tfa();
         <div class="row">
           <div class="col-sm-3 col-xs-5 text-right"><?=$lang['tfa']['set_tfa'];?>:</div>
           <div class="col-sm-9 col-xs-7">
-            <select data-width="auto" id="selectTFA" class="selectpicker" title="<?=$lang['tfa']['select'];?>">
+            <select data-width="fit" id="selectTFA" class="selectpicker" title="<?=$lang['tfa']['select'];?>">
               <option value="yubi_otp"><?=$lang['tfa']['yubi_otp'];?></option>
               <option value="u2f"><?=$lang['tfa']['u2f'];?></option>
               <option value="totp"><?=$lang['tfa']['totp'];?></option>
@@ -79,24 +74,27 @@ $tfa_data = get_tfa();
         <legend data-target="#api" style="margin-top:40px;cursor:pointer" id="api_legend" unselectable="on" data-toggle="collapse">
           <span id="api_arrow" style="font-size:12px" class="rotate glyphicon glyphicon-menu-down"></span> API (experimental, work in progress)
         </legend>
+        <?php
+        $api = admin_api('get');
+        ?>
         <div id="api" class="collapse">
         <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
           <div class="form-group">
             <label class="control-label col-sm-3" for="allow_from"><?=$lang['admin']['api_allow_from'];?>:</label>
             <div class="col-sm-9">
-              <textarea class="form-control" rows="5" name="allow_from" id="allow_from" required><?=htmlspecialchars($admindetails['allow_from']);?></textarea>
+              <textarea class="form-control" rows="5" name="allow_from" id="allow_from" required><?=htmlspecialchars($api['allow_from']);?></textarea>
             </div>
           </div>
           <div class="form-group">
             <label class="control-label col-sm-3" for="admin_api_key"><?=$lang['admin']['api_key'];?>:</label>
             <div class="col-sm-9">
-              <input type="text" class="form-control" placeholder="-" value="<?=htmlspecialchars($admindetails['api_key']);?>" readonly>
+              <input type="text" class="form-control" placeholder="-" value="<?=htmlspecialchars($api['api_key']);?>" readonly>
             </div>
           </div>
           <div class="form-group">
             <div class="col-sm-offset-3 col-sm-9">
               <label>
-                <input type="checkbox" name="active" <?=($admindetails['api_active'] == 1) ? 'checked' : null;?>> <?=$lang['admin']['activate_api'];?>
+                <input type="checkbox" name="active" <?=($api['active'] == 1) ? 'checked' : null;?>> <?=$lang['admin']['activate_api'];?>
               </label>
             </div>
           </div>
@@ -117,7 +115,7 @@ $tfa_data = get_tfa();
     <div class="panel-heading"><?=$lang['admin']['domain_admins'];?></div>
         <div class="panel-body">
           <div class="table-responsive">
-            <table class="table table-striped" id="domainadminstable"></table>
+            <table class="table table-striped table-condensed" id="domainadminstable"></table>
           </div>
           <div class="mass-actions-admin">
             <div class="btn-group">
@@ -776,6 +774,88 @@ $tfa_data = get_tfa();
   </div>
   </div>
 
+  <div role="tabpanel" class="tab-pane" id="tab-sys-mails">
+    <div class="panel panel-default">
+      <div class="panel-heading"><?=$lang['admin']['sys_mails'];?></div>
+      <div class="panel-body">
+        <form class="form-horizontal" autocapitalize="none" data-id="admin" autocorrect="off" role="form" method="post">
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="mass_from"><?=$lang['admin']['from'];?>:</label>
+            <div class="col-sm-10">
+              <input type="email" class="form-control" name="mass_from" value="noreply@<?=getenv('MAILCOW_HOSTNAME');;?>" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="mass_subject"><?=$lang['admin']['subject'];?>:</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" name="mass_subject" required>
+            </div>
+          </div>
+          <?php
+          $domains = array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains'));
+          if (!empty($domains)) {
+            foreach ($domains as $domain) {
+              foreach (mailbox('get', 'mailboxes', $domain) as $mailbox) {
+                $mailboxes[] = $mailbox;
+              }
+            }
+          }
+          ?>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="mass_subject"><?=$lang['admin']['include_exclude'];?>:
+              <p class="help-block"><?=$lang['admin']['include_exclude_info'];?></p>
+            </label>
+            <div class="col-sm-5">
+              <label class="control-label" for="mass_exclude"><?=$lang['admin']['excludes'];?>:</label>
+              <select id="mass_exclude" name="mass_exclude[]" data-live-search="true" data-width="100%"  size="30" multiple>
+              <?php
+              if (!empty($mailboxes)) {
+                foreach (array_filter($mailboxes) as $mailbox):
+                ?>
+                <option><?=htmlspecialchars($mailbox);?></option>
+                <?php
+                endforeach;
+              }
+              ?>
+              </select>
+            </div>
+            <div class="col-sm-5">
+              <label class="control-label" for="mass_include"><?=$lang['admin']['includes'];?>:</label>
+              <select id="mass_include" name="mass_include[]" data-live-search="true" data-width="100%"  size="30" multiple>
+              <?php
+              if (!empty($mailboxes)) {
+                foreach (array_filter($mailboxes) as $mailbox):
+                ?>
+                <option><?=htmlspecialchars($mailbox);?></option>
+                <?php
+                endforeach;
+              }
+              ?>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="mass_text"><?=$lang['admin']['text'];?>:</label>
+            <div class="col-sm-10">
+              <textarea class="form-control" rows="10" name="mass_text" id="mass_text" required></textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <label>
+                <input type="checkbox" id="mass_disarm"> <?=$lang['admin']['activate_send'];?>
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <button class="btn btn-default" type="submit" id="mass_send" name="mass_send" disabled><span class="glyphicon glyphicon-envelope"></span> <?=$lang['admin']['send'];?></button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
   </div>
 </div> <!-- /container -->
 <?php
@@ -785,6 +865,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/admin.php';
 <?php
 $lang_admin = json_encode($lang['admin']);
 echo "var lang = ". $lang_admin . ";\n";
+echo "var admin_username = '". $_SESSION['mailcow_cc_username'] . "';\n";
 echo "var csrf_token = '". $_SESSION['CSRF']['TOKEN'] . "';\n";
 echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
 echo "var log_pagination_size = '". $LOG_PAGINATION_SIZE . "';\n";

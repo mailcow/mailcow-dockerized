@@ -1,8 +1,12 @@
 # mailcow: dockerized - 🐮 + 🐋 = 💕
 
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JWBSYHF4SMC68)
+## Want to support mailcow?
 
-**mailcow Bitcoin donations:** 1E5rgzgA1sS3QH7r1ToWxRC3GEavfsGMrx
+Donate via **PayPal** [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JWBSYHF4SMC68) or via **Liberapay** [![Liberapay.com](https://mailcow.email/img/lp.png)](https://liberapay.com/mailcow)
+
+Or just spread the word: moo.
+
+## Info and documentation
 
 Please see [the official documentation](https://mailcow.github.io/mailcow-dockerized-docs/) for instructions.
 

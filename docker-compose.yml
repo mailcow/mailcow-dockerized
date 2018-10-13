@@ -2,7 +2,7 @@ version: '2.1'
 services:
 
     unbound-mailcow:
-      image: mailcow/unbound:1.2
+      image: mailcow/unbound:1.4
       build: ./data/Dockerfiles/unbound
       command: /usr/sbin/unbound
       environment:
@@ -96,7 +96,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.21
+      image: mailcow/phpfpm:1.22
       build: ./data/Dockerfiles/phpfpm
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
@@ -138,7 +138,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.38
+      image: mailcow/sogo:1.39
       build: ./data/Dockerfiles/sogo
       environment:
         - DBNAME=${DBNAME}
@@ -160,7 +160,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.38
+      image: mailcow/dovecot:1.41
       build: ./data/Dockerfiles/dovecot
       cap_add:
         - NET_BIND_SERVICE
@@ -202,7 +202,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.23
+      image: mailcow/postfix:1.24
       build: ./data/Dockerfiles/postfix
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
@@ -287,7 +287,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.38
+      image: mailcow/acme:1.40
       build: ./data/Dockerfiles/acme
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -364,7 +364,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:1.18
+      image: mailcow/dockerapi:1.19
       restart: always
       build: ./data/Dockerfiles/dockerapi
       oom_kill_disable: true

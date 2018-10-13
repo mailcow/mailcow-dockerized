@@ -28,16 +28,16 @@ if (!isset($_SESSION['SESS_REMOTE_UA'])) {
 
 // API
 if (!empty($_SERVER['HTTP_X_API_KEY'])) {
-  $stmt = $pdo->prepare("SELECT `username`, `allow_from` FROM `api` WHERE `api_key` = :api_key AND `active` = '1';");
+  $stmt = $pdo->prepare("SELECT `allow_from` FROM `api` WHERE `api_key` = :api_key AND `active` = '1';");
   $stmt->execute(array(
-    ':api_key' => preg_replace('/[^A-Z0-9-]/i', '', $_SERVER['HTTP_X_API_KEY'])
+    ':api_key' => preg_replace('/[^a-zA-Z0-9-]/', '', $_SERVER['HTTP_X_API_KEY'])
   ));
   $api_return = $stmt->fetch(PDO::FETCH_ASSOC);
   if (!empty($api_return['username'])) {
     $remote = get_remote_ip(false);
     $allow_from = array_map('trim', preg_split( "/( |,|;|\n)/", $api_return['allow_from']));
     if (in_array($remote, $allow_from)) {
-      $_SESSION['mailcow_cc_username'] = $api_return['username'];
+      $_SESSION['mailcow_cc_username'] = 'API';
       $_SESSION['mailcow_cc_role'] = 'admin';
       $_SESSION['mailcow_cc_api'] = true;
     }
@@ -84,7 +84,7 @@ if (isset($_POST["logout"])) {
     $_SESSION["mailcow_cc_username"] = $_SESSION["dual-login"]["username"];
     $_SESSION["mailcow_cc_role"] = $_SESSION["dual-login"]["role"];
     unset($_SESSION["dual-login"]);
-    header("Location: /mailbox.php");
+    header("Location: /mailbox");
     exit();
   }
   else {
