@@ -1,4 +1,4 @@
-**Notice**
+**Notice (you can delete this paragraph)**
 Please understand that we use GitHub as **bug tracker and for feature requests only**.
 For general (community) support and other discussion, you are welcome to visit us @ Freenode, #mailcow
 Answering may take from a few seconds to hours, please be patient. :-)
@@ -20,7 +20,7 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Logs**
-Please post the logs to https://pastebin.com and paste the link here. Logs can be optained by using docker-compose logs --tail="100" <containername>. Please replace <containername> with the container name, you can find that by using docker-compose ps .
+Please take a look at the [documentation](https://mailcow.github.io/mailcow-dockerized-docs/debug-logs/).
 
 **System**
  - OS: [e.g. iOS]
