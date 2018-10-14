@@ -1,3 +1,9 @@
+---
+name: Bug report
+about: Report a bug for this project
+
+---
+
 **Notice (you can delete this paragraph)**
 Please understand that we use GitHub as **bug tracker and for feature requests only**.
 For general (community) support and other discussion, you are welcome to visit us @ Freenode, #mailcow
