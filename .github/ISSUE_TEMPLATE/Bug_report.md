@@ -7,18 +7,20 @@ Immediate commercial support is available via mailcow@incidents.servercow.de
 **Describe the bug**
 A clear and concise description of what the bug is.
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+**How to reproduce Reproduce**
+Steps to reproduce the behavior please explain how to reproduce the bug:
+1. ....
+2. ....
+3. ....
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
 
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
+
+**Logs**
+Please take a look at the [documentation](https://mailcow.github.io/mailcow-dockerized-docs/debug-logs/).
 
 **System**
  - OS: [e.g. iOS]
