@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [[ ! -z ${MAILCOW_BACKUP_LOCATION} ]]; then
+  BACKUP_LOCATION="${MAILCOW_BACKUP_LOCATION}"
+fi
+
 if [[ ! ${1} =~ (backup|restore) ]]; then
   echo "First parameter needs to be 'backup' or 'restore'"
   exit 1
