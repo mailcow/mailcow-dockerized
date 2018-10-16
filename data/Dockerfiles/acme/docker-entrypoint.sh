@@ -179,33 +179,6 @@ while true; do
     SQL_DOMAIN_ARR+=("${domains}")
   done < <(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM domain WHERE backupmx=0" -Bs)
 
-  for SQL_DOMAIN in "${SQL_DOMAIN_ARR[@]}"; do
-    A_CONFIG=$(dig A autoconfig.${SQL_DOMAIN} +short | tail -n 1)
-    AAAA_CONFIG=$(dig AAAA autoconfig.${SQL_DOMAIN} +short | tail -n 1)
-    # Check if CNAME without v6 enabled target
-    if [[ ! -z ${AAAA_CONFIG} ]] && [[ -z $(echo ${AAAA_CONFIG} | grep "^\([0-9a-fA-F]\{0,4\}:\)\{1,7\}[0-9a-fA-F]\{0,4\}$") ]]; then
-      AAAA_CONFIG=
-    fi
-    if [[ ! -z ${AAAA_CONFIG} ]]; then
-      log_f "Found AAAA record for autoconfig.${SQL_DOMAIN}: ${AAAA_CONFIG} - skipping A record check"
-      if [[ $(expand ${IPV6:-"0000:0000:0000:0000:0000:0000:0000:0000"}) == $(expand ${AAAA_CONFIG}) ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
-        log_f "Confirmed AAAA record autoconfig.${SQL_DOMAIN}"
-        VALIDATED_CONFIG_DOMAINS+=("autoconfig.${SQL_DOMAIN}")
-      else
-        log_f "Cannot match your IP ${IPV6:-NO_IPV6_LINK} against hostname autoconfig.${SQL_DOMAIN} ($(expand ${AAAA_CONFIG}))"
-      fi
-    elif [[ ! -z ${A_CONFIG} ]]; then
-      log_f "Found A record for autoconfig.${SQL_DOMAIN}: ${A_CONFIG}"
-      if [[ ${IPV4:-ERR} == ${A_CONFIG} ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
-        log_f "Confirmed A record autoconfig.${SQL_DOMAIN}"
-        VALIDATED_CONFIG_DOMAINS+=("autoconfig.${SQL_DOMAIN}")
-      else
-        log_f "Cannot match your IP ${IPV4} against hostname autoconfig.${SQL_DOMAIN} (${A_CONFIG})"
-      fi
-    else
-      log_f "No A or AAAA record found for hostname autoconfig.${SQL_DOMAIN}"
-    fi
-
     A_DISCOVER=$(dig A autodiscover.${SQL_DOMAIN} +short | tail -n 1)
     AAAA_DISCOVER=$(dig AAAA autodiscover.${SQL_DOMAIN} +short | tail -n 1)
     # Check if CNAME without v6 enabled target
