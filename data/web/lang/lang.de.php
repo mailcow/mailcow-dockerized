@@ -178,6 +178,7 @@ $lang['user']['alias_time_left'] = 'Zeit verbleibend';
 $lang['user']['alias_full_date'] = 'd.m.Y, H:i:s T';
 $lang['user']['alias_select_validity'] = 'Bitte Gültigkeit auswählen';
 $lang['user']['sync_jobs'] = 'Sync Jobs';
+$lang['user']['expire_in'] = 'Ungültig in';
 $lang['user']['hour'] = 'Stunde';
 $lang['user']['hours'] = 'Stunden';
 $lang['user']['day'] = 'Tag';
