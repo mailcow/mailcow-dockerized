@@ -254,8 +254,9 @@ sleep 2
 docker-compose down
 
 # Fix header check
-[[ -f data/conf/postfix/mailcow_anonymize_headers.pcre ]] && \
+if [[ -f data/conf/postfix/mailcow_anonymize_headers.pcre ]]; then
   mv data/conf/postfix/mailcow_anonymize_headers.pcre data/conf/postfix/mailcow_anonymize_headers.pcre_
+fi
 # Silently fixing remote url from andryyy to mailcow
 git remote set-url origin https://github.com/mailcow/mailcow-dockerized
 echo -e "\e[32mCommitting current status...\e[0m"
@@ -285,7 +286,10 @@ elif [[ ${MERGE_RETURN} != 0 ]]; then
   echo "Run docker-compose up -d to restart your stack without updates or try again after fixing the mentioned errors."
   exit 1
 fi
-
+# Make sure missing files do exist, checkout missing files if any
+if [[ ! -f data/conf/postfix/mailcow_anonymize_headers.pcre ]]; then
+  git checkout origin/${BRANCH} data/conf/postfix/mailcow_anonymize_headers.pcre
+fi
 
 echo -e "\e[32mFetching new docker-compose version...\e[0m"
 sleep 2
