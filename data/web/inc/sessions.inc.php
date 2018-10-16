@@ -33,7 +33,7 @@ if (!empty($_SERVER['HTTP_X_API_KEY'])) {
     ':api_key' => preg_replace('/[^a-zA-Z0-9-]/', '', $_SERVER['HTTP_X_API_KEY'])
   ));
   $api_return = $stmt->fetch(PDO::FETCH_ASSOC);
-  if (!empty($api_return['username'])) {
+  if (!empty($api_return['allow_from'])) {
     $remote = get_remote_ip(false);
     $allow_from = array_map('trim', preg_split( "/( |,|;|\n)/", $api_return['allow_from']));
     if (in_array($remote, $allow_from)) {
