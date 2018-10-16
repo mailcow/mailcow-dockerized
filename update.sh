@@ -253,6 +253,8 @@ echo -e "Stopping mailcow... "
 sleep 2
 docker-compose down
 
+# Fix header check
+rm -f data/conf/postfix/mailcow_anonymize_headers.pcre
 # Silently fixing remote url from andryyy to mailcow
 git remote set-url origin https://github.com/mailcow/mailcow-dockerized
 echo -e "\e[32mCommitting current status...\e[0m"
