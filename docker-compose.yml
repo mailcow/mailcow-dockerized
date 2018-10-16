@@ -73,7 +73,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.27
+      image: mailcow/rspamd:1.28
       build: ./data/Dockerfiles/rspamd
       stop_grace_period: 30s
       depends_on:
@@ -287,7 +287,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.41
+      image: mailcow/acme:1.42
       build: ./data/Dockerfiles/acme
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
