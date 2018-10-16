@@ -259,7 +259,11 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
           <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="tla" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
           <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-time"></span> + 1h</a></li>
+            <li><a data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"validity":"1"}' href="#"><?=$lang['user']['expire_in'];?> 1 <?=$lang['user']['hour'];?></a></li>
+            <li><a data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"validity":"6"}' href="#"><?=$lang['user']['expire_in'];?> 6 <?=$lang['user']['hours'];?></a></li>
+            <li><a data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"validity":"24"}' href="#"><?=$lang['user']['expire_in'];?> 1 <?=$lang['user']['day'];?></a></li>
+            <li><a data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"validity":"168"}' href="#"><?=$lang['user']['expire_in'];?> 1 <?=$lang['user']['week'];?></a></li>
+            <li><a data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"validity":"672"}' href="#"><?=$lang['user']['expire_in'];?> 4 <?=$lang['user']['weeks'];?></a></li>
             <li role="separator" class="divider"></li>
             <li><a data-action="delete_selected" data-id="tla" data-api-url='delete/time_limited_alias' href="#"><?=$lang['mailbox']['remove'];?></a></li>
           </ul>

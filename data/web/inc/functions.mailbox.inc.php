@@ -1213,12 +1213,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
-            $stmt = $pdo->prepare("UPDATE `spamalias` SET `validity` = (`validity` + 3600) WHERE 
-              `address` = :address AND
-              `validity` >= :validity");
+            if (empty($_data['validity'])) {
+              continue;
+            }
+            $validity = round((int)time() + ($_data['validity'] * 3600));
+            $stmt = $pdo->prepare("UPDATE `spamalias` SET `validity` = :validity WHERE 
+              `address` = :address");
             $stmt->execute(array(
               ':address' => $address,
-              ':validity' => time()
+              ':validity' => $validity
             ));
             $_SESSION['return'][] = array(
               'type' => 'success',
