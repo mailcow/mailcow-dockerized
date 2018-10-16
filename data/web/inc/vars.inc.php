@@ -27,6 +27,8 @@ if ($https_port === FALSE) {
 } else {
   $https_port = substr($_SERVER['HTTP_HOST'], $https_port+1);
 }
+
+// TODO: Switch from array_pop to array_key_last with release of PHP 7.3
 // Alternatively select port here =>
 //$https_port = 1234;
 // Other settings =>
