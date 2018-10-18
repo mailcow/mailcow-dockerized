@@ -305,19 +305,26 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 						<li><?=$lang['user']['spamfilter_yellow'];?></li>
 						<li><?=$lang['user']['spamfilter_red'];?></li>
 					</ul>
-					<p><i><?=$lang['user']['spamfilter_default_score'];?> 5:15</i></p>
 					<p><?=$lang['user']['spamfilter_hint'];?></p>
 				</div>
 			</div>
 
       <div class="form-group">
 				<div class="col-sm-10">
-        <button data-acl="<?=$_SESSION['acl']['spam_score'];?>" type="button" class="btn btn-sm btn-success" data-action="edit_selected"
-          data-item="<?= htmlentities($username); ?>"
-          data-id="spam_score"
-          data-api-url='edit/spam-score'
-          data-api-attr='{}'><?=$lang['user']['save_changes'];?></button>
+
 				</div>
+        <div class="btn-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
+          <a data-acl="<?=$_SESSION['acl']['spam_score'];?>" type="button" class="btn btn-sm btn-success" data-action="edit_selected"
+            data-item="<?= htmlentities($username); ?>"
+            data-id="spam_score"
+            data-api-url='edit/spam-score'
+            data-api-attr='{}'><?=$lang['user']['save_changes'];?></a>
+          <a data-acl="<?=$_SESSION['acl']['spam_score'];?>" type="button" class="btn btn-sm btn-default" data-action="edit_selected"
+            data-item="<?= htmlentities($username); ?>"
+            data-id="spam_score_reset"
+            data-api-url='edit/spam-score'
+            data-api-attr='{"spam_score":"default"}'><?=$lang['user']['spam_score_reset'];?></a>
+        </div>
 			</div>
 
 		</form>

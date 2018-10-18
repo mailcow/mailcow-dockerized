@@ -614,6 +614,7 @@ $lang['mailbox']['status'] = "Status";
 $lang['mailbox']['running'] = "Running";
 
 $lang['edit']['spam_score'] = "Set a custom spam score";
+$lang['user']['spam_score_reset'] = "Reset to server default";
 $lang['edit']['spam_policy'] = "Add or remove items to white-/blacklist";
 $lang['edit']['spam_alias'] = "Create or change time limited alias addresses";
 
