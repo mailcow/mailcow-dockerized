@@ -1157,6 +1157,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $stmt->execute(array(
                 ':username' => $username
               ));
+              $_SESSION['return'][] = array(
+                'type' => 'success',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => array('mailbox_modified', $username)
+              );
               continue;
             }
             $lowspamlevel	= explode(',', $_data['spam_score'])[0];
