@@ -1151,13 +1151,21 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             return false;
           }
           foreach ($usernames as $username) {
+            if ($_data['spam_score'] == "default") {
+              $stmt = $pdo->prepare("DELETE FROM `filterconf` WHERE `object` = :username
+                AND (`option` = 'lowspamlevel' OR `option` = 'highspamlevel')");
+              $stmt->execute(array(
+                ':username' => $username
+              ));
+              continue;
+            }
             $lowspamlevel	= explode(',', $_data['spam_score'])[0];
             $highspamlevel	= explode(',', $_data['spam_score'])[1];
             if (!is_numeric($lowspamlevel) || !is_numeric($highspamlevel)) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                'msg' => 'access_denied'
+                'msg' => 'Invalid spam score, format must be "1,2" where first is low and second is high spam value.'
               );
               continue;
             }
@@ -2455,7 +2463,47 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           return $syncjobdata;
         break;
         case 'spam_score':
-          $default = "5, 15";
+          $curl = curl_init();
+          curl_setopt($curl, CURLOPT_UNIX_SOCKET_PATH, '/var/lib/rspamd/rspamd.sock');
+          curl_setopt($curl, CURLOPT_URL,"http://rspamd/actions");
+          curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+          $default_actions = curl_exec($curl);
+          if (!curl_errno($curl)) {
+            $data_array = json_decode($default_actions, true);
+            curl_close($curl);
+            foreach ($data_array as $data) {
+              if ($data['action'] == 'reject') {
+                $reject = $data['value'];
+                continue;
+              }
+              elseif ($data['action'] == 'add header') {
+                $add_header = $data['value'];
+                continue;
+              }
+            }
+            if (empty($add_header) || empty($reject)) {
+              // Assume default, set warning
+              $default = "5, 15";
+              $_SESSION['return'][] = array(
+                'type' => 'warning',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'Could not determine servers default spam score, assuming default'
+              );
+            }
+            else {
+              $default = $add_header . ', ' . $reject;
+            }
+          }
+          else {
+            // Assume default, set warning
+            $default = "5, 15";
+            $_SESSION['return'][] = array(
+              'type' => 'warning',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              'msg' => 'Could not determine servers default spam score, assuming default'
+            );
+          }
+          curl_close($curl);
           $policydata = array();
           if (isset($_data) && filter_var($_data, FILTER_VALIDATE_EMAIL)) {
             if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {

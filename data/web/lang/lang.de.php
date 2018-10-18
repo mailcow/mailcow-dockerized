@@ -598,6 +598,7 @@ $lang['admin']['reset_default'] = "Zurücksetzen auf Standard";
 $lang['admin']['merged_vars_hint'] = 'Ausgegraute Reihen wurden aus der Datei <code>vars.(local.)inc.php</code> gelesen und können hier nicht verändert werden.';
 
 $lang['edit']['spam_score'] = "Einen benutzerdefiniterten Spam-Score festlegen";
+$lang['user']['spam_score_reset'] = "Auf Server-Standard zurücksetzen";
 $lang['edit']['spam_policy'] = "Hinzufügen und Entfernen von Einträgen in White- und Blacklists";
 $lang['edit']['spam_alias'] = "Anpassen temporärer Alias-Adressen";
 
