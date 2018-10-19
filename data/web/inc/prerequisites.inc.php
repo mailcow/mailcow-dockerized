@@ -112,11 +112,9 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
 // Set language
 if (!isset($_SESSION['mailcow_locale']) && !isset($_COOKIE['mailcow_locale'])) {
   if ($DETECT_LANGUAGE && isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-    $header_lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
-    foreach ($AVAILABLE_LANGUAGES as $available_lang) {
-      if ($header_lang == $available_lang) {
-        $_SESSION['mailcow_locale'] = strtolower(trim($header_lang));
-      }
+    $header_lang = strtolower(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2));
+    if (in_array($header_lang, $AVAILABLE_LANGUAGES)) {
+      $_SESSION['mailcow_locale'] = $header_lang;
     }
   }
   else {
@@ -124,7 +122,7 @@ if (!isset($_SESSION['mailcow_locale']) && !isset($_COOKIE['mailcow_locale'])) {
   }
 }
 if (isset($_COOKIE['mailcow_locale'])) {
-  $_SESSION['mailcow_locale'] = $_COOKIE['mailcow_locale'];
+  (preg_match('/^[a-z]{2}$/', $_COOKIE['mailcow_locale'])) ? $_SESSION['mailcow_locale'] = $_COOKIE['mailcow_locale'] : setcookie("mailcow_locale", "", time() - 300);
 }
 if (isset($_GET['lang']) && in_array($_GET['lang'], $AVAILABLE_LANGUAGES)) {
   $_SESSION['mailcow_locale'] = $_GET['lang'];
