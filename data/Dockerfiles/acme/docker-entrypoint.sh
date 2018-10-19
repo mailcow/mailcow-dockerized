@@ -179,6 +179,7 @@ while true; do
     SQL_DOMAIN_ARR+=("${domains}")
   done < <(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM domain WHERE backupmx=0" -Bs)
 
+  for SQL_DOMAIN in "${SQL_DOMAIN_ARR[@]}"; do
     A_DISCOVER=$(dig A autodiscover.${SQL_DOMAIN} +short | tail -n 1)
     AAAA_DISCOVER=$(dig AAAA autodiscover.${SQL_DOMAIN} +short | tail -n 1)
     # Check if CNAME without v6 enabled target
