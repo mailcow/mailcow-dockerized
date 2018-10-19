@@ -358,6 +358,10 @@ while ($row = array_shift($rows)) {
     foreach ($content as $line) {
       echo '    ' . $line . PHP_EOL;
     }
+?>
+  }
+<?php
 }
 ?>
 }
+
