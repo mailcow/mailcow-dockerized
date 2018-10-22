@@ -240,7 +240,7 @@ $lang['user']['create_syncjob'] = 'Create new sync job';
 
 $lang['start']['mailcow_apps_detail'] = 'Use a mailcow app to access your mails, calendar, contacts and more.';
 $lang['start']['mailcow_panel_detail'] = '<b>Domain administrators</b> create, modify or delete mailboxes and aliases, change domains and read further information about their assigned domains.<br>
-	<b>Mailbox users</b> are able to create time-limited aliases (spam aliases), change their password and spam filter settings.';
+<b>Mailbox users</b> are able to create time-limited aliases (spam aliases), change their password and spam filter settings.';
 $lang['start']['imap_smtp_server_auth_info'] = 'Please use your full email address and the PLAIN authentication mechanism.<br>
 Your login data will be encrypted by the server-side mandatory encryption.';
 $lang['start']['help'] = 'Show/Hide help panel';
@@ -730,4 +730,4 @@ $lang['admin']['send'] = 'Send';
 $lang['warning']['ip_invalid'] = 'Skipped invalid IP: %s';
 $lang['danger']['text_empty'] = 'Text must not be empty';
 $lang['danger']['subject_empty'] = 'Subject must not be empty';
-$lang['danger']['from_invalid'] = 'Absender darf nicht leer sein';
+$lang['danger']['from_invalid'] = 'Sender must not be empty';
