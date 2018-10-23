@@ -224,11 +224,21 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
     </div>
   </div>
 
+  <hr>
+
   <div class="row">
     <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['eas_reset'];?>:</div>
     <div class="col-md-9 col-xs-7">
     <button class="btn btn-xs btn-default" data-acl="<?=$_SESSION['acl']['eas_reset'];?>" data-action="delete_selected" data-text="<?=$lang['user']['eas_reset'];?>?" data-item="<?= htmlentities($username); ?>" data-id="eas_cache" data-api-url='delete/eas_cache' href="#"><?=$lang['user']['eas_reset_now'];?></button>
     <p class="help-block"><?=$lang['user']['eas_reset_help'];?></p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['sogo_profile_reset'];?>:</div>
+    <div class="col-md-9 col-xs-7">
+    <button class="btn btn-xs btn-default" data-acl="<?=$_SESSION['acl']['sogo_profile_reset'];?>" data-action="delete_selected" data-text="<?=$lang['user']['sogo_profile_reset'];?>?" data-item="<?= htmlentities($username); ?>" data-id="sogo_profile" data-api-url='delete/sogo_profile' href="#"><?=$lang['user']['sogo_profile_reset_now'];?></button>
+    <p class="help-block"><?=$lang['user']['sogo_profile_reset_help'];?></p>
     </div>
   </div>
 
@@ -392,7 +402,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
           <li><a data-action="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
           <li><a data-action="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
           <li role="separator" class="divider"></li>
-          <li><a data-action="delete_selected" data-text="<?=$lang['user']['eas_reset'];?>?" data-id="syncjob" data-api-url='delete/syncjob' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+          <li><a data-action="delete_selected" data-id="syncjob" data-api-url='delete/syncjob' href="#"><?=$lang['mailbox']['remove'];?></a></li>
         </ul>
         <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addSyncJobModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['create_syncjob'];?></a>
       </div>

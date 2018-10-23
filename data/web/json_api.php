@@ -218,6 +218,24 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             }
           break;
 
+          case "mailq":
+            $mailq_lines = docker('post', 'postfix-mailcow', 'exec', array('cmd' => 'mailq', 'task' => 'list'));
+            $lines = 0;
+            // Hard limit to 1000 items
+            foreach (preg_split("/((\r?\n)|(\r\n?))/", $mailq_lines) as $mailq_item) if ($lines++ < 1000) {
+              if (empty($mailq_item) || $mailq_item == '1') {
+                continue;
+              }
+              $line[] = json_decode($mailq_item, true);
+            }
+            if (!isset($line) || empty($line)) {
+              echo '{}';
+            }
+            else {
+              echo json_encode($line);
+            }
+          break;
+
           case "rl-domain":
             switch ($object) {
               case "all":
@@ -974,6 +992,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "filter":
             process_delete_return(mailbox('delete', 'filter', array('id' => $items)));
           break;
+          case "mailq":
+            process_delete_return(mailq('delete', array('qid' => $items)));
+          break;
           case "qitem":
             process_delete_return(quarantine('delete', array('id' => $items)));
           break;
@@ -1016,6 +1037,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           break;
           case "eas_cache":
             process_delete_return(mailbox('delete', 'eas_cache', array('username' => $items)));
+          break;
+          case "sogo_profile":
+            process_delete_return(mailbox('delete', 'sogo_profile', array('username' => $items)));
           break;
           case "domain-admin":
             process_delete_return(domain_admin('delete', array('username' => $items)));
@@ -1087,6 +1111,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           break;
           case "quarantine":
             process_edit_return(quarantine('edit', $attr));
+          break;
+          case "mailq":
+            process_edit_return(mailq('edit', array_merge(array('qid' => $items), $attr)));
           break;
           case "time_limited_alias":
             process_edit_return(mailbox('edit', 'time_limited_alias', array_merge(array('address' => $items), $attr)));

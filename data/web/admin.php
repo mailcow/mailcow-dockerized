@@ -11,6 +11,7 @@ $tfa_data = get_tfa();
     <li role="presentation" class="active"><a href="#tab-access" aria-controls="tab-access" role="tab" data-toggle="tab"><?=$lang['admin']['access'];?></a></li>
     <li role="presentation"><a href="#tab-config" aria-controls="tab-config" role="tab" data-toggle="tab"><?=$lang['admin']['configuration'];?></a></li>
     <li role="presentation"><a href="#tab-sys-mails" aria-controls="tab-sys-mails" role="tab" data-toggle="tab"><?=$lang['admin']['sys_mails'];?></a></li>
+    <li role="presentation"><a href="#tab-mailq" aria-controls="tab-mailq" role="tab" data-toggle="tab">Queue manager</a></li>
   </ul>
 
   <div class="tab-content" style="padding-top:20px">
@@ -855,8 +856,52 @@ $tfa_data = get_tfa();
         </form>
       </div>
     </div>
-
   </div>
+
+  <div role="tabpanel" class="tab-pane" id="tab-mailq">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Queue manager <span class="badge badge-info table-lines"></span>
+        <div class="btn-group pull-right">
+          <button class="btn btn-xs btn-default refresh_table" data-draw="draw_queue" data-table="queuetable"><?=$lang['admin']['refresh'];?></button>
+        </div>
+      </div>
+      <div class="panel-body">
+      <div class="table-responsive">
+        <table class="table table-striped table-condensed" id="queuetable"></table>
+      </div>
+      <div class="mass-actions-admin">
+        <div class="btn-group">
+          <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="mailqitems" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
+          <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a data-toggle="tooltip" title="postqueue -i" data-action="edit_selected" data-id="mailqitems" data-api-url='edit/mailq' data-api-attr='{"action":"deliver"}' href="#">Deliver</a></li>
+            <li><a data-toggle="tooltip" title="postsuper -H" data-action="edit_selected" data-id="mailqitems" data-api-url='edit/mailq' data-api-attr='{"action":"unhold"}' href="#">Unhold</a></li>
+            <li><a data-toggle="tooltip" title="postsuper -h" data-action="edit_selected" data-id="mailqitems" data-api-url='edit/mailq' data-api-attr='{"action":"hold"}' href="#">Hold</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a data-toggle="tooltip" title="postsuper -d" data-action="delete_selected" data-id="mailqitems" data-api-url='delete/mailq' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+          </ul>
+          <a class="btn btn-sm btn-primary"
+            data-action="edit_selected"
+            data-item="mailqitems-all"
+            data-api-url='edit/mailq'
+            data-api-attr='{"action":"flush"}'
+            data-toggle="tooltip" title="postqueue -f"
+            href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['admin']['flush_queue'];?></a>
+          <a class="btn btn-sm btn-danger"
+            id="super_delete"
+            data-action="edit_selected"
+            data-item="mailqitems-all"
+            data-api-url='edit/mailq'
+            data-api-attr='{"action":"super_delete"}'
+            data-toggle="tooltip" title="postsuper -d ALL"
+            href="#"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> <?=$lang['admin']['delete_queue'];?></a>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+
 </div> <!-- /container -->
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/admin.php';

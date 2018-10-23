@@ -1225,7 +1225,7 @@ function rspamd_ui($action, $data = null) {
         );
         return false;
       }
-      $docker_return = docker('post', 'rspamd-mailcow', 'exec', array('cmd' => 'worker_password', 'raw' => $rspamd_ui_pass), array('Content-Type: application/json'));
+      $docker_return = docker('post', 'rspamd-mailcow', 'exec', array('cmd' => 'rspamd', 'task' => 'worker_password', 'raw' => $rspamd_ui_pass), array('Content-Type: application/json'));
       if ($docker_return_array = json_decode($docker_return, true)) {
         if ($docker_return_array['type'] == 'success') {
           $_SESSION['return'][] =  array(

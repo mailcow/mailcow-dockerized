@@ -5,18 +5,6 @@ jQuery(function($){
   var entityMap={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;","/":"&#x2F;","`":"&#x60;","=":"&#x3D;"};
   function escapeHtml(n){return String(n).replace(/[&<>"'`=\/]/g,function(n){return entityMap[n]})}
   function humanFileSize(i){if(Math.abs(i)<1024)return i+" B";var B=["KiB","MiB","GiB","TiB","PiB","EiB","ZiB","YiB"],e=-1;do{i/=1024,++e}while(Math.abs(i)>=1024&&e<B.length-1);return i.toFixed(1)+" "+B[e]}
-  $("#import_dkim_legend").on('click', function(e) {
-    e.preventDefault();
-    $('#import_dkim_arrow').toggleClass("animation"); 
-  });
-  $("#duplicate_dkim_legend").on('click', function(e) {
-    e.preventDefault();
-    $('#duplicate_dkim_arrow').toggleClass("animation"); 
-  });
-  $("#api_legend").on('click', function(e) {
-    e.preventDefault();
-    $('#api_arrow').toggleClass("animation"); 
-  });
   $("#rspamd_preset_1").on('click', function(e) {
     e.preventDefault();
     $("form[data-id=rsetting]").find("#adminRspamdSettingsDesc").val(lang.rsettings_preset_1);
@@ -35,15 +23,40 @@ jQuery(function($){
      });
      $('#dkim_add_domains').val(domains);
   });
-  $("#mass_exclude").change(function(){ 
-    $("#mass_include").selectpicker('deselectAll');
+  $("#import_dkim_legend").on('click', function(e) { e.preventDefault(); $('#import_dkim_arrow').toggleClass("animation"); });
+  $("#duplicate_dkim_legend").on('click', function(e) { e.preventDefault(); $('#duplicate_dkim_arrow').toggleClass("animation"); });
+  $("#api_legend").on('click', function(e) { e.preventDefault(); $('#api_arrow').toggleClass("animation"); });
+  $("#mass_exclude").change(function(){ $("#mass_include").selectpicker('deselectAll'); });
+  $("#mass_include").change(function(){ $("#mass_exclude").selectpicker('deselectAll'); });
+  $("#mass_disarm").click(function() { $("#mass_send").attr("disabled", !this.checked); });
+  $("#super_delete").click(function() { return confirm(lang.queue_ays); });
+  $(".refresh_table").on('click', function(e) {
+    e.preventDefault();
+    var table_name = $(this).data('table');
+    $('#' + table_name).find("tr.footable-empty").remove();
+    draw_table = $(this).data('draw');
+    eval(draw_table + '()');
   });
-  $("#mass_include").change(function(){ 
-    $("#mass_exclude").selectpicker('deselectAll');
-  });
-  $("#mass_disarm").click(function() {
-    $("#mass_send").attr("disabled", !this.checked);
-  });
+  if (localStorage.getItem("current_page") === null) {
+    var current_page = {};
+  } else {
+    var current_page = JSON.parse(localStorage.getItem('current_page'));
+  }
+  function table_admin_ready(ft, name) {
+    heading = ft.$el.parents('.tab-pane').find('.panel-heading')
+    var ft_paging = ft.use(FooTable.Paging)
+    $(heading).children('.table-lines').text(function(){
+      return ft_paging.totalRows;
+    })
+    if (current_page[name]) {
+      ft_paging.goto(parseInt(current_page[name]))
+    }
+  }
+  function paging_admin_after(ft, name) {
+    var ft_paging = ft.use(FooTable.Paging)
+    current_page[name] = ft_paging.current;
+    localStorage.setItem('current_page', JSON.stringify(current_page));
+  }
   function draw_domain_admins() {
     ft_domainadmins = FooTable.init('#domainadminstable', {
       "columns": [
@@ -150,6 +163,43 @@ jQuery(function($){
       "sorting": {"enabled": true}
     });
   }
+  function draw_queue() {
+    ft_queuetable = FooTable.init('#queuetable', {
+      "columns": [
+        {"name":"chkbox","title":"","style":{"maxWidth":"40px","width":"40px"},"filterable": false,"sortable": false,"type":"html"},
+        {"name":"queue_id","type":"text","title":"QID","style":{"width":"50px"}},
+        {"name":"queue_name","type":"text","title":"Queue","style":{"width":"120px"}},
+        {"name":"arrival_time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},"title":lang.arrival_time,"style":{"width":"170px"}},
+        {"name":"message_size","style":{"whiteSpace":"nowrap"},"title":lang.message_size,"formatter": function(value){
+          return humanFileSize(value);
+        }},
+        {"name":"sender","title":lang.sender, "type": "text","breakpoints":"xs sm"},
+        {"name":"recipients","title":lang.recipients, "type": "text","breakpoints":"xs sm"},
+      ],
+      "rows": $.ajax({
+        dataType: 'json',
+        url: '/api/v1/get/mailq',
+        jsonp: false,
+        error: function () {
+          console.log('Cannot draw forwarding hosts table');
+        },
+        success: function (data) {
+          return process_table_data(data, 'queuetable');
+        }
+      }),
+      "empty": lang.empty,
+      "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
+      "sorting": {"enabled": true},
+      "on": {
+        "ready.ft.table": function(e, ft){
+          table_admin_ready(ft, 'queuetable');
+        },
+        "after.ft.paging": function(e, ft){
+          paging_admin_after(ft, 'queuetable');
+        }
+      }
+    });
+  }
 
   function process_table_data(data, table) {
     if (table == 'relayhoststable') {
@@ -160,6 +210,11 @@ jQuery(function($){
           '<a href="#" data-action="delete_selected" data-id="single-rlshost" data-api-url="delete/relayhost" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
           '</div>';
         item.chkbox = '<input type="checkbox" data-id="rlyhosts" name="multi_select" value="' + item.id + '" />';
+      });
+    } else if (table == 'queuetable') {
+      $.each(data, function (i, item) {
+        item.chkbox = '<input type="checkbox" data-id="mailqitems" name="multi_select" value="' + item.queue_id + '" />';
+        item.recipients = JSON.stringify(item.recipients);
       });
     } else if (table == 'forwardinghoststable') {
       $.each(data, function (i, item) {
@@ -206,6 +261,7 @@ jQuery(function($){
   draw_admins();
   draw_fwd_hosts();
   draw_relayhosts();
+  draw_queue();
   // Relayhost
   $('#testRelayhostModal').on('show.bs.modal', function (e) {
     $('#test_relayhost_result').text("-");
@@ -225,9 +281,9 @@ jQuery(function($){
         dataType: 'text',
         data: $('#test_relayhost_form').serialize(),
         complete: function (data) {
-            $('#test_relayhost_result').html(data.responseText);
-            $('#test_relayhost').prop("disabled",false);
-            $('#test_relayhost').text(prev);
+          $('#test_relayhost_result').html(data.responseText);
+          $('#test_relayhost').prop("disabled",false);
+          $('#test_relayhost').text(prev);
         }
     });
   })

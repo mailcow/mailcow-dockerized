@@ -58,7 +58,6 @@ $(document).ready(function() {
       $(this.$domain).closest("select").selectpicker();
     }
   });
-
   // Auto-fill domain quota when adding new domain
   auto_fill_quota = function(domain) {
 		$.get("/api/v1/get/domain/" + domain, function(data){
@@ -80,7 +79,6 @@ $(document).ready(function() {
     auto_fill_quota($('#addSelectDomain').val());
 	});
   auto_fill_quota($('#addSelectDomain').val());
-
   $(".generate_password").click(function( event ) {
     event.preventDefault();
     $('[data-hibp]').trigger('input');
@@ -90,7 +88,6 @@ $(document).ready(function() {
     $(this).closest("form").find("input[name='password']").val(random_passwd);
     $(this).closest("form").find("input[name='password2']").val(random_passwd);
   });
-
   $(".goto_checkbox").click(function( event ) {
    $("form[data-id='add_alias'] .goto_checkbox").not(this).prop('checked', false);
     if ($("form[data-id='add_alias'] .goto_checkbox:checked").length > 0) {
@@ -108,7 +105,6 @@ $(document).ready(function() {
       $("#textarea_alias_goto").removeAttr('disabled');
     }
   });
-
   // Log modal
   $('#syncjobLogModal').on('show.bs.modal', function(e) {
     var syncjob_id = $(e.relatedTarget).data('syncjob-id');
@@ -124,7 +120,6 @@ $(document).ready(function() {
       }
     });
   });
-
   // Log modal
   $('#dnsInfoModal').on('show.bs.modal', function(e) {
     var domain = $(e.relatedTarget).data('domain');
@@ -141,13 +136,11 @@ $(document).ready(function() {
       }
     });
   });
-
   // Sieve data modal
   $('#sieveDataModal').on('show.bs.modal', function(e) {
     var sieveScript = $(e.relatedTarget).data('sieve-script');
     $(e.currentTarget).find('#sieveDataText').html('<pre style="font-size:14px;line-height:1.1">' + sieveScript + '</pre>');
   });
-
   // Set line numbers for textarea
   $("#script_data").numberedtextarea({allowTabChar: true});
   // Disable submit button on script change
@@ -155,7 +148,6 @@ $(document).ready(function() {
     $('#add_filter_btns > #add_item').attr({"disabled": true});
     $('#validation_msg').html('-');
 	});
-
   // Validate script data
   $("#validate_sieve").click(function( event ) {
     event.preventDefault();
@@ -185,21 +177,8 @@ $(document).ready(function() {
 });
 jQuery(function($){
   // http://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery
-  var entityMap = {
-  '&': '&amp;',
-  '<': '&lt;',
-  '>': '&gt;',
-  '"': '&quot;',
-  "'": '&#39;',
-  '/': '&#x2F;',
-  '`': '&#x60;',
-  '=': '&#x3D;'
-  };
-  function escapeHtml(string) {
-    return String(string).replace(/[&<>"'`=\/]/g, function (s) {
-      return entityMap[s];
-    });
-  }
+  var entityMap={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;","/":"&#x2F;","`":"&#x60;","=":"&#x3D;"};
+  function escapeHtml(n){return String(n).replace(/[&<>"'`=\/]/g,function(n){return entityMap[n]})}
   if (localStorage.getItem("current_page") === null) {
     var current_page = {};
   } else {
@@ -210,23 +189,7 @@ jQuery(function($){
     var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
   }
-  // Calculation human readable file sizes
-  function humanFileSize(bytes) {
-    if(Math.abs(bytes) < 1024) {
-        return bytes + ' B';
-    }
-    var units = ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
-    var u = -1;
-    do {
-        bytes /= 1024;
-        ++u;
-    } while(Math.abs(bytes) >= 1024 && u < units.length - 1);
-    return bytes.toFixed(1)+' '+units[u];
-  }
-  function unix_time_format(tm) {
-    var date = new Date(tm ? tm * 1000 : 0);
-    return date.toLocaleString();
-  }
+  function humanFileSize(i){if(Math.abs(i)<1024)return i+" B";var B=["KiB","MiB","GiB","TiB","PiB","EiB","ZiB","YiB"],e=-1;do{i/=1024,++e}while(Math.abs(i)>=1024&&e<B.length-1);return i.toFixed(1)+" "+B[e]}
   $(".refresh_table").on('click', function(e) {
     e.preventDefault();
     var table_name = $(this).data('table');
@@ -241,7 +204,7 @@ jQuery(function($){
         .removeAttr("href")
         .attr("title", "Dual login cannot be used twice")
         .tooltip();
-    }
+      }
     heading = ft.$el.parents('.tab-pane').find('.panel-heading')
     var ft_paging = ft.use(FooTable.Paging)
     $(heading).children('.table-lines').text(function(){

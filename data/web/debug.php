@@ -35,7 +35,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
       <div class="tab-content" style="padding-top:20px">
         <div class="debug-log-info"><?=sprintf($lang['debug']['log_info'], getenv('LOG_LINES') + 1);?></div>
         <?php
-          $exec_fields = array('cmd' => 'df', 'dir' => '/var/vmail');
+          $exec_fields = array('cmd' => 'system', 'task' => 'df', 'dir' => '/var/vmail');
           $vmail_df = explode(',', json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields), true));
         ?>
         <div role="tabpanel" class="tab-pane active" id="tab-containers">
