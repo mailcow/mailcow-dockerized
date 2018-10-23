@@ -478,6 +478,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           <input type="hidden" value="default" name="sender_acl">
           <input type="hidden" value="0" name="active">
           <input type="hidden" value="0" name="force_pw_update">
+          <input type="hidden" value="0" name="sogo_access">
           <div class="form-group">
             <label class="control-label col-sm-2" for="name"><?=$lang['edit']['full_name'];?>:</label>
             <div class="col-sm-10">
@@ -570,6 +571,14 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               <div class="checkbox">
               <label><input type="checkbox" value="1" name="force_pw_update" <?=($result['attributes']['force_pw_update']=="1") ? "checked" : null;?>> <?=$lang['edit']['force_pw_update'];?></label>
               <small class="help-block"><?=$lang['edit']['force_pw_update_info'];?></small>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <div class="checkbox">
+              <label><input type="checkbox" value="1" name="sogo_access" <?=($result['attributes']['sogo_access']=="1") ? "checked" : null;?>> <?=$lang['edit']['sogo_access'];?></label>
+              <small class="help-block"><?=$lang['edit']['sogo_access_info'];?></small>
               </div>
             </div>
           </div>
