@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_restful import Resource, Api
 from flask import jsonify
+from flask import Response
 from flask import request
 from threading import Thread
 from OpenSSL import crypto
@@ -71,112 +72,214 @@ class container_post(Resource):
         if not request.json or not 'cmd' in request.json:
           return jsonify(type='danger', msg='cmd is missing')
 
-        if request.json['cmd'] == 'df' and request.json['dir']:
-          try:
-            for container in docker_client.containers.list(filters={"id": container_id}):
-              # Should be changed to be able to validate a path
-              directory = re.sub('[^0-9a-zA-Z/]+', '', request.json['dir'])
-              df_return = container.exec_run(["/bin/bash", "-c", "/bin/df -H " + directory + " | /usr/bin/tail -n1 | /usr/bin/tr -s [:blank:] | /usr/bin/tr ' ' ','"], user='nobody')
-              if df_return.exit_code == 0:
-                return df_return.output.rstrip()
-              else:
-                return "0,0,0,0,0,0"
-          except Exception as e:
-            return jsonify(type='danger', msg=str(e))
-        elif request.json['cmd'] == 'sieve_list' and request.json['username']:
-          try:
-            for container in docker_client.containers.list(filters={"id": container_id}):
-              sieve_return = container.exec_run(["/bin/bash", "-c", "/usr/local/bin/doveadm sieve list -u '" + request.json['username'].replace("'", "'\\''") + "'"])
-              return sieve_return.output
-          except Exception as e:
-            return jsonify(type='danger', msg=str(e))
-        elif request.json['cmd'] == 'sieve_print' and request.json['script_name'] and request.json['username']:
-          try:
-            for container in docker_client.containers.list(filters={"id": container_id}):
-              sieve_return = container.exec_run(["/bin/bash", "-c", "/usr/local/bin/doveadm sieve get -u '" + request.json['username'].replace("'", "'\\''") + "' '" + request.json['script_name'].replace("'", "'\\''") + "'"])
-              return sieve_return.output
-          except Exception as e:
-            return jsonify(type='danger', msg=str(e))
-        # not in use...
-        elif request.json['cmd'] == 'mail_crypt_generate' and request.json['username'] and request.json['old_password'] and request.json['new_password']:
-          try:
-            for container in docker_client.containers.list(filters={"id": container_id}):
-              # create if missing
-              crypto_generate = container.exec_run(["/bin/bash", "-c", "/usr/local/bin/doveadm mailbox cryptokey generate -u '" + request.json['username'].replace("'", "'\\''") + "' -URf"], user='vmail')
-              if crypto_generate.exit_code == 0:
-                # open a shell, bind stdin and return socket
-                cryptokey_shell = container.exec_run(["/bin/bash"], stdin=True, socket=True, user='vmail')
-                # command to be piped to shell
-                cryptokey_cmd = "/usr/local/bin/doveadm mailbox cryptokey password -u '" + request.json['username'].replace("'", "'\\''") + "' -n '" + request.json['new_password'].replace("'", "'\\''") + "' -o '" + request.json['old_password'].replace("'", "'\\''") + "'\n"
-                # socket is .output
-                cryptokey_socket = cryptokey_shell.output;
-                try :
-                  # send command utf-8 encoded
-                  cryptokey_socket.sendall(cryptokey_cmd.encode('utf-8'))
-                  # we won't send more data than this
-                  cryptokey_socket.shutdown(socket.SHUT_WR)
-                except socket.error:
-                  # exit on socket error
-                  return jsonify(type='danger', msg=str('socket error'))
-                # read response
-                cryptokey_response = recv_socket_data(cryptokey_socket)
-                crypto_error = re.search('dcrypt_key_load_private.+failed.+error', cryptokey_response)
-                if crypto_error is not None:
-                  return jsonify(type='danger', msg=str("dcrypt_key_load_private error"))
-                return jsonify(type='success', msg=str("key pair generated"))
-              else:
-                return jsonify(type='danger', msg=str(crypto_generate.output))
-          except Exception as e:
-            return jsonify(type='danger', msg=str(e))
-        elif request.json['cmd'] == 'maildir_cleanup' and request.json['maildir']:
-          try:
-            for container in docker_client.containers.list(filters={"id": container_id}):
-              sane_name = re.sub(r'\W+', '', request.json['maildir'])
-              maildir_cleanup = container.exec_run(["/bin/bash", "-c", "if [[ -d '/var/vmail/" + request.json['maildir'].replace("'", "'\\''") + "' ]]; then /bin/mv '/var/vmail/" + request.json['maildir'].replace("'", "'\\''") + "' '/var/vmail/_garbage/" + str(int(time.time())) + "_" + sane_name + "'; fi"], user='vmail')
-              if maildir_cleanup.exit_code == 0:
-                return jsonify(type='success', msg=str("moved to garbage"))
-              else:
-                return jsonify(type='danger', msg=str(maildir_cleanup.output))
-          except Exception as e:
-            return jsonify(type='danger', msg=str(e))
-        elif request.json['cmd'] == 'worker_password' and request.json['raw']:
-          try:
-            for container in docker_client.containers.list(filters={"id": container_id}):
-              worker_shell = container.exec_run(["/bin/bash"], stdin=True, socket=True, user='_rspamd')
-              worker_cmd = "/usr/bin/rspamadm pw -e -p '" + request.json['raw'].replace("'", "'\\''") + "' 2> /dev/null\n"
-              worker_socket = worker_shell.output;
-              try :
-                worker_socket.sendall(worker_cmd.encode('utf-8'))
-                worker_socket.shutdown(socket.SHUT_WR)
-              except socket.error:
-                return jsonify(type='danger', msg=str('socket error'))
-              worker_response = recv_socket_data(worker_socket)
-              matched = False
-              for line in worker_response.split("\n"):
-                if '$2$' in line:
-                  matched = True
-                  hash = line.strip()
-                  hash_out = re.search('\$2\$.+$', hash).group(0)
-                  f = open("/access.inc", "w")
-                  f.write('enable_password = "' + re.sub('[^0-9a-zA-Z\$]+', '', hash_out.rstrip()) + '";\n')
-                  f.close()
-                  container.restart()
-              if matched:
-                return jsonify(type='success', msg='command completed successfully')
-              else:
-                return jsonify(type='danger', msg='command did not complete')
-          except Exception as e:
-            return jsonify(type='danger', msg=str(e))
-        elif request.json['cmd'] == 'mailman_password' and request.json['email'] and request.json['passwd']:
-          try:
-            for container in docker_client.containers.list(filters={"id": container_id}):
-              add_su = container.exec_run(["/bin/bash", "-c", "/opt/mm_web/add_su.py '" + request.json['passwd'].replace("'", "'\\''") + "' '" + request.json['email'].replace("'", "'\\''") + "'"], user='mailman')
-              if add_su.exit_code == 0:
-                return jsonify(type='success', msg='command completed successfully')
-              else:
-                return jsonify(type='danger', msg='command did not complete, exit code was ' + int(add_su.exit_code))
-          except Exception as e:
-            return jsonify(type='danger', msg=str(e))
+        if request.json['cmd'] == 'mailq':
+          if 'items' in request.json:
+            # Check if queue id is valid
+            r = re.compile("^[0-9a-fA-F]+$")
+            filtered_qids = filter(r.match, request.json['items'])
+            if filtered_qids:
+              if request.json['task'] == 'delete':
+                flagged_qids = ['-d %s' % i for i in filtered_qids]
+                sanitized_string = str(' '.join(flagged_qids));
+                try:
+                  for container in docker_client.containers.list(filters={"id": container_id}):
+                    postsuper_r = container.exec_run(["/bin/bash", "-c", "/usr/sbin/postsuper " + sanitized_string])
+                    if postsuper_r.exit_code == 0:
+                      return jsonify(type='success', msg='command completed successfully')
+                    else:
+                      return jsonify(type='danger', msg=str(postsuper_r.output))
+                except Exception as e:
+                  return jsonify(type='danger', msg=str(e))
+              if request.json['task'] == 'hold':
+                flagged_qids = ['-h %s' % i for i in filtered_qids]
+                sanitized_string = str(' '.join(flagged_qids));
+                try:
+                  for container in docker_client.containers.list(filters={"id": container_id}):
+                    postsuper_r = container.exec_run(["/bin/bash", "-c", "/usr/sbin/postsuper " + sanitized_string])
+                    if postsuper_r.exit_code == 0:
+                      return jsonify(type='success', msg='command completed successfully')
+                    else:
+                      return jsonify(type='danger', msg=str(postsuper_r.output))
+                except Exception as e:
+                  return jsonify(type='danger', msg=str(e))
+              if request.json['task'] == 'unhold':
+                flagged_qids = ['-H %s' % i for i in filtered_qids]
+                sanitized_string = str(' '.join(flagged_qids));
+                try:
+                  for container in docker_client.containers.list(filters={"id": container_id}):
+                    postsuper_r = container.exec_run(["/bin/bash", "-c", "/usr/sbin/postsuper " + sanitized_string])
+                    if postsuper_r.exit_code == 0:
+                      return jsonify(type='success', msg='command completed successfully')
+                    else:
+                      return jsonify(type='danger', msg=str(postsuper_r.output))
+                except Exception as e:
+                  return jsonify(type='danger', msg=str(e))
+              if request.json['task'] == 'deliver':
+                flagged_qids = ['-i %s' % i for i in filtered_qids]
+                try:
+                  for container in docker_client.containers.list(filters={"id": container_id}):
+                    for i in flagged_qids:
+                      postqueue_r = container.exec_run(["/bin/bash", "-c", "/usr/sbin/postqueue " + i], user='postfix')
+                      # todo: check each exit code
+                    return jsonify(type='success', msg=str("Scheduled immediate delivery"))
+                except Exception as e:
+                  return jsonify(type='danger', msg=str(e))
+          elif request.json['task'] == 'list':
+            try:
+              for container in docker_client.containers.list(filters={"id": container_id}):
+                mailq_return = container.exec_run(["/usr/sbin/postqueue", "-j"], user='postfix')
+                if mailq_return.exit_code == 0:
+                  # We want plain text content from Postfix
+                  r = Response(response=mailq_return.output, status=200, mimetype="text/plain")
+                  r.headers["Content-Type"] = "text/plain; charset=utf-8"
+                  return r
+            except Exception as e:
+              return jsonify(type='danger', msg=str(e))
+          elif request.json['task'] == 'flush':
+            try:
+              for container in docker_client.containers.list(filters={"id": container_id}):
+                postqueue_r = container.exec_run(["/usr/sbin/postqueue", "-f"], user='postfix')
+                if postqueue_r.exit_code == 0:
+                  return jsonify(type='success', msg='command completed successfully')
+                else:
+                  return jsonify(type='danger', msg=str(postqueue_r.output))
+            except Exception as e:
+              return jsonify(type='danger', msg=str(e))
+          elif request.json['task'] == 'super_delete':
+            try:
+              for container in docker_client.containers.list(filters={"id": container_id}):
+                postsuper_r = container.exec_run(["/usr/sbin/postsuper", "-d", "ALL"])
+                if postsuper_r.exit_code == 0:
+                  return jsonify(type='success', msg='command completed successfully')
+                else:
+                  return jsonify(type='danger', msg=str(postsuper_r.output))
+            except Exception as e:
+              return jsonify(type='danger', msg=str(e))
+
+        elif request.json['cmd'] == 'system':
+          if request.json['task'] == 'df':
+            if 'dir' in request.json:
+              try:
+                for container in docker_client.containers.list(filters={"id": container_id}):
+                  # Should be changed to be able to validate a path
+                  directory = re.sub('[^0-9a-zA-Z/]+', '', request.json['dir'])
+                  df_return = container.exec_run(["/bin/bash", "-c", "/bin/df -H " + directory + " | /usr/bin/tail -n1 | /usr/bin/tr -s [:blank:] | /usr/bin/tr ' ' ','"], user='nobody')
+                  if df_return.exit_code == 0:
+                    return df_return.output.rstrip()
+                  else:
+                    return "0,0,0,0,0,0"
+              except Exception as e:
+                return jsonify(type='danger', msg=str(e))
+
+        elif request.json['cmd'] == 'sieve':
+          if request.json['task'] == 'list':
+            if 'username' in request.json:
+              try:
+                for container in docker_client.containers.list(filters={"id": container_id}):
+                  sieve_return = container.exec_run(["/bin/bash", "-c", "/usr/local/bin/doveadm sieve list -u '" + request.json['username'].replace("'", "'\\''") + "'"])
+                  r = Response(response=sieve_return.output, status=200, mimetype="text/plain")
+                  r.headers["Content-Type"] = "text/plain; charset=utf-8"
+                  return r
+              except Exception as e:
+                return jsonify(type='danger', msg=str(e))
+          elif request.json['task'] == 'print':
+            if 'username' in request.json and 'script_name' in request.json:
+              try:
+                for container in docker_client.containers.list(filters={"id": container_id}):
+                  sieve_return = container.exec_run(["/bin/bash", "-c", "/usr/local/bin/doveadm sieve get -u '" + request.json['username'].replace("'", "'\\''") + "' '" + request.json['script_name'].replace("'", "'\\''") + "'"])
+                  r = Response(response=sieve_return.output, status=200, mimetype="text/plain")
+                  r.headers["Content-Type"] = "text/plain; charset=utf-8"
+                  return r
+              except Exception as e:
+                return jsonify(type='danger', msg=str(e))
+
+        # elif request.json['cmd'] == 'mail_crypt_generate' and request.json['username'] and request.json['old_password'] and request.json['new_password']:
+          # try:
+            # for container in docker_client.containers.list(filters={"id": container_id}):
+              # # create if missing
+              # crypto_generate = container.exec_run(["/bin/bash", "-c", "/usr/local/bin/doveadm mailbox cryptokey generate -u '" + request.json['username'].replace("'", "'\\''") + "' -URf"], user='vmail')
+              # if crypto_generate.exit_code == 0:
+                # # open a shell, bind stdin and return socket
+                # cryptokey_shell = container.exec_run(["/bin/bash"], stdin=True, socket=True, user='vmail')
+                # # command to be piped to shell
+                # cryptokey_cmd = "/usr/local/bin/doveadm mailbox cryptokey password -u '" + request.json['username'].replace("'", "'\\''") + "' -n '" + request.json['new_password'].replace("'", "'\\''") + "' -o '" + request.json['old_password'].replace("'", "'\\''") + "'\n"
+                # # socket is .output
+                # cryptokey_socket = cryptokey_shell.output;
+                # try :
+                  # # send command utf-8 encoded
+                  # cryptokey_socket.sendall(cryptokey_cmd.encode('utf-8'))
+                  # # we won't send more data than this
+                  # cryptokey_socket.shutdown(socket.SHUT_WR)
+                # except socket.error:
+                  # # exit on socket error
+                  # return jsonify(type='danger', msg=str('socket error'))
+                # # read response
+                # cryptokey_response = recv_socket_data(cryptokey_socket)
+                # crypto_error = re.search('dcrypt_key_load_private.+failed.+error', cryptokey_response)
+                # if crypto_error is not None:
+                  # return jsonify(type='danger', msg=str("dcrypt_key_load_private error"))
+                # return jsonify(type='success', msg=str("key pair generated"))
+              # else:
+                # return jsonify(type='danger', msg=str(crypto_generate.output))
+          # except Exception as e:
+            # return jsonify(type='danger', msg=str(e))
+
+        elif request.json['cmd'] == 'maildir':
+          if request.json['task'] == 'cleanup':
+            if 'maildir' in request.json:
+              try:
+                for container in docker_client.containers.list(filters={"id": container_id}):
+                  sane_name = re.sub(r'\W+', '', request.json['maildir'])
+                  maildir_cleanup = container.exec_run(["/bin/bash", "-c", "if [[ -d '/var/vmail/" + request.json['maildir'].replace("'", "'\\''") + "' ]]; then /bin/mv '/var/vmail/" + request.json['maildir'].replace("'", "'\\''") + "' '/var/vmail/_garbage/" + str(int(time.time())) + "_" + sane_name + "'; fi"], user='vmail')
+                  if maildir_cleanup.exit_code == 0:
+                    return jsonify(type='success', msg=str("moved to garbage"))
+                  else:
+                    return jsonify(type='danger', msg=str(maildir_cleanup.output))
+              except Exception as e:
+                return jsonify(type='danger', msg=str(e))
+
+        elif request.json['cmd'] == 'rspamd':
+          if request.json['task'] == 'worker_password':
+            if 'raw' in request.json:
+              try:
+                for container in docker_client.containers.list(filters={"id": container_id}):
+                  worker_shell = container.exec_run(["/bin/bash"], stdin=True, socket=True, user='_rspamd')
+                  worker_cmd = "/usr/bin/rspamadm pw -e -p '" + request.json['raw'].replace("'", "'\\''") + "' 2> /dev/null\n"
+                  worker_socket = worker_shell.output;
+                  try :
+                    worker_socket.sendall(worker_cmd.encode('utf-8'))
+                    worker_socket.shutdown(socket.SHUT_WR)
+                  except socket.error:
+                    return jsonify(type='danger', msg=str('socket error'))
+                  worker_response = recv_socket_data(worker_socket)
+                  matched = False
+                  for line in worker_response.split("\n"):
+                    if '$2$' in line:
+                      matched = True
+                      hash = line.strip()
+                      hash_out = re.search('\$2\$.+$', hash).group(0)
+                      f = open("/access.inc", "w")
+                      f.write('enable_password = "' + re.sub('[^0-9a-zA-Z\$]+', '', hash_out.rstrip()) + '";\n')
+                      f.close()
+                      container.restart()
+                  if matched:
+                    return jsonify(type='success', msg='command completed successfully')
+                  else:
+                    return jsonify(type='danger', msg='command did not complete')
+              except Exception as e:
+                return jsonify(type='danger', msg=str(e))
+        # elif request.json['cmd'] == 'mailman':
+          # if request.json['task'] == 'password':
+            # if request.json['email'] and request.json['passwd']:
+              # try:
+                # for container in docker_client.containers.list(filters={"id": container_id}):
+                  # add_su = container.exec_run(["/bin/bash", "-c", "/opt/mm_web/add_su.py '" + request.json['passwd'].replace("'", "'\\''") + "' '" + request.json['email'].replace("'", "'\\''") + "'"], user='mailman')
+                  # if add_su.exit_code == 0:
+                    # return jsonify(type='success', msg='command completed successfully')
+                  # else:
+                    # return jsonify(type='danger', msg='command did not complete, exit code was ' + int(add_su.exit_code))
+              # except Exception as e:
+                # return jsonify(type='danger', msg=str(e))
 
         else:
           return jsonify(type='danger', msg='Unknown command')
