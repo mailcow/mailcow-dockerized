@@ -94,7 +94,7 @@ function backup() {
     mysql|all)
       SQLIMAGE=$(grep -iEo '(mysql|mariadb)\:.+' ${COMPOSE_FILE})
       docker run --rm \
-        --network $(docker network ls -qf name=${CMPS_PRJ}_mailcow-network) \
+        --network $(docker network ls -qf name=${CMPS_PRJ}_) \
         -v $(docker volume ls -qf name=${CMPS_PRJ}_mysql-vol-1):/var/lib/mysql/ \
         --entrypoint= \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
