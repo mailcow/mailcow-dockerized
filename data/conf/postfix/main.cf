@@ -129,5 +129,5 @@ smtp_sasl_password_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_ma
 smtp_sasl_security_options = 
 smtp_sasl_mechanism_filter = plain, login
 smtp_tls_policy_maps=proxy:mysql:/opt/postfix/conf/sql/mysql_tls_policy_override_maps.cf
-smtp_header_checks = pcre:/opt/postfix/conf/mailcow_anonymize_headers.pcre
+smtp_header_checks = pcre:/opt/postfix/conf/anonymize_headers.pcre
 mail_name = Postcow
