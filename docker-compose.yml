@@ -287,7 +287,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.43
+      image: mailcow/acme:1.44
       build: ./data/Dockerfiles/acme
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -300,6 +300,7 @@ services:
         - DBPASS=${DBPASS}
         - SKIP_LETS_ENCRYPT=${SKIP_LETS_ENCRYPT:-n}
         - SKIP_IP_CHECK=${SKIP_IP_CHECK:-n}
+        - LE_STAGING=${LE_STAGING:-n}
         - TZ=${TZ}
       volumes:
         - ./data/web/.well-known/acme-challenge:/var/www/acme:rw
@@ -369,7 +370,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:1.20
+      image: mailcow/dockerapi:1.21
       restart: always
       build: ./data/Dockerfiles/dockerapi
       oom_kill_disable: true
