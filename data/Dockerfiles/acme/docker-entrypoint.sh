@@ -38,7 +38,25 @@ SSL_EXAMPLE=/var/lib/ssl-example
 
 mkdir -p ${ACME_BASE}/acme/private
 
-restart_containers(){
+reload_configurations(){
+  # Reading container IDs
+  # Wrapping as array to ensure trimmed content when calling $NGINX etc.
+  local NGINX=($(curl --silent --insecure https://dockerapi/containers/json | jq -r '.[] | {name: .Config.Labels["com.docker.compose.service"], id: .Id}' | jq -rc 'select( .name | tostring | contains("nginx-mailcow")) | .id' | tr "\n" " "))
+  local DOVECOT=($(curl --silent --insecure https://dockerapi/containers/json | jq -r '.[] | {name: .Config.Labels["com.docker.compose.service"], id: .Id}' | jq -rc 'select( .name | tostring | contains("dovecot-mailcow")) | .id' | tr "\n" " "))
+  local POSTFIX=($(curl --silent --insecure https://dockerapi/containers/json | jq -r '.[] | {name: .Config.Labels["com.docker.compose.service"], id: .Id}' | jq -rc 'select( .name | tostring | contains("postfix-mailcow")) | .id' | tr "\n" " "))
+  # Reloading
+  echo "Reloading Nginx..."
+  NGINX_RELOAD_RET=$(curl -X POST --insecure https://dockerapi/containers/${NGINX}/exec -d '{"cmd":"reload", "task":"nginx"}' --silent -H 'Content-type: application/json' | jq -r .type)
+  [[ ${NGINX_RELOAD_RET} != 'success' ]] && { echo "Could not reload Nginx, restarting container..."; restart_container ${NGINX} ; }
+  echo "Reloading Dovecot..."
+  DOVECOT_RELOAD_RET=$(curl -X POST --insecure https://dockerapi/containers/${DOVECOT}/exec -d '{"cmd":"reload", "task":"dovecot"}' --silent -H 'Content-type: application/json' | jq -r .type)
+  [[ ${DOVECOT_RELOAD_RET} != 'success' ]] && { echo "Could not reload Dovecot, restarting container..."; restart_container ${DOVECOT} ; }
+  echo "Reloading Postfix..."
+  POSTFIX_RELOAD_RET=$(curl -X POST --insecure https://dockerapi/containers/${POSTFIX}/exec -d '{"cmd":"reload", "task":"postfix"}' --silent -H 'Content-type: application/json' | jq -r .type)
+  [[ ${POSTFIX_RELOAD_RET} != 'success' ]] && { echo "Could not reload Postfix, restarting container..."; restart_container ${POSTFIX} ; }
+}
+
+restart_container(){
   for container in $*; do
     log_f "Restarting ${container}..." no_nl
     C_REST_OUT=$(curl -X POST --insecure https://dockerapi/containers/${container}/restart | jq -r '.msg')
@@ -98,7 +116,7 @@ get_ipv6(){
 
 if [[ -f ${ACME_BASE}/cert.pem ]] && [[ -f ${ACME_BASE}/key.pem ]]; then
   ISSUER=$(openssl x509 -in ${ACME_BASE}/cert.pem -noout -issuer)
-  if [[ ${ISSUER} != *"Let's Encrypt"* && ${ISSUER} != *"mailcow"* ]]; then
+  if [[ ${ISSUER} != *"Let's Encrypt"* && ${ISSUER} != *"mailcow"* && ${ISSUER} != *"Fake LE Intermediate"* ]]; then
     log_f "Found certificate with issuer other than mailcow snake-oil CA and Let's Encrypt, skipping ACME client..."
     sleep 3650d
     exec $(readlink -f "$0")
@@ -163,9 +181,6 @@ while true; do
       exec $(readlink -f "$0")
     fi
   fi
-
-  # Container ids may have changed
-  CONTAINERS_RESTART=($(curl --silent --insecure https://dockerapi/containers/json | jq -r '.[] | {name: .Config.Labels["com.docker.compose.service"], id: .Id}' | jq -rc 'select( .name | tostring | contains("nginx-mailcow") or contains("postfix-mailcow") or contains("dovecot-mailcow")) | .id' | tr "\n" " "))
 
   log_f "Waiting for domain table... " no_nl
   while [[ -z ${DOMAIN_TABLE} ]]; do
@@ -295,8 +310,15 @@ while true; do
     cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/acme/private/${DATE}.bak/ # Keep key for TLSA 3 1 1 records
   fi
 
+  if [[ "${LE_STAGING}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+    log_f "Using Let's Encrypt staging servers"
+    STAGING_PARAMETER="-s"
+  else
+    STAGING_PARAMETER=
+  fi
+
   ACME_RESPONSE=$(acme-client \
-    -v -e -b -N -n \
+    -v -e -b -N -n ${STAGING_PARAMETER} \
     -a 'https://letsencrypt.org/documents/LE-SA-v1.2-November-15-2017.pdf' \
     -f ${ACME_BASE}/acme/private/account.key \
     -k ${ACME_BASE}/acme/private/privkey.pem \
@@ -316,7 +338,7 @@ while true; do
         cp ${SSL_EXAMPLE}/cert.pem ${ACME_BASE}/cert.pem
         cp ${SSL_EXAMPLE}/key.pem ${ACME_BASE}/key.pem
       fi
-      restart_containers ${CONTAINERS_RESTART[*]}
+      reload_configurations
       ;;
     1) # failure
       ACME_RESPONSE_B64=$(echo ${ACME_RESPONSE} | openssl enc -e -A -base64)
@@ -343,7 +365,7 @@ while true; do
         cp ${SSL_EXAMPLE}/key.pem ${ACME_BASE}/key.pem
         TRIGGER_RESTART=1
       fi
-      [[ ${TRIGGER_RESTART} == 1 ]] && restart_containers ${CONTAINERS_RESTART[*]}
+      [[ ${TRIGGER_RESTART} == 1 ]] && reload_configurations
       log_f "Retrying in 30 minutes..."
       sleep 30m
       exec $(readlink -f "$0")
@@ -364,7 +386,7 @@ while true; do
         TRIGGER_RESTART=1
       fi
       log_f "Certificate was not changed"
-      [[ ${TRIGGER_RESTART} == 1 ]] && restart_containers ${CONTAINERS_RESTART[*]}
+      [[ ${TRIGGER_RESTART} == 1 ]] && reload_configurations
       ;;
     *) # unspecified
       ACME_RESPONSE_B64=$(echo ${ACME_RESPONSE} | openssl enc -e -A -base64)
@@ -386,7 +408,7 @@ while true; do
         cp ${SSL_EXAMPLE}/key.pem ${ACME_BASE}/key.pem
         TRIGGER_RESTART=1
       fi
-      [[ ${TRIGGER_RESTART} == 1 ]] && restart_containers ${CONTAINERS_RESTART[*]}
+      [[ ${TRIGGER_RESTART} == 1 ]] && reload_configurations
       log_f "Retrying in 30 minutes..."
       sleep 30m
       exec $(readlink -f "$0")
