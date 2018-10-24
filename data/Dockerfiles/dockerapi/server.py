@@ -171,6 +171,41 @@ class container_post(Resource):
               except Exception as e:
                 return jsonify(type='danger', msg=str(e))
 
+        elif request.json['cmd'] == 'reload':
+          if request.json['task'] == 'dovecot':
+            try:
+              for container in docker_client.containers.list(filters={"id": container_id}):
+                # Should be changed to be able to validate a path
+                reload_return = container.exec_run(["/bin/bash", "-c", "/usr/local/sbin/dovecot reload"])
+                if reload_return.exit_code == 0:
+                  return jsonify(type='success', msg='command completed successfully')
+                else:
+                  return jsonify(type='danger', msg='command failed: ' + reload_return.output)
+            except Exception as e:
+              return jsonify(type='danger', msg=str(e))
+          if request.json['task'] == 'postfix':
+            try:
+              for container in docker_client.containers.list(filters={"id": container_id}):
+                # Should be changed to be able to validate a path
+                reload_return = container.exec_run(["/bin/bash", "-c", "/usr/sbin/postfix reload"])
+                if reload_return.exit_code == 0:
+                  return jsonify(type='success', msg='command completed successfully')
+                else:
+                  return jsonify(type='danger', msg='command failed: ' + reload_return.output)
+            except Exception as e:
+              return jsonify(type='danger', msg=str(e))
+          if request.json['task'] == 'nginx':
+            try:
+              for container in docker_client.containers.list(filters={"id": container_id}):
+                # Should be changed to be able to validate a path
+                reload_return = container.exec_run(["/bin/sh", "-c", "/usr/sbin/nginx -s reload"])
+                if reload_return.exit_code == 0:
+                  return jsonify(type='success', msg='command completed successfully')
+                else:
+                  return jsonify(type='danger', msg='command failed: ' + reload_return.output)
+            except Exception as e:
+              return jsonify(type='danger', msg=str(e))
+
         elif request.json['cmd'] == 'sieve':
           if request.json['task'] == 'list':
             if 'username' in request.json:
