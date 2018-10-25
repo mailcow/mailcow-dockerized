@@ -169,16 +169,16 @@ jQuery(function($){
         {"name":"chkbox","title":"","style":{"maxWidth":"40px","width":"40px"},"filterable": false,"sortable": false,"type":"html"},
         {"name":"queue_id","type":"text","title":"QID","style":{"width":"50px"}},
         {"name":"queue_name","type":"text","title":"Queue","style":{"width":"120px"}},
-        {"name":"arrival_time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},"title":lang.arrival_time,"style":{"width":"170px"}},
+        {"name":"arrival_time","sorted": true,"direction": "DESC","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},"title":lang.arrival_time,"style":{"width":"170px"}},
         {"name":"message_size","style":{"whiteSpace":"nowrap"},"title":lang.message_size,"formatter": function(value){
           return humanFileSize(value);
         }},
         {"name":"sender","title":lang.sender, "type": "text","breakpoints":"xs sm"},
-        {"name":"recipients","title":lang.recipients, "type": "text","breakpoints":"xs sm"},
+        {"name":"recipients","title":lang.recipients, "type": "text","style":{"word-break":"break-all","min-width":"300px"},"breakpoints":"xs sm md"},
       ],
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/mailq',
+        url: '/api/v1/get/mailq/all',
         jsonp: false,
         error: function () {
           console.log('Cannot draw forwarding hosts table');
@@ -214,7 +214,10 @@ jQuery(function($){
     } else if (table == 'queuetable') {
       $.each(data, function (i, item) {
         item.chkbox = '<input type="checkbox" data-id="mailqitems" name="multi_select" value="' + item.queue_id + '" />';
-        item.recipients = JSON.stringify(item.recipients);
+        rcpts = $.map(item.recipients, function(i) {
+          return escapeHtml(i);
+        });
+        item.recipients = rcpts.join('<hr style="margin:1px!important">');
       });
     } else if (table == 'forwardinghoststable') {
       $.each(data, function (i, item) {
