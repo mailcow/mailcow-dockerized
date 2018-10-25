@@ -219,20 +219,16 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           break;
 
           case "mailq":
-            $mailq_lines = docker('post', 'postfix-mailcow', 'exec', array('cmd' => 'mailq', 'task' => 'list'));
-            $lines = 0;
-            // Hard limit to 1000 items
-            foreach (preg_split("/((\r?\n)|(\r\n?))/", $mailq_lines) as $mailq_item) if ($lines++ < 1000) {
-              if (empty($mailq_item) || $mailq_item == '1') {
-                continue;
-              }
-              $line[] = json_decode($mailq_item, true);
-            }
-            if (!isset($line) || empty($line)) {
-              echo '{}';
-            }
-            else {
-              echo json_encode($line);
+            switch ($object) {
+              case "all":
+                $mailq = mailq('get');
+                if (!empty($mailq)) {
+                  echo $mailq;
+                }
+                else {
+                  echo '{}';
+                }
+              break;
             }
           break;
 
