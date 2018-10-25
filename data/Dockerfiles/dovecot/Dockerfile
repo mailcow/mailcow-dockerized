@@ -107,6 +107,7 @@ COPY sa-rules.sh /usr/local/bin/sa-rules.sh
 COPY maildir_gc.sh /usr/local/bin/maildir_gc.sh
 COPY docker-entrypoint.sh /
 COPY supervisord.conf /etc/supervisor/supervisord.conf
+COPY stop-supervisor.sh /usr/local/sbin/stop-supervisor.sh
 
 RUN chmod +x /usr/local/lib/dovecot/sieve/rspamd-pipe-ham \
   /usr/local/lib/dovecot/sieve/rspamd-pipe-spam \
@@ -115,7 +116,8 @@ RUN chmod +x /usr/local/lib/dovecot/sieve/rspamd-pipe-ham \
   /usr/local/bin/imapsync \
   /usr/local/bin/trim_logs.sh \
   /usr/local/bin/sa-rules.sh \
-  /usr/local/bin/maildir_gc.sh
+  /usr/local/bin/maildir_gc.sh \
+  /usr/local/sbin/stop-supervisor.sh
 
 RUN groupadd -g 5000 vmail \
   && groupadd -g 401 dovecot \
