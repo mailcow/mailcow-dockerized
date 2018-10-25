@@ -40,13 +40,18 @@ RUN mkdir /usr/share/doc/sogo \
 	&& echo '0 0 * * *   sogo   /usr/sbin/sogo-tool update-autoreply -p /etc/sogo/sieve.creds' >> /etc/cron.d/sogo \
 	&& touch /etc/default/locale
 
-COPY ./bootstrap-sogo.sh /
+COPY ./bootstrap-sogo.sh /bootstrap-sogo.sh
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 COPY theme-blue.js /usr/lib/GNUstep/SOGo/WebServerResources/js/theme-blue.js
 COPY theme-blue.css /usr/lib/GNUstep/SOGo/WebServerResources/css/theme-default.css
 COPY sogo-full.svg /usr/lib/GNUstep/SOGo/WebServerResources/img/sogo-full.svg
 COPY acl.diff /acl.diff
+COPY stop-supervisor.sh /usr/local/sbin/stop-supervisor.sh
+
+RUN chmod +x /bootstrap-sogo.sh \
+  /usr/local/sbin/stop-supervisor.sh
+
 CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 
 VOLUME /usr/lib/GNUstep/SOGo/
