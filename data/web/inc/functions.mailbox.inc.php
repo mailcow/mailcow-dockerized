@@ -3370,7 +3370,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               continue;
             }
             $maildir = mailbox('get', 'mailbox_details', $username)['maildir'];
-            $exec_fields = array('cmd' => 'maildir_cleanup', 'maildir' => $maildir);
+            $exec_fields = array('cmd' => 'maildir', 'task' => 'cleanup', 'maildir' => $maildir);
             $maildir_gc = json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields), true);
             if ($maildir_gc['type'] != 'success') {
               $_SESSION['return'][] = array(
