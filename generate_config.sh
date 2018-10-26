@@ -125,6 +125,8 @@ SKIP_CLAMD=n
 # Enable watchdog (watchdog-mailcow) to restart unhealthy containers (experimental)
 USE_WATCHDOG=n
 # Send notifications by mail (no DKIM signature, sent from watchdog@MAILCOW_HOSTNAME)
+# Can by multiple rcpts, NO quotation marks
+#WATCHDOG_NOTIFY_EMAIL=a@example.com,b@example.com,c@example.com
 #WATCHDOG_NOTIFY_EMAIL=
 
 # Max log lines per service to keep in Redis logs
