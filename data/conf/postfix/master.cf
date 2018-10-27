@@ -4,6 +4,7 @@ smtpd      pass  -       -       n       -       -       smtpd
 smtps    inet  n       -       n       -       -       smtpd
   -o smtpd_tls_wrappermode=yes
   -o smtpd_client_restrictions=permit_mynetworks,permit_sasl_authenticated,reject
+  -o tls_preempt_cipherlist=yes
 submission inet n       -       n       -       -       smtpd
   -o smtpd_client_restrictions=permit_mynetworks,permit_sasl_authenticated,reject
   -o smtpd_enforce_tls=yes
