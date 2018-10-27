@@ -317,7 +317,6 @@ Empty
 while true; do
   if ! nginx_checks; then
     log_msg "Nginx hit error limit"
-    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "nginx-mailcow"
     echo nginx-mailcow > /tmp/com_pipe
   fi
 done
@@ -328,7 +327,6 @@ BACKGROUND_TASKS+=($!)
 while true; do
   if ! mysql_checks; then
     log_msg "MySQL hit error limit"
-    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "mysql-mailcow"
     echo mysql-mailcow > /tmp/com_pipe
   fi
 done
@@ -339,7 +337,6 @@ BACKGROUND_TASKS+=($!)
 while true; do
   if ! phpfpm_checks; then
     log_msg "PHP-FPM hit error limit"
-    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "php-fpm-mailcow"
     echo php-fpm-mailcow > /tmp/com_pipe
   fi
 done
@@ -350,7 +347,6 @@ BACKGROUND_TASKS+=($!)
 while true; do
   if ! sogo_checks; then
     log_msg "SOGo hit error limit"
-    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "sogo-mailcow"
     echo sogo-mailcow > /tmp/com_pipe
   fi
 done
@@ -362,7 +358,6 @@ if [ ${CHECK_UNBOUND} -eq 1 ]; then
 while true; do
   if ! unbound_checks; then
     log_msg "Unbound hit error limit"
-    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "unbound-mailcow"
     echo unbound-mailcow > /tmp/com_pipe
   fi
 done
@@ -375,7 +370,6 @@ if [[ "${SKIP_CLAMD}" =~ ^([nN][oO]|[nN])+$ ]]; then
 while true; do
   if ! clamd_checks; then
     log_msg "Clamd hit error limit"
-    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "clamd-mailcow"
     echo clamd-mailcow > /tmp/com_pipe
   fi
 done
@@ -387,7 +381,6 @@ fi
 while true; do
   if ! postfix_checks; then
     log_msg "Postfix hit error limit"
-    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "postfix-mailcow"
     echo postfix-mailcow > /tmp/com_pipe
   fi
 done
@@ -398,7 +391,6 @@ BACKGROUND_TASKS+=($!)
 while true; do
   if ! dovecot_checks; then
     log_msg "Dovecot hit error limit"
-    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "dovecot-mailcow"
     echo dovecot-mailcow > /tmp/com_pipe
   fi
 done
@@ -409,7 +401,6 @@ BACKGROUND_TASKS+=($!)
 while true; do
   if ! rspamd_checks; then
     log_msg "Rspamd hit error limit"
-    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "rspamd-mailcow"
     echo rspamd-mailcow > /tmp/com_pipe
   fi
 done
@@ -448,17 +439,27 @@ done
 # Restart container when threshold limit reached
 while true; do
   CONTAINER_ID=
+  HAS_INITDB=
   read com_pipe_answer </tmp/com_pipe
   if [[ ${com_pipe_answer} =~ .+-mailcow ]]; then
     kill -STOP ${BACKGROUND_TASKS[*]}
     sleep 3
     CONTAINER_ID=$(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], id: .Id}" | jq -rc "select( .name | tostring | contains(\"${com_pipe_answer}\")) | .id")
     if [[ ! -z ${CONTAINER_ID} ]]; then
-      log_msg "Sending restart command to ${CONTAINER_ID}..."
-      curl --silent --insecure -XPOST https://dockerapi/containers/${CONTAINER_ID}/restart
+      if [[ "${com_pipe_answer}" == "php-fpm-mailcow" ]]; then
+        HAS_INITDB=$(curl --silent --insecure -XPOST https://dockerapi/containers/${CONTAINER_ID}/top | jq '.msg.Processes[] | contains(["php -c /usr/local/etc/php -f /web/inc/init_db.inc.php"])' | grep true)
+      fi
+      if [[ ! -z ${HAS_INITDB} ]]; then
+        log_msg "Database is being initialized by php-fpm-mailcow, not restarting but delaying checks for a minute..."
+        sleep 60
+      else
+        log_msg "Sending restart command to ${CONTAINER_ID}..."
+        curl --silent --insecure -XPOST https://dockerapi/containers/${CONTAINER_ID}/restart
+        [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}"
+        log_msg "Wait for restarted container to settle and continue watching..."
+        sleep 30
+      fi
     fi
-    log_msg "Wait for restarted container to settle and continue watching..."
-    sleep 30s
     kill -CONT ${BACKGROUND_TASKS[*]}
     kill -USR1 ${BACKGROUND_TASKS[*]}
   fi
