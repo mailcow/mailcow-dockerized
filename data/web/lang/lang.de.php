@@ -44,7 +44,7 @@ $lang['danger']['sieve_error'] = "Sieve Parser: %s";
 $lang['danger']['value_missing'] = "Bitte alle Felder ausfüllen";
 $lang['danger']['filter_type'] = "Falscher Filtertyp";
 $lang['danger']['domain_cannot_match_hostname'] = "Domain darf nicht dem Hostnamen entsprechen";
-$lang['warning']['domain_added_sogo_failed'] = "Domain wurde hinzugefügt; SOGo konnte nicht neugestartet werden";
+$lang['warning']['domain_added_sogo_failed'] = "Domain wurde hinzugefügt aber SOGo konnte nicht neugestartet werden";
 $lang['danger']['rl_timeframe'] = "Ratelimit Zeitraum ist inkorrekt";
 $lang['success']['rl_saved'] = "Ratelimit für Objekt %s wurde gesetzt";
 $lang['success']['acl_saved'] = "ACL für Objekt %s wurde gesetzt";
@@ -69,8 +69,8 @@ $lang['danger']['relayhost_invalid'] = "Relayhost %s ist ungültig";
 $lang['success']['saved_settings'] = "Regel wurde gespeichert";
 
 $lang['danger']['dkim_domain_or_sel_invalid'] = 'DKIM-Domain oder Selektor nicht korrekt: %s';
-$lang['success']['dkim_removed'] = 'DKIM-Key wurde entfernt';
-$lang['success']['dkim_added'] = 'DKIM-Key wurde hinzugefügt';
+$lang['success']['dkim_removed'] = 'DKIM-Key %s wurde entfernt';
+$lang['success']['dkim_added'] = 'DKIM-Key %s wurde hinzugefügt';
 $lang['success']['dkim_duplicated'] = "DKIM-Key der Domain %s wurde auf Domain %s kopiert";
 $lang['danger']['access_denied'] = 'Zugriff verweigert oder unvollständige/ungültige Daten';
 $lang['danger']['domain_invalid'] = 'Domainname ist leer oder ungültig';
@@ -198,7 +198,6 @@ $lang['user']['spamfilter_table_empty'] = 'Keine Einträge vorhanden';
 $lang['user']['spamfilter_table_remove'] = 'entfernen';
 $lang['user']['spamfilter_table_add'] = 'Eintrag hinzufügen';
 $lang['user']['spamfilter_behavior'] = 'Bewertung';
-$lang['user']['spamfilter_default_score'] = 'Spam-Score:';
 $lang['user']['spamfilter_green'] = 'Grün: Die Nachricht ist kein Spam';
 $lang['user']['spamfilter_yellow'] = 'Gelb: Die Nachricht ist vielleicht Spam, wird als Spam markiert und in den Junk-Ordner verschoben';
 $lang['user']['spamfilter_red'] = 'Rot: Die Nachricht ist eindeutig Spam und wird vom Server abgelehnt';
@@ -312,6 +311,7 @@ $lang['mailbox']['owner'] = 'Besitzer';
 $lang['mailbox']['mins_interval'] = 'Intervall (min)';
 $lang['mailbox']['last_run'] = 'Letzte Ausführung';
 $lang['mailbox']['last_run_reset'] = 'Als nächstes ausführen';
+$lang['mailbox']['excludes'] = 'Ausschlüsse';
 $lang['mailbox']['sieve_info'] = 'Es können mehrere Filter pro Benutzer existieren, aber nur ein Filter eines Typs (Pre-/Postfilter) kann gleichzeitig aktiv sein.<br>
 Die Ausführung erfolgt in nachstehender Reihenfolge. Ein fehlgeschlagenes Script sowie der Befehl "keep;" stoppen die weitere Verarbeitung <b>nicht</b>.<br>
 Prefilter → User scripts → Postfilter → <a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/sieve_after" target="_blank">global sieve postfilter</a>';
@@ -386,6 +386,7 @@ $lang['acl']['recipient_maps'] = 'Empfängerumschreibungen';
 $lang['acl']['prohibited'] = 'Untersagt durch Richtlinie';
 
 $lang['add']['generate'] = 'generieren';
+$lang['add']['syncjob'] = 'Syncjob hinzufügen';
 $lang['add']['syncjob_hint'] = 'Passwörter werden unverschlüsselt abgelegt!';
 $lang['add']['hostname'] = 'Servername';
 $lang['add']['port'] = 'Port';
@@ -583,7 +584,7 @@ $lang['success']['forwarding_host_added'] = "Weiterleitungs-Host %s wurde hinzug
 $lang['success']['relayhost_removed'] = "Relayhost %s wurde entfernt";
 $lang['success']['relayhost_added'] = "Relayhost %s wurde hinzugefügt";
 $lang['diagnostics']['dns_records'] = 'DNS-Einträge';
-$lang['diagnostics']['dns_records_24hours'] = 'Bitte beachten Sie, dass es bis zu 24 Stunden dauern kann, bis Änderungen an Ihren DNS-Einträgen als aktueller Status auf dieser Seite dargestellt werden. Diese Seite ist nur als Hilfsmittel gedacht, um die korrekten Werte für DNS-Einträge zu anzuzeigen und zu überprüfen, ob die Daten im DNS hinterlegt sind.';
+$lang['diagnostics']['dns_records_24hours'] = 'Bitte beachten Sie, dass es bis zu 24 Stunden dauern kann, bis Änderungen an Ihren DNS-Einträgen als aktueller Status auf dieser Seite dargestellt werden. Diese Seite ist nur als Hilfsmittel gedacht, um die korrekten Werte für DNS-Einträge anzuzeigen und zu überprüfen, ob die Daten im DNS hinterlegt sind.';
 $lang['diagnostics']['dns_records_name'] = 'Name';
 $lang['diagnostics']['dns_records_type'] = 'Typ';
 $lang['diagnostics']['dns_records_data'] = 'Korrekte Daten';
@@ -708,6 +709,14 @@ $lang['success']['tls_policy_map_entry_saved'] = 'TLS-Richtlinieneintrag "%s" wu
 $lang['success']['tls_policy_map_entry_deleted'] = 'TLS-Richtlinie mit der ID %s wurde gelöscht';
 $lang['mailbox']['add_tls_policy_map'] = "TLS-Richtlinieneintrag hinzufügen";
 $lang['danger']['tls_policy_map_parameter_invalid'] = "Parameter ist ungültig";
+
+$lang['oauth2']['scope_ask_permission'] = 'Eine Anwendung hat um die folgenden Berechtigungen gebeten';
+$lang['oauth2']['profile'] = 'Profil';
+$lang['oauth2']['profile_desc'] = 'Persönliche Informationen anzeigen: Benutzername, Name, Erstellzeitpunkt, Änderungszeitpunkt, Status';
+$lang['oauth2']['permit'] = 'Anwendung authorisieren';
+$lang['oauth2']['authorize_app'] = 'Anwendung authorisieren';
+$lang['oauth2']['deny'] = 'Ablehnen';
+$lang['oauth2']['access_denied'] = 'Bitte als Mailbox-Nutzer einloggen, um den Zugriff via OAuth2 zu erlauben.';
 
 $lang['admin']['sys_mails'] = 'System E-Mails';
 $lang['admin']['subject'] = 'Betreff';
