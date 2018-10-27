@@ -67,6 +67,20 @@ class container_post(Resource):
         except Exception as e:
           return jsonify(type='danger', msg=str(e))
 
+      elif post_action == 'top':
+        try:
+          for container in docker_client.containers.list(all=True, filters={"id": container_id}):
+            return jsonify(type='success', msg=container.top())
+        except Exception as e:
+          return jsonify(type='danger', msg=str(e))
+
+      elif post_action == 'stats':
+        try:
+          for container in docker_client.containers.list(all=True, filters={"id": container_id}):
+            return jsonify(type='success', msg=container.stats(decode=True, stream=False))
+        except Exception as e:
+          return jsonify(type='danger', msg=str(e))
+
       elif post_action == 'exec':
 
         if not request.json or not 'cmd' in request.json:
