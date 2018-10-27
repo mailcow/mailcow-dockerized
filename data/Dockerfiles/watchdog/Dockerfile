@@ -9,6 +9,7 @@ RUN apk add --update \
   nagios-plugins-ping \
   curl \
   bash \
+  coreutils \
   jq \
   fcgi \
   nagios-plugins-mysql \
