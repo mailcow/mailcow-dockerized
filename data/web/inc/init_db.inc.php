@@ -1016,22 +1016,21 @@ if (php_sapi_name() == "cli") {
     PDO::MYSQL_ATTR_INIT_COMMAND => "SET time_zone = '" . $offset . "', group_concat_max_len = 3423543543;",
   ];
   $pdo = new PDO($dsn, $database_user, $database_pass, $opt);
-  $stmt = $pdo->query("SELECT 'OK' FROM INFORMATION_SCHEMA.TABLES
-    WHERE TABLE_NAME = 'sogo_view'");
-  $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-  if ($num_results != 0) {
+  $stmt = $pdo->query("SELECT COUNT('OK') AS OK_C FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'sogo_view' OR TABLE_NAME = '_sogo_static_view';");
+  $res = $stmt->fetch(PDO::FETCH_ASSOC);
+  if (intval($res['OK_C']) === 2) {
     $stmt = $pdo->query("REPLACE INTO _sogo_static_view SELECT * from sogo_view");
     $stmt = $pdo->query("DELETE FROM _sogo_static_view WHERE `c_uid` NOT IN (SELECT `username` FROM `mailbox` WHERE `active` = '1');");
+    echo "Fixed _sogo_static_view" . PHP_EOL;
   }
-  echo "Fixed _sogo_static_view" . PHP_EOL;
   try {
     $m = new Memcached();
     $m->addServer('memcached', 11211);
     $m->flush();
+    echo "Cleaned up memcached". PHP_EOL;
   }
   catch ( Exception $e ) {
     // Dunno
   }
-  echo "Cleaned up memcached". PHP_EOL;
   init_db_schema();
 }
