@@ -145,7 +145,7 @@ $(document).ready(function() {
   $("#script_data").numberedtextarea({allowTabChar: true});
   // Disable submit button on script change
 	$('#script_data').on('keyup', function() {
-    $('#add_filter_btns > #add_item').attr({"disabled": true});
+    $('#add_filter_btns > #add_sieve_script').attr({"disabled": true});
     $('#validation_msg').html('-');
 	});
   // Validate script data
@@ -161,7 +161,7 @@ $(document).ready(function() {
         var response = (data.responseText);
         response_obj = JSON.parse(response);
         if (response_obj.type == "success") {
-          $('#add_filter_btns > #add_item').attr({"disabled": false});
+          $('#add_filter_btns > #add_sieve_script').attr({"disabled": false});
         }
         mailcow_alert_box(response_obj.msg, response_obj.type);
       },
