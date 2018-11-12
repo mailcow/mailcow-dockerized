@@ -3,8 +3,8 @@ LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL C
-ENV DOVECOT_VERSION 2.3.2.1
-ENV PIGEONHOLE_VERSION 0.5.2
+ENV DOVECOT_VERSION 2.3.3
+ENV PIGEONHOLE_VERSION 0.5.3
 
 RUN apt-get update && apt-get -y --no-install-recommends install \
   automake \
@@ -15,6 +15,7 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
   curl \
   default-libmysqlclient-dev \
   dnsutils \
+  jq \
   libjson-webtoken-perl \
   libcgi-pm-perl \
   libcrypt-openssl-rsa-perl \
@@ -74,7 +75,7 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
 
 RUN curl https://www.dovecot.org/releases/2.3/dovecot-$DOVECOT_VERSION.tar.gz | tar xvz  \
   && cd dovecot-$DOVECOT_VERSION \
-  && ./configure --with-solr --with-mysql --with-lzma --with-lz4 --with-ssl=openssl --with-notify=inotify --with-storages=mdbox,sdbox,maildir,mbox,imapc,pop3c --with-bzlib --with-zlib \
+  && ./configure --with-solr --with-mysql --with-lzma --with-lz4 --with-ssl=openssl --with-notify=inotify --with-storages=mdbox,sdbox,maildir,mbox,imapc,pop3c --with-bzlib --with-zlib --enable-hardening \
   && make -j3 \
   && make install \
   && make clean \
@@ -91,9 +92,9 @@ RUN curl https://www.dovecot.org/releases/2.3/dovecot-$DOVECOT_VERSION.tar.gz | 
 RUN cpanm Data::Uniqid Mail::IMAPClient String::Util
 RUN echo '* * * * *   root  /usr/local/bin/imapsync_cron.pl' > /etc/cron.d/imapsync
 RUN echo '30 3 * * *  vmail /usr/local/bin/doveadm quota recalc -A' > /etc/cron.d/dovecot-sync
-RUN echo '* * * * *   vmail /usr/local/bin/trim_logs.sh >> /dev/stdout 2>&1' > /etc/cron.d/trim_logs
-RUN echo '25 * * * *  vmail /usr/local/bin/maildir_gc.sh >> /dev/stdout 2>&1' > /etc/cron.d/maildir_gc
-RUN echo '30 1 * * *  root  /usr/local/bin/sa-rules.sh  >> /dev/stdout 2>&1' > /etc/cron.d/sa-rules
+RUN echo '* * * * *   vmail /usr/local/bin/trim_logs.sh >> /dev/console 2>&1' > /etc/cron.d/trim_logs
+RUN echo '25 * * * *  vmail /usr/local/bin/maildir_gc.sh >> /dev/console 2>&1' > /etc/cron.d/maildir_gc
+RUN echo '30 1 * * *  root  /usr/local/bin/sa-rules.sh  >> /dev/console 2>&1' > /etc/cron.d/sa-rules
 COPY trim_logs.sh /usr/local/bin/trim_logs.sh
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
 COPY imapsync /usr/local/bin/imapsync
