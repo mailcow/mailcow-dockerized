@@ -27,20 +27,20 @@ $redis->connect('redis-mailcow', 6379);
 
 // PDO
 // Calculate offset
-$now = new DateTime();
-$mins = $now->getOffset() / 60;
-$sgn = ($mins < 0 ? -1 : 1);
-$mins = abs($mins);
-$hrs = floor($mins / 60);
-$mins -= $hrs * 60;
-$offset = sprintf('%+d:%02d', $hrs*$sgn, $mins);
+// $now = new DateTime();
+// $mins = $now->getOffset() / 60;
+// $sgn = ($mins < 0 ? -1 : 1);
+// $mins = abs($mins);
+// $hrs = floor($mins / 60);
+// $mins -= $hrs * 60;
+// $offset = sprintf('%+d:%02d', $hrs*$sgn, $mins);
 
 $dsn = $database_type . ":unix_socket=" . $database_sock . ";dbname=" . $database_name;
 $opt = [
   PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
   PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
   PDO::ATTR_EMULATE_PREPARES   => false,
-  PDO::MYSQL_ATTR_INIT_COMMAND => "SET time_zone = '" . $offset . "', group_concat_max_len = 3423543543;",
+  //PDO::MYSQL_ATTR_INIT_COMMAND => "SET time_zone = '" . $offset . "', group_concat_max_len = 3423543543;",
 ];
 try {
   $pdo = new PDO($dsn, $database_user, $database_pass, $opt);
@@ -60,8 +60,7 @@ if (fsockopen("tcp://dockerapi", 443, $errno, $errstr) === false) {
 exit;
 }
 
-function pdo_exception_handler($e) {
-    print_r($e);
+function exception_handler($e) {
     if ($e instanceof PDOException) {
       $_SESSION['return'][] = array(
         'type' => 'danger',
@@ -74,12 +73,12 @@ function pdo_exception_handler($e) {
       $_SESSION['return'][] = array(
         'type' => 'danger',
         'log' => array(__FUNCTION__),
-        'msg' => array('mysql_error', 'unknown error')
+        'msg' => 'An unknown error occured: ' . print_r($e, true)
       );
       return false;
     }
 }
-set_exception_handler('pdo_exception_handler');
+set_exception_handler('exception_handler');
 
 // TODO: Move function
 function get_remote_ip($anonymize = null) {
@@ -108,6 +107,10 @@ function get_remote_ip($anonymize = null) {
 }
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
+
+// IMAP lib
+// use Ddeboer\Imap\Server;
+// $imap_server = new Server('dovecot', 143, '/imap/tls/novalidate-cert');
 
 // Set language
 if (!isset($_SESSION['mailcow_locale']) && !isset($_COOKIE['mailcow_locale'])) {
@@ -153,6 +156,11 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/init_db.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/triggers.inc.php';
 init_db_schema();
 if (isset($_SESSION['mailcow_cc_role'])) {
+  // if ($_SESSION['mailcow_cc_role'] == 'user') {
+    // list($master_user, $master_passwd) = explode(':', file_get_contents('/etc/sogo/sieve.creds'));
+    // $imap_connection = $imap_server->authenticate($_SESSION['mailcow_cc_username'] . '*' . trim($master_user), trim($master_passwd));
+    // $master_user = $master_passwd = null;
+  // }
   acl('to_session');
 }
 $UI_TEXTS = customize('get', 'ui_texts');

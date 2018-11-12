@@ -142,3 +142,6 @@ $MAILBOX_DEFAULT_ATTRIBUTES['force_pw_update'] = false;
 
 // Force password change on next login (only allows login to mailcow UI)
 $MAILBOX_DEFAULT_ATTRIBUTES['sogo_access'] = true;
+
+// Default mailbox format, should not be changed, keep the trailing ":"
+$MAILBOX_DEFAULT_ATTRIBUTES['mailbox_format'] = 'mdbox:';
