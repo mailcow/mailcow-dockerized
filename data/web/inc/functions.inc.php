@@ -394,6 +394,7 @@ function verify_hash($hash, $password) {
 function check_login($user, $pass) {
 	global $pdo;
 	global $redis;
+	global $imap_server;
 	if (!filter_var($user, FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $user))) {
     $_SESSION['return'][] =  array(
       'type' => 'danger',
@@ -523,7 +524,8 @@ function update_sogo_static_view() {
     WHERE TABLE_NAME = 'sogo_view'");
   $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
   if ($num_results != 0) {
-    $stmt = $pdo->query("REPLACE INTO _sogo_static_view SELECT * from sogo_view");
+    $stmt = $pdo->query("REPLACE INTO _sogo_static_view (`c_uid`, `domain`, `c_name`, `c_password`, `c_cn`, `mail`, `aliases`, `ad_aliases`, `kind`, `multiple_bookings`)
+      SELECT `c_uid`, `domain`, `c_name`, `c_password`, `c_cn`, `mail`, `aliases`, `ad_aliases`, `kind`, `multiple_bookings` from sogo_view");
     $stmt = $pdo->query("DELETE FROM _sogo_static_view WHERE `c_uid` NOT IN (SELECT `username` FROM `mailbox` WHERE `active` = '1');");
   }
   flush_memcached();
