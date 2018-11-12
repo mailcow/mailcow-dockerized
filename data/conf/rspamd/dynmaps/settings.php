@@ -26,13 +26,32 @@ catch (PDOException $e) {
 }
 
 function parse_email($email) {
-  if(!filter_var($email, FILTER_VALIDATE_EMAIL)) return false;
+  if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return false;
   $a = strrpos($email, '@');
   return array('local' => substr($email, 0, $a), 'domain' => substr($email, $a));
 }
 
+function wl_by_sogo() {
+  global $pdo;
+  $rcpt = array();
+  $stmt = $pdo->query("SELECT DISTINCT(`sogo_folder_info`.`c_path2`) AS `user`, GROUP_CONCAT(`sogo_quick_contact`.`c_mail`) AS `contacts` FROM `sogo_folder_info`
+    INNER JOIN `sogo_quick_contact` ON `sogo_quick_contact`.`c_folder_id` = `sogo_folder_info`.`c_folder_id`
+      GROUP BY `c_path2`");
+  $sogo_contacts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  while ($row = array_shift($sogo_contacts)) {
+    foreach (explode(',', $row['contacts']) as $contact) {
+      if (!filter_var($contact, FILTER_VALIDATE_EMAIL)) {
+        continue;
+      }
+      $rcpt[$row['user']][] = '/^' . str_replace('/', '\/', $contact) . '$/i';
+    }
+  }
+  return $rcpt;
+}
+
 function ucl_rcpts($object, $type) {
   global $pdo;
+  $rcpt = array();
   if ($type == 'mailbox') {
     // Standard aliases
     $stmt = $pdo->prepare("SELECT `address` FROM `alias`
@@ -82,10 +101,7 @@ function ucl_rcpts($object, $type) {
       $rcpt[] = '/.*@' . $row['alias_domain'] . '/i';
     }
   }
-  if (!empty($rcpt)) {
-    return $rcpt;
-  }
-  return false;
+  return $rcpt;
 }
 ?>
 settings {
@@ -134,6 +150,65 @@ while ($row = array_shift($rows)) {
         "add header" = <?=$spamscore['lowspamlevel'][0];?>;
       }
     }
+  }
+<?php
+}
+
+/*
+// Start SOGo contacts whitelist
+// Priority 4, lower than a domain whitelist (5) and lower than a mailbox whitelist (6)
+*/
+
+foreach (wl_by_sogo() as $user => $contacts) {
+  $username_sane = preg_replace("/[^a-zA-Z0-9]+/", "", $user);
+?>
+  whitelist_sogo_<?=$username_sane;?> {
+<?php
+  foreach ($contacts as $contact) {
+?>
+    from = <?=json_encode($contact, JSON_UNESCAPED_SLASHES);?>;
+<?php
+  }
+?>
+    priority = 4;
+<?php
+    foreach (ucl_rcpts($user, 'mailbox') as $rcpt) {
+?>
+    rcpt = <?=json_encode($rcpt, JSON_UNESCAPED_SLASHES);?>;
+<?php
+    }
+?>
+    apply "default" {
+      SOGO_CONTACT = -999.0;
+    }
+    symbols [
+      "SOGO_CONTACT"
+    ]
+  }
+  whitelist_sogo_<?=$username_sane;?>_header {
+    header = {
+<?php
+  foreach ($contacts as $contact) {
+?>
+      "From" = <?=json_encode(str_replace('/^', '/(', str_replace('$/i', ')/i', $contact)), JSON_UNESCAPED_SLASHES);?>;
+<?php
+  }
+?>
+    }
+    priority = 4;
+<?php
+    foreach (ucl_rcpts($user, 'mailbox') as $rcpt) {
+?>
+    rcpt = <?=json_encode($rcpt, JSON_UNESCAPED_SLASHES);?>;
+<?php
+    }
+?>
+    apply "default" {
+      SOGO_CONTACT = -999.0;
+    }
+    symbols [
+      "SOGO_CONTACT"
+    ]
   }
 <?php
 }
@@ -343,7 +418,6 @@ while ($row = array_shift($rows)) {
     priority = 9;
     want_spam = yes;
   }
-
 <?php
 // Start additional content
 
@@ -364,4 +438,3 @@ while ($row = array_shift($rows)) {
 }
 ?>
 }
-
