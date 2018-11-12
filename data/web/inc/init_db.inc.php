@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "22102018_1502";
+    $db_version = "03112018_1117";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -78,7 +78,6 @@ function init_db_schema() {
           // TODO -> use TEXT and check if SOGo login breaks on empty aliases
           "aliases" => "TEXT NOT NULL",
           "ad_aliases" => "VARCHAR(6144) NOT NULL DEFAULT ''",
-          "home" => "VARCHAR(255)",
           "kind" => "VARCHAR(100) NOT NULL DEFAULT ''",
           "multiple_bookings" => "INT NOT NULL DEFAULT -1"
         ),
@@ -230,7 +229,8 @@ function init_db_schema() {
           "username" => "VARCHAR(255) NOT NULL",
           "password" => "VARCHAR(255) NOT NULL",
           "name" => "VARCHAR(255)",
-          "maildir" => "VARCHAR(255) NOT NULL",
+          // mailbox_path_prefix is followed by domain/local_part/
+          "mailbox_path_prefix" => "VARCHAR(150) DEFAULT '/var/vmail/'",
           "quota" => "BIGINT(20) NOT NULL DEFAULT '102400'",
           "local_part" => "VARCHAR(255) NOT NULL",
           "domain" => "VARCHAR(255) NOT NULL",
@@ -962,16 +962,26 @@ DELIMITER ;';
     // Insert new DB schema version
     $stmt = $pdo->query("REPLACE INTO `versions` (`application`, `version`) VALUES ('db_schema', '" . $db_version . "');"); 
 
-    // Migrate tls_enforce_* options and add force_pw_update attribute
-    $stmt = $pdo->query("UPDATE `mailbox` SET `attributes` = '{}' WHERE `attributes` IS NULL;");
+    // Migrate attributes
+    $stmt = $pdo->query("UPDATE `mailbox` SET `attributes` = '{}' WHERE `attributes` = '' OR NULL;");
     $stmt = $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.force_pw_update', \"0\") WHERE JSON_EXTRACT(`attributes`, '$.force_pw_update') IS NULL;");
     $stmt = $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.sogo_access', \"1\") WHERE JSON_EXTRACT(`attributes`, '$.sogo_access') IS NULL;");
+    $stmt = $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.mailbox_format', \"maildir:\") WHERE JSON_EXTRACT(`attributes`, '$.mailbox_format') IS NULL;");
     foreach($tls_options as $tls_user => $tls_options) {
       $stmt = $pdo->prepare("UPDATE `mailbox` SET `attributes` = JSON_SET(`attributes`, '$.tls_enforce_in', :tls_enforce_in),
         `attributes` = JSON_SET(`attributes`, '$.tls_enforce_out', :tls_enforce_out)
           WHERE `username` = :username");
       $stmt->execute(array(':tls_enforce_in' => $tls_options['tls_enforce_in'], ':tls_enforce_out' => $tls_options['tls_enforce_out'], ':username' => $tls_user));
     }
+    // Set tls_enforce_* if still missing (due to deleted attrs for example)
+    $stmt = $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.tls_enforce_out', \"1\") WHERE JSON_EXTRACT(`attributes`, '$.tls_enforce_out') IS NULL;");
+    $stmt = $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.tls_enforce_in', \"1\") WHERE JSON_EXTRACT(`attributes`, '$.tls_enforce_in') IS NULL;");
+    // Fix ACL
+    $stmt = $pdo->query("INSERT INTO `user_acl` (`username`) SELECT `username` FROM `mailbox` WHERE `kind` = '' AND NOT EXISTS (SELECT `username` FROM `user_acl`);");
+    $stmt = $pdo->query("INSERT INTO `da_acl` (`username`) SELECT DISTINCT `username` FROM `domain_admins` WHERE `username` != 'admin' AND NOT EXISTS (SELECT `username` FROM `da_acl`);");
+    // Fix domain_admins
+    $stmt = $pdo->query("DELETE FROM `domain_admins` WHERE `domain` = 'ALL';");
+
     if (php_sapi_name() == "cli") {
       echo "DB initialization completed" . PHP_EOL;
     } else {
@@ -981,11 +991,6 @@ DELIMITER ;';
         'msg' => 'db_init_complete'
       );
     }
-    // Fix ACL
-    $stmt = $pdo->query("INSERT INTO `user_acl` (`username`) SELECT `username` FROM `mailbox` WHERE `kind` = '' AND NOT EXISTS (SELECT `username` FROM `user_acl`);");
-    $stmt = $pdo->query("INSERT INTO `da_acl` (`username`) SELECT DISTINCT `username` FROM `domain_admins` WHERE `username` != 'admin' AND NOT EXISTS (SELECT `username` FROM `da_acl`);");
-    // Fix domain_admins
-    $stmt = $pdo->query("DELETE FROM `domain_admins` WHERE `domain` = 'ALL';");
   }
   catch (PDOException $e) {
     if (php_sapi_name() == "cli") {
@@ -1001,25 +1006,27 @@ DELIMITER ;';
 }
 if (php_sapi_name() == "cli") {
   include '/web/inc/vars.inc.php';
-  $now = new DateTime();
-  $mins = $now->getOffset() / 60;
-  $sgn = ($mins < 0 ? -1 : 1);
-  $mins = abs($mins);
-  $hrs = floor($mins / 60);
-  $mins -= $hrs * 60;
-  $offset = sprintf('%+d:%02d', $hrs*$sgn, $mins);
+  // $now = new DateTime();
+  // $mins = $now->getOffset() / 60;
+  // $sgn = ($mins < 0 ? -1 : 1);
+  // $mins = abs($mins);
+  // $hrs = floor($mins / 60);
+  // $mins -= $hrs * 60;
+  // $offset = sprintf('%+d:%02d', $hrs*$sgn, $mins);
   $dsn = $database_type . ":unix_socket=" . $database_sock . ";dbname=" . $database_name;
   $opt = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     PDO::ATTR_EMULATE_PREPARES   => false,
-    PDO::MYSQL_ATTR_INIT_COMMAND => "SET time_zone = '" . $offset . "', group_concat_max_len = 3423543543;",
+    //PDO::MYSQL_ATTR_INIT_COMMAND => "SET time_zone = '" . $offset . "', group_concat_max_len = 3423543543;",
   ];
   $pdo = new PDO($dsn, $database_user, $database_pass, $opt);
   $stmt = $pdo->query("SELECT COUNT('OK') AS OK_C FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'sogo_view' OR TABLE_NAME = '_sogo_static_view';");
   $res = $stmt->fetch(PDO::FETCH_ASSOC);
   if (intval($res['OK_C']) === 2) {
-    $stmt = $pdo->query("REPLACE INTO _sogo_static_view SELECT * from sogo_view");
+    // Be more precise when replacing into _sogo_static_view, col orders may change
+    $stmt = $pdo->query("REPLACE INTO _sogo_static_view (`c_uid`, `domain`, `c_name`, `c_password`, `c_cn`, `mail`, `aliases`, `ad_aliases`, `kind`, `multiple_bookings`)
+      SELECT `c_uid`, `domain`, `c_name`, `c_password`, `c_cn`, `mail`, `aliases`, `ad_aliases`, `kind`, `multiple_bookings` from sogo_view");
     $stmt = $pdo->query("DELETE FROM _sogo_static_view WHERE `c_uid` NOT IN (SELECT `username` FROM `mailbox` WHERE `active` = '1');");
     echo "Fixed _sogo_static_view" . PHP_EOL;
   }

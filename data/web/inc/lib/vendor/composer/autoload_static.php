@@ -19,6 +19,10 @@ class ComposerStaticInit873464e4bd965a3168f133248b1b218b
         array (
             'Html2Text\\' => 10,
         ),
+        'D' => 
+        array (
+            'Ddeboer\\Imap\\' => 13,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -33,6 +37,10 @@ class ComposerStaticInit873464e4bd965a3168f133248b1b218b
         'Html2Text\\' => 
         array (
             0 => __DIR__ . '/..' . '/soundasleep/html2text/src',
+        ),
+        'Ddeboer\\Imap\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/ddeboer/imap/src',
         ),
     );
 

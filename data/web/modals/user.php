@@ -54,7 +54,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 						<label class="control-label col-sm-2" for="mins_interval"><?=$lang['add']['mins_interval'];?></label>
 						<div class="col-sm-10">
               <input type="number" class="form-control" name="mins_interval" min="1" max="3600" value="20" required>
-              <small class="help-block">10-3600</small>
+              <small class="help-block">1-3600</small>
 						</div>
 					</div>
 					<div class="form-group">
@@ -78,43 +78,70 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 						</div>
 					</div>
 					<div class="form-group">
+						<label class="control-label col-sm-2" for="timeout1"><?=$lang['edit']['timeout1'];?></label>
+						<div class="col-sm-10">
+						<input type="number" class="form-control" name="timeout1" min="1" max="32000" value="600">
+            <small class="help-block">1-32000</small>
+						</div>
+					</div>
+          <div class="form-group">
+						<label class="control-label col-sm-2" for="timeout2"><?=$lang['edit']['timeout2'];?></label>
+						<div class="col-sm-10">
+						<input type="number" class="form-control" name="timeout2" min="1" max="32000" value="600">
+            <small class="help-block">1-32000</small>
+						</div>
+					</div>
+					<div class="form-group">
 						<label class="control-label col-sm-2" for="exclude"><?=$lang['add']['exclude'];?></label>
 						<div class="col-sm-10">
 						<input type="text" class="form-control" name="exclude" value="(?i)spam|(?i)junk">
 						</div>
 					</div>
 					<div class="form-group">
+						<label class="control-label col-sm-2" for="custom_params"><?=$lang['add']['custom_params'];?></label>
+						<div class="col-sm-10">
+						<input type="text" class="form-control" name="custom_params" placeholder="--delete2folders --otheroption">
+						</div>
+					</div>
+					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">
-							<label><input type="checkbox" value="1" name="delete2duplicates" checked> <?=$lang['add']['delete2duplicates'];?></label>
+							<label><input type="checkbox" value="1" name="delete2duplicates" checked> <?=$lang['add']['delete2duplicates'];?> (--delete2duplicates)</label>
 							</div>
 						</div>
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">
-							<label><input type="checkbox" value="1" name="delete1"> <?=$lang['add']['delete1'];?></label>
+							<label><input type="checkbox" value="1" name="delete1"> <?=$lang['add']['delete1'];?> (--delete1)</label>
 							</div>
 						</div>
 					</div>
           <div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">
-							<label><input type="checkbox" value="1" name="delete2"> <?=$lang['add']['delete2'];?></label>
+							<label><input type="checkbox" value="1" name="delete2"> <?=$lang['add']['delete2'];?> (--delete2)</label>
 							</div>
 						</div>
 					</div>
           <div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">
-							<label><input type="checkbox" value="1" name="automap"> <?=$lang['add']['automap'];?></label>
+							<label><input type="checkbox" value="1" name="automap" checked> <?=$lang['add']['automap'];?> (--automap)</label>
 							</div>
 						</div>
 					</div>
           <div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="checkbox">
-							<label><input type="checkbox" value="1" name="skipcrossduplicates"> <?=$lang['add']['skipcrossduplicates'];?></label>
+							<label><input type="checkbox" value="1" name="skipcrossduplicates"> <?=$lang['add']['skipcrossduplicates'];?> (--skipcrossduplicates)</label>
+							</div>
+						</div>
+					</div>
+          <div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<div class="checkbox">
+							<label><input type="checkbox" value="1" name="subscribeall" checked> <?=$lang['add']['subscribeall'];?> (--subscribeall)</label>
 							</div>
 						</div>
 					</div>
