@@ -227,7 +227,7 @@ function dkim($_action, $_data = null) {
       return true;
     break;
     case 'details':
-      if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
+      if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data) && $_SESSION['mailcow_cc_role'] != "admin") {
         return false;
       }
       $dkimdata = array();
