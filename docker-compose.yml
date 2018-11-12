@@ -171,7 +171,6 @@ services:
         - ./data/conf/sogo/:/etc/sogo/
         - vmail-vol-1:/var/vmail
         - vmail-attachments-vol-1:/var/attachments
-        - vmail-index-vol-1:/var/indexes
         - crypt-vol-1:/mail_crypt/
         - ./data/conf/rspamd/custom/:/etc/rspamd/custom
         - rspamd-vol-1:/var/lib/rspamd
@@ -413,8 +412,6 @@ volumes:
   vmail-vol-1:
   # Storage for attachments (deduplicated)
   vmail-attachments-vol-1:
-  # Storage for index files
-  vmail-index-vol-1:
   mysql-vol-1:
   mysql-socket-vol-1:
   redis-vol-1:
