@@ -131,7 +131,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 					</div>
           <hr>
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="quota">Ratelimit</label>
+						<label class="control-label col-sm-2" for="rl_frame">Ratelimit</label>
             <div class="col-sm-7">
             <input name="rl_value" type="number" value="<?=(!empty($rl['value'])) ? $rl['value'] : null;?>" class="form-control" placeholder="disabled">
             </div>
@@ -326,6 +326,20 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 							</div>
 						</div>
 					</div>
+          <hr>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="rl_frame">Ratelimit</label>
+            <div class="col-sm-7">
+            <input name="rl_value" type="number" value="<?=(!empty($rl['value'])) ? $rl['value'] : null;?>" class="form-control" placeholder="disabled">
+            </div>
+            <div class="col-sm-3">
+            <select name="rl_frame" class="form-control">
+              <option value="s" <?=(isset($rl['frame']) && $rl['frame'] == 's') ? 'selected' : null;?>>msgs / second</option>
+              <option value="m" <?=(isset($rl['frame']) && $rl['frame'] == 'm') ? 'selected' : null;?>>msgs / minute</option>
+              <option value="h" <?=(isset($rl['frame']) && $rl['frame'] == 'h') ? 'selected' : null;?>>msgs / hour</option>
+            </select>
+            </div>
+          </div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
               <button class="btn btn-default" data-action="add_item" data-id="add_alias_domain" data-api-url='add/alias-domain' data-api-attr='{}' href="#"><?=$lang['admin']['add'];?></button>

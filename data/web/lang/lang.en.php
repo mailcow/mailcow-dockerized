@@ -389,6 +389,7 @@ $lang['acl']['syncjobs'] = 'Sync jobs';
 $lang['acl']['eas_reset'] = 'Reset EAS devices';
 $lang['acl']['sogo_profile_reset'] = 'Reset SOGo profile';
 $lang['acl']['quarantine'] = 'Quarantine';
+$lang['acl']['alias_domains'] = 'Add alias domains';
 $lang['acl']['login_as'] = 'Login as mailbox user';
 $lang['acl']['bcc_maps'] = 'BCC maps';
 $lang['acl']['filters'] = 'Filters';
