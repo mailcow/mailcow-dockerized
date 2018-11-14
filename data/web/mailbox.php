@@ -139,7 +139,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <li role="separator" class="divider"></li>
                   <li><a data-action="delete_selected" data-id="alias-domain" data-api-url='delete/alias-domain' href="#"><?=$lang['mailbox']['remove'];?></a></li>
                 </ul>
-                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addAliasDomainModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_domain_alias'];?></a>
+                <a class="btn btn-sm btn-success" href="#" data-acl="<?=$_SESSION['acl']['alias_domains'];?>" data-toggle="modal" data-target="#addAliasDomainModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_domain_alias'];?></a>
               </div>
             </div>
           </div>

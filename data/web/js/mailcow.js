@@ -109,7 +109,11 @@ $(document).ready(function() {
   });
 
   // Disable disallowed inputs
-  $('[data-acl="0"]').each(function(){
+  $('[data-acl="0"]').each(function(event){
+    if ($(this).is("a")) {
+      $(this).removeAttr("data-toggle");
+      $(this).removeAttr("data-target");
+    }
     if ($(this).hasClass('btn-group')) {
       $(this).find('a').each(function(){
         $(this).removeClass('dropdown-toggle')

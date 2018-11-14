@@ -413,7 +413,15 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <label class="control-label col-sm-2" for="target_domain"><?=$lang['edit']['target_domain'];?></label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" name="target_domain" value="<?=htmlspecialchars($result['target_domain']);?>">
+                <select class="full-width-select" data-live-search="true" id="addSelectDomain" name="target_domain" required>
+                <?php
+                foreach (mailbox('get', 'domains') as $domain):
+                ?>
+                  <option <?=($result['target_domain'] != $domain) ?: 'selected';?>><?=htmlspecialchars($domain);?></option>
+                <?php
+                endforeach;
+                ?>
+                </select>
               </div>
             </div>
             <div class="form-group">

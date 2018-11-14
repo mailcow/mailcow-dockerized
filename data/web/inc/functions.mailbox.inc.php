@@ -621,6 +621,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $alias_domains  = array_map('trim', preg_split( "/( |,|;|\n)/", $_data['alias_domain']));
           $alias_domains = array_filter($alias_domains);
           $target_domain = idn_to_ascii(strtolower(trim($_data['target_domain'])));
+          if (!isset($_SESSION['acl']['alias_domains']) || $_SESSION['acl']['alias_domains'] != "1" ) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              'msg' => 'access_denied'
+            );
+            return false;
+          }
           if (!is_valid_domain_name($target_domain)) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
@@ -697,6 +705,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 'msg' => array('redis_error', $e)
               );
               return false;
+            }
+            if (!empty(intval($_data['rl_value']))) {
+              ratelimit('edit', 'domain', array('rl_value' => $_data['rl_value'], 'rl_frame' => $_data['rl_frame'], 'object' => $alias_domain));
             }
             $_SESSION['return'][] = array(
               'type' => 'success',
