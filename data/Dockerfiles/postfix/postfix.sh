@@ -184,7 +184,7 @@ user = ${DBUSER}
 password = ${DBPASS}
 hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
-query = SELECT CONCAT(mailbox_format, mailbox_path_prefix, '%d/%u/') FROM mailbox WHERE username='%s' AND active = '1'
+query = SELECT CONCAT(JSON_UNQUOTE(JSON_EXTRACT(attributes, '$.mailbox_format')), mailbox_path_prefix, '%d/%u/') FROM mailbox WHERE username='%s' AND active = '1'
 EOF
 
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_relay_domain_maps.cf
