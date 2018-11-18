@@ -147,6 +147,7 @@ services:
         - TZ=${TZ}
         - LOG_LINES=${LOG_LINES:-9999}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
+        - ACL_ANYONE=${ACL_ANYONE:-disallow}
       volumes:
         - ./data/conf/sogo/:/etc/sogo/
         - ./data/web/inc/init_db.inc.php:/init_db.inc.php
@@ -183,6 +184,7 @@ services:
         - DBPASS=${DBPASS}
         - TZ=${TZ}
         - MAILDIR_GC_TIME=${MAILDIR_GC_TIME:-1440}
+        - ACL_ANYONE=${ACL_ANYONE:-disallow}
       ports:
         - "${DOVEADM_PORT:-127.0.0.1:19991}:12345"
         - "${IMAP_PORT:-143}:143"

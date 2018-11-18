@@ -85,6 +85,7 @@ map {
 }
 EOF
 
+echo -n ${ACL_ANYONE} > /usr/local/etc/dovecot/acl_anyone
 
 # Create userdb dict for Dovecot
 cat <<EOF > /usr/local/etc/dovecot/sql/dovecot-dict-sql-userdb.conf
