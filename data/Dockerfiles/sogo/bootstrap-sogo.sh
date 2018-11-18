@@ -204,9 +204,17 @@ sed -i \
   /usr/lib/GNUstep/SOGo/WebServerResources/js/Common/Common.app.js \
   /usr/lib/GNUstep/SOGo/WebServerResources/js/Common.js
 
-# Patch ACLs (comment this out to enable any or authenticated targets for ACL)
-if patch -sfN --dry-run /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff > /dev/null; then
-  patch /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff;
+# Patch ACLs
+if [[ ${ACL_ANYONE} == 'allow' ]]; then
+  #enable any or authenticated targets for ACL
+  if patch -R -sfN --dry-run /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff > /dev/null; then
+    patch -R /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff;
+  fi
+else
+  #disable any or authenticated targets for ACL
+  if patch -sfN --dry-run /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff > /dev/null; then
+    patch /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff;
+  fi
 fi
 
 exec gosu sogo /usr/sbin/sogod
