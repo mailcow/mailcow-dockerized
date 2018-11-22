@@ -11,9 +11,6 @@ if (!isset($_SESSION['mailcow_cc_role']) || $_SESSION['mailcow_cc_role'] != 'use
 
 error_reporting(0);
 
-header('Content-Type: application/x-apple-aspen-config');
-header('Content-Disposition: attachment; filename="Mailcow.mobileconfig"');
-
 $email = $_SESSION['mailcow_cc_username'];
 $domain = explode('@', $_SESSION['mailcow_cc_username'])[1];
 $identifier = implode('.', array_reverse(explode('.', $domain))) . '.iphoneprofile.mailcow';
@@ -32,6 +29,9 @@ if (!empty($MailboxData['name'])) {
 else {
   $displayname = $email;
 }
+
+header('Content-Type: application/x-apple-aspen-config');
+header('Content-Disposition: attachment; filename="'.$email.'.mobileconfig"');
 
 echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 ?>
