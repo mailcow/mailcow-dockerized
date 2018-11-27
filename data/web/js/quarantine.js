@@ -60,6 +60,12 @@ jQuery(function($){
             $( "#qid_error" ).text(data.error);
             $( "#qid_error" ).show();
           }
+          $( "li" ).each(function( index ) {
+            console.log( index + ": " + $( this ).text() );
+          });
+          $('[data-id="qitems_single"]').each(function( index ) {
+            $(this).attr("data-item", qitem);
+          });
           $('#qid_detail_subj').text(data.subject);
           $('#qid_detail_text').text(data.text_plain);
           $('#qid_detail_text_from_html').text(data.text_html);

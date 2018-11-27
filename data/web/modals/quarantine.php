@@ -12,6 +12,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
         <h3 class="modal-title"><span class="glyphicon glyphicon-info"></span> <?=$lang['quarantine']['qitem'];?></h3>
       </div>
       <div class="modal-body">
+        <?=var_dump($_POST);?>
         <div id="qid_error" style="display:none" class="alert alert-danger"></div>
         <div class="form-group">
           <label for="qid_detail_subj"><h4><?=$lang['quarantine']['subj'];?>:</h4></label>
@@ -28,6 +29,16 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
         <div class="form-group">
           <label for="qid_detail_atts"><h4><?=$lang['quarantine']['atts'];?>:</h4></label>
           <div id="qid_detail_atts">-</div>
+        </div>
+        <div class="btn-group" data-acl="<?=$_SESSION['acl']['quarantine'];?>">
+          <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['quarantine']['quick_actions'];?> <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a data-action="edit_selected" data-id="qitems_single" data-item="" data-api-url='edit/qitem' data-api-attr='{"action":"release"}' href="#"><?=$lang['quarantine']['release'];?></a></li>
+            <li role="separator" class="divider"></li>
+            <li><a data-action="edit_selected" data-id="qitems_single" data-item="" data-api-url='edit/qitem' data-api-attr='{"action":"learnspam"}' href="#"><?=$lang['quarantine']['learn_spam_delete'];?></a></li>
+            <li role="separator" class="divider"></li>
+            <li><a data-action="delete_selected" data-id="qitems_single" data-item="" data-api-url='delete/qitem' href="#"><?=$lang['quarantine']['remove'];?></a></li>
+          </ul>
         </div>
       </div>
     </div>
