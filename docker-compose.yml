@@ -72,7 +72,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.30
+      image: mailcow/rspamd:1.31
       build: ./data/Dockerfiles/rspamd
       stop_grace_period: 30s
       depends_on:
