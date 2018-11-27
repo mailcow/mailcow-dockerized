@@ -75,11 +75,11 @@ unset($https_port);
 // Uses HTTP_ACCEPT_LANGUAGE header
 $DETECT_LANGUAGE = true;
 
-// Change default language, "de", "en", "es", "nl", "pt", "ru"
+// Change default language, "cs", "de", "en", "es", "nl", "pt", "ru"
 $DEFAULT_LANG = 'en';
 
 // Available languages
-$AVAILABLE_LANGUAGES = array('de', 'en', 'es', 'fr', 'lv', 'nl', 'pl', 'pt', 'ru', 'it', 'ca');
+$AVAILABLE_LANGUAGES = array('cs', 'de', 'en', 'es', 'fr', 'lv', 'nl', 'pl', 'pt', 'ru', 'it', 'ca');
 
 // Change theme (default: lumen)
 // Needs to be one of those: cerulean, cosmo, cyborg, darkly, flatly, journal, lumen, paper, readable, sandstone,
