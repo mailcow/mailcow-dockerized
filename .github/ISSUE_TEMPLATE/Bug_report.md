@@ -8,7 +8,7 @@ about: Report a bug for this project
 Please understand that we use GitHub as **bug tracker and for feature requests only**.
 For general (community) support and other discussion, you are welcome to visit us @ Freenode, #mailcow
 Answering may take from a few seconds to hours, please be patient. :-)
-Immediate commercial support is available via mailcow@incidents.servercow.de
+Immediate commercial support is available via info@servercow.de
 
 **Describe the bug**
 A clear and concise description of what the bug is.
