@@ -252,9 +252,12 @@ $lang['start']['imap_smtp_server_auth_info'] = 'Please use your full email addre
 Your login data will be encrypted by the server-side mandatory encryption.';
 $lang['start']['help'] = 'Show/Hide help panel';
 $lang['header']['mailcow_settings'] = 'Configuration';
-$lang['header']['administration'] = 'Administration';
-$lang['header']['mailboxes'] = 'Mailboxes';
-$lang['header']['user_settings'] = 'User settings';
+$lang['header']['administration'] = 'Configuration & Details';
+$lang['header']['mailboxes'] = 'Mail Setup';
+$lang['header']['user_settings'] = 'User Settings';
+$lang['header']['quarantine'] = "Quarantine";
+$lang['header']['debug'] = "System Information";
+$lang['quarantine']['disabled_by_config'] = "The current system configuration disables the quarantine functionality.";
 $lang['mailbox']['tls_policy_maps'] = 'TLS policy maps';
 $lang['mailbox']['tls_policy_maps_long'] = 'Outgoing TLS policy map overrides';
 $lang['mailbox']['tls_policy_maps_info'] = 'This policy map overrides outgoing TLS transport rules independently of a users TLS policy settings.<br>
@@ -494,6 +497,7 @@ $lang['admin']['rspamd-com_settings'] = '<a href="https://rspamd.com/doc/configu
   - A setting name will be auto-generated, please see the example presets below.';
 
 $lang['admin']['no_new_rows'] = 'No further rows available';
+$lang['admin']['queue_manager'] = 'Queue manager';
 $lang['admin']['additional_rows'] = ' additional rows were added'; // parses to 'n additional rows were added'
 $lang['admin']['private_key'] = 'Private key';
 $lang['admin']['import'] = 'Import';
@@ -671,9 +675,6 @@ $lang['quarantine']['atts'] = "Attachments";
 $lang['warning']['fuzzy_learn_error'] = "Fuzzy hash learn error: %s";
 $lang['danger']['spam_learn_error'] = "Spam learn error: %s";
 $lang['success']['qlearn_spam'] = "Message ID %s was learned as spam and deleted";
-
-$lang['header']['quarantine'] = "Quarantine";
-$lang['header']['debug'] = "Debug";
 
 $lang['debug']['log_info'] = '<p>mailcow <b>in-memory logs</b> are collected in Redis lists and trimmed to LOG_LINES (%d) every minute to reduce hammering.
   <br>In-memory logs are not meant to be persistent. All applications that log in-memory, also log to the Docker daemon and therefore to the default logging driver.

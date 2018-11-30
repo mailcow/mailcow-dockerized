@@ -14,6 +14,15 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
           <h3 class="panel-title"><?=$lang['quarantine']['quarantine'];?></h3>
         </div>
         <p style="margin:10px" class="help-block"><?=$lang['quarantine']['qinfo'];?></p>
+        <p style="margin:10px">
+        <?php
+        if (empty(quarantine('settings')['retention_size']) || empty(quarantine('settings')['max_size'])):
+        ?>
+        <span class="help-block"><span class="glyphicon glyphicon-remove text-danger" style="font-size:10px"></span> <b><?=$lang['quarantine']['disabled_by_config'];?></b></span>
+        <?php
+        endif;
+        ?>
+        </p>
         <div class="table-responsive">
           <table id="quarantinetable" class="table table-striped"></table>
         </div>
