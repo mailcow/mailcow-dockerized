@@ -248,9 +248,12 @@ $lang['start']['mailcow_panel_detail'] = '<b>Domeinbeheerders</b> kunnen postvak
 $lang['start']['imap_smtp_server_auth_info'] = 'Gebruik uw volledige e-mailadres en het onversleutelde verificatiemechanisme.<br>De aanmeldgegevens worden versleuteld verstuurd.';
 $lang['start']['help'] = 'Toon/verberg hulppaneel';
 $lang['header']['mailcow_settings'] = 'Instellingen';
-$lang['header']['administration'] = 'Administratief';
-$lang['header']['mailboxes'] = 'Postvakken';
+$lang['header']['administration'] = 'Configuratie & details';
+$lang['header']['mailboxes'] = 'Mailconfiguratie';
 $lang['header']['user_settings'] = 'Gebruikersinstellingen';
+$lang['header']['quarantine'] = "Quarantaine";
+$lang['header']['debug'] = "Systeeminformatie";
+$lang['quarantine']['disabled_by_config'] = "De huidige systeemconfiguratie deactiveert de quarantainefunctionaliteit.";
 $lang['mailbox']['tls_policy_maps'] = 'Versleutelingsbeleid';
 $lang['mailbox']['tls_policy_maps_long'] = 'Uitgaand versleutelingsbeleid';
 $lang['mailbox']['tls_policy_maps_info'] = 'Deze opties worden verkozen boven de gebruikersinstellingen voor het versleutelingsbeleid<br>Bekijk <a href="http://www.postfix.org/postconf.5.html#smtp_tls_policy_maps" target="_blank">de documentatie</a> voor meer informatie.';
@@ -482,6 +485,7 @@ $lang['tfa']['confirm_totp_token'] = "Bevestig de wijzigingen door de, door uw a
 $lang['admin']['rspamd-com_settings'] = '<a href="https://rspamd.com/doc/configuration/settings.html#settings-structure" target="_blank">Rspamd documentatie</a> - Een beschrijving voor deze instelling zal automatisch worden gegenereerd, bekijk de onderstaande presets voor meer info.';
 
 $lang['admin']['no_new_rows'] = 'Er zijn geen extra rijen beschikbaar';
+$lang['admin']['queue_manager'] = 'Wachtrijbeheerder';
 $lang['admin']['additional_rows'] = ' extra rijen zijn toegevoegd'; // parses to 'n additional rows were added'
 $lang['admin']['private_key'] = 'Privésleutel';
 $lang['admin']['import'] = 'Importeer';
@@ -562,7 +566,7 @@ $lang['admin']['forwarding_hosts'] = 'Doorstuurhosts';
 $lang['admin']['forwarding_hosts_hint'] = 'Inkomende berichten worden onvoorwaardelijk geaccepteerd vanaf iedere host hieronder vermeld. Deze hosts worden vervolgens niet gecontroleerd op DNSBLs of onderworpen aan greylisting. Spam ontvangen van hen wordt nooit geweigerd, maar het kan optioneel in de spam-map worden geplaatst. Het meest gebruikelijke gebruik hiervoor is het specificeren van mailservers waarop een regel is ingesteld die inkomende e-mails doorstuurt naar uw Mailcow-server.';
 $lang['admin']['forwarding_hosts_add_hint'] = 'Het is mogelijk om IPv4- of IPv6-adressen, netwerken in CIDR-notatie, hostnamen (die worden omgezet naar IP-adressen) of domeinnamen (die worden omgezet naar IP-adressen door SPF-records op te vragen of, bij gebrek daaraan, MX-records) op te geven.';
 $lang['admin']['relayhosts_hint'] = 'Stel relayhosts hier in om ze te kunnen selecteren in een domeinconfiguratiedialoog.';
-$lang['admin']['add_relayhost_add_hint'] = 'Wees ervan bewust dat relayhost authenticatiedata onversleuteld moeten worden opgeslagen.';
+$lang['admin']['add_relayhost_add_hint'] = 'Wees ervan bewust dat relayhost authenticatiedata onversleuteld moet worden opgeslagen.';
 $lang['admin']['host'] = 'Host';
 $lang['admin']['source'] = 'Bron';
 $lang['admin']['add_forwarding_host'] = 'Voeg doorstuurhost toe';
@@ -655,9 +659,6 @@ $lang['quarantine']['atts'] = "Bijlagen";
 $lang['warning']['fuzzy_learn_error'] = "Fuzzy hash training-fout: %s";
 $lang['danger']['spam_learn_error'] = "Spamtraining-fout: %s";
 $lang['success']['qlearn_spam'] = "Bericht %s werd als spam geclassificeerd en is verwijderd";
-
-$lang['header']['quarantine'] = "Quarantaine";
-$lang['header']['debug'] = "Debug";
 
 $lang['debug']['log_info'] = '<p>Mailcow <b>in-geheugen logs</b> worden verzameld in Redis-lijsten en worden elke minuut bijgesneden naar LOG_LINES (%d) om de stabiliteit te garanderen.<br>Logs in-geheugen zijn niet bedoeld om te blijven staan. Alle applicaties die in-geheugen loggen, worden ook naar het Docker-proces gelogd.<br>De in-geheugen logs zouden gebruikt moeten worden voor het oplossen van kleine problemen met containers.</p><p><b>Externe logs</b> worden verzameld doormiddel van de API van de applicaties.</p><p><b>Statische logs</b> zijn over het algemeen activiteitenlogs, die niet naar het Docker-proces worden gestuurd</p>';
     
