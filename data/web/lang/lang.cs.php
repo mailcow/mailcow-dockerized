@@ -256,8 +256,11 @@ Vaše přihlašovací údaje budou zašifrovány na straně serveru.';
 $lang['start']['help'] = 'Zobrazit/Skrýt panel nápovědy';
 $lang['header']['mailcow_settings'] = 'Nastavení';
 $lang['header']['administration'] = 'Hlavní nastavení';
-$lang['header']['mailboxes'] = 'Poštovní schránky a domény';
-$lang['header']['user_settings'] = 'Uživatelské nastavení';
+$lang['header']['mailboxes'] = 'Nastavení pošty';
+$lang['header']['user_settings'] = 'Uživatelská nastavení';
+$lang['header']['quarantine'] = "Karanténa";
+$lang['header']['debug'] = "Systémové informace";
+$lang['quarantine']['disabled_by_config'] = "Funkce karanténa je momentálně zakázaná.";
 $lang['mailbox']['tls_policy_maps'] = 'Přetěžování TLS pravidel';
 $lang['mailbox']['tls_policy_maps_long'] = 'Přetěžování odchozích TLS pravidel (TLS policy map overrides).';
 $lang['mailbox']['tls_policy_maps_info'] = 'Tato mapa pravidel přetěžuje odchozí transportní TLS pravidla nezávisle na TLS nastavení uživatele.<br>
@@ -495,6 +498,7 @@ $lang['tfa']['confirm_totp_token'] = "Prosím potvrďte změny zadáním vygener
 $lang['admin']['rspamd-com_settings'] = '<a href="https://rspamd.com/doc/configuration/settings.html#settings-structure" target="_blank">Rspamd dokumentace</a>
   - Název nastavení bude automaticky generován, viz níže uvedené předvolby.';
 
+$lang['admin']['queue_manager'] = 'Správce fronty';
 $lang['admin']['no_new_rows'] = 'Žádné další řádky nejsou k dispozici';
 $lang['admin']['additional_rows'] = ' řádků přidáno'; // parses to 'n additional rows were added'
 $lang['admin']['private_key'] = 'Soukromý klíč';
@@ -673,9 +677,6 @@ $lang['quarantine']['atts'] = "Přílohy";
 $lang['warning']['fuzzy_learn_error'] = "Chyba při učení Fuzzy hash: %s";
 $lang['danger']['spam_learn_error'] = "Chyba při učení spamu: %s";
 $lang['success']['qlearn_spam'] = "Zpráva ID %s byla naučena jako spam a smazána";
-
-$lang['header']['quarantine'] = "Karanténa";
-$lang['header']['debug'] = "Kontrola (Debug)";
 
 $lang['debug']['log_info'] = '<p><b>Logy v paměti</b> jsou schromažďovány pomocí Redis seznamů a jsou omezeny na LOG_LINES (%d) každou minutu pro zabránění přetěžování serveru. Nejsou navrženy jako trvalé. Všechny aplikace, které logují do paměti zároveň logují i do docker služby podle nastavení logging driveru. Logy v paměti jsou navrženy pro ladění menších problémů s kontejnery.</p>
   <p><b>Externí logy</b> jsou schromažďovány pomocí API dané aplikace.</p>
