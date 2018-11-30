@@ -349,16 +349,10 @@ function quarantine($_action, $_data = null) {
       return $q_meta;
     break;
     case 'settings':
-      if ($_SESSION['mailcow_cc_role'] != "admin") {
-        $_SESSION['return'][] = array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => 'access_denied'
-        );
-        return false;
-      }
       try {
-        $settings['exclude_domains'] = json_decode($redis->Get('Q_EXCLUDE_DOMAINS'), true);
+        if ($_SESSION['mailcow_cc_role'] == "admin") {
+          $settings['exclude_domains'] = json_decode($redis->Get('Q_EXCLUDE_DOMAINS'), true);
+        }
         $settings['max_size'] = $redis->Get('Q_MAX_SIZE');
         $settings['retention_size'] = $redis->Get('Q_RETENTION_SIZE');
       }

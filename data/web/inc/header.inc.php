@@ -78,6 +78,7 @@
                 ?>
                   <li<?= (preg_match("/admin/i", $_SERVER['REQUEST_URI'])) ? ' class="active"' : ''; ?>><a href="/admin"><?= $lang['header']['administration']; ?></a></li>
                   <li<?= (preg_match("/debug/i", $_SERVER['REQUEST_URI'])) ? ' class="active"' : ''; ?>><a href="/debug"><?= $lang['header']['debug']; ?></a></li>
+                  <li class="divider"></li>
                 <?php
                 }
                 if ($_SESSION['mailcow_cc_role'] == 'admin' || $_SESSION['mailcow_cc_role'] == 'domainadmin') {

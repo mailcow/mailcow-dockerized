@@ -25,5 +25,6 @@ data/conf/rspamd/custom/*
 data/conf/portainer/
 data/gitea/
 data/gogs/
+data/conf/sogo/plist_ldap
 .github/
 docker-compose.override.yml

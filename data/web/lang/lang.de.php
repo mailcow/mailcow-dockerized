@@ -249,9 +249,12 @@ $lang['start']['imap_smtp_server_auth_info'] = 'Bitte verwenden Sie Ihre vollst�
 Ihre Anmeldedaten werden durch die obligatorische Verschlüsselung entgegen des Begriffes "PLAIN" nicht unverschlüsselt übertragen.';
 $lang['start']['help'] = 'Hilfe ein-/ausblenden';
 $lang['header']['mailcow_settings'] = 'Konfiguration';
-$lang['header']['administration'] = 'Administration';
-$lang['header']['mailboxes'] = 'Mailboxen';
+$lang['header']['administration'] = 'Server-Konfiguration';
+$lang['header']['mailboxes'] = 'E-Mail-Setup';
 $lang['header']['user_settings'] = 'Benutzereinstellungen';
+$lang['header']['quarantine'] = "Quarantäne";
+$lang['header']['debug'] = "Systeminformation";
+$lang['quarantine']['disabled_by_config'] = "Die derzeitige Konfiguration deaktiviert die Funktion des Quarantäne-Systems.";
 $lang['mailbox']['tls_policy_maps'] = 'TLS-Richtlinien';
 $lang['mailbox']['tls_policy_maps_long'] = 'Ausgehende TLS-Richtlinien';
 $lang['mailbox']['tls_policy_maps_info'] = 'Nachstehende Richtlinien erzwingen TLS-Transportregeln unabhängig von TLS-Richtlinieneinstellungen eines Benutzers.<br>
@@ -512,6 +515,7 @@ $lang['admin']['dkim_from_title'] = 'Quellobjekt für Duplizierung';
 $lang['admin']['dkim_to_title'] = 'Ziel-Objekt(e) werden überschrieben';
 $lang['admin']['dkim_domains_wo_keys'] = "Domains mit fehlenden Keys auswählen";
 $lang['admin']['add'] = 'Hinzufügen';
+$lang['admin']['queue_manager'] = 'Queue Manager';
 $lang['add']['add_domain_restart'] = 'Domain hinzufügen und SOGo neustarten';
 $lang['add']['add_domain_only'] = 'Nur Domain hinzufügen';
 $lang['admin']['configuration'] = 'Konfiguration';
@@ -655,9 +659,6 @@ $lang['quarantine']['atts'] = "Anhänge";
 $lang['warning']['fuzzy_learn_error'] = "Fuzzy Lernfehler: %s";
 $lang['danger']['spam_learn_error'] = "Spam Lernfehler: %s";
 $lang['success']['qlearn_spam'] = "Nachricht ID %s wurde als Spam gelernt und gelöscht";
-
-$lang['header']['quarantine'] = "Quarantäne";
-$lang['header']['debug'] = "Debugging";
 
 $lang['debug']['log_info'] = '<p>mailcow <b>in-memory Logs</b> werden in Redis Listen gespeichert, die maximale Anzahl der Einträge pro Anwendung richtet sich nach LOG_LINES (%d).
   <br>In-memory Logs sind vergänglich und nicht zur ständigen Aufbewahrung bestimmt. Alle Anwendungen, die in-memory protokollieren, schreiben ebenso in den Docker Daemon.
