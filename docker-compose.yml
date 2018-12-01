@@ -318,7 +318,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.19
+      image: mailcow/netfilter:1.20
       build: ./data/Dockerfiles/netfilter
       stop_grace_period: 30s
       depends_on:
