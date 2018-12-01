@@ -301,12 +301,12 @@ def snat4(snat_target):
           print log['message']
           chain.insert_rule(get_snat4_rule())
           table.commit()
-        else:
-          for position, item in enumerate(chain.rules):
-            if item == get_snat4_rule():
-              if position != 0:
-                chain.delete_rule(get_snat4_rule())
-          table.commit()
+        #else:
+        #  for position, item in enumerate(chain.rules):
+        #    if item == get_snat4_rule():
+        #      if position != 0:
+        #        chain.delete_rule(get_snat4_rule())
+        #  table.commit()
         table.autocommit = True
       except:
         print 'Error running SNAT4, retrying...' 
