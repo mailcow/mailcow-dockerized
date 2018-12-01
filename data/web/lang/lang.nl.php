@@ -1,6 +1,9 @@
 <?php
 /*
  * Dutch language file
+ *
+ * Created and maintained by Geitenijs
+ *
  */
 
 $lang['footer']['loading'] = "Even geduld aub...";
