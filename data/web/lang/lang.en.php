@@ -676,6 +676,8 @@ $lang['warning']['fuzzy_learn_error'] = "Fuzzy hash learn error: %s";
 $lang['danger']['spam_learn_error'] = "Spam learn error: %s";
 $lang['success']['qlearn_spam'] = "Message ID %s was learned as spam and deleted";
 
+$lang['debug']['system_containers'] = 'System & Containers';
+$lang['debug']['logs'] = 'Logs';
 $lang['debug']['log_info'] = '<p>mailcow <b>in-memory logs</b> are collected in Redis lists and trimmed to LOG_LINES (%d) every minute to reduce hammering.
   <br>In-memory logs are not meant to be persistent. All applications that log in-memory, also log to the Docker daemon and therefore to the default logging driver.
   <br>The in-memory log type should be used for debugging minor issues with containers.</p>
@@ -685,6 +687,10 @@ $lang['debug']['log_info'] = '<p>mailcow <b>in-memory logs</b> are collected in 
 $lang['debug']['in_memory_logs'] = 'In-memory logs';
 $lang['debug']['external_logs'] = 'External logs';
 $lang['debug']['static_logs'] = 'Static logs';
+
+$lang['debug']['disk_usage'] = 'Disk usage';
+$lang['debug']['containers_info'] = "Container information";
+$lang['debug']['restart_container'] = 'Restart';
 
 $lang['quarantine']['release_body'] = "We have attached your message as eml file to this message.";
 $lang['danger']['release_send_failed'] = "Message could not be released: %s";
