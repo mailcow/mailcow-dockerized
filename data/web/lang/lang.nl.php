@@ -660,11 +660,18 @@ $lang['warning']['fuzzy_learn_error'] = "Fuzzy hash training-fout: %s";
 $lang['danger']['spam_learn_error'] = "Spamtraining-fout: %s";
 $lang['success']['qlearn_spam'] = "Bericht %s werd als spam geclassificeerd en is verwijderd";
 
-$lang['debug']['log_info'] = '<p>Mailcow <b>in-geheugen logs</b> worden verzameld in Redis-lijsten en worden elke minuut bijgesneden naar LOG_LINES (%d) om de stabiliteit te garanderen.<br>Logs in-geheugen zijn niet bedoeld om te blijven staan. Alle applicaties die in-geheugen loggen, worden ook naar het Docker-proces gelogd.<br>De in-geheugen logs zouden gebruikt moeten worden voor het oplossen van kleine problemen met containers.</p><p><b>Externe logs</b> worden verzameld doormiddel van de API van de applicaties.</p><p><b>Statische logs</b> zijn over het algemeen activiteitenlogs, die niet naar het Docker-proces worden gestuurd</p>';
+
+$lang['debug']['system_containers'] = 'Systeem & containers';
+$lang['debug']['logs'] = 'Logs';
+$lang['debug']['log_info'] = '<p>Mailcow <b>geheugenlogs</b> worden verzameld in Redis-lijsten en worden elke minuut bijgesneden naar LOG_LINES (%d) om de stabiliteit te garanderen.<br>Geheugenlogs zijn niet bedoeld om te blijven staan. Alle applicaties die geheugenlogs verzamelen, worden ook naar het Docker-proces gelogd.<br>De geheugenlogs zouden gebruikt moeten worden voor het oplossen van kleine problemen met containers.</p><p><b>Externe logs</b> worden verzameld doormiddel van de API van de applicaties.</p><p><b>Statische logs</b> zijn over het algemeen activiteitenlogs, die niet naar het Docker-proces worden gestuurd</p>';
     
-$lang['debug']['in_memory_logs'] = 'Logs in-geheugen';
+$lang['debug']['in_memory_logs'] = 'Geheugenlogs';
 $lang['debug']['external_logs'] = 'Externe logs';
 $lang['debug']['static_logs'] = 'Statische logs';
+
+$lang['debug']['disk_usage'] = 'Schijfgebruik';
+$lang['debug']['containers_info'] = "Containerinformatie";
+$lang['debug']['restart_container'] = 'Herstart';
 
 $lang['quarantine']['release_body'] = "We hebben het oorspronkelijke bericht als eml-bestand meegestuurd.";
 $lang['danger']['release_send_failed'] = "Het volgende bericht kon niet worden vrijgegeven: %s";
