@@ -678,6 +678,8 @@ $lang['warning']['fuzzy_learn_error'] = "Chyba při učení Fuzzy hash: %s";
 $lang['danger']['spam_learn_error'] = "Chyba při učení spamu: %s";
 $lang['success']['qlearn_spam'] = "Zpráva ID %s byla naučena jako spam a smazána";
 
+$lang['debug']['system_containers'] = 'Systém a docker kontejnery';
+$lang['debug']['logs'] = 'Logy';
 $lang['debug']['log_info'] = '<p><b>Logy v paměti</b> jsou schromažďovány pomocí Redis seznamů a jsou omezeny na LOG_LINES (%d) každou minutu pro zabránění přetěžování serveru. Nejsou navrženy jako trvalé. Všechny aplikace, které logují do paměti zároveň logují i do docker služby podle nastavení logging driveru. Logy v paměti jsou navrženy pro ladění menších problémů s kontejnery.</p>
   <p><b>Externí logy</b> jsou schromažďovány pomocí API dané aplikace.</p>
   <p><b>Statické logy</b> jsou většinou logy činností, které nejsou zaznamenávány do Docker služby, ale je potřeba aby byly trvalé (vyjímkou jsou API logy).</p>';
@@ -685,6 +687,10 @@ $lang['debug']['log_info'] = '<p><b>Logy v paměti</b> jsou schromažďovány po
 $lang['debug']['in_memory_logs'] = 'Logy v paměti';
 $lang['debug']['external_logs'] = 'Externí logy';
 $lang['debug']['static_logs'] = 'Statické logy';
+
+$lang['debug']['disk_usage'] = 'Využití disku';
+$lang['debug']['containers_info'] = "Informace o docker kontejnerech";
+$lang['debug']['restart_container'] = 'Restartovat';
 
 $lang['quarantine']['release_body'] = "Váš email byla připojen jako soubor eml k této zprávě.";
 $lang['danger']['release_send_failed'] = "Zprávu nelze propustit: %s";

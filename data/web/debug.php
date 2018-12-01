@@ -9,8 +9,8 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 <div class="container">
 
   <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#tab-containers" aria-controls="tab-containers" role="tab" data-toggle="tab">Containers & System</a></li>
-    <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Logs
+    <li role="presentation" class="active"><a href="#tab-containers" aria-controls="tab-containers" role="tab" data-toggle="tab"><?=$lang['debug']['system_containers'];?></a></li>
+    <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['debug']['logs'];?>
       <span class="caret"></span></a>
       <ul class="dropdown-menu">
         <li role="presentation"><span class="dropdown-desc"><?=$lang['debug']['in_memory_logs'];?></span></li>
@@ -41,7 +41,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
         <div role="tabpanel" class="tab-pane active" id="tab-containers">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Disk usage</h3>
+              <h3 class="panel-title"><?=$lang['debug']['disk_usage'];?></h3>
             </div>
             <div class="panel-body">
               <div class="row">
@@ -59,7 +59,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
           </div>
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Container information</h3>
+              <h3 class="panel-title"><?=$lang['debug']['containers_info'];?></h3>
             </div>
             <div class="panel-body">
             <ul class="list-group">
@@ -90,7 +90,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               }
               ?>
               <small>(Started on <?=$started;?>),
-              <a href data-toggle="modal" data-container="<?=$container;?>" data-target="#RestartContainer">Restart</a></small>
+              <a href data-toggle="modal" data-container="<?=$container;?>" data-target="#RestartContainer"><?=$lang['debug']['restart_container'];?></a></small>
               <span class="pull-right label label-<?=($container_info['State'] !== false && !empty($container_info['State'])) ? (($container_info['State']['Running'] == 1) ? 'success' : 'danger') : 'default'; ?>">&nbsp;&nbsp;&nbsp;</span>
               </li>
               <?php
