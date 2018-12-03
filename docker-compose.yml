@@ -317,30 +317,6 @@ services:
         aliases:
           - acme
 
-  netfilter-mailcow:
-    image: mailcow/netfilter:1.19
-    build: ./data/Dockerfiles/netfilter
-    stop_grace_period: 30s
-    depends_on:
-      - dovecot-mailcow
-      - postfix-mailcow
-      - sogo-mailcow
-      - php-fpm-mailcow
-      - redis-mailcow
-    restart: always
-    privileged: true
-    environment:
-      - TZ=${TZ}
-      - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
-      - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
-      - SNAT_TO_SOURCE=${SNAT_TO_SOURCE:-n}
-      - SNAT6_TO_SOURCE=${SNAT6_TO_SOURCE:-n}
-    network_mode: "host"
-    dns:
-      - ${IPV4_NETWORK:-172.22.1}.254
-    volumes:
-      - /lib/modules:/lib/modules:ro
-
   watchdog-mailcow:
     image: mailcow/watchdog:1.29
     # Debug
@@ -372,6 +348,30 @@ services:
       mailcow-network:
         aliases:
           - watchdog
+
+  netfilter-mailcow:
+    image: mailcow/netfilter:1.20
+    build: ./data/Dockerfiles/netfilter
+    stop_grace_period: 30s
+    depends_on:
+      - dovecot-mailcow
+      - postfix-mailcow
+      - sogo-mailcow
+      - php-fpm-mailcow
+      - redis-mailcow
+    restart: always
+    privileged: true
+    environment:
+      - TZ=${TZ}
+      - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
+      - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
+      - SNAT_TO_SOURCE=${SNAT_TO_SOURCE:-n}
+      - SNAT6_TO_SOURCE=${SNAT6_TO_SOURCE:-n}
+    network_mode: "host"
+    dns:
+      - ${IPV4_NETWORK:-172.22.1}.254
+    volumes:
+      - /lib/modules:/lib/modules:ro
 
   dockerapi-mailcow:
     image: mailcow/dockerapi:1.23
