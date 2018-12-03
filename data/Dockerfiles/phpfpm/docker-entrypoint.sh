@@ -3,6 +3,12 @@ set -e
 
 function array_by_comma { local IFS=","; echo "$*"; }
 
+echo "dmarcts-report-viewer setup"
+cp /web/dmarcts-report-viewer/dmarcts-report-viewer-config.placeholder.php /web/dmarcts-report-viewer/dmarcts-report-viewer-config.php
+sed -ri 's/^dbname_placeholder$/\$dbname=\"'"${DBNAME}"'\";/' /web/dmarcts-report-viewer/dmarcts-report-viewer-config.php
+sed -ri 's/^dbuser_placeholder$/\$dbuser=\"'"${DBUSER}"'\";/' /web/dmarcts-report-viewer/dmarcts-report-viewer-config.php
+sed -ri 's/^dbpass_placeholder$/\$dbpass=\"'"${DBPASS}"'\";/' /web/dmarcts-report-viewer/dmarcts-report-viewer-config.php
+
 # Wait for containers
 while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
   echo "Waiting for SQL..."

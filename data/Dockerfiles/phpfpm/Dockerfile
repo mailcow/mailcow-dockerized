@@ -57,7 +57,7 @@ RUN apk add -U --no-cache autoconf \
     --with-freetype-dir=/usr/include/ \
     --with-png-dir=/usr/include/ \
     --with-jpeg-dir=/usr/include/ \
-  && docker-php-ext-install -j 4 gd gettext intl ldap opcache pcntl pdo pdo_mysql soap sockets xmlrpc zip \
+  && docker-php-ext-install -j 4 gd gettext intl ldap mysqli opcache pcntl pdo pdo_mysql soap sockets xmlrpc zip \
   && docker-php-ext-configure imap --with-imap --with-imap-ssl \
   && docker-php-ext-install -j 4 imap \
   && apk del --purge autoconf \

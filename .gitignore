@@ -12,6 +12,7 @@ data/assets/ssl/*
 .vscode/*
 data/web/.well-known/acme-challenge
 data/web/nextcloud/
+data/web/dmarcts-report-viewer/dmarcts-report-viewer-config.php
 data/conf/rspamd/local.d/*
 data/conf/rspamd/override.d/*
 !data/conf/nginx/dynmaps.conf
@@ -28,3 +29,4 @@ data/gogs/
 data/conf/sogo/plist_ldap
 .github/
 docker-compose.override.yml
+.DS_Store

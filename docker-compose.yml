@@ -410,6 +410,9 @@ services:
       - DBNAME=${DBNAME}
       - DBUSER=${DBUSER}
       - DBPASS=${DBPASS}
+      - DMARCTS_IMAP_USER=${DMARCTS_IMAP_USER}
+      - DMARCTS_IMAP_PASSWORD=${DMARCTS_IMAP_PASSWORD}
+      - USE_DMARCTS=${USE_DMARCTS_REPORT_PARSER:-n}
 
 networks:
   mailcow-network:

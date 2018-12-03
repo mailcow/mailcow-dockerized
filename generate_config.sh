@@ -155,6 +155,14 @@ USE_WATCHDOG=n
 #WATCHDOG_NOTIFY_EMAIL=a@example.com,b@example.com,c@example.com
 #WATCHDOG_NOTIFY_EMAIL=
 
+# Enable dmarc report parser to parse and display DMARC compliance reports
+# Read more at https://blog.returnpath.com/how-to-read-your-first-dmarc-reports-part-1/
+USE_DMARCTS_REPORT_PARSER=n
+
+# Create a central mailbox for DMARC reports and enter the credentials here
+DMARCTS_IMAP_USER=
+DMARCTS_IMAP_PASSWORD=
+
 # Max log lines per service to keep in Redis logs
 
 LOG_LINES=9999

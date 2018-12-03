@@ -121,6 +121,9 @@ CONFIG_ARRAY=(
   "API_KEY"
   "API_ALLOW_FROM"
   "MAILDIR_GC_TIME"
+  "USE_DMARCTS_REPORT_PARSER"
+  "DMARCTS_IMAP_USER"
+  "DMARCTS_IMAP_PASSWORD"
 )
 
 sed -i '$a\' mailcow.conf
@@ -201,6 +204,24 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# How long should objects remain in the garbage until they are being deleted? (value in minutes)' >> mailcow.conf
       echo '# Check interval is hourly' >> mailcow.conf
       echo 'MAILDIR_GC_TIME=1440' >> mailcow.conf
+    fi
+  elif [[ ${option} == "USE_DMARCTS_REPORT_PARSER" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo "# Enable dmarc report parser to parse and display DMARC compliance reports" >> mailcow.conf
+      echo "# Read more at https://blog.returnpath.com/how-to-read-your-first-dmarc-reports-part-1/" >> mailcow.conf
+      echo "USE_DMARCTS_REPORT_PARSER=n" >> mailcow.conf
+    fi
+  elif [[ ${option} == "DMARCTS_IMAP_USER" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo "# Create a central mailbox for DMARC reports and enter the credentials here" >> mailcow.conf
+      echo "DMARCTS_IMAP_USER=" >> mailcow.conf
+    fi
+  elif [[ ${option} == "DMARCTS_IMAP_USER" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo "DMARCTS_IMAP_PASSWORD=" >> mailcow.conf
     fi
   elif ! grep -q ${option} mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"
