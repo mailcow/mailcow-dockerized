@@ -257,6 +257,7 @@ $lang['header']['mailboxes'] = 'Mail Setup';
 $lang['header']['user_settings'] = 'User Settings';
 $lang['header']['quarantine'] = "Quarantine";
 $lang['header']['debug'] = "System Information";
+$lang['header']['dmarcts-report-viewer'] = "DMARC Report Viewer";
 $lang['quarantine']['disabled_by_config'] = "The current system configuration disables the quarantine functionality.";
 $lang['mailbox']['tls_policy_maps'] = 'TLS policy maps';
 $lang['mailbox']['tls_policy_maps_long'] = 'Outgoing TLS policy map overrides';
