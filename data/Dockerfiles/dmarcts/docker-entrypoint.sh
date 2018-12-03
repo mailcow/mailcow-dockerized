@@ -1,5 +1,5 @@
 if [[ "${USE_DMARCTS}" =~ ^([nN][oO]|[nN])+$ ]]; then
-  echo -e "$(date) - USE_DMARCTS=n, skipping dmarcts..."
+  echo -e "$(date) - USE_DMARCTS_REPORT_PARSER=n, skipping dmarcts..."
   sleep 365d
   exec $(readlink -f "$0")
 fi
@@ -24,6 +24,8 @@ sleep 15
 
 while true
 do
+  echo "Running dmarcts-report-parser.pl"
   ./dmarcts-report-parser/dmarcts-report-parser.pl -i
+  echo "Sleeping for 1800 seconds"
   sleep 1800
 done; 
