@@ -108,7 +108,7 @@
           }
           ?>
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-link"></span> Apps <span class="caret"></span></a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-link"></span> <?= $lang['header']['apps']; ?> <span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
             <?php
             foreach ($MAILCOW_APPS as $app):
