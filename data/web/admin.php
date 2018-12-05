@@ -212,15 +212,15 @@ $tfa_data = get_tfa();
             <div class="row">
               <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" /></div>
               <div class="col-md-3">
-                <p>Domain: <strong><?=htmlspecialchars($domain);?></strong>
+                <p><?=$lang['admin']['domain'];?>: <strong><?=htmlspecialchars($domain);?></strong>
                   <p class="dkim-label"><span class="label label-success"><?=$lang['admin']['dkim_key_valid'];?></span></p>
-                  <p class="dkim-label"><span class="label label-primary">Selector '<?=$dkim['dkim_selector'];?>'</span></p>
+                  <p class="dkim-label"><span class="label label-primary"><?=$lang['admin']['dkim_domains_selector'];?> '<?=$dkim['dkim_selector'];?>'</span></p>
                   <p class="dkim-label"><span class="label label-info"><?=$dkim['length'];?> bit</span></p>
                 </p>
               </div>
               <div class="col-md-8">
                   <pre><?=$dkim['dkim_txt'];?></pre>
-                  <p data-toggle="modal" data-target="#showDKIMprivKey" id="dkim_priv" style="cursor:pointer;margin-top:-8pt" data-priv-key="<?=$dkim['privkey'];?>"><small>↪ Private key</small></p>
+                  <p data-toggle="modal" data-target="#showDKIMprivKey" id="dkim_priv" style="cursor:pointer;margin-top:-8pt" data-priv-key="<?=$dkim['privkey'];?>"><small>↪ <?=$lang['admin']['dkim_private_key'];?></small></p>
               </div>
               <hr class="visible-xs visible-sm">
             </div>
@@ -231,7 +231,7 @@ $tfa_data = get_tfa();
           <div class="row">
               <div class="col-md-1"><input class="dkim_missing" type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" disabled /></div>
             <div class="col-md-3">
-              <p>Domain: <strong><?=htmlspecialchars($domain);?></strong><br /><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
+              <p><?=$lang['admin']['domain'];?>: <strong><?=htmlspecialchars($domain);?></strong><br /><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
             </div>
             <div class="col-md-8"><pre>-</pre></div>
               <hr class="visible-xs visible-sm">
@@ -282,7 +282,7 @@ $tfa_data = get_tfa();
             <div class="row">
               <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$blind;?>" /></div>
               <div class="col-md-3">
-                <p>Domain: <strong><?=htmlspecialchars($blind);?></strong>
+                <p><?=$lang['admin']['domain'];?>: <strong><?=htmlspecialchars($blind);?></strong>
                   <p class="dkim-label"><span class="label label-warning"><?=$lang['admin']['dkim_key_unused'];?></span></p>
                   <p class="dkim-label"><span class="label label-primary">Selector '<?=$dkim['dkim_selector'];?>'</span></p>
                   <p class="dkim-label"><span class="label label-info"><?=$dkim['length'];?> bit</span></p>
@@ -307,7 +307,7 @@ $tfa_data = get_tfa();
             <small>↪ <a href="#" id="dkim_missing_keys"><?=$lang['admin']['dkim_domains_wo_keys'];?></a></small>
           </div>
           <div class="form-group">
-            <label for="domain">Selector</label>
+            <label for="domain"><?=$lang['admin']['dkim_domains_selector'];?></label>
             <input class="form-control input-sm" name="dkim_selector" value="dkim" required>
           </div>
           <div class="form-group">
@@ -325,11 +325,11 @@ $tfa_data = get_tfa();
         <div id="import_dkim" class="collapse">
         <form class="form" data-id="dkim_import" role="form" method="post">
           <div class="form-group">
-            <label for="domain">Domain:</label>
+            <label for="domain"><?=$lang['admin']['domain'];?>:</label>
             <input class="form-control input-sm" name="domain" placeholder="example.org" required>
           </div>
           <div class="form-group">
-            <label for="domain">Selector:</label>
+            <label for="domain"><?=$lang['admin']['dkim_domains_selector'];?>:</label>
             <input class="form-control input-sm" name="dkim_selector" value="dkim" required>
           </div>
           <div class="form-group">
@@ -861,7 +861,7 @@ $tfa_data = get_tfa();
   <div role="tabpanel" class="tab-pane" id="tab-mailq">
     <div class="panel panel-default">
       <div class="panel-heading">
-        Queue manager <span class="badge badge-info table-lines"></span>
+        <?=$lang['admin']['queue_manager'];?> <span class="badge badge-info table-lines"></span>
         <div class="btn-group pull-right">
           <button class="btn btn-xs btn-default refresh_table" data-draw="draw_queue" data-table="queuetable"><?=$lang['admin']['refresh'];?></button>
         </div>
@@ -875,9 +875,9 @@ $tfa_data = get_tfa();
           <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="mailqitems" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
           <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a data-toggle="tooltip" title="postqueue -i" data-action="edit_selected" data-id="mailqitems" data-api-url='edit/mailq' data-api-attr='{"action":"deliver"}' href="#">Deliver</a></li>
-            <li><a data-toggle="tooltip" title="postsuper -H" data-action="edit_selected" data-id="mailqitems" data-api-url='edit/mailq' data-api-attr='{"action":"unhold"}' href="#">Unhold</a></li>
-            <li><a data-toggle="tooltip" title="postsuper -h" data-action="edit_selected" data-id="mailqitems" data-api-url='edit/mailq' data-api-attr='{"action":"hold"}' href="#">Hold</a></li>
+            <li><a data-toggle="tooltip" title="postqueue -i" data-action="edit_selected" data-id="mailqitems" data-api-url='edit/mailq' data-api-attr='{"action":"deliver"}' href="#"><?=$lang['admin']['queue_deliver_mail'];?></a></li>
+            <li><a data-toggle="tooltip" title="postsuper -H" data-action="edit_selected" data-id="mailqitems" data-api-url='edit/mailq' data-api-attr='{"action":"unhold"}' href="#"><?=$lang['admin']['queue_unhold_mail'];?></a></li>
+            <li><a data-toggle="tooltip" title="postsuper -h" data-action="edit_selected" data-id="mailqitems" data-api-url='edit/mailq' data-api-attr='{"action":"hold"}' href="#"><?=$lang['admin']['queue_hold_mail'];?></a></li>
             <li role="separator" class="divider"></li>
             <li><a data-toggle="tooltip" title="postsuper -d" data-action="delete_selected" data-id="mailqitems" data-api-url='delete/mailq' href="#"><?=$lang['mailbox']['remove'];?></a></li>
           </ul>
