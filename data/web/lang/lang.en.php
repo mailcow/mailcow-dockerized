@@ -418,6 +418,8 @@ $lang['add']['custom_params'] = 'Custom parameters';
 $lang['add']['subscribeall'] = 'Subscribe all folders';
 $lang['add']['timeout1'] = 'Timeout for connection to remote host';
 $lang['add']['timeout2'] = 'Timeout for connection to local host';
+$lang['edit']['timeout1'] = 'Timeout for connection to remote host';
+$lang['edit']['timeout2'] = 'Timeout for connection to local host';
 
 $lang['edit']['delete2duplicates'] = 'Delete duplicates on destination';
 $lang['edit']['delete1'] = 'Delete from source when completed';
