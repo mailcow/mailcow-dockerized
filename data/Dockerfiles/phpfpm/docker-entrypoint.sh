@@ -14,6 +14,10 @@ until [[ $(redis-cli -h redis-mailcow PING) == "PONG" ]]; do
   sleep 2
 done
 
+if [[ -z $(redis-cli --raw -h redis-mailcow GET Q_RELEASE_FORMAT) ]]; then
+  redis-cli --raw -h redis-mailcow SET Q_RELEASE_FORMAT raw
+fi
+
 # Trigger db init
 echo "Running DB init..."
 php -c /usr/local/etc/php -f /web/inc/init_db.inc.php
