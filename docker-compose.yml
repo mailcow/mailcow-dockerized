@@ -72,7 +72,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.31
+      image: mailcow/rspamd:1.32
       build: ./data/Dockerfiles/rspamd
       stop_grace_period: 30s
       depends_on:
@@ -95,7 +95,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.24
+      image: mailcow/phpfpm:1.25
       build: ./data/Dockerfiles/phpfpm
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
@@ -162,7 +162,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.46
+      image: mailcow/dovecot:1.47
       build: ./data/Dockerfiles/dovecot
       cap_add:
         - NET_BIND_SERVICE
@@ -318,7 +318,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.20
+      image: mailcow/netfilter:1.21
       build: ./data/Dockerfiles/netfilter
       stop_grace_period: 30s
       depends_on:
