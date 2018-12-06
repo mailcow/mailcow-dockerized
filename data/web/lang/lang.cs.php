@@ -420,6 +420,8 @@ $lang['add']['custom_params'] = 'Vlastní parametry';
 $lang['add']['subscribeall'] = 'Odebírat všechny složky';
 $lang['add']['timeout1'] = 'Časový limit pro připojení ke vzdálenému hostiteli';
 $lang['add']['timeout2'] = 'Časový limit pro připojení k lokálnímu hostiteli';
+$lang['edit']['timeout1'] = 'Časový limit pro připojení ke vzdálenému hostiteli';
+$lang['edit']['timeout2'] = 'Časový limit pro připojení k lokálnímu hostiteli';
 
 $lang['edit']['delete2duplicates'] = 'Odstranit duplicity v cílovém místě';
 $lang['edit']['delete1'] = 'Odstranit ze zdroje po dokončení';
