@@ -12,7 +12,6 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
         <h3 class="modal-title"><span class="glyphicon glyphicon-info"></span> <?=$lang['quarantine']['qitem'];?></h3>
       </div>
       <div class="modal-body">
-        <?=var_dump($_POST);?>
         <div id="qid_error" style="display:none" class="alert alert-danger"></div>
         <div class="form-group">
           <label for="qid_detail_subj"><h4><?=$lang['quarantine']['subj'];?>:</h4></label>

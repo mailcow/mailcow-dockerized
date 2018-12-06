@@ -557,7 +557,7 @@ $tfa_data = get_tfa();
     <div class="panel panel-default">
       <div class="panel-heading"><?=$lang['admin']['quarantine'];?></div>
       <div class="panel-body">
-       <?php $q_data = quarantine('settings'); ?>
+       <?php $q_data = quarantine('settings');?>
         <form class="form" data-id="quarantine" role="form" method="post">
           <div class="row">
             <div class="col-sm-6">
@@ -573,17 +573,30 @@ $tfa_data = get_tfa();
               </div>
             </div>
           </div>
-          <div class="form-group">
-            <label for="exclude_domains"><?=$lang['admin']['quarantine_exclude_domains'];?></label><br />
-            <select data-width="100%" name="exclude_domains" class="selectpicker" title="<?=$lang['tfa']['select'];?>" multiple>
-              <?php
-              foreach (array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains')) as $domain):
-              ?>
-                <option <?=(in_array($domain, $q_data['exclude_domains'])) ? 'selected' : null;?>><?=htmlspecialchars($domain);?></option>
-              <?php
-              endforeach;
-              ?>
-            </select>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="release_format"><?=$lang['admin']['quarantine_release_format'];?></label>
+                <select data-width="100%" name="release_format" class="selectpicker" title="<?=$lang['tfa']['select'];?>">
+                  <option <?=($q_data['release_format'] == 'raw') ? 'selected' : null;?> value="raw"><?=$lang['admin']['quarantine_release_format_raw'];?></option>
+                  <option <?=($q_data['release_format'] == 'attachment') ? 'selected' : null;?> value="attachment"><?=$lang['admin']['quarantine_release_format_att'];?></option>
+                </select>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="exclude_domains"><?=$lang['admin']['quarantine_exclude_domains'];?></label><br />
+                <select data-width="100%" name="exclude_domains" class="selectpicker" title="<?=$lang['tfa']['select'];?>" multiple>
+                <?php
+                foreach (array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains')) as $domain):
+                ?>
+                  <option <?=(in_array($domain, $q_data['exclude_domains'])) ? 'selected' : null;?>><?=htmlspecialchars($domain);?></option>
+                <?php
+                endforeach;
+                ?>
+                </select>
+              </div>
+            </div>
           </div>
           <button class="btn btn-default" data-action="edit_selected" data-item="self" data-id="quarantine" data-api-url='edit/quarantine' data-api-attr='{"action":"settings"}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
         </form>
