@@ -3,6 +3,7 @@
  * English language file
  */
 
+$lang['header']['apps'] = 'Apps';
 $lang['footer']['loading'] = "Please wait...";
 $lang['header']['restart_sogo'] = 'Restart SOGo';
 $lang['header']['restart_netfilter'] = 'Restart netfilter';
@@ -283,6 +284,7 @@ $lang['mailbox']['description'] = 'Description';
 $lang['mailbox']['alias'] = 'Alias';
 $lang['mailbox']['aliases'] = 'Aliases';
 $lang['mailbox']['domains'] = 'Domains';
+$lang['admin']['domain'] = 'Domain';
 $lang['admin']['domain_s'] = 'Domain/s';
 $lang['mailbox']['mailboxes'] = 'Mailboxes';
 $lang['mailbox']['resources'] = 'Resources';
@@ -527,7 +529,9 @@ $lang['admin']['dkim_key_unused'] = 'Key unused';
 $lang['admin']['dkim_key_missing'] = 'Key missing';
 $lang['admin']['dkim_add_key'] = 'Add ARC/DKIM key';
 $lang['admin']['dkim_keys'] = 'ARC/DKIM keys';
+$lang['admin']['dkim_private_key'] = 'Private key';
 $lang['admin']['dkim_domains_wo_keys'] = "Select domains with missing keys";
+$lang['admin']['dkim_domains_selector'] = "Selector";
 $lang['admin']['add'] = 'Add';
 $lang['add']['add_domain_restart'] = 'Add domain and restart SOGo';
 $lang['add']['add_domain_only'] = 'Add domain only';
@@ -557,6 +561,9 @@ $lang['admin']['admin_domains'] = 'Domain assignments';
 $lang['admin']['domain_admins'] = 'Domain administrators';
 $lang['admin']['flush_queue'] = 'Flush queue';
 $lang['admin']['delete_queue'] = 'Delete all';
+$lang['admin']['queue_deliver_mail'] = 'Deliver';
+$lang['admin']['queue_hold_mail'] = 'Hold';
+$lang['admin']['queue_unhold_mail'] = 'Unhold';
 $lang['admin']['username'] = 'Username';
 $lang['admin']['edit'] = 'Edit';
 $lang['admin']['remove'] = 'Remove';
