@@ -6,6 +6,7 @@
  *
  */
 
+$lang['header']['apps'] = 'Aplikace';
 $lang['footer']['loading'] = "Prosím čekejte...";
 $lang['header']['restart_sogo'] = 'Restartovat SOGo';
 $lang['header']['restart_netfilter'] = 'Restartovat netfilter';
@@ -286,6 +287,7 @@ $lang['mailbox']['description'] = 'Popis';
 $lang['mailbox']['alias'] = 'Alias';
 $lang['mailbox']['aliases'] = 'Aliasy';
 $lang['mailbox']['domains'] = 'Domény';
+$lang['admin']['domain'] = 'Doména';
 $lang['admin']['domain_s'] = 'Doména/y';
 $lang['mailbox']['mailboxes'] = 'Poštovní schránky';
 $lang['mailbox']['resources'] = 'Zdroje';
@@ -529,7 +531,9 @@ $lang['admin']['dkim_key_unused'] = 'Klíč nepoužitý';
 $lang['admin']['dkim_key_missing'] = 'Klíč chybí';
 $lang['admin']['dkim_add_key'] = 'Přidat ARC/DKIM klíč';
 $lang['admin']['dkim_keys'] = 'ARC/DKIM klíče';
+$lang['admin']['dkim_private_key'] = 'Soukromý klíč';
 $lang['admin']['dkim_domains_wo_keys'] = "Vybrat domény bez klíče";
+$lang['admin']['dkim_domains_selector'] = "Selektor";
 $lang['admin']['add'] = 'Přidat';
 $lang['add']['add_domain_restart'] = 'Přidat doménu a restartovat SOGo';
 $lang['add']['add_domain_only'] = 'Přidat doménu';
@@ -559,6 +563,9 @@ $lang['admin']['admin_domains'] = 'Přidělěné domény';
 $lang['admin']['domain_admins'] = 'Administrátoři domén';
 $lang['admin']['flush_queue'] = 'Zkusit opětovně doručit frontu. (Flush queue)';
 $lang['admin']['delete_queue'] = 'Smazat vše';
+$lang['admin']['queue_deliver_mail'] = 'Doručit';
+$lang['admin']['queue_hold_mail'] = "Zadržet";
+$lang['admin']['queue_unhold_mail'] = 'Propustit';
 $lang['admin']['username'] = 'Jméno uživatele';
 $lang['admin']['edit'] = 'Upravit';
 $lang['admin']['remove'] = 'Smazat';
