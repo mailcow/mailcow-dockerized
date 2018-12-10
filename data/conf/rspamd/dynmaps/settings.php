@@ -185,31 +185,6 @@ foreach (wl_by_sogo() as $user => $contacts) {
       "SOGO_CONTACT"
     ]
   }
-  whitelist_sogo_<?=$username_sane;?>_header {
-    header = {
-<?php
-  foreach ($contacts as $contact) {
-?>
-      "From" = <?=json_encode(str_replace('/^', '/(', str_replace('$/i', ')/i', $contact)), JSON_UNESCAPED_SLASHES);?>;
-<?php
-  }
-?>
-    }
-    priority = 4;
-<?php
-    foreach (ucl_rcpts($user, 'mailbox') as $rcpt) {
-?>
-    rcpt = <?=json_encode($rcpt, JSON_UNESCAPED_SLASHES);?>;
-<?php
-    }
-?>
-    apply "default" {
-      SOGO_CONTACT = -999.0;
-    }
-    symbols [
-      "SOGO_CONTACT"
-    ]
-  }
 <?php
 }
 
