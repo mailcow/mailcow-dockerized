@@ -162,6 +162,29 @@ class container_post(Resource):
                     return "0,0,0,0,0,0"
               except Exception as e:
                 return jsonify(type='danger', msg=str(e))
+          elif request.json['task'] == 'mysql_upgrade':
+            try:
+              for container in docker_client.containers.list(filters={"id": container_id}):
+                sql_shell = container.exec_run(["/bin/bash"], stdin=True, socket=True, user='mysql')
+                upgrade_cmd = "/usr/bin/mysql_upgrade -uroot -p'" + os.environ['DBROOT'].replace("'", "'\\''") + "'\n"
+                sql_socket = sql_shell.output;
+                try :
+                  sql_socket.sendall(upgrade_cmd.encode('utf-8'))
+                  sql_socket.shutdown(socket.SHUT_WR)
+                except socket.error:
+                  return jsonify(type='danger', msg=str('socket error'))
+                worker_response = recv_socket_data(sql_socket)
+                matched = False
+                for line in worker_response.split("\n"):
+                  if 'is already upgraded to' in line:
+                    matched = True
+                if matched:
+                  return jsonify(type='success', msg='mysql_upgrade: already upgraded')
+                else:
+                  container.restart()
+                  return jsonify(type='warning', msg='mysql_upgrade: upgrade was applied')
+            except Exception as e:
+              return jsonify(type='danger', msg=str(e))
 
         elif request.json['cmd'] == 'reload':
           if request.json['task'] == 'dovecot':
