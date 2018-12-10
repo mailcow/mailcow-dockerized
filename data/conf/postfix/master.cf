@@ -13,6 +13,8 @@ submission inet n       -       n       -       -       smtpd
 588 inet n      -       n       -       -       smtpd
   -o smtpd_client_restrictions=permit_mynetworks,permit_sasl_authenticated,reject
   -o smtpd_tls_auth_only=no
+  -o smtpd_sender_restrictions=check_sasl_access,regexp:/opt/postfix/conf/allow_mailcow_local.regexp,reject_authenticated_sender_login_mismatch,permit_mynetworks,permit_sasl_authenticated,reject_unlisted_sender,reject_unknown_sender_domain
+
 590 inet n      -       n       -       -       smtpd
   -o smtpd_client_restrictions=permit_mynetworks,reject
   -o smtpd_tls_auth_only=no
