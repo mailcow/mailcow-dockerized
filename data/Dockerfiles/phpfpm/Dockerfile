@@ -20,6 +20,7 @@ RUN apk add -U --no-cache autoconf \
   imagemagick \
   imagemagick-dev \
   imap-dev \
+  jq \
   libjpeg-turbo \
   libjpeg-turbo-dev \
   libmemcached-dev \

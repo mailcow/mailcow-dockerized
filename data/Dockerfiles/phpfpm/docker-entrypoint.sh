@@ -14,8 +14,22 @@ until [[ $(redis-cli -h redis-mailcow PING) == "PONG" ]]; do
   sleep 2
 done
 
+# Set a default release format
+
 if [[ -z $(redis-cli --raw -h redis-mailcow GET Q_RELEASE_FORMAT) ]]; then
   redis-cli --raw -h redis-mailcow SET Q_RELEASE_FORMAT raw
+fi
+
+# Check of mysql_upgrade
+
+CONTAINER_ID=
+CONTAINER_ID=$(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], id: .Id}" | jq -rc "select( .name | tostring | contains(\"mysql-mailcow\")) | .id")
+if [[ ! -z ${CONTAINER_ID} ]]; then
+  SQL_UPGRADE_RETURN=$(curl --silent --insecure -XPOST https://dockerapi/containers/${CONTAINER_ID}/exec -d '{"cmd":"system", "task":"mysql_upgrade"}' --silent -H 'Content-type: application/json' | jq -r .type)
+  if [[ ${SQL_UPGRADE_RETURN} == 'warning' ]]; then
+    echo "MySQL applied an upgrade, restarting PHP-FPM..."
+    exit 1
+  fi
 fi
 
 # Trigger db init
