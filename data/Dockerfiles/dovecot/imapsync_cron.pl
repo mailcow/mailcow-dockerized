@@ -18,7 +18,13 @@ if ($imapsync_running eq 1)
   exit;
 }
 
-sub qqw($) { split /\s+/, $_[0] }
+sub qqw($) {
+  my @values = split('(?=--)', $_[0]);
+  foreach my $val (@values) {
+    $val=trim($val);
+  }
+  return @values
+}
 
 $DBNAME = '';
 $DBUSER = '';
