@@ -30,46 +30,53 @@
 	background: #FF4500;
 }
 #slider1 .slider-track-low {
-	background: #66CD00;
+  background: #66CD00;
 }
 .striped:nth-child(odd) {
-    background-color: #fff;
+  background-color: #fff;
 }
 .striped:nth-child(even) {
-    background-color: #fafafa;
-	border:1px solid white;
+  background-color: #fafafa;
+  border:1px solid white;
 }
 .btn {
-   text-transform: none;
+  text-transform: none;
+}
+.navbar-nav {
+  margin: 0;
+}
+.navbar-fixed-bottom .navbar-collapse, 
+.navbar-fixed-top .navbar-collapse {
+  max-height: 1000px
 }
 .glyphicon-spin {
-    font-size:12px;
-    -webkit-animation: spin 2000ms infinite linear;
-    animation: spin 2000ms infinite linear;
+  font-size:12px;
+  -webkit-animation: spin 2000ms infinite linear;
+  animation: spin 2000ms infinite linear;
 }
 @-webkit-keyframes spin {
-    0% {
-        -webkit-transform: rotate(0deg);
-        transform: rotate(0deg);
-    }
-    100% {
-        -webkit-transform: rotate(359deg);
-        transform: rotate(359deg);
-    }
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
 }
 @keyframes spin {
-    0% {
-        -webkit-transform: rotate(0deg);
-        transform: rotate(0deg);
-    }
-    100% {
-        -webkit-transform: rotate(359deg);
-        transform: rotate(359deg);
-    }
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
 }
 pre{white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space:-o-pre-wrap;word-wrap:break-word;}
 .footable-sortable {
-	 -webkit-user-select: none;  
+  -webkit-user-select: none;  
   -moz-user-select: none;    
   -ms-user-select: none;      
   user-select: none;
@@ -109,10 +116,10 @@ legend {
   max-width: 250px;
 }
 .lang-link-disabled a  {
-	pointer-events: none;
+  pointer-events: none;
 }
 .lang-link-disabled  {
-	cursor: not-allowed;
+  cursor: not-allowed;
 }
 .dkim-label {
   margin: 0 0 2px !important;
@@ -126,9 +133,6 @@ legend {
 }
 nav .glyphicon {
   font-size: 12px !important;
-}
-.logged-in-as {
-  border-left: 1px solid #E7E7E7;
 }
 #top {
   padding-top: 70px;
