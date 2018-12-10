@@ -167,6 +167,9 @@ echo '    </dict>
 chown sogo:sogo -R /var/lib/sogo/
 chmod 600 /var/lib/sogo/GNUstep/Defaults/sogod.plist
 
+# Add credentials to alarms
+sed -i 's/\/usr\/sbin\/sogo-ealarms-notify/\/usr\/sbin\/sogo-ealarms-notify -p \/etc\/sogo\/sieve.creds/g' /etc/cron.d/sogo
+
 # Prevent theme switching
 sed -i \
   -e 's/eaf5e9/E3F2FD/g' \
