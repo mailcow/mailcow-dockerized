@@ -92,13 +92,16 @@ function backup() {
         debian:stretch-slim /bin/tar --warning='no-file-ignored' -Pcvpzf /backup/backup_postfix.tar.gz /postfix
       ;;&
     mysql|all)
+      export DBROOT
       SQLIMAGE=$(grep -iEo '(mysql|mariadb)\:.+' ${COMPOSE_FILE})
       docker run --rm \
         --network $(docker network ls -qf name=${CMPS_PRJ}_) \
         -v $(docker volume ls -qf name=${CMPS_PRJ}_mysql-vol-1):/var/lib/mysql/ \
         --entrypoint= \
+        -e DBROOT \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
-        ${SQLIMAGE} /bin/sh -c "mysqldump -hmysql -uroot -p${DBROOT} --all-databases | gzip > /backup/backup_mysql.gz"
+        ${SQLIMAGE} /bin/bash -c 'echo -e "[mysqldump]\npassword=${DBROOT}" > /tmp/passwd.cnf; mysqldump --defaults-file=/tmp/passwd.cnf -hmysql -uroot --all-databases | gzip > /backup/backup_mysql.gz'
+      export -n DBROOT
       ;;
     esac
     shift
