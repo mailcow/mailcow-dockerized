@@ -32,7 +32,11 @@ if [[ ${NC_PURGE} == "y" ]]; then
 
 	docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e \
 	  "$(docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e "SELECT GROUP_CONCAT('DROP TABLE ', TABLE_SCHEMA, '.', TABLE_NAME SEPARATOR ';') FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE 'nc_%' AND TABLE_SCHEMA = '${DBNAME}';" -BN)"
-	docker exec -it $(docker ps -f name=redis-mailcow -q) /bin/sh -c 'redis-cli KEYS "*nextcloud*" | xargs redis-cli DEL'
+	docker exec -it $(docker ps -f name=redis-mailcow -q) /bin/sh -c ' cat <<EOF | redis-cli
+SELECT 10
+FLUSHDB
+EOF
+'
 	if [ -d ./data/web/nextcloud/config ]; then
 	  mv ./data/web/nextcloud/config/ ./data/conf/nextcloud-config-folder-$(date +%s).bak
 	fi
@@ -87,6 +91,7 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
 	docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ config:system:set redis host --value=redis --type=string; \
 	  /web/nextcloud/occ config:system:set redis port --value=6379 --type=integer; \
           /web/nextcloud/occ config:system:set redis timeout --value=0.0 --type=integer; \
+          /web/nextcloud/occ config:system:set redis dbindex --value=10 --type=integer; \
 	  /web/nextcloud/occ config:system:set memcache.locking --value='\OC\Memcache\Redis' --type=string; \
 	  /web/nextcloud/occ config:system:set memcache.local --value='\OC\Memcache\Redis' --type=string; \
 	  /web/nextcloud/occ config:system:set trusted_domains 1 --value=${MAILCOW_HOSTNAME}; \
