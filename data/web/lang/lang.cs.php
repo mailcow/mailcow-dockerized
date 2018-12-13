@@ -624,6 +624,9 @@ $lang['admin']['quarantine'] = "Karanténa";
 $lang['admin']['quarantine_retention_size'] = "Počet zadržených zpráv na poštovní schránku<br />0 znamená <b>neaktivní</b>!";
 $lang['admin']['quarantine_max_size'] = "Maximální velikost v MiB (větší prvky budou smazány)<br />0 <b>neznamená</b> neomezeno!";
 $lang['admin']['quarantine_exclude_domains'] = "Vyloučené domény a doménové aliasy:";
+$lang['admin']['quarantine_release_format'] = "Formát propuštěných položek:";
+$lang['admin']['quarantine_release_format_raw'] = "Nezměněný originál";
+$lang['admin']['quarantine_release_format_att'] = "Jako příloha";
 
 $lang['admin']['ui_texts'] = "Úpravy UI textů";
 $lang['admin']['help_text'] = "Přetíží text nápovědy pod přihlašovacím formulářem (HTML povoleno)";
