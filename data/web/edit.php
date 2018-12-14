@@ -522,6 +522,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <label class="control-label col-sm-2" for="password2"><?=$lang['edit']['password_repeat'];?></label>
             <div class="col-sm-10">
             <input type="password" class="form-control" name="password2" id="password2">
+            <p class="help-block"><?=$lang['user']['new_password_description'];?></p>
             </div>
           </div>
           <div class="form-group">
