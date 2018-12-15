@@ -387,6 +387,17 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 }
                 echo (isset($logs) && !empty($logs)) ? json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '{}';
               break;
+              case "ratelimited":
+                // 0 is first record, so empty is fine
+                if (isset($extra)) {
+                  $extra = preg_replace('/[^\d\-]/i', '', $extra);
+                  $logs = get_logs('ratelimited', $extra);
+                }
+                else {
+                  $logs = get_logs('ratelimited');
+                }
+                echo (isset($logs) && !empty($logs)) ? json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '{}';
+              break;
               case "netfilter":
                 // 0 is first record, so empty is fine
                 if (isset($extra)) {
@@ -1042,6 +1053,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           break;
           case "admin":
             process_delete_return(admin('delete', array('username' => $items)));
+          break;
+          case "rlhash":
+            echo ratelimit('delete', null, implode($items));
           break;
         }
       break;

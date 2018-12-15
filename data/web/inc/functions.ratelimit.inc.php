@@ -192,5 +192,44 @@ function ratelimit($_action, $_scope, $_data = null) {
         break;
       }
     break;
+    case 'delete':
+      $data['hash'] = $_data;
+      if ($_SESSION['mailcow_cc_role'] != 'admin' || !preg_match('/^RL[0-9A-Za-z=]+$/i', trim($data['hash']))) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }
+      try {
+        if ($redis->exists($data['hash'])) {
+          $redis->delete($data['hash']);
+          $_SESSION['return'][] = array(
+            'type' => 'success',
+            'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
+            'msg' => 'hash_deleted'
+          );
+          return true;
+        }
+        else {
+          $_SESSION['return'][] = array(
+            'type' => 'warning',
+            'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
+            'msg' => 'hash_not_found'
+          );
+          return false;
+        }
+      }
+      catch (RedisException $e) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
+          'msg' => array('redis_error', $e)
+        );
+        return false;
+      }
+      return false;
+    break;
   }
 }
