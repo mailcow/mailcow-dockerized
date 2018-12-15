@@ -322,6 +322,34 @@ phpfpm_checks() {
   return 1
 }
 
+ratelimit_checks() {
+  err_count=0
+  diff_c=0
+  THRESHOLD=1
+  RL_LOG_STATUS=$(redis-cli -h redis LRANGE RL_LOG 0 0 | jq .qid)
+  # Reduce error count by 2 after restarting an unhealthy container
+  trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
+  while [ ${err_count} -lt ${THRESHOLD} ]; do
+    err_c_cur=${err_count}
+    RL_LOG_STATUS_PREV=${RL_LOG_STATUS}
+    RL_LOG_STATUS=$(redis-cli -h redis LRANGE RL_LOG 0 0 | jq .qid)
+    if [[ ${RL_LOG_STATUS_PREV} != ${RL_LOG_STATUS} ]]; then
+      err_count=$(( ${err_count} + 1 ))
+    fi
+    [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
+    [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
+    progress "Ratelimit" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
+    if [[ $? == 10 ]]; then
+      diff_c=0
+      sleep 1
+    else
+      diff_c=0
+      sleep $(( ( RANDOM % 30 )  + 10 ))
+    fi
+  done
+  return 1
+}
+
 rspamd_checks() {
   err_count=0
   diff_c=0
@@ -448,6 +476,15 @@ done
 ) &
 BACKGROUND_TASKS+=($!)
 
+(
+while true; do
+  if ! ratelimit_checks; then
+    log_msg "Ratelimit hit error limit"
+    echo ratelimit > /tmp/com_pipe
+  fi
+done
+) &
+BACKGROUND_TASKS+=($!)
 # Monitor watchdog agents, stop script when agents fails and wait for respawn by Docker (restart:always:n)
 (
 while true; do
@@ -482,7 +519,10 @@ while true; do
   CONTAINER_ID=
   HAS_INITDB=
   read com_pipe_answer </tmp/com_pipe
-  if [[ ${com_pipe_answer} =~ .+-mailcow ]]; then
+  if [[ ${com_pipe_answer} == "ratelimit" ]]; then
+    log_msg "At least one ratelimit was applied"
+    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}" "No further information available."
+  elif [[ ${com_pipe_answer} =~ .+-mailcow ]]; then
     kill -STOP ${BACKGROUND_TASKS[*]}
     sleep 3
     CONTAINER_ID=$(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], id: .Id}" | jq -rc "select( .name | tostring | contains(\"${com_pipe_answer}\")) | .id")
