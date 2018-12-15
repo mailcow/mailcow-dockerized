@@ -21,6 +21,7 @@ RUN apt-get update && apt-get install -y \
 
 COPY settings.conf /etc/rspamd/settings.conf
 COPY docker-entrypoint.sh /docker-entrypoint.sh
+COPY ratelimit.lua /usr/share/rspamd/lua/ratelimit.lua
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
