@@ -580,8 +580,16 @@ $lang['admin']['no_record'] = 'No record';
 $lang['admin']['filter_table'] = 'Filter table';
 $lang['admin']['empty'] = 'No results';
 $lang['admin']['time'] = 'Time';
+$lang['admin']['last_applied'] = 'Last applied';
+$lang['admin']['reset_limit'] = 'Remove hash';
+$lang['admin']['hash_remove_info'] = 'Removing a ratelimit hash (if still existing) will reset its counter completely.<br>
+  Each hash is indicated by an individual color.';
+$lang['warning']['hash_not_found'] = 'Hash not found';
+$lang['success']['hash_deleted'] = 'Hash deleted';
+$lang['admin']['authed_user'] = 'Auth. user';
 $lang['admin']['priority'] = 'Priority';
 $lang['admin']['message'] = 'Message';
+$lang['admin']['rate_name'] = 'Rate name';
 $lang['admin']['refresh'] = 'Refresh';
 $lang['admin']['to_top'] = 'Back to top';
 $lang['admin']['in_use_by'] = 'In use by';

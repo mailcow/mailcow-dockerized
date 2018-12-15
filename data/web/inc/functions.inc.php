@@ -1263,7 +1263,7 @@ function get_u2f_registrations($username) {
   $sel->execute(array($username));
   return $sel->fetchAll(PDO::FETCH_OBJ);
 }
-function get_logs($container, $lines = false) {
+function get_logs($application, $lines = false) {
   if ($lines === false) {
     $lines = $GLOBALS['LOG_LINES'] - 1; 
   }
@@ -1283,7 +1283,7 @@ function get_logs($container, $lines = false) {
 		return false;
 	}
   // SQL
-  if ($container == "mailcow-ui") {
+  if ($application == "mailcow-ui") {
     if (isset($from) && isset($to)) {
       $stmt = $pdo->prepare("SELECT * FROM `logs` ORDER BY `id` DESC LIMIT :from, :to");
       $stmt->execute(array(
@@ -1304,7 +1304,7 @@ function get_logs($container, $lines = false) {
     }
   }
   // Redis
-  if ($container == "dovecot-mailcow") {
+  if ($application == "dovecot-mailcow") {
     if (isset($from) && isset($to)) {
       $data = $redis->lRange('DOVECOT_MAILLOG', $from - 1, $to - 1);
     }
@@ -1318,7 +1318,7 @@ function get_logs($container, $lines = false) {
       return $data_array;
     }
   }
-  if ($container == "postfix-mailcow") {
+  if ($application == "postfix-mailcow") {
     if (isset($from) && isset($to)) {
       $data = $redis->lRange('POSTFIX_MAILLOG', $from - 1, $to - 1);
     }
@@ -1332,7 +1332,7 @@ function get_logs($container, $lines = false) {
       return $data_array;
     }
   }
-  if ($container == "sogo-mailcow") {
+  if ($application == "sogo-mailcow") {
     if (isset($from) && isset($to)) {
       $data = $redis->lRange('SOGO_LOG', $from - 1, $to - 1);
     }
@@ -1346,7 +1346,7 @@ function get_logs($container, $lines = false) {
       return $data_array;
     }
   }
-  if ($container == "watchdog-mailcow") {
+  if ($application == "watchdog-mailcow") {
     if (isset($from) && isset($to)) {
       $data = $redis->lRange('WATCHDOG_LOG', $from - 1, $to - 1);
     }
@@ -1360,7 +1360,7 @@ function get_logs($container, $lines = false) {
       return $data_array;
     }
   }
-  if ($container == "acme-mailcow") {
+  if ($application == "acme-mailcow") {
     if (isset($from) && isset($to)) {
       $data = $redis->lRange('ACME_LOG', $from - 1, $to - 1);
     }
@@ -1374,7 +1374,21 @@ function get_logs($container, $lines = false) {
       return $data_array;
     }
   }
-  if ($container == "api-mailcow") {
+  if ($application == "ratelimited") {
+    if (isset($from) && isset($to)) {
+      $data = $redis->lRange('RL_LOG', $from - 1, $to - 1);
+    }
+    else {
+      $data = $redis->lRange('RL_LOG', 0, $lines);
+    }
+    if ($data) {
+      foreach ($data as $json_line) {
+        $data_array[] = json_decode($json_line, true);
+      }
+      return $data_array;
+    }
+  }
+  if ($application == "api-mailcow") {
     if (isset($from) && isset($to)) {
       $data = $redis->lRange('API_LOG', $from - 1, $to - 1);
     }
@@ -1388,7 +1402,7 @@ function get_logs($container, $lines = false) {
       return $data_array;
     }
   }
-  if ($container == "netfilter-mailcow") {
+  if ($application == "netfilter-mailcow") {
     if (isset($from) && isset($to)) {
       $data = $redis->lRange('NETFILTER_LOG', $from - 1, $to - 1);
     }
@@ -1402,7 +1416,7 @@ function get_logs($container, $lines = false) {
       return $data_array;
     }
   }
-  if ($container == "autodiscover-mailcow") {
+  if ($application == "autodiscover-mailcow") {
     if (isset($from) && isset($to)) {
       $data = $redis->lRange('AUTODISCOVER_LOG', $from - 1, $to - 1);
     }
@@ -1416,7 +1430,7 @@ function get_logs($container, $lines = false) {
       return $data_array;
     }
   }
-  if ($container == "rspamd-history") {
+  if ($application == "rspamd-history") {
     $curl = curl_init();
     curl_setopt($curl, CURLOPT_UNIX_SOCKET_PATH, '/var/lib/rspamd/rspamd.sock');
     if (!is_numeric($lines)) {
