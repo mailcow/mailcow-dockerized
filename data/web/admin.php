@@ -333,7 +333,7 @@ $tfa_data = get_tfa();
             <input class="form-control input-sm" name="dkim_selector" value="dkim" required>
           </div>
           <div class="form-group">
-            <label for="private_key_file"><?=$lang['admin']['private_key'];?>:</label>
+            <label for="private_key_file"><?=$lang['admin']['private_key'];?>: (RSA PKCS#8)</label>
             <textarea class="form-control input-sm" rows="10" name="private_key_file" id="private_key_file" required placeholder="-----BEGIN RSA KEY-----"></textarea>
           </div>
           <button class="btn btn-sm btn-default" data-action="add_item" data-id="dkim_import" data-api-url='add/dkim_import' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['import'];?></button>
