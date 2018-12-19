@@ -23,7 +23,7 @@ smtp_enforced_tls      unix  -       -       n       -       -       smtp
   -o smtp_tls_security_level=encrypt
   -o syslog_name=enforced-tls-smtp
   -o smtp_delivery_status_filter=pcre:/opt/postfix/conf/smtp_dsn_filter
-smtp_via_transport_maps      unix  -       -       n       -       -       smtp -v
+smtp_via_transport_maps      unix  -       -       n       -       -       smtp
   -o smtp_sasl_password_maps=proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps_transport_maps.cf
 
 tlsproxy   unix  -       -       n       -       0       tlsproxy
