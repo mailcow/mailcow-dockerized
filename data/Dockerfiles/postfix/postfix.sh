@@ -85,7 +85,17 @@ query = SELECT GROUP_CONCAT(transport SEPARATOR '') AS transport_maps
   AS transport_view;
 EOF
 
-cat <<EOF > /opt/postfix/conf/sql/mysql_sasl_passwd_maps.cf
+cat <<EOF > /opt/postfix/conf/sql/mysql_transport_maps.cf
+user = ${DBUSER}
+password = ${DBPASS}
+hosts = unix:/var/run/mysqld/mysqld.sock
+dbname = ${DBNAME}
+query = SELECT CONCAT('smtp_via_transport_maps:', nexthop) AS transport FROM transports
+  WHERE active = '1'
+  AND destination = '%s';
+EOF
+
+cat <<EOF > /opt/postfix/conf/sql/mysql_sasl_passwd_maps_sender_dependent.cf
 user = ${DBUSER}
 password = ${DBPASS}
 hosts = unix:/var/run/mysqld/mysqld.sock
@@ -98,6 +108,18 @@ query = SELECT CONCAT_WS(':', username, password) AS auth_data FROM relayhosts
         SELECT CONCAT('@', alias_domain) FROM alias_domain
       )
   )
+  AND active = '1'
+  AND username != '';
+EOF
+
+cat <<EOF > /opt/postfix/conf/sql/mysql_sasl_passwd_maps_transport_maps.cf
+user = ${DBUSER}
+password = ${DBPASS}
+hosts = unix:/var/run/mysqld/mysqld.sock
+dbname = ${DBNAME}
+query = SELECT CONCAT_WS(':', username, password) AS auth_data FROM transports
+  WHERE nexthop = '%s'
+  AND active = '1'
   AND username != '';
 EOF
 
