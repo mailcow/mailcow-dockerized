@@ -43,7 +43,9 @@ postscreen_pipelining_enable = no
 proxy_read_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_sender_acl.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_tls_policy_override_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_sender_dependent_default_transport_maps.cf,
-  proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps.cf,
+  proxy:mysql:/opt/postfix/conf/sql/mysql_transport_maps.cf,
+  proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps_sender_dependent.cf,
+  proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps_transport_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_tls_enforce_in_policy.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_sender_bcc_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_recipient_bcc_maps.cf,
@@ -126,9 +128,11 @@ mydestination = localhost.localdomain, localhost
 smtp_address_preference = ipv4
 smtp_sender_dependent_authentication = yes
 smtp_sasl_auth_enable = yes
-smtp_sasl_password_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps.cf
+smtp_sasl_password_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps_sender_dependent.cf
 smtp_sasl_security_options = 
 smtp_sasl_mechanism_filter = plain, login
 smtp_tls_policy_maps=proxy:mysql:/opt/postfix/conf/sql/mysql_tls_policy_override_maps.cf
 smtp_header_checks = pcre:/opt/postfix/conf/anonymize_headers.pcre
 mail_name = Postcow
+transport_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_transport_maps.cf
+smtp_sasl_auth_soft_bounce = no
