@@ -210,7 +210,7 @@ function transport($_action, $_data = null) {
         $transports = transport('get');
         if (!empty($transports)) {
           foreach ($transports as $transport) {
-            if (transport('details', $transport['id'])['nexthop'] == $nexthop && !empty(transport('details', $transport['id'])['username'])) {
+            if (transport('details', $transport['id'])['nexthop'] == $nexthop && transport('details', $transport['id'])['username'] != $username) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_data_log),
@@ -273,6 +273,9 @@ function transport($_action, $_data = null) {
           $username = (isset($_data['username'])) ? trim($_data['username']) : $is_now['username'];
           $password = (isset($_data['password'])) ? trim($_data['password']) : $is_now['password'];
           $active   = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
+        }
+        if (empty($username)) {
+          $password = '';
         }
         else {
           $_SESSION['return'][] = array(
