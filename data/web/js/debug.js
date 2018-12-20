@@ -592,7 +592,7 @@ jQuery(function($){
         if (item.rl_hash == null) {
           item.rl_hash = "err";
         }
-        item.indicator = '<span class="label" style="background-color:#' + intToRGB(hashCode(item.rl_hash)) + '!important;padding:3px 5px 0px 5px;">&nbsp;&nbsp;</span>';
+        item.indicator = '<span style="border-right:6px solid #' + intToRGB(hashCode(item.rl_hash)) + ';padding-left:5px;">&nbsp;</span>';
         if (item.rl_hash != 'err') {
           item.action = '<a href="#" data-action="delete_selected" data-id="single-hash" data-api-url="delete/rlhash" data-item="' + encodeURI(item.rl_hash) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.reset_limit + '</a>';
         }

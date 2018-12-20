@@ -151,17 +151,18 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
     </div>
   </div>
 </div><!-- add admin modal -->
-<!-- test relayhost modal -->
-<div class="modal fade" id="testRelayhostModal" tabindex="-1" role="dialog" aria-hidden="true">
+<!-- test transport modal -->
+<div class="modal fade" id="testTransportModal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
-        <h3 class="modal-title"><span class="glyphicon glyphicon-stats"></span> Relayhost</h3>
+        <h3 class="modal-title"><span class="glyphicon glyphicon-stats"></span> Transport</h3>
       </div>
       <div class="modal-body">
-          <form class="form-horizontal" data-cached-form="true" id="test_relayhost_form" role="form" method="post">
-            <input type="hidden" class="form-control" name="relayhost_id" id="relayhost_id">
+          <form class="form-horizontal" data-cached-form="true" id="test_transport_form" role="form" method="post">
+            <input type="hidden" class="form-control" name="transport_id" id="transport_id">
+            <input type="hidden" class="form-control" name="transport_type" id="transport_type">
             <div class="form-group">
               <label class="control-label col-sm-2" for="mail_from"><?=$lang['admin']['relay_from'];?></label>
               <div class="col-sm-10">
@@ -170,16 +171,16 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             </div>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
-                <button class="btn btn-default" id="test_relayhost" href="#"><?=$lang['admin']['relay_run'];?></button>
+                <button class="btn btn-default" id="test_transport" href="#"><?=$lang['admin']['relay_run'];?></button>
               </div>
             </div>
           </form>
           <hr>
-          <div id="test_relayhost_result" style="font-size:10pt">-</div>
+          <div id="test_transport_result" style="font-size:10pt">-</div>
       </div>
     </div>
   </div>
-</div><!-- test relayhost modal -->
+</div><!-- test transport modal -->
 <!-- priv key modal -->
 <div class="modal fade" id="showDKIMprivKey" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog">

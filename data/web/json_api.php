@@ -102,6 +102,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "relayhost":
             process_add_return(relayhost('add', $attr));
           break;
+          case "transport":
+            process_add_return(transport('add', $attr));
+          break;
           case "rsetting":
             process_add_return(rsettings('add', $attr));
           break;
@@ -315,6 +318,33 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
 
               default:
                 $data = relayhost('details', $object);
+                process_get_return($data);
+              break;
+            }
+          break;
+
+          case "transport":
+            switch ($object) {
+              case "all":
+                $transports = transport('get');
+                if (!empty($transports)) {
+                  foreach ($transports as $transport) {
+                    if ($details = transport('details', $transport['id'])) {
+                      $data[] = $details;
+                    }
+                    else {
+                      continue;
+                    }
+                  }
+                  process_get_return($data);
+                }
+                else {
+                  echo '{}';
+                }
+              break;
+
+              default:
+                $data = transport('details', $object);
                 process_get_return($data);
               break;
             }
@@ -990,6 +1020,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "relayhost":
             process_delete_return(relayhost('delete', array('id' => $items)));
           break;
+          case "transport":
+            process_delete_return(transport('delete', array('id' => $items)));
+          break;
           case "rsetting":
             process_delete_return(rsettings('delete', array('id' => $items)));
           break;
@@ -1106,6 +1139,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           break;
           case "relayhost":
             process_edit_return(relayhost('edit', array_merge(array('id' => $items), $attr)));
+          break;
+          case "transport":
+            process_edit_return(transport('edit', array_merge(array('id' => $items), $attr)));
           break;
           case "rsetting":
             process_edit_return(rsettings('edit', array_merge(array('id' => $items), $attr)));

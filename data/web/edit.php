@@ -693,6 +693,59 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         <?php
         }
     }
+    elseif (isset($_GET['transport']) && is_numeric($_GET["transport"]) && !empty($_GET["transport"])) {
+        $transport = intval($_GET["transport"]);
+        $result = transport('details', $transport);
+        if (!empty($result)) {
+          ?>
+          <h4><?=$lang['edit']['resource'];?></h4>
+          <form class="form-horizontal" role="form" method="post" data-id="edittransport">
+            <input type="hidden" value="0" name="active">
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="destination"><?=$lang['add']['destination'];?></label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" name="destination" value="<?=htmlspecialchars($result['destination'], ENT_QUOTES, 'UTF-8');?>" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="nexthop"><?=$lang['edit']['nexthop'];?></label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" name="nexthop" value="<?=htmlspecialchars($result['nexthop'], ENT_QUOTES, 'UTF-8');?>" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="username"><?=$lang['add']['username'];?></label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" name="username" value="<?=htmlspecialchars($result['username'], ENT_QUOTES, 'UTF-8');?>">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="password"><?=$lang['add']['password'];?></label>
+              <div class="col-sm-10">
+                <input type="password" data-hibp="true" class="form-control" name="password" value="<?=htmlspecialchars($result['password'], ENT_QUOTES, 'UTF-8');?>">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <div class="checkbox">
+                <label><input type="checkbox" value="1" name="active" <?=($result['active_int']=="1") ? "checked" : null;?>> <?=$lang['edit']['active'];?></label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <button class="btn btn-success" data-action="edit_selected" data-id="edittransport" data-item="<?=htmlspecialchars($result['id']);?>" data-api-url='edit/transport' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
+              </div>
+            </div>
+          </form>
+        <?php
+        }
+        else {
+        ?>
+          <div class="alert alert-info" role="alert"><?=$lang['info']['no_action'];?></div>
+        <?php
+        }
+    }
     elseif (isset($_GET['resource']) && filter_var(html_entity_decode(rawurldecode($_GET["resource"])), FILTER_VALIDATE_EMAIL) && !empty($_GET["resource"])) {
         $resource = html_entity_decode(rawurldecode($_GET["resource"]));
         $result = mailbox('get', 'resource_details', $resource);
