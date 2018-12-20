@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "14112018_0717";
+    $db_version = "15122018_0717";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -105,6 +105,26 @@ function init_db_schema() {
           ),
           "key" => array(
             "hostname" => array("hostname")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "transports" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "destination" => "VARCHAR(255) NOT NULL",
+          "nexthop" => "VARCHAR(255) NOT NULL",
+          "username" => "VARCHAR(255) NOT NULL",
+          "password" => "VARCHAR(255) NOT NULL",
+          "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "key" => array(
+            "destination" => array("destination"),
+            "nexthop" => array("nexthop"),
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"

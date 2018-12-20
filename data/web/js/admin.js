@@ -5,6 +5,8 @@ jQuery(function($){
   var entityMap={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;","/":"&#x2F;","`":"&#x60;","=":"&#x3D;"};
   function escapeHtml(n){return String(n).replace(/[&<>"'`=\/]/g,function(n){return entityMap[n]})}
   function humanFileSize(i){if(Math.abs(i)<1024)return i+" B";var B=["KiB","MiB","GiB","TiB","PiB","EiB","ZiB","YiB"],e=-1;do{i/=1024,++e}while(Math.abs(i)>=1024&&e<B.length-1);return i.toFixed(1)+" "+B[e]}
+  function hashCode(t){for(var n=0,r=0;r<t.length;r++)n=t.charCodeAt(r)+((n<<5)-n);return n}
+  function intToRGB(t){var n=(16777215&t).toString(16).toUpperCase();return"00000".substring(0,6-n.length)+n}
   $("#rspamd_preset_1").on('click', function(e) {
     e.preventDefault();
     $("form[data-id=rsetting]").find("#adminRspamdSettingsDesc").val(lang.rsettings_preset_1);
@@ -145,7 +147,7 @@ jQuery(function($){
         {"name":"username","title":lang.username,"breakpoints":"xs sm"},
         {"name":"used_by_domains","title":lang.in_use_by,"style":{"width":"110px"}, "type": "text","breakpoints":"xs sm"},
         {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"280px","width":"280px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
+        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"220px","width":"220px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
       ],
       "rows": $.ajax({
         dataType: 'json',
@@ -156,6 +158,33 @@ jQuery(function($){
         },
         success: function (data) {
           return process_table_data(data, 'relayhoststable');
+        }
+      }),
+      "empty": lang.empty,
+      "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
+      "sorting": {"enabled": true}
+    });
+  }
+  function draw_transport_maps() {
+    ft_relayhoststable = FooTable.init('#transportstable', {
+      "columns": [
+        {"name":"chkbox","title":"","style":{"maxWidth":"40px","width":"40px"},"filterable": false,"sortable": false,"type":"html"},
+        {"name":"id","type":"text","title":"ID","style":{"width":"50px"}},
+        {"name":"destination","type":"text","title":lang.destination,"style":{"width":"250px"}},
+        {"name":"nexthop","type":"text","title":lang.nexthop,"style":{"width":"250px"}},
+        {"name":"username","title":lang.username,"breakpoints":"xs sm"},
+        {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active},
+        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"220px","width":"220px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
+      ],
+      "rows": $.ajax({
+        dataType: 'json',
+        url: '/api/v1/get/transport/all',
+        jsonp: false,
+        error: function () {
+          console.log('Cannot draw transports table');
+        },
+        success: function (data) {
+          return process_table_data(data, 'transportstable');
         }
       }),
       "empty": lang.empty,
@@ -205,11 +234,23 @@ jQuery(function($){
     if (table == 'relayhoststable') {
       $.each(data, function (i, item) {
         item.action = '<div class="btn-group">' +
-          '<a href="#" data-toggle="modal" id="miau" data-target="#testRelayhostModal" data-relayhost-id="' + encodeURI(item.id) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-stats"></span> Test</a>' +
+          '<a href="#" data-toggle="modal" data-target="#testTransportModal" data-transport-id="' + encodeURI(item.id) + '" data-transport-type="sender-dependent" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-triangle-right"></span> Test</a>' +
           '<a href="/edit/relayhost/' + encodeURI(item.id) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-          '<a href="#" data-action="delete_selected" data-id="single-rlshost" data-api-url="delete/relayhost" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+          '<a href="#" data-action="delete_selected" data-id="single-rlyhost" data-api-url="delete/relayhost" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
           '</div>';
         item.chkbox = '<input type="checkbox" data-id="rlyhosts" name="multi_select" value="' + item.id + '" />';
+      });
+    } else if (table == 'transportstable') {
+      $.each(data, function (i, item) {
+        if (item.username) {
+          item.username = '<span style="border-left:3px solid #' + intToRGB(hashCode(item.nexthop)) + ';padding-left:5px;">' + item.username + '</span>';
+        }
+        item.action = '<div class="btn-group">' +
+          '<a href="#" data-toggle="modal" data-target="#testTransportModal" data-transport-id="' + encodeURI(item.id) + '" data-transport-type="transport-map" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-triangle-right"></span> Test</a>' +
+          '<a href="/edit/transport/' + encodeURI(item.id) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
+          '<a href="#" data-action="delete_selected" data-id="single-transport" data-api-url="delete/transport" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+          '</div>';
+        item.chkbox = '<input type="checkbox" data-id="transports" name="multi_select" value="' + item.id + '" />';
       });
     } else if (table == 'queuetable') {
       $.each(data, function (i, item) {
@@ -264,6 +305,7 @@ jQuery(function($){
   draw_admins();
   draw_fwd_hosts();
   draw_relayhosts();
+  draw_transport_maps();
   draw_queue();
   // Relayhost
   $('#testRelayhostModal').on('show.bs.modal', function (e) {
@@ -287,6 +329,32 @@ jQuery(function($){
           $('#test_relayhost_result').html(data.responseText);
           $('#test_relayhost').prop("disabled",false);
           $('#test_relayhost').text(prev);
+        }
+    });
+  })
+  // Transport
+  $('#testTransportModal').on('show.bs.modal', function (e) {
+    $('#test_transport_result').text("-");
+    button = $(e.relatedTarget)
+    if (button != null) {
+      $('#transport_id').val(button.data('transport-id'));
+      $('#transport_type').val(button.data('transport-type'));
+    }
+  })
+  $('#test_transport').on('click', function (e) {
+    e.preventDefault();
+    prev = $('#test_transport').text();
+    $(this).prop("disabled",true);
+    $(this).html('<span class="glyphicon glyphicon-refresh glyphicon-spin"></span> ');
+    $.ajax({
+        type: 'GET',
+        url: 'inc/ajax/transport_check.php',
+        dataType: 'text',
+        data: $('#test_transport_form').serialize(),
+        complete: function (data) {
+          $('#test_transport_result').html(data.responseText);
+          $('#test_transport').prop("disabled",false);
+          $('#test_transport').text(prev);
         }
     });
   })
