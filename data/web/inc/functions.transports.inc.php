@@ -188,8 +188,11 @@ function transport($_action, $_data = null) {
       }
       $destination = trim($_data['destination']);
       $nexthop = trim($_data['nexthop']);
+      preg_match('/\[(.+)\].*/', $nexthop, $next_hop_matches);
+      $next_hop_clean = (isset($next_hop_matches[1])) ? $next_hop_matches[1] : $nexthop;
       $username = str_replace(':', '\:', trim($_data['username']));
       $password = str_replace(':', '\:', trim($_data['password']));
+      // ".domain" is a valid destination, "..domain" is not
       if (empty($destination) || (is_valid_domain_name(preg_replace('/^' . preg_quote('.', '/') . '/', '', $destination)) === false && $destination != '*')) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
@@ -206,18 +209,39 @@ function transport($_action, $_data = null) {
         );
         return false;
       }
-      if (!empty($username)) {
-        $transports = transport('get');
-        if (!empty($transports)) {
-          foreach ($transports as $transport) {
-            if (transport('details', $transport['id'])['nexthop'] == $nexthop && transport('details', $transport['id'])['username'] != $username) {
-              $_SESSION['return'][] = array(
-                'type' => 'danger',
-                'log' => array(__FUNCTION__, $_action, $_data_log),
-                'msg' => 'invalid_nexthop_authenticated'
-              );
-              return false;
-            }
+      $transports = transport('get');
+      if (!empty($transports)) {
+        foreach ($transports as $transport) {
+          $transport_data = transport('details', $transport['id']);
+          $existing_nh[] = $transport_data['nexthop'];
+          preg_match('/\[(.+)\].*/', $transport_data['nexthop'], $existing_clean_nh[]);
+          if (($transport_data['nexthop'] == $nexthop || $transport_data['nexthop'] == $next_hop_clean) && $transport_data['username'] != $username) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_data_log),
+              'msg' => 'invalid_nexthop_authenticated'
+            );
+            return false;
+          }
+        }
+      }
+      if (in_array($next_hop_clean, $existing_nh)) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('next_hop_interferes', $next_hop_clean, $nexthop)
+        );
+        return false;
+      }
+      if (!isset($next_hop_matches[1])) {
+        foreach ($existing_clean_nh as $existing_clean_nh_each) {
+          if ($existing_clean_nh_each[1] == $nexthop) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_data_log),
+              'msg' => array('next_hop_interferes_any', $nexthop)
+            );
+            return false;
           }
         }
       }
@@ -274,9 +298,6 @@ function transport($_action, $_data = null) {
           $password = (isset($_data['password'])) ? trim($_data['password']) : $is_now['password'];
           $active   = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
         }
-        if (empty($username)) {
-          $password = '';
-        }
         else {
           $_SESSION['return'][] = array(
             'type' => 'danger',
@@ -284,6 +305,42 @@ function transport($_action, $_data = null) {
             'msg' => array('relayhost_invalid', $id)
           );
           continue;
+        }
+        preg_match('/\[(.+)\].*/', $nexthop, $next_hop_matches);
+        $next_hop_clean = (isset($next_hop_matches[1])) ? $next_hop_matches[1] : $nexthop;
+        $transports = transport('get');
+        if (!empty($transports)) {
+          foreach ($transports as $transport) {
+            $transport_data = transport('details', $transport['id']);
+            if ($transport['id'] == $id) {
+              continue;
+            }
+            $existing_nh[] = $transport_data['nexthop'];
+            preg_match('/\[(.+)\].*/', $transport_data['nexthop'], $existing_clean_nh[]);
+          }
+        }
+        if (in_array($next_hop_clean, $existing_nh)) {
+          $_SESSION['return'][] = array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => array('next_hop_interferes', $next_hop_clean, $nexthop)
+          );
+          return false;
+        }
+        if (!isset($next_hop_matches[1])) {
+          foreach ($existing_clean_nh as $existing_clean_nh_each) {
+            if ($existing_clean_nh_each[1] == $nexthop) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_data_log),
+                'msg' => array('next_hop_interferes_any', $nexthop)
+              );
+              return false;
+            }
+          }
+        }
+        if (empty($username)) {
+          $password = '';
         }
         try {
           $stmt = $pdo->prepare("UPDATE `transports` SET
