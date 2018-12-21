@@ -171,11 +171,11 @@ chmod 600 /var/lib/sogo/GNUstep/Defaults/sogod.plist
 sed -i 's/\/usr\/local\/sbin\/sogo-ealarms-notify/\/usr\/local\/sbin\/sogo-ealarms-notify -p \/etc\/sogo\/sieve.creds/g' /etc/cron.d/sogo
 
 # Patch ACLs (comment this out to enable any or authenticated targets for ACL)
-if patch -sfN --dry-run /usr/local/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff > /dev/null; then
-  patch /usr/local/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff;
+if patch -sfN --dry-run /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff > /dev/null; then
+  patch /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff;
 fi
 
 # Copy logo, if any
-[[ -f /etc/sogo/sogo-full.svg ]] && cp /etc/sogo/sogo_full.svg /usr/local/lib/GNUstep/SOGo/WebServerResources/img/sogo-full.svg
+[[ -f /etc/sogo/sogo-full.svg ]] && cp /etc/sogo/sogo_full.svg /usr/lib/GNUstep/SOGo/WebServerResources/img/sogo-full.svg
 
-exec gosu sogo /usr/local/sbin/sogod
+exec gosu sogo /usr/sbin/sogod

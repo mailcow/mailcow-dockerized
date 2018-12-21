@@ -138,7 +138,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.46
+      image: mailcow/sogo:1.47
       build: ./data/Dockerfiles/sogo
       environment:
         - DBNAME=${DBNAME}
@@ -150,7 +150,7 @@ services:
       volumes:
         - ./data/conf/sogo/:/etc/sogo/
         - ./data/web/inc/init_db.inc.php:/init_db.inc.php
-        - ./data/conf/sogo/custom-sogo.js:/usr/local/lib/GNUstep/SOGo/WebServerResources/js/custom-sogo.js
+        - ./data/conf/sogo/custom-sogo.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/custom-sogo.js
         - mysql-socket-vol-1:/var/run/mysqld/
       restart: always
       dns:
