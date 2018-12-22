@@ -176,6 +176,6 @@ if patch -sfN --dry-run /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.
 fi
 
 # Copy logo, if any
-[[ -f /etc/sogo/sogo-full.svg ]] && cp /etc/sogo/sogo_full.svg /usr/lib/GNUstep/SOGo/WebServerResources/img/sogo-full.svg
+[[ -f /etc/sogo/sogo-full.svg ]] && cp /etc/sogo/sogo-full.svg /usr/lib/GNUstep/SOGo/WebServerResources/img/sogo-full.svg
 
 exec gosu sogo /usr/sbin/sogod
