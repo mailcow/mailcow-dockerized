@@ -2,7 +2,7 @@
 /*
  * Czech language file for mailcow
  *
- * Author: radek@fastlinux.eu (www.fastlinux.eu) 
+ * Author: radek@fastlinux.eu (www.fastlinux.eu)
  *
  */
 
@@ -33,6 +33,11 @@ $lang['success']['verified_u2f_login'] = "U2F přihlášení ověřeno";
 $lang['success']['verified_yotp_login'] = "Yubico OTP přihlášení ověřeno";
 $lang['danger']['yotp_verification_failed'] = "Yubico OTP ověření selhalo: %s";
 $lang['danger']['ip_list_empty'] = "Seznam povolených IP nesmí být prázdný";
+$lang['danger']['invalid_destination'] = "Formát cíle je špatný";
+$lang['danger']['invalid_nexthop'] = "Formát skoku (Next hop) je špatný";
+$lang['danger']['invalid_nexthop_authenticated'] = "Skok (Next hop) již existuje s rozílným přihlašovacím údajem, nejdříve prosím aktualizujte existující přihlašovací údaje tohoto skoku.";
+$lang['danger']['next_hop_interferes'] = "%s koliduje se skokem %s";
+$lang['danger']['next_hop_interferes_any'] = "Existující skok koliduje s %s";
 $lang['danger']['rspamd_ui_pw_length'] = "Heslo pro Rspamd UI musí být minimálně 6 znaků dlouhé";
 $lang['success']['rspamd_ui_pw_set'] = "Heslo k Rspamd UI nastaveno";
 $lang['success']['queue_command_success'] = "Příkaz pro frontu úspěšně dokončen";
@@ -251,7 +256,7 @@ $lang['user']['create_syncjob'] = 'Vytvořit novou synchronizační úlohu';
 
 $lang['start']['mailcow_apps_detail'] = 'Použijte mailcow aplikace pro přístup k vašim e-mailům, kalendáři, kontaktům a dalším funkcím.';
 $lang['start']['mailcow_panel_detail'] = '<b>Administrátoři domén</b> mohou vytvářet, upravovat nebo mazat mailboxy a aliasy. Dále mohou upravovat parametry domény a zobrazovat další informace o jejich přidělených doménách.<br>
-<b>Uživatelé<b> mohou vytvářet časově omezené aliasy (spam aliases), měnit jejich heslo a nastavovat spam filtr.';
+<b>Uživatelé</b> mohou vytvářet časově omezené aliasy (spam aliases), měnit jejich heslo a nastavovat spam filtr.';
 $lang['start']['imap_smtp_server_auth_info'] = 'Použijte prosím vaší celou e-mailovou adresu a způsob ověřování PLAIN.<br>
 Vaše přihlašovací údaje budou zašifrovány na straně serveru.';
 $lang['start']['help'] = 'Zobrazit/Skrýt panel nápovědy';
@@ -331,7 +336,6 @@ Každý filtr bude zpracován v daném pořadí. Ani chyba při vykonávání sk
 Prefilter → Uživatelské skripty → Postfilter → <a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/sieve_after" target="_blank">global sieve postfilter</a>';
 $lang['info']['no_action'] = 'Není použitelná žádná akce';
 
-
 $lang['edit']['syncjob'] = 'Upravit synchronizační úlohu';
 $lang['edit']['client_id'] = 'ID klienta';
 $lang['edit']['client_secret'] = 'Client secret';
@@ -407,7 +411,10 @@ $lang['acl']['prohibited'] = 'Zakázáno z důvodu ACL';
 $lang['add']['generate'] = 'generovat';
 $lang['add']['syncjob'] = 'Přidat synchronizační úlohu';
 $lang['add']['syncjob_hint'] = 'Upozornění: Heslo bude uloženo v prostém textu!';
-$lang['add']['hostname'] = 'Jméno hostitele (Hostname)';
+$lang['add']['hostname'] = 'Jméno hostitele (Host)';
+$lang['add']['destination'] = 'Cíl';
+$lang['add']['nexthop'] = 'Další skok (Next hop)';
+$lang['edit']['nexthop'] = 'Další skok (Next hop)';
 $lang['add']['port'] = 'Port';
 $lang['add']['username'] = 'Jméno uživatele';
 $lang['add']['enc_method'] = 'Metoda šifrování';
@@ -473,7 +480,6 @@ $lang['mailbox']['filters'] = 'Filtry';
 $lang['mailbox']['sync_jobs'] = 'Synchronizační úlohy';
 $lang['mailbox']['inactive'] = 'Neaktivní';
 $lang['edit']['validate_save'] = 'Ověřit a uložit';
-
 
 $lang['login']['username'] = 'Jméno uživatele';
 $lang['login']['password'] = 'Heslo';
@@ -582,24 +588,46 @@ $lang['admin']['no_record'] = 'Žádný záznam';
 $lang['admin']['filter_table'] = 'Tabulka filtrů';
 $lang['admin']['empty'] = 'Žádné výsledky';
 $lang['admin']['time'] = 'Čas';
+$lang['admin']['last_applied'] = 'Naposledy použité';
+$lang['admin']['reset_limit'] = 'Odebrat hash';
+$lang['admin']['hash_remove_info'] = 'Odebrání hashe omezování provozu (pokud stále existuje) vyresetuje kompletně jeho čítač.<br>
+  Každý hash je označen jedinečnou barvou.';
+$lang['warning']['hash_not_found'] = 'Hash nenalezen';
+$lang['success']['hash_deleted'] = 'Hash byl smazán';
+$lang['admin']['authed_user'] = 'Přihlášený uživatel';
 $lang['admin']['priority'] = 'Priorita';
 $lang['admin']['message'] = 'Zpráva';
+$lang['admin']['rate_name'] = 'Název (Rate name)';
 $lang['admin']['refresh'] = 'Obnovit';
 $lang['admin']['to_top'] = 'Zpět na začátek';
 $lang['admin']['in_use_by'] = 'Používáno';
 $lang['admin']['forwarding_hosts'] = 'Přesměrování klientů (Forwarding Hosts)';
 $lang['admin']['forwarding_hosts_hint'] = 'Příchozí zprávy jsou bezpodmínečně akceptovány od všech zde uvedených klientů. Tito klienti nebudou kontrolováni proti DNSBL nebo podrobeni greylistingu. Spam obdržený od těchto klientů nebude nikdy odmítnut, ale příležitostně může být uložen do složky se spamem. Nejčastějším účelem je zadat poštovní servery, pro které jste nastavili pravidlo, které předává příchozí e-maily na váš poštovní server.';
 $lang['admin']['forwarding_hosts_add_hint'] = 'Lze zadat IPv4/IPv6 adresy, sítě ve formátu CIDR, názvy klientů (které budou převedeny na IP adresy) nebo názvy domén (které budou převedeny na IP dotazováním se DNS na SPF záznam nebo pokud neexistuje tak na MX záznam).';
-$lang['admin']['relayhosts_hint'] = 'Nastavte zde nadřazené SMTP servery (relayhosts), pro možnost je vybrat v okně pro nastavení domény.';
-$lang['admin']['add_relayhost_add_hint'] = 'Upozornění: autentizační data budou uložena jako prostý text.';
+$lang['admin']['relayhosts_hint'] = 'Nastavte zde přeposílání závislé na odesílateli (sender-dependent transports), pro možnost je vybrat v okně pro nastavení domény.<br>
+Služba přeposílání je vždy "smtp:". Individuální uživatelská nastavení odchozích TLS politik jsou také povolena.';
+$lang['admin']['transports_hint'] = 'Položky seznamu přeposílání (transport map) <b>přetěžují</b> položky seznamu přeposílání závislém na odesílateli (sender-dependent transport)</b>.<br>
+Individuální uživatelská nastavení odchozích TLS politik jsou ignorována a lze je vynutit přes přetěžování odchozích TLS pravidel (TLS policy map overrides). Služba přeposílání je vždy "smtp:".<br>
+Pro zjištění přihlašovacích údajů dalšího skoku "[host]:25" se Postfix <b>vždy</b> dotáže na "nexthop" před hledáním "[nexthop]:25". Toto chování znemožnuje použít "nexthop" a "[nexthop]:25" současně.';
+$lang['admin']['add_relayhost_hint'] = 'Upozornění: přihlašovací údaje (pokud existují) budou uloženy jako prostý text.';
+$lang['admin']['add_transports_hint'] = 'Upozornění: přihlašovací údaje budou uloženy jako prostý text.';
 $lang['admin']['host'] = 'Klient (Host)';
 $lang['admin']['source'] = 'Zdroj';
 $lang['admin']['add_forwarding_host'] = 'Přidat přesměrování klientů (Forwarding Hosts)';
-$lang['admin']['add_relayhost'] = 'Přidat nadřazený SMTP server (Relayhost)';
+$lang['admin']['add_relayhost'] = 'Přidat přeposílání závislé na odesílateli (sender-dependent transport)';
+$lang['admin']['add_transport'] = 'Přidat přeposílání (Transport)';
+$lang['admin']['relayhosts'] = 'Přeposílání závislé na odesílateli (Sender-dependent transports)';
+$lang['admin']['transport_maps'] = 'Přeposílání (Transport Maps)';
+$lang['admin']['routing'] = 'Směrování';
+$lang['admin']['credentials_transport_warning'] = '<b>Upozornění</b>: Přidání položky do seznamu přeposílání aktualizuje také přihlašovací údaje všech záznamů s odpovídajícím sloupcem (nexthop).';
+
+$lang['admin']['destination'] = 'Cíl';
+$lang['admin']['nexthop'] = 'Další skok (Next hop)';
+
 $lang['success']['forwarding_host_removed'] = "Přesměrovaný klient %s byl odebrán";
 $lang['success']['forwarding_host_added'] = "Přesměrovaný klient %s byl přidán";
-$lang['success']['relayhost_removed'] = "Nadřazený SMTP server (Relayhost) %s byl odebrán";
-$lang['success']['relayhost_added'] = "Nadřazený SMTP server (Relayhost) %s byl přidán";
+$lang['success']['relayhost_removed'] = "Položka seznamu přeposílání %s byla odebrána";
+$lang['success']['relayhost_added'] = "Položky seznamu přeposílání %s byla přidána";
 $lang['diagnostics']['dns_records'] = 'DNS záznamy';
 $lang['diagnostics']['dns_records_24hours'] = 'Upozornění: Změnám provedeným v systému DNS může trvat až 24 hodin, než se na této stránce správně zobrazí jejich aktuální stav. Tato stránka je určena pro snadné zjištění, jak nakonfigurovat DNS záznamy a zda jsou všechny vaše záznamy správně uloženy.';
 $lang['diagnostics']['dns_records_name'] = 'Název';
@@ -624,6 +652,9 @@ $lang['admin']['quarantine'] = "Karanténa";
 $lang['admin']['quarantine_retention_size'] = "Počet zadržených zpráv na poštovní schránku<br />0 znamená <b>neaktivní</b>!";
 $lang['admin']['quarantine_max_size'] = "Maximální velikost v MiB (větší prvky budou smazány)<br />0 <b>neznamená</b> neomezeno!";
 $lang['admin']['quarantine_exclude_domains'] = "Vyloučené domény a doménové aliasy:";
+$lang['admin']['quarantine_release_format'] = "Formát propuštěných položek:";
+$lang['admin']['quarantine_release_format_raw'] = "Nezměněný originál";
+$lang['admin']['quarantine_release_format_att'] = "Jako příloha";
 
 $lang['admin']['ui_texts'] = "Úpravy UI textů";
 $lang['admin']['help_text'] = "Přetíží text nápovědy pod přihlašovacím formulářem (HTML povoleno)";
