@@ -29,6 +29,11 @@ $lang['success']['verified_u2f_login'] = "U2F Anmeldung verifiziert";
 $lang['success']['verified_yotp_login'] = "Yubico OTP Anmeldung verifiziert";
 $lang['danger']['yotp_verification_failed'] = "Yubico OTP Verifizierung fehlgeschlagen: %s";
 $lang['danger']['ip_list_empty'] = "Liste erlaubter IPs darf nicht leer sein";
+$lang['danger']['invalid_destination'] = "Ziel-Format ist ungültig";
+$lang['danger']['invalid_nexthop'] = "Next Hop ist ungültig";
+$lang['danger']['invalid_nexthop_authenticated'] = 'Dieser Next Hop existiert bereits mit abweichenden Authentifizierungsdaten. Die bestehenden Authentifizierungsdaten dieses "Next Hops" müssen vorab angepasst werden.';
+$lang['danger']['next_hop_interferes'] = "%s verhindert das Hinzufügen von Next Hop %s";
+$lang['danger']['next_hop_interferes_any'] = "Ein vorhandener Eintrag verhindert das Hinzufügen von Next Hop %s";
 $lang['danger']['rspamd_ui_pw_length'] = "Rspamd UI Passwort muss mindestens 6 Zeichen lang sein";
 $lang['success']['rspamd_ui_pw_set'] = "Rspamd UI Passwort wurde gesetzt";
 $lang['success']['queue_command_success'] = "Queue-Aufgabe erfolgreich ausgeführt";
@@ -65,7 +70,7 @@ $lang['success']['settings_map_added'] = "Regel wurde gespeichert";
 $lang['danger']['settings_map_invalid'] = "Regel ID %s ist ungültig";
 $lang['success']['settings_map_removed'] = "Regeln wurden entfernt: %s";
 $lang['danger']['invalid_host'] = "Ungültiger Host: %s";
-$lang['danger']['relayhost_invalid'] = "Relayhost %s ist ungültig";
+$lang['danger']['relayhost_invalid'] = "Mapeintrag %s ist ungültig";
 $lang['success']['saved_settings'] = "Regel wurde gespeichert";
 
 $lang['danger']['dkim_domain_or_sel_invalid'] = 'DKIM-Domain oder Selektor nicht korrekt: %s';
@@ -392,7 +397,10 @@ $lang['acl']['prohibited'] = 'Untersagt durch Richtlinie';
 $lang['add']['generate'] = 'generieren';
 $lang['add']['syncjob'] = 'Syncjob hinzufügen';
 $lang['add']['syncjob_hint'] = 'Passwörter werden unverschlüsselt abgelegt!';
-$lang['add']['hostname'] = 'Servername';
+$lang['add']['hostname'] = 'Host';
+$lang['add']['destination'] = 'Ziel';
+$lang['add']['nexthop'] = 'Next Hop';
+$lang['edit']['nexthop'] = 'Next Hop';
 $lang['add']['port'] = 'Port';
 $lang['add']['username'] = 'Benutzername';
 $lang['add']['enc_method'] = 'Verschlüsselung';
@@ -572,12 +580,30 @@ $lang['admin']['message'] = 'Nachricht';
 $lang['admin']['forwarding_hosts'] = 'Weiterleitungs-Hosts';
 $lang['admin']['forwarding_hosts_hint'] = 'Eingehende Nachrichten werden von den hier gelisteten Hosts bedingungslos akzeptiert. Diese Hosts werden dann nicht mit DNSBLs abgeglichen oder Greylisting unterworfen. Von ihnen empfangener Spam wird nie abgelehnt, optional kann er aber in den Spam-Ordner einsortiert werden. Die übliche Verwendung für diese Funktion ist, um Mailserver anzugeben, auf denen eine Weiterleitung zu Ihrem mailcow-Server eingerichtet wurde.';
 $lang['admin']['forwarding_hosts_add_hint'] = 'Sie können entweder IPv4/IPv6-Adressen, Netzwerke in CIDR-Notation, Hostnamen (die zu IP-Adressen aufgelöst werden), oder Domainnamen (die zu IP-Adressen aufgelöst werden, indem ihr SPF-Record abgefragt wird oder, in dessen Abwesenheit, ihre MX-Records) angeben.';
-$lang['admin']['relayhosts_hint'] = 'Erstellen Sie Relayhosts, um diese im Einstellungsdialog einer Domain auszuwählen.';
-$lang['admin']['add_relayhost_add_hint'] = 'Bitte beachten Sie, dass Relayhost Anmeldedaten im Klartext gespeichert werden.';
+$lang['admin']['relayhosts_hint'] = 'Erstellen Sie senderabhängige Transporte, um diese im Einstellungsdialog einer Domain auszuwählen.<br>
+  Der Transporttyp lautet immer "smtp:". Benutzereinstellungen bezüglich Verschlüsselungsrichtlinie werden beim Transport berücksichtigt.';
+$lang['admin']['transports_hint'] = 'Transport Maps <b>überwiegen</b> senderabhängige Transport Maps und ignorieren die individuellen Einstellungen eines Benutzers bezüglich Verschlüsselungsrichtlinie, da der Absender bei Ermittlung der Transportregel nicht berücksichtigt wird.<br>
+  Der Transport erfolgt immer via "smtp:".<br>
+  Ein Eintrag in der TLS Policy Map kann eine Verschlüsselung erzwingen.<br>
+  Die Authentifizierung wird anhand des Host Parameters ermittelt, hierbei würde bei einem beispielhaften Next Hop "[host]:25" immer zuerst "host" abfragt und <b>erst im Anschluss</b> "[host]:25".<br>
+  Dieses Verhalten schließt die <b>gleichzeitige Verwendung</b> von Einträgen der Art "host" sowie "[host]:25" aus.';
+$lang['admin']['add_relayhost_hint'] = 'Bitte beachten Sie, dass Anmeldedaten klartext gespeichert werden.<br>
+  Angelegte Transporte dieser Art sind <b>senderabhängig</b> und müssen erst einer Domain zugewiesen werden, bevor sie als Transport verwendet werden.<br>
+  Diese Einstellungen entsprechen demach <i>nicht</i> dem "relayhost" Parameter in Postfix.';
+$lang['admin']['add_transports_hint'] = 'Bitte beachten Sie, dass Anmeldedaten klartext gespeichert werden.';
 $lang['admin']['host'] = 'Host';
 $lang['admin']['source'] = 'Quelle';
 $lang['admin']['add_forwarding_host'] = 'Weiterleitungs-Host hinzufügen';
-$lang['admin']['add_relayhost'] = 'Relayhost hinzufügen';
+$lang['admin']['add_relayhost'] = 'Senderabhängigen Transport hinzufügen';
+$lang['admin']['add_transport'] = 'Transport hinzufügen';
+$lang['admin']['relayhosts'] = 'Senderabhängige Transport Maps';
+$lang['admin']['transport_maps'] = 'Transport Maps';
+$lang['admin']['routing'] = 'Routing';
+$lang['admin']['credentials_transport_warning'] = '<b>Warnung</b>: Das Hinzufügen einer neuen Regel bewirkt die Aktualisierung der Authentifizierungsdaten aller vorhandenen Einträge mit identischem Host.';
+
+$lang['admin']['destination'] = 'Ziel';
+$lang['admin']['nexthop'] = 'Next Hop';
+
 $lang['admin']['api_allow_from'] = "IP-Adressen für Zugriff";
 $lang['admin']['api_key'] = "API-Key";
 $lang['admin']['activate_api'] = "API aktivieren";
@@ -594,8 +620,8 @@ $lang['admin']['quarantine_exclude_domains'] = "Domains und Alias-Domains aussch
 
 $lang['success']['forwarding_host_removed'] = "Weiterleitungs-Host %s wurde entfernt";
 $lang['success']['forwarding_host_added'] = "Weiterleitungs-Host %s wurde hinzugefügt";
-$lang['success']['relayhost_removed'] = "Relayhost %s wurde entfernt";
-$lang['success']['relayhost_added'] = "Relayhost %s wurde hinzugefügt";
+$lang['success']['relayhost_removed'] = "Mapeintrag %s wurde entfernt";
+$lang['success']['relayhost_added'] = "Mapeintrag %s wurde hinzugefügt";
 $lang['diagnostics']['dns_records'] = 'DNS-Einträge';
 $lang['diagnostics']['dns_records_24hours'] = 'Bitte beachten Sie, dass es bis zu 24 Stunden dauern kann, bis Änderungen an Ihren DNS-Einträgen als aktueller Status auf dieser Seite dargestellt werden. Diese Seite ist nur als Hilfsmittel gedacht, um die korrekten Werte für DNS-Einträge anzuzeigen und zu überprüfen, ob die Daten im DNS hinterlegt sind.';
 $lang['diagnostics']['dns_records_name'] = 'Name';

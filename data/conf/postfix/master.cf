@@ -14,7 +14,6 @@ submission inet n       -       n       -       -       smtpd
   -o smtpd_client_restrictions=permit_mynetworks,permit_sasl_authenticated,reject
   -o smtpd_tls_auth_only=no
   -o smtpd_sender_restrictions=check_sasl_access,regexp:/opt/postfix/conf/allow_mailcow_local.regexp,reject_authenticated_sender_login_mismatch,permit_mynetworks,permit_sasl_authenticated,reject_unlisted_sender,reject_unknown_sender_domain
-
 590 inet n      -       n       -       -       smtpd
   -o smtpd_client_restrictions=permit_mynetworks,reject
   -o smtpd_tls_auth_only=no
@@ -24,6 +23,8 @@ smtp_enforced_tls      unix  -       -       n       -       -       smtp
   -o smtp_tls_security_level=encrypt
   -o syslog_name=enforced-tls-smtp
   -o smtp_delivery_status_filter=pcre:/opt/postfix/conf/smtp_dsn_filter
+smtp_via_transport_maps      unix  -       -       n       -       -       smtp
+  -o smtp_sasl_password_maps=proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps_transport_maps.cf
 
 tlsproxy   unix  -       -       n       -       0       tlsproxy
 dnsblog    unix  -       -       n       -       0       dnsblog

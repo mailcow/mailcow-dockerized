@@ -168,48 +168,14 @@ chown sogo:sogo -R /var/lib/sogo/
 chmod 600 /var/lib/sogo/GNUstep/Defaults/sogod.plist
 
 # Add credentials to alarms
-sed -i 's/\/usr\/sbin\/sogo-ealarms-notify/\/usr\/sbin\/sogo-ealarms-notify -p \/etc\/sogo\/sieve.creds/g' /etc/cron.d/sogo
-
-# Prevent theme switching
-sed -i \
-  -e 's/eaf5e9/E3F2FD/g' \
-  -e 's/cbe5c8/BBDEFB/g' \
-  -e 's/aad6a5/90CAF9/g' \
-  -e 's/88c781/64B5F6/g' \
-  -e 's/66b86a/42A5F5/g' \
-  -e 's/56b04c/2196F3/g' \
-  -e 's/4da143/1E88E5/g' \
-  -e 's/388e3c/1976D2/g' \
-  -e 's/367d2e/1565C0/g' \
-  -e 's/225e1b/0D47A1/g' \
-  -e 's/fafafa/82B1FF/g' \
-  -e 's/69f0ae/448AFF/g' \
-  -e 's/00e676/2979ff/g' \
-  -e 's/00c853/2962ff/g'  \
-  /usr/lib/GNUstep/SOGo/WebServerResources/js/Common/Common.app.js \
-  /usr/lib/GNUstep/SOGo/WebServerResources/js/Common.js
-
-sed -i \
-  -e 's/default: "900"/default: "700"/g' \
-  -e 's/default: "500"/default: "700"/g' \
-  -e 's/"hue-1": "400"/"hue-1": "500"/g' \
-  -e 's/"hue-1": "A100"/"hue-1": "500"/g' \
-  -e 's/"hue-2": "800"/"hue-2": "700"/g' \
-  -e 's/"hue-2": "300"/"hue-2": "700"/g' \
-  -e 's/"hue-3": "A700"/"hue-3": "A200"/' \
-  -e 's/default:"900"/default:"700"/g' \
-  -e 's/default:"500"/default:"700"/g' \
-  -e 's/"hue-1":"400"/"hue-1":"500"/g' \
-  -e 's/"hue-1":"A100"/"hue-1":"500"/g' \
-  -e 's/"hue-2":"800"/"hue-2":"700"/g' \
-  -e 's/"hue-2":"300"/"hue-2":"700"/g' \
-  -e 's/"hue-3":"A700"/"hue-3":"A200"/' \
-  /usr/lib/GNUstep/SOGo/WebServerResources/js/Common/Common.app.js \
-  /usr/lib/GNUstep/SOGo/WebServerResources/js/Common.js
+sed -i 's/\/usr\/local\/sbin\/sogo-ealarms-notify/\/usr\/local\/sbin\/sogo-ealarms-notify -p \/etc\/sogo\/sieve.creds/g' /etc/cron.d/sogo
 
 # Patch ACLs (comment this out to enable any or authenticated targets for ACL)
 if patch -sfN --dry-run /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff > /dev/null; then
   patch /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff;
 fi
+
+# Copy logo, if any
+[[ -f /etc/sogo/sogo-full.svg ]] && cp /etc/sogo/sogo_full.svg /usr/lib/GNUstep/SOGo/WebServerResources/img/sogo-full.svg
 
 exec gosu sogo /usr/sbin/sogod
