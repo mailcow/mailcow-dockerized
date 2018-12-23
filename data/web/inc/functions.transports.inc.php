@@ -225,7 +225,17 @@ function transport($_action, $_data = null) {
           }
         }
       }
-      if (!isset($next_hop_matches[1])) {
+      if (isset($next_hop_matches[1])) {
+        if (in_array($next_hop_clean, $existing_nh)) {
+          $_SESSION['return'][] = array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => array('next_hop_interferes', $next_hop_clean, $nexthop)
+          );
+          return false;
+        }
+      }
+      else {
         foreach ($existing_clean_nh as $existing_clean_nh_each) {
           if ($existing_clean_nh_each[1] == $nexthop) {
             $_SESSION['return'][] = array(
@@ -311,7 +321,17 @@ function transport($_action, $_data = null) {
             preg_match('/\[(.+)\].*/', $transport_data['nexthop'], $existing_clean_nh[]);
           }
         }
-        if (!isset($next_hop_matches[1])) {
+        if (isset($next_hop_matches[1])) {
+          if (in_array($next_hop_clean, $existing_nh)) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_data_log),
+              'msg' => array('next_hop_interferes', $next_hop_clean, $nexthop)
+            );
+            return false;
+          }
+        }
+        else {
           foreach ($existing_clean_nh as $existing_clean_nh_each) {
             if ($existing_clean_nh_each[1] == $nexthop) {
               $_SESSION['return'][] = array(
