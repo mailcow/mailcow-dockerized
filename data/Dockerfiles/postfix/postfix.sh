@@ -120,7 +120,8 @@ dbname = ${DBNAME}
 query = SELECT CONCAT_WS(':', username, password) AS auth_data FROM transports
   WHERE nexthop = '%s'
   AND active = '1'
-  AND username != '';
+  AND username != ''
+  LIMIT 1;
 EOF
 
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_alias_domain_catchall_maps.cf
