@@ -40,7 +40,7 @@ services:
             - mysql
 
     redis-mailcow:
-      image: redis:4-alpine
+      image: redis:5-alpine
       volumes:
         - redis-vol-1:/data/
       restart: always
@@ -95,7 +95,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.27
+      image: mailcow/phpfpm:1.29
       build: ./data/Dockerfiles/phpfpm
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
@@ -342,7 +342,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.31
+      image: mailcow/watchdog:1.32
       # Debug
       #command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog
