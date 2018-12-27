@@ -375,7 +375,7 @@ ipv6nat_checks() {
       sleep 1
     else
       diff_c=0
-      sleep $(( ( RANDOM % 30 )  + 10 ))
+      sleep 3600
     fi
   done
   return 1
