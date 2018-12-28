@@ -350,6 +350,37 @@ ratelimit_checks() {
   return 1
 }
 
+ipv6nat_checks() {
+  err_count=0
+  diff_c=0
+  THRESHOLD=1
+  # Reduce error count by 2 after restarting an unhealthy container
+  trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
+  while [ ${err_count} -lt ${THRESHOLD} ]; do
+    err_c_cur=${err_count}
+    IPV6NAT_CONTAINER_ID=$(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], id: .Id}" | jq -rc "select( .name | tostring | contains(\"ipv6nat\")) | .id")
+    if [[ ! -z ${IPV6NAT_CONTAINER_ID} ]]; then
+      LATEST_STARTED="$(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], StartedAt: .State.StartedAt}" | jq -rc "select( .name | tostring | contains(\"ipv6nat\") | not)" | jq -rc .StartedAt | xargs -n1 date +%s -d | sort | tail -n1)"
+      LATEST_IPV6NAT="$(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], StartedAt: .State.StartedAt}" | jq -rc "select( .name | tostring | contains(\"ipv6nat\"))" | jq -rc .StartedAt | xargs -n1 date +%s -d | sort | tail -n1)"
+      DIFFERENCE_START_TIME=$(expr ${LATEST_IPV6NAT} - ${LATEST_STARTED} 2>/dev/null)
+      if [[ "${DIFFERENCE_START_TIME}" -lt 30 ]]; then
+        err_count=$(( ${err_count} + 1 ))
+      fi
+    fi
+    [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
+    [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
+    progress "IPv6 NAT" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
+    if [[ $? == 10 ]]; then
+      diff_c=0
+      sleep 1
+    else
+      diff_c=0
+      sleep 3600
+    fi
+  done
+  return 1
+}
+
 rspamd_checks() {
   err_count=0
   diff_c=0
@@ -485,6 +516,17 @@ while true; do
 done
 ) &
 BACKGROUND_TASKS+=($!)
+
+(
+while true; do
+  if ! ipv6nat_checks; then
+    log_msg "IPv6 NAT warning: ipv6nat container was not started at least 30s after siblings (not an error)"
+    echo ipv6nat > /tmp/com_pipe
+  fi
+done
+) &
+BACKGROUND_TASKS+=($!)
+
 # Monitor watchdog agents, stop script when agents fails and wait for respawn by Docker (restart:always:n)
 (
 while true; do
@@ -522,7 +564,7 @@ while true; do
   if [[ ${com_pipe_answer} == "ratelimit" ]]; then
     log_msg "At least one ratelimit was applied"
     [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}" "No further information available."
-  elif [[ ${com_pipe_answer} =~ .+-mailcow ]]; then
+  elif [[ ${com_pipe_answer} =~ .+-mailcow ]] || [[ ${com_pipe_answer} == "ipv6nat" ]]; then
     kill -STOP ${BACKGROUND_TASKS[*]}
     sleep 3
     CONTAINER_ID=$(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], id: .Id}" | jq -rc "select( .name | tostring | contains(\"${com_pipe_answer}\")) | .id")
@@ -539,9 +581,11 @@ while true; do
       else
         log_msg "Sending restart command to ${CONTAINER_ID}..."
         curl --silent --insecure -XPOST https://dockerapi/containers/${CONTAINER_ID}/restart
-        [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}"
+        if [[ ${com_pipe_answer} != "ipv6nat" ]]; then
+          [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}"
+        fi
         log_msg "Wait for restarted container to settle and continue watching..."
-        sleep 30
+        sleep 35
       fi
     fi
     kill -CONT ${BACKGROUND_TASKS[*]}

@@ -27,7 +27,7 @@ CONTAINER_ID=
 # This can happen due to a broken sogo_view
 [ -s /mysql_upgrade_loop ] && SQL_LOOP_C=$(cat /mysql_upgrade_loop)
 CONTAINER_ID=$(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], id: .Id}" | jq -rc "select( .name | tostring | contains(\"mysql-mailcow\")) | .id")
-if [[ ! -z ${CONTAINER_ID} ]]; then
+if [[ ! -z "${CONTAINER_ID}" ]] && [[ "${CONTAINER_ID}" =~ [^a-zA-Z0-9] ]]; then
   SQL_UPGRADE_RETURN=$(curl --silent --insecure -XPOST https://dockerapi/containers/${CONTAINER_ID}/exec -d '{"cmd":"system", "task":"mysql_upgrade"}' --silent -H 'Content-type: application/json' | jq -r .type)
   if [[ ${SQL_UPGRADE_RETURN} == 'warning' ]]; then
     if [ -z ${SQL_LOOP_C} ]; then
