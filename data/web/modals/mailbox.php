@@ -131,7 +131,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 					</div>
           <hr>
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="rl_frame">Ratelimit</label>
+						<label class="control-label col-sm-2" for="rl_frame"><?=$lang['acl']['ratelimit'];?></label>
             <div class="col-sm-7">
             <input name="rl_value" type="number" value="<?=(!empty($rl['value'])) ? $rl['value'] : null;?>" class="form-control" placeholder="disabled">
             </div>
@@ -328,7 +328,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 					</div>
           <hr>
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="rl_frame">Ratelimit</label>
+						<label class="control-label col-sm-2" for="rl_frame"><?=$lang['acl']['ratelimit'];?></label>
             <div class="col-sm-7">
             <input name="rl_value" type="number" value="<?=(!empty($rl['value'])) ? $rl['value'] : null;?>" class="form-control" placeholder="disabled">
             </div>
