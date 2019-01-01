@@ -22,6 +22,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
         <li role="presentation"><a href="#tab-watchdog-logs" aria-controls="tab-watchdog-logs" role="tab" data-toggle="tab">Watchdog</a></li>
         <li role="presentation"><a href="#tab-acme-logs" aria-controls="tab-acme-logs" role="tab" data-toggle="tab">ACME</a></li>
         <li role="presentation"><a href="#tab-api-logs" aria-controls="tab-api-logs" role="tab" data-toggle="tab">API</a></li>
+        <li role="presentation"><a href="#tab-api-rl" aria-controls="tab-api-rl" role="tab" data-toggle="tab">Ratelimits</a></li>
         <li role="presentation"><span class="dropdown-desc"><?=$lang['debug']['external_logs'];?></span></li>
         <li role="presentation"><a href="#tab-rspamd-history" aria-controls="tab-rspamd-history" role="tab" data-toggle="tab">Rspamd</a></li>
         <li role="presentation"><span class="dropdown-desc"><?=$lang['debug']['static_logs'];?></span></li>
@@ -267,6 +268,24 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             <div class="panel-body">
               <div class="table-responsive">
                 <table class="table table-striped table-condensed" id="api_log"></table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div role="tabpanel" class="tab-pane" id="tab-api-rl">
+          <div class="panel panel-default">
+            <div class="panel-heading">Ratelimits <span class="badge badge-info table-lines"></span>
+              <div class="btn-group pull-right">
+                <button class="btn btn-xs btn-default add_log_lines" data-post-process="rllog" data-table="rl_log" data-log-url="ratelimited" data-nrows="100">+ 100</button>
+                <button class="btn btn-xs btn-default add_log_lines" data-post-process="rllog" data-table="rl_log" data-log-url="ratelimited" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_rl_logs" data-table="rl_log"><?=$lang['admin']['refresh'];?></button>
+              </div>
+            </div>
+            <div class="panel-body">
+              <p class="help-block"><?=$lang['admin']['hash_remove_info'];?></p>
+              <div class="table-responsive">
+                <table class="table table-striped table-condensed" id="rl_log"></table>
               </div>
             </div>
           </div>

@@ -159,7 +159,7 @@ USE_WATCHDOG=n
 
 LOG_LINES=9999
 
-# Internal IPv4 /24 subnet, format n.n.n. (expands to n.n.n.0/24)
+# Internal IPv4 /24 subnet, format n.n.n (expands to n.n.n.0/24)
 
 IPV4_NETWORK=172.22.1
 

@@ -10,6 +10,7 @@ $tfa_data = get_tfa();
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#tab-access" aria-controls="tab-access" role="tab" data-toggle="tab"><?=$lang['admin']['access'];?></a></li>
     <li role="presentation"><a href="#tab-config" aria-controls="tab-config" role="tab" data-toggle="tab"><?=$lang['admin']['configuration'];?></a></li>
+    <li role="presentation"><a href="#tab-routing" aria-controls="tab-config" role="tab" data-toggle="tab"><?=$lang['admin']['routing'];?></a></li>
     <li role="presentation"><a href="#tab-sys-mails" aria-controls="tab-sys-mails" role="tab" data-toggle="tab"><?=$lang['admin']['sys_mails'];?></a></li>
     <li role="presentation"><a href="#tab-mailq" aria-controls="tab-mailq" role="tab" data-toggle="tab"><?=$lang['admin']['queue_manager'];?></a></li>
   </ul>
@@ -178,6 +179,101 @@ $tfa_data = get_tfa();
     </div>
   </div>
 
+  <div role="tabpanel" class="tab-pane" id="tab-routing">
+    <div class="panel panel-default">
+      <div class="panel-heading"><?=$lang['admin']['relayhosts'];?></div>
+      <div class="panel-body">
+        <p style="margin-bottom:40px"><?=$lang['admin']['relayhosts_hint'];?></p>
+        <div class="table-responsive">
+          <table class="table table-striped table-condensed" id="relayhoststable"></table>
+        </div>
+        <div class="mass-actions-admin">
+          <div class="btn-group btn-group-sm">
+            <button type="button" id="toggle_multi_select_all" data-id="rlyhosts" class="btn btn-default"><?=$lang['mailbox']['toggle_all'];?></button>
+            <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a data-action="edit_selected" data-id="rlyhosts" data-api-url='edit/relayhost' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
+              <li><a data-action="edit_selected" data-id="rlyhosts" data-api-url='edit/relayhost' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
+              <li role="separator" class="divider"></li>
+              <li><a data-action="delete_selected" data-id="rlyhosts" data-api-url='delete/relayhost' href="#"><?=$lang['admin']['remove'];?></a></li>
+            </ul>
+          </div>
+        </div>
+        <legend><?=$lang['admin']['add_relayhost'];?></legend>
+        <p class="help-block"><?=$lang['admin']['add_relayhost_hint'];?></p>
+        <div class="row">
+          <div class="col-md-6">
+            <form class="form" data-id="rlyhost" role="form" method="post">
+              <div class="form-group">
+                <label for="hostname"><?=$lang['admin']['host'];?></label>
+                <input class="form-control input-sm" name="hostname" required>
+              </div>
+              <div class="form-group">
+                <label for="username"><?=$lang['admin']['username'];?></label>
+                <input class="form-control input-sm" name="username">
+              </div>
+              <div class="form-group">
+                <label for="password"><?=$lang['admin']['password'];?></label>
+                <input class="form-control input-sm" name="password">
+              </div>
+              <button class="btn btn-default" data-action="add_item" data-id="rlyhost" data-api-url='add/relayhost' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading"><?=$lang['admin']['transport_maps'];?></div>
+      <div class="panel-body">
+        <p style="margin-bottom:40px"><?=$lang['admin']['transports_hint'];?></p>
+        <div class="table-responsive">
+          <table class="table table-striped table-condensed" id="transportstable"></table>
+        </div>
+        <div class="mass-actions-admin">
+          <div class="btn-group btn-group-sm">
+            <button type="button" id="toggle_multi_select_all" data-id="transports" class="btn btn-default"><?=$lang['mailbox']['toggle_all'];?></button>
+            <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a data-action="edit_selected" data-id="transports" data-api-url='edit/transport' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
+              <li><a data-action="edit_selected" data-id="transports" data-api-url='edit/transport' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
+              <li role="separator" class="divider"></li>
+              <li><a data-action="delete_selected" data-id="transports" data-api-url='delete/transport' href="#"><?=$lang['admin']['remove'];?></a></li>
+            </ul>
+          </div>
+        </div>
+        <legend><?=$lang['admin']['add_transport'];?></legend>
+        <p class="help-block"><?=$lang['admin']['add_transports_hint'];?></p>
+        <div class="row">
+          <div class="col-md-6">
+            <form class="form" data-id="transport" role="form" method="post">
+              <div class="form-group">
+                <label for="destination"><?=$lang['admin']['destination'];?></label>
+                <input class="form-control input-sm" name="destination" placeholder='example.org, .example.org, *, box@example.org' required>
+              </div>
+              <div class="form-group">
+                <label for="nexthop"><?=$lang['admin']['nexthop'];?></label>
+                <input class="form-control input-sm" name="nexthop" placeholder='host:25, host, [host]:25, [0.0.0.0]:25' required>
+              </div>
+              <div class="form-group">
+                <label for="username"><?=$lang['admin']['username'];?></label>
+                <input class="form-control input-sm" name="username">
+              </div>
+              <div class="form-group">
+                <label for="password"><?=$lang['admin']['password'];?></label>
+                <input class="form-control" name="password">
+              </div>
+              <p class="help-block"><?=$lang['admin']['credentials_transport_warning'];?></p>
+              <button class="btn btn-default" data-action="add_item" data-id="transport" data-api-url='add/transport' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
   <div role="tabpanel" class="tab-pane" id="tab-config">
     <div class="row">
     <div id="sidebar-admin" class="col-sm-2 hidden-xs">
@@ -185,7 +281,6 @@ $tfa_data = get_tfa();
         <a href="#dkim" class="list-group-item"><?=$lang['admin']['dkim_keys'];?></a>
         <a href="#fwdhosts" class="list-group-item"><?=$lang['admin']['forwarding_hosts'];?></a>
         <a href="#f2bparams" class="list-group-item"><?=$lang['admin']['f2b_parameters'];?></a>
-        <a href="#relayhosts" class="list-group-item">Relayhosts</a>
         <a href="#quarantine" class="list-group-item"><?=$lang['admin']['quarantine'];?></a>
         <a href="#rsettings" class="list-group-item">Rspamd settings map</a>
         <a href="#customize" class="list-group-item"><?=$lang['admin']['customize'];?></a>
@@ -333,7 +428,7 @@ $tfa_data = get_tfa();
             <input class="form-control input-sm" name="dkim_selector" value="dkim" required>
           </div>
           <div class="form-group">
-            <label for="private_key_file"><?=$lang['admin']['private_key'];?>:</label>
+            <label for="private_key_file"><?=$lang['admin']['private_key'];?>: (RSA PKCS#8)</label>
             <textarea class="form-control input-sm" rows="10" name="private_key_file" id="private_key_file" required placeholder="-----BEGIN RSA KEY-----"></textarea>
           </div>
           <button class="btn btn-sm btn-default" data-action="add_item" data-id="dkim_import" data-api-url='add/dkim_import' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['import'];?></button>
@@ -510,46 +605,6 @@ $tfa_data = get_tfa();
         <?php
         endforeach;
         ?>
-      </div>
-    </div>
-
-    <span class="anchor" id="relayhosts"></span>
-    <div class="panel panel-default">
-      <div class="panel-heading">Relayhosts</div>
-      <div class="panel-body">
-        <p style="margin-bottom:40px"><?=$lang['admin']['relayhosts_hint'];?></p>
-        <div class="table-responsive">
-          <table class="table table-striped table-condensed" id="relayhoststable"></table>
-        </div>
-        <div class="mass-actions-admin">
-          <div class="btn-group btn-group-sm">
-            <button type="button" id="toggle_multi_select_all" data-id="rlyhosts" class="btn btn-default"><?=$lang['mailbox']['toggle_all'];?></button>
-            <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
-            <ul class="dropdown-menu">
-              <li><a data-action="edit_selected" data-id="rlyhosts" data-api-url='edit/relayhost' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
-              <li><a data-action="edit_selected" data-id="rlyhosts" data-api-url='edit/relayhost' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
-              <li role="separator" class="divider"></li>
-              <li><a data-action="delete_selected" data-id="rlyhosts" data-api-url='delete/relayhost' href="#"><?=$lang['admin']['remove'];?></a></li>
-            </ul>
-          </div>
-        </div>
-        <legend><?=$lang['admin']['add_relayhost'];?></legend>
-        <p class="help-block"><?=$lang['admin']['add_relayhost_add_hint'];?></p>
-        <form class="form" data-id="rlyhost" role="form" method="post">
-          <div class="form-group">
-            <label for="hostname"><?=$lang['admin']['host'];?></label>
-            <input class="form-control" name="hostname" required>
-          </div>
-          <div class="form-group">
-            <label for="hostname"><?=$lang['admin']['username'];?></label>
-            <input class="form-control" name="username">
-          </div>
-          <div class="form-group">
-            <label for="hostname"><?=$lang['admin']['password'];?></label>
-            <input class="form-control" name="password">
-          </div>
-          <button class="btn btn-default" data-action="add_item" data-id="rlyhost" data-api-url='add/relayhost' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
-        </form>
       </div>
     </div>
 

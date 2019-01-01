@@ -5,6 +5,9 @@ function domain_admin($_action, $_data = null) {
   $_data_log = $_data;
   !isset($_data_log['password']) ?: $_data_log['password'] = '*';
   !isset($_data_log['password2']) ?: $_data_log['password2'] = '*';
+  !isset($_data_log['user_old_pass']) ?: $_data_log['user_old_pass'] = '*';
+  !isset($_data_log['user_new_pass']) ?: $_data_log['user_new_pass'] = '*';
+  !isset($_data_log['user_new_pass2']) ?: $_data_log['user_new_pass2'] = '*';
   switch ($_action) {
     case 'add':
       $username		= strtolower(trim($_data['username']));

@@ -102,6 +102,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "relayhost":
             process_add_return(relayhost('add', $attr));
           break;
+          case "transport":
+            process_add_return(transport('add', $attr));
+          break;
           case "rsetting":
             process_add_return(rsettings('add', $attr));
           break;
@@ -320,6 +323,33 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             }
           break;
 
+          case "transport":
+            switch ($object) {
+              case "all":
+                $transports = transport('get');
+                if (!empty($transports)) {
+                  foreach ($transports as $transport) {
+                    if ($details = transport('details', $transport['id'])) {
+                      $data[] = $details;
+                    }
+                    else {
+                      continue;
+                    }
+                  }
+                  process_get_return($data);
+                }
+                else {
+                  echo '{}';
+                }
+              break;
+
+              default:
+                $data = transport('details', $object);
+                process_get_return($data);
+              break;
+            }
+          break;
+
           case "rsetting":
             switch ($object) {
               case "all":
@@ -384,6 +414,17 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 }
                 else {
                   $logs = get_logs('dovecot-mailcow');
+                }
+                echo (isset($logs) && !empty($logs)) ? json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '{}';
+              break;
+              case "ratelimited":
+                // 0 is first record, so empty is fine
+                if (isset($extra)) {
+                  $extra = preg_replace('/[^\d\-]/i', '', $extra);
+                  $logs = get_logs('ratelimited', $extra);
+                }
+                else {
+                  $logs = get_logs('ratelimited');
                 }
                 echo (isset($logs) && !empty($logs)) ? json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '{}';
               break;
@@ -979,6 +1020,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "relayhost":
             process_delete_return(relayhost('delete', array('id' => $items)));
           break;
+          case "transport":
+            process_delete_return(transport('delete', array('id' => $items)));
+          break;
           case "rsetting":
             process_delete_return(rsettings('delete', array('id' => $items)));
           break;
@@ -1043,6 +1087,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "admin":
             process_delete_return(admin('delete', array('username' => $items)));
           break;
+          case "rlhash":
+            echo ratelimit('delete', null, implode($items));
+          break;
         }
       break;
       case "edit":
@@ -1092,6 +1139,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           break;
           case "relayhost":
             process_edit_return(relayhost('edit', array_merge(array('id' => $items), $attr)));
+          break;
+          case "transport":
+            process_edit_return(transport('edit', array_merge(array('id' => $items), $attr)));
           break;
           case "rsetting":
             process_edit_return(rsettings('edit', array_merge(array('id' => $items), $attr)));
