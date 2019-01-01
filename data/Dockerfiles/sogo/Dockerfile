@@ -36,7 +36,7 @@ RUN mkdir /usr/share/doc/sogo \
     sogo \
     sogo-activesync \
   && rm -rf /var/lib/apt/lists/* \
-  && echo '* * * * *   sogo   /usr/sbin/sogo-ealarms-notify 2>/dev/null' > /etc/cron.d/sogo \
+  && echo '* * * * *   sogo   /usr/sbin/sogo-ealarms-notify -p /etc/sogo/sieve.creds 2>/dev/null' > /etc/cron.d/sogo \
   && echo '* * * * *   sogo   /usr/sbin/sogo-tool expire-sessions 60' >> /etc/cron.d/sogo \
   && echo '0 0 * * *   sogo   /usr/sbin/sogo-tool update-autoreply -p /etc/sogo/sieve.creds' >> /etc/cron.d/sogo \
   && touch /etc/default/locale
@@ -44,9 +44,6 @@ RUN mkdir /usr/share/doc/sogo \
 COPY ./bootstrap-sogo.sh /bootstrap-sogo.sh
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
 COPY supervisord.conf /etc/supervisor/supervisord.conf
-COPY theme-blue.js /usr/lib/GNUstep/SOGo/WebServerResources/js/theme-blue.js
-COPY theme-blue.css /usr/lib/GNUstep/SOGo/WebServerResources/css/theme-default.css
-COPY sogo-full.svg /usr/lib/GNUstep/SOGo/WebServerResources/img/sogo-full.svg
 COPY acl.diff /acl.diff
 COPY stop-supervisor.sh /usr/local/sbin/stop-supervisor.sh
 
