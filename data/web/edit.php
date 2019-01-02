@@ -271,7 +271,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               </div>
             </div>
             <div class="form-group">
-              <label class="control-label col-sm-2" for="quota">Relayhost</label>
+              <label class="control-label col-sm-2" for="quota"><?=$lang['edit']['relayhost'];?></label>
               <div class="col-sm-10">
                 <select data-live-search="true" name="relayhost" class="form-control">
                   <?php
@@ -330,7 +330,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
       <hr>
       <form data-id="domratelimit" class="form-inline well" method="post">
         <div class="form-group">
-          <label class="control-label">Ratelimit</label>
+          <label class="control-label"><?=$lang['acl']['ratelimit'];?></label>
           <input name="rl_value" type="number" value="<?=(!empty($rl['value'])) ? $rl['value'] : null;?>" autocomplete="off" class="form-control" placeholder="disabled">
         </div>
         <div class="form-group">
@@ -440,7 +440,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           <hr>
           <form data-id="domratelimit" class="form-inline well" method="post">
             <div class="form-group">
-              <label class="control-label">Ratelimit</label>
+              <label class="control-label"><?=$lang['acl']['ratelimit'];?></label>
               <input name="rl_value" type="number" value="<?=(!empty($rl['value'])) ? $rl['value'] : null;?>" autocomplete="off" class="form-control" placeholder="disabled">
             </div>
             <div class="form-group">
@@ -600,7 +600,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         <form data-id="mboxratelimit" class="form-inline well" method="post">
           <div class="row">
             <div class="col-sm-1">
-              <p class="help-block">Ratelimit</p>
+              <p class="help-block"><?=$lang['acl']['ratelimit'];?></p>
             </div>
             <div class="col-sm-10">
               <div class="form-group">
