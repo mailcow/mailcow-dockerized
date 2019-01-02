@@ -180,7 +180,7 @@ IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
 # API_KEY allowed chars: a-z, A-Z, 0-9, -
 
 #API_KEY=
-#API_ALLOW_FROM=127.0.0.1,1.2.3.4
+#API_ALLOW_FROM=172.22.1.1,127.0.0.1
 
 EOF
 
