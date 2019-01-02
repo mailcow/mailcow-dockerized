@@ -138,7 +138,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.49
+      image: mailcow/sogo:1.50
       build: ./data/Dockerfiles/sogo
       environment:
         - DBNAME=${DBNAME}
@@ -163,7 +163,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.52
+      image: mailcow/dovecot:1.53
       build: ./data/Dockerfiles/dovecot
       cap_add:
         - NET_BIND_SERVICE
