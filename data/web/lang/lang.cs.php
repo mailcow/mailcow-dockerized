@@ -391,6 +391,7 @@ $lang['edit']['dont_check_sender_acl'] = "Disable sender check for domain %s (+ 
 $lang['edit']['multiple_bookings'] = 'Vícenásobné rezervace';
 $lang['edit']['kind'] = 'Druh';
 $lang['edit']['resource'] = 'Zdroje';
+$lang['edit']['relayhost'] = 'Přeposílání závislé na odesílateli';
 
 $lang['acl']['spam_alias'] = 'Dočasné aliasy';
 $lang['acl']['tls_policy'] = 'Pravidla TLS';
@@ -404,7 +405,7 @@ $lang['acl']['quarantine'] = 'Karanténa';
 $lang['acl']['login_as'] = 'Přihlásit jako uživatel poštovní schránky';
 $lang['acl']['bcc_maps'] = 'BCC maps';
 $lang['acl']['filters'] = 'Filtry';
-$lang['acl']['ratelimit'] = 'Omezování provozu (Rate limit)';
+$lang['acl']['ratelimit'] = 'Omezování provozu';
 $lang['acl']['recipient_maps'] = 'Recipient maps';
 $lang['acl']['prohibited'] = 'Zakázáno z důvodu ACL';
 

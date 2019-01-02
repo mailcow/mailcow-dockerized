@@ -389,6 +389,7 @@ $lang['edit']['dont_check_sender_acl'] = "Disable sender check for domain %s (+ 
 $lang['edit']['multiple_bookings'] = 'Multiple bookings';
 $lang['edit']['kind'] = 'Kind';
 $lang['edit']['resource'] = 'Resource';
+$lang['edit']['relayhost'] = 'Sender-dependent transports';
 
 $lang['acl']['spam_alias'] = 'Temporary aliases';
 $lang['acl']['tls_policy'] = 'TLS policy';
