@@ -10,7 +10,7 @@ fi
 mkdir -p /var/log/clamav
 touch /var/log/clamav/clamd.log /var/log/clamav/freshclam.log
 chown -R clamav:clamav /var/log/clamav/
-chown root:tty /dev/console
+adduser clamav tty
 chmod g+rw /dev/console
 
 # Prepare whitelist
@@ -33,6 +33,27 @@ while true; do
   sleep 1m
   freshclam
   sleep 1h
+done
+) &
+BACKGROUND_TASKS+=($!)
+
+(
+while true; do
+  sleep 2m
+  SANE_MIRRORS="$(dig +ignore +short rsync.sanesecurity.net)"
+  for sane_mirror in ${SANE_MIRRORS}; do
+    rsync -avp --chown=clamav:clamav --timeout=5 rsync://${sane_mirror}/sanesecurity/ \
+      --include 'blurl.ndb' \
+      --include 'junk.ndb' \
+      --include 'jurlbl.ndb' \
+      --include 'phish.ndb' \
+      --exclude='*' /var/lib/clamav/
+    if [ $? -eq 0 ]; then
+      echo RELOAD | nc localhost 3310
+      break
+    fi
+  done
+  sleep 30h
 done
 ) &
 BACKGROUND_TASKS+=($!)
