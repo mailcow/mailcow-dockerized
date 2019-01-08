@@ -199,15 +199,16 @@ while ($row = array_shift($rows)) {
 ?>
   whitelist_<?=$username_sane;?> {
 <?php
-  $stmt = $pdo->prepare("SELECT GROUP_CONCAT(REPLACE(CONCAT('^', `value`, '$'), '*', '.*') SEPARATOR '|') AS `value` FROM `filterconf`
+  $stmt = $pdo->prepare("SELECT `value` FROM `filterconf`
     WHERE `object`= :object
       AND `option` = 'whitelist_from'");
   $stmt->execute(array(':object' => $row['object']));
-  $grouped_lists = $stmt->fetchAll(PDO::FETCH_COLUMN);
-  $value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
+  $list_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  while ($item = array_shift($list_items)) {
 ?>
-    from = "/(<?=$value_sane;?>)/i";
+    from = "/<?='^' . str_replace('\*', '.*', preg_quote($item['value'], '/')) . '$' ;?>/i";
 <?php
+  }
   if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
 ?>
     priority = 5;
@@ -238,15 +239,20 @@ while ($row = array_shift($rows)) {
   }
   whitelist_header_<?=$username_sane;?> {
 <?php
-  $stmt = $pdo->prepare("SELECT GROUP_CONCAT(REPLACE(CONCAT('\<', `value`, '\>'), '*', '.*') SEPARATOR '|') AS `value` FROM `filterconf`
+  $header_from = array();
+  $stmt = $pdo->prepare("SELECT `value` FROM `filterconf`
     WHERE `object`= :object
       AND `option` = 'whitelist_from'");
   $stmt->execute(array(':object' => $row['object']));
-  $grouped_lists = $stmt->fetchAll(PDO::FETCH_COLUMN);
-  $value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
+  $list_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
     header = {
-      "From" = "/(<?=$value_sane;?>)/i";
+<?php
+  while ($item = array_shift($list_items)) {
+    $header_from[] = str_replace('\*', '.*', preg_quote($item['value'], '/'));
+  }
+?>
+      "From" = "/(<?=implode('|', $header_from);?>)/i";
     }
 <?php
   if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
@@ -291,15 +297,17 @@ while ($row = array_shift($rows)) {
 ?>
   blacklist_<?=$username_sane;?> {
 <?php
-  $stmt = $pdo->prepare("SELECT GROUP_CONCAT(REPLACE(CONCAT('^', `value`, '$'), '*', '.*') SEPARATOR '|') AS `value` FROM `filterconf`
+  $items[] = array();
+  $stmt = $pdo->prepare("SELECT `value` FROM `filterconf`
     WHERE `object`= :object
       AND `option` = 'blacklist_from'");
   $stmt->execute(array(':object' => $row['object']));
-  $grouped_lists = $stmt->fetchAll(PDO::FETCH_COLUMN);
-  $value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
+  $list_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  while ($item = array_shift($list_items)) {
 ?>
-    from = "/(<?=$value_sane;?>)/i";
+    from = "/<?='^' . str_replace('\*', '.*', preg_quote($item['value'], '/')) . '$' ;?>/i";
 <?php
+  }
   if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
 ?>
     priority = 5;
@@ -330,15 +338,20 @@ while ($row = array_shift($rows)) {
   }
   blacklist_header_<?=$username_sane;?> {
 <?php
-  $stmt = $pdo->prepare("SELECT GROUP_CONCAT(REPLACE(CONCAT('\<', `value`, '\>'), '*', '.*') SEPARATOR '|') AS `value` FROM `filterconf`
+  $header_from = array();
+  $stmt = $pdo->prepare("SELECT `value` FROM `filterconf`
     WHERE `object`= :object
       AND `option` = 'blacklist_from'");
   $stmt->execute(array(':object' => $row['object']));
-  $grouped_lists = $stmt->fetchAll(PDO::FETCH_COLUMN);
-  $value_sane = preg_replace("/\.\./", ".", (preg_replace("/\*/", ".*", $grouped_lists[0])));
+  $list_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
     header = {
-      "From" = "/(<?=$value_sane;?>)/i";
+<?php
+  while ($item = array_shift($list_items)) {
+    $header_from[] = str_replace('\*', '.*', preg_quote($item['value'], '/'));
+  }
+?>
+      "From" = "/(<?=implode('|', $header_from);?>)/i";
     }
 <?php
   if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
