@@ -206,7 +206,7 @@ $tfa_data = get_tfa();
             <form class="form" data-id="rlyhost" role="form" method="post">
               <div class="form-group">
                 <label for="hostname"><?=$lang['admin']['host'];?></label>
-                <input class="form-control input-sm" name="hostname" required>
+                <input class="form-control input-sm" name="hostname" placeholder='host:25, host, [host]:25, [0.0.0.0]:25' required>
               </div>
               <div class="form-group">
                 <label for="username"><?=$lang['admin']['username'];?></label>

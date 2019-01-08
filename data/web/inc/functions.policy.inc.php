@@ -42,7 +42,7 @@ function policy($_action, $_scope, $_data = null) {
           elseif ($_data['object_list'] == "wl") {
             $object_list = "whitelist_from";
           }
-          $object_from = preg_replace('/\.+/', '.', rtrim(preg_replace("/\.\*/", "*", trim(strtolower($_data['object_from']))), '.'));
+          $object_from = trim(strtolower($_data['object_from']));
           if (!ctype_alnum(str_replace(array('@', '_', '.', '-', '*'), '', $object_from))) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
@@ -104,7 +104,7 @@ function policy($_action, $_scope, $_data = null) {
           elseif ($_data['object_list'] == "wl") {
             $object_list = "whitelist_from";
           }
-          $object_from = preg_replace('/\.+/', '.', rtrim(preg_replace("/\.\*/", "*", trim(strtolower($_data['object_from']))), '.'));
+          $object_from = trim(strtolower($_data['object_from']));
           if (!ctype_alnum(str_replace(array('@', '_', '.', '-', '*'), '', $object_from))) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
