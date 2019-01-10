@@ -58,7 +58,6 @@ services:
       image: mailcow/clamd:1.16
       build: ./data/Dockerfiles/clamd
       restart: always
-      tty: true
       environment:
         - TZ=${TZ}
         - SKIP_CLAMD=${SKIP_CLAMD:-n}

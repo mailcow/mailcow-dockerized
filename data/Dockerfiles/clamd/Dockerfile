@@ -32,7 +32,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   --sysconfdir=/etc/clamav \
   --mandir=/usr/share/man \
   --infodir=/usr/share/info \
-  --without-iconv \
   --disable-llvm \
   --with-user=clamav \
   --with-group=clamav \
