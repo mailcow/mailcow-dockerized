@@ -143,7 +143,8 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
     /web/nextcloud/occ --no-warnings config:system:set mail_smtpport --value=588
     /web/nextcloud/occ --no-warnings app:install user_external
     /web/nextcloud/occ --no-warnings config:system:set user_backends 0 arguments 0 --value={dovecot:143/imap/tls/novalidate-cert}
-    /web/nextcloud/occ --no-warnings config:system:set user_backends 0 class --value=OC_User_IMAP"
+    /web/nextcloud/occ --no-warnings config:system:set user_backends 0 class --value=OC_User_IMAP
+    /web/nextcloud/occ --no-warnings db:convert-filecache-bigint -n"
 
   if [[ ${NC_TYPE} == "subdomain" ]]; then
     docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) /web/nextcloud/occ --no-warnings config:system:set trusted_domains 1 --value=${NC_SUBD}
