@@ -10,7 +10,6 @@ while [ "$1" != '' ]; do
   case "${1}" in
     -p|--purge) NC_PURGE=y && shift;;
     -i|--install) NC_INSTALL=y && shift;;
-    -u|--update) NC_UPDATE=y && shift;;
     -h|--help) NC_HELP=y && shift;;
     *) echo "Unknown parameter: ${1}" && shift;;
   esac
@@ -20,7 +19,6 @@ if [[ ${NC_HELP} == "y" ]]; then
   printf 'Usage:\n\n'
   printf '  -p|--purge\n    Purge Nextcloud\n'
   printf '  -i|--install\n    Install Nextcloud\n\n'
-  printf '  -u|--update\n    Update Nextcloud\n\n'
   exit 0
 fi
 
@@ -56,6 +54,7 @@ EOF
   docker restart $(docker ps -aqf name=nginx-mailcow)
 
 elif [[ ${NC_UPDATE} == "y" ]]; then
+  exit;
   read -r -p "Are you sure you want to update Nextcloud? [y/N] " response
   response=${response,,}
   if [[ ! "$response" =~ ^(yes|y)$ ]]; then
@@ -67,8 +66,13 @@ elif [[ ${NC_UPDATE} == "y" ]]; then
     echo "Nextcloud occ not found. Is Nextcloud installed?"
     exit 1
   fi
-
-  if grep -q 'installed: true' <<<$(docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ --no-warnings status"); then
+  if ! grep -q 'installed: true' <<<$(docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ --no-warnings status"); then
+    echo "Nextcloud seems not to be installed."
+    exit 1
+  elif ! grep -q 'version: 15\.' <<<$(docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ --no-warnings status"); then
+    echo "Cannot upgrade to new major version, please update manually."
+    exit 1
+  else
     curl -L# -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/latest-15.tar.bz2" || { echo "Failed to download Nextcloud archive."; exit 1; } \
       && tar -xjf nextcloud.tar.bz2 -C ./data/web/ \
       && rm nextcloud.tar.bz2 \
@@ -78,9 +82,6 @@ elif [[ ${NC_UPDATE} == "y" ]]; then
       && chmod +x ./data/web/nextcloud/occ
     docker exec -it $(docker ps -f name=php-fpm-mailcow -q) bash -c "chown www-data:www-data -R /web/nextcloud"
     docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ --no-warnings upgrade"
-  else
-    echo "Nextcloud seems not to be installed."
-    exit 1
   fi
 
 elif [[ ${NC_INSTALL} == "y" ]]; then
