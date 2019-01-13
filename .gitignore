@@ -13,7 +13,7 @@ data/web/inc/vars.local.inc.php
 data/assets/ssl/*
 .vscode/*
 data/web/.well-known/acme-challenge
-data/web/nextcloud/
+data/web/nextcloud*/
 data/conf/rspamd/local.d/*
 data/conf/rspamd/override.d/*
 !data/conf/nginx/dynmaps.conf
