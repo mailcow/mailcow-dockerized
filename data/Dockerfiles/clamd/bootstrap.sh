@@ -50,7 +50,7 @@ done
 ) &
 BACKGROUND_TASKS+=($!)
 
-clamd &
+nice -n10 clamd &
 BACKGROUND_TASKS+=($!)
 
 while true; do
