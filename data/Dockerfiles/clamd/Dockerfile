@@ -32,7 +32,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   --sysconfdir=/etc/clamav \
   --mandir=/usr/share/man \
   --infodir=/usr/share/info \
-  --without-iconv \
   --disable-llvm \
   --with-user=clamav \
   --with-group=clamav \
@@ -53,9 +52,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libssl-dev \
   libjson-c-dev \
   && addgroup --system --gid 700 clamav \
-  && adduser --system --home /var/lib/clamav --uid 700 --gid 700 --disabled-login clamav \
-  && mkdir -p /run/clamav \
-  && chown clamav:clamav /run/clamav \
+  && adduser --system --no-create-home --home /var/lib/clamav --uid 700 --gid 700 --disabled-login clamav \
+  && mkdir -p /run/clamav /var/lib/clamav \
+  && chown clamav:clamav /run/clamav /var/lib/clamav \
   && chmod 750 /run/clamav \
   && rm -rf /tmp/* /var/tmp/*
 

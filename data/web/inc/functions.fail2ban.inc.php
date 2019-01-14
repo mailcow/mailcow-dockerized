@@ -117,6 +117,7 @@ function fail2ban($_action, $_data = null) {
             elseif ($_data['action'] == "blacklist") {
               if (valid_network($network)) {
                 $redis->hSet('F2B_BLACKLIST', $network, 1);
+                $redis->hDel('F2B_WHITELIST', $network, 1);
               }
             }
           }

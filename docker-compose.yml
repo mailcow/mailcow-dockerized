@@ -55,10 +55,9 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.16
+      image: mailcow/clamd:1.18
       build: ./data/Dockerfiles/clamd
       restart: always
-      tty: true
       environment:
         - TZ=${TZ}
         - SKIP_CLAMD=${SKIP_CLAMD:-n}

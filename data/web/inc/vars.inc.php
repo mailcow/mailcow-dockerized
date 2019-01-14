@@ -90,11 +90,11 @@ $DEFAULT_THEME = 'lumen';
 
 // Password complexity as regular expression
 // Min. 6 characters
-//$PASSWD_REGEP = '.{6,}';
+$PASSWD_REGEP = '.{6,}';
 // Min. 6 characters, which must include at least one uppercase letter, one lowercase letter and one number
 // $PASSWD_REGEP = '^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z]).{6,}$';
 // Min. 6 characters, which must include at least one letter and one number
-$PASSWD_REGEP = '^(?=.*[0-9])(?=.*[A-Za-z]).{6,}$';
+// $PASSWD_REGEP = '^(?=.*[0-9])(?=.*[A-Za-z]).{6,}$';
 
 // Show DKIM private keys - false by default
 $SHOW_DKIM_PRIV_KEYS = false;
