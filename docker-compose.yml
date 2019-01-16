@@ -137,7 +137,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.49
+      image: mailcow/sogo:1.50
       build: ./data/Dockerfiles/sogo
       environment:
         - DBNAME=${DBNAME}
@@ -146,6 +146,7 @@ services:
         - TZ=${TZ}
         - LOG_LINES=${LOG_LINES:-9999}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
+        - ACL_ANYONE=${ACL_ANYONE:-disallow}
       volumes:
         - ./data/conf/sogo/:/etc/sogo/
         - ./data/web/inc/init_db.inc.php:/init_db.inc.php
@@ -161,7 +162,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.52
+      image: mailcow/dovecot:1.54
       build: ./data/Dockerfiles/dovecot
       cap_add:
         - NET_BIND_SERVICE
@@ -182,6 +183,7 @@ services:
         - DBPASS=${DBPASS}
         - TZ=${TZ}
         - MAILDIR_GC_TIME=${MAILDIR_GC_TIME:-1440}
+        - ACL_ANYONE=${ACL_ANYONE:-disallow}
       ports:
         - "${DOVEADM_PORT:-127.0.0.1:19991}:12345"
         - "${IMAP_PORT:-143}:143"
