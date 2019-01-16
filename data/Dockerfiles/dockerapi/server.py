@@ -151,7 +151,28 @@ class container_post(Resource):
               return jsonify(type='danger', msg=str(e))
 
         elif request.json['cmd'] == 'system':
-          if request.json['task'] == 'df':
+          if request.json['task'] == 'fts_rescan':
+            if 'username' in request.json:
+              try:
+                for container in docker_client.containers.list(filters={"id": container_id}):
+                  rescan_return = container.exec_run(["/bin/bash", "-c", "/usr/local/bin/doveadm fts rescan -u '" + request.json['username'].replace("'", "'\\''") + "'"], user='vmail')
+                  if rescan_return.exit_code == 0:
+                    return jsonify(type='success', msg='fts_rescan: rescan triggered')
+                  else:
+                    return jsonify(type='warning', msg='fts_rescan error')
+              except Exception as e:
+                return jsonify(type='danger', msg=str(e))
+            if 'all' in request.json:
+              try:
+                for container in docker_client.containers.list(filters={"id": container_id}):
+                  rescan_return = container.exec_run(["/bin/bash", "-c", "/usr/local/bin/doveadm fts rescan -A"], user='vmail')
+                  if rescan_return.exit_code == 0:
+                    return jsonify(type='success', msg='fts_rescan: rescan triggered')
+                  else:
+                    return jsonify(type='warning', msg='fts_rescan error')
+              except Exception as e:
+                return jsonify(type='danger', msg=str(e))
+          elif request.json['task'] == 'df':
             if 'dir' in request.json:
               try:
                 for container in docker_client.containers.list(filters={"id": container_id}):
