@@ -42,7 +42,14 @@ while true; do
       --include 'blurl.ndb' \
       --include 'junk.ndb' \
       --include 'jurlbl.ndb' \
+      --include 'jurbla.ndb' \
+      --include 'phishtank.ndb' \
       --include 'phish.ndb' \
+      --include 'spamimg.hdb' \
+      --include 'scam.ndb' \
+      --include 'rogue.hdb' \
+      --include 'sanesecurity.ftm' \
+      --include 'sigwhitelist.ign2' \
       --exclude='*' /var/lib/clamav/
     if [ $? -eq 0 ]; then
       echo RELOAD | nc localhost 3310
