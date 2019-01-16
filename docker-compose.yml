@@ -55,7 +55,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.20
+      image: mailcow/clamd:1.21
       build: ./data/Dockerfiles/clamd
       restart: always
       environment:
@@ -138,7 +138,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.50
+      image: mailcow/sogo:1.51
       build: ./data/Dockerfiles/sogo
       environment:
         - DBNAME=${DBNAME}
