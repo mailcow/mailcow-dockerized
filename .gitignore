@@ -22,6 +22,7 @@ data/conf/rspamd/override.d/*
 data/conf/nginx/*.conf
 data/conf/nginx/*.custom
 data/conf/nginx/*.bak
+data/conf/dovecot/acl_anyone
 data/conf/dovecot/extra.conf
 data/conf/rspamd/custom/*
 data/conf/portainer/
