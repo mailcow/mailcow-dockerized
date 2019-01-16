@@ -703,6 +703,13 @@ $lang['debug']['log_info'] = '<p>mailcow <b>in-memory Logs</b> werden in Redis L
 $lang['debug']['in_memory_logs'] = 'In-memory Logs';
 $lang['debug']['external_logs'] = 'Externe Logs';
 $lang['debug']['static_logs'] = 'Statische Logs';
+$lang['debug']['solr_status'] = 'Solr Status';
+$lang['debug']['solr_dead'] = 'Solr startet, ist deaktiviert oder temporär nicht erreichbar.';
+$lang['debug']['solr_uptime'] = 'Uptime';
+$lang['debug']['solr_started_at'] = 'Gestartet am';
+$lang['debug']['solr_last_modified'] = 'Zuletzt geändert';
+$lang['debug']['solr_size'] = 'Größe';
+$lang['debug']['solr_docs'] = 'Dokumente';
 
 $lang['quarantine']['release_body'] = "Die ursprüngliche Nachricht wurde als EML-Datei im Anhang hinterlegt.";
 $lang['danger']['release_send_failed'] = "Die Nachricht konnte nicht versendet werden: %s";
