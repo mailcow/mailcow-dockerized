@@ -65,7 +65,7 @@ else {
           </div>
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Solr status</h3>
+              <h3 class="panel-title"><?=$lang['debug']['solr_status'];?></h3>
             </div>
             <div class="panel-body">
               <div class="row">
@@ -76,14 +76,15 @@ else {
                   <?php
                   if ($solr_status !== false):
                   ?>
-                  <p>Uptime: ~<?=round($solr_status['uptime'] / 1000 / 60 / 60);?>h</p>
-                  <p>Started at: <?=$solr_status['startTime'];?></p>
-                  <p>Last modified: <?=$solr_status['index']['lastModified'];?></p>
-                  <p>Size: <?=$solr_status['index']['size'];?></p>
+                  <p><?=$lang['debug']['solr_uptime'];?>: ~<?=round($solr_status['uptime'] / 1000 / 60 / 60);?>h</p>
+                  <p><?=$lang['debug']['solr_started_at'];?>: <?=$solr_status['startTime'];?></p>
+                  <p><?=$lang['debug']['solr_last_modified'];?>: <?=$solr_status['index']['lastModified'];?></p>
+                  <p><?=$lang['debug']['solr_size'];?>: <?=$solr_status['index']['size'];?></p>
+                  <p><?=$lang['debug']['solr_docs'];?>: <?=$solr_status['index']['numDocs'];?></p>
                   <?php
                   else:
                   ?>
-                  <p>Solr is disabled or died.</p>
+                  <p><?=$lang['debug']['solr_dead'];?></p>
                   <?php
                   endif;
                   ?>
