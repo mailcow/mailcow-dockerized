@@ -206,7 +206,7 @@ for option in ${CONFIG_ARRAY[@]}; do
   elif [[ ${option} == "ACL_ANYONE" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
-      echo '# Set this to allow to enable the anyone pseudo user. Disabled by default.
+      echo '# Set this to "allow" to enable the anyone pseudo user. Disabled by default.
 ' >> mailcow.conf
       echo '# When enabled, ACL can be created, that apply to "All authenticated users"
 ' >> mailcow.conf
