@@ -1487,7 +1487,7 @@ function solr_status() {
       // 'log' => array(__FUNCTION__, $action, $service_name, $attr1, $attr2, $extra_headers),
       // 'msg' => $err,
     // )));
-    return $err;
+    return false;
   }
   else {
     curl_close($curl);
