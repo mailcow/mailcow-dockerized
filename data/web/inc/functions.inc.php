@@ -1465,4 +1465,39 @@ function getGUID() {
         .substr($charid,16, 4).$hyphen
         .substr($charid,20,12);
 }
+function solr_status() {
+  $curl = curl_init();
+  $endpoint = 'http://solr:8983/solr/admin/cores';
+  $params = array(
+    'action' => 'STATUS',
+    'core' => 'dovecot',
+    'indexInfo' => 'true'
+  );
+  $url = $endpoint . '?' . http_build_query($params);
+  curl_setopt($curl, CURLOPT_URL, $url);
+  curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($curl, CURLOPT_POST, 0);
+  curl_setopt($curl, CURLOPT_TIMEOUT, 20);
+  $response = curl_exec($curl);
+  if ($response === false) {
+    $err = curl_error($curl);
+    curl_close($curl);
+    // logger(array('return' => array(
+      // 'type' => 'danger',
+      // 'log' => array(__FUNCTION__, $action, $service_name, $attr1, $attr2, $extra_headers),
+      // 'msg' => $err,
+    // )));
+    return $err;
+  }
+  else {
+    curl_close($curl);
+    // logger(array('return' => array(
+      // 'type' => 'success',
+      // 'log' => array(__FUNCTION__, $action, $service_name, $attr1, $attr2, $extra_headers),
+    // )));
+    $status = json_decode($response, true);
+    return (!empty($status['status']['dovecot'])) ? $status['status']['dovecot'] : false;
+  }
+  return false;
+}
 ?>

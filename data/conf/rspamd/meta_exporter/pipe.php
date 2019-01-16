@@ -51,6 +51,7 @@ $raw_data = mb_convert_encoding($raw_data_content, 'HTML-ENTITIES', "UTF-8");
 $headers = getallheaders();
 
 $qid      = $headers['X-Rspamd-Qid'];
+$subject      = $headers['X-Rspamd-Subject'];
 $score    = $headers['X-Rspamd-Score'];
 $rcpts    = $headers['X-Rspamd-Rcpt'];
 $user     = $headers['X-Rspamd-User'];
@@ -188,10 +189,11 @@ foreach (json_decode($rcpts, true) as $rcpt) {
 foreach ($rcpt_final_mailboxes as $rcpt) {
   error_log("QUARANTINE: quarantine pipe: processing quarantine message for rcpt " . $rcpt);
   try {
-    $stmt = $pdo->prepare("INSERT INTO `quarantine` (`qid`, `score`, `sender`, `rcpt`, `symbols`, `user`, `ip`, `msg`, `action`)
+    $stmt = $pdo->prepare("INSERT INTO `quarantine` (`qid`, `subject`, `score`, `sender`, `rcpt`, `symbols`, `user`, `ip`, `msg`, `action`)
       VALUES (:qid, :score, :sender, :rcpt, :symbols, :user, :ip, :msg, :action)");
     $stmt->execute(array(
       ':qid' => $qid,
+      ':subject' => $subject,
       ':score' => $score,
       ':sender' => $sender,
       ':rcpt' => $rcpt,

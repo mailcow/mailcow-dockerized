@@ -53,9 +53,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libjson-c-dev \
   && addgroup --system --gid 700 clamav \
   && adduser --system --no-create-home --home /var/lib/clamav --uid 700 --gid 700 --disabled-login clamav \
-  && mkdir -p /run/clamav /var/lib/clamav \
-  && chown clamav:clamav /run/clamav /var/lib/clamav \
-  && chmod 750 /run/clamav \
   && rm -rf /tmp/* /var/tmp/*
 
 COPY bootstrap.sh ./

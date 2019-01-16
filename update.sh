@@ -121,6 +121,9 @@ CONFIG_ARRAY=(
   "API_KEY"
   "API_ALLOW_FROM"
   "MAILDIR_GC_TIME"
+  "ACL_ANYONE"
+  "SOLR_HEAP"
+  "SKIP_SOLR"
 )
 
 sed -i '$a\' mailcow.conf
@@ -202,6 +205,26 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# Check interval is hourly' >> mailcow.conf
       echo 'MAILDIR_GC_TIME=1440' >> mailcow.conf
     fi
+  elif [[ ${option} == "ACL_ANYONE" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Set this to "allow" to enable the anyone pseudo user. Disabled by default.
+' >> mailcow.conf
+      echo '# When enabled, ACL can be created, that apply to "All authenticated users"
+' >> mailcow.conf
+      echo '# This should probably only be activated on mail hosts, that are used exclusivly by one organisation.
+' >> mailcow.conf
+      echo '# Otherwise a user might share data with too many other users.
+' >> mailcow.conf
+      echo 'ACL_ANYONE=disallow' >> mailcow.conf
+    fi
+  elif [[ ${option} == "SOLR_HEAP" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Solr heap size, there is no recommendation, please see Solr docs.' >> mailcow.conf
+      echo '# Solr is a prone to run OOM and should be monitored. Unmonitored Solr setups are not recommended.' >> mailcow.conf
+      echo "SOLR_HEAP=1024" >> mailcow.conf
+  fi
   elif ! grep -q ${option} mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"
     echo "${option}=n" >> mailcow.conf
