@@ -348,6 +348,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $active = intval($_data['active']);
           $relay_all_recipients = intval($_data['relay_all_recipients']);
           $backupmx = intval($_data['backupmx']);
+          $gal = intval($_data['gal']);
           ($relay_all_recipients == 1) ? $backupmx = '1' : null;
           if (!is_valid_domain_name($domain)) {
             $_SESSION['return'][] = array(
@@ -391,8 +392,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
-          $stmt = $pdo->prepare("INSERT INTO `domain` (`domain`, `description`, `aliases`, `mailboxes`, `maxquota`, `quota`, `backupmx`, `active`, `relay_all_recipients`)
-            VALUES (:domain, :description, :aliases, :mailboxes, :maxquota, :quota, :backupmx, :active, :relay_all_recipients)");
+          $stmt = $pdo->prepare("INSERT INTO `domain` (`domain`, `description`, `aliases`, `mailboxes`, `maxquota`, `quota`, `backupmx`, `gal`, `active`, `relay_all_recipients`)
+            VALUES (:domain, :description, :aliases, :mailboxes, :maxquota, :quota, :backupmx, :gal, :active, :relay_all_recipients)");
           $stmt->execute(array(
             ':domain' => $domain,
             ':description' => $description,
@@ -401,6 +402,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ':maxquota' => $maxquota,
             ':quota' => $quota,
             ':backupmx' => $backupmx,
+            ':gal' => $gal,
             ':active' => $active,
             ':relay_all_recipients' => $relay_all_recipients
           ));
@@ -1738,13 +1740,26 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             }
             if ($_SESSION['mailcow_cc_role'] == "domainadmin" &&
             hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
-              $description  = $_data['description'];
-              $active = intval($_data['active']);
+              $is_now = mailbox('get', 'domain_details', $domain);
+              if (!empty($is_now)) {
+                $gal                  = (isset($_data['gal'])) ? intval($_data['gal']) : $is_now['gal_int'];
+                $description          = (!empty($_data['description'])) ? $_data['description'] : $is_now['description'];
+              }
+              else {
+                $_SESSION['return'][] = array(
+                  'type' => 'danger',
+                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                  'msg' => 'domain_invalid'
+                );
+                continue;
+              }
               $stmt = $pdo->prepare("UPDATE `domain` SET 
-              `description` = :description
+              `description` = :description,
+              `gal` = :gal
                 WHERE `domain` = :domain");
               $stmt->execute(array(
                 ':description' => $description,
+                ':gal' => $gal,
                 ':domain' => $domain
               ));
               $_SESSION['return'][] = array(
@@ -1758,6 +1773,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               if (!empty($is_now)) {
                 $active               = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
                 $backupmx             = (isset($_data['backupmx'])) ? intval($_data['backupmx']) : $is_now['backupmx_int'];
+                $gal                  = (isset($_data['gal'])) ? intval($_data['gal']) : $is_now['gal_int'];
                 $relay_all_recipients = (isset($_data['relay_all_recipients'])) ? intval($_data['relay_all_recipients']) : $is_now['relay_all_recipients_int'];
                 $relayhost            = (isset($_data['relayhost'])) ? intval($_data['relayhost']) : $is_now['relayhost'];
                 $aliases              = (!empty($_data['aliases'])) ? $_data['aliases'] : $is_now['max_num_aliases_for_domain'];
@@ -1844,6 +1860,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $stmt = $pdo->prepare("UPDATE `domain` SET 
               `relay_all_recipients` = :relay_all_recipients,
               `backupmx` = :backupmx,
+              `gal` = :gal,
               `active` = :active,
               `quota` = :quota,
               `maxquota` = :maxquota,
@@ -1855,6 +1872,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $stmt->execute(array(
                 ':relay_all_recipients' => $relay_all_recipients,
                 ':backupmx' => $backupmx,
+                ':gal' => $gal,
                 ':active' => $active,
                 ':quota' => $quota,
                 ':maxquota' => $maxquota,
@@ -2789,9 +2807,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               `relayhost`,
               `relay_all_recipients` as `relay_all_recipients_int`,
               `backupmx` as `backupmx_int`,
+              `gal` as `gal_int`,
               `active` as `active_int`,
               CASE `relay_all_recipients` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `relay_all_recipients`,
               CASE `backupmx` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `backupmx`,
+              CASE `gal` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `gal`,
               CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`
                 FROM `domain` WHERE `domain`= :domain");
           $stmt->execute(array(
@@ -2824,7 +2844,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $domaindata['max_quota_for_domain'] = $row['quota'] * 1048576;
           $domaindata['relayhost'] = $row['relayhost'];
           $domaindata['backupmx'] = $row['backupmx'];
+          $domaindata['gal'] = $row['gal'];
           $domaindata['backupmx_int'] = $row['backupmx_int'];
+          $domaindata['gal_int'] = $row['gal_int'];
           $domaindata['rl'] = $rl;
           $domaindata['active'] = $row['active'];
           $domaindata['active_int'] = $row['active_int'];

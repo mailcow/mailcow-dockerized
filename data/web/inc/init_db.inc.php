@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "14012019_0717";
+    $db_version = "16012019_0717";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -181,6 +181,7 @@ function init_db_schema() {
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
       "domain" => array(
+        // Todo: Move some attributes to json
         "cols" => array(
           "domain" => "VARCHAR(255) NOT NULL",
           "description" => "VARCHAR(255)",
@@ -190,6 +191,7 @@ function init_db_schema() {
           "quota" => "BIGINT(20) NOT NULL DEFAULT '102400'",
           "relayhost" => "VARCHAR(255) NOT NULL DEFAULT '0'",
           "backupmx" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "gal" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "relay_all_recipients" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
