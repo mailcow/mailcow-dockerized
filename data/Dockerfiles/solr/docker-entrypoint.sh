@@ -6,6 +6,16 @@ if [[ "${SKIP_SOLR}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   exit 0
 fi
 
+MEM_TOTAL=$(awk '/MemTotal/ {print $2}' /proc/meminfo)
+
+if [[ "${1}" != "--bootstrap" ]]; then
+  if [ ${MEM_TOTAL} -lt "2097152" ]; then
+    echo "System memory less than 2 GB, skipping Solr..."
+    sleep 365d
+    exit 0
+  fi
+fi
+
 set -e
 
 # allow easier debugging with `docker run -e VERBOSE=yes`
@@ -158,7 +168,11 @@ function solr_config() {
 
 # fixing volume permission
 [[ -d /opt/solr/server/solr/dovecot/data ]] && chown -R solr:solr /opt/solr/server/solr/dovecot/data
-sed -i 's/#SOLR_HEAP="512m"/SOLR_HEAP="'${SOLR_HEAP:-1024}'m"/g' /opt/solr/bin/solr.in.sh
+if [[ "${1}" != "--bootstrap" ]]; then
+  sed -i '/SOLR_HEAP=/c\SOLR_HEAP="'${SOLR_HEAP:-1024}'m"' /opt/solr/bin/solr.in.sh
+else
+  sed -i '/SOLR_HEAP=/c\SOLR_HEAP="256m"' /opt/solr/bin/solr.in.sh
+fi
 
 # start a Solr so we can use the Schema API, but only on localhost,
 # so that clients don't see Solr until we have configured it.
