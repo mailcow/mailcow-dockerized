@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "16012019_0717";
+    $db_version = "17012019_0717";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -230,7 +230,7 @@ function init_db_schema() {
           "qid" => "VARCHAR(30) NOT NULL",
           "subject" => "VARCHAR(500)",
           "score" => "FLOAT(8,2)",
-          "ip" => "VARBINARY(16)",
+          "ip" => "VARCHAR(50)",
           "action" => "CHAR(20) NOT NULL DEFAULT 'unknown'",
           "symbols" => "JSON",
           "sender" => "VARCHAR(255) NOT NULL DEFAULT 'unknown'",

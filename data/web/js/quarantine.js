@@ -14,6 +14,7 @@ jQuery(function($){
         {"name":"qid","type":"text","title":lang.qid,"style":{"width":"125px"}},
         {"name":"sender","style":{"word-break":"break-all"},"title":lang.sender,"breakpoints":"xs sm"},
         {"name":"rcpt","title":lang.rcpt, "type": "text"},
+        {"name":"subject","title":"Subject", "type": "text"},
         {"name":"created","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},"title":lang.received,"style":{"width":"170px"}},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right"},"style":{"width":"220px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
@@ -26,6 +27,12 @@ jQuery(function($){
         },
         success: function (data) {
           $.each(data, function (i, item) {
+            if (item.subject === null) {
+              item.subject = '<i>no preview</i>';
+            }
+            else {
+              item.subject = escapeHtml(item.subject);
+            }
             item.action = '<div class="btn-group">' +
               '<a href="#" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-info show_qid_info"><span class="glyphicon glyphicon-modal-window"></span> ' + lang.show_item + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="del-single-qitem" data-api-url="delete/qitem" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +

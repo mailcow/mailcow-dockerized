@@ -193,7 +193,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <li><a data-action="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
                   <li><a data-action="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
                   <li role="separator" class="divider"></li>
-                  <li><a data-action="delete_selected" data-text="<?=$lang['user']['eas_reset'];?>?" data-id="syncjob" data-api-url='delete/syncjob' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+                  <li><a data-action="delete_selected" data-id="syncjob" data-api-url='delete/syncjob' href="#"><?=$lang['mailbox']['remove'];?></a></li>
                 </ul>
                 <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addSyncJobModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['create_syncjob'];?></a>
               </div>
