@@ -181,7 +181,7 @@ SKIP_IP_CHECK=n
 
 # Skip ClamAV (clamd-mailcow) anti-virus (Rspamd will auto-detect a missing ClamAV container) - y/n
 
-SKIP_CLAMD=n
+SKIP_CLAMD=${SKIP_CLAMD}
 
 # Skip Solr on low-memory systems
 SKIP_SOLR=${SKIP_SOLR}
