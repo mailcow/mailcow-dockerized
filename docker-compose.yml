@@ -11,6 +11,8 @@ services:
         - ./data/conf/unbound/unbound.conf:/etc/unbound/unbound.conf:ro
       restart: always
       tty: true
+      ports:
+        - "127.0.0.1:53:53/udp"
       networks:
         mailcow-network:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.254
