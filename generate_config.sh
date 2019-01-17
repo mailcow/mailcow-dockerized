@@ -65,8 +65,8 @@ else
  SKIP_CLAMD=n
 fi
 
-if [ ${MEM_TOTAL} -le "6815744" ]; then
-  echo "Installed memory is less than 6.5 GiB. It is highly recommended to disable Solr to prevent out-of-memory situations."
+if [ ${MEM_TOTAL} -le "3670016" ]; then
+  echo "Installed memory is less than 3.5 GiB. It is highly recommended to disable Solr to prevent out-of-memory situations."
   echo "Solr is a prone to run OOM and should be monitored. The default Solr heap size is 1024 MiB and should be set according to your expected load in mailcow.conf."
   read -r -p  "Do you want to disable Solr now (recommended)? Solr can be re-enabled by setting SKIP_SOLR=n in mailcow.conf. [Y/n] " response
   case $response in
