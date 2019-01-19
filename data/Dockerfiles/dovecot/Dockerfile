@@ -92,7 +92,7 @@ RUN curl https://www.dovecot.org/releases/2.3/dovecot-$DOVECOT_VERSION.tar.gz | 
   && rm -rf dovecot-2.3-pigeonhole-$PIGEONHOLE_VERSION
 
 RUN cpanm Data::Uniqid Mail::IMAPClient String::Util
-RUN echo '* * * * *   root  /usr/local/bin/imapsync_cron.pl' > /etc/cron.d/imapsync
+RUN echo '* * * * *   root  /usr/local/bin/imapsync_cron.pl 2>&1 | /usr/bin/logger' > /etc/cron.d/imapsync
 RUN echo '30 3 * * *  vmail /usr/local/bin/doveadm quota recalc -A' > /etc/cron.d/dovecot-sync
 RUN echo '* * * * *   vmail /usr/local/bin/trim_logs.sh >> /dev/console 2>&1' > /etc/cron.d/trim_logs
 RUN echo '25 * * * *  vmail /usr/local/bin/maildir_gc.sh >> /dev/console 2>&1' > /etc/cron.d/maildir_gc
