@@ -222,6 +222,12 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# Solr will refuse to start with total system memory below or equal to 2 GB.' >> mailcow.conf
       echo "SOLR_HEAP=1024" >> mailcow.conf
   fi
+  elif [[ ${option} == "SKIP_SOLR" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Solr is disabled by default after upgrading from non-Solr to Solr-enabled mailcows.' >> mailcow.conf
+      echo "SKIP_SOLR=y" >> mailcow.conf
+  fi
   elif ! grep -q ${option} mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"
     echo "${option}=n" >> mailcow.conf
