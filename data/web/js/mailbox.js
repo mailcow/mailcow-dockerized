@@ -179,11 +179,6 @@ jQuery(function($){
   // http://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery
   var entityMap={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;","/":"&#x2F;","`":"&#x60;","=":"&#x3D;"};
   function escapeHtml(n){return String(n).replace(/[&<>"'`=\/]/g,function(n){return entityMap[n]})}
-  if (localStorage.getItem("current_page") === null) {
-    var current_page = {};
-  } else {
-    var current_page = JSON.parse(localStorage.getItem('current_page'));
-  }
   // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
   function validateEmail(email) {
     var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -210,14 +205,6 @@ jQuery(function($){
     $(heading).children('.table-lines').text(function(){
       return ft_paging.totalRows;
     })
-    if (current_page[name]) {
-      ft_paging.goto(parseInt(current_page[name]))
-    }
-  }
-  function paging_mailbox_after(ft, name) {
-    var ft_paging = ft.use(FooTable.Paging)
-    current_page[name] = ft_paging.current;
-    localStorage.setItem('current_page', JSON.stringify(current_page));
   }
   function draw_domain_table() {
     ft_domain_table = FooTable.init('#domain_table', {
@@ -280,6 +267,9 @@ jQuery(function($){
         "limit": 5,
         "size": pagination_size
       },
+      "state": {
+        "enabled": true
+      },
       "filtering": {
         "enabled": true,
         "delay": 100,
@@ -293,9 +283,6 @@ jQuery(function($){
       "on": {
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'domain_table');
-        },
-        "after.ft.paging": function(e, ft){
-          paging_mailbox_after(ft, 'domain_table');
         }
       }
     });
@@ -319,6 +306,7 @@ jQuery(function($){
         {"name":"spam_aliases","filterable": false,"title":lang.spam_aliases,"breakpoints":"xs sm md"},
         {"name":"tls_enforce_in","filterable": false,"title":lang.tls_enforce_in,"breakpoints":"all"},
         {"name":"tls_enforce_out","filterable": false,"title":lang.tls_enforce_out,"breakpoints":"all"},
+        {"name":"quarantine_notification","filterable": false,"title":lang.quarantine_notification,"breakpoints":"all"},
         {"name":"in_use","filterable": false,"type":"html","title":lang.in_use,"sortValue": function(value){
           return Number($(value).find(".progress-bar").attr('aria-valuenow'));
         },
@@ -350,6 +338,15 @@ jQuery(function($){
             item.chkbox = '<input type="checkbox" data-id="mailbox" name="multi_select" value="' + encodeURIComponent(item.username) + '" />';
             item.tls_enforce_in = '<span class="text-' + (item.attributes.tls_enforce_in == 1 ? 'success' : 'danger') + ' glyphicon glyphicon-lock"></span>';
             item.tls_enforce_out = '<span class="text-' + (item.attributes.tls_enforce_out == 1 ? 'success' : 'danger') + ' glyphicon glyphicon-lock"></span>';
+            if (item.attributes.quarantine_notification === 'never') {
+              item.quarantine_notification = lang.never;
+            } else if (item.attributes.quarantine_notification === 'hourly') {
+              item.quarantine_notification = lang.hourly;
+            } else if (item.attributes.quarantine_notification === 'daily') {
+              item.quarantine_notification = lang.daily;
+            } else if (item.attributes.quarantine_notification === 'weekly') {
+              item.quarantine_notification = lang.weekly;
+            }
             if (acl_data.login_as === 1) {
             item.action = '<div class="btn-group">' +
               '<a href="/edit/mailbox/' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
@@ -375,6 +372,9 @@ jQuery(function($){
         "limit": 5,
         "size": pagination_size
       },
+      "state": {
+        "enabled": true
+      },
       "filtering": {
         "enabled": true,
         "delay": 100,
@@ -392,9 +392,6 @@ jQuery(function($){
       "on": {
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'mailbox_table');
-        },
-        "after.ft.paging": function(e, ft){
-          paging_mailbox_after(ft, 'mailbox_table');
         }
       }
     });
@@ -441,6 +438,9 @@ jQuery(function($){
         "limit": 5,
         "size": pagination_size
       },
+      "state": {
+        "enabled": true
+      },
       "filtering": {
         "enabled": true,
         "delay": 100,
@@ -457,9 +457,6 @@ jQuery(function($){
       "on": {
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'resource_table');
-        },
-        "after.ft.paging": function(e, ft){
-          paging_mailbox_after(ft, 'resource_table');
         }
       }
     });
@@ -506,6 +503,9 @@ jQuery(function($){
         "limit": 5,
         "size": pagination_size
       },
+      "state": {
+        "enabled": true
+      },
       "filtering": {
         "enabled": true,
         "delay": 100,
@@ -519,9 +519,6 @@ jQuery(function($){
       "on": {
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'bcc_table');
-        },
-        "after.ft.paging": function(e, ft){
-          paging_mailbox_after(ft, 'bcc_table');
         }
       }
     });
@@ -563,6 +560,9 @@ jQuery(function($){
         "limit": 5,
         "size": pagination_size
       },
+      "state": {
+        "enabled": true
+      },
       "filtering": {
         "enabled": true,
         "delay": 100,
@@ -576,9 +576,6 @@ jQuery(function($){
       "on": {
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'recipient_map_table');
-        },
-        "after.ft.paging": function(e, ft){
-          paging_mailbox_after(ft, 'recipient_map_table');
         }
       }
     });
@@ -626,6 +623,9 @@ jQuery(function($){
         "limit": 5,
         "size": pagination_size
       },
+      "state": {
+        "enabled": true
+      },
       "filtering": {
         "enabled": true,
         "delay": 100,
@@ -639,9 +639,6 @@ jQuery(function($){
       "on": {
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'tls_policy_table');
-        },
-        "after.ft.paging": function(e, ft){
-          paging_mailbox_after(ft, 'tls_policy_table');
         }
       }
     });
@@ -687,6 +684,9 @@ jQuery(function($){
         "limit": 5,
         "size": pagination_size
       },
+      "state": {
+        "enabled": true
+      },
       "filtering": {
         "enabled": true,
         "delay": 100,
@@ -700,9 +700,6 @@ jQuery(function($){
       "on": {
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'transport_maps_table');
-        },
-        "after.ft.paging": function(e, ft){
-          paging_mailbox_after(ft, 'transport_maps_table');
         }
       }
     });
@@ -760,6 +757,9 @@ jQuery(function($){
         "limit": 5,
         "size": pagination_size
       },
+      "state": {
+        "enabled": true
+      },
       "filtering": {
         "enabled": true,
         "delay": 100,
@@ -776,9 +776,6 @@ jQuery(function($){
       "on": {
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'alias_table');
-        },
-        "after.ft.paging": function(e, ft){
-          paging_mailbox_after(ft, 'alias_table');
         }
       }
     });
@@ -817,6 +814,9 @@ jQuery(function($){
         "limit": 5,
         "size": pagination_size
       },
+      "state": {
+        "enabled": true
+      },
       "filtering": {
         "enabled": true,
         "delay": 100,
@@ -830,9 +830,6 @@ jQuery(function($){
       "on": {
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'aliasdomain_table');
-        },
-        "after.ft.paging": function(e, ft){
-          paging_mailbox_after(ft, 'aliasdomain_table');
         }
       }
     });
@@ -892,6 +889,9 @@ jQuery(function($){
         "limit": 5,
         "size": pagination_size
       },
+      "state": {
+        "enabled": true
+      },
       "filtering": {
         "enabled": true,
         "delay": 100,
@@ -905,9 +905,6 @@ jQuery(function($){
       "on": {
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'sync_job_table');
-        },
-        "after.ft.paging": function(e, ft){
-          paging_mailbox_after(ft, 'sync_job_table');
         }
       }
     });
@@ -955,6 +952,9 @@ jQuery(function($){
         "limit": 5,
         "size": pagination_size
       },
+      "state": {
+        "enabled": true
+      },
       "filtering": {
         "enabled": true,
         "delay": 100,
@@ -968,9 +968,6 @@ jQuery(function($){
       "on": {
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'filter_table');
-        },
-        "after.ft.paging": function(e, ft){
-          paging_mailbox_after(ft, 'filter_table');
         }
       }
     });
