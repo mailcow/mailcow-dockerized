@@ -81,6 +81,7 @@ jQuery(function($){
         "limit": 5,
         "size": pagination_size
       },
+      "state": {"enabled": true},
       "sorting": {
         "enabled": true
       }
@@ -147,6 +148,7 @@ jQuery(function($){
         "limit": 5,
         "size": pagination_size
       },
+      "state": {"enabled": true},
       "sorting": {
         "enabled": true
       }
@@ -182,6 +184,7 @@ jQuery(function($){
           });
         }
       }),
+      "state": {"enabled": true},
       "paging": {
         "enabled": true,
         "limit": 5,
@@ -227,6 +230,7 @@ jQuery(function($){
         "limit": 5,
         "size": pagination_size
       },
+      "state": {"enabled": true},
       "sorting": {
         "enabled": true
       }

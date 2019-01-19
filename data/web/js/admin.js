@@ -50,14 +50,6 @@ jQuery(function($){
     $(heading).children('.table-lines').text(function(){
       return ft_paging.totalRows;
     })
-    if (current_page[name]) {
-      ft_paging.goto(parseInt(current_page[name]))
-    }
-  }
-  function paging_admin_after(ft, name) {
-    var ft_paging = ft.use(FooTable.Paging)
-    current_page[name] = ft_paging.current;
-    localStorage.setItem('current_page', JSON.stringify(current_page));
   }
   function draw_domain_admins() {
     ft_domainadmins = FooTable.init('#domainadminstable', {
@@ -82,8 +74,8 @@ jQuery(function($){
       }),
       "empty": lang.empty,
       "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "filtering": {"enabled": true,"delay": 1,"position": "left","connectors": false,"placeholder": lang.filter_table
-      },
+      "state": {"enabled": true},
+      "filtering": {"enabled": true,"delay": 1,"position": "left","connectors": false,"placeholder": lang.filter_table},
       "sorting": {"enabled": true}
     });
   }
@@ -110,6 +102,7 @@ jQuery(function($){
       "empty": lang.empty,
       "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
       "filtering": {"enabled": false},
+      "state": {"enabled": true},
       "sorting": {"enabled": true}
     });
   }
@@ -222,9 +215,6 @@ jQuery(function($){
       "on": {
         "ready.ft.table": function(e, ft){
           table_admin_ready(ft, 'queuetable');
-        },
-        "after.ft.paging": function(e, ft){
-          paging_admin_after(ft, 'queuetable');
         }
       }
     });
