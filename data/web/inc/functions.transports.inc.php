@@ -193,7 +193,10 @@ function transport($_action, $_data = null) {
       $username = str_replace(':', '\:', trim($_data['username']));
       $password = str_replace(':', '\:', trim($_data['password']));
       // ".domain" is a valid destination, "..domain" is not
-      if (empty($destination) || (is_valid_domain_name(preg_replace('/^' . preg_quote('.', '/') . '/', '', $destination)) === false && $destination != '*')) {
+      if (empty($destination)
+            || (is_valid_domain_name(preg_replace('/^' . preg_quote('.', '/') . '/', '', $destination)) === false
+                  && filter_var(idn_to_ascii($destination), FILTER_VALIDATE_EMAIL) === false
+                  && $destination != '*')) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
