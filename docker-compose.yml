@@ -400,7 +400,6 @@ services:
         - solr-vol-1:/opt/solr/server/solr/dovecot/data
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
-      dns_search: mailcow-network
       environment:
         - SOLR_HEAP=${SOLR_HEAP:-1024}
         - SKIP_SOLR=${SKIP_SOLR:-y}
