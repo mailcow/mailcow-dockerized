@@ -638,8 +638,8 @@ $lang['admin']['no_active_bans'] = "Geen actieve verbanningen";
 $lang['admin']['quarantine'] = "Quarantaine";
 $lang['admin']['quarantine_retention_size'] = "Maximale retenties per postvak<br />Gebruik 0 om deze functionaliteit <b>uit te zetten</b>.";
 $lang['admin']['quarantine_max_size'] = "Maximale grootte in MiB (mail die de limiet overschrijdt zal worden verwijderd)<br />0 betekent <b>niet</b> onbeperkt!";
-$lang['admin']['quarantine_exclude_domains'] = "Sluit domeinen en aliasdomeinen uit:";
-$lang['admin']['quarantine_release_format'] = "Vrijgegeven items worden verstuurd als:";
+$lang['admin']['quarantine_exclude_domains'] = "Sluit domeinen en aliasdomeinen uit";
+$lang['admin']['quarantine_release_format'] = "Vrijgegeven items worden verstuurd als";
 $lang['admin']['quarantine_release_format_raw'] = "Origineel";
 $lang['admin']['quarantine_release_format_att'] = "Bijlage";
 

@@ -24,6 +24,11 @@ body.modal-open {
   overflow-y:scroll;
   padding-right: inherit !important;
 }
+@media (min-width: 992px) {
+  .container {
+      width: 80%;
+  }
+}
 .mass-actions-admin {
   user-select: none;
   padding:10px 0 10px 0;
@@ -59,11 +64,6 @@ body.modal-open {
 }
 .nav-tabs>li>a {
   z-index: 1;
-}
-#settings_map {
-  font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
-  font-size:9pt;
-  background:transparent;
 }
 .table-condensed .input-sm {
   width: 100%!important;  

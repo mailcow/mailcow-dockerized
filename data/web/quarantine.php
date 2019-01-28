@@ -18,7 +18,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
         <?php
         if (empty(quarantine('settings')['retention_size']) || empty(quarantine('settings')['max_size'])):
         ?>
-        <span class="help-block"><span class="glyphicon glyphicon-remove text-danger" style="font-size:10px"></span> <b><?=$lang['quarantine']['disabled_by_config'];?></b></span>
+        <div class="panel-body"><div class="alert alert-info"><?=$lang['quarantine']['disabled_by_config'];?></div></div>
         <?php
         endif;
         ?>
@@ -39,6 +39,11 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             </ul>
           </div>
         </div>
+        <hr>
+        <div class="panel-body help-block">
+        <p><span class="dot-danger"></span> <?=$lang['quarantine']['high_danger'];?></p>
+        <p><span class="dot-neutral"></span> <?=$lang['quarantine']['neutral_danger'];?></p>
+        </div>
       </div>
     </div> <!-- /col-md-12 -->
   </div> <!-- /row -->
@@ -49,6 +54,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/quarantine.php';
 <script type='text/javascript'>
 <?php
 $lang_mailbox = json_encode($lang['quarantine']);
+echo "var acl = '". json_encode($_SESSION['acl']) . "';\n";
 echo "var lang = ". $lang_mailbox . ";\n";
 echo "var csrf_token = '". $_SESSION['CSRF']['TOKEN'] . "';\n";
 $role = ($_SESSION['mailcow_cc_role'] == "admin") ? 'admin' : 'domainadmin';

@@ -378,6 +378,14 @@ $lang['edit']['dont_check_sender_acl'] = 'Absender für Domain %s u. Alias-Dom. 
 $lang['edit']['multiple_bookings'] = 'Mehrfaches Buchen';
 $lang['edit']['kind'] = 'Art';
 $lang['edit']['resource'] = 'Ressource';
+$lang['edit']['public_comment'] = 'Öffentlicher Kommentar';
+$lang['mailbox']['public_comment'] = 'Öffentlicher Kommentar';
+$lang['edit']['private_comment'] = 'Privater Kommentar';
+$lang['mailbox']['private_comment'] = 'Privater Kommentar';
+$lang['edit']['comment_info'] = 'Ein privater Kommentar ist für den Benutzer nicht einsehbar. Ein öffentlicher Kommentar wird als Tooltip im Interface des Benutzers angezeigt.';
+$lang['add']['public_comment'] = 'Öffentlicher Kommentar';
+$lang['add']['private_comment'] = 'Privater Kommentar';
+$lang['add']['comment_info'] = 'Ein privater Kommentar ist für den Benutzer nicht einsehbar. Ein öffentlicher Kommentar wird als Tooltip im Interface des Benutzers angezeigt.';
 
 $lang['acl']['spam_alias'] = 'Temporäre E-Mail Aliasse';
 $lang['acl']['tls_policy'] = 'Verschlüsselungsrichtlinie';
@@ -630,9 +638,15 @@ $lang['admin']['queue_unban'] = "Unban einreihen";
 $lang['admin']['no_active_bans'] = "Keine aktiven Bans";
 
 $lang['admin']['quarantine'] = "Quarantäne";
-$lang['admin']['quarantine_retention_size'] = "Rückhaltungen pro Mailbox<br />0 bedeutet <b>inaktiv</b>!";
-$lang['admin']['quarantine_max_size'] = "Maximale Größe in MiB (größere Elemente werden verworfen)<br />0 bedeutet <b>nicht</b> unlimitert!";
-$lang['admin']['quarantine_exclude_domains'] = "Domains und Alias-Domains ausschließen:";
+$lang['admin']['quarantine_retention_size'] = "Rückhaltungen pro Mailbox:<br><small>0 bedeutet <b>inaktiv</b>.</small>";
+$lang['admin']['quarantine_max_size'] = "Maximale Größe in MiB (größere Elemente werden verworfen):<br><small>0 bedeutet <b>nicht</b> unlimitert.</small>";
+$lang['admin']['quarantine_exclude_domains'] = "Domains und Alias-Domains ausschließen";
+$lang['admin']['quarantine_notification_sender'] = "Benachrichtigungs-E-Mail Absender";
+$lang['admin']['quarantine_notification_subject'] = "Benachrichtigungs-E-Mail Betreff";
+$lang['admin']['quarantine_notification_html'] = "Benachrichtigungs-E-Mail Inhalt:<br><small>Leer lassen, um Standard-Template wiederherzustellen.</small>";
+$lang['admin']['quarantine_release_format'] = "Format freigegebener Mails";
+$lang['admin']['quarantine_release_format_raw'] = "Unverändertes Original";
+$lang['admin']['quarantine_release_format_att'] = "Als Anhang";
 
 $lang['success']['forwarding_host_removed'] = "Weiterleitungs-Host %s wurde entfernt";
 $lang['success']['forwarding_host_added'] = "Weiterleitungs-Host %s wurde hinzugefügt";
@@ -676,6 +690,7 @@ $lang['edit']['spam_policy'] = "Hinzufügen und Entfernen von Einträgen in Whit
 $lang['edit']['spam_alias'] = "Anpassen temporärer Alias-Adressen";
 
 $lang['danger']['img_tmp_missing'] = "Grafik konnte nicht validiert werden: Erstellung temporärer Datei fehlgeschlagen";
+$lang['danger']['comment_too_long'] = "Kommentarfeld darf maximal 160 Zeichen enthalten";
 $lang['danger']['img_invalid'] = "Grafik konnte nicht validiert werden";
 $lang['danger']['invalid_mime_type'] = "Grafik konnte nicht validiert werden: Ungültiger MIME-Type";
 $lang['success']['upload_success'] = "Datei wurde erfolgreich hochgeladen";

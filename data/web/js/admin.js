@@ -54,7 +54,7 @@ jQuery(function($){
   function draw_domain_admins() {
     ft_domainadmins = FooTable.init('#domainadminstable', {
       "columns": [
-        {"name":"chkbox","title":"","style":{"maxWidth":"40px","width":"40px"},"filterable": false,"sortable": false,"type":"html"},
+        {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"sorted": true,"name":"username","title":lang.username,"style":{"width":"250px"}},
         {"name":"selected_domains","title":lang.admin_domains,"breakpoints":"xs sm"},
         {"name":"tfa_active","title":"TFA", "filterable": false,"style":{"maxWidth":"80px","width":"80px"}},
@@ -82,7 +82,7 @@ jQuery(function($){
   function draw_admins() {
     ft_admins = FooTable.init('#adminstable', {
       "columns": [
-        {"name":"chkbox","title":"","style":{"maxWidth":"40px","width":"40px"},"filterable": false,"sortable": false,"type":"html"},
+        {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"sorted": true,"name":"usr","title":lang.username,"style":{"width":"250px"}},
         {"name":"tfa_active","title":"TFA", "filterable": false,"style":{"maxWidth":"80px","width":"80px"}},
         {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active},
@@ -109,7 +109,7 @@ jQuery(function($){
   function draw_fwd_hosts() {
     ft_forwardinghoststable = FooTable.init('#forwardinghoststable', {
       "columns": [
-        {"name":"chkbox","title":"","style":{"maxWidth":"40px","width":"40px"},"filterable": false,"sortable": false,"type":"html"},
+        {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"name":"host","type":"text","title":lang.host,"style":{"width":"250px"}},
         {"name":"source","title":lang.source,"breakpoints":"xs sm"},
         {"name":"keep_spam","title":lang.spamfilter, "type": "text","style":{"maxWidth":"80px","width":"80px"}},
@@ -134,7 +134,7 @@ jQuery(function($){
   function draw_relayhosts() {
     ft_relayhoststable = FooTable.init('#relayhoststable', {
       "columns": [
-        {"name":"chkbox","title":"","style":{"maxWidth":"40px","width":"40px"},"filterable": false,"sortable": false,"type":"html"},
+        {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"name":"id","type":"text","title":"ID","style":{"width":"50px"}},
         {"name":"hostname","type":"text","title":lang.host,"style":{"width":"250px"}},
         {"name":"username","title":lang.username,"breakpoints":"xs sm"},
@@ -161,7 +161,7 @@ jQuery(function($){
   function draw_transport_maps() {
     ft_relayhoststable = FooTable.init('#transportstable', {
       "columns": [
-        {"name":"chkbox","title":"","style":{"maxWidth":"40px","width":"40px"},"filterable": false,"sortable": false,"type":"html"},
+        {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"name":"id","type":"text","title":"ID","style":{"width":"50px"}},
         {"name":"destination","type":"text","title":lang.destination,"style":{"width":"250px"}},
         {"name":"nexthop","type":"text","title":lang.nexthop,"style":{"width":"250px"}},
@@ -188,7 +188,7 @@ jQuery(function($){
   function draw_queue() {
     ft_queuetable = FooTable.init('#queuetable', {
       "columns": [
-        {"name":"chkbox","title":"","style":{"maxWidth":"40px","width":"40px"},"filterable": false,"sortable": false,"type":"html"},
+        {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"name":"queue_id","type":"text","title":"QID","style":{"width":"50px"}},
         {"name":"queue_name","type":"text","title":"Queue","style":{"width":"120px"}},
         {"name":"arrival_time","sorted": true,"direction": "DESC","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},"title":lang.arrival_time,"style":{"width":"170px"}},

@@ -453,6 +453,16 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $goto_null = intval($_data['goto_null']);
           $goto_spam = intval($_data['goto_spam']);
           $goto_ham = intval($_data['goto_ham']);
+          $private_comment = $_data['private_comment'];
+          $public_comment = $_data['public_comment'];
+          if (strlen($private_comment) > 160 | strlen($public_comment) > 160){
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              'msg' => 'comment_too_long'
+            );
+            return false;
+          } 
           if (empty($addresses[0])) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
@@ -593,10 +603,13 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               return false;
             }
-            $stmt = $pdo->prepare("INSERT INTO `alias` (`address`, `goto`, `domain`, `active`)
+            $stmt = $pdo->prepare("INSERT INTO `alias` (`address`, `public_comment`, `private_comment`, `goto`, `domain`, `active`)
               VALUES (:address, :goto, :domain, :active)");
             if (!filter_var($address, FILTER_VALIDATE_EMAIL) === true) {
               $stmt->execute(array(
+                ':address' => '@'.$domain,
+                ':public_comment' => $public_comment,
+                ':private_comment' => $private_comment,
                 ':address' => '@'.$domain,
                 ':goto' => $goto,
                 ':domain' => $domain,
@@ -606,6 +619,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             else {
               $stmt->execute(array(
                 ':address' => $address,
+                ':public_comment' => $public_comment,
+                ':private_comment' => $private_comment,
                 ':goto' => $goto,
                 ':domain' => $domain,
                 ':active' => $active
@@ -753,7 +768,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'tls_enforce_in' => strval(intval($MAILBOX_DEFAULT_ATTRIBUTES['tls_enforce_in'])),
               'tls_enforce_out' => strval(intval($MAILBOX_DEFAULT_ATTRIBUTES['tls_enforce_out'])),
               'sogo_access' => strval(intval($MAILBOX_DEFAULT_ATTRIBUTES['sogo_access'])),
-              'mailbox_format' => strval($MAILBOX_DEFAULT_ATTRIBUTES['mailbox_format'])
+              'mailbox_format' => strval($MAILBOX_DEFAULT_ATTRIBUTES['mailbox_format']),
+              'quarantine_notification' => strval($MAILBOX_DEFAULT_ATTRIBUTES['quarantine_notification'])
             )
           );
           if (!is_valid_domain_name($domain)) {
@@ -1139,6 +1155,65 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt->execute(array(
               ':tls_out' => intval($tls_enforce_out),
               ':tls_in' => intval($tls_enforce_in),
+              ':username' => $username
+            ));
+            $_SESSION['return'][] = array(
+              'type' => 'success',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              'msg' => array('mailbox_modified', $username)
+            );
+          }
+        break;
+        case 'quarantine_notification':
+          if (!is_array($_data['username'])) {
+            $usernames = array();
+            $usernames[] = $_data['username'];
+          }
+          else {
+            $usernames = $_data['username'];
+          }
+          if (!isset($_SESSION['acl']['quarantine_notification']) || $_SESSION['acl']['quarantine_notification'] != "1" ) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              'msg' => 'access_denied'
+            );
+            return false;
+          }
+          foreach ($usernames as $username) {
+            if (!filter_var($username, FILTER_VALIDATE_EMAIL) || !hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'access_denied'
+              );
+              continue;
+            }
+            $is_now = mailbox('get', 'quarantine_notification', $username);
+            if (!empty($is_now)) {
+              $quarantine_notification = (isset($_data['quarantine_notification'])) ? $_data['quarantine_notification'] : $is_now['quarantine_notification'];
+            }
+            else {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'access_denied'
+              );
+              continue;
+            }
+            if (!in_array($quarantine_notification, array('never', 'hourly', 'daily', 'weekly'))) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'access_denied'
+              );
+              continue;
+            } 
+            $stmt = $pdo->prepare("UPDATE `mailbox`
+              SET `attributes` = JSON_SET(`attributes`, '$.quarantine_notification', :quarantine_notification)
+                WHERE `username` = :username");
+            $stmt->execute(array(
+              ':quarantine_notification' => $quarantine_notification,
               ':username' => $username
             ));
             $_SESSION['return'][] = array(
@@ -1587,6 +1662,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $goto_null = (isset($_data['goto_null'])) ? intval($_data['goto_null']) : 0;
               $goto_spam = (isset($_data['goto_spam'])) ? intval($_data['goto_spam']) : 0;
               $goto_ham = (isset($_data['goto_ham'])) ? intval($_data['goto_ham']) : 0;
+              $public_comment = (isset($_data['public_comment'])) ? $_data['public_comment'] : $is_now['public_comment'];
+              $private_comment = (isset($_data['private_comment'])) ? $_data['private_comment'] : $is_now['private_comment'];
               $goto = (!empty($_data['goto'])) ? $_data['goto'] : $is_now['goto'];
               $address = (!empty($_data['address'])) ? $_data['address'] : $is_now['address'];
             }
@@ -1703,11 +1780,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             if (!empty($goto)) {
               $stmt = $pdo->prepare("UPDATE `alias` SET
                 `address` = :address,
+                `public_comment` = :public_comment,
+                `private_comment` = :private_comment,
                 `goto` = :goto,
                 `active`= :active
                   WHERE `id` = :id");
               $stmt->execute(array(
                 ':address' => $address,
+                ':public_comment' => $public_comment,
+                ':private_comment' => $private_comment,
                 ':goto' => $goto,
                 ':active' => $active,
                 ':id' => $id
@@ -2367,6 +2448,22 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             'tls_enforce_out' => $attrs['tls_enforce_out']
           );
         break;
+        case 'quarantine_notification':
+          $attrs = array();
+          if (isset($_data) && filter_var($_data, FILTER_VALIDATE_EMAIL)) {
+            if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
+              return false;
+            }
+          }
+          else {
+            $_data = $_SESSION['mailcow_cc_username'];
+          }
+          $stmt = $pdo->prepare("SELECT `attributes` FROM `mailbox` WHERE `username` = :username");
+          $stmt->execute(array(':username' => $_data));
+          $attrs = $stmt->fetch(PDO::FETCH_ASSOC);
+          $attrs = json_decode($attrs['attributes'], true);
+          return $attrs['quarantine_notification'];
+        break;
         case 'filters':
           $filters = array();
           if (isset($_data) && filter_var($_data, FILTER_VALIDATE_EMAIL)) {
@@ -2699,6 +2796,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             `domain`,
             `goto`,
             `address`,
+            `public_comment`,
+            `private_comment`,
             `active` as `active_int`,
             CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`,
             `created`,
@@ -2721,6 +2820,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $aliasdata['in_primary_domain'] = "";
           }
           $aliasdata['id'] = $row['id'];
+          $aliasdata['domain'] = $row['domain'];
+          $aliasdata['public_comment'] = $row['public_comment'];
+          $aliasdata['private_comment'] = $row['private_comment'];
           $aliasdata['domain'] = $row['domain'];
           $aliasdata['goto'] = $row['goto'];
           $aliasdata['address'] = $row['address'];

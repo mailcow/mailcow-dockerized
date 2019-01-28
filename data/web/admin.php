@@ -7,6 +7,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 $tfa_data = get_tfa();
 ?>
 <div class="container">
+
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#tab-access" aria-controls="tab-access" role="tab" data-toggle="tab"><?=$lang['admin']['access'];?></a></li>
     <li role="presentation"><a href="#tab-config" aria-controls="tab-config" role="tab" data-toggle="tab"><?=$lang['admin']['configuration'];?></a></li>
@@ -15,6 +16,8 @@ $tfa_data = get_tfa();
     <li role="presentation"><a href="#tab-mailq" aria-controls="tab-mailq" role="tab" data-toggle="tab"><?=$lang['admin']['queue_manager'];?></a></li>
   </ul>
 
+  <div class="row">
+  <div class="col-md-12">
   <div class="tab-content" style="padding-top:20px">
   <div role="tabpanel" class="tab-pane active" id="tab-access">
     <div class="panel panel-danger">
@@ -271,8 +274,6 @@ $tfa_data = get_tfa();
       </div>
     </div>
   </div>
-
-
 
   <div role="tabpanel" class="tab-pane" id="tab-config">
     <div class="row">
@@ -631,7 +632,28 @@ $tfa_data = get_tfa();
           <div class="row">
             <div class="col-sm-6">
               <div class="form-group">
-                <label for="release_format"><?=$lang['admin']['quarantine_release_format'];?></label>
+                <label for="sender"><?=$lang['admin']['quarantine_notification_sender'];?>:</label>
+                <input type="text" class="form-control" name="sender" value="<?=$q_data['sender'];?>" placeholder="quarantine@localhost">
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="subject"><?=$lang['admin']['quarantine_notification_subject'];?>:</label>
+                <input type="text" class="form-control" name="subject" value="<?=$q_data['subject'];?>" placeholder="Spam Quarantine Notification">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+              <label for="html"><?=$lang['admin']['quarantine_notification_html'];?></label>
+              <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code" rows="20" name="html"><?=$q_data['html'];?></textarea>
+              <br>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="release_format"><?=$lang['admin']['quarantine_release_format'];?>:</label>
                 <select data-width="100%" name="release_format" class="selectpicker" title="<?=$lang['tfa']['select'];?>">
                   <option <?=($q_data['release_format'] == 'raw') ? 'selected' : null;?> value="raw"><?=$lang['admin']['quarantine_release_format_raw'];?></option>
                   <option <?=($q_data['release_format'] == 'attachment') ? 'selected' : null;?> value="attachment"><?=$lang['admin']['quarantine_release_format_att'];?></option>
@@ -640,7 +662,7 @@ $tfa_data = get_tfa();
             </div>
             <div class="col-sm-6">
               <div class="form-group">
-                <label for="exclude_domains"><?=$lang['admin']['quarantine_exclude_domains'];?></label><br />
+                <label for="exclude_domains"><?=$lang['admin']['quarantine_exclude_domains'];?>:</label><br />
                 <select data-width="100%" name="exclude_domains" class="selectpicker" title="<?=$lang['tfa']['select'];?>" multiple>
                 <?php
                 foreach (array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains')) as $domain):
@@ -663,7 +685,7 @@ $tfa_data = get_tfa();
       <div class="panel-heading">Rspamd settings map</div>
       <div class="panel-body">
       <legend>Active settings map</legend>
-      <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control" rows="20" id="settings_map" name="settings_map" readonly><?=file_get_contents('http://nginx:8081/settings.php');?></textarea>
+      <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code" rows="20" name="settings_map" readonly><?=file_get_contents('http://nginx:8081/settings.php');?></textarea>
       <hr>
       <?php $rsettings = rsettings('get'); ?>
         <form class="form" data-id="rsettings" role="form" method="post">
@@ -970,6 +992,9 @@ $tfa_data = get_tfa();
     </div>
   </div>
 
+  </div> <!-- /tab-content -->
+  </div> <!-- /col-md-12 -->
+  </div> <!-- /row -->
 </div> <!-- /container -->
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/admin.php';

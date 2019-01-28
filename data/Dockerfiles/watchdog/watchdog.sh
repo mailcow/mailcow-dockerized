@@ -143,7 +143,7 @@ unbound_checks() {
     cat /dev/null > /tmp/unbound-mailcow
     host_ip=$(get_container_ip unbound-mailcow)
     err_c_cur=${err_count}
-    /usr/lib/nagios/plugins/check_dns -s ${host_ip} -H google.com 2>> /tmp/unbound-mailcow 1>&2; err_count=$(( ${err_count} + $? ))
+    /usr/lib/nagios/plugins/check_dns -s ${host_ip} -H stackoverflow.com 2>> /tmp/unbound-mailcow 1>&2; err_count=$(( ${err_count} + $? ))
     DNSSEC=$(dig com +dnssec | egrep 'flags:.+ad')
     if [[ -z ${DNSSEC} ]]; then
       echo "DNSSEC failure" 2>> /tmp/unbound-mailcow 1>&2

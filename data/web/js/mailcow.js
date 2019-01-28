@@ -161,7 +161,8 @@ $(document).ready(function() {
       $(document).on("keydown", disableF5);
     }
   });
-
+  // Textarea line numbers
+  $(".textarea-code").numberedtextarea({allowTabChar: true});
   // trigger container restart
   $('#RestartContainer').on('show.bs.modal', function(e) {
     var container = $(e.relatedTarget).data('container');

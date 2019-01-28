@@ -74,6 +74,9 @@ if (!empty($_GET['id']) && ctype_alnum($_GET['id'])) {
       }
     }
     if (isset($_GET['att'])) {
+      if ($_SESSION['acl']['quarantine_attachments'] == 0) {
+        exit(json_encode('Forbidden'));
+      }
       $dl_id = intval($_GET['att']);
       $dl_filename = $data['attachments'][$dl_id][0];
       if (!is_dir($tmpdir . $dl_filename) && file_exists($tmpdir . $dl_filename)) {

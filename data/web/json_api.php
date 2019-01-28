@@ -1152,6 +1152,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "tls_policy":
             process_edit_return(mailbox('edit', 'tls_policy', array_merge(array('username' => $items), $attr)));
           break;
+          case "quarantine_notification":
+            process_edit_return(mailbox('edit', 'quarantine_notification', array_merge(array('username' => $items), $attr)));
+          break;
           case "qitem":
             process_edit_return(quarantine('edit', array_merge(array('id' => $items), $attr)));
           break;

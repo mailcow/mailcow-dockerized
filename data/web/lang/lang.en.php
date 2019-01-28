@@ -392,7 +392,14 @@ $lang['edit']['multiple_bookings'] = 'Multiple bookings';
 $lang['edit']['kind'] = 'Kind';
 $lang['edit']['resource'] = 'Resource';
 $lang['edit']['relayhost'] = 'Sender-dependent transports';
-
+$lang['edit']['public_comment'] = 'Public comment';
+$lang['mailbox']['public_comment'] = 'Public comment';
+$lang['edit']['private_comment'] = 'Private comment';
+$lang['mailbox']['private_comment'] = 'Private comment';
+$lang['edit']['comment_info'] = 'A private comment is not visible to the user, while a public comment is shown as tooltip when hovering it in a users overview';
+$lang['add']['public_comment'] = 'Public comment';
+$lang['add']['private_comment'] = 'Private comment';
+$lang['add']['comment_info'] = 'A private comment is not visible to the user, while a public comment is shown as tooltip when hovering it in a users overview';
 $lang['acl']['spam_alias'] = 'Temporary aliases';
 $lang['acl']['tls_policy'] = 'TLS policy';
 $lang['acl']['spam_score'] = 'Spam score';
@@ -666,13 +673,15 @@ $lang['admin']['queue_unban'] = "queue unban";
 $lang['admin']['no_active_bans'] = "No active bans";
 
 $lang['admin']['quarantine'] = "Quarantine";
-$lang['admin']['quarantine_retention_size'] = "Retentions per mailbox<br />0 indicates <b>inactive</b>!";
-$lang['admin']['quarantine_max_size'] = "Maximum size in MiB (larger elements are discarded)<br />0 does <b>not</b> indicate unlimited!";
-$lang['admin']['quarantine_exclude_domains'] = "Exclude domains and alias-domains:";
-$lang['admin']['quarantine_release_format'] = "Format of released items:";
+$lang['admin']['quarantine_retention_size'] = "Retentions per mailbox:<br><small>0 indicates <b>inactive</b>.</small>";
+$lang['admin']['quarantine_max_size'] = "Maximum size in MiB (larger elements are discarded):<br><small>0 does <b>not</b> indicate unlimited.</small>";
+$lang['admin']['quarantine_exclude_domains'] = "Exclude domains and alias-domains";
+$lang['admin']['quarantine_release_format'] = "Format of released items";
 $lang['admin']['quarantine_release_format_raw'] = "Unmodified original";
 $lang['admin']['quarantine_release_format_att'] = "As attachment";
-
+$lang['admin']['quarantine_notification_sender'] = "Notification email sender";
+$lang['admin']['quarantine_notification_subject'] = "Notification email subject";
+$lang['admin']['quarantine_notification_html'] = "Notification email template:<br><small>Leave empty to restore default template.</small>";
 $lang['admin']['ui_texts'] = "UI labels and texts";
 $lang['admin']['help_text'] = "Override help text below login mask (HTML allowed)";
 $lang['admin']['title_name'] = '"mailcow UI" website title';
@@ -699,6 +708,7 @@ $lang['user']['spam_score_reset'] = "Reset to server default";
 $lang['edit']['spam_policy'] = "Add or remove items to white-/blacklist";
 $lang['edit']['spam_alias'] = "Create or change time limited alias addresses";
 
+$lang['danger']['comment_too_long'] = "Comment too long, max 160 chars allowed";
 $lang['danger']['img_tmp_missing'] = "Cannot validate image file: Temporary file not found";
 $lang['danger']['img_invalid'] = "Cannot validate image file";
 $lang['danger']['invalid_mime_type'] = "Invalid mime type";

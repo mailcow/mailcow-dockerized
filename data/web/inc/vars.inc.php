@@ -131,6 +131,9 @@ $DOCKER_TIMEOUT = 60;
 // Anonymize IPs logged via UI
 $ANONYMIZE_IPS = true;
 
+// MAILBOX_DEFAULT_ATTRIBUTES define default attributes for new mailboxes
+// These settings will not change existing mailboxes
+
 // Force incoming TLS for new mailboxes by default
 $MAILBOX_DEFAULT_ATTRIBUTES['tls_enforce_in'] = false;
 
@@ -142,6 +145,9 @@ $MAILBOX_DEFAULT_ATTRIBUTES['force_pw_update'] = false;
 
 // Force password change on next login (only allows login to mailcow UI)
 $MAILBOX_DEFAULT_ATTRIBUTES['sogo_access'] = true;
+
+// Send notification when quarantine is not empty (never, hourly, daily, weekly)
+$MAILBOX_DEFAULT_ATTRIBUTES['quarantine_notification'] = 'never';
 
 // Default mailbox format, should not be changed unless you know exactly, what you do, keep the trailing ":"
 // Check dovecot.conf for further changes (e.g. shared namespace)

@@ -141,8 +141,6 @@ $(document).ready(function() {
     var sieveScript = $(e.relatedTarget).data('sieve-script');
     $(e.currentTarget).find('#sieveDataText').html('<pre style="font-size:14px;line-height:1.1">' + sieveScript + '</pre>');
   });
-  // Set line numbers for textarea
-  $("#script_data").numberedtextarea({allowTabChar: true});
   // Disable submit button on script change
 	$('#script_data').on('keyup', function() {
     $('#add_filter_btns > #add_sieve_script').attr({"disabled": true});
@@ -712,6 +710,8 @@ jQuery(function($){
         {"sorted": true,"name":"address","title":lang.alias,"style":{"width":"250px"}},
         {"name":"goto","title":lang.target_address},
         {"name":"domain","title":lang.domain,"breakpoints":"xs sm"},
+        {"name":"public_comment","title":lang.public_comment,"breakpoints":"all"},
+        {"name":"private_comment","title":lang.private_comment,"breakpoints":"all"},
         {"name":"active","filterable": false,"style":{"maxWidth":"50px","width":"70px"},"title":lang.active},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
@@ -731,6 +731,8 @@ jQuery(function($){
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="alias" name="multi_select" value="' + encodeURIComponent(item.id) + '" />';
             item.goto = escapeHtml(item.goto.replace(/,/g, " "));
+            item.public_comment = escapeHtml(item.public_comment);
+            item.private_comment = escapeHtml(item.private_comment);
             if (item.is_catch_all == 1) {
               item.address = '<div class="label label-default">Catch-All</div> ' + escapeHtml(item.address);
             }
