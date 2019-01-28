@@ -25,11 +25,17 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
           <label for="qid_detail_text_from_html"><h4><?=$lang['quarantine']['text_from_html_content'];?>:</h4></label>
           <pre id="qid_detail_text_from_html"></pre>
         </div>
+        <?php
+        if ($_SESSION['acl']['quarantine_attachments'] == 1):
+        ?>
         <div class="form-group">
           <label for="qid_detail_atts"><h4><?=$lang['quarantine']['atts'];?>:</h4></label>
           <div id="qid_detail_atts">-</div>
         </div>
-        <div class="btn-group" data-acl="<?=$_SESSION['acl']['quarantine'];?>">
+        <?php
+        endif;
+        ?>
+        <div class="btn-group dropup" data-acl="<?=$_SESSION['acl']['quarantine'];?>">
           <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['quarantine']['quick_actions'];?> <span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li><a data-action="edit_selected" data-id="qitems_single" data-item="" data-api-url='edit/qitem' data-api-attr='{"action":"release"}' href="#"><?=$lang['quarantine']['release'];?></a></li>

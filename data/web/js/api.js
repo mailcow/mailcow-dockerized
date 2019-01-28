@@ -193,7 +193,6 @@ $(document).ready(function() {
         }
         if ($(this).attr("max")) {
           if (Number($(this).val()) > Number($(this).attr("max"))) {
-            alert($(this).attr("max"))
             invalid = true;
             $(this).addClass('inputMissingAttr');
           } else {

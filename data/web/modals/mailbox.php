@@ -572,7 +572,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="script_data">Script:</label>
 						<div class="col-sm-10">
-							<textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control" rows="20" id="script_data" name="script_data" required></textarea>
+							<textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code" rows="20" id="script_data" name="script_data" required></textarea>
 						</div>
 					</div>
 					<div class="form-group">

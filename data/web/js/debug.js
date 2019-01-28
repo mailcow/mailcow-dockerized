@@ -381,11 +381,13 @@ jQuery(function($){
         function drawChart() {
 
           var data = google.visualization.arrayToDataTable(graphdata);
-
+          var body_font_color = $('body').css("color");
           var options = {
             is3D: true,
             sliceVisibilityThreshold: 0,
             pieSliceText: 'percentage',
+            backgroundColor: { fill:'transparent' },
+            legend: {textStyle: {color: body_font_color}},
             chartArea: {
               left: 0,
               right: 0,
@@ -416,7 +418,7 @@ jQuery(function($){
         {"name":"unix_time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},"title":lang.time,"style":{"width":"170px"}},
         {"name": "ip","title": "IP address","breakpoints": "all","style": {"minWidth": 88}},
         {"name": "sender_mime","title": "From","breakpoints": "xs sm md","style": {"minWidth": 100}},
-        {"name": "rcpt_mime","title": "To","breakpoints": "xs sm md","style": {"minWidth": 100}},
+        {"name": "rcpt","title": "To","breakpoints": "xs sm md","style": {"minWidth": 100}},
         {"name": "subject","title": "Subject","breakpoints": "all","style": {"word-break": "break-all","minWidth": 150}},
         {"name": "action","title": "Action","style": {"minwidth": 82}},
         {"name": "score","title": "Score","style": {"maxWidth": 110},},
@@ -460,7 +462,12 @@ jQuery(function($){
   function process_table_data(data, table) {
     if (table == 'rspamd_history') {
     $.each(data, function (i, item) {
-      item.rcpt_mime = item.rcpt_mime.join(",&#8203;");
+      if (item.rcpt_mime != "") {
+        item.rcpt = item.rcpt_mime.join(", ");
+      }
+      else {
+        item.rcpt = item.rcpt_smtp.join(", ");
+      }
       Object.keys(item.symbols).map(function(key) {
         var sym = item.symbols[key];
         if (sym.score <= 0) {

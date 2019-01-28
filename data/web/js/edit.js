@@ -22,8 +22,6 @@ $(document).ready(function() {
     $('#textarea_alias_goto').prop('disabled', true);
   }
 
-  $("#script_data").numberedtextarea({allowTabChar: true});
-
   $("#mailbox-password-warning-close").click(function( event ) {
     $('#mailbox-passwd-hidden-info').addClass('hidden');
     $('#mailbox-passwd-form-groups').removeClass('hidden');

@@ -19,8 +19,8 @@
 @font-face {
   font-family: 'Source Sans Pro';
   font-style: italic;
-  font-weight: 700;
-  src: local('Source Sans Pro Bold Italic'), local('SourceSansPro-BoldIt'), url('../fonts/SourceSansPro-BoldIt.woff2') format('woff2');
+  font-weight: 300;
+  src: local('Source Sans Pro Italic'), local('SourceSansPro-Italic'), url('../fonts/SourceSansPro-Italic.woff2') format('woff2');
 }
 #maxmsgsize { min-width: 80px; }
 #slider1 .slider-selection {
@@ -41,6 +41,10 @@
 }
 .btn {
   text-transform: none;
+}
+.textarea-code {
+  font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+  background:transparent !important;
 }
 .navbar-nav {
   margin: 0;

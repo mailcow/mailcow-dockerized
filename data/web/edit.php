@@ -49,6 +49,20 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                 </div>
               </div>
             </div>
+            <hr>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="private_"><?=$lang['edit']['private_comment'];?></label>
+              <div class="col-sm-10">
+                <input maxlength="160" class="form-control" type="text" name="private_comment" value="<?=htmlspecialchars($result['private_comment']);?>" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="public_comment"><?=$lang['edit']['public_comment'];?></label>
+              <div class="col-sm-10">
+                <input maxlength="160" class="form-control" type="text" name="public_comment" value="<?=htmlspecialchars($result['public_comment']);?>" />
+              </div>
+            </div>
+            <hr>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
                 <div class="checkbox">
@@ -1165,7 +1179,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <label class="control-label col-sm-2" for="script_data">Script:</label>
               <div class="col-sm-10">
-                <textarea spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control" rows="20" id="script_data" name="script_data" required><?=$result['script_data'];?></textarea>
+                <textarea spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control textarea-code" rows="20" id="script_data" name="script_data" required><?=$result['script_data'];?></textarea>
               </div>
             </div>
             <div class="form-group">

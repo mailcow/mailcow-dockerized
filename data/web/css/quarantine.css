@@ -35,3 +35,17 @@ table.footable>tbody>tr.footable-empty>td {
 .inputMissingAttr {
   border-color: #FF4136;
 }
+.dot-danger {
+  height: 10px;
+  width: 10px;
+  background-color: #ff4136;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot-neutral {
+  height: 10px;
+  width: 10px;
+  background-color: #d4d4d4;
+  border-radius: 50%;
+  display: inline-block;
+}

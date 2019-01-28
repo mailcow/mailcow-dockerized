@@ -125,7 +125,18 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
       <p class="small"><?=$lang['user']['direct_aliases_desc'];?></p>
     </div>
     <div class="col-md-9 col-xs-7">
-    <p><?=$user_get_alias_details['direct_aliases'];?></p>
+    <?php
+    if ($user_get_alias_details['direct_aliases'] === false) {
+      echo '&#10008;';
+    }
+    else {
+      foreach (array_filter($user_get_alias_details['direct_aliases']) as $direct_alias => $direct_alias_meta) {
+        (!empty($direct_alias_meta['public_comment'])) ?
+          printf('%s <small>(%s)</small><br>', $direct_alias, $direct_alias_meta['public_comment']) :
+          printf('%s<br>', $direct_alias);
+      }
+    }
+    ?>
     </div>
   </div>
   <div class="row">
@@ -133,7 +144,18 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
       <p class="small"><?=$lang['user']['shared_aliases_desc'];?></p>
     </div>
     <div class="col-md-9 col-xs-7">
-    <p><?=$user_get_alias_details['shared_aliases'];?></p>
+    <?php
+    if ($user_get_alias_details['shared_aliases'] === false) {
+      echo '&#10008;';
+    }
+    else {
+      foreach (array_filter($user_get_alias_details['shared_aliases']) as $shared_alias => $shared_alias_meta) {
+        (!empty($shared_alias_meta['public_comment'])) ?
+          printf('%s <small>(%s)</small><br>', $shared_alias, $shared_alias_meta['public_comment']) :
+          printf('%s<br>', $shared_alias);
+      }
+    }
+    ?>
     </div>
   </div>
   <hr>
@@ -223,7 +245,42 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
     <p class="help-block"><?=$lang['user']['tls_policy_warning'];?></p>
     </div>
   </div>
-
+  <?php
+  // Show quarantine_notification options
+  $quarantine_notification = mailbox('get', 'quarantine_notification', $username);
+  ?>
+  <div class="row">
+    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['quarantine_notification'];?>:</div>
+    <div class="col-md-9 col-xs-7">
+    <div class="btn-group" data-acl="<?=$_SESSION['acl']['quarantine_notification'];?>">
+      <button type="button" class="btn btn-sm btn-default <?=($quarantine_notification == "never") ? "active" : null;?>"
+        data-action="edit_selected"
+        data-item="<?= htmlentities($username); ?>"
+        data-id="quarantine_notification"
+        data-api-url='edit/quarantine_notification'
+        data-api-attr='{"quarantine_notification":"never"}'><?=$lang['user']['never'];?></button>
+      <button type="button" class="btn btn-sm btn-default <?=($quarantine_notification == "hourly") ? "active" : null;?>"
+        data-action="edit_selected"
+        data-item="<?= htmlentities($username); ?>"
+        data-id="quarantine_notification"
+        data-api-url='edit/quarantine_notification'
+        data-api-attr='{"quarantine_notification":"hourly"}'><?=$lang['user']['hourly'];?></button>
+      <button type="button" class="btn btn-sm btn-default <?=($quarantine_notification == "daily") ? "active" : null;?>"
+        data-action="edit_selected"
+        data-item="<?= htmlentities($username); ?>"
+        data-id="quarantine_notification"
+        data-api-url='edit/quarantine_notification'
+        data-api-attr='{"quarantine_notification":"daily"}'><?=$lang['user']['daily'];?></button>
+      <button type="button" class="btn btn-sm btn-default <?=($quarantine_notification == "weekly") ? "active" : null;?>"
+        data-action="edit_selected"
+        data-item="<?= htmlentities($username); ?>"
+        data-id="quarantine_notification"
+        data-api-url='edit/quarantine_notification'
+        data-api-attr='{"quarantine_notification":"weekly"}'><?=$lang['user']['weekly'];?></button>
+    </div>
+    <p class="help-block"><?=$lang['user']['quarantine_notification_info'];?></p>
+    </div>
+  </div>
   <hr>
 
   <div class="row">
