@@ -64,6 +64,9 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
   libregexp-common-perl \
   liburi-perl \
   lzma-dev \
+  python-redis \
+  python-jinja2 \
+  python-mysql.connector \
   make \
   mysql-client \
   procps \
@@ -73,9 +76,8 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
   syslog-ng \
   syslog-ng-core \
   syslog-ng-mod-redis \
-  && rm -rf /var/lib/apt/lists/*
-
-RUN curl https://www.dovecot.org/releases/2.3/dovecot-$DOVECOT_VERSION.tar.gz | tar xvz  \
+  && rm -rf /var/lib/apt/lists/* \
+  && curl https://www.dovecot.org/releases/2.3/dovecot-$DOVECOT_VERSION.tar.gz | tar xvz  \
   && cd dovecot-$DOVECOT_VERSION \
   && ./configure --with-solr --with-mysql --with-ldap --with-lzma --with-lz4 --with-ssl=openssl --with-notify=inotify --with-storages=mdbox,sdbox,maildir,mbox,imapc,pop3c --with-bzlib --with-zlib --enable-hardening \
   && make -j3 \
@@ -89,15 +91,19 @@ RUN curl https://www.dovecot.org/releases/2.3/dovecot-$DOVECOT_VERSION.tar.gz | 
   && make install \
   && make clean \
   && cd .. \
-  && rm -rf dovecot-2.3-pigeonhole-$PIGEONHOLE_VERSION
+  && rm -rf dovecot-2.3-pigeonhole-$PIGEONHOLE_VERSION \
+  && cpanm Data::Uniqid Mail::IMAPClient String::Util \
+  && groupadd -g 5000 vmail \
+  && groupadd -g 401 dovecot \
+  && groupadd -g 402 dovenull \
+  && useradd -g vmail -u 5000 vmail -d /var/vmail \
+  && useradd -c "Dovecot unprivileged user" -d /dev/null -u 401 -g dovecot -s /bin/false dovecot \
+  && useradd -c "Dovecot login user" -d /dev/null -u 402 -g dovenull -s /bin/false dovenull \
+  && touch /etc/default/locale \
+  && apt-get purge -y build-essential automake autotools-dev default-libmysqlclient-dev libbz2-dev libcurl4-openssl-dev libexpat1-dev liblz-dev liblz4-dev liblzma-dev libpam-dev libssl-dev lzma-dev \
+  && apt-get autoremove --purge -y \
+  && rm -rf /tmp/* /var/tmp/*
 
-RUN cpanm Data::Uniqid Mail::IMAPClient String::Util
-RUN echo '* * * * *   root  /usr/local/bin/imapsync_cron.pl 2>&1 | /usr/bin/logger' > /etc/cron.d/imapsync
-RUN echo '30 3 * * *  vmail /usr/local/bin/doveadm quota recalc -A' > /etc/cron.d/dovecot-sync
-RUN echo '* * * * *   vmail /usr/local/bin/trim_logs.sh >> /dev/console 2>&1' > /etc/cron.d/trim_logs
-RUN echo '25 * * * *  vmail /usr/local/bin/maildir_gc.sh >> /dev/console 2>&1' > /etc/cron.d/maildir_gc
-RUN echo '30 1 * * *  root  /usr/local/bin/sa-rules.sh  >> /dev/console 2>&1' > /etc/cron.d/sa-rules
-RUN echo '0 2 * * *   root  /usr/bin/curl http://solr:8983/solr/dovecot/update?optimize=true >> /dev/console 2>&1' > /etc/cron.d/solr-optimize 
 COPY trim_logs.sh /usr/local/bin/trim_logs.sh
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
 COPY imapsync /usr/local/bin/imapsync
@@ -112,32 +118,7 @@ COPY maildir_gc.sh /usr/local/bin/maildir_gc.sh
 COPY docker-entrypoint.sh /
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 COPY stop-supervisor.sh /usr/local/sbin/stop-supervisor.sh
-
-RUN chmod +x /usr/local/lib/dovecot/sieve/rspamd-pipe-ham \
-  /usr/local/lib/dovecot/sieve/rspamd-pipe-spam \
-  /usr/local/bin/imapsync_cron.pl \
-  /usr/local/bin/postlogin.sh \
-  /usr/local/bin/imapsync \
-  /usr/local/bin/trim_logs.sh \
-  /usr/local/bin/sa-rules.sh \
-  /usr/local/bin/maildir_gc.sh \
-  /usr/local/sbin/stop-supervisor.sh
-
-RUN groupadd -g 5000 vmail \
-  && groupadd -g 401 dovecot \
-  && groupadd -g 402 dovenull \
-  && useradd -g vmail -u 5000 vmail -d /var/vmail \
-  && useradd -c "Dovecot unprivileged user" -d /dev/null -u 401 -g dovecot -s /bin/false dovecot \
-  && useradd -c "Dovecot login user" -d /dev/null -u 402 -g dovenull -s /bin/false dovenull
-
-RUN touch /etc/default/locale
-RUN apt-get purge -y build-essential automake autotools-dev default-libmysqlclient-dev libbz2-dev libcurl4-openssl-dev libexpat1-dev liblz-dev liblz4-dev liblzma-dev libpam-dev libssl-dev lzma-dev \
-  && apt-get autoremove --purge -y
+COPY quarantine_notify.py /usr/local/bin/quarantine_notify.py
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
-
-RUN rm -rf \
-  /tmp/* \
-  /var/tmp/*
-

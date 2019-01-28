@@ -7,11 +7,16 @@ while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${D
   sleep 2
 done
 
-# Hard-code env vars to scripts due to cron not passing them to the perl script
-sed -i "/^\$DBUSER/c\\\$DBUSER='${DBUSER}';" /usr/local/bin/imapsync_cron.pl
-sed -i "/^\$DBPASS/c\\\$DBPASS='${DBPASS}';" /usr/local/bin/imapsync_cron.pl
-sed -i "/^\$DBNAME/c\\\$DBNAME='${DBNAME}';" /usr/local/bin/imapsync_cron.pl
-sed -i "s/LOG_LINES/${LOG_LINES}/g" /usr/local/bin/trim_logs.sh
+# Hard-code env vars to scripts due to cron not passing them to the scripts
+sed -i "s/__DBUSER__/${DBUSER}/g" /usr/local/bin/imapsync_cron.pl
+sed -i "s/__DBPASS__/${DBPASS}/g" /usr/local/bin/imapsync_cron.pl
+sed -i "s/__DBNAME__/${DBNAME}/g" /usr/local/bin/imapsync_cron.pl
+
+sed -i "s/__DBUSER__/${DBUSER}/g" /usr/local/bin/quarantine_notify.py
+sed -i "s/__DBPASS__/${DBPASS}/g" /usr/local/bin/quarantine_notify.py
+sed -i "s/__DBNAME__/${DBNAME}/g" /usr/local/bin/quarantine_notify.py
+
+sed -i "s/__LOG_LINES__/${LOG_LINES}/g" /usr/local/bin/trim_logs.sh
 
 # Create missing directories
 [[ ! -d /usr/local/etc/dovecot/sql/ ]] && mkdir -p /usr/local/etc/dovecot/sql/
@@ -87,7 +92,17 @@ EOF
 
 echo -n ${ACL_ANYONE} > /usr/local/etc/dovecot/acl_anyone
 
-# Create userdb dict for Dovecot
+if [[ "${SKIP_SOLR}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+echo -n 'quota acl zlib listescape mail_crypt mail_crypt_acl mail_log notify' > /usr/local/etc/dovecot/mail_plugins
+echo -n 'quota imap_quota imap_acl acl zlib imap_zlib imap_sieve listescape mail_crypt mail_crypt_acl notify mail_log' > /usr/local/etc/dovecot/mail_plugins_imap
+echo -n 'quota sieve acl zlib listescape mail_crypt mail_crypt_acl' > /usr/local/etc/dovecot/mail_plugins_lmtp
+else
+echo -n 'quota acl zlib listescape mail_crypt mail_crypt_acl mail_log notify fts fts_solr' > /usr/local/etc/dovecot/mail_plugins
+echo -n 'quota imap_quota imap_acl acl zlib imap_zlib imap_sieve listescape mail_crypt mail_crypt_acl notify mail_log fts fts_solr' > /usr/local/etc/dovecot/mail_plugins_imap
+echo -n 'quota sieve acl zlib listescape mail_crypt mail_crypt_acl fts fts_solr' > /usr/local/etc/dovecot/mail_plugins_lmtp
+fi
+chmod 644 /usr/local/etc/dovecot/mail_plugins /usr/local/etc/dovecot/mail_plugins_imap /usr/local/etc/dovecot/mail_plugins_lmtp /templates/quarantine.tpl
+
 cat <<EOF > /usr/local/etc/dovecot/sql/dovecot-dict-sql-userdb.conf
 driver = mysql
 connect = "host=/var/run/mysqld/mysqld.sock dbname=${DBNAME} user=${DBUSER} password=${DBPASS}"
@@ -142,6 +157,24 @@ chown -R vmail:vmail /var/vmail/sieve
 chown -R vmail:vmail /var/volatile
 adduser vmail tty
 chmod g+rw /dev/console
+chmod +x /usr/local/lib/dovecot/sieve/rspamd-pipe-ham \
+  /usr/local/lib/dovecot/sieve/rspamd-pipe-spam \
+  /usr/local/bin/imapsync_cron.pl \
+  /usr/local/bin/postlogin.sh \
+  /usr/local/bin/imapsync \
+  /usr/local/bin/trim_logs.sh \
+  /usr/local/bin/sa-rules.sh \
+  /usr/local/bin/maildir_gc.sh \
+  /usr/local/sbin/stop-supervisor.sh
+
+# Setup cronjobs
+echo '* * * * *    root  /usr/local/bin/imapsync_cron.pl 2>&1 | /usr/bin/logger' > /etc/cron.d/imapsync
+echo '30 3 * * *   vmail /usr/local/bin/doveadm quota recalc -A' > /etc/cron.d/dovecot-sync
+echo '* * * * *    vmail /usr/local/bin/trim_logs.sh >> /dev/console 2>&1' > /etc/cron.d/trim_logs
+echo '25 * * * *   vmail /usr/local/bin/maildir_gc.sh >> /dev/console 2>&1' > /etc/cron.d/maildir_gc
+echo '30 1 * * *   root  /usr/local/bin/sa-rules.sh  >> /dev/console 2>&1' > /etc/cron.d/sa-rules
+echo '0 2 * * *    root  /usr/bin/curl http://solr:8983/solr/dovecot/update?optimize=true >> /dev/console 2>&1' > /etc/cron.d/solr-optimize
+echo '*/20 * * * * vmail /usr/local/bin/quarantine_notify.py >> /dev/console 2>&1' > /etc/cron.d/quarantine_notify
 
 # Fix more than 1 hardlink issue
 touch /etc/crontab /etc/cron.*/*
