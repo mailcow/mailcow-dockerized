@@ -20,10 +20,9 @@
      * Modification:
      * Only continue load this library if window.u2f is not already supplied by the browser.
      */
-    var isFirefox = navigator.userAgent.indexOf('Firefox') !== -1 || navigator.userAgent.indexOf('Gecko/') !== -1;
     var browserImplementsU2f = !!((typeof root.u2f !== 'undefined') && root.u2f.register);
 
-    if (isFirefox && browserImplementsU2f) {
+    if (browserImplementsU2f) {
         root.u2f.isSupported = true;
         return;
     }
