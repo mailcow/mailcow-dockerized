@@ -189,7 +189,7 @@ SKIP_IP_CHECK=n
 
 SKIP_CLAMD=${SKIP_CLAMD}
 
-# Skip Solr on low-memory systems
+# Skip Solr on low-memory systems or if you do not want to store a readable index of your mails in solr-vol-1.
 SKIP_SOLR=${SKIP_SOLR}
 
 # Solr heap size in MB, there is no recommendation, please see Solr docs.
