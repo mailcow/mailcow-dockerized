@@ -98,13 +98,16 @@ for record in records:
   attrs_json = query_mysql('SELECT attributes FROM mailbox WHERE username = "%s"' % (record['rcpt']))
   attrs = json.loads(str(attrs_json[0]['attributes']))
   if attrs['quarantine_notification'] == 'hourly':
-    if last_notification == 0 or (last_notification + 3600) > time_now:
+    if last_notification == 0 or (last_notification + 3600) < time_now:
+      print "Notifying %s about %d new items in quarantine" % (record['rcpt'], record['counter'])
       notify_rcpt(record['rcpt'], record['counter'])
   elif attrs['quarantine_notification'] == 'daily':
-    if last_notification == 0 or (last_notification + 86400) > time_now:
+    if last_notification == 0 or (last_notification + 86400) < time_now:
+      print "Notifying %s about %d new items in quarantine" % (record['rcpt'], record['counter'])
       notify_rcpt(record['rcpt'], record['counter'])
   elif attrs['quarantine_notification'] == 'weekly':
-    if last_notification == 0 or (last_notification + 604800) > time_now:
+    if last_notification == 0 or (last_notification + 604800) < time_now:
+      print "Notifying %s about %d new items in quarantine" % (record['rcpt'], record['counter'])
       notify_rcpt(record['rcpt'], record['counter'])
   else:
     break
