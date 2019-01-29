@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# Check permissions
+if [ "$(id -u)" -ne "0" ]; then
+  echo "You need to be root"
+  exit 1
+fi
+
 #exit on error and pipefail
 set -o pipefail
 
@@ -271,7 +277,14 @@ echo -e "Stopping mailcow... "
 sleep 2
 docker-compose down
 
-# Fix header check
+# Fix Rspamd maps
+if [ -f data/conf/rspamd/custom/global_from_blacklist.map ]; then
+  mv data/conf/rspamd/custom/global_from_blacklist.map data/conf/rspamd/custom/global_smtp_from_blacklist.map
+fi
+if [ -f data/conf/rspamd/custom/global_from_whitelist.map ]; then
+  mv data/conf/rspamd/custom/global_from_whitelist.map data/conf/rspamd/custom/global_smtp_from_whitelist.map
+fi
+
 # Silently fixing remote url from andryyy to mailcow
 git remote set-url origin https://github.com/mailcow/mailcow-dockerized
 echo -e "\e[32mCommitting current status...\e[0m"
