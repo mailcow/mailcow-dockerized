@@ -278,14 +278,6 @@ echo -e "Stopping mailcow... "
 sleep 2
 docker-compose down
 
-# Fix Rspamd maps
-if [ -f data/conf/rspamd/custom/global_from_blacklist.map ]; then
-  mv data/conf/rspamd/custom/global_from_blacklist.map data/conf/rspamd/custom/global_smtp_from_blacklist.map
-fi
-if [ -f data/conf/rspamd/custom/global_from_whitelist.map ]; then
-  mv data/conf/rspamd/custom/global_from_whitelist.map data/conf/rspamd/custom/global_smtp_from_whitelist.map
-fi
-
 # Silently fixing remote url from andryyy to mailcow
 git remote set-url origin https://github.com/mailcow/mailcow-dockerized
 echo -e "\e[32mCommitting current status...\e[0m"
@@ -372,6 +364,14 @@ fi
 if [[ -f "data/web/nextcloud/occ" ]]; then
 echo "Setting Nextcloud Redis timeout to 0.0..."
 docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ config:system:set redis timeout --value=0.0 --type=integer"
+fi
+
+# Fix Rspamd maps
+if [ -f data/conf/rspamd/custom/global_from_blacklist.map ]; then
+  mv data/conf/rspamd/custom/global_from_blacklist.map data/conf/rspamd/custom/global_smtp_from_blacklist.map
+fi
+if [ -f data/conf/rspamd/custom/global_from_whitelist.map ]; then
+  mv data/conf/rspamd/custom/global_from_whitelist.map data/conf/rspamd/custom/global_smtp_from_whitelist.map
 fi
 
 echo -e "\e[32mStarting mailcow...\e[0m"
