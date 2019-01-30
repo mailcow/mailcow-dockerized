@@ -27,7 +27,7 @@ abstract class AbstractMessage extends AbstractPart
      *
      * @return null|string
      */
-    final public function getId()
+    final public function getId(): ?string
     {
         return $this->getHeaders()->get('message_id');
     }
@@ -37,7 +37,7 @@ abstract class AbstractMessage extends AbstractPart
      *
      * @return null|EmailAddress
      */
-    final public function getFrom()
+    final public function getFrom(): ?EmailAddress
     {
         $from = $this->getHeaders()->get('from');
 
@@ -109,7 +109,7 @@ abstract class AbstractMessage extends AbstractPart
      *
      * @return null|\DateTimeImmutable
      */
-    final public function getDate()
+    final public function getDate(): ?\DateTimeImmutable
     {
         $dateHeader = $this->getHeaders()->get('date');
         if (null === $dateHeader) {
@@ -149,7 +149,7 @@ abstract class AbstractMessage extends AbstractPart
      *
      * @return null|string
      */
-    final public function getSubject()
+    final public function getSubject(): ?string
     {
         return $this->getHeaders()->get('subject');
     }
@@ -183,7 +183,7 @@ abstract class AbstractMessage extends AbstractPart
      *
      * @return null|string
      */
-    final public function getBodyHtml()
+    final public function getBodyHtml(): ?string
     {
         $iterator = new \RecursiveIteratorIterator($this, \RecursiveIteratorIterator::SELF_FIRST);
         foreach ($iterator as $part) {
@@ -205,7 +205,7 @@ abstract class AbstractMessage extends AbstractPart
      *
      * @return null|string
      */
-    final public function getBodyText()
+    final public function getBodyText(): ?string
     {
         $iterator = new \RecursiveIteratorIterator($this, \RecursiveIteratorIterator::SELF_FIRST);
         foreach ($iterator as $part) {

@@ -1,5 +1,29 @@
 # Change Log
 
+## [1.6.0](https://github.com/ddeboer/imap/tree/1.6.0) (2018-12-04)
+[Full Changelog](https://github.com/ddeboer/imap/compare/1.5.5...1.6.0)
+
+**Implemented enhancements:**
+
+- Require PHP ^7.1 [\#257](https://github.com/ddeboer/imap/issues/257)
+- Require PHP ^7.1 [\#383](https://github.com/ddeboer/imap/pull/383) ([Slamdunk](https://github.com/Slamdunk))
+- Add ability to pass options and retries to imap\_open [\#382](https://github.com/ddeboer/imap/pull/382) ([Slamdunk](https://github.com/Slamdunk))
+- Docker setup for running tests [\#374](https://github.com/ddeboer/imap/pull/374) ([LeadTechVisas](https://github.com/LeadTechVisas))
+- Get messages by UID sequence [\#373](https://github.com/ddeboer/imap/pull/373) ([LeadTechVisas](https://github.com/LeadTechVisas))
+
+**Fixed bugs:**
+
+- Undeliverable mail: attachment parsing error [\#334](https://github.com/ddeboer/imap/issues/334)
+- imap\_getmailboxes returns false; [\#134](https://github.com/ddeboer/imap/issues/134)
+- Fix mailbox name as only numbers [\#381](https://github.com/ddeboer/imap/pull/381) ([Slamdunk](https://github.com/Slamdunk))
+- Gracefully handle possible non-array return value of imap\_getmailboxes [\#372](https://github.com/ddeboer/imap/pull/372) ([Slamdunk](https://github.com/Slamdunk))
+
+**Closed issues:**
+
+- \[AUTHENTICATIONFAILED\] Authentication failed - Too many login failures [\#368](https://github.com/ddeboer/imap/issues/368)
+- last folder in list [\#353](https://github.com/ddeboer/imap/issues/353)
+- Caching IMAP server connections [\#88](https://github.com/ddeboer/imap/issues/88)
+
 ## [1.5.5](https://github.com/ddeboer/imap/tree/1.5.5) (2018-08-21)
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.5.4...1.5.5)
 

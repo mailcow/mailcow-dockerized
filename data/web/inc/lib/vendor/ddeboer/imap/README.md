@@ -6,7 +6,7 @@
 [![Latest Stable Version](https://poser.pugx.org/ddeboer/imap/v/stable.svg)](https://packagist.org/packages/ddeboer/imap)
 [![Total Downloads](https://poser.pugx.org/ddeboer/imap/downloads.png)](https://packagist.org/packages/ddeboer/imap)
 
-A PHP 7.0+ library to read and process e-mails over IMAP.
+A PHP 7.1+ library to read and process e-mails over IMAP.
 
 This library requires [IMAP](https://secure.php.net/manual/en/book.imap.php),
 [iconv](https://secure.php.net/manual/en/book.iconv.php) and
@@ -27,6 +27,7 @@ This library requires [IMAP](https://secure.php.net/manual/en/book.imap.php),
     1. [Timeouts](#timeouts)
 1. [Mock the library](#mock-the-library)
 1. [Running the Tests](#running-the-tests)
+    1. [Running Tests using Docker](#running-tests-using-docker)
 
 ## Installation
 
@@ -345,3 +346,11 @@ these environment variables in it:
 ```
 
 **WARNING** Tests create new mailboxes without removing them.
+
+### Running Tests using Docker
+
+If you have Docker installed you can run the tests locally with the following command:
+
+```
+$ docker-compose run tests
+```

@@ -27,7 +27,7 @@ class Parameters extends \ArrayIterator
     /**
      * @param array $parameters
      */
-    public function add(array $parameters = [])
+    public function add(array $parameters = []): void
     {
         foreach ($parameters as $parameter) {
             $key = \strtolower($parameter->attribute);

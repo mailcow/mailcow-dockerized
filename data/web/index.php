@@ -108,6 +108,6 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
     </div>
   </div>
 </div><!-- /.container -->
-<script src="/js/index.js"></script>
+<script src="/js/site/index.js"></script>
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';

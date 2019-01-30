@@ -21,7 +21,7 @@ interface MessageInterface extends Message\BasicMessageInterface
      *
      * @return null|string
      */
-    public function isRecent();
+    public function isRecent(): ?string;
 
     /**
      * Get message unseen flag value (from headers).
@@ -86,19 +86,19 @@ interface MessageInterface extends Message\BasicMessageInterface
      *
      * @param MailboxInterface $mailbox
      */
-    public function copy(MailboxInterface $mailbox);
+    public function copy(MailboxInterface $mailbox): void;
 
     /**
      * Move message to another mailbox.
      *
      * @param MailboxInterface $mailbox
      */
-    public function move(MailboxInterface $mailbox);
+    public function move(MailboxInterface $mailbox): void;
 
     /**
      * Delete message.
      */
-    public function delete();
+    public function delete(): void;
 
     /**
      * Set Flag Message.

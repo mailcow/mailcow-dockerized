@@ -34,14 +34,14 @@ interface BasicMessageInterface extends PartInterface
      *
      * @return null|string
      */
-    public function getId();
+    public function getId(): ?string;
 
     /**
      * Get message sender (from headers).
      *
      * @return null|EmailAddress
      */
-    public function getFrom();
+    public function getFrom(): ?EmailAddress;
 
     /**
      * Get To recipients.
@@ -90,21 +90,21 @@ interface BasicMessageInterface extends PartInterface
      *
      * @return null|\DateTimeImmutable
      */
-    public function getDate();
+    public function getDate(): ?\DateTimeImmutable;
 
     /**
      * Get message size (from headers).
      *
-     * @return int
+     * @return null|int|string
      */
     public function getSize();
 
     /**
      * Get message subject (from headers).
      *
-     * @return string
+     * @return null|string
      */
-    public function getSubject();
+    public function getSubject(): ?string;
 
     /**
      * Get message In-Reply-To (from headers).
@@ -123,16 +123,16 @@ interface BasicMessageInterface extends PartInterface
     /**
      * Get body HTML.
      *
-     * @return string | null Null if message has no HTML message part
+     * @return null|string Null if message has no HTML message part
      */
-    public function getBodyHtml();
+    public function getBodyHtml(): ?string;
 
     /**
      * Get body text.
      *
-     * @return string
+     * @return null|string
      */
-    public function getBodyText();
+    public function getBodyText(): ?string;
 
     /**
      * Get attachments (if any) linked to this e-mail.

@@ -1009,8 +1009,7 @@ echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
 echo "var log_pagination_size = '". $LOG_PAGINATION_SIZE . "';\n";
 ?>
 </script>
-<script src="/js/footable.min.js"></script>
-<script src="/js/admin.js"></script>
+<script src="/js/site/admin.js"></script>
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
 } else {

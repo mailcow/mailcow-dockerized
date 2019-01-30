@@ -15,6 +15,11 @@ class ComposerStaticInit873464e4bd965a3168f133248b1b218b
         array (
             'PhpMimeMailParser\\' => 18,
         ),
+        'M' => 
+        array (
+            'MatthiasMullie\\PathConverter\\' => 29,
+            'MatthiasMullie\\Minify\\' => 22,
+        ),
         'H' => 
         array (
             'Html2Text\\' => 10,
@@ -33,6 +38,14 @@ class ComposerStaticInit873464e4bd965a3168f133248b1b218b
         'PhpMimeMailParser\\' => 
         array (
             0 => __DIR__ . '/..' . '/php-mime-mail-parser/php-mime-mail-parser/src',
+        ),
+        'MatthiasMullie\\PathConverter\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/matthiasmullie/path-converter/src',
+        ),
+        'MatthiasMullie\\Minify\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/matthiasmullie/minify/src',
         ),
         'Html2Text\\' => 
         array (
