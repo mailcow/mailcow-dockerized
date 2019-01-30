@@ -80,7 +80,6 @@ body.modal-open {
 }
 body {
   font-family: "PT Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
-  font-size:11pt;
 }
 #mailcow-alert {
   position: fixed;
