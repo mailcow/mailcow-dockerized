@@ -14,7 +14,7 @@ interface AttachmentInterface extends PartInterface
      *
      * @return null|string
      */
-    public function getFilename();
+    public function getFilename(): ?string;
 
     /**
      * Get attachment file size.

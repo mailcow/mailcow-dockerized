@@ -3,6 +3,7 @@ sudo: false
 php:
   - 7.0
   - 7.1
+  - 7.2
   - hhvm
 matrix:
   include:
@@ -15,6 +16,7 @@ before_script:
   - composer install
 
 script:
+  - ./vendor/bin/psalm
   - ./vendor/phpunit/phpunit/phpunit -c phpunit.xml
 
 after_success:

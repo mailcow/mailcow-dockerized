@@ -179,6 +179,31 @@ final class Mailbox implements MailboxInterface
     }
 
     /**
+     * Get message iterator for a sequence.
+     *
+     * @param string $sequence Message numbers
+     *
+     * @return MessageIteratorInterface
+     */
+    public function getMessageSequence(string $sequence): MessageIteratorInterface
+    {
+        \imap_errors();
+
+        $overview = \imap_fetch_overview($this->resource->getStream(), $sequence, FT_UID);
+        if (empty($overview)) {
+            if (false !== \imap_last_error()) {
+                throw new InvalidSearchCriteriaException(\sprintf('Invalid sequence [%s]', $sequence));
+            }
+
+            $messageNumbers = [];
+        } else {
+            $messageNumbers = \array_column($overview, 'uid');
+        }
+
+        return new MessageIterator($this->resource, $messageNumbers);
+    }
+
+    /**
      * Get a message by message number.
      *
      * @param int $number Message number
@@ -250,7 +275,7 @@ final class Mailbox implements MailboxInterface
      *
      * @throws \Ddeboer\Imap\Exception\MessageMoveException
      */
-    public function move($numbers, MailboxInterface $mailbox)
+    public function move($numbers, MailboxInterface $mailbox): void
     {
         if (!\imap_mail_move($this->resource->getStream(), $this->prepareMessageIds($numbers), $mailbox->getEncodedName(), \CP_UID)) {
             throw new MessageMoveException(\sprintf('Messages cannot be moved to "%s"', $mailbox->getName()));
@@ -265,7 +290,7 @@ final class Mailbox implements MailboxInterface
      *
      * @throws \Ddeboer\Imap\Exception\MessageCopyException
      */
-    public function copy($numbers, MailboxInterface $mailbox)
+    public function copy($numbers, MailboxInterface $mailbox): void
     {
         if (!\imap_mail_copy($this->resource->getStream(), $this->prepareMessageIds($numbers), $mailbox->getEncodedName(), \CP_UID)) {
             throw new MessageCopyException(\sprintf('Messages cannot be copied to "%s"', $mailbox->getName()));

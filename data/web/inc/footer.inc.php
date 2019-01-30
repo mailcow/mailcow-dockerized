@@ -3,19 +3,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/footer.php';
 logger();
 ?>
 <div style="margin-bottom: 100px;"></div>
-<script src="/js/bootstrap.min.js"></script>
-<script src="/js/bootstrap-switch.min.js"></script>
-<script src="/js/bootstrap-slider.min.js"></script>
-<script src="/js/bootstrap-select.min.js"></script>
-<script src="/js/bootstrap-filestyle.min.js"></script>
-<script src="/js/notifications.min.js"></script>
-<script src="/js/formcache.min.js"></script>
-<script src="/js/google.charts.loader.js"></script>
-<script src="/js/numberedtextarea.min.js"></script>
-<script src="/js/sha1.min.js"></script>
-<script src="/js/u2f-api.js"></script>
-<script src="/js/api.js"></script>
-<script src="/js/mailcow.js"></script>
+<script><?=$js_footer;?></script>
 <script>
 <?php
 $lang_footer = json_encode($lang['footer']);

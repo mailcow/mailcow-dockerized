@@ -40,42 +40,42 @@ interface PartInterface extends \RecursiveIterator
     /**
      * Part charset.
      *
-     * @return string
+     * @return null|string
      */
-    public function getCharset();
+    public function getCharset(): ?string;
 
     /**
      * Part type.
      *
      * @return null|string
      */
-    public function getType();
+    public function getType(): ?string;
 
     /**
      * Part subtype.
      *
      * @return null|string
      */
-    public function getSubtype();
+    public function getSubtype(): ?string;
 
     /**
      * Part encoding.
      *
      * @return null|string
      */
-    public function getEncoding();
+    public function getEncoding(): ?string;
 
     /**
      * Part disposition.
      *
      * @return null|string
      */
-    public function getDisposition();
+    public function getDisposition(): ?string;
 
     /**
      * Part bytes.
      *
-     * @return null|string
+     * @return null|int|string
      */
     public function getBytes();
 
@@ -84,7 +84,7 @@ interface PartInterface extends \RecursiveIterator
      *
      * @return null|string
      */
-    public function getLines();
+    public function getLines(): ?string;
 
     /**
      * Part parameters.

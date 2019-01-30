@@ -166,14 +166,14 @@ abstract class AbstractPart implements PartInterface
      *
      * @param int $messageNumber
      */
-    protected function assertMessageExists(int $messageNumber)
+    protected function assertMessageExists(int $messageNumber): void
     {
     }
 
     /**
      * @param \stdClass $structure Part structure
      */
-    final protected function setStructure(\stdClass $structure)
+    final protected function setStructure(\stdClass $structure): void
     {
         $this->structure = $structure;
     }
@@ -193,7 +193,7 @@ abstract class AbstractPart implements PartInterface
     /**
      * Lazy load structure.
      */
-    protected function lazyLoadStructure()
+    protected function lazyLoadStructure(): void
     {
     }
 
@@ -214,7 +214,7 @@ abstract class AbstractPart implements PartInterface
      *
      * @return null|string
      */
-    final public function getCharset()
+    final public function getCharset(): ?string
     {
         $this->lazyParseStructure();
 
@@ -226,7 +226,7 @@ abstract class AbstractPart implements PartInterface
      *
      * @return null|string
      */
-    final public function getType()
+    final public function getType(): ?string
     {
         $this->lazyParseStructure();
 
@@ -238,7 +238,7 @@ abstract class AbstractPart implements PartInterface
      *
      * @return null|string
      */
-    final public function getSubtype()
+    final public function getSubtype(): ?string
     {
         $this->lazyParseStructure();
 
@@ -250,7 +250,7 @@ abstract class AbstractPart implements PartInterface
      *
      * @return null|string
      */
-    final public function getEncoding()
+    final public function getEncoding(): ?string
     {
         $this->lazyParseStructure();
 
@@ -262,7 +262,7 @@ abstract class AbstractPart implements PartInterface
      *
      * @return null|string
      */
-    final public function getDisposition()
+    final public function getDisposition(): ?string
     {
         $this->lazyParseStructure();
 
@@ -272,7 +272,7 @@ abstract class AbstractPart implements PartInterface
     /**
      * Part bytes.
      *
-     * @return null|string
+     * @return null|int|string
      */
     final public function getBytes()
     {
@@ -286,7 +286,7 @@ abstract class AbstractPart implements PartInterface
      *
      * @return null|string
      */
-    final public function getLines()
+    final public function getLines(): ?string
     {
         $this->lazyParseStructure();
 
@@ -470,7 +470,7 @@ abstract class AbstractPart implements PartInterface
     /**
      * Parse part structure.
      */
-    private function lazyParseStructure()
+    private function lazyParseStructure(): void
     {
         if (true === $this->structureParsed) {
             return;

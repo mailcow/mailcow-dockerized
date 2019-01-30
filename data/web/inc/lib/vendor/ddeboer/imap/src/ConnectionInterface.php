@@ -78,5 +78,5 @@ interface ConnectionInterface extends \Countable
      *
      * @param MailboxInterface $mailbox
      */
-    public function deleteMailbox(MailboxInterface $mailbox);
+    public function deleteMailbox(MailboxInterface $mailbox): void;
 }

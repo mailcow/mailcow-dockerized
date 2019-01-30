@@ -17,6 +17,23 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/vendor/autoload.php';
 // Load Sieve
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/sieve/SieveParser.php';
 
+// Minify JS
+use MatthiasMullie\Minify;
+$js_minifier = new Minify\JS();
+$js_dir = array_diff(scandir('/web/js/build'), array('..', '.'));
+foreach ($js_dir as $js_file) {
+  $js_minifier->add('/web/js/build/' . $js_file);
+}
+$js_footer = $js_minifier->minify();
+
+// Minify CSS
+$css_minifier = new Minify\CSS();
+$css_dir = array_diff(scandir('/web/css/build'), array('..', '.'));
+foreach ($css_dir as $css_file) {
+  $css_minifier->add('/web/css/build/' . $css_file);
+}
+$css_header = $css_minifier->minify();
+
 // U2F API + T/HOTP API
 $u2f = new u2flib_server\U2F('https://' . $_SERVER['HTTP_HOST']);
 $tfa = new RobThree\Auth\TwoFactorAuth($OTP_LABEL);

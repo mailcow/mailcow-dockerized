@@ -16,5 +16,5 @@ interface ImapResourceInterface
     /**
      * Clear last mailbox used cache.
      */
-    public function clearLastMailboxUsedCache();
+    public function clearLastMailboxUsedCache(): void;
 }

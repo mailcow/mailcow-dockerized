@@ -55,7 +55,7 @@ final class Message extends Message\AbstractMessage implements MessageInterface
     /**
      * Lazy load structure.
      */
-    protected function lazyLoadStructure()
+    protected function lazyLoadStructure(): void
     {
         if (true === $this->structureLoaded) {
             return;
@@ -95,7 +95,7 @@ final class Message extends Message\AbstractMessage implements MessageInterface
      *
      * @param int $messageNumber
      */
-    protected function assertMessageExists(int $messageNumber)
+    protected function assertMessageExists(int $messageNumber): void
     {
         if (true === $this->messageNumberVerified) {
             return;
@@ -166,7 +166,7 @@ final class Message extends Message\AbstractMessage implements MessageInterface
     /**
      * Clearmessage headers.
      */
-    private function clearHeaders()
+    private function clearHeaders(): void
     {
         $this->headers = null;
     }
@@ -176,7 +176,7 @@ final class Message extends Message\AbstractMessage implements MessageInterface
      *
      * @return null|string
      */
-    public function isRecent()
+    public function isRecent(): ?string
     {
         return $this->getHeaders()->get('recent');
     }
@@ -272,7 +272,7 @@ final class Message extends Message\AbstractMessage implements MessageInterface
      *
      * @throws MessageCopyException
      */
-    public function copy(MailboxInterface $mailbox)
+    public function copy(MailboxInterface $mailbox): void
     {
         // 'deleted' header changed, force to reload headers, would be better to set deleted flag to true on header
         $this->clearHeaders();
@@ -289,7 +289,7 @@ final class Message extends Message\AbstractMessage implements MessageInterface
      *
      * @throws MessageMoveException
      */
-    public function move(MailboxInterface $mailbox)
+    public function move(MailboxInterface $mailbox): void
     {
         // 'deleted' header changed, force to reload headers, would be better to set deleted flag to true on header
         $this->clearHeaders();
@@ -304,7 +304,7 @@ final class Message extends Message\AbstractMessage implements MessageInterface
      *
      * @throws MessageDeleteException
      */
-    public function delete()
+    public function delete(): void
     {
         // 'deleted' header changed, force to reload headers, would be better to set deleted flag to true on header
         $this->clearHeaders();
