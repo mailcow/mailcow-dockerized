@@ -604,7 +604,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               return false;
             }
             $stmt = $pdo->prepare("INSERT INTO `alias` (`address`, `public_comment`, `private_comment`, `goto`, `domain`, `active`)
-              VALUES (:address, :goto, :domain, :active)");
+              VALUES (:address, :public_comment, :private_comment, :goto, :domain, :active)");
             if (!filter_var($address, FILTER_VALIDATE_EMAIL) === true) {
               $stmt->execute(array(
                 ':address' => '@'.$domain,
