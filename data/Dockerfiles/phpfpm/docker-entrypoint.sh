@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 function array_by_comma { local IFS=","; echo "$*"; }
 
@@ -91,5 +90,10 @@ INSERT INTO api (api_key, active, allow_from) VALUES ("${API_KEY}", "1", "${VALI
 EOF
   fi
 fi
+
+# Patching NC files, if any (fixes PHP 7.2.14 + NC 15.0.2)
+find /web/ -ipath '*lib/private/legacy/template.php' | while read -r template; do
+  sed -i "s/\$app \!== ''/\$app \!== '' \&\& \$app \!== 'core'/g" "${template}"
+done
 
 exec "$@"
