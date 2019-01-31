@@ -1,12 +1,15 @@
 @font-face {font-family: 'PT Sans'; 
+  font-display: auto;
   src: local('PT Sans'), url('/fonts/PTS55F_W.woff') format('woff');
 }
 @font-face {font-family: 'PT Sans'; 
   font-style: italic;
+  font-display: auto;
   src: local('PT Sans Italic'), url('/fonts/PTS56F_W.woff') format('woff');
 }
 @font-face {font-family: 'PT Sans';
   font-style: normal;
+  font-display: auto;
   font-weight: bold; 
   src: local('PT Sans Bold'), url('/fonts/PTS75F_W.woff') format('woff');
 }

@@ -438,7 +438,7 @@ function quarantine($_action, $_data = null) {
         $settings['sender'] = $redis->Get('Q_SENDER');
         $settings['html'] = htmlspecialchars($redis->Get('Q_HTML'));
         if (empty($settings['html'])) {
-          $settings['html'] = htmlspecialchars(file_get_contents("/templates/quarantine.tpl"));
+          $settings['html'] = htmlspecialchars(file_get_contents("/tpls/quarantine.tpl"));
         }
       }
       catch (RedisException $e) {
