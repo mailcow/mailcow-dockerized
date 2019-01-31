@@ -59,8 +59,8 @@ def notify_rcpt(rcpt, msg_count):
       template = Template(r.get('Q_HTML'))
     except:
       print "Error: Cannot parse quarantine template, falling back to default template."
-    with open('/templates/quarantine.tpl') as file_:
-      template = Template(file_.read())
+      with open('/templates/quarantine.tpl') as file_:
+        template = Template(file_.read())
   else:
     with open('/templates/quarantine.tpl') as file_:
       template = Template(file_.read())
@@ -68,7 +68,7 @@ def notify_rcpt(rcpt, msg_count):
   count = 0
   while count < 15:
     try:
-      server = smtplib.SMTP('postfix', 590, 'quarntine')
+      server = smtplib.SMTP('postfix', 590, 'quarantine')
       server.ehlo()
       msg = MIMEMultipart('alternative')
       msg['From'] = r.get('Q_SENDER') or "quarantine@localhost"
