@@ -11,17 +11,30 @@
     <script src="/js/html5shiv.min.js"></script>
     <script src="/js/respond.min.js"></script>
   <![endif]-->
-  <script src="/js/jquery-1.12.4.min.js"></script>
-  <style><?=$css_header;?></style>
+  <script type='text/javascript' src="/js/jquery-1.12.4.min.js"></script>
   <?php if (strtolower(trim($DEFAULT_THEME)) != "lumen"): ?>
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/<?= strtolower(trim($DEFAULT_THEME)); ?>/bootstrap.min.css">
-  <?php endif; ?>
-  <?= (preg_match("/mailbox/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/site/mailbox.css">' : null; ?>
-  <?= (preg_match("/admin/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/site/admin.css">' : null; ?>
-  <?= (preg_match("/user/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/site/user.css">' : null; ?>
-  <?= (preg_match("/edit/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/site/edit.css">' : null; ?>
-  <?= (preg_match("/quarantine/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/site/quarantine.css">' : null; ?>
-  <?= (preg_match("/debug/i", $_SERVER['REQUEST_URI'])) ? '<link rel="stylesheet" href="/css/site/debug.css">' : null; ?>
+  <?php endif;
+    if (preg_match("/mailbox/i", $_SERVER['REQUEST_URI'])) {
+      $css_minifier->add('/web/css/site/mailbox.css');
+    }
+    if (preg_match("/admin/i", $_SERVER['REQUEST_URI'])) {
+      $css_minifier->add('/web/css/site/admin.css');
+    }
+    if (preg_match("/user/i", $_SERVER['REQUEST_URI'])) {
+      $css_minifier->add('/web/css/site/user.css');
+    }
+    if (preg_match("/edit/i", $_SERVER['REQUEST_URI'])) {
+      $css_minifier->add('/web/css/site/edit.css');
+    }
+    if (preg_match("/quarantine/i", $_SERVER['REQUEST_URI'])) {
+      $css_minifier->add('/web/css/site/quarantine.css');
+    }
+    if (preg_match("/debug/i", $_SERVER['REQUEST_URI'])) {
+      $css_minifier->add('/web/css/site/debug.css');
+    }
+  ?>
+  <style><?=$css_minifier->minify();?></style>
   <link rel="shortcut icon" href="/favicon.png" type="image/png">
   <link rel="icon" href="/favicon.png" type="image/png">
 </head>
