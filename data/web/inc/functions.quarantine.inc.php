@@ -91,7 +91,7 @@ function quarantine($_action, $_data = null) {
           $redis->Set('Q_EXCLUDE_DOMAINS', json_encode($exclude_domains));
           $redis->Set('Q_RELEASE_FORMAT', $release_format);
           $redis->Set('Q_SENDER', $sender);
-          $redis->Set('Q_SUBJECT', $subject);
+          $redis->Set('Q_SUBJ', $subject);
           $redis->Set('Q_HTML', $html);
         }
         catch (RedisException $e) {
@@ -434,7 +434,7 @@ function quarantine($_action, $_data = null) {
         $settings['max_size'] = $redis->Get('Q_MAX_SIZE');
         $settings['retention_size'] = $redis->Get('Q_RETENTION_SIZE');
         $settings['release_format'] = $redis->Get('Q_RELEASE_FORMAT');
-        $settings['subject'] = $redis->Get('Q_SUBJECT');
+        $settings['subject'] = $redis->Get('Q_SUBJ');
         $settings['sender'] = $redis->Get('Q_SENDER');
         $settings['html'] = htmlspecialchars($redis->Get('Q_HTML'));
         if (empty($settings['html'])) {
