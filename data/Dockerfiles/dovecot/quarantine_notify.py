@@ -68,15 +68,15 @@ def notify_rcpt(rcpt, msg_count):
   count = 0
   while count < 15:
     try:
-      server = smtplib.SMTP('postfix', 589, 'quarntine')
+      server = smtplib.SMTP('postfix', 590, 'quarntine')
       server.ehlo()
       msg = MIMEMultipart('alternative')
       msg['From'] = r.get('Q_SENDER') or "quarantine@localhost"
       msg['Subject'] = r.get('Q_SUBJ') or "Spam Quarantine Notification"
       msg['Date'] = formatdate(localtime = True)
       text = "You have %d new items" % (msg_count)
-      text_part = MIMEText(text, 'plain')
-      html_part = MIMEText(html, 'html')
+      text_part = MIMEText(text, 'plain', 'utf-8')
+      html_part = MIMEText(html, 'html', 'utf-8')
       msg.attach(text_part)
       msg.attach(html_part)
       msg['To'] = str(rcpt)
