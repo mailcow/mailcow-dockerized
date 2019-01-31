@@ -40,7 +40,7 @@ def query_mysql(query, headers = True, update = False):
     result = []
     columns = tuple( [d[0].decode('utf8') for d in cur.description] )
     for row in cur:
-      if headers: 
+      if headers:
         result.append(dict(zip(columns, row)))
       else:
         result.append(row)
@@ -94,7 +94,7 @@ def notify_rcpt(rcpt, msg_count):
 records = query_mysql('SELECT count(id) AS counter, rcpt FROM quarantine WHERE notified = 0 GROUP BY rcpt')
 
 for record in records:
-  last_notification = int(r.hget('Q_LAST_NOTIFIED', record['rcpt'])) or 0
+  last_notification = int(r.hget('Q_LAST_NOTIFIED', record['rcpt']) or 0)
   attrs_json = query_mysql('SELECT attributes FROM mailbox WHERE username = "%s"' % (record['rcpt']))
   attrs = json.loads(str(attrs_json[0]['attributes']))
   if attrs['quarantine_notification'] == 'hourly':
