@@ -62,8 +62,8 @@ echo "var role = '". $role . "';\n";
 echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
 ?>
 </script>
-<script src="/js/site/quarantine.js"></script>
 <?php
+$js_minifier->add('/web/js/site/quarantine.js');
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
 } else {
 	header('Location: /');

@@ -3,7 +3,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/footer.php';
 logger();
 ?>
 <div style="margin-bottom: 100px;"></div>
-<script><?=$js_footer;?></script>
+<script type='text/javascript'><?=$js_minifier->minify();?></script>
 <script>
 <?php
 $lang_footer = json_encode($lang['footer']);

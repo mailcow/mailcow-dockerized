@@ -336,8 +336,8 @@ echo "var is_dual = " . $is_dual . ";\n";
 echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
 ?>
 </script>
-<script src="/js/site/mailbox.js"></script>
 <?php
+$js_minifier->add('/web/js/site/mailbox.js');
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
 }
 else {

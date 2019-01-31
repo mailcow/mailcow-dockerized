@@ -412,7 +412,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
         </div>
         <form class="form-inline" data-id="add_wl_policy_mailbox">
           <div class="input-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
-            <input type="text" class="form-control" name="object_from" id="object_from" placeholder="*@example.org" required>
+            <input type="text" class="form-control" name="object_from" placeholder="*@example.org" required>
             <span class="input-group-btn">
               <button class="btn btn-default" data-action="add_item" data-id="add_wl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username":<?= json_encode($username); ?>,"object_list":"wl"}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['spamfilter_table_add'];?></button>
             </span>
@@ -435,7 +435,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
         </div>
         <form class="form-inline" data-id="add_bl_policy_mailbox">
           <div class="input-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
-            <input type="text" class="form-control" name="object_from" id="object_from" placeholder="*@example.org" required>
+            <input type="text" class="form-control" name="object_from" placeholder="*@example.org" required>
             <span class="input-group-btn">
               <button class="btn btn-default" data-action="add_item" data-id="add_bl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username":<?= json_encode($username); ?>,"object_list":"bl"}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['spamfilter_table_add'];?></button>
             </span>
@@ -485,9 +485,8 @@ echo "var mailcow_cc_username = '". $_SESSION['mailcow_cc_username'] . "';\n";
 echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
 ?>
 </script>
-<script src="/js/footable.min.js"></script>
-<script src="/js/user.js"></script>
 <?php
+$js_minifier->add('/web/js/site/user.js');
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
 }
 else {

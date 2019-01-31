@@ -341,8 +341,8 @@ echo "var log_pagination_size = '". $LOG_PAGINATION_SIZE . "';\n";
 
 ?>
 </script>
-<script src="/js/site/debug.js"></script>
 <?php
+$js_minifier->add('/web/js/site/debug.js');
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
 }
 else {
