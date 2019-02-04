@@ -247,7 +247,7 @@ jQuery(function($){
     ft_acme_logs = FooTable.init('#acme_log', {
       "columns": [
         {"name":"time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},"title":lang.time,"style":{"width":"170px"}},
-        {"name":"message","title":lang.message},
+        {"name":"message","title":lang.message,"style":{"word-break":"break-all"}},
       ],
       "rows": $.ajax({
         dataType: 'json',
@@ -565,9 +565,7 @@ jQuery(function($){
       $.each(data, function (i, item) {
         if (item === null) { return true; }
         if (item.message.match("^base64,")) {
-          item.message = atob(item.message.slice(7));
-          item.message = item.message.replace(/(?!^)acme-client:/g, '<br>acme-client:')
-          item.message = item.message.replace(/acme-client:/g, '<b>acme-client:</b>')
+          item.message = atob(item.message.slice(7)).replace(/\\n/g, "<br />");
         } else {
           item.message = escapeHtml(item.message);
         }

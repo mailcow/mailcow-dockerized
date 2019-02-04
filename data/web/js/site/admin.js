@@ -25,9 +25,7 @@ jQuery(function($){
      });
      $('#dkim_add_domains').val(domains);
   });
-  $("#import_dkim_legend").on('click', function(e) { e.preventDefault(); $('#import_dkim_arrow').toggleClass("animation"); });
-  $("#duplicate_dkim_legend").on('click', function(e) { e.preventDefault(); $('#duplicate_dkim_arrow').toggleClass("animation"); });
-  $("#api_legend").on('click', function(e) { e.preventDefault(); $('#api_arrow').toggleClass("animation"); });
+  $(".arrow-toggle").on('click', function(e) { e.preventDefault(); $('.arrow').toggleClass("animation"); });
   $("#mass_exclude").change(function(){ $("#mass_include").selectpicker('deselectAll'); });
   $("#mass_include").change(function(){ $("#mass_exclude").selectpicker('deselectAll'); });
   $("#mass_disarm").click(function() { $("#mass_send").attr("disabled", !this.checked); });
