@@ -94,9 +94,21 @@ def notify_rcpt(rcpt, msg_count):
 records = query_mysql('SELECT count(id) AS counter, rcpt FROM quarantine WHERE notified = 0 GROUP BY rcpt')
 
 for record in records:
-  last_notification = int(r.hget('Q_LAST_NOTIFIED', record['rcpt']) or 0)
+  attrs = ''
+  attrs_json = ''
+  try:
+    last_notification = int(r.hget('Q_LAST_NOTIFIED', record['rcpt']))
+    if last_notification > time_now:
+      print 'Last notification is > time now, assuming never'
+      last_notification = 0
+  except Exception as ex:
+    print 'Could not determine last notification for %s, assuming never' % (record['rcpt'])
+    last_notification = 0
   attrs_json = query_mysql('SELECT attributes FROM mailbox WHERE username = "%s"' % (record['rcpt']))
   attrs = json.loads(str(attrs_json[0]['attributes']))
+  if attrs['quarantine_notification'] not in ('hourly', 'daily', 'weekly', 'never'):
+    print 'Abnormal quarantine_notification value'
+    continue
   if attrs['quarantine_notification'] == 'hourly':
     if last_notification == 0 or (last_notification + 3600) < time_now:
       print "Notifying %s about %d new items in quarantine" % (record['rcpt'], record['counter'])
