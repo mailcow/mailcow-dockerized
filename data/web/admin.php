@@ -76,8 +76,8 @@ $tfa_data = get_tfa();
             </select>
           </div>
         </div>
-        <legend data-target="#api" style="margin-top:40px;cursor:pointer" id="api_legend" unselectable="on" data-toggle="collapse">
-          <span id="api_arrow" style="font-size:12px" class="rotate glyphicon glyphicon-menu-down"></span> API (experimental, work in progress)
+        <legend data-target="#api" style="margin-top:40px;cursor:pointer" class="arrow-toggle" unselectable="on" data-toggle="collapse">
+          <span style="font-size:12px" class="arrow rotate glyphicon glyphicon-menu-down"></span> API (experimental, work in progress)
         </legend>
         <?php
         $api = admin_api('get');
@@ -283,6 +283,7 @@ $tfa_data = get_tfa();
         <a href="#fwdhosts" class="list-group-item"><?=$lang['admin']['forwarding_hosts'];?></a>
         <a href="#f2bparams" class="list-group-item"><?=$lang['admin']['f2b_parameters'];?></a>
         <a href="#quarantine" class="list-group-item"><?=$lang['admin']['quarantine'];?></a>
+        <a href="#quota" class="list-group-item">Quota notifications</a>
         <a href="#rsettings" class="list-group-item">Rspamd settings map</a>
         <a href="#customize" class="list-group-item"><?=$lang['admin']['customize'];?></a>
         <a href="#top" class="list-group-item" style="border-top:1px dashed #dadada">↸ <?=$lang['admin']['to_top'];?></a>
@@ -415,8 +416,8 @@ $tfa_data = get_tfa();
           <button class="btn btn-sm btn-default" data-action="add_item" data-id="dkim" data-api-url='add/dkim' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
         </form>
 
-        <legend data-target="#import_dkim" style="margin-top:40px;cursor:pointer" id="import_dkim_legend" unselectable="on" data-toggle="collapse">
-          <span id="import_dkim_arrow" style="font-size:12px" class="rotate glyphicon glyphicon-menu-down"></span> <?=$lang['admin']['import_private_key'];?>
+        <legend data-target="#import_dkim" style="margin-top:40px;cursor:pointer" class="arrow-toggle"" unselectable="on" data-toggle="collapse">
+          <span style="font-size:12px" class="arrow rotate glyphicon glyphicon-menu-down"></span> <?=$lang['admin']['import_private_key'];?>
         </legend>
         <div id="import_dkim" class="collapse">
         <form class="form" data-id="dkim_import" role="form" method="post">
@@ -436,8 +437,8 @@ $tfa_data = get_tfa();
         </form>
         </div>
 
-        <legend data-target="#duplicate_dkim" style="margin-top:40px;cursor:pointer" id="duplicate_dkim_legend" unselectable="on" data-toggle="collapse">
-          <span id="duplicate_dkim_arrow" style="font-size:12px" class="rotate glyphicon glyphicon-menu-down"></span> <?=$lang['admin']['duplicate_dkim'];?>
+        <legend data-target="#duplicate_dkim" style="margin-top:40px;cursor:pointer" class="arrow-toggle" unselectable="on" data-toggle="collapse">
+          <span style="font-size:12px" class="arrow rotate glyphicon glyphicon-menu-down"></span> <?=$lang['admin']['duplicate_dkim'];?>
         </legend>
         <div id="duplicate_dkim" class="collapse">
         <form class="form-horizontal" data-id="dkim_duplicate" role="form" method="post">
@@ -579,32 +580,36 @@ $tfa_data = get_tfa();
         <i><?=$lang['admin']['no_active_bans'];?></i>
         <?php
         endif;
-        foreach ($f2b_data['active_bans'] as $active_bans):
-        ?>
-        <p><span class="label label-info" style="padding:4px;font-size:85%;"><span class="glyphicon glyphicon-filter"></span> <?=$active_bans['network'];?> (<?=$active_bans['banned_until'];?>) - 
-          <?php
-          if ($active_bans['queued_for_unban'] == 0):
+        if (!empty($f2b_data['active_bans'])):
+          foreach ($f2b_data['active_bans'] as $active_bans):
           ?>
-          <a data-action="edit_selected" data-item="<?=$active_bans['network'];?>" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"unban"}' href="#">[<?=$lang['admin']['queue_unban'];?>]</a>
-          <a data-action="edit_selected" data-item="<?=$active_bans['network'];?>" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"whitelist"}' href="#">[whitelist]</a>
-          <a data-action="edit_selected" data-item="<?=$active_bans['network'];?>" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"blacklist"}' href="#">[blacklist]</a>
+          <p><span class="label label-info" style="padding:4px;font-size:85%;"><span class="glyphicon glyphicon-filter"></span> <?=$active_bans['network'];?> (<?=$active_bans['banned_until'];?>) - 
+            <?php
+            if ($active_bans['queued_for_unban'] == 0):
+            ?>
+            <a data-action="edit_selected" data-item="<?=$active_bans['network'];?>" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"unban"}' href="#">[<?=$lang['admin']['queue_unban'];?>]</a>
+            <a data-action="edit_selected" data-item="<?=$active_bans['network'];?>" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"whitelist"}' href="#">[whitelist]</a>
+            <a data-action="edit_selected" data-item="<?=$active_bans['network'];?>" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"blacklist"}' href="#">[blacklist]</a>
+            <?php
+            else:
+            ?>
+            <i><?=$lang['admin']['unban_pending'];?></i>
+            <?php
+            endif;
+            ?>
+          </span></p>
           <?php
-          else:
+          endforeach;
+        endif;
+        if (!empty($f2b_data['perm_bans'])):
+          foreach ($f2b_data['perm_bans'] as $perm_bans):
           ?>
-          <i><?=$lang['admin']['unban_pending'];?></i>
+          <p>
+          <span class="label label-danger" style="padding:4px;font-size:85%;"><span class="glyphicon glyphicon-filter"></span> <?=$perm_bans?></span>
+          </p>
           <?php
-          endif;
-          ?>
-        </span></p>
-        <?php
-        endforeach;
-        foreach ($f2b_data['perm_bans'] as $perm_bans):
-        ?>
-        <p>
-        <span class="label label-danger" style="padding:4px;font-size:85%;"><span class="glyphicon glyphicon-filter"></span> <?=$perm_bans?></span>
-        </p>
-        <?php
-        endforeach;
+          endforeach;
+        endif;
         ?>
       </div>
     </div>
@@ -645,9 +650,12 @@ $tfa_data = get_tfa();
           </div>
           <div class="row">
             <div class="col-sm-12">
-              <label for="html"><?=$lang['admin']['quarantine_notification_html'];?></label>
-              <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code" rows="20" name="html"><?=$q_data['html'];?></textarea>
-              <br>
+              <legend data-target="#quarantine_template" style="cursor:pointer" class="arrow-toggle" unselectable="on" data-toggle="collapse">
+                <span style="font-size:12px" class="arrow rotate glyphicon glyphicon-menu-down"></span> <?=$lang['admin']['quarantine_notification_html'];?>
+              </legend>
+              <div id="quarantine_template" class="collapse" >
+                <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code" rows="20" name="html_tmpl"><?=$q_data['html_tmpl'];?></textarea>
+              </div>
             </div>
           </div>
           <div class="row">
@@ -680,13 +688,63 @@ $tfa_data = get_tfa();
       </div>
     </div>
 
+    <span class="anchor" id="quota"></span>
+    <div class="panel panel-default">
+      <div class="panel-heading">Quota notifications</div>
+      <div class="panel-body">
+      <p>Quota notications are sent to users once when crossing 80% and once when crossing 95% usage.</p>
+       <?php $q_data = quota_notification('get');?>
+      <form class="form" role="form" data-id="quota_notification" method="post">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label for="sender"><?=$lang['admin']['quarantine_notification_sender'];?>:</label>
+              <input type="text" class="form-control" name="sender" value="<?=$q_data['sender'];?>" placeholder="quota-warning@localhost">
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label for="subject"><?=$lang['admin']['quarantine_notification_subject'];?>:</label>
+              <input type="text" class="form-control" name="subject" value="<?=$q_data['subject'];?>" placeholder="Quota warning">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <legend data-target="#quota_template" style="cursor:pointer" class="arrow-toggle" unselectable="on" data-toggle="collapse">
+              <span style="font-size:12px" class="arrow rotate glyphicon glyphicon-menu-down"></span> <?=$lang['admin']['quarantine_notification_html'];?>
+            </legend>
+            <div id="quota_template" class="collapse" >
+              <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code collapse in" rows="20" name="html"><?=$q_data['html_tmpl'];?></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-10">
+            <div class="form-group">
+              <br>
+              <a type="button" class="btn btn-sm btn-success" data-action="edit_selected"
+                data-item="quota_notification"
+                data-id="quota_notification"
+                data-api-url='edit/quota_notification'
+                data-api-attr='{}'><?=$lang['user']['save_changes'];?></a>
+            </div>
+          </div>
+        </div>
+      </form>
+      </div>
+    </div>
+
     <span class="anchor" id="rsettings"></span>
     <div class="panel panel-default">
       <div class="panel-heading">Rspamd settings map</div>
       <div class="panel-body">
-      <legend>Active settings map</legend>
-      <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code" rows="20" name="settings_map" readonly><?=file_get_contents('http://nginx:8081/settings.php');?></textarea>
-      <hr>
+      <legend data-target="#active_settings_map" style="cursor:pointer" class="arrow-toggle" unselectable="on" data-toggle="collapse">
+        <span style="font-size:12px" class="arrow rotate glyphicon glyphicon-menu-down"></span> Active settings map
+      </legend>
+      <div id="active_settings_map" class="collapse" >
+        <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code" rows="20" name="settings_map" readonly><?=file_get_contents('http://nginx:8081/settings.php');?></textarea>
+      </div>
       <?php $rsettings = rsettings('get'); ?>
         <form class="form" data-id="rsettings" role="form" method="post">
           <div class="row">
@@ -836,29 +894,33 @@ $tfa_data = get_tfa();
             <button class="btn btn-sm btn-default" type="button" id="add_app_link_row"><?=$lang['admin']['add_row'];?></button>
           </div></p>
         </form>
-        <legend><?=$lang['admin']['ui_texts'];?></legend>
+        <legend data-target="#ui_texts" style="cursor:pointer" class="arrow-toggle" unselectable="on" data-toggle="collapse">
+          <span style="font-size:12px" class="arrow rotate glyphicon glyphicon-menu-down"></span> <?=$lang['admin']['ui_texts'];?>
+        </legend>
+        <div id="ui_texts" class="collapse" >
         <?php
         $ui_texts = customize('get', 'ui_texts');
         ?>
-        <form class="form" data-id="uitexts" role="form" method="post">
-          <div class="form-group">
-            <label for="title_name"><?=$lang['admin']['title_name'];?>:</label>
-            <input type="text" class="form-control" name="title_name" placeholder="mailcow UI" value="<?=$ui_texts['title_name'];?>">
-          </div>
-          <div class="form-group">
-            <label for="main_name"><?=$lang['admin']['main_name'];?>:</label>
-            <input type="text" class="form-control" name="main_name" placeholder="mailcow UI" value="<?=$ui_texts['main_name'];?>">
-          </div>
-          <div class="form-group">
-            <label for="apps_name"><?=$lang['admin']['apps_name'];?>:</label>
-            <input type="text" class="form-control" name="apps_name" placeholder="mailcow Apps" value="<?=$ui_texts['apps_name'];?>">
-          </div>
-          <div class="form-group">
-            <label for="help_text"><?=$lang['admin']['help_text'];?>:</label>
-            <textarea class="form-control" id="help_text" name="help_text" rows="7"><?=$ui_texts['help_text'];?></textarea>
-          </div>
-          <button class="btn btn-default" data-action="edit_selected" data-item="ui" data-id="uitexts" data-api-url='edit/ui_texts' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
-        </form>
+          <form class="form" data-id="uitexts" role="form" method="post">
+            <div class="form-group">
+              <label for="title_name"><?=$lang['admin']['title_name'];?>:</label>
+              <input type="text" class="form-control" name="title_name" placeholder="mailcow UI" value="<?=$ui_texts['title_name'];?>">
+            </div>
+            <div class="form-group">
+              <label for="main_name"><?=$lang['admin']['main_name'];?>:</label>
+              <input type="text" class="form-control" name="main_name" placeholder="mailcow UI" value="<?=$ui_texts['main_name'];?>">
+            </div>
+            <div class="form-group">
+              <label for="apps_name"><?=$lang['admin']['apps_name'];?>:</label>
+              <input type="text" class="form-control" name="apps_name" placeholder="mailcow Apps" value="<?=$ui_texts['apps_name'];?>">
+            </div>
+            <div class="form-group">
+              <label for="help_text"><?=$lang['admin']['help_text'];?>:</label>
+              <textarea class="form-control" id="help_text" name="help_text" rows="7"><?=$ui_texts['help_text'];?></textarea>
+            </div>
+            <button class="btn btn-default" data-action="edit_selected" data-item="ui" data-id="uitexts" data-api-url='edit/ui_texts' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+          </form>
+        </div>
       </div>
     </div>
   </div>

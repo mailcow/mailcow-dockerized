@@ -7,10 +7,6 @@
   <meta name="theme-color" content="#F5D76E"/>
   <meta http-equiv="Referrer-Policy" content="same-origin">
   <title><?=$UI_TEXTS['title_name'];?></title>
-  <!--[if lt IE 9]>
-    <script src="/js/html5shiv.min.js"></script>
-    <script src="/js/respond.min.js"></script>
-  <![endif]-->
   <?php if (strtolower(trim($DEFAULT_THEME)) != "lumen"): ?>
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/<?= strtolower(trim($DEFAULT_THEME)); ?>/bootstrap.min.css">
   <?php endif;
@@ -117,12 +113,14 @@
             <?php
             endforeach;
             $app_links = customize('get', 'app_links');
-            foreach ($app_links as $row) {
-              foreach ($row as $key => $val):
-            ?>
+            if ($app_links) {
+              foreach ($app_links as $row) {
+                foreach ($row as $key => $val):
+              ?>
               <li><a href="<?= htmlspecialchars($val); ?>"><?= htmlspecialchars($key); ?></a></li>
-            <?php
-              endforeach;
+              <?php
+                endforeach;
+              }
             }
             ?>
             </ul>

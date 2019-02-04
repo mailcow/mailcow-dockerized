@@ -83,7 +83,7 @@ function quarantine($_action, $_data = null) {
         $max_size = $_data['max_size'];
         $subject = $_data['subject'];
         $sender = $_data['sender'];
-        $html = $_data['html'];
+        $html = $_data['html_tmpl'];
         $exclude_domains = (array)$_data['exclude_domains'];
         try {
           $redis->Set('Q_RETENTION_SIZE', intval($retention_size));
@@ -436,9 +436,9 @@ function quarantine($_action, $_data = null) {
         $settings['release_format'] = $redis->Get('Q_RELEASE_FORMAT');
         $settings['subject'] = $redis->Get('Q_SUBJ');
         $settings['sender'] = $redis->Get('Q_SENDER');
-        $settings['html'] = htmlspecialchars($redis->Get('Q_HTML'));
-        if (empty($settings['html'])) {
-          $settings['html'] = htmlspecialchars(file_get_contents("/tpls/quarantine.tpl"));
+        $settings['html_tmpl'] = htmlspecialchars($redis->Get('Q_HTML'));
+        if (empty($settings['html_tmpl'])) {
+          $settings['html_tmpl'] = htmlspecialchars(file_get_contents("/tpls/quarantine.tpl"));
         }
       }
       catch (RedisException $e) {

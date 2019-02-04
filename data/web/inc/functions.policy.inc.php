@@ -26,7 +26,7 @@ function policy($_action, $_scope, $_data = null) {
               );
               return false;
             }
-            $object = idn_to_ascii(strtolower(trim($object)));
+            $object = idn_to_ascii(strtolower(trim($object)), 0, INTL_IDNA_VARIANT_UTS46);
           }
           else {
             $_SESSION['return'][] = array(
@@ -183,7 +183,7 @@ function policy($_action, $_scope, $_data = null) {
                 );
                 continue;
               }
-              $object = idn_to_ascii(strtolower(trim($object)));
+              $object = idn_to_ascii(strtolower(trim($object)), 0, INTL_IDNA_VARIANT_UTS46);
             }
             else {
               $_SESSION['return'][] = array(
@@ -277,7 +277,7 @@ function policy($_action, $_scope, $_data = null) {
             if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
               return false;
             }
-            $_data = idn_to_ascii(strtolower(trim($_data)));
+            $_data = idn_to_ascii(strtolower(trim($_data)), 0, INTL_IDNA_VARIANT_UTS46);
           }
 
           // WHITELIST

@@ -44,8 +44,8 @@ function bcc($_action, $_data = null, $attr = null) {
           );
           return false;
         }
-        $domain = idn_to_ascii($local_dest);
-        $local_dest_sane = '@' . idn_to_ascii($local_dest);
+        $domain = idn_to_ascii($local_dest, 0, INTL_IDNA_VARIANT_UTS46);
+        $local_dest_sane = '@' . idn_to_ascii($local_dest, 0, INTL_IDNA_VARIANT_UTS46);
       }
       elseif (filter_var($local_dest, FILTER_VALIDATE_EMAIL)) {
         if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $local_dest)) {
@@ -265,7 +265,7 @@ function recipient_map($_action, $_data = null, $attr = null) {
       $new_dest = strtolower(trim($_data['recipient_map_new']));
       $active = intval($_data['active']);
       if (is_valid_domain_name($old_dest)) {
-        $old_dest_sane = '@' . idn_to_ascii($old_dest);
+        $old_dest_sane = '@' . idn_to_ascii($old_dest, 0, INTL_IDNA_VARIANT_UTS46);
       }
       elseif (filter_var($old_dest, FILTER_VALIDATE_EMAIL)) {
         $old_dest_sane = $old_dest;
@@ -331,7 +331,7 @@ function recipient_map($_action, $_data = null, $attr = null) {
           continue;
         }
         if (is_valid_domain_name($old_dest)) {
-          $old_dest_sane = '@' . idn_to_ascii($old_dest);
+          $old_dest_sane = '@' . idn_to_ascii($old_dest, 0, INTL_IDNA_VARIANT_UTS46);
         }
         elseif (filter_var($old_dest, FILTER_VALIDATE_EMAIL)) {
           $old_dest_sane = $old_dest;
