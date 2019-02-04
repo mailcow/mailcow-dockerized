@@ -1,9 +1,9 @@
-FROM php:7.2-fpm-alpine3.8
+FROM php:7.3-fpm-alpine3.8
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 ENV APCU_PECL 5.1.16
 ENV IMAGICK_PECL 3.4.3
-ENV MAILPARSE_PECL 3.0.2
+#ENV MAILPARSE_PECL 3.0.2
 ENV MEMCACHED_PECL 3.1.3
 ENV REDIS_PECL 4.2.0
 
@@ -14,6 +14,7 @@ RUN apk add -U --no-cache autoconf \
   freetype \
   freetype-dev \
   g++ \
+  git \
   gettext-dev \
   icu-dev \
   icu-libs \
@@ -33,6 +34,7 @@ RUN apk add -U --no-cache autoconf \
   libwebp-dev \
   libxml2-dev \
   libxpm-dev \
+  libzip-dev \
   make \
   mysql-client \
   openldap-dev \
@@ -41,10 +43,14 @@ RUN apk add -U --no-cache autoconf \
   redis \
   samba-client \
   zlib-dev \
-  tzdata
-  
-  RUN pecl install redis-${REDIS_PECL} memcached-${MEMCACHED_PECL} APCu-${APCU_PECL} imagick-${IMAGICK_PECL} mailparse-${MAILPARSE_PECL} \
-  && docker-php-ext-enable apcu imagick mailparse memcached redis \
+  tzdata \
+  && git clone https://github.com/php/pecl-mail-mailparse \
+  && cd pecl-mail-mailparse \
+  && pecl install package.xml \
+  && cd .. \
+  && rm -r pecl-mail-mailparse \
+  && pecl install redis-${REDIS_PECL} memcached-${MEMCACHED_PECL} APCu-${APCU_PECL} imagick-${IMAGICK_PECL} \
+  && docker-php-ext-enable apcu imagick memcached mailparse redis \
   && pecl clear-cache \
   && docker-php-ext-configure intl \
   && docker-php-ext-configure gd \
