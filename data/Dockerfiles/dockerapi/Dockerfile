@@ -1,4 +1,4 @@
-FROM alpine:3.8
+FROM alpine:3.9
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 RUN apk add -U --no-cache python2 python-dev py-pip gcc musl-dev tzdata openssl-dev libffi-dev \
