@@ -157,6 +157,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.address_rewriting.inc.p
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.domain_admin.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.admin.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.quarantine.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.quota_notification.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.policy.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.dkim.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.fwdhost.inc.php';

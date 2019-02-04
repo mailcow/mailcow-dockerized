@@ -7,7 +7,7 @@ function tls_policy_maps($_action, $_data = null, $attr = null) {
   }
   switch ($_action) {
     case 'add':
-      $dest = idn_to_ascii(trim($_data['dest']));
+      $dest = idn_to_ascii(trim($_data['dest']), 0, INTL_IDNA_VARIANT_UTS46);
       $policy = strtolower(trim($_data['policy']));
       $parameters = (isset($_data['parameters']) && !empty($_data['parameters'])) ? $_data['parameters'] : '';
       if (!empty($parameters)) {

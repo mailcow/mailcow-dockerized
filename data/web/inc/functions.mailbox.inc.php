@@ -322,7 +322,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
-          $domain				= idn_to_ascii(strtolower(trim($_data['domain'])));
+          $domain				= idn_to_ascii(strtolower(trim($_data['domain'])), 0, INTL_IDNA_VARIANT_UTS46);
           $description  = $_data['description'];
           $aliases			= $_data['aliases'];
           $mailboxes    = $_data['mailboxes'];
@@ -493,7 +493,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               if (empty($goto)) {
                 continue;
               }
-              $goto_domain = idn_to_ascii(substr(strstr($goto, '@'), 1));
+              $goto_domain = idn_to_ascii(substr(strstr($goto, '@'), 1), 0, INTL_IDNA_VARIANT_UTS46);
               $goto_local_part = strstr($goto, '@', true);
               $goto = $goto_local_part.'@'.$goto_domain;
               $stmt = $pdo->prepare("SELECT `username` FROM `mailbox`
@@ -531,7 +531,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             if (in_array($address, $gotos)) {
               continue;
             }
-            $domain       = idn_to_ascii(substr(strstr($address, '@'), 1));
+            $domain       = idn_to_ascii(substr(strstr($address, '@'), 1), 0, INTL_IDNA_VARIANT_UTS46);
             $local_part   = strstr($address, '@', true);
             $address      = $local_part.'@'.$domain;
             $domaindata = mailbox('get', 'domain_details', $domain);
@@ -637,7 +637,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $active = intval($_data['active']);
           $alias_domains  = array_map('trim', preg_split( "/( |,|;|\n)/", $_data['alias_domain']));
           $alias_domains = array_filter($alias_domains);
-          $target_domain = idn_to_ascii(strtolower(trim($_data['target_domain'])));
+          $target_domain = idn_to_ascii(strtolower(trim($_data['target_domain'])), 0, INTL_IDNA_VARIANT_UTS46);
           if (!isset($_SESSION['acl']['alias_domains']) || $_SESSION['acl']['alias_domains'] != "1" ) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
@@ -663,7 +663,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             return false;
           }
           foreach ($alias_domains as $i => $alias_domain) {
-            $alias_domain = idn_to_ascii(strtolower(trim($alias_domain)));
+            $alias_domain = idn_to_ascii(strtolower(trim($alias_domain)), 0, INTL_IDNA_VARIANT_UTS46);
             if (!is_valid_domain_name($alias_domain)) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
@@ -735,7 +735,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
         break;
         case 'mailbox':
           $local_part   = strtolower(trim($_data['local_part']));
-          $domain       = idn_to_ascii(strtolower(trim($_data['domain'])));
+          $domain       = idn_to_ascii(strtolower(trim($_data['domain'])), 0, INTL_IDNA_VARIANT_UTS46);
           $username     = $local_part . '@' . $domain;
           if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
             $_SESSION['return'][] = array(
@@ -938,7 +938,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           );
         break;
         case 'resource':
-          $domain             = idn_to_ascii(strtolower(trim($_data['domain'])));
+          $domain             = idn_to_ascii(strtolower(trim($_data['domain'])), 0, INTL_IDNA_VARIANT_UTS46);
           $description        = $_data['description'];
           $local_part         = preg_replace('/[^\da-z]/i', '', preg_quote($description, '/'));
           $name               = $local_part . '@' . $domain;
@@ -1056,11 +1056,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
         case 'alias_domain':
           $alias_domains = (array)$_data['alias_domain'];
           foreach ($alias_domains as $alias_domain) {
-            $alias_domain = idn_to_ascii(strtolower(trim($alias_domain)));
+            $alias_domain = idn_to_ascii(strtolower(trim($alias_domain)), 0, INTL_IDNA_VARIANT_UTS46);
             $is_now = mailbox('get', 'alias_domain_details', $alias_domain);
             if (!empty($is_now)) {
               $active         = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
-              $target_domain  = (!empty($_data['target_domain'])) ? idn_to_ascii(strtolower(trim($_data['target_domain']))) : $is_now['target_domain'];
+              $target_domain  = (!empty($_data['target_domain'])) ? idn_to_ascii(strtolower(trim($_data['target_domain'])), 0, INTL_IDNA_VARIANT_UTS46) : $is_now['target_domain'];
             }
             else {
               $_SESSION['return'][] = array(
@@ -1676,7 +1676,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               continue;
             }
             if ($is_now['address'] != $address) {
-              $domain = idn_to_ascii(substr(strstr($address, '@'), 1));
+              $domain = idn_to_ascii(substr(strstr($address, '@'), 1), 0, INTL_IDNA_VARIANT_UTS46);
               $local_part = strstr($address, '@', true);
               $address      = $local_part.'@'.$domain;
               if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
@@ -1810,7 +1810,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $domains = $_data['domain'];
           }
           foreach ($domains as $domain) {
-            $domain = idn_to_ascii($domain);
+            $domain = idn_to_ascii($domain, 0, INTL_IDNA_VARIANT_UTS46);
             if (!is_valid_domain_name($domain)) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
@@ -2887,7 +2887,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
         break;
         case 'domain_details':
           $domaindata = array();
-          $_data = idn_to_ascii(strtolower(trim($_data)));
+          $_data = idn_to_ascii(strtolower(trim($_data)), 0, INTL_IDNA_VARIANT_UTS46);
           if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
             return false;
           }
@@ -3308,7 +3308,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
-            $domain	= idn_to_ascii(strtolower(trim($domain)));
+            $domain	= idn_to_ascii(strtolower(trim($domain)), 0, INTL_IDNA_VARIANT_UTS46);
             $stmt = $pdo->prepare("SELECT `username` FROM `mailbox`
               WHERE `domain` = :domain");
             $stmt->execute(array(':domain' => $domain));

@@ -1161,6 +1161,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "quarantine":
             process_edit_return(quarantine('edit', $attr));
           break;
+          case "quota_notification":
+            process_edit_return(quota_notification('edit', $attr));
+          break;
           case "mailq":
             process_edit_return(mailq('edit', array_merge(array('qid' => $items), $attr)));
           break;
