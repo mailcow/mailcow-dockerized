@@ -1,17 +1,26 @@
-@font-face {font-family: 'PT Sans'; 
-  font-display: auto;
-  src: local('PT Sans'), url('/fonts/PTS55F_W.woff') format('woff');
-}
-@font-face {font-family: 'PT Sans'; 
-  font-style: italic;
-  font-display: auto;
-  src: local('PT Sans Italic'), url('/fonts/PTS56F_W.woff') format('woff');
-}
-@font-face {font-family: 'PT Sans';
+@font-face {
+  font-family: 'PT Sans';
   font-style: normal;
-  font-display: auto;
-  font-weight: bold; 
-  src: local('PT Sans Bold'), url('/fonts/PTS75F_W.woff') format('woff');
+  font-weight: 400;
+  src: local('PT Sans'), local('PTSans-Regular'),
+    url('/fonts/pt-sans-v9-cyrillic_latin-regular.woff2') format('woff2'),
+    url('/fonts/pt-sans-v9-cyrillic_latin-regular.woff') format('woff');
+}
+@font-face {
+  font-family: 'PT Sans';
+  font-style: normal;
+  font-weight: 700;
+  src: local('PT Sans Bold'), local('PTSans-Bold'),
+    url('/fonts/pt-sans-v9-cyrillic_latin-700.woff2') format('woff2'),
+    url('/fonts/pt-sans-v9-cyrillic_latin-700.woff') format('woff');
+}
+@font-face {
+  font-family: 'PT Sans';
+  font-style: italic;
+  font-weight: 400;
+  src: local('PT Sans Italic'), local('PTSans-Italic'),
+    url('/fonts/pt-sans-v9-cyrillic_latin-italic.woff2') format('woff2'),
+    url('/fonts/pt-sans-v9-cyrillic_latin-italic.woff') format('woff');
 }
 #maxmsgsize { min-width: 80px; }
 #slider1 .slider-selection {
@@ -152,4 +161,12 @@ nav .glyphicon {
 }
 .full-width-select {
   width: 100%!important;  
+}
+.tooltip {
+  font-family: inherit;
+  font-size: 12px;
+}
+.progress-bar {
+  font-size: 12px;
+  line-height: 14px;
 }
