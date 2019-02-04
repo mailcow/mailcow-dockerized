@@ -1,22 +1,31 @@
 <?php
 // Start session
-ini_set("session.cookie_httponly", 1);
-ini_set('session.gc_maxlifetime', $SESSION_LIFETIME);
+if (session_status() !== PHP_SESSION_ACTIVE) {
+  ini_set("session.cookie_httponly", 1);
+  ini_set('session.gc_maxlifetime', $SESSION_LIFETIME);
+}
 
 if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && 
   strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) == "https") {
-  ini_set("session.cookie_secure", 1);
+  if (session_status() !== PHP_SESSION_ACTIVE) {
+    ini_set("session.cookie_secure", 1);
+  }
   $IS_HTTPS = true;
 }
 elseif (isset($_SERVER['HTTPS'])) {
-  ini_set("session.cookie_secure", 1);
+  if (session_status() !== PHP_SESSION_ACTIVE) {
+    ini_set("session.cookie_secure", 1);
+  }
   $IS_HTTPS = true;
 }
 else {
   $IS_HTTPS = false;
 }
 // session_set_cookie_params($SESSION_LIFETIME, '/', '', $IS_HTTPS, true);
-session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+  session_start();
+}
+
 if (!isset($_SESSION['CSRF']['TOKEN'])) {
   $_SESSION['CSRF']['TOKEN'] = bin2hex(random_bytes(32));
 }
@@ -41,6 +50,26 @@ if (!empty($_SERVER['HTTP_X_API_KEY'])) {
       $_SESSION['mailcow_cc_role'] = 'admin';
       $_SESSION['mailcow_cc_api'] = true;
     }
+    else {
+      $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for API_USER by " . $_SERVER['REMOTE_ADDR']);
+      error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
+      echo json_encode(array(
+        'type' => 'error',
+        'msg' => 'api access denied for ip ' . $_SERVER['REMOTE_ADDR']
+      ));
+      unset($_POST);
+      die();
+    }
+  }
+  else {
+    $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for API_USER by " . $_SERVER['REMOTE_ADDR']);
+    error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
+    echo json_encode(array(
+      'type' => 'error',
+      'msg' => 'authentication failed'
+    ));
+    unset($_POST);
+    die();
   }
 }
 // Update session cookie
@@ -48,7 +77,7 @@ if (!empty($_SERVER['HTTP_X_API_KEY'])) {
 
 // Check session
 function session_check() {
-  if ($_SESSION['mailcow_cc_api'] === true) {
+  if (isset($_SESSION['mailcow_cc_api']) && $_SESSION['mailcow_cc_api'] === true) {
     return true;
   }
   if (!isset($_SESSION['SESS_REMOTE_UA']) || ($_SESSION['SESS_REMOTE_UA'] != $_SERVER['HTTP_USER_AGENT'])) {
