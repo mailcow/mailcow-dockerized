@@ -165,7 +165,8 @@ chmod +x /usr/local/lib/dovecot/sieve/rspamd-pipe-ham \
   /usr/local/bin/trim_logs.sh \
   /usr/local/bin/sa-rules.sh \
   /usr/local/bin/maildir_gc.sh \
-  /usr/local/sbin/stop-supervisor.sh
+  /usr/local/sbin/stop-supervisor.sh \
+  /usr/local/bin/quota_notify.py
 
 # Setup cronjobs
 echo '* * * * *    root  /usr/local/bin/imapsync_cron.pl 2>&1 | /usr/bin/logger' > /etc/cron.d/imapsync
