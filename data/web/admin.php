@@ -283,8 +283,8 @@ $tfa_data = get_tfa();
         <a href="#fwdhosts" class="list-group-item"><?=$lang['admin']['forwarding_hosts'];?></a>
         <a href="#f2bparams" class="list-group-item"><?=$lang['admin']['f2b_parameters'];?></a>
         <a href="#quarantine" class="list-group-item"><?=$lang['admin']['quarantine'];?></a>
-        <a href="#quota" class="list-group-item">Quota notifications</a>
-        <a href="#rsettings" class="list-group-item">Rspamd settings map</a>
+        <a href="#quota" class="list-group-item"><?=$lang['admin']['quota_notifications'];?></a>
+        <a href="#rsettings" class="list-group-item"><?=$lang['admin']['rspamd_settings_map'];?></a>
         <a href="#customize" class="list-group-item"><?=$lang['admin']['customize'];?></a>
         <a href="#top" class="list-group-item" style="border-top:1px dashed #dadada">↸ <?=$lang['admin']['to_top'];?></a>
       </div>
@@ -690,9 +690,9 @@ $tfa_data = get_tfa();
 
     <span class="anchor" id="quota"></span>
     <div class="panel panel-default">
-      <div class="panel-heading">Quota notifications</div>
+      <div class="panel-heading"><?=$lang['admin']['quota_notifications'];?></div>
       <div class="panel-body">
-      <p>Quota notications are sent to users once when crossing 80% and once when crossing 95% usage.</p>
+      <p><?=$lang['admin']['quota_notifications_info'];?></p>
        <?php $q_data = quota_notification('get');?>
       <form class="form" role="form" data-id="quota_notification" method="post">
         <div class="row">
@@ -715,6 +715,7 @@ $tfa_data = get_tfa();
               <span style="font-size:12px" class="arrow rotate glyphicon glyphicon-menu-down"></span> <?=$lang['admin']['quarantine_notification_html'];?>
             </legend>
             <div id="quota_template" class="collapse" >
+              <!-- <small><?=$lang['admin']['quota_notifications_vars'];?></small><br><br>-->
               <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code collapse in" rows="20" name="html"><?=$q_data['html_tmpl'];?></textarea>
             </div>
           </div>
@@ -737,10 +738,10 @@ $tfa_data = get_tfa();
 
     <span class="anchor" id="rsettings"></span>
     <div class="panel panel-default">
-      <div class="panel-heading">Rspamd settings map</div>
+      <div class="panel-heading"><?=$lang['admin']['rspamd_settings_map'];?></div>
       <div class="panel-body">
       <legend data-target="#active_settings_map" style="cursor:pointer" class="arrow-toggle" unselectable="on" data-toggle="collapse">
-        <span style="font-size:12px" class="arrow rotate glyphicon glyphicon-menu-down"></span> Active settings map
+        <span style="font-size:12px" class="arrow rotate glyphicon glyphicon-menu-down"></span> <?=$lang['admin']['active_rspamd_settings_map'];?>
       </legend>
       <div id="active_settings_map" class="collapse" >
         <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code" rows="20" name="settings_map" readonly><?=file_get_contents('http://nginx:8081/settings.php');?></textarea>

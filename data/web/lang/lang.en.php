@@ -673,6 +673,11 @@ $lang['admin']['queue_unban'] = "queue unban";
 $lang['admin']['no_active_bans'] = "No active bans";
 
 $lang['admin']['quarantine'] = "Quarantine";
+$lang['admin']['rspamd_settings_map'] = "Rspamd settings map";
+$lang['admin']['quota_notifications'] = "Quota notifications";
+$lang['admin']['quota_notifications_vars'] = "{{percent}} equals the current quota of the user<br>{{username}} is the mailbox name";
+$lang['admin']['active_rspamd_settings_map'] = "Active settings map";
+$lang['admin']['quota_notifications_info'] = "Quota notications are sent to users once when crossing 80% and once when crossing 95% usage.";
 $lang['admin']['quarantine_retention_size'] = "Retentions per mailbox:<br><small>0 indicates <b>inactive</b>.</small>";
 $lang['admin']['quarantine_max_size'] = "Maximum size in MiB (larger elements are discarded):<br><small>0 does <b>not</b> indicate unlimited.</small>";
 $lang['admin']['quarantine_exclude_domains'] = "Exclude domains and alias-domains";
