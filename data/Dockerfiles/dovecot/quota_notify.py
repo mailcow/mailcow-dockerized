@@ -10,6 +10,7 @@ from jinja2 import Template
 import redis
 import time
 import sys
+import html2text
 from subprocess import Popen, PIPE, STDOUT
 
 if len(sys.argv) > 2:
@@ -41,12 +42,13 @@ else:
     template = Template(file_.read())
 
 html = template.render(username=username, percent=percent)
+text = html2text.html2text(html)
+
 try:
   msg = MIMEMultipart('alternative')
   msg['From'] = r.get('QW_SENDER') or "quota-warning@localhost"
   msg['Subject'] = r.get('QW_SUBJ') or "Quota warning"
   msg['Date'] = formatdate(localtime = True)
-  text = "Your mailbox is almost full, currently %d%% are in use. Please consider deleting old messages." % (percent)
   text_part = MIMEText(text, 'plain', 'utf-8')
   html_part = MIMEText(html, 'html', 'utf-8')
   msg.attach(text_part)
