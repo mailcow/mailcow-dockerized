@@ -64,9 +64,10 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
   libregexp-common-perl \
   liburi-perl \
   lzma-dev \
-  python-redis \
+  python-html2text \
   python-jinja2 \
   python-mysql.connector \
+  python-redis \
   make \
   mysql-client \
   procps \

@@ -12,6 +12,7 @@ from jinja2 import Template
 import json
 import redis
 import time
+import html2text
 
 while True:
   try:
@@ -65,6 +66,7 @@ def notify_rcpt(rcpt, msg_count):
     with open('/templates/quarantine.tpl') as file_:
       template = Template(file_.read())
   html = template.render(meta=meta_query, counter=msg_count)
+  text = html2text.html2text(html)
   count = 0
   while count < 15:
     try:
@@ -74,7 +76,6 @@ def notify_rcpt(rcpt, msg_count):
       msg['From'] = r.get('Q_SENDER') or "quarantine@localhost"
       msg['Subject'] = r.get('Q_SUBJ') or "Spam Quarantine Notification"
       msg['Date'] = formatdate(localtime = True)
-      text = "You have %d new items" % (msg_count)
       text_part = MIMEText(text, 'plain', 'utf-8')
       html_part = MIMEText(html, 'html', 'utf-8')
       msg.attach(text_part)
