@@ -7,9 +7,7 @@
   <meta name="theme-color" content="#F5D76E"/>
   <meta http-equiv="Referrer-Policy" content="same-origin">
   <title><?=$UI_TEXTS['title_name'];?></title>
-  <?php if (strtolower(trim($DEFAULT_THEME)) != "lumen"): ?>
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/<?= strtolower(trim($DEFAULT_THEME)); ?>/bootstrap.min.css">
-  <?php endif;
+  <?php
     if (preg_match("/mailbox/i", $_SERVER['REQUEST_URI'])) {
       $css_minifier->add('/web/css/site/mailbox.css');
     }
@@ -30,6 +28,9 @@
     }
   ?>
   <style><?=$css_minifier->minify();?></style>
+  <?php if (strtolower(trim($DEFAULT_THEME)) != "lumen"): ?>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/<?= strtolower(trim($DEFAULT_THEME)); ?>/bootstrap.min.css">
+  <?php endif; ?>
   <link rel="shortcut icon" href="/favicon.png" type="image/png">
   <link rel="icon" href="/favicon.png" type="image/png">
 </head>
