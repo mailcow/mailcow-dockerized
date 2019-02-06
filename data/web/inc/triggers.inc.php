@@ -10,6 +10,14 @@ if (isset($_POST["verify_tfa_login"])) {
   }
 }
 
+if (isset($_POST["quick_release"])) {
+	quarantine('quick_release', $_POST["quick_release"]);
+}
+
+if (isset($_POST["quick_delete"])) {
+	quarantine('quick_delete', $_POST["quick_delete"]);
+}
+
 if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
 	$login_user = strtolower(trim($_POST["login_user"]));
 	$as = check_login($login_user, $_POST["pass_user"]);
