@@ -13,6 +13,7 @@ import json
 import redis
 import time
 import html2text
+import socket
 
 while True:
   try:
@@ -29,7 +30,7 @@ time_now = int(time.time())
 def query_mysql(query, headers = True, update = False):
   while True:
     try:
-      cnx = mysql.connector.connect(unix_socket = '/var/run/mysqld/mysqld.sock', user='__DBUSER__', passwd='__DBPASS__', database='__DBNAME__', charset="utf8")
+      cnx = mysql.connector.connect(unix_socket = '/var/run/mysqld/mysqld.sock', user='mailcow', passwd='9S6jd31ijEytZE9lQ8sWOxK34tg5', database='mailcow', charset="utf8")
     except Exception as ex:
       print '%s - trying again...'  % (ex)
       time.sleep(3)
@@ -53,8 +54,8 @@ def query_mysql(query, headers = True, update = False):
     cur.close()
     cnx.close()
 
-def notify_rcpt(rcpt, msg_count):
-  meta_query = query_mysql('SELECT id, subject, sender, created FROM quarantine WHERE notified = 0 AND rcpt = "%s"' % (rcpt))
+def notify_rcpt(rcpt, msg_count, quarantine_acl):
+  meta_query = query_mysql('SELECT SHA2(CONCAT(id, qid), 256) AS qhash, id, subject, score, sender, created FROM quarantine WHERE notified = 0 AND rcpt = "%s"' % (rcpt))
   if r.get('Q_HTML'):
     try:
       template = Template(r.get('Q_HTML'))
@@ -65,7 +66,7 @@ def notify_rcpt(rcpt, msg_count):
   else:
     with open('/templates/quarantine.tpl') as file_:
       template = Template(file_.read())
-  html = template.render(meta=meta_query, counter=msg_count)
+  html = template.render(meta=meta_query, counter=msg_count, hostname=socket.gethostname(), quarantine_acl=quarantine_acl)
   text = html2text.html2text(html)
   count = 0
   while count < 15:
@@ -92,7 +93,7 @@ def notify_rcpt(rcpt, msg_count):
       print '%s'  % (ex)
       time.sleep(3)
 
-records = query_mysql('SELECT count(id) AS counter, rcpt FROM quarantine WHERE notified = 0 GROUP BY rcpt')
+records = query_mysql('SELECT IFNULL(user_acl.quarantine, 0) AS quarantine_acl, count(id) AS counter, rcpt FROM quarantine LEFT OUTER JOIN user_acl ON user_acl.username = rcpt WHERE notified = 0 AND rcpt in (SELECT username FROM mailbox) GROUP BY rcpt')
 
 for record in records:
   attrs = ''
@@ -113,14 +114,14 @@ for record in records:
   if attrs['quarantine_notification'] == 'hourly':
     if last_notification == 0 or (last_notification + 3600) < time_now:
       print "Notifying %s about %d new items in quarantine" % (record['rcpt'], record['counter'])
-      notify_rcpt(record['rcpt'], record['counter'])
+      notify_rcpt(record['rcpt'], record['counter'], record['quarantine_acl'])
   elif attrs['quarantine_notification'] == 'daily':
     if last_notification == 0 or (last_notification + 86400) < time_now:
       print "Notifying %s about %d new items in quarantine" % (record['rcpt'], record['counter'])
-      notify_rcpt(record['rcpt'], record['counter'])
+      notify_rcpt(record['rcpt'], record['counter'], record['quarantine_acl'])
   elif attrs['quarantine_notification'] == 'weekly':
     if last_notification == 0 or (last_notification + 604800) < time_now:
       print "Notifying %s about %d new items in quarantine" % (record['rcpt'], record['counter'])
-      notify_rcpt(record['rcpt'], record['counter'])
+      notify_rcpt(record['rcpt'], record['counter'], record['quarantine_acl'])
   else:
     break

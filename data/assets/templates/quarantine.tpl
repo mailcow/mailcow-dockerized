@@ -2,7 +2,7 @@
   <head>
   <style>
   body {
-    font-family: sans-serif;
+    font-family: Helvetica, Arial, Sans-Serif;
   }
   table {
     border-collapse: collapse;
@@ -15,18 +15,28 @@
     border-bottom: 1px solid #ddd;
     vertical-align: top;
   }
+  th {
+    background-color: #56B04C;
+    color: white;
+  }
+  tr:nth-child(even){background-color: #f2f2f2}
+
   </style>
   </head>
   <body>
     <p>Hi!<br>
     There are {{counter}} new messages waiting in quarantine:<br>
     <table>
-    <tr><th>Subject</th><th>Sender</th><th>Arrived on</th></tr>
+    <tr><th>Subject</th><th>Sender</th><th>Score</th><th>Arrived on</th>{% if quarantine_acl == 1 %}<th>Actions</th>{% endif %}</tr>
     {% for line in meta %}
     <tr>
     <td>{{ line.subject|e }}</td>
     <td>{{ line.sender|e }}</td>
+    <td>{{ line.score }}</td>
     <td>{{ line.created }}</td>
+    {% if quarantine_acl == 1 %}
+    <td><a href="https://{{ hostname }}/qhandler/release/{{ line.qhash }}">release</a> | <a href="https://{{ hostname }}/qhandler/delete/{{ line.qhash }}">delete</a></td>
+    {% endif %}
     </tr>
     {% endfor %}
     </table>
