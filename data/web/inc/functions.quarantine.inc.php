@@ -5,6 +5,221 @@ function quarantine($_action, $_data = null) {
 	global $lang;
 	$_data_log = $_data;
   switch ($_action) {
+    case 'quick_delete':
+      // Dont return results, just log
+      $hash = trim($_data);
+      if (preg_match("/^([a-f0-9]{64})$/", $hash) === false) {
+        logger(array('return' => array(
+          array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => 'access_denied'
+          )
+        )));
+        return;
+      }
+      $stmt = $pdo->prepare('SELECT `id` FROM `quarantine` LEFT OUTER JOIN `user_acl` ON `user_acl`.`username` = `rcpt`
+        WHERE SHA2(CONCAT(`id`, `qid`), 256) = :hash
+          AND user_acl.quarantine = 1
+          AND rcpt IN (SELECT username FROM mailbox)');
+      $stmt->execute(array(':hash' => $hash));
+      $row = $stmt->fetch(PDO::FETCH_ASSOC);
+      if (empty($row['id']) || !is_numeric($row['id'])) {
+        logger(array('return' => array(
+          array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => 'access_denied'
+          )
+        )));
+        return;
+      }
+      else {
+        $stmt = $pdo->prepare("DELETE FROM `quarantine` WHERE id = :id");
+        $stmt->execute(array(
+          ':id' => $row['id']
+        ));
+      }
+      logger(array('return' => array(
+        array(
+          'type' => 'success',
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('item_deleted', $row['id'])
+        )
+      )));
+    break;
+    case 'quick_release':
+      // Dont return results, just log
+      $hash = trim($_data);
+      if (preg_match("/^([a-f0-9]{64})$/", $hash) === false) {
+        logger(array('return' => array(
+          array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => 'access_denied'
+          )
+        )));
+        return;
+      }
+      $stmt = $pdo->prepare('SELECT `id` FROM `quarantine` LEFT OUTER JOIN `user_acl` ON `user_acl`.`username` = `rcpt`
+        WHERE SHA2(CONCAT(`id`, `qid`), 256) = :hash
+          AND `user_acl`.`quarantine` = 1
+          AND `username` IN (SELECT `username` FROM `mailbox`)');
+      $stmt->execute(array(':hash' => $hash));
+      $row = $stmt->fetch(PDO::FETCH_ASSOC);
+      if (empty($row['id']) || !is_numeric($row['id'])) {
+        logger(array('return' => array(
+          array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => 'access_denied'
+          )
+        )));
+        return;
+      }
+      else {
+        $stmt = $pdo->prepare('SELECT `msg`, `qid`, `sender`, `rcpt` FROM `quarantine` WHERE `id` = :id');
+        $stmt->execute(array(':id' => $row['id']));
+        $detail_row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $sender = (isset($detail_row['sender'])) ? $detail_row['sender'] : 'sender-unknown@rspamd';
+        if (!empty(gethostbynamel('postfix-mailcow'))) {
+          $postfix = 'postfix-mailcow';
+        }
+        if (!empty(gethostbynamel('postfix'))) {
+          $postfix = 'postfix';
+        }
+        else {
+          logger(array('return' => array(
+            array(
+              'type' => 'warning',
+              'log' => array(__FUNCTION__, $_action, $_data_log),
+              'msg' => array('release_send_failed', 'Cannot determine Postfix host')
+            )
+          )));
+          return;
+        }
+        try {
+          $release_format = $redis->Get('Q_RELEASE_FORMAT');
+        }
+        catch (RedisException $e) {
+          logger(array('return' => array(
+            array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_data_log),
+              'msg' => array('redis_error', $e)
+            )
+          )));
+          return;
+        }
+        if ($release_format == 'attachment') {
+          try {
+            $mail = new PHPMailer(true);
+            $mail->isSMTP();
+            $mail->SMTPDebug = 0;
+            $mail->SMTPOptions = array(
+              'ssl' => array(
+                  'verify_peer' => false,
+                  'verify_peer_name' => false,
+                  'allow_self_signed' => true
+              )
+            );
+            if (!empty(gethostbynamel('postfix-mailcow'))) {
+              $postfix = 'postfix-mailcow';
+            }
+            if (!empty(gethostbynamel('postfix'))) {
+              $postfix = 'postfix';
+            }
+            else {
+              logger(array('return' => array(
+                array(
+                  'type' => 'warning',
+                  'log' => array(__FUNCTION__, $_action, $_data_log),
+                  'msg' => array('release_send_failed', 'Cannot determine Postfix host')
+                )
+              )));
+              return;
+            }
+            $mail->Host = $postfix;
+            $mail->Port = 590;
+            $mail->setFrom($sender);
+            $mail->CharSet = 'UTF-8';
+            $mail->Subject = sprintf($lang['quarantine']['release_subject'], $detail_row['qid']);
+            $mail->addAddress($detail_row['rcpt']);
+            $mail->IsHTML(false);
+            $msg_tmpf = tempnam("/tmp", $detail_row['qid']);
+            file_put_contents($msg_tmpf, $detail_row['msg']);
+            $mail->addAttachment($msg_tmpf, $detail_row['qid'] . '.eml');
+            $mail->Body = sprintf($lang['quarantine']['release_body']);
+            $mail->send();
+            unlink($msg_tmpf);
+          }
+          catch (phpmailerException $e) {
+            unlink($msg_tmpf);
+            logger(array('return' => array(
+              array(
+                'type' => 'warning',
+                'log' => array(__FUNCTION__, $_action, $_data_log),
+                'msg' => array('release_send_failed', $e->errorMessage())
+              )
+            )));
+            return;
+          }
+        }
+        elseif ($release_format == 'raw') {
+          $postfix_talk = array(
+            array('220', 'HELO quarantine' . chr(10)),
+            array('250', 'MAIL FROM: ' . $sender . chr(10)),
+            array('250', 'RCPT TO: ' . $detail_row['rcpt'] . chr(10)),
+            array('250', 'DATA' . chr(10)),
+            array('354', $detail_row['msg'] . chr(10) . '.' . chr(10)),
+            array('250', 'QUIT' . chr(10)),
+            array('221', '')
+          );
+          // Thanks to https://stackoverflow.com/questions/6632399/given-an-email-as-raw-text-how-can-i-send-it-using-php
+          $smtp_connection = fsockopen($postfix, 590, $errno, $errstr, 1); 
+          if (!$smtp_connection) {
+            logger(array('return' => array(
+              array(
+                'type' => 'warning',
+                'log' => array(__FUNCTION__, $_action, $_data_log),
+                'msg' => 'Cannot connect to Postfix'
+              )
+            )));
+            return false;
+          }
+          for ($i=0; $i < count($postfix_talk); $i++) {
+            $smtp_resource = fgets($smtp_connection, 256); 
+            if (substr($smtp_resource, 0, 3) !== $postfix_talk[$i][0]) {
+              $ret = substr($smtp_resource, 0, 3);
+              $ret = (empty($ret)) ? '-' : $ret;
+              logger(array('return' => array(
+                array(
+                  'type' => 'warning',
+                  'log' => array(__FUNCTION__, $_action, $_data_log),
+                  'msg' => 'Postfix returned SMTP code ' . $smtp_resource . ', expected ' . $postfix_talk[$i][0]
+                )
+              )));
+              return;
+            }
+            if ($postfix_talk[$i][1] !== '')  {
+              fputs($smtp_connection, $postfix_talk[$i][1]);
+            }
+          }
+          fclose($smtp_connection);
+        }
+        $stmt = $pdo->prepare("DELETE FROM `quarantine` WHERE id = :id");
+        $stmt->execute(array(
+          ':id' => $row['id']
+        ));
+      }
+    logger(array('return' => array(
+      array(
+        'type' => 'success',
+        'log' => array(__FUNCTION__, $_action, $_data_log),
+        'msg' => array('item_released', $hash)
+      )
+    )));
+    break;
     case 'delete':
       if (!is_array($_data['id'])) {
         $ids = array();
