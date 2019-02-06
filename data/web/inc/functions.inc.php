@@ -654,6 +654,9 @@ function user_get_alias_details($username) {
   $stmt->execute(array(':username' => $username));
   $run = $stmt->fetchAll(PDO::FETCH_ASSOC);
   while ($row = array_shift($run)) {
+    if (empty($row['ad_alias'])) {
+      continue;
+    }
     $data['direct_aliases'][$row['ad_alias']]['public_comment'] = '↪ ' . $row['alias_domain'];
   }
   $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(`send_as` SEPARATOR ', '), '&#10008;') AS `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `send_as` NOT LIKE '@%';");
@@ -1483,19 +1486,10 @@ function solr_status() {
   if ($response === false) {
     $err = curl_error($curl);
     curl_close($curl);
-    // logger(array('return' => array(
-      // 'type' => 'danger',
-      // 'log' => array(__FUNCTION__, $action, $service_name, $attr1, $attr2, $extra_headers),
-      // 'msg' => $err,
-    // )));
     return false;
   }
   else {
     curl_close($curl);
-    // logger(array('return' => array(
-      // 'type' => 'success',
-      // 'log' => array(__FUNCTION__, $action, $service_name, $attr1, $attr2, $extra_headers),
-    // )));
     $status = json_decode($response, true);
     return (!empty($status['status']['dovecot'])) ? $status['status']['dovecot'] : false;
   }
