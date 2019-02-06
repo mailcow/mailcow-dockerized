@@ -3546,6 +3546,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt->execute(array(
               ':username' => $username
             ));
+            $stmt = $pdo->prepare("DELETE FROM `quarantine` WHERE `rcpt` = :username");
+            $stmt->execute(array(
+              ':username' => $username
+            ));
             $stmt = $pdo->prepare("DELETE FROM `quota2` WHERE `username` = :username");
             $stmt->execute(array(
               ':username' => $username
@@ -3555,6 +3559,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               ':username' => $username
             ));
             $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE `logged_in_as` = :username");
+            $stmt->execute(array(
+              ':username' => $username
+            ));
+            // fk, better safe than sorry
+            $stmt = $pdo->prepare("DELETE FROM `user_acl` WHERE `username` = :username");
             $stmt->execute(array(
               ':username' => $username
             ));
