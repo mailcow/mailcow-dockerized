@@ -121,7 +121,7 @@ verify_challenge_path(){
   # verify_challenge_path URL 4|6
   RAND_FILE=${RANDOM}${RANDOM}${RANDOM}
   touch /var/www/acme/${RAND_FILE}
-  if [[ "$(curl -${2} http://${1}/.well-known/acme-challenge/${RAND_FILE} --write-out %{http_code} --silent --output /dev/null)" == "200" ]]; then
+  if [[ "$(curl -${2} http://${1}/.well-known/acme-challenge/${RAND_FILE} --write-out %{http_code} --silent --output /dev/null)" =~ ^(2|3)  ]]; then
     rm /var/www/acme/${RAND_FILE}
     return 0
   else
