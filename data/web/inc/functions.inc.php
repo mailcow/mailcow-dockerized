@@ -406,6 +406,7 @@ function check_login($user, $pass) {
 	$user = strtolower(trim($user));
 	$stmt = $pdo->prepare("SELECT `password` FROM `admin`
 			WHERE `superadmin` = '1'
+			AND `active` = '1'
 			AND `username` = :user");
 	$stmt->execute(array(':user' => $user));
 	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -632,7 +633,9 @@ function user_get_alias_details($username) {
     ));
   $run = $stmt->fetchAll(PDO::FETCH_ASSOC);
   while ($row = array_shift($run)) {
-    $data['shared_aliases'][] = $row['shared_aliases'];
+    $data['shared_aliases'][$row['shared_aliases']]['public_comment'] = htmlspecialchars($row['public_comment']);
+
+    //$data['shared_aliases'][] = $row['shared_aliases'];
   }
 
   $stmt = $pdo->prepare("SELECT `address` AS `direct_aliases`, `public_comment` FROM `alias`
