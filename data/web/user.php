@@ -132,7 +132,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
     else {
       foreach (array_filter($user_get_alias_details['direct_aliases']) as $direct_alias => $direct_alias_meta) {
         (!empty($direct_alias_meta['public_comment'])) ?
-          printf('%s <small>(%s)</small><br>', $direct_alias, $direct_alias_meta['public_comment']) :
+          printf('%s &mdash; <span class="bg-info">%s</span><br>', $direct_alias, $direct_alias_meta['public_comment']) :
           printf('%s<br>', $direct_alias);
       }
     }
@@ -151,7 +151,8 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
     else {
       foreach (array_filter($user_get_alias_details['shared_aliases']) as $shared_alias => $shared_alias_meta) {
         (!empty($shared_alias_meta['public_comment'])) ?
-          printf('%s <small>(%s)</small><br>', $shared_alias, $shared_alias_meta['public_comment']) :
+          printf('%s &mdash; <span class="bg-info">%s</span><br>', $shared_alias, $shared_alias_meta['public_comment']) :
+
           printf('%s<br>', $shared_alias);
       }
     }
