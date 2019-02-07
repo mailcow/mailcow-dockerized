@@ -205,7 +205,7 @@ function admin($_action, $_data = null) {
     case 'delete':
       $usernames = (array)$_data['username'];
       foreach ($usernames as $username) {
-        if ($_SESSION['mailcow_cc_role'] == $username) {
+        if ($_SESSION['mailcow_cc_username'] == $username) {
           $_SESSION['return'][] = array(
             'type' => 'warning',
             'log' => array(__FUNCTION__, $_action, $_data_log),
