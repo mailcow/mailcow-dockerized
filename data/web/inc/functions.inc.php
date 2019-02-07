@@ -406,6 +406,7 @@ function check_login($user, $pass) {
 	$user = strtolower(trim($user));
 	$stmt = $pdo->prepare("SELECT `password` FROM `admin`
 			WHERE `superadmin` = '1'
+			AND `active` = '1'
 			AND `username` = :user");
 	$stmt->execute(array(':user' => $user));
 	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
