@@ -296,7 +296,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.46
+      image: mailcow/acme:1.47
       build: ./data/Dockerfiles/acme
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -389,7 +389,6 @@ services:
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
         - ./data/conf/rspamd/override.d/worker-controller-password.inc:/access.inc:rw
-        - vmail-vol-1:/var/vmail:ro
       networks:
         mailcow-network:
           aliases:
