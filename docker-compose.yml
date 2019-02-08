@@ -2,7 +2,7 @@ version: '2.1'
 services:
 
     unbound-mailcow:
-      image: mailcow/unbound:1.5
+      image: mailcow/unbound:1.6
       build: ./data/Dockerfiles/unbound
       command: /usr/sbin/unbound
       environment:
@@ -395,7 +395,7 @@ services:
             - dockerapi
 
     solr-mailcow:
-      image: mailcow/solr:1.0
+      image: mailcow/solr:1.1
       build: ./data/Dockerfiles/solr
       restart: always
       volumes:
