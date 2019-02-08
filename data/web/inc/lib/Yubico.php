@@ -6,9 +6,9 @@
    * @package     Auth_Yubico
    * @author      Simon Josefsson <simon@yubico.com>, Olov Danielson <olov@yubico.com>
    * @copyright   2007-2015 Yubico AB
-   * @license     http://opensource.org/licenses/bsd-license.php New BSD License
+   * @license     https://opensource.org/licenses/bsd-license.php New BSD License
    * @version     2.0
-   * @link        http://www.yubico.com/
+   * @link        https://www.yubico.com/
    */
 
 require_once 'PEAR.php';
@@ -81,12 +81,6 @@ class Auth_Yubico
 	var $_response;
 
 	/**
-	 * Flag whether to use https or not.
-	 * @var boolean
-	 */
-	var $_https;
-
-	/**
 	 * Flag whether to verify HTTPS server certificates or not.
 	 * @var boolean
 	 */
@@ -98,23 +92,17 @@ class Auth_Yubico
 	 * Sets up the object
 	 * @param    string  $id     The client identity
 	 * @param    string  $key    The client MAC key (optional)
-	 * @param    boolean $https  Flag whether to use https (optional)
+	 * @param    boolean $https  noop
 	 * @param    boolean $httpsverify  Flag whether to use verify HTTPS
 	 *                                 server certificates (optional,
 	 *                                 default true)
 	 * @access public
 	 */
-	function __construct($id, $key = '', $https = 0, $httpsverify = 1)
+	public function __construct($id, $key = '', $https = 0, $httpsverify = 1)
 	{
 		$this->_id =  $id;
 		$this->_key = base64_decode($key);
-		$this->_https = $https;
 		$this->_httpsverify = $httpsverify;
-	}
-  
-  function Auth_Yubico($id, $key = '', $https = 0, $httpsverify = 1)
-	{
-    self::__construct();
 	}
 
 	/**
@@ -130,22 +118,6 @@ class Auth_Yubico
 	}
 
 	/**
-	 * Get URL part to use for validation.
-	 *
-	 * @return string  Server URL part
-	 * @access public
-	 */
-	function getURLpart()
-	{
-		if ($this->_url) {
-			return $this->_url;
-		} else {
-			return "api.yubico.com/wsapi/verify";
-		}
-	}
-
-
-	/**
 	 * Get next URL part from list to use for validation.
 	 *
 	 * @return mixed string with URL part of false if no more URLs in list
@@ -154,12 +126,12 @@ class Auth_Yubico
 	function getNextURLpart()
 	{
 	  if ($this->_url_list) $url_list=$this->_url_list;
-	  else $url_list=array('api.yubico.com/wsapi/2.0/verify',
-			       'api2.yubico.com/wsapi/2.0/verify', 
-			       'api3.yubico.com/wsapi/2.0/verify', 
-			       'api4.yubico.com/wsapi/2.0/verify',
-			       'api5.yubico.com/wsapi/2.0/verify');
-	  
+	  else $url_list=array('https://api.yubico.com/wsapi/2.0/verify',
+			       'https://api2.yubico.com/wsapi/2.0/verify',
+			       'https://api3.yubico.com/wsapi/2.0/verify',
+			       'https://api4.yubico.com/wsapi/2.0/verify',
+			       'https://api5.yubico.com/wsapi/2.0/verify');
+
 	  if ($this->_url_index>=count($url_list)) return false;
 	  else return $url_list[$this->_url_index++];
 	}
@@ -318,13 +290,7 @@ class Auth_Yubico
 	  $ch = array();
 	  while($URLpart=$this->getNextURLpart()) 
 	    {
-	      /* Support https. */
-	      if ($this->_https) {
-		$query = "https://";
-	      } else {
-		$query = "http://";
-	      }
-	      $query .= $URLpart . "?" . $parameters;
+	      $query = $URLpart . "?" . $parameters;
 
 	      if ($this->_lastquery) { $this->_lastquery .= " "; }
 	      $this->_lastquery .= $query;
@@ -392,7 +358,7 @@ class Auth_Yubico
 		    /* Case 2. Verify signature first */
 		    $rows = explode("\r\n", trim($str));
 		    $response=array();
-		    while (list($key, $val) = each($rows)) {
+			foreach ($rows as $key => $val) {
 		      /* = is also used in BASE64 encoding so we only replace the first = by # which is not used in BASE64 */
 		      $val = preg_replace('/=/', '#', $val, 1);
 		      $row = explode("#", $val);
