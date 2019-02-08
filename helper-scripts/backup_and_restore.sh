@@ -36,7 +36,7 @@ if [[ ! -d ${BACKUP_LOCATION} ]]; then
   if [[ ! ${CREATE_BACKUP_LOCATION,,} =~ ^(yes|y)$ ]]; then
     exit 1
   else
-    mkdir ${BACKUP_LOCATION}
+    mkdir -p ${BACKUP_LOCATION}
     chmod 755 ${BACKUP_LOCATION}
   fi
 else
