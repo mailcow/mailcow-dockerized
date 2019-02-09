@@ -693,19 +693,19 @@ $tfa_data = get_tfa();
       <div class="panel-heading"><?=$lang['admin']['quota_notifications'];?></div>
       <div class="panel-body">
       <p><?=$lang['admin']['quota_notifications_info'];?></p>
-       <?php $q_data = quota_notification('get');?>
+       <?php $qw_data = quota_notification('get');?>
       <form class="form" role="form" data-id="quota_notification" method="post">
         <div class="row">
           <div class="col-sm-6">
             <div class="form-group">
               <label for="sender"><?=$lang['admin']['quarantine_notification_sender'];?>:</label>
-              <input type="text" class="form-control" name="sender" value="<?=$q_data['sender'];?>" placeholder="quota-warning@localhost">
+              <input type="text" class="form-control" name="sender" value="<?=$qw_data['sender'];?>" placeholder="quota-warning@localhost">
             </div>
           </div>
           <div class="col-sm-6">
             <div class="form-group">
               <label for="subject"><?=$lang['admin']['quarantine_notification_subject'];?>:</label>
-              <input type="text" class="form-control" name="subject" value="<?=$q_data['subject'];?>" placeholder="Quota warning">
+              <input type="text" class="form-control" name="subject" value="<?=$qw_data['subject'];?>" placeholder="Quota warning">
             </div>
           </div>
         </div>
@@ -716,7 +716,7 @@ $tfa_data = get_tfa();
             </legend>
             <div id="quota_template" class="collapse" >
               <!-- <small><?=$lang['admin']['quota_notifications_vars'];?></small><br><br>-->
-              <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code collapse in" rows="20" name="html"><?=$q_data['html_tmpl'];?></textarea>
+              <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code collapse in" rows="20" name="html_tmpl"><?=$qw_data['html_tmpl'];?></textarea>
             </div>
           </div>
         </div>
