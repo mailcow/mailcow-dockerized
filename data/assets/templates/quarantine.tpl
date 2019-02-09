@@ -25,11 +25,11 @@
   </head>
   <body>
     <p>Hi!<br>
-	{% if counter == 1 %}
+    {% if counter == 1 %}
     There is 1 new message waiting in quarantine:<br>
-	{% else %}
-	There are {{counter}} new messages waiting in quarantine:<br>
-	{% endif %}
+    {% else %}
+    There are {{counter}} new messages waiting in quarantine:<br>
+    {% endif %}
     <table>
     <tr><th>Subject</th><th>Sender</th><th>Score</th><th>Arrived on</th>{% if quarantine_acl == 1 %}<th>Actions</th>{% endif %}</tr>
     {% for line in meta %}
