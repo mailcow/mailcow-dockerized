@@ -82,86 +82,61 @@ EOF
   fi
 done
 
+# Create tmp folder for dynamic config snippet
+mkdir -p /tmp/sogo
 
-mkdir -p /var/lib/sogo/GNUstep/Defaults/
-
-# Generate plist header with timezone data
-cat <<EOF > /var/lib/sogo/GNUstep/Defaults/sogod.plist
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//GNUstep//DTD plist 0.9//EN" "http://www.gnustep.org/plist-0_9.xml">
-<plist version="0.9">
-<dict>
-    <key>OCSAclURL</key>
-    <string>mysql://${DBUSER}:${DBPASS}@%2Fvar%2Frun%2Fmysqld%2Fmysqld.sock/${DBNAME}/sogo_acl</string>
-    <key>OCSCacheFolderURL</key>
-    <string>mysql://${DBUSER}:${DBPASS}@%2Fvar%2Frun%2Fmysqld%2Fmysqld.sock/${DBNAME}/sogo_cache_folder</string>
-    <key>OCSEMailAlarmsFolderURL</key>
-    <string>mysql://${DBUSER}:${DBPASS}@%2Fvar%2Frun%2Fmysqld%2Fmysqld.sock/${DBNAME}/sogo_alarms_folder</string>
-    <key>OCSFolderInfoURL</key>
-    <string>mysql://${DBUSER}:${DBPASS}@%2Fvar%2Frun%2Fmysqld%2Fmysqld.sock/${DBNAME}/sogo_folder_info</string>
-    <key>OCSSessionsFolderURL</key>
-    <string>mysql://${DBUSER}:${DBPASS}@%2Fvar%2Frun%2Fmysqld%2Fmysqld.sock/${DBNAME}/sogo_sessions_folder</string>
-    <key>OCSStoreURL</key>
-    <string>mysql://${DBUSER}:${DBPASS}@%2Fvar%2Frun%2Fmysqld%2Fmysqld.sock/${DBNAME}/sogo_store</string>
-    <key>SOGoProfileURL</key>
-    <string>mysql://${DBUSER}:${DBPASS}@%2Fvar%2Frun%2Fmysqld%2Fmysqld.sock/${DBNAME}/sogo_user_profile</string>
-    <key>SOGoTimeZone</key>
-    <string>${TZ}</string>
-    <key>domains</key>
-    <dict>
+# Create mysql configuration, set timezone and save in temporary snippet
+cat <<EOF > /tmp/sogo/sogo-dynamic-domain.conf
+  OCSAclURL = "mysql://${DBUSER}:${DBPASS}@%2Fvar%2Frun%2Fmysqld%2Fmysqld.sock/${DBNAME}/sogo_acl";
+  OCSCacheFolderURL = "mysql://${DBUSER}:${DBPASS}@%2Fvar%2Frun%2Fmysqld%2Fmysqld.sock/${DBNAME}/sogo_cache_folder";
+  OCSEMailAlarmsFolderURL = "mysql://${DBUSER}:${DBPASS}@%2Fvar%2Frun%2Fmysqld%2Fmysqld.sock/${DBNAME}/sogo_alarms_folder";
+  OCSFolderInfoURL = "mysql://${DBUSER}:${DBPASS}@%2Fvar%2Frun%2Fmysqld%2Fmysqld.sock/${DBNAME}/sogo_folder_info";
+  OCSSessionsFolderURL = "mysql://${DBUSER}:${DBPASS}@%2Fvar%2Frun%2Fmysqld%2Fmysqld.sock/${DBNAME}/sogo_sessions_folder";
+  OCSStoreURL = "mysql://${DBUSER}:${DBPASS}@%2Fvar%2Frun%2Fmysqld%2Fmysqld.sock/${DBNAME}/sogo_store";
+  SOGoProfileURL = "mysql://${DBUSER}:${DBPASS}@%2Fvar%2Frun%2Fmysqld%2Fmysqld.sock/${DBNAME}/sogo_user_profile";
+  SOGoTimeZone = ${TZ};
 EOF
 
-# Generate multi-domain setup
+# Begin domains array
+echo '  domains = 
+  {' >> /tmp/sogo/sogo-dynamic-domain.conf
+  
+# Generate and add multi-domain setup to temporary snippet
 while read -r line gal
   do
-  echo "        <key>${line}</key>
-        <dict>
-            <key>SOGoMailDomain</key>
-            <string>${line}</string>
-            <key>SOGoUserSources</key>
-            <array>
-                <dict>
-                    <key>MailFieldNames</key>
-                    <array>
-                        <string>aliases</string>
-                        <string>ad_aliases</string>
-                    </array>
-                    <key>KindFieldName</key>
-                    <string>kind</string>
-                    <key>DomainFieldName</key>
-                    <string>domain</string>
-                    <key>MultipleBookingsFieldName</key>
-                    <string>multiple_bookings</string>
-                    <key>listRequiresDot</key>
-                    <string>NO</string>
-                    <key>canAuthenticate</key>
-                    <string>YES</string>
-                    <key>displayName</key>
-                    <string>GAL ${line}</string>
-                    <key>id</key>
-                    <string>${line}</string>
-                    <key>isAddressBook</key>
-                    <string>${gal}</string>
-                    <key>type</key>
-                    <string>sql</string>
-                    <key>userPasswordAlgorithm</key>
-                    <string>ssha256</string>
-                    <key>prependPasswordScheme</key>
-                    <string>YES</string>
-                    <key>viewURL</key>
-                    <string>mysql://${DBUSER}:${DBPASS}@%2Fvar%2Frun%2Fmysqld%2Fmysqld.sock/${DBNAME}/_sogo_static_view</string>
-                </dict>" >> /var/lib/sogo/GNUstep/Defaults/sogod.plist
-  # Generate alternative LDAP authentication dict, when SQL authentication fails
-  # This will nevertheless read attributes from LDAP
-  line=${line} envsubst < /etc/sogo/plist_ldap >> /var/lib/sogo/GNUstep/Defaults/sogod.plist
-  echo "            </array>
-        </dict>" >> /var/lib/sogo/GNUstep/Defaults/sogod.plist
+  echo "    ${line} = {
+      SOGoMailDomain = ${line};
+	  SOGoUserSources = (
+		{
+			MailFieldName = (aliases, ad_aliases);
+			KindFieldName = kind;
+			DomainFieldName = domain;
+			MultipleBookingsFieldName = multiple_bookings;
+			listRequiresDot = NO;
+			canAuthenticate = YES;
+			displayName = \"GAL ${line}\";
+			id = ${line};
+			isAddressBook = ${gal};
+			type = sql;
+			userPasswordAlgorithm = ssha256;
+			prependPasswordScheme = YES;
+			viewURL = \"mysql://${DBUSER}:${DBPASS}@%2Fvar%2Frun%2Fmysqld%2Fmysqld.sock/${DBNAME}/_sogo_static_view\";
+		}
+	  );
+	};
+" >> /tmp/sogo/sogo-dynamic-domain.conf
 done < <(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain, CASE gal WHEN '1' THEN 'YES' ELSE 'NO' END AS gal FROM domain;" -B -N)
+# Close domains array
+echo '  };' >> /tmp/sogo/sogo-dynamic-domain.conf
 
-# Generate footer
-echo '    </dict>
-</dict>
-</plist>' >> /var/lib/sogo/GNUstep/Defaults/sogod.plist
+# Clear old dynamic entries from sogo.conf
+sed -i '/\/\/\sSTART\sAUTOMATIC\sSECTION/,/\/\/\sEND\sAUTOMATIC\sSECTION/{//!d}' /etc/sogo/sogo.conf
+
+# Add new dynamic entries from temporary snippet to sogo.conf
+sed -i '/\/\/\sSTART\sAUTOMATIC\sSECTION/r /tmp/sogo/sogo-dynamic-domain.conf' /etc/sogo/sogo.conf
+
+# Remove temporary folder
+rm -rf /tmp/sogo
 
 # Fix permissions
 chown sogo:sogo -R /var/lib/sogo/
