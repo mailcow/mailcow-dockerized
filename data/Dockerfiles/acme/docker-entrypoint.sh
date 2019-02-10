@@ -157,10 +157,17 @@ else
   fi
 fi
 
-log_f "Waiting for database... "
+log_f "Waiting for database... " no_nl
 while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
   sleep 2
 done
+log_f "OK" no_date
+
+log_f "Waiting for Nginx... " no_nl
+until $(curl --output /dev/null --silent --head --fail http://nginx:8081); do
+  sleep 2
+done
+log_f "OK" no_date
 
 # Waiting for domain table
 log_f "Waiting for domain table... " no_nl
