@@ -178,7 +178,7 @@ class container_post(Resource):
                 for container in docker_client.containers.list(filters={"id": container_id}):
                   df_return = container.exec_run(["/bin/bash", "-c", "/bin/df -H '" + request.json['dir'].replace("'", "'\\''") + "' | /usr/bin/tail -n1 | /usr/bin/tr -s [:blank:] | /usr/bin/tr ' ' ','"], user='nobody')
                   if df_return.exit_code == 0:
-                    return df_return.output.rstrip()
+                    return df_return.output.decode("utf-8").rstrip()
                   else:
                     return "0,0,0,0,0,0"
               except Exception as e:
@@ -188,7 +188,7 @@ class container_post(Resource):
               for container in docker_client.containers.list(filters={"id": container_id}):
                 sql_shell = container.exec_run(["/bin/bash"], stdin=True, socket=True, user='mysql')
                 upgrade_cmd = "/usr/bin/mysql_upgrade -uroot -p'" + os.environ['DBROOT'].replace("'", "'\\''") + "'\n"
-                sql_socket = sql_shell.output;
+                sql_socket = sql_shell.output.decode("utf-8");
                 try :
                   sql_socket.sendall(upgrade_cmd.encode('utf-8'))
                   sql_socket.shutdown(socket.SHUT_WR)
@@ -266,7 +266,7 @@ class container_post(Resource):
                 for container in docker_client.containers.list(filters={"id": container_id}):
                   worker_shell = container.exec_run(["/bin/bash"], stdin=True, socket=True, user='_rspamd')
                   worker_cmd = "/usr/bin/rspamadm pw -e -p '" + request.json['raw'].replace("'", "'\\''") + "' 2> /dev/null\n"
-                  worker_socket = worker_shell.output;
+                  worker_socket = worker_shell.output.decode("utf-8");
                   try :
                     worker_socket.sendall(worker_cmd.encode('utf-8'))
                     worker_socket.shutdown(socket.SHUT_WR)
@@ -315,7 +315,7 @@ def startFlaskAPI():
     ctx.check_hostname = False
     ctx.load_cert_chain(certfile='/cert.pem', keyfile='/key.pem')
   except:
-    print "Cannot initialize TLS, retrying in 5s..."
+    print("Cannot initialize TLS, retrying in 5s...")
     time.sleep(5)
   app.run(debug=False, host='0.0.0.0', port=443, threaded=True, ssl_context=ctx)
 
@@ -348,9 +348,9 @@ def exec_run_handler(type, output):
     if output.exit_code == 0:
       return jsonify(type='success', msg='command completed successfully')
     else:
-      return jsonify(type='danger', msg='command failed: ' + output.output)
+      return jsonify(type='danger', msg='command failed: ' + output.output.decode("utf-8"))
   if type == 'utf8_text_only':
-    r = Response(response=output.output, status=200, mimetype="text/plain")
+    r = Response(response=output.output.decode("utf-8"), status=200, mimetype="text/plain")
     r.headers["Content-Type"] = "text/plain; charset=utf-8"
     return r
 
@@ -372,9 +372,9 @@ def create_self_signed_cert():
       cert = crypto.dump_certificate(crypto.FILETYPE_PEM, cert)
       pkey = crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey)
       with os.fdopen(os.open('/cert.pem', os.O_WRONLY | os.O_CREAT, 0o644), 'w') as handle:
-        handle.write(cert)
+        handle.write(cert.decode("utf-8"))
       with os.fdopen(os.open('/key.pem', os.O_WRONLY | os.O_CREAT, 0o600), 'w') as handle:
-        handle.write(pkey)
+        handle.write(pkey.decode("utf-8"))
       success = True
     except:
       time.sleep(1)
@@ -397,5 +397,6 @@ if __name__ == '__main__':
     time.sleep(1)
     if killer.kill_now:
       break
-  print "Stopping dockerapi-mailcow"
-
+  print("Stopping dockerapi-mailcow")
+  
+  
