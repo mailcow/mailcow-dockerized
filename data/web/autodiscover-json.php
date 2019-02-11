@@ -11,7 +11,7 @@ header('Content-type: application/json');
 if ($_GET['Protocol'] == 'ActiveSync') {
   echo '{"Protocol":"ActiveSync","Url":"' . $autodiscover_config['activesync']['url'] . '"}';
 }
-elseif ($_GET['Protocol'] == 'AutodiscoverV1') {
+elseif (($_GET['Protocol'] == 'AutodiscoverV1') || ($_GET['Protocol'] == 'Autodiscoverv1')) {
   echo '{"Protocol":"AutodiscoverV1","Url":"https://' . $_SERVER['HTTP_HOST'] . '/Autodiscover/Autodiscover.xml"}';
 }
 else {
