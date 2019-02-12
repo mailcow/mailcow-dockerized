@@ -68,7 +68,6 @@ $autodiscover_config = array(
     'port' => $https_port,
   ),
 );
-unset($https_port);
 
 // If false, we will use DEFAULT_LANG
 // Uses HTTP_ACCEPT_LANGUAGE header
