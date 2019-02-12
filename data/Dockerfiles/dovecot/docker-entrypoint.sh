@@ -189,7 +189,7 @@ IMAPSYNC_TABLE=$(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBP
 [[ ! -z ${IMAPSYNC_TABLE} ]] && mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "UPDATE imapsync SET is_running='0'"
 
 # Envsubst maildir_gc
-envsubst < /usr/local/bin/maildir_gc.sh > /usr/local/bin/maildir_gc.sh
+echo "$(envsubst < /usr/local/bin/maildir_gc.sh)" > /usr/local/bin/maildir_gc.sh
 
 # Collect SA rules once now
 /usr/local/bin/sa-rules.sh
