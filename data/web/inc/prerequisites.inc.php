@@ -1,6 +1,7 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/vars.inc.php';
 $default_autodiscover_config = $autodiscover_config;
+unset($https_port);
 if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/inc/vars.local.inc.php')) {
   include_once $_SERVER['DOCUMENT_ROOT'] . '/inc/vars.local.inc.php';
 }
