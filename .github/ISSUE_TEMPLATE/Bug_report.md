@@ -20,6 +20,7 @@ General logs:
 Further information (where applicable):
  - Your OS (is Apparmor or SELinux active?)
  - Your virtualization technology (KVM/QEMU, Xen, VMware, VirtualBox etc.)
+ - Your server/VM specifications (Memory, CPU Cores)
  - Don't try to run mailcow on a Synology or QNAP NAS, do you?
  - Docker and Docker Compose versions
  - Output of `git diff origin/master`, any other changes to the code?
