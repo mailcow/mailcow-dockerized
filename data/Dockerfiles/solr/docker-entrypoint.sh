@@ -33,20 +33,42 @@ function solr_config() {
       "class":"solr.TrieLongField"
     },
     "add-field-type":{
-      "name":"text",
+      "name":"dovecot_text",
       "class":"solr.TextField",
+      "autoGeneratePhraseQueries":true,
       "positionIncrementGap":100,
       "indexAnalyser":{
+        "charFilter":{
+          "class":"solr.MappingCharFilterFactory",
+          "mapping":"mapping-FoldToASCII.txt"
+        },
+        "charFilter":{
+          "class":"solr.MappingCharFilterFactory",
+          "mapping":"mapping-ISOLatin1Accent.txt"
+        },
+        "charFilter":{
+          "class":"solr.HTMLStripCharFilterFactory"
+        },
         "tokenizer":{
           "class":"solr.StandardTokenizerFactory"
         },
         "filter":{
-          "class":"solr.WordDelimiterFilterFactory",
+          "class":"solr.StopFilterFactory",
+          "words":"stopwords.txt",
+          "ignoreCase":true
+        },
+        "filter":{
+          "class":"solr.WordDelimiterGraphFilterFactory",
           "generateWordParts":1,
           "generateNumberParts":1,
-          "catenateWorks":1,
+          "splitOnCaseChange":1,
+          "splitOnNumerics":1,
+          "catenateWords":1,
           "catenateNumbers":1,
-          "catenateAll":0
+          "catenateAll":1
+        },
+        "filter":{
+          "class":"solr.FlattenGraphFilterFactory"
         },
         "filter":{
           "class":"solr.LowerCaseFilterFactory"
@@ -54,6 +76,9 @@ function solr_config() {
         "filter":{
           "class":"solr.KeywordMarkerFilterFactory",
           "protected":"protwords.txt"
+        },
+        "filter":{
+          "class":"solr.PorterStemFilterFactory"
         }
       },
       "queryAnalyzer":{
@@ -61,21 +86,38 @@ function solr_config() {
           "class":"solr.StandardTokenizerFactory"
         },
         "filter":{
-          "synonyms":"synonyms.txt",
+          "class":"solr.SynonymGraphFilterFactory",
+          "expand":true,
           "ignoreCase":true,
-          "expand":true
+          "synonyms":synonyms.txt
+        },
+        "filter":{
+          "class":"solr.FlattenGraphFilterFactory"
+        },
+        "filter":{
+          "class":"solr.StopFilterFactory",
+          "words":"stopwords.txt",
+          "ignoreCase":true
+        },
+        "filter":{
+          "class":"solr.WordDelimiterGraphFilterFactory",
+          "generateWordParts":1,
+          "generateNumberParts":1,
+          "splitOnCaseChange":1,
+          "splitOnNumerics":1,
+          "catenateWords":1,
+          "catenateNumbers":1,
+          "catenateAll":1
         },
         "filter":{
           "class":"solr.LowerCaseFilterFactory"
         },
         "filter":{
-          "class":"solr.WordDelimiterFilterFactory",
-          "generateWordParts":1,
-          "generateNumberParts":1,
-          "catenateWords":0,
-          "catenateNumbers":0,
-          "catenateAll":0,
-          "splitOnCaseChange":1
+          "class":"solr.KeywordMarkerFilterFactory",
+          "protected":"protwords.txt"
+        },
+        "filter":{
+          "class":"solr.PorterStemFilterFactory"
         }
       }
     },
@@ -102,44 +144,204 @@ function solr_config() {
     },
     "add-field":{
       "name":"hdr",
-      "type":"text",
+      "type":"dovecot_text",
       "indexed":true,
       "stored":false
 
     },
     "add-field":{
       "name":"body",
-      "type":"text",
+      "type":"dovecot_text",
       "indexed":true,
       "stored":false
     },
     "add-field":{
       "name":"from",
-      "type":"text",
+      "type":"dovecot_text",
       "indexed":true,
       "stored":false
     },
     "add-field":{
       "name":"to",
-      "type":"text",
+      "type":"dovecot_text",
       "indexed":true,
       "stored":false
     },
     "add-field":{
       "name":"cc",
-      "type":"text",
+      "type":"dovecot_text",
       "indexed":true,
       "stored":false
     },
     "add-field":{
       "name":"bcc",
-      "type":"text",
+      "type":"dovecot_text",
       "indexed":true,
       "stored":false
     },
     "add-field":{
       "name":"subject",
-      "type":"text",
+      "type":"dovecot_text",
+      "indexed":true,
+      "stored":false
+    }
+  }'
+
+  curl -XPOST http://localhost:8983/solr/dovecot/schema -H 'Content-type:application/json' -d '{
+    "replace-field-type":{
+      "name":"long",
+      "class":"solr.TrieLongField"
+    },
+    "replace-field-type":{
+      "name":"dovecot_text",
+      "class":"solr.TextField",
+      "autoGeneratePhraseQueries":true,
+      "positionIncrementGap":100,
+      "indexAnalyser":{
+        "charFilter":{
+          "class":"solr.MappingCharFilterFactory",
+          "mapping":"mapping-FoldToASCII.txt"
+        },
+        "charFilter":{
+          "class":"solr.MappingCharFilterFactory",
+          "mapping":"mapping-ISOLatin1Accent.txt"
+        },
+        "charFilter":{
+          "class":"solr.HTMLStripCharFilterFactory"
+        },
+        "tokenizer":{
+          "class":"solr.StandardTokenizerFactory"
+        },
+        "filter":{
+          "class":"solr.StopFilterFactory",
+          "words":"stopwords.txt",
+          "ignoreCase":true
+        },
+        "filter":{
+          "class":"solr.WordDelimiterGraphFilterFactory",
+          "generateWordParts":1,
+          "generateNumberParts":1,
+          "splitOnCaseChange":1,
+          "splitOnNumerics":1,
+          "catenateWords":1,
+          "catenateNumbers":1,
+          "catenateAll":1
+        },
+        "filter":{
+          "class":"solr.FlattenGraphFilterFactory"
+        },
+        "filter":{
+          "class":"solr.LowerCaseFilterFactory"
+        },
+        "filter":{
+          "class":"solr.KeywordMarkerFilterFactory",
+          "protected":"protwords.txt"
+        },
+        "filter":{
+          "class":"solr.PorterStemFilterFactory"
+        }
+      },
+      "queryAnalyzer":{
+        "tokenizer":{
+          "class":"solr.StandardTokenizerFactory"
+        },
+        "filter":{
+          "class":"solr.SynonymGraphFilterFactory",
+          "expand":true,
+          "ignoreCase":true,
+          "synonyms":synonyms.txt
+        },
+        "filter":{
+          "class":"solr.FlattenGraphFilterFactory"
+        },
+        "filter":{
+          "class":"solr.StopFilterFactory",
+          "words":"stopwords.txt",
+          "ignoreCase":true
+        },
+        "filter":{
+          "class":"solr.WordDelimiterGraphFilterFactory",
+          "generateWordParts":1,
+          "generateNumberParts":1,
+          "splitOnCaseChange":1,
+          "splitOnNumerics":1,
+          "catenateWords":1,
+          "catenateNumbers":1,
+          "catenateAll":1
+        },
+        "filter":{
+          "class":"solr.LowerCaseFilterFactory"
+        },
+        "filter":{
+          "class":"solr.KeywordMarkerFilterFactory",
+          "protected":"protwords.txt"
+        },
+        "filter":{
+          "class":"solr.PorterStemFilterFactory"
+        }
+      }
+    },
+    "replace-field":{
+      "name":"uid",
+      "type":"long",
+      "indexed":true,
+      "stored":true,
+      "required":true
+    },
+    "replace-field":{
+      "name":"box",
+      "type":"string",
+      "indexed":true,
+      "stored":true,
+      "required":true
+    },
+    "replace-field":{
+      "name":"user",
+      "type":"string",
+      "indexed":true,
+      "stored":true,
+      "required":true
+    },
+    "replace-field":{
+      "name":"hdr",
+      "type":"dovecot_text",
+      "indexed":true,
+      "stored":false
+
+    },
+    "replace-field":{
+      "name":"body",
+      "type":"dovecot_text",
+      "indexed":true,
+      "stored":false
+    },
+    "replace-field":{
+      "name":"from",
+      "type":"dovecot_text",
+      "indexed":true,
+      "stored":false
+    },
+    "replace-field":{
+      "name":"to",
+      "type":"dovecot_text",
+      "indexed":true,
+      "stored":false
+    },
+    "replace-field":{
+      "name":"cc",
+      "type":"dovecot_text",
+      "indexed":true,
+      "stored":false
+    },
+    "replace-field":{
+      "name":"bcc",
+      "type":"dovecot_text",
+      "indexed":true,
+      "stored":false
+    },
+    "replace-field":{
+      "name":"subject",
+      "type":"dovecot_text",
       "indexed":true,
       "stored":false
     }
@@ -167,6 +369,7 @@ function solr_config() {
 }
 
 # fixing volume permission
+
 [[ -d /opt/solr/server/solr/dovecot/data ]] && chown -R solr:solr /opt/solr/server/solr/dovecot/data
 if [[ "${1}" != "--bootstrap" ]]; then
   sed -i '/SOLR_HEAP=/c\SOLR_HEAP="'${SOLR_HEAP:-1024}'m"' /opt/solr/bin/solr.in.sh
@@ -176,12 +379,15 @@ fi
 
 # start a Solr so we can use the Schema API, but only on localhost,
 # so that clients don't see Solr until we have configured it.
+
 echo "Starting local Solr instance to setup configuration"
 su-exec solr start-local-solr
 
 # keep a sentinel file so we don't try to create the core a second time
 # for example when we restart a container.
+
 SENTINEL=/opt/docker-solr/core_created
+
 if [[ -f ${SENTINEL} ]]; then
   echo "skipping core creation"
 else
@@ -199,9 +405,14 @@ else
 fi
 
 echo "Starting configuration"
+while ! wget -O - 'http://localhost:8983/solr/admin/cores?action=STATUS' | grep -q instanceDir; do
+  echo "Waiting for Solr..."
+  sleep 5
+done
 solr_config
 echo "Stopping local Solr"
 su-exec solr stop-local-solr
+
 if [[ "${1}" == "--bootstrap" ]]; then
   exit 0
 else
