@@ -37,3 +37,6 @@ table.footable>tbody>tr.footable-empty>td {
   white-space: -o-pre-wrap;
   word-wrap: break-word;
 }
+body {
+  overflow-y:scroll;
+}
