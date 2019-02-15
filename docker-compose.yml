@@ -395,7 +395,7 @@ services:
             - dockerapi
 
     solr-mailcow:
-      image: mailcow/solr:1.1
+      image: mailcow/solr:1.2
       build: ./data/Dockerfiles/solr
       restart: always
       volumes:
