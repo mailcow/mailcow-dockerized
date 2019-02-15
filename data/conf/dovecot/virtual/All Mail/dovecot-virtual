@@ -1,0 +1,40 @@
+*
+-INBOX/Trash
+-INBOX/Trash/*
+-INBOX/Spam
+-INBOX/Spam/*
+-INBOX/Deleted\ Messages
+-INBOX/Deleted\ Messages/*
+-INBOX/Deleted\ Items
+-INBOX/Deleted\ Items/*
+-INBOX/Rubbish
+-INBOX/Rubbish/*
+-INBOX/Gelöschte\ Objekte
+-INBOX/Gelöschte\ Objekte/*
+-INBOX/Gelöschte\ Elemente
+-INBOX/Gelöschte\ Elemente/*
+-INBOX/Papierkorb
+-INBOX/Papierkorb/*
+-INBOX/Itens\ Excluidos
+-INBOX/Itens\ Excluídos/*
+-INBOX/Lixeira
+-INBOX/Lixeira/*
+-INBOX/Prullenbak
+-INBOX/Prullenbak/*
+-INBOX/Verwijderde
+-INBOX/Verwijderde/*
+-INBOX/Junk
+-INBOX/Junk/*
+-INBOX/Junk-E-Mail
+-INBOX/Junk-E-Mail/*
+-INBOX/Junk\ E-Mail
+-INBOX/Junk\ E-Mail/*
+-INBOX/Lixo\ Eletrônico
+-INBOX/Lixo\ Eletrônico/*
+-INBOX/Ongewenste\ e-mail
+-INBOX/Ongewenste\ e-mail/*
+-INBOX/Nevyžádaná\ pošta
+-INBOX/Nevyžádaná\ pošta/*
+-INBOX/Odstraněná\ pošta
+-INBOX/Odstraněná\ pošta/*
+  all

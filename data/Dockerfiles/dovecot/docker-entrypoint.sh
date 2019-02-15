@@ -93,13 +93,13 @@ EOF
 echo -n ${ACL_ANYONE} > /usr/local/etc/dovecot/acl_anyone
 
 if [[ "${SKIP_SOLR}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-echo -n 'quota acl zlib listescape mail_crypt mail_crypt_acl mail_log notify' > /usr/local/etc/dovecot/mail_plugins
-echo -n 'quota imap_quota imap_acl acl zlib imap_zlib imap_sieve listescape mail_crypt mail_crypt_acl notify mail_log' > /usr/local/etc/dovecot/mail_plugins_imap
-echo -n 'quota sieve acl zlib listescape mail_crypt mail_crypt_acl' > /usr/local/etc/dovecot/mail_plugins_lmtp
+echo -n 'quota acl zlib listescape mail_crypt mail_crypt_acl mail_log notify virtual' > /usr/local/etc/dovecot/mail_plugins
+echo -n 'quota imap_quota imap_acl acl zlib imap_zlib imap_sieve listescape mail_crypt mail_crypt_acl notify mail_log virtual' > /usr/local/etc/dovecot/mail_plugins_imap
+echo -n 'quota sieve acl zlib listescape mail_crypt mail_crypt_acl virtual' > /usr/local/etc/dovecot/mail_plugins_lmtp
 else
-echo -n 'quota acl zlib listescape mail_crypt mail_crypt_acl mail_log notify fts fts_solr' > /usr/local/etc/dovecot/mail_plugins
-echo -n 'quota imap_quota imap_acl acl zlib imap_zlib imap_sieve listescape mail_crypt mail_crypt_acl notify mail_log fts fts_solr' > /usr/local/etc/dovecot/mail_plugins_imap
-echo -n 'quota sieve acl zlib listescape mail_crypt mail_crypt_acl fts fts_solr' > /usr/local/etc/dovecot/mail_plugins_lmtp
+echo -n 'quota acl zlib listescape mail_crypt mail_crypt_acl mail_log notify fts fts_solr virtual' > /usr/local/etc/dovecot/mail_plugins
+echo -n 'quota imap_quota imap_acl acl zlib imap_zlib imap_sieve listescape mail_crypt mail_crypt_acl notify mail_log fts fts_solr virtual' > /usr/local/etc/dovecot/mail_plugins_imap
+echo -n 'quota sieve acl zlib listescape mail_crypt mail_crypt_acl fts fts_solr virtual' > /usr/local/etc/dovecot/mail_plugins_lmtp
 fi
 chmod 644 /usr/local/etc/dovecot/mail_plugins /usr/local/etc/dovecot/mail_plugins_imap /usr/local/etc/dovecot/mail_plugins_lmtp /templates/quarantine.tpl
 
