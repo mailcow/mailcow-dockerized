@@ -347,7 +347,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.34
+      image: mailcow/watchdog:1.35
       # Debug
       #command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog
@@ -411,7 +411,7 @@ services:
           aliases:
             - solr
 
-    ipv6nat:
+    ipv6nat-mailcow:
       depends_on:
         - unbound-mailcow
         - mysql-mailcow
