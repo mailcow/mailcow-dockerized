@@ -123,5 +123,3 @@ for record in records:
     if last_notification == 0 or (last_notification + 604800) < time_now:
       print "Notifying %s about %d new items in quarantine" % (record['rcpt'], record['counter'])
       notify_rcpt(record['rcpt'], record['counter'], record['quarantine_acl'])
-  else:
-    break
