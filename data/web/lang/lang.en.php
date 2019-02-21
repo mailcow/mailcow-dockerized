@@ -251,7 +251,7 @@ $lang['user']['edit'] = 'Edit';
 $lang['user']['remove'] = 'Remove';
 $lang['user']['create_syncjob'] = 'Create new sync job';
 
-$lang['start']['mailcow_apps_detail'] = 'Use a mailcow app to access your mails, calendar, contacts and more.';
+$lang['start']['mailcow_apps_detail'] = 'Use a mailcow app to access your emails, calendar, contacts and more.';
 $lang['start']['mailcow_panel_detail'] = '<b>Domain administrators</b> create, modify or delete mailboxes and aliases, change domains and read further information about their assigned domains.<br>
 <b>Mailbox users</b> are able to create time-limited aliases (spam aliases), change their password and spam filter settings.';
 $lang['start']['imap_smtp_server_auth_info'] = 'Please use your full email address and the PLAIN authentication mechanism.<br>
@@ -259,7 +259,7 @@ Your login data will be encrypted by the server-side mandatory encryption.';
 $lang['start']['help'] = 'Show/Hide help panel';
 $lang['header']['mailcow_settings'] = 'Configuration';
 $lang['header']['administration'] = 'Configuration & Details';
-$lang['header']['mailboxes'] = 'Mail Setup';
+$lang['header']['mailboxes'] = 'Email Setup';
 $lang['header']['user_settings'] = 'User Settings';
 $lang['header']['quarantine'] = "Quarantine";
 $lang['header']['debug'] = "System Information";
@@ -487,7 +487,7 @@ $lang['add']['select_domain'] = 'Please select a domain first';
 $lang['add']['password'] = 'Password';
 $lang['add']['password_repeat'] = 'Confirmation password (repeat)';
 $lang['add']['restart_sogo_hint'] = 'You will need to restart the SOGo service container after adding a new domain!';
-$lang['add']['goto_null'] = 'Silently discard mail';
+$lang['add']['goto_null'] = 'Silently discard email';
 $lang['add']['goto_ham'] = 'Learn as <span class="text-success"><b>ham</b></span>';
 $lang['add']['goto_spam'] = 'Learn as <span class="text-danger"><b>spam</b></span>';
 $lang['add']['validation_success'] = 'Validated successfully';
@@ -627,7 +627,7 @@ $lang['admin']['refresh'] = 'Refresh';
 $lang['admin']['to_top'] = 'Back to top';
 $lang['admin']['in_use_by'] = 'In use by';
 $lang['admin']['forwarding_hosts'] = 'Forwarding Hosts';
-$lang['admin']['forwarding_hosts_hint'] = 'Incoming messages are unconditionally accepted from any hosts listed here. These hosts are then not checked against DNSBLs or subjected to greylisting. Spam received from them is never rejected, but optionally it can be filed into the Junk folder. The most common use for this is to specify mail servers on which you have set up a rule that forwards incoming emails to your mailcow server.';
+$lang['admin']['forwarding_hosts_hint'] = 'Incoming messages are unconditionally accepted from any hosts listed here. These hosts are then not checked against DNSBLs or subjected to greylisting. Spam received from them is never rejected, but optionally it can be filed into the Junk folder. The most common use for this is to specify email servers on which you have set up a rule that forwards incoming emails to your mailcow server.';
 $lang['admin']['forwarding_hosts_add_hint'] = 'You can either specify IPv4/IPv6 addresses, networks in CIDR notation, host names (which will be resolved to IP addresses), or domain names (which will be resolved to IP addresses by querying SPF records or, in their absence, MX records).';
 $lang['admin']['relayhosts_hint'] = 'Define sender-dependent transports to be able to select them in a domains configuration dialog.<br>
   The transport service is always "smtp:". A users individual outbound TLS policy setting is taken into account.';
@@ -836,7 +836,7 @@ $lang['oauth2']['authorize_app'] = 'Authorize application';
 $lang['oauth2']['deny'] = 'Deny';
 $lang['oauth2']['access_denied'] = 'Please login as mailbox owner to grant access via OAuth2.';
 
-$lang['admin']['sys_mails'] = 'System mails';
+$lang['admin']['sys_mails'] = 'System emails';
 $lang['admin']['subject'] = 'Subject';
 $lang['admin']['from'] = 'From';
 $lang['admin']['include_exclude'] = 'Include/Exclude';
