@@ -24,6 +24,7 @@ data/conf/nginx/*.custom
 data/conf/nginx/*.bak
 data/conf/dovecot/acl_anyone
 data/conf/dovecot/mail_plugins*
+data/conf/dovecot/sogo-sso.conf
 data/conf/dovecot/extra.conf
 data/conf/rspamd/custom/*
 data/conf/portainer/
