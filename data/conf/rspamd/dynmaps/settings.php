@@ -179,7 +179,7 @@ foreach (wl_by_sogo() as $user => $contacts) {
     }
 ?>
     apply "default" {
-      SOGO_CONTACT = -999.0;
+      SOGO_CONTACT = -99.0;
     }
     symbols [
       "SOGO_CONTACT"
