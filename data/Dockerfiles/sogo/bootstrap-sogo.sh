@@ -85,6 +85,9 @@ done
 
 mkdir -p /var/lib/sogo/GNUstep/Defaults/
 
+# Force-remove lines from sogo.conf
+sed -i '/SOGoIMAPServer/d' /etc/sogo/sogo.conf
+
 # Generate plist header with timezone data
 cat <<EOF > /var/lib/sogo/GNUstep/Defaults/sogod.plist
 <?xml version="1.0" encoding="UTF-8"?>
@@ -93,6 +96,8 @@ cat <<EOF > /var/lib/sogo/GNUstep/Defaults/sogod.plist
 <dict>
     <key>OCSAclURL</key>
     <string>mysql://${DBUSER}:${DBPASS}@%2Fvar%2Frun%2Fmysqld%2Fmysqld.sock/${DBNAME}/sogo_acl</string>
+    <key>SOGoIMAPServer</key>
+    <string>imap://${IPV4_NETWORK}.250:143/?tls=YES</string>
     <key>OCSCacheFolderURL</key>
     <string>mysql://${DBUSER}:${DBPASS}@%2Fvar%2Frun%2Fmysqld%2Fmysqld.sock/${DBNAME}/sogo_cache_folder</string>
     <key>OCSEMailAlarmsFolderURL</key>
