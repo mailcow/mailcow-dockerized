@@ -755,7 +755,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
           $password     = $_data['password'];
           $password2    = $_data['password2'];
-          $name         = $_data['name'];
+          $name         = ltrim(rtrim($_data['name'], '>'), '<');
           $quota_m			= filter_var($_data['quota'], FILTER_SANITIZE_NUMBER_FLOAT);
           if (empty($name)) {
             $name = $local_part;
@@ -1993,7 +1993,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $active     = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
               (int)$force_pw_update = (isset($_data['force_pw_update'])) ? intval($_data['force_pw_update']) : intval($is_now['attributes']['force_pw_update']);
               (int)$sogo_access = (isset($_data['sogo_access'])) ? intval($_data['sogo_access']) : intval($is_now['attributes']['sogo_access']);
-              $name       = (!empty($_data['name'])) ? $_data['name'] : $is_now['name'];
+              $name       = (!empty($_data['name'])) ? ltrim(rtrim($_data['name'], '>'), '<') : $is_now['name'];
               $domain     = $is_now['domain'];
               $quota_m    = (!empty($_data['quota'])) ? $_data['quota'] : ($is_now['quota'] / 1048576);
               $quota_b    = $quota_m * 1048576;
