@@ -7,19 +7,29 @@ if [[ "${SKIP_CLAMD}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 fi
 
 # Prepare whitelist
+
+mkdir -p /run/clamav /var/lib/clamav
+
 if [[ -s /etc/clamav/whitelist.ign2 ]]; then
+  echo "Copying non-empty whitelist.ign2 to /var/lib/clamav/whitelist.ign2"
   cp /etc/clamav/whitelist.ign2 /var/lib/clamav/whitelist.ign2
 fi
 if [[ ! -f /var/lib/clamav/whitelist.ign2 ]]; then
+  echo "Creating /var/lib/clamav/whitelist.ign2"
   echo "Example-Signature.Ignore-1" > /var/lib/clamav/whitelist.ign2
 fi
-chown clamav:clamav /var/lib/clamav/whitelist.ign2
-mkdir -p /run/clamav /var/lib/clamav
-chown clamav:clamav /run/clamav /var/lib/clamav
-chmod 750 /run/clamav
+
+chown clamav:clamav -R /var/lib/clamav /run/clamav
+
 chmod 755 /var/lib/clamav
+chmod 644 -R /var/lib/clamav/*
+chmod 750 /run/clamav
+
+echo "Stating whitelist.ign2"
+stat /var/lib/clamav/whitelist.ign2
 
 dos2unix /var/lib/clamav/whitelist.ign2
+
 sed -i '/^\s*$/d' /var/lib/clamav/whitelist.ign2
 
 BACKGROUND_TASKS=()
@@ -38,7 +48,7 @@ while true; do
   sleep 2m
   SANE_MIRRORS="$(dig +ignore +short rsync.sanesecurity.net)"
   for sane_mirror in ${SANE_MIRRORS}; do
-    rsync -avp --chown=clamav:clamav --timeout=5 rsync://${sane_mirror}/sanesecurity/ \
+    rsync -avp --chown=clamav:clamav --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r --timeout=5 rsync://${sane_mirror}/sanesecurity/ \
       --include 'blurl.ndb' \
       --include 'junk.ndb' \
       --include 'jurlbl.ndb' \
