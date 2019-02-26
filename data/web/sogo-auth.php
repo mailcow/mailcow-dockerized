@@ -30,7 +30,8 @@ $ALLOW_ADMIN_EMAIL_LOGIN = (preg_match(
   $_ENV["ALLOW_ADMIN_EMAIL_LOGIN"]
 ));
 
-$session_variable = 'sogo-sso-user';
+$session_var_user = 'sogo-sso-user';
+$session_var_pass = 'sogo-sso-pass';
 
 if (!$ALLOW_ADMIN_EMAIL_LOGIN) {
   header("Location: /");
@@ -42,7 +43,9 @@ elseif (isset($_GET['login'])) {
     $login = html_entity_decode(rawurldecode($_GET["login"]));
     if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
       if (!empty(mailbox('get', 'mailbox_details', $login))) {
-        $_SESSION[$session_variable] = $login;
+        $sogo_sso_pass = file_get_contents("/etc/sogo-sso/sogo-sso.pass");
+        $_SESSION[$session_var_user] = $login;
+        $_SESSION[$session_var_pass] = $sogo_sso_pass;
         header("Location: /SOGo/");
         exit;
       }
@@ -54,11 +57,17 @@ elseif (isset($_GET['login'])) {
 else {
   // this is an nginx auth_request call, we check for an existing sogo-sso-user session variable
   session_start();
-  $username = "";
-  if (isset($_SESSION[$session_variable]) && filter_var($_SESSION[$session_variable], FILTER_VALIDATE_EMAIL)) {
-      $username = $_SESSION[$session_variable];
+  if (isset($_SESSION[$session_var_user]) && filter_var($_SESSION[$session_var_user], FILTER_VALIDATE_EMAIL)) {
+      $username = $_SESSION[$session_var_user];
+      $password = $_SESSION[$session_var_pass];
+      header("X-User: $username");
+      header("X-Auth: Basic ".base64_encode("$username:$password"));
+      header("X-Auth-Type: Basic");
+  } else {
+      // if username is empty, SOGo will display the normal login form
+      header("X-User: ");
+      header("X-Auth: ");
+      header("X-Auth-Type: ");
   }
-  // if username is empty, SOGo will display the normal login form
-  header("X-Username: $username");
   exit;
 }
