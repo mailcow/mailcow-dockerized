@@ -1,3 +1,18 @@
+FROM alpine:3.9
+LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
+
+WORKDIR /app
+
+RUN apk add -U --no-cache python3 tzdata openssl \
+ && apk add --no-cache --virtual build-dependencies python3-dev gcc musl-dev openssl-dev libffi-dev \
+ && python3 -m pip install --upgrade pip \
+ && python3 -m pip install --upgrade docker flask flask-restful pyOpenSSL \
+ && apk del build-dependencies
+
+COPY server.py /
+
+CMD ["python3", "-u", "/server.py"]
+root@mx2 /data/docker_projects/mailcow-dockerized/data/Dockerfiles/dockerapi_3 # cat server.py
 from flask import Flask
 from flask_restful import Resource, Api
 from flask import jsonify
@@ -14,6 +29,7 @@ import sys
 import ssl
 import socket
 import subprocess
+import traceback
 
 docker_client = docker.DockerClient(base_url='unix://var/run/docker.sock', version='auto')
 app = Flask(__name__)
@@ -55,7 +71,7 @@ class container_post(Resource):
         else:
           api_call_method_name = '__'.join(['container_post', str(post_action) ])
 
-        api_call_method = getattr(self, api_call_method_name, lambda container_id: jsonify(type='danger', msg='container_post - api call  unknown'))
+        api_call_method = getattr(self, api_call_method_name, lambda container_id: jsonify(type='danger', msg='container_post - unknown api call'))
 
 
         print("api call: %s, container_id: %s" % (api_call_method_name, container_id))
@@ -213,17 +229,11 @@ class container_post(Resource):
   # api call: container_post - post_action: exec - cmd: system - task: mysql_upgrade
   def container_post__exec__system__mysql_upgrade(self, container_id):
     for container in docker_client.containers.list(filters={"id": container_id}):
-      sql_shell = container.exec_run(["/bin/bash"], stdin=True, socket=True, user='mysql')
-      upgrade_cmd = "/usr/bin/mysql_upgrade -uroot -p'" + os.environ['DBROOT'].replace("'", "'\\''") + "'\n"
-      sql_socket = sql_shell.output;
-      try :
-        sql_socket.sendall(upgrade_cmd.encode('utf-8'))
-        sql_socket.shutdown(socket.SHUT_WR)
-      except socket.error:
-        return jsonify(type='danger', msg=str('socket error'))
-      worker_response = recv_socket_data(sql_socket)
+      cmd = "/usr/bin/mysql_upgrade -uroot -p'" + os.environ['DBROOT'].replace("'", "'\\''") + "'\n"
+      cmd_response = exec_cmd_container(container, cmd, user='mysql')
+
       matched = False
-      for line in worker_response.split("\n"):
+      for line in cmd_response.split("\n"):
         if 'is already upgraded to' in line:
           matched = True
       if matched:
@@ -266,7 +276,8 @@ class container_post(Resource):
   def container_post__exec__sieve__print(self, container_id):
     if 'username' in request.json and 'script_name' in request.json:
       for container in docker_client.containers.list(filters={"id": container_id}):
-        sieve_return = container.exec_run(["/bin/bash", "-c", "/usr/local/bin/doveadm sieve get -u '" + request.json['username'].replace("'", "'\\''") + "' '" + request.json['script_name'].replace("'", "'\\''") + "'"])
+        cmd = ["/bin/bash", "-c", "/usr/local/bin/doveadm sieve get -u '" + request.json['username'].replace("'", "'\\''") + "' '" + request.json['script_name'].replace("'", "'\\''") + "'"]  
+        sieve_return = container.exec_run(cmd)
         return exec_run_handler('utf8_text_only', sieve_return)
 
 
@@ -275,62 +286,78 @@ class container_post(Resource):
     if 'maildir' in request.json:
       for container in docker_client.containers.list(filters={"id": container_id}):
         sane_name = re.sub(r'\W+', '', request.json['maildir'])
-        maildir_cleanup = container.exec_run(["/bin/bash", "-c", "if [[ -d '/var/vmail/" + request.json['maildir'].replace("'", "'\\''") + "' ]]; then /bin/mv '/var/vmail/" + request.json['maildir'].replace("'", "'\\''") + "' '/var/vmail/_garbage/" + str(int(time.time())) + "_" + sane_name + "'; fi"], user='vmail')
+        cmd = ["/bin/bash", "-c", "if [[ -d '/var/vmail/" + request.json['maildir'].replace("'", "'\\''") + "' ]]; then /bin/mv '/var/vmail/" + request.json['maildir'].replace("'", "'\\''") + "' '/var/vmail/_garbage/" + str(int(time.time())) + "_" + sane_name + "'; fi"]
+        maildir_cleanup = container.exec_run(cmd, user='vmail')
         return exec_run_handler('generic', maildir_cleanup)
+
 
 
   # api call: container_post - post_action: exec - cmd: rspamd - task: worker_password
   def container_post__exec__rspamd__worker_password(self, container_id):
     if 'raw' in request.json:
       for container in docker_client.containers.list(filters={"id": container_id}):
-        worker_shell = container.exec_run(["/bin/bash"], stdin=True, socket=True, user='_rspamd')
-        worker_cmd = "/usr/bin/rspamadm pw -e -p '" + request.json['raw'].replace("'", "'\\''") + "' 2> /dev/null\n"
-        worker_socket = worker_shell.output;
-        try :
-          worker_socket.sendall(worker_cmd.encode('utf-8'))
-          worker_socket.shutdown(socket.SHUT_WR)
-        except socket.error:
-          return jsonify(type='danger', msg=str('socket error'))
-        worker_response = recv_socket_data(worker_socket)
+        cmd = "/usr/bin/rspamadm pw -e -p '" + request.json['raw'].replace("'", "'\\''") + "' 2> /dev/null"
+        cmd_response = exec_cmd_container(container, cmd, user="_rspamd")
+        
         matched = False
-        for line in worker_response.split("\n"):
+        for line in cmd_response.split("\n"):
           if '$2$' in line:
-            matched = True
             hash = line.strip()
             hash_out = re.search('\$2\$.+$', hash).group(0)
-            f = open("/access.inc", "w")
-            f.write('enable_password = "' + re.sub('[^0-9a-zA-Z\$]+', '', hash_out.rstrip()) + '";\n')
-            f.close()
-            container.restart()
+            rspamd_passphrase_hash = re.sub('[^0-9a-zA-Z\$]+', '', hash_out.rstrip())
+
+            rspamd_password_filename = "/etc/rspamd/override.d/worker-controller-password.inc"
+            cmd = '''/bin/echo 'enable_password = "%s";' > %s && cat %s''' % (rspamd_passphrase_hash, rspamd_password_filename, rspamd_password_filename)
+            cmd_response = exec_cmd_container(container, cmd, user="_rspamd")
+
+            if rspamd_passphrase_hash.startswith("$2$") and rspamd_passphrase_hash in cmd_response:
+              container.restart()
+              matched = True
+
         if matched:
             return jsonify(type='success', msg='command completed successfully')
         else:
             return jsonify(type='danger', msg='command did not complete')
+        
 
+def exec_cmd_container(container, cmd, user, timeout=2, shell_cmd="/bin/bash"):
 
-def recv_socket_data(c_socket, timeout=10):
-  c_socket.setblocking(0)
-  total_data=[];
-  data='';
-  begin=time.time()
-  while True:
-    if total_data and time.time()-begin > timeout:
-      break
-    elif time.time()-begin > timeout*2:
-      break
-    try:
-      data = c_socket.recv(8192)
-      if data:
-        total_data.append(data)
-        #change the beginning time for measurement
-        begin=time.time()
-      else:
-        #sleep for sometime to indicate a gap
-        time.sleep(0.1)
+  def recv_socket_data(c_socket, timeout):
+    c_socket.setblocking(0)
+    total_data=[];
+    data='';
+    begin=time.time()
+    while True:
+      if total_data and time.time()-begin > timeout:
         break
-    except:
-      pass
-  return ''.join(total_data)
+      elif time.time()-begin > timeout*2:
+        break
+      try:
+        data = c_socket.recv(8192)
+        if data:
+          total_data.append(data.decode('utf-8'))
+          #change the beginning time for measurement
+          begin=time.time()
+        else:
+          #sleep for sometime to indicate a gap
+          time.sleep(0.1)
+          break
+      except:
+        pass
+    return ''.join(total_data)
+    
+  try :
+    socket = container.exec_run([shell_cmd], stdin=True, socket=True, user=user).output._sock
+    if not cmd.endswith("\n"):
+      cmd = cmd + "\n"
+    socket.send(cmd.encode('utf-8'))
+    data = recv_socket_data(socket, timeout)
+    socket.close()
+    return data
+
+  except Exception as e:
+    print("error - exec_cmd_container: %s" % str(e))
+    traceback.print_exc(file=sys.stdout)
 
 def exec_run_handler(type, output):
   if type == 'generic':
@@ -371,7 +398,7 @@ def startFlaskAPI():
   app.run(debug=False, host='0.0.0.0', port=443, threaded=True, ssl_context=ctx)
 
 api.add_resource(containers_get, '/containers/json')
-api.add_resource(container_get, '/containers/<string:container_id>/json')
+api.add_resource(container_get,  '/containers/<string:container_id>/json')
 api.add_resource(container_post, '/containers/<string:container_id>/<string:post_action>')
 
 if __name__ == '__main__':
