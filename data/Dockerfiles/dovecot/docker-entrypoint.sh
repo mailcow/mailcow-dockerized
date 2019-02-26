@@ -118,17 +118,6 @@ default_pass_scheme = SSHA256
 password_query = SELECT password FROM mailbox WHERE active = '1' AND username = '%u' AND domain IN (SELECT domain FROM domain WHERE domain='%d' AND active='1') AND JSON_EXTRACT(attributes, '$.force_pw_update') NOT LIKE '%%1%%'
 EOF
 
-if [[ "${ALLOW_ADMIN_EMAIL_LOGIN}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-    cat <<EOF > /usr/local/etc/dovecot/sogo-sso.conf
-passdb {
-  driver = static
-  args = password= allow_real_nets=${IPV4_NETWORK}.248/32
-}
-EOF
-else
-    rm -f /usr/local/etc/dovecot/sogo-sso.conf
-fi
-
 # Create global sieve_after script
 cat /usr/local/etc/dovecot/sieve_after > /var/vmail/sieve/global.sieve
 
@@ -145,6 +134,21 @@ RAND_PASS=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 24 | head -n 1)
 echo ${RAND_USER}@mailcow.local:{SHA1}$(echo -n ${RAND_PASS} | sha1sum | awk '{print $1}') > /usr/local/etc/dovecot/dovecot-master.passwd
 echo ${RAND_USER}@mailcow.local::5000:5000:::: > /usr/local/etc/dovecot/dovecot-master.userdb
 echo ${RAND_USER}@mailcow.local:${RAND_PASS} > /etc/sogo/sieve.creds
+
+if [[ "${ALLOW_ADMIN_EMAIL_LOGIN}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+    # Create random master Password for SOGo 'login as user' via proxy auth
+    RAND_PASS=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 32 | head -n 1)
+    echo -n ${RAND_PASS} > /etc/phpfpm/sogo-sso.pass
+    cat <<EOF > /usr/local/etc/dovecot/sogo-sso.conf
+passdb {
+  driver = static
+  args = allow_real_nets=${IPV4_NETWORK}.248/32 password={plain}${RAND_PASS}
+}
+EOF
+else
+    rm -f /usr/local/etc/dovecot/sogo-sso.pass
+    rm -f /usr/local/etc/dovecot/sogo-sso.conf
+fi
 
 # 401 is user dovecot
 if [[ ! -s /mail_crypt/ecprivkey.pem || ! -s /mail_crypt/ecpubkey.pem ]]; then
