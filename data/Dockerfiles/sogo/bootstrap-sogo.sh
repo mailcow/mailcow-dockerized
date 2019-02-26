@@ -88,6 +88,13 @@ mkdir -p /var/lib/sogo/GNUstep/Defaults/
 # Force-remove lines from sogo.conf
 sed -i '/SOGoIMAPServer/d' /etc/sogo/sogo.conf
 
+if [[ "${ALLOW_ADMIN_EMAIL_LOGIN}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  TRUST_PROXY="YES"
+else
+  TRUST_PROXY="NO"
+fi
+RAND_PASS=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 24 | head -n 1)
+
 # Generate plist header with timezone data
 cat <<EOF > /var/lib/sogo/GNUstep/Defaults/sogod.plist
 <?xml version="1.0" encoding="UTF-8"?>
@@ -98,6 +105,10 @@ cat <<EOF > /var/lib/sogo/GNUstep/Defaults/sogod.plist
     <string>mysql://${DBUSER}:${DBPASS}@%2Fvar%2Frun%2Fmysqld%2Fmysqld.sock/${DBNAME}/sogo_acl</string>
     <key>SOGoIMAPServer</key>
     <string>imap://${IPV4_NETWORK}.250:143/?tls=YES</string>
+    <key>SOGoTrustProxyAuthentication</key>
+    <string>${TRUST_PROXY}</string>
+    <key>SOGoEncryptionKey</key>
+    <string>${RAND_PASS}</string>
     <key>OCSCacheFolderURL</key>
     <string>mysql://${DBUSER}:${DBPASS}@%2Fvar%2Frun%2Fmysqld%2Fmysqld.sock/${DBNAME}/sogo_cache_folder</string>
     <key>OCSEMailAlarmsFolderURL</key>
