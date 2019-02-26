@@ -83,19 +83,16 @@ EOF
 done
 
 
-mkdir -p /var/lib/sogo/GNUstep/Defaults/
-
-# Force-remove lines from sogo.conf
-sed -i '/SOGoIMAPServer/d' /etc/sogo/sogo.conf
-
 if [[ "${ALLOW_ADMIN_EMAIL_LOGIN}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   TRUST_PROXY="YES"
 else
   TRUST_PROXY="NO"
 fi
-RAND_PASS=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 24 | head -n 1)
+# cat /dev/urandom seems to hang here occasionally and is not recommended anyway, better use openssl
+RAND_PASS=$(openssl rand -base64 16 | tr -dc _A-Z-a-z-0-9)
 
 # Generate plist header with timezone data
+mkdir -p /var/lib/sogo/GNUstep/Defaults/
 cat <<EOF > /var/lib/sogo/GNUstep/Defaults/sogod.plist
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//GNUstep//DTD plist 0.9//EN" "http://www.gnustep.org/plist-0_9.xml">
