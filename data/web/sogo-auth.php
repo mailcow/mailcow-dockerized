@@ -8,11 +8,31 @@ $ALLOW_ADMIN_EMAIL_LOGIN = (preg_match(
 $session_var_user = 'sogo-sso-user';
 $session_var_pass = 'sogo-sso-pass';
 
+// prevent if feature is disabled
 if (!$ALLOW_ADMIN_EMAIL_LOGIN) {
-  header('HTTP/1.0 401 Forbidden');
+  header('HTTP/1.0 403 Forbidden');
   echo "this feature is disabled";
   exit;
 }
+// validate credentials for basic auth requests
+elseif (isset($_SERVER['PHP_AUTH_USER'])) {
+  // load prerequisites only when required
+  require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
+  $username = $_SERVER['PHP_AUTH_USER'];
+  $password = $_SERVER['PHP_AUTH_PW'];
+  $login_check = check_login($username, $password);
+  if ($login_check === 'user') {
+    header("X-User: $username");
+    header("X-Auth: Basic ".base64_encode("$username:$password"));
+    header("X-Auth-Type: Basic");
+    exit;
+  } else {
+    header('HTTP/1.0 401 Unauthorized');
+    echo 'Invalid login';
+    exit;
+  }
+}
+// check permissions and redirect for direct GET ?login=xy requests
 elseif (isset($_GET['login'])) {
   // load prerequisites only when required
   require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
@@ -32,10 +52,14 @@ elseif (isset($_GET['login'])) {
       }
     }
   }
-  header('HTTP/1.0 401 Forbidden');
+  header('HTTP/1.0 403 Forbidden');
   exit;
 }
-else {
+// do not check for admin-login / sogo-sso for EAS and DAV requests, SOGo can check auth itself if no authorization header is set
+elseif (
+    substr($_SERVER['HTTP_X_ORIGINAL_URI'], 0, 28) !== "/Microsoft-Server-ActiveSync" &&
+    substr($_SERVER['HTTP_X_ORIGINAL_URI'], 0, 9) !== "/SOGo/dav"
+) {
   // this is an nginx auth_request call, we check for existing sogo-sso session variables
   session_start();
   if (isset($_SESSION[$session_var_user]) && filter_var($_SESSION[$session_var_user], FILTER_VALIDATE_EMAIL)) {
