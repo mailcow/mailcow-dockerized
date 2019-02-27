@@ -57,8 +57,8 @@ elseif (isset($_GET['login'])) {
 }
 // do not check for admin-login / sogo-sso for EAS and DAV requests, SOGo can check auth itself if no authorization header is set
 elseif (
-    substr($_SERVER['HTTP_X_ORIGINAL_URI'], 0, 28) !== "/Microsoft-Server-ActiveSync" &&
-    substr($_SERVER['HTTP_X_ORIGINAL_URI'], 0, 9) !== "/SOGo/dav"
+  strcasecmp(substr($_SERVER['HTTP_X_ORIGINAL_URI'], 0, 28), "/Microsoft-Server-ActiveSync") == 0 &&
+  strcasecmp(substr($_SERVER['HTTP_X_ORIGINAL_URI'], 0, 9), "/SOGo/dav") == 0
 ) {
   // this is an nginx auth_request call, we check for existing sogo-sso session variables
   session_start();
