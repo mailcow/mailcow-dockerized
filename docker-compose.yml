@@ -333,7 +333,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.22
+      image: mailcow/netfilter:1.23
       build: ./data/Dockerfiles/netfilter
       stop_grace_period: 30s
       depends_on:
