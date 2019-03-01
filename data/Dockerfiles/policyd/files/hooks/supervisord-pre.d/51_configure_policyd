@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -eu
+
+export DOLLAR=$
+export MYSQL_DATABASE=${MYSQL_DATABASE}
+export MYSQL_USER=${MYSQL_USER}
+export MYSQL_PASSWORD=${MYSQL_PASSWORD}
+export CLUEBRINGER_DB_BACKEND=${CLUEBRINGER_DB_BACKEND}
+export CLUEBRINGER_DB_PORT=${CLUEBRINGER_DB_PORT}
+export CLUEBRINGER_DB_HOST=${CLUEBRINGER_DB_HOST}
+
+envsubst < /tmpl/cluebringer/cluebringer.conf > /etc/cluebringer/cluebringer.conf
+envsubst < /tmpl/cluebringer/cluebringer-webui.conf > /etc/cluebringer/cluebringer-webui.conf
