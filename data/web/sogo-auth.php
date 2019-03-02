@@ -5,7 +5,7 @@ $ALLOW_ADMIN_EMAIL_LOGIN = (preg_match(
   $_ENV["ALLOW_ADMIN_EMAIL_LOGIN"]
 ));
 
-$session_var_user = 'sogo-sso-user';
+$session_var_user_allowed = 'sogo-sso-user-allowed';
 $session_var_pass = 'sogo-sso-pass';
 
 // prevent if feature is disabled
@@ -44,10 +44,10 @@ elseif (isset($_GET['login'])) {
         // load master password
         $sogo_sso_pass = file_get_contents("/etc/sogo-sso/sogo-sso.pass");
         // register username and password in session
-        $_SESSION[$session_var_user] = $login;
+        $_SESSION[$session_var_user_allowed][] = $login;
         $_SESSION[$session_var_pass] = $sogo_sso_pass;
         // redirect to sogo (sogo will get the correct credentials via nginx auth_request
-        header("Location: /SOGo/");
+        header("Location: /SOGo/so/${login}");
         exit;
       }
     }
@@ -55,24 +55,32 @@ elseif (isset($_GET['login'])) {
   header('HTTP/1.0 403 Forbidden');
   exit;
 }
-// do not check for admin-login / sogo-sso for EAS and DAV requests, SOGo can check auth itself if no authorization header is set
+// only check for admin-login on sogo GUI requests
 elseif (
-  strcasecmp(substr($_SERVER['HTTP_X_ORIGINAL_URI'], 0, 28), "/Microsoft-Server-ActiveSync") !== 0 &&
-  strcasecmp(substr($_SERVER['HTTP_X_ORIGINAL_URI'], 0, 9), "/SOGo/dav") !== 0
+  strcasecmp(substr($_SERVER['HTTP_X_ORIGINAL_URI'], 0, 9), "/SOGo/so/") === 0
 ) {
   // this is an nginx auth_request call, we check for existing sogo-sso session variables
   session_start();
-  if (isset($_SESSION[$session_var_user]) && filter_var($_SESSION[$session_var_user], FILTER_VALIDATE_EMAIL)) {
-      $username = $_SESSION[$session_var_user];
-      $password = $_SESSION[$session_var_pass];
-      header("X-User: $username");
-      header("X-Auth: Basic ".base64_encode("$username:$password"));
-      header("X-Auth-Type: Basic");
-  } else {
-      // if username is empty, SOGo will display the normal login form
-      header("X-User: ");
-      header("X-Auth: ");
-      header("X-Auth-Type: ");
+  // extract email address from "/SOGo/so/user@domain/xy"
+  $url_parts = explode("/", $_SERVER['HTTP_X_ORIGINAL_URI']);
+  $email = $url_parts[3];
+  // check if this email is in session allowed list
+  if (
+      !empty($email) &&
+      filter_var($email, FILTER_VALIDATE_EMAIL) &&
+      is_array($_SESSION[$session_var_user_allowed]) &&
+      in_array($email, $_SESSION[$session_var_user_allowed])
+  ) {
+    $username = $email;
+    $password = $_SESSION[$session_var_pass];
+    header("X-User: $username");
+    header("X-Auth: Basic ".base64_encode("$username:$password"));
+    header("X-Auth-Type: Basic");
+    exit;
   }
-  exit;
 }
+
+// if username is empty, SOGo will use the normal login methods / login form
+header("X-User: ");
+header("X-Auth: ");
+header("X-Auth-Type: ");
