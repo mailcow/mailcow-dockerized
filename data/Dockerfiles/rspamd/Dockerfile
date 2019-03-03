@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
 	gnupg2 \
 	apt-transport-https \
 	&& apt-key adv --fetch-keys https://rspamd.com/apt/gpg.key \
-	&& echo "deb https://rspamd.com/apt-stable/ bionic main" > /etc/apt/sources.list.d/rspamd.list \
+	&& echo "deb https://rspamd.com/apt/ bionic main" > /etc/apt/sources.list.d/rspamd.list \
 	&& apt-get update && apt-get install -y rspamd \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& echo '.include $LOCAL_CONFDIR/local.d/rspamd.conf.local' > /etc/rspamd/rspamd.conf.local \
@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y \
 
 COPY settings.conf /etc/rspamd/settings.conf
 COPY docker-entrypoint.sh /docker-entrypoint.sh
-COPY metadata_exporter.lua /usr/share/rspamd/lua/metadata_exporter.lua
+#COPY metadata_exporter.lua /usr/share/rspamd/lua/metadata_exporter.lua
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
