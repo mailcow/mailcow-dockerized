@@ -13,7 +13,6 @@ RUN apt-get update && apt-get install -y \
 	&& echo "deb https://rspamd.com/apt-stable/ bionic main" > /etc/apt/sources.list.d/rspamd.list \
 	&& apt-get update && apt-get install -y rspamd \
 	&& rm -rf /var/lib/apt/lists/* \
-	&& echo '.include $LOCAL_CONFDIR/local.d/rspamd.conf.local' > /etc/rspamd/rspamd.conf.local \
 	&& apt-get autoremove --purge \
 	&& apt-get clean \
 	&& mkdir -p /run/rspamd \
