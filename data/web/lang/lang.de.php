@@ -607,11 +607,11 @@ $lang['admin']['forwarding_hosts_hint'] = 'Eingehende Nachrichten werden von den
 $lang['admin']['forwarding_hosts_add_hint'] = 'Sie können entweder IPv4/IPv6-Adressen, Netzwerke in CIDR-Notation, Hostnamen (die zu IP-Adressen aufgelöst werden), oder Domainnamen (die zu IP-Adressen aufgelöst werden, indem ihr SPF-Record abgefragt wird oder, in dessen Abwesenheit, ihre MX-Records) angeben.';
 $lang['admin']['relayhosts_hint'] = 'Erstellen Sie senderabhängige Transporte, um diese im Einstellungsdialog einer Domain auszuwählen.<br>
   Der Transporttyp lautet immer "smtp:". Benutzereinstellungen bezüglich Verschlüsselungsrichtlinie werden beim Transport berücksichtigt.';
-$lang['admin']['transports_hint'] = 'Transport Maps <b>überwiegen</b> senderabhängige Transport Maps und ignorieren die individuellen Einstellungen eines Benutzers bezüglich Verschlüsselungsrichtlinie, da der Absender bei Ermittlung der Transportregel nicht berücksichtigt wird.<br>
-  Der Transport erfolgt immer via "smtp:".<br>
-  Ein Eintrag in der TLS Policy Map kann eine Verschlüsselung erzwingen.<br>
-  Die Authentifizierung wird anhand des Host Parameters ermittelt, hierbei würde bei einem beispielhaften Next Hop "[host]:25" immer zuerst "host" abfragt und <b>erst im Anschluss</b> "[host]:25".<br>
-  Dieses Verhalten schließt die <b>gleichzeitige Verwendung</b> von Einträgen der Art "host" sowie "[host]:25" aus.';
+$lang['admin']['transports_hint'] = '→ Transport Maps <b>überwiegen</b> senderabhängige Transport Maps.
+→ Transport Maps ignorieren Mailbox-Einstellungen für ausgehende Verschlüsselung. Eine serverweite TLS-Richtlinie wird jedoch angewendet.<br>
+→ Der Transport erfolgt immer via "smtp:".<br>
+→ Adressen, die mit "/localhost$/" übereinstimmen, werden immer via "local:" transportiert, daher sind sie von einer Zieldefinition "*" ausgeschlossen.<br>
+→ Die Authentifizierung wird anhand des "Next hop" Parameters ermittelt. Hierbei würde bei einem beispielhaften Wert "[host]:25" immer zuerst "host" abfragt und <b>erst im Anschluss</b> "[host]:25". Dieses Verhalten schließt die <b>gleichzeitige Verwendung</b> von Einträgen der Art "host" sowie "[host]:25" aus.';
 $lang['admin']['add_relayhost_hint'] = 'Bitte beachten Sie, dass Anmeldedaten unverschlüsselt gespeichert werden.<br>
   Angelegte Transporte dieser Art sind <b>senderabhängig</b> und müssen erst einer Domain zugewiesen werden, bevor sie als Transport verwendet werden.<br>
   Diese Einstellungen entsprechen demach <i>nicht</i> dem "relayhost" Parameter in Postfix.';

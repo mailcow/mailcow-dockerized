@@ -1,6 +1,6 @@
 bind_socket = "rspamd:9900";
 milter = true;
-upstream {
+upstream "local" {
   name = "localhost";
   default = true;
   hosts = "rspamd:11333"
