@@ -107,8 +107,8 @@ function ucl_rcpts($object, $type) {
 settings {
   watchdog {
     priority = 10;
-    rcpt = "/null@localhost/i";
-    from = "/watchdog@localhost/i";
+    rcpt_mime = "/null@localhost/i";
+    from_mime = "/watchdog@localhost/i";
     apply "default" {
       actions {
         reject = 9999.0;
@@ -199,12 +199,13 @@ while ($row = array_shift($rows)) {
 ?>
   whitelist_<?=$username_sane;?> {
 <?php
+  $list_items = array();
   $stmt = $pdo->prepare("SELECT `value` FROM `filterconf`
     WHERE `object`= :object
       AND `option` = 'whitelist_from'");
   $stmt->execute(array(':object' => $row['object']));
   $list_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  while ($item = array_shift($list_items)) {
+  foreach ($list_items as $item) {
 ?>
     from = "/<?='^' . str_replace('\*', '.*', preg_quote($item['value'], '/')) . '$' ;?>/i";
 <?php
@@ -237,24 +238,13 @@ while ($row = array_shift($rows)) {
       "MAILCOW_WHITE"
     ]
   }
-  whitelist_header_<?=$username_sane;?> {
+  whitelist_mime_<?=$username_sane;?> {
 <?php
-  $header_from = array();
-  $stmt = $pdo->prepare("SELECT `value` FROM `filterconf`
-    WHERE `object`= :object
-      AND `option` = 'whitelist_from'");
-  $stmt->execute(array(':object' => $row['object']));
-  $list_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  foreach ($list_items as $item) {
 ?>
-    header = {
+    from_mime = "/<?='^' . str_replace('\*', '.*', preg_quote($item['value'], '/')) . '$' ;?>/i";
 <?php
-  while ($item = array_shift($list_items)) {
-    $header_from[] = str_replace('\*', '.*', preg_quote($item['value'], '/'));
   }
-?>
-      "From" = "/(<?=implode('|', $header_from);?>)/i";
-    }
-<?php
   if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
 ?>
     priority = 5;
@@ -297,13 +287,13 @@ while ($row = array_shift($rows)) {
 ?>
   blacklist_<?=$username_sane;?> {
 <?php
-  $items[] = array();
+  $list_items = array();
   $stmt = $pdo->prepare("SELECT `value` FROM `filterconf`
     WHERE `object`= :object
       AND `option` = 'blacklist_from'");
   $stmt->execute(array(':object' => $row['object']));
   $list_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  while ($item = array_shift($list_items)) {
+  foreach ($list_items as $item) {
 ?>
     from = "/<?='^' . str_replace('\*', '.*', preg_quote($item['value'], '/')) . '$' ;?>/i";
 <?php
@@ -338,22 +328,11 @@ while ($row = array_shift($rows)) {
   }
   blacklist_header_<?=$username_sane;?> {
 <?php
-  $header_from = array();
-  $stmt = $pdo->prepare("SELECT `value` FROM `filterconf`
-    WHERE `object`= :object
-      AND `option` = 'blacklist_from'");
-  $stmt->execute(array(':object' => $row['object']));
-  $list_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  foreach ($list_items as $item) {
 ?>
-    header = {
+    from_mime = "/<?='^' . str_replace('\*', '.*', preg_quote($item['value'], '/')) . '$' ;?>/i";
 <?php
-  while ($item = array_shift($list_items)) {
-    $header_from[] = str_replace('\*', '.*', preg_quote($item['value'], '/'));
   }
-?>
-      "From" = "/(<?=implode('|', $header_from);?>)/i";
-    }
-<?php
   if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
 ?>
     priority = 5;
