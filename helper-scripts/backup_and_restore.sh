@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [[ ! -z ${DATE} ]]; then
+  DATE=$(date +"%Y-%m-%d-%H-%M-%S")
+fi
+
 if [[ ! -z ${MAILCOW_BACKUP_LOCATION} ]]; then
   BACKUP_LOCATION="${MAILCOW_BACKUP_LOCATION}"
 fi
@@ -54,7 +58,6 @@ source ${SCRIPT_DIR}/../mailcow.conf
 CMPS_PRJ=$(echo $COMPOSE_PROJECT_NAME | tr -cd "[A-Za-z-_]")
 
 function backup() {
-  DATE=$(date +"%Y-%m-%d-%H-%M-%S")
   mkdir -p "${BACKUP_LOCATION}/mailcow-${DATE}"
   chmod 755 "${BACKUP_LOCATION}/mailcow-${DATE}"
   cp "${SCRIPT_DIR}/../mailcow.conf" "${BACKUP_LOCATION}/mailcow-${DATE}"
