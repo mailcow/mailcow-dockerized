@@ -6,6 +6,8 @@ then any of these will trigger the rule. If a rule is triggered then no more rul
 */
 header('Content-Type: text/plain');
 require_once "vars.inc.php";
+// Getting headers sent by the client.
+$headers = apache_request_headers();
 
 ini_set('error_reporting', 0);
 
@@ -23,6 +25,22 @@ try {
 catch (PDOException $e) {
   echo 'settings { }';
   exit;
+}
+
+// Check if db changed and return header
+$stmt = $pdo->prepare("SELECT UNIX_TIMESTAMP(UPDATE_TIME) AS `db_update_time` FROM information_schema.tables
+  WHERE `TABLE_NAME` = 'filterconf'
+    AND TABLE_SCHEMA = :dbname;");
+$stmt->execute(array(
+  ':dbname' => $database_name
+));
+$db_update_time = $stmt->fetch(PDO::FETCH_ASSOC)['db_update_time'];
+
+if (isset($headers['If-Modified-Since']) && (strtotime($headers['If-Modified-Since']) == $db_update_time)) {
+  header('Last-Modified: '.gmdate('D, d M Y H:i:s', $db_update_time).' GMT', true, 304);
+  exit;
+} else {
+  header('Last-Modified: '.gmdate('D, d M Y H:i:s', $db_update_time).' GMT', true, 200);
 }
 
 function parse_email($email) {
