@@ -28,7 +28,7 @@ catch (PDOException $e) {
 }
 
 // Check if db changed and return header
-$stmt = $pdo->prepare("SELECT UNIX_TIMESTAMP(UPDATE_TIME) AS `db_update_time` FROM information_schema.tables
+/*$stmt = $pdo->prepare("SELECT UNIX_TIMESTAMP(UPDATE_TIME) AS `db_update_time` FROM information_schema.tables
   WHERE `TABLE_NAME` = 'filterconf'
     AND TABLE_SCHEMA = :dbname;");
 $stmt->execute(array(
@@ -42,6 +42,7 @@ if (isset($headers['If-Modified-Since']) && (strtotime($headers['If-Modified-Sin
 } else {
   header('Last-Modified: '.gmdate('D, d M Y H:i:s', $db_update_time).' GMT', true, 200);
 }
+*/
 
 function parse_email($email) {
   if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return false;
