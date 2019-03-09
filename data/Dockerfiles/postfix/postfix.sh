@@ -110,6 +110,7 @@ query = SELECT CONCAT_WS(':', username, password) AS auth_data FROM relayhosts
   )
   AND active = '1'
   AND username != '';
+EOF
 
 cat <<EOF > /opt/postfix/conf/sql/mysql_sasl_passwd_maps_transport_maps.cf
 user = ${DBUSER}
