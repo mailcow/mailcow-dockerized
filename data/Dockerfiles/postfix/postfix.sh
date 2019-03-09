@@ -104,13 +104,12 @@ query = SELECT CONCAT_WS(':', username, password) AS auth_data FROM relayhosts
   WHERE id IN (
     SELECT relayhost FROM domain
       WHERE CONCAT('@', domain) = '%s'
-      OR '%s' IN (
-        SELECT CONCAT('@', alias_domain) FROM alias_domain
+      OR domain IN (
+        SELECT target_domain FROM alias_domain WHERE CONCAT('@', alias_domain) =  '%s'
       )
   )
   AND active = '1'
   AND username != '';
-EOF
 
 cat <<EOF > /opt/postfix/conf/sql/mysql_sasl_passwd_maps_transport_maps.cf
 user = ${DBUSER}
