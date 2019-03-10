@@ -71,7 +71,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.34
+      image: mailcow/rspamd:1.36
       build: ./data/Dockerfiles/rspamd
       stop_grace_period: 30s
       depends_on:
@@ -219,7 +219,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.29
+      image: mailcow/postfix:1.31
       build: ./data/Dockerfiles/postfix
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
@@ -239,7 +239,6 @@ services:
       ports:
         - "${SMTP_PORT:-25}:25"
         - "${SMTPS_PORT:-465}:465"
-        - "${SUBMISSION_PORT:-587}:587"
       restart: always
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -357,7 +356,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.35
+      image: mailcow/watchdog:1.37
       # Debug
       #command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog

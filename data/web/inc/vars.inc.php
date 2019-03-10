@@ -141,7 +141,7 @@ $MAILBOX_DEFAULT_ATTRIBUTES['tls_enforce_out'] = false;
 // Force password change on next login (only allows login to mailcow UI)
 $MAILBOX_DEFAULT_ATTRIBUTES['force_pw_update'] = false;
 
-// Force password change on next login (only allows login to mailcow UI)
+// Enable SOGo access (set to false to disable access by default)
 $MAILBOX_DEFAULT_ATTRIBUTES['sogo_access'] = true;
 
 // Send notification when quarantine is not empty (never, hourly, daily, weekly)

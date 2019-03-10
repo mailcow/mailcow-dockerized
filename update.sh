@@ -6,8 +6,11 @@ if [ "$(id -u)" -ne "0" ]; then
   exit 1
 fi
 
-#exit on error and pipefail
+# Exit on error and pipefail
 set -o pipefail
+
+# Add /opt/bin to PATH
+PATH=$PATH:/opt/bin
 
 umask 0022
 
