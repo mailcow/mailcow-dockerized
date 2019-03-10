@@ -6,6 +6,17 @@ if [ ! -f /var/lib/mysql/sql.key ]; then
   openssl req -x509 -sha256 -newkey rsa:2048 -keyout /var/lib/mysql/sql.key -out /var/lib/mysql/sql.crt -days 3650 -nodes -subj '/CN=mysql'
 fi
 
+if [ -f /var/lib/mysql/sql.key ]; then
+  if openssl x509 -checkend 86400 -noout -in /var/lib/mysql/sql.crt
+  then
+    echo "Certificate is good for another day!"
+  else
+    rm /var/lib/mysql/sql.key
+    rm /var/lib/mysql/sql.crt
+    openssl req -x509 -sha256 -newkey rsa:2048 -keyout /var/lib/mysql/sql.key -out /var/lib/mysql/sql.crt -days 3650 -nodes -subj '/CN=mysql'
+  fi
+fi
+
 # if command starts with an option, prepend mysqld
 if [ "${1:0:1}" = '-' ]; then
 	set -- mysqld "$@"
