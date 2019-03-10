@@ -239,6 +239,7 @@ services:
       ports:
         - "${SMTP_PORT:-25}:25"
         - "${SMTPS_PORT:-465}:465"
+        - "${SUBMISSION_PORT:-587}:587"
       restart: always
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
