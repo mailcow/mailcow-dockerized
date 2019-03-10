@@ -3525,7 +3525,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             }
             if (strtolower(getenv('SKIP_SOLR')) == 'n') {
               $curl = curl_init();
-              curl_setopt($curl, CURLOPT_URL, 'http://solr:8983/solr/dovecot/update?commit=true');
+              curl_setopt($curl, CURLOPT_URL, 'http://solr:8983/solr/dovecot-fts/update?commit=true');
               curl_setopt($curl, CURLOPT_HTTPHEADER,array('Content-Type: text/xml'));
               curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
               curl_setopt($curl, CURLOPT_POST, 1);
