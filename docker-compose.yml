@@ -23,6 +23,7 @@ services:
         - mysql-vol-1:/var/lib/mysql/
         - mysql-socket-vol-1:/var/run/mysqld/
         - ./data/conf/mysql/:/etc/mysql/conf.d/:ro
+        - ./data/assets/mysql/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh:ro
       environment:
         - TZ=${TZ}
         - MYSQL_ROOT_PASSWORD=${DBROOT}
