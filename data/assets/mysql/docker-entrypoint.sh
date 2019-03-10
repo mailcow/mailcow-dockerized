@@ -2,7 +2,9 @@
 set -eo pipefail
 shopt -s nullglob
 
-openssl req -x509 -sha256 -newkey rsa:2048 -keyout /var/lib/mysql/sql.key -out /var/lib/mysql/sql.crt -days 3650 -nodes -subj '/CN=mysql'
+if [ ! -f /var/lib/mysql/sql.key ]; then
+  openssl req -x509 -sha256 -newkey rsa:2048 -keyout /var/lib/mysql/sql.key -out /var/lib/mysql/sql.crt -days 3650 -nodes -subj '/CN=mysql'
+fi
 
 # if command starts with an option, prepend mysqld
 if [ "${1:0:1}" = '-' ]; then
