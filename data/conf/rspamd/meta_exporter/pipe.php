@@ -84,6 +84,9 @@ $rcpt_final_mailboxes = array();
 
 // Loop through all rcpts
 foreach (json_decode($rcpts, true) as $rcpt) {
+  // Remove tag
+  $rcpt = preg_replace('/^(.*?)\+.*(@.*)$/', '$1$2', $rcpt);
+  
   // Break rcpt into local part and domain part
   $parsed_rcpt = parse_email($rcpt);
   
