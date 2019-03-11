@@ -18,7 +18,7 @@ services:
             - unbound
 
     mysql-mailcow:
-      image: mariadb:10.2
+      image: mariadb:10.3
       volumes:
         - mysql-vol-1:/var/lib/mysql/
         - mysql-socket-vol-1:/var/run/mysqld/
