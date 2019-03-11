@@ -76,7 +76,7 @@ elif [[ ${NC_UPDATE} == "y" ]]; then
     curl -L# -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/latest-15.tar.bz2" || { echo "Failed to download Nextcloud archive."; exit 1; } \
       && tar -xjf nextcloud.tar.bz2 -C ./data/web/ \
       && rm nextcloud.tar.bz2 \
-      && rm -rf ./data/web/nextcloud/updater \
+      #&& rm -rf ./data/web/nextcloud/updater \
       && mkdir -p ./data/web/nextcloud/data \
       && mkdir -p ./data/web/nextcloud/custom_apps \
       && chmod +x ./data/web/nextcloud/occ
@@ -106,7 +106,7 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
   curl -L# -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/latest-15.tar.bz2" || { echo "Failed to download Nextcloud archive."; exit 1; } \
     && tar -xjf nextcloud.tar.bz2 -C ./data/web/ \
     && rm nextcloud.tar.bz2 \
-    && rm -rf ./data/web/nextcloud/updater \
+    #&& rm -rf ./data/web/nextcloud/updater \
     && mkdir -p ./data/web/nextcloud/data \
     && mkdir -p ./data/web/nextcloud/custom_apps \
     && chmod +x ./data/web/nextcloud/occ
