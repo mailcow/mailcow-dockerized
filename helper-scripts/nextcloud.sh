@@ -78,7 +78,6 @@ elif [[ ${NC_UPDATE} == "y" ]]; then
       && rm nextcloud.tar.bz2 \
       #&& rm -rf ./data/web/nextcloud/updater \
       && mkdir -p ./data/web/nextcloud/data \
-      && mkdir -p ./data/web/nextcloud/custom_apps \
       && chmod +x ./data/web/nextcloud/occ
     docker exec -it $(docker ps -f name=php-fpm-mailcow -q) bash -c "chown www-data:www-data -R /web/nextcloud"
     docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ --no-warnings upgrade"
@@ -108,10 +107,9 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
     && rm nextcloud.tar.bz2 \
     #&& rm -rf ./data/web/nextcloud/updater \
     && mkdir -p ./data/web/nextcloud/data \
-    && mkdir -p ./data/web/nextcloud/custom_apps \
     && chmod +x ./data/web/nextcloud/occ
 
-  docker exec -it $(docker ps -f name=php-fpm-mailcow -q) /bin/bash -c "chown -R www-data:www-data /web/nextcloud/data /web/nextcloud/config /web/nextcloud/apps /web/nextcloud/custom_apps"
+  docker exec -it $(docker ps -f name=php-fpm-mailcow -q) /bin/bash -c "chown -R www-data:www-data /web/nextcloud/data /web/nextcloud/config /web/nextcloud/apps"
   docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) /web/nextcloud/occ --no-warnings maintenance:install \
     --database mysql \
     --database-host mysql \
