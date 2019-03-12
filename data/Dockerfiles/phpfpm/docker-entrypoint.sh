@@ -25,23 +25,26 @@ CONTAINER_ID=
 # Todo: Better check if upgrade failed
 # This can happen due to a broken sogo_view
 [ -s /mysql_upgrade_loop ] && SQL_LOOP_C=$(cat /mysql_upgrade_loop)
-CONTAINER_ID=$(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], id: .Id}" | jq -rc "select( .name | tostring | contains(\"mysql-mailcow\")) | .id")
-if [[ ! -z "${CONTAINER_ID}" ]] && [[ "${CONTAINER_ID}" =~ [^a-zA-Z0-9] ]]; then
-  SQL_UPGRADE_RETURN=$(curl --silent --insecure -XPOST https://dockerapi/containers/${CONTAINER_ID}/exec -d '{"cmd":"system", "task":"mysql_upgrade"}' --silent -H 'Content-type: application/json' | jq -r .type)
-  if [[ ${SQL_UPGRADE_RETURN} == 'warning' ]]; then
-    if [ -z ${SQL_LOOP_C} ]; then
-      echo 1 > /mysql_upgrade_loop
-      echo "MySQL applied an upgrade, restarting PHP-FPM..."
-      exit 1
-    else
-      rm /mysql_upgrade_loop
-      echo "MySQL was not applied previously, skipping. Restart php-fpm-mailcow to retry or run mysql_upgrade manually."
-      while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
-        echo "Waiting for SQL to return..."
-        sleep 2
-      done
-    fi
+until [[ ! -z "${CONTAINER_ID}" ]] && [[ "${CONTAINER_ID}" =~ ^[[:alnum:]]*$ ]]; do
+  CONTAINER_ID=$(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], id: .Id}" 2> /dev/null | jq -rc "select( .name | tostring | contains(\"mysql-mailcow\")) | .id" 2> /dev/null)
+done
+echo "MySQL @ ${CONTAINER_ID}"
+SQL_UPGRADE_RETURN=$(curl --silent --insecure -XPOST https://dockerapi/containers/${CONTAINER_ID}/exec -d '{"cmd":"system", "task":"mysql_upgrade"}' --silent -H 'Content-type: application/json' | jq -r .type)
+if [[ ${SQL_UPGRADE_RETURN} == 'warning' ]]; then
+  if [ -z ${SQL_LOOP_C} ]; then
+    echo 1 > /mysql_upgrade_loop
+    echo "MySQL applied an upgrade, restarting PHP-FPM..."
+    exit 1
+  else
+    rm /mysql_upgrade_loop
+    echo "MySQL was not applied previously, skipping. Restart php-fpm-mailcow to retry or run mysql_upgrade manually."
+    while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
+      echo "Waiting for SQL to return..."
+      sleep 2
+    done
   fi
+else
+  echo "MySQL is up-to-date"
 fi
 
 # Trigger db init
