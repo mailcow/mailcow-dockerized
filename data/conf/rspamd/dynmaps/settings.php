@@ -7,7 +7,7 @@ then any of these will trigger the rule. If a rule is triggered then no more rul
 header('Content-Type: text/plain');
 require_once "vars.inc.php";
 // Getting headers sent by the client.
-$headers = apache_request_headers();
+//$headers = apache_request_headers();
 
 ini_set('error_reporting', 0);
 

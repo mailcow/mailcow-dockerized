@@ -42,7 +42,6 @@ mkdir -p ${ACME_BASE}/acme
 [[ -f ${ACME_BASE}/acme/private/privkey.pem ]] && mv ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/acme/key.pem
 [[ -f ${ACME_BASE}/acme/private/account.key ]] && mv ${ACME_BASE}/acme/private/account.key ${ACME_BASE}/acme/account.pem
 
-
 reload_configurations(){
   # Reading container IDs
   # Wrapping as array to ensure trimmed content when calling $NGINX etc.
@@ -156,6 +155,7 @@ else
     exec env TRIGGER_RESTART=1 $(readlink -f "$0")
   fi
 fi
+chmod 600 ${ACME_BASE}/key.pem
 
 log_f "Waiting for database... " no_nl
 while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
@@ -195,6 +195,9 @@ while true; do
   else
     log_f "Using existing Lets Encrypt account key ${ACME_BASE}/acme/account.pem"
   fi
+
+  chmod 600 ${ACME_BASE}/acme/key.pem
+  chmod 600 ${ACME_BASE}/acme/account.pem
 
   # Skipping IP check when we like to live dangerously
   if [[ "${SKIP_IP_CHECK}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then

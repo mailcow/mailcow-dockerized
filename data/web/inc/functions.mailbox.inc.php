@@ -561,7 +561,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
                 'msg' => array('is_alias_or_mailbox', htmlspecialchars($address))
               );
-              return false;
+              continue;
             }
             $stmt = $pdo->prepare("SELECT `domain` FROM `domain`
               WHERE `domain`= :domain1 OR `domain` = (SELECT `target_domain` FROM `alias_domain` WHERE `alias_domain` = :domain2)");
@@ -573,7 +573,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
                 'msg' => array('domain_not_found', htmlspecialchars($domain))
               );
-              return false;
+              continue;
             }
             $stmt = $pdo->prepare("SELECT `address` FROM `spamalias`
               WHERE `address`= :address");
@@ -585,7 +585,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
                 'msg' => array('is_spam_alias', htmlspecialchars($address))
               );
-              return false;
+              continue;
             }
             if ((!filter_var($address, FILTER_VALIDATE_EMAIL) === true) && !empty($local_part)) {
               $_SESSION['return'][] = array(
@@ -593,7 +593,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
                 'msg' => 'alias_invalid'
               );
-              return false;
+              continue;
             }
             if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
               $_SESSION['return'][] = array(
@@ -601,7 +601,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
                 'msg' => 'access_denied'
               );
-              return false;
+              continue;
             }
             $stmt = $pdo->prepare("INSERT INTO `alias` (`address`, `public_comment`, `private_comment`, `goto`, `domain`, `active`)
               VALUES (:address, :public_comment, :private_comment, :goto, :domain, :active)");

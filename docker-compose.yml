@@ -71,7 +71,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.37
+      image: mailcow/rspamd:1.38
       build: ./data/Dockerfiles/rspamd
       stop_grace_period: 30s
       depends_on:
@@ -94,7 +94,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.34
+      image: mailcow/phpfpm:1.35
       build: ./data/Dockerfiles/phpfpm
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
@@ -306,7 +306,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.48
+      image: mailcow/acme:1.49
       build: ./data/Dockerfiles/acme
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -405,12 +405,11 @@ services:
             - dockerapi
 
     solr-mailcow:
-      image: mailcow/solr:1.3
+      image: mailcow/solr:1.4
       build: ./data/Dockerfiles/solr
       restart: always
       volumes:
-        - solr-vol-1:/opt/solr/server/solr/dovecot/data
-        - ./data/conf/solr:/etc/solr
+        - solr-vol-1:/opt/solr/server/solr/dovecot-fts/data
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
