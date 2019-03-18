@@ -71,8 +71,12 @@ while (($#)); do
   case "${1}" in
     --check|-c)
       echo "Checking remote code for updates..."
-      git fetch origin #${BRANCH}
-      if [[ -z $(git log HEAD --pretty=format:"%H" | grep $(git rev-parse origin/${BRANCH})) ]]; then
+      LATEST_REV=$(git ls-remote --exit-code --refs --quiet https://github.com/mailcow/mailcow-dockerized ${BRANCH} | cut -f1)
+      if [ $? -ne 0 ]; then
+        echo "A problem occurred while trying to fetch the latest revision from github."
+        exit 99
+      fi
+      if [[ -z $(git log HEAD --pretty=format:"%H" | grep "${LATEST_REV}") ]]; then
         echo "Updated code is available."
         exit 0
       else
@@ -101,6 +105,7 @@ while (($#)); do
 done
 
 [[ ! -f mailcow.conf ]] && { echo "mailcow.conf is missing"; exit 1;}
+chmod 600 mailcow.conf
 source mailcow.conf
 DOTS=${MAILCOW_HOSTNAME//[^.]};
 if [ ${#DOTS} -lt 2 ]; then
@@ -355,9 +360,8 @@ if grep -q 'SYSCTL_IPV6_DISABLED=1' mailcow.conf; then
   read -p "Press any key to continue..." < /dev/tty
 fi
 
-echo -e "Fixing project name... "
+# Checking for old project name bug
 sed -i 's#COMPOSEPROJECT_NAME#COMPOSE_PROJECT_NAME#g' mailcow.conf
-sed -i '/COMPOSE_PROJECT_NAME=/s/-//g' mailcow.conf
 
 echo -e "Fixing PHP-FPM worker ports for Nginx sites..."
 sed -i 's#phpfpm:9000#phpfpm:9002#g' data/conf/nginx/*.conf

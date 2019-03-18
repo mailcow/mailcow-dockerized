@@ -734,8 +734,18 @@ jQuery(function($){
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="alias" name="multi_select" value="' + encodeURIComponent(item.id) + '" />';
             item.goto = escapeHtml(item.goto.replace(/,/g, " "));
-            item.public_comment = escapeHtml(item.public_comment);
-            item.private_comment = escapeHtml(item.private_comment);
+            if (item.public_comment !== null) {
+              item.public_comment = escapeHtml(item.public_comment);
+            }
+            else {
+              item.public_comment = '-';
+            }
+            if (item.private_comment !== null) {
+              item.private_comment = escapeHtml(item.private_comment);
+            }
+            else {
+              item.private_comment = '-';
+            }
             if (item.is_catch_all == 1) {
               item.address = '<div class="label label-default">Catch-All</div> ' + escapeHtml(item.address);
             }

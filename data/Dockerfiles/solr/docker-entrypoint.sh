@@ -18,16 +18,10 @@ fi
 
 set -e
 
-# allow easier debugging with `docker run -e VERBOSE=yes`
-if [[ "$VERBOSE" = "yes" ]]; then
-  set -x
-fi
-
 # run the optional initdb
 . /opt/docker-solr/scripts/run-initdb
 
 # fixing volume permission
-
 [[ -d /opt/solr/server/solr/dovecot-fts/data ]] && chown -R solr:solr /opt/solr/server/solr/dovecot-fts/data
 if [[ "${1}" != "--bootstrap" ]]; then
   sed -i '/SOLR_HEAP=/c\SOLR_HEAP="'${SOLR_HEAP:-1024}'m"' /opt/solr/bin/solr.in.sh
@@ -35,15 +29,13 @@ else
   sed -i '/SOLR_HEAP=/c\SOLR_HEAP="256m"' /opt/solr/bin/solr.in.sh
 fi
 
-# keep a sentinel file so we don't try to create the core a second time
-# for example when we restart a container.
-# todo: check if a core exists without sentinel file
+if [[ "${1}" == "--bootstrap" ]]; then
+  echo "Creating initial configuration"
+  echo "Modifying default config set"
+  cp /solr-config-7.7.0.xml /opt/solr/server/solr/configsets/_default/conf/solrconfig.xml
+  cp /solr-schema-7.7.0.xml /opt/solr/server/solr/configsets/_default/conf/schema.xml
+  rm /opt/solr/server/solr/configsets/_default/conf/managed-schema
 
-SENTINEL=/opt/docker-solr/fts_core_created
-
-if [[ -f ${SENTINEL} ]]; then
-  echo "skipping core creation"
-else
   echo "Starting local Solr instance to setup configuration"
   su-exec solr start-local-solr
 
@@ -58,19 +50,12 @@ else
   done
 
   echo "Created core \"dovecot-fts\""
-  touch ${SENTINEL}
 
   echo "Stopping local Solr"
   su-exec solr stop-local-solr
+
+  exit 0
 fi
 
-rm -f /opt/solr/server/solr/dovecot-fts/conf/schema.xml
-rm -f /opt/solr/server/solr/dovecot-fts/conf/managed-schema
-rm -f /opt/solr/server/solr/dovecot-fts/conf/solrconfig.xml
-
-cp /etc/solr/solr-config-7.7.0.xml /opt/solr/server/solr/dovecot-fts/conf/solrconfig.xml
-cp /etc/solr/solr-schema-7.7.0.xml /opt/solr/server/solr/dovecot-fts/conf/schema.xml
-
-chown -R solr:solr /opt/solr/server/solr/dovecot-fts/conf/{schema.xml,solrconfig.xml}
-
 exec su-exec solr solr-foreground
+
