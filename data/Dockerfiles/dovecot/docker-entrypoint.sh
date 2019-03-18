@@ -106,7 +106,7 @@ chmod 644 /usr/local/etc/dovecot/mail_plugins /usr/local/etc/dovecot/mail_plugin
 cat <<EOF > /usr/local/etc/dovecot/sql/dovecot-dict-sql-userdb.conf
 driver = mysql
 connect = "host=/var/run/mysqld/mysqld.sock dbname=${DBNAME} user=${DBUSER} password=${DBPASS}"
-user_query = SELECT CONCAT(JSON_UNQUOTE(JSON_EXTRACT(attributes, '$.mailbox_format')), mailbox_path_prefix, '%d/%n/:VOLATILEDIR=/var/volatile/%u') AS mail, 5000 AS uid, 5000 AS gid, concat('*:bytes=', quota) AS quota_rule FROM mailbox WHERE username = '%u' AND active = '1'
+user_query = SELECT CONCAT(JSON_UNQUOTE(JSON_EXTRACT(attributes, '$.mailbox_format')), mailbox_path_prefix, '%d/%n/${MAILDIR_SUB}:VOLATILEDIR=/var/volatile/%u') AS mail, 5000 AS uid, 5000 AS gid, concat('*:bytes=', quota) AS quota_rule FROM mailbox WHERE username = '%u' AND active = '1'
 iterate_query = SELECT username FROM mailbox WHERE active='1';
 EOF
 
