@@ -234,6 +234,9 @@ IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
 #API_KEY=
 #API_ALLOW_FROM=127.0.0.1,1.2.3.4
 
+# mail_home is ~/Maildir
+MAILDIR_SUB=Maildir
+
 EOF
 
 mkdir -p data/assets/ssl
