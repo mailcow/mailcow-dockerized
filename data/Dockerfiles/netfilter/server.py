@@ -41,6 +41,17 @@ lock = Lock()
 def refreshF2boptions():
   global f2boptions
   global quit_now
+
+  if not r.hgetall('F2B_WHITELIST'):
+    f2b_whitelist = {x.strip(): 1 for x in re.split(' |,|;', os.getenv('F2B_WHITELIST_DEFAULT')) if x.strip()}
+    if f2b_whitelist:
+      r.hmset('F2B_WHITELIST', f2b_whitelist)
+
+  if not r.hgetall('F2B_BLACKLIST'):
+    f2b_blacklist = {x.strip(): 1 for x in re.split(' |,|;', os.getenv('F2B_BLACKLIST_DEFAULT')) if x.strip()}
+    if f2b_blacklist:
+      r.hmset('F2B_BLACKLIST', f2b_blacklist)
+
   if not r.get('F2B_OPTIONS'):
     f2boptions = {}
     f2boptions['ban_time'] = int
@@ -48,11 +59,11 @@ def refreshF2boptions():
     f2boptions['retry_window'] = int
     f2boptions['netban_ipv4'] = int
     f2boptions['netban_ipv6'] = int
-    f2boptions['ban_time'] = r.get('F2B_BAN_TIME') or 1800
-    f2boptions['max_attempts'] = r.get('F2B_MAX_ATTEMPTS') or 10
-    f2boptions['retry_window'] = r.get('F2B_RETRY_WINDOW') or 600
-    f2boptions['netban_ipv4'] = r.get('F2B_NETBAN_IPV4') or 24
-    f2boptions['netban_ipv6'] = r.get('F2B_NETBAN_IPV6') or 64
+    f2boptions['ban_time'] = r.get('F2B_BAN_TIME') or os.getenv('F2B_BAN_TIME_DEFAULT')
+    f2boptions['max_attempts'] = r.get('F2B_MAX_ATTEMPTS') or os.getenv('F2B_MAX_ATTEMPTS_DEFAULT')
+    f2boptions['retry_window'] = r.get('F2B_RETRY_WINDOW') or os.getenv('F2B_RETRY_WINDOW_DEFAULT')
+    f2boptions['netban_ipv4'] = r.get('F2B_NETBAN_IPV4') or os.getenv('F2B_NETBAN_IPV4_DEFAULT')
+    f2boptions['netban_ipv6'] = r.get('F2B_NETBAN_IPV6') or os.getenv('F2B_NETBAN_IPV6_DEFAULT')
     r.set('F2B_OPTIONS', json.dumps(f2boptions, ensure_ascii=False))
   else:
     try:
