@@ -12,3 +12,7 @@ Please see [the official documentation](https://mailcow.github.io/mailcow-docker
 
 **Important**: mailcow makes use of various open-source software. Please assure you agree with their license before using mailcow.
 Any part of mailcow itself is released under **GNU General Public License, Version 3**.
+
+## Discussion & Support Forum
+
+Kindly use our forum https://mailcow.farm if you need help or assistance.
