@@ -135,6 +135,7 @@ CONFIG_ARRAY=(
   "API_KEY"
   "API_ALLOW_FROM"
   "MAILDIR_GC_TIME"
+  "MAILDIR_SUB"
   "ACL_ANYONE"
   "SOLR_HEAP"
   "SKIP_SOLR"
@@ -243,6 +244,13 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# Solr is disabled by default after upgrading from non-Solr to Solr-enabled mailcows.' >> mailcow.conf
       echo '# Disable Solr or if you do not want to store a readable index of your mails in solr-vol-1.' >> mailcow.conf
       echo "SKIP_SOLR=y" >> mailcow.conf
+  fi
+  elif [[ ${option} == "MAILDIR_SUB" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# MAILDIR_SUB defines a path in a users virtual home to keep the maildir in. Leave empty for updated setups.' >> mailcow.conf
+      echo "#MAILDIR_SUB=Maildir" >> mailcow.conf
+      echo "MAILDIR_SUB=" >> mailcow.conf
   fi
   elif ! grep -q ${option} mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"

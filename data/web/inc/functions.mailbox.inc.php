@@ -3714,7 +3714,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
       }
     break;
   }
-  if ($_action != 'get' && in_array($_type, array('domain', 'alias', 'alias_domain', 'mailbox'))) {
+  if ($_action != 'get' && in_array($_type, array('domain', 'alias', 'alias_domain', 'mailbox', 'resource'))) {
     update_sogo_static_view();
   }
 }

@@ -195,6 +195,7 @@ services:
         - MAILDIR_GC_TIME=${MAILDIR_GC_TIME:-1440}
         - ACL_ANYONE=${ACL_ANYONE:-disallow}
         - SKIP_SOLR=${SKIP_SOLR:-y}
+        - MAILDIR_SUB=${MAILDIR_SUB:-}
       ports:
         - "${DOVEADM_PORT:-127.0.0.1:19991}:12345"
         - "${IMAP_PORT:-143}:143"
