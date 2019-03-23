@@ -785,24 +785,3 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
     </div>
   </div>
 </div><!-- DNS info modal -->
-<script>
-$('#addResourceModal').on('shown.bs.modal', function() {
-  $("#multiple_bookings").val($("#multiple_bookings_select").val());
-  if ($("#multiple_bookings").val() == "custom") {
-    $("#multiple_bookings_custom_div").show();
-    $("#multiple_bookings").val($("#multiple_bookings_custom").val());
-  }
-})
-$("#multiple_bookings_select").change(function() {
-  $("#multiple_bookings").val($("#multiple_bookings_select").val());
-  if ($("#multiple_bookings").val() == "custom") {
-    $("#multiple_bookings_custom_div").show();
-  }
-  else {
-    $("#multiple_bookings_custom_div").hide();
-  }
-});
-$("#multiple_bookings_custom").bind ("change keypress keyup blur", function () {
-  $("#multiple_bookings").val($("#multiple_bookings_custom").val());
-});
-</script>
