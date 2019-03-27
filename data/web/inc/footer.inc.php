@@ -93,6 +93,15 @@ $(document).ready(function() {
     }
     if ($(this).val() == "totp") {
       $('#TOTPModal').modal('show');
+      request_token = $('#tfa-qr-img').data('totp-secret');
+      $.ajax({
+        url: '/inc/ajax/qr_gen.php',
+        data: {
+          token: request_token,
+        },
+      }).done(function (result) {
+        $("#tfa-qr-img").attr("src", result);
+      });
       $("option:selected").prop("selected", false);
     }
     if ($(this).val() == "u2f") {

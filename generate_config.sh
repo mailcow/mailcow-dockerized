@@ -16,6 +16,7 @@ if [ -f mailcow.conf ]; then
   case $response in
     [yY][eE][sS]|[yY])
       mv mailcow.conf mailcow.conf_backup
+      chmod 600 mailcow.conf_backup
       ;;
     *)
       exit 1
@@ -237,9 +238,14 @@ IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
 #API_KEY=
 #API_ALLOW_FROM=127.0.0.1,1.2.3.4
 
+# mail_home is ~/Maildir
+MAILDIR_SUB=Maildir
+
 EOF
 
 mkdir -p data/assets/ssl
+
+chmod 600 mailcow.conf
 
 # copy but don't overwrite existing certificate
 cp -n data/assets/ssl-example/*.pem data/assets/ssl/
