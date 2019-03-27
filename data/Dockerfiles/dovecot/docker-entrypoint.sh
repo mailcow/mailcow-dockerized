@@ -127,6 +127,10 @@ if [[ $(stat -c %U /var/vmail/) != "vmail" ]] ; then chown -R vmail:vmail /var/v
 if [[ $(stat -c %U /var/vmail/_garbage) != "vmail" ]] ; then chown -R vmail:vmail /var/vmail/_garbage ; fi
 if [[ $(stat -c %U /var/attachments) != "vmail" ]] ; then chown -R vmail:vmail /var/attachments ; fi
 
+# Cleanup random user maildirs
+rm -rf /var/vmail/mailcow.local/*
+
+
 # Create random master for SOGo sieve features
 RAND_USER=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 16 | head -n 1)
 RAND_PASS=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 24 | head -n 1)
