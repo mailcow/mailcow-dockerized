@@ -36,7 +36,8 @@ foreach ($css_dir as $css_file) {
 
 // U2F API + T/HOTP API
 $u2f = new u2flib_server\U2F('https://' . $_SERVER['HTTP_HOST']);
-$tfa = new RobThree\Auth\TwoFactorAuth($OTP_LABEL);
+$qrprovider = new RobThree\Auth\Providers\Qr\QRServerProvider();
+$tfa = new RobThree\Auth\TwoFactorAuth($OTP_LABEL, 6, 30, 'sha1', $qrprovider);
 
 // Redis
 $redis = new Redis();
