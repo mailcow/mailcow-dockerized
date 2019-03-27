@@ -479,6 +479,7 @@ while true; do
       ACME_RESPONSE_B64=$(echo "${ACME_RESPONSE}" | openssl enc -e -A -base64)
       log_f "${ACME_RESPONSE_B64}" redis_only b64
       log_f "Retrying in 30 minutes..."
+      redis-cli -h redis SET ACME_FAIL_TIME "$(date +%s)"
       sleep 30m
       exec $(readlink -f "$0")
       ;;
