@@ -746,6 +746,7 @@ $tfa_data = get_tfa();
       <div id="active_settings_map" class="collapse" >
         <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code" rows="20" name="settings_map" readonly><?=file_get_contents('http://nginx:8081/settings.php');?></textarea>
       </div>
+      <br>
       <?php $rsettings = rsettings('get'); ?>
         <form class="form" data-id="rsettings" role="form" method="post">
           <div class="row">

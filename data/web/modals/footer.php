@@ -81,7 +81,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
           <ol>
             <li>
               <p><?=$lang['tfa']['scan_qr_code'];?></p>
-              <img src="<?=$tfa->getQRCodeImageAsDataUri($_SESSION['mailcow_cc_username'], $totp_secret);?>">
+              <img id="tfa-qr-img" data-totp-secret="<?=$totp_secret;?>" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=">
               <p class="help-block"><?=$lang['tfa']['enter_qr_code'];?>:<br />
               <code><?=$totp_secret;?></code>
               </p>

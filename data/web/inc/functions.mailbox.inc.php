@@ -561,7 +561,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
                 'msg' => array('is_alias_or_mailbox', htmlspecialchars($address))
               );
-              return false;
+              continue;
             }
             $stmt = $pdo->prepare("SELECT `domain` FROM `domain`
               WHERE `domain`= :domain1 OR `domain` = (SELECT `target_domain` FROM `alias_domain` WHERE `alias_domain` = :domain2)");
@@ -573,7 +573,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
                 'msg' => array('domain_not_found', htmlspecialchars($domain))
               );
-              return false;
+              continue;
             }
             $stmt = $pdo->prepare("SELECT `address` FROM `spamalias`
               WHERE `address`= :address");
@@ -585,7 +585,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
                 'msg' => array('is_spam_alias', htmlspecialchars($address))
               );
-              return false;
+              continue;
             }
             if ((!filter_var($address, FILTER_VALIDATE_EMAIL) === true) && !empty($local_part)) {
               $_SESSION['return'][] = array(
@@ -593,7 +593,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
                 'msg' => 'alias_invalid'
               );
-              return false;
+              continue;
             }
             if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
               $_SESSION['return'][] = array(
@@ -601,7 +601,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
                 'msg' => 'access_denied'
               );
-              return false;
+              continue;
             }
             $stmt = $pdo->prepare("INSERT INTO `alias` (`address`, `public_comment`, `private_comment`, `goto`, `domain`, `active`)
               VALUES (:address, :public_comment, :private_comment, :goto, :domain, :active)");
@@ -755,7 +755,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
           $password     = $_data['password'];
           $password2    = $_data['password2'];
-          $name         = $_data['name'];
+          $name         = ltrim(rtrim($_data['name'], '>'), '<');
           $quota_m			= filter_var($_data['quota'], FILTER_SANITIZE_NUMBER_FLOAT);
           if (empty($name)) {
             $name = $local_part;
@@ -1993,7 +1993,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $active     = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
               (int)$force_pw_update = (isset($_data['force_pw_update'])) ? intval($_data['force_pw_update']) : intval($is_now['attributes']['force_pw_update']);
               (int)$sogo_access = (isset($_data['sogo_access'])) ? intval($_data['sogo_access']) : intval($is_now['attributes']['sogo_access']);
-              $name       = (!empty($_data['name'])) ? $_data['name'] : $is_now['name'];
+              $name       = (!empty($_data['name'])) ? ltrim(rtrim($_data['name'], '>'), '<') : $is_now['name'];
               $domain     = $is_now['domain'];
               $quota_m    = (!empty($_data['quota'])) ? $_data['quota'] : ($is_now['quota'] / 1048576);
               $quota_b    = $quota_m * 1048576;
@@ -3525,7 +3525,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             }
             if (strtolower(getenv('SKIP_SOLR')) == 'n') {
               $curl = curl_init();
-              curl_setopt($curl, CURLOPT_URL, 'http://solr:8983/solr/dovecot/update?commit=true');
+              curl_setopt($curl, CURLOPT_URL, 'http://solr:8983/solr/dovecot-fts/update?commit=true');
               curl_setopt($curl, CURLOPT_HTTPHEADER,array('Content-Type: text/xml'));
               curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
               curl_setopt($curl, CURLOPT_POST, 1);
@@ -3714,7 +3714,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
       }
     break;
   }
-  if ($_action != 'get' && in_array($_type, array('domain', 'alias', 'alias_domain', 'mailbox'))) {
+  if ($_action != 'get' && in_array($_type, array('domain', 'alias', 'alias_domain', 'mailbox', 'resource'))) {
     update_sogo_static_view();
   }
 }

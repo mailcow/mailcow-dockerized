@@ -169,7 +169,25 @@ $(document).ready(function() {
     // $("#active-script").closest('td').css('background-color','#b0f0a0');
     // $("#inactive-script").closest('td').css('background-color','#b0f0a0');
   // });
-
+  $('#addResourceModal').on('shown.bs.modal', function() {
+    $("#multiple_bookings").val($("#multiple_bookings_select").val());
+    if ($("#multiple_bookings").val() == "custom") {
+      $("#multiple_bookings_custom_div").show();
+      $("#multiple_bookings").val($("#multiple_bookings_custom").val());
+    }
+  })
+  $("#multiple_bookings_select").change(function() {
+    $("#multiple_bookings").val($("#multiple_bookings_select").val());
+    if ($("#multiple_bookings").val() == "custom") {
+      $("#multiple_bookings_custom_div").show();
+    }
+    else {
+      $("#multiple_bookings_custom_div").hide();
+    }
+  });
+  $("#multiple_bookings_custom").bind ("change keypress keyup blur", function () {
+    $("#multiple_bookings").val($("#multiple_bookings_custom").val());
+  });
 
 
 });
@@ -734,8 +752,18 @@ jQuery(function($){
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="alias" name="multi_select" value="' + encodeURIComponent(item.id) + '" />';
             item.goto = escapeHtml(item.goto.replace(/,/g, " "));
-            item.public_comment = escapeHtml(item.public_comment);
-            item.private_comment = escapeHtml(item.private_comment);
+            if (item.public_comment !== null) {
+              item.public_comment = escapeHtml(item.public_comment);
+            }
+            else {
+              item.public_comment = '-';
+            }
+            if (item.private_comment !== null) {
+              item.private_comment = escapeHtml(item.private_comment);
+            }
+            else {
+              item.private_comment = '-';
+            }
             if (item.is_catch_all == 1) {
               item.address = '<div class="label label-default">Catch-All</div> ' + escapeHtml(item.address);
             }

@@ -1477,7 +1477,7 @@ function solr_status() {
   $endpoint = 'http://solr:8983/solr/admin/cores';
   $params = array(
     'action' => 'STATUS',
-    'core' => 'dovecot',
+    'core' => 'dovecot-fts',
     'indexInfo' => 'true'
   );
   $url = $endpoint . '?' . http_build_query($params);
@@ -1494,7 +1494,7 @@ function solr_status() {
   else {
     curl_close($curl);
     $status = json_decode($response, true);
-    return (!empty($status['status']['dovecot'])) ? $status['status']['dovecot'] : false;
+    return (!empty($status['status']['dovecot-fts'])) ? $status['status']['dovecot-fts'] : false;
   }
   return false;
 }
