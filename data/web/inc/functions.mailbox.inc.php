@@ -756,7 +756,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $password     = $_data['password'];
           $password2    = $_data['password2'];
           $name         = ltrim(rtrim($_data['name'], '>'), '<');
-          $quota_m			= filter_var($_data['quota'], FILTER_SANITIZE_NUMBER_FLOAT);
+          $quota_m			= intval($_data['quota']);
           if (empty($name)) {
             $name = $local_part;
           }
@@ -841,14 +841,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
               'msg' => array('domain_not_found', htmlspecialchars($domain))
-            );
-            return false;
-          }
-          if (!is_numeric($quota_m) || $quota_m == "0") {
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => 'quota_not_0_not_numeric'
             );
             return false;
           }
@@ -1993,9 +1985,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $active     = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
               (int)$force_pw_update = (isset($_data['force_pw_update'])) ? intval($_data['force_pw_update']) : intval($is_now['attributes']['force_pw_update']);
               (int)$sogo_access = (isset($_data['sogo_access'])) ? intval($_data['sogo_access']) : intval($is_now['attributes']['sogo_access']);
+              (int)$quota_m = (isset_has_content($_data['quota'])) ? intval($_data['quota']) : ($is_now['quota'] / 1048576);
               $name       = (!empty($_data['name'])) ? ltrim(rtrim($_data['name'], '>'), '<') : $is_now['name'];
               $domain     = $is_now['domain'];
-              $quota_m    = (!empty($_data['quota'])) ? $_data['quota'] : ($is_now['quota'] / 1048576);
               $quota_b    = $quota_m * 1048576;
               $password   = (!empty($_data['password'])) ? $_data['password'] : null;
               $password2  = (!empty($_data['password2'])) ? $_data['password2'] : null; 
@@ -2018,14 +2010,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
                 'msg' => 'access_denied'
-              );
-              continue;
-            }
-            if (!is_numeric($quota_m) || $quota_m == "0") {
-              $_SESSION['return'][] = array(
-                'type' => 'danger',
-                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                'msg' => array('quota_not_0_not_numeric', htmlspecialchars($quota_m))
               );
               continue;
             }
@@ -3016,14 +3000,17 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $mailboxdata['quota'] = $row['quota'];
           $mailboxdata['attributes'] = json_decode($row['attributes'], true);
           $mailboxdata['quota_used'] = intval($row['bytes']);
-          $mailboxdata['percent_in_use'] = round((intval($row['bytes']) / intval($row['quota'])) * 100);
+          $mailboxdata['percent_in_use'] = ($row['quota'] == 0) ? '- ' : round((intval($row['bytes']) / intval($row['quota'])) * 100);
           $mailboxdata['messages'] = $row['messages'];
           $mailboxdata['spam_aliases'] = $SpamaliasUsage['sa_count'];
-          if ($mailboxdata['percent_in_use'] >= 90) {
-            $mailboxdata['percent_class'] = "danger";
+          if ($mailboxdata['percent_in_use'] === '- ') {
+            $mailboxdata['percent_class'] = "info";
           }
           elseif ($mailboxdata['percent_in_use'] >= 75) {
             $mailboxdata['percent_class'] = "warning";
+          }
+          elseif ($mailboxdata['percent_in_use'] >= 90) {
+            $mailboxdata['percent_class'] = "danger";
           }
           else {
             $mailboxdata['percent_class'] = "success";
