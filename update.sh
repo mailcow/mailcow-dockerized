@@ -139,6 +139,7 @@ CONFIG_ARRAY=(
   "ACL_ANYONE"
   "SOLR_HEAP"
   "SKIP_SOLR"
+  "SKIP_HTTP_VERIFICATION"
 )
 
 sed -i '$a\' mailcow.conf
