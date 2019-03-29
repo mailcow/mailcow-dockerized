@@ -5,6 +5,16 @@ exec 5>&1
 # Thanks to https://github.com/cvmiller -> https://github.com/cvmiller/expand6
 source /srv/expand6.sh
 
+# Skipping IP check when we like to live dangerously
+if [[ "${SKIP_IP_CHECK}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  SKIP_IP_CHECK=y
+fi
+
+# Skipping HTTP check when we like to live dangerously
+if [[ "${SKIP_HTTP_VERIFICATION}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  SKIP_HTTP_VERIFICATION=y
+fi
+
 log_f() {
   if [[ ${2} == "no_nl" ]]; then
     echo -n "$(date) - ${1}"
@@ -120,7 +130,10 @@ verify_challenge_path(){
   # verify_challenge_path URL 4|6
   RAND_FILE=${RANDOM}${RANDOM}${RANDOM}
   touch /var/www/acme/${RAND_FILE}
-  if [[ "$(curl -${2} http://${1}/.well-known/acme-challenge/${RAND_FILE} --write-out %{http_code} --silent --output /dev/null)" =~ ^(2|3)  ]]; then
+  if [[ ${SKIP_HTTP_VERIFICATION} == "y" ]]; then
+    echo '(skipping check, returning 0)'
+    return 0
+  elif [[ "$(curl -${2} http://${1}/.well-known/acme-challenge/${RAND_FILE} --write-out %{http_code} --silent --output /dev/null)" =~ ^(2|3)  ]]; then
     rm /var/www/acme/${RAND_FILE}
     return 0
   else
@@ -198,11 +211,6 @@ while true; do
 
   chmod 600 ${ACME_BASE}/acme/key.pem
   chmod 600 ${ACME_BASE}/acme/account.pem
-
-  # Skipping IP check when we like to live dangerously
-  if [[ "${SKIP_IP_CHECK}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-    SKIP_IP_CHECK=y
-  fi
 
   # Cleaning up and init validation arrays
   unset SQL_DOMAIN_ARR
