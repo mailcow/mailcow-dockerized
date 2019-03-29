@@ -183,4 +183,8 @@ fi
 # Copy logo, if any
 [[ -f /etc/sogo/sogo-full.svg ]] && cp /etc/sogo/sogo-full.svg /usr/lib/GNUstep/SOGo/WebServerResources/img/sogo-full.svg
 
+# Rsync web content
+echo "Syncing web content with named volume"
+rsync -a /usr/lib/GNUstep/SOGo/. /sogo_web/
+
 exec gosu sogo /usr/sbin/sogod
