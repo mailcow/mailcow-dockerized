@@ -19,6 +19,7 @@ $lang['footer']['cancel'] = 'Abbrechen';
 $lang['footer']['hibp_nok'] = 'Übereinstimmung gefunden! Dieses Passwort ist potentiell gefährlich!';
 $lang['footer']['hibp_ok'] = 'Keine Übereinstimmung gefunden.';
 
+$lang['danger']['unlimited_quota_acl'] = "Unendliche Quota untersagt durch ACL";
 $lang['danger']['mysql_error'] = "MySQL Fehler: %s";
 $lang['danger']['redis_error'] = "Redis Fehler: %s";
 $lang['danger']['unknown_tfa_method'] = "Unbekannte TFA Methode";
@@ -405,6 +406,7 @@ $lang['acl']['bcc_maps'] = 'BCC Maps';
 $lang['acl']['filters'] = 'Filter';
 $lang['acl']['ratelimit'] = 'Rate limit';
 $lang['acl']['recipient_maps'] = 'Empfängerumschreibungen';
+$lang['acl']['unlimited_quota'] = 'Unendliche Quota für Mailboxen';
 $lang['acl']['prohibited'] = 'Untersagt durch Richtlinie';
 
 $lang['mailbox']['quarantine_notification'] = 'Quarantäne-Benachrichtigung';

@@ -20,6 +20,7 @@ $lang['footer']['cancel'] = 'Cancel';
 $lang['footer']['hibp_nok'] = 'Matched! This is a potentially dangerous password!';
 $lang['footer']['hibp_ok'] = 'No match found.';
 
+$lang['danger']['unlimited_quota_acl'] = "Unlimited quota prohibited by ACL";
 $lang['danger']['mysql_error'] = "MySQL error: %s";
 $lang['danger']['redis_error'] = "Redis error: %s";
 $lang['danger']['unknown_tfa_method'] = "Unknown TFA method";
@@ -418,6 +419,7 @@ $lang['acl']['bcc_maps'] = 'BCC maps';
 $lang['acl']['filters'] = 'Filters';
 $lang['acl']['ratelimit'] = 'Rate limit';
 $lang['acl']['recipient_maps'] = 'Recipient maps';
+$lang['acl']['unlimited_quota'] = 'Unlimited quota for mailboxes';
 $lang['acl']['prohibited'] = 'Prohibited by ACL';
 
 $lang['mailbox']['quarantine_notification'] = 'Quarantine notifications';
