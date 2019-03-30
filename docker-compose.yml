@@ -442,6 +442,8 @@ services:
 networks:
   mailcow-network:
     driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: br-mailcow
     enable_ipv6: true
     ipam:
       driver: default
