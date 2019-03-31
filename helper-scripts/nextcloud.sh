@@ -78,9 +78,9 @@ elif [[ ${NC_UPDATE} == "y" ]]; then
       && rm nextcloud.tar.bz2 \
       #&& rm -rf ./data/web/nextcloud/updater \
       && mkdir -p ./data/web/nextcloud/data \
-      && chmod +x ./data/web/nextcloud/occ
-    docker exec -it $(docker ps -f name=php-fpm-mailcow -q) bash -c "chown www-data:www-data -R /web/nextcloud"
-    docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ --no-warnings upgrade"
+      && chmod +x ./data/web/nextcloud/occ \
+       docker exec -it $(docker ps -f name=php-fpm-mailcow -q) bash -c "chown www-data:www-data -R /web/nextcloud"
+       docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ --no-warnings upgrade"
   fi
 
 elif [[ ${NC_INSTALL} == "y" ]]; then
