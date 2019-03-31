@@ -43,8 +43,8 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
               <br /><span id="quotaBadge" class="badge">max. - MiB</span>
             </label>
             <div class="col-sm-10">
-            <input type="text" class="form-control" name="quota" min="1" max="" id="addInputQuota" disabled value="<?=$lang['add']['select_domain'];?>" required>
-            <small class="help-block">min. 1</small>
+            <input type="text" class="form-control" name="quota" min="0" max="" id="addInputQuota" disabled value="<?=$lang['add']['select_domain'];?>" required>
+            <small class="help-block">0 = ∞</small>
             </div>
           </div>
           <div class="form-group">

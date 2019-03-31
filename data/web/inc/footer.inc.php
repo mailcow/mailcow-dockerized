@@ -26,6 +26,10 @@ $(window).load(function() {
   $(".overlay").hide();
 });
 $(document).ready(function() {
+  $(document).on('shown.bs.modal', function(e) {
+    modal_id = $(e.relatedTarget).data('target');
+    $(modal_id).attr("aria-hidden","false");
+  });
   // TFA, CSRF, Alerts in footer.inc.php
   // Other general functions in mailcow.js
   <?php
