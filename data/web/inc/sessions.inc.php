@@ -75,6 +75,24 @@ if (!empty($_SERVER['HTTP_X_API_KEY'])) {
 // Update session cookie
 // setcookie(session_name() ,session_id(), time() + $SESSION_LIFETIME);
 
+// Handle logouts
+if (isset($_POST["logout"])) {
+  if (isset($_SESSION["dual-login"])) {
+    $_SESSION["mailcow_cc_username"] = $_SESSION["dual-login"]["username"];
+    $_SESSION["mailcow_cc_role"] = $_SESSION["dual-login"]["role"];
+    unset($_SESSION["dual-login"]);
+    header("Location: /mailbox");
+    exit();
+  }
+  else {
+    session_regenerate_id(true);
+    session_unset();
+    session_destroy();
+    session_write_close();
+    header("Location: /");
+  }
+}
+
 // Check session
 function session_check() {
   if (isset($_SESSION['mailcow_cc_api']) && $_SESSION['mailcow_cc_api'] === true) {
@@ -105,22 +123,4 @@ function session_check() {
 if (isset($_SESSION['mailcow_cc_role']) && session_check() === false) {
   $_POST = array();
   $_FILES = array();
-}
-
-// Handle logouts
-if (isset($_POST["logout"])) {
-  if (isset($_SESSION["dual-login"])) {
-    $_SESSION["mailcow_cc_username"] = $_SESSION["dual-login"]["username"];
-    $_SESSION["mailcow_cc_role"] = $_SESSION["dual-login"]["role"];
-    unset($_SESSION["dual-login"]);
-    header("Location: /mailbox");
-    exit();
-  }
-  else {
-    session_regenerate_id(true);
-    session_unset();
-    session_destroy();
-    session_write_close();
-    header("Location: /");
-  }
 }

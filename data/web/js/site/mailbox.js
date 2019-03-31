@@ -312,7 +312,8 @@ jQuery(function($){
         {"name":"domain","title":lang.domain,"breakpoints":"xs sm"},
         {"name":"quota","style":{"whiteSpace":"nowrap"},"title":lang.domain_quota,"formatter": function(value){
           res = value.split("/");
-          return humanFileSize(res[0]) + " / " + humanFileSize(res[1]);
+          var of_q = (res[1] == 0 ? "∞" : humanFileSize(res[1]));
+          return humanFileSize(res[0]) + " / " + of_q;
         },
         "sortValue": function(value){
           res = value.split("/");
