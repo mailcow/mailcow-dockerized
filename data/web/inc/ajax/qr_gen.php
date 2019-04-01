@@ -7,7 +7,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 }
 
 if (isset($_GET['token']) && ctype_alnum($_GET['token'])) {
-  echo $tfa->getQRCodeImageAsDataUri($_SESSION['mailcow_cc_username'], $totp_secret);
+  echo $tfa->getQRCodeImageAsDataUri($_SESSION['mailcow_cc_username'], $_GET['token']);
 }
 
 ?>
