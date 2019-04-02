@@ -1,4 +1,12 @@
 <?php
+function isset_has_content($var) {
+  if (isset($var) && $var != "") {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
 function hash_password($password) {
 	$salt_str = bin2hex(openssl_random_pseudo_bytes(8));
 	return "{SSHA256}".base64_encode(hash('sha256', $password . $salt_str, true) . $salt_str);
@@ -1477,7 +1485,7 @@ function solr_status() {
   $endpoint = 'http://solr:8983/solr/admin/cores';
   $params = array(
     'action' => 'STATUS',
-    'core' => 'dovecot',
+    'core' => 'dovecot-fts',
     'indexInfo' => 'true'
   );
   $url = $endpoint . '?' . http_build_query($params);
@@ -1494,7 +1502,7 @@ function solr_status() {
   else {
     curl_close($curl);
     $status = json_decode($response, true);
-    return (!empty($status['status']['dovecot'])) ? $status['status']['dovecot'] : false;
+    return (!empty($status['status']['dovecot-fts'])) ? $status['status']['dovecot-fts'] : false;
   }
   return false;
 }

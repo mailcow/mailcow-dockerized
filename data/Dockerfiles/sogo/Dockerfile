@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   gettext \
   gnupg \
   mysql-client \
+  rsync \
   supervisor \
   syslog-ng \
   syslog-ng-core \
@@ -51,7 +52,5 @@ RUN chmod +x /bootstrap-sogo.sh \
   /usr/local/sbin/stop-supervisor.sh
 
 CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
-
-VOLUME /usr/lib/GNUstep/SOGo/
 
 RUN rm -rf /tmp/* /var/tmp/*

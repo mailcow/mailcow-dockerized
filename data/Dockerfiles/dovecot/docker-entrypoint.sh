@@ -106,7 +106,7 @@ chmod 644 /usr/local/etc/dovecot/mail_plugins /usr/local/etc/dovecot/mail_plugin
 cat <<EOF > /usr/local/etc/dovecot/sql/dovecot-dict-sql-userdb.conf
 driver = mysql
 connect = "host=/var/run/mysqld/mysqld.sock dbname=${DBNAME} user=${DBUSER} password=${DBPASS}"
-user_query = SELECT CONCAT(JSON_UNQUOTE(JSON_EXTRACT(attributes, '$.mailbox_format')), mailbox_path_prefix, '%d/%n/:VOLATILEDIR=/var/volatile/%u') AS mail, 5000 AS uid, 5000 AS gid, concat('*:bytes=', quota) AS quota_rule FROM mailbox WHERE username = '%u' AND active = '1'
+user_query = SELECT CONCAT(JSON_UNQUOTE(JSON_EXTRACT(attributes, '$.mailbox_format')), mailbox_path_prefix, '%d/%n/${MAILDIR_SUB}:VOLATILEDIR=/var/volatile/%u') AS mail, 5000 AS uid, 5000 AS gid, concat('*:bytes=', quota) AS quota_rule FROM mailbox WHERE username = '%u' AND active = '1'
 iterate_query = SELECT username FROM mailbox WHERE active='1';
 EOF
 
@@ -127,6 +127,10 @@ if [[ $(stat -c %U /var/vmail/) != "vmail" ]] ; then chown -R vmail:vmail /var/v
 if [[ $(stat -c %U /var/vmail/_garbage) != "vmail" ]] ; then chown -R vmail:vmail /var/vmail/_garbage ; fi
 if [[ $(stat -c %U /var/attachments) != "vmail" ]] ; then chown -R vmail:vmail /var/attachments ; fi
 
+# Cleanup random user maildirs
+rm -rf /var/vmail/mailcow.local/*
+
+
 # Create random master for SOGo sieve features
 RAND_USER=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 16 | head -n 1)
 RAND_PASS=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 24 | head -n 1)
@@ -134,6 +138,21 @@ RAND_PASS=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 24 | head -n 1)
 echo ${RAND_USER}@mailcow.local:{SHA1}$(echo -n ${RAND_PASS} | sha1sum | awk '{print $1}') > /usr/local/etc/dovecot/dovecot-master.passwd
 echo ${RAND_USER}@mailcow.local::5000:5000:::: > /usr/local/etc/dovecot/dovecot-master.userdb
 echo ${RAND_USER}@mailcow.local:${RAND_PASS} > /etc/sogo/sieve.creds
+
+if [[ "${ALLOW_ADMIN_EMAIL_LOGIN}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+    # Create random master Password for SOGo 'login as user' via proxy auth
+    RAND_PASS=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 32 | head -n 1)
+    echo -n ${RAND_PASS} > /etc/phpfpm/sogo-sso.pass
+    cat <<EOF > /usr/local/etc/dovecot/sogo-sso.conf
+passdb {
+  driver = static
+  args = allow_real_nets=${IPV4_NETWORK}.248/32 password={plain}${RAND_PASS}
+}
+EOF
+else
+    rm -f /usr/local/etc/dovecot/sogo-sso.pass
+    rm -f /usr/local/etc/dovecot/sogo-sso.conf
+fi
 
 # 401 is user dovecot
 if [[ ! -s /mail_crypt/ecprivkey.pem || ! -s /mail_crypt/ecpubkey.pem ]]; then
@@ -174,7 +193,7 @@ echo '30 3 * * *   vmail /usr/local/bin/doveadm quota recalc -A' > /etc/cron.d/d
 echo '* * * * *    vmail /usr/local/bin/trim_logs.sh >> /dev/console 2>&1' > /etc/cron.d/trim_logs
 echo '25 * * * *   vmail /usr/local/bin/maildir_gc.sh >> /dev/console 2>&1' > /etc/cron.d/maildir_gc
 echo '30 1 * * *   root  /usr/local/bin/sa-rules.sh  >> /dev/console 2>&1' > /etc/cron.d/sa-rules
-echo '0 2 * * *    root  /usr/bin/curl http://solr:8983/solr/dovecot/update?optimize=true >> /dev/console 2>&1' > /etc/cron.d/solr-optimize
+echo '0 2 * * *    root  /usr/bin/curl http://solr:8983/solr/dovecot-fts/update?optimize=true >> /dev/console 2>&1' > /etc/cron.d/solr-optimize
 echo '*/20 * * * * vmail /usr/local/bin/quarantine_notify.py >> /dev/console 2>&1' > /etc/cron.d/quarantine_notify
 
 # Fix more than 1 hardlink issue

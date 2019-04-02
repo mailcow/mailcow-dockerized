@@ -16,6 +16,7 @@ if [ -f mailcow.conf ]; then
   case $response in
     [yY][eE][sS]|[yY])
       mv mailcow.conf mailcow.conf_backup
+      chmod 600 mailcow.conf_backup
       ;;
     *)
       exit 1
@@ -185,6 +186,10 @@ SKIP_LETS_ENCRYPT=n
 
 SKIP_IP_CHECK=n
 
+# Skip HTTP verification in ACME container - y/n
+
+SKIP_HTTP_VERIFICATION=n
+
 # Skip ClamAV (clamd-mailcow) anti-virus (Rspamd will auto-detect a missing ClamAV container) - y/n
 
 SKIP_CLAMD=${SKIP_CLAMD}
@@ -199,6 +204,10 @@ SOLR_HEAP=1024
 # Enable watchdog (watchdog-mailcow) to restart unhealthy containers (experimental)
 
 USE_WATCHDOG=n
+
+# Allow admins to log into SOGo as email user (without any password)
+
+ALLOW_ADMIN_EMAIL_LOGIN=n
 
 # Send notifications by mail (no DKIM signature, sent from watchdog@MAILCOW_HOSTNAME)
 # Can by multiple rcpts, NO quotation marks
@@ -233,9 +242,14 @@ IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
 #API_KEY=
 #API_ALLOW_FROM=127.0.0.1,1.2.3.4
 
+# mail_home is ~/Maildir
+MAILDIR_SUB=Maildir
+
 EOF
 
 mkdir -p data/assets/ssl
+
+chmod 600 mailcow.conf
 
 # copy but don't overwrite existing certificate
 cp -n data/assets/ssl-example/*.pem data/assets/ssl/

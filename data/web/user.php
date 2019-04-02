@@ -63,6 +63,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'doma
     </div>
   </div>
   </div>
+</div>
 <?php
 }
 elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user') {
@@ -92,227 +93,227 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
   }
 ?>
 <div class="container">
-<h3><?=$lang['user']['user_settings'];?></h3>
 
-<div class="panel panel-default">
-<div class="panel-heading"><?=$lang['user']['mailbox_details'];?></div>
-<div class="panel-body">
-  <div class="row">
-    <div class="col-sm-offset-3 col-sm-9">
-      <?php if ($mailboxdata['attributes']['force_pw_update'] == "1"): ?>
-      <div class="alert alert-danger"><?=$lang['user']['force_pw_update'];?></div>
-      <?php endif; ?>
-      <p><a href="#pwChangeModal" data-toggle="modal">[<?=$lang['user']['change_password'];?>]</a></p>
-      <p><a target="_blank" href="https://mailcow.github.io/mailcow-dockerized-docs/client/#<?=$clientconfigstr;?>">[<?=$lang['user']['client_configuration'];?>]</a></p>
-      <p><a href="#userFilterModal" data-toggle="modal">[<?=$lang['user']['show_sieve_filters'];?>]</a></p>
-      <p><small>
-      <?php
-      if ($_SESSION['mailcow_cc_last_login']['remote']):
-      ?>
-      <span style="margin-right:10px" class="glyphicon glyphicon-log-in"></span> <span data-time="<?=$_SESSION['mailcow_cc_last_login']['time'];?>" class="last_login_date"></span> (<?=$_SESSION['mailcow_cc_last_login']['remote'];?>)
-      <?php
-      else: echo "Last login: -"; endif;
-      ?>
-      </small></p>
-    </div>
-  </div>
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#userSettings" aria-controls="userSettings" role="tab" data-toggle="tab"><?=$lang['user']['mailbox_details'];?></a></li>
+    <li role="presentation"><a href="#SpamAliases" aria-controls="SpamAliases" role="tab" data-toggle="tab"><?=$lang['user']['spam_aliases'];?></a></li>
+    <li role="presentation"><a href="#Spamfilter" aria-controls="Spamfilter" role="tab" data-toggle="tab"><?=$lang['user']['spamfilter'];?></a></li>
+    <li role="presentation"><a href="#Syncjobs" aria-controls="Syncjobs" role="tab" data-toggle="tab"><?=$lang['user']['sync_jobs'];?></a></li>
+  </ul>
   <hr>
-  <?php // Get user information about aliases
-  $user_get_alias_details = user_get_alias_details($username);
-  ?>
-  <div class="row">
-    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['direct_aliases'];?>:
-      <p class="small"><?=$lang['user']['direct_aliases_desc'];?></p>
-    </div>
-    <div class="col-md-9 col-xs-7">
-    <?php
-    if ($user_get_alias_details['direct_aliases'] === false) {
-      echo '&#10008;';
-    }
-    else {
-      foreach (array_filter($user_get_alias_details['direct_aliases']) as $direct_alias => $direct_alias_meta) {
-        (!empty($direct_alias_meta['public_comment'])) ?
-          printf('%s &mdash; <span class="bg-info">%s</span><br>', $direct_alias, $direct_alias_meta['public_comment']) :
-          printf('%s<br>', $direct_alias);
-      }
-    }
-    ?>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['shared_aliases'];?>:
-      <p class="small"><?=$lang['user']['shared_aliases_desc'];?></p>
-    </div>
-    <div class="col-md-9 col-xs-7">
-    <?php
-    if ($user_get_alias_details['shared_aliases'] === false) {
-      echo '&#10008;';
-    }
-    else {
-      foreach (array_filter($user_get_alias_details['shared_aliases']) as $shared_alias => $shared_alias_meta) {
-        (!empty($shared_alias_meta['public_comment'])) ?
-          printf('%s &mdash; <span class="bg-info">%s</span><br>', $shared_alias, $shared_alias_meta['public_comment']) :
 
-          printf('%s<br>', $shared_alias);
-      }
-    }
-    ?>
-    </div>
-  </div>
-  <hr>
-  <div class="row">
-    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['aliases_also_send_as'];?>:</div>
-    <div class="col-md-9 col-xs-7">
-    <p><?=($user_get_alias_details['aliases_also_send_as'] == '*') ? $lang['user']['sender_acl_disabled'] : $user_get_alias_details['aliases_also_send_as'];?></p>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['aliases_send_as_all'];?>:</div>
-    <div class="col-md-9 col-xs-7">
-    <p><?=$user_get_alias_details['aliases_send_as_all'];?></p>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['is_catch_all'];?>:</div>
-    <div class="col-md-9 col-xs-7">
-    <p><?=$user_get_alias_details['is_catch_all'];?></p>
-    </div>
-  </div>
-  <hr>
-  <div class="row">
-    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['in_use'];?>:</div>
-    <div class="col-md-5 col-xs-7">
-      <div class="progress">
-        <div class="progress-bar progress-bar-<?=$mailboxdata['percent_class'];?>" role="progressbar" aria-valuenow="<?=$mailboxdata['percent_in_use'];?>" aria-valuemin="0" aria-valuemax="100" style="min-width:2em;width: <?=$mailboxdata['percent_in_use'];?>%;">
-          <?=$mailboxdata['percent_in_use'];?>%
+  <div class="tab-content">
+
+  <div role="tabpanel" class="tab-pane active" id="userSettings">
+    <div class="panel panel-default">
+      <div class="panel-heading"><?=$lang['user']['mailbox_details'];?></div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-offset-3 col-sm-9">
+            <?php if ($mailboxdata['attributes']['force_pw_update'] == "1"): ?>
+            <div class="alert alert-danger"><?=$lang['user']['force_pw_update'];?></div>
+            <?php endif; ?>
+            <p><a href="#pwChangeModal" data-toggle="modal">[<?=$lang['user']['change_password'];?>]</a></p>
+            <p><a target="_blank" href="https://mailcow.github.io/mailcow-dockerized-docs/client/#<?=$clientconfigstr;?>">[<?=$lang['user']['client_configuration'];?>]</a></p>
+            <p><a href="#userFilterModal" data-toggle="modal">[<?=$lang['user']['show_sieve_filters'];?>]</a></p>
+            <p><small>
+            <?php
+            if ($_SESSION['mailcow_cc_last_login']['remote']):
+            ?>
+            <span style="margin-right:10px" class="glyphicon glyphicon-log-in"></span> <span data-time="<?=$_SESSION['mailcow_cc_last_login']['time'];?>" class="last_login_date"></span> (<?=$_SESSION['mailcow_cc_last_login']['remote'];?>)
+            <?php
+            else: echo "Last login: -"; endif;
+            ?>
+            </small></p>
+          </div>
+        </div>
+        <hr>
+        <?php // Get user information about aliases
+        $user_get_alias_details = user_get_alias_details($username);
+        ?>
+        <div class="row">
+          <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['direct_aliases'];?>:
+            <p class="small"><?=$lang['user']['direct_aliases_desc'];?></p>
+          </div>
+          <div class="col-md-9 col-xs-7">
+          <?php
+          if ($user_get_alias_details['direct_aliases'] === false) {
+            echo '&#10008;';
+          }
+          else {
+            foreach (array_filter($user_get_alias_details['direct_aliases']) as $direct_alias => $direct_alias_meta) {
+              (!empty($direct_alias_meta['public_comment'])) ?
+                printf('%s &mdash; <span class="bg-info">%s</span><br>', $direct_alias, $direct_alias_meta['public_comment']) :
+                printf('%s<br>', $direct_alias);
+            }
+          }
+          ?>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['shared_aliases'];?>:
+            <p class="small"><?=$lang['user']['shared_aliases_desc'];?></p>
+          </div>
+          <div class="col-md-9 col-xs-7">
+          <?php
+          if ($user_get_alias_details['shared_aliases'] === false) {
+            echo '&#10008;';
+          }
+          else {
+            foreach (array_filter($user_get_alias_details['shared_aliases']) as $shared_alias => $shared_alias_meta) {
+              (!empty($shared_alias_meta['public_comment'])) ?
+                printf('%s &mdash; <span class="bg-info">%s</span><br>', $shared_alias, $shared_alias_meta['public_comment']) :
+
+                printf('%s<br>', $shared_alias);
+            }
+          }
+          ?>
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['aliases_also_send_as'];?>:</div>
+          <div class="col-md-9 col-xs-7">
+          <p><?=($user_get_alias_details['aliases_also_send_as'] == '*') ? $lang['user']['sender_acl_disabled'] : $user_get_alias_details['aliases_also_send_as'];?></p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['aliases_send_as_all'];?>:</div>
+          <div class="col-md-9 col-xs-7">
+          <p><?=$user_get_alias_details['aliases_send_as_all'];?></p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['is_catch_all'];?>:</div>
+          <div class="col-md-9 col-xs-7">
+          <p><?=$user_get_alias_details['is_catch_all'];?></p>
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['in_use'];?>:</div>
+          <div class="col-md-5 col-xs-7">
+            <div class="progress">
+              <div class="progress-bar progress-bar-<?=$mailboxdata['percent_class'];?>" role="progressbar" aria-valuenow="<?=$mailboxdata['percent_in_use'];?>" aria-valuemin="0" aria-valuemax="100" style="min-width:2em;width: <?=$mailboxdata['percent_in_use'];?>%;">
+                <?=$mailboxdata['percent_in_use'];?>%
+              </div>
+            </div>
+            <p><?=formatBytes($mailboxdata['quota_used'], 2);?> / <?=($mailboxdata['quota'] == 0) ? '∞' : formatBytes($mailboxdata['quota'], 2);?><br><?=$mailboxdata['messages'];?> <?=$lang['user']['messages'];?></p>
+          </div>
+        </div>
+        <hr>
+        <?php
+        // Show tagging options
+        $get_tagging_options = mailbox('get', 'delimiter_action', $username);
+        ?>
+        <div class="row">
+          <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['tag_handling'];?>:</div>
+          <div class="col-md-9 col-xs-7">
+          <div class="btn-group" data-acl="<?=$_SESSION['acl']['delimiter_action'];?>">
+            <button type="button" class="btn btn-sm btn-default <?=($get_tagging_options == "subfolder") ? 'active' : null; ?>"
+              data-action="edit_selected"
+              data-item="<?= htmlentities($username); ?>"
+              data-id="delimiter_action"
+              data-api-url='edit/delimiter_action'
+              data-api-attr='{"tagged_mail_handler":"subfolder"}'><?=$lang['user']['tag_in_subfolder'];?></button>
+            <button type="button" class="btn btn-sm btn-default <?=($get_tagging_options == "subject") ? 'active' : null; ?>"
+              data-action="edit_selected"
+              data-item="<?= htmlentities($username); ?>"
+              data-id="delimiter_action"
+              data-api-url='edit/delimiter_action'
+              data-api-attr='{"tagged_mail_handler":"subject"}'><?=$lang['user']['tag_in_subject'];?></button>
+            <button type="button" class="btn btn-sm btn-default <?=($get_tagging_options == "none") ? 'active' : null; ?>"
+              data-action="edit_selected"
+              data-item="<?= htmlentities($username); ?>"
+              data-id="delimiter_action"
+              data-api-url='edit/delimiter_action'
+              data-api-attr='{"tagged_mail_handler":"none"}'><?=$lang['user']['tag_in_none'];?></button>
+          </div>
+          <p class="help-block"><?=$lang['user']['tag_help_explain'];?></p>
+          <p class="help-block"><?=$lang['user']['tag_help_example'];?></p>
+          </div>
+        </div>
+        <?php
+        // Show TLS policy options
+        $get_tls_policy = mailbox('get', 'tls_policy', $username);
+        ?>
+        <div class="row">
+          <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['tls_policy'];?>:</div>
+          <div class="col-md-9 col-xs-7">
+          <div class="btn-group" data-acl="<?=$_SESSION['acl']['tls_policy'];?>">
+            <button type="button" class="btn btn-sm btn-default <?=($get_tls_policy['tls_enforce_in'] == "1") ? "active" : null;?>"
+              data-action="edit_selected"
+              data-item="<?= htmlentities($username); ?>"
+              data-id="tls_policy"
+              data-api-url='edit/tls_policy'
+              data-api-attr='{"tls_enforce_in":<?=($get_tls_policy['tls_enforce_in'] == "1") ? "0" : "1";?>}'><?=$lang['user']['tls_enforce_in'];?></button>
+            <button type="button" class="btn btn-sm btn-default <?=($get_tls_policy['tls_enforce_out'] == "1") ? "active" : null;?>"
+              data-action="edit_selected"
+              data-item="<?= htmlentities($username); ?>"
+              data-id="tls_policy"
+              data-api-url='edit/tls_policy'
+              data-api-attr='{"tls_enforce_out":<?=($get_tls_policy['tls_enforce_out'] == "1") ? "0" : "1";?>}'><?=$lang['user']['tls_enforce_out'];?></button>
+          </div>
+          <p class="help-block"><?=$lang['user']['tls_policy_warning'];?></p>
+          </div>
+        </div>
+        <?php
+        // Show quarantine_notification options
+        $quarantine_notification = mailbox('get', 'quarantine_notification', $username);
+        ?>
+        <div class="row">
+          <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['quarantine_notification'];?>:</div>
+          <div class="col-md-9 col-xs-7">
+          <div class="btn-group" data-acl="<?=$_SESSION['acl']['quarantine_notification'];?>">
+            <button type="button" class="btn btn-sm btn-default <?=($quarantine_notification == "never") ? "active" : null;?>"
+              data-action="edit_selected"
+              data-item="<?= htmlentities($username); ?>"
+              data-id="quarantine_notification"
+              data-api-url='edit/quarantine_notification'
+              data-api-attr='{"quarantine_notification":"never"}'><?=$lang['user']['never'];?></button>
+            <button type="button" class="btn btn-sm btn-default <?=($quarantine_notification == "hourly") ? "active" : null;?>"
+              data-action="edit_selected"
+              data-item="<?= htmlentities($username); ?>"
+              data-id="quarantine_notification"
+              data-api-url='edit/quarantine_notification'
+              data-api-attr='{"quarantine_notification":"hourly"}'><?=$lang['user']['hourly'];?></button>
+            <button type="button" class="btn btn-sm btn-default <?=($quarantine_notification == "daily") ? "active" : null;?>"
+              data-action="edit_selected"
+              data-item="<?= htmlentities($username); ?>"
+              data-id="quarantine_notification"
+              data-api-url='edit/quarantine_notification'
+              data-api-attr='{"quarantine_notification":"daily"}'><?=$lang['user']['daily'];?></button>
+            <button type="button" class="btn btn-sm btn-default <?=($quarantine_notification == "weekly") ? "active" : null;?>"
+              data-action="edit_selected"
+              data-item="<?= htmlentities($username); ?>"
+              data-id="quarantine_notification"
+              data-api-url='edit/quarantine_notification'
+              data-api-attr='{"quarantine_notification":"weekly"}'><?=$lang['user']['weekly'];?></button>
+          </div>
+          <p class="help-block"><?=$lang['user']['quarantine_notification_info'];?></p>
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['eas_reset'];?>:</div>
+          <div class="col-md-9 col-xs-7">
+          <button class="btn btn-xs btn-default" data-acl="<?=$_SESSION['acl']['eas_reset'];?>" data-action="delete_selected" data-text="<?=$lang['user']['eas_reset'];?>?" data-item="<?= htmlentities($username); ?>" data-id="eas_cache" data-api-url='delete/eas_cache' href="#"><?=$lang['user']['eas_reset_now'];?></button>
+          <p class="help-block"><?=$lang['user']['eas_reset_help'];?></p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['sogo_profile_reset'];?>:</div>
+          <div class="col-md-9 col-xs-7">
+          <button class="btn btn-xs btn-default" data-acl="<?=$_SESSION['acl']['sogo_profile_reset'];?>" data-action="delete_selected" data-text="<?=$lang['user']['sogo_profile_reset'];?>?" data-item="<?= htmlentities($username); ?>" data-id="sogo_profile" data-api-url='delete/sogo_profile' href="#"><?=$lang['user']['sogo_profile_reset_now'];?></button>
+          <p class="help-block"><?=$lang['user']['sogo_profile_reset_help'];?></p>
+          </div>
         </div>
       </div>
-      <p><?=formatBytes($mailboxdata['quota_used'], 2);?> / <?=formatBytes($mailboxdata['quota'], 2);?>, <?=$mailboxdata['messages'];?> <?=$lang['user']['messages'];?></p>
-    </div>
-  </div>
-  <hr>
-  <?php
-  // Show tagging options
-  $get_tagging_options = mailbox('get', 'delimiter_action', $username);
-  ?>
-  <div class="row">
-    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['tag_handling'];?>:</div>
-    <div class="col-md-9 col-xs-7">
-    <div class="btn-group" data-acl="<?=$_SESSION['acl']['delimiter_action'];?>">
-      <button type="button" class="btn btn-sm btn-default <?=($get_tagging_options == "subfolder") ? 'active' : null; ?>"
-        data-action="edit_selected"
-        data-item="<?= htmlentities($username); ?>"
-        data-id="delimiter_action"
-        data-api-url='edit/delimiter_action'
-        data-api-attr='{"tagged_mail_handler":"subfolder"}'><?=$lang['user']['tag_in_subfolder'];?></button>
-      <button type="button" class="btn btn-sm btn-default <?=($get_tagging_options == "subject") ? 'active' : null; ?>"
-        data-action="edit_selected"
-        data-item="<?= htmlentities($username); ?>"
-        data-id="delimiter_action"
-        data-api-url='edit/delimiter_action'
-        data-api-attr='{"tagged_mail_handler":"subject"}'><?=$lang['user']['tag_in_subject'];?></button>
-      <button type="button" class="btn btn-sm btn-default <?=($get_tagging_options == "none") ? 'active' : null; ?>"
-        data-action="edit_selected"
-        data-item="<?= htmlentities($username); ?>"
-        data-id="delimiter_action"
-        data-api-url='edit/delimiter_action'
-        data-api-attr='{"tagged_mail_handler":"none"}'><?=$lang['user']['tag_in_none'];?></button>
-    </div>
-    <p class="help-block"><?=$lang['user']['tag_help_explain'];?></p>
-    <p class="help-block"><?=$lang['user']['tag_help_example'];?></p>
-    </div>
-  </div>
-  <?php
-  // Show TLS policy options
-  $get_tls_policy = mailbox('get', 'tls_policy', $username);
-  ?>
-  <div class="row">
-    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['tls_policy'];?>:</div>
-    <div class="col-md-9 col-xs-7">
-    <div class="btn-group" data-acl="<?=$_SESSION['acl']['tls_policy'];?>">
-      <button type="button" class="btn btn-sm btn-default <?=($get_tls_policy['tls_enforce_in'] == "1") ? "active" : null;?>"
-        data-action="edit_selected"
-        data-item="<?= htmlentities($username); ?>"
-        data-id="tls_policy"
-        data-api-url='edit/tls_policy'
-        data-api-attr='{"tls_enforce_in":<?=($get_tls_policy['tls_enforce_in'] == "1") ? "0" : "1";?>}'><?=$lang['user']['tls_enforce_in'];?></button>
-      <button type="button" class="btn btn-sm btn-default <?=($get_tls_policy['tls_enforce_out'] == "1") ? "active" : null;?>"
-        data-action="edit_selected"
-        data-item="<?= htmlentities($username); ?>"
-        data-id="tls_policy"
-        data-api-url='edit/tls_policy'
-        data-api-attr='{"tls_enforce_out":<?=($get_tls_policy['tls_enforce_out'] == "1") ? "0" : "1";?>}'><?=$lang['user']['tls_enforce_out'];?></button>
-    </div>
-    <p class="help-block"><?=$lang['user']['tls_policy_warning'];?></p>
-    </div>
-  </div>
-  <?php
-  // Show quarantine_notification options
-  $quarantine_notification = mailbox('get', 'quarantine_notification', $username);
-  ?>
-  <div class="row">
-    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['quarantine_notification'];?>:</div>
-    <div class="col-md-9 col-xs-7">
-    <div class="btn-group" data-acl="<?=$_SESSION['acl']['quarantine_notification'];?>">
-      <button type="button" class="btn btn-sm btn-default <?=($quarantine_notification == "never") ? "active" : null;?>"
-        data-action="edit_selected"
-        data-item="<?= htmlentities($username); ?>"
-        data-id="quarantine_notification"
-        data-api-url='edit/quarantine_notification'
-        data-api-attr='{"quarantine_notification":"never"}'><?=$lang['user']['never'];?></button>
-      <button type="button" class="btn btn-sm btn-default <?=($quarantine_notification == "hourly") ? "active" : null;?>"
-        data-action="edit_selected"
-        data-item="<?= htmlentities($username); ?>"
-        data-id="quarantine_notification"
-        data-api-url='edit/quarantine_notification'
-        data-api-attr='{"quarantine_notification":"hourly"}'><?=$lang['user']['hourly'];?></button>
-      <button type="button" class="btn btn-sm btn-default <?=($quarantine_notification == "daily") ? "active" : null;?>"
-        data-action="edit_selected"
-        data-item="<?= htmlentities($username); ?>"
-        data-id="quarantine_notification"
-        data-api-url='edit/quarantine_notification'
-        data-api-attr='{"quarantine_notification":"daily"}'><?=$lang['user']['daily'];?></button>
-      <button type="button" class="btn btn-sm btn-default <?=($quarantine_notification == "weekly") ? "active" : null;?>"
-        data-action="edit_selected"
-        data-item="<?= htmlentities($username); ?>"
-        data-id="quarantine_notification"
-        data-api-url='edit/quarantine_notification'
-        data-api-attr='{"quarantine_notification":"weekly"}'><?=$lang['user']['weekly'];?></button>
-    </div>
-    <p class="help-block"><?=$lang['user']['quarantine_notification_info'];?></p>
-    </div>
-  </div>
-  <hr>
-
-  <div class="row">
-    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['eas_reset'];?>:</div>
-    <div class="col-md-9 col-xs-7">
-    <button class="btn btn-xs btn-default" data-acl="<?=$_SESSION['acl']['eas_reset'];?>" data-action="delete_selected" data-text="<?=$lang['user']['eas_reset'];?>?" data-item="<?= htmlentities($username); ?>" data-id="eas_cache" data-api-url='delete/eas_cache' href="#"><?=$lang['user']['eas_reset_now'];?></button>
-    <p class="help-block"><?=$lang['user']['eas_reset_help'];?></p>
     </div>
   </div>
 
-  <div class="row">
-    <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['sogo_profile_reset'];?>:</div>
-    <div class="col-md-9 col-xs-7">
-    <button class="btn btn-xs btn-default" data-acl="<?=$_SESSION['acl']['sogo_profile_reset'];?>" data-action="delete_selected" data-text="<?=$lang['user']['sogo_profile_reset'];?>?" data-item="<?= htmlentities($username); ?>" data-id="sogo_profile" data-api-url='delete/sogo_profile' href="#"><?=$lang['user']['sogo_profile_reset_now'];?></button>
-    <p class="help-block"><?=$lang['user']['sogo_profile_reset_help'];?></p>
-    </div>
-  </div>
-
-</div>
-</div>
-
-<!-- Nav tabs -->
-<ul class="nav nav-pills nav-justified" role="tablist">
-	<li role="presentation" class="active"><a href="#SpamAliases" aria-controls="SpamAliases" role="tab" data-toggle="tab"><?=$lang['user']['spam_aliases'];?></a></li>
-	<li role="presentation"><a href="#Spamfilter" aria-controls="Spamfilter" role="tab" data-toggle="tab"><?=$lang['user']['spamfilter'];?></a></li>
-	<li role="presentation"><a href="#Syncjobs" aria-controls="Syncjobs" role="tab" data-toggle="tab"><?=$lang['user']['sync_jobs'];?></a></li>
-</ul>
-<hr>
-
-<div class="tab-content">
-	<div role="tabpanel" class="tab-pane active" id="SpamAliases">
+	<div role="tabpanel" class="tab-pane" id="SpamAliases">
     <div class="row">
       <div class="col-md-12 col-sm-12 col-xs-12">
         <div class="table-responsive">
@@ -320,7 +321,6 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
         </div>
       </div>
 		</div>
-
     <div class="mass-actions-user">
       <div class="btn-group" data-acl="<?=$_SESSION['acl']['spam_alias'];?>">
         <div class="btn-group">
@@ -348,7 +348,6 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
         </div>
       </div>
     </div>
-
 	</div>
 
 	<div role="tabpanel" class="tab-pane" id="Spamfilter">
@@ -376,10 +375,8 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 					<p><?=$lang['user']['spamfilter_hint'];?></p>
 				</div>
 			</div>
-
       <div class="form-group">
 				<div class="col-sm-10">
-
 				</div>
         <div class="btn-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
           <a data-acl="<?=$_SESSION['acl']['spam_score'];?>" type="button" class="btn btn-sm btn-success" data-action="edit_selected"
@@ -394,7 +391,6 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
             data-api-attr='{"spam_score":"default"}'><?=$lang['user']['spam_score_reset'];?></a>
         </div>
 			</div>
-
 		</form>
 		<hr>
 		<div class="row">
@@ -419,7 +415,6 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
             </span>
           </div>
         </form>
-
       </div>
 			<div class="col-sm-6">
 				<h4><?=$lang['user']['spamfilter_bl'];?></h4>
@@ -451,7 +446,6 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 		<div class="table-responsive">
       <table class="table table-striped" id="sync_job_table"></table>
 		</div>
-
     <div class="mass-actions-user">
       <div class="btn-group" data-acl="<?=$_SESSION['acl']['syncjobs'];?>">
         <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="syncjob" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
@@ -465,10 +459,9 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
         <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addSyncJobModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['create_syncjob'];?></a>
       </div>
     </div>
-
 		</div>
 	</div>
-
+  
 </div><!-- /container -->
 <div style="margin-bottom:200px;"></div>
 <?php
