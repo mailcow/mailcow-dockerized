@@ -6,8 +6,11 @@ if [ "$(id -u)" -ne "0" ]; then
   exit 1
 fi
 
-#exit on error and pipefail
+# Exit on error and pipefail
 set -o pipefail
+
+# Add /opt/bin to PATH
+PATH=$PATH:/opt/bin
 
 umask 0022
 
@@ -68,8 +71,12 @@ while (($#)); do
   case "${1}" in
     --check|-c)
       echo "Checking remote code for updates..."
-      git fetch origin #${BRANCH}
-      if [[ -z $(git log HEAD --pretty=format:"%H" | grep $(git rev-parse origin/${BRANCH})) ]]; then
+      LATEST_REV=$(git ls-remote --exit-code --refs --quiet https://github.com/mailcow/mailcow-dockerized ${BRANCH} | cut -f1)
+      if [ $? -ne 0 ]; then
+        echo "A problem occurred while trying to fetch the latest revision from github."
+        exit 99
+      fi
+      if [[ -z $(git log HEAD --pretty=format:"%H" | grep "${LATEST_REV}") ]]; then
         echo "Updated code is available."
         exit 0
       else
@@ -98,6 +105,7 @@ while (($#)); do
 done
 
 [[ ! -f mailcow.conf ]] && { echo "mailcow.conf is missing"; exit 1;}
+chmod 600 mailcow.conf
 source mailcow.conf
 DOTS=${MAILCOW_HOSTNAME//[^.]};
 if [ ${#DOTS} -lt 2 ]; then
@@ -127,9 +135,12 @@ CONFIG_ARRAY=(
   "API_KEY"
   "API_ALLOW_FROM"
   "MAILDIR_GC_TIME"
+  "MAILDIR_SUB"
   "ACL_ANYONE"
   "SOLR_HEAP"
   "SKIP_SOLR"
+  "ALLOW_ADMIN_EMAIL_LOGIN"
+  "SKIP_HTTP_VERIFICATION"
 )
 
 sed -i '$a\' mailcow.conf
@@ -234,6 +245,13 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# Solr is disabled by default after upgrading from non-Solr to Solr-enabled mailcows.' >> mailcow.conf
       echo '# Disable Solr or if you do not want to store a readable index of your mails in solr-vol-1.' >> mailcow.conf
       echo "SKIP_SOLR=y" >> mailcow.conf
+  fi
+  elif [[ ${option} == "MAILDIR_SUB" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# MAILDIR_SUB defines a path in a users virtual home to keep the maildir in. Leave empty for updated setups.' >> mailcow.conf
+      echo "#MAILDIR_SUB=Maildir" >> mailcow.conf
+      echo "MAILDIR_SUB=" >> mailcow.conf
   fi
   elif ! grep -q ${option} mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"
@@ -351,9 +369,8 @@ if grep -q 'SYSCTL_IPV6_DISABLED=1' mailcow.conf; then
   read -p "Press any key to continue..." < /dev/tty
 fi
 
-echo -e "Fixing project name... "
+# Checking for old project name bug
 sed -i 's#COMPOSEPROJECT_NAME#COMPOSE_PROJECT_NAME#g' mailcow.conf
-sed -i '/COMPOSE_PROJECT_NAME=/s/-//g' mailcow.conf
 
 echo -e "Fixing PHP-FPM worker ports for Nginx sites..."
 sed -i 's#phpfpm:9000#phpfpm:9002#g' data/conf/nginx/*.conf

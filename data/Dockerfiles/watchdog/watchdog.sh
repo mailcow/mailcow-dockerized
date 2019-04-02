@@ -5,6 +5,8 @@ trap "kill 0" EXIT
 
 # Prepare
 BACKGROUND_TASKS=()
+echo "Waiting for containers to settle..."
+sleep 10
 
 if [[ "${USE_WATCHDOG}" =~ ^([nN][oO]|[nN])+$ ]]; then
   echo -e "$(date) - USE_WATCHDOG=n, skipping watchdog..."
@@ -37,7 +39,7 @@ progress() {
 log_msg() {
   if [[ ${2} != "no_redis" ]]; then
     redis-cli -h redis LPUSH WATCHDOG_LOG "{\"time\":\"$(date +%s)\",\"message\":\"$(printf '%s' "${1}" | \
-      tr '%&;$"_[]{}-\r\n' ' ')\"}" > /dev/null
+      tr '\r\n%&;$"_[]{}-' ' ')\"}" > /dev/null
   fi
   echo $(date) $(printf '%s\n' "${1}")
 }
@@ -115,7 +117,7 @@ nginx_checks() {
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
-    cat /dev/null > /tmp/nginx-mailcow
+    touch /tmp/nginx-mailcow; echo "$(tail -50 /tmp/nginx-mailcow)" > /tmp/nginx-mailcow
     host_ip=$(get_container_ip nginx-mailcow)
     err_c_cur=${err_count}
     /usr/lib/nagios/plugins/check_http -4 -H ${host_ip} -u / -p 8081 2>> /tmp/nginx-mailcow 1>&2; err_count=$(( ${err_count} + $? ))
@@ -140,7 +142,7 @@ unbound_checks() {
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
-    cat /dev/null > /tmp/unbound-mailcow
+    touch /tmp/unbound-mailcow; echo "$(tail -50 /tmp/unbound-mailcow)" > /tmp/unbound-mailcow
     host_ip=$(get_container_ip unbound-mailcow)
     err_c_cur=${err_count}
     /usr/lib/nagios/plugins/check_dns -s ${host_ip} -H stackoverflow.com 2>> /tmp/unbound-mailcow 1>&2; err_count=$(( ${err_count} + $? ))
@@ -172,7 +174,7 @@ mysql_checks() {
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
-    cat /dev/null > /tmp/mysql-mailcow
+    touch /tmp/mysql-mailcow; echo "$(tail -50 /tmp/mysql-mailcow)" > /tmp/mysql-mailcow
     host_ip=$(get_container_ip mysql-mailcow)
     err_c_cur=${err_count}
     /usr/lib/nagios/plugins/check_mysql -s /var/run/mysqld/mysqld.sock -u ${DBUSER} -p ${DBPASS} -d ${DBNAME} 2>> /tmp/mysql-mailcow 1>&2; err_count=$(( ${err_count} + $? ))
@@ -198,7 +200,7 @@ sogo_checks() {
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
-    cat /dev/null > /tmp/sogo-mailcow
+    touch /tmp/sogo-mailcow; echo "$(tail -50 /tmp/sogo-mailcow)" > /tmp/sogo-mailcow
     host_ip=$(get_container_ip sogo-mailcow)
     err_c_cur=${err_count}
     /usr/lib/nagios/plugins/check_http -4 -H ${host_ip} -u /SOGo.index/ -p 20000 -R "SOGo\.MainUI" 2>> /tmp/sogo-mailcow 1>&2; err_count=$(( ${err_count} + $? ))
@@ -223,7 +225,7 @@ postfix_checks() {
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
-    cat /dev/null > /tmp/postfix-mailcow
+    touch /tmp/postfix-mailcow; echo "$(tail -50 /tmp/postfix-mailcow)" > /tmp/postfix-mailcow
     host_ip=$(get_container_ip postfix-mailcow)
     err_c_cur=${err_count}
     /usr/lib/nagios/plugins/check_smtp -4 -H ${host_ip} -p 589 -f "watchdog@invalid" -C "RCPT TO:null@localhost" -C DATA -C . -R 250 2>> /tmp/postfix-mailcow 1>&2; err_count=$(( ${err_count} + $? ))
@@ -249,7 +251,7 @@ clamd_checks() {
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
-    cat /dev/null > /tmp/clamd-mailcow
+    touch /tmp/clamd-mailcow; echo "$(tail -50 /tmp/clamd-mailcow)" > /tmp/clamd-mailcow
     host_ip=$(get_container_ip clamd-mailcow)
     err_c_cur=${err_count}
     /usr/lib/nagios/plugins/check_clamd -4 -H ${host_ip} 2>> /tmp/clamd-mailcow 1>&2; err_count=$(( ${err_count} + $? ))
@@ -274,7 +276,7 @@ dovecot_checks() {
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
-    cat /dev/null > /tmp/dovecot-mailcow
+    touch /tmp/dovecot-mailcow; echo "$(tail -50 /tmp/dovecot-mailcow)" > /tmp/dovecot-mailcow
     host_ip=$(get_container_ip dovecot-mailcow)
     err_c_cur=${err_count}
     /usr/lib/nagios/plugins/check_smtp -4 -H ${host_ip} -p 24 -f "watchdog@invalid" -C "RCPT TO:<watchdog@invalid>" -L -R "User doesn't exist" 2>> /tmp/dovecot-mailcow 1>&2; err_count=$(( ${err_count} + $? ))
@@ -303,7 +305,7 @@ phpfpm_checks() {
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
-    cat /dev/null > /tmp/php-fpm-mailcow
+    touch /tmp/php-fpm-mailcow; echo "$(tail -50 /tmp/php-fpm-mailcow)" > /tmp/php-fpm-mailcow
     host_ip=$(get_container_ip php-fpm-mailcow)
     err_c_cur=${err_count}
     /usr/lib/nagios/plugins/check_tcp -H ${host_ip} -p 9001 2>> /tmp/php-fpm-mailcow 1>&2; err_count=$(( ${err_count} + $? ))
@@ -350,6 +352,38 @@ ratelimit_checks() {
   return 1
 }
 
+acme_checks() {
+  err_count=0
+  diff_c=0
+  THRESHOLD=1
+  ACME_LOG_STATUS=$(redis-cli -h redis GET ACME_FAIL_TIME)
+  if [[ -z "${ACME_LOG_STATUS}" ]]; then
+    redis-cli -h redis SET ACME_FAIL_TIME 0
+    ACME_LOG_STATUS=0
+  fi
+  # Reduce error count by 2 after restarting an unhealthy container
+  trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
+  while [ ${err_count} -lt ${THRESHOLD} ]; do
+    err_c_cur=${err_count}
+    ACME_LOG_STATUS_PREV=${ACME_LOG_STATUS}
+    ACME_LOG_STATUS=$(redis-cli -h redis GET ACME_FAIL_TIME)
+    if [[ ${ACME_LOG_STATUS_PREV} != ${ACME_LOG_STATUS} ]]; then
+      err_count=$(( ${err_count} + 1 ))
+    fi
+    [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
+    [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
+    progress "ACME" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
+    if [[ $? == 10 ]]; then
+      diff_c=0
+      sleep 1
+    else
+      diff_c=0
+      sleep $(( ( RANDOM % 30 )  + 10 ))
+    fi
+  done
+  return 1
+}
+
 ipv6nat_checks() {
   err_count=0
   diff_c=0
@@ -358,10 +392,11 @@ ipv6nat_checks() {
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
     err_c_cur=${err_count}
-    IPV6NAT_CONTAINER_ID=$(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], id: .Id}" | jq -rc "select( .name | tostring | contains(\"ipv6nat\")) | .id")
+    CONTAINERS=$(curl --silent --insecure https://dockerapi/containers/json)
+    IPV6NAT_CONTAINER_ID=$(echo ${CONTAINERS} | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], id: .Id}" | jq -rc "select( .name | tostring | contains(\"ipv6nat-mailcow\")) | .id")
     if [[ ! -z ${IPV6NAT_CONTAINER_ID} ]]; then
-      LATEST_STARTED="$(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], StartedAt: .State.StartedAt}" | jq -rc "select( .name | tostring | contains(\"ipv6nat\") | not)" | jq -rc .StartedAt | xargs -n1 date +%s -d | sort | tail -n1)"
-      LATEST_IPV6NAT="$(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], StartedAt: .State.StartedAt}" | jq -rc "select( .name | tostring | contains(\"ipv6nat\"))" | jq -rc .StartedAt | xargs -n1 date +%s -d | sort | tail -n1)"
+      LATEST_STARTED="$(echo ${CONTAINERS} | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], StartedAt: .State.StartedAt}" | jq -rc "select( .name | tostring | contains(\"ipv6nat-mailcow\") | not)" | jq -rc .StartedAt | xargs -n1 date +%s -d | sort | tail -n1)"
+      LATEST_IPV6NAT="$(echo ${CONTAINERS} | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], StartedAt: .State.StartedAt}" | jq -rc "select( .name | tostring | contains(\"ipv6nat-mailcow\"))" | jq -rc .StartedAt | xargs -n1 date +%s -d | sort | tail -n1)"
       DIFFERENCE_START_TIME=$(expr ${LATEST_IPV6NAT} - ${LATEST_STARTED} 2>/dev/null)
       if [[ "${DIFFERENCE_START_TIME}" -lt 30 ]]; then
         err_count=$(( ${err_count} + 1 ))
@@ -375,11 +410,12 @@ ipv6nat_checks() {
       sleep 1
     else
       diff_c=0
-      sleep 3600
+      sleep 300
     fi
   done
   return 1
 }
+
 
 rspamd_checks() {
   err_count=0
@@ -388,15 +424,14 @@ rspamd_checks() {
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
-    cat /dev/null > /tmp/rspamd-mailcow
+    touch /tmp/rspamd-mailcow; echo "$(tail -50 /tmp/rspamd-mailcow)" > /tmp/rspamd-mailcow
     host_ip=$(get_container_ip rspamd-mailcow)
     err_c_cur=${err_count}
-    SCORE=$(/usr/bin/curl -s --data-binary @- --unix-socket /var/lib/rspamd/rspamd.sock http://rspamd/scan -d '
-To: null@localhost
+    SCORE=$(echo 'To: null@localhost
 From: watchdog@localhost
 
 Empty
-' | jq -rc .required_score)
+' | usr/bin/curl -s --data-binary @- --unix-socket /var/lib/rspamd/rspamd.sock http://rspamd/scan | jq -rc .required_score)
     if [[ ${SCORE} != "9999" ]]; then
       echo "Rspamd settings check failed" 2>> /tmp/rspamd-mailcow 1>&2
       err_count=$(( ${err_count} + 1))
@@ -519,9 +554,19 @@ BACKGROUND_TASKS+=($!)
 
 (
 while true; do
+  if ! acme_checks; then
+    log_msg "ACME client hit error limit"
+    echo acme-tiny > /tmp/com_pipe
+  fi
+done
+) &
+BACKGROUND_TASKS+=($!)
+
+(
+while true; do
   if ! ipv6nat_checks; then
-    log_msg "IPv6 NAT warning: ipv6nat container was not started at least 30s after siblings (not an error)"
-    echo ipv6nat > /tmp/com_pipe
+    log_msg "IPv6 NAT warning: ipv6nat-mailcow container was not started at least 30s after siblings (not an error)"
+    echo ipv6nat-mailcow > /tmp/com_pipe
   fi
 done
 ) &
@@ -561,10 +606,16 @@ while true; do
   CONTAINER_ID=
   HAS_INITDB=
   read com_pipe_answer </tmp/com_pipe
+  if [ -s "/tmp/${com_pipe_answer}" ]; then
+    cat "/tmp/${com_pipe_answer}"
+  fi
   if [[ ${com_pipe_answer} == "ratelimit" ]]; then
     log_msg "At least one ratelimit was applied"
-    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}" "No further information available."
-  elif [[ ${com_pipe_answer} =~ .+-mailcow ]] || [[ ${com_pipe_answer} == "ipv6nat" ]]; then
+    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}" "Please see mailcow UI logs for further information."
+  elif [[ ${com_pipe_answer} == "acme-tiny" ]]; then
+    log_msg "acme-tiny client returned non-zero exit code"
+    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}" "Please check acme-mailcow for ruther information."
+  elif [[ ${com_pipe_answer} =~ .+-mailcow ]] || [[ ${com_pipe_answer} == "ipv6nat-mailcow" ]]; then
     kill -STOP ${BACKGROUND_TASKS[*]}
     sleep 3
     CONTAINER_ID=$(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], id: .Id}" | jq -rc "select( .name | tostring | contains(\"${com_pipe_answer}\")) | .id")
@@ -581,7 +632,7 @@ while true; do
       else
         log_msg "Sending restart command to ${CONTAINER_ID}..."
         curl --silent --insecure -XPOST https://dockerapi/containers/${CONTAINER_ID}/restart
-        if [[ ${com_pipe_answer} != "ipv6nat" ]]; then
+        if [[ ${com_pipe_answer} != "ipv6nat-mailcow" ]]; then
           [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}"
         fi
         log_msg "Wait for restarted container to settle and continue watching..."

@@ -169,7 +169,25 @@ $(document).ready(function() {
     // $("#active-script").closest('td').css('background-color','#b0f0a0');
     // $("#inactive-script").closest('td').css('background-color','#b0f0a0');
   // });
-
+  $('#addResourceModal').on('shown.bs.modal', function() {
+    $("#multiple_bookings").val($("#multiple_bookings_select").val());
+    if ($("#multiple_bookings").val() == "custom") {
+      $("#multiple_bookings_custom_div").show();
+      $("#multiple_bookings").val($("#multiple_bookings_custom").val());
+    }
+  })
+  $("#multiple_bookings_select").change(function() {
+    $("#multiple_bookings").val($("#multiple_bookings_select").val());
+    if ($("#multiple_bookings").val() == "custom") {
+      $("#multiple_bookings_custom_div").show();
+    }
+    else {
+      $("#multiple_bookings_custom_div").hide();
+    }
+  });
+  $("#multiple_bookings_custom").bind ("change keypress keyup blur", function () {
+    $("#multiple_bookings").val($("#multiple_bookings_custom").val());
+  });
 
 
 });
@@ -294,7 +312,8 @@ jQuery(function($){
         {"name":"domain","title":lang.domain,"breakpoints":"xs sm"},
         {"name":"quota","style":{"whiteSpace":"nowrap"},"title":lang.domain_quota,"formatter": function(value){
           res = value.split("/");
-          return humanFileSize(res[0]) + " / " + humanFileSize(res[1]);
+          var of_q = (res[1] == 0 ? "∞" : humanFileSize(res[1]));
+          return humanFileSize(res[0]) + " / " + of_q;
         },
         "sortValue": function(value){
           res = value.split("/");
@@ -312,7 +331,7 @@ jQuery(function($){
         {"name":"messages","filterable": false,"title":lang.msg_num,"breakpoints":"xs sm md"},
         {"name":"rl","title":"RL","breakpoints":"xs sm md","style":{"width":"125px"}},
         {"name":"active","filterable": false,"title":lang.active},
-        {"name":"action","filterable": false,"sortable": false,"style":{"min-width":"250px","text-align":"right"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
+        {"name":"action","filterable": false,"sortable": false,"style":{"min-width":"290px","text-align":"right"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
       ],
       "empty": lang.empty,
       "rows": $.ajax({
@@ -349,8 +368,11 @@ jQuery(function($){
             item.action = '<div class="btn-group">' +
               '<a href="/edit/mailbox/' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-mailbox" data-api-url="delete/mailbox" data-item="' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
-              '<a href="/index.php?duallogin=' + encodeURIComponent(item.username) + '" class="login_as btn btn-xs btn-success"><span class="glyphicon glyphicon-user"></span> Login</a>' +
-              '</div>';
+              '<a href="/index.php?duallogin=' + encodeURIComponent(item.username) + '" class="login_as btn btn-xs btn-success"><span class="glyphicon glyphicon-user"></span> Login</a>';
+              if (ALLOW_ADMIN_EMAIL_LOGIN) {
+                item.action += '<a href="/sogo-auth.php?login=' + encodeURIComponent(item.username) + '" class="login_as btn btn-xs btn-primary" target="_blank"><span class="glyphicon glyphicon-envelope"></span> SOGo</a>';
+              }
+              item.action += '</div>';
             }
             else {
             item.action = '<div class="btn-group">' +
@@ -731,8 +753,18 @@ jQuery(function($){
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="alias" name="multi_select" value="' + encodeURIComponent(item.id) + '" />';
             item.goto = escapeHtml(item.goto.replace(/,/g, " "));
-            item.public_comment = escapeHtml(item.public_comment);
-            item.private_comment = escapeHtml(item.private_comment);
+            if (item.public_comment !== null) {
+              item.public_comment = escapeHtml(item.public_comment);
+            }
+            else {
+              item.public_comment = '-';
+            }
+            if (item.private_comment !== null) {
+              item.private_comment = escapeHtml(item.private_comment);
+            }
+            else {
+              item.private_comment = '-';
+            }
             if (item.is_catch_all == 1) {
               item.address = '<div class="label label-default">Catch-All</div> ' + escapeHtml(item.address);
             }

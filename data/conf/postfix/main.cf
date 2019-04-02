@@ -94,12 +94,16 @@ smtpd_tls_dh1024_param_file = /etc/ssl/mail/dhparams.pem
 smtpd_tls_eecdh_grade = auto
 smtpd_tls_exclude_ciphers = ECDHE-RSA-RC4-SHA, RC4, aNULL, DES-CBC3-SHA, ECDHE-RSA-DES-CBC3-SHA, EDH-RSA-DES-CBC3-SHA
 smtpd_tls_loglevel = 1
-smtp_tls_mandatory_protocols = !SSLv2, !SSLv3
+
+smtp_tls_mandatory_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1
 smtp_tls_protocols = !SSLv2, !SSLv3
-lmtp_tls_mandatory_protocols = !SSLv2, !SSLv3
-lmtp_tls_protocols = !SSLv2, !SSLv2, !SSLv3
-smtpd_tls_mandatory_protocols = !SSLv2, !SSLv3
+
+lmtp_tls_mandatory_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1
+lmtp_tls_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1
+
+smtpd_tls_mandatory_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1
 smtpd_tls_protocols = !SSLv2, !SSLv3
+
 smtpd_tls_security_level = may
 tls_preempt_cipherlist = yes
 tls_ssl_options = NO_COMPRESSION
@@ -134,5 +138,5 @@ smtp_sasl_mechanism_filter = plain, login
 smtp_tls_policy_maps=proxy:mysql:/opt/postfix/conf/sql/mysql_tls_policy_override_maps.cf
 smtp_header_checks = pcre:/opt/postfix/conf/anonymize_headers.pcre
 mail_name = Postcow
-transport_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_transport_maps.cf
+transport_maps = pcre:/opt/postfix/conf/local_transport, proxy:mysql:/opt/postfix/conf/sql/mysql_transport_maps.cf
 smtp_sasl_auth_soft_bounce = no

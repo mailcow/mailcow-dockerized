@@ -20,6 +20,7 @@ $lang['footer']['cancel'] = 'Cancel';
 $lang['footer']['hibp_nok'] = 'Matched! This is a potentially dangerous password!';
 $lang['footer']['hibp_ok'] = 'No match found.';
 
+$lang['danger']['unlimited_quota_acl'] = "Unlimited quota prohibited by ACL";
 $lang['danger']['mysql_error'] = "MySQL error: %s";
 $lang['danger']['redis_error'] = "Redis error: %s";
 $lang['danger']['unknown_tfa_method'] = "Unknown TFA method";
@@ -418,6 +419,7 @@ $lang['acl']['bcc_maps'] = 'BCC maps';
 $lang['acl']['filters'] = 'Filters';
 $lang['acl']['ratelimit'] = 'Rate limit';
 $lang['acl']['recipient_maps'] = 'Recipient maps';
+$lang['acl']['unlimited_quota'] = 'Unlimited quota for mailboxes';
 $lang['acl']['prohibited'] = 'Prohibited by ACL';
 
 $lang['mailbox']['quarantine_notification'] = 'Quarantine notifications';
@@ -631,9 +633,11 @@ $lang['admin']['forwarding_hosts_hint'] = 'Incoming messages are unconditionally
 $lang['admin']['forwarding_hosts_add_hint'] = 'You can either specify IPv4/IPv6 addresses, networks in CIDR notation, host names (which will be resolved to IP addresses), or domain names (which will be resolved to IP addresses by querying SPF records or, in their absence, MX records).';
 $lang['admin']['relayhosts_hint'] = 'Define sender-dependent transports to be able to select them in a domains configuration dialog.<br>
   The transport service is always "smtp:". A users individual outbound TLS policy setting is taken into account.';
-$lang['admin']['transports_hint'] = 'A transport map entry <b>overrules</b> a sender-dependent transport map</b>.<br>
-Outbound TLS policy settings per-user are ignored and can only be enfored by TLS policy map entries. The transport service is always "smtp:".<br>
-To determine credentials for an exemplary next hop "[host]:25", Postfix <b>always</b> queries for "nexthop" before searching for "[nexthop]:25". This behavior makes it impossible to use "nexthop" and "[nexthop]:25" at the same time.';
+$lang['admin']['transports_hint'] = '→ A transport map entry <b>overrules</b> a sender-dependent transport map</b>.<br>
+→ Outbound TLS policy settings per-user are ignored and can only be enfored by TLS policy map entries.<br>
+→ The transport service for defined transports is always "smtp:".<br>
+→ Adresses matching "/localhost$/" will always be transported via "local:", therefore a "*" destination will not apply to those addresses.<br>
+→ To determine credentials for an exemplary next hop "[host]:25", Postfix <b>always</b> queries for "host" before searching for "[host]:25". This behavior makes it impossible to use "host" and "[host]:25" at the same time.';
 $lang['admin']['add_relayhost_hint'] = 'Please be aware that authentication data, if any, will be stored as plain text.';
 $lang['admin']['add_transports_hint'] = 'Please be aware that authentication data, if any, will be stored as plain text.';
 $lang['admin']['host'] = 'Host';
