@@ -51,7 +51,7 @@ done
 
 MEM_TOTAL=$(awk '/MemTotal/ {print $2}' /proc/meminfo)
 
-if [ ${MEM_TOTAL} -le "2621440" ]; then
+if [ "${MEM_TOTAL:-3670017}" -le "2621440" ]; then
   echo "Installed memory is <= 2.5 GiB. It is recommended to disable ClamAV to prevent out-of-memory situations."
   echo "ClamAV can be re-enabled by setting SKIP_CLAMD=n in mailcow.conf."
   read -r -p  "Do you want to disable ClamAV now? [Y/n] " response
@@ -67,10 +67,10 @@ else
   SKIP_CLAMD=n
 fi
 
-if [ ${MEM_TOTAL} -le "2097152" ]; then
+if [ "${MEM_TOTAL:-3670017}" -le "2097152" ]; then
   echo "Disabling Solr on low-memory system."
   SKIP_SOLR=y
-elif [ ${MEM_TOTAL} -le "3670016" ]; then
+elif [ "${MEM_TOTAL-3670017}" -le "3670016" ]; then
   echo "Installed memory is <= 3.5 GiB. It is recommended to disable Solr to prevent out-of-memory situations."
   echo "Solr is a prone to run OOM and should be monitored. The default Solr heap size is 1024 MiB and should be set in mailcow.conf according to your expected load."
   echo "Solr can be re-enabled by setting SKIP_SOLR=n in mailcow.conf but will refuse to start with less than 2 GB total memory."
