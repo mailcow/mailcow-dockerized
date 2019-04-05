@@ -3023,11 +3023,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           if ($mailboxdata['percent_in_use'] === '- ') {
             $mailboxdata['percent_class'] = "info";
           }
-          elseif ($mailboxdata['percent_in_use'] >= 75) {
-            $mailboxdata['percent_class'] = "warning";
-          }
           elseif ($mailboxdata['percent_in_use'] >= 90) {
             $mailboxdata['percent_class'] = "danger";
+          }
+          elseif ($mailboxdata['percent_in_use'] >= 75) {
+            $mailboxdata['percent_class'] = "warning";
           }
           else {
             $mailboxdata['percent_class'] = "success";
