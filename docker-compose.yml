@@ -359,7 +359,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.39
+      image: mailcow/watchdog:1.40
       # Debug
       #command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog
@@ -407,7 +407,7 @@ services:
             - dockerapi
 
     solr-mailcow:
-      image: mailcow/solr:1.4
+      image: mailcow/solr:1.5
       build: ./data/Dockerfiles/solr
       restart: always
       volumes:
