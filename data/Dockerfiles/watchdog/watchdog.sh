@@ -247,7 +247,7 @@ postfix_checks() {
 clamd_checks() {
   err_count=0
   diff_c=0
-  THRESHOLD=5
+  THRESHOLD=15
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
@@ -263,7 +263,7 @@ clamd_checks() {
       sleep 1
     else
       diff_c=0
-      sleep $(( ( RANDOM % 30 )  + 10 ))
+      sleep $(( ( RANDOM % 30 )  + 30 ))
     fi
   done
   return 1
