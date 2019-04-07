@@ -1,4 +1,12 @@
 <?php
+function isset_has_content($var) {
+  if (isset($var) && $var != "") {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
 function hash_password($password) {
 	$salt_str = bin2hex(openssl_random_pseudo_bytes(8));
 	return "{SSHA256}".base64_encode(hash('sha256', $password . $salt_str, true) . $salt_str);

@@ -132,7 +132,7 @@ $lang['user']['spamfilter_red'] = "Rouge: Ce message est un pourriel et sera rej
 $lang['user']['spamfilter_hint'] = "La première valeur décrit le \"score bas de pourriel\", la seconde représente le \"score haut de pourriel\".";
 $lang['user']['spamfilter_table_domain_policy'] = "N/D (Politique du domaine)";
 
-$lang['user']['tls_policy_warning'] = "<strong>Attention :<strong> Si vous décidez d'imposer le chiffrement des échanges de courriel, vous pouvez perdre des messages.<br> Les messages qui ne respecte pas la politique seront rejetés avec un message d'erreur définitif par le système de courriel.<br> Cette option s'applique à votre adresse de courriel principale (identifiant de connexion), tous les alias de domaine ainsi que les alias d'adresse <b> qui n'ont que cette unique boîte</b> comme destinataire.";
+$lang['user']['tls_policy_warning'] = "<strong>Attention :</strong> Si vous décidez d'imposer le chiffrement des échanges de courriel, vous pouvez perdre des messages.<br> Les messages qui ne respectent pas la politique seront rejetés avec un message d'erreur définitif par le système de courriel.<br> Cette option s'applique à votre adresse de courriel principale (identifiant de connexion), tous les alias de domaine ainsi que les alias d'adresse <b> qui n'ont que cette unique boîte</b> comme destinataire.";
 $lang['user']['tls_policy'] = "Politique de chiffrement";
 $lang['user']['tls_enforce_in'] = "Imposer le TLS entrant";
 $lang['user']['tls_enforce_out'] = "Imposer le TLS sortant";

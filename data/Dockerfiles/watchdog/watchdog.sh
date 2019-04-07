@@ -5,6 +5,8 @@ trap "kill 0" EXIT
 
 # Prepare
 BACKGROUND_TASKS=()
+echo "Waiting for containers to settle..."
+sleep 10
 
 if [[ "${USE_WATCHDOG}" =~ ^([nN][oO]|[nN])+$ ]]; then
   echo -e "$(date) - USE_WATCHDOG=n, skipping watchdog..."
@@ -245,7 +247,7 @@ postfix_checks() {
 clamd_checks() {
   err_count=0
   diff_c=0
-  THRESHOLD=5
+  THRESHOLD=15
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
@@ -261,7 +263,7 @@ clamd_checks() {
       sleep 1
     else
       diff_c=0
-      sleep $(( ( RANDOM % 30 )  + 10 ))
+      sleep $(( ( RANDOM % 30 )  + 30 ))
     fi
   done
   return 1
@@ -339,6 +341,38 @@ ratelimit_checks() {
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
     [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
     progress "Ratelimit" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
+    if [[ $? == 10 ]]; then
+      diff_c=0
+      sleep 1
+    else
+      diff_c=0
+      sleep $(( ( RANDOM % 30 )  + 10 ))
+    fi
+  done
+  return 1
+}
+
+acme_checks() {
+  err_count=0
+  diff_c=0
+  THRESHOLD=1
+  ACME_LOG_STATUS=$(redis-cli -h redis GET ACME_FAIL_TIME)
+  if [[ -z "${ACME_LOG_STATUS}" ]]; then
+    redis-cli -h redis SET ACME_FAIL_TIME 0
+    ACME_LOG_STATUS=0
+  fi
+  # Reduce error count by 2 after restarting an unhealthy container
+  trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
+  while [ ${err_count} -lt ${THRESHOLD} ]; do
+    err_c_cur=${err_count}
+    ACME_LOG_STATUS_PREV=${ACME_LOG_STATUS}
+    ACME_LOG_STATUS=$(redis-cli -h redis GET ACME_FAIL_TIME)
+    if [[ ${ACME_LOG_STATUS_PREV} != ${ACME_LOG_STATUS} ]]; then
+      err_count=$(( ${err_count} + 1 ))
+    fi
+    [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
+    [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
+    progress "ACME" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
     if [[ $? == 10 ]]; then
       diff_c=0
       sleep 1
@@ -520,6 +554,16 @@ BACKGROUND_TASKS+=($!)
 
 (
 while true; do
+  if ! acme_checks; then
+    log_msg "ACME client hit error limit"
+    echo acme-tiny > /tmp/com_pipe
+  fi
+done
+) &
+BACKGROUND_TASKS+=($!)
+
+(
+while true; do
   if ! ipv6nat_checks; then
     log_msg "IPv6 NAT warning: ipv6nat-mailcow container was not started at least 30s after siblings (not an error)"
     echo ipv6nat-mailcow > /tmp/com_pipe
@@ -567,7 +611,10 @@ while true; do
   fi
   if [[ ${com_pipe_answer} == "ratelimit" ]]; then
     log_msg "At least one ratelimit was applied"
-    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}" "No further information available."
+    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}" "Please see mailcow UI logs for further information."
+  elif [[ ${com_pipe_answer} == "acme-tiny" ]]; then
+    log_msg "acme-tiny client returned non-zero exit code"
+    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}" "Please check acme-mailcow for ruther information."
   elif [[ ${com_pipe_answer} =~ .+-mailcow ]] || [[ ${com_pipe_answer} == "ipv6nat-mailcow" ]]; then
     kill -STOP ${BACKGROUND_TASKS[*]}
     sleep 3

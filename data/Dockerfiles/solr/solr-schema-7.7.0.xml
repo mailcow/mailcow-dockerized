@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<schema name="dovecot" version="2.0">
+<schema name="dovecot-fts" version="2.0">
   <fieldType name="string" class="solr.StrField" omitNorms="true" sortMissingLast="true"/>
   <fieldType name="long" class="solr.LongPointField" positionIncrementGap="0"/>
   <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>

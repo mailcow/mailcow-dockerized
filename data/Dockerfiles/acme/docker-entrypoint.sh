@@ -5,6 +5,16 @@ exec 5>&1
 # Thanks to https://github.com/cvmiller -> https://github.com/cvmiller/expand6
 source /srv/expand6.sh
 
+# Skipping IP check when we like to live dangerously
+if [[ "${SKIP_IP_CHECK}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  SKIP_IP_CHECK=y
+fi
+
+# Skipping HTTP check when we like to live dangerously
+if [[ "${SKIP_HTTP_VERIFICATION}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  SKIP_HTTP_VERIFICATION=y
+fi
+
 log_f() {
   if [[ ${2} == "no_nl" ]]; then
     echo -n "$(date) - ${1}"
@@ -41,7 +51,6 @@ mkdir -p ${ACME_BASE}/acme
 # Migrate
 [[ -f ${ACME_BASE}/acme/private/privkey.pem ]] && mv ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/acme/key.pem
 [[ -f ${ACME_BASE}/acme/private/account.key ]] && mv ${ACME_BASE}/acme/private/account.key ${ACME_BASE}/acme/account.pem
-
 
 reload_configurations(){
   # Reading container IDs
@@ -121,7 +130,10 @@ verify_challenge_path(){
   # verify_challenge_path URL 4|6
   RAND_FILE=${RANDOM}${RANDOM}${RANDOM}
   touch /var/www/acme/${RAND_FILE}
-  if [[ "$(curl -${2} http://${1}/.well-known/acme-challenge/${RAND_FILE} --write-out %{http_code} --silent --output /dev/null)" =~ ^(2|3)  ]]; then
+  if [[ ${SKIP_HTTP_VERIFICATION} == "y" ]]; then
+    echo '(skipping check, returning 0)'
+    return 0
+  elif [[ "$(curl -${2} http://${1}/.well-known/acme-challenge/${RAND_FILE} --write-out %{http_code} --silent --output /dev/null)" =~ ^(2|3)  ]]; then
     rm /var/www/acme/${RAND_FILE}
     return 0
   else
@@ -156,6 +168,7 @@ else
     exec env TRIGGER_RESTART=1 $(readlink -f "$0")
   fi
 fi
+chmod 600 ${ACME_BASE}/key.pem
 
 log_f "Waiting for database... " no_nl
 while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
@@ -196,10 +209,8 @@ while true; do
     log_f "Using existing Lets Encrypt account key ${ACME_BASE}/acme/account.pem"
   fi
 
-  # Skipping IP check when we like to live dangerously
-  if [[ "${SKIP_IP_CHECK}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-    SKIP_IP_CHECK=y
-  fi
+  chmod 600 ${ACME_BASE}/acme/key.pem
+  chmod 600 ${ACME_BASE}/acme/account.pem
 
   # Cleaning up and init validation arrays
   unset SQL_DOMAIN_ARR
@@ -476,6 +487,7 @@ while true; do
       ACME_RESPONSE_B64=$(echo "${ACME_RESPONSE}" | openssl enc -e -A -base64)
       log_f "${ACME_RESPONSE_B64}" redis_only b64
       log_f "Retrying in 30 minutes..."
+      redis-cli -h redis SET ACME_FAIL_TIME "$(date +%s)"
       sleep 30m
       exec $(readlink -f "$0")
       ;;
