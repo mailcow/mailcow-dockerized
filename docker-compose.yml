@@ -16,7 +16,9 @@ services:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.254
           aliases:
             - unbound
-
+      labels:
+        org.label-schema.group: "mailcow"
+ 
     mysql-mailcow:
       image: mariadb:10.2
       volumes:
@@ -38,6 +40,8 @@ services:
         mailcow-network:
           aliases:
             - mysql
+      labels:
+        org.label-schema.group: "mailcow"
 
     redis-mailcow:
       image: redis:5-alpine
@@ -53,6 +57,8 @@ services:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.249
           aliases:
             - redis
+      labels:
+        org.label-schema.group: "mailcow"
 
     clamd-mailcow:
       image: mailcow/clamd:1.22
@@ -69,6 +75,8 @@ services:
         mailcow-network:
           aliases:
             - clamd
+      labels:
+        org.label-schema.group: "mailcow"
 
     rspamd-mailcow:
       image: mailcow/rspamd:1.38
@@ -92,6 +100,8 @@ services:
         mailcow-network:
           aliases:
             - rspamd
+      labels:
+        org.label-schema.group: "mailcow"
 
     php-fpm-mailcow:
       image: mailcow/phpfpm:1.36
@@ -139,6 +149,8 @@ services:
         mailcow-network:
           aliases:
             - phpfpm
+      labels:
+        org.label-schema.group: "mailcow"
 
     sogo-mailcow:
       image: mailcow/sogo:1.54
@@ -167,6 +179,8 @@ services:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.248
           aliases:
             - sogo
+      labels:
+        org.label-schema.group: "mailcow"
 
     dovecot-mailcow:
       image: mailcow/dovecot:1.67
@@ -219,6 +233,8 @@ services:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.250
           aliases:
             - dovecot
+      labels:
+        org.label-schema.group: "mailcow"
 
     postfix-mailcow:
       image: mailcow/postfix:1.31
@@ -250,6 +266,8 @@ services:
         mailcow-network:
           aliases:
             - postfix
+      labels:
+        org.label-schema.group: "mailcow"
 
     memcached-mailcow:
       image: memcached:alpine
@@ -260,6 +278,8 @@ services:
         mailcow-network:
           aliases:
             - memcached
+      labels:
+        org.label-schema.group: "mailcow"
 
     nginx-mailcow:
       depends_on:
@@ -303,6 +323,8 @@ services:
         mailcow-network:
           aliases:
             - nginx
+      labels:
+        org.label-schema.group: "mailcow"
 
     acme-mailcow:
       depends_on:
@@ -333,6 +355,8 @@ services:
         mailcow-network:
           aliases:
             - acme
+      labels:
+        org.label-schema.group: "mailcow"
 
     netfilter-mailcow:
       image: mailcow/netfilter:1.23
@@ -357,6 +381,8 @@ services:
         - ${IPV4_NETWORK:-172.22.1}.254
       volumes:
         - /lib/modules:/lib/modules:ro
+      labels:
+        org.label-schema.group: "mailcow"
 
     watchdog-mailcow:
       image: mailcow/watchdog:1.40
@@ -389,6 +415,8 @@ services:
         mailcow-network:
           aliases:
             - watchdog
+      labels:
+        org.label-schema.group: "mailcow"
 
     dockerapi-mailcow:
       image: mailcow/dockerapi:1.26
@@ -405,6 +433,8 @@ services:
         mailcow-network:
           aliases:
             - dockerapi
+      labels:
+        org.label-schema.group: "mailcow"
 
     solr-mailcow:
       image: mailcow/solr:1.5
@@ -422,6 +452,8 @@ services:
         mailcow-network:
           aliases:
             - solr
+      labels:
+        org.label-schema.group: "mailcow"
 
     ipv6nat-mailcow:
       depends_on:
@@ -448,6 +480,8 @@ services:
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
         - /lib/modules:/lib/modules:ro
+      labels:
+        org.label-schema.group: "mailcow"
 
 networks:
   mailcow-network:
