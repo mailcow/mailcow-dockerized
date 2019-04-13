@@ -40,6 +40,13 @@ if (!empty($_GET['id']) && ctype_alnum($_GET['id'])) {
     $data['text_plain'] = $mail_parser->getMessageBody('text');
     // Get html content and convert to text
     $data['text_html'] = $html2text->convert($mail_parser->getMessageBody('html'));
+    if (empty($data['text_plain']) && empty($data['text_html'])) {
+      // Failed to parse content, try raw
+      $text = trim(substr($mailc['msg'], strpos($mailc['msg'], "\r\n\r\n") + 1));
+      // Only return html->text
+      $data['text_plain'] = 'Parser failed, assuming HTML';
+      $data['text_html'] = $html2text->convert($text);
+    }
     (empty($data['text_plain'])) ? $data['text_plain'] = '-' : null;
     // Get subject
     $data['subject'] = $mail_parser->getHeader('subject');
@@ -67,6 +74,9 @@ if (!empty($_GET['id']) && ctype_alnum($_GET['id'])) {
       }
     }
     if (isset($_GET['att'])) {
+      if ($_SESSION['acl']['quarantine_attachments'] == 0) {
+        exit(json_encode('Forbidden'));
+      }
       $dl_id = intval($_GET['att']);
       $dl_filename = $data['attachments'][$dl_id][0];
       if (!is_dir($tmpdir . $dl_filename) && file_exists($tmpdir . $dl_filename)) {

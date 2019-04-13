@@ -20,7 +20,7 @@ broken_sasl_auth_clients = yes
 disable_vrfy_command = yes
 maximal_backoff_time = 1800s
 maximal_queue_lifetime = 1d
-message_size_limit = 26214400
+message_size_limit = 104857600
 milter_default_action = accept
 milter_protocol = 6
 minimal_backoff_time = 300s
@@ -41,8 +41,11 @@ postscreen_greet_wait = 3s
 postscreen_non_smtp_command_enable = no
 postscreen_pipelining_enable = no
 proxy_read_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_sender_acl.cf,
+  proxy:mysql:/opt/postfix/conf/sql/mysql_tls_policy_override_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_sender_dependent_default_transport_maps.cf,
-  proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps.cf,
+  proxy:mysql:/opt/postfix/conf/sql/mysql_transport_maps.cf,
+  proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps_sender_dependent.cf,
+  proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps_transport_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_tls_enforce_in_policy.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_sender_bcc_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_recipient_bcc_maps.cf,
@@ -91,13 +94,18 @@ smtpd_tls_dh1024_param_file = /etc/ssl/mail/dhparams.pem
 smtpd_tls_eecdh_grade = auto
 smtpd_tls_exclude_ciphers = ECDHE-RSA-RC4-SHA, RC4, aNULL, DES-CBC3-SHA, ECDHE-RSA-DES-CBC3-SHA, EDH-RSA-DES-CBC3-SHA
 smtpd_tls_loglevel = 1
-smtp_tls_mandatory_protocols = !SSLv2, !SSLv3
+
+smtp_tls_mandatory_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1
 smtp_tls_protocols = !SSLv2, !SSLv3
-lmtp_tls_mandatory_protocols = !SSLv2, !SSLv3
-lmtp_tls_protocols = !SSLv2, !SSLv2, !SSLv3
-smtpd_tls_mandatory_protocols = !SSLv2, !SSLv3
+
+lmtp_tls_mandatory_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1
+lmtp_tls_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1
+
+smtpd_tls_mandatory_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1
 smtpd_tls_protocols = !SSLv2, !SSLv3
+
 smtpd_tls_security_level = may
+tls_preempt_cipherlist = yes
 tls_ssl_options = NO_COMPRESSION
 smtpd_tls_mandatory_ciphers = high
 virtual_alias_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_alias_maps.cf,
@@ -124,6 +132,11 @@ mydestination = localhost.localdomain, localhost
 smtp_address_preference = ipv4
 smtp_sender_dependent_authentication = yes
 smtp_sasl_auth_enable = yes
-smtp_sasl_password_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps.cf
+smtp_sasl_password_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps_sender_dependent.cf
 smtp_sasl_security_options = 
 smtp_sasl_mechanism_filter = plain, login
+smtp_tls_policy_maps=proxy:mysql:/opt/postfix/conf/sql/mysql_tls_policy_override_maps.cf
+smtp_header_checks = pcre:/opt/postfix/conf/anonymize_headers.pcre
+mail_name = Postcow
+transport_maps = pcre:/opt/postfix/conf/local_transport, proxy:mysql:/opt/postfix/conf/sql/mysql_transport_maps.cf
+smtp_sasl_auth_soft_bounce = no

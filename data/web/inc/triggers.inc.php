@@ -6,8 +6,16 @@ if (isset($_POST["verify_tfa_login"])) {
     unset($_SESSION['pending_mailcow_cc_username']);
     unset($_SESSION['pending_mailcow_cc_role']);
     unset($_SESSION['pending_tfa_method']);
-		header("Location: /user.php");
+		header("Location: /user");
   }
+}
+
+if (isset($_POST["quick_release"])) {
+	quarantine('quick_release', $_POST["quick_release"]);
+}
+
+if (isset($_POST["quick_delete"])) {
+	quarantine('quick_delete', $_POST["quick_delete"]);
 }
 
 if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
@@ -17,19 +25,19 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
 		$_SESSION['mailcow_cc_username'] = $login_user;
 		$_SESSION['mailcow_cc_role'] = "admin";
     $_SESSION['mailcow_cc_last_login'] = last_login($login_user);
-		header("Location: /admin.php");
+		header("Location: /admin");
 	}
 	elseif ($as == "domainadmin") {
 		$_SESSION['mailcow_cc_username'] = $login_user;
 		$_SESSION['mailcow_cc_role'] = "domainadmin";
     $_SESSION['mailcow_cc_last_login'] = last_login($login_user);
-		header("Location: /mailbox.php");
+		header("Location: /mailbox");
 	}
 	elseif ($as == "user") {
 		$_SESSION['mailcow_cc_username'] = $login_user;
 		$_SESSION['mailcow_cc_role'] = "user";
     $_SESSION['mailcow_cc_last_login'] = last_login($login_user);
-		header("Location: /user.php");
+		header("Location: /user");
 	}
 	elseif ($as != "pending") {
     unset($_SESSION['pending_mailcow_cc_username']);
@@ -40,7 +48,7 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
 	}
 }
 
-if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admin") {
+if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['acl']['login_as'] == "1") {
 	if (isset($_GET["duallogin"])) {
     $duallogin = html_entity_decode(rawurldecode($_GET["duallogin"]));
     if (filter_var($duallogin, FILTER_VALIDATE_EMAIL)) {
@@ -49,7 +57,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
         $_SESSION["dual-login"]["role"]     = $_SESSION['mailcow_cc_role'];
         $_SESSION['mailcow_cc_username']    = $duallogin;
         $_SESSION['mailcow_cc_role']        = "user";
-        header("Location: /user.php");
+        header("Location: /user");
       }
     }
     else {
@@ -58,7 +66,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
         $_SESSION["dual-login"]["role"]     = $_SESSION['mailcow_cc_role'];
         $_SESSION['mailcow_cc_username']    = $duallogin;
         $_SESSION['mailcow_cc_role']        = "domainadmin";
-        header("Location: /user.php");
+        header("Location: /user");
       }
     }
   }
@@ -92,6 +100,9 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
   // Not available via API
 	if (isset($_POST["rspamd_ui"])) {
 		rspamd_ui('edit', $_POST);
+	}
+	if (isset($_POST["mass_send"])) {
+		sys_mail($_POST);
 	}
 }
 ?>

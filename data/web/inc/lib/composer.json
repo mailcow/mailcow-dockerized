@@ -4,6 +4,8 @@
         "yubico/u2flib-server": "^1.0",
         "phpmailer/phpmailer": "^5.2",
         "php-mime-mail-parser/php-mime-mail-parser": "^2.9",
-        "soundasleep/html2text": "^0.5.0"
+        "soundasleep/html2text": "^0.5.0",
+        "ddeboer/imap": "^1.5",
+        "matthiasmullie/minify": "^1.3"
     }
 }

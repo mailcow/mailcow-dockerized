@@ -14,7 +14,7 @@ newaliases;
 cat <<EOF > /opt/postfix/conf/sql/mysql_relay_recipient_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT DISTINCT
   CASE WHEN '%d' IN (
@@ -29,10 +29,18 @@ query = SELECT DISTINCT
   END AS result;
 EOF
 
+cat <<EOF > /opt/postfix/conf/sql/mysql_tls_policy_override_maps.cf
+user = ${DBUSER}
+password = ${DBPASS}
+hosts = unix:/var/run/mysqld/mysqld.sock
+dbname = ${DBNAME}
+query = SELECT CONCAT(policy, ' ', parameters) AS tls_policy FROM tls_policy_override WHERE active = '1' AND dest = '%s'
+EOF
+
 cat <<EOF > /opt/postfix/conf/sql/mysql_tls_enforce_in_policy.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT IF(EXISTS(
   SELECT 'TLS_ACTIVE' FROM alias
@@ -49,7 +57,7 @@ EOF
 cat <<EOF > /opt/postfix/conf/sql/mysql_sender_dependent_default_transport_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT GROUP_CONCAT(transport SEPARATOR '') AS transport_maps
   FROM (
@@ -77,26 +85,49 @@ query = SELECT GROUP_CONCAT(transport SEPARATOR '') AS transport_maps
   AS transport_view;
 EOF
 
-cat <<EOF > /opt/postfix/conf/sql/mysql_sasl_passwd_maps.cf
+cat <<EOF > /opt/postfix/conf/sql/mysql_transport_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
+dbname = ${DBNAME}
+query = SELECT CONCAT('smtp_via_transport_maps:', nexthop) AS transport FROM transports
+  WHERE active = '1'
+  AND destination = '%s';
+EOF
+
+cat <<EOF > /opt/postfix/conf/sql/mysql_sasl_passwd_maps_sender_dependent.cf
+user = ${DBUSER}
+password = ${DBPASS}
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT CONCAT_WS(':', username, password) AS auth_data FROM relayhosts
   WHERE id IN (
     SELECT relayhost FROM domain
       WHERE CONCAT('@', domain) = '%s'
-      OR '%s' IN (
-        SELECT CONCAT('@', alias_domain) FROM alias_domain
+      OR domain IN (
+        SELECT target_domain FROM alias_domain WHERE CONCAT('@', alias_domain) =  '%s'
       )
   )
+  AND active = '1'
   AND username != '';
+EOF
+
+cat <<EOF > /opt/postfix/conf/sql/mysql_sasl_passwd_maps_transport_maps.cf
+user = ${DBUSER}
+password = ${DBPASS}
+hosts = unix:/var/run/mysqld/mysqld.sock
+dbname = ${DBNAME}
+query = SELECT CONCAT_WS(':', username, password) AS auth_data FROM transports
+  WHERE nexthop = '%s'
+  AND active = '1'
+  AND username != ''
+  LIMIT 1;
 EOF
 
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_alias_domain_catchall_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT goto FROM alias, alias_domain
   WHERE alias_domain.alias_domain = '%d'
@@ -107,7 +138,7 @@ EOF
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_alias_domain_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT username FROM mailbox, alias_domain
   WHERE alias_domain.alias_domain = '%d'
@@ -119,7 +150,7 @@ EOF
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_alias_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT goto FROM alias
   WHERE address='%s'
@@ -129,7 +160,7 @@ EOF
 cat <<EOF > /opt/postfix/conf/sql/mysql_recipient_bcc_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT bcc_dest FROM bcc_maps
   WHERE local_dest='%s'
@@ -140,7 +171,7 @@ EOF
 cat <<EOF > /opt/postfix/conf/sql/mysql_sender_bcc_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT bcc_dest FROM bcc_maps
   WHERE local_dest='%s'
@@ -151,7 +182,7 @@ EOF
 cat <<EOF > /opt/postfix/conf/sql/mysql_recipient_canonical_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT new_dest FROM recipient_maps
   WHERE old_dest='%s'
@@ -161,7 +192,7 @@ EOF
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_domains_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT alias_domain from alias_domain WHERE alias_domain='%s' AND active='1'
   UNION
@@ -174,15 +205,15 @@ EOF
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_mailbox_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
-query = SELECT maildir FROM mailbox WHERE username='%s' AND active = '1'
+query = SELECT CONCAT(JSON_UNQUOTE(JSON_EXTRACT(attributes, '$.mailbox_format')), mailbox_path_prefix, '%d/%u/') FROM mailbox WHERE username='%s' AND active = '1'
 EOF
 
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_relay_domain_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT domain FROM domain WHERE domain='%s' AND backupmx = '1' AND active = '1'
 EOF
@@ -190,7 +221,7 @@ EOF
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_sender_acl.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 # First select queries domain and alias_domain to determine if domains are active.
 query = SELECT goto FROM alias
@@ -231,7 +262,7 @@ EOF
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_spamalias_maps.cf
 user = ${DBUSER}
 password = ${DBPASS}
-hosts = mysql
+hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT goto FROM spamalias
   WHERE address='%s'
@@ -244,6 +275,8 @@ chmod 700 /var/lib/zeyple/keys
 chown -R 600:600 /var/lib/zeyple/keys
 
 # Fix Postfix permissions
+chown -R root:postfix /opt/postfix/conf/sql/
+chmod 640 /opt/postfix/conf/sql/*.cf
 chgrp -R postdrop /var/spool/postfix/public
 chgrp -R postdrop /var/spool/postfix/maildrop
 postfix set-permissions

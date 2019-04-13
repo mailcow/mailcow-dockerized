@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<psalm
+    totallyTyped="false"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config file:///mnt/share/php-u2flib-server/vendor/vimeo/psalm/config.xsd"
+>
+    <projectFiles>
+        <directory name="src" />
+        <ignoreFiles>
+            <directory name="vendor" />
+        </ignoreFiles>
+    </projectFiles>
+
+    <issueHandlers>
+        <LessSpecificReturnType errorLevel="info" />
+
+        <!-- level 3 issues - slightly lazy code writing, but provably low false-negatives -->
+
+        <DeprecatedMethod errorLevel="info" />
+        <DeprecatedProperty errorLevel="info" />
+        <DeprecatedClass errorLevel="info" />
+        <DeprecatedInterface errorLevel="info" />
+
+        <MissingClosureReturnType errorLevel="info" />
+        <MissingReturnType errorLevel="info" />
+        <MissingPropertyType errorLevel="info" />
+        <InvalidDocblock errorLevel="info" />
+        <MisplacedRequiredParam errorLevel="info" />
+
+        <PropertyNotSetInConstructor errorLevel="info" />
+        <MissingConstructor errorLevel="info" />
+        <MissingClosureParamType errorLevel="info" />
+        <MissingParamType errorLevel="info" />
+
+        <RedundantCondition errorLevel="info" />
+
+        <DocblockTypeContradiction errorLevel="suppress" />
+        <RedundantConditionGivenDocblockType errorLevel="suppress" />
+
+        <UnresolvableInclude errorLevel="info" />
+
+        <RawObjectIteration errorLevel="info" />
+
+        <!-- psalm seems to wrongly complain about this, set the errorLevel to info for now -->
+        <UndefinedConstant errorLevel="info" />
+    </issueHandlers>
+</psalm>

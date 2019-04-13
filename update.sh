@@ -1,7 +1,18 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-#exit on error and pipefail
+# Check permissions
+if [ "$(id -u)" -ne "0" ]; then
+  echo "You need to be root"
+  exit 1
+fi
+
+# Exit on error and pipefail
 set -o pipefail
+
+# Add /opt/bin to PATH
+PATH=$PATH:/opt/bin
+
+umask 0022
 
 for bin in curl docker-compose docker git awk sha1sum; do
   if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
@@ -12,7 +23,6 @@ DATE=$(date +%Y-%m-%d_%H_%M_%S)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 docker_garbage() {
-  echo -e "\e[32mCollecting garbage...\e[0m"
   IMGS_TO_DELETE=()
   for container in $(grep -oP "image: \Kmailcow.+" docker-compose.yml); do
     REPOSITORY=${container/:*}
@@ -61,8 +71,12 @@ while (($#)); do
   case "${1}" in
     --check|-c)
       echo "Checking remote code for updates..."
-      git fetch origin #${BRANCH}
-      if [[ -z $(git log HEAD --pretty=format:"%H" | grep $(git rev-parse origin/${BRANCH})) ]]; then
+      LATEST_REV=$(git ls-remote --exit-code --refs --quiet https://github.com/mailcow/mailcow-dockerized ${BRANCH} | cut -f1)
+      if [ $? -ne 0 ]; then
+        echo "A problem occurred while trying to fetch the latest revision from github."
+        exit 99
+      fi
+      if [[ -z $(git log HEAD --pretty=format:"%H" | grep "${LATEST_REV}") ]]; then
         echo "Updated code is available."
         exit 0
       else
@@ -74,6 +88,7 @@ while (($#)); do
       MERGE_STRATEGY=ours
     ;;
     --gc)
+      echo -e "\e[32mCollecting garbage...\e[0m"
       docker_garbage
       exit 0
     ;;
@@ -90,6 +105,7 @@ while (($#)); do
 done
 
 [[ ! -f mailcow.conf ]] && { echo "mailcow.conf is missing"; exit 1;}
+chmod 600 mailcow.conf
 source mailcow.conf
 DOTS=${MAILCOW_HOSTNAME//[^.]};
 if [ ${#DOTS} -lt 2 ]; then
@@ -114,11 +130,17 @@ CONFIG_ARRAY=(
   "LOG_LINES"
   "SNAT_TO_SOURCE"
   "SNAT6_TO_SOURCE"
-  "SYSCTL_IPV6_DISABLED"
   "COMPOSE_PROJECT_NAME"
   "SQL_PORT"
   "API_KEY"
   "API_ALLOW_FROM"
+  "MAILDIR_GC_TIME"
+  "MAILDIR_SUB"
+  "ACL_ANYONE"
+  "SOLR_HEAP"
+  "SKIP_SOLR"
+  "ALLOW_ADMIN_EMAIL_LOGIN"
+  "SKIP_HTTP_VERIFICATION"
 )
 
 sed -i '$a\' mailcow.conf
@@ -127,15 +149,6 @@ for option in ${CONFIG_ARRAY[@]}; do
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo "${option}=" >> mailcow.conf
-    fi
-  elif [[ ${option} == "SYSCTL_IPV6_DISABLED" ]]; then
-    if ! grep -q ${option} mailcow.conf; then
-      echo "Adding new option \"${option}\" to mailcow.conf"
-      echo "# Disable IPv6" >> mailcow.conf
-      echo "# mailcow-network will still be created as IPv6 enabled, all containers will be created" >> mailcow.conf
-      echo "# without IPv6 support." >> mailcow.conf
-      echo "# Use 1 for disabled, 0 for enabled" >> mailcow.conf
-      echo "SYSCTL_IPV6_DISABLED=0" >> mailcow.conf
     fi
   elif [[ ${option} == "COMPOSE_PROJECT_NAME" ]]; then
     if ! grep -q ${option} mailcow.conf; then
@@ -200,6 +213,46 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# Use this IPv6 for outgoing connections (SNAT)' >> mailcow.conf
       echo "#SNAT6_TO_SOURCE=" >> mailcow.conf
     fi
+  elif [[ ${option} == "MAILDIR_GC_TIME" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Garbage collector cleanup' >> mailcow.conf
+      echo '# Deleted domains and mailboxes are moved to /var/vmail/_garbage/timestamp_sanitizedstring' >> mailcow.conf
+      echo '# How long should objects remain in the garbage until they are being deleted? (value in minutes)' >> mailcow.conf
+      echo '# Check interval is hourly' >> mailcow.conf
+      echo 'MAILDIR_GC_TIME=1440' >> mailcow.conf
+    fi
+  elif [[ ${option} == "ACL_ANYONE" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Set this to "allow" to enable the anyone pseudo user. Disabled by default.' >> mailcow.conf
+      echo '# When enabled, ACL can be created, that apply to "All authenticated users"' >> mailcow.conf
+      echo '# This should probably only be activated on mail hosts, that are used exclusivly by one organisation.' >> mailcow.conf
+      echo '# Otherwise a user might share data with too many other users.' >> mailcow.conf
+      echo 'ACL_ANYONE=disallow' >> mailcow.conf
+    fi
+  elif [[ ${option} == "SOLR_HEAP" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Solr heap size, there is no recommendation, please see Solr docs.' >> mailcow.conf
+      echo '# Solr is a prone to run OOM on large systems and should be monitored. Unmonitored Solr setups are not recommended.' >> mailcow.conf
+      echo '# Solr will refuse to start with total system memory below or equal to 2 GB.' >> mailcow.conf
+      echo "SOLR_HEAP=1024" >> mailcow.conf
+  fi
+  elif [[ ${option} == "SKIP_SOLR" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Solr is disabled by default after upgrading from non-Solr to Solr-enabled mailcows.' >> mailcow.conf
+      echo '# Disable Solr or if you do not want to store a readable index of your mails in solr-vol-1.' >> mailcow.conf
+      echo "SKIP_SOLR=y" >> mailcow.conf
+  fi
+  elif [[ ${option} == "MAILDIR_SUB" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# MAILDIR_SUB defines a path in a users virtual home to keep the maildir in. Leave empty for updated setups.' >> mailcow.conf
+      echo "#MAILDIR_SUB=Maildir" >> mailcow.conf
+      echo "MAILDIR_SUB=" >> mailcow.conf
+  fi
   elif ! grep -q ${option} mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"
     echo "${option}=n" >> mailcow.conf
@@ -207,7 +260,7 @@ for option in ${CONFIG_ARRAY[@]}; do
 done
 
 echo -en "Checking internet connection... "
-curl -o /dev/null google.com -sm3
+curl -o /dev/null 1.1.1.1 -sm3
 if [[ $? != 0 ]]; then
   echo -e "\e[31mfailed\e[0m"
   exit 1
@@ -246,6 +299,8 @@ docker-compose down
 # Silently fixing remote url from andryyy to mailcow
 git remote set-url origin https://github.com/mailcow/mailcow-dockerized
 echo -e "\e[32mCommitting current status...\e[0m"
+[[ -z "$(git config user.name)" ]] && git config user.name moo
+[[ -z "$(git config user.email)" ]] && git config user.email moo@cow.moo
 git update-index --assume-unchanged data/conf/rspamd/override.d/worker-controller-password.inc
 git add -u
 git commit -am "Before update on ${DATE}" > /dev/null
@@ -272,7 +327,6 @@ elif [[ ${MERGE_RETURN} != 0 ]]; then
   echo "Run docker-compose up -d to restart your stack without updates or try again after fixing the mentioned errors."
   exit 1
 fi
-
 
 echo -e "\e[32mFetching new docker-compose version...\e[0m"
 sleep 2
@@ -315,9 +369,8 @@ if grep -q 'SYSCTL_IPV6_DISABLED=1' mailcow.conf; then
   read -p "Press any key to continue..." < /dev/tty
 fi
 
-echo -e "Fixing project name... "
+# Checking for old project name bug
 sed -i 's#COMPOSEPROJECT_NAME#COMPOSE_PROJECT_NAME#g' mailcow.conf
-sed -i '/COMPOSE_PROJECT_NAME=/s/-//g' mailcow.conf
 
 echo -e "Fixing PHP-FPM worker ports for Nginx sites..."
 sed -i 's#phpfpm:9000#phpfpm:9002#g' data/conf/nginx/*.conf
@@ -325,14 +378,22 @@ if ls data/conf/nginx/*.custom 1> /dev/null 2>&1; then
   sed -i 's#phpfpm:9000#phpfpm:9002#g' data/conf/nginx/*.custom
 fi
 
-if [[ -f "data/web/nextcloud/occ" ]]; then
-echo "Setting Nextcloud Redis timeout to 0.0..."
-docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ config:system:set redis timeout --value=0.0 --type=integer"
+# Fix Rspamd maps
+if [ -f data/conf/rspamd/custom/global_from_blacklist.map ]; then
+  mv data/conf/rspamd/custom/global_from_blacklist.map data/conf/rspamd/custom/global_smtp_from_blacklist.map
+fi
+if [ -f data/conf/rspamd/custom/global_from_whitelist.map ]; then
+  mv data/conf/rspamd/custom/global_from_whitelist.map data/conf/rspamd/custom/global_smtp_from_whitelist.map
 fi
 
 echo -e "\e[32mStarting mailcow...\e[0m"
 sleep 2
 docker-compose up -d --remove-orphans
+
+if [[ -f "data/web/nextcloud/occ" ]]; then
+  echo "Setting Nextcloud Redis timeout to 0.0..."
+  docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ config:system:set redis timeout --value=0.0 --type=integer"
+fi
 
 echo -e "\e[32mCollecting garbage...\e[0m"
 docker_garbage

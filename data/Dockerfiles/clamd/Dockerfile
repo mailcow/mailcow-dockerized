@@ -1,24 +1,37 @@
-FROM alpine:3.8
+FROM debian:stretch-slim
 
 LABEL maintainer "André Peters <andre.peters@servercow.de>"
 
-# Add scripts
-COPY dl_files.sh bootstrap.sh ./
-
 # Installation
-ENV CLAMAV 0.100.1
+ENV CLAMAV 0.101.1
 
-RUN apk add --no-cache --virtual build-dependencies alpine-sdk ncurses-dev zlib-dev bzip2-dev pcre-dev linux-headers fts-dev libxml2-dev libressl-dev \
-  && apk add --no-cache curl bash tini libxml2 libbz2 pcre fts libressl tzdata \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  ca-certificates \
+  zlib1g-dev \
+  libncurses5-dev \
+  libzip-dev \
+  libpcre2-dev \
+  libxml2-dev \
+  libssl-dev \
+  build-essential \
+  libjson-c-dev \
+  curl \
+  bash \
+  wget \
+  tzdata \
+  dnsutils \
+  rsync \
+  dos2unix \
+  netcat \
+  && rm -rf /var/lib/apt/lists/* \
   && wget -O - https://www.clamav.net/downloads/production/clamav-${CLAMAV}.tar.gz | tar xfvz - \
   && cd clamav-${CLAMAV} \
-  && LIBS=-lfts ./configure \
+  && ./configure \
   --prefix=/usr \
   --libdir=/usr/lib \
   --sysconfdir=/etc/clamav \
   --mandir=/usr/share/man \
   --infodir=/usr/share/info \
-  --without-iconv \
   --disable-llvm \
   --with-user=clamav \
   --with-group=clamav \
@@ -30,18 +43,19 @@ RUN apk add --no-cache --virtual build-dependencies alpine-sdk ncurses-dev zlib-
   && make install \
   && make clean \
   && cd .. && rm -rf clamav-${CLAMAV} \
-  && apk del build-dependencies \
-  && addgroup -S clamav \
-  && adduser -S -D -h /var/lib/clamav -s /sbin/nologin -G clamav -g clamav clamav \
-  && adduser clamav tty \
-  && mkdir -p /run/clamav \
-  && chown clamav:clamav /run/clamav \
-  && chmod +x /dl_files.sh \
-  && set -ex; /bin/bash /dl_files.sh \
-  && chmod 750 /run/clamav
+  && apt-get -y --auto-remove purge build-essential \
+  && apt-get -y purge zlib1g-dev \
+  libncurses5-dev \
+  libzip-dev \
+  libpcre2-dev \
+  libxml2-dev \
+  libssl-dev \
+  libjson-c-dev \
+  && addgroup --system --gid 700 clamav \
+  && adduser --system --no-create-home --home /var/lib/clamav --uid 700 --gid 700 --disabled-login clamav \
+  && rm -rf /tmp/* /var/tmp/*
 
-# Port provision
-EXPOSE 3310
+COPY bootstrap.sh ./
+COPY tini /sbin/tini
 
-# AV daemon bootstrapping
 CMD ["/sbin/tini", "-g", "--", "/bootstrap.sh"]

@@ -1,11 +1,11 @@
 <?php
-require_once("inc/prerequisites.inc.php");
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 $AuthUsers = array("admin", "domainadmin", "user");
 if (!isset($_SESSION['mailcow_cc_role']) OR !in_array($_SESSION['mailcow_cc_role'], $AuthUsers)) {
 	header('Location: /');
 	exit();
 }
-require_once("inc/header.inc.php");
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/header.inc.php';
 ?>
 <div class="container">
 	<div class="row">
@@ -18,108 +18,51 @@ require_once("inc/header.inc.php");
 <?php
 if (isset($_SESSION['mailcow_cc_role'])) {
   if ($_SESSION['mailcow_cc_role'] == "admin"  || $_SESSION['mailcow_cc_role'] == "domainadmin") {
-      if (isset($_GET["alias"]) &&
-        !empty($_GET["alias"])) {
-          $alias = html_entity_decode(rawurldecode($_GET["alias"]));
-          $result = mailbox('get', 'alias_details', $alias);
-          if (!empty($result)) {
-          ?>
-            <h4><?=$lang['edit']['alias'];?></h4>
-            <br />
-            <form class="form-horizontal" data-id="editalias" role="form" method="post">
-              <input type="hidden" value="0" name="active">
-              <div class="form-group">
-                <label class="control-label col-sm-2" for="address"><?=$lang['edit']['alias'];?></label>
-                <div class="col-sm-10">
-                  <input class="form-control" type="text" name="address" value="<?=htmlspecialchars($result['address']);?>" />
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="control-label col-sm-2" for="goto"><?=$lang['edit']['target_address'];?></label>
-                <div class="col-sm-10">
-                  <textarea id="textarea_alias_goto" class="form-control" autocapitalize="none" autocorrect="off" rows="10" id="goto" name="goto" required><?= (!preg_match('/^(null|ham|spam)@localhost$/i', $result['goto'])) ? htmlspecialchars($result['goto']) : null; ?></textarea>
-                  <div class="checkbox">
-                    <label><input class="goto_checkbox"id="goto_null" type="checkbox" value="1" name="goto_null" <?= ($result['goto'] == "null@localhost") ? "checked" : null; ?>> <?=$lang['add']['goto_null'];?></label>
-                  </div>
-                  <div class="checkbox">
-                    <label><input class="goto_checkbox" id="goto_spam" type="checkbox" value="1" name="goto_spam" <?= ($result['goto'] == "spam@localhost") ? "checked" : null; ?>> <?=$lang['add']['goto_spam'];?></label>
-                  </div>
-                  <div class="checkbox">
-                    <label><input class="goto_checkbox" id="goto_ham" type="checkbox" value="1" name="goto_ham" <?= ($result['goto'] == "ham@localhost") ? "checked" : null; ?>> <?=$lang['add']['goto_ham'];?></label>
-                  </div>
-                </div>
-              </div>
-              <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
-                  <div class="checkbox">
-                  <label><input type="checkbox" value="1" name="active" <?php if (isset($result['active_int']) && $result['active_int']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['active'];?></label>
-                  </div>
-                </div>
-              </div>
-              <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
-                  <button class="btn btn-success" id="edit_selected" data-id="editalias" data-item="<?=htmlspecialchars($alias);?>" data-api-url='edit/alias' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
-                </div>
-              </div>
-            </form>
-          <?php
-          }
-          else {
-          ?>
-            <div class="alert alert-info" role="alert"><?=$lang['info']['no_action'];?></div>
-          <?php
-          }
-      }
-      elseif (isset($_GET['domainadmin']) &&
-          ctype_alnum(str_replace(array('_', '.', '-'), '', $_GET["domainadmin"])) &&
-          !empty($_GET["domainadmin"]) &&
-          $_GET["domainadmin"] != 'admin' &&
-          $_SESSION['mailcow_cc_role'] == "admin") {
-          $domain_admin = $_GET["domainadmin"];
-          $result = domain_admin('details', $domain_admin);
-          if (!empty($result)) {
-          ?>
-          <h4><?=$lang['edit']['domain_admin'];?></h4>
+    if (isset($_GET["alias"]) &&
+      !empty($_GET["alias"])) {
+        $alias = html_entity_decode(rawurldecode($_GET["alias"]));
+        $result = mailbox('get', 'alias_details', $alias);
+        if (!empty($result)) {
+        ?>
+          <h4><?=$lang['edit']['alias'];?></h4>
           <br />
-          <form class="form-horizontal" data-id="editdomainadmin" role="form" method="post">
+          <form class="form-horizontal" data-id="editalias" role="form" method="post">
             <input type="hidden" value="0" name="active">
             <div class="form-group">
-              <label class="control-label col-sm-2" for="username_new"><?=$lang['edit']['username'];?></label>
+              <label class="control-label col-sm-2" for="address"><?=$lang['edit']['alias'];?></label>
               <div class="col-sm-10">
-                <input class="form-control" type="text" name="username_new" value="<?=htmlspecialchars($domain_admin);?>" />
+                <input class="form-control" type="text" name="address" value="<?=htmlspecialchars($result['address']);?>" />
               </div>
             </div>
             <div class="form-group">
-              <label class="control-label col-sm-2" for="domains"><?=$lang['edit']['domains'];?></label>
+              <label class="control-label col-sm-2" for="goto"><?=$lang['edit']['target_address'];?></label>
               <div class="col-sm-10">
-                <select data-live-search="true" id="domains" name="domains" multiple required>
-                <?php
-                foreach ($result['selected_domains'] as $domain):
-                ?>
-                  <option selected><?=htmlspecialchars($domain);?></option>
-                <?php
-                endforeach;
-                foreach ($result['unselected_domains'] as $domain):
-                ?>
-                  <option><?=htmlspecialchars($domain);?></option>
-                <?php
-                endforeach;
-                ?>
-                </select>
+                <textarea id="textarea_alias_goto" class="form-control" autocapitalize="none" autocorrect="off" rows="10" id="goto" name="goto" required><?= (!preg_match('/^(null|ham|spam)@localhost$/i', $result['goto'])) ? htmlspecialchars($result['goto']) : null; ?></textarea>
+                <div class="checkbox">
+                  <label><input class="goto_checkbox" type="checkbox" value="1" name="goto_null" <?= ($result['goto'] == "null@localhost") ? "checked" : null; ?>> <?=$lang['add']['goto_null'];?></label>
+                </div>
+                <div class="checkbox">
+                  <label><input class="goto_checkbox" type="checkbox" value="1" name="goto_spam" <?= ($result['goto'] == "spam@localhost") ? "checked" : null; ?>> <?=$lang['add']['goto_spam'];?></label>
+                </div>
+                <div class="checkbox">
+                  <label><input class="goto_checkbox" type="checkbox" value="1" name="goto_ham" <?= ($result['goto'] == "ham@localhost") ? "checked" : null; ?>> <?=$lang['add']['goto_ham'];?></label>
+                </div>
+              </div>
+            </div>
+            <hr>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="private_"><?=$lang['edit']['private_comment'];?></label>
+              <div class="col-sm-10">
+                <input maxlength="160" class="form-control" type="text" name="private_comment" value="<?=htmlspecialchars($result['private_comment']);?>" />
               </div>
             </div>
             <div class="form-group">
-              <label class="control-label col-sm-2" for="password"><?=$lang['edit']['password'];?></label>
+              <label class="control-label col-sm-2" for="public_comment"><?=$lang['edit']['public_comment'];?></label>
               <div class="col-sm-10">
-              <input type="password" class="form-control" name="password" id="password" placeholder="">
+                <input maxlength="160" class="form-control" type="text" name="public_comment" value="<?=htmlspecialchars($result['public_comment']);?>" />
               </div>
             </div>
-            <div class="form-group">
-              <label class="control-label col-sm-2" for="password2"><?=$lang['edit']['password_repeat'];?></label>
-              <div class="col-sm-10">
-              <input type="password" class="form-control" name="password2" id="password2">
-              </div>
-            </div>
+            <hr>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
                 <div class="checkbox">
@@ -129,14 +72,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             </div>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
-                <div class="checkbox">
-                <label><input type="checkbox" value="1" name="disable_tfa"> <?=$lang['tfa']['disable_tfa'];?></label>
-                </div>
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="col-sm-offset-2 col-sm-10">
-                <button class="btn btn-success" id="edit_selected" data-id="editdomainadmin" data-item="<?=$domain_admin;?>" data-api-url='edit/domain-admin' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
+                <button class="btn btn-success" data-action="edit_selected" data-id="editalias" data-item="<?=htmlspecialchars($alias);?>" data-api-url='edit/alias' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
               </div>
             </div>
           </form>
@@ -147,6 +83,159 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           <div class="alert alert-info" role="alert"><?=$lang['info']['no_action'];?></div>
         <?php
         }
+    }
+    elseif (isset($_GET['domainadmin'])) {
+      $domain_admin = $_GET["domainadmin"];
+      $result = domain_admin('details', $domain_admin);
+      if (!empty($result)) {
+      ?>
+      <h4><?=$lang['edit']['domain_admin'];?></h4>
+      <br />
+      <form class="form-horizontal" data-id="editdomainadmin" role="form" method="post">
+        <input type="hidden" value="0" name="active">
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="username_new"><?=$lang['edit']['username'];?></label>
+          <div class="col-sm-10">
+            <input class="form-control" type="text" name="username_new" value="<?=htmlspecialchars($domain_admin);?>" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="domains"><?=$lang['edit']['domains'];?></label>
+          <div class="col-sm-10">
+            <select data-live-search="true" class="full-width-select" name="domains" multiple required>
+            <?php
+            foreach ($result['selected_domains'] as $domain):
+            ?>
+              <option selected><?=htmlspecialchars($domain);?></option>
+            <?php
+            endforeach;
+            foreach ($result['unselected_domains'] as $domain):
+            ?>
+              <option><?=htmlspecialchars($domain);?></option>
+            <?php
+            endforeach;
+            ?>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="password"><?=$lang['edit']['password'];?></label>
+          <div class="col-sm-10">
+          <input type="password" data-hibp="true" class="form-control" name="password" placeholder="">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="password2"><?=$lang['edit']['password_repeat'];?></label>
+          <div class="col-sm-10">
+          <input type="password" class="form-control" name="password2">
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <div class="checkbox">
+            <label><input type="checkbox" value="1" name="active" <?php if (isset($result['active_int']) && $result['active_int']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['active'];?></label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <div class="checkbox">
+            <label><input type="checkbox" value="1" name="disable_tfa"> <?=$lang['tfa']['disable_tfa'];?></label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button class="btn btn-success" data-action="edit_selected" data-api-reload-location="/admin" data-id="editdomainadmin" data-item="<?=$domain_admin;?>" data-api-url='edit/domain-admin' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
+          </div>
+        </div>
+      </form>
+      <form data-id="daacl" class="form-inline well" method="post">
+        <div class="row">
+          <div class="col-sm-1">
+            <p class="help-block">ACL</p>
+          </div>
+          <div class="col-sm-10">
+            <div class="form-group">
+              <select id="da_acl" name="da_acl" size="10" multiple>
+              <?php
+              $da_acls = acl('get', 'domainadmin', $domain_admin);
+              foreach ($da_acls as $acl => $val):
+                ?>
+                <option value="<?=$acl;?>" <?=($val == 1) ? 'selected' : null;?>><?=$lang['acl'][$acl];?></option>
+                <?php
+              endforeach;
+              ?>
+              </select>
+            </div>
+            <div class="form-group">
+              <button class="btn btn-default" data-action="edit_selected" data-id="daacl" data-item="<?=htmlspecialchars($domain_admin);?>" data-api-url='edit/da-acl' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
+            </div>
+          </div>
+        </div>
+      </form>
+      <?php
+      }
+      else {
+      ?>
+        <div class="alert alert-info" role="alert"><?=$lang['info']['no_action'];?></div>
+      <?php
+      }
+    }
+    elseif (isset($_GET['admin'])) {
+      $admin = $_GET["admin"];
+      $result = admin('details', $admin);
+      if (!empty($result)) {
+      ?>
+      <h4><?=$lang['edit']['domain_admin'];?></h4>
+      <br />
+      <form class="form-horizontal" data-id="editadmin" role="form" method="post">
+        <input type="hidden" value="0" name="active">
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="username_new"><?=$lang['edit']['username'];?></label>
+          <div class="col-sm-10">
+            <input class="form-control" type="text" name="username_new" value="<?=htmlspecialchars($admin);?>" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="password"><?=$lang['edit']['password'];?></label>
+          <div class="col-sm-10">
+          <input type="password" data-hibp="true" class="form-control" name="password" placeholder="">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="password2"><?=$lang['edit']['password_repeat'];?></label>
+          <div class="col-sm-10">
+          <input type="password" class="form-control" name="password2">
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <div class="checkbox">
+            <label><input type="checkbox" value="1" name="active" <?php if (isset($result['active_int']) && $result['active_int']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['active'];?></label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <div class="checkbox">
+            <label><input type="checkbox" value="1" name="disable_tfa"> <?=$lang['tfa']['disable_tfa'];?></label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button class="btn btn-success" data-action="edit_selected" data-api-reload-location="/admin" data-id="editadmin" data-item="<?=$admin;?>" data-api-url='edit/admin' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
+          </div>
+        </div>
+      </form>
+      <?php
+      }
+      else {
+      ?>
+        <div class="alert alert-info" role="alert"><?=$lang['info']['no_action'];?></div>
+      <?php
+      }
     }
     elseif (isset($_GET['domain']) &&
       is_valid_domain_name($_GET["domain"]) &&
@@ -161,11 +250,12 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           <form data-id="editdomain" class="form-horizontal" role="form" method="post">
             <input type="hidden" value="0" name="active">
             <input type="hidden" value="0" name="backupmx">
+            <input type="hidden" value="0" name="gal">
             <input type="hidden" value="0" name="relay_all_recipients">
             <div class="form-group">
               <label class="control-label col-sm-2" for="description"><?=$lang['edit']['description'];?></label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" name="description" id="description" value="<?=htmlspecialchars($result['description']);?>">
+                <input type="text" class="form-control" name="description" value="<?=htmlspecialchars($result['description']);?>">
               </div>
             </div>
             <?php
@@ -174,31 +264,31 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <label class="control-label col-sm-2" for="aliases"><?=$lang['edit']['max_aliases'];?></label>
               <div class="col-sm-10">
-                <input type="number" class="form-control" name="aliases" id="aliases" value="<?=intval($result['max_num_aliases_for_domain']);?>">
+                <input type="number" class="form-control" name="aliases" value="<?=intval($result['max_num_aliases_for_domain']);?>">
               </div>
             </div>
             <div class="form-group">
               <label class="control-label col-sm-2" for="mailboxes"><?=$lang['edit']['max_mailboxes'];?></label>
               <div class="col-sm-10">
-                <input type="number" class="form-control" name="mailboxes" id="mailboxes" value="<?=intval($result['max_num_mboxes_for_domain']);?>">
+                <input type="number" class="form-control" name="mailboxes" value="<?=intval($result['max_num_mboxes_for_domain']);?>">
               </div>
             </div>
             <div class="form-group">
               <label class="control-label col-sm-2" for="maxquota"><?=$lang['edit']['max_quota'];?></label>
               <div class="col-sm-10">
-                <input type="number" class="form-control" name="maxquota" id="maxquota" value="<?=intval($result['max_quota_for_mbox'] / 1048576);?>">
+                <input type="number" class="form-control" name="maxquota" value="<?=intval($result['max_quota_for_mbox'] / 1048576);?>">
               </div>
             </div>
             <div class="form-group">
               <label class="control-label col-sm-2" for="quota"><?=$lang['edit']['domain_quota'];?></label>
               <div class="col-sm-10">
-                <input type="number" class="form-control" name="quota" id="quota" value="<?=intval($result['max_quota_for_domain'] / 1048576);?>">
+                <input type="number" class="form-control" name="quota" value="<?=intval($result['max_quota_for_domain'] / 1048576);?>">
               </div>
             </div>
             <div class="form-group">
-              <label class="control-label col-sm-2" for="quota">Relayhost</label>
+              <label class="control-label col-sm-2" for="quota"><?=$lang['edit']['relayhost'];?></label>
               <div class="col-sm-10">
-                <select data-live-search="true" name="relayhost" id="relayhost" class="form-control">
+                <select data-live-search="true" name="relayhost" class="form-control">
                   <?php
                   foreach ($rlyhosts as $rlyhost) {
                   ?>
@@ -227,13 +317,21 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
                 <div class="checkbox">
+                  <label><input type="checkbox" value="1" name="gal" <?=(isset($result['gal_int']) && $result['gal_int']=="1") ? "checked" : null;?>> <?=$lang['edit']['gal'];?></label>
+                  <small class="help-block"><?=$lang['edit']['gal_info'];?></small>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <div class="checkbox">
                   <label><input type="checkbox" value="1" name="active" <?=(isset($result['active_int']) && $result['active_int']=="1") ? "checked" : null;?> <?=($_SESSION['mailcow_cc_role'] == "admin") ? null : "disabled";?>> <?=$lang['edit']['active'];?></label>
                 </div>
               </div>
             </div>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
-                <button class="btn btn-success" id="edit_selected" data-id="editdomain" data-item="<?=$domain;?>" data-api-url='edit/domain' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
+                <button class="btn btn-success" data-action="edit_selected" data-id="editdomain" data-item="<?=$domain;?>" data-api-url='edit/domain' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
               </div>
             </div>
           </form>
@@ -255,18 +353,18 @@ if (isset($_SESSION['mailcow_cc_role'])) {
       <hr>
       <form data-id="domratelimit" class="form-inline well" method="post">
         <div class="form-group">
-          <label class="control-label">Ratelimit</label>
-          <input name="rl_value" id="rl_value" type="number" value="<?=(!empty($rl['value'])) ? $rl['value'] : null;?>" class="form-control" placeholder="disabled">
+          <label class="control-label"><?=$lang['acl']['ratelimit'];?></label>
+          <input name="rl_value" type="number" value="<?=(!empty($rl['value'])) ? $rl['value'] : null;?>" autocomplete="off" class="form-control" placeholder="disabled">
         </div>
         <div class="form-group">
-          <select name="rl_frame" id="rl_frame" class="form-control">
+          <select name="rl_frame" class="form-control">
             <option value="s" <?=(isset($rl['frame']) && $rl['frame'] == 's') ? 'selected' : null;?>>msgs / second</option>
             <option value="m" <?=(isset($rl['frame']) && $rl['frame'] == 'm') ? 'selected' : null;?>>msgs / minute</option>
             <option value="h" <?=(isset($rl['frame']) && $rl['frame'] == 'h') ? 'selected' : null;?>>msgs / hour</option>
           </select>
         </div>
         <div class="form-group">
-          <button class="btn btn-default" id="edit_selected" data-id="domratelimit" data-item="<?=$domain;?>" data-api-url='edit/rl-domain' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
+          <button data-acl="<?=$_SESSION['acl']['ratelimit'];?>" class="btn btn-default" data-action="edit_selected" data-id="domratelimit" data-item="<?=$domain;?>" data-api-url='edit/rl-domain' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
         </div>
       </form>
       <hr>
@@ -278,17 +376,17 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <table class="table table-striped table-condensed" id="wl_policy_domain_table"></table>
           </div>
           <div class="mass-actions-user">
-            <div class="btn-group">
+            <div class="btn-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
               <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="policy_wl_domain" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
-              <a class="btn btn-sm btn-danger" id="delete_selected" data-id="policy_wl_domain" data-api-url='delete/domain-policy' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+              <a class="btn btn-sm btn-danger" data-action="delete_selected" data-id="policy_wl_domain" data-api-url='delete/domain-policy' href="#"><?=$lang['mailbox']['remove'];?></a></li>
               </ul>
             </div>
           </div>
           <form class="form-inline" data-id="add_wl_policy_domain">
-            <div class="input-group">
-              <input type="text" class="form-control" name="object_from" id="object_from" placeholder="*@example.org" required>
+            <div class="input-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
+              <input type="text" class="form-control" name="object_from" placeholder="*@example.org" required>
               <span class="input-group-btn">
-                <button class="btn btn-default" id="add_item" data-id="add_wl_policy_domain" data-api-url='add/domain-policy' data-api-attr='{"domain":"<?= $domain; ?>","object_list":"wl"}' href="#"><?=$lang['user']['spamfilter_table_add'];?></button>
+                <button class="btn btn-default" data-action="add_item" data-id="add_wl_policy_domain" data-api-url='add/domain-policy' data-api-attr='{"domain":"<?= $domain; ?>","object_list":"wl"}' href="#"><?=$lang['user']['spamfilter_table_add'];?></button>
               </span>
             </div>
           </form>
@@ -300,17 +398,17 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <table class="table table-striped table-condensed" id="bl_policy_domain_table"></table>
           </div>
           <div class="mass-actions-user">
-            <div class="btn-group">
+            <div class="btn-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
               <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="policy_bl_domain" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
-              <a class="btn btn-sm btn-danger" id="delete_selected" data-id="policy_bl_domain" data-api-url='delete/domain-policy' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+              <a class="btn btn-sm btn-danger" data-action="delete_selected" data-id="policy_bl_domain" data-api-url='delete/domain-policy' href="#"><?=$lang['mailbox']['remove'];?></a></li>
               </ul>
             </div>
           </div>
           <form class="form-inline" data-id="add_bl_policy_domain">
-            <div class="input-group">
-              <input type="text" class="form-control" name="object_from" id="object_from" placeholder="*@example.org" required>
+            <div class="input-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
+              <input type="text" class="form-control" name="object_from" placeholder="*@example.org" required>
               <span class="input-group-btn">
-                <button class="btn btn-default" id="add_item" data-id="add_bl_policy_domain" data-api-url='add/domain-policy' data-api-attr='{"domain":"<?= $domain; ?>","object_list":"bl"}' href="#"><?=$lang['user']['spamfilter_table_add'];?></button>
+                <button class="btn btn-default" data-action="add_item" data-id="add_bl_policy_domain" data-api-url='add/domain-policy' data-api-attr='{"domain":"<?= $domain; ?>","object_list":"bl"}' href="#"><?=$lang['user']['spamfilter_table_add'];?></button>
               </span>
             </div>
           </form>
@@ -338,7 +436,15 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <label class="control-label col-sm-2" for="target_domain"><?=$lang['edit']['target_domain'];?></label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" name="target_domain" id="target_domain" value="<?=htmlspecialchars($result['target_domain']);?>">
+                <select class="full-width-select" data-live-search="true" id="addSelectDomain" name="target_domain" required>
+                <?php
+                foreach (mailbox('get', 'domains') as $domain):
+                ?>
+                  <option <?=($result['target_domain'] != $domain) ?: 'selected';?>><?=htmlspecialchars($domain);?></option>
+                <?php
+                endforeach;
+                ?>
+                </select>
               </div>
             </div>
             <div class="form-group">
@@ -350,25 +456,25 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             </div>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
-                <button class="btn btn-success" id="edit_selected" data-id="editaliasdomain" data-item="<?=$alias_domain;?>" data-api-url='edit/alias-domain' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
+                <button class="btn btn-success" data-action="edit_selected" data-id="editaliasdomain" data-item="<?=$alias_domain;?>" data-api-url='edit/alias-domain' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
               </div>
             </div>
           </form>
           <hr>
           <form data-id="domratelimit" class="form-inline well" method="post">
             <div class="form-group">
-              <label class="control-label">Ratelimit</label>
-              <input name="rl_value" id="rl_value" type="number" value="<?=(!empty($rl['value'])) ? $rl['value'] : null;?>" class="form-control" placeholder="disabled">
+              <label class="control-label"><?=$lang['acl']['ratelimit'];?></label>
+              <input name="rl_value" type="number" value="<?=(!empty($rl['value'])) ? $rl['value'] : null;?>" autocomplete="off" class="form-control" placeholder="disabled">
             </div>
             <div class="form-group">
-              <select name="rl_frame" id="rl_frame" class="form-control">
+              <select name="rl_frame" class="form-control">
                 <option value="s" <?=(isset($rl['frame']) && $rl['frame'] == 's') ? 'selected' : null;?>>msgs / second</option>
                 <option value="m" <?=(isset($rl['frame']) && $rl['frame'] == 'm') ? 'selected' : null;?>>msgs / minute</option>
                 <option value="h" <?=(isset($rl['frame']) && $rl['frame'] == 'h') ? 'selected' : null;?>>msgs / hour</option>
               </select>
             </div>
             <div class="form-group">
-              <button class="btn btn-default" id="edit_selected" data-id="domratelimit" data-item="<?=$alias_domain;?>" data-api-url='edit/rl-domain' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
+              <button class="btn btn-default" data-action="edit_selected" data-id="domratelimit" data-item="<?=$alias_domain;?>" data-api-url='edit/rl-domain' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
             </div>
           </form>
           <?php
@@ -403,10 +509,11 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           <input type="hidden" value="default" name="sender_acl">
           <input type="hidden" value="0" name="active">
           <input type="hidden" value="0" name="force_pw_update">
+          <input type="hidden" value="0" name="sogo_access">
           <div class="form-group">
             <label class="control-label col-sm-2" for="name"><?=$lang['edit']['full_name'];?>:</label>
             <div class="col-sm-10">
-            <input type="text" class="form-control" name="name" id="name" value="<?=htmlspecialchars($result['name'], ENT_QUOTES, 'UTF-8');?>">
+            <input type="text" class="form-control" name="name" value="<?=htmlspecialchars($result['name'], ENT_QUOTES, 'UTF-8');?>">
             </div>
           </div>
           <div class="form-group">
@@ -414,13 +521,14 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               <br /><span id="quotaBadge" class="badge">max. <?=intval($result['max_new_quota'] / 1048576)?> MiB</span>
             </label>
             <div class="col-sm-10">
-              <input type="number" name="quota" id="quota" id="destroyable" style="width:100%" min="1" max="<?=intval($result['max_new_quota'] / 1048576);?>" value="<?=intval($result['quota']) / 1048576;?>" class="form-control">
+              <input type="number" name="quota" style="width:100%" min="0" max="<?=intval($result['max_new_quota'] / 1048576);?>" value="<?=intval($result['quota']) / 1048576;?>" class="form-control">
+              <small class="help-block">0 = ∞</small>
             </div>
           </div>
           <div class="form-group">
             <label class="control-label col-sm-2" for="sender_acl"><?=$lang['edit']['sender_acl'];?>:</label>
             <div class="col-sm-10">
-              <select data-live-search="true" data-width="100%" style="width:100%" id="sender_acl" name="sender_acl" size="10" multiple>
+              <select data-live-search="true" data-width="100%" style="width:100%" id="editSelectSenderACL" name="sender_acl" size="10" multiple>
               <?php
               $sender_acl_handles = mailbox('get', 'sender_acl_handles', $mailbox);
 
@@ -474,13 +582,13 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           <div class="form-group">
             <label class="control-label col-sm-2" for="password"><?=$lang['edit']['password'];?></label>
             <div class="col-sm-10">
-            <input type="password" class="form-control" name="password" id="password" placeholder="<?=$lang['edit']['unchanged_if_empty'];?>">
+            <input type="password" data-hibp="true" class="form-control" name="password" placeholder="<?=$lang['edit']['unchanged_if_empty'];?>">
             </div>
           </div>
           <div class="form-group">
             <label class="control-label col-sm-2" for="password2"><?=$lang['edit']['password_repeat'];?></label>
             <div class="col-sm-10">
-            <input type="password" class="form-control" name="password2" id="password2">
+            <input type="password" class="form-control" name="password2">
             </div>
           </div>
           <div class="form-group">
@@ -500,7 +608,15 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           </div>
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-              <button class="btn btn-success" id="edit_selected" data-id="editmailbox" data-item="<?=htmlspecialchars($result['username']);?>" data-api-url='edit/mailbox' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
+              <div class="checkbox">
+              <label><input type="checkbox" value="1" name="sogo_access" <?=($result['attributes']['sogo_access']=="1") ? "checked" : null;?>> <?=$lang['edit']['sogo_access'];?></label>
+              <small class="help-block"><?=$lang['edit']['sogo_access_info'];?></small>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <button class="btn btn-success" data-action="edit_selected" data-id="editmailbox" data-item="<?=htmlspecialchars($result['username']);?>" data-api-url='edit/mailbox' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
             </div>
           </div>
         </form>
@@ -508,21 +624,45 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         <form data-id="mboxratelimit" class="form-inline well" method="post">
           <div class="row">
             <div class="col-sm-1">
-              <p class="help-block">Ratelimit</p>
+              <p class="help-block"><?=$lang['acl']['ratelimit'];?></p>
             </div>
             <div class="col-sm-10">
               <div class="form-group">
-                <input name="rl_value" id="rl_value" type="number" value="<?=(!empty($rl['value'])) ? $rl['value'] : null;?>" class="form-control" placeholder="disabled">
+                <input name="rl_value" type="number" autocomplete="off" value="<?=(!empty($rl['value'])) ? $rl['value'] : null;?>" class="form-control" placeholder="disabled">
               </div>
               <div class="form-group">
-                <select name="rl_frame" id="rl_frame" class="form-control">
+                <select name="rl_frame" class="form-control">
                   <option value="s" <?=(isset($rl['frame']) && $rl['frame'] == 's') ? 'selected' : null;?>>msgs / second</option>
                   <option value="m" <?=(isset($rl['frame']) && $rl['frame'] == 'm') ? 'selected' : null;?>>msgs / minute</option>
                   <option value="h" <?=(isset($rl['frame']) && $rl['frame'] == 'h') ? 'selected' : null;?>>msgs / hour</option>
                 </select>
               </div>
               <div class="form-group">
-                <button class="btn btn-default" id="edit_selected" data-id="mboxratelimit" data-item="<?=htmlspecialchars($mailbox);?>" data-api-url='edit/rl-mbox' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
+                <button class="btn btn-default" data-action="edit_selected" data-id="mboxratelimit" data-item="<?=htmlspecialchars($mailbox);?>" data-api-url='edit/rl-mbox' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
+              </div>
+            </div>
+          </div>
+        </form>
+        <form data-id="useracl" class="form-inline well" method="post">
+          <div class="row">
+            <div class="col-sm-1">
+              <p class="help-block">ACL</p>
+            </div>
+            <div class="col-sm-10">
+              <div class="form-group">
+                <select id="user_acl" name="user_acl" size="10" multiple>
+                <?php
+                $user_acls = acl('get', 'user', $mailbox);
+                foreach ($user_acls as $acl => $val):
+                  ?>
+                  <option value="<?=$acl;?>" <?=($val == 1) ? 'selected' : null;?>><?=$lang['acl'][$acl];?></option>
+                  <?php
+                endforeach;
+                ?>
+                </select>
+              </div>
+              <div class="form-group">
+                <button class="btn btn-default" data-action="edit_selected" data-id="useracl" data-item="<?=htmlspecialchars($mailbox);?>" data-api-url='edit/user-acl' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
               </div>
             </div>
           </div>
@@ -541,19 +681,19 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <label class="control-label col-sm-2" for="hostname"><?=$lang['add']['hostname'];?></label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" name="hostname" id="hostname" value="<?=htmlspecialchars($result['hostname'], ENT_QUOTES, 'UTF-8');?>" required>
+                <input type="text" class="form-control" name="hostname" value="<?=htmlspecialchars($result['hostname'], ENT_QUOTES, 'UTF-8');?>" required>
               </div>
             </div>
             <div class="form-group">
               <label class="control-label col-sm-2" for="username"><?=$lang['add']['username'];?></label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" name="username" id="username" value="<?=htmlspecialchars($result['username'], ENT_QUOTES, 'UTF-8');?>">
+                <input type="text" class="form-control" name="username" value="<?=htmlspecialchars($result['username'], ENT_QUOTES, 'UTF-8');?>">
               </div>
             </div>
             <div class="form-group">
               <label class="control-label col-sm-2" for="password"><?=$lang['add']['password'];?></label>
               <div class="col-sm-10">
-                <input type="password" class="form-control" name="password" id="password" value="<?=htmlspecialchars($result['password'], ENT_QUOTES, 'UTF-8');?>">
+                <input type="password" data-hibp="true" class="form-control" name="password" value="<?=htmlspecialchars($result['password'], ENT_QUOTES, 'UTF-8');?>">
               </div>
             </div>
             <div class="form-group">
@@ -565,7 +705,60 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             </div>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
-                <button class="btn btn-success" id="edit_selected" data-id="editrelayhost" data-item="<?=htmlspecialchars($result['id']);?>" data-api-url='edit/relayhost' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
+                <button class="btn btn-success" data-action="edit_selected" data-id="editrelayhost" data-item="<?=htmlspecialchars($result['id']);?>" data-api-url='edit/relayhost' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
+              </div>
+            </div>
+          </form>
+        <?php
+        }
+        else {
+        ?>
+          <div class="alert alert-info" role="alert"><?=$lang['info']['no_action'];?></div>
+        <?php
+        }
+    }
+    elseif (isset($_GET['transport']) && is_numeric($_GET["transport"]) && !empty($_GET["transport"])) {
+        $transport = intval($_GET["transport"]);
+        $result = transport('details', $transport);
+        if (!empty($result)) {
+          ?>
+          <h4><?=$lang['edit']['resource'];?></h4>
+          <form class="form-horizontal" role="form" method="post" data-id="edittransport">
+            <input type="hidden" value="0" name="active">
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="destination"><?=$lang['add']['destination'];?></label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" name="destination" value="<?=htmlspecialchars($result['destination'], ENT_QUOTES, 'UTF-8');?>" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="nexthop"><?=$lang['edit']['nexthop'];?></label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" name="nexthop" value="<?=htmlspecialchars($result['nexthop'], ENT_QUOTES, 'UTF-8');?>" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="username"><?=$lang['add']['username'];?></label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" name="username" value="<?=htmlspecialchars($result['username'], ENT_QUOTES, 'UTF-8');?>">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="password"><?=$lang['add']['password'];?></label>
+              <div class="col-sm-10">
+                <input type="password" data-hibp="true" class="form-control" name="password" value="<?=htmlspecialchars($result['password'], ENT_QUOTES, 'UTF-8');?>">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <div class="checkbox">
+                <label><input type="checkbox" value="1" name="active" <?=($result['active_int']=="1") ? "checked" : null;?>> <?=$lang['edit']['active'];?></label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <button class="btn btn-success" data-action="edit_selected" data-id="edittransport" data-item="<?=htmlspecialchars($result['id']);?>" data-api-url='edit/transport' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
               </div>
             </div>
           </form>
@@ -588,13 +781,13 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <label class="control-label col-sm-2" for="description"><?=$lang['add']['description'];?></label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" name="description" id="description" value="<?=htmlspecialchars($result['description'], ENT_QUOTES, 'UTF-8');?>" required>
+                <input type="text" class="form-control" name="description" value="<?=htmlspecialchars($result['description'], ENT_QUOTES, 'UTF-8');?>" required>
               </div>
             </div>
             <div class="form-group">
               <label class="control-label col-sm-2" for="domain"><?=$lang['edit']['kind'];?>:</label>
               <div class="col-sm-10">
-                <select name="kind" id="kind" title="<?=$lang['edit']['select'];?>" required>
+                <select name="kind" title="<?=$lang['edit']['select'];?>" required>
                   <option value="location" <?=($result['kind'] == "location") ? "selected" : null;?>>Location</option>
                   <option value="group" <?=($result['kind'] == "group") ? "selected" : null;?>>Group</option>
                   <option value="thing" <?=($result['kind'] == "thing") ? "selected" : null;?>>Thing</option>
@@ -604,7 +797,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <label class="control-label col-sm-2" for="multiple_bookings_select"><?=$lang['add']['multiple_bookings'];?>:</label>
               <div class="col-sm-10">
-                <select name="multiple_bookings_select" id="multiple_bookings_select" title="<?=$lang['add']['select'];?>" required>
+                <select name="multiple_bookings_select" id="editSelectMultipleBookings" title="<?=$lang['add']['select'];?>" required>
                   <option value="0" <?=($result['multiple_bookings'] == 0) ? "selected" : null;?>><?=$lang['mailbox']['booking_0'];?></option>
                   <option value="-1" <?=($result['multiple_bookings'] == -1) ? "selected" : null;?>><?=$lang['mailbox']['booking_lt0'];?></option>
                   <option value="custom" <?=($result['multiple_bookings'] >= 1) ? "selected" : null;?>><?=$lang['mailbox']['booking_custom'];?></option>
@@ -625,7 +818,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             </div>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
-                <button class="btn btn-success" id="edit_selected" data-id="editresource" data-item="<?=htmlspecialchars($result['name']);?>" data-api-url='edit/resource' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
+                <button class="btn btn-success" data-action="edit_selected" data-id="editresource" data-item="<?=htmlspecialchars($result['name']);?>" data-api-url='edit/resource' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
               </div>
             </div>
           </form>
@@ -671,7 +864,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             </div>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
-                <button class="btn btn-success" id="edit_selected" data-id="editbcc" data-item="<?=$bcc;?>" data-api-url='edit/bcc' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
+                <button class="btn btn-success" data-action="edit_selected" data-id="editbcc" data-item="<?=$bcc;?>" data-api-url='edit/bcc' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
               </div>
             </div>
           </form>
@@ -683,7 +876,9 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         <?php
         }
     }
-    elseif (isset($_GET['recipient_map']) && !empty($_GET["recipient_map"])) {
+    elseif (isset($_GET['recipient_map']) &&
+      !empty($_GET["recipient_map"]) &&
+      $_SESSION['mailcow_cc_role'] == "admin") {
         $map = intval($_GET["recipient_map"]);
         $result = recipient_map('details', $map);
         if (substr($result['recipient_map_old'], 0, 1) == '@') {
@@ -718,7 +913,68 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             </div>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
-                <button class="btn btn-success" id="edit_selected" data-id="edit_recipient_map" data-item="<?=$map;?>" data-api-url='edit/recipient_map' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
+                <button class="btn btn-success" data-action="edit_selected" data-id="edit_recipient_map" data-item="<?=$map;?>" data-api-url='edit/recipient_map' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
+              </div>
+            </div>
+          </form>
+        <?php
+        }
+        else {
+        ?>
+          <div class="alert alert-info" role="alert"><?=$lang['info']['no_action'];?></div>
+        <?php
+        }
+    }
+    elseif (isset($_GET['tls_policy_map']) &&
+      !empty($_GET["tls_policy_map"]) &&
+      $_SESSION['mailcow_cc_role'] == "admin") {
+        $map = intval($_GET["tls_policy_map"]);
+        $result = tls_policy_maps('details', $map);
+        if (!empty($result)) {
+          ?>
+          <h4><?=$lang['mailbox']['tls_policy_maps']?>: <?=$result['dest'];?></h4>
+          <br />
+          <form class="form-horizontal" data-id="edit_tls_policy_maps" role="form" method="post">
+            <input type="hidden" value="0" name="active">
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="dest"><?=$lang['mailbox']['tls_map_dest'];?></label>
+              <div class="col-sm-10">
+                <input value="<?=$result['dest'];?>" type="text" class="form-control" name="dest" id="dest">
+                <small><?=$lang['mailbox']['tls_map_dest_info'];?></small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="policy"><?=$lang['mailbox']['tls_map_policy'];?></label>
+              <div class="col-sm-10">
+              <select class="full-width-select" name="policy" required>
+                <option value="none" <?=($result['policy'] != 'none') ?: 'selected';?>>none</option>
+                <option value="may" <?=($result['policy'] != 'may') ?: 'selected';?>>may</option>
+                <option value="encrypt" <?=($result['policy'] != 'encrypt') ?: 'selected';?>>encrypt</option>
+                <option value="dane" <?=($result['policy'] != 'dane') ?: 'selected';?>>dane-only</option>
+                <option value="dane-only" <?=($result['policy'] != 'dane-only') ?: 'selected';?>>dane-only</option>
+                <option value="fingerprint" <?=($result['policy'] != 'fingerprint') ?: 'selected';?>>fingerprint</option>
+                <option value="verify" <?=($result['policy'] != 'verify') ?: 'selected';?>>verify</option>
+                <option value="secure" <?=($result['policy'] != 'secure') ?: 'selected';?>>secure</option>
+              </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="parameters"><?=$lang['mailbox']['tls_map_parameters'];?></label>
+              <div class="col-sm-10">
+                <input value="<?=$result['parameters'];?>" type="text" class="form-control" name="parameters" id="parameters">
+                <small><?=$lang['mailbox']['tls_map_parameters_info'];?></small>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <div class="checkbox">
+                <label><input type="checkbox" value="1" name="active" <?php if (isset($result['active_int']) && $result['active_int']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['active'];?></label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <button class="btn btn-success" data-action="edit_selected" data-id="edit_tls_policy_maps" data-item="<?=$map;?>" data-api-url='edit/tls-policy-map' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
               </div>
             </div>
           </form>
@@ -885,7 +1141,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             </div>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
-                <button class="btn btn-success" id="edit_selected" data-id="editsyncjob" data-item="<?=htmlspecialchars($result['id']);?>" data-api-url='edit/syncjob' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
+                <button class="btn btn-success" data-action="edit_selected" data-id="editsyncjob" data-item="<?=htmlspecialchars($result['id']);?>" data-api-url='edit/syncjob' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
               </div>
             </div>
           </form>
@@ -924,7 +1180,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <label class="control-label col-sm-2" for="script_data">Script:</label>
               <div class="col-sm-10">
-                <textarea spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control" rows="20" id="script_data" name="script_data" required><?=$result['script_data'];?></textarea>
+                <textarea spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control textarea-code" rows="20" id="script_data" name="script_data" required><?=$result['script_data'];?></textarea>
               </div>
             </div>
             <div class="form-group">
@@ -936,7 +1192,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             </div>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
-                <button class="btn btn-success" id="edit_selected" data-id="editfilter" data-item="<?=htmlspecialchars($result['id']);?>" data-api-url='edit/filter' data-api-attr='{}' href="#"><?=$lang['edit']['validate_save'];?></button>
+                <button class="btn btn-success" data-action="edit_selected" data-id="editfilter" data-item="<?=htmlspecialchars($result['id']);?>" data-api-url='edit/filter' data-api-attr='{}' href="#"><?=$lang['edit']['validate_save'];?></button>
               </div>
             </div>
           </form>
@@ -965,14 +1221,13 @@ else {
 <script type='text/javascript'>
 <?php
 $lang_user = json_encode($lang['user']);
-echo "var lang = ". $lang_user . ";\n";
+echo "var lang_user = ". $lang_user . ";\n";
 echo "var table_for_domain = '". ((isset($domain)) ? $domain : null) . "';\n";
 echo "var csrf_token = '". $_SESSION['CSRF']['TOKEN'] . "';\n";
 echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
 ?>
 </script>
-<script src="js/footable.min.js"></script>
-<script src="js/edit.js"></script>
 <?php
-require_once("inc/footer.inc.php");
+$js_minifier->add('/web/js/site/edit.js');
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
 ?>

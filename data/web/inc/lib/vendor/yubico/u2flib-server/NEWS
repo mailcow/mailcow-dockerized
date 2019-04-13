@@ -1,5 +1,11 @@
 php-u2flib-server NEWS -- History of user-visible changes.
 
+* Version 1.0.2 (released 2018-09-07)
+ ** Additional error checks.
+ ** Add user presence check.
+ ** Support single files for attestation root.
+ ** Type safety, CSPRNG, avoid chr().
+
 * Version 1.0.1 (released 2017-05-09)
  ** Move examples to phps so they don't execute by default
  ** Use common challenge for multiple registrations

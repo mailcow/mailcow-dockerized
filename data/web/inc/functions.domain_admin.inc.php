@@ -1,11 +1,13 @@
 <?php
-
 function domain_admin($_action, $_data = null) {
   global $pdo;
   global $lang;
   $_data_log = $_data;
   !isset($_data_log['password']) ?: $_data_log['password'] = '*';
   !isset($_data_log['password2']) ?: $_data_log['password2'] = '*';
+  !isset($_data_log['user_old_pass']) ?: $_data_log['user_old_pass'] = '*';
+  !isset($_data_log['user_new_pass']) ?: $_data_log['user_new_pass'] = '*';
+  !isset($_data_log['user_new_pass2']) ?: $_data_log['user_new_pass2'] = '*';
   switch ($_action) {
     case 'add':
       $username		= strtolower(trim($_data['username']));
@@ -90,43 +92,22 @@ function domain_admin($_action, $_data = null) {
             );
             return false;
           }
-          try {
-            $stmt = $pdo->prepare("INSERT INTO `domain_admins` (`username`, `domain`, `created`, `active`)
-                VALUES (:username, :domain, :created, :active)");
-            $stmt->execute(array(
-              ':username' => $username,
-              ':domain' => $domain,
-              ':created' => date('Y-m-d H:i:s'),
-              ':active' => $active
-            ));
-          }
-          catch (PDOException $e) {
-            domain_admin('delete', $username);
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_data_log),
-              'msg' => array('mysql_error', $e)
-            );
-            return false;
-          }
-        }
-        try {
-          $stmt = $pdo->prepare("INSERT INTO `admin` (`username`, `password`, `superadmin`, `active`)
-            VALUES (:username, :password_hashed, '0', :active)");
+          $stmt = $pdo->prepare("INSERT INTO `domain_admins` (`username`, `domain`, `created`, `active`)
+              VALUES (:username, :domain, :created, :active)");
           $stmt->execute(array(
             ':username' => $username,
-            ':password_hashed' => $password_hashed,
+            ':domain' => $domain,
+            ':created' => date('Y-m-d H:i:s'),
             ':active' => $active
           ));
         }
-        catch (PDOException $e) {
-          $_SESSION['return'][] = array(
-            'type' => 'danger',
-            'log' => array(__FUNCTION__, $_action, $_data_log),
-            'msg' => array('mysql_error', $e)
-          );
-          return false;
-        }
+        $stmt = $pdo->prepare("INSERT INTO `admin` (`username`, `password`, `superadmin`, `active`)
+          VALUES (:username, :password_hashed, '0', :active)");
+        $stmt->execute(array(
+          ':username' => $username,
+          ':password_hashed' => $password_hashed,
+          ':active' => $active
+        ));
       }
       else {
         $_SESSION['return'][] = array(
@@ -136,6 +117,10 @@ function domain_admin($_action, $_data = null) {
         );
         return false;
       }
+      $stmt = $pdo->prepare("INSERT INTO `da_acl` (`username`) VALUES (:username)");
+      $stmt->execute(array(
+        ':username' => $username
+      ));
       $_SESSION['return'][] = array(
         'type' => 'success',
         'log' => array(__FUNCTION__, $_action, $_data_log),
@@ -179,15 +164,14 @@ function domain_admin($_action, $_data = null) {
           $password     = $_data['password'];
           $password2    = $_data['password2'];
           if (!empty($domains)) {
-            foreach ($domains as $i => &$domain) {
+            foreach ($domains as $domain) {
               if (!is_valid_domain_name($domain)) {
                 $_SESSION['return'][] = array(
                   'type' => 'danger',
                   'log' => array(__FUNCTION__, $_action, $_data_log),
                   'msg' => array('domain_invalid', htmlspecialchars($domain))
                 );
-                unset($domains[$i]);
-                continue;
+                continue 2;
               }
             }
           }
@@ -209,44 +193,27 @@ function domain_admin($_action, $_data = null) {
               continue;
             }
           }
-          try {
-            $stmt = $pdo->prepare("DELETE FROM `domain_admins` WHERE `username` = :username");
-            $stmt->execute(array(
-              ':username' => $username,
-            ));
-          }
-          catch (PDOException $e) {
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_data_log),
-              'msg' => array('mysql_error', $e)
-            );
-            continue;
-          }
-
+          $stmt = $pdo->prepare("DELETE FROM `domain_admins` WHERE `username` = :username");
+          $stmt->execute(array(
+            ':username' => $username,
+          ));
+          $stmt = $pdo->prepare("UPDATE `da_acl` SET `username` = :username_new WHERE `username` = :username");
+          $stmt->execute(array(
+            ':username_new' => $username_new,
+            ':username' => $username
+          ));
           if (!empty($domains)) {
             foreach ($domains as $domain) {
-              try {
-                $stmt = $pdo->prepare("INSERT INTO `domain_admins` (`username`, `domain`, `created`, `active`)
-                  VALUES (:username_new, :domain, :created, :active)");
-                $stmt->execute(array(
-                  ':username_new' => $username_new,
-                  ':domain' => $domain,
-                  ':created' => date('Y-m-d H:i:s'),
-                  ':active' => $active
-                ));
-              }
-              catch (PDOException $e) {
-                $_SESSION['return'][] = array(
-                  'type' => 'danger',
-                  'log' => array(__FUNCTION__, $_action, $_data_log),
-                  'msg' => array('mysql_error', $e)
-                );
-                continue;
-              }
+              $stmt = $pdo->prepare("INSERT INTO `domain_admins` (`username`, `domain`, `created`, `active`)
+                VALUES (:username_new, :domain, :created, :active)");
+              $stmt->execute(array(
+                ':username_new' => $username_new,
+                ':domain' => $domain,
+                ':created' => date('Y-m-d H:i:s'),
+                ':active' => $active
+              ));
             }
           }
-
           if (!empty($password) && !empty($password2)) {
             if (!preg_match('/' . $GLOBALS['PASSWD_REGEP'] . '/', $password)) {
               $_SESSION['return'][] = array(
@@ -265,56 +232,36 @@ function domain_admin($_action, $_data = null) {
               continue;
             }
             $password_hashed = hash_password($password);
-            try {
-              $stmt = $pdo->prepare("UPDATE `admin` SET `username` = :username_new, `active` = :active, `password` = :password_hashed WHERE `username` = :username");
-              $stmt->execute(array(
-                ':password_hashed' => $password_hashed,
-                ':username_new' => $username_new,
-                ':username' => $username,
-                ':active' => $active
-              ));
-              if (isset($_data['disable_tfa'])) {
-                $stmt = $pdo->prepare("UPDATE `tfa` SET `active` = '0' WHERE `username` = :username");
-                $stmt->execute(array(':username' => $username));
-              }
-              else {
-                $stmt = $pdo->prepare("UPDATE `tfa` SET `username` = :username_new WHERE `username` = :username");
-                $stmt->execute(array(':username_new' => $username_new, ':username' => $username));
-              }
+            $stmt = $pdo->prepare("UPDATE `admin` SET `username` = :username_new, `active` = :active, `password` = :password_hashed WHERE `username` = :username");
+            $stmt->execute(array(
+              ':password_hashed' => $password_hashed,
+              ':username_new' => $username_new,
+              ':username' => $username,
+              ':active' => $active
+            ));
+            if (isset($_data['disable_tfa'])) {
+              $stmt = $pdo->prepare("UPDATE `tfa` SET `active` = '0' WHERE `username` = :username");
+              $stmt->execute(array(':username' => $username));
             }
-            catch (PDOException $e) {
-              $_SESSION['return'][] = array(
-                'type' => 'danger',
-                'log' => array(__FUNCTION__, $_action, $_data_log),
-                'msg' => array('mysql_error', $e)
-              );
-              continue;
+            else {
+              $stmt = $pdo->prepare("UPDATE `tfa` SET `username` = :username_new WHERE `username` = :username");
+              $stmt->execute(array(':username_new' => $username_new, ':username' => $username));
             }
           }
           else {
-            try {
-              $stmt = $pdo->prepare("UPDATE `admin` SET `username` = :username_new, `active` = :active WHERE `username` = :username");
-              $stmt->execute(array(
-                ':username_new' => $username_new,
-                ':username' => $username,
-                ':active' => $active
-              ));
-              if (isset($_data['disable_tfa'])) {
-                $stmt = $pdo->prepare("UPDATE `tfa` SET `active` = '0' WHERE `username` = :username");
-                $stmt->execute(array(':username' => $username));
-              }
-              else {
-                $stmt = $pdo->prepare("UPDATE `tfa` SET `username` = :username_new WHERE `username` = :username");
-                $stmt->execute(array(':username_new' => $username_new, ':username' => $username));
-              }
+            $stmt = $pdo->prepare("UPDATE `admin` SET `username` = :username_new, `active` = :active WHERE `username` = :username");
+            $stmt->execute(array(
+              ':username_new' => $username_new,
+              ':username' => $username,
+              ':active' => $active
+            ));
+            if (isset($_data['disable_tfa'])) {
+              $stmt = $pdo->prepare("UPDATE `tfa` SET `active` = '0' WHERE `username` = :username");
+              $stmt->execute(array(':username' => $username));
             }
-            catch (PDOException $e) {
-              $_SESSION['return'][] = array(
-                'type' => 'danger',
-                'log' => array(__FUNCTION__, $_action, $_data_log),
-                'msg' => array('mysql_error', $e)
-              );
-              continue;
+            else {
+              $stmt = $pdo->prepare("UPDATE `tfa` SET `username` = :username_new WHERE `username` = :username");
+              $stmt->execute(array(':username_new' => $username_new, ':username' => $username));
             }
           }
           $_SESSION['return'][] = array(
@@ -337,7 +284,6 @@ function domain_admin($_action, $_data = null) {
             WHERE `username` = :user");
         $stmt->execute(array(':user' => $username));
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
         if (!verify_hash($row['password'], $password_old)) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
@@ -346,7 +292,6 @@ function domain_admin($_action, $_data = null) {
           );
           return false;
         }
-
         if (!empty($password_new2) && !empty($password_new)) {
           if ($password_new2 != $password_new) {
             $_SESSION['return'][] = array(
@@ -365,21 +310,11 @@ function domain_admin($_action, $_data = null) {
             return false;
           }
           $password_hashed = hash_password($password_new);
-          try {
-            $stmt = $pdo->prepare("UPDATE `admin` SET `password` = :password_hashed WHERE `username` = :username");
-            $stmt->execute(array(
-              ':password_hashed' => $password_hashed,
-              ':username' => $username
-            ));
-          }
-          catch (PDOException $e) {
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_data_log),
-              'msg' => array('mysql_error', $e)
-            );
-            return false;
-          }
+          $stmt = $pdo->prepare("UPDATE `admin` SET `password` = :password_hashed WHERE `username` = :username");
+          $stmt->execute(array(
+            ':password_hashed' => $password_hashed,
+            ':username' => $username
+          ));
         }
         $_SESSION['return'][] = array(
           'type' => 'success',
@@ -399,7 +334,7 @@ function domain_admin($_action, $_data = null) {
       }
       $usernames = (array)$_data['username'];
       foreach ($usernames as $username) {
-        if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $username))) {
+        if (empty(domain_admin('details', $username))) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data_log),
@@ -407,24 +342,18 @@ function domain_admin($_action, $_data = null) {
           );
           continue;
         }
-        try {
-          $stmt = $pdo->prepare("DELETE FROM `domain_admins` WHERE `username` = :username");
-          $stmt->execute(array(
-            ':username' => $username,
-          ));
-          $stmt = $pdo->prepare("DELETE FROM `admin` WHERE `username` = :username");
-          $stmt->execute(array(
-            ':username' => $username,
-          ));
-        }
-        catch (PDOException $e) {
-          $_SESSION['return'][] = array(
-            'type' => 'danger',
-            'log' => array(__FUNCTION__, $_action, $_data_log),
-            'msg' => array('mysql_error', $e)
-          );
-          continue;
-        }
+        $stmt = $pdo->prepare("DELETE FROM `domain_admins` WHERE `username` = :username");
+        $stmt->execute(array(
+          ':username' => $username,
+        ));
+        $stmt = $pdo->prepare("DELETE FROM `admin` WHERE `username` = :username");
+        $stmt->execute(array(
+          ':username' => $username,
+        ));
+        $stmt = $pdo->prepare("DELETE FROM `da_acl` WHERE `username` = :username");
+        $stmt->execute(array(
+          ':username' => $username,
+        ));
         $_SESSION['return'][] = array(
           'type' => 'success',
           'log' => array(__FUNCTION__, $_action, $_data_log),
@@ -442,7 +371,6 @@ function domain_admin($_action, $_data = null) {
         );
         return false;
       }
-
       $stmt = $pdo->query("SELECT DISTINCT
         `username`
           FROM `domain_admins` 
@@ -454,23 +382,19 @@ function domain_admin($_action, $_data = null) {
       while ($row = array_shift($rows)) {
         $domainadmins[] = $row['username'];
       }
-
       return $domainadmins;
     break;
     case 'details':
       $domainadmindata = array();
-
       if ($_SESSION['mailcow_cc_role'] == "domainadmin" && $_data != $_SESSION['mailcow_cc_username']) {
         return false;
       }
       elseif ($_SESSION['mailcow_cc_role'] != "admin" || !isset($_data)) {
         return false;
       }
-
       if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $_data))) {
         return false;
       }
-
       $stmt = $pdo->prepare("SELECT
         `tfa`.`active` AS `tfa_active_int`,
         CASE `tfa`.`active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `tfa_active`,
@@ -493,7 +417,7 @@ function domain_admin($_action, $_data = null) {
       $domainadmindata['active'] = $row['active'];
       $domainadmindata['tfa_active_int'] = $row['tfa_active_int'];
       $domainadmindata['active_int'] = $row['active_int'];
-      $domainadmindata['modified'] = $row['created'];
+      $domainadmindata['created'] = $row['created'];
       // GET SELECTED
       $stmt = $pdo->prepare("SELECT `domain` FROM `domain`
         WHERE `domain` IN (

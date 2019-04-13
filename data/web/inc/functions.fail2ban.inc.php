@@ -113,10 +113,28 @@ function fail2ban($_action, $_data = null) {
                 $redis->hDel('F2B_BLACKLIST', $network, 1);
                 $redis->hSet('F2B_QUEUE_UNBAN', $network, 1);
               }
+              else  {
+                $_SESSION['return'][] = array(
+                  'type' => 'danger',
+                  'log' => array(__FUNCTION__, $_action, $_data_log),
+                  'msg' => array('network_host_invalid', $network)
+                );
+                continue;
+              }
             }
             elseif ($_data['action'] == "blacklist") {
               if (valid_network($network)) {
                 $redis->hSet('F2B_BLACKLIST', $network, 1);
+                $redis->hDel('F2B_WHITELIST', $network, 1);
+                $response = docker('post', 'netfilter-mailcow', 'restart');
+              }
+              else  {
+                $_SESSION['return'][] = array(
+                  'type' => 'danger',
+                  'log' => array(__FUNCTION__, $_action, $_data_log),
+                  'msg' => array('network_host_invalid', $network)
+                );
+                continue;
               }
             }
           }

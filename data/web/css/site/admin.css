@@ -1,0 +1,73 @@
+table.footable>tbody>tr.footable-empty>td {
+  font-size:15px !important;
+  font-style:italic;
+}
+.pagination a {
+  text-decoration: none !important;
+}
+.panel panel-default {
+  overflow: visible !important;
+}
+.table-responsive {
+  overflow: visible !important;
+}
+@media screen and (max-width: 767px) {
+  .table-responsive {
+    overflow-x: scroll !important;
+  }
+}
+body {
+  overflow-y:scroll;
+}
+/* Fix modal moving content left */
+body.modal-open {
+  overflow-y:scroll;
+  padding-right: inherit !important;
+}
+@media (min-width: 992px) {
+  .container {
+      width: 80%;
+  }
+}
+.mass-actions-admin {
+  user-select: none;
+  padding:10px 0 10px 0;
+}
+.inputMissingAttr {
+  border-color: #FF4136;
+}
+.rotate {
+  -moz-transition: all 0.3s linear;
+  -webkit-transition: all 0.3s linear;
+  transition: all 0.3s linear;
+}
+.rotate.animation {
+  -ms-transform:rotateX(180deg);
+  -moz-transform:rotateX(180deg);
+  -webkit-transform:rotateX(180deg);
+  transform:rotateX(180deg);
+}
+.anchor {
+  display: block;
+  height: 65px;
+  margin-top: -65px;
+  visibility: hidden;
+}
+.scrollboxFixed {
+  position: fixed;
+  top: 65px;
+  z-index: 1;
+}
+.thumbnail img {
+  min-height:100px;
+  height:100px;
+}
+.nav-tabs>li>a {
+  z-index: 1;
+}
+.table-condensed .input-sm {
+  width: 100%!important;  
+}
+.table-condensed > thead > tr > th, .table-condensed > tbody > tr > th, .table-condensed > tfoot > tr > th, .table-condensed > thead > tr > td, .table-condensed > tbody > tr > td, .table-condensed > tfoot > tr > td {
+  padding: 3px;
+}

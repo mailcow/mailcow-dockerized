@@ -9,6 +9,7 @@ This file will be reset on upgrades.
 
 // SQL database connection variables
 $database_type = 'mysql';
+$database_sock = '/var/run/mysqld/mysqld.sock';
 $database_host = 'mysql';
 $database_user = getenv('DBUSER');
 $database_pass = getenv('DBPASS');
@@ -26,6 +27,7 @@ if ($https_port === FALSE) {
 } else {
   $https_port = substr($_SERVER['HTTP_HOST'], $https_port+1);
 }
+
 // Alternatively select port here =>
 //$https_port = 1234;
 // Other settings =>
@@ -41,18 +43,18 @@ $autodiscover_config = array(
   // The autoconfig service will additionally announce the STARTTLS-enabled ports, specified in the "tlsport" variable.
   'imap' => array(
     'server' => $mailcow_hostname,
-    'port' => array_pop(explode(':', getenv('IMAPS_PORT'))),
-    'tlsport' => array_pop(explode(':', getenv('IMAP_PORT'))),
+    'port' => end(explode(':', getenv('IMAPS_PORT'))),
+    'tlsport' => end(explode(':', getenv('IMAP_PORT'))),
   ),
   'pop3' => array(
     'server' => $mailcow_hostname,
-    'port' => array_pop(explode(':', getenv('POPS_PORT'))),
-    'tlsport' => array_pop(explode(':', getenv('POP_PORT'))),
+    'port' => end(explode(':', getenv('POPS_PORT'))),
+    'tlsport' => end(explode(':', getenv('POP_PORT'))),
   ),
   'smtp' => array(
     'server' => $mailcow_hostname,
-    'port' => array_pop(explode(':', getenv('SMTPS_PORT'))),
-    'tlsport' => array_pop(explode(':', getenv('SUBMISSION_PORT'))),
+    'port' => end(explode(':', getenv('SMTPS_PORT'))),
+    'tlsport' => end(explode(':', getenv('SUBMISSION_PORT'))),
   ),
   'activesync' => array(
     'url' => 'https://'.$mailcow_hostname.($https_port == 443 ? '' : ':'.$https_port).'/Microsoft-Server-ActiveSync',
@@ -66,17 +68,16 @@ $autodiscover_config = array(
     'port' => $https_port,
   ),
 );
-unset($https_port);
 
 // If false, we will use DEFAULT_LANG
 // Uses HTTP_ACCEPT_LANGUAGE header
 $DETECT_LANGUAGE = true;
 
-// Change default language, "de", "en", "es", "nl", "pt", "ru"
+// Change default language, "cs", "de", "en", "es", "nl", "pt", "ru"
 $DEFAULT_LANG = 'en';
 
 // Available languages
-$AVAILABLE_LANGUAGES = array('de', 'en', 'es', 'fr', 'lv', 'nl', 'pl', 'pt', 'ru', 'it', 'ca');
+$AVAILABLE_LANGUAGES = array('cs', 'de', 'en', 'es', 'fr', 'lv', 'nl', 'pl', 'pt', 'ru', 'it', 'ca');
 
 // Change theme (default: lumen)
 // Needs to be one of those: cerulean, cosmo, cyborg, darkly, flatly, journal, lumen, paper, readable, sandstone,
@@ -86,7 +87,12 @@ $AVAILABLE_LANGUAGES = array('de', 'en', 'es', 'fr', 'lv', 'nl', 'pl', 'pt', 'ru
 $DEFAULT_THEME = 'lumen';
 
 // Password complexity as regular expression
-$PASSWD_REGEP = '.{4,}';
+// Min. 6 characters
+$PASSWD_REGEP = '.{6,}';
+// Min. 6 characters, which must include at least one uppercase letter, one lowercase letter and one number
+// $PASSWD_REGEP = '^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z]).{6,}$';
+// Min. 6 characters, which must include at least one letter and one number
+// $PASSWD_REGEP = '^(?=.*[0-9])(?=.*[A-Za-z]).{6,}$';
 
 // Show DKIM private keys - false by default
 $SHOW_DKIM_PRIV_KEYS = false;
@@ -122,3 +128,25 @@ $DOCKER_TIMEOUT = 60;
 
 // Anonymize IPs logged via UI
 $ANONYMIZE_IPS = true;
+
+// MAILBOX_DEFAULT_ATTRIBUTES define default attributes for new mailboxes
+// These settings will not change existing mailboxes
+
+// Force incoming TLS for new mailboxes by default
+$MAILBOX_DEFAULT_ATTRIBUTES['tls_enforce_in'] = false;
+
+// Force outgoing TLS for new mailboxes by default
+$MAILBOX_DEFAULT_ATTRIBUTES['tls_enforce_out'] = false;
+
+// Force password change on next login (only allows login to mailcow UI)
+$MAILBOX_DEFAULT_ATTRIBUTES['force_pw_update'] = false;
+
+// Enable SOGo access (set to false to disable access by default)
+$MAILBOX_DEFAULT_ATTRIBUTES['sogo_access'] = true;
+
+// Send notification when quarantine is not empty (never, hourly, daily, weekly)
+$MAILBOX_DEFAULT_ATTRIBUTES['quarantine_notification'] = 'never';
+
+// Default mailbox format, should not be changed unless you know exactly, what you do, keep the trailing ":"
+// Check dovecot.conf for further changes (e.g. shared namespace)
+$MAILBOX_DEFAULT_ATTRIBUTES['mailbox_format'] = 'maildir:';

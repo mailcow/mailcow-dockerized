@@ -1,4 +1,4 @@
-FROM alpine:3.6
+FROM alpine:3.9
 LABEL maintainer "André Peters <andre.peters@servercow.de>"
 
 # Installation
@@ -9,6 +9,7 @@ RUN apk add --update \
   nagios-plugins-ping \
   curl \
   bash \
+  coreutils \
   jq \
   fcgi \
   nagios-plugins-mysql \

@@ -5,6 +5,16 @@ exec 5>&1
 # Thanks to https://github.com/cvmiller -> https://github.com/cvmiller/expand6
 source /srv/expand6.sh
 
+# Skipping IP check when we like to live dangerously
+if [[ "${SKIP_IP_CHECK}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  SKIP_IP_CHECK=y
+fi
+
+# Skipping HTTP check when we like to live dangerously
+if [[ "${SKIP_HTTP_VERIFICATION}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  SKIP_HTTP_VERIFICATION=y
+fi
+
 log_f() {
   if [[ ${2} == "no_nl" ]]; then
     echo -n "$(date) - ${1}"
@@ -13,8 +23,12 @@ log_f() {
   elif [[ ${2} != "redis_only" ]]; then
     echo "$(date) - ${1}"
   fi
-  redis-cli -h redis LPUSH ACME_LOG "{\"time\":\"$(date +%s)\",\"message\":\"$(printf '%s' "${1}" | \
-    tr '%&;$"_[]{}-\r\n' ' ')\"}" > /dev/null
+  if [[ ${3} == "b64" ]]; then
+    redis-cli -h redis LPUSH ACME_LOG "{\"time\":\"$(date +%s)\",\"message\":\"base64,$(printf '%s' "${1}")\"}" > /dev/null
+  else
+    redis-cli -h redis LPUSH ACME_LOG "{\"time\":\"$(date +%s)\",\"message\":\"$(printf '%s' "${1}" | \
+      tr '%&;$"[]{}-\r\n' ' ')\"}" > /dev/null
+  fi
 }
 
 if [[ "${SKIP_LETS_ENCRYPT}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
@@ -32,12 +46,34 @@ log_f "OK" no_date
 ACME_BASE=/var/lib/acme
 SSL_EXAMPLE=/var/lib/ssl-example
 
-mkdir -p ${ACME_BASE}/acme/private
+mkdir -p ${ACME_BASE}/acme
 
-restart_containers(){
+# Migrate
+[[ -f ${ACME_BASE}/acme/private/privkey.pem ]] && mv ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/acme/key.pem
+[[ -f ${ACME_BASE}/acme/private/account.key ]] && mv ${ACME_BASE}/acme/private/account.key ${ACME_BASE}/acme/account.pem
+
+reload_configurations(){
+  # Reading container IDs
+  # Wrapping as array to ensure trimmed content when calling $NGINX etc.
+  local NGINX=($(curl --silent --insecure https://dockerapi/containers/json | jq -r '.[] | {name: .Config.Labels["com.docker.compose.service"], id: .Id}' | jq -rc 'select( .name | tostring | contains("nginx-mailcow")) | .id' | tr "\n" " "))
+  local DOVECOT=($(curl --silent --insecure https://dockerapi/containers/json | jq -r '.[] | {name: .Config.Labels["com.docker.compose.service"], id: .Id}' | jq -rc 'select( .name | tostring | contains("dovecot-mailcow")) | .id' | tr "\n" " "))
+  local POSTFIX=($(curl --silent --insecure https://dockerapi/containers/json | jq -r '.[] | {name: .Config.Labels["com.docker.compose.service"], id: .Id}' | jq -rc 'select( .name | tostring | contains("postfix-mailcow")) | .id' | tr "\n" " "))
+  # Reloading
+  echo "Reloading Nginx..."
+  NGINX_RELOAD_RET=$(curl -X POST --insecure https://dockerapi/containers/${NGINX}/exec -d '{"cmd":"reload", "task":"nginx"}' --silent -H 'Content-type: application/json' | jq -r .type)
+  [[ ${NGINX_RELOAD_RET} != 'success' ]] && { echo "Could not reload Nginx, restarting container..."; restart_container ${NGINX} ; }
+  echo "Reloading Dovecot..."
+  DOVECOT_RELOAD_RET=$(curl -X POST --insecure https://dockerapi/containers/${DOVECOT}/exec -d '{"cmd":"reload", "task":"dovecot"}' --silent -H 'Content-type: application/json' | jq -r .type)
+  [[ ${DOVECOT_RELOAD_RET} != 'success' ]] && { echo "Could not reload Dovecot, restarting container..."; restart_container ${DOVECOT} ; }
+  echo "Reloading Postfix..."
+  POSTFIX_RELOAD_RET=$(curl -X POST --insecure https://dockerapi/containers/${POSTFIX}/exec -d '{"cmd":"reload", "task":"postfix"}' --silent -H 'Content-type: application/json' | jq -r .type)
+  [[ ${POSTFIX_RELOAD_RET} != 'success' ]] && { echo "Could not reload Postfix, restarting container..."; restart_container ${POSTFIX} ; }
+}
+
+restart_container(){
   for container in $*; do
     log_f "Restarting ${container}..." no_nl
-    C_REST_OUT=$(curl -X POST http://dockerapi:8080/containers/${container}/restart | jq -r '.msg')
+    C_REST_OUT=$(curl -X POST --insecure https://dockerapi/containers/${container}/restart | jq -r '.msg')
     log_f "${C_REST_OUT}" no_date
   done
 }
@@ -90,28 +126,37 @@ get_ipv6(){
   echo ${IPV6}
 }
 
+verify_challenge_path(){
+  # verify_challenge_path URL 4|6
+  RAND_FILE=${RANDOM}${RANDOM}${RANDOM}
+  touch /var/www/acme/${RAND_FILE}
+  if [[ ${SKIP_HTTP_VERIFICATION} == "y" ]]; then
+    echo '(skipping check, returning 0)'
+    return 0
+  elif [[ "$(curl -${2} http://${1}/.well-known/acme-challenge/${RAND_FILE} --write-out %{http_code} --silent --output /dev/null)" =~ ^(2|3)  ]]; then
+    rm /var/www/acme/${RAND_FILE}
+    return 0
+  else
+    rm /var/www/acme/${RAND_FILE}
+    return 1
+  fi
+}
+
 [[ ! -f ${ACME_BASE}/dhparams.pem ]] && cp ${SSL_EXAMPLE}/dhparams.pem ${ACME_BASE}/dhparams.pem
 
 if [[ -f ${ACME_BASE}/cert.pem ]] && [[ -f ${ACME_BASE}/key.pem ]]; then
   ISSUER=$(openssl x509 -in ${ACME_BASE}/cert.pem -noout -issuer)
-  if [[ ${ISSUER} != *"Let's Encrypt"* && ${ISSUER} != *"mailcow"* ]]; then
+  if [[ ${ISSUER} != *"Let's Encrypt"* && ${ISSUER} != *"mailcow"* && ${ISSUER} != *"Fake LE Intermediate"* ]]; then
     log_f "Found certificate with issuer other than mailcow snake-oil CA and Let's Encrypt, skipping ACME client..."
     sleep 3650d
     exec $(readlink -f "$0")
-  else
-    declare -a SAN_ARRAY_NOW
-    SAN_NAMES=$(openssl x509 -noout -text -in ${ACME_BASE}/cert.pem | awk '/X509v3 Subject Alternative Name/ {getline;gsub(/ /, "", $0); print}' | tr -d "DNS:")
-    if [[ ! -z ${SAN_NAMES} ]]; then
-      IFS=',' read -a SAN_ARRAY_NOW <<< ${SAN_NAMES}
-      log_f "Found Let's Encrypt or mailcow snake-oil CA issued certificate with SANs: ${SAN_ARRAY_NOW[*]}"
-    fi
   fi
 else
-  if [[ -f ${ACME_BASE}/acme/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/privkey.pem ]]; then
-    if verify_hash_match ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/acme/private/privkey.pem; then
+  if [[ -f ${ACME_BASE}/acme/cert.pem ]] && [[ -f ${ACME_BASE}/acme/key.pem ]]; then
+    if verify_hash_match ${ACME_BASE}/acme/cert.pem ${ACME_BASE}/acme/key.pem; then
       log_f "Restoring previous acme certificate and restarting script..."
-      cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
-      cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
+      cp ${ACME_BASE}/acme/cert.pem ${ACME_BASE}/cert.pem
+      cp ${ACME_BASE}/acme/key.pem ${ACME_BASE}/key.pem
       # Restarting with env var set to trigger a restart,
       exec env TRIGGER_RESTART=1 $(readlink -f "$0")
     fi
@@ -123,25 +168,80 @@ else
     exec env TRIGGER_RESTART=1 $(readlink -f "$0")
   fi
 fi
+chmod 600 ${ACME_BASE}/key.pem
 
-log_f "Waiting for database... "
-while ! mysqladmin ping --host mysql -u${DBUSER} -p${DBPASS} --silent; do
+log_f "Waiting for database... " no_nl
+while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
   sleep 2
 done
+log_f "OK" no_date
+
+log_f "Waiting for Nginx... " no_nl
+until $(curl --output /dev/null --silent --head --fail http://nginx:8081); do
+  sleep 2
+done
+log_f "OK" no_date
+
+# Waiting for domain table
+log_f "Waiting for domain table... " no_nl
+while [[ -z ${DOMAIN_TABLE} ]]; do
+  curl --silent http://nginx/ >/dev/null 2>&1
+  DOMAIN_TABLE=$(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SHOW TABLES LIKE 'domain'" -Bs)
+  [[ -z ${DOMAIN_TABLE} ]] && sleep 10
+done
+log_f "OK" no_date
+
 log_f "Initializing, please wait... "
 
-
 while true; do
-  if [[ "${SKIP_IP_CHECK}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-    SKIP_IP_CHECK=y
+
+  # Re-using previous acme-mailcow account and domain keys
+  if [[ ! -f ${ACME_BASE}/acme/key.pem ]]; then
+    log_f "Generating missing domain private key..."
+    openssl genrsa 4096 > ${ACME_BASE}/acme/key.pem
+  else
+    log_f "Using existing domain key ${ACME_BASE}/acme/key.pem"
   fi
+  if [[ ! -f ${ACME_BASE}/acme/account.pem ]]; then
+    log_f "Generating missing Lets Encrypt account key..."
+    openssl genrsa 4096 > ${ACME_BASE}/acme/account.pem
+  else
+    log_f "Using existing Lets Encrypt account key ${ACME_BASE}/acme/account.pem"
+  fi
+
+  chmod 600 ${ACME_BASE}/acme/key.pem
+  chmod 600 ${ACME_BASE}/acme/account.pem
+
+  # Cleaning up and init validation arrays
   unset SQL_DOMAIN_ARR
   unset VALIDATED_CONFIG_DOMAINS
   unset ADDITIONAL_VALIDATED_SAN
+  unset ADDITIONAL_WC_ARR
+  unset ADDITIONAL_SAN_ARR
+  unset SAN_CHANGE
+  unset SAN_ARRAY_NOW
+  unset ORPHANED_SAN
+  unset ADDED_SAN
+  SAN_CHANGE=0
+  declare -a SAN_ARRAY_NOW
+  declare -a ORPHANED_SAN
+  declare -a ADDED_SAN
   declare -a SQL_DOMAIN_ARR
   declare -a VALIDATED_CONFIG_DOMAINS
   declare -a ADDITIONAL_VALIDATED_SAN
-  IFS=',' read -r -a ADDITIONAL_SAN_ARR <<< "${ADDITIONAL_SAN}"
+  declare -a ADDITIONAL_WC_ARR
+  declare -a ADDITIONAL_SAN_ARR
+  IFS=',' read -r -a TMP_ARR <<< "${ADDITIONAL_SAN}"
+  for i in "${TMP_ARR[@]}" ; do
+    if [[ "$i" =~ \.\*$ ]]; then
+      ADDITIONAL_WC_ARR+=(${i::-2})
+    else
+      ADDITIONAL_SAN_ARR+=($i)
+    fi
+  done
+  ADDITIONAL_WC_ARR+=('autodiscover')
+
+  # Start IP detection
   log_f "Detecting IP addresses... " no_nl
   IPV4=$(get_ipv4)
   IPV6=$(get_ipv6)
@@ -160,73 +260,50 @@ while true; do
     fi
   fi
 
-  # Container ids may have changed
-  CONTAINERS_RESTART=($(curl --silent http://dockerapi:8080/containers/json | jq -r '.[] | {name: .Config.Labels["com.docker.compose.service"], id: .Id}' | jq -rc 'select( .name | tostring | contains("nginx-mailcow") or contains("postfix-mailcow") or contains("dovecot-mailcow")) | .id' | tr "\n" " "))
-
-  log_f "Waiting for domain table... " no_nl
-  while [[ -z ${DOMAIN_TABLE} ]]; do
-    curl --silent http://nginx/ >/dev/null 2>&1
-    DOMAIN_TABLE=$(mysql -h mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SHOW TABLES LIKE 'domain'" -Bs)
-    [[ -z ${DOMAIN_TABLE} ]] && sleep 10
-  done
-  log_f "OK" no_date
-
+  #########################################
+  # IP and webroot challenge verification #
   while read domains; do
     SQL_DOMAIN_ARR+=("${domains}")
-  done < <(mysql -h mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM domain WHERE backupmx=0 UNION SELECT alias_domain FROM alias_domain" -Bs)
+  done < <(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM domain WHERE backupmx=0" -Bs)
 
   for SQL_DOMAIN in "${SQL_DOMAIN_ARR[@]}"; do
-    A_CONFIG=$(dig A autoconfig.${SQL_DOMAIN} +short | tail -n 1)
-    AAAA_CONFIG=$(dig AAAA autoconfig.${SQL_DOMAIN} +short | tail -n 1)
-    # Check if CNAME without v6 enabled target
-    if [[ ! -z ${AAAA_CONFIG} ]] && [[ -z $(echo ${AAAA_CONFIG} | grep "^\([0-9a-fA-F]\{0,4\}:\)\{1,7\}[0-9a-fA-F]\{0,4\}$") ]]; then
-      AAAA_CONFIG=
-    fi
-    if [[ ! -z ${AAAA_CONFIG} ]]; then
-      log_f "Found AAAA record for autoconfig.${SQL_DOMAIN}: ${AAAA_CONFIG} - skipping A record check"
-      if [[ $(expand ${IPV6:-"0000:0000:0000:0000:0000:0000:0000:0000"}) == $(expand ${AAAA_CONFIG}) ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
-        log_f "Confirmed AAAA record autoconfig.${SQL_DOMAIN}"
-        VALIDATED_CONFIG_DOMAINS+=("autoconfig.${SQL_DOMAIN}")
-      else
-        log_f "Cannot match your IP ${IPV6:-NO_IPV6_LINK} against hostname autoconfig.${SQL_DOMAIN} ($(expand ${AAAA_CONFIG}))"
+    for SUBDOMAIN in "${ADDITIONAL_WC_ARR[@]}"; do
+      if [[  "${SUBDOMAIN}.${SQL_DOMAIN}" != "${MAILCOW_HOSTNAME}" ]]; then
+        A_SUBDOMAIN=$(dig A ${SUBDOMAIN}.${SQL_DOMAIN} +short | tail -n 1)
+        AAAA_SUBDOMAIN=$(dig AAAA ${SUBDOMAIN}.${SQL_DOMAIN} +short | tail -n 1)
+        # Check if CNAME without v6 enabled target
+        if [[ ! -z ${AAAA_SUBDOMAIN} ]] && [[ -z $(echo ${AAAA_SUBDOMAIN} | grep "^\([0-9a-fA-F]\{0,4\}:\)\{1,7\}[0-9a-fA-F]\{0,4\}$") ]]; then
+          AAAA_SUBDOMAIN=
+        fi
+        if [[ ! -z ${AAAA_SUBDOMAIN} ]]; then
+          log_f "Found AAAA record for ${SUBDOMAIN}.${SQL_DOMAIN}: ${AAAA_SUBDOMAIN} - skipping A record check"
+          if [[ $(expand ${IPV6:-"0000:0000:0000:0000:0000:0000:0000:0000"}) == $(expand ${AAAA_SUBDOMAIN}) ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
+            if verify_challenge_path "${SUBDOMAIN}.${SQL_DOMAIN}" 6; then
+              log_f "Confirmed AAAA record ${AAAA_SUBDOMAIN}"
+              VALIDATED_CONFIG_DOMAINS+=("${SUBDOMAIN}.${SQL_DOMAIN}")
+            else
+              log_f "Confirmed AAAA record ${AAAA_SUBDOMAIN}, but HTTP validation failed"
+            fi
+          else
+            log_f "Cannot match your IP ${IPV6:-NO_IPV6_LINK} against hostname ${SUBDOMAIN}.${SQL_DOMAIN} ($(expand ${AAAA_SUBDOMAIN}))"
+          fi
+        elif [[ ! -z ${A_SUBDOMAIN} ]]; then
+          log_f "Found A record for ${SUBDOMAIN}.${SQL_DOMAIN}: ${A_SUBDOMAIN}"
+          if [[ ${IPV4:-ERR} == ${A_SUBDOMAIN} ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
+            if verify_challenge_path "${SUBDOMAIN}.${SQL_DOMAIN}" 4; then
+              log_f "Confirmed A record ${A_SUBDOMAIN}"
+              VALIDATED_CONFIG_DOMAINS+=("${SUBDOMAIN}.${SQL_DOMAIN}")
+            else
+              log_f "Confirmed AAAA record ${A_SUBDOMAIN}, but HTTP validation failed"
+            fi
+          else
+            log_f "Cannot match your IP ${IPV4} against hostname ${SUBDOMAIN}.${SQL_DOMAIN} (${A_SUBDOMAIN})"
+          fi
+        else
+          log_f "No A or AAAA record found for hostname ${SUBDOMAIN}.${SQL_DOMAIN}"
+        fi
       fi
-    elif [[ ! -z ${A_CONFIG} ]]; then
-      log_f "Found A record for autoconfig.${SQL_DOMAIN}: ${A_CONFIG}"
-      if [[ ${IPV4:-ERR} == ${A_CONFIG} ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
-        log_f "Confirmed A record autoconfig.${SQL_DOMAIN}"
-        VALIDATED_CONFIG_DOMAINS+=("autoconfig.${SQL_DOMAIN}")
-      else
-        log_f "Cannot match your IP ${IPV4} against hostname autoconfig.${SQL_DOMAIN} (${A_CONFIG})"
-      fi
-    else
-      log_f "No A or AAAA record found for hostname autoconfig.${SQL_DOMAIN}"
-    fi
-
-    A_DISCOVER=$(dig A autodiscover.${SQL_DOMAIN} +short | tail -n 1)
-    AAAA_DISCOVER=$(dig AAAA autodiscover.${SQL_DOMAIN} +short | tail -n 1)
-    # Check if CNAME without v6 enabled target
-    if [[ ! -z ${AAAA_DISCOVER} ]] && [[ -z $(echo ${AAAA_DISCOVER} | grep "^\([0-9a-fA-F]\{0,4\}:\)\{1,7\}[0-9a-fA-F]\{0,4\}$") ]]; then
-      AAAA_DISCOVER=
-    fi
-    if [[ ! -z ${AAAA_DISCOVER} ]]; then
-      log_f "Found AAAA record for autodiscover.${SQL_DOMAIN}: ${AAAA_DISCOVER} - skipping A record check"
-      if [[ $(expand ${IPV6:-"0000:0000:0000:0000:0000:0000:0000:0000"}) == $(expand ${AAAA_DISCOVER}) ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
-        log_f "Confirmed AAAA record autodiscover.${SQL_DOMAIN}"
-        VALIDATED_CONFIG_DOMAINS+=("autodiscover.${SQL_DOMAIN}")
-      else
-        log_f "Cannot match your IP ${IPV6:-NO_IPV6_LINK} against hostname autodiscover.${SQL_DOMAIN} ($(expand ${AAAA_DISCOVER}))"
-      fi
-    elif [[ ! -z ${A_DISCOVER} ]]; then
-      log_f "Found A record for autodiscover.${SQL_DOMAIN}: ${A_DISCOVER}"
-      if [[ ${IPV4:-ERR} == ${A_DISCOVER} ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
-        log_f "Confirmed A record autodiscover.${SQL_DOMAIN}"
-        VALIDATED_CONFIG_DOMAINS+=("autodiscover.${SQL_DOMAIN}")
-      else
-        log_f "Cannot match your IP ${IPV4} against hostname autodiscover.${SQL_DOMAIN} (${A_DISCOVER})"
-      fi
-    else
-      log_f "No A or AAAA record found for hostname autodiscover.${SQL_DOMAIN}"
-    fi
+    done
   done
 
   A_MAILCOW_HOSTNAME=$(dig A ${MAILCOW_HOSTNAME} +short | tail -n 1)
@@ -238,16 +315,24 @@ while true; do
   if [[ ! -z ${AAAA_MAILCOW_HOSTNAME} ]]; then
     log_f "Found AAAA record for ${MAILCOW_HOSTNAME}: ${AAAA_MAILCOW_HOSTNAME} - skipping A record check"
     if [[ $(expand ${IPV6:-"0000:0000:0000:0000:0000:0000:0000:0000"}) == $(expand ${AAAA_MAILCOW_HOSTNAME}) ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
-      log_f "Confirmed AAAA record ${MAILCOW_HOSTNAME}"
-      VALIDATED_MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
+      if verify_challenge_path "${MAILCOW_HOSTNAME}" 6; then
+        log_f "Confirmed AAAA record ${AAAA_MAILCOW_HOSTNAME}"
+        VALIDATED_MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
+      else
+        log_f "Confirmed AAAA record ${A_MAILCOW_HOSTNAME}, but HTTP validation failed"
+      fi
     else
       log_f "Cannot match your IP ${IPV6:-NO_IPV6_LINK} against hostname ${MAILCOW_HOSTNAME} ($(expand ${AAAA_MAILCOW_HOSTNAME}))"
     fi
   elif [[ ! -z ${A_MAILCOW_HOSTNAME} ]]; then
     log_f "Found A record for ${MAILCOW_HOSTNAME}: ${A_MAILCOW_HOSTNAME}"
     if [[ ${IPV4:-ERR} == ${A_MAILCOW_HOSTNAME} ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
-      log_f "Confirmed A record ${A_MAILCOW_HOSTNAME}"
-      VALIDATED_MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
+      if verify_challenge_path "${MAILCOW_HOSTNAME}" 4; then
+        log_f "Confirmed A record ${A_MAILCOW_HOSTNAME}"
+        VALIDATED_MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
+      else
+        log_f "Confirmed A record ${A_MAILCOW_HOSTNAME}, but HTTP validation failed"
+      fi
     else
       log_f "Cannot match your IP ${IPV4} against hostname ${MAILCOW_HOSTNAME} (${A_MAILCOW_HOSTNAME})"
     fi
@@ -279,16 +364,24 @@ while true; do
     if [[ ! -z ${AAAA_SAN} ]]; then
       log_f "Found AAAA record for ${SAN}: ${AAAA_SAN} - skipping A record check"
       if [[ $(expand ${IPV6:-"0000:0000:0000:0000:0000:0000:0000:0000"}) == $(expand ${AAAA_SAN}) ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
-        log_f "Confirmed AAAA record ${SAN}"
-        ADDITIONAL_VALIDATED_SAN+=("${SAN}")
+        if verify_challenge_path "${SAN}" 6; then
+          log_f "Confirmed AAAA record ${AAAA_SAN}"
+          ADDITIONAL_VALIDATED_SAN+=("${SAN}")
+        else
+          log_f "Confirmed AAAA record ${AAAA_SAN}, but HTTP validation failed"
+        fi
       else
         log_f "Cannot match your IP ${IPV6:-NO_IPV6_LINK} against hostname ${SAN} ($(expand ${AAAA_SAN}))"
       fi
     elif [[ ! -z ${A_SAN} ]]; then
       log_f "Found A record for ${SAN}: ${A_SAN}"
       if [[ ${IPV4:-ERR} == ${A_SAN} ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
-        log_f "Confirmed A record ${A_SAN}"
-        ADDITIONAL_VALIDATED_SAN+=("${SAN}")
+        if verify_challenge_path "${SAN}" 4; then
+          log_f "Confirmed A record ${A_SAN}"
+          ADDITIONAL_VALIDATED_SAN+=("${SAN}")
+        else
+          log_f "Confirmed A record ${A_SAN}, but HTTP validation failed"
+        fi
       else
         log_f "Cannot match your IP ${IPV4} against hostname ${SAN} (${A_SAN})"
       fi
@@ -306,113 +399,98 @@ while true; do
     exec $(readlink -f "$0")
   fi
 
-  array_diff ORPHANED_SAN SAN_ARRAY_NOW ALL_VALIDATED
-  if [[ ! -z ${ORPHANED_SAN[*]} ]] && [[ ${ISSUER} != *"mailcow"* ]]; then
-    DATE=$(date +%Y-%m-%d_%H_%M_%S)
-    log_f "Found orphaned SAN ${ORPHANED_SAN[*]} in certificate, moving old files to ${ACME_BASE}/acme/private/${DATE}.bak/, keeping key file..."
-    mkdir -p ${ACME_BASE}/acme/private/${DATE}.bak/
-    [[ -f ${ACME_BASE}/acme/private/account.key ]] && mv ${ACME_BASE}/acme/private/account.key ${ACME_BASE}/acme/private/${DATE}.bak/
-    [[ -f ${ACME_BASE}/acme/fullchain.pem ]] && mv ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/acme/private/${DATE}.bak/
-    [[ -f ${ACME_BASE}/acme/cert.pem ]] && mv ${ACME_BASE}/acme/cert.pem ${ACME_BASE}/acme/private/${DATE}.bak/
-    cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/acme/private/${DATE}.bak/ # Keep key for TLSA 3 1 1 records
+  # Collecting SANs from active certificate
+  SAN_NAMES=$(openssl x509 -noout -text -in ${ACME_BASE}/cert.pem | awk '/X509v3 Subject Alternative Name/ {getline;gsub(/ /, "", $0); print}' | tr -d "DNS:")
+  if [[ ! -z ${SAN_NAMES} ]]; then
+    IFS=',' read -a SAN_ARRAY_NOW <<< ${SAN_NAMES}
   fi
 
-  ACME_RESPONSE=$(acme-client \
-    -v -e -b -N -n \
-    -a 'https://letsencrypt.org/documents/LE-SA-v1.2-November-15-2017.pdf' \
-    -f ${ACME_BASE}/acme/private/account.key \
-    -k ${ACME_BASE}/acme/private/privkey.pem \
-    -c ${ACME_BASE}/acme \
-    ${ALL_VALIDATED[*]} 2>&1 | tee /dev/fd/5)
+  # Finding difference in SAN array now vs. SAN array by current configuration
+  array_diff ORPHANED_SAN SAN_ARRAY_NOW ALL_VALIDATED
+  if [[ ! -z ${ORPHANED_SAN[*]} ]]; then
+    log_f "Found orphaned SANs ${ORPHANED_SAN[*]}"
+    SAN_CHANGE=1
+  fi
+  array_diff ADDED_SAN ALL_VALIDATED SAN_ARRAY_NOW
+  if [[ ! -z ${ADDED_SAN[*]} ]]; then
+    log_f "Found new SANs ${ADDED_SAN[*]}"
+    SAN_CHANGE=1
+  fi
+
+  if [[ ${SAN_CHANGE} == 0 ]]; then
+    # Certificate did not change but could be due for renewal (4 weeks)
+    if ! openssl x509 -checkend 1209600 -noout -in ${ACME_BASE}/cert.pem; then
+      log_f "Certificate is due for renewal (< 2 weeks)"
+    else
+      log_f "Certificate validation done, neither changed nor due for renewal, sleeping for another day."
+      sleep 1d
+      continue
+    fi
+  fi
+
+  DATE=$(date +%Y-%m-%d_%H_%M_%S)
+  log_f "Creating backups in ${ACME_BASE}/backups/${DATE}/ ..."
+  mkdir -p ${ACME_BASE}/backups/${DATE}/
+  [[ -f ${ACME_BASE}/acme/acme.csr ]] && cp ${ACME_BASE}/acme/acme.csr ${ACME_BASE}/backups/${DATE}/
+  [[ -f ${ACME_BASE}/acme/cert.pem ]] && cp ${ACME_BASE}/acme/cert.pem ${ACME_BASE}/backups/${DATE}/
+  [[ -f ${ACME_BASE}/acme/key.pem ]] && cp ${ACME_BASE}/acme/key.pem ${ACME_BASE}/backups/${DATE}/
+  [[ -f ${ACME_BASE}/acme/account.pem ]] && cp ${ACME_BASE}/acme/account.pem ${ACME_BASE}/backups/${DATE}/
+
+  # Generating CSR
+  printf "[SAN]\nsubjectAltName=" > /tmp/_SAN
+  printf "DNS:%s," "${ALL_VALIDATED[@]}" >> /tmp/_SAN
+  sed -i '$s/,$//' /tmp/_SAN
+  openssl req -new -sha256 -key ${ACME_BASE}/acme/key.pem -subj "/" -reqexts SAN -config <(cat /etc/ssl/openssl.cnf /tmp/_SAN) > ${ACME_BASE}/acme/acme.csr
+
+  if [[ "${LE_STAGING}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+    log_f "Using Let's Encrypt staging servers"
+    STAGING_PARAMETER='--directory-url https://acme-staging-v02.api.letsencrypt.org/directory'
+  else
+    STAGING_PARAMETER=
+  fi
+
+  # acme-tiny writes info to stderr and ceritifcate to stdout
+  # The redirects will do the following:
+  # - redirect stdout to temp certificate file
+  # - redirect acme-tiny stderr to stdout (logs to variable ACME_RESPONSE)
+  # - tee stderr to get live output and log to dockerd
+
+  ACME_RESPONSE=$(acme-tiny ${STAGING_PARAMETER} \
+    --account-key ${ACME_BASE}/acme/account.pem \
+    --disable-check \
+    --csr ${ACME_BASE}/acme/acme.csr \
+    --acme-dir /var/www/acme/ 2>&1 > /tmp/_cert.pem | tee /dev/fd/5)
 
   case "$?" in
-    0) # new certs
-      log_f "${ACME_RESPONSE}" redis_only
-      # cp the new certificates and keys
-      cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
-      cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
-
-      # restart docker containers
-      if ! verify_hash_match ${ACME_BASE}/cert.pem ${ACME_BASE}/key.pem; then
-        log_f "Certificate was successfully requested, but key and certificate have non-matching hashes, restoring mailcow snake-oil and restarting containers..."
-        cp ${SSL_EXAMPLE}/cert.pem ${ACME_BASE}/cert.pem
-        cp ${SSL_EXAMPLE}/key.pem ${ACME_BASE}/key.pem
-      fi
-      restart_containers ${CONTAINERS_RESTART[*]}
-      ;;
-    1) # failure
-      log_f "${ACME_RESPONSE}" redis_only
-      if [[ $ACME_RESPONSE =~ "No registration exists" ]]; then
-        log_f "Registration keys are invalid, deleting old keys and restarting..."
-        rm ${ACME_BASE}/acme/private/account.key
+    0) # cert requested
+      ACME_RESPONSE_B64=$(echo "${ACME_RESPONSE}" | openssl enc -e -A -base64)
+      log_f "${ACME_RESPONSE_B64}" redis_only b64
+      log_f "Deploying..."
+      # Deploy the new certificate and key
+      # Moving temp cert to acme/cert.pem
+      if verify_hash_match /tmp/_cert.pem ${ACME_BASE}/acme/key.pem; then
+        mv /tmp/_cert.pem ${ACME_BASE}/acme/cert.pem
+        cp ${ACME_BASE}/acme/cert.pem ${ACME_BASE}/cert.pem
+        cp ${ACME_BASE}/acme/key.pem ${ACME_BASE}/key.pem
+        reload_configurations
+        rm /var/www/acme/*
+        log_f "Certificate successfully deployed, removing backup, sleeping 1d"
+        sleep 1d
+      else
+        log_f "Certificate was successfully requested, but key and certificate have non-matching hashes, ignoring certificate"
+        log_f "Retrying in 30 minutes..."
+        sleep 30m
         exec $(readlink -f "$0")
       fi
-      if [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]]; then
-        log_f "Error requesting certificate, restoring previous certificate from backup and restarting containers...."
-        cp ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ${ACME_BASE}/cert.pem
-        cp ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ${ACME_BASE}/key.pem
-        TRIGGER_RESTART=1
-      elif [[ -f ${ACME_BASE}/acme/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/privkey.pem ]]; then
-        log_f "Error requesting certificate, restoring from previous acme request and restarting containers..."
-        cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
-        cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
-        TRIGGER_RESTART=1
-      fi
-      if ! verify_hash_match ${ACME_BASE}/cert.pem ${ACME_BASE}/key.pem; then
-        log_f "Error verifying certificates, restoring mailcow snake-oil and restarting containers..."
-        cp ${SSL_EXAMPLE}/cert.pem ${ACME_BASE}/cert.pem
-        cp ${SSL_EXAMPLE}/key.pem ${ACME_BASE}/key.pem
-        TRIGGER_RESTART=1
-      fi
-      [[ ${TRIGGER_RESTART} == 1 ]] && restart_containers ${CONTAINERS_RESTART[*]}
-      log_f "Retrying in 30 minutes..."
-      sleep 30m
-      exec $(readlink -f "$0")
       ;;
-    2) # no change
-      log_f "${ACME_RESPONSE}" redis_only
-      if ! diff ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem; then
-        log_f "Certificate was not changed, but active certificate does not match the verified certificate, fixing and restarting containers..."
-        cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
-        cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
-        TRIGGER_RESTART=1
-      fi
-      if ! verify_hash_match ${ACME_BASE}/cert.pem ${ACME_BASE}/key.pem; then
-        log_f "Certificate was not changed, but hashes do not match, restoring from previous acme request and restarting containers..."
-        cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
-        cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
-        TRIGGER_RESTART=1
-      fi
-      log_f "Certificate was not changed"
-      [[ ${TRIGGER_RESTART} == 1 ]] && restart_containers ${CONTAINERS_RESTART[*]}
-      ;;
-    *) # unspecified
-      log_f "${ACME_RESPONSE}" redis_only
-      if [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ]]; then
-        log_f "Error requesting certificate, restoring previous certificate from backup and restarting containers...."
-        cp ${ACME_BASE}/acme/private/${DATE}.bak/fullchain.pem ${ACME_BASE}/cert.pem
-        cp ${ACME_BASE}/acme/private/${DATE}.bak/privkey.pem ${ACME_BASE}/key.pem
-        TRIGGER_RESTART=1
-            elif [[ -f ${ACME_BASE}/acme/fullchain.pem ]] && [[ -f ${ACME_BASE}/acme/private/privkey.pem ]]; then
-        log_f "Error requesting certificate, restoring from previous acme request and restarting containers..."
-        cp ${ACME_BASE}/acme/fullchain.pem ${ACME_BASE}/cert.pem
-        cp ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/key.pem
-        TRIGGER_RESTART=1
-      fi
-      if ! verify_hash_match ${ACME_BASE}/cert.pem ${ACME_BASE}/key.pem; then
-        log_f "Error verifying certificates, restoring mailcow snake-oil..."
-        cp ${SSL_EXAMPLE}/cert.pem ${ACME_BASE}/cert.pem
-        cp ${SSL_EXAMPLE}/key.pem ${ACME_BASE}/key.pem
-        TRIGGER_RESTART=1
-      fi
-      [[ ${TRIGGER_RESTART} == 1 ]] && restart_containers ${CONTAINERS_RESTART[*]}
+    *) # non-zero is non-fun
+      ACME_RESPONSE_B64=$(echo "${ACME_RESPONSE}" | openssl enc -e -A -base64)
+      log_f "${ACME_RESPONSE_B64}" redis_only b64
       log_f "Retrying in 30 minutes..."
+      redis-cli -h redis SET ACME_FAIL_TIME "$(date +%s)"
       sleep 30m
       exec $(readlink -f "$0")
       ;;
   esac
-
-  log_f "ACME certificate validation done. Sleeping for another day."
-  sleep 1d
 
 done

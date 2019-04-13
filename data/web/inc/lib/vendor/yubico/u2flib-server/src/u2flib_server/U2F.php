@@ -32,6 +32,12 @@ namespace u2flib_server;
 /** Constant for the version of the u2f protocol */
 const U2F_VERSION = "U2F_V2";
 
+/** Constant for the type value in registration clientData */
+const REQUEST_TYPE_REGISTER = "navigator.id.finishEnrollment";
+
+/** Constant for the type value in authentication clientData */
+const REQUEST_TYPE_AUTHENTICATE = "navigator.id.getAssertion";
+
 /** Error for the authentication message not matching any outstanding
  * authentication request */
 const ERR_NO_MATCHING_REQUEST = 1;
@@ -68,6 +74,15 @@ const ERR_BAD_UA_RETURNING = 10;
 
 /** Error old OpenSSL version */
 const ERR_OLD_OPENSSL = 11;
+
+/** Error for the origin not matching the appId */
+const ERR_NO_MATCHING_ORIGIN = 12;
+
+/** Error for the type in clientData being invalid */
+const ERR_BAD_TYPE = 13;
+
+/** Error for bad user presence byte value */
+const ERR_BAD_USER_PRESENCE = 14;
 
 /** @internal */
 const PUBKEY_LEN = 65;
@@ -160,6 +175,14 @@ class U2F
             throw new Error('Registration challenge does not match', ERR_UNMATCHED_CHALLENGE );
         }
 
+        if(isset($cli->typ) && $cli->typ !== REQUEST_TYPE_REGISTER) {
+            throw new Error('ClientData type is invalid', ERR_BAD_TYPE);
+        }
+
+        if(isset($cli->origin) && $cli->origin !== $request->appId) {
+            throw new Error('App ID does not match the origin', ERR_NO_MATCHING_ORIGIN);
+        }
+
         $registration = new Registration();
         $offs = 1;
         $pubKey = substr($rawReg, $offs, PUBKEY_LEN);
@@ -199,7 +222,7 @@ class U2F
         }
         $signature = substr($rawReg, $offs);
 
-        $dataToVerify  = chr(0);
+        $dataToVerify  = pack('C', 0);
         $dataToVerify .= hash('sha256', $request->appId, true);
         $dataToVerify .= hash('sha256', $clientData, true);
         $dataToVerify .= $kh;
@@ -227,6 +250,7 @@ class U2F
             if( !is_object( $reg ) ) {
                 throw new \InvalidArgumentException('$registrations of getAuthenticateData() method only accepts array of object.');
             }
+            /** @var Registration $reg */
 
             $sig = new SignRequest();
             $sig->appId = $this->appId;
@@ -269,6 +293,11 @@ class U2F
 
         $clientData = $this->base64u_decode($response->clientData);
         $decodedClient = json_decode($clientData);
+
+        if(isset($decodedClient->typ) && $decodedClient->typ !== REQUEST_TYPE_AUTHENTICATE) {
+            throw new Error('ClientData type is invalid', ERR_BAD_TYPE);
+        }
+
         foreach ($requests as $req) {
             if( !is_object( $req ) ) {
                 throw new \InvalidArgumentException('$requests of doAuthenticate() method only accepts array of object.');
@@ -282,6 +311,9 @@ class U2F
         }
         if($req === null) {
             throw new Error('No matching request found', ERR_NO_MATCHING_REQUEST );
+        }
+        if(isset($decodedClient->origin) && $decodedClient->origin !== $req->appId) {
+            throw new Error('App ID does not match the origin', ERR_NO_MATCHING_ORIGIN);
         }
         foreach ($registrations as $reg) {
             if( !is_object( $reg ) ) {
@@ -308,12 +340,16 @@ class U2F
         $signature = substr($signData, 5);
 
         if(openssl_verify($dataToVerify, $signature, $pemKey, 'sha256') === 1) {
+            $upb = unpack("Cupb", substr($signData, 0, 1)); 
+            if($upb['upb'] !== 1) { 
+                throw new Error('User presence byte value is invalid', ERR_BAD_USER_PRESENCE );
+            }
             $ctr = unpack("Nctr", substr($signData, 1, 4));
             $counter = $ctr['ctr'];
             /* TODO: wrap-around should be handled somehow.. */
             if($counter > $reg->counter) {
                 $reg->counter = $counter;
-                return $reg;
+                return self::castObjectToRegistration($reg);
             } else {
                 throw new Error('Counter too low.', ERR_COUNTER_TOO_LOW );
             }
@@ -323,19 +359,43 @@ class U2F
     }
 
     /**
+     * @param object $object
+     * @return Registration
+     */
+    protected static function castObjectToRegistration($object)
+    {
+        $reg = new Registration();
+        if (property_exists($object, 'publicKey')) {
+            $reg->publicKey = $object->publicKey;
+        }
+        if (property_exists($object, 'certificate')) {
+            $reg->certificate = $object->certificate;
+        }
+        if (property_exists($object, 'counter')) {
+            $reg->counter = $object->counter;
+        }
+        if (property_exists($object, 'keyHandle')) {
+            $reg->keyHandle = $object->keyHandle;
+        }
+        return $reg;
+    }
+
+    /**
      * @return array
      */
     private function get_certs()
     {
         $files = array();
         $dir = $this->attestDir;
-        if($dir && $handle = opendir($dir)) {
+        if($dir !== null && is_dir($dir) && $handle = opendir($dir)) {
             while(false !== ($entry = readdir($handle))) {
                 if(is_file("$dir/$entry")) {
                     $files[] = "$dir/$entry";
                 }
             }
             closedir($handle);
+        } elseif (is_file("$dir")) {
+            $files[] = "$dir";
         }
         return $files;
     }
@@ -395,11 +455,7 @@ class U2F
      */
     private function createChallenge()
     {
-        $challenge = openssl_random_pseudo_bytes(32, $crypto_strong );
-        if( $crypto_strong !== true ) {
-            throw new Error('Unable to obtain a good source of randomness', ERR_BAD_RANDOM);
-        }
-
+        $challenge = random_bytes(32);
         $challenge = $this->base64u_encode( $challenge );
 
         return $challenge;
@@ -413,7 +469,7 @@ class U2F
      */
     private function fixSignatureUnusedBits($cert)
     {
-        if(in_array(hash('sha256', $cert), $this->FIXCERTS)) {
+        if(in_array(hash('sha256', $cert), $this->FIXCERTS, true)) {
             $cert[strlen($cert) - 257] = "\0";
         }
         return $cert;
@@ -427,13 +483,13 @@ class U2F
  */
 class RegisterRequest
 {
-    /** Protocol version */
+    /** @var string Protocol version */
     public $version = U2F_VERSION;
 
-    /** Registration challenge */
+    /** @var string Registration challenge */
     public $challenge;
 
-    /** Application id */
+    /** @var string Application id */
     public $appId;
 
     /**
@@ -455,17 +511,17 @@ class RegisterRequest
  */
 class SignRequest
 {
-    /** Protocol version */
+    /** @var string Protocol version */
     public $version = U2F_VERSION;
 
-    /** Authentication challenge */
-    public $challenge;
+    /** @var string Authentication challenge */
+    public $challenge = '';
 
-    /** Key handle of a registered authenticator */
-    public $keyHandle;
+    /** @var string Key handle of a registered authenticator */
+    public $keyHandle = '';
 
-    /** Application id */
-    public $appId;
+    /** @var string Application id */
+    public $appId = '';
 }
 
 /**
@@ -475,16 +531,16 @@ class SignRequest
  */
 class Registration
 {
-    /** The key handle of the registered authenticator */
-    public $keyHandle;
+    /** @var string The key handle of the registered authenticator */
+    public $keyHandle = '';
 
-    /** The public key of the registered authenticator */
-    public $publicKey;
+    /** @var string The public key of the registered authenticator */
+    public $publicKey = '';
 
-    /** The attestation certificate of the registered authenticator */
-    public $certificate;
+    /** @var string The attestation certificate of the registered authenticator */
+    public $certificate = '';
 
-    /** The counter associated with this registration */
+    /** @var int The counter associated with this registration */
     public $counter = -1;
 }
 
