@@ -1,19 +1,20 @@
 <?php
-require_once 'inc/prerequisites.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'admin') {
-  header('Location: /admin.php');
+  header('Location: /admin');
   exit();
 }
 elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'domainadmin') {
-  header('Location: /mailbox.php');
+  header('Location: /mailbox');
   exit();
 }
 elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user') {
-  header('Location: /user.php');
+  header('Location: /user');
   exit();
 }
-require_once 'inc/header.inc.php';
+
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/header.inc.php';
 $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 
 ?>
@@ -107,6 +108,6 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
     </div>
   </div>
 </div><!-- /.container -->
-<script src="js/index.js"></script>
 <?php
-require_once 'inc/footer.inc.php';
+$js_minifier->add('/web/js/site/index.js');
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';

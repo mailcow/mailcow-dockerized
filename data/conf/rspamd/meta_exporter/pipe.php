@@ -6,7 +6,8 @@ require_once "vars.inc.php";
 // Do not show errors, we log to using error_log
 ini_set('error_reporting', 0);
 // Init database
-$dsn = $database_type . ':host=' . $database_host . ';dbname=' . $database_name;
+//$dsn = $database_type . ':host=' . $database_host . ';dbname=' . $database_name;
+$dsn = $database_type . ":unix_socket=" . $database_sock . ";dbname=" . $database_name;
 $opt = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -16,6 +17,7 @@ try {
   $pdo = new PDO($dsn, $database_user, $database_pass, $opt);
 }
 catch (PDOException $e) {
+  error_log("QUARANTINE: " . $e);
   http_response_code(501);
   exit;
 }
@@ -49,6 +51,7 @@ $raw_data = mb_convert_encoding($raw_data_content, 'HTML-ENTITIES', "UTF-8");
 $headers = getallheaders();
 
 $qid      = $headers['X-Rspamd-Qid'];
+$subject  = $headers['X-Rspamd-Subject'];
 $score    = $headers['X-Rspamd-Score'];
 $rcpts    = $headers['X-Rspamd-Rcpt'];
 $user     = $headers['X-Rspamd-User'];
@@ -60,12 +63,11 @@ $symbols  = $headers['X-Rspamd-Symbols'];
 $raw_size = (int)$_SERVER['CONTENT_LENGTH'];
 
 try {
-  if ($max_size = $redis->Get('Q_MAX_SIZE')) {
-    if (!empty($max_size) && ($max_size * 1048576) < $raw_size) {
-      error_log(sprintf("Message too large: %d exceeds %d", $raw_size, ($max_size * 1048576)));
-      http_response_code(505);
-      exit;
-    }
+  $max_size = (int)$redis->Get('Q_MAX_SIZE');
+  if (($max_size * 1048576) < $raw_size) {
+    error_log(sprintf("QUARANTINE: Message too large: %d b exceeds %d b", $raw_size, ($max_size * 1048576)));
+    http_response_code(505);
+    exit;
   }
   if ($exclude_domains = $redis->Get('Q_EXCLUDE_DOMAINS')) {
     $exclude_domains = json_decode($exclude_domains, true);
@@ -73,7 +75,7 @@ try {
   $retention_size = (int)$redis->Get('Q_RETENTION_SIZE');
 }
 catch (RedisException $e) {
-  error_log($e);
+  error_log("QUARANTINE: " . $e);
   http_response_code(504);
   exit;
 }
@@ -82,6 +84,9 @@ $rcpt_final_mailboxes = array();
 
 // Loop through all rcpts
 foreach (json_decode($rcpts, true) as $rcpt) {
+  // Remove tag
+  $rcpt = preg_replace('/^(.*?)\+.*(@.*)$/', '$1$2', $rcpt);
+  
   // Break rcpt into local part and domain part
   $parsed_rcpt = parse_email($rcpt);
   
@@ -92,14 +97,14 @@ foreach (json_decode($rcpts, true) as $rcpt) {
     }
   }
   catch (RedisException $e) {
-    error_log($e);
+    error_log("QUARANTINE: " . $e);
     http_response_code(504);
     exit;
   }
 
   // Skip if domain is excluded
   if (in_array($parsed_rcpt['domain'], $exclude_domains)) {
-    error_log(sprintf("Skipped domain %s", $parsed_rcpt['domain']));
+    error_log(sprintf("QUARANTINE: Skipped domain %s", $parsed_rcpt['domain']));
     continue;
   }
 
@@ -134,12 +139,12 @@ foreach (json_decode($rcpts, true) as $rcpt) {
 
       // Loop through all found gotos
       foreach ($gotos_array as $index => &$goto) {
-        error_log("quarantine pipe: query " . $goto . " as username from mailbox");
+        error_log("QUARANTINE: quarantine pipe: query " . $goto . " as username from mailbox");
         $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `username` = :goto AND `active`= '1';");
         $stmt->execute(array(':goto' => $goto));
         $username = $stmt->fetch(PDO::FETCH_ASSOC)['username'];
         if (!empty($username)) {
-          error_log("quarantine pipe: mailbox found: " . $username);
+          error_log("QUARANTINE: quarantine pipe: mailbox found: " . $username);
           // Current goto is a mailbox, save to rcpt_final_mailboxes if not a duplicate
           if (!in_array($username, $rcpt_final_mailboxes)) {
             $rcpt_final_mailboxes[] = $username;
@@ -148,13 +153,13 @@ foreach (json_decode($rcpts, true) as $rcpt) {
         else {
           $parsed_goto = parse_email($goto);
           if (!$redis->hGet('DOMAIN_MAP', $parsed_goto['domain'])) {
-            error_log($goto . " is not a mailcow handled mailbox or alias address");
+            error_log("QUARANTINE:" . $goto . " is not a mailcow handled mailbox or alias address");
           }
           else {
             $stmt = $pdo->prepare("SELECT `goto` FROM `alias` WHERE `address` = :goto AND `active` = '1'");
             $stmt->execute(array(':goto' => $goto));
             $goto_branch = $stmt->fetch(PDO::FETCH_ASSOC)['goto'];
-            error_log("quarantine pipe: goto address " . $goto . " is a alias branch for " . $goto_branch);
+            error_log("QUARANTINE: quarantine pipe: goto address " . $goto . " is a alias branch for " . $goto_branch);
             $goto_branch_array = explode(',', $goto_branch);
           }
         }
@@ -174,23 +179,24 @@ foreach (json_decode($rcpts, true) as $rcpt) {
       // Force exit if loop cannot be solved
       // Postfix does not allow for alias loops, so this should never happen.
       $loop_c++;
-      error_log("quarantine pipe: goto array count on loop #". $loop_c . " is " . count($gotos_array));
+      error_log("QUARANTINE: quarantine pipe: goto array count on loop #". $loop_c . " is " . count($gotos_array));
     }
   }
   catch (PDOException $e) {
-    error_log($e->getMessage());
+    error_log("QUARANTINE: " . $e->getMessage());
     http_response_code(502);
     exit;
   }
 }
 
 foreach ($rcpt_final_mailboxes as $rcpt) {
-  error_log("quarantine pipe: processing quarantine message for rcpt " . $rcpt);
+  error_log("QUARANTINE: quarantine pipe: processing quarantine message for rcpt " . $rcpt);
   try {
-    $stmt = $pdo->prepare("INSERT INTO `quarantine` (`qid`, `score`, `sender`, `rcpt`, `symbols`, `user`, `ip`, `msg`, `action`)
-      VALUES (:qid, :score, :sender, :rcpt, :symbols, :user, :ip, :msg, :action)");
+    $stmt = $pdo->prepare("INSERT INTO `quarantine` (`qid`, `subject`, `score`, `sender`, `rcpt`, `symbols`, `user`, `ip`, `msg`, `action`)
+      VALUES (:qid, :subject, :score, :sender, :rcpt, :symbols, :user, :ip, :msg, :action)");
     $stmt->execute(array(
       ':qid' => $qid,
+      ':subject' => $subject,
       ':score' => $score,
       ':sender' => $sender,
       ':rcpt' => $rcpt,
@@ -217,7 +223,7 @@ foreach ($rcpt_final_mailboxes as $rcpt) {
     ));
   }
   catch (PDOException $e) {
-    error_log($e->getMessage());
+    error_log("QUARANTINE: " . $e->getMessage());
     http_response_code(503);
     exit;
   }

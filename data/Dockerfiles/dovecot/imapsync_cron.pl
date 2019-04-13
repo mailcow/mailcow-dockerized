@@ -18,18 +18,20 @@ if ($imapsync_running eq 1)
   exit;
 }
 
-sub qqw($) { split /\s+/, $_[0] }
-
-$DBNAME = '';
-$DBUSER = '';
-$DBPASS = '';
+sub qqw($) {
+  my @values = split('(?=--)', $_[0]);
+  foreach my $val (@values) {
+    $val=trim($val);
+  }
+  return @values
+}
 
 $run_dir="/tmp";
-$dsn = "DBI:mysql:database=" . $DBNAME . ";host=mysql";
+$dsn = 'DBI:mysql:database=__DBNAME__;mysql_socket=/var/run/mysqld/mysqld.sock';
 $lock_file = $run_dir . "/imapsync_busy";
 $lockmgr = LockFile::Simple->make(-autoclean => 1, -max => 1);
 $lockmgr->lock($lock_file) || die "can't lock ${lock_file}";
-$dbh = DBI->connect($dsn, $DBUSER, $DBPASS, {
+$dbh = DBI->connect($dsn, '__DBUSER__', '__DBPASS__', {
   mysql_auto_reconnect => 1,
   mysql_enable_utf8mb4 => 1
 });

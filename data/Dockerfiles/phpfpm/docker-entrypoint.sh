@@ -1,16 +1,55 @@
 #!/bin/bash
-set -e
 
 function array_by_comma { local IFS=","; echo "$*"; }
 
 # Wait for containers
-while ! mysqladmin ping --host mysql -u${DBUSER} -p${DBPASS} --silent; do
+while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
+  echo "Waiting for SQL..."
   sleep 2
 done
 
 until [[ $(redis-cli -h redis-mailcow PING) == "PONG" ]]; do
+  echo "Waiting for Redis..."
   sleep 2
 done
+
+# Set a default release format
+
+if [[ -z $(redis-cli --raw -h redis-mailcow GET Q_RELEASE_FORMAT) ]]; then
+  redis-cli --raw -h redis-mailcow SET Q_RELEASE_FORMAT raw
+fi
+
+# Check of mysql_upgrade
+
+CONTAINER_ID=
+# Todo: Better check if upgrade failed
+# This can happen due to a broken sogo_view
+[ -s /mysql_upgrade_loop ] && SQL_LOOP_C=$(cat /mysql_upgrade_loop)
+until [[ ! -z "${CONTAINER_ID}" ]] && [[ "${CONTAINER_ID}" =~ ^[[:alnum:]]*$ ]]; do
+  CONTAINER_ID=$(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], id: .Id}" 2> /dev/null | jq -rc "select( .name | tostring | contains(\"mysql-mailcow\")) | .id" 2> /dev/null)
+done
+echo "MySQL @ ${CONTAINER_ID}"
+SQL_UPGRADE_RETURN=$(curl --silent --insecure -XPOST https://dockerapi/containers/${CONTAINER_ID}/exec -d '{"cmd":"system", "task":"mysql_upgrade"}' --silent -H 'Content-type: application/json' | jq -r .type)
+if [[ ${SQL_UPGRADE_RETURN} == 'warning' ]]; then
+  if [ -z ${SQL_LOOP_C} ]; then
+    echo 1 > /mysql_upgrade_loop
+    echo "MySQL applied an upgrade, restarting PHP-FPM..."
+    exit 1
+  else
+    rm /mysql_upgrade_loop
+    echo "MySQL was not applied previously, skipping. Restart php-fpm-mailcow to retry or run mysql_upgrade manually."
+    while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
+      echo "Waiting for SQL to return..."
+      sleep 2
+    done
+  fi
+else
+  echo "MySQL is up-to-date"
+fi
+
+# Trigger db init
+echo "Running DB init..."
+php -c /usr/local/etc/php -f /web/inc/init_db.inc.php
 
 # Migrate domain map
 declare -a DOMAIN_ARR
@@ -18,11 +57,11 @@ redis-cli -h redis-mailcow DEL DOMAIN_MAP
 while read line
 do
   DOMAIN_ARR+=("$line")
-done < <(mysql -h mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM domain" -Bs)
+done < <(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM domain" -Bs)
 while read line
 do
   DOMAIN_ARR+=("$line")
-done < <(mysql -h mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT alias_domain FROM alias_domain" -Bs)
+done < <(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT alias_domain FROM alias_domain" -Bs)
 
 if [[ ! -z ${DOMAIN_ARR} ]]; then
 for domain in "${DOMAIN_ARR[@]}"; do
@@ -48,10 +87,9 @@ if [[ ${API_ALLOW_FROM} != "invalid" ]] && \
   done
   VALIDATED_IPS=$(array_by_comma ${VALIDATED_API_ALLOW_FROM_ARR[*]})
   if [[ ! -z ${VALIDATED_IPS} ]]; then
-    mysql --host mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
-INSERT INTO api (username, api_key, active, allow_from)
-SELECT username, "${API_KEY}", '1', "${VALIDATED_IPS}" FROM admin WHERE superadmin='1' AND active='1'
-ON DUPLICATE KEY UPDATE active = '1', allow_from = "${VALIDATED_IPS}", api_key = "${API_KEY}";
+    mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
+DELETE FROM api;
+INSERT INTO api (api_key, active, allow_from) VALUES ("${API_KEY}", "1", "${VALIDATED_IPS}");
 EOF
   fi
 fi

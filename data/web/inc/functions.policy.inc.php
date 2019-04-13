@@ -6,6 +6,14 @@ function policy($_action, $_scope, $_data = null) {
 	$_data_log = $_data;
   switch ($_action) {
     case 'add':
+      if (!isset($_SESSION['acl']['spam_policy']) || $_SESSION['acl']['spam_policy'] != "1" ) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }
       switch ($_scope) {
         case 'domain':
           $object = $_data['domain'];
@@ -18,7 +26,7 @@ function policy($_action, $_scope, $_data = null) {
               );
               return false;
             }
-            $object = idn_to_ascii(strtolower(trim($object)));
+            $object = idn_to_ascii(strtolower(trim($object)), 0, INTL_IDNA_VARIANT_UTS46);
           }
           else {
             $_SESSION['return'][] = array(
@@ -34,7 +42,7 @@ function policy($_action, $_scope, $_data = null) {
           elseif ($_data['object_list'] == "wl") {
             $object_list = "whitelist_from";
           }
-          $object_from = preg_replace('/\.+/', '.', rtrim(preg_replace("/\.\*/", "*", trim(strtolower($_data['object_from']))), '.'));
+          $object_from = trim(strtolower($_data['object_from']));
           if (!ctype_alnum(str_replace(array('@', '_', '.', '-', '*'), '', $object_from))) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
@@ -90,21 +98,13 @@ function policy($_action, $_scope, $_data = null) {
             );
             return false;
           }
-          if (!isset($_SESSION['acl']['spam_policy']) || $_SESSION['acl']['spam_policy'] != "1" ) {
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
-              'msg' => 'access_denied'
-            );
-            return false;
-          }
           if ($_data['object_list'] == "bl") {
             $object_list = "blacklist_from";
           }
           elseif ($_data['object_list'] == "wl") {
             $object_list = "whitelist_from";
           }
-          $object_from = preg_replace('/\.+/', '.', rtrim(preg_replace("/\.\*/", "*", trim(strtolower($_data['object_from']))), '.'));
+          $object_from = trim(strtolower($_data['object_from']));
           if (!ctype_alnum(str_replace(array('@', '_', '.', '-', '*'), '', $object_from))) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
@@ -151,6 +151,14 @@ function policy($_action, $_scope, $_data = null) {
       }
     break;
     case 'delete':
+      if (!isset($_SESSION['acl']['spam_policy']) || $_SESSION['acl']['spam_policy'] != "1" ) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }
       switch ($_scope) {
         case 'domain':
           (array)$prefids = $_data['prefid'];
@@ -175,7 +183,7 @@ function policy($_action, $_scope, $_data = null) {
                 );
                 continue;
               }
-              $object = idn_to_ascii(strtolower(trim($object)));
+              $object = idn_to_ascii(strtolower(trim($object)), 0, INTL_IDNA_VARIANT_UTS46);
             }
             else {
               $_SESSION['return'][] = array(
@@ -214,14 +222,6 @@ function policy($_action, $_scope, $_data = null) {
           }
           else {
             $prefids = $_data['prefid'];
-          }
-          if (!isset($_SESSION['acl']['spam_policy']) || $_SESSION['acl']['spam_policy'] != "1" ) {
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
-              'msg' => 'access_denied'
-            );
-            return false;
           }
           foreach ($prefids as $prefid) {
             if (!is_numeric($prefid)) {
@@ -277,7 +277,7 @@ function policy($_action, $_scope, $_data = null) {
             if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
               return false;
             }
-            $_data = idn_to_ascii(strtolower(trim($_data)));
+            $_data = idn_to_ascii(strtolower(trim($_data)), 0, INTL_IDNA_VARIANT_UTS46);
           }
 
           // WHITELIST

@@ -123,7 +123,7 @@ function dkim($_action, $_data = null) {
         try {
           $redis->hSet('DKIM_PUB_KEYS', $to_domain, $from_domain_dkim['pubkey']);
           $redis->hSet('DKIM_SELECTORS', $to_domain, $from_domain_dkim['dkim_selector']);
-          $redis->hSet('DKIM_PRIV_KEYS', $from_domain_dkim['dkim_selector'] . '.' . $to_domain, trim($from_domain_dkim['privkey']));
+          $redis->hSet('DKIM_PRIV_KEYS', $from_domain_dkim['dkim_selector'] . '.' . $to_domain, base64_decode(trim($from_domain_dkim['privkey'])));
         }
         catch (RedisException $e) {
           $_SESSION['return'][] = array(
@@ -227,7 +227,7 @@ function dkim($_action, $_data = null) {
       return true;
     break;
     case 'details':
-      if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
+      if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data) && $_SESSION['mailcow_cc_role'] != "admin") {
         return false;
       }
       $dkimdata = array();

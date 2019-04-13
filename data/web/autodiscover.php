@@ -1,6 +1,6 @@
 <?php
-require_once 'inc/vars.inc.php';
-require_once 'inc/functions.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/vars.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.inc.php';
 $default_autodiscover_config = $autodiscover_config;
 if(file_exists('inc/vars.local.inc.php')) {
   include_once 'inc/vars.local.inc.php';
@@ -27,7 +27,8 @@ if (strpos($data, 'autodiscover/outlook/responseschema') !== false) {
   }
 }
 
-$dsn = $database_type . ":host=" . $database_host . ";dbname=" . $database_name;
+//$dsn = $database_type . ":host=" . $database_host . ";dbname=" . $database_name;
+$dsn = $database_type . ":unix_socket=" . $database_sock . ";dbname=" . $database_name;
 $opt = [
   PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
   PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,

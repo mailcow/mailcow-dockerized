@@ -44,8 +44,8 @@ function bcc($_action, $_data = null, $attr = null) {
           );
           return false;
         }
-        $domain = idn_to_ascii($local_dest);
-        $local_dest_sane = '@' . idn_to_ascii($local_dest);
+        $domain = idn_to_ascii($local_dest, 0, INTL_IDNA_VARIANT_UTS46);
+        $local_dest_sane = '@' . idn_to_ascii($local_dest, 0, INTL_IDNA_VARIANT_UTS46);
       }
       elseif (filter_var($local_dest, FILTER_VALIDATE_EMAIL)) {
         if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $local_dest)) {
@@ -87,25 +87,15 @@ function bcc($_action, $_data = null, $attr = null) {
         );
         return false;
       }
-      try {
-        $stmt = $pdo->prepare("INSERT INTO `bcc_maps` (`local_dest`, `bcc_dest`, `domain`, `active`, `type`) VALUES
-          (:local_dest, :bcc_dest, :domain, :active, :type)");
-        $stmt->execute(array(
-          ':local_dest' => $local_dest_sane,
-          ':bcc_dest' => $bcc_dest,
-          ':domain' => $domain,
-          ':active' => $active,
-          ':type' => $type
-        ));
-      }
-      catch (PDOException $e) {
-        $_SESSION['return'][] = array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__, $_action, $_data, $_attr),
-          'msg' => array('mysql_error', $e)
-        );
-        return false;
-      }
+      $stmt = $pdo->prepare("INSERT INTO `bcc_maps` (`local_dest`, `bcc_dest`, `domain`, `active`, `type`) VALUES
+        (:local_dest, :bcc_dest, :domain, :active, :type)");
+      $stmt->execute(array(
+        ':local_dest' => $local_dest_sane,
+        ':bcc_dest' => $bcc_dest,
+        ':domain' => $domain,
+        ':active' => $active,
+        ':type' => $type
+      ));
       $_SESSION['return'][] = array(
         'type' => 'success',
         'log' => array(__FUNCTION__, $_action, $_data, $_attr),
@@ -155,37 +145,27 @@ function bcc($_action, $_data = null, $attr = null) {
           );
           continue;
         }
-        try {
-          $stmt = $pdo->prepare("SELECT `id` FROM `bcc_maps`
-            WHERE `local_dest` = :local_dest AND `type` = :type");
-          $stmt->execute(array(':local_dest' => $local_dest, ':type' => $type));
-          $id_now = $stmt->fetch(PDO::FETCH_ASSOC)['id'];
+        $stmt = $pdo->prepare("SELECT `id` FROM `bcc_maps`
+          WHERE `local_dest` = :local_dest AND `type` = :type");
+        $stmt->execute(array(':local_dest' => $local_dest, ':type' => $type));
+        $id_now = $stmt->fetch(PDO::FETCH_ASSOC)['id'];
 
-          if (isset($id_now) && $id_now != $id) {
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_data, $_attr),
-              'msg' => array('bcc_exists', htmlspecialchars($local_dest), $type)
-            );
-            continue;
-          }
-
-          $stmt = $pdo->prepare("UPDATE `bcc_maps` SET `bcc_dest` = :bcc_dest, `active` = :active, `type` = :type WHERE `id`= :id");
-          $stmt->execute(array(
-            ':bcc_dest' => $bcc_dest,
-            ':active' => $active,
-            ':type' => $type,
-            ':id' => $id
-          ));
-        }
-        catch (PDOException $e) {
+        if (isset($id_now) && $id_now != $id) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data, $_attr),
-            'msg' => array('mysql_error', $e)
+            'msg' => array('bcc_exists', htmlspecialchars($local_dest), $type)
           );
           continue;
         }
+
+        $stmt = $pdo->prepare("UPDATE `bcc_maps` SET `bcc_dest` = :bcc_dest, `active` = :active, `type` = :type WHERE `id`= :id");
+        $stmt->execute(array(
+          ':bcc_dest' => $bcc_dest,
+          ':active' => $active,
+          ':type' => $type,
+          ':id' => $id
+        ));
         $_SESSION['return'][] = array(
           'type' => 'success',
           'log' => array(__FUNCTION__, $_action, $_data, $_attr),
@@ -233,34 +213,33 @@ function bcc($_action, $_data = null, $attr = null) {
       return $bccdata;
     break;
     case 'delete':
+      if (!isset($_SESSION['acl']['bcc_maps']) || $_SESSION['acl']['bcc_maps'] != "1" ) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }
       $ids = (array)$_data['id'];
       foreach ($ids as $id) {
         if (!is_numeric($id)) {
           return false;
         }
-        try {
-          $stmt = $pdo->prepare("SELECT `domain` FROM `bcc_maps` WHERE id = :id");
-          $stmt->execute(array(':id' => $id));
-          $domain = $stmt->fetch(PDO::FETCH_ASSOC)['domain'];
-          if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_data, $_attr),
-              'msg' => 'access_denied'
-            );
-            continue;
-          }
-          $stmt = $pdo->prepare("DELETE FROM `bcc_maps` WHERE `id`= :id");
-          $stmt->execute(array(':id' => $id));
-        }
-        catch (PDOException $e) {
+        $stmt = $pdo->prepare("SELECT `domain` FROM `bcc_maps` WHERE id = :id");
+        $stmt->execute(array(':id' => $id));
+        $domain = $stmt->fetch(PDO::FETCH_ASSOC)['domain'];
+        if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data, $_attr),
-            'msg' => array('mysql_error', $e)
+            'msg' => 'access_denied'
           );
           continue;
         }
+        $stmt = $pdo->prepare("DELETE FROM `bcc_maps` WHERE `id`= :id");
+        $stmt->execute(array(':id' => $id));
+
         $_SESSION['return'][] = array(
           'type' => 'success',
           'log' => array(__FUNCTION__, $_action, $_data, $_attr),
@@ -286,7 +265,7 @@ function recipient_map($_action, $_data = null, $attr = null) {
       $new_dest = strtolower(trim($_data['recipient_map_new']));
       $active = intval($_data['active']);
       if (is_valid_domain_name($old_dest)) {
-        $old_dest_sane = '@' . idn_to_ascii($old_dest);
+        $old_dest_sane = '@' . idn_to_ascii($old_dest, 0, INTL_IDNA_VARIANT_UTS46);
       }
       elseif (filter_var($old_dest, FILTER_VALIDATE_EMAIL)) {
         $old_dest_sane = $old_dest;
@@ -309,33 +288,22 @@ function recipient_map($_action, $_data = null, $attr = null) {
       }
       $rmaps = recipient_map('get');
       foreach ($rmaps as $rmap) {
-        $old_dests_existing[] = recipient_map('details', $rmap)['recipient_map_old'];
+        if (recipient_map('details', $rmap)['recipient_map_old'] == $old_dest_sane) {
+          $_SESSION['return'][] = array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+            'msg' => array('recipient_map_entry_exists', htmlspecialchars($old_dest_sane))
+          );
+          return false;
+        }
       }
-      if (in_array($old_dest_sane, $old_dests_existing)) {
-        $_SESSION['return'][] = array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__, $_action, $_data, $_attr),
-          'msg' => array('recipient_map_entry_exists', htmlspecialchars($old_dest))
-        );
-        return false;
-      }
-      try {
-        $stmt = $pdo->prepare("INSERT INTO `recipient_maps` (`old_dest`, `new_dest`, `active`) VALUES
-          (:old_dest, :new_dest, :active)");
-        $stmt->execute(array(
-          ':old_dest' => $old_dest_sane,
-          ':new_dest' => $new_dest,
-          ':active' => $active
-        ));
-      }
-      catch (PDOException $e) {
-        $_SESSION['return'][] = array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__, $_action, $_data, $_attr),
-          'msg' => array('mysql_error', $e)
-        );
-        return false;
-      }
+      $stmt = $pdo->prepare("INSERT INTO `recipient_maps` (`old_dest`, `new_dest`, `active`) VALUES
+        (:old_dest, :new_dest, :active)");
+      $stmt->execute(array(
+        ':old_dest' => $old_dest_sane,
+        ':new_dest' => $new_dest,
+        ':active' => $active
+      ));
       $_SESSION['return'][] = array(
         'type' => 'success',
         'log' => array(__FUNCTION__, $_action, $_data, $_attr),
@@ -363,7 +331,7 @@ function recipient_map($_action, $_data = null, $attr = null) {
           continue;
         }
         if (is_valid_domain_name($old_dest)) {
-          $old_dest_sane = '@' . idn_to_ascii($old_dest);
+          $old_dest_sane = '@' . idn_to_ascii($old_dest, 0, INTL_IDNA_VARIANT_UTS46);
         }
         elseif (filter_var($old_dest, FILTER_VALIDATE_EMAIL)) {
           $old_dest_sane = $old_dest;
@@ -376,7 +344,6 @@ function recipient_map($_action, $_data = null, $attr = null) {
           );
           continue;
         }
-        $active = intval($_data['active']);
         if (!filter_var($new_dest, FILTER_VALIDATE_EMAIL)) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
@@ -387,38 +354,27 @@ function recipient_map($_action, $_data = null, $attr = null) {
         }
         $rmaps = recipient_map('get');
         foreach ($rmaps as $rmap) {
-          $old_dests_existing[] = recipient_map('details', $rmap)['recipient_map_old'];
-        }
-        if (in_array($old_dest_sane, $old_dests_existing) &&
-          recipient_map('details', $id)['recipient_map_old'] != $old_dest_sane) {
+          if ($rmap == $id) { continue; }
+          if (recipient_map('details', $rmap)['recipient_map_old'] == $old_dest_sane) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_data, $_attr),
               'msg' => array('recipient_map_entry_exists', htmlspecialchars($old_dest_sane))
             );
-            continue;
+            return false;
+          }
         }
-        try {
-          $stmt = $pdo->prepare("UPDATE `recipient_maps` SET
-            `old_dest` = :old_dest,
-            `new_dest` = :new_dest,
-            `active` = :active
-              WHERE `id`= :id");
-          $stmt->execute(array(
-            ':old_dest' => $old_dest_sane,
-            ':new_dest' => $new_dest,
-            ':active' => $active,
-            ':id' => $id
-          ));
-        }
-        catch (PDOException $e) {
-          $_SESSION['return'][] = array(
-            'type' => 'danger',
-            'log' => array(__FUNCTION__, $_action, $_data, $_attr),
-            'msg' => array('mysql_error', $e)
-          );
-          return false;
-        }
+        $stmt = $pdo->prepare("UPDATE `recipient_maps` SET
+          `old_dest` = :old_dest,
+          `new_dest` = :new_dest,
+          `active` = :active
+            WHERE `id`= :id");
+        $stmt->execute(array(
+          ':old_dest' => $old_dest_sane,
+          ':new_dest' => $new_dest,
+          ':active' => $active,
+          ':id' => $id
+        ));
         $_SESSION['return'][] = array(
           'type' => 'success',
           'log' => array(__FUNCTION__, $_action, $_data, $_attr),
@@ -463,24 +419,14 @@ function recipient_map($_action, $_data = null, $attr = null) {
         if (!is_numeric($id)) {
           return false;
         }
-        try {
-          $stmt = $pdo->prepare("DELETE FROM `recipient_maps` WHERE `id`= :id");
-          $stmt->execute(array(':id' => $id));
-        }
-        catch (PDOException $e) {
-          $_SESSION['return'][] = array(
-            'type' => 'danger',
-            'log' => array(__FUNCTION__, $_action, $_data, $_attr),
-            'msg' => array('mysql_error', $e)
-          );
-          return false;
-        }
+        $stmt = $pdo->prepare("DELETE FROM `recipient_maps` WHERE `id`= :id");
+        $stmt->execute(array(':id' => $id));
+        $_SESSION['return'][] = array(
+          'type' => 'success',
+          'log' => array(__FUNCTION__, $_action, $_data, $_attr),
+          'msg' => array('recipient_map_entry_deleted', htmlspecialchars($id))
+        );
       }
-      $_SESSION['return'][] = array(
-        'type' => 'success',
-        'msg' => array('recipient_map_entry_deleted', htmlspecialchars($old_dest))
-      );
-      return true;
     break;
   }
 }
