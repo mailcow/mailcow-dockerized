@@ -21,7 +21,7 @@ elseif (isset($_SERVER['HTTPS'])) {
 else {
   $IS_HTTPS = false;
 }
-// session_set_cookie_params($SESSION_LIFETIME, '/', '', $IS_HTTPS, true);
+
 if (session_status() !== PHP_SESSION_ACTIVE) {
   session_start();
 }
@@ -34,6 +34,13 @@ if (!isset($_SESSION['CSRF']['TOKEN'])) {
 if (!isset($_SESSION['SESS_REMOTE_UA'])) {
   $_SESSION['SESS_REMOTE_UA'] = $_SERVER['HTTP_USER_AGENT'];
 }
+
+// Keep session active
+if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $SESSION_LIFETIME)) {
+  session_unset();
+  session_destroy();
+}
+$_SESSION['LAST_ACTIVITY'] = time();
 
 // API
 if (!empty($_SERVER['HTTP_X_API_KEY'])) {
@@ -72,8 +79,6 @@ if (!empty($_SERVER['HTTP_X_API_KEY'])) {
     die();
   }
 }
-// Update session cookie
-// setcookie(session_name() ,session_id(), time() + $SESSION_LIFETIME);
 
 // Handle logouts
 if (isset($_POST["logout"])) {
