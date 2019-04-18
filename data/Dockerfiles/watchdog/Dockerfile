@@ -12,6 +12,7 @@ RUN apk add --update \
   coreutils \
   jq \
   fcgi \
+  openssl \
   nagios-plugins-mysql \
   nagios-plugins-dns \
   nagios-plugins-disk \

@@ -58,9 +58,10 @@ function mail_error() {
       log_msg "Cannot determine MX for ${rcpt}, skipping email notification..."
       return 1
     fi
+    [[ ${1} == "watchdog-mailcow" ]] && SUBJECT="Watchdog started" || SUBJECT="Watchdog: ${1} hit the error rate limit"
     [ -f "/tmp/${1}" ] && ATTACH="--attach /tmp/${1}@text/plain" || ATTACH=
     ./smtp-cli --missing-modules-ok \
-      --subject="Watchdog: ${1} hit the error rate limit" \
+      --subject="${SUBJECT}" \
       --body-plain="${BODY}" \
       --to=${rcpt} \
       --from="watchdog@${MAILCOW_HOSTNAME}" \
@@ -446,6 +447,9 @@ Empty
   done
   return 1
 }
+
+# Notify about start
+[[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "watchdog-mailcow" "Watchdog started monitoring mailcow."
 
 # Create watchdog agents
 (
