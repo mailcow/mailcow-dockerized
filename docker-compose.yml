@@ -359,14 +359,14 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.40
+      image: mailcow/watchdog:1.41
       # Debug
       #command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog
-      oom_kill_disable: true
       volumes:
         - rspamd-vol-1:/var/lib/rspamd
         - mysql-socket-vol-1:/var/run/mysqld/
+        - ./data/assets/ssl:/etc/ssl/mail/:ro
       restart: always
       environment:
         - LOG_LINES=${LOG_LINES:-9999}
