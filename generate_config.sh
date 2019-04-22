@@ -106,8 +106,8 @@ MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
 # SQL database configuration
 # ------------------------------
 
-DBNAME=mailcow
-DBUSER=mailcow
+DBNAME=${DBNAME:-mailcow}
+DBUSER=${DBUSER:-mailcow}
 
 # Please use long, random alphanumeric strings (A-Za-z0-9)
 
@@ -133,16 +133,16 @@ HTTPS_BIND=${HTTPS_BIND:-0.0.0.0}
 # Format: 11.22.33.44:25 or 0.0.0.0:465 etc.
 # Do _not_ use IP:PORT in HTTP(S)_BIND or HTTP(S)_PORT
 
-SMTP_PORT=25
-SMTPS_PORT=465
-SUBMISSION_PORT=587
-IMAP_PORT=143
-IMAPS_PORT=993
-POP_PORT=110
-POPS_PORT=995
-SIEVE_PORT=4190
-DOVEADM_PORT=127.0.0.1:19991
-SQL_PORT=127.0.0.1:13306
+SMTP_PORT=${SMTP_PORT:-25}
+SMTPS_PORT=${SMTPS_PORT:-465}
+SUBMISSION_PORT=${SUBMISSION_PORT:-587}
+IMAP_PORT=${IMAP_PORT:-143}
+IMAPS_PORT=${IMAPS_PORT:-993}
+POP_PORT=${POP_PORT:-110}
+POPS_PORT=${POPS_PORT:-995}
+SIEVE_PORT=${SIEVE_PORT:-4190}
+DOVEADM_PORT=${DOVEADM_PORT:-127.0.0.1:19991}
+SQL_PORT=${SQL_PORT:-127.0.0.1:13306}
 
 # Your timezone
 
@@ -150,20 +150,20 @@ TZ=${MAILCOW_TZ}
 
 # Fixed project name
 
-COMPOSE_PROJECT_NAME=mailcowdockerized
+COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-mailcowdockerized}
 
 # Set this to "allow" to enable the anyone pseudo user. Disabled by default.
 # When enabled, ACL can be created, that apply to "All authenticated users"
 # This should probably only be activated on mail hosts, that are used exclusivly by one organisation.
 # Otherwise a user might share data with too many other users.
-ACL_ANYONE=disallow
+ACL_ANYONE=${ACL_ANYONE:-disallow}
 
 # Garbage collector cleanup
 # Deleted domains and mailboxes are moved to /var/vmail/_garbage/timestamp_sanitizedstring
 # How long should objects remain in the garbage until they are being deleted? (value in minutes)
 # Check interval is hourly
 
-MAILDIR_GC_TIME=1440
+MAILDIR_GC_TIME=${MAILDIR_GC_TIME:-1440}
 
 # Additional SAN for the certificate
 #
@@ -183,15 +183,15 @@ ADDITIONAL_SAN=
 
 # Skip running ACME (acme-mailcow, Let's Encrypt certs) - y/n
 
-SKIP_LETS_ENCRYPT=n
+SKIP_LETS_ENCRYPT=${SKIP_LETS_ENCRYPT:-n}
 
 # Skip IPv4 check in ACME container - y/n
 
-SKIP_IP_CHECK=n
+SKIP_IP_CHECK=${SKIP_IP_CHECK:-n}
 
 # Skip HTTP verification in ACME container - y/n
 
-SKIP_HTTP_VERIFICATION=n
+SKIP_HTTP_VERIFICATION=${SKIP_HTTP_VERIFICATION:-n}
 
 # Skip ClamAV (clamd-mailcow) anti-virus (Rspamd will auto-detect a missing ClamAV container) - y/n
 
@@ -202,15 +202,15 @@ SKIP_SOLR=${SKIP_SOLR}
 
 # Solr heap size in MB, there is no recommendation, please see Solr docs.
 # Solr is a prone to run OOM and should be monitored. Unmonitored Solr setups are not recommended.
-SOLR_HEAP=1024
+SOLR_HEAP=${SOLR_HEAP:-1024}
 
 # Enable watchdog (watchdog-mailcow) to restart unhealthy containers (experimental)
 
-USE_WATCHDOG=n
+USE_WATCHDOG=${USE_WATCHDOG:-n}
 
 # Allow admins to log into SOGo as email user (without any password)
 
-ALLOW_ADMIN_EMAIL_LOGIN=n
+ALLOW_ADMIN_EMAIL_LOGIN=${ALLOW_ADMIN_EMAIL_LOGIN:-n}
 
 # Send notifications by mail (no DKIM signature, sent from watchdog@MAILCOW_HOSTNAME)
 # Can by multiple rcpts, NO quotation marks
@@ -220,15 +220,15 @@ ALLOW_ADMIN_EMAIL_LOGIN=n
 
 # Max log lines per service to keep in Redis logs
 
-LOG_LINES=9999
+LOG_LINES=${LOG_LINES:-9999}
 
 # Internal IPv4 /24 subnet, format n.n.n (expands to n.n.n.0/24)
 
-IPV4_NETWORK=172.22.1
+IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
 
 # Internal IPv6 subnet in fc00::/7
 
-IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
+IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
 
 # Use this IPv4 for outgoing connections (SNAT)
 
@@ -246,7 +246,7 @@ IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
 #API_ALLOW_FROM=127.0.0.1,1.2.3.4
 
 # mail_home is ~/Maildir
-MAILDIR_SUB=Maildir
+MAILDIR_SUB=${MAILDIR_SUB:-Maildir}
 
 EOF
 
