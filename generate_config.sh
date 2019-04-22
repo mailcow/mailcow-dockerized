@@ -89,6 +89,9 @@ fi
 
 [ ! -f ./data/conf/rspamd/override.d/worker-controller-password.inc ] && echo '# Placeholder' > ./data/conf/rspamd/override.d/worker-controller-password.inc
 
+DEFAULT_DBPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 | head -c 28)
+DEFAULT_DBROOT=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 | head -c 28)
+
 cat << EOF > mailcow.conf
 # ------------------------------
 # mailcow web ui configuration
@@ -108,8 +111,8 @@ DBUSER=mailcow
 
 # Please use long, random alphanumeric strings (A-Za-z0-9)
 
-DBPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 | head -c 28)
-DBROOT=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 | head -c 28)
+DBPASS=${DBPASS:-$DEFAULT_DBPASS}
+DBROOT=${DBROOT:-$DEFAULT_DBROOT}
 
 # ------------------------------
 # HTTP/S Bindings
