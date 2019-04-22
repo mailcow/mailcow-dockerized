@@ -117,11 +117,11 @@ DBROOT=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 | head -c 28)
 
 # You should use HTTPS, but in case of SSL offloaded reverse proxies:
 
-HTTP_PORT=80
-HTTP_BIND=0.0.0.0
+HTTP_PORT=${HTTP_PORT:-80}
+HTTP_BIND=${HTTP_BIND:-0.0.0.0}
 
-HTTPS_PORT=443
-HTTPS_BIND=0.0.0.0
+HTTPS_PORT=${HTTPS_PORT:-443}
+HTTPS_BIND=${HTTPS_BIND:-0.0.0.0}
 
 # ------------------------------
 # Other bindings
