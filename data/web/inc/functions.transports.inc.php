@@ -193,7 +193,7 @@ function transport($_action, $_data = null) {
       $username = str_replace(':', '\:', trim($_data['username']));
       $password = str_replace(':', '\:', trim($_data['password']));
       // ".domain" is a valid destination, "..domain" is not
-      if (empty($destination) || (is_valid_domain_name(preg_replace('/^' . preg_quote('.', '/') . '/', '', $destination)) === false && $destination != '*')) {
+      if (empty($destination) || (is_valid_domain_name(preg_replace('/^' . preg_quote('.', '/') . '/', '', $destination)) === false && $destination != '*' && filter_var($destination, FILTER_VALIDATE_EMAIL) === false)) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
@@ -220,6 +220,14 @@ function transport($_action, $_data = null) {
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_data_log),
               'msg' => 'invalid_nexthop_authenticated'
+            );
+            return false;
+          }
+          if ($transport_data['destination'] == $destination) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_data_log),
+              'msg' => 'transport_dest_exists'
             );
             return false;
           }
@@ -319,6 +327,14 @@ function transport($_action, $_data = null) {
             }
             $existing_nh[] = $transport_data['nexthop'];
             preg_match('/\[(.+)\].*/', $transport_data['nexthop'], $existing_clean_nh[]);
+            if ($transport_data['destination'] == $destination) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_data_log),
+                'msg' => 'transport_dest_exists'
+              );
+              return false;
+            }
           }
         }
         if (isset($next_hop_matches[1])) {

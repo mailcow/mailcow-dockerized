@@ -20,6 +20,7 @@ $lang['footer']['cancel'] = 'Cancel';
 $lang['footer']['hibp_nok'] = 'Matched! This is a potentially dangerous password!';
 $lang['footer']['hibp_ok'] = 'No match found.';
 
+$lang['danger']['transport_dest_exists'] = "Transport destination exists";
 $lang['danger']['unlimited_quota_acl'] = "Unlimited quota prohibited by ACL";
 $lang['danger']['mysql_error'] = "MySQL error: %s";
 $lang['danger']['redis_error'] = "Redis error: %s";
