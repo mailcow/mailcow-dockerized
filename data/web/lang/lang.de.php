@@ -19,6 +19,7 @@ $lang['footer']['cancel'] = 'Abbrechen';
 $lang['footer']['hibp_nok'] = 'Übereinstimmung gefunden! Dieses Passwort ist potentiell gefährlich!';
 $lang['footer']['hibp_ok'] = 'Keine Übereinstimmung gefunden.';
 
+$lang['danger']['transport_dest_exists'] = "Transport Maps Ziel existiert bereits";
 $lang['danger']['unlimited_quota_acl'] = "Unendliche Quota untersagt durch ACL";
 $lang['danger']['mysql_error'] = "MySQL Fehler: %s";
 $lang['danger']['redis_error'] = "Redis Fehler: %s";
