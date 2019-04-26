@@ -307,7 +307,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.51
+      image: mailcow/acme:1.52
       build: ./data/Dockerfiles/acme
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -321,6 +321,7 @@ services:
         - SKIP_LETS_ENCRYPT=${SKIP_LETS_ENCRYPT:-n}
         - SKIP_IP_CHECK=${SKIP_IP_CHECK:-n}
         - SKIP_HTTP_VERIFICATION=${SKIP_HTTP_VERIFICATION:-n}
+        - ONLY_MAILCOW_HOSTNAME=${ONLY_MAILCOW_HOSTNAME:-n}
         - LE_STAGING=${LE_STAGING:-n}
         - TZ=${TZ}
       volumes:
