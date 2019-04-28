@@ -1,8 +1,8 @@
 {
     "name": "php-mime-mail-parser/php-mime-mail-parser",
     "type": "library",
-    "description": "Fully Tested Mailparse Extension Wrapper for PHP 5.4+",
-    "keywords": ["mime", "mail", "mailparse", "MimeMailParser"],
+    "description": "A fully tested email parser for PHP 7.1+ (mailparse extension wrapper).",
+    "keywords": ["mime", "mail", "mailparse", "MimeMailParser", "parser", "php"],
     "homepage": "https://github.com/php-mime-mail-parser/php-mime-mail-parser",
     "license": "MIT",
     "authors": [      
@@ -42,14 +42,14 @@
         "url":"https://github.com/php-mime-mail-parser/php-mime-mail-parser.git"
     },
     "require": {
-        "php":           "^5.4.0 || ^7.0",
+        "php":           "^7.1",
         "ext-mailparse": "*"
     },
     "require-dev": {
-        "phpunit/phpunit":              "^4.0 || ^5.0",
-        "phpunit/php-token-stream":     "^1.3.0",
-        "satooshi/php-coveralls":       "0.*",
-        "squizlabs/PHP_CodeSniffer":    "2.*"
+        "phpunit/phpunit":              "^7.0",
+        "phpunit/php-token-stream":     "^3.0",
+        "php-coveralls/php-coveralls":  "^2.1",
+        "squizlabs/php_codesniffer":    "^3.4"
     },
     "replace": {
         "exorus/php-mime-mail-parser":   "*",
