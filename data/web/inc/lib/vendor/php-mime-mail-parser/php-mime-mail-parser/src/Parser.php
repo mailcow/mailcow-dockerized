@@ -110,6 +110,15 @@ class Parser
      */
     public function setPath($path)
     {
+        if (is_writable($path)) {
+            $file = fopen($path, 'a+');
+            fseek($file, -1, SEEK_END);
+            if (fread($file, 1) != "\n") {
+                fwrite($file, PHP_EOL);
+            }
+            fclose($file);
+        }
+
         // should parse message incrementally from file
         $this->resource = mailparse_msg_parse_file($path);
         $this->stream = fopen($path, 'r');
@@ -142,6 +151,11 @@ class Parser
             while (!feof($stream)) {
                 fwrite($tmp_fp, fread($stream, 2028));
             }
+
+            if (fread($tmp_fp, 1) != "\n") {
+                fwrite($tmp_fp, PHP_EOL);
+            }
+
             fseek($tmp_fp, 0);
             $this->stream = &$tmp_fp;
         } else {
@@ -170,9 +184,14 @@ class Parser
      */
     public function setText($data)
     {
-        if (!$data) {
+        if (empty($data)) {
             throw new Exception('You must not call MimeMailParser::setText with an empty string parameter');
         }
+
+        if (substr($data, -1) != "\n") {
+            $data = $data.PHP_EOL;
+        }
+
         $this->resource = mailparse_msg_create();
         // does not parse incrementally, fast memory hog might explode
         mailparse_msg_parse($this->resource, $data);
@@ -205,7 +224,7 @@ class Parser
      *
      * @param string $name Header name (case-insensitive)
      *
-     * @return string
+     * @return string|bool
      * @throws Exception
      */
     public function getRawHeader($name)
@@ -214,7 +233,7 @@ class Parser
         if (isset($this->parts[1])) {
             $headers = $this->getPart('headers', $this->parts[1]);
 
-            return (isset($headers[$name])) ? $headers[$name] : false;
+            return isset($headers[$name]) ? $headers[$name] : false;
         } else {
             throw new Exception(
                 'setPath() or setText() or setStream() must be called before retrieving email headers.'
@@ -227,7 +246,7 @@ class Parser
      *
      * @param string $name Header name (case-insensitive)
      *
-     * @return string
+     * @return string|bool
      */
     public function getHeader($name)
     {
@@ -559,50 +578,10 @@ class Parser
         $filenameStrategy = self::ATTACHMENT_DUPLICATE_SUFFIX
     ) {
         $attachments = $this->getAttachments($include_inline);
-        if (empty($attachments)) {
-            return false;
-        }
-
-        if (!is_dir($attach_dir)) {
-            mkdir($attach_dir);
-        }
 
         $attachments_paths = [];
         foreach ($attachments as $attachment) {
-            // Determine filename
-            switch ($filenameStrategy) {
-                case self::ATTACHMENT_RANDOM_FILENAME:
-                    $attachment_path = tempnam($attach_dir, '');
-                    break;
-                case self::ATTACHMENT_DUPLICATE_THROW:
-                case self::ATTACHMENT_DUPLICATE_SUFFIX:
-                    $attachment_path = $attach_dir.$attachment->getFilename();
-                    break;
-                default:
-                    throw new Exception('Invalid filename strategy argument provided.');
-            }
-
-            // Handle duplicate filename
-            if (file_exists($attachment_path)) {
-                switch ($filenameStrategy) {
-                    case self::ATTACHMENT_DUPLICATE_THROW:
-                        throw new Exception('Could not create file for attachment: duplicate filename.');
-                    case self::ATTACHMENT_DUPLICATE_SUFFIX:
-                        $attachment_path = tempnam($attach_dir, $attachment->getFilename());
-                        break;
-                }
-            }
-
-            /** @var resource $fp */
-            if ($fp = fopen($attachment_path, 'w')) {
-                while ($bytes = $attachment->read()) {
-                    fwrite($fp, $bytes);
-                }
-                fclose($fp);
-                $attachments_paths[] = realpath($attachment_path);
-            } else {
-                throw new Exception('Could not write attachments. Your directory may be unwritable by PHP.');
-            }
+            $attachments_paths[] = $attachment->save($attach_dir, $filenameStrategy);
         }
 
         return $attachments_paths;
