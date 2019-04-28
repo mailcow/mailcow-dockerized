@@ -78,20 +78,20 @@ class Charset implements CharsetManager
         'cns11643'                 => 'x-euc-tw',
         'x-imap4-modified-utf7'    => 'x-imap4-modified-utf7',
         'x-euc-tw'                 => 'x-euc-tw',
-        'x-mac-ce'                 => 'x-mac-ce',
-        'x-mac-turkish'            => 'x-mac-turkish',
-        'x-mac-greek'              => 'x-mac-greek',
-        'x-mac-icelandic'          => 'x-mac-icelandic',
-        'x-mac-croatian'           => 'x-mac-croatian',
-        'x-mac-romanian'           => 'x-mac-romanian',
-        'x-mac-cyrillic'           => 'x-mac-cyrillic',
-        'x-mac-ukrainian'          => 'x-mac-cyrillic',
-        'x-mac-hebrew'             => 'x-mac-hebrew',
-        'x-mac-arabic'             => 'x-mac-arabic',
-        'x-mac-farsi'              => 'x-mac-farsi',
-        'x-mac-devanagari'         => 'x-mac-devanagari',
-        'x-mac-gujarati'           => 'x-mac-gujarati',
-        'x-mac-gurmukhi'           => 'x-mac-gurmukhi',
+        'x-mac-ce'                 => 'MACCE',
+        'x-mac-turkish'            => 'MACTURKISH',
+        'x-mac-greek'              => 'MACGREEK',
+        'x-mac-icelandic'          => 'MACICELANDIC',
+        'x-mac-croatian'           => 'MACCROATIAN',
+        'x-mac-romanian'           => 'MACROMANIAN',
+        'x-mac-cyrillic'           => 'MACCYRILLIC',
+        'x-mac-ukrainian'          => 'MACUKRAINIAN',
+        'x-mac-hebrew'             => 'MACHEBREW',
+        'x-mac-arabic'             => 'MACARABIC',
+        'x-mac-farsi'              => 'MACFARSI',
+        'x-mac-devanagari'         => 'MACDEVANAGARI',
+        'x-mac-gujarati'           => 'MACGUJARATI',
+        'x-mac-gurmukhi'           => 'MACGURMUKHI',
         'armscii-8'                => 'armscii-8',
         'x-viet-tcvn5712'          => 'x-viet-tcvn5712',
         'x-viet-vps'               => 'x-viet-vps',
@@ -315,11 +315,23 @@ class Charset implements CharsetManager
      */
     public function decodeCharset($encodedString, $charset)
     {
-        if (strtolower($charset) == 'utf-8' || strtolower($charset) == 'us-ascii') {
+        $charset = $this->getCharsetAlias($charset);
+
+        if ($charset == 'utf-8' || $charset == 'us-ascii') {
             return $encodedString;
-        } else {
-            return iconv($this->getCharsetAlias($charset), 'UTF-8//TRANSLIT//IGNORE', $encodedString);
         }
+
+        if (function_exists('mb_convert_encoding')) {
+            if ($charset == 'ISO-2022-JP') {
+                return mb_convert_encoding($encodedString, 'UTF-8', 'ISO-2022-JP-MS');
+            }
+
+            if (array_search($charset, array_map('strtolower', mb_list_encodings()))) {
+                return mb_convert_encoding($encodedString, 'UTF-8', $charset);
+            }
+        }
+
+        return iconv($charset, 'UTF-8//TRANSLIT//IGNORE', $encodedString);
     }
 
     /**
@@ -331,8 +343,8 @@ class Charset implements CharsetManager
 
         if (array_key_exists($charset, $this->charsetAlias)) {
             return $this->charsetAlias[$charset];
-        } else {
-            return null;
         }
+        
+        return 'us-ascii';
     }
 }

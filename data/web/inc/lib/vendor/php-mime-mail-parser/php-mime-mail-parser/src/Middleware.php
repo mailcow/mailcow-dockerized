@@ -7,6 +7,8 @@ namespace PhpMimeMailParser;
  */
 class Middleware implements Contracts\Middleware
 {
+    protected $parser;
+
     /**
      * Create a middleware using a callable $fn
      *
