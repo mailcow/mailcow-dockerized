@@ -113,11 +113,17 @@ $(document).ready(function() {
     if ($(this).is("a")) {
       $(this).removeAttr("data-toggle");
       $(this).removeAttr("data-target");
+      $(this).removeAttr("data-action");
+      $(this).click(function(event) {
+        event.preventDefault();
+      });
     }
     if ($(this).hasClass('btn-group')) {
       $(this).find('a').each(function(){
         $(this).removeClass('dropdown-toggle')
           .removeAttr('data-toggle')
+          .removeAttr('data-target')
+          .removeAttr('data-action')
           .removeAttr('id')
           .attr("disabled", true);
         $(this).click(function(event) {
@@ -147,7 +153,7 @@ $(document).ready(function() {
     }
     $(this).data("toggle", "tooltip");
     $(this).attr("title", lang_acl.prohibited);
-    $(this).tooltip(); 
+    $(this).tooltip();
   });
 
   // disable submit after submitting form (not API driven buttons)
