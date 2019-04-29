@@ -142,7 +142,7 @@ $(document).ready(function() {
       });
     } else if ($(this).hasClass('btn')) {
       $(this).attr("disabled", true);
-    } else if ($(this).attr('data-provide', 'slider')) {
+    } else if ($(this).attr('data-provide') == 'slider') {
       $(this).slider("disable");
     }
     $(this).data("toggle", "tooltip");
