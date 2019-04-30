@@ -131,6 +131,14 @@ foreach (json_decode($rcpts, true) as $rcpt) {
       ));
       $gotos = $stmt->fetch(PDO::FETCH_ASSOC)['goto'];
     }
+    if (empty($gotos)) {
+      $stmt = $pdo->prepare("SELECT `target_domain` FROM `alias_domain` WHERE `alias_domain` = :rcpt AND `active` = '1'");
+      $stmt->execute(array(':rcpt' => $parsed_rcpt['domain']));
+      $goto_branch = $stmt->fetch(PDO::FETCH_ASSOC)['target_domain'];
+      if ($goto_branch) {
+        $gotos = $parsed_rcpt['local'] . '@' . $goto_branch;
+      }
+    }
     $gotos_array = explode(',', $gotos);
 
     $loop_c = 0;
@@ -159,8 +167,18 @@ foreach (json_decode($rcpts, true) as $rcpt) {
             $stmt = $pdo->prepare("SELECT `goto` FROM `alias` WHERE `address` = :goto AND `active` = '1'");
             $stmt->execute(array(':goto' => $goto));
             $goto_branch = $stmt->fetch(PDO::FETCH_ASSOC)['goto'];
-            error_log("QUARANTINE: quarantine pipe: goto address " . $goto . " is a alias branch for " . $goto_branch);
-            $goto_branch_array = explode(',', $goto_branch);
+            if ($goto_branch) {
+              error_log("QUARANTINE: quarantine pipe: goto address " . $goto . " is a alias branch for " . $goto_branch);
+              $goto_branch_array = explode(',', $goto_branch);
+            } else {
+              $stmt = $pdo->prepare("SELECT `target_domain` FROM `alias_domain` WHERE `alias_domain` = :domain AND `active` AND '1'");
+              $stmt->execute(array(':domain' => $parsed_goto['domain']));
+              $goto_branch = $stmt->fetch(PDO::FETCH_ASSOC)['target_domain'];
+              if ($goto_branch) {
+                error_log("QUARANTINE: quarantine pipe: goto domain " . $parsed_gto['domain'] . " is a domain alias branch for " . $goto_branch);
+                $goto_branch_array = array($parsed_gto['local'] . '@' . $goto_branch);
+              }
+            }
           }
         }
         // goto item was processed, unset

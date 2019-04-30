@@ -49,3 +49,11 @@ table.footable>tbody>tr.footable-empty>td {
   border-radius: 50%;
   display: inline-block;
 }
+
+span.mail-address-item {
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  padding: 2px 7px;
+  margin-right: 7px;
+}
