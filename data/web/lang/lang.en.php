@@ -754,6 +754,7 @@ $lang['quarantine']['show_item'] = "Show item";
 $lang['quarantine']['check_hash'] = "Search file hash @ VT";
 $lang['quarantine']['qitem'] = "Quarantine item";
 $lang['quarantine']['subj'] = "Subject";
+$lang['quarantine']['recipients'] = "Recipients";
 $lang['quarantine']['text_plain_content'] = "Content (text/plain)";
 $lang['quarantine']['text_from_html_content'] = "Content (converted html)";
 $lang['quarantine']['atts'] = "Attachments";

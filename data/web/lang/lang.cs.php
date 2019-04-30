@@ -712,6 +712,7 @@ $lang['quarantine']['show_item'] = "Zobrazit položku";
 $lang['quarantine']['check_hash'] = "Hledat hash @ VT souboru";
 $lang['quarantine']['qitem'] = "Položka v karanténě";
 $lang['quarantine']['subj'] = "Předmět";
+$lang['quarantine']['recipients'] = "Příjemci";
 $lang['quarantine']['text_plain_content'] = "Obsah (text/plain)";
 $lang['quarantine']['text_from_html_content'] = "Obsah (konvertované html)";
 $lang['quarantine']['atts'] = "Přílohy";

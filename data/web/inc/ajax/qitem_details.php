@@ -3,8 +3,9 @@ session_start();
 header("Content-Type: application/json");
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 if (!isset($_SESSION['mailcow_cc_role'])) {
-	exit();
+  exit();
 }
+
 function rrmdir($src) {
   $dir = opendir($src);
   while(false !== ( $file = readdir($dir)) ) {
@@ -21,6 +22,13 @@ function rrmdir($src) {
   closedir($dir);
   rmdir($src);
 }
+function addAddresses(&$list, $mail, $headerName) {
+  $addresses = $mail->getAddresses($headerName);
+  foreach ($addresses as $address) {
+    $list[] = array('address' => $address['address'], 'type' => $headerName);
+  }
+}
+
 if (!empty($_GET['id']) && ctype_alnum($_GET['id'])) {
   $tmpdir = '/tmp/' . $_GET['id'] . '/';
   $mailc = quarantine('details', $_GET['id']);
@@ -36,6 +44,16 @@ if (!empty($_GET['id']) && ctype_alnum($_GET['id'])) {
     $html2text = new Html2Text\Html2Text();
     // Load msg to parser
     $mail_parser->setText($mailc['msg']);
+
+    // Get mail recipients
+    {
+      $recipientsList = array();
+      addAddresses($recipientsList, $mail_parser, 'to');
+      addAddresses($recipientsList, $mail_parser, 'cc');
+      addAddresses($recipientsList, $mail_parser, 'bcc');
+      $data['recipients'] = $recipientsList;
+    }
+
     // Get text/plain content
     $data['text_plain'] = $mail_parser->getMessageBody('text');
     // Get html content and convert to text
