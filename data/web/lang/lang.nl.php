@@ -23,6 +23,8 @@ $lang['footer']['cancel'] = 'Annuleren';
 $lang['footer']['hibp_nok'] = 'Dit is een potentieel onveilig wachtwoord!';
 $lang['footer']['hibp_ok'] = 'Dit wachtwoord is relatief veilig';
 
+$lang['danger']['transport_dest_exists'] = "Transportbestemming bestaat reeds";
+$lang['danger']['unlimited_quota_acl'] = "Onbeperkt quotum geweigerd door toegangscontrole";
 $lang['danger']['mysql_error'] = "MySQL-fout: %s";
 $lang['danger']['redis_error'] = "Redis-fout: %s";
 $lang['danger']['unknown_tfa_method'] = "Onbekende tweefactorauthenticatiemethode";
@@ -410,6 +412,7 @@ $lang['acl']['bcc_maps'] = 'BCC-kaarten';
 $lang['acl']['filters'] = 'Filters';
 $lang['acl']['ratelimit'] = 'Ratelimit';
 $lang['acl']['recipient_maps'] = 'Ontvanger-kaarten';
+$lang['acl']['unlimited_quota'] = 'Onbeperkt quotum voor postvakken';
 $lang['acl']['prohibited'] = 'Toegang geweigerd';
 
 $lang['mailbox']['quarantine_notification'] = 'Quarantaine-notificaties';
@@ -618,7 +621,11 @@ $lang['admin']['forwarding_hosts'] = 'Doorstuurhosts';
 $lang['admin']['forwarding_hosts_hint'] = 'Inkomende berichten worden onvoorwaardelijk geaccepteerd vanaf iedere host hieronder vermeld. Deze hosts worden hierdoor niet gecontroleerd op DNSBLs, en zullen de greylisting omzeilen. Spam wordt daarentegen zoals gebruikelijk in de spamfolder geplaatst. Dit wordt vaak gebruikt om mailservers te specificeren die mails doorsturen naar deze Mailcow-server.';
 $lang['admin']['forwarding_hosts_add_hint'] = 'Het is mogelijk om IPv4- of IPv6-adressen, netwerken in CIDR-notatie, hostnames (worden omgezet naar IP-adressen) of domeinnamen (worden tevens omgezet naar IP-adressen of, bij gebrek daaraan, MX-records) op te geven.';
 $lang['admin']['relayhosts_hint'] = 'Stel afzender-afhankelijke transportkaarten in om deze te kunnen gebruiken bij de configuratie van een domein.<br>De transportservice is altijd "smtp:". Er wordt rekening gehouden met het uitgaande versleutelingsbeleid van individuele gebruikers.';
-$lang['admin']['transports_hint'] = 'Een transportkaart wordt boven een afzender-afhankelijke transportkaart verkozen.<br>Het uitgaande versleutelingsbeleid van individuele gebruikers wordt genegeerd en kan enkel worden gehandhaafd doormiddel van globaal versleutelingsbeleid. De transportservice is altijd "smtp:".<br>Om de inloggegevens van een (voorbeeld) nexthop "[host]:25" te bepalen, zoekt Postfix <b>altijd</b> naar "nexthop" voodat er wordt gekeken naar "[nexthop]:25". Dit maakt het onmogelijk om "nexthop" en "[nexthop]:25" tegelijkertijd te gebruiken.';
+$lang['admin']['transports_hint'] = '→ Een transportkaart wordt boven een afzender-afhankelijke transportkaart verkozen.<br>
+    → Het uitgaande versleutelingsbeleid van individuele gebruikers wordt genegeerd en kan enkel worden gehandhaafd doormiddel van globaal versleutelingsbeleid.<br>
+    → De transportservice is altijd "smtp:".<br>
+    → Adressen overeenkomend met "/localhost$/" zullen altijd via "local:" getransporteerd worden, hierdoor zullen "*"-bestemmingen niet van toepassing zijn op deze adressen.<br>
+    → Om de inloggegevens van een (voorbeeld) nexthop "[host]:25" te bepalen, zoekt Postfix <b>altijd</b> naar "nexthop" voodat er wordt gekeken naar "[nexthop]:25". Dit maakt het onmogelijk om "nexthop" en "[nexthop]:25" tegelijkertijd te gebruiken.';
 $lang['admin']['add_relayhost_hint'] = 'Wees ervan bewust dat de authenticatiedata onversleuteld wordt opgeslagen!';
 $lang['admin']['add_transports_hint'] = 'Wees ervan bewust dat de authenticatiedata onversleuteld wordt opgeslagen!';
 $lang['admin']['host'] = 'Host';
