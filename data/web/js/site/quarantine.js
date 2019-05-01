@@ -87,8 +87,17 @@ jQuery(function($){
         $('#qid_detail_text').text(data.text_plain);
         $('#qid_detail_text_from_html').text(data.text_html);
 
+        $('#qid_detail_recipients').html('');
+        if (typeof data.recipients !== 'undefined') {
+          $.each(data.recipients, function(index, value) {
+            var elem = $('<span class="mail-address-item"></span>');
+            elem.text(value.address + (value.type != 'to' ? (' (' + value.type.toUpperCase() + ')') : ''));
+            $('#qid_detail_recipients').append(elem);
+          });
+        }
+
+        var qAtts = $("#qid_detail_atts");
         if (typeof data.attachments !== 'undefined') {
-          qAtts = $("#qid_detail_atts");
           qAtts.text('');
           $.each(data.attachments, function(index, value) {
             qAtts.append(

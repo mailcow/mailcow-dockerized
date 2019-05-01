@@ -731,6 +731,7 @@ $lang['quarantine']['show_item'] = "Laat item zien";
 $lang['quarantine']['check_hash'] = "Zoek bestandshash op in VT";
 $lang['quarantine']['qitem'] = "Quarantaine-item";
 $lang['quarantine']['subj'] = "Onderwerp";
+$lang['quarantine']['recipients'] = "Ontvangers";
 $lang['quarantine']['text_plain_content'] = "Inhoud (tekst)";
 $lang['quarantine']['text_from_html_content'] = "Inhoud (geconverteerde html)";
 $lang['quarantine']['atts'] = "Bijlagen";
