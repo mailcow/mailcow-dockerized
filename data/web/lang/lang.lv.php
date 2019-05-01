@@ -494,6 +494,7 @@ $lang['quarantine']['show_item'] = "Parādīt vienumus";
 $lang['quarantine']['check_hash'] = "Meklēt faila hašu @ VT";
 $lang['quarantine']['qitem'] = "Karantīnas vienumi";
 $lang['quarantine']['subj'] = "Priekšmets";
+$lang['quarantine']['recipients'] = "Adresāts";
 $lang['quarantine']['text_plain_content'] = "Saturs (teksts/vienkāršs)";
 $lang['quarantine']['text_from_html_content'] = "Saturs (konvertēts html)";
 $lang['quarantine']['atts'] = "Pielikumi";
