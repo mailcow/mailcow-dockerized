@@ -26,7 +26,7 @@ fi
 
 echo "Press enter to confirm the detected value '[value]' where applicable or enter a custom value."
 while [ -z "${MAILCOW_HOSTNAME}" ]; do
-  read -p "Hostname (FQDN): " -e MAILCOW_HOSTNAME
+  read -p "Mail server hostname (FQDN) - this is not your mail domain, but your mail servers hostname: " -e MAILCOW_HOSTNAME
   DOTS=${MAILCOW_HOSTNAME//[^.]};
   if [ ${#DOTS} -lt 2 ] && [ ! -z ${MAILCOW_HOSTNAME} ]; then
     echo "${MAILCOW_HOSTNAME} is not a FQDN"
