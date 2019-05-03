@@ -22,7 +22,7 @@ try {
   $stmt = $pdo->prepare("SELECT `name` FROM `mailbox` WHERE `username`= :username");
   $stmt->execute(array(':username' => $email));
   $MailboxData = $stmt->fetch(PDO::FETCH_ASSOC);
-  $displayname = empty($MailboxData['name']) ? $email : $MailboxData['name'];
+  $displayname = htmlspecialchars(empty($MailboxData['name']) ? $email : $MailboxData['name']);
 }
 catch(PDOException $e) {
   $displayname = $email;
