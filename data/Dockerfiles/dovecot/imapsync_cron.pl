@@ -140,11 +140,16 @@ while ($row = $sth->fetchrow_arrayref()) {
     $update->bind_param( 2, ${id} );
     $update->execute();
   } catch {
-    $update = $dbh->prepare("UPDATE imapsync SET returned_text = 'Could not start or finish imapsync', last_run = NOW(), is_running = 0 WHERE id = ?");
+    $update = $dbh->prepare("UPDATE imapsync SET returned_text = 'Could not start or finish imapsync' WHERE id = ?");
+    $update->bind_param( 1, ${id} );
+    $update->execute();
+  } finally {
+    $update = $dbh->prepare("UPDATE imapsync SET last_run = NOW(), is_running = 0 WHERE id = ?");
     $update->bind_param( 1, ${id} );
     $update->execute();
     $lockmgr->unlock($lock_file);
   };
+
 
 }
 
