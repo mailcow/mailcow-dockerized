@@ -146,7 +146,6 @@ while ($row = $sth->fetchrow_arrayref()) {
     $update = $dbh->prepare("UPDATE imapsync SET last_run = NOW(), is_running = 0 WHERE id = ?");
     $update->bind_param( 1, ${id} );
     $update->execute();
-    $lockmgr->unlock($lock_file);
   };
 
 
