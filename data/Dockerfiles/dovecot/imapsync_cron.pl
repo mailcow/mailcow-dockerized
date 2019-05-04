@@ -18,14 +18,6 @@ if ($imapsync_running eq 1)
   exit;
 }
 
-sub qqw($) {
-  my @values = split('(?=--)', $_[0]);
-  foreach my $val (@values) {
-    $val=trim($val);
-  }
-  return @values
-}
-
 $run_dir="/tmp";
 $dsn = 'DBI:mysql:database=__DBNAME__;mysql_socket=/var/run/mysqld/mysqld.sock';
 $lock_file = $run_dir . "/imapsync_busy";
@@ -101,10 +93,6 @@ while ($row = $sth->fetchrow_arrayref()) {
   $timeout1            = @$row[19];
   $timeout2            = @$row[20];
 
-  $is_running = $dbh->prepare("UPDATE imapsync SET is_running = 1 WHERE id = ?");
-  $is_running->bind_param( 1, ${id} );
-  $is_running->execute();
-
   if ($enc1 eq "TLS") { $enc1 = "--tls1"; } elsif ($enc1 eq "SSL") { $enc1 = "--ssl1"; } else { undef $enc1; }
 
   my $template = $run_dir . '/imapsync.XXXXXXX';
@@ -114,46 +102,52 @@ while ($row = $sth->fetchrow_arrayref()) {
   print $passfile1 "$password1\n";
   print $passfile2 trim($master_pass) . "\n";
 
-  my @custom_params_a = qqw($custom_params);
-  my $custom_params_ref = \@custom_params_a;
-
-  my $generated_cmds = [ "/usr/local/bin/imapsync",
-	"--tmpdir", "/tmp",
-	"--nofoldersizes",
-	($timeout1 gt "0" ? () : ('--timeout1', $timeout1)),
-	($timeout2 gt "0" ? () : ('--timeout2', $timeout2)),
-	($exclude eq ""	? () : ("--exclude", $exclude)),
-	($subfolder2 eq "" ? () : ('--subfolder2', $subfolder2)),
-	($maxage eq "0" ? () : ('--maxage', $maxage)),
-	($maxbytespersecond eq "0" ? () : ('--maxbytespersecond', $maxbytespersecond)),
-	($delete2duplicates	ne "1" ? () : ('--delete2duplicates')),
-	($subscribeall	ne "1" ? () : ('--subscribeall')),
-	($delete1	ne "1" ? () : ('--delete')),
-  ($delete2 ne "1" ? () : ('--delete2')),
-  ($automap ne "1" ? () : ('--automap')),
-  ($skipcrossduplicates ne "1" ? () : ('--skipcrossduplicates')),
-	(!defined($enc1) ? () : ($enc1)),
-	"--host1", $host1,
-	"--user1", $user1,
-	"--passfile1", $passfile1->filename,
-	"--port1", $port1,
-	"--host2", "localhost",
-	"--user2", $user2 . '*' . trim($master_user),
-	"--passfile2", $passfile2->filename,
-	'--no-modulesversion'];
+  my $command = "/usr/local/bin/imapsync";
+  $command .= " --tmpdir /tmp";
+  $command .= " --pidfile /tmp/imapsync.pid";
+  $command .= " --nofoldersizes";
+  ($timeout1 gt "0" ? () : ($command .= " --timeout1 ${timeout1}"));
+  ($timeout2 gt "0" ? () : ($command .= " --timeout2 ${timeout2}"));
+  ($exclude eq ""   ? () : ($command .= qq` --exclude ${exclude}`));
+  ($subfolder2 eq "" ? () : ($command .= qq` --subfolder2 ${subfolder2}`));
+  ($maxage eq "0" ? () : ($command .= " --maxage ${maxage}"));
+  ($maxbytespersecond eq "0" ? () : ($command .= " --maxbytespersecond ${maxbytespersecond}"));
+  ($delete2duplicates   ne "1" ? () : ($command .= " --delete2duplicates"));
+  ($subscribeall    ne "1" ? () : ($command .= " --subscribeall"));
+  ($delete1 ne "1" ? () : ($command .= " --delete"));
+  ($delete2 ne "1" ? () : ($command .= " --delete2"));
+  ($automap ne "1" ? () : ($command .= " --automap"));
+  ($skipcrossduplicates ne "1" ? () : ($command .= " --skipcrossduplicates"));
+  (!defined($enc1) ? () : ($command .= " ${enc1}"));
+  $command .= " --host1 ${host1}";
+  $command .= qq` --user1 ${user1}`;
+  $command .= " --passfile1 $passfile1->filename";
+  $command .= " --port1 ${port1}";
+  $command .= " --host2 localhost";
+  $command .= " --user2 ${user2}" . '*' . trim($master_user);
+  $command .= " --passfile2 $passfile2->filename";
+  $command .= " --no-modulesversion";
+  ($custom_params eq "" ? () : ($command .= qq` ${custom_params}`));
 
   try {
-    run [@$generated_cmds, @$custom_params_ref], '&>', \my $stdout;
+    $is_running = $dbh->prepare("UPDATE imapsync SET is_running = 1 WHERE id = ?");
+    $is_running->bind_param( 1, ${id} );
+    $is_running->execute();
+    my $stdout = `${command}`
     $update = $dbh->prepare("UPDATE imapsync SET returned_text = ?, last_run = NOW(), is_running = 0 WHERE id = ?");
     $update->bind_param( 1, ${stdout} );
     $update->bind_param( 2, ${id} );
     $update->execute();
   } catch {
-    $update = $dbh->prepare("UPDATE imapsync SET returned_text = 'Could not start or finish imapsync', last_run = NOW(), is_running = 0 WHERE id = ?");
+    $update = $dbh->prepare("UPDATE imapsync SET returned_text = 'Could not start or finish imapsync' WHERE id = ?");
     $update->bind_param( 1, ${id} );
     $update->execute();
-    $lockmgr->unlock($lock_file);
+  } finally {
+    $update = $dbh->prepare("UPDATE imapsync SET last_run = NOW(), is_running = 0 WHERE id = ?");
+    $update->bind_param( 1, ${id} );
+    $update->execute();
   };
+
 
 }
 
