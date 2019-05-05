@@ -299,6 +299,9 @@ jQuery(function($){
       "on": {
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'domain_table');
+        },
+        "after.ft.filtering": function(e, ft){
+          table_mailbox_ready(ft, 'domain_table');
         }
       }
     });
@@ -412,6 +415,9 @@ jQuery(function($){
       "on": {
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'mailbox_table');
+        },
+        "after.ft.filtering": function(e, ft){
+          table_mailbox_ready(ft, 'mailbox_table');
         }
       }
     });
@@ -477,6 +483,9 @@ jQuery(function($){
       "on": {
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'resource_table');
+        },
+        "after.ft.filtering": function(e, ft){
+          table_mailbox_ready(ft, 'resource_table');
         }
       }
     });
@@ -539,6 +548,9 @@ jQuery(function($){
       "on": {
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'bcc_table');
+        },
+        "after.ft.filtering": function(e, ft){
+          table_mailbox_ready(ft, 'bcc_table');
         }
       }
     });
@@ -595,6 +607,9 @@ jQuery(function($){
       },
       "on": {
         "ready.ft.table": function(e, ft){
+          table_mailbox_ready(ft, 'recipient_map_table');
+        },
+        "after.ft.filtering": function(e, ft){
           table_mailbox_ready(ft, 'recipient_map_table');
         }
       }
@@ -659,6 +674,9 @@ jQuery(function($){
       "on": {
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'tls_policy_table');
+        },
+        "after.ft.filtering": function(e, ft){
+          table_mailbox_ready(ft, 'tls_policy_table');
         }
       }
     });
@@ -719,6 +737,9 @@ jQuery(function($){
       },
       "on": {
         "ready.ft.table": function(e, ft){
+          table_mailbox_ready(ft, 'transport_maps_table');
+        },
+        "after.ft.filtering": function(e, ft){
           table_mailbox_ready(ft, 'transport_maps_table');
         }
       }
@@ -810,6 +831,9 @@ jQuery(function($){
       "on": {
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'alias_table');
+        },
+        "after.ft.filtering": function(e, ft){
+          table_mailbox_ready(ft, 'alias_table');
         }
       }
     });
@@ -863,6 +887,9 @@ jQuery(function($){
       },
       "on": {
         "ready.ft.table": function(e, ft){
+          table_mailbox_ready(ft, 'aliasdomain_table');
+        },
+        "after.ft.filtering": function(e, ft){
           table_mailbox_ready(ft, 'aliasdomain_table');
         }
       }
@@ -939,6 +966,9 @@ jQuery(function($){
       "on": {
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'sync_job_table');
+        },
+        "after.ft.filtering": function(e, ft){
+          table_mailbox_ready(ft, 'sync_job_table');
         }
       }
     });
@@ -1001,6 +1031,9 @@ jQuery(function($){
       },
       "on": {
         "ready.ft.table": function(e, ft){
+          table_mailbox_ready(ft, 'filter_table');
+        },
+        "after.ft.filtering": function(e, ft){
           table_mailbox_ready(ft, 'filter_table');
         }
       }
