@@ -93,7 +93,7 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
   && make clean \
   && cd .. \
   && rm -rf dovecot-2.3-pigeonhole-$PIGEONHOLE_VERSION \
-  && cpanm Data::Uniqid Mail::IMAPClient String::Util \
+  && cpanm Data::Uniqid Mail::IMAPClient String::Util File::Tail Dist::CheckConflicts Module::Implementation Package::Stash Package::Stash::XS Test::Fatal Test::Mock::Guard Test::Requires \
   && groupadd -g 5000 vmail \
   && groupadd -g 401 dovecot \
   && groupadd -g 402 dovenull \
