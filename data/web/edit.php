@@ -1085,7 +1085,8 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <label class="control-label col-sm-2" for="custom_params"><?=$lang['add']['custom_params'];?></label>
               <div class="col-sm-10">
-              <input type="text" class="form-control" name="custom_params" id="custom_params" value="<?=htmlspecialchars($result['custom_params'], ENT_QUOTES, 'UTF-8');?>">
+              <input type="text" class="form-control" name="custom_params" id="custom_params" value="<?=htmlspecialchars($result['custom_params'], ENT_QUOTES, 'UTF-8');?>" placeholder="--dry --some-param=xy --other-param=yx">
+              <small class="help-block"><?=$lang['add']['custom_params_hint'];?></small>
               </div>
             </div>
             <div class="form-group">

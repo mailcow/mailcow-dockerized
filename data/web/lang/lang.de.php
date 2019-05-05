@@ -438,6 +438,7 @@ $lang['add']['delete2duplicates'] = 'Lösche Duplikate im Ziel';
 $lang['add']['delete1'] = 'Lösche Nachricht nach Übertragung vom Quell-Server';
 $lang['add']['delete2'] = 'Lösche Nachrichten von Ziel-Server, die nicht auf Quell-Server vorhanden sind';
 $lang['add']['custom_params'] = 'Eigene Parameter';
+$lang['add']['custom_params_hint'] = 'Richtig: --param=xy, falsch: --param xy';
 $lang['add']['subscribeall'] = 'Alle synchronisierten Ordner abonnieren';
 $lang['add']['timeout1'] = 'Timeout für Verbindung zum Remote-Host';
 $lang['add']['timeout2'] = 'Timeout für Verbindung zum lokalen Host';
