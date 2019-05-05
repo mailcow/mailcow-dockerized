@@ -235,12 +235,12 @@ IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
 
 #SNAT6_TO_SOURCE=
 
-# Create or override API key for web uI
+# Create or override API key for web ui
 # You _must_ define API_ALLOW_FROM, which is a comma separated list of IPs
 # API_KEY allowed chars: a-z, A-Z, 0-9, -
 
 #API_KEY=
-#API_ALLOW_FROM=127.0.0.1,1.2.3.4
+#API_ALLOW_FROM=172.22.1.1,127.0.0.1
 
 # mail_home is ~/Maildir
 MAILDIR_SUB=Maildir
