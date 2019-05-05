@@ -145,7 +145,8 @@ while ($row = $sth->fetchrow_arrayref()) {
   "--host2", "localhost",
   "--user2", $user2 . '*' . trim($master_user),
   "--passfile2", $passfile2->filename,
-  '--no-modulesversion'];
+  '--no-modulesversion',
+  '--noreleasecheck'];
 
   try {
     $is_running = $dbh->prepare("UPDATE imapsync SET is_running = 1 WHERE id = ?");
