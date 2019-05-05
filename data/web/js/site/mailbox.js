@@ -215,7 +215,8 @@ jQuery(function($){
         .removeAttr("href")
         .attr("title", "Dual login cannot be used twice")
         .tooltip();
-      }
+    }
+    $('.refresh_table').prop("disabled", false);
     heading = ft.$el.parents('.tab-pane').find('.panel-heading')
     var ft_paging = ft.use(FooTable.Paging)
     $(heading).children('.table-lines').text(function(){
@@ -297,6 +298,9 @@ jQuery(function($){
         "enabled": true
       },
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'domain_table');
         },
@@ -413,6 +417,9 @@ jQuery(function($){
         "enabled": true
       },
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'mailbox_table');
         },
@@ -481,6 +488,9 @@ jQuery(function($){
         "enabled": true
       },
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'resource_table');
         },
@@ -546,6 +556,9 @@ jQuery(function($){
         "enabled": true
       },
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'bcc_table');
         },
@@ -606,6 +619,9 @@ jQuery(function($){
         "enabled": true
       },
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'recipient_map_table');
         },
@@ -672,6 +688,9 @@ jQuery(function($){
         "enabled": true
       },
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'tls_policy_table');
         },
@@ -736,6 +755,9 @@ jQuery(function($){
         "enabled": true
       },
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'transport_maps_table');
         },
@@ -829,6 +851,9 @@ jQuery(function($){
         "enabled": true
       },
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'alias_table');
         },
@@ -886,6 +911,9 @@ jQuery(function($){
         "enabled": true
       },
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'aliasdomain_table');
         },
@@ -964,6 +992,9 @@ jQuery(function($){
         "enabled": true
       },
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'sync_job_table');
         },
@@ -1030,6 +1061,9 @@ jQuery(function($){
         "enabled": true
       },
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'filter_table');
         },
