@@ -1695,25 +1695,27 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 );
                 continue;
               }
-              $stmt = $pdo->prepare("SELECT `address` FROM `alias`
-                WHERE `address`= :address OR `address` IN (
-                  SELECT `username` FROM `mailbox`, `alias_domain`
-                    WHERE (
-                      `alias_domain`.`alias_domain` = :address_d
-                        AND `mailbox`.`username` = CONCAT(:address_l, '@', alias_domain.target_domain)))");
-              $stmt->execute(array(
-                ':address' => $address,
-                ':address_l' => $local_part,
-                ':address_d' => $domain
-              ));
-              $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-              if ($num_results != 0) {
-                $_SESSION['return'][] = array(
-                  'type' => 'danger',
-                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                  'msg' => array('is_alias_or_mailbox', htmlspecialchars($address))
-                );
-                continue;
+              if (strtolower($is_now['address']) != strtolower($address)) {
+                $stmt = $pdo->prepare("SELECT `address` FROM `alias`
+                  WHERE `address`= :address OR `address` IN (
+                    SELECT `username` FROM `mailbox`, `alias_domain`
+                      WHERE (
+                        `alias_domain`.`alias_domain` = :address_d
+                          AND `mailbox`.`username` = CONCAT(:address_l, '@', alias_domain.target_domain)))");
+                $stmt->execute(array(
+                  ':address' => $address,
+                  ':address_l' => $local_part,
+                  ':address_d' => $domain
+                ));
+                $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+                if ($num_results != 0) {
+                  $_SESSION['return'][] = array(
+                    'type' => 'danger',
+                    'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                    'msg' => array('is_alias_or_mailbox', htmlspecialchars($address))
+                  );
+                  continue;
+                }
               }
               $stmt = $pdo->prepare("SELECT `domain` FROM `domain`
                 WHERE `domain`= :domain1 OR `domain` = (SELECT `target_domain` FROM `alias_domain` WHERE `alias_domain` = :domain2)");
