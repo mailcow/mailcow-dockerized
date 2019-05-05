@@ -110,10 +110,6 @@ while ($row = $sth->fetchrow_arrayref()) {
   $timeout1            = @$row[19];
   $timeout2            = @$row[20];
 
-  $is_running = $dbh->prepare("UPDATE imapsync SET is_running = 1 WHERE id = ?");
-  $is_running->bind_param( 1, ${id} );
-  $is_running->execute();
-
   if ($enc1 eq "TLS") { $enc1 = "--tls1"; } elsif ($enc1 eq "SSL") { $enc1 = "--ssl1"; } else { undef $enc1; }
 
   my $template = $run_dir . '/imapsync.XXXXXXX';
@@ -152,7 +148,12 @@ while ($row = $sth->fetchrow_arrayref()) {
   '--no-modulesversion'];
 
   try {
+    $is_running = $dbh->prepare("UPDATE imapsync SET is_running = 1 WHERE id = ?");
+    $is_running->bind_param( 1, ${id} );
+    $is_running->execute();
+    
     run [@$generated_cmds, @$custom_params_ref], '&>', \my $stdout;
+    
     $update = $dbh->prepare("UPDATE imapsync SET returned_text = ?, last_run = NOW(), is_running = 0 WHERE id = ?");
     $update->bind_param( 1, ${stdout} );
     $update->bind_param( 2, ${id} );
