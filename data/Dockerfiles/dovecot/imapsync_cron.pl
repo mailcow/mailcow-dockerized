@@ -19,11 +19,20 @@ if ($imapsync_running eq 1)
 }
 
 sub qqw($) {
-  my @values = split('(?=--)', $_[0]);
+  my @params = ();
+  my @values = split(/(?=--)/, $_[0]);
   foreach my $val (@values) {
+    my @tmpparam = split(/ /, $val, 2);
+    foreach my $tmpval (@tmpparam) {
+        if ($tmpval ne '') {
+          push @params, $tmpval;
+        }
+    }
+  }
+  foreach my $val (@params) {
     $val=trim($val);
   }
-  return @values
+  return @params;
 }
 
 $run_dir="/tmp";
