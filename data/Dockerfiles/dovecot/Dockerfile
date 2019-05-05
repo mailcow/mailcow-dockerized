@@ -12,68 +12,76 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
   build-essential \
   ca-certificates \
   cpanminus \
+  cron \
   curl \
   default-libmysqlclient-dev \
   dnsutils \
   gettext \
   jq \
-  libjson-webtoken-perl \
-  libcgi-pm-perl \
-  libcrypt-openssl-rsa-perl \
-  libdata-uniqid-perl \
-  libhtml-parser-perl \
-  libmail-imapclient-perl \
-  libparse-recdescent-perl \
-  libsys-meminfo-perl \
-  libtest-mockobject-perl \
-  libwww-perl \
   libauthen-ntlm-perl \
   libbz2-dev \
+  libcgi-pm-perl \
+  libcrypt-openssl-rsa-perl \
   libcrypt-ssleay-perl \
   libcurl4-openssl-dev \
+  libdata-uniqid-perl \
   libdbd-mysql-perl \
   libdbi-perl \
   libdigest-hmac-perl \
+  libdist-checkconflicts-perl \
   libexpat1-dev \
   libfile-copy-recursive-perl \
+  libfile-tail-perl \
+  libhtml-parser-perl \
   libio-compress-perl \
   libio-socket-inet6-perl \
   libio-socket-ssl-perl \
   libio-tee-perl \
   libipc-run-perl \
+  libjson-webtoken-perl \
   libldap2-dev \
   liblockfile-simple-perl \
   liblz-dev \
   liblz4-dev \
   liblzma-dev \
+  libmail-imapclient-perl \
+  libmodule-implementation-perl \
   libmodule-scandeps-perl \
   libnet-ssleay-perl \
+  libpackage-stash-perl \
+  libpackage-stash-xs-perl \
   libpam-dev \
   libpar-packer-perl \
+  libparse-recdescent-perl \
+  libproc-processtable-perl \
   libreadonly-perl \
+  libregexp-common-perl \
   libssl-dev \
+  libsys-meminfo-perl \
   libterm-readkey-perl \
+  libtest-deep-perl \
+  libtest-fatal-perl \
+  libtest-mock-guard-perl \
+  libtest-mockobject-perl \
+  libtest-nowarnings-perl \
   libtest-pod-perl \
+  libtest-requires-perl \
   libtest-simple-perl \
+  libtest-warn-perl \
   libtry-tiny-perl \
   libunicode-string-perl \
-  libproc-processtable-perl \
-  libtest-nowarnings-perl \
-  libtest-deep-perl \
-  libtest-warn-perl \
-  libregexp-common-perl \
   liburi-perl \
+  libwww-perl \
   lzma-dev \
+  make \
+  mysql-client \
+  procps \
   python-html2text \
   python-jinja2 \
   python-mysql.connector \
   python-redis \
-  make \
-  mysql-client \
-  procps \
-  supervisor \
-  cron \
   redis-server \
+  supervisor \
   syslog-ng \
   syslog-ng-core \
   syslog-ng-mod-redis \
@@ -93,7 +101,6 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
   && make clean \
   && cd .. \
   && rm -rf dovecot-2.3-pigeonhole-$PIGEONHOLE_VERSION \
-  && cpanm Data::Uniqid Mail::IMAPClient String::Util File::Tail Dist::CheckConflicts Module::Implementation Package::Stash Package::Stash::XS Test::Fatal Test::Mock::Guard Test::Requires \
   && groupadd -g 5000 vmail \
   && groupadd -g 401 dovecot \
   && groupadd -g 402 dovenull \
