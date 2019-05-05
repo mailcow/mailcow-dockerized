@@ -451,6 +451,7 @@ $lang['add']['delete2duplicates'] = 'Delete duplicates on destination';
 $lang['add']['delete1'] = 'Delete from source when completed';
 $lang['add']['delete2'] = 'Delete messages on destination that are not on source';
 $lang['add']['custom_params'] = 'Custom parameters';
+$lang['add']['custom_params_hint'] = 'Right: --param=xy, wrong: --param xy';
 $lang['add']['subscribeall'] = 'Subscribe all folders';
 $lang['add']['timeout1'] = 'Timeout for connection to remote host';
 $lang['add']['timeout2'] = 'Timeout for connection to local host';
