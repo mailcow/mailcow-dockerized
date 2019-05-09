@@ -172,7 +172,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.69
+      image: mailcow/dovecot:1.70
       build: ./data/Dockerfiles/dovecot
       cap_add:
         - NET_BIND_SERVICE
