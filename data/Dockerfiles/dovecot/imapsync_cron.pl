@@ -5,11 +5,11 @@ use LockFile::Simple qw(lock trylock unlock);
 use Proc::ProcessTable;
 use Data::Dumper qw(Dumper);
 use IPC::Run 'run';
-use String::Util 'trim';
 use File::Temp;
 use Try::Tiny;
 use sigtrap 'handler' => \&sig_handler, qw(INT TERM KILL QUIT);
 
+sub trim { my $s = shift; $s =~ s/^\s+|\s+$//g; return $s };
 my $t = Proc::ProcessTable->new;
 my $imapsync_running = grep { $_->{cmndline} =~ /^\/usr\/bin\/perl \/usr\/local\/bin\/imapsync\s/ } @{$t->table};
 if ($imapsync_running eq 1)
@@ -19,11 +19,20 @@ if ($imapsync_running eq 1)
 }
 
 sub qqw($) {
-  my @values = split('(?=--)', $_[0]);
+  my @params = ();
+  my @values = split(/(?=--)/, $_[0]);
   foreach my $val (@values) {
+    my @tmpparam = split(/ /, $val, 2);
+    foreach my $tmpval (@tmpparam) {
+        if ($tmpval ne '') {
+          push @params, $tmpval;
+        }
+    }
+  }
+  foreach my $val (@params) {
     $val=trim($val);
   }
-  return @values
+  return @params;
 }
 
 $run_dir="/tmp";
@@ -101,10 +110,6 @@ while ($row = $sth->fetchrow_arrayref()) {
   $timeout1            = @$row[19];
   $timeout2            = @$row[20];
 
-  $is_running = $dbh->prepare("UPDATE imapsync SET is_running = 1 WHERE id = ?");
-  $is_running->bind_param( 1, ${id} );
-  $is_running->execute();
-
   if ($enc1 eq "TLS") { $enc1 = "--tls1"; } elsif ($enc1 eq "SSL") { $enc1 = "--ssl1"; } else { undef $enc1; }
 
   my $template = $run_dir . '/imapsync.XXXXXXX';
@@ -140,20 +145,30 @@ while ($row = $sth->fetchrow_arrayref()) {
   "--host2", "localhost",
   "--user2", $user2 . '*' . trim($master_user),
   "--passfile2", $passfile2->filename,
-  '--no-modulesversion'];
+  '--no-modulesversion',
+  '--noreleasecheck'];
 
   try {
+    $is_running = $dbh->prepare("UPDATE imapsync SET is_running = 1 WHERE id = ?");
+    $is_running->bind_param( 1, ${id} );
+    $is_running->execute();
+    
     run [@$generated_cmds, @$custom_params_ref], '&>', \my $stdout;
-    $update = $dbh->prepare("UPDATE imapsync SET returned_text = ?, last_run = NOW(), is_running = 0 WHERE id = ?");
+    
+    $update = $dbh->prepare("UPDATE imapsync SET returned_text = ? WHERE id = ?");
     $update->bind_param( 1, ${stdout} );
     $update->bind_param( 2, ${id} );
     $update->execute();
   } catch {
-    $update = $dbh->prepare("UPDATE imapsync SET returned_text = 'Could not start or finish imapsync', last_run = NOW(), is_running = 0 WHERE id = ?");
+    $update = $dbh->prepare("UPDATE imapsync SET returned_text = 'Could not start or finish imapsync' WHERE id = ?");
     $update->bind_param( 1, ${id} );
     $update->execute();
-    $lockmgr->unlock($lock_file);
+  } finally {
+    $update = $dbh->prepare("UPDATE imapsync SET last_run = NOW(), is_running = 0 WHERE id = ?");
+    $update->bind_param( 1, ${id} );
+    $update->execute();
   };
+
 
 }
 
