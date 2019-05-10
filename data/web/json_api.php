@@ -64,6 +64,42 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
     $object =     (isset($query[2])) ? $query[2] : null;
     $extra =      (isset($query[3])) ? $query[3] : null;
 
+    // accept json in request body
+    if($_SERVER['HTTP_CONTENT_TYPE'] === 'application/json') {
+      $request = file_get_contents('php://input');
+      $requestDecoded = json_decode($request, true);
+
+      // check for valid json
+      if($action != 'get' && $requestDecoded === null) {
+        echo json_encode(array(
+            'type' => 'error',
+            'msg' => 'Request body doesn\'t contain valid json!'
+        ));
+        exit;
+      }
+
+      // add
+      if($action == 'add') {
+        $_POST['attr'] = $request;
+      }
+
+      // edit
+      if($action == 'edit') {
+        $_POST['attr']  = json_encode($requestDecoded['attr']);
+        $_POST['items'] = json_encode($requestDecoded['items']);
+      }
+
+      // delete
+      if($action == 'delete') {
+        $_POST['items'] = $request;
+      }
+
+      unset($_SESSION['return']);
+      unset($_SESSION['success']);
+      unset($_SESSION['danger']);
+      unset($_SESSION['error']);
+    }
+
     $request_incomplete = json_encode(array(
     'type' => 'error',
     'msg' => 'Cannot find attributes in post data'
