@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 read -r -p "Are you sure you want to reset learned hashes from Rspamd (fuzzy, bayes, neural)? [y/N] " response
 response=${response,,}    # tolower
