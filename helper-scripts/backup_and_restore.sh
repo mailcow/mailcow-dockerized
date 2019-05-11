@@ -48,10 +48,15 @@ fi
 BACKUP_LOCATION=$(echo ${BACKUP_LOCATION} | sed 's#/$##')
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 COMPOSE_FILE=${SCRIPT_DIR}/../docker-compose.yml
+COMPRESSOR="zstd -T0 --rsyncable"
+DECOMPRESSOR="zstd -T0"
+ARCHIVE_SUFFIX=".zst"
 echo "Using ${BACKUP_LOCATION} as backup/restore location."
 echo
 source ${SCRIPT_DIR}/../mailcow.conf
 CMPS_PRJ=$(echo $COMPOSE_PROJECT_NAME | tr -cd "[A-Za-z-_]")
+
+docker build  --tag=mailcow-archiver - < ${SCRIPT_DIR}/../data/Dockerfiles/archiver/Dockerfile
 
 function backup() {
   DATE=$(date +"%Y-%m-%d-%H-%M-%S")
@@ -64,32 +69,32 @@ function backup() {
       docker run --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
         -v $(docker volume ls -qf name=${CMPS_PRJ}_vmail-vol-1):/vmail:ro \
-        debian:stretch-slim /bin/tar --warning='no-file-ignored' --use-compress-program="gzip --rsyncable -v --best" -Pcvpf /backup/backup_vmail.tar.gz /vmail
+        mailcow-archiver tar --warning='no-file-ignored' --use-compress-program "$COMPRESSOR" -Pcvpf /backup/backup_vmail.tar${ARCHIVE_SUFFIX} /vmail
       ;;&
     crypt|all)
       docker run --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
         -v $(docker volume ls -qf name=${CMPS_PRJ}_crypt-vol-1):/crypt:ro \
-        debian:stretch-slim /bin/tar --warning='no-file-ignored' --use-compress-program="gzip --rsyncable -v --best" -Pcvpf /backup/backup_crypt.tar.gz /crypt
+        mailcow-archiver tar --warning='no-file-ignored' --use-compress-program "$COMPRESSOR" -Pcvpf /backup/backup_crypt.tar${ARCHIVE_SUFFIX} /crypt
       ;;&
     redis|all)
       docker exec $(docker ps -qf name=redis-mailcow) redis-cli save
       docker run --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
         -v $(docker volume ls -qf name=${CMPS_PRJ}_redis-vol-1):/redis:ro \
-        debian:stretch-slim /bin/tar --warning='no-file-ignored' --use-compress-program="gzip --rsyncable -v --best" -Pcvpf /backup/backup_redis.tar.gz /redis
+        mailcow-archiver tar --warning='no-file-ignored' --use-compress-program "$COMPRESSOR" -Pcvpf /backup/backup_redis.tar${ARCHIVE_SUFFIX} /redis
       ;;&
     rspamd|all)
       docker run --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
         -v $(docker volume ls -qf name=${CMPS_PRJ}_rspamd-vol-1):/rspamd:ro \
-        debian:stretch-slim /bin/tar --warning='no-file-ignored' --use-compress-program="gzip --rsyncable -v --best" -Pcvpf /backup/backup_rspamd.tar.gz /rspamd
+        mailcow-archiver tar --warning='no-file-ignored' --use-compress-program "$COMPRESSOR" -Pcvpf /backup/backup_rspamd.tar${ARCHIVE_SUFFIX} /rspamd
       ;;&
     postfix|all)
       docker run --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
         -v $(docker volume ls -qf name=${CMPS_PRJ}_postfix-vol-1):/postfix:ro \
-        debian:stretch-slim /bin/tar --warning='no-file-ignored' --use-compress-program="gzip --rsyncable -v --best" -Pcvpf /backup/backup_postfix.tar.gz /postfix
+        mailcow-archiver tar --warning='no-file-ignored' --use-compress-program "$COMPRESSOR" -Pcvpf /backup/backup_postfix.tar${ARCHIVE_SUFFIX} /postfix
       ;;&
     mysql|all)
       SQLIMAGE=$(grep -iEo '(mysql|mariadb)\:.+' ${COMPOSE_FILE})
@@ -98,8 +103,8 @@ function backup() {
         -v $(docker volume ls -qf name=${CMPS_PRJ}_mysql-vol-1):/var/lib/mysql/:ro \
         --entrypoint= \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
-        ${SQLIMAGE} /bin/sh -c "mysqldump -hmysql -uroot -p${DBROOT} --all-databases | gzip > /backup/backup_mysql.gz"
-      ;;
+        ${SQLIMAGE} /bin/sh -c "mysqldump -hmysql -uroot -p${DBROOT} --all-databases > /backup/backup_mysql.sql"
+     ;;
     esac
     shift
   done
@@ -116,7 +121,7 @@ function restore() {
       docker run -it --rm \
         -v ${RESTORE_LOCATION}:/backup \
         -v $(docker volume ls -qf name=${CMPS_PRJ}_vmail-vol-1):/vmail \
-        debian:stretch-slim /bin/tar -Pxvzf /backup/backup_vmail.tar.gz
+        mailcow-archiver /bin/tar -Pxvjf /backup/backup_vmail.tar${ARCHIVE_SUFFIX}
       docker start $(docker ps -aqf name=dovecot-mailcow)
       echo
       echo "In most cases it is not required to run a full resync, you can run the command printed below at any time after testing wether the restore process broke a mailbox:"
@@ -135,7 +140,7 @@ function restore() {
       docker run -it --rm \
         -v ${RESTORE_LOCATION}:/backup \
         -v $(docker volume ls -qf name=${CMPS_PRJ}_redis-vol-1):/redis \
-        debian:stretch-slim /bin/tar -Pxvzf /backup/backup_redis.tar.gz
+        mailcow-archiver /bin/tar --use-compress-program "$DECOMPRESSOR" -Pxvf /backup/backup_redis.tar${ARCHIVE_SUFFIX}
       docker start $(docker ps -aqf name=redis-mailcow)
       ;;
     crypt)
@@ -143,7 +148,7 @@ function restore() {
       docker run -it --rm \
         -v ${RESTORE_LOCATION}:/backup \
         -v $(docker volume ls -qf name=${CMPS_PRJ}_crypt-vol-1):/crypt \
-        debian:stretch-slim /bin/tar -Pxvzf /backup/backup_crypt.tar.gz
+        mailcow-archiver /bin/tar --use-compress-program "$DECOMPRESSOR" -Pxvf  /backup/backup_crypt.tar${ARCHIVE_SUFFIX}
       docker start $(docker ps -aqf name=dovecot-mailcow)
       ;;
     rspamd)
@@ -151,7 +156,7 @@ function restore() {
       docker run -it --rm \
         -v ${RESTORE_LOCATION}:/backup \
         -v $(docker volume ls -qf name=${CMPS_PRJ}_rspamd-vol-1):/rspamd \
-        debian:stretch-slim /bin/tar -Pxvzf /backup/backup_rspamd.tar.gz
+        mailcow-archiver /bin/tar --use-compress-program "$DECOMPRESSOR" -Pxvf /backup/backup_rspamd.tar${ARCHIVE_SUFFIX}
       docker start $(docker ps -aqf name=rspamd-mailcow)
       ;;
     postfix)
@@ -159,7 +164,7 @@ function restore() {
       docker run -it --rm \
         -v ${RESTORE_LOCATION}:/backup \
         -v $(docker volume ls -qf name=${CMPS_PRJ}_postfix-vol-1):/postfix \
-        debian:stretch-slim /bin/tar -Pxvzf /backup/backup_postfix.tar.gz
+        mailcow-archiver /bin/tar --use-compress-program "$DECOMPRESSOR" -Pxvf /backup/backup_postfix.tar${ARCHIVE_SUFFIX}
       docker start $(docker ps -aqf name=postfix-mailcow)
       ;;
     mysql)
@@ -174,10 +179,10 @@ function restore() {
         ${SQLIMAGE} /bin/sh -c "mysqld --skip-grant-tables & \
         until mysqladmin ping; do sleep 3; done && \
         echo Restoring... && \
-        gunzip < backup/backup_mysql.gz | mysql -uroot && \
+        mysql -uroot < backup/backup_mysql.gz && \
         mysql -uroot -e SHUTDOWN;"
       docker start $(docker ps -aqf name=mysql-mailcow)
-      ;;
+     ;;
     esac
     shift
   done
