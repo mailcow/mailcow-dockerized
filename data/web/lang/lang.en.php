@@ -859,3 +859,9 @@ $lang['danger']['text_empty'] = 'Text must not be empty';
 $lang['danger']['subject_empty'] = 'Subject must not be empty';
 $lang['danger']['from_invalid'] = 'Sender must not be empty';
 $lang['danger']['network_host_invalid'] = 'Invalid network or host: %s';
+
+$lang['add']['mailbox_quota_def'] = 'Default mailbox quota';
+$lang['edit']['mailbox_quota_def'] = 'Default mailbox quota';
+$lang['danger']['mailbox_defquota_exceeds_mailbox_maxquota'] = 'Default quota exceeds max quota limit"';
+$lang['danger']['defquota_empty'] = 'Default quota per mailbox must not be 0.';
+$lang['mailbox']['mailbox_defquota'] = 'Default mailbox size';
