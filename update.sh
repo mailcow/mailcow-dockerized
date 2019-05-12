@@ -260,7 +260,7 @@ for option in ${CONFIG_ARRAY[@]}; do
 done
 
 echo -en "Checking internet connection... "
-timeout 3 ping -c 1 8.8.8.8 > /dev/null
+timeout 3 ping -c 1 9.9.9.9 > /dev/null
 if [[ $? != 0 ]]; then
   echo -e "\e[31mfailed\e[0m"
   exit 1
