@@ -53,8 +53,6 @@ function api_log($_data) {
   }
 }
 
-api_log($_POST);
-
 if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_username'])) {
   if (isset($_GET['query'])) {
 
@@ -70,7 +68,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
       $requestDecoded = json_decode($request, true);
 
       // check for valid json
-      if($action != 'get' && $requestDecoded === null) {
+      if ($action != 'get' && $requestDecoded === null) {
         echo json_encode(array(
             'type' => 'error',
             'msg' => 'Request body doesn\'t contain valid json!'
@@ -79,30 +77,27 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
       }
 
       // add
-      if($action == 'add') {
+      if ($action == 'add') {
         $_POST['attr'] = $request;
       }
 
       // edit
-      if($action == 'edit') {
+      if ($action == 'edit') {
         $_POST['attr']  = json_encode($requestDecoded['attr']);
         $_POST['items'] = json_encode($requestDecoded['items']);
       }
 
       // delete
-      if($action == 'delete') {
+      if ($action == 'delete') {
         $_POST['items'] = $request;
       }
 
-      unset($_SESSION['return']);
-      unset($_SESSION['success']);
-      unset($_SESSION['danger']);
-      unset($_SESSION['error']);
     }
+    api_log($_POST);
 
     $request_incomplete = json_encode(array(
-    'type' => 'error',
-    'msg' => 'Cannot find attributes in post data'
+      'type' => 'error',
+      'msg' => 'Cannot find attributes in post data'
     ));
 
     switch ($action) {
