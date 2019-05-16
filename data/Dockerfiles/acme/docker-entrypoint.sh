@@ -404,6 +404,7 @@ while true; do
   if [[ -z ${ALL_VALIDATED[*]} ]]; then
     log_f "Cannot validate hostnames, skipping Let's Encrypt for 1 hour."
     log_f "Use SKIP_LETS_ENCRYPT=y in mailcow.conf to skip it permanently."
+    redis-cli -h redis SET ACME_FAIL_TIME "$(date +%s)"
     sleep 1h
     exec $(readlink -f "$0")
   fi
