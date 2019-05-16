@@ -560,7 +560,7 @@ BACKGROUND_TASKS+=($!)
 while true; do
   if ! acme_checks; then
     log_msg "ACME client hit error limit"
-    echo acme-tiny > /tmp/com_pipe
+    echo acme-mailcow > /tmp/com_pipe
   fi
 done
 ) &
@@ -616,9 +616,9 @@ while true; do
   if [[ ${com_pipe_answer} == "ratelimit" ]]; then
     log_msg "At least one ratelimit was applied"
     [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}" "Please see mailcow UI logs for further information."
-  elif [[ ${com_pipe_answer} == "acme-tiny" ]]; then
-    log_msg "acme-tiny client returned non-zero exit code"
-    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}" "Please check acme-mailcow for ruther information."
+  elif [[ ${com_pipe_answer} == "acme-mailcow" ]]; then
+    log_msg "acme-mailcow did not complete successfully"
+    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}" "Please check acme-mailcow for further information."
   elif [[ ${com_pipe_answer} =~ .+-mailcow ]] || [[ ${com_pipe_answer} == "ipv6nat-mailcow" ]]; then
     kill -STOP ${BACKGROUND_TASKS[*]}
     sleep 3
