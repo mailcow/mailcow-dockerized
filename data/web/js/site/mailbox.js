@@ -3,28 +3,18 @@ $(document).ready(function() {
   FooTable.domainFilter = FooTable.Filtering.extend({
     construct: function(instance){
       this._super(instance);
-      var domain_list = [];
-      $.ajax({
-        dataType: 'json',
-        url: '/api/v1/get/domain/all',
-        jsonp: false,
-        async: true,
-        error: function () {
-          domain_list.push('Cannot read domain list');
-        },
-        success: function (data) {
-          $.each(data, function (i, item) {
-            domain_list.push(item.domain_name);
-          });
-        }
-      });
-      this.domains = domain_list;
       this.def = 'All Domains';
       this.$domain = null;
     },
     $create: function(){
       this._super();
-      var self = this,
+      var self = this;
+      var domains = [];
+      
+      $.each(self.ft.rows.all, function(i, row){
+        if((row.val().domain != null) && ($.inArray(row.val().domain, domains) === -1)) domains.push(row.val().domain);
+      });
+      
       $form_grp = $('<div/>', {'class': 'form-group'})
         .append($('<label/>', {'class': 'sr-only', text: 'Domain'}))
         .prependTo(self.$form);
@@ -33,7 +23,7 @@ $(document).ready(function() {
         .append($('<option/>', {text: self.def}))
         .appendTo($form_grp);
 
-      $.each(self.domains, function(i, domain){
+      $.each(domains, function(i, domain){
         self.$domain.append($('<option/>').text(domain));
       });
     },
