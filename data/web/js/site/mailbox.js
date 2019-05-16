@@ -12,7 +12,7 @@ $(document).ready(function() {
       var domains = [];
       
       $.each(self.ft.rows.all, function(i, row){
-        if($.inArray(row.val().domain, domains) === -1) domains.push(row.val().domain);
+        if((row.val().domain != null) && ($.inArray(row.val().domain, domains) === -1)) domains.push(row.val().domain);
       });
       
       $form_grp = $('<div/>', {'class': 'form-group'})
