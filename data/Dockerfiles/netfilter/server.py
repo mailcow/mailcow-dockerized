@@ -5,6 +5,7 @@ import os
 import time
 import atexit
 import signal
+import socket
 import ipaddress
 from random import randint
 from threading import Thread
@@ -38,6 +39,13 @@ bans = {}
 log = {}
 quit_now = False
 lock = Lock()
+
+def is_ip_network(address):
+  try:
+    ipaddress.ip_network(address.decode('ascii'), False)
+  except ValueError:
+    return False
+  return True
 
 def refreshF2boptions():
   global f2boptions
@@ -119,6 +127,19 @@ def ban(address):
   self_network = ipaddress.ip_network(address.decode('ascii'))
   if WHITELIST:
     for wl_key in WHITELIST:
+      if not is_ip_network(wl_key):
+        hostname = wl_key
+        try:
+          wl_key = socket.gethostbyname(hostname)
+        except socket.gaierror as err:
+          continue
+          
+        log['time'] = int(round(time.time()))
+        log['priority'] = 'info'
+        log['message'] = 'Hostname %s is resolved to %s' % (hostname, wl_key)
+        r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
+        print 'Hostname %s is resolved to %s' % (hostname, wl_key)
+
       wl_net = ipaddress.ip_network(wl_key.decode('ascii'), False)
       if wl_net.overlaps(self_network):
         log['time'] = int(round(time.time()))
