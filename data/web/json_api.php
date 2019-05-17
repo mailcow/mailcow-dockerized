@@ -819,6 +819,14 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               break;
             }
           break;
+          case "fail2ban":
+            switch ($object) {
+              default:
+                $data = fail2ban('get');
+                process_get_return($data);
+              break;
+            }
+          break;
           case "resource":
             switch ($object) {
               case "all":
