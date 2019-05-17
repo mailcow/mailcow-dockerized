@@ -9,6 +9,11 @@ function valid_network($network) {
   }
   return false;
 }
+
+function valid_hostname($hostname) {
+    return filter_var($hostname, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME);
+}
+
 function fail2ban($_action, $_data = null) {
   global $redis;
   global $lang;
@@ -188,7 +193,7 @@ function fail2ban($_action, $_data = null) {
           $wl_array = array_map('trim', preg_split( "/( |,|;|\n)/", $wl));
           if (is_array($wl_array)) {
             foreach ($wl_array as $wl_item) {
-              if (valid_network($wl_item)) {
+              if (valid_network($wl_item) || valid_hostname($wl_item)) {
                 $redis->hSet('F2B_WHITELIST', $wl_item, 1);
               }
             }
