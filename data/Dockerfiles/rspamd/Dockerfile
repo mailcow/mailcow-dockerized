@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
 	apt-transport-https \
 	&& apt-key adv --fetch-keys https://rspamd.com/apt/gpg.key \
 	&& echo "deb https://rspamd.com/apt-stable/ bionic main" > /etc/apt/sources.list.d/rspamd.list \
-	&& apt-get update && apt-get install -y rspamd \
+	&& apt-get update && apt-get install -y rspamd dnsutils \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& apt-get autoremove --purge \
 	&& apt-get clean \
