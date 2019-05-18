@@ -5,7 +5,6 @@ import os
 import time
 import atexit
 import signal
-import socket
 import ipaddress
 from random import randint
 from threading import Thread
@@ -13,6 +12,8 @@ from threading import Lock
 import redis
 import json
 import iptc
+import dns.resolver
+import dns.exception
 
 while True:
   try:
@@ -25,6 +26,8 @@ while True:
     break
 
 pubsub = r.pubsub()
+
+resolver = dns.resolver.Resolver()
 
 RULES = {}
 RULES[1] = 'warning: .*\[([0-9a-f\.:]+)\]: SASL .+ authentication failed'
@@ -126,21 +129,51 @@ def ban(address):
 
   self_network = ipaddress.ip_network(address.decode('ascii'))
   if WHITELIST:
+    wl_hostnames=[]
+    wl_networks=[]
+    
     for wl_key in WHITELIST:
-      if not is_ip_network(wl_key):
-        hostname = wl_key
+      if is_ip_network(wl_key):
+        wl_networks.append(wl_key)
+      else:
+        wl_hostnames.append(wl_key)
+
+    for w1_hostname in wl_hostnames:
+      hostname_ips = []
+      for rdtype in ['A', 'AAAA']:
         try:
-          wl_key = socket.gethostbyname(hostname)
-        except socket.gaierror as err:
+          answer = resolver.query(qname=w1_hostname, rdtype=rdtype, lifetime=1)
+        except dns.exception.Timeout as timout:
+          log['time'] = int(round(time.time()))
+          log['priority'] = 'info'
+          log['message'] = 'Hostname %s timedout on resolve' % (w1_hostname)
+          r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
+          print 'Hostname %s timedout on resolve' % (w1_hostname)
+          break
+        except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer):
+          continue
+        except dns.exception.DNSException as dnsexception:
+          log['time'] = int(round(time.time()))
+          log['priority'] = 'info'
+          log['message'] = '%s' % (dnsexception)
+          r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
+          print '%s' % (dnsexception)
           continue
           
-        log['time'] = int(round(time.time()))
-        log['priority'] = 'info'
-        log['message'] = 'Hostname %s is resolved to %s' % (hostname, wl_key)
-        r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-        print 'Hostname %s is resolved to %s' % (hostname, wl_key)
-
+        for rdata in answer:
+          hostname_ips.append(rdata.to_text())
+            
+      wl_networks.extend(hostname_ips)
+          
+      log['time'] = int(round(time.time()))
+      log['priority'] = 'info'
+      log['message'] = 'Hostname %s is resolved to %s' % (w1_hostname, hostname_ips)
+      r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
+      print 'Hostname %s is resolved to %s' % (w1_hostname, hostname_ips)     
+     
+    for wl_key in wl_networks:
       wl_net = ipaddress.ip_network(wl_key.decode('ascii'), False)
+          
       if wl_net.overlaps(self_network):
         log['time'] = int(round(time.time()))
         log['priority'] = 'info'
