@@ -6,7 +6,7 @@ ENV PYTHON_IPTABLES_XTABLES_VERSION 12
 ENV IPTABLES_LIBDIR /usr/lib
 
 RUN apk add -U python2 python-dev py-pip gcc musl-dev iptables ip6tables tzdata \
-  && pip2 install --upgrade python-iptables==0.13.0 redis ipaddress \
+  && pip2 install --upgrade python-iptables==0.13.0 redis ipaddress dnspython \
   && apk del python-dev py2-pip gcc
 
 COPY server.py /
