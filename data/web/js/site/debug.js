@@ -524,6 +524,9 @@ jQuery(function($){
     });
     } else if (table == 'autodiscover_log') {
       $.each(data, function (i, item) {
+        if (item.ua == null) {
+          item.ua = 'unknown';
+        }
         item.ua = '<span style="font-size:small">' + item.ua + '</span>';
         if (item.service == "activesync") {
           item.service = '<span class="label label-info">ActiveSync</span>';
