@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 import re
 import os
@@ -21,7 +21,7 @@ while True:
     r = redis.StrictRedis(host=os.getenv('IPV4_NETWORK', '172.22.1') + '.249', decode_responses=True, port=6379, db=0)
     r.ping()
   except Exception as ex:
-    print '%s - trying again in 3 seconds'  % (ex)
+    print('%s - trying again in 3 seconds'  % (ex))
     time.sleep(3)
   else:
     break
@@ -66,8 +66,8 @@ def refreshF2boptions():
     try:
       f2boptions = {}
       f2boptions = json.loads(r.get('F2B_OPTIONS'))
-    except ValueError, e:
-      print 'Error loading F2B options: F2B_OPTIONS is not json'
+    except ValueError as e:
+      print('Error loading F2B options: F2B_OPTIONS is not json')
       quit_now = True
 
 if r.exists('F2B_LOG'):
@@ -96,14 +96,14 @@ def mailcowChainOrder():
                 log['priority'] = 'crit'
                 log['message'] = 'Error in ' + chain.name + ' chain order, restarting container'
                 r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-                print log['message']
+                print(log['message'])
                 quit_now = True
           if not target_found:
             log['time'] = int(round(time.time()))
             log['priority'] = 'crit'
             log['message'] = 'Error in ' + chain.name + ' chain: MAILCOW target not found, restarting container'
             r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-            print log['message']
+            print(log['message'])
             quit_now = True
 
 def ban(address):
@@ -133,7 +133,7 @@ def ban(address):
         log['priority'] = 'info'
         log['message'] = 'Address %s is whitelisted by rule %s' % (self_network, wl_net)
         r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-        print 'Address %s is whitelisted by rule %s' % (self_network, wl_net)
+        print('Address %s is whitelisted by rule %s' % (self_network, wl_net))
         return
 
   net = ipaddress.ip_network((address + (NETBAN_IPV4 if type(ip) is ipaddress.IPv4Address else NETBAN_IPV6)).decode('ascii'), strict=False)
@@ -155,7 +155,7 @@ def ban(address):
     log['priority'] = 'crit'
     log['message'] = 'Banning %s' % net
     r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-    print 'Banning %s for %d minutes' % (net, BAN_TIME / 60)
+    print('Banning %s for %d minutes' % (net, BAN_TIME / 60))
     if type(ip) is ipaddress.IPv4Address:
       with lock:
         chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), 'MAILCOW')
@@ -180,7 +180,7 @@ def ban(address):
     log['priority'] = 'warn'
     log['message'] = '%d more attempts in the next %d seconds until %s is banned' % (MAX_ATTEMPTS - bans[net]['attempts'], RETRY_WINDOW, net)
     r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-    print '%d more attempts in the next %d seconds until %s is banned' % (MAX_ATTEMPTS - bans[net]['attempts'], RETRY_WINDOW, net)
+    print('%d more attempts in the next %d seconds until %s is banned' % (MAX_ATTEMPTS - bans[net]['attempts'], RETRY_WINDOW, net))
 
 def unban(net):
   global lock
@@ -190,12 +190,12 @@ def unban(net):
   if not net in bans:
    log['message'] = '%s is not banned, skipping unban and deleting from queue (if any)' % net
    r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-   print '%s is not banned, skipping unban and deleting from queue (if any)' % net
+   print('%s is not banned, skipping unban and deleting from queue (if any)' % net)
    r.hdel('F2B_QUEUE_UNBAN', '%s' % net)
    return
   log['message'] = 'Unbanning %s' % net
   r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-  print 'Unbanning %s' % net
+  print('Unbanning %s' % net)
   if type(ipaddress.ip_network(net.decode('ascii'))) is ipaddress.IPv4Network:
     with lock:
       chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), 'MAILCOW')
@@ -229,7 +229,7 @@ def clear():
   log['priority'] = 'info'
   log['message'] = 'Clearing all bans'
   r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-  print 'Clearing all bans'
+  print('Clearing all bans')
   for net in bans.copy():
     unban(net)
   with lock:
@@ -263,11 +263,11 @@ def watch():
   log['message'] = 'Watching Redis channel F2B_CHANNEL'
   r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
   pubsub.subscribe('F2B_CHANNEL')
-  print 'Subscribing to Redis channel F2B_CHANNEL'
+  print('Subscribing to Redis channel F2B_CHANNEL')
 
   while not quit_now:
     for item in pubsub.listen():
-      for rule_id, rule_regex in RULES.iteritems():
+      for rule_id, rule_regex in RULES.items():
         if item['data'] and item['type'] == 'message':
           result = re.search(rule_regex, item['data'])
           if result:
@@ -275,7 +275,7 @@ def watch():
             ip = ipaddress.ip_address(addr.decode('ascii'))
             if ip.is_private or ip.is_loopback:
               continue
-            print '%s matched rule id %d' % (addr, rule_id)
+            print('%s matched rule id %d' % (addr, rule_id))
             log['time'] = int(round(time.time()))
             log['priority'] = 'warn'
             log['message'] = '%s matched rule id %d' % (addr, rule_id)
@@ -307,7 +307,7 @@ def snat4(snat_target):
           log['priority'] = 'info'
           log['message'] = 'Added POSTROUTING rule for source network ' + get_snat4_rule().src + ' to SNAT target ' + snat_target
           r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-          print log['message']
+          print(log['message'])
           chain.insert_rule(get_snat4_rule())
           table.commit()
         else:
@@ -318,7 +318,7 @@ def snat4(snat_target):
           table.commit()
         table.autocommit = True
       except:
-        print 'Error running SNAT4, retrying...' 
+        print('Error running SNAT4, retrying...') 
 
 def snat6(snat_target):
   global lock
@@ -345,7 +345,7 @@ def snat6(snat_target):
           log['priority'] = 'info'
           log['message'] = 'Added POSTROUTING rule for source network ' + get_snat6_rule().src + ' to SNAT target ' + snat_target
           r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-          print log['message']
+          print(log['message'])
           chain.insert_rule(get_snat6_rule())
           table.commit()
         else:
@@ -356,7 +356,7 @@ def snat6(snat_target):
           table.commit()
         table.autocommit = True
       except:
-        print 'Error running SNAT6, retrying...' 
+        print('Error running SNAT6, retrying...') 
 
 def autopurge():
   while not quit_now:
@@ -401,7 +401,7 @@ def genNetworkList(list):
         log['priority'] = 'info'
         log['message'] = 'Hostname %s timedout on resolve' % (hostname)
         r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-        print 'Hostname %s timedout on resolve' % (hostname)
+        print('Hostname %s timedout on resolve' % (hostname))
         break
       except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer):
         continue
@@ -410,7 +410,7 @@ def genNetworkList(list):
         log['priority'] = 'info'
         log['message'] = '%s' % (dnsexception)
         r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-        print '%s' % (dnsexception)
+        print('%s' % (dnsexception))
         continue
 
       for rdata in answer:
@@ -436,13 +436,13 @@ def whitelistUpdate():
         log['priority'] = 'info'
         log['message'] = 'New entrys for whitelist %s' % (WHITELIST)
         r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-        print 'New entrys for whitelist %s' % (WHITELIST)
+        print('New entrys for whitelist %s' % (WHITELIST))
         
     time.sleep(60.0 - ((time.time() - start_time) % 60.0)) 
       
 def initChain():
   # Is called before threads start, no locking
-  print "Initializing mailcow netfilter chain"
+  print("Initializing mailcow netfilter chain")
   # IPv4
   if not iptc.Chain(iptc.Table(iptc.Table.FILTER), "MAILCOW") in iptc.Table(iptc.Table.FILTER).chains:
     iptc.Table(iptc.Table.FILTER).create_chain("MAILCOW")
@@ -482,7 +482,7 @@ def initChain():
           log['priority'] = 'crit'
           log['message'] = 'Blacklisting host/network %s' % bl_key
           r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-          print log['message']
+          print(log['message'])
           chain.insert_rule(rule)
           r.hset('F2B_PERM_BANS', '%s' % bl_key, int(round(time.time())))
       else:
@@ -496,7 +496,7 @@ def initChain():
           log['priority'] = 'crit'
           log['message'] = 'Blacklisting host/network %s' % bl_key
           r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-          print log['message']
+          print(log['message'])
           chain.insert_rule(rule)
           r.hset('F2B_PERM_BANS', '%s' % bl_key, int(round(time.time())))
 
@@ -520,7 +520,7 @@ if __name__ == '__main__':
         snat4_thread.daemon = True
         snat4_thread.start()
     except ValueError:
-      print os.getenv('SNAT_TO_SOURCE') + ' is not a valid IPv4 address'
+      print(os.getenv('SNAT_TO_SOURCE') + ' is not a valid IPv4 address')
 
   if os.getenv('SNAT6_TO_SOURCE') and os.getenv('SNAT6_TO_SOURCE') is not 'n':
     try:
@@ -531,7 +531,7 @@ if __name__ == '__main__':
         snat6_thread.daemon = True
         snat6_thread.start()
     except ValueError:
-      print os.getenv('SNAT6_TO_SOURCE') + ' is not a valid IPv6 address'
+      print(os.getenv('SNAT6_TO_SOURCE') + ' is not a valid IPv6 address')
 
   autopurge_thread = Thread(target=autopurge)
   autopurge_thread.daemon = True
