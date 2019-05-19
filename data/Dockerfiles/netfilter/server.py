@@ -391,12 +391,16 @@ def whitelistUpdate():
   while not quit_now:
     start_time = time.time()
     list = r.hgetall('F2B_WHITELIST')
+    
+    gen_whitelist = []
+    
     if list:
-      new_whitelist = genNetworkList(list)
-      if Counter(new_whitelist) != Counter(WHITELIST):
-        WHITELIST = new_whitelist
-        logInfo('New entrys for whitelist %s' % WHITELIST)
-        
+      gen_whitelist = genNetworkList(list)
+    
+    if Counter(gen_whitelist) != Counter(WHITELIST):
+      WHITELIST = gen_whitelist
+      logInfo('New entrys for whitelist %s' % WHITELIST)
+
     time.sleep(60.0 - ((time.time() - start_time) % 60.0)) 
       
 def initChain():
