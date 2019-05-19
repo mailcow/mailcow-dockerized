@@ -42,10 +42,27 @@ RULES[6] = '([0-9a-f\.:]+) \"GET \/SOGo\/.* HTTP.+\" 403 .+'
 WHITELIST = []
 
 bans = {}
-log = {}
+
 quit_now = False
 lock = Lock()
 
+def log(priority, message):
+  tolog = {}
+  tolog['time'] = int(round(time.time()))
+  tolog['priority'] = priority
+  tolog['message'] = message
+  r.lpush('NETFILTER_LOG', json.dumps(tolog, ensure_ascii=False))
+  print(message)
+  
+def logWarn(message):
+  log('warn', message)
+  
+def logCrit(message):
+  log('crit', message)
+  
+def logInfo(message):
+  log('info', message)
+  
 def refreshF2boptions():
   global f2boptions
   global quit_now
@@ -92,18 +109,10 @@ def mailcowChainOrder():
             if item.target.name == 'MAILCOW':
               target_found = True
               if position != 0:
-                log['time'] = int(round(time.time()))
-                log['priority'] = 'crit'
-                log['message'] = 'Error in ' + chain.name + ' chain order, restarting container'
-                r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-                print(log['message'])
+                logCrit('Error in %s chain order, restarting container' % (chain.name))
                 quit_now = True
           if not target_found:
-            log['time'] = int(round(time.time()))
-            log['priority'] = 'crit'
-            log['message'] = 'Error in ' + chain.name + ' chain: MAILCOW target not found, restarting container'
-            r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-            print(log['message'])
+            logCrit('Error in %s chain: MAILCOW target not found, restarting container' % (chain.name))
             quit_now = True
 
 def ban(address):
@@ -115,28 +124,24 @@ def ban(address):
   NETBAN_IPV4 = '/' + str(f2boptions['netban_ipv4'])
   NETBAN_IPV6 = '/' + str(f2boptions['netban_ipv6'])
 
-  ip = ipaddress.ip_address(address.decode('ascii'))
+  ip = ipaddress.ip_address(address)
   if type(ip) is ipaddress.IPv6Address and ip.ipv4_mapped:
     ip = ip.ipv4_mapped
     address = str(ip)
   if ip.is_private or ip.is_loopback:
     return
 
-  self_network = ipaddress.ip_network(address.decode('ascii'))
+  self_network = ipaddress.ip_network(address)
 
   if WHITELIST:
     for wl_key in WHITELIST:
-      wl_net = ipaddress.ip_network(wl_key.decode('ascii'), False)
+      wl_net = ipaddress.ip_network(wl_key, False)
           
       if wl_net.overlaps(self_network):
-        log['time'] = int(round(time.time()))
-        log['priority'] = 'info'
-        log['message'] = 'Address %s is whitelisted by rule %s' % (self_network, wl_net)
-        r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-        print('Address %s is whitelisted by rule %s' % (self_network, wl_net))
+        logInfo('Address %s is whitelisted by rule %s' % (self_network, wl_net))
         return
 
-  net = ipaddress.ip_network((address + (NETBAN_IPV4 if type(ip) is ipaddress.IPv4Address else NETBAN_IPV6)).decode('ascii'), strict=False)
+  net = ipaddress.ip_network((address + (NETBAN_IPV4 if type(ip) is ipaddress.IPv4Address else NETBAN_IPV6)), strict=False)
   net = str(net)
 
   if not net in bans or time.time() - bans[net]['last_attempt'] > RETRY_WINDOW:
@@ -151,11 +156,8 @@ def ban(address):
   active_window = time.time() - bans[net]['last_attempt']
 
   if bans[net]['attempts'] >= MAX_ATTEMPTS:
-    log['time'] = int(round(time.time()))
-    log['priority'] = 'crit'
-    log['message'] = 'Banning %s' % net
-    r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-    print('Banning %s for %d minutes' % (net, BAN_TIME / 60))
+    cur_time = int(round(time.time()))
+    logCrit('Banning %s for %d minutes' % (net, BAN_TIME / 60))
     if type(ip) is ipaddress.IPv4Address:
       with lock:
         chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), 'MAILCOW')
@@ -174,29 +176,18 @@ def ban(address):
         rule.target = target
         if rule not in chain.rules:
           chain.insert_rule(rule)
-    r.hset('F2B_ACTIVE_BANS', '%s' % net, log['time'] + BAN_TIME)
+    r.hset('F2B_ACTIVE_BANS', '%s' % net, cur_time + BAN_TIME)
   else:
-    log['time'] = int(round(time.time()))
-    log['priority'] = 'warn'
-    log['message'] = '%d more attempts in the next %d seconds until %s is banned' % (MAX_ATTEMPTS - bans[net]['attempts'], RETRY_WINDOW, net)
-    r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-    print('%d more attempts in the next %d seconds until %s is banned' % (MAX_ATTEMPTS - bans[net]['attempts'], RETRY_WINDOW, net))
+    logWarn('%d more attempts in the next %d seconds until %s is banned' % (MAX_ATTEMPTS - bans[net]['attempts'], RETRY_WINDOW, net))
 
 def unban(net):
   global lock
-  log['time'] = int(round(time.time())) 
-  log['priority'] = 'info'
-  r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
   if not net in bans:
-   log['message'] = '%s is not banned, skipping unban and deleting from queue (if any)' % net
-   r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-   print('%s is not banned, skipping unban and deleting from queue (if any)' % net)
+   logInfo('%s is not banned, skipping unban and deleting from queue (if any)' % net)
    r.hdel('F2B_QUEUE_UNBAN', '%s' % net)
    return
-  log['message'] = 'Unbanning %s' % net
-  r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-  print('Unbanning %s' % net)
-  if type(ipaddress.ip_network(net.decode('ascii'))) is ipaddress.IPv4Network:
+  logInfo('Unbanning %s' % net)
+  if type(ipaddress.ip_network(net)) is ipaddress.IPv4Network:
     with lock:
       chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), 'MAILCOW')
       rule = iptc.Rule()
@@ -225,11 +216,7 @@ def quit(signum, frame):
 
 def clear():
   global lock
-  log['time'] = int(round(time.time()))
-  log['priority'] = 'info'
-  log['message'] = 'Clearing all bans'
-  r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-  print('Clearing all bans')
+  logInfo('Clearing all bans')
   for net in bans.copy():
     unban(net)
   with lock:
@@ -258,12 +245,8 @@ def clear():
     pubsub.unsubscribe()
 
 def watch():
-  log['time'] = int(round(time.time()))
-  log['priority'] = 'info'
-  log['message'] = 'Watching Redis channel F2B_CHANNEL'
-  r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
+  logInfo('Watching Redis channel F2B_CHANNEL')
   pubsub.subscribe('F2B_CHANNEL')
-  print('Subscribing to Redis channel F2B_CHANNEL')
 
   while not quit_now:
     for item in pubsub.listen():
@@ -272,14 +255,10 @@ def watch():
           result = re.search(rule_regex, item['data'])
           if result:
             addr = result.group(1)
-            ip = ipaddress.ip_address(addr.decode('ascii'))
+            ip = ipaddress.ip_address(addr)
             if ip.is_private or ip.is_loopback:
               continue
-            print('%s matched rule id %d' % (addr, rule_id))
-            log['time'] = int(round(time.time()))
-            log['priority'] = 'warn'
-            log['message'] = '%s matched rule id %d' % (addr, rule_id)
-            r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
+            logWarn('%s matched rule id %d' % (addr, rule_id))
             ban(addr)
 
 def snat4(snat_target):
@@ -303,11 +282,7 @@ def snat4(snat_target):
         chain = iptc.Chain(table, 'POSTROUTING')
         table.autocommit = False
         if get_snat4_rule() not in chain.rules:
-          log['time'] = int(round(time.time()))
-          log['priority'] = 'info'
-          log['message'] = 'Added POSTROUTING rule for source network ' + get_snat4_rule().src + ' to SNAT target ' + snat_target
-          r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-          print(log['message'])
+          logCrit('Added POSTROUTING rule for source network %s to SNAT target %s' % (get_snat4_rule().src, snat_target))  
           chain.insert_rule(get_snat4_rule())
           table.commit()
         else:
@@ -341,11 +316,7 @@ def snat6(snat_target):
         chain = iptc.Chain(table, 'POSTROUTING')
         table.autocommit = False
         if get_snat6_rule() not in chain.rules:
-          log['time'] = int(round(time.time()))
-          log['priority'] = 'info'
-          log['message'] = 'Added POSTROUTING rule for source network ' + get_snat6_rule().src + ' to SNAT target ' + snat_target
-          r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-          print(log['message'])
+          logInfo('Added POSTROUTING rule for source network %s to SNAT target %s' % (get_snat6_rule().src, snat_target))
           chain.insert_rule(get_snat6_rule())
           table.commit()
         else:
@@ -375,7 +346,7 @@ def autopurge():
 
 def isIpNetwork(address):
   try:
-    ipaddress.ip_network(address.decode('ascii'), False)
+    ipaddress.ip_network(address, False)
   except ValueError:
     return False
   return True
@@ -387,7 +358,7 @@ def genNetworkList(list):
 
   for key in list:
     if isIpNetwork(key):
-      networks.append(key.encode("utf-8"))
+      networks.append(key)
     else:
       hostnames.append(key)
 
@@ -397,24 +368,16 @@ def genNetworkList(list):
       try:
         answer = resolver.query(qname=hostname, rdtype=rdtype, lifetime=10)
       except dns.exception.Timeout:
-        log['time'] = int(round(time.time()))
-        log['priority'] = 'info'
-        log['message'] = 'Hostname %s timedout on resolve' % (hostname)
-        r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-        print('Hostname %s timedout on resolve' % (hostname))
+        logInfo('Hostname %s timedout on resolve' % hostname)
         break
       except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer):
         continue
       except dns.exception.DNSException as dnsexception:
-        log['time'] = int(round(time.time()))
-        log['priority'] = 'info'
-        log['message'] = '%s' % (dnsexception)
-        r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-        print('%s' % (dnsexception))
+        logInfo('%s' % dnsexception)
         continue
 
       for rdata in answer:
-        hostname_ips.append(rdata.to_text().encode("utf-8"))
+        hostname_ips.append(rdata.to_text())
 
     networks.extend(hostname_ips)
       
@@ -432,11 +395,7 @@ def whitelistUpdate():
       new_whitelist = genNetworkList(list)
       if Counter(new_whitelist) != Counter(WHITELIST):
         WHITELIST = new_whitelist
-        log['time'] = int(round(time.time()))
-        log['priority'] = 'info'
-        log['message'] = 'New entrys for whitelist %s' % (WHITELIST)
-        r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-        print('New entrys for whitelist %s' % (WHITELIST))
+        logInfo('New entrys for whitelist %s' % WHITELIST)
         
     time.sleep(60.0 - ((time.time() - start_time) % 60.0)) 
       
@@ -471,18 +430,14 @@ def initChain():
   BLACKLIST = r.hgetall('F2B_BLACKLIST')
   if BLACKLIST:
     for bl_key in BLACKLIST:
-      if type(ipaddress.ip_network(bl_key.decode('ascii'), strict=False)) is ipaddress.IPv4Network:
+      if type(ipaddress.ip_network(bl_key, strict=False)) is ipaddress.IPv4Network:
         chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), 'MAILCOW')
         rule = iptc.Rule()
         rule.src = bl_key
         target = iptc.Target(rule, "REJECT")
         rule.target = target
         if rule not in chain.rules:
-          log['time'] = int(round(time.time()))
-          log['priority'] = 'crit'
-          log['message'] = 'Blacklisting host/network %s' % bl_key
-          r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-          print(log['message'])
+          logCrit('Blacklisting host/network %s' % bl_key)
           chain.insert_rule(rule)
           r.hset('F2B_PERM_BANS', '%s' % bl_key, int(round(time.time())))
       else:
@@ -492,11 +447,7 @@ def initChain():
         target = iptc.Target(rule, "REJECT")
         rule.target = target
         if rule not in chain.rules:
-          log['time'] = int(round(time.time()))
-          log['priority'] = 'crit'
-          log['message'] = 'Blacklisting host/network %s' % bl_key
-          r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-          print(log['message'])
+          logCrit('Blacklisting host/network %s' % bl_key)
           chain.insert_rule(rule)
           r.hset('F2B_PERM_BANS', '%s' % bl_key, int(round(time.time())))
 
@@ -513,7 +464,7 @@ if __name__ == '__main__':
 
   if os.getenv('SNAT_TO_SOURCE') and os.getenv('SNAT_TO_SOURCE') is not 'n':
     try:
-      snat_ip = os.getenv('SNAT_TO_SOURCE').decode('ascii')
+      snat_ip = os.getenv('SNAT_TO_SOURCE')
       snat_ipo = ipaddress.ip_address(snat_ip)
       if type(snat_ipo) is ipaddress.IPv4Address:
         snat4_thread = Thread(target=snat4,args=(snat_ip,))
@@ -524,7 +475,7 @@ if __name__ == '__main__':
 
   if os.getenv('SNAT6_TO_SOURCE') and os.getenv('SNAT6_TO_SOURCE') is not 'n':
     try:
-      snat_ip = os.getenv('SNAT6_TO_SOURCE').decode('ascii')
+      snat_ip = os.getenv('SNAT6_TO_SOURCE')
       snat_ipo = ipaddress.ip_address(snat_ip)
       if type(snat_ipo) is ipaddress.IPv6Address:
         snat6_thread = Thread(target=snat6,args=(snat_ip,))
