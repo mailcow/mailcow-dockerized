@@ -6,6 +6,7 @@ import time
 import atexit
 import signal
 import ipaddress
+from collections import Counter
 from random import randint
 from threading import Thread
 from threading import Lock
@@ -38,17 +39,12 @@ RULES[5] = 'mailcow UI: Invalid password for .+ by ([0-9a-f\.:]+)'
 RULES[6] = '([0-9a-f\.:]+) \"GET \/SOGo\/.* HTTP.+\" 403 .+'
 #RULES[7] = '-login: Aborted login \(no auth .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
 
+WHITELIST = []
+
 bans = {}
 log = {}
 quit_now = False
 lock = Lock()
-
-def is_ip_network(address):
-  try:
-    ipaddress.ip_network(address.decode('ascii'), False)
-  except ValueError:
-    return False
-  return True
 
 def refreshF2boptions():
   global f2boptions
@@ -118,7 +114,6 @@ def ban(address):
   RETRY_WINDOW = int(f2boptions['retry_window'])
   NETBAN_IPV4 = '/' + str(f2boptions['netban_ipv4'])
   NETBAN_IPV6 = '/' + str(f2boptions['netban_ipv6'])
-  WHITELIST = r.hgetall('F2B_WHITELIST')
 
   ip = ipaddress.ip_address(address.decode('ascii'))
   if type(ip) is ipaddress.IPv6Address and ip.ipv4_mapped:
@@ -128,50 +123,9 @@ def ban(address):
     return
 
   self_network = ipaddress.ip_network(address.decode('ascii'))
-  if WHITELIST:
-    wl_hostnames=[]
-    wl_networks=[]
-    
-    for wl_key in WHITELIST:
-      if is_ip_network(wl_key):
-        wl_networks.append(wl_key)
-      else:
-        wl_hostnames.append(wl_key)
 
-    for w1_hostname in wl_hostnames:
-      hostname_ips = []
-      for rdtype in ['A', 'AAAA']:
-        try:
-          answer = resolver.query(qname=w1_hostname, rdtype=rdtype, lifetime=1)
-        except dns.exception.Timeout as timout:
-          log['time'] = int(round(time.time()))
-          log['priority'] = 'info'
-          log['message'] = 'Hostname %s timedout on resolve' % (w1_hostname)
-          r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-          print 'Hostname %s timedout on resolve' % (w1_hostname)
-          break
-        except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer):
-          continue
-        except dns.exception.DNSException as dnsexception:
-          log['time'] = int(round(time.time()))
-          log['priority'] = 'info'
-          log['message'] = '%s' % (dnsexception)
-          r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-          print '%s' % (dnsexception)
-          continue
-          
-        for rdata in answer:
-          hostname_ips.append(rdata.to_text())
-            
-      wl_networks.extend(hostname_ips)
-          
-      log['time'] = int(round(time.time()))
-      log['priority'] = 'info'
-      log['message'] = 'Hostname %s is resolved to %s' % (w1_hostname, hostname_ips)
-      r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
-      print 'Hostname %s is resolved to %s' % (w1_hostname, hostname_ips)     
-     
-    for wl_key in wl_networks:
+  if WHITELIST:
+    for wl_key in WHITELIST:
       wl_net = ipaddress.ip_network(wl_key.decode('ascii'), False)
           
       if wl_net.overlaps(self_network):
@@ -419,6 +373,73 @@ def autopurge():
         if time.time() - bans[net]['last_attempt'] > BAN_TIME:
           unban(net)
 
+def isIpNetwork(address):
+  try:
+    ipaddress.ip_network(address.decode('ascii'), False)
+  except ValueError:
+    return False
+  return True
+
+          
+def genNetworkList(list):
+  hostnames = []
+  networks = []
+
+  for key in list:
+    if isIpNetwork(key):
+      networks.append(key.encode("utf-8"))
+    else:
+      hostnames.append(key)
+
+  for hostname in hostnames:
+    hostname_ips = []
+    for rdtype in ['A', 'AAAA']:
+      try:
+        answer = resolver.query(qname=hostname, rdtype=rdtype, lifetime=10)
+      except dns.exception.Timeout:
+        log['time'] = int(round(time.time()))
+        log['priority'] = 'info'
+        log['message'] = 'Hostname %s timedout on resolve' % (hostname)
+        r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
+        print 'Hostname %s timedout on resolve' % (hostname)
+        break
+      except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer):
+        continue
+      except dns.exception.DNSException as dnsexception:
+        log['time'] = int(round(time.time()))
+        log['priority'] = 'info'
+        log['message'] = '%s' % (dnsexception)
+        r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
+        print '%s' % (dnsexception)
+        continue
+
+      for rdata in answer:
+        hostname_ips.append(rdata.to_text().encode("utf-8"))
+
+    networks.extend(hostname_ips)
+      
+  return networks
+
+def whitelistUpdate():
+  global lock
+  global quit_now
+  global WHITELIST
+  
+  while not quit_now:
+    start_time = time.time()
+    list = r.hgetall('F2B_WHITELIST')
+    if list:
+      new_whitelist = genNetworkList(list)
+      if Counter(new_whitelist) != Counter(WHITELIST):
+        WHITELIST = new_whitelist
+        log['time'] = int(round(time.time()))
+        log['priority'] = 'info'
+        log['message'] = 'New entrys for whitelist %s' % (WHITELIST)
+        r.lpush('NETFILTER_LOG', json.dumps(log, ensure_ascii=False))
+        print 'New entrys for whitelist %s' % (WHITELIST)
+        
+    time.sleep(60.0 - ((time.time() - start_time) % 60.0)) 
+      
 def initChain():
   # Is called before threads start, no locking
   print "Initializing mailcow netfilter chain"
@@ -519,6 +540,10 @@ if __name__ == '__main__':
   mailcowchainwatch_thread = Thread(target=mailcowChainOrder)
   mailcowchainwatch_thread.daemon = True
   mailcowchainwatch_thread.start()
+
+  whitelistupdate_thread = Thread(target=whitelistUpdate)
+  whitelistupdate_thread.daemon = True
+  whitelistupdate_thread.start()
 
   signal.signal(signal.SIGTERM, quit)
   atexit.register(clear)
