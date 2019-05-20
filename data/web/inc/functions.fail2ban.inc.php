@@ -203,7 +203,7 @@ function fail2ban($_action, $_data = null) {
           $bl_array = array_map('trim', preg_split( "/( |,|;|\n)/", $bl));
           if (is_array($bl_array)) {
             foreach ($bl_array as $bl_item) {
-              if (valid_network($bl_item)) {
+              if (valid_network($bl_item) || valid_hostname($bl_item)) {
                 $redis->hSet('F2B_BLACKLIST', $bl_item, 1);
               }
             }
