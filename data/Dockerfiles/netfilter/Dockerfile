@@ -10,4 +10,4 @@ RUN apk add -U python3 python3-dev gcc musl-dev iptables ip6tables tzdata \
   && apk del python3-dev gcc
 
 COPY server.py /
-CMD ["python2", "-u", "/server.py"]
+CMD ["python3", "-u", "/server.py"]
