@@ -28,8 +28,6 @@ while True:
 
 pubsub = r.pubsub()
 
-resolver = dns.resolver.Resolver()
-
 RULES = {}
 RULES[1] = 'warning: .*\[([0-9a-f\.:]+)\]: SASL .+ authentication failed'
 RULES[2] = '-login: Disconnected \(auth failed, .+\): user=.*, method=.+, rip=([0-9a-f\.:]+),'
@@ -40,6 +38,7 @@ RULES[6] = '([0-9a-f\.:]+) \"GET \/SOGo\/.* HTTP.+\" 403 .+'
 #RULES[7] = '-login: Aborted login \(no auth .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
 
 WHITELIST = []
+BLACKLIST= []
 
 bans = {}
 
@@ -83,7 +82,7 @@ def refreshF2boptions():
     try:
       f2boptions = {}
       f2boptions = json.loads(r.get('F2B_OPTIONS'))
-    except ValueError as e:
+    except ValueError:
       print('Error loading F2B options: F2B_OPTIONS is not json')
       quit_now = True
 
@@ -132,9 +131,12 @@ def ban(address):
     return
 
   self_network = ipaddress.ip_network(address)
+  
+  with lock:
+    temp_whitelist = set(WHITELIST)
 
-  if WHITELIST:
-    for wl_key in WHITELIST:
+  if temp_whitelist:
+    for wl_key in temp_whitelist:
       wl_net = ipaddress.ip_network(wl_key, False)
           
       if wl_net.overlaps(self_network):
@@ -210,6 +212,40 @@ def unban(net):
   if net in bans:
     del bans[net]
 
+def permBan(net, unban=False):
+  global lock
+  
+  if type(ipaddress.ip_network(net, strict=False)) is ipaddress.IPv4Network:
+    with lock:
+      chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), 'MAILCOW')
+      rule = iptc.Rule()
+      rule.src = net
+      target = iptc.Target(rule, "REJECT")
+      rule.target = target
+      if rule not in chain.rules and not unban:
+        logCrit('Add host/network %s to blacklist' % net)
+        chain.insert_rule(rule)
+        r.hset('F2B_PERM_BANS', '%s' % net, int(round(time.time()))) 
+      elif rule in chain.rules and unban:
+        logCrit('Remove host/network %s from blacklist' % net)
+        chain.delete_rule(rule)
+        r.hdel('F2B_PERM_BANS', '%s' % net)
+  else:
+    with lock:
+      chain = iptc.Chain(iptc.Table6(iptc.Table6.FILTER), 'MAILCOW')
+      rule = iptc.Rule6()
+      rule.src = net
+      target = iptc.Target(rule, "REJECT")
+      rule.target = target
+      if rule not in chain.rules and not unban:
+        logCrit('Add host/network %s to blacklist' % net)
+        chain.insert_rule(rule)
+        r.hset('F2B_PERM_BANS', '%s' % net, int(round(time.time()))) 
+      elif rule in chain.rules and unban:
+        logCrit('Remove host/network %s from blacklist' % net)
+        chain.delete_rule(rule)
+        r.hdel('F2B_PERM_BANS', '%s' % net)
+    
 def quit(signum, frame):
   global quit_now
   quit_now = True
@@ -353,6 +389,7 @@ def isIpNetwork(address):
 
           
 def genNetworkList(list):
+  resolver = dns.resolver.Resolver()
   hostnames = []
   networks = []
 
@@ -366,7 +403,7 @@ def genNetworkList(list):
     hostname_ips = []
     for rdtype in ['A', 'AAAA']:
       try:
-        answer = resolver.query(qname=hostname, rdtype=rdtype, lifetime=10)
+        answer = resolver.query(qname=hostname, rdtype=rdtype, lifetime=3)
       except dns.exception.Timeout:
         logInfo('Hostname %s timedout on resolve' % hostname)
         break
@@ -381,7 +418,7 @@ def genNetworkList(list):
 
     networks.extend(hostname_ips)
       
-  return networks
+  return set(networks)
 
 def whitelistUpdate():
   global lock
@@ -392,15 +429,47 @@ def whitelistUpdate():
     start_time = time.time()
     list = r.hgetall('F2B_WHITELIST')
     
-    gen_whitelist = []
+    new_whitelist = []
     
     if list:
-      gen_whitelist = genNetworkList(list)
+      new_whitelist = genNetworkList(list)
     
-    if Counter(gen_whitelist) != Counter(WHITELIST):
-      WHITELIST = gen_whitelist
-      logInfo('New entrys for whitelist %s' % WHITELIST)
+    with lock:
+      if Counter(new_whitelist) != Counter(WHITELIST):
+        WHITELIST = new_whitelist
+        logInfo('Whitelist was changed, it has %s entries' % len(WHITELIST))
 
+    time.sleep(60.0 - ((time.time() - start_time) % 60.0)) 
+    
+def blacklistUpdate():
+  global quit_now
+  global BLACKLIST
+  
+  while not quit_now:
+    start_time = time.time()
+    list = r.hgetall('F2B_BLACKLIST')
+    
+    new_blacklist = []
+    
+    if list:
+      new_blacklist = genNetworkList(list)
+      
+    if Counter(new_blacklist) != Counter(BLACKLIST): 
+      addban = set(new_blacklist).difference(BLACKLIST)
+      delban = set(BLACKLIST).difference(new_blacklist)
+        
+      BLACKLIST = new_blacklist
+      logInfo('Blacklist was changed, it has %s entries' % len(BLACKLIST))
+        
+      if addban:
+        for net in addban:
+          permBan(net=net)
+            
+      if delban:
+        for net in delban:
+          permBan(net=net, unban=True)
+      
+        
     time.sleep(60.0 - ((time.time() - start_time) % 60.0)) 
       
 def initChain():
@@ -430,30 +499,7 @@ def initChain():
     rule.target = target
     if rule not in chain.rules:
       chain.insert_rule(rule)
-  # Apply blacklist
-  BLACKLIST = r.hgetall('F2B_BLACKLIST')
-  if BLACKLIST:
-    for bl_key in BLACKLIST:
-      if type(ipaddress.ip_network(bl_key, strict=False)) is ipaddress.IPv4Network:
-        chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), 'MAILCOW')
-        rule = iptc.Rule()
-        rule.src = bl_key
-        target = iptc.Target(rule, "REJECT")
-        rule.target = target
-        if rule not in chain.rules:
-          logCrit('Blacklisting host/network %s' % bl_key)
-          chain.insert_rule(rule)
-          r.hset('F2B_PERM_BANS', '%s' % bl_key, int(round(time.time())))
-      else:
-        chain = iptc.Chain(iptc.Table6(iptc.Table6.FILTER), 'MAILCOW')
-        rule = iptc.Rule6()
-        rule.src = bl_key
-        target = iptc.Target(rule, "REJECT")
-        rule.target = target
-        if rule not in chain.rules:
-          logCrit('Blacklisting host/network %s' % bl_key)
-          chain.insert_rule(rule)
-          r.hset('F2B_PERM_BANS', '%s' % bl_key, int(round(time.time())))
+ 
 
 if __name__ == '__main__':
 
@@ -495,6 +541,10 @@ if __name__ == '__main__':
   mailcowchainwatch_thread = Thread(target=mailcowChainOrder)
   mailcowchainwatch_thread.daemon = True
   mailcowchainwatch_thread.start()
+  
+  blacklistupdate_thread = Thread(target=blacklistUpdate)
+  blacklistupdate_thread.daemon = True
+  blacklistupdate_thread.start()
 
   whitelistupdate_thread = Thread(target=whitelistUpdate)
   whitelistupdate_thread.daemon = True
