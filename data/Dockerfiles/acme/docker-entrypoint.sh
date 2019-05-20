@@ -429,8 +429,8 @@ while true; do
 
   if [[ ${SAN_CHANGE} == 0 ]]; then
     # Certificate did not change but could be due for renewal (4 weeks)
-    if ! openssl x509 -checkend 1209600 -noout -in ${ACME_BASE}/cert.pem; then
-      log_f "Certificate is due for renewal (< 2 weeks)"
+    if ! openssl x509 -checkend 2592000 -noout -in ${ACME_BASE}/cert.pem; then
+      log_f "Certificate is due for renewal (< 30 days)"
     else
       log_f "Certificate validation done, neither changed nor due for renewal, sleeping for another day."
       sleep 1d
