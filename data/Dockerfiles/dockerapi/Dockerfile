@@ -3,11 +3,12 @@ LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 WORKDIR /app
 
-RUN apk add -U --no-cache python3 tzdata python3-dev gcc musl-dev openssl-dev libffi-dev openssl\
-  && pip3 install --upgrade pip \
-  && pip3 install --upgrade docker flask flask-restful pyOpenSSL \
-  && apk del python3-dev gcc musl-dev openssl-dev libffi-dev
+RUN apk add --update --no-cache python3 openssl tzdata \
+ && apk add --update --no-cache --virtual .build-dependencies gcc python3-dev musl-dev libffi-dev openssl-dev \
+ && pip3 install --upgrade pip \
+ && pip3 install --upgrade docker flask flask-restful pyOpenSSL \
+ && apk del .build-dependencies
 
-COPY server.py /
+COPY server.py /app/
 
-CMD ["python3", "-u", "/server.py"]
+CMD ["python3", "-u", "/app/server.py"]
