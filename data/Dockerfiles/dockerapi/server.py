@@ -269,7 +269,7 @@ class container_post(Resource):
 
 
   # api call: container_post - post_action: exec - cmd: maildir - task: cleanup
-  def container_post_exec__maildir__cleanup(self, container_id):
+  def container_post__exec__maildir__cleanup(self, container_id):
     if 'maildir' in request.json:
       for container in docker_client.containers.list(filters={"id": container_id}):
         sane_name = re.sub(r'\W+', '', request.json['maildir'])
