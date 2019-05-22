@@ -300,7 +300,7 @@ while true; do
               log_f "Confirmed A record ${A_SUBDOMAIN}"
               VALIDATED_CONFIG_DOMAINS+=("${SUBDOMAIN}.${SQL_DOMAIN}")
             else
-              log_f "Confirmed AAAA record ${A_SUBDOMAIN}, but HTTP validation failed"
+              log_f "Confirmed A record ${A_SUBDOMAIN}, but HTTP validation failed"
             fi
           else
             log_f "Cannot match your IP ${IPV4} against hostname ${SUBDOMAIN}.${SQL_DOMAIN} (${A_SUBDOMAIN})"
