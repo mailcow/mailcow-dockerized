@@ -292,6 +292,14 @@ if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   exit 0
 fi
 
+echo -e "\e[32mUpdate docker-compose.yml...\e[0m"
+git fetch origin #${BRANCH}
+git checkout origin/${BRANCH} docker-compose.yml
+
+echo -e "\e[32mFetching new images, if any...\e[0m"
+sleep 2
+docker-compose pull
+
 echo -e "Stopping mailcow... "
 sleep 2
 docker-compose down
@@ -347,10 +355,6 @@ elif [[ $(curl -sL -w "%{http_code}" https://www.servercow.de/docker-compose/lat
 else
   echo -e "\e[33mCannot determine latest docker-compose version, skipping...\e[0m"
 fi
-
-echo -e "\e[32mFetching new images, if any...\e[0m"
-sleep 2
-docker-compose pull
 
 # Fix missing SSL, does not overwrite existing files
 [[ ! -d data/assets/ssl ]] && mkdir -p data/assets/ssl
