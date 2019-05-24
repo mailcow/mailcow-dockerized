@@ -69,11 +69,11 @@ elif [[ ${NC_UPDATE} == "y" ]]; then
   if ! grep -q 'installed: true' <<<$(docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ --no-warnings status"); then
     echo "Nextcloud seems not to be installed."
     exit 1
-  elif ! grep -q 'version: 15\.' <<<$(docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ --no-warnings status"); then
+  elif ! grep -q 'version: 16\.' <<<$(docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ --no-warnings status"); then
     echo "Cannot upgrade to new major version, please update manually."
     exit 1
   else
-    curl -L# -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/latest-15.tar.bz2" || { echo "Failed to download Nextcloud archive."; exit 1; } \
+    curl -L# -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/latest-16.tar.bz2" || { echo "Failed to download Nextcloud archive."; exit 1; } \
       && tar -xjf nextcloud.tar.bz2 -C ./data/web/ \
       && rm nextcloud.tar.bz2 \
       && mkdir -p ./data/web/nextcloud/data \
