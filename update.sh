@@ -10,7 +10,7 @@ fi
 set -o pipefail
 
 # Setting high dc timeout
-export COMPOSE_HTTP_TIMEOUT=300
+export COMPOSE_HTTP_TIMEOUT=600
 
 # Add /opt/bin to PATH
 PATH=$PATH:/opt/bin
