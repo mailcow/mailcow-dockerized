@@ -9,6 +9,9 @@ fi
 # Exit on error and pipefail
 set -o pipefail
 
+# Setting high dc timeout
+export COMPOSE_HTTP_TIMEOUT=300
+
 # Add /opt/bin to PATH
 PATH=$PATH:/opt/bin
 
@@ -291,6 +294,18 @@ if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   echo "OK, exiting."
   exit 0
 fi
+
+echo -e "\e[32mPrefetching images...\e[0m"
+while read image; do
+  RET_C=0
+  until docker pull ${image}; do
+    RET_C=$((RET_C + 1))
+    echo -e "\e[33m\nError pulling $image, retrying...\e[0m"
+    [ ${RET_C} -gt 3 ] && { echo -e "\e[31m\nToo many failed retries, exiting\e[0m"; exit 1; }
+    sleep 1
+  done
+done < <(git show origin/${BRANCH}:docker-compose.yml | grep "image:" | awk '{ gsub("image:","", $3); print $2 }')
+
 
 echo -e "Stopping mailcow... "
 sleep 2
