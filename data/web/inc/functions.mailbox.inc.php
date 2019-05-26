@@ -2119,9 +2119,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                     unset($sender_acl_domain_admin[$key]);
                     continue;
                   }
-                  // Check if user has mailbox access (if object is email)
+                  // Check if user has alias access (if object is email)
                   if (filter_var($val, FILTER_VALIDATE_EMAIL)) {
-                    if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $val)) {
+                    if (!hasAliasObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $val)) {
                       $_SESSION['return'][] = array(
                         'type' => 'danger',
                         'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -2351,11 +2351,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $stmt->execute(array(':logged_in_as' => $_data));
           $address_rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
           while ($address_row = array_shift($address_rows)) {
-            if (filter_var($address_row['send_as'], FILTER_VALIDATE_EMAIL) && !hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $address_row['send_as'])) {
+            if (filter_var($address_row['send_as'], FILTER_VALIDATE_EMAIL) && !hasAliasObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $address_row['send_as'])) {
               $data['sender_acl_addresses']['ro'][] = $address_row['send_as'];
               continue;
             }
-            if (filter_var($address_row['send_as'], FILTER_VALIDATE_EMAIL) && hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $address_row['send_as'])) {
+            if (filter_var($address_row['send_as'], FILTER_VALIDATE_EMAIL) && hasAliasObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $address_row['send_as'])) {
               $data['sender_acl_addresses']['rw'][] = $address_row['send_as'];
               continue;
             }
@@ -2398,7 +2398,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           ));
           $rows_mbox = $stmt->fetchAll(PDO::FETCH_ASSOC);
           while ($row = array_shift($rows_mbox)) {
-            if (filter_var($row['address'], FILTER_VALIDATE_EMAIL) && hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $row['address'])) {
+            if (filter_var($row['address'], FILTER_VALIDATE_EMAIL) && hasAliasObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $row['address'])) {
               $data['sender_acl_addresses']['selectable'][] = $row['address'];
             }
           }
