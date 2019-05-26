@@ -1775,6 +1775,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                   unset($gotos[$i]);
                   continue;
                 }
+                // Delete from sender_acl to prevent duplicates
+                $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE
+                  `logged_in_as` = :goto AND
+                  `send_as` = :address");
+                $stmt->execute(array(
+                  ':goto' => $goto,
+                  ':address' => $address
+                ));
               }
               $gotos = array_filter($gotos);
               $goto = implode(",", $gotos);
@@ -2140,10 +2148,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $stmt->execute(array(
                   ':username' => $username
                 ));
+                $fixed_sender_aliases = mailbox('get', 'sender_acl_handles', $username)['fixed_sender_aliases'];
                 foreach ($sender_acl_merged as $sender_acl) {
                   $domain = ltrim($sender_acl, '@');
                   if (is_valid_domain_name($domain)) {
                     $sender_acl = '@' . $domain;
+                  }
+                  // Don't add if allowed by alias
+                  if (in_array($sender_acl, $fixed_sender_aliases)) {
+                    continue;
                   }
                   $stmt = $pdo->prepare("INSERT INTO `sender_acl` (`send_as`, `logged_in_as`)
                     VALUES (:sender_acl, :username)");
@@ -2398,6 +2411,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           ));
           $rows_mbox = $stmt->fetchAll(PDO::FETCH_ASSOC);
           while ($row = array_shift($rows_mbox)) {
+            // Aliases are not selectable
+            if (in_array($row['address'], $data['fixed_sender_aliases'])) {
+              continue;
+            }
             if (filter_var($row['address'], FILTER_VALIDATE_EMAIL) && hasAliasObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $row['address'])) {
               $data['sender_acl_addresses']['selectable'][] = $row['address'];
             }

@@ -536,7 +536,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                 <?php
               endforeach;
 
-              foreach ($sender_acl_handles['sender_acl_addresses']['ro'] as $domain):
+              foreach ($sender_acl_handles['sender_acl_addresses']['ro'] as $alias):
                 ?>
               <option data-subtext="Admin" disabled selected><?=htmlspecialchars($alias);?></option>
                 <?php
