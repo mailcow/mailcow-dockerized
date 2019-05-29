@@ -193,6 +193,7 @@ chown -R vmail:vmail /var/vmail/sieve
 chown -R vmail:vmail /var/volatile
 adduser vmail tty
 chmod g+rw /dev/console
+chown root:tty /dev/console
 chmod +x /usr/local/lib/dovecot/sieve/rspamd-pipe-ham \
   /usr/local/lib/dovecot/sieve/rspamd-pipe-spam \
   /usr/local/bin/imapsync_cron.pl \
