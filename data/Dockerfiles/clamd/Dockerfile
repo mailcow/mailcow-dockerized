@@ -3,7 +3,7 @@ FROM debian:stretch-slim
 LABEL maintainer "André Peters <andre.peters@servercow.de>"
 
 # Installation
-ENV CLAMAV 0.101.1
+ENV CLAMAV 0.101.2
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
   ca-certificates \
