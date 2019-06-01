@@ -118,8 +118,11 @@ default_pass_scheme = SSHA256
 password_query = SELECT password FROM mailbox WHERE active = '1' AND username = '%u' AND domain IN (SELECT domain FROM domain WHERE domain='%d' AND active='1') AND JSON_EXTRACT(attributes, '$.force_pw_update') NOT LIKE '%%1%%'
 EOF
 
-# Create global sieve_after script
-cat /usr/local/etc/dovecot/sieve_after > /var/vmail/sieve/global.sieve
+# Migrate old sieve_after file
+[[ -f /usr/local/etc/dovecot/sieve_after ]] && mv /usr/local/etc/dovecot/sieve_after /usr/local/etc/dovecot/global_sieve_after
+# Create global sieve scripts
+cat /usr/local/etc/dovecot/global_sieve_after > /var/vmail/sieve/global_sieve_after.sieve
+cat /usr/local/etc/dovecot/global_sieve_before > /var/vmail/sieve/global_sieve_before.sieve
 
 # Check permissions of vmail/attachments directory.
 # Do not do this every start-up, it may take a very long time. So we use a stat check here.
@@ -181,7 +184,8 @@ else
 fi
 
 # Compile sieve scripts
-sievec /var/vmail/sieve/global.sieve
+sievec /var/vmail/sieve/global_sieve_before.sieve
+sievec /var/vmail/sieve/global_sieve_after.sieve
 sievec /usr/local/lib/dovecot/sieve/report-spam.sieve
 sievec /usr/local/lib/dovecot/sieve/report-ham.sieve
 
