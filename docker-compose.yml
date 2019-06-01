@@ -98,7 +98,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.37
+      image: mailcow/phpfpm:1.38
       build: ./data/Dockerfiles/phpfpm
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
@@ -173,7 +173,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.77
+      image: mailcow/dovecot:1.78
       build: ./data/Dockerfiles/dovecot
       cap_add:
         - NET_BIND_SERVICE
