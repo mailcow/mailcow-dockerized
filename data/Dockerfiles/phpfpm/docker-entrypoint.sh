@@ -19,6 +19,12 @@ if [[ -z $(redis-cli --raw -h redis-mailcow GET Q_RELEASE_FORMAT) ]]; then
   redis-cli --raw -h redis-mailcow SET Q_RELEASE_FORMAT raw
 fi
 
+# Set max age of q items - if unset
+
+if [[ -z $(redis-cli --raw -h redis-mailcow GET Q_MAX_AGE) ]]; then
+  redis-cli --raw -h redis-mailcow SET Q_MAX_AGE 365
+fi
+
 # Check of mysql_upgrade
 
 CONTAINER_ID=
