@@ -113,6 +113,7 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
   && rm -rf /tmp/* /var/tmp/*
 
 COPY trim_logs.sh /usr/local/bin/trim_logs.sh
+COPY clean_q_aged.sh /usr/local/bin/clean_q_aged.sh
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
 COPY imapsync /usr/local/bin/imapsync
 COPY postlogin.sh /usr/local/bin/postlogin.sh
