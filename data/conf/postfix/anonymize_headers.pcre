@@ -6,3 +6,5 @@ endif
 /^\s*X-Mailer/          IGNORE
 /^\s*X-Originating-IP/  IGNORE
 /^\s*X-Forward/         IGNORE
+# Not removing UA by default, might be signed
+#/^\s*User-Agent/        IGNORE
