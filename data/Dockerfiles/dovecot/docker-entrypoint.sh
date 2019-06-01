@@ -16,6 +16,10 @@ sed -i "s/__DBUSER__/${DBUSER}/g" /usr/local/bin/quarantine_notify.py
 sed -i "s/__DBPASS__/${DBPASS}/g" /usr/local/bin/quarantine_notify.py
 sed -i "s/__DBNAME__/${DBNAME}/g" /usr/local/bin/quarantine_notify.py
 
+sed -i "s/__DBUSER__/${DBUSER}/g" /usr/local/bin/clean_q_aged.sh
+sed -i "s/__DBPASS__/${DBPASS}/g" /usr/local/bin/clean_q_aged.sh
+sed -i "s/__DBNAME__/${DBNAME}/g" /usr/local/bin/clean_q_aged.sh
+
 sed -i "s/__LOG_LINES__/${LOG_LINES}/g" /usr/local/bin/trim_logs.sh
 
 # Create missing directories
@@ -205,6 +209,7 @@ chmod +x /usr/local/lib/dovecot/sieve/rspamd-pipe-ham \
   /usr/local/bin/imapsync \
   /usr/local/bin/trim_logs.sh \
   /usr/local/bin/sa-rules.sh \
+  /usr/local/bin/clean_q_aged.sh \
   /usr/local/bin/maildir_gc.sh \
   /usr/local/sbin/stop-supervisor.sh \
   /usr/local/bin/quota_notify.py
@@ -217,7 +222,7 @@ echo '25 * * * *   vmail /usr/local/bin/maildir_gc.sh >> /dev/console 2>&1' > /e
 echo '30 1 * * *   root  /usr/local/bin/sa-rules.sh  >> /dev/console 2>&1' > /etc/cron.d/sa-rules
 echo '0 2 * * *    root  /usr/bin/curl http://solr:8983/solr/dovecot-fts/update?optimize=true >> /dev/console 2>&1' > /etc/cron.d/solr-optimize
 echo '*/20 * * * * vmail /usr/local/bin/quarantine_notify.py >> /dev/console 2>&1' > /etc/cron.d/quarantine_notify
-
+echo '15 4 * * * vmail /usr/local/bin/clean_q_aged.sh >> /dev/console 2>&1' > /etc/cron.d/clean_q_aged
 # Fix more than 1 hardlink issue
 touch /etc/crontab /etc/cron.*/*
 
