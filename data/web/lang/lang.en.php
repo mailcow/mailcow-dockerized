@@ -333,7 +333,7 @@ $lang['mailbox']['excludes'] = 'Excludes';
 $lang['mailbox']['last_run_reset'] = 'Schedule next';
 $lang['mailbox']['sieve_info'] = 'You can store multiple filters per user, but only one prefilter and one postfilter can be active at the same time.<br>
 Each filter will be processed in the described order. Neither a failed script nor an issued "keep;" will stop processing of further scripts.<br>
-Prefilter → User scripts → Postfilter → <a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/sieve_after" target="_blank">global sieve postfilter</a>';
+<a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/global_sieve_before" target="_blank">Global sieve prefilter</a> → Prefilter → User scripts → Postfilter → <a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/global_sieve_after" target="_blank">Global sieve postfilter</a>';
 $lang['info']['no_action'] = 'No action applicable';
 
 

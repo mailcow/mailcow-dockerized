@@ -333,7 +333,7 @@ $lang['mailbox']['excludes'] = 'Vyloučené';
 $lang['mailbox']['last_run_reset'] = 'Plánovat další';
 $lang['mailbox']['sieve_info'] = 'Můžete uložit více filtrů pro každého uživatele, ale současně může být aktivní pouze jeden prefilter a jeden postfilter.<br>
 Každý filtr bude zpracován v daném pořadí. Ani chyba při vykonávání skriptu nebo snaha o pozdržení nezastaví vykonání dalších skriptů.<br>
-Prefilter → Uživatelské skripty → Postfilter → <a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/sieve_after" target="_blank">global sieve postfilter</a>';
+<a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/global_sieve_before" target="_blank">Global sieve prefilter</a> → Prefilter → Uživatelské skripty → Postfilter → <a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/global_sieve_after" target="_blank">Global sieve postfilter</a>';
 $lang['info']['no_action'] = 'Není použitelná žádná akce';
 
 $lang['edit']['syncjob'] = 'Upravit synchronizační úlohu';
