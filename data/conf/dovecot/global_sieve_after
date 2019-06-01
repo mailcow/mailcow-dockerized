@@ -1,3 +1,6 @@
+# global_sieve_after script
+# global_sieve_before -> user sieve_before (mailcow UI) -> user sieve_after (mailcow UI) -> global_sieve_after
+
 require "fileinto";
 require "mailbox";
 require "variables";
