@@ -227,7 +227,7 @@ $lang['mailbox']['excludes'] = 'Izslēdzot';
 $lang['mailbox']['last_run_reset'] = 'Nākamais grafiks';
 $lang['mailbox']['sieve_info'] = 'Jūs varat saglabāt vairākus filtrus katram lietotājam, bet tikai viens pirmsfiltrs un viens pēcfiltrs var būt aktīvs vienlaicīgi.<br>
 Katrs filtrs tiks apstrādāts aprakstītajā kārtībā. Kļūdains vai izdots skripts "Paturēt;" pārtrauks turpmāko skriptu apstrādi.<br>
-Pirmsfiltrs → Lietotāja skripts → Pēcfiltrs → <a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/sieve_after" target="_blank">global sieve postfilter</a>';
+<a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/global_sieve_before" target="_blank">Global sieve prefilter</a> → Pirmsfiltrs → Lietotāja skripts → Pēcfiltrs → <a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/global_sieve_after" target="_blank">Global sieve postfilter</a>';
 $lang['info']['no_action'] = 'No action applicable';
 
 
