@@ -621,16 +621,22 @@ $tfa_data = get_tfa();
        <?php $q_data = quarantine('settings');?>
         <form class="form" data-id="quarantine" role="form" method="post">
           <div class="row">
-            <div class="col-sm-6">
+            <div class="col-sm-4">
               <div class="form-group">
                 <label for="retention_size"><?=$lang['admin']['quarantine_retention_size'];?></label>
                 <input type="number" class="form-control" name="retention_size" value="<?=$q_data['retention_size'];?>" placeholder="0" required>
               </div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-4">
               <div class="form-group">
                 <label for="max_size"><?=$lang['admin']['quarantine_max_size'];?></label>
                 <input type="number" class="form-control" name="max_size" value="<?=$q_data['max_size'];?>" placeholder="0" required>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="form-group">
+                <label for="max_age"><?=$lang['admin']['quarantine_max_age'];?></label>
+                <input type="number" class="form-control" name="max_age" value="<?=$q_data['max_age'];?>" min="1" required>
               </div>
             </div>
           </div>
