@@ -798,3 +798,9 @@ $lang['warning']['ip_invalid'] = 'Přeskočeno, vadná IP: %s';
 $lang['danger']['text_empty'] = 'Text nesmí být prázdný';
 $lang['danger']['subject_empty'] = 'Předmět nesmí být prázdný';
 $lang['danger']['from_invalid'] = 'Odesílat nesmí být prázdný';
+
+$lang['add']['mailbox_quota_def'] = 'Výchozí kvóta schránky';
+$lang['edit']['mailbox_quota_def'] = 'Výchozí kvóta schránky';
+$lang['danger']['mailbox_defquota_exceeds_mailbox_maxquota'] = 'Výchozí kvóta překračuje maximální kvótu schránky"';
+$lang['danger']['defquota_empty'] = 'Výchozí kvóta schránky nesmí být 0.';
+$lang['mailbox']['mailbox_defquota'] = 'Výchozí velikost schránky';

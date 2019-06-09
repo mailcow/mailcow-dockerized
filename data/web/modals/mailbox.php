@@ -108,12 +108,18 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             <label class="control-label col-sm-2" for="mailboxes"><?=$lang['add']['max_mailboxes'];?></label>
             <div class="col-sm-10">
             <input type="number" class="form-control" name="mailboxes" value="10" required>
+						</div>
+					</div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="defquota"><?=$lang['add']['mailbox_quota_def'];?></label>
+                        <div class="col-sm-10">
+                            <input type="number" class="form-control" name="defquota" value="3072" required>
             </div>
           </div>
           <div class="form-group">
             <label class="control-label col-sm-2" for="maxquota"><?=$lang['add']['mailbox_quota_m'];?></label>
             <div class="col-sm-10">
-            <input type="number" class="form-control" name="maxquota" value="3072" required>
+						<input type="number" class="form-control" name="maxquota" value="10240" required>
             </div>
           </div>
           <div class="form-group">
