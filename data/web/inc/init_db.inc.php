@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "04052019_1210";
+    $db_version = "09062019_1208";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -189,7 +189,8 @@ function init_db_schema() {
           "description" => "VARCHAR(255)",
           "aliases" => "INT(10) NOT NULL DEFAULT '0'",
           "mailboxes" => "INT(10) NOT NULL DEFAULT '0'",
-          "maxquota" => "BIGINT(20) NOT NULL DEFAULT '0'",
+          "defquota" => "BIGINT(20) NOT NULL DEFAULT '3072'",
+          "maxquota" => "BIGINT(20) NOT NULL DEFAULT '102400'",
           "quota" => "BIGINT(20) NOT NULL DEFAULT '102400'",
           "relayhost" => "VARCHAR(255) NOT NULL DEFAULT '0'",
           "backupmx" => "TINYINT(1) NOT NULL DEFAULT '0'",
