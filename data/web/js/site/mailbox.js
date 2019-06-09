@@ -52,11 +52,12 @@ $(document).ready(function() {
   auto_fill_quota = function(domain) {
 		$.get("/api/v1/get/domain/" + domain, function(data){
       var result = $.parseJSON(JSON.stringify(data));
+      def_new_mailbox_quota = ( result.def_new_mailbox_quota / 1048576);
       max_new_mailbox_quota = ( result.max_new_mailbox_quota / 1048576);
 			if (max_new_mailbox_quota != '0') {
 				$("#quotaBadge").html('max. ' +  max_new_mailbox_quota + ' MiB');
 				$('#addInputQuota').attr({"disabled": false, "value": "", "type": "number", "max": max_new_mailbox_quota});
-				$('#addInputQuota').val(max_new_mailbox_quota);
+				$('#addInputQuota').val(def_new_mailbox_quota);
 			}
 			else {
 				$("#quotaBadge").html('max. ' + max_new_mailbox_quota + ' MiB');
@@ -229,6 +230,7 @@ jQuery(function($){
           return Number(res[0]);
         },
         },
+        {"name":"def_quota_for_mbox","title":lang.mailbox_defquota,"breakpoints":"xs sm md","style":{"width":"125px"}},
         {"name":"max_quota_for_mbox","title":lang.mailbox_quota,"breakpoints":"xs sm","style":{"width":"125px"}},
         {"name":"rl","title":"RL","breakpoints":"xs sm md lg","style":{"maxWidth":"100px","width":"100px"}},
         {"name":"backupmx","filterable": false,"style":{"maxWidth":"120px","width":"120px"},"title":lang.backup_mx,"breakpoints":"xs sm md lg"},
@@ -254,6 +256,7 @@ jQuery(function($){
                 return e;
               }).join('/1');
             }
+            item.def_quota_for_mbox = humanFileSize(item.def_quota_for_mbox);
             item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
             item.chkbox = '<input type="checkbox" data-id="domain" name="multi_select" value="' + encodeURIComponent(item.domain_name) + '" />';
             item.action = '<div class="btn-group">';
