@@ -77,15 +77,6 @@ function mail_error() {
       log_msg "Cannot determine MX for ${rcpt}, skipping email notification..."
       return 1
     fi
-    # Some exceptions for subject and body formats
-    if [[ ${1} == "watchdog-mailcow" ]]; then
-      SUBJECT="Watchdog started"
-    elif [[ ${1} == "fail2ban" ]]; then
-      SUBJECT="${BODY}"
-      BODY="Please see netfilter-mailcow for more details and triggered rules."
-    else
-      SUBJECT="Watchdog: ${1} triggered an event"
-    fi
     [ -f "/tmp/${1}" ] && ATTACH="--attach /tmp/${1}@text/plain" || ATTACH=
     ./smtp-cli --missing-modules-ok \
       --subject="${SUBJECT}" \
