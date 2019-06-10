@@ -59,13 +59,11 @@ function mail_error() {
   [[ -z ${2} ]] && BODY="Service was restarted on $(date), please check your mailcow installation." || BODY="$(date) - ${2}"
   WATCHDOG_NOTIFY_EMAIL=$(echo "${WATCHDOG_NOTIFY_EMAIL}" | sed 's/"//;s|"$||')
   # Some exceptions for subject and body formats
-  if [[ ${1} == "watchdog-mailcow" ]]; then
-    SUBJECT="Watchdog started"
-  elif [[ ${1} == "fail2ban" ]]; then
+  if [[ ${1} == "fail2ban" ]]; then
     SUBJECT="${BODY}"
     BODY="Please see netfilter-mailcow for more details and triggered rules."
   else
-    SUBJECT="Watchdog: ${1} triggered an event"
+    SUBJECT="Watchdog ALERT: ${1}"
   fi
   IFS=',' read -r -a MAIL_RCPTS <<< "${WATCHDOG_NOTIFY_EMAIL}"
   for rcpt in "${MAIL_RCPTS[@]}"; do
@@ -77,15 +75,14 @@ function mail_error() {
       log_msg "Cannot determine MX for ${rcpt}, skipping email notification..."
       return 1
     fi
-    [ -f "/tmp/${1}" ] && ATTACH="--attach /tmp/${1}@text/plain" || ATTACH=
+    [ -f "/tmp/${1}" ] && BODY="/tmp/${1}"
     ./smtp-cli --missing-modules-ok \
       --subject="${SUBJECT}" \
       --body-plain="${BODY}" \
       --to=${rcpt} \
       --from="watchdog@${MAILCOW_HOSTNAME}" \
       --server="${RCPT_MX}" \
-      --hello-host=${MAILCOW_HOSTNAME} \
-      ${ATTACH}
+      --hello-host=${MAILCOW_HOSTNAME}
     log_msg "Sent notification email to ${rcpt}"
   done
 }
@@ -669,7 +666,7 @@ while true; do
 done
 ) &
 
-# Restart container when threshold limit reached
+# Actions when threshold limit is reached
 while true; do
   CONTAINER_ID=
   HAS_INITDB=
@@ -688,10 +685,12 @@ while true; do
     redis-cli -h redis-mailcow DEL F2B_RES > /dev/null
     host=
     for host in "${F2B_RES[@]}"; do
-      log_msg "Banned ${F2B_RES}"
+      log_msg "Banned ${host}"
+      rm /tmp/fail2ban 2> /dev/null
+      whois ${host} > /tmp/fail2ban 
       [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}" "IP ban: ${host}"
     done
-  elif [[ ${com_pipe_answer} =~ .+-mailcow ]] || [[ ${com_pipe_answer} == "ipv6nat-mailcow" ]]; then
+  elif [[ ${com_pipe_answer} =~ .+-mailcow ]]; then
     kill -STOP ${BACKGROUND_TASKS[*]}
     sleep 3
     CONTAINER_ID=$(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], id: .Id}" | jq -rc "select( .name | tostring | contains(\"${com_pipe_answer}\")) | .id")
