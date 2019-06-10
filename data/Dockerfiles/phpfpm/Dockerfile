@@ -53,13 +53,14 @@ RUN apk add -U --no-cache autoconf \
   && docker-php-ext-enable apcu imagick memcached mailparse redis \
   && pecl clear-cache \
   && docker-php-ext-configure intl \
+  && docker-php-ext-configure exif \
   && docker-php-ext-configure gd \
     --with-gd \
     --enable-gd-native-ttf \
     --with-freetype-dir=/usr/include/ \
     --with-png-dir=/usr/include/ \
     --with-jpeg-dir=/usr/include/ \
-  && docker-php-ext-install -j 4 gd gettext intl ldap opcache pcntl pdo pdo_mysql soap sockets xmlrpc zip \
+  && docker-php-ext-install -j 4 exif gd gettext intl ldap opcache pcntl pdo pdo_mysql soap sockets xmlrpc zip \
   && docker-php-ext-configure imap --with-imap --with-imap-ssl \
   && docker-php-ext-install -j 4 imap \
   && apk del --purge autoconf \
