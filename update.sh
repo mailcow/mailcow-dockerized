@@ -316,7 +316,7 @@ git remote set-url origin https://github.com/mailcow/mailcow-dockerized
 echo -e "\e[32mCommitting current status...\e[0m"
 [[ -z "$(git config user.name)" ]] && git config user.name moo
 [[ -z "$(git config user.email)" ]] && git config user.email moo@cow.moo
-git update-index --assume-unchanged data/conf/rspamd/override.d/worker-controller-password.inc
+git rm data/conf/rspamd/override.d/worker-controller-password.inc
 git add -u
 git commit -am "Before update on ${DATE}" > /dev/null
 echo -e "\e[32mFetching updated code from remote...\e[0m"
