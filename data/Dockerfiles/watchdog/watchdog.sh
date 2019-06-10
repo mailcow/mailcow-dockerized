@@ -58,6 +58,15 @@ function mail_error() {
   [[ -z ${1} ]] && return 1
   [[ -z ${2} ]] && BODY="Service was restarted on $(date), please check your mailcow installation." || BODY="$(date) - ${2}"
   WATCHDOG_NOTIFY_EMAIL=$(echo "${WATCHDOG_NOTIFY_EMAIL}" | sed 's/"//;s|"$||')
+  # Some exceptions for subject and body formats
+  if [[ ${1} == "watchdog-mailcow" ]]; then
+    SUBJECT="Watchdog started"
+  elif [[ ${1} == "fail2ban" ]]; then
+    SUBJECT="${BODY}"
+    BODY="Please see netfilter-mailcow for more details and triggered rules."
+  else
+    SUBJECT="Watchdog: ${1} triggered an event"
+  fi
   IFS=',' read -r -a MAIL_RCPTS <<< "${WATCHDOG_NOTIFY_EMAIL}"
   for rcpt in "${MAIL_RCPTS[@]}"; do
     RCPT_DOMAIN=
