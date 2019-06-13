@@ -256,6 +256,12 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo "#MAILDIR_SUB=Maildir" >> mailcow.conf
       echo "MAILDIR_SUB=" >> mailcow.conf
   fi
+  elif [[ ${option} == "WATCHDOG_NOTIFY_BAN" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Notify about banned IP. Includes whois lookup.' >> mailcow.conf
+      echo "WATCHDOG_NOTIFY_BAN=y" >> mailcow.conf
+  fi
   elif ! grep -q ${option} mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"
     echo "${option}=n" >> mailcow.conf
