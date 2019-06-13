@@ -340,7 +340,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.25
+      image: mailcow/netfilter:1.26
       build: ./data/Dockerfiles/netfilter
       stop_grace_period: 30s
       depends_on:
@@ -364,7 +364,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.46
+      image: mailcow/watchdog:1.47
       # Debug
       #command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog
@@ -381,6 +381,7 @@ services:
         - DBPASS=${DBPASS}
         - USE_WATCHDOG=${USE_WATCHDOG:-n}
         - WATCHDOG_NOTIFY_EMAIL=${WATCHDOG_NOTIFY_EMAIL}
+        - WATCHDOG_NOTIFY_BAN=${WATCHDOG_NOTIFY_BAN:-y}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
         - IP_BY_DOCKER_API=${IP_BY_DOCKER_API:-0}

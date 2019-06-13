@@ -687,8 +687,8 @@ while true; do
     for host in "${F2B_RES[@]}"; do
       log_msg "Banned ${host}"
       rm /tmp/fail2ban 2> /dev/null
-      whois ${host} > /tmp/fail2ban 
-      [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}" "IP ban: ${host}"
+      whois ${host} > /tmp/fail2ban
+      [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && [[ ${WATCHDOG_NOTIFY_BAN} =~ ^([yY][eE][sS]|[yY])+$ ]] && mail_error "${com_pipe_answer}" "IP ban: ${host}"
     done
   elif [[ ${com_pipe_answer} =~ .+-mailcow ]]; then
     kill -STOP ${BACKGROUND_TASKS[*]}
