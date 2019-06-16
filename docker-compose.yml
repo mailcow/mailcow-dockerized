@@ -55,7 +55,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.23
+      image: mailcow/clamd:1.24
       build: ./data/Dockerfiles/clamd
       restart: always
       environment:
@@ -225,7 +225,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.32
+      image: mailcow/postfix:1.33
       build: ./data/Dockerfiles/postfix
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
@@ -427,6 +427,24 @@ services:
         mailcow-network:
           aliases:
             - solr
+
+    olefy-mailcow:
+      image: mailcow/olefy:1.0
+      restart: always
+      build: ./data/Dockerfiles/olefy
+      environment:
+        - OLEFY_BINDADDRESS=0.0.0.0
+        - OLEFY_BINDPORT=10055
+        - OLEFY_TMPDIR=/tmp
+        - OLEFY_PYTHON_PATH=/usr/bin/python3
+        - OLEFY_OLEVBA_PATH=/usr/bin/olevba3
+        - OLEFY_LOGLVL=20
+        - OLEFY_MINLENGTH=500
+        - OLEFY_DEL_TMP=1
+      networks:
+        mailcow-network:
+          aliases:
+            - olefy
 
     ipv6nat-mailcow:
       depends_on:
