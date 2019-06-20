@@ -73,7 +73,7 @@ $(document).ready(function() {
   $(".generate_password").click(function( event ) {
     event.preventDefault();
     $('[data-hibp]').trigger('input');
-    var random_passwd = Math.random().toString(36).slice(-8)
+    var random_passwd = GPW.pronounceable(8)
     $(this).closest("form").find("input[name='password']").prop('type', 'text');
     $(this).closest("form").find("input[name='password2']").prop('type', 'text');
     $(this).closest("form").find("input[name='password']").val(random_passwd);
