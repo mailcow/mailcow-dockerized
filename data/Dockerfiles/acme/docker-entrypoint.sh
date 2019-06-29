@@ -133,16 +133,16 @@ get_ipv6(){
 
 verify_challenge_path(){
   # verify_challenge_path URL 4|6
-  RAND_FILE=${RANDOM}${RANDOM}${RANDOM}
-  touch /var/www/acme/${RAND_FILE}
+  RANDOM_N=${RANDOM}${RANDOM}${RANDOM}
+  echo ${RANDOM_N} > /var/www/acme/${RANDOM_N}
   if [[ ${SKIP_HTTP_VERIFICATION} == "y" ]]; then
     echo '(skipping check, returning 0)'
     return 0
-  elif [[ "$(curl -${2} http://${1}/.well-known/acme-challenge/${RAND_FILE} --write-out %{http_code} --silent --output /dev/null)" =~ ^(2|3)  ]]; then
-    rm /var/www/acme/${RAND_FILE}
+  elif [[ "$(curl -${2} -L http://${1}/.well-known/acme-challenge/${RANDOM_N} --silent)" == "${RANDOM_N}"  ]]; then
+    rm /var/www/acme/${RANDOM_N}
     return 0
   else
-    rm /var/www/acme/${RAND_FILE}
+    rm /var/www/acme/${RANDOM_N}
     return 1
   fi
 }
