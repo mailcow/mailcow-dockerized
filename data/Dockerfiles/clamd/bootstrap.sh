@@ -62,6 +62,7 @@ while true; do
       --include 'sanesecurity.ftm' \
       --include 'sigwhitelist.ign2' \
       --exclude='*' /var/lib/clamav/
+    CE=$?
     chown 755 /var/lib/clamav/
     if [ ${CE} -eq 0 ]; then
       echo RELOAD | nc localhost 3310
