@@ -274,6 +274,12 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               </div>
             </div>
             <div class="form-group">
+                <label class="control-label col-sm-2" for="defquota"><?=$lang['edit']['mailbox_quota_def'];?></label>
+                <div class="col-sm-10">
+                    <input type="number" class="form-control" name="defquota" value="<?=intval($result['def_quota_for_mbox'] / 1048576);?>">
+                </div>
+            </div>
+            <div class="form-group">
               <label class="control-label col-sm-2" for="maxquota"><?=$lang['edit']['max_quota'];?></label>
               <div class="col-sm-10">
                 <input type="number" class="form-control" name="maxquota" value="<?=intval($result['max_quota_for_mbox'] / 1048576);?>">
@@ -536,7 +542,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                 <?php
               endforeach;
 
-              foreach ($sender_acl_handles['sender_acl_addresses']['ro'] as $domain):
+              foreach ($sender_acl_handles['sender_acl_addresses']['ro'] as $alias):
                 ?>
               <option data-subtext="Admin" disabled selected><?=htmlspecialchars($alias);?></option>
                 <?php

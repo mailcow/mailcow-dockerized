@@ -55,7 +55,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.22
+      image: mailcow/clamd:1.25
       build: ./data/Dockerfiles/clamd
       restart: always
       environment:
@@ -71,7 +71,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.42
+      image: mailcow/rspamd:1.43
       build: ./data/Dockerfiles/rspamd
       stop_grace_period: 30s
       depends_on:
@@ -98,7 +98,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.37
+      image: mailcow/phpfpm:1.41
       build: ./data/Dockerfiles/phpfpm
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
@@ -173,7 +173,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.72
+      image: mailcow/dovecot:1.79
       build: ./data/Dockerfiles/dovecot
       cap_add:
         - NET_BIND_SERVICE
@@ -225,7 +225,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.31
+      image: mailcow/postfix:1.33
       build: ./data/Dockerfiles/postfix
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
@@ -311,7 +311,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.56
+      image: mailcow/acme:1.58
       build: ./data/Dockerfiles/acme
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -340,7 +340,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.25
+      image: mailcow/netfilter:1.27
       build: ./data/Dockerfiles/netfilter
       stop_grace_period: 30s
       depends_on:
@@ -364,7 +364,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.42
+      image: mailcow/watchdog:1.47
       # Debug
       #command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog
@@ -381,6 +381,7 @@ services:
         - DBPASS=${DBPASS}
         - USE_WATCHDOG=${USE_WATCHDOG:-n}
         - WATCHDOG_NOTIFY_EMAIL=${WATCHDOG_NOTIFY_EMAIL}
+        - WATCHDOG_NOTIFY_BAN=${WATCHDOG_NOTIFY_BAN:-y}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
         - IP_BY_DOCKER_API=${IP_BY_DOCKER_API:-0}
@@ -396,7 +397,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:1.28
+      image: mailcow/dockerapi:1.30
       restart: always
       build: ./data/Dockerfiles/dockerapi
       oom_kill_disable: true
@@ -405,7 +406,6 @@ services:
         - TZ=${TZ}
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
-        - ./data/conf/rspamd/override.d/worker-controller-password.inc:/access.inc:rw
       networks:
         mailcow-network:
           aliases:
@@ -439,6 +439,24 @@ services:
         mailcow-network:
           aliases:
             - mta-sts
+
+    olefy-mailcow:
+      image: mailcow/olefy:1.0
+      restart: always
+      build: ./data/Dockerfiles/olefy
+      environment:
+        - OLEFY_BINDADDRESS=0.0.0.0
+        - OLEFY_BINDPORT=10055
+        - OLEFY_TMPDIR=/tmp
+        - OLEFY_PYTHON_PATH=/usr/bin/python3
+        - OLEFY_OLEVBA_PATH=/usr/bin/olevba3
+        - OLEFY_LOGLVL=20
+        - OLEFY_MINLENGTH=500
+        - OLEFY_DEL_TMP=1
+      networks:
+        mailcow-network:
+          aliases:
+            - olefy
 
     ipv6nat-mailcow:
       depends_on:

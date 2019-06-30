@@ -62,7 +62,7 @@ $lang['success']['delete_filters'] = "Deleted filters: %s";
 $lang['success']['delete_filter'] = "Deleted filters ID %s";
 $lang['danger']['invalid_bcc_map_type'] = "Invalid BCC map type";
 $lang['danger']['bcc_empty'] = "BCC destination cannot be empty";
-$lang['danger']['bcc_must_be_email'] = "BCC map %s is not a valid email address";
+$lang['danger']['bcc_must_be_email'] = "BCC destination %s is not a valid email address";
 $lang['danger']['bcc_exists'] = "A BCC map %s exists for type %s";
 $lang['success']['bcc_saved'] = "BCC map entry saved";
 $lang['success']['bcc_edited'] = "BCC map entry %s edited";
@@ -333,7 +333,7 @@ $lang['mailbox']['excludes'] = 'Excludes';
 $lang['mailbox']['last_run_reset'] = 'Schedule next';
 $lang['mailbox']['sieve_info'] = 'You can store multiple filters per user, but only one prefilter and one postfilter can be active at the same time.<br>
 Each filter will be processed in the described order. Neither a failed script nor an issued "keep;" will stop processing of further scripts.<br>
-Prefilter → User scripts → Postfilter → <a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/sieve_after" target="_blank">global sieve postfilter</a>';
+<a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/global_sieve_before" target="_blank">Global sieve prefilter</a> → Prefilter → User scripts → Postfilter → <a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/global_sieve_after" target="_blank">Global sieve postfilter</a>';
 $lang['info']['no_action'] = 'No action applicable';
 
 
@@ -687,6 +687,7 @@ $lang['admin']['active_rspamd_settings_map'] = "Active settings map";
 $lang['admin']['quota_notifications_info'] = "Quota notications are sent to users once when crossing 80% and once when crossing 95% usage.";
 $lang['admin']['quarantine_retention_size'] = "Retentions per mailbox:<br><small>0 indicates <b>inactive</b>.</small>";
 $lang['admin']['quarantine_max_size'] = "Maximum size in MiB (larger elements are discarded):<br><small>0 does <b>not</b> indicate unlimited.</small>";
+$lang['admin']['quarantine_max_age'] = "Maximum age in days<br><small>Value must be equal to or greater than 1 day.</small>";
 $lang['admin']['quarantine_exclude_domains'] = "Exclude domains and alias-domains";
 $lang['admin']['quarantine_release_format'] = "Format of released items";
 $lang['admin']['quarantine_release_format_raw'] = "Unmodified original";
@@ -859,3 +860,9 @@ $lang['danger']['text_empty'] = 'Text must not be empty';
 $lang['danger']['subject_empty'] = 'Subject must not be empty';
 $lang['danger']['from_invalid'] = 'Sender must not be empty';
 $lang['danger']['network_host_invalid'] = 'Invalid network or host: %s';
+
+$lang['add']['mailbox_quota_def'] = 'Default mailbox quota';
+$lang['edit']['mailbox_quota_def'] = 'Default mailbox quota';
+$lang['danger']['mailbox_defquota_exceeds_mailbox_maxquota'] = 'Default quota exceeds max quota limit"';
+$lang['danger']['defquota_empty'] = 'Default quota per mailbox must not be 0.';
+$lang['mailbox']['mailbox_defquota'] = 'Default mailbox size';

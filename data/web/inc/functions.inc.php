@@ -256,6 +256,25 @@ function hasMailboxObjectAccess($username, $role, $object) {
   }
 	return false;
 }
+function hasAliasObjectAccess($username, $role, $object) {
+	global $pdo;
+	if (!filter_var(html_entity_decode(rawurldecode($username)), FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $username))) {
+		return false;
+	}
+	if ($role != 'admin' && $role != 'domainadmin' && $role != 'user') {
+		return false;
+	}
+	if ($username == $object) {
+		return true;
+	}
+  $stmt = $pdo->prepare("SELECT `domain` FROM `alias` WHERE `address` = :object");
+  $stmt->execute(array(':object' => $object));
+  $row = $stmt->fetch(PDO::FETCH_ASSOC);
+  if (isset($row['domain']) && hasDomainAccess($username, $role, $row['domain'])) {
+    return true;
+  }
+	return false;
+}
 function pem_to_der($pem_key) {
   // Need to remove BEGIN/END PUBLIC KEY
   $lines = explode("\n", trim($pem_key));

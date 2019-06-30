@@ -69,7 +69,7 @@ function bcc($_action, $_data = null, $attr = null) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data, $_attr),
-          'msg' => 'bcc_must_be_email'
+          'msg' => array('bcc_must_be_email', htmlspecialchars($bcc_dest))
         );
         return false;
       }

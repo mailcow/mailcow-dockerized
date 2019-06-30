@@ -333,7 +333,7 @@ $lang['mailbox']['excludes'] = 'Vyloučené';
 $lang['mailbox']['last_run_reset'] = 'Plánovat další';
 $lang['mailbox']['sieve_info'] = 'Můžete uložit více filtrů pro každého uživatele, ale současně může být aktivní pouze jeden prefilter a jeden postfilter.<br>
 Každý filtr bude zpracován v daném pořadí. Ani chyba při vykonávání skriptu nebo snaha o pozdržení nezastaví vykonání dalších skriptů.<br>
-Prefilter → Uživatelské skripty → Postfilter → <a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/sieve_after" target="_blank">global sieve postfilter</a>';
+<a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/global_sieve_before" target="_blank">Global sieve prefilter</a> → Prefilter → Uživatelské skripty → Postfilter → <a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/global_sieve_after" target="_blank">Global sieve postfilter</a>';
 $lang['info']['no_action'] = 'Není použitelná žádná akce';
 
 $lang['edit']['syncjob'] = 'Upravit synchronizační úlohu';
@@ -798,3 +798,9 @@ $lang['warning']['ip_invalid'] = 'Přeskočeno, vadná IP: %s';
 $lang['danger']['text_empty'] = 'Text nesmí být prázdný';
 $lang['danger']['subject_empty'] = 'Předmět nesmí být prázdný';
 $lang['danger']['from_invalid'] = 'Odesílat nesmí být prázdný';
+
+$lang['add']['mailbox_quota_def'] = 'Výchozí kvóta schránky';
+$lang['edit']['mailbox_quota_def'] = 'Výchozí kvóta schránky';
+$lang['danger']['mailbox_defquota_exceeds_mailbox_maxquota'] = 'Výchozí kvóta překračuje maximální kvótu schránky"';
+$lang['danger']['defquota_empty'] = 'Výchozí kvóta schránky nesmí být 0.';
+$lang['mailbox']['mailbox_defquota'] = 'Výchozí velikost schránky';

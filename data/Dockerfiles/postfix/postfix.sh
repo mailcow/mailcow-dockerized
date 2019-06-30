@@ -95,6 +95,15 @@ query = SELECT CONCAT('smtp_via_transport_maps:', nexthop) AS transport FROM tra
   AND destination = '%s';
 EOF
 
+cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_resource_maps.cf
+user = ${DBUSER}
+password = ${DBPASS}
+hosts = unix:/var/run/mysqld/mysqld.sock
+dbname = ${DBNAME}
+query = SELECT 'null@localhost' FROM mailbox
+  WHERE kind REGEXP 'location|thing|group' AND username = '%s';
+EOF
+
 cat <<EOF > /opt/postfix/conf/sql/mysql_sasl_passwd_maps_sender_dependent.cf
 user = ${DBUSER}
 password = ${DBPASS}

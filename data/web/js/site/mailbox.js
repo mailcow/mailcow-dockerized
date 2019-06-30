@@ -52,11 +52,12 @@ $(document).ready(function() {
   auto_fill_quota = function(domain) {
 		$.get("/api/v1/get/domain/" + domain, function(data){
       var result = $.parseJSON(JSON.stringify(data));
+      def_new_mailbox_quota = ( result.def_new_mailbox_quota / 1048576);
       max_new_mailbox_quota = ( result.max_new_mailbox_quota / 1048576);
 			if (max_new_mailbox_quota != '0') {
 				$("#quotaBadge").html('max. ' +  max_new_mailbox_quota + ' MiB');
 				$('#addInputQuota').attr({"disabled": false, "value": "", "type": "number", "max": max_new_mailbox_quota});
-				$('#addInputQuota').val(max_new_mailbox_quota);
+				$('#addInputQuota').val(def_new_mailbox_quota);
 			}
 			else {
 				$("#quotaBadge").html('max. ' + max_new_mailbox_quota + ' MiB');
@@ -72,7 +73,7 @@ $(document).ready(function() {
   $(".generate_password").click(function( event ) {
     event.preventDefault();
     $('[data-hibp]').trigger('input');
-    var random_passwd = Math.random().toString(36).slice(-8)
+    var random_passwd = GPW.pronounceable(8)
     $(this).closest("form").find("input[name='password']").prop('type', 'text');
     $(this).closest("form").find("input[name='password2']").prop('type', 'text');
     $(this).closest("form").find("input[name='password']").val(random_passwd);
@@ -229,6 +230,7 @@ jQuery(function($){
           return Number(res[0]);
         },
         },
+        {"name":"def_quota_for_mbox","title":lang.mailbox_defquota,"breakpoints":"xs sm md","style":{"width":"125px"}},
         {"name":"max_quota_for_mbox","title":lang.mailbox_quota,"breakpoints":"xs sm","style":{"width":"125px"}},
         {"name":"rl","title":"RL","breakpoints":"xs sm md lg","style":{"maxWidth":"100px","width":"100px"}},
         {"name":"backupmx","filterable": false,"style":{"maxWidth":"120px","width":"120px"},"title":lang.backup_mx,"breakpoints":"xs sm md lg"},
@@ -254,6 +256,7 @@ jQuery(function($){
                 return e;
               }).join('/1');
             }
+            item.def_quota_for_mbox = humanFileSize(item.def_quota_for_mbox);
             item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
             item.chkbox = '<input type="checkbox" data-id="domain" name="multi_select" value="' + encodeURIComponent(item.domain_name) + '" />';
             item.action = '<div class="btn-group">';
@@ -424,6 +427,7 @@ jQuery(function($){
       "columns": [
         {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"sorted": true,"name":"description","title":lang.description,"style":{"width":"250px"}},
+        {"name":"name","title":lang.alias},
         {"name":"kind","title":lang.kind},
         {"name":"domain","title":lang.domain,"breakpoints":"xs sm"},
         {"name":"multiple_bookings","filterable": false,"style":{"maxWidth":"150px","width":"140px"},"title":lang.multiple_bookings,"breakpoints":"xs sm"},

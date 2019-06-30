@@ -326,14 +326,31 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $description  = $_data['description'];
           $aliases			= $_data['aliases'];
           $mailboxes    = $_data['mailboxes'];
+          $defquota			= $_data['defquota'];
           $maxquota			= $_data['maxquota'];
           $restart_sogo = $_data['restart_sogo'];
           $quota				= $_data['quota'];
+          if ($defquota > $maxquota) {
+            $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'mailbox_defquota_exceeds_mailbox_maxquota'
+            );
+            return false;
+          }
           if ($maxquota > $quota) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
               'msg' => 'mailbox_quota_exceeds_domain_quota'
+            );
+            return false;
+          }
+          if ($defquota == "0" || empty($defquota)) {
+            $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'defquota_empty'
             );
             return false;
           }
@@ -392,13 +409,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
-          $stmt = $pdo->prepare("INSERT INTO `domain` (`domain`, `description`, `aliases`, `mailboxes`, `maxquota`, `quota`, `backupmx`, `gal`, `active`, `relay_all_recipients`)
-            VALUES (:domain, :description, :aliases, :mailboxes, :maxquota, :quota, :backupmx, :gal, :active, :relay_all_recipients)");
+          $stmt = $pdo->prepare("INSERT INTO `domain` (`domain`, `description`, `aliases`, `mailboxes`, `defquota`, `maxquota`, `quota`, `backupmx`, `gal`, `active`, `relay_all_recipients`)
+            VALUES (:domain, :description, :aliases, :mailboxes, :defquota, :maxquota, :quota, :backupmx, :gal, :active, :relay_all_recipients)");
           $stmt->execute(array(
             ':domain' => $domain,
             ':description' => $description,
             ':aliases' => $aliases,
             ':mailboxes' => $mailboxes,
+            ':defquota' => $defquota,
             ':maxquota' => $maxquota,
             ':quota' => $quota,
             ':backupmx' => $backupmx,
@@ -1775,6 +1793,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                   unset($gotos[$i]);
                   continue;
                 }
+                // Delete from sender_acl to prevent duplicates
+                $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE
+                  `logged_in_as` = :goto AND
+                  `send_as` = :address");
+                $stmt->execute(array(
+                  ':goto' => $goto,
+                  ':address' => $address
+                ));
               }
               $gotos = array_filter($gotos);
               $goto = implode(",", $gotos);
@@ -1861,6 +1887,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $relayhost            = (isset($_data['relayhost'])) ? intval($_data['relayhost']) : $is_now['relayhost'];
                 $aliases              = (!empty($_data['aliases'])) ? $_data['aliases'] : $is_now['max_num_aliases_for_domain'];
                 $mailboxes            = (isset($_data['mailboxes']) && $_data['mailboxes'] != '') ? intval($_data['mailboxes']) : $is_now['max_num_mboxes_for_domain'];
+                $defquota             = (!empty($_data['defquota'])) ? $_data['defquota'] : ($is_now['def_quota_for_mbox'] / 1048576);
                 $maxquota             = (!empty($_data['maxquota'])) ? $_data['maxquota'] : ($is_now['max_quota_for_mbox'] / 1048576);
                 $quota                = (!empty($_data['quota'])) ? $_data['quota'] : ($is_now['max_quota_for_domain'] / 1048576);
                 $description          = (!empty($_data['description'])) ? $_data['description'] : $is_now['description'];
@@ -1892,6 +1919,22 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                   )");
               $stmt->execute(array(':domain' => $domain));
               $AliasData = $stmt->fetch(PDO::FETCH_ASSOC);
+              if ($defquota > $maxquota) {
+                $_SESSION['return'][] = array(
+                    'type' => 'danger',
+                    'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                    'msg' => 'mailbox_defquota_exceeds_mailbox_maxquota'
+                );
+                continue;
+              }
+              if ($defquota == "0" || empty($defquota)) {
+                $_SESSION['return'][] = array(
+                    'type' => 'danger',
+                    'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                    'msg' => 'defquota_empty'
+                );
+                continue;
+              }
               if ($maxquota > $quota) {
                 $_SESSION['return'][] = array(
                   'type' => 'danger',
@@ -1946,6 +1989,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               `gal` = :gal,
               `active` = :active,
               `quota` = :quota,
+              `defquota` = :defquota,
               `maxquota` = :maxquota,
               `relayhost` = :relayhost,
               `mailboxes` = :mailboxes,
@@ -1958,6 +2002,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':gal' => $gal,
                 ':active' => $active,
                 ':quota' => $quota,
+                ':defquota' => $defquota,
                 ':maxquota' => $maxquota,
                 ':relayhost' => $relayhost,
                 ':mailboxes' => $mailboxes,
@@ -2119,9 +2164,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                     unset($sender_acl_domain_admin[$key]);
                     continue;
                   }
-                  // Check if user has mailbox access (if object is email)
+                  // Check if user has alias access (if object is email)
                   if (filter_var($val, FILTER_VALIDATE_EMAIL)) {
-                    if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $val)) {
+                    if (!hasAliasObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $val)) {
                       $_SESSION['return'][] = array(
                         'type' => 'danger',
                         'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -2140,10 +2185,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $stmt->execute(array(
                   ':username' => $username
                 ));
+                $fixed_sender_aliases = mailbox('get', 'sender_acl_handles', $username)['fixed_sender_aliases'];
                 foreach ($sender_acl_merged as $sender_acl) {
                   $domain = ltrim($sender_acl, '@');
                   if (is_valid_domain_name($domain)) {
                     $sender_acl = '@' . $domain;
+                  }
+                  // Don't add if allowed by alias
+                  if (in_array($sender_acl, $fixed_sender_aliases)) {
+                    continue;
                   }
                   $stmt = $pdo->prepare("INSERT INTO `sender_acl` (`send_as`, `logged_in_as`)
                     VALUES (:sender_acl, :username)");
@@ -2351,11 +2401,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $stmt->execute(array(':logged_in_as' => $_data));
           $address_rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
           while ($address_row = array_shift($address_rows)) {
-            if (filter_var($address_row['send_as'], FILTER_VALIDATE_EMAIL) && !hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $address_row['send_as'])) {
+            if (filter_var($address_row['send_as'], FILTER_VALIDATE_EMAIL) && !hasAliasObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $address_row['send_as'])) {
               $data['sender_acl_addresses']['ro'][] = $address_row['send_as'];
               continue;
             }
-            if (filter_var($address_row['send_as'], FILTER_VALIDATE_EMAIL) && hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $address_row['send_as'])) {
+            if (filter_var($address_row['send_as'], FILTER_VALIDATE_EMAIL) && hasAliasObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $address_row['send_as'])) {
               $data['sender_acl_addresses']['rw'][] = $address_row['send_as'];
               continue;
             }
@@ -2398,7 +2448,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           ));
           $rows_mbox = $stmt->fetchAll(PDO::FETCH_ASSOC);
           while ($row = array_shift($rows_mbox)) {
-            if (filter_var($row['address'], FILTER_VALIDATE_EMAIL) && hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $row['address'])) {
+            // Aliases are not selectable
+            if (in_array($row['address'], $data['fixed_sender_aliases'])) {
+              continue;
+            }
+            if (filter_var($row['address'], FILTER_VALIDATE_EMAIL) && hasAliasObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $row['address'])) {
               $data['sender_acl_addresses']['selectable'][] = $row['address'];
             }
           }
@@ -2907,6 +2961,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               `description`,
               `aliases`,
               `mailboxes`, 
+              `defquota`,
               `maxquota`,
               `quota`,
               `relayhost`,
@@ -2938,6 +2993,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           if ($domaindata['max_new_mailbox_quota'] > ($row['maxquota'] * 1048576)) {
             $domaindata['max_new_mailbox_quota'] = ($row['maxquota'] * 1048576);
           }
+          $domaindata['def_new_mailbox_quota'] = $domaindata['max_new_mailbox_quota'];
+          if ($domaindata['def_new_mailbox_quota'] > ($row['defquota'] * 1048576)) {
+            $domaindata['def_new_mailbox_quota'] = ($row['defquota'] * 1048576);
+          }
           $domaindata['quota_used_in_domain'] = $MailboxDataDomain['in_use'];
           $domaindata['mboxes_in_domain'] = $MailboxDataDomain['count'];
           $domaindata['mboxes_left'] = $row['mailboxes']	- $MailboxDataDomain['count'];
@@ -2945,6 +3004,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $domaindata['description'] = $row['description'];
           $domaindata['max_num_aliases_for_domain'] = $row['aliases'];
           $domaindata['max_num_mboxes_for_domain'] = $row['mailboxes'];
+          $domaindata['def_quota_for_mbox'] = $row['defquota'] * 1048576;
           $domaindata['max_quota_for_mbox'] = $row['maxquota'] * 1048576;
           $domaindata['max_quota_for_domain'] = $row['quota'] * 1048576;
           $domaindata['relayhost'] = $row['relayhost'];
@@ -3416,6 +3476,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt = $pdo->prepare("DELETE FROM `alias` WHERE `id` = :id");
             $stmt->execute(array(
               ':id' => $id
+            ));
+            $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE `send_as` = :alias_address");
+            $stmt->execute(array(
+              ':alias_address' => $alias_data['address']
             ));
             $_SESSION['return'][] = array(
               'type' => 'success',

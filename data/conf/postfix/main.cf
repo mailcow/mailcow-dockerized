@@ -19,7 +19,8 @@ bounce_queue_lifetime = 1d
 broken_sasl_auth_clients = yes
 disable_vrfy_command = yes
 maximal_backoff_time = 1800s
-maximal_queue_lifetime = 1d
+maximal_queue_lifetime = 5d
+delay_warning_time = 4h
 message_size_limit = 104857600
 milter_default_action = accept
 milter_protocol = 6
@@ -40,16 +41,10 @@ postscreen_greet_ttl = 2d
 postscreen_greet_wait = 3s
 postscreen_non_smtp_command_enable = no
 postscreen_pipelining_enable = no
-proxy_read_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_sender_acl.cf,
-  proxy:mysql:/opt/postfix/conf/sql/mysql_tls_policy_override_maps.cf,
-  proxy:mysql:/opt/postfix/conf/sql/mysql_sender_dependent_default_transport_maps.cf,
-  proxy:mysql:/opt/postfix/conf/sql/mysql_transport_maps.cf,
-  proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps_sender_dependent.cf,
-  proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps_transport_maps.cf,
+proxy_read_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps_transport_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_tls_enforce_in_policy.cf,
-  proxy:mysql:/opt/postfix/conf/sql/mysql_sender_bcc_maps.cf,
-  proxy:mysql:/opt/postfix/conf/sql/mysql_recipient_bcc_maps.cf,
-  proxy:mysql:/opt/postfix/conf/sql/mysql_recipient_canonical_maps.cf,
+  $sender_dependent_default_transport_maps,
+  $smtp_tls_policy_maps,
   $local_recipient_maps,
   $mydestination,
   $virtual_alias_maps,
@@ -60,11 +55,14 @@ proxy_read_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_sender_acl.cf,
   $relay_domains,
   $canonical_maps,
   $sender_canonical_maps,
+  $sender_bcc_maps,
+  $recipient_bcc_maps,
   $recipient_canonical_maps,
   $relocated_maps,
   $transport_maps,
   $mynetworks,
-  $smtpd_sender_login_maps
+  $smtpd_sender_login_maps,
+  $smtp_sasl_password_maps
 queue_run_delay = 300s
 relay_domains = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_relay_domain_maps.cf
 relay_recipient_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_relay_recipient_maps.cf
@@ -109,6 +107,7 @@ tls_preempt_cipherlist = yes
 tls_ssl_options = NO_COMPRESSION
 smtpd_tls_mandatory_ciphers = high
 virtual_alias_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_alias_maps.cf,
+  proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_resource_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_spamalias_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_alias_domain_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_alias_domain_catchall_maps.cf
@@ -140,3 +139,4 @@ smtp_header_checks = pcre:/opt/postfix/conf/anonymize_headers.pcre
 mail_name = Postcow
 transport_maps = pcre:/opt/postfix/conf/local_transport, proxy:mysql:/opt/postfix/conf/sql/mysql_transport_maps.cf
 smtp_sasl_auth_soft_bounce = no
+postscreen_discard_ehlo_keywords = silent-discard, dsn

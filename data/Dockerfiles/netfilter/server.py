@@ -369,8 +369,8 @@ def autopurge():
   while not quit_now:
     time.sleep(10)
     refreshF2boptions()
-    BAN_TIME = f2boptions['ban_time']
-    MAX_ATTEMPTS = f2boptions['max_attempts']
+    BAN_TIME = int(f2boptions['ban_time'])
+    MAX_ATTEMPTS = int(f2boptions['max_attempts'])
     QUEUE_UNBAN = r.hgetall('F2B_QUEUE_UNBAN')
     if QUEUE_UNBAN:
       for net in QUEUE_UNBAN:

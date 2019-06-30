@@ -19,7 +19,17 @@ if [[ ! -p /tmp/com_pipe ]]; then
   mkfifo /tmp/com_pipe
 fi
 
+redis-cli -h redis-mailcow DEL F2B_RES > /dev/null
+
 # Common functions
+array_diff() {
+  # https://stackoverflow.com/questions/2312762, Alex Offshore
+  eval local ARR1=\(\"\${$2[@]}\"\)
+  eval local ARR2=\(\"\${$3[@]}\"\)
+  local IFS=$'\n'
+  mapfile -t $1 < <(comm -23 <(echo "${ARR1[*]}" | sort) <(echo "${ARR2[*]}" | sort))
+}
+
 progress() {
   SERVICE=${1}
   TOTAL=${2}
@@ -48,6 +58,13 @@ function mail_error() {
   [[ -z ${1} ]] && return 1
   [[ -z ${2} ]] && BODY="Service was restarted on $(date), please check your mailcow installation." || BODY="$(date) - ${2}"
   WATCHDOG_NOTIFY_EMAIL=$(echo "${WATCHDOG_NOTIFY_EMAIL}" | sed 's/"//;s|"$||')
+  # Some exceptions for subject and body formats
+  if [[ ${1} == "fail2ban" ]]; then
+    SUBJECT="${BODY}"
+    BODY="Please see netfilter-mailcow for more details and triggered rules."
+  else
+    SUBJECT="Watchdog ALERT: ${1}"
+  fi
   IFS=',' read -r -a MAIL_RCPTS <<< "${WATCHDOG_NOTIFY_EMAIL}"
   for rcpt in "${MAIL_RCPTS[@]}"; do
     RCPT_DOMAIN=
@@ -58,16 +75,14 @@ function mail_error() {
       log_msg "Cannot determine MX for ${rcpt}, skipping email notification..."
       return 1
     fi
-    [[ ${1} == "watchdog-mailcow" ]] && SUBJECT="Watchdog started" || SUBJECT="Watchdog: ${1} hit the error rate limit"
-    [ -f "/tmp/${1}" ] && ATTACH="--attach /tmp/${1}@text/plain" || ATTACH=
+    [ -f "/tmp/${1}" ] && BODY="/tmp/${1}"
     ./smtp-cli --missing-modules-ok \
       --subject="${SUBJECT}" \
       --body-plain="${BODY}" \
       --to=${rcpt} \
       --from="watchdog@${MAILCOW_HOSTNAME}" \
       --server="${RCPT_MX}" \
-      --hello-host=${MAILCOW_HOSTNAME} \
-      ${ATTACH}
+      --hello-host=${MAILCOW_HOSTNAME}
     log_msg "Sent notification email to ${rcpt}"
   done
 }
@@ -353,6 +368,37 @@ ratelimit_checks() {
   return 1
 }
 
+fail2ban_checks() {
+  err_count=0
+  diff_c=0
+  THRESHOLD=1
+  F2B_LOG_STATUS=($(redis-cli -h redis-mailcow --raw HKEYS F2B_ACTIVE_BANS))
+  F2B_RES=
+  # Reduce error count by 2 after restarting an unhealthy container
+  trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
+  while [ ${err_count} -lt ${THRESHOLD} ]; do
+    err_c_cur=${err_count}
+    F2B_LOG_STATUS_PREV=(${F2B_LOG_STATUS[@]})
+    F2B_LOG_STATUS=($(redis-cli -h redis-mailcow --raw HKEYS F2B_ACTIVE_BANS))
+    array_diff F2B_RES F2B_LOG_STATUS F2B_LOG_STATUS_PREV
+    if [[ ! -z "${F2B_RES}" ]]; then
+      err_count=$(( ${err_count} + 1 ))
+      echo -n "${F2B_RES[@]}" | redis-cli -x -h redis-mailcow SET F2B_RES > /dev/null
+    fi
+    [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
+    [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
+    progress "Fail2ban" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
+    if [[ $? == 10 ]]; then
+      diff_c=0
+      sleep 1
+    else
+      diff_c=0
+      sleep $(( ( RANDOM % 30 )  + 10 ))
+    fi
+  done
+  return 1
+}
+
 acme_checks() {
   err_count=0
   diff_c=0
@@ -442,8 +488,13 @@ Empty
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
     [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
     progress "Rspamd" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
-    diff_c=0
-    sleep $(( ( RANDOM % 30 )  + 10 ))
+    if [[ $? == 10 ]]; then
+      diff_c=0
+      sleep 1
+    else
+      diff_c=0
+      sleep $(( ( RANDOM % 30 )  + 10 ))
+    fi
   done
   return 1
 }
@@ -558,6 +609,16 @@ BACKGROUND_TASKS+=($!)
 
 (
 while true; do
+  if ! fail2ban_checks; then
+    log_msg "Fail2ban hit error limit"
+    echo fail2ban > /tmp/com_pipe
+  fi
+done
+) &
+BACKGROUND_TASKS+=($!)
+
+(
+while true; do
   if ! acme_checks; then
     log_msg "ACME client hit error limit"
     echo acme-mailcow > /tmp/com_pipe
@@ -605,7 +666,7 @@ while true; do
 done
 ) &
 
-# Restart container when threshold limit reached
+# Actions when threshold limit is reached
 while true; do
   CONTAINER_ID=
   HAS_INITDB=
@@ -619,7 +680,17 @@ while true; do
   elif [[ ${com_pipe_answer} == "acme-mailcow" ]]; then
     log_msg "acme-mailcow did not complete successfully"
     [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}" "Please check acme-mailcow for further information."
-  elif [[ ${com_pipe_answer} =~ .+-mailcow ]] || [[ ${com_pipe_answer} == "ipv6nat-mailcow" ]]; then
+  elif [[ ${com_pipe_answer} == "fail2ban" ]]; then
+    F2B_RES=($(redis-cli -h redis-mailcow --raw GET F2B_RES))
+    redis-cli -h redis-mailcow DEL F2B_RES > /dev/null
+    host=
+    for host in "${F2B_RES[@]}"; do
+      log_msg "Banned ${host}"
+      rm /tmp/fail2ban 2> /dev/null
+      whois ${host} > /tmp/fail2ban
+      [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && [[ ${WATCHDOG_NOTIFY_BAN} =~ ^([yY][eE][sS]|[yY])+$ ]] && mail_error "${com_pipe_answer}" "IP ban: ${host}"
+    done
+  elif [[ ${com_pipe_answer} =~ .+-mailcow ]]; then
     kill -STOP ${BACKGROUND_TASKS[*]}
     sleep 3
     CONTAINER_ID=$(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], id: .Id}" | jq -rc "select( .name | tostring | contains(\"${com_pipe_answer}\")) | .id")

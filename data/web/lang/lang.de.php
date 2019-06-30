@@ -61,7 +61,7 @@ $lang['success']['delete_filters'] = "Filter gelöscht: %s";
 $lang['success']['delete_filter'] = "Filter ID %s wurde gelöscht";
 $lang['danger']['invalid_bcc_map_type'] = "Ungültiger BCC Map-Typ";
 $lang['danger']['bcc_empty'] = "BCC Ziel darf nicht leer sein";
-$lang['danger']['bcc_must_be_email'] = "BCC Map %s ist keine gültige E-Mail-Adresse";
+$lang['danger']['bcc_must_be_email'] = "BCC Ziel %s ist keine gültige E-Mail-Adresse";
 $lang['danger']['bcc_exists'] = "Ein BCC Map Eintrag %s existiert bereits als Typ %s";
 $lang['success']['bcc_saved'] = "BCC Map Eintrag wurde gespeichert";
 $lang['success']['bcc_edited'] = "BCC Map Eintrag %s wurde editiert";
@@ -325,7 +325,7 @@ $lang['mailbox']['last_run_reset'] = 'Als nächstes ausführen';
 $lang['mailbox']['excludes'] = 'Ausschlüsse';
 $lang['mailbox']['sieve_info'] = 'Es können mehrere Filter pro Benutzer existieren, aber nur ein Filter eines Typs (Pre-/Postfilter) kann gleichzeitig aktiv sein.<br>
 Die Ausführung erfolgt in nachstehender Reihenfolge. Ein fehlgeschlagenes Script sowie der Befehl "keep;" stoppen die weitere Verarbeitung <b>nicht</b>.<br>
-Prefilter → User scripts → Postfilter → <a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/sieve_after" target="_blank">global sieve postfilter</a>';
+<a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/global_sieve_before" target="_blank">Global sieve prefilter</a> → Prefilter → User scripts → Postfilter → <a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/global_sieve_after" target="_blank">Global sieve postfilter</a>';
 
 $lang['info']['no_action'] = 'Keine Aktion anwendbar';
 
@@ -650,6 +650,7 @@ $lang['admin']['active_rspamd_settings_map'] = "Derzeit aktive Settings Map";
 $lang['admin']['quota_notifications_info'] = "Quota Benachrichtigungen werden an Mailboxen versendet, die 80 respektive 95 Prozent der zur Verfügung stehenden Quota überschreiten.";
 $lang['admin']['quarantine_retention_size'] = "Rückhaltungen pro Mailbox:<br><small>0 bedeutet <b>inaktiv</b>.</small>";
 $lang['admin']['quarantine_max_size'] = "Maximale Größe in MiB (größere Elemente werden verworfen):<br><small>0 bedeutet <b>nicht</b> unlimitert.</small>";
+$lang['admin']['quarantine_max_age'] = "Maximales Alter in Tagen<br><small>Wert muss größer oder gleich 1 Tag sein.</small>";
 $lang['admin']['quarantine_exclude_domains'] = "Domains und Alias-Domains ausschließen";
 $lang['admin']['quarantine_notification_sender'] = "Benachrichtigungs-E-Mail Absender";
 $lang['admin']['quota_notification_sender'] = "Benachrichtigungs-E-Mail Absender";
