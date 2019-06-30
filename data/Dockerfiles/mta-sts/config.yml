@@ -1,0 +1,11 @@
+host: 0.0.0.0
+port: 8461
+reuse_port: true
+shutdown_timeout: 20
+cache:
+  type: sqlite
+  options:
+    filename: "/var/lib/mta-sts/cache.db"
+default_zone:
+  strict_testing: false
+timeout: 4
