@@ -428,6 +428,18 @@ services:
           aliases:
             - solr
 
+    mta-sts-mailcow:
+      image: mailcow/mta-sts:1.0
+      build: ./data/Dockerfiles/mta-sts
+      expose:
+        - 8461
+      volumes:
+        - mta-sts-cache-vol-1:/var/lib/mta-sts
+      networks:
+        mailcow-network:
+          aliases:
+            - mta-sts
+
     ipv6nat-mailcow:
       depends_on:
         - unbound-mailcow
@@ -479,3 +491,4 @@ volumes:
   postfix-vol-1:
   crypt-vol-1:
   sogo-web-vol-1:
+  mta-sts-cache-vol-1:
