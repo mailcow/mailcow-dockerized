@@ -63,7 +63,7 @@ while true; do
       --include 'sigwhitelist.ign2' \
       --exclude='*' /var/lib/clamav/
     CE=$?
-    chown 755 /var/lib/clamav/
+    chmod 755 /var/lib/clamav/
     if [ ${CE} -eq 0 ]; then
       echo RELOAD | nc localhost 3310
       break
