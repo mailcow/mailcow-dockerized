@@ -3,7 +3,6 @@
  * Dutch language file
  *
  * Created and maintained by Geitenijs
- *
  */
 
 $lang['header']['apps'] = 'Apps';
@@ -65,7 +64,7 @@ $lang['success']['delete_filters'] = "Filters %s zijn verwijderd";
 $lang['success']['delete_filter'] = "Filter %s is verwijderd";
 $lang['danger']['invalid_bcc_map_type'] = "Ongeldig BCC-kaart type";
 $lang['danger']['bcc_empty'] = "BCC-bestemming dient ingevuld te worden";
-$lang['danger']['bcc_must_be_email'] = "BCC-kaart %s is geen geldig e-mailadres";
+$lang['danger']['bcc_must_be_email'] = "BCC-bestemming %s is geen geldig e-mailadres";
 $lang['danger']['bcc_exists'] = "BCC-kaart %s bestaat voor type %s";
 $lang['success']['bcc_saved'] = "BCC-kaart is opgeslagen";
 $lang['success']['bcc_edited'] = "BCC-kaart %s is gewijzigd";
@@ -326,7 +325,7 @@ $lang['mailbox']['mins_interval'] = 'Interval (min)';
 $lang['mailbox']['last_run'] = 'Laatst uitgevoerd';
 $lang['mailbox']['excludes'] = 'Exclusief';
 $lang['mailbox']['last_run_reset'] = 'Plan volgende';
-$lang['mailbox']['sieve_info'] = 'Het is mogelijk om meerdere filters per gebruiker in te stellen, maar er kan slechts één voorfilter en één nafilter tegelijkertijd actief zijn.<br>Elk filter zal in de aangegeven volgorde worden verwerkt. Noch een mislukt script, noch een gespecificeerde "keep;" stopt met het verwerken van volgende scripts.<br>Voorfilter → Gebruikersscripts → Nafilter → <a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/sieve_after" target="_blank">Globaal filter</a>';
+$lang['mailbox']['sieve_info'] = 'Het is mogelijk om meerdere filters per gebruiker in te stellen, maar er kan slechts één voorfilter en één nafilter tegelijkertijd actief zijn.<br>Elk filter zal in de aangegeven volgorde worden verwerkt. Noch een mislukt script, noch een gespecificeerde "keep;" stopt met het verwerken van volgende scripts.<br><a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/global_sieve_before" target="_blank">Globaal voorfilter</a> → Voorfilter → Gebruikersscripts → Nafilter → <a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/global_sieve_after" target="_blank">Globaal nafilter</a>';
 $lang['info']['no_action'] = 'Geen handeling van toepassing';
 
 $lang['edit']['syncjob'] = 'Wijzig synchronisatietaak';
@@ -449,6 +448,7 @@ $lang['edit']['delete2duplicates'] = 'Verwijder duplicaten op de bestemming';
 $lang['edit']['delete1'] = 'Verwijder van oorsprong wanneer voltooid';
 $lang['edit']['delete2'] = 'Verwijder berichten die zich niet in de oorsprong bevinden';
 $lang['add']['custom_params'] = 'Aangepaste parameters';
+$lang['add']['custom_params_hint'] = 'Goed: --param=xy, fout: --param xy';
 $lang['add']['subscribeall'] = 'Abonneer op alle mappen';
 $lang['add']['timeout1'] = 'Time-out voor verbinding met externe hosts';
 $lang['add']['timeout2'] = 'Time-out voor verbinding met lokale hosts';
@@ -549,7 +549,7 @@ $lang['admin']['f2b_netban_ipv4'] = 'Voer de IPv4-subnetgrootte in waar de verba
 $lang['admin']['f2b_netban_ipv6'] = 'Voer de IPv6-subnetgrootte in waar de verbanning van kracht moet zijn (8-128)';
 $lang['admin']['f2b_whitelist'] = 'Netwerken/hosts op de witte lijst';
 $lang['admin']['f2b_blacklist'] = 'Netwerken/hosts op de zwarte lijst';
-$lang['admin']['f2b_list_info'] = 'Wees ervan bewust dat een host of netwerk op de zwarte lijst altijd hogere prioriteit heeft dan eenzelfde op de witte lijst.';
+$lang['admin']['f2b_list_info'] = 'Een host of netwerk op de zwarte lijst gaat altijd boven eenzelfde op de witte lijst <b>Het doorvoeren van wijzigingen kan enkele seconden in beslag nemen.</b>';
 $lang['admin']['search_domain_da'] = 'Zoek domeinen';
 $lang['admin']['r_inactive'] = 'Inactieve beperkingen';
 $lang['admin']['r_active'] = 'Actieve beperkingen';
@@ -674,6 +674,7 @@ $lang['admin']['active_rspamd_settings_map'] = "Huidige instellingen";
 $lang['admin']['quota_notifications_info'] = "Quotum-notificaties worden verstuurd naar gebruikers wanneer deze 80% of 95% van hun opslagcapaciteit overschreden hebben.";
 $lang['admin']['quarantine_retention_size'] = "Maximale retenties per postvak:<br><small>Gebruik 0 om deze functionaliteit <b>uit te schakelen</b>.</small>";
 $lang['admin']['quarantine_max_size'] = "Maximale grootte in MiB (mail die de limiet overschrijdt zal worden verwijderd):<br><small>0 betekent <b>niet</b> onbeperkt!</small>";
+$lang['admin']['quarantine_max_age'] = "Maximale leeftijd in dagen<br><small>Dit kan niet minder zijn dan 1 dag.</small>";
 $lang['admin']['quarantine_exclude_domains'] = "Sluit de volgende domeinen en aliasdomeinen uit";
 $lang['admin']['quarantine_release_format'] = "Verstuur vrijgegeven items als";
 $lang['admin']['quarantine_release_format_raw'] = "Origineel";
@@ -839,3 +840,9 @@ $lang['danger']['text_empty'] = 'De tekst dient ingevuld te worden';
 $lang['danger']['subject_empty'] = 'Het onderwerp dient ingevuld te worden';
 $lang['danger']['from_invalid'] = 'De afzender dient ingevuld te worden';
 $lang['danger']['network_host_invalid'] = 'Ongeldig netwerk of host: %s';
+
+$lang['add']['mailbox_quota_def'] = 'Standaard postvakquotum';
+$lang['edit']['mailbox_quota_def'] = 'Standaard postvakquotum';
+$lang['danger']['mailbox_defquota_exceeds_mailbox_maxquota'] = 'Standaardquotum overschrijdt de quotumlimiet';
+$lang['danger']['defquota_empty'] = 'Standaardquotum per postvak dient geen 0 te zijn.';
+$lang['mailbox']['mailbox_defquota'] = 'Standaard postvakgrootte';
