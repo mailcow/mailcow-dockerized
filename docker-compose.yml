@@ -71,7 +71,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.43
+      image: mailcow/rspamd:1.45
       build: ./data/Dockerfiles/rspamd
       stop_grace_period: 30s
       depends_on:
@@ -173,7 +173,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.79
+      image: mailcow/dovecot:1.81
       build: ./data/Dockerfiles/dovecot
       cap_add:
         - NET_BIND_SERVICE
@@ -225,7 +225,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.33
+      image: mailcow/postfix:1.35
       build: ./data/Dockerfiles/postfix
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
@@ -364,7 +364,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.47
+      image: mailcow/watchdog:1.48
       # Debug
       #command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog
