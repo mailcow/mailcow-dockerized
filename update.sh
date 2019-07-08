@@ -25,6 +25,18 @@ export LC_ALL=C
 DATE=$(date +%Y-%m-%d_%H_%M_%S)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
+function prefetch_images() {
+while read image; do
+  RET_C=0
+  until docker pull ${image}; do
+    RET_C=$((RET_C + 1))
+    echo -e "\e[33m\nError pulling $image, retrying...\e[0m"
+    [ ${RET_C} -gt 3 ] && { echo -e "\e[31m\nToo many failed retries, exiting\e[0m"; exit 1; }
+    sleep 1
+  done
+done < <(git show origin/${BRANCH}:docker-compose.yml | grep "image:" | awk '{ gsub("image:","", $3); print $2 }')
+}
+
 docker_garbage() {
   IMGS_TO_DELETE=()
   for container in $(grep -oP "image: \Kmailcow.+" docker-compose.yml); do
@@ -93,6 +105,11 @@ while (($#)); do
     --gc)
       echo -e "\e[32mCollecting garbage...\e[0m"
       docker_garbage
+      exit 0
+    ;;
+    --prefetch)
+      echo -e "\e[32mPrefetching images...\e[0m"
+      prefetch_images
       exit 0
     ;;
     --help|-h)
@@ -303,16 +320,7 @@ if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 fi
 
 echo -e "\e[32mPrefetching images...\e[0m"
-while read image; do
-  RET_C=0
-  until docker pull ${image}; do
-    RET_C=$((RET_C + 1))
-    echo -e "\e[33m\nError pulling $image, retrying...\e[0m"
-    [ ${RET_C} -gt 3 ] && { echo -e "\e[31m\nToo many failed retries, exiting\e[0m"; exit 1; }
-    sleep 1
-  done
-done < <(git show origin/${BRANCH}:docker-compose.yml | grep "image:" | awk '{ gsub("image:","", $3); print $2 }')
-
+prefetch_images
 
 echo -e "Stopping mailcow... "
 sleep 2
