@@ -133,7 +133,7 @@ while ($row = $sth->fetchrow_arrayref()) {
   ($maxbytespersecond eq "0" ? () : ('--maxbytespersecond', $maxbytespersecond)),
   ($delete2duplicates ne "1" ? () : ('--delete2duplicates')),
   ($subscribeall  ne "1" ? () : ('--subscribeall')),
-  ($delete1 ne "1" ? () : ('--delete')),
+  ($delete1 ne "1" ? () : ('--delete1')),
   ($delete2 ne "1" ? () : ('--delete2')),
   ($automap ne "1" ? () : ('--automap')),
   ($skipcrossduplicates ne "1" ? () : ('--skipcrossduplicates')),
