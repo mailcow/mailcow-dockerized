@@ -2,7 +2,8 @@ FROM alpine:3.9
 
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
-RUN apk add --update --no-cache \
+RUN apk upgrade --no-cache \
+  && apk add --update --no-cache \
   bash \
   curl \
   openssl \

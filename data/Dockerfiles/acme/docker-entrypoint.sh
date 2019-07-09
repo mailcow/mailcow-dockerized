@@ -285,10 +285,10 @@ while true; do
           log_f "Found AAAA record for ${SUBDOMAIN}.${SQL_DOMAIN}: ${AAAA_SUBDOMAIN} - skipping A record check"
           if [[ $(expand ${IPV6:-"0000:0000:0000:0000:0000:0000:0000:0000"}) == $(expand ${AAAA_SUBDOMAIN}) ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
             if verify_challenge_path "${SUBDOMAIN}.${SQL_DOMAIN}" 6; then
-              log_f "Confirmed AAAA record ${AAAA_SUBDOMAIN}"
+              log_f "Confirmed AAAA record with IP ${AAAA_SUBDOMAIN}, adding SAN"
               VALIDATED_CONFIG_DOMAINS+=("${SUBDOMAIN}.${SQL_DOMAIN}")
             else
-              log_f "Confirmed AAAA record ${AAAA_SUBDOMAIN}, but HTTP validation failed"
+              log_f "Confirmed AAAA record with IP ${AAAA_SUBDOMAIN}, but HTTP validation failed"
             fi
           else
             log_f "Cannot match your IP ${IPV6:-NO_IPV6_LINK} against hostname ${SUBDOMAIN}.${SQL_DOMAIN} ($(expand ${AAAA_SUBDOMAIN}))"
@@ -297,10 +297,10 @@ while true; do
           log_f "Found A record for ${SUBDOMAIN}.${SQL_DOMAIN}: ${A_SUBDOMAIN}"
           if [[ ${IPV4:-ERR} == ${A_SUBDOMAIN} ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
             if verify_challenge_path "${SUBDOMAIN}.${SQL_DOMAIN}" 4; then
-              log_f "Confirmed A record ${A_SUBDOMAIN}"
+              log_f "Confirmed A record ${A_SUBDOMAIN}, adding SAN"
               VALIDATED_CONFIG_DOMAINS+=("${SUBDOMAIN}.${SQL_DOMAIN}")
             else
-              log_f "Confirmed A record ${A_SUBDOMAIN}, but HTTP validation failed"
+              log_f "Confirmed A record with IP ${A_SUBDOMAIN}, but HTTP validation failed"
             fi
           else
             log_f "Cannot match your IP ${IPV4} against hostname ${SUBDOMAIN}.${SQL_DOMAIN} (${A_SUBDOMAIN})"
@@ -326,10 +326,10 @@ while true; do
         log_f "Confirmed AAAA record ${AAAA_MAILCOW_HOSTNAME}"
         VALIDATED_MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
       else
-        log_f "Confirmed AAAA record ${A_MAILCOW_HOSTNAME}, but HTTP validation failed"
+        log_f "Confirmed AAAA record with IP ${AAAA_MAILCOW_HOSTNAME}, but HTTP validation failed"
       fi
     else
-      log_f "Cannot match your IP ${IPV6:-NO_IPV6_LINK} against hostname ${MAILCOW_HOSTNAME} ($(expand ${AAAA_MAILCOW_HOSTNAME}))"
+      log_f "Cannot match your IP ${IPV6:-NO_IPV6_LINK} against hostname ${MAILCOW_HOSTNAME} (DNS returned $(expand ${AAAA_MAILCOW_HOSTNAME}))"
     fi
   elif [[ ! -z ${A_MAILCOW_HOSTNAME} ]]; then
     log_f "Found A record for ${MAILCOW_HOSTNAME}: ${A_MAILCOW_HOSTNAME}"
@@ -338,10 +338,10 @@ while true; do
         log_f "Confirmed A record ${A_MAILCOW_HOSTNAME}"
         VALIDATED_MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
       else
-        log_f "Confirmed A record ${A_MAILCOW_HOSTNAME}, but HTTP validation failed"
+        log_f "Confirmed A record with IP ${A_MAILCOW_HOSTNAME}, but HTTP validation failed"
       fi
     else
-      log_f "Cannot match your IP ${IPV4} against hostname ${MAILCOW_HOSTNAME} (${A_MAILCOW_HOSTNAME})"
+      log_f "Cannot match your IP ${IPV4} against hostname ${MAILCOW_HOSTNAME} (DNS returned ${A_MAILCOW_HOSTNAME})"
     fi
   else
     log_f "No A or AAAA record found for hostname ${MAILCOW_HOSTNAME}"
@@ -373,13 +373,13 @@ while true; do
       log_f "Found AAAA record for ${SAN}: ${AAAA_SAN} - skipping A record check"
       if [[ $(expand ${IPV6:-"0000:0000:0000:0000:0000:0000:0000:0000"}) == $(expand ${AAAA_SAN}) ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
         if verify_challenge_path "${SAN}" 6; then
-          log_f "Confirmed AAAA record ${AAAA_SAN}"
+          log_f "Confirmed AAAA record with IP ${AAAA_SAN}"
           ADDITIONAL_VALIDATED_SAN+=("${SAN}")
         else
-          log_f "Confirmed AAAA record ${AAAA_SAN}, but HTTP validation failed"
+          log_f "Confirmed AAAA record with IP ${AAAA_SAN}, but HTTP validation failed"
         fi
       else
-        log_f "Cannot match your IP ${IPV6:-NO_IPV6_LINK} against hostname ${SAN} ($(expand ${AAAA_SAN}))"
+        log_f "Cannot match your IP ${IPV6:-NO_IPV6_LINK} against hostname ${SAN} (DNS returned $(expand ${AAAA_SAN}))"
       fi
     elif [[ ! -z ${A_SAN} ]]; then
       log_f "Found A record for ${SAN}: ${A_SAN}"
@@ -388,10 +388,10 @@ while true; do
           log_f "Confirmed A record ${A_SAN}"
           ADDITIONAL_VALIDATED_SAN+=("${SAN}")
         else
-          log_f "Confirmed A record ${A_SAN}, but HTTP validation failed"
+          log_f "Confirmed A record with IP ${A_SAN}, but HTTP validation failed"
         fi
       else
-        log_f "Cannot match your IP ${IPV4} against hostname ${SAN} (${A_SAN})"
+        log_f "Cannot match your IP ${IPV4} against hostname ${SAN} (DNS returned ${A_SAN})"
       fi
     else
       log_f "No A or AAAA record found for hostname ${SAN}"
@@ -418,12 +418,12 @@ while true; do
   # Finding difference in SAN array now vs. SAN array by current configuration
   array_diff ORPHANED_SAN SAN_ARRAY_NOW ALL_VALIDATED
   if [[ ! -z ${ORPHANED_SAN[*]} ]]; then
-    log_f "Found orphaned SANs ${ORPHANED_SAN[*]}"
+    log_f "Found orphaned SAN ${ORPHANED_SAN[*]}"
     SAN_CHANGE=1
   fi
   array_diff ADDED_SAN ALL_VALIDATED SAN_ARRAY_NOW
   if [[ ! -z ${ADDED_SAN[*]} ]]; then
-    log_f "Found new SANs ${ADDED_SAN[*]}"
+    log_f "Found new SAN ${ADDED_SAN[*]}"
     SAN_CHANGE=1
   fi
 
