@@ -6,7 +6,7 @@ ENV LC_ALL C
 ENV GOSU_VERSION 1.9
 
 # Prerequisites
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
   apt-transport-https \
   ca-certificates \
   cron \
@@ -23,19 +23,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   psmisc \
   wget \
   patch \
-  && rm -rf /var/lib/apt/lists/* \
   && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
   && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
   && chmod +x /usr/local/bin/gosu \
-  && gosu nobody true
-
-RUN mkdir /usr/share/doc/sogo \
+  && gosu nobody true \
+  && mkdir /usr/share/doc/sogo \
   && touch /usr/share/doc/sogo/empty.sh \
   && apt-key adv --keyserver keyserver.ubuntu.com --recv-key 0x810273C4 \
   && echo "deb http://packages.inverse.ca/SOGo/nightly/4/debian/ stretch stretch" > /etc/apt/sources.list.d/sogo.list \
-  && apt-get update && apt-get install -y --force-yes \
+  && apt-get update && apt-get install -y --no-install-recommends \
     sogo \
     sogo-activesync \
+  && apt-get autoclean \
   && rm -rf /var/lib/apt/lists/* \
   && echo '* * * * *   sogo   /usr/sbin/sogo-ealarms-notify -p /etc/sogo/sieve.creds 2>/dev/null' > /etc/cron.d/sogo \
   && echo '* * * * *   sogo   /usr/sbin/sogo-tool expire-sessions 60' >> /etc/cron.d/sogo \
