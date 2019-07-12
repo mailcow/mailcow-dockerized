@@ -71,8 +71,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt->execute(array(
               ':username' => $username,
               ':script_data' => $prefilter_tempEmail,
-              ':script_desc' => "Temp email " . $temp_email  ." drop",
-              ':script_name' => "active",
+              ':script_desc' => $temp_email . " drop",
+              ':script_name' => "inactive",
               ':filter_type' => "prefilter"
             ));
           }
