@@ -2,7 +2,7 @@ version: '2.1'
 services:
 
     unbound-mailcow:
-      image: mailcow/unbound:1.7
+      image: mailcow/unbound:1.8
       build: ./data/Dockerfiles/unbound
       command: /usr/sbin/unbound
       environment:
