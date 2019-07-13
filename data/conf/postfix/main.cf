@@ -109,8 +109,7 @@ smtpd_tls_mandatory_ciphers = high
 virtual_alias_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_alias_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_resource_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_spamalias_maps.cf,
-  proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_alias_domain_maps.cf,
-  proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_alias_domain_catchall_maps.cf
+  proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_alias_domain_maps.cf
 virtual_gid_maps = static:5000
 virtual_mailbox_base = /var/vmail/
 virtual_mailbox_domains = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_domains_maps.cf
