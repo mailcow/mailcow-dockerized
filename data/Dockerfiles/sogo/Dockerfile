@@ -3,10 +3,10 @@ LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL C
-ENV GOSU_VERSION 1.9
+ENV GOSU_VERSION 1.11
 
 # Prerequisites
-RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y --no-install-recommends \
   apt-transport-https \
   ca-certificates \
   cron \
@@ -51,5 +51,3 @@ RUN chmod +x /bootstrap-sogo.sh \
   /usr/local/sbin/stop-supervisor.sh
 
 CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
-
-RUN rm -rf /tmp/* /var/tmp/*
