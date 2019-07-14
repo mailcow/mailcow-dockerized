@@ -65,8 +65,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           if($count > 0){
             $stmt = $pdo->prepare("INSERT INTO `sieve_filters` (`username`, `script_data`, `script_desc`, `script_name`, `filter_type`)
             VALUES (:username, :script_data, :script_desc, :script_name, :filter_type)");
-            $prefilter_tempEmail = 'if address :is "To" "' .  $temp_email . '" {
-              discard;
+            $prefilter_tempEmail = 'require ["reject"];if address :is "To" "' .  $temp_email . '" {
+              reject "Not Accepted";
             }';
             $stmt->execute(array(
               ':username' => $username,
