@@ -32,7 +32,7 @@ CONTAINER_ID=
 # This can happen due to a broken sogo_view
 [ -s /mysql_upgrade_loop ] && SQL_LOOP_C=$(cat /mysql_upgrade_loop)
 until [[ ! -z "${CONTAINER_ID}" ]] && [[ "${CONTAINER_ID}" =~ ^[[:alnum:]]*$ ]]; do
-  CONTAINER_ID=$(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | {project: .Config.Labels["com.docker.compose.project"], name: .Config.Labels["com.docker.compose.service"], id: .Id}" | jq -rc "select( .name | tostring | contains("mysql-mailcow")) | select( .project == "$COMPOSE_PROJECT_NAME") | .id" 2> /dev/null)
+  CONTAINER_ID=$(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | select(.Config.Labels[\"com.docker.compose.project\"] == \"$COMPOSE_PROJECT_NAME\") | select(.Config.Labels[\"com.docker.compose.service\"] == \"mysql-mailcow\") | .Id")
 done
 echo "MySQL @ ${CONTAINER_ID}"
 SQL_UPGRADE_RETURN=$(curl --silent --insecure -XPOST https://dockerapi/containers/${CONTAINER_ID}/exec -d '{"cmd":"system", "task":"mysql_upgrade"}' --silent -H 'Content-type: application/json' | jq -r .type)

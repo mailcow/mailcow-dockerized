@@ -99,7 +99,7 @@ get_container_ip() {
     else
       sleep 0.5
       # get long container id for exact match
-      CONTAINER_ID=($(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], id: .Id}" | jq -rc "select( .name | tostring == \"${1}\") | .id"))
+      CONTAINER_ID=$(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | select(.Config.Labels[\"com.docker.compose.project\"] == \"$COMPOSE_PROJECT_NAME\") | select(.Config.Labels[\"com.docker.compose.service\"] == \"${1}\") | .Id")
       # returned id can have multiple elements (if scaled), shuffle for random test
       CONTAINER_ID=($(printf "%s\n" "${CONTAINER_ID[@]}" | shuf))
       if [[ ! -z ${CONTAINER_ID} ]]; then
@@ -440,7 +440,7 @@ ipv6nat_checks() {
   while [ ${err_count} -lt ${THRESHOLD} ]; do
     err_c_cur=${err_count}
     CONTAINERS=$(curl --silent --insecure https://dockerapi/containers/json)
-    IPV6NAT_CONTAINER_ID=$(echo ${CONTAINERS} | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], id: .Id}" | jq -rc "select( .name | tostring | contains(\"ipv6nat-mailcow\")) | .id")
+    IPV6NAT_CONTAINER_ID=$(echo ${CONTAINERS} | jq -r ".[] | select(.Config.Labels[\"com.docker.compose.project\"] == \"$COMPOSE_PROJECT_NAME\") | select(.Config.Labels[\"com.docker.compose.service\"] == \"ipv6nat-mailcow\") | .Id")
     if [[ ! -z ${IPV6NAT_CONTAINER_ID} ]]; then
       LATEST_STARTED="$(echo ${CONTAINERS} | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], StartedAt: .State.StartedAt}" | jq -rc "select( .name | tostring | contains(\"ipv6nat-mailcow\") | not)" | jq -rc .StartedAt | xargs -n1 date +%s -d | sort | tail -n1)"
       LATEST_IPV6NAT="$(echo ${CONTAINERS} | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], StartedAt: .State.StartedAt}" | jq -rc "select( .name | tostring | contains(\"ipv6nat-mailcow\"))" | jq -rc .StartedAt | xargs -n1 date +%s -d | sort | tail -n1)"
