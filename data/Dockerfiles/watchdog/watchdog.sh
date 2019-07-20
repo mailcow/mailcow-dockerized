@@ -129,7 +129,7 @@ get_container_ip() {
 nginx_checks() {
   err_count=0
   diff_c=0
-  THRESHOLD=16
+  THRESHOLD=5
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
@@ -145,7 +145,7 @@ nginx_checks() {
       sleep 1
     else
       diff_c=0
-      sleep $(( ( RANDOM % 30 )  + 10 ))
+      sleep $(( ( RANDOM % 60 ) + 20 ))
     fi
   done
   return 1
@@ -154,7 +154,7 @@ nginx_checks() {
 unbound_checks() {
   err_count=0
   diff_c=0
-  THRESHOLD=8
+  THRESHOLD=5
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
@@ -177,7 +177,7 @@ unbound_checks() {
       sleep 1
     else
       diff_c=0
-      sleep $(( ( RANDOM % 30 )  + 10 ))
+      sleep $(( ( RANDOM % 60 ) + 20 ))
     fi
   done
   return 1
@@ -186,7 +186,7 @@ unbound_checks() {
 mysql_checks() {
   err_count=0
   diff_c=0
-  THRESHOLD=12
+  THRESHOLD=5
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
@@ -203,7 +203,7 @@ mysql_checks() {
       sleep 1
     else
       diff_c=0
-      sleep $(( ( RANDOM % 30 )  + 10 ))
+      sleep $(( ( RANDOM % 60 ) + 20 ))
     fi
   done
   return 1
@@ -212,7 +212,7 @@ mysql_checks() {
 sogo_checks() {
   err_count=0
   diff_c=0
-  THRESHOLD=10
+  THRESHOLD=5
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
@@ -228,7 +228,7 @@ sogo_checks() {
       sleep 1
     else
       diff_c=0
-      sleep $(( ( RANDOM % 30 )  + 10 ))
+      sleep $(( ( RANDOM % 60 ) + 20 ))
     fi
   done
   return 1
@@ -254,7 +254,7 @@ postfix_checks() {
       sleep 1
     else
       diff_c=0
-      sleep $(( ( RANDOM % 30 )  + 10 ))
+      sleep $(( ( RANDOM % 60 ) + 20 ))
     fi
   done
   return 1
@@ -263,7 +263,7 @@ postfix_checks() {
 clamd_checks() {
   err_count=0
   diff_c=0
-  THRESHOLD=15
+  THRESHOLD=10
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
@@ -279,7 +279,7 @@ clamd_checks() {
       sleep 1
     else
       diff_c=0
-      sleep $(( ( RANDOM % 30 )  + 30 ))
+      sleep $(( ( RANDOM % 120 ) + 20 ))
     fi
   done
   return 1
@@ -288,7 +288,7 @@ clamd_checks() {
 dovecot_checks() {
   err_count=0
   diff_c=0
-  THRESHOLD=20
+  THRESHOLD=15
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
@@ -308,7 +308,7 @@ dovecot_checks() {
       sleep 1
     else
       diff_c=0
-      sleep $(( ( RANDOM % 30 )  + 10 ))
+      sleep $(( ( RANDOM % 60 ) + 20 ))
     fi
   done
   return 1
@@ -334,7 +334,7 @@ phpfpm_checks() {
       sleep 1
     else
       diff_c=0
-      sleep $(( ( RANDOM % 30 )  + 10 ))
+      sleep $(( ( RANDOM % 60 ) + 20 ))
     fi
   done
   return 1
@@ -362,7 +362,7 @@ ratelimit_checks() {
       sleep 1
     else
       diff_c=0
-      sleep $(( ( RANDOM % 30 )  + 10 ))
+      sleep $(( ( RANDOM % 60 ) + 20 ))
     fi
   done
   return 1
@@ -393,7 +393,7 @@ fail2ban_checks() {
       sleep 1
     else
       diff_c=0
-      sleep $(( ( RANDOM % 30 )  + 10 ))
+      sleep $(( ( RANDOM % 60 ) + 20 ))
     fi
   done
   return 1
@@ -425,7 +425,7 @@ acme_checks() {
       sleep 1
     else
       diff_c=0
-      sleep $(( ( RANDOM % 30 )  + 10 ))
+      sleep $(( ( RANDOM % 60 ) + 20 ))
     fi
   done
   return 1
@@ -454,7 +454,7 @@ ipv6nat_checks() {
     progress "IPv6 NAT" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
     if [[ $? == 10 ]]; then
       diff_c=0
-      sleep 1
+      sleep 30
     else
       diff_c=0
       sleep 300
@@ -493,7 +493,7 @@ Empty
       sleep 1
     else
       diff_c=0
-      sleep $(( ( RANDOM % 30 )  + 10 ))
+      sleep $(( ( RANDOM % 60 ) + 20 ))
     fi
   done
   return 1
@@ -518,7 +518,7 @@ olefy_checks() {
       sleep 1
     else
       diff_c=0
-      sleep $(( ( RANDOM % 30 )  + 10 ))
+      sleep $(( ( RANDOM % 60 ) + 20 ))
     fi
   done
   return 1
@@ -722,20 +722,21 @@ while true; do
     for host in "${F2B_RES[@]}"; do
       log_msg "Banned ${host}"
       rm /tmp/fail2ban 2> /dev/null
-      whois ${host} > /tmp/fail2ban
+      timeout 2s whois ${host} > /tmp/fail2ban
+      sleep 2.5
       [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && [[ ${WATCHDOG_NOTIFY_BAN} =~ ^([yY][eE][sS]|[yY])+$ ]] && mail_error "${com_pipe_answer}" "IP ban: ${host}"
     done
   elif [[ ${com_pipe_answer} =~ .+-mailcow ]]; then
     kill -STOP ${BACKGROUND_TASKS[*]}
-    sleep 3
+    sleep 10
     CONTAINER_ID=$(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], id: .Id}" | jq -rc "select( .name | tostring | contains(\"${com_pipe_answer}\")) | .id")
     if [[ ! -z ${CONTAINER_ID} ]]; then
       if [[ "${com_pipe_answer}" == "php-fpm-mailcow" ]]; then
         HAS_INITDB=$(curl --silent --insecure -XPOST https://dockerapi/containers/${CONTAINER_ID}/top | jq '.msg.Processes[] | contains(["php -c /usr/local/etc/php -f /web/inc/init_db.inc.php"])' | grep true)
       fi
       S_RUNNING=$(($(date +%s) - $(curl --silent --insecure https://dockerapi/containers/${CONTAINER_ID}/json | jq .State.StartedAt | xargs -n1 date +%s -d)))
-      if [ ${S_RUNNING} -lt 120 ]; then
-        log_msg "Container is running for less than 120 seconds, skipping action..."
+      if [ ${S_RUNNING} -lt 360 ]; then
+        log_msg "Container is running for less than 360 seconds, skipping action..."
       elif [[ ! -z ${HAS_INITDB} ]]; then
         log_msg "Database is being initialized by php-fpm-mailcow, not restarting but delaying checks for a minute..."
         sleep 60
@@ -750,6 +751,7 @@ while true; do
       fi
     fi
     kill -CONT ${BACKGROUND_TASKS[*]}
+    sleep 1
     kill -USR1 ${BACKGROUND_TASKS[*]}
   fi
 done
