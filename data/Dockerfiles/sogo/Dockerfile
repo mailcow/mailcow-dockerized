@@ -36,9 +36,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     sogo-activesync \
   && apt-get autoclean \
   && rm -rf /var/lib/apt/lists/* \
-  && echo '* * * * *   sogo   /usr/sbin/sogo-ealarms-notify -p /etc/sogo/sieve.creds 2>/dev/null' > /etc/cron.d/sogo \
-  && echo '* * * * *   sogo   /usr/sbin/sogo-tool expire-sessions 60' >> /etc/cron.d/sogo \
-  && echo '0 0 * * *   sogo   /usr/sbin/sogo-tool update-autoreply -p /etc/sogo/sieve.creds' >> /etc/cron.d/sogo \
   && touch /etc/default/locale
 
 COPY ./bootstrap-sogo.sh /bootstrap-sogo.sh
