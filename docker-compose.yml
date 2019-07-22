@@ -174,7 +174,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.82
+      image: mailcow/dovecot:1.83
       build: ./data/Dockerfiles/dovecot
       cap_add:
         - NET_BIND_SERVICE
@@ -341,7 +341,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.27
+      image: mailcow/netfilter:1.28
       build: ./data/Dockerfiles/netfilter
       stop_grace_period: 30s
       depends_on:
@@ -365,7 +365,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.49
+      image: mailcow/watchdog:1.50
       # Debug
       #command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog
@@ -398,7 +398,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:1.30
+      image: mailcow/dockerapi:1.31
       restart: always
       build: ./data/Dockerfiles/dockerapi
       oom_kill_disable: true
@@ -430,7 +430,7 @@ services:
             - solr
 
     olefy-mailcow:
-      image: mailcow/olefy:1.0
+      image: mailcow/olefy:1.1
       restart: always
       build: ./data/Dockerfiles/olefy
       environment:
