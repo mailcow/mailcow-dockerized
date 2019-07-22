@@ -110,7 +110,7 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
   && touch /etc/default/locale \
   && apt-get purge -y build-essential automake autotools-dev default-libmysqlclient-dev libbz2-dev libcurl4-openssl-dev libexpat1-dev liblz-dev liblz4-dev liblzma-dev libpam-dev libssl-dev lzma-dev \
   && apt-get autoremove --purge -y \
-  && rm -rf /tmp/* /var/tmp/*
+  && rm -rf /tmp/* /var/tmp/* /etc/cron.daily/*
 
 COPY trim_logs.sh /usr/local/bin/trim_logs.sh
 COPY clean_q_aged.sh /usr/local/bin/clean_q_aged.sh
