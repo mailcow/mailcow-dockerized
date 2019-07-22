@@ -483,7 +483,7 @@ while true; do
         cp ${ACME_BASE}/acme/cert.pem ${ACME_BASE}/cert.pem
         cp ${ACME_BASE}/acme/key.pem ${ACME_BASE}/key.pem
         reload_configurations
-        rm /var/www/acme/*
+        rm /var/www/acme/* 2> /dev/null
         log_f "Certificate successfully deployed, removing backup, sleeping 1d"
         sleep 1d
       else
