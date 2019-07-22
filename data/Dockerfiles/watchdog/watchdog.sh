@@ -288,7 +288,7 @@ clamd_checks() {
 dovecot_checks() {
   err_count=0
   diff_c=0
-  THRESHOLD=15
+  THRESHOLD=12
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
@@ -502,7 +502,7 @@ Empty
 olefy_checks() {
   err_count=0
   diff_c=0
-  THRESHOLD=20
+  THRESHOLD=5
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
