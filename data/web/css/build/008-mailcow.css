@@ -42,6 +42,9 @@
 .btn {
   text-transform: none;
 }
+.btn * {
+  pointer-events: none;
+}
 .textarea-code {
   font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
   background:transparent !important;
