@@ -750,6 +750,7 @@ $lang['quarantine']['neutral_danger'] = "Neutraal/geen beoordeling";
 $lang['quarantine']['medium_danger'] = "Middelmatig risico";
 $lang['quarantine']['high_danger'] = "Hoog risico";
 $lang['quarantine']['danger'] = "Risico";
+$lang['quarantine']['spam_score'] = "Score";
 $lang['quarantine']['confirm_delete'] = "Bevestig de verwijdering van dit item.";
 $lang['quarantine']['qhandler_success'] = "Verzoek met succes verzonden naar het systeem. Je kunt het venster nu veilig sluiten.";
 

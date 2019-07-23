@@ -715,6 +715,7 @@ $lang['quarantine']['subj'] = "Předmět";
 $lang['quarantine']['recipients'] = "Příjemci";
 $lang['quarantine']['text_plain_content'] = "Obsah (text/plain)";
 $lang['quarantine']['text_from_html_content'] = "Obsah (konvertované html)";
+$lang['quarantine']['spam_score'] = "Skóre";
 $lang['quarantine']['atts'] = "Přílohy";
 $lang['warning']['fuzzy_learn_error'] = "Chyba při učení Fuzzy hash: %s";
 $lang['danger']['spam_learn_error'] = "Chyba při učení spamu: %s";

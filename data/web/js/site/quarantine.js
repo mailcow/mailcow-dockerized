@@ -17,6 +17,7 @@ jQuery(function($){
         {"name":"sender","title":lang.sender},
         {"name":"rcpt","title":lang.rcpt, "breakpoints":"xs sm md", "type": "text"},
         {"name":"virus","title":lang.danger, "type": "text"},
+        {"name":"score","title": lang.spam_score,"type": "number"},
         {"name":"subject","title":lang.subj, "type": "text"},
         {"name":"created","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},"title":lang.received,"style":{"width":"170px"}},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right"},"style":{"width":"220px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
