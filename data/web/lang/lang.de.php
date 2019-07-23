@@ -745,6 +745,7 @@ $lang['quarantine']['neutral_danger'] = "Neutral/ohne Bewertung";
 $lang['quarantine']['medium_danger'] = "Mittlere Gefahr";
 $lang['quarantine']['high_danger'] = "Hohe Gefahr";
 $lang['quarantine']['danger'] = "Gefahr";
+$lang['quarantine']['spam_score'] = "Bewertung";
 $lang['quarantine']['qhandler_success'] = "Aktion wurde an das System übergeben. Sie dürfen dieses Fenster nun schließen.";
 $lang['warning']['fuzzy_learn_error'] = "Fuzzy Lernfehler: %s";
 $lang['danger']['spam_learn_error'] = "Spam Lernfehler: %s";

@@ -767,6 +767,7 @@ $lang['quarantine']['neutral_danger'] = "Neutral/no rating";
 $lang['quarantine']['medium_danger'] = "Medium danger";
 $lang['quarantine']['high_danger'] = "High";
 $lang['quarantine']['danger'] = "Danger";
+$lang['quarantine']['spam_score'] = "Score";
 $lang['quarantine']['confirm_delete'] = "Confirm the deletion of this element.";
 $lang['quarantine']['qhandler_success'] = "Request successfully sent to the system. You can now close the window.";
 
