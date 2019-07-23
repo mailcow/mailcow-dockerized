@@ -26,6 +26,9 @@
     if (preg_match("/debug/i", $_SERVER['REQUEST_URI'])) {
       $css_minifier->add('/web/css/site/debug.css');
     }
+    if ($_SERVER['REQUEST_URI'] == '/') {
+      $css_minifier->add('/web/css/site/index.css');
+    }
   ?>
   <style><?=$css_minifier->minify();?></style>
   <?php if (strtolower(trim($DEFAULT_THEME)) != "lumen"): ?>
