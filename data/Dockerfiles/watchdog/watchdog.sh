@@ -77,6 +77,7 @@ function mail_error() {
     fi
     [ -f "/tmp/${1}" ] && BODY="/tmp/${1}"
     ./smtp-cli --missing-modules-ok \
+      --charset=UTF-8 \
       --subject="${SUBJECT}" \
       --body-plain="${BODY}" \
       --to=${rcpt} \
