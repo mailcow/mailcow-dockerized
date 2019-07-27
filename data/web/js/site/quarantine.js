@@ -63,6 +63,7 @@ jQuery(function($){
       "paging": {"enabled": true,"limit": 5,"size": pagination_size},
       "sorting": {"enabled": true},
       "filtering": {"enabled": true,"position": "left","connectors": false,"placeholder": lang.filter_table},
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
 
@@ -116,6 +117,10 @@ jQuery(function($){
       }
     });
   });
+
+  $('body').on('click', 'span.footable-toggle', function () {
+    event.stopPropagation();
+  })
 
   // Initial table drawings
   draw_quarantine_table();
