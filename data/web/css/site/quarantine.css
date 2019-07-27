@@ -61,3 +61,7 @@ span.mail-address-item {
 table tbody span.footable-toggle {
   cursor: pointer;
 }
+
+#quarantinetable tbody tr {
+  cursor: pointer;
+}
