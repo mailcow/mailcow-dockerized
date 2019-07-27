@@ -114,7 +114,7 @@ jQuery(function($){
     });
   });
 
-  $('table tbody').on('click', 'span.footable-toggle', function () {
+  $('body').on('click', 'span.footable-toggle', function () {
     event.stopPropagation();
   })
 
