@@ -300,7 +300,8 @@ jQuery(function($){
         "after.ft.filtering": function(e, ft){
           table_mailbox_ready(ft, 'domain_table');
         }
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
   function draw_mailbox_table() {
@@ -419,7 +420,8 @@ jQuery(function($){
         "after.ft.filtering": function(e, ft){
           table_mailbox_ready(ft, 'mailbox_table');
         }
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
   function draw_resource_table() {
@@ -491,7 +493,8 @@ jQuery(function($){
         "after.ft.filtering": function(e, ft){
           table_mailbox_ready(ft, 'resource_table');
         }
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
   function draw_bcc_table() {
@@ -559,7 +562,8 @@ jQuery(function($){
         "after.ft.filtering": function(e, ft){
           table_mailbox_ready(ft, 'bcc_table');
         }
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
   function draw_recipient_map_table() {
@@ -622,7 +626,8 @@ jQuery(function($){
         "after.ft.filtering": function(e, ft){
           table_mailbox_ready(ft, 'recipient_map_table');
         }
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
   function draw_tls_policy_table() {
@@ -691,7 +696,8 @@ jQuery(function($){
         "after.ft.filtering": function(e, ft){
           table_mailbox_ready(ft, 'tls_policy_table');
         }
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
   function draw_transport_maps_table() {
@@ -758,7 +764,8 @@ jQuery(function($){
         "after.ft.filtering": function(e, ft){
           table_mailbox_ready(ft, 'transport_maps_table');
         }
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
   function draw_alias_table() {
@@ -854,7 +861,8 @@ jQuery(function($){
         "after.ft.filtering": function(e, ft){
           table_mailbox_ready(ft, 'alias_table');
         }
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
 
@@ -914,7 +922,8 @@ jQuery(function($){
         "after.ft.filtering": function(e, ft){
           table_mailbox_ready(ft, 'aliasdomain_table');
         }
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
 
@@ -995,7 +1004,8 @@ jQuery(function($){
         "after.ft.filtering": function(e, ft){
           table_mailbox_ready(ft, 'sync_job_table');
         }
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
 
@@ -1064,9 +1074,14 @@ jQuery(function($){
         "after.ft.filtering": function(e, ft){
           table_mailbox_ready(ft, 'filter_table');
         }
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   };
+
+  $('body').on('click', 'span.footable-toggle', function () {
+    event.stopPropagation();
+  })
 
   draw_domain_table();
   draw_mailbox_table();
