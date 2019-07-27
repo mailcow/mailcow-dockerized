@@ -419,7 +419,8 @@ jQuery(function($){
         "after.ft.filtering": function(e, ft){
           table_mailbox_ready(ft, 'mailbox_table');
         }
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
   function draw_resource_table() {
@@ -854,7 +855,8 @@ jQuery(function($){
         "after.ft.filtering": function(e, ft){
           table_mailbox_ready(ft, 'alias_table');
         }
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
 
@@ -995,7 +997,8 @@ jQuery(function($){
         "after.ft.filtering": function(e, ft){
           table_mailbox_ready(ft, 'sync_job_table');
         }
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
 
@@ -1064,7 +1067,8 @@ jQuery(function($){
         "after.ft.filtering": function(e, ft){
           table_mailbox_ready(ft, 'filter_table');
         }
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   };
 
