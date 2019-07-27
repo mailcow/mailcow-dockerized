@@ -1068,6 +1068,10 @@ jQuery(function($){
     });
   };
 
+  $('body').on('click', 'span.footable-toggle', function () {
+    event.stopPropagation();
+  })
+
   draw_domain_table();
   draw_mailbox_table();
   draw_resource_table();

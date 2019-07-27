@@ -236,6 +236,11 @@ jQuery(function($){
       }
     });
   }
+
+  $('body').on('click', 'span.footable-toggle', function () {
+    event.stopPropagation();
+  })
+
   draw_sync_job_table();
   draw_tla_table();
   draw_wl_policy_mailbox_table();
