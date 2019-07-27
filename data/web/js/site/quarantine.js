@@ -114,6 +114,10 @@ jQuery(function($){
     });
   });
 
+  $('table tbody').on('click', 'span.footable-toggle', function () {
+    event.stopPropagation();
+  })
+
   // Initial table drawings
   draw_quarantine_table();
 });
