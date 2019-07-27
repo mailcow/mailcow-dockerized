@@ -53,3 +53,11 @@ table.footable>tbody>tr.footable-empty>td {
   font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
   font-size:smaller;
 }
+
+table tbody tr {
+  cursor: pointer;
+}
+
+table tbody tr td input[type="checkbox"] {
+  cursor: pointer;
+}

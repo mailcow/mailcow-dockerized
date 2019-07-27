@@ -58,10 +58,10 @@ span.mail-address-item {
   margin-right: 7px;
 }
 
-table tbody span.footable-toggle {
+table tbody tr {
   cursor: pointer;
 }
 
-#quarantinetable tbody tr {
+table tbody tr td input[type="checkbox"] {
   cursor: pointer;
 }
