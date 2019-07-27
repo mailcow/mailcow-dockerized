@@ -84,7 +84,8 @@ jQuery(function($){
       "state": {"enabled": true},
       "sorting": {
         "enabled": true
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
   function draw_sync_job_table() {
