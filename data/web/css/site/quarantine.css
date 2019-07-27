@@ -57,3 +57,7 @@ span.mail-address-item {
   padding: 2px 7px;
   margin-right: 7px;
 }
+
+table tbody span.footable-toggle {
+  cursor: pointer;
+}
