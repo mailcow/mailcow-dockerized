@@ -151,7 +151,8 @@ jQuery(function($){
       "state": {"enabled": true},
       "sorting": {
         "enabled": true
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
   function draw_wl_policy_mailbox_table() {
