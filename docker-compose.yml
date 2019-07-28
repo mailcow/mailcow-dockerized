@@ -174,12 +174,12 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.83
+      image: mailcow/dovecot:1.84
       build: ./data/Dockerfiles/dovecot
       cap_add:
         - NET_BIND_SERVICE
       volumes:
-        - ./data/conf/dovecot:/usr/local/etc/dovecot
+        - ./data/conf/dovecot:/etc/dovecot
         - ./data/assets/ssl:/etc/ssl/mail/:ro
         - ./data/conf/sogo/:/etc/sogo/
         - ./data/conf/phpfpm/sogo-sso/:/etc/phpfpm/
@@ -413,7 +413,7 @@ services:
             - dockerapi
 
     solr-mailcow:
-      image: mailcow/solr:1.5
+      image: mailcow/solr:1.6
       build: ./data/Dockerfiles/solr
       restart: always
       volumes:
