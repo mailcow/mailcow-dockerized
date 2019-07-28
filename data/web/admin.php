@@ -600,13 +600,14 @@ $tfa_data = get_tfa();
           </span></p>
           <?php
           endforeach;
+          ?>
+          <hr>
+          <?php
         endif;
         if (!empty($f2b_data['perm_bans'])):
           foreach ($f2b_data['perm_bans'] as $perm_bans):
           ?>
-          <p>
-          <span class="label label-danger" style="padding:4px;font-size:85%;"><span class="glyphicon glyphicon-filter"></span> <?=$perm_bans?></span>
-          </p>
+          <span class="label label-danger" style="padding: 0.1em 0.4em 0.1em;"><span class="glyphicon glyphicon-filter"></span> <?=$perm_bans?></span>
           <?php
           endforeach;
         endif;
