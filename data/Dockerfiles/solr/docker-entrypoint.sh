@@ -37,10 +37,10 @@ if [[ "${1}" == "--bootstrap" ]]; then
   rm /opt/solr/server/solr/configsets/_default/conf/managed-schema
 
   echo "Starting local Solr instance to setup configuration"
-  su-exec solr start-local-solr
+  gosu solr start-local-solr
 
   echo "Creating core \"dovecot-fts\""
-  su-exec solr /opt/solr/bin/solr create -c "dovecot-fts"
+  gosu solr /opt/solr/bin/solr create -c "dovecot-fts"
 
   # See https://github.com/docker-solr/docker-solr/issues/27
   echo "Checking core"
@@ -52,10 +52,10 @@ if [[ "${1}" == "--bootstrap" ]]; then
   echo "Created core \"dovecot-fts\""
 
   echo "Stopping local Solr"
-  su-exec solr stop-local-solr
+  gosu solr stop-local-solr
 
   exit 0
 fi
 
-exec su-exec solr solr-foreground
+exec gosu solr solr-foreground
 
