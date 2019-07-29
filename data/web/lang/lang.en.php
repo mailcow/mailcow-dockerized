@@ -34,13 +34,13 @@ $lang['danger']['yotp_verification_failed'] = "Yubico OTP verification failed: %
 $lang['danger']['ip_list_empty'] = "List of allowed IPs cannot be empty";
 $lang['danger']['invalid_destination'] = "Destination format is invalid";
 $lang['danger']['invalid_nexthop'] = "Next hop format is invalid";
-$lang['danger']['invalid_nexthop_authenticated'] = "Next hops exists with different credentials, please update the existing credentials for this next hop first.";
+$lang['danger']['invalid_nexthop_authenticated'] = "Next hop exists with different credentials, please update the existing credentials for this next hop first.";
 $lang['danger']['next_hop_interferes'] = "%s interferes with nexthop %s";
 $lang['danger']['next_hop_interferes_any'] = "An existing next hop interferes with %s";
 $lang['danger']['rspamd_ui_pw_length'] = "Rspamd UI password should be at least 6 chars long";
 $lang['success']['rspamd_ui_pw_set'] = "Rspamd UI password successfully set";
 $lang['success']['queue_command_success'] = "Queue command completed successfully";
-$lang['danger']['unknown'] = "An unknown error occured";
+$lang['danger']['unknown'] = "An unknown error occurred";
 $lang['danger']['malformed_username'] = "Malformed username";
 $lang['info']['awaiting_tfa_confirmation'] = "Awaiting TFA confirmation";
 $lang['success']['logged_in_as'] = "Logged in as %s";
@@ -528,7 +528,7 @@ $lang['tfa']['none'] = "Deactivate";
 $lang['tfa']['delete_tfa'] = "Disable TFA";
 $lang['tfa']['disable_tfa'] = "Disable TFA until next successful login";
 $lang['tfa']['confirm'] = "Confirm";
-$lang['tfa']['totp'] = "Time-based OTP (Google Authenticator etc.)";
+$lang['tfa']['totp'] = "Time-based OTP (Google Authenticator, Authy, etc.)";
 $lang['tfa']['select'] = "Please select";
 $lang['tfa']['waiting_usb_auth'] = "<i>Waiting for USB device...</i><br><br>Please tap the button on your U2F USB device now.";
 $lang['tfa']['waiting_usb_register'] = "<i>Waiting for USB device...</i><br><br>Please enter your password above and confirm your U2F registration by tapping the button on your U2F USB device.";
@@ -587,7 +587,7 @@ $lang['admin']['add_admin'] = 'Add administrator';
 $lang['admin']['add_settings_rule'] = 'Add settings rule';
 $lang['admin']['rsetting_desc'] = 'Short description';
 $lang['admin']['rsetting_content'] = 'Rule content';
-$lang['admin']['rsetting_none'] = 'No rule available';
+$lang['admin']['rsetting_none'] = 'No rules available';
 $lang['admin']['rsetting_no_selection'] = 'Please select a rule';
 $lang['admin']['rsettings_preset_1'] = 'Disable all but DKIM and rate limit for authenticated users';
 $lang['admin']['rsettings_preset_2'] = 'Postmasters want spam';
@@ -638,9 +638,9 @@ $lang['admin']['forwarding_hosts_add_hint'] = 'You can either specify IPv4/IPv6 
 $lang['admin']['relayhosts_hint'] = 'Define sender-dependent transports to be able to select them in a domains configuration dialog.<br>
   The transport service is always "smtp:". A users individual outbound TLS policy setting is taken into account.';
 $lang['admin']['transports_hint'] = '→ A transport map entry <b>overrules</b> a sender-dependent transport map</b>.<br>
-→ Outbound TLS policy settings per-user are ignored and can only be enfored by TLS policy map entries.<br>
+→ Outbound TLS policy settings per-user are ignored and can only be enforced by TLS policy map entries.<br>
 → The transport service for defined transports is always "smtp:".<br>
-→ Adresses matching "/localhost$/" will always be transported via "local:", therefore a "*" destination will not apply to those addresses.<br>
+→ Addresses matching "/localhost$/" will always be transported via "local:", therefore a "*" destination will not apply to those addresses.<br>
 → To determine credentials for an exemplary next hop "[host]:25", Postfix <b>always</b> queries for "host" before searching for "[host]:25". This behavior makes it impossible to use "host" and "[host]:25" at the same time.';
 $lang['admin']['add_relayhost_hint'] = 'Please be aware that authentication data, if any, will be stored as plain text.';
 $lang['admin']['add_transports_hint'] = 'Please be aware that authentication data, if any, will be stored as plain text.';
@@ -676,7 +676,7 @@ $lang['admin']['api_allow_from'] = "Allow API access from these IPs (separated b
 $lang['admin']['api_key'] = "API key";
 $lang['admin']['activate_api'] = "Activate API";
 $lang['admin']['regen_api_key'] = "Regenerate API key";
-$lang['admin']['ban_list_info'] = "See a list of banned IPs below: <b>network (remaining ban time) - [actions]</b>.<br />IPs queued to be unbanned, will be removed from the active ban list within a few seconds.<br />Red labels indicate active permanent bans by blacklisting.";
+$lang['admin']['ban_list_info'] = "See a list of banned IPs below: <b>network (remaining ban time) - [actions]</b>.<br />IPs queued to be unbanned will be removed from the active ban list within a few seconds.<br />Red labels indicate active permanent bans by blacklisting.";
 $lang['admin']['unban_pending'] = "unban pending";
 $lang['admin']['queue_unban'] = "queue unban";
 $lang['admin']['no_active_bans'] = "No active bans";
@@ -770,7 +770,6 @@ $lang['quarantine']['danger'] = "Danger";
 $lang['quarantine']['spam_score'] = "Score";
 $lang['quarantine']['confirm_delete'] = "Confirm the deletion of this element.";
 $lang['quarantine']['qhandler_success'] = "Request successfully sent to the system. You can now close the window.";
-
 $lang['warning']['fuzzy_learn_error'] = "Fuzzy hash learn error: %s";
 $lang['danger']['spam_learn_error'] = "Spam learn error: %s";
 $lang['success']['qlearn_spam'] = "Message ID %s was learned as spam and deleted";
@@ -866,6 +865,6 @@ $lang['danger']['network_host_invalid'] = 'Invalid network or host: %s';
 
 $lang['add']['mailbox_quota_def'] = 'Default mailbox quota';
 $lang['edit']['mailbox_quota_def'] = 'Default mailbox quota';
-$lang['danger']['mailbox_defquota_exceeds_mailbox_maxquota'] = 'Default quota exceeds max quota limit"';
+$lang['danger']['mailbox_defquota_exceeds_mailbox_maxquota'] = 'Default quota exceeds max quota limit';
 $lang['danger']['defquota_empty'] = 'Default quota per mailbox must not be 0.';
 $lang['mailbox']['mailbox_defquota'] = 'Default mailbox size';
