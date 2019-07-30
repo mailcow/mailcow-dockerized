@@ -187,7 +187,7 @@ class container_post(Resource):
   def container_post__exec__system__fts_rescan(self, container_id):
     if 'username' in request.json:
       for container in docker_client.containers.list(filters={"id": container_id}):
-        rescan_return = container.exec_run(["/bin/bash", "-c", "/usr/local/bin/doveadm fts rescan -u '" + request.json['username'].replace("'", "'\\''") + "'"], user='vmail')
+        rescan_return = container.exec_run(["/bin/bash", "-c", "/usr/bin/doveadm fts rescan -u '" + request.json['username'].replace("'", "'\\''") + "'"], user='vmail')
         if rescan_return.exit_code == 0:
           return jsonify(type='success', msg='fts_rescan: rescan triggered')
         else:
@@ -195,7 +195,7 @@ class container_post(Resource):
 
     if 'all' in request.json:
       for container in docker_client.containers.list(filters={"id": container_id}):
-        rescan_return = container.exec_run(["/bin/bash", "-c", "/usr/local/bin/doveadm fts rescan -A"], user='vmail')
+        rescan_return = container.exec_run(["/bin/bash", "-c", "/usr/bin/doveadm fts rescan -A"], user='vmail')
         if rescan_return.exit_code == 0:
           return jsonify(type='success', msg='fts_rescan: rescan triggered')
         else:
@@ -233,7 +233,7 @@ class container_post(Resource):
   # api call: container_post - post_action: exec - cmd: reload - task: dovecot
   def container_post__exec__reload__dovecot(self, container_id):
     for container in docker_client.containers.list(filters={"id": container_id}):
-      reload_return = container.exec_run(["/bin/bash", "-c", "/usr/local/sbin/dovecot reload"])
+      reload_return = container.exec_run(["/bin/bash", "-c", "/usr/sbin/dovecot reload"])
       return exec_run_handler('generic', reload_return)
 
 
@@ -255,7 +255,7 @@ class container_post(Resource):
   def container_post__exec__sieve__list(self, container_id):
     if 'username' in request.json:
       for container in docker_client.containers.list(filters={"id": container_id}):
-        sieve_return = container.exec_run(["/bin/bash", "-c", "/usr/local/bin/doveadm sieve list -u '" + request.json['username'].replace("'", "'\\''") + "'"])
+        sieve_return = container.exec_run(["/bin/bash", "-c", "/usr/bin/doveadm sieve list -u '" + request.json['username'].replace("'", "'\\''") + "'"])
         return exec_run_handler('utf8_text_only', sieve_return)
 
 
@@ -263,7 +263,7 @@ class container_post(Resource):
   def container_post__exec__sieve__print(self, container_id):
     if 'username' in request.json and 'script_name' in request.json:
       for container in docker_client.containers.list(filters={"id": container_id}):
-        cmd = ["/bin/bash", "-c", "/usr/local/bin/doveadm sieve get -u '" + request.json['username'].replace("'", "'\\''") + "' '" + request.json['script_name'].replace("'", "'\\''") + "'"]  
+        cmd = ["/bin/bash", "-c", "/usr/bin/doveadm sieve get -u '" + request.json['username'].replace("'", "'\\''") + "' '" + request.json['script_name'].replace("'", "'\\''") + "'"]  
         sieve_return = container.exec_run(cmd)
         return exec_run_handler('utf8_text_only', sieve_return)
 
