@@ -526,9 +526,19 @@ olefy_checks() {
 }
 
 # Notify about start
-[[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "watchdog-mailcow" "Watchdog started monitoring mailcow."
+if [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && [[ ! -f /tmp/watchdog_reload ]]; then
+  mail_error "watchdog-mailcow" "Watchdog started monitoring mailcow."
+  rm /tmp/watchdog_reload
+fi
 
 # Create watchdog agents
+(
+  touch /tmp/watchdog_reload
+  sleep 60
+  echo "Reloading watchdog"
+  kill 1
+) &
+
 (
 while true; do
   if ! nginx_checks; then
@@ -537,7 +547,9 @@ while true; do
   fi
 done
 ) &
-BACKGROUND_TASKS+=($!)
+PID=$!
+echo "Spawned nginx_checks with PID ${PID}"
+BACKGROUND_TASKS+=(${PID})
 
 (
 while true; do
@@ -547,7 +559,9 @@ while true; do
   fi
 done
 ) &
-BACKGROUND_TASKS+=($!)
+PID=$!
+echo "Spawned mysql_checks with PID ${PID}"
+BACKGROUND_TASKS+=(${PID})
 
 (
 while true; do
@@ -557,7 +571,9 @@ while true; do
   fi
 done
 ) &
-BACKGROUND_TASKS+=($!)
+PID=$!
+echo "Spawned phpfpm_checks with PID ${PID}"
+BACKGROUND_TASKS+=(${PID})
 
 (
 while true; do
@@ -567,7 +583,9 @@ while true; do
   fi
 done
 ) &
-BACKGROUND_TASKS+=($!)
+PID=$!
+echo "Spawned sogo_checks with PID ${PID}"
+BACKGROUND_TASKS+=(${PID})
 
 if [ ${CHECK_UNBOUND} -eq 1 ]; then
 (
@@ -578,7 +596,9 @@ while true; do
   fi
 done
 ) &
-BACKGROUND_TASKS+=($!)
+PID=$!
+echo "Spawned unbound_checks with PID ${PID}"
+BACKGROUND_TASKS+=(${PID})
 fi
 
 if [[ "${SKIP_CLAMD}" =~ ^([nN][oO]|[nN])+$ ]]; then
@@ -590,7 +610,9 @@ while true; do
   fi
 done
 ) &
-BACKGROUND_TASKS+=($!)
+PID=$!
+echo "Spawned clamd_checks with PID ${PID}"
+BACKGROUND_TASKS+=(${PID})
 fi
 
 (
@@ -601,7 +623,9 @@ while true; do
   fi
 done
 ) &
-BACKGROUND_TASKS+=($!)
+PID=$!
+echo "Spawned postfix_checks with PID ${PID}"
+BACKGROUND_TASKS+=(${PID})
 
 (
 while true; do
@@ -611,7 +635,9 @@ while true; do
   fi
 done
 ) &
-BACKGROUND_TASKS+=($!)
+PID=$!
+echo "Spawned dovecot_checks with PID ${PID}"
+BACKGROUND_TASKS+=(${PID})
 
 (
 while true; do
@@ -621,7 +647,9 @@ while true; do
   fi
 done
 ) &
-BACKGROUND_TASKS+=($!)
+PID=$!
+echo "Spawned rspamd_checks with PID ${PID}"
+BACKGROUND_TASKS+=(${PID})
 
 (
 while true; do
@@ -631,7 +659,9 @@ while true; do
   fi
 done
 ) &
-BACKGROUND_TASKS+=($!)
+PID=$!
+echo "Spawned ratelimit_checks with PID ${PID}"
+BACKGROUND_TASKS+=(${PID})
 
 (
 while true; do
@@ -641,17 +671,21 @@ while true; do
   fi
 done
 ) &
-BACKGROUND_TASKS+=($!)
+PID=$!
+echo "Spawned fail2ban_checks with PID ${PID}"
+BACKGROUND_TASKS+=(${PID})
 
-(
-while true; do
-  if ! olefy_checks; then
-    log_msg "Olefy hit error limit"
-    echo olefy-mailcow > /tmp/com_pipe
-  fi
-done
-) &
-BACKGROUND_TASKS+=($!)
+#(
+#while true; do
+#  if ! olefy_checks; then
+#    log_msg "Olefy hit error limit"
+#    echo olefy-mailcow > /tmp/com_pipe
+#  fi
+#done
+#) &
+#PID=$!
+#echo "Spawned olefy_checks with PID ${PID}"
+#BACKGROUND_TASKS+=(${PID})
 
 (
 while true; do
@@ -661,7 +695,9 @@ while true; do
   fi
 done
 ) &
-BACKGROUND_TASKS+=($!)
+PID=$!
+echo "Spawned acme_checks with PID ${PID}"
+BACKGROUND_TASKS+=(${PID})
 
 (
 while true; do
@@ -671,7 +707,9 @@ while true; do
   fi
 done
 ) &
-BACKGROUND_TASKS+=($!)
+PID=$!
+echo "Spawned ipv6nat_checks with PID ${PID}"
+BACKGROUND_TASKS+=(${PID})
 
 # Monitor watchdog agents, stop script when agents fails and wait for respawn by Docker (restart:always:n)
 (
