@@ -534,7 +534,7 @@ fi
 # Create watchdog agents
 (
   touch /tmp/watchdog_reload
-  sleep 60
+  sleep 86400
   echo "Reloading watchdog"
   kill 1
 ) &
