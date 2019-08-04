@@ -27,6 +27,7 @@ BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 function prefetch_images() {
   [[ -z ${BRANCH} ]] && { echo -e "\e[33m\nUnknown branch...\e[0m"; exit 1; }
+  git fetch origin #${BRANCH}
   while read image; do
     RET_C=0
     until docker pull ${image}; do
