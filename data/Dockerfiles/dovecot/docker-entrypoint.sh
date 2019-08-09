@@ -243,6 +243,20 @@ IMAPSYNC_TABLE=$(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBP
 # Envsubst maildir_gc
 echo "$(envsubst < /usr/local/bin/maildir_gc.sh)" > /usr/local/bin/maildir_gc.sh
 
+PUBKEY_MCRYPT=$(doveconf -P | grep -i mail_crypt_global_public_key | cut -d '<' -f2)
+if [ -f ${PUBKEY_MCRYPT} ]; then
+  GUID=$(cat <(echo ${MAILCOW_HOSTNAME}) /mail_crypt/ecpubkey.pem | grep -v 'PUBLIC KEY' | base64 -d | sha256sum | cut -d ' ' -f1 | tr -cd "[a-fA-F0-9.:/] ")
+  if [ ${#GUID} -eq 64 ]; then
+    mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
+REPLACE INTO versions (application, version) VALUES ("GUID", "${GUID}");
+EOF
+  else
+    mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
+REPLACE INTO versions (application, version) VALUES ("GUID", "INVALID");
+EOF
+  fi
+fi
+
 # Collect SA rules once now
 /usr/local/bin/sa-rules.sh
 
