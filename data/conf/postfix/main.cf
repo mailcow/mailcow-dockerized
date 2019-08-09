@@ -125,7 +125,6 @@ smtpd_milters = inet:rspamd:9900
 non_smtpd_milters = inet:rspamd:9900
 milter_mail_macros = i {mail_addr} {client_addr} {client_name} {auth_authen}
 mydestination = localhost.localdomain, localhost
-#content_filter=zeyple
 # Prefere IPv4, useful for v4-only envs
 smtp_address_preference = ipv4
 smtp_sender_dependent_authentication = yes
@@ -140,3 +139,4 @@ transport_maps = pcre:/opt/postfix/conf/local_transport, proxy:mysql:/opt/postfi
 smtp_sasl_auth_soft_bounce = no
 postscreen_discard_ehlo_keywords = silent-discard, dsn
 compatibility_level = 2
+smtputf8_enable = no
