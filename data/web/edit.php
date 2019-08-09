@@ -515,13 +515,13 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           <input type="hidden" value="0" name="force_pw_update">
           <input type="hidden" value="0" name="sogo_access">
           <div class="form-group">
-            <label class="control-label col-sm-2" for="name"><?=$lang['edit']['full_name'];?>:</label>
+            <label class="control-label col-sm-2" for="name"><?=$lang['edit']['full_name'];?></label>
             <div class="col-sm-10">
             <input type="text" class="form-control" name="name" value="<?=htmlspecialchars($result['name'], ENT_QUOTES, 'UTF-8');?>">
             </div>
           </div>
           <div class="form-group">
-            <label class="control-label col-sm-2" for="quota"><?=$lang['edit']['quota_mb'];?>:
+            <label class="control-label col-sm-2" for="quota"><?=$lang['edit']['quota_mb'];?>
               <br /><span id="quotaBadge" class="badge">max. <?=intval($result['max_new_quota'] / 1048576)?> MiB</span>
             </label>
             <div class="col-sm-10">
@@ -530,7 +530,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             </div>
           </div>
           <div class="form-group">
-            <label class="control-label col-sm-2" for="sender_acl"><?=$lang['edit']['sender_acl'];?>:</label>
+            <label class="control-label col-sm-2" for="sender_acl"><?=$lang['edit']['sender_acl'];?></label>
             <div class="col-sm-10">
               <select data-live-search="true" data-width="100%" style="width:100%" id="editSelectSenderACL" name="sender_acl" size="10" multiple>
               <?php
@@ -789,7 +789,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               </div>
             </div>
             <div class="form-group">
-              <label class="control-label col-sm-2" for="domain"><?=$lang['edit']['kind'];?>:</label>
+              <label class="control-label col-sm-2" for="domain"><?=$lang['edit']['kind'];?></label>
               <div class="col-sm-10">
                 <select name="kind" title="<?=$lang['edit']['select'];?>" required>
                   <option value="location" <?=($result['kind'] == "location") ? "selected" : null;?>>Location</option>
@@ -799,7 +799,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               </div>
             </div>
             <div class="form-group">
-              <label class="control-label col-sm-2" for="multiple_bookings_select"><?=$lang['add']['multiple_bookings'];?>:</label>
+              <label class="control-label col-sm-2" for="multiple_bookings_select"><?=$lang['add']['multiple_bookings'];?></label>
               <div class="col-sm-10">
                 <select name="multiple_bookings_select" id="editSelectMultipleBookings" title="<?=$lang['add']['select'];?>" required>
                   <option value="0" <?=($result['multiple_bookings'] == 0) ? "selected" : null;?>><?=$lang['mailbox']['booking_0'];?></option>
@@ -1032,7 +1032,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               </div>
             </div>
             <div class="form-group">
-              <label class="control-label col-sm-2" for="enc1"><?=$lang['edit']['encryption'];?>:</label>
+              <label class="control-label col-sm-2" for="enc1"><?=$lang['edit']['encryption'];?></label>
               <div class="col-sm-10">
                 <select id="enc1" name="enc1">
                   <option <?=($result['enc1'] == "TLS") ? "selected" : null;?>>TLS</option>
@@ -1168,13 +1168,13 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           <form class="form-horizontal" data-id="editfilter" role="form" method="post">
             <input type="hidden" value="0" name="active">
             <div class="form-group">
-              <label class="control-label col-sm-2" for="script_desc"><?=$lang['edit']['sieve_desc'];?>:</label>
+              <label class="control-label col-sm-2" for="script_desc"><?=$lang['edit']['sieve_desc'];?></label>
               <div class="col-sm-10">
               <input type="text" class="form-control" name="script_desc" id="script_desc" value="<?=htmlspecialchars($result['script_desc'], ENT_QUOTES, 'UTF-8');?>" required maxlength="255">
               </div>
             </div>
             <div class="form-group">
-              <label class="control-label col-sm-2" for="filter_type"><?=$lang['edit']['sieve_type'];?>:</label>
+              <label class="control-label col-sm-2" for="filter_type"><?=$lang['edit']['sieve_type'];?></label>
               <div class="col-sm-10">
                 <select id="addFilterType" name="filter_type" id="filter_type" required>
                   <option value="prefilter" <?=($result['filter_type'] == 'prefilter') ? 'selected' : null;?>>Prefilter</option>

@@ -120,6 +120,7 @@ $lang['success']['domain_admin_added'] = "Domain administrator %s has been added
 $lang['success']['admin_added'] = "Administrator %s has been added";
 $lang['success']['admin_modified'] = "Changes to administrator have been saved";
 $lang['success']['admin_api_modified'] = "Changes to API have been saved";
+$lang['success']['license_modified'] = "Changes to license have been saved";
 $lang['danger']['username_invalid'] = "Username %s cannot be used";
 $lang['danger']['password_mismatch'] = "Confirmation password does not match";
 $lang['danger']['password_complexity'] = "Password does not meet the policy";
@@ -837,6 +838,7 @@ $lang['success']['tls_policy_map_entry_saved'] = 'TLS policy map entry "%s" has 
 $lang['success']['tls_policy_map_entry_deleted'] = 'TLS policy map ID %s has been deleted';
 $lang['mailbox']['add_recipient_map_entry'] = 'Add recipient map';
 $lang['danger']['tls_policy_map_parameter_invalid'] = "Policy parameter is invalid";
+$lang['danger']['temp_error'] = "Temporary error";
 
 $lang['oauth2']['scope_ask_permission'] = 'An application asked for the following permissions';
 $lang['oauth2']['profile'] = 'Profile';
@@ -868,3 +870,13 @@ $lang['edit']['mailbox_quota_def'] = 'Default mailbox quota';
 $lang['danger']['mailbox_defquota_exceeds_mailbox_maxquota'] = 'Default quota exceeds max quota limit';
 $lang['danger']['defquota_empty'] = 'Default quota per mailbox must not be 0.';
 $lang['mailbox']['mailbox_defquota'] = 'Default mailbox size';
+
+$lang['admin']['api_info'] = 'The API is a work in progress.';
+
+$lang['admin']['guid_and_license'] = 'GUID & License';
+$lang['admin']['guid'] = 'GUID - unique instance ID';
+$lang['admin']['license_info'] = 'A license is not required but helps further development.<br><a href="https://www.servercow.de/mailcow?lang=en#sal" target="_blank" alt="SAL order">Register your GUID here</a> or <a href="https://www.servercow.de/mailcow?lang=en#support" target="_blank" alt="Support order">buy support for your mailcow installation.</a>';
+$lang['admin']['validate_license_now'] = 'Validate GUID against license server';
+
+$lang['admin']['customer_id'] = 'Customer ID';
+$lang['admin']['service_id'] = 'Service ID';

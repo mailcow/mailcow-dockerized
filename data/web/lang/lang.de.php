@@ -116,6 +116,7 @@ $lang['success']['domain_admin_added'] = 'Domain-Administrator %s wurde angelegt
 $lang['success']['admin_added'] = 'Administrator %s wurde angelegt';
 $lang['success']['admin_modified'] = 'Änderungen am Administrator wurden gespeichert';
 $lang['success']['admin_api_modified'] = "Änderungen an API wurden gespeichert";
+$lang['success']['license_modified'] = "Änderungen an Lizenz wurden gespeichert";
 $lang['danger']['username_invalid'] = 'Benutzername %s kann nicht verwendet werden';
 $lang['danger']['password_mismatch'] = 'Passwort-Wiederholung stimmt nicht überein';
 $lang['danger']['password_complexity'] = 'Passwort entspricht nicht den Richtlinien';
@@ -809,6 +810,7 @@ $lang['success']['tls_policy_map_entry_saved'] = 'TLS-Richtlinieneintrag "%s" wu
 $lang['success']['tls_policy_map_entry_deleted'] = 'TLS-Richtlinie mit der ID %s wurde gelöscht';
 $lang['mailbox']['add_tls_policy_map'] = "TLS-Richtlinieneintrag hinzufügen";
 $lang['danger']['tls_policy_map_parameter_invalid'] = "Parameter ist ungültig";
+$lang['danger']['temp_error'] = "Temporärer Fehler";
 
 $lang['oauth2']['scope_ask_permission'] = 'Eine Anwendung hat um die folgenden Berechtigungen gebeten';
 $lang['oauth2']['profile'] = 'Profil';
@@ -834,3 +836,19 @@ $lang['danger']['text_empty'] = 'Text darf nicht leer sein';
 $lang['danger']['subject_empty'] = 'Betreff darf nicht leer sein';
 $lang['danger']['from_invalid'] = 'From address must be a valid email address';
 $lang['danger']['network_host_invalid'] = 'Netzwerk oder Host ungültig: %s';
+
+$lang['add']['mailbox_quota_def'] = 'Standard-Quota einer Mailbox:';
+$lang['edit']['mailbox_quota_def'] = 'Standard-Quota einer Mailbox:';
+$lang['danger']['mailbox_defquota_exceeds_mailbox_maxquota'] = 'Standard-Quota überschreitet das Limit der maximal erlaubten Größe einer Mailbox';
+$lang['danger']['defquota_empty'] = 'Standard-Quota darf nicht 0 sein';
+$lang['mailbox']['mailbox_defquota'] = 'Standard-Quota';
+
+$lang['admin']['api_info'] = 'Das API befindet sich noch in Entwicklung, eine Dokumentation ist ausstehend.';
+
+$lang['admin']['guid_and_license'] = 'GUID & Lizenz';
+$lang['admin']['guid'] = 'GUID - Eindeutige Instanz-ID';
+$lang['admin']['license_info'] = 'Eine Lizenz ist nicht erforderlich, hilft jedoch der Entwicklung mailcows.<br><a href="https://www.servercow.de/mailcow#sal" target="_blank" alt="SAL Bestellung">Hier kann die mailcow GUID registriert werden.</a> Alternativ ist <a href="https://www.servercow.de/mailcow#support" target="_blank" alt="SAL Bestellung">die Bestellung von Support-Paketen möglich</a>.';
+$lang['admin']['validate_license_now'] = 'GUID erneut verifizieren';
+$lang['admin']['customer_id'] = 'Kunde';
+$lang['admin']['service_id'] = 'Service';
+
