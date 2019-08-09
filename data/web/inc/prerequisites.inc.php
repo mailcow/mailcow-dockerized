@@ -191,4 +191,3 @@ if (isset($_SESSION['mailcow_cc_role'])) {
   acl('to_session');
 }
 $UI_TEXTS = customize('get', 'ui_texts');
-

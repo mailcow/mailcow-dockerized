@@ -76,8 +76,40 @@ $tfa_data = get_tfa();
             </select>
           </div>
         </div>
-        <legend data-target="#api" style="margin-top:40px;cursor:pointer" class="arrow-toggle" unselectable="on" data-toggle="collapse">
-          <span style="font-size:12px" class="arrow rotate glyphicon glyphicon-menu-down"></span> API (experimental, work in progress)
+
+        <legend data-target="#license" class="arrow-toggle" unselectable="on" data-toggle="collapse">
+          <span style="font-size:12px" class="arrow rotate glyphicon glyphicon-menu-down"></span> <?=$lang['admin']['guid_and_license'];?>
+        </legend>
+        <div id="license" class="collapse in">
+        <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
+          <div class="form-group">
+            <label class="control-label col-sm-3" for="guid"><?=$lang['admin']['guid'];?>:</label>
+            <div class="col-sm-9">
+              <div class="input-group">
+                <span class="input-group-addon">
+                  <span class="glyphicon <?=(isset($_SESSION['gal']['valid']) && $_SESSION['gal']['valid'] === true) ? 'glyphicon-heart text-danger' : 'glyphicon-remove';?>" aria-hidden="true"></span>
+                </span>
+                <input type="text" id="guid" class="form-control" value="<?=license('guid');?>" readonly>
+              </div>
+              <p class="help-block">
+                <?=$lang['admin']['customer_id'];?>: <?=(isset($_SESSION['gal']['c'])) ? $_SESSION['gal']['c'] : '?';?> -
+                <?=$lang['admin']['service_id'];?>: <?=(isset($_SESSION['gal']['s'])) ? $_SESSION['gal']['s'] : '?';?>
+              </p>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+              <p class="help-block"><?=$lang['admin']['license_info'];?></p>
+              <div class="btn-group">
+                <button class="btn btn-sm btn-success" name="license_validate_now" type="submit" href="#"><?=$lang['admin']['validate_license_now'];?></button>
+              </div>
+            </div>
+          </div>
+        </form>
+        </div>
+
+        <legend data-target="#api" class="arrow-toggle" unselectable="on" data-toggle="collapse">
+          <span style="font-size:12px" class="arrow rotate glyphicon glyphicon-menu-down"></span> API
         </legend>
         <?php
         $api = admin_api('get');
@@ -105,6 +137,7 @@ $tfa_data = get_tfa();
           </div>
           <div class="form-group">
             <div class="col-sm-offset-3 col-sm-9">
+              <p class="help-block"><?=$lang['admin']['api_info'];?></p>
               <div class="btn-group">
                 <button class="btn btn-default" name="admin_api" type="submit" href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
                 <button class="btn btn-info" name="admin_api_regen_key" type="submit" href="#"><?=$lang['admin']['regen_api_key'];?></button>
@@ -113,6 +146,7 @@ $tfa_data = get_tfa();
           </div>
         </form>
         </div>
+
       </div>
     </div>
 

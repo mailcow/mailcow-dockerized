@@ -1887,7 +1887,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $relayhost            = (isset($_data['relayhost'])) ? intval($_data['relayhost']) : $is_now['relayhost'];
                 $aliases              = (!empty($_data['aliases'])) ? $_data['aliases'] : $is_now['max_num_aliases_for_domain'];
                 $mailboxes            = (isset($_data['mailboxes']) && $_data['mailboxes'] != '') ? intval($_data['mailboxes']) : $is_now['max_num_mboxes_for_domain'];
-                $defquota             = (!empty($_data['defquota'])) ? $_data['defquota'] : ($is_now['def_quota_for_mbox'] / 1048576);
+                $defquota             = (isset($_data['defquota']) && $_data['defquota'] != '') ? intval($_data['defquota']) : ($is_now['def_quota_for_mbox'] / 1048576);
                 $maxquota             = (!empty($_data['maxquota'])) ? $_data['maxquota'] : ($is_now['max_quota_for_mbox'] / 1048576);
                 $quota                = (!empty($_data['quota'])) ? $_data['quota'] : ($is_now['max_quota_for_domain'] / 1048576);
                 $description          = (!empty($_data['description'])) ? $_data['description'] : $is_now['description'];
