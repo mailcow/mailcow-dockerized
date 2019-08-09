@@ -264,7 +264,7 @@ postfix_checks() {
 clamd_checks() {
   err_count=0
   diff_c=0
-  THRESHOLD=10
+  THRESHOLD=15
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
@@ -384,7 +384,10 @@ fail2ban_checks() {
     array_diff F2B_RES F2B_LOG_STATUS F2B_LOG_STATUS_PREV
     if [[ ! -z "${F2B_RES}" ]]; then
       err_count=$(( ${err_count} + 1 ))
-      echo -n "${F2B_RES[@]}" | redis-cli -x -h redis-mailcow SET F2B_RES > /dev/null
+      echo -n "${F2B_RES[@]}" | tr -cd "[a-fA-F0-9.:/] " | timeout 3s redis-cli -x -h redis-mailcow SET F2B_RES > /dev/null
+      if [ $? -ne 0 ]; then
+         redis-cli -x -h redis-mailcow DEL F2B_RES
+      fi
     fi
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
     [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
@@ -756,15 +759,17 @@ while true; do
     [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}" "Please check acme-mailcow for further information."
   elif [[ ${com_pipe_answer} == "fail2ban" ]]; then
     F2B_RES=($(redis-cli -h redis-mailcow --raw GET F2B_RES))
-    redis-cli -h redis-mailcow DEL F2B_RES > /dev/null
-    host=
-    for host in "${F2B_RES[@]}"; do
-      log_msg "Banned ${host}"
-      rm /tmp/fail2ban 2> /dev/null
-      timeout 2s whois ${host} > /tmp/fail2ban
-      sleep 2.5
-      [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && [[ ${WATCHDOG_NOTIFY_BAN} =~ ^([yY][eE][sS]|[yY])+$ ]] && mail_error "${com_pipe_answer}" "IP ban: ${host}"
-    done
+    if [[ ! -z "${F2B_RES}" ]]; then
+      redis-cli -h redis-mailcow DEL F2B_RES > /dev/null
+      host=
+      for host in "${F2B_RES[@]}"; do
+        log_msg "Banned ${host}"
+        rm /tmp/fail2ban 2> /dev/null
+        timeout 2s whois ${host} > /tmp/fail2ban
+        sleep 2.5
+        [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && [[ ${WATCHDOG_NOTIFY_BAN} =~ ^([yY][eE][sS]|[yY])+$ ]] && mail_error "${com_pipe_answer}" "IP ban: ${host}"
+      done
+    fi
   elif [[ ${com_pipe_answer} =~ .+-mailcow ]]; then
     kill -STOP ${BACKGROUND_TASKS[*]}
     sleep 10
