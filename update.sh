@@ -328,6 +328,11 @@ if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   exit 0
 fi
 
+DIFF_FILE=diff_before_update_$(date +"%Y-%m-%d-%H-%M-%S")
+echo -e "\e[32mSaving diff to ${DIFF_FILE}...\e[0m"
+git diff --stat > ${DIFF_FILE}
+git diff >> ${DIFF_FILE}
+
 echo -e "\e[32mPrefetching images...\e[0m"
 prefetch_images
 
