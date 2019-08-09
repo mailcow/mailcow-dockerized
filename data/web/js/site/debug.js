@@ -591,6 +591,7 @@ jQuery(function($){
         } else if (item.method == 'POST') {
           item.method = '<span class="label label-warning">' + item.method + '</span>';
         }
+        item.data = escapeHtml(item.data);
       });
     } else if (table == 'rllog') {
       $.each(data, function (i, item) {
