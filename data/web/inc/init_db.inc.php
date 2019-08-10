@@ -8,7 +8,7 @@ function init_db_schema() {
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
     if ($num_results != 0) {
-      $stmt = $pdo->query("SELECT `version` FROM `versions`");
+      $stmt = $pdo->query("SELECT `version` FROM `versions` WHERE `application` = 'db_schema'");
       if ($stmt->fetch(PDO::FETCH_ASSOC)['version'] == $db_version) {
         return true;
       }
