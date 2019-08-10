@@ -679,13 +679,13 @@ $tfa_data = get_tfa();
             <div class="col-sm-6">
               <div class="form-group">
                 <label for="sender"><?=$lang['admin']['quarantine_notification_sender'];?>:</label>
-                <input type="text" class="form-control" name="sender" value="<?=$q_data['sender'];?>" placeholder="quarantine@localhost">
+                <input type="text" class="form-control" name="sender" value="<?=htmlspecialchars($q_data['sender']);?>" placeholder="quarantine@localhost">
               </div>
             </div>
             <div class="col-sm-6">
               <div class="form-group">
                 <label for="subject"><?=$lang['admin']['quarantine_notification_subject'];?>:</label>
-                <input type="text" class="form-control" name="subject" value="<?=$q_data['subject'];?>" placeholder="Spam Quarantine Notification">
+                <input type="text" class="form-control" name="subject" value="<?=htmlspecialchars($q_data['subject']);?>" placeholder="Spam Quarantine Notification">
               </div>
             </div>
           </div>
@@ -740,13 +740,13 @@ $tfa_data = get_tfa();
           <div class="col-sm-6">
             <div class="form-group">
               <label for="sender"><?=$lang['admin']['quarantine_notification_sender'];?>:</label>
-              <input type="text" class="form-control" name="sender" value="<?=$qw_data['sender'];?>" placeholder="quota-warning@localhost">
+              <input type="text" class="form-control" name="sender" value="<?=htmlspecialchars($qw_data['sender']);?>" placeholder="quota-warning@localhost">
             </div>
           </div>
           <div class="col-sm-6">
             <div class="form-group">
               <label for="subject"><?=$lang['admin']['quarantine_notification_subject'];?>:</label>
-              <input type="text" class="form-control" name="subject" value="<?=$qw_data['subject'];?>" placeholder="Quota warning">
+              <input type="text" class="form-control" name="subject" value="<?=htmlspecialchars($qw_data['subject']);?>" placeholder="Quota warning">
             </div>
           </div>
         </div>
@@ -838,11 +838,11 @@ $tfa_data = get_tfa();
                     <input type="hidden" name="active" value="0">
                     <div class="form-group">
                       <label for="desc"><?=$lang['admin']['rsetting_desc'];?>:</label>
-                      <input type="text" class="form-control" name="desc" value="<?=$rsetting_details['desc'];?>">
+                      <input type="text" class="form-control" name="desc" value="<?=htmlspecialchars($rsetting_details['desc']);?>">
                     </div>
                     <div class="form-group">
                       <label for="content"><?=$lang['admin']['rsetting_content'];?>:</label>
-                      <textarea class="form-control" name="content" rows="10"><?=$rsetting_details['content'];?></textarea>
+                      <textarea class="form-control" name="content" rows="10"><?=htmlspecialchars($rsetting_details['content']);?></textarea>
                     </div>
                     <div class="form-group">
                       <label>
@@ -918,7 +918,7 @@ $tfa_data = get_tfa();
               <td><input class="input-sm form-control" data-id="app_links" type="text" name="href" required value="<?=$val;?>"></td>
               <td><a href="#" role="button" class="btn btn-xs btn-default" type="button"><?=$lang['admin']['remove_row'];?></a></td>
             </tr>
-            <?php 
+            <?php
               endforeach;
             }
             foreach ($MAILCOW_APPS as $app):
