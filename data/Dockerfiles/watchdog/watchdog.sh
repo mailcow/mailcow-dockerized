@@ -76,7 +76,7 @@ function mail_error() {
       return 1
     fi
     [ -f "/tmp/${1}" ] && BODY="/tmp/${1}"
-    ./smtp-cli --missing-modules-ok \
+    timeout 10s ./smtp-cli --missing-modules-ok \
       --charset=UTF-8 \
       --subject="${SUBJECT}" \
       --body-plain="${BODY}" \
@@ -539,6 +539,7 @@ fi
   touch /tmp/watchdog_reload
   sleep 86400
   echo "Reloading watchdog"
+  killall watchdog
   kill 1
 ) &
 
