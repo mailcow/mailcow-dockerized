@@ -1250,24 +1250,34 @@ function license($action, $data = null) {
       $json_return = json_decode($response, true);
       if ($response && $json_return) {
         if ($json_return['response'] === "ok") {
-          $_SESSION['gal']['valid'] = true;
+          $_SESSION['gal']['valid'] = "true";
           $_SESSION['gal']['c'] = $json_return['c'];
           $_SESSION['gal']['s'] = $json_return['s'];
-          return true;
-        }
-        if ($json_return['response'] === "invalid") {
-          $_SESSION['gal']['valid'] = false;
+                  }
+        elseif ($json_return['response'] === "invalid") {
+          $_SESSION['gal']['valid'] = "false";
           $_SESSION['gal']['c'] = $lang['mailbox']['no'];
           $_SESSION['gal']['s'] = $lang['mailbox']['no'];
-          return true;
         }
       }
       else {
-        $_SESSION['gal']['valid'] = false;
+        $_SESSION['gal']['valid'] = "false";
         $_SESSION['gal']['c'] = $lang['danger']['temp_error'];
         $_SESSION['gal']['s'] = $lang['danger']['temp_error'];
+      }
+      try {
+        // json_encode needs "true"/"false" instead of true/false, to not encode it to 0 or 1
+        $redis->Set('LICENSE_STATUS_CACHE', json_encode($_SESSION['gal']));
+      }
+      catch (RedisException $e) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('redis_error', $e)
+        );
         return false;
       }
+      return $_SESSION['gal']['valid'];
     break;
     case "guid":
       $stmt = $pdo->query("SELECT `version` FROM `versions` WHERE `application` = 'GUID'");

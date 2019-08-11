@@ -5,6 +5,9 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/header.inc.php';
 $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 $tfa_data = get_tfa();
+if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CACHE')) {
+  $_SESSION['gal'] = json_decode($license_cache, true);
+}
 ?>
 <div class="container">
 
@@ -87,7 +90,7 @@ $tfa_data = get_tfa();
             <div class="col-sm-9">
               <div class="input-group">
                 <span class="input-group-addon">
-                  <span class="glyphicon <?=(isset($_SESSION['gal']['valid']) && $_SESSION['gal']['valid'] === true) ? 'glyphicon-heart text-danger' : 'glyphicon-remove';?>" aria-hidden="true"></span>
+                  <span class="glyphicon <?=(isset($_SESSION['gal']['valid']) && $_SESSION['gal']['valid'] === "true") ? 'glyphicon-heart text-danger' : 'glyphicon-remove';?>" aria-hidden="true"></span>
                 </span>
                 <input type="text" id="guid" class="form-control" value="<?=license('guid');?>" readonly>
               </div>
