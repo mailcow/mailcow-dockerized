@@ -7,9 +7,9 @@ about: Report a bug for this project
   For community support and other discussions, you are welcome to visit us on our community channels listed at https://mailcow.github.io/mailcow-dockerized-docs/#community-support. For professional commercial support, please check out https://mailcow.github.io/mailcow-dockerized-docs/#commercial-support instead
 -->
 
-**Prior placing the issue, please check following:** *(fill out each checkbox with a `X` once done)*
-- [ ] I have understood that answers are voluntary and community-driven, and not kind of commercial support.
-- [ ] I do promise I will carefully read below instructions to help getting my issue fixed quickier.
+**Prior to placing the issue, please check following:** *(fill out each checkbox with a `X` once done)*
+- [ ] I have understood that answers are voluntary and community-driven, and not commercial support.
+- [ ] I do promise I will carefully read below instructions to help getting my issue fixed quicker.
 - [ ] I have verified that my issue has not been already answered in the past. I also checked previous [issues](https://github.com/mailcow/mailcow-dockerized/issues).
 - [ ] I understand that ignoring below instructions might result in immediate closing and deletion of my issue.
 
@@ -39,7 +39,7 @@ My issue is...
 <!--
   We now know what kind of issue you are experiencing and how, and the best case, this can be
   reproduced in a reliable way. Please tell us now, what you expected to happen.
-  This can be quite short usually. Please add text below.
+  This may be just a few sentences. Please add text below.
 -->
 
 I thought I can ... but then this happened.
