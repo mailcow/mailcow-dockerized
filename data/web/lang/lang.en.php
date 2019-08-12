@@ -624,7 +624,7 @@ $lang['admin']['last_applied'] = 'Last applied';
 $lang['admin']['reset_limit'] = 'Remove hash';
 $lang['admin']['hash_remove_info'] = 'Removing a ratelimit hash (if still existing) will reset its counter completely.<br>
   Each hash is indicated by an individual color.';
-$lang['warning']['hash_not_found'] = 'Hash not found';
+$lang['warning']['hash_not_found'] = 'Hash not found. Possibly it was already deleted.';
 $lang['success']['hash_deleted'] = 'Hash deleted';
 $lang['admin']['authed_user'] = 'Auth. user';
 $lang['admin']['priority'] = 'Priority';
