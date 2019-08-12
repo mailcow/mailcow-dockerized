@@ -242,6 +242,7 @@ IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
 
 # Create or override API key for web ui
 # You _must_ define API_ALLOW_FROM, which is a comma separated list of IPs
+# You _can_ use format 127.0.0.1 for add single ip address or 127.0.0.* for add whole subnet
 # API_KEY allowed chars: a-z, A-Z, 0-9, -
 
 #API_KEY=

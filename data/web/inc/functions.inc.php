@@ -1136,6 +1136,14 @@ function verify_tfa_login($username, $token) {
 	}
   return false;
 }
+
+function is_valid_ip($val) {
+  if (preg_match('/([0-9]+|\*)\.([0-9]+|\*)\.([0-9]+|\*)\.([(0-9]+|\*)/', $val)){
+    return true;
+  }
+  return false;
+}
+
 function admin_api($action, $data = null) {
 	global $pdo;
 	global $lang;
@@ -1153,7 +1161,7 @@ function admin_api($action, $data = null) {
       $active = (isset($data['active'])) ? 1 : 0;
       $allow_from = array_map('trim', preg_split( "/( |,|;|\n)/", $data['allow_from']));
       foreach ($allow_from as $key => $val) {
-        if (!filter_var($val, FILTER_VALIDATE_IP)) {
+        if (!is_valid_ip($val)) {
           $_SESSION['return'][] =  array(
             'type' => 'warning',
             'log' => array(__FUNCTION__, $data),

@@ -52,7 +52,22 @@ if (!empty($_SERVER['HTTP_X_API_KEY'])) {
   if (!empty($api_return['allow_from'])) {
     $remote = get_remote_ip(false);
     $allow_from = array_map('trim', preg_split( "/( |,|;|\n)/", $api_return['allow_from']));
-    if (in_array($remote, $allow_from)) {
+    $matches=array('/\./','/\*/');
+    $to_replace=array('\.','[0-9]+');
+    
+    $allow_from = preg_replace($matches, $to_replace, $allow_from);
+    
+    function is_allowed($allow_from, $remote){
+      foreach($allow_from as $allow_match){
+        if(preg_match('/' . $allow_match . '/', $remote)){
+          return true;
+        }
+      }
+      return false;
+    };
+    
+    // echo("<script>console.log('PHP: is good ip ".$remote."');</script>");
+    if (is_allowed($allow_from, $remote)) {
       $_SESSION['mailcow_cc_username'] = 'API';
       $_SESSION['mailcow_cc_role'] = 'admin';
       $_SESSION['mailcow_cc_api'] = true;
