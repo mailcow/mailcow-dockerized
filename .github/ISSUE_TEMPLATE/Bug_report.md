@@ -8,10 +8,10 @@ about: Report a bug for this project
 -->
 
 **Prior to placing the issue, please check following:** *(fill out each checkbox with a `X` once done)*
-- [ ] I have understood that answers are voluntary and community-driven, and not commercial support.
-- [ ] I do promise I will carefully read below instructions to help getting my issue fixed quicker.
-- [ ] I have verified that my issue has not been already answered in the past. I also checked previous [issues](https://github.com/mailcow/mailcow-dockerized/issues).
 - [ ] I understand that ignoring below instructions might result in immediate closing and deletion of my issue.
+- [ ] I do promise I will carefully read below instructions to help getting my issue fixed quicker.
+- [ ] I have understood that answers are voluntary and community-driven, and not commercial support.
+- [ ] I have verified that my issue has not been already answered in the past. I also checked previous [issues](https://github.com/mailcow/mailcow-dockerized/issues).
 
 ---
 
