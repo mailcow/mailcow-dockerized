@@ -572,6 +572,7 @@ jQuery(function($){
         } else {
           item.message = escapeHtml(item.message);
         }
+        item.call = escapeHtml(item.call);
         var danger_class = ["emerg", "alert", "crit", "err"];
         var warning_class = ["warning", "warn"];
         var info_class = ["notice", "info", "debug"];
