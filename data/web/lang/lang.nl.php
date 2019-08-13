@@ -122,6 +122,7 @@ $lang['success']['domain_admin_added'] = "Domeinbeheerder %s is toegevoegd";
 $lang['success']['admin_added'] = "Administrator %s is toegevoegd";
 $lang['success']['admin_modified'] = "Wijzigingen aan administrator zijn opgeslagen";
 $lang['success']['admin_api_modified'] = "Wijzigingen aan de API zijn opgeslagen";
+$lang['success']['license_modified'] = "Wijzigingen aan de licentie zijn opgeslagen";
 $lang['danger']['username_invalid'] = "Gebruikersnaam %s kan niet worden gebruikt";
 $lang['danger']['password_mismatch'] = "De ingevoerde wachtwoorden komen niet overeen";
 $lang['danger']['password_complexity'] = "Wachtwoord voldoet niet aan de vereisten (6 tekens lang, letters en nummers)";
@@ -156,7 +157,7 @@ $lang['danger']['domain_quota_m_in_use'] = "Domeinquotum moet gelijk zijn aan, o
 $lang['danger']['mailboxes_in_use'] = "Maximaal aantal postvakken moet gelijk zijn aan, of groter zijn dan %d";
 $lang['danger']['aliases_in_use'] = "Maximaal aantal aliassen moet gelijk zijn aan, of groter zijn dan %d";
 $lang['danger']['sender_acl_invalid'] = "Toegangscontrole van afzender %s is ongeldig";
-$lang['danger']['domain_not_empty'] = "Kan geen domein in gebruik verwijderen";
+$lang['danger']['domain_not_empty'] = "Domein %s is in gebruik, verwijderen niet mogelijk";
 $lang['danger']['validity_missing'] = 'Wijs een geldigheidstermijn toe';
 $lang['user']['loading'] = "Bezig met laden...";
 $lang['user']['force_pw_update'] = 'Er <b>moet</b> een nieuw wachtwoord worden ingesteld voordat er gebruik kan worden gemaakt van deze dienst.';
@@ -487,9 +488,9 @@ $lang['add']['restart_sogo_hint'] = 'SOGo dient opnieuw opgestart te worden nada
 $lang['add']['goto_null'] = 'Houd e-mail achterwege';
 $lang['add']['goto_ham'] = 'Leer als <span class="text-success"><b>ham</b></span>';
 $lang['add']['goto_spam'] = 'Leer als <span class="text-danger"><b>spam</b></span>';
-$lang['add']['validation_success'] = 'Succesvol gevalideerd';
+$lang['add']['validation_success'] = 'Succesvol geverifieerd';
 $lang['add']['activate_filter_warn'] = 'Alle overige filters zullen worden gedeactiveerd zodra deze geactiveerd.';
-$lang['add']['validate'] = 'Valideer';
+$lang['add']['validate'] = 'Verifieer';
 $lang['mailbox']['add_filter'] = 'Voeg filter toe';
 $lang['add']['sieve_desc'] = 'Korte beschrijving';
 $lang['edit']['sieve_desc'] = 'Korte beschrijving';
@@ -500,7 +501,7 @@ $lang['mailbox']['set_postfilter'] = 'Stel in als nafilter';
 $lang['mailbox']['filters'] = 'Filters';
 $lang['mailbox']['sync_jobs'] = 'Synchronisatietaken';
 $lang['mailbox']['inactive'] = 'Inactief';
-$lang['edit']['validate_save'] = 'Valideer en sla op';
+$lang['edit']['validate_save'] = 'Verifieer en sla op';
 
 
 $lang['login']['username'] = 'Gebruikersnaam';
@@ -519,7 +520,7 @@ $lang['tfa']['none'] = "Deactiveer";
 $lang['tfa']['delete_tfa'] = "Schakel tweefactorauthenticatie uit";
 $lang['tfa']['disable_tfa'] = "Pauzeer tweefactorauthenticatie tot de eerstvolgende succesvolle login";
 $lang['tfa']['confirm'] = "Bevestig";
-$lang['tfa']['totp'] = "TOTP (30-secondecode)";
+$lang['tfa']['totp'] = "TOTP (Step Two, Authy, etc.)";
 $lang['tfa']['select'] = "Selecteer...";
 $lang['tfa']['waiting_usb_auth'] = "<i>In afwachting van USB-apparaat...</i><br><br>Druk nu op de knop van je U2F-apparaat.";
 $lang['tfa']['waiting_usb_register'] = "<i>In afwachting van USB-apparaat...</i><br><br>Voer je wachtwoord hierboven in en bevestig de registratie van het U2F-apparaat door op de knop van het apparaat te drukken.";
@@ -577,7 +578,7 @@ $lang['admin']['add_admin'] = 'Voeg administrator toe';
 $lang['admin']['add_settings_rule'] = 'Voeg regel toe';
 $lang['admin']['rsetting_desc'] = 'Korte beschrijving';
 $lang['admin']['rsetting_content'] = 'Regelinhoud';
-$lang['admin']['rsetting_none'] = 'Geen regel beschikbaar';
+$lang['admin']['rsetting_none'] = 'Geen regels beschikbaar';
 $lang['admin']['rsetting_no_selection'] = 'Selecteer een regel';
 $lang['admin']['rsettings_preset_1'] = 'Schakel alles uit voor geauthenticeerde gebruikers, behalve DKIM en ratelimiting';
 $lang['admin']['rsettings_preset_2'] = 'Postmeesters willen spam';
@@ -610,7 +611,7 @@ $lang['admin']['time'] = 'Tijd';
 $lang['admin']['last_applied'] = 'Voor het laatst toegepast';
 $lang['admin']['reset_limit'] = 'Verwijder hash';
 $lang['admin']['hash_remove_info'] = 'Het verwijderen van een ratelimit-hash, indien nog aanwezig, zal zijn teller volledig herstellen.<br>Elke hash wordt aangeduid met een aparte kleur.';
-$lang['warning']['hash_not_found'] = 'Hash niet gevonden';
+$lang['warning']['hash_not_found'] = 'Hash niet gevonden, mogelijk is deze al verwijderd.';
 $lang['success']['hash_deleted'] = 'Hash verwijderd';
 $lang['admin']['authed_user'] = 'Geauthenticeerde gebruiker';
 $lang['admin']['priority'] = 'Prioriteit';
@@ -753,7 +754,6 @@ $lang['quarantine']['danger'] = "Risico";
 $lang['quarantine']['spam_score'] = "Score";
 $lang['quarantine']['confirm_delete'] = "Bevestig de verwijdering van dit item.";
 $lang['quarantine']['qhandler_success'] = "Verzoek met succes verzonden naar het systeem. Je kunt het venster nu veilig sluiten.";
-
 $lang['warning']['fuzzy_learn_error'] = "Fuzzy hash training-fout: %s";
 $lang['danger']['spam_learn_error'] = "Spamtraining-fout: %s";
 $lang['success']['qlearn_spam'] = "Bericht %s werd als spam gemarkeerd en is verwijderd";
@@ -816,6 +816,7 @@ $lang['success']['tls_policy_map_entry_saved'] = 'Versleutelingsbeleid "%s" is o
 $lang['success']['tls_policy_map_entry_deleted'] = 'Versleutelingsbeleid %s is verwijderd';
 $lang['mailbox']['add_recipient_map_entry'] = 'Voeg ontvangerkaart toe';
 $lang['danger']['tls_policy_map_parameter_invalid'] = "Beleidsparameter is ongeldig";
+$lang['danger']['temp_error'] = "Tijdelijke fout";
 
 $lang['oauth2']['scope_ask_permission'] = 'Een applicatie heeft toegang tot de volgende onderdelen gevraagd';
 $lang['oauth2']['profile'] = 'Profiel';
@@ -847,3 +848,13 @@ $lang['edit']['mailbox_quota_def'] = 'Standaard postvakquotum';
 $lang['danger']['mailbox_defquota_exceeds_mailbox_maxquota'] = 'Standaardquotum overschrijdt de quotumlimiet';
 $lang['danger']['defquota_empty'] = 'Standaardquotum per postvak dient geen 0 te zijn.';
 $lang['mailbox']['mailbox_defquota'] = 'Standaard postvakgrootte';
+
+$lang['admin']['api_info'] = 'De API is nog in ontwikkeling.';
+
+$lang['admin']['guid_and_license'] = 'Licentie en identificatie';
+$lang['admin']['guid'] = 'Identificatienummer - GUID';
+$lang['admin']['license_info'] = 'Een licentie is niet verplicht, maar je steunt hiermee wel de ontwikkeling.<br><a href="https://www.servercow.de/mailcow?lang=nl#sal" target="_blank" alt="SAL order">Registreer je GUID hier</a>, of <a href="https://www.servercow.de/mailcow?lang=nl#support" target="_blank" alt="Support order">schaf ondersteuning aan voor deze installatie.</a>';
+$lang['admin']['validate_license_now'] = 'Valideer licentie';
+
+$lang['admin']['customer_id'] = 'Klantnummer';
+$lang['admin']['service_id'] = 'Servicenummer';
