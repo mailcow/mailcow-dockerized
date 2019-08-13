@@ -600,7 +600,7 @@ $lang['admin']['last_applied'] = 'Zuletzt angewendet';
 $lang['admin']['reset_limit'] = 'Hash entfernen';
 $lang['admin']['hash_remove_info'] = 'Das Entfernen eines Ratelimit Hashes - sofern noch existent - bewirkt den Reset gezählter Nachrichten dieses Elements.<br>
   Jeder Hash wird durch eine eindeutige Farbe gekennzeichnet.';
-$lang['warning']['hash_not_found'] = 'Hash nicht gefunden';
+$lang['warning']['hash_not_found'] = 'Hash nicht gefunden. Möglicherweise wurde dieser bereits gelöscht.';
 $lang['success']['hash_deleted'] = 'Hash wurde gelöscht';
 $lang['admin']['authed_user'] = 'Auth. Benutzer';
 $lang['admin']['priority'] = 'Gewichtung';
