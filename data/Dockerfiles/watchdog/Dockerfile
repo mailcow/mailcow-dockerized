@@ -33,6 +33,7 @@ RUN apk add --update \
 
 COPY watchdog.sh /watchdog.sh
 
-ENTRYPOINT ["/sbin/tini", "-g", "--"]
+#ENTRYPOINT ["/sbin/tini", "-g", "--"]
 # Less verbose
+
 CMD /watchdog.sh 2> /dev/null

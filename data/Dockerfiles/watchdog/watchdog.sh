@@ -529,19 +529,11 @@ olefy_checks() {
 }
 
 # Notify about start
-if [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && [[ ! -f /tmp/watchdog_reload ]]; then
+if [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]]; then
   mail_error "watchdog-mailcow" "Watchdog started monitoring mailcow."
-  rm /tmp/watchdog_reload
 fi
 
 # Create watchdog agents
-(
-  touch /tmp/watchdog_reload
-  sleep 86400
-  echo "Reloading watchdog"
-  killall watchdog
-  kill 1
-) &
 
 (
 while true; do
@@ -759,15 +751,14 @@ while true; do
     log_msg "acme-mailcow did not complete successfully"
     [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}" "Please check acme-mailcow for further information."
   elif [[ ${com_pipe_answer} == "fail2ban" ]]; then
-    F2B_RES=($(redis-cli -h redis-mailcow --raw GET F2B_RES))
+    F2B_RES=($(timeout 4s redis-cli -h redis-mailcow --raw GET F2B_RES 2> /dev/null))
     if [[ ! -z "${F2B_RES}" ]]; then
       redis-cli -h redis-mailcow DEL F2B_RES > /dev/null
       host=
       for host in "${F2B_RES[@]}"; do
         log_msg "Banned ${host}"
         rm /tmp/fail2ban 2> /dev/null
-        timeout 2s whois ${host} > /tmp/fail2ban
-        sleep 2.5
+        timeout 2s whois "${host}" > /tmp/fail2ban
         [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && [[ ${WATCHDOG_NOTIFY_BAN} =~ ^([yY][eE][sS]|[yY])+$ ]] && mail_error "${com_pipe_answer}" "IP ban: ${host}"
       done
     fi
