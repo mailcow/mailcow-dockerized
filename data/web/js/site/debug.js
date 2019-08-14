@@ -564,6 +564,7 @@ jQuery(function($){
       $.each(data, function (i, item) {
         if (item === null) { return true; }
         item.user = escapeHtml(item.user);
+        item.call = escapeHtml(item.call);
         item.task = '<code>' + item.task + '</code>';
         item.type = '<span class="label label-' + item.type + '">' + item.type + '</span>';
       });
