@@ -71,10 +71,10 @@ RUN groupadd -g 5000 vmail \
   libwww-perl \
   mysql-client \
   procps \
-  python-html2text \
-  python-jinja2 \
-  python-mysql.connector \
-  python-redis \
+  python3-html2text \
+  python3-jinja2 \
+  python3-mysql-connector \
+  python3-redis \
   redis-server \
   supervisor \
   syslog-ng \
