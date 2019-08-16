@@ -8,8 +8,7 @@ about: Report a bug for this project
 -->
 
 **Prior to placing the issue, please check following:** *(fill out each checkbox with a `X` once done)*
-- [ ] I understand that ignoring below instructions might result in immediate closing and deletion of my issue.
-- [ ] I do promise I will carefully read below instructions to help getting my issue fixed quicker.
+- [ ] I understand that not following below instructions might result in immediate closing and deletion of my issue.
 - [ ] I have understood that answers are voluntary and community-driven, and not commercial support.
 - [ ] I have verified that my issue has not been already answered in the past. I also checked previous [issues](https://github.com/mailcow/mailcow-dockerized/issues).
 
@@ -35,31 +34,11 @@ My issue is...
 2. And then to...
 3. But once I do...
 
-**Expected behavior**: What did you expect to happen instead?
-<!--
-  We now know what kind of issue you are experiencing and how, and the best case, this can be
-  reproduced in a reliable way. Please tell us now, what you expected to happen.
-  This may be just a few sentences. Please add text below.
--->
-
-I thought I can ... but then this happened.
-
-**Undertaken actions**: What actions have you tried to solve the issue?
-<!--
-  Near the end of the issue we would like to know what you have tried fixing the reported issue.
-  This helps to prevent all kind of "Have you already tried this and that?" questions which might
-  delay the actual solution in the first place. Please be accurate. Add actions below.
--->
-
-1. I have tried restarting...
-2. I checked...
-3. I did...
-
 __I have tried or I do...__ *(fill out each checkbox with a `X` if applicable)*
 - [ ] In case of WebUI issue, I have tried clearing the browser cache and the issue persists.
-- [ ] I do run mailcow on a Synology, QNAP or any other sort of NAS. (Be honest!)
+- [ ] I do run mailcow on a Synology, QNAP or any other sort of NAS.
 
-**System informationg**
+**System information**
 <!--
   In this stage we would kindly ask you to attach logs or general system information about your setup.
   Please carefully read the questions and instructions below.
