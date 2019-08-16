@@ -482,6 +482,7 @@ jQuery(function($){
         }
         item.symbols[key].str = str;
       });
+      item.subject = escapeHtml(item.subject);
       item.symbols = Object.keys(item.symbols).
       map(function(key) {
         return item.symbols[key];
@@ -526,6 +527,8 @@ jQuery(function($){
       $.each(data, function (i, item) {
         if (item.ua == null) {
           item.ua = 'unknown';
+        } else {
+          item.ua = escapeHtml(item.ua);
         }
         item.ua = '<span style="font-size:small">' + item.ua + '</span>';
         if (item.service == "activesync") {
@@ -535,7 +538,7 @@ jQuery(function($){
           item.service = '<span class="label label-success">IMAP, SMTP, Cal-/CardDAV</span>';
         }
         else {
-          item.service = '<span class="label label-danger">' + item.service + '</span>';
+          item.service = '<span class="label label-danger">' + escapeHtml(item.service) + '</span>';
         }
       });
     } else if (table == 'watchdog') {
@@ -561,6 +564,7 @@ jQuery(function($){
       $.each(data, function (i, item) {
         if (item === null) { return true; }
         item.user = escapeHtml(item.user);
+        item.call = escapeHtml(item.call);
         item.task = '<code>' + item.task + '</code>';
         item.type = '<span class="label label-' + item.type + '">' + item.type + '</span>';
       });
