@@ -32,7 +32,22 @@ postscreen_blacklist_action = drop
 postscreen_cache_cleanup_interval = 24h
 postscreen_cache_map = proxy:btree:$data_directory/postscreen_cache
 postscreen_dnsbl_action = enforce
-postscreen_dnsbl_sites = b.barracudacentral.org=127.0.0.2*7
+postscreen_dnsbl_sites = wl.mailspike.net=127.0.0.[18;19;20]*-2
+  hostkarma.junkemailfilter.com=127.0.0.1*-2
+  list.dnswl.org=127.0.[0..255].0*-2
+  list.dnswl.org=127.0.[0..255].1*-4
+  list.dnswl.org=127.0.[0..255].2*-6
+  list.dnswl.org=127.0.[0..255].3*-8
+  ix.dnsbl.manitu.net*2
+  bl.spamcop.net*2
+  hostkarma.junkemailfilter.com=127.0.0.2*4
+  hostkarma.junkemailfilter.com=127.0.0.3*2
+  hostkarma.junkemailfilter.com=127.0.0.4*3
+  hostkarma.junkemailfilter.com=127.0.1.2*1
+  backscatter.spameatingmonkey.net*2
+  bl.ipv6.spameatingmonkey.net*2
+  bl.spameatingmonkey.net*2
+  b.barracudacentral.org=127.0.0.2*7
   dnsbl.inps.de=127.0.0.2*7
   bl.mailspike.net=127.0.0.2*5
   bl.mailspike.net=127.0.0.[10;11;12]*4
@@ -47,11 +62,9 @@ postscreen_dnsbl_sites = b.barracudacentral.org=127.0.0.2*7
   zen.spamhaus.org=127.0.0.3*4
   zen.spamhaus.org=127.0.0.2*3
   hostkarma.junkemailfilter.com=127.0.0.2*3
-  hostkarma.junkemailfilter.com=127.0.0.4*1
+  hostkarma.junkemailfilter.com=127.0.0.4*2
   hostkarma.junkemailfilter.com=127.0.1.2*1
-  wl.mailspike.net=127.0.0.[18;19;20]*-2
-  hostkarma.junkemailfilter.com=127.0.0.1*-2
-postscreen_dnsbl_threshold = 4
+postscreen_dnsbl_threshold = 5
 postscreen_dnsbl_ttl = 5m
 postscreen_greet_action = enforce
 postscreen_greet_banner = $smtpd_banner
@@ -111,19 +124,20 @@ smtpd_tls_eecdh_grade = auto
 smtpd_tls_exclude_ciphers = ECDHE-RSA-RC4-SHA, RC4, aNULL, DES-CBC3-SHA, ECDHE-RSA-DES-CBC3-SHA, EDH-RSA-DES-CBC3-SHA
 smtpd_tls_loglevel = 1
 
+# Mandatory protocols and ciphers are used when a connections is enforced to use TLS
+# Does _not_ apply to enforced incoming TLS settings per mailbox
 smtp_tls_mandatory_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1
-smtp_tls_protocols = !SSLv2, !SSLv3
-
 lmtp_tls_mandatory_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1
-lmtp_tls_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1
-
 smtpd_tls_mandatory_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1
+smtpd_tls_mandatory_ciphers = high
+
+smtp_tls_protocols = !SSLv2, !SSLv3
+lmtp_tls_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1
 smtpd_tls_protocols = !SSLv2, !SSLv3
 
 smtpd_tls_security_level = may
 tls_preempt_cipherlist = yes
 tls_ssl_options = NO_COMPRESSION
-smtpd_tls_mandatory_ciphers = high
 virtual_alias_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_alias_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_resource_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_spamalias_maps.cf,
