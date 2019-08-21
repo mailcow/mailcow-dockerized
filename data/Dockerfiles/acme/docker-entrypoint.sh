@@ -60,9 +60,9 @@ mkdir -p ${ACME_BASE}/acme
 reload_configurations(){
   # Reading container IDs
   # Wrapping as array to ensure trimmed content when calling $NGINX etc.
-  local NGINX=($(curl --silent --insecure https://dockerapi/containers/json | jq -r '.[] | {name: .Config.Labels["com.docker.compose.service"], id: .Id}' | jq -rc 'select( .name | tostring | contains("nginx-mailcow")) | .id' | tr "\n" " "))
-  local DOVECOT=($(curl --silent --insecure https://dockerapi/containers/json | jq -r '.[] | {name: .Config.Labels["com.docker.compose.service"], id: .Id}' | jq -rc 'select( .name | tostring | contains("dovecot-mailcow")) | .id' | tr "\n" " "))
-  local POSTFIX=($(curl --silent --insecure https://dockerapi/containers/json | jq -r '.[] | {name: .Config.Labels["com.docker.compose.service"], id: .Id}' | jq -rc 'select( .name | tostring | contains("postfix-mailcow")) | .id' | tr "\n" " "))
+  local NGINX=($(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | select(.Config.Labels[\"com.docker.compose.project\"] == \"$COMPOSE_PROJECT_NAME\") | select(.Config.Labels[\"com.docker.compose.service\"] == \"nginx-mailcow\") | .Id"))
+  local DOVECOT=($(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | select(.Config.Labels[\"com.docker.compose.project\"] == \"$COMPOSE_PROJECT_NAME\") | select(.Config.Labels[\"com.docker.compose.service\"] == \"dovecot-mailcow\") | .Id"))
+  local POSTFIX=($(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | select(.Config.Labels[\"com.docker.compose.project\"] == \"$COMPOSE_PROJECT_NAME\") | select(.Config.Labels[\"com.docker.compose.service\"] == \"postfix-mailcow\") | .Id"))
   # Reloading
   echo "Reloading Nginx..."
   NGINX_RELOAD_RET=$(curl -X POST --insecure https://dockerapi/containers/${NGINX}/exec -d '{"cmd":"reload", "task":"nginx"}' --silent -H 'Content-type: application/json' | jq -r .type)

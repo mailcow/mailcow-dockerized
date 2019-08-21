@@ -13,10 +13,7 @@ if [[ -f /tmp/sa-rules.tar.gz ]]; then
   cat /tmp/sa-rules-heinlein/*cf > /etc/rspamd/custom/sa-rules-heinlein
   # Only restart rspamd-mailcow when rules changed
   if [[ $(cat /etc/rspamd/custom/sa-rules-heinlein | md5sum | cut -d' ' -f1) != ${HASH_SA_RULES} ]]; then
-    CONTAINER_NAME=rspamd-mailcow
-    CONTAINER_ID=$(curl --silent --insecure https://dockerapi/containers/json | \
-      jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], id: .Id}" | \
-      jq -rc "select( .name | tostring | contains(\"${CONTAINER_NAME}\")) | .id")
+    CONTAINER_ID=$(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | select(.Config.Labels[\"com.docker.compose.project\"] == \"$COMPOSE_PROJECT_NAME\") | select(.Config.Labels[\"com.docker.compose.service\"] == \"rspamd-mailcow\") | .Id")
     if [[ ! -z ${CONTAINER_ID} ]]; then
       curl --silent --insecure -XPOST --connect-timeout 15 --max-time 120 https://dockerapi/containers/${CONTAINER_ID}/restart
     fi
