@@ -62,7 +62,9 @@ function wl_by_sogo() {
       if (!filter_var($contact, FILTER_VALIDATE_EMAIL)) {
         continue;
       }
-      $rcpt[$row['user']][] = '/^' . str_replace('/', '\/', $contact) . '$/i';
+      // Explicit from, no mime_from, no regex - envelope must match
+      // mailcow white and blacklists also cover mime_from
+      $rcpt[$row['user']][] = str_replace('/', '\/', $contact);
     }
   }
   return $rcpt;
@@ -86,7 +88,7 @@ function ucl_rcpts($object, $type) {
       if (!empty($local) && !empty($domain)) {
         $rcpt[] = '/^' . str_replace('/', '\/', $local) . '[+].*' . str_replace('/', '\/', $domain) . '$/i';
       }
-      $rcpt[] = '/^' . str_replace('/', '\/', $row['address']) . '$/i';
+      $rcpt[] = str_replace('/', '\/', $row['address']);
     }
     // Aliases by alias domains
     $stmt = $pdo->prepare("SELECT CONCAT(`local_part`, '@', `alias_domain`.`alias_domain`) AS `alias` FROM `mailbox` 
@@ -104,7 +106,7 @@ function ucl_rcpts($object, $type) {
         if (!empty($local) && !empty($domain)) {
           $rcpt[] = '/^' . str_replace('/', '\/', $local) . '[+].*' . str_replace('/', '\/', $domain) . '$/i';
         }
-      $rcpt[] = '/^' . str_replace('/', '\/', $row['alias']) . '$/i';
+        $rcpt[] = str_replace('/', '\/', $row['alias']);
       }
     }
   }
