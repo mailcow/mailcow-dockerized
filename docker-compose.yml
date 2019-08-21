@@ -55,7 +55,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.27
+      image: mailcow/clamd:1.28
       build: ./data/Dockerfiles/clamd
       restart: always
       environment:
@@ -174,7 +174,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.85
+      image: mailcow/dovecot:1.86
       build: ./data/Dockerfiles/dovecot
       cap_add:
         - NET_BIND_SERVICE
