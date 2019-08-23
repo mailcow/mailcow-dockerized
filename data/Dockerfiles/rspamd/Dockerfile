@@ -8,7 +8,7 @@ ENV LC_ALL C
 RUN apt-get update && apt-get install -y \
   tzdata \
   ca-certificates \
-  gnupg \
+  gnupg2 \
   apt-transport-https \
   dnsutils \
   && apt-key adv --fetch-keys https://rspamd.com/apt-stable/gpg.key \
