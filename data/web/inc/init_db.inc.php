@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "09062019_1208";
+    $db_version = "22082019_2140";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -116,6 +116,7 @@ function init_db_schema() {
           "nexthop" => "VARCHAR(255) NOT NULL",
           "username" => "VARCHAR(255) NOT NULL",
           "password" => "VARCHAR(255) NOT NULL",
+          "lookup_mx" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
         ),
         "keys" => array(

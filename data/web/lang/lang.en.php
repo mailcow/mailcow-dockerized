@@ -880,3 +880,10 @@ $lang['admin']['validate_license_now'] = 'Validate GUID against license server';
 
 $lang['admin']['customer_id'] = 'Customer ID';
 $lang['admin']['service_id'] = 'Service ID';
+
+$lang['admin']['lookup_mx'] = 'Match destination against MX (.outlook.com to route all mail targeted to a MX *.outlook.com over this hop)';
+$lang['edit']['mbox_rl_info'] = 'This rate limit is applied on the SASL login name, it matches any "from" address used by the logged-in user. A mailbox rate limit overrides a domain-wide rate limit.';
+
+$lang['add']['relayhost_wrapped_tls_info'] = 'Please do <b>not</b> use TLS-wrapped ports (mostly used on port 465).<br>
+Use any non-wrapped port and issue STARTTLS. A TLS policy to enforce TLS can be created in "TLS policy maps".';
+

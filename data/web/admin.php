@@ -303,6 +303,16 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
                 <label for="password"><?=$lang['admin']['password'];?></label>
                 <input class="form-control" name="password">
               </div>
+              <!-- <div class="form-group">
+                <label>
+                  <input type="checkbox" name="lookup_mx" value="1"> <?=$lang['admin']['lookup_mx'];?>
+                </label>
+              </div> -->
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" name="active" value="1"> <?=$lang['admin']['active'];?>
+                </label>
+              </div>
               <p class="help-block"><?=$lang['admin']['credentials_transport_warning'];?></p>
               <button class="btn btn-default" data-action="add_item" data-id="transport" data-api-url='add/transport' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
             </form>
@@ -363,7 +373,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
           else {
           ?>
           <div class="row">
-              <div class="col-md-1"><input class="dkim_missing" type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" disabled /></div>
+            <div class="col-md-1"><input class="dkim_missing" type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" disabled /></div>
             <div class="col-md-3">
               <p><?=$lang['admin']['domain'];?>: <strong><?=htmlspecialchars($domain);?></strong><br /><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
             </div>

@@ -58,9 +58,11 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
       )
     );
     $mail->SMTPDebug = 3;
-    if ($port == 465) {
-      $mail->SMTPSecure = "ssl";
-    }
+    // smtp: and smtp_enforced_tls: do not support wrapped tls, todo?
+    // change postfix map to detect wrapped tls or add a checkbox to toggle wrapped tls
+    // if ($port == 465) {
+      // $mail->SMTPSecure = "ssl";
+    // }
     $mail->Debugoutput = function($str, $level) {
       foreach(preg_split("/((\r?\n)|(\r\n?)|\n)/", $str) as $line){
         if (empty($line)) { continue; }

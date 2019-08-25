@@ -3069,7 +3069,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $mailboxdata['max_new_quota'] = ($DomainQuota['maxquota'] * 1048576);
           }
           $mailboxdata['username'] = $row['username'];
-          $mailboxdata['rl'] = $rl;
+          if (!empty($rl)) {
+            $mailboxdata['rl'] = $rl;
+            $mailboxdata['rl_scope'] = 'mailbox';
+          }
+          else {
+            $mailboxdata['rl'] = ratelimit('get', 'domain', $row['domain']);
+            $mailboxdata['rl_scope'] = 'domain';
+          }
           $mailboxdata['is_relayed'] = $row['backupmx'];
           $mailboxdata['name'] = $row['name'];
           $mailboxdata['active'] = $row['active'];
