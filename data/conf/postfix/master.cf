@@ -58,20 +58,6 @@ scache     unix  -       -       n       -       1       scache
 maildrop   unix  -       n       n       -       -       pipe flags=DRhu
     user=vmail argv=/usr/bin/maildrop -d ${recipient}
 
-# start zeyple
-zeyple    unix  -       n       n       -       -       pipe
-  user=zeyple argv=/usr/local/bin/zeyple.py ${recipient}
-127.0.0.1:10026 inet  n       -       n       -       10      smtpd
-  -o content_filter=
-  -o receive_override_options=no_unknown_recipient_checks,no_header_body_checks,no_milters
-  -o smtpd_helo_restrictions=
-  -o smtpd_client_restrictions=
-  -o smtpd_sender_restrictions=
-  -o smtpd_recipient_restrictions=permit_mynetworks,reject
-  -o mynetworks=127.0.0.0/8
-  -o smtpd_authorized_xforward_hosts=127.0.0.0/8
-# end zeyple
-
 # start whitelist_fwd
 127.0.0.1:10027 inet n n n - 0 spawn user=nobody argv=/usr/local/bin/whitelist_forwardinghosts.sh
 # end whitelist_fwd
