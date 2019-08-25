@@ -33,7 +33,7 @@ data/conf/portainer/
 data/gitea/
 data/gogs/
 data/conf/sogo/plist_ldap
-diff_before_update_*
+update_diffs/
 .github/
 docker-compose.override.yml
 refresh_images.sh
