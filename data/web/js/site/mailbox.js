@@ -352,6 +352,9 @@ jQuery(function($){
               item.rl = $.map(item.rl, function(e){
                 return e;
               }).join('/1');
+              if (item.rl_scope === 'domain') {
+                item.rl = '↪ ' + item.rl + ' (via ' + item.domain + ')';
+              }
             }
             item.chkbox = '<input type="checkbox" data-id="mailbox" name="multi_select" value="' + encodeURIComponent(item.username) + '" />';
             item.tls_enforce_in = '<span class="text-' + (item.attributes.tls_enforce_in == 1 ? 'success' : 'danger') + ' glyphicon glyphicon-lock"></span>';

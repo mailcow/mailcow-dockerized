@@ -644,6 +644,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               <div class="form-group">
                 <button class="btn btn-default" data-action="edit_selected" data-id="mboxratelimit" data-item="<?=htmlspecialchars($mailbox);?>" data-api-url='edit/rl-mbox' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
               </div>
+              <p class="help-block"><?=$lang['edit']['mbox_rl_info'];?></p>
             </div>
           </div>
         </form>
@@ -686,6 +687,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               <label class="control-label col-sm-2" for="hostname"><?=$lang['add']['hostname'];?></label>
               <div class="col-sm-10">
                 <input type="text" class="form-control" name="hostname" value="<?=htmlspecialchars($result['hostname'], ENT_QUOTES, 'UTF-8');?>" required>
+                <p class="help-block"><?=$lang['add']['relayhost_wrapped_tls_info'];?></p>
               </div>
             </div>
             <div class="form-group">

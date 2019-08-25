@@ -187,6 +187,8 @@ function transport($_action, $_data = null) {
         return false;
       }
       $destination = trim($_data['destination']);
+      $active = intval($_data['active']);
+      $lookup_mx = intval($_data['lookup_mx']);
       $nexthop = trim($_data['nexthop']);
       preg_match('/\[(.+)\].*/', $nexthop, $next_hop_matches);
       $next_hop_clean = (isset($next_hop_matches[1])) ? $next_hop_matches[1] : $nexthop;
@@ -256,14 +258,15 @@ function transport($_action, $_data = null) {
         }
       }
       try {
-        $stmt = $pdo->prepare("INSERT INTO `transports` (`nexthop`, `destination`, `username` ,`password`, `active`)
-          VALUES (:nexthop, :destination, :username, :password, :active)");
+        $stmt = $pdo->prepare("INSERT INTO `transports` (`nexthop`, `destination`, `username` , `password`,  `lookup_mx`, `active`)
+          VALUES (:nexthop, :destination, :username, :password, :lookup_mx, :active)");
         $stmt->execute(array(
           ':nexthop' => $nexthop,
           ':destination' => $destination,
           ':username' => $username,
           ':password' => str_replace(':', '\:', $password),
-          ':active' => '1'
+          ':lookup_mx' => $lookup_mx,
+          ':active' => $active
         ));
         $stmt = $pdo->prepare("UPDATE `transports` SET
           `username` = :username,
@@ -306,7 +309,8 @@ function transport($_action, $_data = null) {
           $nexthop = (!empty($_data['nexthop'])) ? trim($_data['nexthop']) : $is_now['nexthop'];
           $username = (isset($_data['username'])) ? trim($_data['username']) : $is_now['username'];
           $password = (isset($_data['password'])) ? trim($_data['password']) : $is_now['password'];
-          $active   = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
+          $lookup_mx   = (isset($_data['lookup_mx']) && $_data['lookup_mx'] != '') ? intval($_data['lookup_mx']) : $is_now['lookup_mx_int'];
+          $active   = (isset($_data['active']) && $_data['active'] != '') ? intval($_data['active']) : $is_now['active_int'];
         }
         else {
           $_SESSION['return'][] = array(
@@ -368,6 +372,7 @@ function transport($_action, $_data = null) {
             `nexthop` = :nexthop,
             `username` = :username,
             `password` = :password,
+            `lookup_mx` = :lookup_mx,
             `active` = :active
               WHERE `id` = :id");
           $stmt->execute(array(
@@ -376,6 +381,7 @@ function transport($_action, $_data = null) {
             ':nexthop' => $nexthop,
             ':username' => $username,
             ':password' => $password,
+            ':lookup_mx' => $lookup_mx,
             ':active' => $active
           ));
           $stmt = $pdo->prepare("UPDATE `transports` SET
@@ -453,8 +459,10 @@ function transport($_action, $_data = null) {
         `username`,
         `password`,
         `active` AS `active_int`,
+        `lookup_mx` AS `lookup_mx_int`,
         CONCAT(LEFT(`password`, 3), '...') AS `password_short`,
-        CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`
+        CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`,
+        CASE `lookup_mx` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `lookup_mx`
           FROM `transports`
             WHERE `id` = :id");
       $stmt->execute(array(':id' => $_data));
