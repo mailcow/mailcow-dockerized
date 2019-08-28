@@ -262,6 +262,8 @@ services:
       restart: always
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
+      environment:
+        - TZ=${TZ}  
       networks:
         mailcow-network:
           aliases:
@@ -435,6 +437,7 @@ services:
       restart: always
       build: ./data/Dockerfiles/olefy
       environment:
+        - TZ=${TZ}
         - OLEFY_BINDADDRESS=0.0.0.0
         - OLEFY_BINDPORT=10055
         - OLEFY_TMPDIR=/tmp
@@ -470,6 +473,8 @@ services:
       restart: always
       privileged: true
       network_mode: "host"
+      environment:
+        - TZ=${TZ}
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
         - /lib/modules:/lib/modules:ro
