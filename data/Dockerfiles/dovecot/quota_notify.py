@@ -1,10 +1,10 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 
 import smtplib
 import os
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.utils import COMMASPACE, formatdate
+from email.MIMEMultipart import MIMEMultipart
+from email.MIMEText import MIMEText
+from email.Utils import COMMASPACE, formatdate
 import jinja2
 from jinja2 import Template
 import redis
@@ -17,7 +17,7 @@ if len(sys.argv) > 2:
   percent = int(sys.argv[1])
   username = str(sys.argv[2])
 else:
-  print("Args missing")
+  print "Args missing"
   sys.exit(1)
 
 while True:
@@ -25,7 +25,7 @@ while True:
     r = redis.StrictRedis(host='redis', decode_responses=True, port=6379, db=0)
     r.ping()
   except Exception as ex:
-    print("{0} - trying again...".format(ex))
+    print '%s - trying again...'  % (ex)
     time.sleep(3)
   else:
     break
@@ -34,7 +34,7 @@ if r.get('QW_HTML'):
   try:
     template = Template(r.get('QW_HTML'))
   except:
-    print("Error: Cannot parse quarantine template, falling back to default template.")
+    print "Error: Cannot parse quarantine template, falling back to default template."
     with open('/templates/quota.tpl') as file_:
       template = Template(file_.read())
 else:
@@ -58,7 +58,7 @@ try:
   p.communicate(input=msg.as_string())
 
 except Exception as ex:
-  print('Failed to send quota notification: {0}'.format(ex))
+  print 'Failed to send quota notification: %s' % (ex)
   sys.exit(1)
 
 try:
