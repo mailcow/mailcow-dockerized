@@ -1,5 +1,6 @@
 /.+\.accountant$/i
 /.+\.ar$/i
+/.+\.art$/i
 /.+\.asia$/i
 /.+\.bid$/i
 /.+\.biz$/i
@@ -54,6 +55,7 @@
 /.+\.science$/i
 /.+\.se$/i
 /.+\.si$/i
+/.+\.site$/i
 /.+\.space$/i
 /.+\.stream$/i
 /.+\.sucks$/i
@@ -72,4 +74,3 @@
 /.+\.work$/i
 /.+\.world$/i
 /.+\.xyz$/i
-
