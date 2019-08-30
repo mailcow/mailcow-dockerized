@@ -289,7 +289,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             <form class="form" data-id="transport" role="form" method="post">
               <div class="form-group">
                 <label for="destination"><?=$lang['admin']['destination'];?></label>
-                <input class="form-control input-sm" name="destination" placeholder='example.org, .example.org, *, box@example.org' required>
+                <input class="form-control input-sm" name="destination" placeholder='<?=$lang['admin']['transport_dest_format'];?>' required>
               </div>
               <div class="form-group">
                 <label for="nexthop"><?=$lang['admin']['nexthop'];?></label>

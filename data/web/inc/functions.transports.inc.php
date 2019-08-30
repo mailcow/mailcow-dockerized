@@ -186,7 +186,7 @@ function transport($_action, $_data = null) {
         );
         return false;
       }
-      $destination = trim($_data['destination']);
+      $destinations  = array_map('trim', preg_split( "/( |,|;|\n)/", $_data['destination']));
       $active = intval($_data['active']);
       $lookup_mx = intval($_data['lookup_mx']);
       $nexthop = trim($_data['nexthop']);
@@ -194,15 +194,6 @@ function transport($_action, $_data = null) {
       $next_hop_clean = (isset($next_hop_matches[1])) ? $next_hop_matches[1] : $nexthop;
       $username = str_replace(':', '\:', trim($_data['username']));
       $password = str_replace(':', '\:', trim($_data['password']));
-      // ".domain" is a valid destination, "..domain" is not
-      if (empty($destination) || (is_valid_domain_name(preg_replace('/^' . preg_quote('.', '/') . '/', '', $destination)) === false && $destination != '*' && filter_var($destination, FILTER_VALIDATE_EMAIL) === false)) {
-        $_SESSION['return'][] = array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => 'invalid_destination'
-        );
-        return false;
-      }
       if (empty($nexthop)) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
@@ -225,16 +216,35 @@ function transport($_action, $_data = null) {
             );
             return false;
           }
-          if ($transport_data['destination'] == $destination) {
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_data_log),
-              'msg' => 'transport_dest_exists'
-            );
-            return false;
+          foreach ($destinations as $d_ix => &$dest) {
+            if (empty($dest)) {
+              unset($destinations[$d_ix]);
+              continue;
+            }
+            if ($transport_data['destination'] == $dest) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_data_log),
+                'msg' => array('transport_dest_exists', $dest)
+              );
+              unset($destinations[$d_ix]);
+              continue;
+            }
+            // ".domain" is a valid destination, "..domain" is not
+            if (empty($dest) || (is_valid_domain_name(preg_replace('/^' . preg_quote('.', '/') . '/', '', $dest)) === false && $dest != '*' && filter_var($dest, FILTER_VALIDATE_EMAIL) === false)) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_data_log),
+                'msg' => array('invalid_destination', $dest)
+              );
+              unset($destinations[$d_ix]);
+              continue;
+            }
           }
         }
       }
+      $destinations = array_values($destinations);
+      if (empty($destinations)) { return false; }
       if (isset($next_hop_matches[1])) {
         if (in_array($next_hop_clean, $existing_nh)) {
           $_SESSION['return'][] = array(
@@ -257,35 +267,27 @@ function transport($_action, $_data = null) {
           }
         }
       }
-      try {
+      foreach ($destinations as $insert_dest) {
         $stmt = $pdo->prepare("INSERT INTO `transports` (`nexthop`, `destination`, `username` , `password`,  `lookup_mx`, `active`)
           VALUES (:nexthop, :destination, :username, :password, :lookup_mx, :active)");
         $stmt->execute(array(
           ':nexthop' => $nexthop,
-          ':destination' => $destination,
+          ':destination' => $insert_dest,
           ':username' => $username,
           ':password' => str_replace(':', '\:', $password),
           ':lookup_mx' => $lookup_mx,
           ':active' => $active
         ));
-        $stmt = $pdo->prepare("UPDATE `transports` SET
-          `username` = :username,
-          `password` = :password
-            WHERE `nexthop` = :nexthop");
-        $stmt->execute(array(
-          ':nexthop' => $nexthop,
-          ':username' => $username,
-          ':password' => $password
-        ));
       }
-      catch (PDOException $e) {
-        $_SESSION['return'][] = array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => array('mysql_error', $e)
-        );
-        return false;
-      }
+      $stmt = $pdo->prepare("UPDATE `transports` SET
+        `username` = :username,
+        `password` = :password
+          WHERE `nexthop` = :nexthop");
+      $stmt->execute(array(
+        ':nexthop' => $nexthop,
+        ':username' => $username,
+        ':password' => $password
+      ));
       $_SESSION['return'][] = array(
         'type' => 'success',
         'log' => array(__FUNCTION__, $_action, $_data_log),

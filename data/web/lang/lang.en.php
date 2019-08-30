@@ -20,7 +20,7 @@ $lang['footer']['cancel'] = 'Cancel';
 $lang['footer']['hibp_nok'] = 'Matched! This is a potentially dangerous password!';
 $lang['footer']['hibp_ok'] = 'No match found.';
 
-$lang['danger']['transport_dest_exists'] = "Transport destination exists";
+$lang['danger']['transport_dest_exists'] = 'Transport destination "%s" exists';
 $lang['danger']['unlimited_quota_acl'] = "Unlimited quota prohibited by ACL";
 $lang['danger']['mysql_error'] = "MySQL error: %s";
 $lang['danger']['redis_error'] = "Redis error: %s";
@@ -32,7 +32,7 @@ $lang['success']['verified_u2f_login'] = "Verified U2F login";
 $lang['success']['verified_yotp_login'] = "Verified Yubico OTP login";
 $lang['danger']['yotp_verification_failed'] = "Yubico OTP verification failed: %s";
 $lang['danger']['ip_list_empty'] = "List of allowed IPs cannot be empty";
-$lang['danger']['invalid_destination'] = "Destination format is invalid";
+$lang['danger']['invalid_destination'] = 'Destination format "%s" is invalid';
 $lang['danger']['invalid_nexthop'] = "Next hop format is invalid";
 $lang['danger']['invalid_nexthop_authenticated'] = "Next hop exists with different credentials, please update the existing credentials for this next hop first.";
 $lang['danger']['next_hop_interferes'] = "%s interferes with nexthop %s";
@@ -887,3 +887,4 @@ $lang['edit']['mbox_rl_info'] = 'This rate limit is applied on the SASL login na
 $lang['add']['relayhost_wrapped_tls_info'] = 'Please do <b>not</b> use TLS-wrapped ports (mostly used on port 465).<br>
 Use any non-wrapped port and issue STARTTLS. A TLS policy to enforce TLS can be created in "TLS policy maps".';
 
+$lang['admin']['transport_dest_format'] = 'Syntax: example.org, .example.org, *, box@example.org (multiple values can be comma-separated)';
