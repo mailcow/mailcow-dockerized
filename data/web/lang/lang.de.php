@@ -19,7 +19,7 @@ $lang['footer']['cancel'] = 'Abbrechen';
 $lang['footer']['hibp_nok'] = 'Übereinstimmung gefunden! Dieses Passwort ist potentiell gefährlich!';
 $lang['footer']['hibp_ok'] = 'Keine Übereinstimmung gefunden.';
 
-$lang['danger']['transport_dest_exists'] = "Transport Maps Ziel existiert bereits";
+$lang['danger']['transport_dest_exists'] = 'Transport Maps Ziel "%s" existiert bereits';
 $lang['danger']['unlimited_quota_acl'] = "Unendliche Quota untersagt durch ACL";
 $lang['danger']['mysql_error'] = "MySQL Fehler: %s";
 $lang['danger']['redis_error'] = "Redis Fehler: %s";
@@ -31,7 +31,7 @@ $lang['success']['verified_u2f_login'] = "U2F Anmeldung verifiziert";
 $lang['success']['verified_yotp_login'] = "Yubico OTP Anmeldung verifiziert";
 $lang['danger']['yotp_verification_failed'] = "Yubico OTP Verifizierung fehlgeschlagen: %s";
 $lang['danger']['ip_list_empty'] = "Liste erlaubter IPs darf nicht leer sein";
-$lang['danger']['invalid_destination'] = "Ziel-Format ist ungültig";
+$lang['danger']['invalid_destination'] = 'Ziel-Format "%s" ist ungültig';
 $lang['danger']['invalid_nexthop'] = "Next Hop ist ungültig";
 $lang['danger']['invalid_nexthop_authenticated'] = 'Dieser Next Hop existiert bereits mit abweichenden Authentifizierungsdaten. Die bestehenden Authentifizierungsdaten dieses "Next Hops" müssen vorab angepasst werden.';
 $lang['danger']['next_hop_interferes'] = "%s verhindert das Hinzufügen von Next Hop %s";
@@ -857,3 +857,5 @@ $lang['edit']['mbox_rl_info'] = 'Dieses Limit wird auf den SASL Loginnamen angew
 
 $lang['add']['relayhost_wrapped_tls_info'] = 'Bitte <b>keine</b> TLS-wrapped Ports verwenden (etwa SMTPS via Port 465/tcp).<br>
 Der Transport wird stattdessen STARTTLS anfordern, um TLS zu verwenden. TLS kann unter "TLS Policy Maps" erzwungen werden.';
+
+$lang['admin']['transport_dest_format'] = 'Syntax: example.org, .example.org, *, box@example.org (mehrere Werte getrennt durch Komma einzugeben)';

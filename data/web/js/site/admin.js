@@ -74,7 +74,8 @@ jQuery(function($){
       "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
       "state": {"enabled": true},
       "filtering": {"enabled": true,"delay": 1,"position": "left","connectors": false,"placeholder": lang.filter_table},
-      "sorting": {"enabled": true}
+      "sorting": {"enabled": true},
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
   function draw_admins() {
@@ -101,7 +102,8 @@ jQuery(function($){
       "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
       "filtering": {"enabled": false},
       "state": {"enabled": true},
-      "sorting": {"enabled": true}
+      "sorting": {"enabled": true},
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
   function draw_fwd_hosts() {
@@ -126,7 +128,8 @@ jQuery(function($){
       }),
       "empty": lang.empty,
       "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "sorting": {"enabled": true}
+      "sorting": {"enabled": true},
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
   function draw_relayhosts() {
@@ -153,7 +156,8 @@ jQuery(function($){
       }),
       "empty": lang.empty,
       "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "sorting": {"enabled": true}
+      "sorting": {"enabled": true},
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
   function draw_transport_maps() {
@@ -180,7 +184,8 @@ jQuery(function($){
       }),
       "empty": lang.empty,
       "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "sorting": {"enabled": true}
+      "sorting": {"enabled": true},
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
   function draw_queue() {
@@ -210,6 +215,7 @@ jQuery(function($){
       "empty": lang.empty,
       "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
       "sorting": {"enabled": true},
+      "toggleSelector": "table tbody span.footable-toggle",
       "on": {
         "ready.ft.table": function(e, ft){
           table_admin_ready(ft, 'queuetable');
