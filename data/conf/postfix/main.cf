@@ -6,7 +6,10 @@ smtpd_use_tls=yes
 smtpd_tls_received_header = yes
 smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
 smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
-smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination
+smtpd_relay_restrictions = permit_mynetworks,
+  permit_sasl_authenticated,
+  defer_unauth_destination
+# alias maps are auto-generated in postfix.sh on startup
 alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
 relayhost =
@@ -26,7 +29,9 @@ milter_default_action = accept
 milter_protocol = 6
 minimal_backoff_time = 300s
 plaintext_reject_code = 550
-postscreen_access_list = permit_mynetworks, cidr:/opt/postfix/conf/postscreen_access.cidr, tcp:127.0.0.1:10027
+postscreen_access_list = permit_mynetworks,
+  cidr:/opt/postfix/conf/postscreen_access.cidr,
+  tcp:127.0.0.1:10027
 postscreen_bare_newline_enable = no
 postscreen_blacklist_action = drop
 postscreen_cache_cleanup_interval = 24h
@@ -110,13 +115,22 @@ smtpd_error_sleep_time = 10s
 smtpd_hard_error_limit = ${stress?1}${stress:5}
 smtpd_helo_required = yes
 smtpd_proxy_timeout = 600s
-smtpd_recipient_restrictions = permit_sasl_authenticated, permit_mynetworks, check_recipient_access proxy:mysql:/opt/postfix/conf/sql/mysql_tls_enforce_in_policy.cf, reject_invalid_helo_hostname, reject_unknown_reverse_client_hostname, reject_unauth_destination
+smtpd_recipient_restrictions = permit_sasl_authenticated,
+  permit_mynetworks,
+  check_recipient_access proxy:mysql:/opt/postfix/conf/sql/mysql_tls_enforce_in_policy.cf,
+  reject_invalid_helo_hostname,
+  reject_unknown_reverse_client_hostname,
+  reject_unauth_destination
 smtpd_sasl_auth_enable = yes
 smtpd_sasl_authenticated_header = yes
 smtpd_sasl_path = inet:dovecot:10001
 smtpd_sasl_type = dovecot
 smtpd_sender_login_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_sender_acl.cf
-smtpd_sender_restrictions = reject_authenticated_sender_login_mismatch, permit_mynetworks, permit_sasl_authenticated, reject_unlisted_sender, reject_unknown_sender_domain
+smtpd_sender_restrictions = reject_authenticated_sender_login_mismatch,
+  permit_mynetworks,
+  permit_sasl_authenticated,
+  reject_unlisted_sender,
+  reject_unknown_sender_domain
 smtpd_soft_error_limit = 3
 smtpd_tls_auth_only = yes
 smtpd_tls_dh1024_param_file = /etc/ssl/mail/dhparams.pem
@@ -167,7 +181,9 @@ smtp_sasl_mechanism_filter = plain, login
 smtp_tls_policy_maps=proxy:mysql:/opt/postfix/conf/sql/mysql_tls_policy_override_maps.cf
 smtp_header_checks = pcre:/opt/postfix/conf/anonymize_headers.pcre
 mail_name = Postcow
-transport_maps = pcre:/opt/postfix/conf/local_transport, proxy:mysql:/opt/postfix/conf/sql/mysql_transport_maps.cf
+# local_transport map catches local destinations and prevents routing local dests when the next map would route "*"
+transport_maps = pcre:/opt/postfix/conf/local_transport,
+  proxy:mysql:/opt/postfix/conf/sql/mysql_transport_maps.cf
 smtp_sasl_auth_soft_bounce = no
 postscreen_discard_ehlo_keywords = silent-discard, dsn
 compatibility_level = 2
