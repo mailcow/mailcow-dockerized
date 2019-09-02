@@ -1,3 +1,6 @@
+# --------------------------------------------------------------------------
+# Please create a file "extra.cf" for persistent overrides to main.cf
+# --------------------------------------------------------------------------
 biff = no
 append_dot_mydomain = no
 smtpd_tls_cert_file = /etc/ssl/mail/cert.pem
@@ -188,3 +191,7 @@ smtp_sasl_auth_soft_bounce = no
 postscreen_discard_ehlo_keywords = silent-discard, dsn
 compatibility_level = 2
 smtputf8_enable = no
+
+# DO NOT EDIT ANYTHING BELOW #
+# User overrides #
+
