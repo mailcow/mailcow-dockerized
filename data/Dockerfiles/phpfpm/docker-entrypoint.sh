@@ -39,7 +39,17 @@ SQL_UPGRADE_RETURN=$(curl --silent --insecure -XPOST https://dockerapi/container
 if [[ ${SQL_UPGRADE_RETURN} == 'warning' ]]; then
   if [ -z ${SQL_LOOP_C} ]; then
     echo 1 > /mysql_upgrade_loop
-    echo "MySQL applied an upgrade, restarting PHP-FPM..."
+    echo "MySQL applied an upgrade"
+    POSTFIX=($(curl --silent --insecure https://dockerapi/containers/json | jq -r '.[] | {name: .Config.Labels["com.docker.compose.service"], id: .Id}' | jq -rc 'select( .name | tostring | contains("postfix-mailcow")) | .id' | tr "\n" " "))
+    if [[ -z ${POSTFIX} ]]; then
+      echo "Could not determine Postfix container ID, skipping Postfix restart."
+    else
+      echo "Restarting Postfix"
+      curl -X POST --silent --insecure https://dockerapi/containers/${POSTFIX}/restart | jq -r '.msg'
+      echo "Sleeping 10 seconds..."
+      sleep 10
+    fi
+    echo "Restarting PHP-FPM, bye"
     exit 1
   else
     rm /mysql_upgrade_loop
