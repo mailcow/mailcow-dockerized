@@ -292,6 +292,12 @@ query = SELECT goto FROM spamalias
     AND validity >= UNIX_TIMESTAMP()
 EOF
 
+sed -i '/User overrides/q' /opt/postfix/conf/main.cf
+echo >> /opt/postfix/conf/main.cf
+if [ -f /opt/postfix/conf/extra.cf ]; then
+  cat /opt/postfix/conf/extra.cf >> /opt/postfix/conf/main.cf
+fi
+
 # Fix Postfix permissions
 chown -R root:postfix /opt/postfix/conf/sql/
 chmod 640 /opt/postfix/conf/sql/*.cf
@@ -300,7 +306,7 @@ chgrp -R postdrop /var/spool/postfix/maildrop
 postfix set-permissions
 
 # Check Postfix configuration
-postconf -c /opt/postfix/conf
+postconf -c /opt/postfix/conf > /dev/null
 
 if [[ $? != 0 ]]; then
   echo "Postfix configuration error, refusing to start."
