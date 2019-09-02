@@ -578,9 +578,18 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                 <?php
               endforeach;
 
+              // Generated here, but used in extended_sender_acl
+              if (!empty($sender_acl_handles['external_sender_aliases'])) {
+                $ext_sender_acl = implode(', ', $sender_acl_handles['external_sender_aliases']);
+              }
+              else {
+                $ext_sender_acl = '';
+              }
+
               ?>
               </select>
               <div style="display:none" id="sender_acl_disabled"><?=$lang['edit']['sender_acl_disabled'];?></div>
+              <small class="help-block"><?=$lang['edit']['sender_acl_info'];?></small>
             </div>
           </div>
           <div class="form-group">
@@ -593,6 +602,13 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <label class="control-label col-sm-2" for="password2"><?=$lang['edit']['password_repeat'];?></label>
             <div class="col-sm-10">
             <input type="password" class="form-control" name="password2">
+            </div>
+          </div>
+          <div data-acl="<?=$_SESSION['acl']['extend_sender_acl'];?>" class="form-group">
+            <label class="control-label col-sm-2" for="extended_sender_acl"><?=$lang['edit']['extended_sender_acl'];?></label>
+            <div class="col-sm-10">
+            <input type="text" class="form-control" name="extended_sender_acl" value="<?=empty($ext_sender_acl) ? '' : $ext_sender_acl; ?>" placeholder="user1@example.com, user2@example.org, @example.com, ...">
+            <small class="help-block"><?=$lang['edit']['extended_sender_acl_info'];?></small>
             </div>
           </div>
           <div class="form-group">

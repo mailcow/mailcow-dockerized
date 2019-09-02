@@ -146,6 +146,10 @@ $(document).ready(function() {
       $(this).find('button').each(function() {
         $(this).attr("disabled", true);
       });
+    } else if ($(this).hasClass('form-group')) {
+      $(this).find('input').each(function() {
+        $(this).attr("disabled", true);
+      });
     } else if ($(this).hasClass('btn')) {
       $(this).attr("disabled", true);
     } else if ($(this).attr('data-provide') == 'slider') {
