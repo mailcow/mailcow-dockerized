@@ -409,6 +409,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
+          $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE `external` = 1 AND `send_as` LIKE :domain");
+          $stmt->execute(array(
+            ':domain' => '%@' . $domain
+          ));
           $stmt = $pdo->prepare("INSERT INTO `domain` (`domain`, `description`, `aliases`, `mailboxes`, `defquota`, `maxquota`, `quota`, `backupmx`, `gal`, `active`, `relay_all_recipients`)
             VALUES (:domain, :description, :aliases, :mailboxes, :defquota, :maxquota, :quota, :backupmx, :gal, :active, :relay_all_recipients)");
           $stmt->execute(array(
@@ -710,6 +714,18 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
+            $stmt = $pdo->prepare("SELECT `domain` FROM `domain`
+              WHERE `domain`= :target_domain AND `backupmx` = '1'");
+            $stmt->execute(array(':target_domain' => $target_domain));
+            $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+            if ($num_results == 0) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => array('targetd_relay_domain', htmlspecialchars($target_domain))
+              );
+              continue;
+            }
             $stmt = $pdo->prepare("SELECT `alias_domain` FROM `alias_domain` WHERE `alias_domain`= :alias_domain
               UNION
               SELECT `domain` FROM `domain` WHERE `domain`= :alias_domain_in_domain");
@@ -723,6 +739,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
+            $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE `external` = 1 AND `send_as` LIKE :domain");
+            $stmt->execute(array(
+              ':domain' => '%@' . $domain
+            ));
             $stmt = $pdo->prepare("INSERT INTO `alias_domain` (`alias_domain`, `target_domain`, `active`)
               VALUES (:alias_domain, :target_domain, :active)");
             $stmt->execute(array(
@@ -2093,6 +2113,75 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
+            $extra_acls = array();
+            if (isset($_data['extended_sender_acl'])) {
+              if (!isset($_SESSION['acl']['extend_sender_acl']) || $_SESSION['acl']['extend_sender_acl'] != "1" ) {
+                $_SESSION['return'][] = array(
+                  'type' => 'danger',
+                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                  'msg' => 'access_denied'
+                );
+                return false;
+              }
+              $extra_acls = array_map('trim', preg_split( "/( |,|;|\n)/", $_data['extended_sender_acl']));
+              foreach ($extra_acls as $i => &$extra_acl) {
+                if (empty($extra_acl)) {
+                  continue;
+                }
+                if (substr($extra_acl, 0, 1) === "@") {
+                  $extra_acl = ltrim($extra_acl, '@');
+                }
+                if (!filter_var($extra_acl, FILTER_VALIDATE_EMAIL) && !is_valid_domain_name($extra_acl)) {
+                  $_SESSION['return'][] = array(
+                    'type' => 'danger',
+                    'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                    'msg' => array('extra_acl_invalid', htmlspecialchars($extra_acl))
+                  );
+                  unset($extra_acls[$i]);
+                  continue;
+                }
+                $domains = array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains'));
+                if (filter_var($extra_acl, FILTER_VALIDATE_EMAIL)) {
+                  $extra_acl_domain = idn_to_ascii(substr(strstr($extra_acl, '@'), 1), 0, INTL_IDNA_VARIANT_UTS46);
+                  if (in_array($extra_acl_domain, $domains)) {
+                    $_SESSION['return'][] = array(
+                      'type' => 'danger',
+                      'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                      'msg' => array('extra_acl_invalid_domain', $extra_acl_domain)
+                    );
+                    unset($extra_acls[$i]);
+                    continue;
+                  }
+                }
+                else {
+                  if (in_array($extra_acl, $domains)) {
+                    $_SESSION['return'][] = array(
+                      'type' => 'danger',
+                      'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                      'msg' => array('extra_acl_invalid_domain', $extra_acl_domain)
+                    );
+                    unset($extra_acls[$i]);
+                    continue;
+                  }
+                  $extra_acl = '@' . $extra_acl;
+                }
+              }
+              $extra_acls = array_filter($extra_acls);
+              $extra_acls = array_values($extra_acls);
+              $extra_acls = array_unique($extra_acls);
+              $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE `external` = 1 AND `logged_in_as` = :username");
+              $stmt->execute(array(
+                ':username' => $username
+              ));
+              foreach ($extra_acls as $sender_acl_external) {
+                $stmt = $pdo->prepare("INSERT INTO `sender_acl` (`send_as`, `logged_in_as`, `external`)
+                  VALUES (:sender_acl, :username, 1)");
+                $stmt->execute(array(
+                  ':sender_acl' => $sender_acl_external,
+                  ':username' => $username
+                ));
+              }
+            }
             if (isset($_data['sender_acl'])) {
               // Get sender_acl items set by admin
               $sender_acl_admin = array_merge(
@@ -2181,7 +2270,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $sender_acl_merged = array_merge($sender_acl_domain_admin, $sender_acl_admin);
                 // If merged array still contains "*", set it as only value
                 !in_array('*', $sender_acl_merged) ?: $sender_acl_merged = array('*');
-                $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE `logged_in_as` = :username");
+                $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE `external` = 0 AND `logged_in_as` = :username");
                 $stmt->execute(array(
                   ':username' => $username
                 ));
@@ -2204,7 +2293,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 }
               }
               else {
-                $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE `logged_in_as` = :username");
+                $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE `external` = 0 AND `logged_in_as` = :username");
                 $stmt->execute(array(
                   ':username' => $username
                 ));
@@ -2359,6 +2448,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $data['sender_acl_addresses']['rw']             = array();
           $data['sender_acl_addresses']['selectable']     = array();
           $data['fixed_sender_aliases']                   = array();
+          $data['external_sender_aliases']                = array();
           // Fixed addresses
           $stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `goto` REGEXP :goto AND `address` NOT LIKE '@%'");
           $stmt->execute(array(':goto' => '(^|,)'.$_data.'($|,)'));
@@ -2376,9 +2466,18 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $data['fixed_sender_aliases'][] = $row['alias_domain_alias'];
             }
           }
+          // External addresses
+          $stmt = $pdo->prepare("SELECT `send_as` as `send_as_external` FROM `sender_acl` WHERE `logged_in_as` = :logged_in_as AND `external` = '1'");
+          $stmt->execute(array(':logged_in_as' => $_data));
+          $exernal_rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+          while ($row = array_shift($exernal_rows)) {
+            if (!empty($row['send_as_external'])) {
+              $data['external_sender_aliases'][] = $row['send_as_external'];
+            }
+          }
           // Return array $data['sender_acl_domains/addresses']['ro'] with read-only objects
           // Return array $data['sender_acl_domains/addresses']['rw'] with read-write objects (can be deleted)
-          $stmt = $pdo->prepare("SELECT REPLACE(`send_as`, '@', '') AS `send_as` FROM `sender_acl` WHERE `logged_in_as` = :logged_in_as AND (`send_as` LIKE '@%' OR `send_as` = '*')");
+          $stmt = $pdo->prepare("SELECT REPLACE(`send_as`, '@', '') AS `send_as` FROM `sender_acl` WHERE `logged_in_as` = :logged_in_as AND `external` = '0' AND (`send_as` LIKE '@%' OR `send_as` = '*')");
           $stmt->execute(array(':logged_in_as' => $_data));
           $domain_rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
           while ($domain_row = array_shift($domain_rows)) {
@@ -2397,7 +2496,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $data['sender_acl_domains']['rw'][] = $domain_row['send_as'];
             }
           }
-          $stmt = $pdo->prepare("SELECT `send_as` FROM `sender_acl` WHERE `logged_in_as` = :logged_in_as AND (`send_as` NOT LIKE '@%' AND `send_as` != '*')");
+          $stmt = $pdo->prepare("SELECT `send_as` FROM `sender_acl` WHERE `logged_in_as` = :logged_in_as AND `external` = '0' AND (`send_as` NOT LIKE '@%' AND `send_as` != '*')");
           $stmt->execute(array(':logged_in_as' => $_data));
           $address_rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
           while ($address_row = array_shift($address_rows)) {
@@ -2414,12 +2513,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             WHERE `domain` NOT IN (
               SELECT REPLACE(`send_as`, '@', '') FROM `sender_acl` 
                 WHERE `logged_in_as` = :logged_in_as1
+                  AND `external` = '0'
                   AND `send_as` LIKE '@%')
             UNION
             SELECT '*' FROM `domain`
               WHERE '*' NOT IN (
                 SELECT `send_as` FROM `sender_acl`  
                   WHERE `logged_in_as` = :logged_in_as2
+                    AND `external` = '0'
               )");
           $stmt->execute(array(
             ':logged_in_as1' => $_data,
@@ -2441,6 +2542,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               AND `address` NOT IN (
                 SELECT `send_as` FROM `sender_acl` 
                   WHERE `logged_in_as` = :logged_in_as
+                    AND `external` = '0'
                     AND `send_as` NOT LIKE '@%')");
           $stmt->execute(array(
             ':logged_in_as' => $_data,
@@ -2909,7 +3011,13 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ':aliasdomain' => $_data,
           ));
           $row = $stmt->fetch(PDO::FETCH_ASSOC);
+          $stmt = $pdo->prepare("SELECT `backupmx` FROM `domain` WHERE `domain` = :target_domain");
+          $stmt->execute(array(
+            ':target_domain' => $row['target_domain']
+          ));
+          $row_parent = $stmt->fetch(PDO::FETCH_ASSOC);
           $aliasdomaindata['alias_domain'] = $row['alias_domain'];
+          $aliasdomaindata['parent_is_backupmx'] = $row_parent['backupmx'];
           $aliasdomaindata['target_domain'] = $row['target_domain'];
           $aliasdomaindata['active'] = $row['active'];
           $aliasdomaindata['rl'] = $rl;
