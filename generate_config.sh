@@ -2,6 +2,12 @@
 
 set -o pipefail
 
+if [[ "$(uname -r)" =~ ^4\.15\.0-60 ]]; then
+  echo "DO NOT RUN mailcow ON THIS UBUNTU KERNEL!";
+  echo "Please update to 5.x or use another distribution."
+  exit 1
+fi
+
 if grep --help 2>&1 | grep -q -i "busybox"; then
   echo "BusybBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\""
   exit 1
