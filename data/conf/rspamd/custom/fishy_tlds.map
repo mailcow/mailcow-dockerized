@@ -5,7 +5,6 @@
 /.+\.bid$/i
 /.+\.biz$/i
 /.+\.care$/i
-/.+\.cc$/i
 /.+\.cf$/i
 /.+\.cl$/i
 /.+\.click$/i
@@ -63,7 +62,6 @@
 /.+\.top$/i
 /.+\.topica\.com$/i
 /.+\.town$/i
-/.+\.tr$/i
 /.+\.trade$/i
 /.+\.uno$/i
 /.+\.us$/i
