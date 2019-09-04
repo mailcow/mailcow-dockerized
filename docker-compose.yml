@@ -215,7 +215,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.38
+      image: mailcow/postfix:1.39
       build: ./data/Dockerfiles/postfix
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
@@ -346,10 +346,12 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.56
+      image: mailcow/watchdog:1.57
       # Debug
       #command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog
+      dns:
+        - ${IPV4_NETWORK:-172.22.1}.254
       volumes:
         - rspamd-vol-1:/var/lib/rspamd
         - mysql-socket-vol-1:/var/run/mysqld/
