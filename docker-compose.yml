@@ -260,6 +260,8 @@ services:
     memcached-mailcow:
       image: memcached:alpine
       restart: always
+      environment:
+        - TZ=${TZ}  
       networks:
         mailcow-network:
           aliases:
