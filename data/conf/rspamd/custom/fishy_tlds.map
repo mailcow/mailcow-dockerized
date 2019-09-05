@@ -13,7 +13,6 @@
 /.+\.construction$/i
 /.+\.country$/i
 /.+\.cricket$/i
-/.+\.cz$/i
 /.+\.date$/i
 /.+\.desi$/i
 /.+\.download$/i
@@ -27,7 +26,6 @@
 /.+\.guru$/i
 /.+\.icu$/i
 /.+\.id$/i
-/.+\.in$/i
 /.+\.info$/i
 /.+\.in.net$/i
 /.+\.ir$/i
@@ -49,10 +47,8 @@
 /.+\.review$/i
 /.+\.rocks$/i
 /.+\.rs$/i
-/.+\.ru$/i
 /.+\.ryukyu$/i
 /.+\.science$/i
-/.+\.se$/i
 /.+\.si$/i
 /.+\.site$/i
 /.+\.space$/i
