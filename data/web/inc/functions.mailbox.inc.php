@@ -718,7 +718,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               WHERE `domain`= :target_domain AND `backupmx` = '1'");
             $stmt->execute(array(':target_domain' => $target_domain));
             $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-            if ($num_results == 0) {
+            if ($num_results == 1) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
