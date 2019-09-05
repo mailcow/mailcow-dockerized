@@ -248,6 +248,8 @@ services:
     memcached-mailcow:
       image: memcached:alpine
       restart: always
+      environment:
+        - TZ=${TZ}
       networks:
         mailcow-network:
           aliases:
@@ -413,6 +415,7 @@ services:
       restart: always
       build: ./data/Dockerfiles/olefy
       environment:
+        - TZ=${TZ}
         - OLEFY_BINDADDRESS=0.0.0.0
         - OLEFY_BINDPORT=10055
         - OLEFY_TMPDIR=/tmp
@@ -444,6 +447,8 @@ services:
         - watchdog-mailcow
         - dockerapi-mailcow
         - solr-mailcow
+      environment:
+        - TZ=${TZ}
       image: robbertkl/ipv6nat
       restart: always
       privileged: true
