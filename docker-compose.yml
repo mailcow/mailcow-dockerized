@@ -260,8 +260,6 @@ services:
     memcached-mailcow:
       image: memcached:alpine
       restart: always
-      dns:
-        - ${IPV4_NETWORK:-172.22.1}.254
       environment:
         - TZ=${TZ}  
       networks:
