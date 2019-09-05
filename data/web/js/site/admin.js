@@ -280,7 +280,7 @@ jQuery(function($){
       });
     } else if (table == 'adminstable') {
       $.each(data, function (i, item) {
-        if (admin_username == item.username) {
+        if (admin_username.toLowerCase() == item.username.toLowerCase()) {
           item.usr = '→ ' + item.username;
         } else {
           item.usr = item.username;
