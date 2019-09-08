@@ -127,7 +127,7 @@ services:
         - SMTP_PORT=${SMTP_PORT:-25}
         - API_KEY=${API_KEY:-invalid}
         - API_ALLOW_FROM=${API_ALLOW_FROM:-invalid}
-        - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-mailcow-dockerized}
+        - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-mailcowdockerized}
         - SKIP_SOLR=${SKIP_SOLR:-y}
         - ALLOW_ADMIN_EMAIL_LOGIN=${ALLOW_ADMIN_EMAIL_LOGIN:-n}
       restart: always
@@ -186,6 +186,7 @@ services:
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
         - TZ=${TZ}
+        - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-mailcowdockerized}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
         - ALLOW_ADMIN_EMAIL_LOGIN=${ALLOW_ADMIN_EMAIL_LOGIN:-n}
@@ -308,6 +309,7 @@ services:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
+        - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-mailcowdockerized}
         - SKIP_LETS_ENCRYPT=${SKIP_LETS_ENCRYPT:-n}
         - SKIP_IP_CHECK=${SKIP_IP_CHECK:-n}
         - SKIP_HTTP_VERIFICATION=${SKIP_HTTP_VERIFICATION:-n}
@@ -365,6 +367,7 @@ services:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
+        - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-mailcowdockerized}
         - USE_WATCHDOG=${USE_WATCHDOG:-n}
         - WATCHDOG_NOTIFY_EMAIL=${WATCHDOG_NOTIFY_EMAIL}
         - WATCHDOG_NOTIFY_BAN=${WATCHDOG_NOTIFY_BAN:-y}
