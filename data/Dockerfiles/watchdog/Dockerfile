@@ -7,6 +7,7 @@ RUN apk add --update \
   nagios-plugins-tcp \
   nagios-plugins-http \
   nagios-plugins-ping \
+  mariadb-client \
   curl \
   bash \
   coreutils \
