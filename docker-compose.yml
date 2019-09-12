@@ -360,7 +360,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.57
+      image: mailcow/watchdog:1.58
       # Debug
       #command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog
