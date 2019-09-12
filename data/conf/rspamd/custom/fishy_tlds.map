@@ -1,5 +1,4 @@
 /.+\.accountant$/i
-/.+\.ar$/i
 /.+\.art$/i
 /.+\.asia$/i
 /.+\.bid$/i
@@ -46,10 +45,8 @@
 /.+\.racing$/i
 /.+\.review$/i
 /.+\.rocks$/i
-/.+\.rs$/i
 /.+\.ryukyu$/i
 /.+\.science$/i
-/.+\.si$/i
 /.+\.site$/i
 /.+\.space$/i
 /.+\.stream$/i
@@ -60,7 +57,6 @@
 /.+\.town$/i
 /.+\.trade$/i
 /.+\.uno$/i
-/.+\.us$/i
 /.+\.vip$/i
 /.+\.webcam$/i
 /.+\.website$/i

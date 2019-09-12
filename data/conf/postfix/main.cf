@@ -56,7 +56,6 @@ postscreen_dnsbl_sites = wl.mailspike.net=127.0.0.[18;19;20]*-2
   bl.ipv6.spameatingmonkey.net*2
   bl.spameatingmonkey.net*2
   b.barracudacentral.org=127.0.0.2*7
-  dnsbl.inps.de=127.0.0.2*7
   bl.mailspike.net=127.0.0.2*5
   bl.mailspike.net=127.0.0.[10;11;12]*4
   dnsbl.sorbs.net=127.0.0.10*8
