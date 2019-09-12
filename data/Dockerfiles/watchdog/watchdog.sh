@@ -19,6 +19,17 @@ if [[ ! -p /tmp/com_pipe ]]; then
   mkfifo /tmp/com_pipe
 fi
 
+# Wait for containers
+while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
+  echo "Waiting for SQL..."
+  sleep 2
+done
+
+until [[ $(redis-cli -h redis-mailcow PING) == "PONG" ]]; do
+  echo "Waiting for Redis..."
+  sleep 2
+done
+
 redis-cli -h redis-mailcow DEL F2B_RES > /dev/null
 
 # Common functions
@@ -173,6 +184,31 @@ unbound_checks() {
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
     [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
     progress "Unbound" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
+    if [[ $? == 10 ]]; then
+      diff_c=0
+      sleep 1
+    else
+      diff_c=0
+      sleep $(( ( RANDOM % 60 ) + 20 ))
+    fi
+  done
+  return 1
+}
+
+redis_checks() {
+  err_count=0
+  diff_c=0
+  THRESHOLD=5
+  # Reduce error count by 2 after restarting an unhealthy container
+  trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
+  while [ ${err_count} -lt ${THRESHOLD} ]; do
+    touch /tmp/redis-mailcow; echo "$(tail -50 /tmp/redis-mailcow)" > /tmp/redis-mailcow
+    host_ip=$(get_container_ip redis-mailcow)
+    err_c_cur=${err_count}
+    /usr/lib/nagios/plugins/check_tcp -4 -H redis-mailcow -p 6379 -E -s "PING\n" -q "QUIT" -e "PONG" 2>> /tmp/redis-mailcow 1>&2; err_count=$(( ${err_count} + $? ))
+    [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
+    [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
+    progress "Redis" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
     if [[ $? == 10 ]]; then
       diff_c=0
       sleep 1
@@ -557,6 +593,18 @@ done
 ) &
 PID=$!
 echo "Spawned mysql_checks with PID ${PID}"
+BACKGROUND_TASKS+=(${PID})
+
+(
+while true; do
+  if ! redis_checks; then
+    log_msg "Redis hit error limit"
+    echo redis-mailcow > /tmp/com_pipe
+  fi
+done
+) &
+PID=$!
+echo "Spawned redis_checks with PID ${PID}"
 BACKGROUND_TASKS+=(${PID})
 
 (
