@@ -1,29 +1,47 @@
+# inter-mx with postscreen on 25/tcp
 smtp       inet  n       -       n       -       1       postscreen
 smtpd      pass  -       -       n       -       -       smtpd
   -o smtpd_helo_restrictions=permit_mynetworks,reject_non_fqdn_helo_hostname
   -o smtpd_sasl_auth_enable=no
+  -o smtpd_sender_restrictions=permit_mynetworks,reject_unlisted_sender,reject_unknown_sender_domain
+
+# smtpd tls-wrapped (smtps) on 465/tcp
 smtps    inet  n       -       n       -       -       smtpd
   -o smtpd_tls_wrappermode=yes
   -o smtpd_client_restrictions=permit_mynetworks,permit_sasl_authenticated,reject
+  -o smtpd_tls_mandatory_protocols=!SSLv2,!SSLv3
   -o tls_preempt_cipherlist=yes
+
+# smtpd with starttls on 587/tcp
 submission inet n       -       n       -       -       smtpd
   -o smtpd_client_restrictions=permit_mynetworks,permit_sasl_authenticated,reject
   -o smtpd_enforce_tls=yes
   -o smtpd_tls_security_level=encrypt
+  -o smtpd_tls_mandatory_protocols=!SSLv2,!SSLv3
   -o tls_preempt_cipherlist=yes
+
+# used by SOGo
+# smtpd_sender_restrictions should match main.cf, but with check_sasl_access prepended for login-as-mailbox-user function
 588 inet n      -       n       -       -       smtpd
   -o smtpd_client_restrictions=permit_mynetworks,permit_sasl_authenticated,reject
   -o smtpd_tls_auth_only=no
   -o smtpd_sender_restrictions=check_sasl_access,regexp:/opt/postfix/conf/allow_mailcow_local.regexp,reject_authenticated_sender_login_mismatch,permit_mynetworks,permit_sasl_authenticated,reject_unlisted_sender,reject_unknown_sender_domain
+
+# used to reinject quarantine mails
 590 inet n      -       n       -       -       smtpd
   -o smtpd_client_restrictions=permit_mynetworks,reject
   -o smtpd_tls_auth_only=no
   -o smtpd_milters=
   -o non_smtpd_milters=
+
+# enforced smtp connector
 smtp_enforced_tls      unix  -       -       n       -       -       smtp
   -o smtp_tls_security_level=encrypt
   -o syslog_name=enforced-tls-smtp
   -o smtp_delivery_status_filter=pcre:/opt/postfix/conf/smtp_dsn_filter
+
+# smtp connector used, when a transport map matched
+# this helps to have different sasl maps than we have with sender dependent transport maps
 smtp_via_transport_maps      unix  -       -       n       -       -       smtp
   -o smtp_sasl_password_maps=proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps_transport_maps.cf
 
@@ -55,25 +73,12 @@ scache     unix  -       -       n       -       1       scache
 maildrop   unix  -       n       n       -       -       pipe flags=DRhu
     user=vmail argv=/usr/bin/maildrop -d ${recipient}
 
-# start zeyple
-zeyple    unix  -       n       n       -       -       pipe
-  user=zeyple argv=/usr/local/bin/zeyple.py ${recipient}
-127.0.0.1:10026 inet  n       -       n       -       10      smtpd
-  -o content_filter=
-  -o receive_override_options=no_unknown_recipient_checks,no_header_body_checks,no_milters
-  -o smtpd_helo_restrictions=
-  -o smtpd_client_restrictions=
-  -o smtpd_sender_restrictions=
-  -o smtpd_recipient_restrictions=permit_mynetworks,reject
-  -o mynetworks=127.0.0.0/8
-  -o smtpd_authorized_xforward_hosts=127.0.0.0/8
-# end zeyple
-
 # start whitelist_fwd
 127.0.0.1:10027 inet n n n - 0 spawn user=nobody argv=/usr/local/bin/whitelist_forwardinghosts.sh
 # end whitelist_fwd
 
 # start watchdog-specific
+# logs to local7 (hidden)
 589 inet n      -       n       -       -       smtpd
   -o smtpd_client_restrictions=permit_mynetworks,reject
   -o syslog_name=watchdog

@@ -498,6 +498,7 @@ $lang['quarantine']['show_item'] = "Mostrar";
 $lang['quarantine']['check_hash'] = "Comprovar el hash del fitxer a VT";
 $lang['quarantine']['qitem'] = "Element en quarantena";
 $lang['quarantine']['subj'] = "Assumpte";
+$lang['quarantine']['recipients'] = "Recipients";
 $lang['quarantine']['text_plain_content'] = "Contingut (text/plain)";
 $lang['quarantine']['text_from_html_content'] = "Contingut (a partir del HTML)";
 $lang['quarantine']['atts'] = "Adjunts";

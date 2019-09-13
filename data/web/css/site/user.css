@@ -40,3 +40,11 @@ table.footable>tbody>tr.footable-empty>td {
 body {
   overflow-y:scroll;
 }
+
+table tbody tr {
+  cursor: pointer;
+}
+
+table tbody tr td input[type="checkbox"] {
+  cursor: pointer;
+}

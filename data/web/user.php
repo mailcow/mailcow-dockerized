@@ -77,7 +77,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
   $username = $_SESSION['mailcow_cc_username'];
   $mailboxdata = mailbox('get', 'mailbox_details', $username);
 
-  $clientconfigstr = "host=" . urlencode($mailcow_hostname) . "&email=" . urlencode($username) . "&name=" . urlencode($mailboxdata['name']) . "&ui=" . urlencode($_SERVER['HTTP_HOST']) . "&port=" . urlencode($autodiscover_config['caldav']['port']);
+  $clientconfigstr = "host=" . urlencode($mailcow_hostname) . "&email=" . urlencode($username) . "&name=" . urlencode($mailboxdata['name']) . "&ui=" . urlencode(strtok($_SERVER['HTTP_HOST'], ':')) . "&port=" . urlencode($autodiscover_config['caldav']['port']);
   if ($autodiscover_config['useEASforOutlook'] == 'yes')
   $clientconfigstr .= "&outlookEAS=1";
   if (file_exists('thunderbird-plugins/version.csv')) {
@@ -199,7 +199,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
                 <?=$mailboxdata['percent_in_use'];?>%
               </div>
             </div>
-            <p><?=formatBytes($mailboxdata['quota_used'], 2);?> / <?=formatBytes($mailboxdata['quota'], 2);?>, <?=$mailboxdata['messages'];?> <?=$lang['user']['messages'];?></p>
+            <p><?=formatBytes($mailboxdata['quota_used'], 2);?> / <?=($mailboxdata['quota'] == 0) ? '∞' : formatBytes($mailboxdata['quota'], 2);?><br><?=$mailboxdata['messages'];?> <?=$lang['user']['messages'];?></p>
           </div>
         </div>
         <hr>

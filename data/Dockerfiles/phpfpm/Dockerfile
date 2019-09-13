@@ -1,11 +1,11 @@
-FROM php:7.3-fpm-alpine3.8
+FROM php:7.3-fpm-alpine3.10
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
-ENV APCU_PECL 5.1.16
-ENV IMAGICK_PECL 3.4.3
+ENV APCU_PECL 5.1.17
+ENV IMAGICK_PECL 3.4.4
 #ENV MAILPARSE_PECL 3.0.2
 ENV MEMCACHED_PECL 3.1.3
-ENV REDIS_PECL 4.2.0
+ENV REDIS_PECL 5.0.1
 
 RUN apk add -U --no-cache autoconf \
   bash \
@@ -53,13 +53,14 @@ RUN apk add -U --no-cache autoconf \
   && docker-php-ext-enable apcu imagick memcached mailparse redis \
   && pecl clear-cache \
   && docker-php-ext-configure intl \
+  && docker-php-ext-configure exif \
   && docker-php-ext-configure gd \
     --with-gd \
     --enable-gd-native-ttf \
     --with-freetype-dir=/usr/include/ \
     --with-png-dir=/usr/include/ \
     --with-jpeg-dir=/usr/include/ \
-  && docker-php-ext-install -j 4 gd gettext intl ldap opcache pcntl pdo pdo_mysql soap sockets xmlrpc zip \
+  && docker-php-ext-install -j 4 exif gd gettext intl ldap opcache pcntl pdo pdo_mysql soap sockets xmlrpc zip \
   && docker-php-ext-configure imap --with-imap --with-imap-ssl \
   && docker-php-ext-install -j 4 imap \
   && apk del --purge autoconf \

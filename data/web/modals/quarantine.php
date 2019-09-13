@@ -18,6 +18,10 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
           <p id="qid_detail_subj"></p>
         </div>
         <div class="form-group">
+          <label for="qid_detail_recipients"><h4><?=$lang['quarantine']['recipients'];?>:</h4></label>
+          <p id="qid_detail_recipients"></p>
+        </div>
+        <div class="form-group">
           <label for="qid_detail_text"><h4><?=$lang['quarantine']['text_plain_content'];?>:</h4></label>
           <pre id="qid_detail_text"></pre>
         </div>

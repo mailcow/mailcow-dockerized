@@ -178,7 +178,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-body">
-        <form class="form-horizontal" data-cached-form="true" data-id="pwchange" role="form" method="post" autocomplete="off">
+        <form class="form-horizontal" data-cached-form="false" data-id="pwchange" role="form" method="post" autocomplete="off">
           <div class="form-group">
             <label class="control-label col-sm-3" for="user_new_pass"><?=$lang['user']['new_password'];?></label>
             <div class="col-sm-5">

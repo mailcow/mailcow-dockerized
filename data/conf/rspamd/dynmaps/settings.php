@@ -6,6 +6,8 @@ then any of these will trigger the rule. If a rule is triggered then no more rul
 */
 header('Content-Type: text/plain');
 require_once "vars.inc.php";
+// Getting headers sent by the client.
+//$headers = apache_request_headers();
 
 ini_set('error_reporting', 0);
 
@@ -25,6 +27,23 @@ catch (PDOException $e) {
   exit;
 }
 
+// Check if db changed and return header
+/*$stmt = $pdo->prepare("SELECT UNIX_TIMESTAMP(UPDATE_TIME) AS `db_update_time` FROM information_schema.tables
+  WHERE `TABLE_NAME` = 'filterconf'
+    AND TABLE_SCHEMA = :dbname;");
+$stmt->execute(array(
+  ':dbname' => $database_name
+));
+$db_update_time = $stmt->fetch(PDO::FETCH_ASSOC)['db_update_time'];
+
+if (isset($headers['If-Modified-Since']) && (strtotime($headers['If-Modified-Since']) == $db_update_time)) {
+  header('Last-Modified: '.gmdate('D, d M Y H:i:s', $db_update_time).' GMT', true, 304);
+  exit;
+} else {
+  header('Last-Modified: '.gmdate('D, d M Y H:i:s', $db_update_time).' GMT', true, 200);
+}
+*/
+
 function parse_email($email) {
   if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return false;
   $a = strrpos($email, '@');
@@ -43,7 +62,9 @@ function wl_by_sogo() {
       if (!filter_var($contact, FILTER_VALIDATE_EMAIL)) {
         continue;
       }
-      $rcpt[$row['user']][] = '/^' . str_replace('/', '\/', $contact) . '$/i';
+      // Explicit from, no mime_from, no regex - envelope must match
+      // mailcow white and blacklists also cover mime_from
+      $rcpt[$row['user']][] = str_replace('/', '\/', $contact);
     }
   }
   return $rcpt;
@@ -67,7 +88,7 @@ function ucl_rcpts($object, $type) {
       if (!empty($local) && !empty($domain)) {
         $rcpt[] = '/^' . str_replace('/', '\/', $local) . '[+].*' . str_replace('/', '\/', $domain) . '$/i';
       }
-      $rcpt[] = '/^' . str_replace('/', '\/', $row['address']) . '$/i';
+      $rcpt[] = str_replace('/', '\/', $row['address']);
     }
     // Aliases by alias domains
     $stmt = $pdo->prepare("SELECT CONCAT(`local_part`, '@', `alias_domain`.`alias_domain`) AS `alias` FROM `mailbox` 
@@ -85,7 +106,7 @@ function ucl_rcpts($object, $type) {
         if (!empty($local) && !empty($domain)) {
           $rcpt[] = '/^' . str_replace('/', '\/', $local) . '[+].*' . str_replace('/', '\/', $domain) . '$/i';
         }
-      $rcpt[] = '/^' . str_replace('/', '\/', $row['alias']) . '$/i';
+        $rcpt[] = str_replace('/', '\/', $row['alias']);
       }
     }
   }
@@ -107,8 +128,8 @@ function ucl_rcpts($object, $type) {
 settings {
   watchdog {
     priority = 10;
-    rcpt = "/null@localhost/i";
-    from = "/watchdog@localhost/i";
+    rcpt_mime = "/null@localhost/i";
+    from_mime = "/watchdog@localhost/i";
     apply "default" {
       actions {
         reject = 9999.0;
@@ -199,12 +220,13 @@ while ($row = array_shift($rows)) {
 ?>
   whitelist_<?=$username_sane;?> {
 <?php
+  $list_items = array();
   $stmt = $pdo->prepare("SELECT `value` FROM `filterconf`
     WHERE `object`= :object
       AND `option` = 'whitelist_from'");
   $stmt->execute(array(':object' => $row['object']));
   $list_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  while ($item = array_shift($list_items)) {
+  foreach ($list_items as $item) {
 ?>
     from = "/<?='^' . str_replace('\*', '.*', preg_quote($item['value'], '/')) . '$' ;?>/i";
 <?php
@@ -237,24 +259,13 @@ while ($row = array_shift($rows)) {
       "MAILCOW_WHITE"
     ]
   }
-  whitelist_header_<?=$username_sane;?> {
+  whitelist_mime_<?=$username_sane;?> {
 <?php
-  $header_from = array();
-  $stmt = $pdo->prepare("SELECT `value` FROM `filterconf`
-    WHERE `object`= :object
-      AND `option` = 'whitelist_from'");
-  $stmt->execute(array(':object' => $row['object']));
-  $list_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  foreach ($list_items as $item) {
 ?>
-    header = {
+    from_mime = "/<?='^' . str_replace('\*', '.*', preg_quote($item['value'], '/')) . '$' ;?>/i";
 <?php
-  while ($item = array_shift($list_items)) {
-    $header_from[] = str_replace('\*', '.*', preg_quote($item['value'], '/'));
   }
-?>
-      "From" = "/(<?=implode('|', $header_from);?>)/i";
-    }
-<?php
   if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
 ?>
     priority = 5;
@@ -297,13 +308,13 @@ while ($row = array_shift($rows)) {
 ?>
   blacklist_<?=$username_sane;?> {
 <?php
-  $items[] = array();
+  $list_items = array();
   $stmt = $pdo->prepare("SELECT `value` FROM `filterconf`
     WHERE `object`= :object
       AND `option` = 'blacklist_from'");
   $stmt->execute(array(':object' => $row['object']));
   $list_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  while ($item = array_shift($list_items)) {
+  foreach ($list_items as $item) {
 ?>
     from = "/<?='^' . str_replace('\*', '.*', preg_quote($item['value'], '/')) . '$' ;?>/i";
 <?php
@@ -338,22 +349,11 @@ while ($row = array_shift($rows)) {
   }
   blacklist_header_<?=$username_sane;?> {
 <?php
-  $header_from = array();
-  $stmt = $pdo->prepare("SELECT `value` FROM `filterconf`
-    WHERE `object`= :object
-      AND `option` = 'blacklist_from'");
-  $stmt->execute(array(':object' => $row['object']));
-  $list_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  foreach ($list_items as $item) {
 ?>
-    header = {
+    from_mime = "/<?='^' . str_replace('\*', '.*', preg_quote($item['value'], '/')) . '$' ;?>/i";
 <?php
-  while ($item = array_shift($list_items)) {
-    $header_from[] = str_replace('\*', '.*', preg_quote($item['value'], '/'));
   }
-?>
-      "From" = "/(<?=implode('|', $header_from);?>)/i";
-    }
-<?php
   if (!filter_var(trim($row['object']), FILTER_VALIDATE_EMAIL)) {
 ?>
     priority = 5;

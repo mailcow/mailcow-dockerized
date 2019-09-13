@@ -135,7 +135,7 @@ function mailparse_msg_create()
  * @param resource $mimemail A valid MIME resource allocated by
  *                           mailparse_msg_create or mailparse_msg_parse_file
  *
- * @return bool
+ * @return boolean|null
  */
 function mailparse_msg_free($mimemail)
 {
@@ -149,7 +149,7 @@ function mailparse_msg_free($mimemail)
  * @param resource $mimemail A valid MIME resource
  * @param string   $data
  *
- * @return bool
+ * @return boolean|null
  */
 function mailparse_msg_parse($mimemail, $data)
 {
@@ -199,7 +199,7 @@ function mailparse_determine_best_xfer_encoding($fp)
  * @param string   $encoding One of the character encodings supported by the mbstring
  *                           module
  *
- * @return bool
+ * @return boolean|null
  */
 function mailparse_stream_encode($sourcefp, $destfp, $encoding)
 {

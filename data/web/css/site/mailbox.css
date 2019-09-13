@@ -9,7 +9,7 @@ table.footable>tbody>tr.footable-empty>td {
   overflow: visible !important;
 }
 .table-responsive {
-  overflow: auto !important;
+  overflow: inherit !important;
 }
 @media screen and (max-width: 767px) {
   .table-responsive {
@@ -52,4 +52,10 @@ table.footable>tbody>tr.footable-empty>td {
 #logText {
   font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
   font-size:smaller;
+}
+table tbody tr {
+  cursor: pointer;
+}
+table tbody tr td input[type="checkbox"] {
+  cursor: pointer;
 }

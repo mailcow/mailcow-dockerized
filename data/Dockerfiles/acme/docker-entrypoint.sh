@@ -5,6 +5,21 @@ exec 5>&1
 # Thanks to https://github.com/cvmiller -> https://github.com/cvmiller/expand6
 source /srv/expand6.sh
 
+# Skipping IP check when we like to live dangerously
+if [[ "${SKIP_IP_CHECK}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  SKIP_IP_CHECK=y
+fi
+
+# Skipping HTTP check when we like to live dangerously
+if [[ "${SKIP_HTTP_VERIFICATION}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  SKIP_HTTP_VERIFICATION=y
+fi
+
+# Request certificate for MAILCOW_HOSTNAME ony
+if [[ "${ONLY_MAILCOW_HOSTNAME}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  ONLY_MAILCOW_HOSTNAME=y
+fi
+
 log_f() {
   if [[ ${2} == "no_nl" ]]; then
     echo -n "$(date) - ${1}"
@@ -41,7 +56,6 @@ mkdir -p ${ACME_BASE}/acme
 # Migrate
 [[ -f ${ACME_BASE}/acme/private/privkey.pem ]] && mv ${ACME_BASE}/acme/private/privkey.pem ${ACME_BASE}/acme/key.pem
 [[ -f ${ACME_BASE}/acme/private/account.key ]] && mv ${ACME_BASE}/acme/private/account.key ${ACME_BASE}/acme/account.pem
-
 
 reload_configurations(){
   # Reading container IDs
@@ -118,21 +132,25 @@ get_ipv6(){
 }
 
 verify_challenge_path(){
+  if [[ ${SKIP_HTTP_VERIFICATION} == "y" ]]; then
+    echo '(skipping check, returning 0)'
+    return 0
+  fi
   # verify_challenge_path URL 4|6
-  RAND_FILE=${RANDOM}${RANDOM}${RANDOM}
-  touch /var/www/acme/${RAND_FILE}
-  if [[ "$(curl -${2} http://${1}/.well-known/acme-challenge/${RAND_FILE} --write-out %{http_code} --silent --output /dev/null)" =~ ^(2|3)  ]]; then
-    rm /var/www/acme/${RAND_FILE}
+  RANDOM_N=${RANDOM}${RANDOM}${RANDOM}
+  echo ${RANDOM_N} > /var/www/acme/${RANDOM_N}
+  if [[ "$(curl --insecure -${2} -L http://${1}/.well-known/acme-challenge/${RANDOM_N} --silent)" == "${RANDOM_N}"  ]]; then
+    rm /var/www/acme/${RANDOM_N}
     return 0
   else
-    rm /var/www/acme/${RAND_FILE}
+    rm /var/www/acme/${RANDOM_N}
     return 1
   fi
 }
 
 [[ ! -f ${ACME_BASE}/dhparams.pem ]] && cp ${SSL_EXAMPLE}/dhparams.pem ${ACME_BASE}/dhparams.pem
 
-if [[ -f ${ACME_BASE}/cert.pem ]] && [[ -f ${ACME_BASE}/key.pem ]]; then
+if [[ -f ${ACME_BASE}/cert.pem ]] && [[ -f ${ACME_BASE}/key.pem ]] && [[ $(stat -c%s ${ACME_BASE}/cert.pem) != 0 ]]; then
   ISSUER=$(openssl x509 -in ${ACME_BASE}/cert.pem -noout -issuer)
   if [[ ${ISSUER} != *"Let's Encrypt"* && ${ISSUER} != *"mailcow"* && ${ISSUER} != *"Fake LE Intermediate"* ]]; then
     log_f "Found certificate with issuer other than mailcow snake-oil CA and Let's Encrypt, skipping ACME client..."
@@ -156,6 +174,7 @@ else
     exec env TRIGGER_RESTART=1 $(readlink -f "$0")
   fi
 fi
+chmod 600 ${ACME_BASE}/key.pem
 
 log_f "Waiting for database... " no_nl
 while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
@@ -196,10 +215,8 @@ while true; do
     log_f "Using existing Lets Encrypt account key ${ACME_BASE}/acme/account.pem"
   fi
 
-  # Skipping IP check when we like to live dangerously
-  if [[ "${SKIP_IP_CHECK}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-    SKIP_IP_CHECK=y
-  fi
+  chmod 600 ${ACME_BASE}/acme/key.pem
+  chmod 600 ${ACME_BASE}/acme/account.pem
 
   # Cleaning up and init validation arrays
   unset SQL_DOMAIN_ARR
@@ -228,7 +245,7 @@ while true; do
       ADDITIONAL_SAN_ARR+=($i)
     fi
   done
-  ADDITIONAL_WC_ARR+=('autodiscover')
+  ADDITIONAL_WC_ARR+=('autodiscover' 'autoconfig')
 
   # Start IP detection
   log_f "Detecting IP addresses... " no_nl
@@ -255,9 +272,10 @@ while true; do
     SQL_DOMAIN_ARR+=("${domains}")
   done < <(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM domain WHERE backupmx=0" -Bs)
 
+  if [[ ${ONLY_MAILCOW_HOSTNAME} != "y" ]]; then
   for SQL_DOMAIN in "${SQL_DOMAIN_ARR[@]}"; do
     for SUBDOMAIN in "${ADDITIONAL_WC_ARR[@]}"; do
-      if [[  "${SUBDOMAIN}.${SQL_DOMAIN}" != "${MAILCOW_HOSTNAME}" ]]; then
+      if [[ "${SUBDOMAIN}.${SQL_DOMAIN}" != "${MAILCOW_HOSTNAME}" ]]; then
         A_SUBDOMAIN=$(dig A ${SUBDOMAIN}.${SQL_DOMAIN} +short | tail -n 1)
         AAAA_SUBDOMAIN=$(dig AAAA ${SUBDOMAIN}.${SQL_DOMAIN} +short | tail -n 1)
         # Check if CNAME without v6 enabled target
@@ -268,10 +286,10 @@ while true; do
           log_f "Found AAAA record for ${SUBDOMAIN}.${SQL_DOMAIN}: ${AAAA_SUBDOMAIN} - skipping A record check"
           if [[ $(expand ${IPV6:-"0000:0000:0000:0000:0000:0000:0000:0000"}) == $(expand ${AAAA_SUBDOMAIN}) ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
             if verify_challenge_path "${SUBDOMAIN}.${SQL_DOMAIN}" 6; then
-              log_f "Confirmed AAAA record ${AAAA_SUBDOMAIN}"
+              log_f "Confirmed AAAA record with IP ${AAAA_SUBDOMAIN}, adding SAN"
               VALIDATED_CONFIG_DOMAINS+=("${SUBDOMAIN}.${SQL_DOMAIN}")
             else
-              log_f "Confirmed AAAA record ${AAAA_SUBDOMAIN}, but HTTP validation failed"
+              log_f "Confirmed AAAA record with IP ${AAAA_SUBDOMAIN}, but HTTP validation failed"
             fi
           else
             log_f "Cannot match your IP ${IPV6:-NO_IPV6_LINK} against hostname ${SUBDOMAIN}.${SQL_DOMAIN} ($(expand ${AAAA_SUBDOMAIN}))"
@@ -280,10 +298,10 @@ while true; do
           log_f "Found A record for ${SUBDOMAIN}.${SQL_DOMAIN}: ${A_SUBDOMAIN}"
           if [[ ${IPV4:-ERR} == ${A_SUBDOMAIN} ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
             if verify_challenge_path "${SUBDOMAIN}.${SQL_DOMAIN}" 4; then
-              log_f "Confirmed A record ${A_SUBDOMAIN}"
+              log_f "Confirmed A record ${A_SUBDOMAIN}, adding SAN"
               VALIDATED_CONFIG_DOMAINS+=("${SUBDOMAIN}.${SQL_DOMAIN}")
             else
-              log_f "Confirmed AAAA record ${A_SUBDOMAIN}, but HTTP validation failed"
+              log_f "Confirmed A record with IP ${A_SUBDOMAIN}, but HTTP validation failed"
             fi
           else
             log_f "Cannot match your IP ${IPV4} against hostname ${SUBDOMAIN}.${SQL_DOMAIN} (${A_SUBDOMAIN})"
@@ -294,6 +312,7 @@ while true; do
       fi
     done
   done
+  fi
 
   A_MAILCOW_HOSTNAME=$(dig A ${MAILCOW_HOSTNAME} +short | tail -n 1)
   AAAA_MAILCOW_HOSTNAME=$(dig AAAA ${MAILCOW_HOSTNAME} +short | tail -n 1)
@@ -308,10 +327,10 @@ while true; do
         log_f "Confirmed AAAA record ${AAAA_MAILCOW_HOSTNAME}"
         VALIDATED_MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
       else
-        log_f "Confirmed AAAA record ${A_MAILCOW_HOSTNAME}, but HTTP validation failed"
+        log_f "Confirmed AAAA record with IP ${AAAA_MAILCOW_HOSTNAME}, but HTTP validation failed"
       fi
     else
-      log_f "Cannot match your IP ${IPV6:-NO_IPV6_LINK} against hostname ${MAILCOW_HOSTNAME} ($(expand ${AAAA_MAILCOW_HOSTNAME}))"
+      log_f "Cannot match your IP ${IPV6:-NO_IPV6_LINK} against hostname ${MAILCOW_HOSTNAME} (DNS returned $(expand ${AAAA_MAILCOW_HOSTNAME}))"
     fi
   elif [[ ! -z ${A_MAILCOW_HOSTNAME} ]]; then
     log_f "Found A record for ${MAILCOW_HOSTNAME}: ${A_MAILCOW_HOSTNAME}"
@@ -320,15 +339,16 @@ while true; do
         log_f "Confirmed A record ${A_MAILCOW_HOSTNAME}"
         VALIDATED_MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
       else
-        log_f "Confirmed A record ${A_MAILCOW_HOSTNAME}, but HTTP validation failed"
+        log_f "Confirmed A record with IP ${A_MAILCOW_HOSTNAME}, but HTTP validation failed"
       fi
     else
-      log_f "Cannot match your IP ${IPV4} against hostname ${MAILCOW_HOSTNAME} (${A_MAILCOW_HOSTNAME})"
+      log_f "Cannot match your IP ${IPV4} against hostname ${MAILCOW_HOSTNAME} (DNS returned ${A_MAILCOW_HOSTNAME})"
     fi
   else
     log_f "No A or AAAA record found for hostname ${MAILCOW_HOSTNAME}"
   fi
 
+  if [[ ${ONLY_MAILCOW_HOSTNAME} != "y" ]]; then
   for SAN in "${ADDITIONAL_SAN_ARR[@]}"; do
     # Skip on CAA errors for SAN
     SAN_PARENT_DOMAIN=$(echo ${SAN} | cut -d. -f2-)
@@ -354,13 +374,13 @@ while true; do
       log_f "Found AAAA record for ${SAN}: ${AAAA_SAN} - skipping A record check"
       if [[ $(expand ${IPV6:-"0000:0000:0000:0000:0000:0000:0000:0000"}) == $(expand ${AAAA_SAN}) ]] || [[ ${SKIP_IP_CHECK} == "y" ]]; then
         if verify_challenge_path "${SAN}" 6; then
-          log_f "Confirmed AAAA record ${AAAA_SAN}"
+          log_f "Confirmed AAAA record with IP ${AAAA_SAN}"
           ADDITIONAL_VALIDATED_SAN+=("${SAN}")
         else
-          log_f "Confirmed AAAA record ${AAAA_SAN}, but HTTP validation failed"
+          log_f "Confirmed AAAA record with IP ${AAAA_SAN}, but HTTP validation failed"
         fi
       else
-        log_f "Cannot match your IP ${IPV6:-NO_IPV6_LINK} against hostname ${SAN} ($(expand ${AAAA_SAN}))"
+        log_f "Cannot match your IP ${IPV6:-NO_IPV6_LINK} against hostname ${SAN} (DNS returned $(expand ${AAAA_SAN}))"
       fi
     elif [[ ! -z ${A_SAN} ]]; then
       log_f "Found A record for ${SAN}: ${A_SAN}"
@@ -369,21 +389,23 @@ while true; do
           log_f "Confirmed A record ${A_SAN}"
           ADDITIONAL_VALIDATED_SAN+=("${SAN}")
         else
-          log_f "Confirmed A record ${A_SAN}, but HTTP validation failed"
+          log_f "Confirmed A record with IP ${A_SAN}, but HTTP validation failed"
         fi
       else
-        log_f "Cannot match your IP ${IPV4} against hostname ${SAN} (${A_SAN})"
+        log_f "Cannot match your IP ${IPV4} against hostname ${SAN} (DNS returned ${A_SAN})"
       fi
     else
       log_f "No A or AAAA record found for hostname ${SAN}"
     fi
   done
+  fi
 
   # Unique elements
   ALL_VALIDATED=(${VALIDATED_MAILCOW_HOSTNAME} $(echo ${VALIDATED_CONFIG_DOMAINS[*]} ${ADDITIONAL_VALIDATED_SAN[*]} | xargs -n1 | sort -u | xargs))
   if [[ -z ${ALL_VALIDATED[*]} ]]; then
     log_f "Cannot validate hostnames, skipping Let's Encrypt for 1 hour."
     log_f "Use SKIP_LETS_ENCRYPT=y in mailcow.conf to skip it permanently."
+    redis-cli -h redis SET ACME_FAIL_TIME "$(date +%s)"
     sleep 1h
     exec $(readlink -f "$0")
   fi
@@ -397,19 +419,19 @@ while true; do
   # Finding difference in SAN array now vs. SAN array by current configuration
   array_diff ORPHANED_SAN SAN_ARRAY_NOW ALL_VALIDATED
   if [[ ! -z ${ORPHANED_SAN[*]} ]]; then
-    log_f "Found orphaned SANs ${ORPHANED_SAN[*]}"
+    log_f "Found orphaned SAN ${ORPHANED_SAN[*]}"
     SAN_CHANGE=1
   fi
   array_diff ADDED_SAN ALL_VALIDATED SAN_ARRAY_NOW
   if [[ ! -z ${ADDED_SAN[*]} ]]; then
-    log_f "Found new SANs ${ADDED_SAN[*]}"
+    log_f "Found new SAN ${ADDED_SAN[*]}"
     SAN_CHANGE=1
   fi
 
   if [[ ${SAN_CHANGE} == 0 ]]; then
     # Certificate did not change but could be due for renewal (4 weeks)
-    if ! openssl x509 -checkend 1209600 -noout -in ${ACME_BASE}/cert.pem; then
-      log_f "Certificate is due for renewal (< 2 weeks)"
+    if ! openssl x509 -checkend 2592000 -noout -in ${ACME_BASE}/cert.pem; then
+      log_f "Certificate is due for renewal (< 30 days)"
     else
       log_f "Certificate validation done, neither changed nor due for renewal, sleeping for another day."
       sleep 1d
@@ -462,7 +484,7 @@ while true; do
         cp ${ACME_BASE}/acme/cert.pem ${ACME_BASE}/cert.pem
         cp ${ACME_BASE}/acme/key.pem ${ACME_BASE}/key.pem
         reload_configurations
-        rm /var/www/acme/*
+        rm /var/www/acme/* 2> /dev/null
         log_f "Certificate successfully deployed, removing backup, sleeping 1d"
         sleep 1d
       else
@@ -476,6 +498,7 @@ while true; do
       ACME_RESPONSE_B64=$(echo "${ACME_RESPONSE}" | openssl enc -e -A -base64)
       log_f "${ACME_RESPONSE_B64}" redis_only b64
       log_f "Retrying in 30 minutes..."
+      redis-cli -h redis SET ACME_FAIL_TIME "$(date +%s)"
       sleep 30m
       exec $(readlink -f "$0")
       ;;

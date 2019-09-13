@@ -5,6 +5,9 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/header.inc.php';
 $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 $tfa_data = get_tfa();
+if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CACHE')) {
+  $_SESSION['gal'] = json_decode($license_cache, true);
+}
 ?>
 <div class="container">
 
@@ -76,8 +79,40 @@ $tfa_data = get_tfa();
             </select>
           </div>
         </div>
-        <legend data-target="#api" style="margin-top:40px;cursor:pointer" class="arrow-toggle" unselectable="on" data-toggle="collapse">
-          <span style="font-size:12px" class="arrow rotate glyphicon glyphicon-menu-down"></span> API (experimental, work in progress)
+
+        <legend data-target="#license" class="arrow-toggle" unselectable="on" data-toggle="collapse">
+          <span style="font-size:12px" class="arrow rotate glyphicon glyphicon-menu-down"></span> <?=$lang['admin']['guid_and_license'];?>
+        </legend>
+        <div id="license" class="collapse in">
+        <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
+          <div class="form-group">
+            <label class="control-label col-sm-3" for="guid"><?=$lang['admin']['guid'];?>:</label>
+            <div class="col-sm-9">
+              <div class="input-group">
+                <span class="input-group-addon">
+                  <span class="glyphicon <?=(isset($_SESSION['gal']['valid']) && $_SESSION['gal']['valid'] === "true") ? 'glyphicon-heart text-danger' : 'glyphicon-remove';?>" aria-hidden="true"></span>
+                </span>
+                <input type="text" id="guid" class="form-control" value="<?=license('guid');?>" readonly>
+              </div>
+              <p class="help-block">
+                <?=$lang['admin']['customer_id'];?>: <?=(isset($_SESSION['gal']['c'])) ? $_SESSION['gal']['c'] : '?';?> -
+                <?=$lang['admin']['service_id'];?>: <?=(isset($_SESSION['gal']['s'])) ? $_SESSION['gal']['s'] : '?';?>
+              </p>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+              <p class="help-block"><?=$lang['admin']['license_info'];?></p>
+              <div class="btn-group">
+                <button class="btn btn-sm btn-success" name="license_validate_now" type="submit" href="#"><?=$lang['admin']['validate_license_now'];?></button>
+              </div>
+            </div>
+          </div>
+        </form>
+        </div>
+
+        <legend data-target="#api" class="arrow-toggle" unselectable="on" data-toggle="collapse">
+          <span style="font-size:12px" class="arrow rotate glyphicon glyphicon-menu-down"></span> API
         </legend>
         <?php
         $api = admin_api('get');
@@ -105,6 +140,7 @@ $tfa_data = get_tfa();
           </div>
           <div class="form-group">
             <div class="col-sm-offset-3 col-sm-9">
+              <p class="help-block"><?=$lang['admin']['api_info'];?></p>
               <div class="btn-group">
                 <button class="btn btn-default" name="admin_api" type="submit" href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
                 <button class="btn btn-info" name="admin_api_regen_key" type="submit" href="#"><?=$lang['admin']['regen_api_key'];?></button>
@@ -113,6 +149,7 @@ $tfa_data = get_tfa();
           </div>
         </form>
         </div>
+
       </div>
     </div>
 
@@ -252,7 +289,7 @@ $tfa_data = get_tfa();
             <form class="form" data-id="transport" role="form" method="post">
               <div class="form-group">
                 <label for="destination"><?=$lang['admin']['destination'];?></label>
-                <input class="form-control input-sm" name="destination" placeholder='example.org, .example.org, *, box@example.org' required>
+                <input class="form-control input-sm" name="destination" placeholder='<?=$lang['admin']['transport_dest_format'];?>' required>
               </div>
               <div class="form-group">
                 <label for="nexthop"><?=$lang['admin']['nexthop'];?></label>
@@ -265,6 +302,16 @@ $tfa_data = get_tfa();
               <div class="form-group">
                 <label for="password"><?=$lang['admin']['password'];?></label>
                 <input class="form-control" name="password">
+              </div>
+              <!-- <div class="form-group">
+                <label>
+                  <input type="checkbox" name="lookup_mx" value="1"> <?=$lang['admin']['lookup_mx'];?>
+                </label>
+              </div> -->
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" name="active" value="1"> <?=$lang['admin']['active'];?>
+                </label>
               </div>
               <p class="help-block"><?=$lang['admin']['credentials_transport_warning'];?></p>
               <button class="btn btn-default" data-action="add_item" data-id="transport" data-api-url='add/transport' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
@@ -326,7 +373,7 @@ $tfa_data = get_tfa();
           else {
           ?>
           <div class="row">
-              <div class="col-md-1"><input class="dkim_missing" type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" disabled /></div>
+            <div class="col-md-1"><input class="dkim_missing" type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" disabled /></div>
             <div class="col-md-3">
               <p><?=$lang['admin']['domain'];?>: <strong><?=htmlspecialchars($domain);?></strong><br /><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
             </div>
@@ -600,13 +647,14 @@ $tfa_data = get_tfa();
           </span></p>
           <?php
           endforeach;
+          ?>
+          <hr>
+          <?php
         endif;
         if (!empty($f2b_data['perm_bans'])):
           foreach ($f2b_data['perm_bans'] as $perm_bans):
           ?>
-          <p>
-          <span class="label label-danger" style="padding:4px;font-size:85%;"><span class="glyphicon glyphicon-filter"></span> <?=$perm_bans?></span>
-          </p>
+          <span class="label label-danger" style="padding: 0.1em 0.4em 0.1em;"><span class="glyphicon glyphicon-filter"></span> <?=$perm_bans?></span>
           <?php
           endforeach;
         endif;
@@ -621,16 +669,22 @@ $tfa_data = get_tfa();
        <?php $q_data = quarantine('settings');?>
         <form class="form" data-id="quarantine" role="form" method="post">
           <div class="row">
-            <div class="col-sm-6">
+            <div class="col-sm-4">
               <div class="form-group">
                 <label for="retention_size"><?=$lang['admin']['quarantine_retention_size'];?></label>
                 <input type="number" class="form-control" name="retention_size" value="<?=$q_data['retention_size'];?>" placeholder="0" required>
               </div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-4">
               <div class="form-group">
                 <label for="max_size"><?=$lang['admin']['quarantine_max_size'];?></label>
                 <input type="number" class="form-control" name="max_size" value="<?=$q_data['max_size'];?>" placeholder="0" required>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="form-group">
+                <label for="max_age"><?=$lang['admin']['quarantine_max_age'];?></label>
+                <input type="number" class="form-control" name="max_age" value="<?=$q_data['max_age'];?>" min="1" required>
               </div>
             </div>
           </div>
@@ -638,13 +692,13 @@ $tfa_data = get_tfa();
             <div class="col-sm-6">
               <div class="form-group">
                 <label for="sender"><?=$lang['admin']['quarantine_notification_sender'];?>:</label>
-                <input type="text" class="form-control" name="sender" value="<?=$q_data['sender'];?>" placeholder="quarantine@localhost">
+                <input type="text" class="form-control" name="sender" value="<?=htmlspecialchars($q_data['sender']);?>" placeholder="quarantine@localhost">
               </div>
             </div>
             <div class="col-sm-6">
               <div class="form-group">
                 <label for="subject"><?=$lang['admin']['quarantine_notification_subject'];?>:</label>
-                <input type="text" class="form-control" name="subject" value="<?=$q_data['subject'];?>" placeholder="Spam Quarantine Notification">
+                <input type="text" class="form-control" name="subject" value="<?=htmlspecialchars($q_data['subject']);?>" placeholder="Spam Quarantine Notification">
               </div>
             </div>
           </div>
@@ -699,13 +753,13 @@ $tfa_data = get_tfa();
           <div class="col-sm-6">
             <div class="form-group">
               <label for="sender"><?=$lang['admin']['quarantine_notification_sender'];?>:</label>
-              <input type="text" class="form-control" name="sender" value="<?=$qw_data['sender'];?>" placeholder="quota-warning@localhost">
+              <input type="text" class="form-control" name="sender" value="<?=htmlspecialchars($qw_data['sender']);?>" placeholder="quota-warning@localhost">
             </div>
           </div>
           <div class="col-sm-6">
             <div class="form-group">
               <label for="subject"><?=$lang['admin']['quarantine_notification_subject'];?>:</label>
-              <input type="text" class="form-control" name="subject" value="<?=$qw_data['subject'];?>" placeholder="Quota warning">
+              <input type="text" class="form-control" name="subject" value="<?=htmlspecialchars($qw_data['subject']);?>" placeholder="Quota warning">
             </div>
           </div>
         </div>
@@ -746,6 +800,7 @@ $tfa_data = get_tfa();
       <div id="active_settings_map" class="collapse" >
         <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code" rows="20" name="settings_map" readonly><?=file_get_contents('http://nginx:8081/settings.php');?></textarea>
       </div>
+      <br>
       <?php $rsettings = rsettings('get'); ?>
         <form class="form" data-id="rsettings" role="form" method="post">
           <div class="row">
@@ -796,11 +851,11 @@ $tfa_data = get_tfa();
                     <input type="hidden" name="active" value="0">
                     <div class="form-group">
                       <label for="desc"><?=$lang['admin']['rsetting_desc'];?>:</label>
-                      <input type="text" class="form-control" name="desc" value="<?=$rsetting_details['desc'];?>">
+                      <input type="text" class="form-control" name="desc" value="<?=htmlspecialchars($rsetting_details['desc']);?>">
                     </div>
                     <div class="form-group">
                       <label for="content"><?=$lang['admin']['rsetting_content'];?>:</label>
-                      <textarea class="form-control" name="content" rows="10"><?=$rsetting_details['content'];?></textarea>
+                      <textarea class="form-control" name="content" rows="10"><?=htmlspecialchars($rsetting_details['content']);?></textarea>
                     </div>
                     <div class="form-group">
                       <label>
@@ -876,7 +931,7 @@ $tfa_data = get_tfa();
               <td><input class="input-sm form-control" data-id="app_links" type="text" name="href" required value="<?=$val;?>"></td>
               <td><a href="#" role="button" class="btn btn-xs btn-default" type="button"><?=$lang['admin']['remove_row'];?></a></td>
             </tr>
-            <?php 
+            <?php
               endforeach;
             }
             foreach ($MAILCOW_APPS as $app):
