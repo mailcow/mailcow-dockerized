@@ -3,28 +3,18 @@ $(document).ready(function() {
   FooTable.domainFilter = FooTable.Filtering.extend({
     construct: function(instance){
       this._super(instance);
-      var domain_list = [];
-      $.ajax({
-        dataType: 'json',
-        url: '/api/v1/get/domain/all',
-        jsonp: false,
-        async: true,
-        error: function () {
-          domain_list.push('Cannot read domain list');
-        },
-        success: function (data) {
-          $.each(data, function (i, item) {
-            domain_list.push(item.domain_name);
-          });
-        }
-      });
-      this.domains = domain_list;
       this.def = 'All Domains';
       this.$domain = null;
     },
     $create: function(){
       this._super();
-      var self = this,
+      var self = this;
+      var domains = [];
+      
+      $.each(self.ft.rows.all, function(i, row){
+        if((row.val().domain != null) && ($.inArray(row.val().domain, domains) === -1)) domains.push(row.val().domain);
+      });
+      
       $form_grp = $('<div/>', {'class': 'form-group'})
         .append($('<label/>', {'class': 'sr-only', text: 'Domain'}))
         .prependTo(self.$form);
@@ -33,7 +23,7 @@ $(document).ready(function() {
         .append($('<option/>', {text: self.def}))
         .appendTo($form_grp);
 
-      $.each(self.domains, function(i, domain){
+      $.each(domains, function(i, domain){
         self.$domain.append($('<option/>').text(domain));
       });
     },
@@ -62,11 +52,12 @@ $(document).ready(function() {
   auto_fill_quota = function(domain) {
 		$.get("/api/v1/get/domain/" + domain, function(data){
       var result = $.parseJSON(JSON.stringify(data));
+      def_new_mailbox_quota = ( result.def_new_mailbox_quota / 1048576);
       max_new_mailbox_quota = ( result.max_new_mailbox_quota / 1048576);
 			if (max_new_mailbox_quota != '0') {
 				$("#quotaBadge").html('max. ' +  max_new_mailbox_quota + ' MiB');
 				$('#addInputQuota').attr({"disabled": false, "value": "", "type": "number", "max": max_new_mailbox_quota});
-				$('#addInputQuota').val(max_new_mailbox_quota);
+				$('#addInputQuota').val(def_new_mailbox_quota);
 			}
 			else {
 				$("#quotaBadge").html('max. ' + max_new_mailbox_quota + ' MiB');
@@ -82,7 +73,7 @@ $(document).ready(function() {
   $(".generate_password").click(function( event ) {
     event.preventDefault();
     $('[data-hibp]').trigger('input');
-    var random_passwd = Math.random().toString(36).slice(-8)
+    var random_passwd = GPW.pronounceable(8)
     $(this).closest("form").find("input[name='password']").prop('type', 'text');
     $(this).closest("form").find("input[name='password2']").prop('type', 'text');
     $(this).closest("form").find("input[name='password']").val(random_passwd);
@@ -169,7 +160,25 @@ $(document).ready(function() {
     // $("#active-script").closest('td').css('background-color','#b0f0a0');
     // $("#inactive-script").closest('td').css('background-color','#b0f0a0');
   // });
-
+  $('#addResourceModal').on('shown.bs.modal', function() {
+    $("#multiple_bookings").val($("#multiple_bookings_select").val());
+    if ($("#multiple_bookings").val() == "custom") {
+      $("#multiple_bookings_custom_div").show();
+      $("#multiple_bookings").val($("#multiple_bookings_custom").val());
+    }
+  })
+  $("#multiple_bookings_select").change(function() {
+    $("#multiple_bookings").val($("#multiple_bookings_select").val());
+    if ($("#multiple_bookings").val() == "custom") {
+      $("#multiple_bookings_custom_div").show();
+    }
+    else {
+      $("#multiple_bookings_custom_div").hide();
+    }
+  });
+  $("#multiple_bookings_custom").bind ("change keypress keyup blur", function () {
+    $("#multiple_bookings").val($("#multiple_bookings_custom").val());
+  });
 
 
 });
@@ -197,7 +206,8 @@ jQuery(function($){
         .removeAttr("href")
         .attr("title", "Dual login cannot be used twice")
         .tooltip();
-      }
+    }
+    $('.refresh_table').prop("disabled", false);
     heading = ft.$el.parents('.tab-pane').find('.panel-heading')
     var ft_paging = ft.use(FooTable.Paging)
     $(heading).children('.table-lines').text(function(){
@@ -220,9 +230,10 @@ jQuery(function($){
           return Number(res[0]);
         },
         },
+        {"name":"def_quota_for_mbox","title":lang.mailbox_defquota,"breakpoints":"xs sm md","style":{"width":"125px"}},
         {"name":"max_quota_for_mbox","title":lang.mailbox_quota,"breakpoints":"xs sm","style":{"width":"125px"}},
-        {"name":"rl","title":"RL","breakpoints":"xs sm md","style":{"maxWidth":"100px","width":"100px"}},
-        {"name":"backupmx","filterable": false,"style":{"maxWidth":"120px","width":"120px"},"title":lang.backup_mx,"breakpoints":"xs sm md"},
+        {"name":"rl","title":"RL","breakpoints":"xs sm md lg","style":{"maxWidth":"100px","width":"100px"}},
+        {"name":"backupmx","filterable": false,"style":{"maxWidth":"120px","width":"120px"},"title":lang.backup_mx,"breakpoints":"xs sm md lg"},
         {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"240px","width":"240px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
       ],
@@ -245,6 +256,7 @@ jQuery(function($){
                 return e;
               }).join('/1');
             }
+            item.def_quota_for_mbox = humanFileSize(item.def_quota_for_mbox);
             item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
             item.chkbox = '<input type="checkbox" data-id="domain" name="multi_select" value="' + encodeURIComponent(item.domain_name) + '" />';
             item.action = '<div class="btn-group">';
@@ -270,7 +282,7 @@ jQuery(function($){
       },
       "filtering": {
         "enabled": true,
-        "delay": 100,
+        "delay": 1200,
         "position": "left",
         "connectors": false,
         "placeholder": lang.filter_table
@@ -279,10 +291,17 @@ jQuery(function($){
         "enabled": true
       },
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'domain_table');
+        },
+        "after.ft.filtering": function(e, ft){
+          table_mailbox_ready(ft, 'domain_table');
         }
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
   function draw_mailbox_table() {
@@ -290,18 +309,19 @@ jQuery(function($){
       "columns": [
         {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"sorted": true,"name":"username","style":{"word-break":"break-all","min-width":"120px"},"title":lang.username},
-        {"name":"name","title":lang.fname,"style":{"word-break":"break-all","min-width":"120px"},"breakpoints":"xs sm"},
-        {"name":"domain","title":lang.domain,"breakpoints":"xs sm"},
+        {"name":"name","title":lang.fname,"style":{"word-break":"break-all","min-width":"120px"},"breakpoints":"xs sm md lg"},
+        {"name":"domain","title":lang.domain,"breakpoints":"xs sm md lg"},
         {"name":"quota","style":{"whiteSpace":"nowrap"},"title":lang.domain_quota,"formatter": function(value){
           res = value.split("/");
-          return humanFileSize(res[0]) + " / " + humanFileSize(res[1]);
+          var of_q = (res[1] == 0 ? "∞" : humanFileSize(res[1]));
+          return humanFileSize(res[0]) + " / " + of_q;
         },
         "sortValue": function(value){
           res = value.split("/");
           return Number(res[0]);
         },
         },
-        {"name":"spam_aliases","filterable": false,"title":lang.spam_aliases,"breakpoints":"xs sm md"},
+        {"name":"spam_aliases","filterable": false,"title":lang.spam_aliases,"breakpoints":"all"},
         {"name":"tls_enforce_in","filterable": false,"title":lang.tls_enforce_in,"breakpoints":"all"},
         {"name":"tls_enforce_out","filterable": false,"title":lang.tls_enforce_out,"breakpoints":"all"},
         {"name":"quarantine_notification","filterable": false,"title":lang.quarantine_notification,"breakpoints":"all"},
@@ -310,9 +330,9 @@ jQuery(function($){
         },
         },
         {"name":"messages","filterable": false,"title":lang.msg_num,"breakpoints":"xs sm md"},
-        {"name":"rl","title":"RL","breakpoints":"xs sm md","style":{"width":"125px"}},
+        {"name":"rl","title":"RL","breakpoints":"all","style":{"width":"125px"}},
         {"name":"active","filterable": false,"title":lang.active},
-        {"name":"action","filterable": false,"sortable": false,"style":{"min-width":"250px","text-align":"right"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
+        {"name":"action","filterable": false,"sortable": false,"style":{"min-width":"290px","text-align":"right"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
       ],
       "empty": lang.empty,
       "rows": $.ajax({
@@ -332,6 +352,9 @@ jQuery(function($){
               item.rl = $.map(item.rl, function(e){
                 return e;
               }).join('/1');
+              if (item.rl_scope === 'domain') {
+                item.rl = '↪ ' + item.rl + ' (via ' + item.domain + ')';
+              }
             }
             item.chkbox = '<input type="checkbox" data-id="mailbox" name="multi_select" value="' + encodeURIComponent(item.username) + '" />';
             item.tls_enforce_in = '<span class="text-' + (item.attributes.tls_enforce_in == 1 ? 'success' : 'danger') + ' glyphicon glyphicon-lock"></span>';
@@ -349,8 +372,11 @@ jQuery(function($){
             item.action = '<div class="btn-group">' +
               '<a href="/edit/mailbox/' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-mailbox" data-api-url="delete/mailbox" data-item="' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
-              '<a href="/index.php?duallogin=' + encodeURIComponent(item.username) + '" class="login_as btn btn-xs btn-success"><span class="glyphicon glyphicon-user"></span> Login</a>' +
-              '</div>';
+              '<a href="/index.php?duallogin=' + encodeURIComponent(item.username) + '" class="login_as btn btn-xs btn-success"><span class="glyphicon glyphicon-user"></span> Login</a>';
+              if (ALLOW_ADMIN_EMAIL_LOGIN) {
+                item.action += '<a href="/sogo-auth.php?login=' + encodeURIComponent(item.username) + '" class="login_as btn btn-xs btn-primary" target="_blank"><span class="glyphicon glyphicon-envelope"></span> SOGo</a>';
+              }
+              item.action += '</div>';
             }
             else {
             item.action = '<div class="btn-group">' +
@@ -375,7 +401,7 @@ jQuery(function($){
       },
       "filtering": {
         "enabled": true,
-        "delay": 100,
+        "delay": 1200,
         "position": "left",
         "connectors": false,
         //"container": "#tab-mailboxes.panel",
@@ -388,10 +414,17 @@ jQuery(function($){
         "enabled": true
       },
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'mailbox_table');
+        },
+        "after.ft.filtering": function(e, ft){
+          table_mailbox_ready(ft, 'mailbox_table');
         }
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
   function draw_resource_table() {
@@ -399,6 +432,7 @@ jQuery(function($){
       "columns": [
         {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"sorted": true,"name":"description","title":lang.description,"style":{"width":"250px"}},
+        {"name":"name","title":lang.alias},
         {"name":"kind","title":lang.kind},
         {"name":"domain","title":lang.domain,"breakpoints":"xs sm"},
         {"name":"multiple_bookings","filterable": false,"style":{"maxWidth":"150px","width":"140px"},"title":lang.multiple_bookings,"breakpoints":"xs sm"},
@@ -441,7 +475,7 @@ jQuery(function($){
       },
       "filtering": {
         "enabled": true,
-        "delay": 100,
+        "delay": 1200,
         "position": "left",
         "connectors": false,
         "placeholder": lang.filter_table
@@ -453,10 +487,17 @@ jQuery(function($){
         "enabled": true
       },
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'resource_table');
+        },
+        "after.ft.filtering": function(e, ft){
+          table_mailbox_ready(ft, 'resource_table');
         }
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
   function draw_bcc_table() {
@@ -506,7 +547,7 @@ jQuery(function($){
       },
       "filtering": {
         "enabled": true,
-        "delay": 100,
+        "delay": 1200,
         "position": "left",
         "connectors": false,
         "placeholder": lang.filter_table
@@ -515,10 +556,17 @@ jQuery(function($){
         "enabled": true
       },
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'bcc_table');
+        },
+        "after.ft.filtering": function(e, ft){
+          table_mailbox_ready(ft, 'bcc_table');
         }
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
   function draw_recipient_map_table() {
@@ -563,7 +611,7 @@ jQuery(function($){
       },
       "filtering": {
         "enabled": true,
-        "delay": 100,
+        "delay": 1200,
         "position": "left",
         "connectors": false,
         "placeholder": lang.filter_table
@@ -572,10 +620,17 @@ jQuery(function($){
         "enabled": true
       },
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'recipient_map_table');
+        },
+        "after.ft.filtering": function(e, ft){
+          table_mailbox_ready(ft, 'recipient_map_table');
         }
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
   function draw_tls_policy_table() {
@@ -626,7 +681,7 @@ jQuery(function($){
       },
       "filtering": {
         "enabled": true,
-        "delay": 100,
+        "delay": 1200,
         "position": "left",
         "connectors": false,
         "placeholder": lang.filter_table
@@ -635,10 +690,17 @@ jQuery(function($){
         "enabled": true
       },
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'tls_policy_table');
+        },
+        "after.ft.filtering": function(e, ft){
+          table_mailbox_ready(ft, 'tls_policy_table');
         }
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
   function draw_transport_maps_table() {
@@ -687,7 +749,7 @@ jQuery(function($){
       },
       "filtering": {
         "enabled": true,
-        "delay": 100,
+        "delay": 1200,
         "position": "left",
         "connectors": false,
         "placeholder": lang.filter_table
@@ -696,10 +758,17 @@ jQuery(function($){
         "enabled": true
       },
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'transport_maps_table');
+        },
+        "after.ft.filtering": function(e, ft){
+          table_mailbox_ready(ft, 'transport_maps_table');
         }
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
   function draw_alias_table() {
@@ -731,8 +800,18 @@ jQuery(function($){
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="alias" name="multi_select" value="' + encodeURIComponent(item.id) + '" />';
             item.goto = escapeHtml(item.goto.replace(/,/g, " "));
-            item.public_comment = escapeHtml(item.public_comment);
-            item.private_comment = escapeHtml(item.private_comment);
+            if (item.public_comment !== null) {
+              item.public_comment = escapeHtml(item.public_comment);
+            }
+            else {
+              item.public_comment = '-';
+            }
+            if (item.private_comment !== null) {
+              item.private_comment = escapeHtml(item.private_comment);
+            }
+            else {
+              item.private_comment = '-';
+            }
             if (item.is_catch_all == 1) {
               item.address = '<div class="label label-default">Catch-All</div> ' + escapeHtml(item.address);
             }
@@ -764,7 +843,7 @@ jQuery(function($){
       },
       "filtering": {
         "enabled": true,
-        "delay": 100,
+        "delay": 1200,
         "position": "left",
         "connectors": false,
         "placeholder": lang.filter_table
@@ -776,10 +855,17 @@ jQuery(function($){
         "enabled": true
       },
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'alias_table');
+        },
+        "after.ft.filtering": function(e, ft){
+          table_mailbox_ready(ft, 'alias_table');
         }
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
 
@@ -788,7 +874,7 @@ jQuery(function($){
       "columns": [
         {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"sorted": true,"name":"alias_domain","title":lang.alias,"style":{"width":"250px"}},
-        {"name":"target_domain","title":lang.target_domain},
+        {"name":"target_domain","title":lang.target_domain,"type":"html"},
         {"name":"active","filterable": false,"style":{"maxWidth":"50px","width":"70px"},"title":lang.active},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"250px","width":"250px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
@@ -808,6 +894,11 @@ jQuery(function($){
               '<a href="#dnsInfoModal" class="btn btn-xs btn-info" data-toggle="modal" data-domain="' + encodeURIComponent(item.alias_domain) + '"><span class="glyphicon glyphicon-question-sign"></span> DNS</a></div>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="alias-domain" name="multi_select" value="' + encodeURIComponent(item.alias_domain) + '" />';
+            if(item.parent_is_backupmx == '1') {
+              item.target_domain = '<span><a href="/edit/domain/' + item.target_domain + '">' + item.target_domain + '</a> <div class="label label-warning">' + lang.alias_domain_backupmx + '</div></span>';
+            } else {
+              item.target_domain = '<span><a href="/edit/domain/' + item.target_domain + '">' + item.target_domain + '</a></span>';
+            }
           });
         }
       }),
@@ -821,7 +912,7 @@ jQuery(function($){
       },
       "filtering": {
         "enabled": true,
-        "delay": 100,
+        "delay": 1200,
         "position": "left",
         "connectors": false,
         "placeholder": lang.filter_table
@@ -830,10 +921,17 @@ jQuery(function($){
         "enabled": true
       },
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'aliasdomain_table');
+        },
+        "after.ft.filtering": function(e, ft){
+          table_mailbox_ready(ft, 'aliasdomain_table');
         }
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
 
@@ -843,10 +941,10 @@ jQuery(function($){
         {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px","text-align":"center"},"filterable": false,"sortable": false,"type":"html"},
         {"sorted": true,"name":"id","title":"ID","style":{"maxWidth":"60px","width":"60px","text-align":"center"}},
         {"name":"user2","title":lang.owner},
-        {"name":"server_w_port","title":"Server","breakpoints":"xs","style":{"word-break":"break-all"}},
+        {"name":"server_w_port","title":"Server","breakpoints":"xs sm md","style":{"word-break":"break-all"}},
         {"name":"exclude","title":lang.excludes,"breakpoints":"all"},
         {"name":"mins_interval","title":lang.mins_interval,"breakpoints":"all"},
-        {"name":"last_run","title":lang.last_run,"breakpoints":"sm"},
+        {"name":"last_run","title":lang.last_run,"breakpoints":"xs sm md"},
         {"name":"log","title":"Log"},
         {"name":"active","filterable": false,"style":{"maxWidth":"70px","width":"70px"},"title":lang.active},
         {"name":"is_running","filterable": false,"style":{"maxWidth":"120px","width":"100px"},"title":lang.status},
@@ -896,7 +994,7 @@ jQuery(function($){
       },
       "filtering": {
         "enabled": true,
-        "delay": 100,
+        "delay": 1200,
         "position": "left",
         "connectors": false,
         "placeholder": lang.filter_table
@@ -905,10 +1003,17 @@ jQuery(function($){
         "enabled": true
       },
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'sync_job_table');
+        },
+        "after.ft.filtering": function(e, ft){
+          table_mailbox_ready(ft, 'sync_job_table');
         }
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
 
@@ -959,7 +1064,7 @@ jQuery(function($){
       },
       "filtering": {
         "enabled": true,
-        "delay": 100,
+        "delay": 1200,
         "position": "left",
         "connectors": false,
         "placeholder": lang.filter_table
@@ -968,12 +1073,23 @@ jQuery(function($){
         "enabled": true
       },
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'filter_table');
+        },
+        "after.ft.filtering": function(e, ft){
+          table_mailbox_ready(ft, 'filter_table');
         }
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   };
+
+  $('body').on('click', 'span.footable-toggle', function () {
+    event.stopPropagation();
+  })
 
   draw_domain_table();
   draw_mailbox_table();

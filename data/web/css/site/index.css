@@ -1,0 +1,5 @@
+@media (max-width: 500px) {
+  #top {
+    padding-top: 15px !important;
+  }
+}

@@ -348,10 +348,16 @@ $is_dual = (!empty($_SESSION["dual-login"]["username"])) ? 'true' : 'false';
 echo "var role = '". $role . "';\n";
 echo "var is_dual = " . $is_dual . ";\n";
 echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
+$ALLOW_ADMIN_EMAIL_LOGIN = (preg_match(
+	"/^([yY][eE][sS]|[yY])+$/",
+    $_ENV["ALLOW_ADMIN_EMAIL_LOGIN"]
+)) ? "true" : "false";
+echo "var ALLOW_ADMIN_EMAIL_LOGIN = " . $ALLOW_ADMIN_EMAIL_LOGIN . ";\n";
 ?>
 </script>
 <?php
 $js_minifier->add('/web/js/site/mailbox.js');
+$js_minifier->add('/web/js/site/pwgen.js');
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
 }
 else {

@@ -2,6 +2,12 @@
 
 set -o pipefail
 
+if [[ "$(uname -r)" =~ ^4\.15\.0-60 ]]; then
+  echo "DO NOT RUN mailcow ON THIS UBUNTU KERNEL!";
+  echo "Please update to 5.x or use another distribution."
+  exit 1
+fi
+
 if grep --help 2>&1 | grep -q -i "busybox"; then
   echo "BusybBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\""
   exit 1
@@ -16,6 +22,7 @@ if [ -f mailcow.conf ]; then
   case $response in
     [yY][eE][sS]|[yY])
       mv mailcow.conf mailcow.conf_backup
+      chmod 600 mailcow.conf_backup
       ;;
     *)
       exit 1
@@ -25,7 +32,7 @@ fi
 
 echo "Press enter to confirm the detected value '[value]' where applicable or enter a custom value."
 while [ -z "${MAILCOW_HOSTNAME}" ]; do
-  read -p "Hostname (FQDN): " -e MAILCOW_HOSTNAME
+  read -p "Mail server hostname (FQDN) - this is not your mail domain, but your mail servers hostname: " -e MAILCOW_HOSTNAME
   DOTS=${MAILCOW_HOSTNAME//[^.]};
   if [ ${#DOTS} -lt 2 ] && [ ! -z ${MAILCOW_HOSTNAME} ]; then
     echo "${MAILCOW_HOSTNAME} is not a FQDN"
@@ -115,6 +122,8 @@ DBROOT=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 | head -c 28)
 # ------------------------------
 
 # You should use HTTPS, but in case of SSL offloaded reverse proxies:
+# Might be important: This will also change the binding within the container.
+# If you use a proxy within Docker, point it to the ports you set below.
 
 HTTP_PORT=80
 HTTP_BIND=0.0.0.0
@@ -185,26 +194,39 @@ SKIP_LETS_ENCRYPT=n
 
 SKIP_IP_CHECK=n
 
+# Skip HTTP verification in ACME container - y/n
+
+SKIP_HTTP_VERIFICATION=n
+
 # Skip ClamAV (clamd-mailcow) anti-virus (Rspamd will auto-detect a missing ClamAV container) - y/n
 
 SKIP_CLAMD=${SKIP_CLAMD}
 
 # Skip Solr on low-memory systems or if you do not want to store a readable index of your mails in solr-vol-1.
+
 SKIP_SOLR=${SKIP_SOLR}
 
 # Solr heap size in MB, there is no recommendation, please see Solr docs.
 # Solr is a prone to run OOM and should be monitored. Unmonitored Solr setups are not recommended.
+
 SOLR_HEAP=1024
 
 # Enable watchdog (watchdog-mailcow) to restart unhealthy containers (experimental)
 
 USE_WATCHDOG=n
 
+# Allow admins to log into SOGo as email user (without any password)
+
+ALLOW_ADMIN_EMAIL_LOGIN=n
+
 # Send notifications by mail (no DKIM signature, sent from watchdog@MAILCOW_HOSTNAME)
 # Can by multiple rcpts, NO quotation marks
 
 #WATCHDOG_NOTIFY_EMAIL=a@example.com,b@example.com,c@example.com
 #WATCHDOG_NOTIFY_EMAIL=
+
+# Notify about banned IP (includes whois lookup)
+WATCHDOG_NOTIFY_BAN=y
 
 # Max log lines per service to keep in Redis logs
 
@@ -226,16 +248,24 @@ IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
 
 #SNAT6_TO_SOURCE=
 
-# Create or override API key for web uI
+# Create or override API key for web ui
 # You _must_ define API_ALLOW_FROM, which is a comma separated list of IPs
 # API_KEY allowed chars: a-z, A-Z, 0-9, -
 
 #API_KEY=
-#API_ALLOW_FROM=127.0.0.1,1.2.3.4
+#API_ALLOW_FROM=172.22.1.1,127.0.0.1
+
+# mail_home is ~/Maildir
+MAILDIR_SUB=Maildir
+
+# SOGo session timeout in minutes
+SOGO_EXPIRE_SESSION=480
 
 EOF
 
 mkdir -p data/assets/ssl
+
+chmod 600 mailcow.conf
 
 # copy but don't overwrite existing certificate
 cp -n data/assets/ssl-example/*.pem data/assets/ssl/

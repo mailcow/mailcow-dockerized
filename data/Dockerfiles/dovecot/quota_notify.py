@@ -54,7 +54,7 @@ try:
   msg.attach(text_part)
   msg.attach(html_part)
   msg['To'] = username
-  p = Popen(['/usr/local/libexec/dovecot/dovecot-lda', '-d', username, '-o', '"plugin/quota=maildir:User quota:noenforcing"'], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+  p = Popen(['/usr/lib/dovecot/dovecot-lda', '-d', username, '-o', '"plugin/quota=maildir:User quota:noenforcing"'], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
   p.communicate(input=msg.as_string())
 
 except Exception as ex:

@@ -3,12 +3,12 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "27012019_1217";
+    $db_version = "01092019_1240";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
     if ($num_results != 0) {
-      $stmt = $pdo->query("SELECT `version` FROM `versions`");
+      $stmt = $pdo->query("SELECT `version` FROM `versions` WHERE `application` = 'db_schema'");
       if ($stmt->fetch(PDO::FETCH_ASSOC)['version'] == $db_version) {
         return true;
       }
@@ -21,9 +21,15 @@ function init_db_schema() {
       AND active = '1'
       AND address NOT LIKE '@%'
       GROUP BY goto;",
+    // Unused at the moment - we cannot allow to show a foreign mailbox as sender address in SOGo, as SOGo does not like this
+    // We need to create delegation in SOGo AND set a sender_acl in mailcow to allow to send as user X
     "grouped_sender_acl" => "CREATE VIEW grouped_sender_acl (username, send_as_acl) AS
       SELECT logged_in_as, IFNULL(GROUP_CONCAT(send_as SEPARATOR ' '), '') AS send_as_acl FROM sender_acl
       WHERE send_as NOT LIKE '@%'
+      GROUP BY logged_in_as;",
+    "grouped_sender_acl_external" => "CREATE VIEW grouped_sender_acl_external (username, send_as_acl) AS
+      SELECT logged_in_as, IFNULL(GROUP_CONCAT(send_as SEPARATOR ' '), '') AS send_as_acl FROM sender_acl
+      WHERE send_as NOT LIKE '@%' AND external = '1'
       GROUP BY logged_in_as;",
     "grouped_domain_alias_address" => "CREATE VIEW grouped_domain_alias_address (username, ad_alias) AS
       SELECT username, IFNULL(GROUP_CONCAT(local_part, '@', alias_domain SEPARATOR ' '), '') AS ad_alias FROM mailbox
@@ -78,6 +84,7 @@ function init_db_schema() {
           // TODO -> use TEXT and check if SOGo login breaks on empty aliases
           "aliases" => "TEXT NOT NULL",
           "ad_aliases" => "VARCHAR(6144) NOT NULL DEFAULT ''",
+          "ext_acl" => "VARCHAR(6144) NOT NULL DEFAULT ''",
           "kind" => "VARCHAR(100) NOT NULL DEFAULT ''",
           "multiple_bookings" => "INT NOT NULL DEFAULT -1"
         ),
@@ -116,6 +123,7 @@ function init_db_schema() {
           "nexthop" => "VARCHAR(255) NOT NULL",
           "username" => "VARCHAR(255) NOT NULL",
           "password" => "VARCHAR(255) NOT NULL",
+          "lookup_mx" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
         ),
         "keys" => array(
@@ -173,7 +181,8 @@ function init_db_schema() {
         "cols" => array(
           "id" => "INT NOT NULL AUTO_INCREMENT",
           "logged_in_as" => "VARCHAR(255) NOT NULL",
-          "send_as" => "VARCHAR(255) NOT NULL"
+          "send_as" => "VARCHAR(255) NOT NULL",
+          "external" => "TINYINT(1) NOT NULL DEFAULT '0'"
         ),
         "keys" => array(
           "primary" => array(
@@ -189,7 +198,8 @@ function init_db_schema() {
           "description" => "VARCHAR(255)",
           "aliases" => "INT(10) NOT NULL DEFAULT '0'",
           "mailboxes" => "INT(10) NOT NULL DEFAULT '0'",
-          "maxquota" => "BIGINT(20) NOT NULL DEFAULT '0'",
+          "defquota" => "BIGINT(20) NOT NULL DEFAULT '3072'",
+          "maxquota" => "BIGINT(20) NOT NULL DEFAULT '102400'",
           "quota" => "BIGINT(20) NOT NULL DEFAULT '102400'",
           "relayhost" => "VARCHAR(255) NOT NULL DEFAULT '0'",
           "backupmx" => "TINYINT(1) NOT NULL DEFAULT '0'",
@@ -464,6 +474,8 @@ function init_db_schema() {
           "filters" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "ratelimit" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "spam_policy" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "extend_sender_acl" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "unlimited_quota" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "alias_domains" => "TINYINT(1) NOT NULL DEFAULT '0'",
           ),
         "keys" => array(
@@ -501,7 +513,7 @@ function init_db_schema() {
           "timeout2" => "SMALLINT NOT NULL DEFAULT '600'",
           "subscribeall" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "is_running" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "returned_text" => "MEDIUMTEXT",
+          "returned_text" => "LONGTEXT",
           "last_run" => "TIMESTAMP NULL DEFAULT NULL",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",

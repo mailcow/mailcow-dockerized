@@ -1,8 +1,11 @@
 if /^\s*Received:.*Authenticated sender.*\(Postcow\)/
-/^\s*Received:.*Authenticated sender:(.+)/
-  REPLACE Received: from localhost (localhost [127.0.0.1]) (Authenticated sender:$1
+#/^Received: from .*? \([\w-.]* \[.*?\]\)\s+\(Authenticated sender: (.+)\)\s+by.+\(Postcow\) with (E?SMTPS?A?) id ([A-F0-9]+).+;.*?/
+/^Received: from .*? \([\w-.]* \[.*?\]\)(.*|\n.*)\(Authenticated sender: (.+)\)\s+by.+\(Postcow\) with (.*)/
+  REPLACE Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with $2
 endif
 /^\s*X-Enigmail/        IGNORE
 /^\s*X-Mailer/          IGNORE
 /^\s*X-Originating-IP/  IGNORE
 /^\s*X-Forward/         IGNORE
+# Not removing UA by default, might be signed
+#/^\s*User-Agent/        IGNORE

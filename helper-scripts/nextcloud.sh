@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 for bin in curl dirmngr; do
   if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
@@ -69,36 +69,27 @@ elif [[ ${NC_UPDATE} == "y" ]]; then
   if ! grep -q 'installed: true' <<<$(docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ --no-warnings status"); then
     echo "Nextcloud seems not to be installed."
     exit 1
-  elif ! grep -q 'version: 15\.' <<<$(docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ --no-warnings status"); then
+  elif ! grep -q 'version: 16\.' <<<$(docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ --no-warnings status"); then
     echo "Cannot upgrade to new major version, please update manually."
     exit 1
   else
-    curl -L# -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/latest-15.tar.bz2" || { echo "Failed to download Nextcloud archive."; exit 1; } \
+    curl -L# -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/latest-16.tar.bz2" || { echo "Failed to download Nextcloud archive."; exit 1; } \
       && tar -xjf nextcloud.tar.bz2 -C ./data/web/ \
       && rm nextcloud.tar.bz2 \
-      && rm -rf ./data/web/nextcloud/updater \
       && mkdir -p ./data/web/nextcloud/data \
-      && mkdir -p ./data/web/nextcloud/custom_apps \
-      && chmod +x ./data/web/nextcloud/occ
-    docker exec -it $(docker ps -f name=php-fpm-mailcow -q) bash -c "chown www-data:www-data -R /web/nextcloud"
-    docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ --no-warnings upgrade"
+      && chmod +x ./data/web/nextcloud/occ \
+       docker exec -it $(docker ps -f name=php-fpm-mailcow -q) bash -c "chown www-data:www-data -R /web/nextcloud" \
+       docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ --no-warnings upgrade"
   fi
 
 elif [[ ${NC_INSTALL} == "y" ]]; then
-  NC_TYPE=
-  while [[ ! ${NC_TYPE} =~ ^subfolder$|^subdomain$ ]]; do
-    read -p "Configure as subdomain or subfolder? [subdomain/subfolder] " NC_TYPE
+  NC_SUBD=
+  while [[ -z ${NC_SUBD} ]]; do
+    read -p "Subdomain to run Nextcloud from [format: nextcloud.domain.tld]: " NC_SUBD
   done
-
-  if [[ ${NC_TYPE} == "subdomain" ]]; then
-    NC_SUBD=
-      while [[ -z ${NC_SUBD} ]]; do
-          read -p "Which subdomain? [format: nextcloud.domain.tld] " NC_SUBD
-      done
-    if ! ping -q -c2 ${NC_SUBD} > /dev/null 2>&1 ; then
-      read -p "Cannot ping subdomain, continue anyway? [y|N] " NC_CONT_FAIL
-      [[ ! ${NC_CONT_FAIL,,} =~ ^(yes|y)$ ]] && { echo "Ok, exiting..."; exit 1; }
-    fi
+  if ! ping -q -c2 ${NC_SUBD} > /dev/null 2>&1 ; then
+    read -p "Cannot ping subdomain, continue anyway? [y|N] " NC_CONT_FAIL
+    [[ ! ${NC_CONT_FAIL,,} =~ ^(yes|y)$ ]] && { echo "Ok, exiting..."; exit 1; }
   fi
 
   ADMIN_NC_PASS=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
@@ -106,12 +97,10 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
   curl -L# -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/latest-15.tar.bz2" || { echo "Failed to download Nextcloud archive."; exit 1; } \
     && tar -xjf nextcloud.tar.bz2 -C ./data/web/ \
     && rm nextcloud.tar.bz2 \
-    && rm -rf ./data/web/nextcloud/updater \
     && mkdir -p ./data/web/nextcloud/data \
-    && mkdir -p ./data/web/nextcloud/custom_apps \
     && chmod +x ./data/web/nextcloud/occ
 
-  docker exec -it $(docker ps -f name=php-fpm-mailcow -q) /bin/bash -c "chown -R www-data:www-data /web/nextcloud/data /web/nextcloud/config /web/nextcloud/apps /web/nextcloud/custom_apps"
+  docker exec -it $(docker ps -f name=php-fpm-mailcow -q) /bin/bash -c "chown -R www-data:www-data /web/nextcloud"
   docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) /web/nextcloud/occ --no-warnings maintenance:install \
     --database mysql \
     --database-host mysql \
@@ -140,22 +129,21 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
     /web/nextcloud/occ --no-warnings config:system:set mail_from_address --value=nextcloud; \
     /web/nextcloud/occ --no-warnings config:system:set mail_domain --value=${MAILCOW_HOSTNAME}; \
     /web/nextcloud/occ --no-warnings config:system:set mail_smtphost --value=postfix; \
-    /web/nextcloud/occ --no-warnings config:system:set mail_smtpport --value=588
-    /web/nextcloud/occ --no-warnings app:install user_external
-    /web/nextcloud/occ --no-warnings config:system:set user_backends 0 arguments 0 --value={dovecot:143/imap/tls/novalidate-cert}
-    /web/nextcloud/occ --no-warnings config:system:set user_backends 0 class --value=OC_User_IMAP
+    /web/nextcloud/occ --no-warnings config:system:set mail_smtpport --value=588; \
+    /web/nextcloud/occ --no-warnings config:system:set trusted_domains 1 --value=${NC_SUBD}; \
+    /web/nextcloud/occ --no-warnings config:system:set overwritewebroot --value=/; \
+    /web/nextcloud/occ --no-warnings config:system:set overwritehost --value=${NC_SUBD}; \
     /web/nextcloud/occ --no-warnings db:convert-filecache-bigint -n"
 
-  if [[ ${NC_TYPE} == "subdomain" ]]; then
-    docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) /web/nextcloud/occ --no-warnings config:system:set trusted_domains 1 --value=${NC_SUBD}
-    docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) /web/nextcloud/occ --no-warnings config:system:set overwritewebroot --value=/
-    docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) /web/nextcloud/occ --no-warnings config:system:set overwritehost --value=${NC_SUBD}
+    # Not installing by default, broke too often
+    #/web/nextcloud/occ --no-warnings app:install user_external; \
+    #/web/nextcloud/occ --no-warnings config:system:set user_backends 0 arguments 0 --value={dovecot:143/imap/tls/novalidate-cert}; \
+    #/web/nextcloud/occ --no-warnings config:system:set user_backends 0 class --value=OC_User_IMAP; \
+
     cp ./data/assets/nextcloud/nextcloud.conf ./data/conf/nginx/
     sed -i "s/NC_SUBD/${NC_SUBD}/g" ./data/conf/nginx/nextcloud.conf
-  elif [[ ${NC_TYPE} == "subfolder" ]]; then
-    cp ./data/assets/nextcloud/site.nextcloud.custom ./data/conf/nginx/
-  fi
 
+  echo "Restarting Nginx..."
   docker restart $(docker ps -aqf name=nginx-mailcow)
 
   echo "Login as admin with password: ${ADMIN_NC_PASS}"

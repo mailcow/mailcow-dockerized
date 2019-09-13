@@ -14,11 +14,11 @@ do
 done
 
 # Wait for updated schema
-DBV_NOW=$(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT version FROM versions;" -BN)
+DBV_NOW=$(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT version FROM versions WHERE application = 'db_schema';" -BN)
 DBV_NEW=$(grep -oE '\$db_version = .*;' init_db.inc.php | sed 's/$db_version = //g;s/;//g' | cut -d \" -f2)
 while [[ ${DBV_NOW} != ${DBV_NEW} ]]; do
   echo "Waiting for schema update..."
-  DBV_NOW=$(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT version FROM versions;" -BN)
+  DBV_NOW=$(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT version FROM versions WHERE application = 'db_schema';" -BN)
   DBV_NEW=$(grep -oE '\$db_version = .*;' init_db.inc.php | sed 's/$db_version = //g;s/;//g' | cut -d \" -f2)
   sleep 5
 done
@@ -30,10 +30,11 @@ mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e
 
 while [[ ${VIEW_OK} != 'OK' ]]; do
   mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
-CREATE VIEW sogo_view (c_uid, domain, c_name, c_password, c_cn, mail, aliases, ad_aliases, kind, multiple_bookings) AS
-SELECT mailbox.username, mailbox.domain, mailbox.username, if(json_extract(attributes, '$.force_pw_update') LIKE '%0%', if(json_extract(attributes, '$.sogo_access') LIKE '%1%', password, 'invalid'), 'invalid'), mailbox.name, mailbox.username, IFNULL(GROUP_CONCAT(ga.aliases SEPARATOR ' '), ''), IFNULL(gda.ad_alias, ''), mailbox.kind, mailbox.multiple_bookings FROM mailbox
+CREATE VIEW sogo_view (c_uid, domain, c_name, c_password, c_cn, mail, aliases, ad_aliases, ext_acl, kind, multiple_bookings) AS
+SELECT mailbox.username, mailbox.domain, mailbox.username, if(json_extract(attributes, '$.force_pw_update') LIKE '%0%', if(json_extract(attributes, '$.sogo_access') LIKE '%1%', password, '{SSHA256}A123A123A321A321A321B321B321B123B123B321B432F123E321123123321321'), '{SSHA256}A123A123A321A321A321B321B321B123B123B321B432F123E321123123321321'), mailbox.name, mailbox.username, IFNULL(GROUP_CONCAT(ga.aliases SEPARATOR ' '), ''), IFNULL(gda.ad_alias, ''), IFNULL(external_acl.send_as_acl, ''), mailbox.kind, mailbox.multiple_bookings FROM mailbox
 LEFT OUTER JOIN grouped_mail_aliases ga ON ga.username REGEXP CONCAT('(^|,)', mailbox.username, '($|,)')
 LEFT OUTER JOIN grouped_domain_alias_address gda ON gda.username = mailbox.username
+LEFT OUTER JOIN grouped_sender_acl_external external_acl ON external_acl.username = mailbox.username
 WHERE mailbox.active = '1'
 GROUP BY mailbox.username;
 EOF
@@ -51,7 +52,7 @@ while [[ ${STATIC_VIEW_OK} != 'OK' ]]; do
   if [[ ! -z $(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "SELECT 'OK' FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '_sogo_static_view'") ]]; then
     STATIC_VIEW_OK=OK
     echo "Updating _sogo_static_view content..."
-    mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "REPLACE INTO _sogo_static_view (c_uid, domain, c_name, c_password, c_cn, mail, aliases, ad_aliases, kind, multiple_bookings) SELECT c_uid, domain, c_name, c_password, c_cn, mail, aliases, ad_aliases, kind, multiple_bookings from sogo_view;"
+    mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "REPLACE INTO _sogo_static_view (c_uid, domain, c_name, c_password, c_cn, mail, aliases, ad_aliases, ext_acl, kind, multiple_bookings) SELECT c_uid, domain, c_name, c_password, c_cn, mail, aliases, ad_aliases, ext_acl, kind, multiple_bookings from sogo_view;"
     mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "DELETE FROM _sogo_static_view WHERE c_uid NOT IN (SELECT username FROM mailbox WHERE active = '1')"
   else
     echo "Waiting for database initialization..."
@@ -83,9 +84,16 @@ EOF
 done
 
 
-mkdir -p /var/lib/sogo/GNUstep/Defaults/
+if [[ "${ALLOW_ADMIN_EMAIL_LOGIN}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  TRUST_PROXY="YES"
+else
+  TRUST_PROXY="NO"
+fi
+# cat /dev/urandom seems to hang here occasionally and is not recommended anyway, better use openssl
+RAND_PASS=$(openssl rand -base64 16 | tr -dc _A-Z-a-z-0-9)
 
 # Generate plist header with timezone data
+mkdir -p /var/lib/sogo/GNUstep/Defaults/
 cat <<EOF > /var/lib/sogo/GNUstep/Defaults/sogod.plist
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//GNUstep//DTD plist 0.9//EN" "http://www.gnustep.org/plist-0_9.xml">
@@ -93,6 +101,12 @@ cat <<EOF > /var/lib/sogo/GNUstep/Defaults/sogod.plist
 <dict>
     <key>OCSAclURL</key>
     <string>mysql://${DBUSER}:${DBPASS}@%2Fvar%2Frun%2Fmysqld%2Fmysqld.sock/${DBNAME}/sogo_acl</string>
+    <key>SOGoIMAPServer</key>
+    <string>imaps://${IPV4_NETWORK}.250:993</string>
+    <key>SOGoTrustProxyAuthentication</key>
+    <string>${TRUST_PROXY}</string>
+    <key>SOGoEncryptionKey</key>
+    <string>${RAND_PASS}</string>
     <key>OCSCacheFolderURL</key>
     <string>mysql://${DBUSER}:${DBPASS}@%2Fvar%2Frun%2Fmysqld%2Fmysqld.sock/${DBNAME}/sogo_cache_folder</string>
     <key>OCSEMailAlarmsFolderURL</key>
@@ -125,6 +139,7 @@ while read -r line gal
                     <array>
                         <string>aliases</string>
                         <string>ad_aliases</string>
+                        <string>ext_acl</string>
                     </array>
                     <key>KindFieldName</key>
                     <string>kind</string>
@@ -168,19 +183,29 @@ chown sogo:sogo -R /var/lib/sogo/
 chmod 600 /var/lib/sogo/GNUstep/Defaults/sogod.plist
 
 # Patch ACLs
-if [[ ${ACL_ANYONE} == 'allow' ]]; then
-  #enable any or authenticated targets for ACL
-  if patch -R -sfN --dry-run /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff > /dev/null; then
-    patch -R /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff;
-  fi
-else
-  #disable any or authenticated targets for ACL
-  if patch -sfN --dry-run /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff > /dev/null; then
-    patch /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff;
-  fi
-fi
+#if [[ ${ACL_ANYONE} == 'allow' ]]; then
+#  #enable any or authenticated targets for ACL
+#  if patch -R -sfN --dry-run /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff > /dev/null; then
+#    patch -R /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff;
+#  fi
+#else
+#  #disable any or authenticated targets for ACL
+#  if patch -sfN --dry-run /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff > /dev/null; then
+#    patch /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff;
+#  fi
+#fi
 
 # Copy logo, if any
 [[ -f /etc/sogo/sogo-full.svg ]] && cp /etc/sogo/sogo-full.svg /usr/lib/GNUstep/SOGo/WebServerResources/img/sogo-full.svg
+
+# Rsync web content
+echo "Syncing web content with named volume"
+rsync -a /usr/lib/GNUstep/SOGo/. /sogo_web/
+
+# Creating cronjobs
+echo "* * * * *   sogo   /usr/sbin/sogo-ealarms-notify -p /etc/sogo/sieve.creds 2>/dev/null" > /etc/cron.d/sogo
+echo "* * * * *   sogo   /usr/sbin/sogo-tool expire-sessions ${SOGO_EXPIRE_SESSION}" >> /etc/cron.d/sogo
+echo "0 0 * * *   sogo   /usr/sbin/sogo-tool update-autoreply -p /etc/sogo/sieve.creds" >> /etc/cron.d/sogo
+
 
 exec gosu sogo /usr/sbin/sogod

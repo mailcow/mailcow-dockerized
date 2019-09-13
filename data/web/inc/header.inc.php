@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
   <meta name="theme-color" content="#F5D76E"/>
   <meta http-equiv="Referrer-Policy" content="same-origin">
   <title><?=$UI_TEXTS['title_name'];?></title>
@@ -25,6 +25,9 @@
     }
     if (preg_match("/debug/i", $_SERVER['REQUEST_URI'])) {
       $css_minifier->add('/web/css/site/debug.css');
+    }
+    if ($_SERVER['REQUEST_URI'] == '/') {
+      $css_minifier->add('/web/css/site/index.css');
     }
   ?>
   <style><?=$css_minifier->minify();?></style>

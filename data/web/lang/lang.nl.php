@@ -3,7 +3,6 @@
  * Dutch language file
  *
  * Created and maintained by Geitenijs
- *
  */
 
 $lang['header']['apps'] = 'Apps';
@@ -23,6 +22,8 @@ $lang['footer']['cancel'] = 'Annuleren';
 $lang['footer']['hibp_nok'] = 'Dit is een potentieel onveilig wachtwoord!';
 $lang['footer']['hibp_ok'] = 'Dit wachtwoord is relatief veilig';
 
+$lang['danger']['transport_dest_exists'] = "Transportbestemming bestaat reeds";
+$lang['danger']['unlimited_quota_acl'] = "Onbeperkt quotum geweigerd door toegangscontrole";
 $lang['danger']['mysql_error'] = "MySQL-fout: %s";
 $lang['danger']['redis_error'] = "Redis-fout: %s";
 $lang['danger']['unknown_tfa_method'] = "Onbekende tweefactorauthenticatiemethode";
@@ -63,7 +64,7 @@ $lang['success']['delete_filters'] = "Filters %s zijn verwijderd";
 $lang['success']['delete_filter'] = "Filter %s is verwijderd";
 $lang['danger']['invalid_bcc_map_type'] = "Ongeldig BCC-kaart type";
 $lang['danger']['bcc_empty'] = "BCC-bestemming dient ingevuld te worden";
-$lang['danger']['bcc_must_be_email'] = "BCC-kaart %s is geen geldig e-mailadres";
+$lang['danger']['bcc_must_be_email'] = "BCC-bestemming %s is geen geldig e-mailadres";
 $lang['danger']['bcc_exists'] = "BCC-kaart %s bestaat voor type %s";
 $lang['success']['bcc_saved'] = "BCC-kaart is opgeslagen";
 $lang['success']['bcc_edited'] = "BCC-kaart %s is gewijzigd";
@@ -121,6 +122,7 @@ $lang['success']['domain_admin_added'] = "Domeinbeheerder %s is toegevoegd";
 $lang['success']['admin_added'] = "Administrator %s is toegevoegd";
 $lang['success']['admin_modified'] = "Wijzigingen aan administrator zijn opgeslagen";
 $lang['success']['admin_api_modified'] = "Wijzigingen aan de API zijn opgeslagen";
+$lang['success']['license_modified'] = "Wijzigingen aan de licentie zijn opgeslagen";
 $lang['danger']['username_invalid'] = "Gebruikersnaam %s kan niet worden gebruikt";
 $lang['danger']['password_mismatch'] = "De ingevoerde wachtwoorden komen niet overeen";
 $lang['danger']['password_complexity'] = "Wachtwoord voldoet niet aan de vereisten (6 tekens lang, letters en nummers)";
@@ -155,7 +157,7 @@ $lang['danger']['domain_quota_m_in_use'] = "Domeinquotum moet gelijk zijn aan, o
 $lang['danger']['mailboxes_in_use'] = "Maximaal aantal postvakken moet gelijk zijn aan, of groter zijn dan %d";
 $lang['danger']['aliases_in_use'] = "Maximaal aantal aliassen moet gelijk zijn aan, of groter zijn dan %d";
 $lang['danger']['sender_acl_invalid'] = "Toegangscontrole van afzender %s is ongeldig";
-$lang['danger']['domain_not_empty'] = "Kan geen domein in gebruik verwijderen";
+$lang['danger']['domain_not_empty'] = "Domein %s is in gebruik, verwijderen niet mogelijk";
 $lang['danger']['validity_missing'] = 'Wijs een geldigheidstermijn toe';
 $lang['user']['loading'] = "Bezig met laden...";
 $lang['user']['force_pw_update'] = 'Er <b>moet</b> een nieuw wachtwoord worden ingesteld voordat er gebruik kan worden gemaakt van deze dienst.';
@@ -324,7 +326,7 @@ $lang['mailbox']['mins_interval'] = 'Interval (min)';
 $lang['mailbox']['last_run'] = 'Laatst uitgevoerd';
 $lang['mailbox']['excludes'] = 'Exclusief';
 $lang['mailbox']['last_run_reset'] = 'Plan volgende';
-$lang['mailbox']['sieve_info'] = 'Het is mogelijk om meerdere filters per gebruiker in te stellen, maar er kan slechts één voorfilter en één nafilter tegelijkertijd actief zijn.<br>Elk filter zal in de aangegeven volgorde worden verwerkt. Noch een mislukt script, noch een gespecificeerde "keep;" stopt met het verwerken van volgende scripts.<br>Voorfilter → Gebruikersscripts → Nafilter → <a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/sieve_after" target="_blank">Globaal filter</a>';
+$lang['mailbox']['sieve_info'] = 'Het is mogelijk om meerdere filters per gebruiker in te stellen, maar er kan slechts één voorfilter en één nafilter tegelijkertijd actief zijn.<br>Elk filter zal in de aangegeven volgorde worden verwerkt. Noch een mislukt script, noch een gespecificeerde "keep;" stopt met het verwerken van volgende scripts.<br><a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/global_sieve_before" target="_blank">Globaal voorfilter</a> → Voorfilter → Gebruikersscripts → Nafilter → <a href="https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/global_sieve_after" target="_blank">Globaal nafilter</a>';
 $lang['info']['no_action'] = 'Geen handeling van toepassing';
 
 $lang['edit']['syncjob'] = 'Wijzig synchronisatietaak';
@@ -351,7 +353,9 @@ $lang['edit']['title'] = 'Wijzig object';
 $lang['edit']['target_address'] = 'Doeladres(sen) <small>(kommagescheiden)</small>';
 $lang['edit']['active'] = 'Actief';
 $lang['edit']['gal'] = 'Globale adreslijst';
+$lang['add']['gal'] = 'Globale adreslijst';
 $lang['edit']['gal_info'] = 'De globale adreslijst bevat alle objecten van een domein. Deze kunnen door geen enkele gebruiker worden bewerkt. <b>Herstart SOGo om wijzigingen door te voeren.</b>';
+$lang['add']['gal_info'] = 'De globale adreslijst bevat alle objecten van een domein. Deze kunnen door geen enkele gebruiker worden bewerkt. <b>Herstart SOGo om wijzigingen door te voeren.</b>';
 $lang['edit']['force_pw_update'] = 'Vereis nieuw wachtwoord bij eerstvolgende login';
 $lang['edit']['force_pw_update_info'] = 'Deze gebruiker kan hierdoor enkel inloggen op Mailcow UI, totdat de procedure succesvol doorlopen is.';
 $lang['edit']['sogo_access'] = 'Geef toegang to SOGo';
@@ -410,6 +414,7 @@ $lang['acl']['bcc_maps'] = 'BCC-kaarten';
 $lang['acl']['filters'] = 'Filters';
 $lang['acl']['ratelimit'] = 'Ratelimit';
 $lang['acl']['recipient_maps'] = 'Ontvanger-kaarten';
+$lang['acl']['unlimited_quota'] = 'Onbeperkt quotum voor postvakken';
 $lang['acl']['prohibited'] = 'Toegang geweigerd';
 
 $lang['mailbox']['quarantine_notification'] = 'Quarantaine-notificaties';
@@ -444,6 +449,7 @@ $lang['edit']['delete2duplicates'] = 'Verwijder duplicaten op de bestemming';
 $lang['edit']['delete1'] = 'Verwijder van oorsprong wanneer voltooid';
 $lang['edit']['delete2'] = 'Verwijder berichten die zich niet in de oorsprong bevinden';
 $lang['add']['custom_params'] = 'Aangepaste parameters';
+$lang['add']['custom_params_hint'] = 'Goed: --param=xy, fout: --param xy';
 $lang['add']['subscribeall'] = 'Abonneer op alle mappen';
 $lang['add']['timeout1'] = 'Time-out voor verbinding met externe hosts';
 $lang['add']['timeout2'] = 'Time-out voor verbinding met lokale hosts';
@@ -482,9 +488,9 @@ $lang['add']['restart_sogo_hint'] = 'SOGo dient opnieuw opgestart te worden nada
 $lang['add']['goto_null'] = 'Houd e-mail achterwege';
 $lang['add']['goto_ham'] = 'Leer als <span class="text-success"><b>ham</b></span>';
 $lang['add']['goto_spam'] = 'Leer als <span class="text-danger"><b>spam</b></span>';
-$lang['add']['validation_success'] = 'Succesvol gevalideerd';
+$lang['add']['validation_success'] = 'Succesvol geverifieerd';
 $lang['add']['activate_filter_warn'] = 'Alle overige filters zullen worden gedeactiveerd zodra deze geactiveerd.';
-$lang['add']['validate'] = 'Valideer';
+$lang['add']['validate'] = 'Verifieer';
 $lang['mailbox']['add_filter'] = 'Voeg filter toe';
 $lang['add']['sieve_desc'] = 'Korte beschrijving';
 $lang['edit']['sieve_desc'] = 'Korte beschrijving';
@@ -495,7 +501,7 @@ $lang['mailbox']['set_postfilter'] = 'Stel in als nafilter';
 $lang['mailbox']['filters'] = 'Filters';
 $lang['mailbox']['sync_jobs'] = 'Synchronisatietaken';
 $lang['mailbox']['inactive'] = 'Inactief';
-$lang['edit']['validate_save'] = 'Valideer en sla op';
+$lang['edit']['validate_save'] = 'Verifieer en sla op';
 
 
 $lang['login']['username'] = 'Gebruikersnaam';
@@ -514,7 +520,7 @@ $lang['tfa']['none'] = "Deactiveer";
 $lang['tfa']['delete_tfa'] = "Schakel tweefactorauthenticatie uit";
 $lang['tfa']['disable_tfa'] = "Pauzeer tweefactorauthenticatie tot de eerstvolgende succesvolle login";
 $lang['tfa']['confirm'] = "Bevestig";
-$lang['tfa']['totp'] = "TOTP (30-secondecode)";
+$lang['tfa']['totp'] = "TOTP (Step Two, Authy, etc.)";
 $lang['tfa']['select'] = "Selecteer...";
 $lang['tfa']['waiting_usb_auth'] = "<i>In afwachting van USB-apparaat...</i><br><br>Druk nu op de knop van je U2F-apparaat.";
 $lang['tfa']['waiting_usb_register'] = "<i>In afwachting van USB-apparaat...</i><br><br>Voer je wachtwoord hierboven in en bevestig de registratie van het U2F-apparaat door op de knop van het apparaat te drukken.";
@@ -544,7 +550,7 @@ $lang['admin']['f2b_netban_ipv4'] = 'Voer de IPv4-subnetgrootte in waar de verba
 $lang['admin']['f2b_netban_ipv6'] = 'Voer de IPv6-subnetgrootte in waar de verbanning van kracht moet zijn (8-128)';
 $lang['admin']['f2b_whitelist'] = 'Netwerken/hosts op de witte lijst';
 $lang['admin']['f2b_blacklist'] = 'Netwerken/hosts op de zwarte lijst';
-$lang['admin']['f2b_list_info'] = 'Wees ervan bewust dat een host of netwerk op de zwarte lijst altijd hogere prioriteit heeft dan eenzelfde op de witte lijst.';
+$lang['admin']['f2b_list_info'] = 'Een host of netwerk op de zwarte lijst gaat altijd boven eenzelfde op de witte lijst <b>Het doorvoeren van wijzigingen kan enkele seconden in beslag nemen.</b>';
 $lang['admin']['search_domain_da'] = 'Zoek domeinen';
 $lang['admin']['r_inactive'] = 'Inactieve beperkingen';
 $lang['admin']['r_active'] = 'Actieve beperkingen';
@@ -572,7 +578,7 @@ $lang['admin']['add_admin'] = 'Voeg administrator toe';
 $lang['admin']['add_settings_rule'] = 'Voeg regel toe';
 $lang['admin']['rsetting_desc'] = 'Korte beschrijving';
 $lang['admin']['rsetting_content'] = 'Regelinhoud';
-$lang['admin']['rsetting_none'] = 'Geen regel beschikbaar';
+$lang['admin']['rsetting_none'] = 'Geen regels beschikbaar';
 $lang['admin']['rsetting_no_selection'] = 'Selecteer een regel';
 $lang['admin']['rsettings_preset_1'] = 'Schakel alles uit voor geauthenticeerde gebruikers, behalve DKIM en ratelimiting';
 $lang['admin']['rsettings_preset_2'] = 'Postmeesters willen spam';
@@ -605,7 +611,7 @@ $lang['admin']['time'] = 'Tijd';
 $lang['admin']['last_applied'] = 'Voor het laatst toegepast';
 $lang['admin']['reset_limit'] = 'Verwijder hash';
 $lang['admin']['hash_remove_info'] = 'Het verwijderen van een ratelimit-hash, indien nog aanwezig, zal zijn teller volledig herstellen.<br>Elke hash wordt aangeduid met een aparte kleur.';
-$lang['warning']['hash_not_found'] = 'Hash niet gevonden';
+$lang['warning']['hash_not_found'] = 'Hash niet gevonden, mogelijk is deze al verwijderd.';
 $lang['success']['hash_deleted'] = 'Hash verwijderd';
 $lang['admin']['authed_user'] = 'Geauthenticeerde gebruiker';
 $lang['admin']['priority'] = 'Prioriteit';
@@ -618,7 +624,11 @@ $lang['admin']['forwarding_hosts'] = 'Doorstuurhosts';
 $lang['admin']['forwarding_hosts_hint'] = 'Inkomende berichten worden onvoorwaardelijk geaccepteerd vanaf iedere host hieronder vermeld. Deze hosts worden hierdoor niet gecontroleerd op DNSBLs, en zullen de greylisting omzeilen. Spam wordt daarentegen zoals gebruikelijk in de spamfolder geplaatst. Dit wordt vaak gebruikt om mailservers te specificeren die mails doorsturen naar deze Mailcow-server.';
 $lang['admin']['forwarding_hosts_add_hint'] = 'Het is mogelijk om IPv4- of IPv6-adressen, netwerken in CIDR-notatie, hostnames (worden omgezet naar IP-adressen) of domeinnamen (worden tevens omgezet naar IP-adressen of, bij gebrek daaraan, MX-records) op te geven.';
 $lang['admin']['relayhosts_hint'] = 'Stel afzender-afhankelijke transportkaarten in om deze te kunnen gebruiken bij de configuratie van een domein.<br>De transportservice is altijd "smtp:". Er wordt rekening gehouden met het uitgaande versleutelingsbeleid van individuele gebruikers.';
-$lang['admin']['transports_hint'] = 'Een transportkaart wordt boven een afzender-afhankelijke transportkaart verkozen.<br>Het uitgaande versleutelingsbeleid van individuele gebruikers wordt genegeerd en kan enkel worden gehandhaafd doormiddel van globaal versleutelingsbeleid. De transportservice is altijd "smtp:".<br>Om de inloggegevens van een (voorbeeld) nexthop "[host]:25" te bepalen, zoekt Postfix <b>altijd</b> naar "nexthop" voodat er wordt gekeken naar "[nexthop]:25". Dit maakt het onmogelijk om "nexthop" en "[nexthop]:25" tegelijkertijd te gebruiken.';
+$lang['admin']['transports_hint'] = '→ Een transportkaart wordt boven een afzender-afhankelijke transportkaart verkozen.<br>
+    → Het uitgaande versleutelingsbeleid van individuele gebruikers wordt genegeerd en kan enkel worden gehandhaafd doormiddel van globaal versleutelingsbeleid.<br>
+    → De transportservice is altijd "smtp:".<br>
+    → Adressen overeenkomend met "/localhost$/" zullen altijd via "local:" getransporteerd worden, hierdoor zullen "*"-bestemmingen niet van toepassing zijn op deze adressen.<br>
+    → Om de inloggegevens van een (voorbeeld) nexthop "[host]:25" te bepalen, zoekt Postfix <b>altijd</b> naar "nexthop" voodat er wordt gekeken naar "[nexthop]:25". Dit maakt het onmogelijk om "nexthop" en "[nexthop]:25" tegelijkertijd te gebruiken.';
 $lang['admin']['add_relayhost_hint'] = 'Wees ervan bewust dat de authenticatiedata onversleuteld wordt opgeslagen!';
 $lang['admin']['add_transports_hint'] = 'Wees ervan bewust dat de authenticatiedata onversleuteld wordt opgeslagen!';
 $lang['admin']['host'] = 'Host';
@@ -665,6 +675,7 @@ $lang['admin']['active_rspamd_settings_map'] = "Huidige instellingen";
 $lang['admin']['quota_notifications_info'] = "Quotum-notificaties worden verstuurd naar gebruikers wanneer deze 80% of 95% van hun opslagcapaciteit overschreden hebben.";
 $lang['admin']['quarantine_retention_size'] = "Maximale retenties per postvak:<br><small>Gebruik 0 om deze functionaliteit <b>uit te schakelen</b>.</small>";
 $lang['admin']['quarantine_max_size'] = "Maximale grootte in MiB (mail die de limiet overschrijdt zal worden verwijderd):<br><small>0 betekent <b>niet</b> onbeperkt!</small>";
+$lang['admin']['quarantine_max_age'] = "Maximale leeftijd in dagen<br><small>Dit kan niet minder zijn dan 1 dag.</small>";
 $lang['admin']['quarantine_exclude_domains'] = "Sluit de volgende domeinen en aliasdomeinen uit";
 $lang['admin']['quarantine_release_format'] = "Verstuur vrijgegeven items als";
 $lang['admin']['quarantine_release_format_raw'] = "Origineel";
@@ -731,6 +742,7 @@ $lang['quarantine']['show_item'] = "Laat item zien";
 $lang['quarantine']['check_hash'] = "Zoek bestandshash op in VT";
 $lang['quarantine']['qitem'] = "Quarantaine-item";
 $lang['quarantine']['subj'] = "Onderwerp";
+$lang['quarantine']['recipients'] = "Ontvangers";
 $lang['quarantine']['text_plain_content'] = "Inhoud (tekst)";
 $lang['quarantine']['text_from_html_content'] = "Inhoud (geconverteerde html)";
 $lang['quarantine']['atts'] = "Bijlagen";
@@ -739,9 +751,9 @@ $lang['quarantine']['neutral_danger'] = "Neutraal/geen beoordeling";
 $lang['quarantine']['medium_danger'] = "Middelmatig risico";
 $lang['quarantine']['high_danger'] = "Hoog risico";
 $lang['quarantine']['danger'] = "Risico";
+$lang['quarantine']['spam_score'] = "Score";
 $lang['quarantine']['confirm_delete'] = "Bevestig de verwijdering van dit item.";
 $lang['quarantine']['qhandler_success'] = "Verzoek met succes verzonden naar het systeem. Je kunt het venster nu veilig sluiten.";
-
 $lang['warning']['fuzzy_learn_error'] = "Fuzzy hash training-fout: %s";
 $lang['danger']['spam_learn_error'] = "Spamtraining-fout: %s";
 $lang['success']['qlearn_spam'] = "Bericht %s werd als spam gemarkeerd en is verwijderd";
@@ -804,6 +816,7 @@ $lang['success']['tls_policy_map_entry_saved'] = 'Versleutelingsbeleid "%s" is o
 $lang['success']['tls_policy_map_entry_deleted'] = 'Versleutelingsbeleid %s is verwijderd';
 $lang['mailbox']['add_recipient_map_entry'] = 'Voeg ontvangerkaart toe';
 $lang['danger']['tls_policy_map_parameter_invalid'] = "Beleidsparameter is ongeldig";
+$lang['danger']['temp_error'] = "Tijdelijke fout";
 
 $lang['oauth2']['scope_ask_permission'] = 'Een applicatie heeft toegang tot de volgende onderdelen gevraagd';
 $lang['oauth2']['profile'] = 'Profiel';
@@ -829,3 +842,19 @@ $lang['danger']['text_empty'] = 'De tekst dient ingevuld te worden';
 $lang['danger']['subject_empty'] = 'Het onderwerp dient ingevuld te worden';
 $lang['danger']['from_invalid'] = 'De afzender dient ingevuld te worden';
 $lang['danger']['network_host_invalid'] = 'Ongeldig netwerk of host: %s';
+
+$lang['add']['mailbox_quota_def'] = 'Standaard postvakquotum';
+$lang['edit']['mailbox_quota_def'] = 'Standaard postvakquotum';
+$lang['danger']['mailbox_defquota_exceeds_mailbox_maxquota'] = 'Standaardquotum overschrijdt de quotumlimiet';
+$lang['danger']['defquota_empty'] = 'Standaardquotum per postvak dient geen 0 te zijn.';
+$lang['mailbox']['mailbox_defquota'] = 'Standaard postvakgrootte';
+
+$lang['admin']['api_info'] = 'De API is nog in ontwikkeling.';
+
+$lang['admin']['guid_and_license'] = 'Licentie en identificatie';
+$lang['admin']['guid'] = 'Identificatienummer - GUID';
+$lang['admin']['license_info'] = 'Een licentie is niet verplicht, maar je steunt hiermee wel de ontwikkeling.<br><a href="https://www.servercow.de/mailcow?lang=nl#sal" target="_blank" alt="SAL order">Registreer je GUID hier</a>, of <a href="https://www.servercow.de/mailcow?lang=nl#support" target="_blank" alt="Support order">schaf ondersteuning aan voor deze installatie.</a>';
+$lang['admin']['validate_license_now'] = 'Valideer licentie';
+
+$lang['admin']['customer_id'] = 'Klantnummer';
+$lang['admin']['service_id'] = 'Servicenummer';

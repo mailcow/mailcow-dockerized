@@ -48,6 +48,7 @@ while true; do
   sleep 2m
   SANE_MIRRORS="$(dig +ignore +short rsync.sanesecurity.net)"
   for sane_mirror in ${SANE_MIRRORS}; do
+    CE=
     rsync -avp --chown=clamav:clamav --chmod=Du=rwx,Dgo=rx,Fu=rw,Fog=r --timeout=5 rsync://${sane_mirror}/sanesecurity/ \
       --include 'blurl.ndb' \
       --include 'junk.ndb' \
@@ -61,7 +62,9 @@ while true; do
       --include 'sanesecurity.ftm' \
       --include 'sigwhitelist.ign2' \
       --exclude='*' /var/lib/clamav/
-    if [ $? -eq 0 ]; then
+    CE=$?
+    chmod 755 /var/lib/clamav/
+    if [ ${CE} -eq 0 ]; then
       echo RELOAD | nc localhost 3310
       break
     fi

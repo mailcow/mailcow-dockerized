@@ -84,7 +84,8 @@ jQuery(function($){
       "state": {"enabled": true},
       "sorting": {
         "enabled": true
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
   function draw_sync_job_table() {
@@ -151,7 +152,8 @@ jQuery(function($){
       "state": {"enabled": true},
       "sorting": {
         "enabled": true
-      }
+      },
+      "toggleSelector": "table tbody span.footable-toggle"
     });
   }
   function draw_wl_policy_mailbox_table() {
@@ -236,6 +238,11 @@ jQuery(function($){
       }
     });
   }
+
+  $('body').on('click', 'span.footable-toggle', function () {
+    event.stopPropagation();
+  })
+
   draw_sync_job_table();
   draw_tla_table();
   draw_wl_policy_mailbox_table();

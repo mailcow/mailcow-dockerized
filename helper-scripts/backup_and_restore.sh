@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [[ ! -z ${MAILCOW_BACKUP_LOCATION} ]]; then
   BACKUP_LOCATION="${MAILCOW_BACKUP_LOCATION}"
@@ -64,32 +64,32 @@ function backup() {
       docker run --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
         -v $(docker volume ls -qf name=${CMPS_PRJ}_vmail-vol-1):/vmail:ro \
-        debian:stretch-slim /bin/tar --warning='no-file-ignored' --use-compress-program="gzip --rsyncable -v --best" -Pcvpf /backup/backup_vmail.tar.gz /vmail
+        debian:stretch-slim /bin/tar --warning='no-file-ignored' --use-compress-program="gzip --rsyncable --best" -Pcvpf /backup/backup_vmail.tar.gz /vmail
       ;;&
     crypt|all)
       docker run --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
         -v $(docker volume ls -qf name=${CMPS_PRJ}_crypt-vol-1):/crypt:ro \
-        debian:stretch-slim /bin/tar --warning='no-file-ignored' --use-compress-program="gzip --rsyncable -v --best" -Pcvpf /backup/backup_crypt.tar.gz /crypt
+        debian:stretch-slim /bin/tar --warning='no-file-ignored' --use-compress-program="gzip --rsyncable --best" -Pcvpf /backup/backup_crypt.tar.gz /crypt
       ;;&
     redis|all)
       docker exec $(docker ps -qf name=redis-mailcow) redis-cli save
       docker run --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
         -v $(docker volume ls -qf name=${CMPS_PRJ}_redis-vol-1):/redis:ro \
-        debian:stretch-slim /bin/tar --warning='no-file-ignored' --use-compress-program="gzip --rsyncable -v --best" -Pcvpf /backup/backup_redis.tar.gz /redis
+        debian:stretch-slim /bin/tar --warning='no-file-ignored' --use-compress-program="gzip --rsyncable --best" -Pcvpf /backup/backup_redis.tar.gz /redis
       ;;&
     rspamd|all)
       docker run --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
         -v $(docker volume ls -qf name=${CMPS_PRJ}_rspamd-vol-1):/rspamd:ro \
-        debian:stretch-slim /bin/tar --warning='no-file-ignored' --use-compress-program="gzip --rsyncable -v --best" -Pcvpf /backup/backup_rspamd.tar.gz /rspamd
+        debian:stretch-slim /bin/tar --warning='no-file-ignored' --use-compress-program="gzip --rsyncable --best" -Pcvpf /backup/backup_rspamd.tar.gz /rspamd
       ;;&
     postfix|all)
       docker run --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
         -v $(docker volume ls -qf name=${CMPS_PRJ}_postfix-vol-1):/postfix:ro \
-        debian:stretch-slim /bin/tar --warning='no-file-ignored' --use-compress-program="gzip --rsyncable -v --best" -Pcvpf /backup/backup_postfix.tar.gz /postfix
+        debian:stretch-slim /bin/tar --warning='no-file-ignored' --use-compress-program="gzip --rsyncable --best" -Pcvpf /backup/backup_postfix.tar.gz /postfix
       ;;&
     mysql|all)
       SQLIMAGE=$(grep -iEo '(mysql|mariadb)\:.+' ${COMPOSE_FILE})

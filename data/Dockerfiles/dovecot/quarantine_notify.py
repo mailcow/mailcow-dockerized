@@ -83,13 +83,14 @@ def notify_rcpt(rcpt, msg_count, quarantine_acl):
       msg.attach(html_part)
       msg['To'] = str(rcpt)
       text = msg.as_string()
-      server.sendmail(msg['From'], msg['To'], text)
+      server.sendmail(msg['From'].encode("ascii", errors="ignore"), msg['To'], text)
       server.quit()
       for res in meta_query:
         query_mysql('UPDATE quarantine SET notified = 1 WHERE id = "%d"' % (res['id']), update = True)
       r.hset('Q_LAST_NOTIFIED', record['rcpt'], time_now)
       break
     except Exception as ex:
+      server.quit()
       print '%s'  % (ex)
       time.sleep(3)
 
