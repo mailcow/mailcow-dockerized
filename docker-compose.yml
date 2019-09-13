@@ -210,33 +210,6 @@ services:
           aliases:
             - dovecot
 
-    policyd-mailcow:
-      hostname: policyd
-      container_name: policyd-mailcow
-      build: ./data/Dockerfiles/policyd
-      image: policyd-mailcow:1.00
-      ports:
-        # - "10031:10031"
-        - "9080:8080"
-        - "9443:8443"
-      user: "1000000"
-      environment:
-        - "SUPERVISORD_LOGLEVEL=${POLICYD_SUPERVISORD_LOGLEVEL:-debug}"
-        - "CLUEBRINGER_DB_HOST=mysql"
-        - "MYSQL_ROOT_PASSWORD=${DBROOT}" 
-        - "MYSQL_DATABASE=${POLICYD_MYSQL_DATABASE:-cluebringer}" 
-        - "MYSQL_USER=${POLICYD_MYSQL_USER:-cluebringer}" 
-        - "MYSQL_PASSWORD=${POLICYD_MYSQL_PASSWORD}" 
-        - "CLUEBRINGER_DB_BACKEND=${POLICYD_DB_BACKEND:-mysql}" 
-        - "CLUEBRINGER_DB_PORT=${INTERNAL_MYSQL_PORT:-3306}" 
-        - "WEBUI_PASSWORD=${POLICYD_WEBUI_PASSWORD}"
-      networks:
-          mailcow-network:
-            ipv4_address: ${IPV4_NETWORK:-172.22.1}.200
-            aliases:
-              - policyd
-
-
     postfix-mailcow:
       image: mailcow/postfix:1.29
       build: ./data/Dockerfiles/postfix
