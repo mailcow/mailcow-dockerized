@@ -30,7 +30,7 @@ time_now = int(time.time())
 def query_mysql(query, headers = True, update = False):
   while True:
     try:
-      cnx = mysql.connector.connect(unix_socket = '/var/run/mysqld/mysqld.sock', user='mailcow', passwd='sdvZ39iWd86UnVI772spU48VO1T8', database='mailcow', charset="utf8")
+      cnx = mysql.connector.connect(unix_socket = '/var/run/mysqld/mysqld.sock', user='__DBUSER__', passwd='__DBPASS__', database='__DBNAME__', charset="utf8")
     except Exception as ex:
       print('%s - trying again...'  % (ex))
       time.sleep(3)
