@@ -74,7 +74,9 @@ def notify_rcpt(rcpt, msg_count, quarantine_acl):
       server = smtplib.SMTP('postfix', 590, 'quarantine')
       server.ehlo()
       msg = MIMEMultipart('alternative')
-      msg['From'] = r.get('Q_SENDER') or "quarantine@localhost"
+      msg_from = r.get('Q_SENDER') or "quarantine@localhost"
+      # Remove non-ascii chars from field
+      msg['From'] = ''.join([i if ord(i) < 128 else '' for i in msg_from])
       msg['Subject'] = r.get('Q_SUBJ') or "Spam Quarantine Notification"
       msg['Date'] = formatdate(localtime = True)
       text_part = MIMEText(text, 'plain', 'utf-8')
