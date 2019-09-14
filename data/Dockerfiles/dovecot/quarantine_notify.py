@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 
 import smtplib
 import os
@@ -82,7 +83,7 @@ def notify_rcpt(rcpt, msg_count, quarantine_acl):
       msg.attach(html_part)
       msg['To'] = str(rcpt)
       text = msg.as_string()
-      server.sendmail(msg['From'].encode("ascii", errors="ignore"), msg['To'], text)
+      server.sendmail(msg['From'], msg['To'], text)
       server.quit()
       for res in meta_query:
         query_mysql('UPDATE quarantine SET notified = 1 WHERE id = "%d"' % (res['id']), update = True)
@@ -107,7 +108,8 @@ for record in records:
     print('Could not determine last notification for %s, assuming never' % (record['rcpt']))
     last_notification = 0
   attrs_json = query_mysql('SELECT attributes FROM mailbox WHERE username = "%s"' % (record['rcpt']))
-  attrs = json.loads(str(attrs_json[0]['attributes']))
+  print("\n\n\n\n",attrs_json,"\n\n\n\n")
+  attrs = json.loads(str(attrs_json[0]['attributes'].decode('utf-8')))
   if attrs['quarantine_notification'] not in ('hourly', 'daily', 'weekly', 'never'):
     print('Abnormal quarantine_notification value')
     continue
