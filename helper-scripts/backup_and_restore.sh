@@ -111,7 +111,7 @@ function restore() {
   shift
   while (( "$#" )); do
     case "$1" in
-    vmail)
+    vmail|all)
       docker stop $(docker ps -qf name=dovecot-mailcow)
       docker run -it --rm \
         -v ${RESTORE_LOCATION}:/backup \
@@ -130,7 +130,7 @@ function restore() {
         echo "OK, skipped."
       fi
       ;;
-    redis)
+    redis|all)
       docker stop $(docker ps -qf name=redis-mailcow)
       docker run -it --rm \
         -v ${RESTORE_LOCATION}:/backup \
@@ -138,7 +138,7 @@ function restore() {
         debian:stretch-slim /bin/tar -Pxvzf /backup/backup_redis.tar.gz
       docker start $(docker ps -aqf name=redis-mailcow)
       ;;
-    crypt)
+    crypt|all)
       docker stop $(docker ps -qf name=dovecot-mailcow)
       docker run -it --rm \
         -v ${RESTORE_LOCATION}:/backup \
@@ -146,7 +146,7 @@ function restore() {
         debian:stretch-slim /bin/tar -Pxvzf /backup/backup_crypt.tar.gz
       docker start $(docker ps -aqf name=dovecot-mailcow)
       ;;
-    rspamd)
+    rspamd|all)
       docker stop $(docker ps -qf name=rspamd-mailcow)
       docker run -it --rm \
         -v ${RESTORE_LOCATION}:/backup \
@@ -154,7 +154,7 @@ function restore() {
         debian:stretch-slim /bin/tar -Pxvzf /backup/backup_rspamd.tar.gz
       docker start $(docker ps -aqf name=rspamd-mailcow)
       ;;
-    postfix)
+    postfix|all)
       docker stop $(docker ps -qf name=postfix-mailcow)
       docker run -it --rm \
         -v ${RESTORE_LOCATION}:/backup \
@@ -162,7 +162,7 @@ function restore() {
         debian:stretch-slim /bin/tar -Pxvzf /backup/backup_postfix.tar.gz
       docker start $(docker ps -aqf name=postfix-mailcow)
       ;;
-    mysql)
+    mysql|all)
       SQLIMAGE=$(grep -iEo '(mysql|mariadb)\:.+' ${COMPOSE_FILE})
       docker stop $(docker ps -qf name=mysql-mailcow)
       docker run \
@@ -198,6 +198,7 @@ elif [[ ${1} == "restore" ]]; then
     FOLDER_SELECTION[${i}]="${folder}"
     ((i++))
   done
+  echo "[ All ] - Restore all data"
   echo
   input_sel=0
   while [[ ${input_sel} -lt 1 ||  ${input_sel} -gt ${i} ]]; do
