@@ -110,7 +110,6 @@ for record in records:
     print('Could not determine last notification for %s, assuming never' % (record['rcpt']))
     last_notification = 0
   attrs_json = query_mysql('SELECT attributes FROM mailbox WHERE username = "%s"' % (record['rcpt']))
-  print("\n\n\n\n",attrs_json,"\n\n\n\n")
   attrs = json.loads(str(attrs_json[0]['attributes'].decode('utf-8')))
   if attrs['quarantine_notification'] not in ('hourly', 'daily', 'weekly', 'never'):
     print('Abnormal quarantine_notification value')
