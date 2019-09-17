@@ -298,7 +298,9 @@ function quarantine($_action, $_data = null) {
         $max_size = $_data['max_size'];
         $max_age = intval($_data['max_age']);
         $subject = $_data['subject'];
-        $sender = $_data['sender'];
+        if (!filter_var($_data['sender'], FILTER_VALIDATE_EMAIL)) {
+          $sender = '';
+        }
         $html = $_data['html_tmpl'];
         if ($max_age <= 0) {
           $max_age = 365;
