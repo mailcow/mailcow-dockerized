@@ -786,6 +786,8 @@ $lang['danger']['spam_learn_error'] = "Spam learn error: %s";
 $lang['success']['qlearn_spam'] = "Message ID %s was learned as spam and deleted";
 
 $lang['debug']['system_containers'] = 'System & Containers';
+$lang['debug']['started_on'] = 'Started on';
+$lang['debug']['jvm_memory_solr'] = 'JVM memory usage';
 $lang['debug']['solr_status'] = 'Solr status';
 $lang['debug']['solr_dead'] = 'Solr is starting, disabled or died.';
 $lang['debug']['logs'] = 'Logs';
