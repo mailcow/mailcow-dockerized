@@ -769,6 +769,8 @@ $lang['debug']['log_info'] = '<p>mailcow <b>in-memory Logs</b> werden in Redis L
   <p><b>Statische Logs</b> sind weitestgehend Aktivitätsprotokolle, die nicht in den Docker Daemon geschrieben werden, jedoch permanent verfügbar sein müssen (ausgeschlossen API Logs).</p>';
 
 $lang['debug']['in_memory_logs'] = 'In-memory Logs';
+$lang['debug']['started_on'] = 'Gestartet am';
+$lang['debug']['jvm_memory_solr'] = 'JVM Speicherauslastung';
 $lang['debug']['external_logs'] = 'Externe Logs';
 $lang['debug']['static_logs'] = 'Statische Logs';
 $lang['debug']['solr_status'] = 'Solr Status';
