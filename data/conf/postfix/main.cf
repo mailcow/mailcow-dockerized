@@ -48,9 +48,8 @@ postscreen_dnsbl_sites = wl.mailspike.net=127.0.0.[18;19;20]*-2
   list.dnswl.org=127.0.[0..255].3*-8
   ix.dnsbl.manitu.net*2
   bl.spamcop.net*2
-  hostkarma.junkemailfilter.com=127.0.0.2*4
-  hostkarma.junkemailfilter.com=127.0.0.3*2
-  hostkarma.junkemailfilter.com=127.0.0.4*3
+  hostkarma.junkemailfilter.com=127.0.0.2*3
+  hostkarma.junkemailfilter.com=127.0.0.4*2
   hostkarma.junkemailfilter.com=127.0.1.2*1
   backscatter.spameatingmonkey.net*2
   bl.ipv6.spameatingmonkey.net*2
@@ -68,10 +67,7 @@ postscreen_dnsbl_sites = wl.mailspike.net=127.0.0.[18;19;20]*-2
   zen.spamhaus.org=127.0.0.[4..7]*6
   zen.spamhaus.org=127.0.0.3*4
   zen.spamhaus.org=127.0.0.2*3
-  hostkarma.junkemailfilter.com=127.0.0.2*3
-  hostkarma.junkemailfilter.com=127.0.0.4*2
-  hostkarma.junkemailfilter.com=127.0.1.2*1
-postscreen_dnsbl_threshold = 5
+postscreen_dnsbl_threshold = 6
 postscreen_dnsbl_ttl = 5m
 postscreen_greet_action = enforce
 postscreen_greet_banner = $smtpd_banner
