@@ -709,14 +709,14 @@ function user_get_alias_details($username) {
   }
   return $data;
 }
-function is_valid_domain_name($domain_name) { 
+function is_valid_domain_name($domain_name) {
 	if (empty($domain_name)) {
 		return false;
 	}
 	$domain_name = idn_to_ascii($domain_name, 0, INTL_IDNA_VARIANT_UTS46);
-	return (preg_match("/^([a-z\d](-*[a-z\d])*)(\.([a-z\d](-*[a-z\d])*))*$/i", $domain_name)
+	return (preg_match("/^([a-z\d](-*[a-z\d])*)\.(([a-z\d](-*[a-z\d])*))*$/i", $domain_name)
 		   && preg_match("/^.{1,253}$/", $domain_name)
-		   && preg_match("/^[^\.]{1,63}(\.[^\.]{1,63})*$/", $domain_name));
+		   && preg_match("/^[^\.]{1,63}\.([^\.]{1,63})*$/", $domain_name));
 }
 function set_tfa($_data) {
 	global $lang;
