@@ -24,7 +24,6 @@ RUN groupadd -g 102 postfix \
 	postfix \
 	postfix-mysql \
 	postfix-pcre \
-	python-gpg \
 	sasl2-bin \
 	sudo \
 	supervisor \
