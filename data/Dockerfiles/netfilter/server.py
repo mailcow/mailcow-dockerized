@@ -107,8 +107,8 @@ def mailcowChainOrder():
           for position, item in enumerate(chain.rules):
             if item.target.name == 'MAILCOW':
               target_found = True
-              if position != 0:
-                logCrit('Error in %s chain order, restarting container' % (chain.name))
+              if position > 2:
+                logCrit('Error in %s chain order: MAILCOW on position %d, restarting container' % (chain.name, position))
                 quit_now = True
           if not target_found:
             logCrit('Error in %s chain: MAILCOW target not found, restarting container' % (chain.name))
