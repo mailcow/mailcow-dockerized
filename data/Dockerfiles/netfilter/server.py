@@ -75,8 +75,8 @@ def refreshF2boptions():
     f2boptions['ban_time'] = r.get('F2B_BAN_TIME') or 1800
     f2boptions['max_attempts'] = r.get('F2B_MAX_ATTEMPTS') or 10
     f2boptions['retry_window'] = r.get('F2B_RETRY_WINDOW') or 600
-    f2boptions['netban_ipv4'] = r.get('F2B_NETBAN_IPV4') or 24
-    f2boptions['netban_ipv6'] = r.get('F2B_NETBAN_IPV6') or 64
+    f2boptions['netban_ipv4'] = r.get('F2B_NETBAN_IPV4') or 32
+    f2boptions['netban_ipv6'] = r.get('F2B_NETBAN_IPV6') or 128
     r.set('F2B_OPTIONS', json.dumps(f2boptions, ensure_ascii=False))
   else:
     try:
