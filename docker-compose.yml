@@ -18,7 +18,8 @@ services:
             - unbound
 
     mysql-mailcow:
-      image: mariadb:10.2
+      image: mariadb:10.3
+      stop_grace_period: 45s
       volumes:
         - mysql-vol-1:/var/lib/mysql/
         - mysql-socket-vol-1:/var/run/mysqld/
@@ -223,7 +224,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.39
+      image: mailcow/postfix:1.40
       build: ./data/Dockerfiles/postfix
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
@@ -338,7 +339,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.28
+      image: mailcow/netfilter:1.29
       build: ./data/Dockerfiles/netfilter
       stop_grace_period: 30s
       depends_on:
