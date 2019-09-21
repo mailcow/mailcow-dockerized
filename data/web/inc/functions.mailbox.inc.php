@@ -245,14 +245,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
-          if (!is_valid_domain_name($host1)) {
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => 'access_denied'
-            );
-            return false;
-          }
+          // if (!is_valid_domain_name($host1)) {
+            // $_SESSION['return'][] = array(
+              // 'type' => 'danger',
+              // 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              // 'msg' => 'access_denied'
+            // );
+            // return false;
+          // }
           if ($enc1 != "TLS" && $enc1 != "SSL" && $enc1 != "PLAIN") {
             $_SESSION['return'][] = array(
               'type' => 'danger',
