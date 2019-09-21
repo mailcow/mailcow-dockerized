@@ -31,14 +31,16 @@ CONTAINER_ID=
 # Todo: Better check if upgrade failed
 # This can happen due to a broken sogo_view
 [ -s /mysql_upgrade_loop ] && SQL_LOOP_C=$(cat /mysql_upgrade_loop)
+[ -z ${SQL_LOOP_C} ] && SQL_LOOP_C=0
 until [[ ! -z "${CONTAINER_ID}" ]] && [[ "${CONTAINER_ID}" =~ ^[[:alnum:]]*$ ]]; do
   CONTAINER_ID=$(curl --silent --insecure https://dockerapi/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], id: .Id}" 2> /dev/null | jq -rc "select( .name | tostring | contains(\"mysql-mailcow\")) | .id" 2> /dev/null)
 done
 echo "MySQL @ ${CONTAINER_ID}"
 SQL_UPGRADE_RETURN=$(curl --silent --insecure -XPOST https://dockerapi/containers/${CONTAINER_ID}/exec -d '{"cmd":"system", "task":"mysql_upgrade"}' --silent -H 'Content-type: application/json' | jq -r .type)
 if [[ ${SQL_UPGRADE_RETURN} == 'warning' ]]; then
-  if [ -z ${SQL_LOOP_C} ]; then
-    echo 1 > /mysql_upgrade_loop
+  sleep 2
+  if [ ${SQL_LOOP_C} -lt 2 ]; then
+    echo $((SQL_LOOP_C+1)) > /mysql_upgrade_loop
     echo "MySQL applied an upgrade"
     POSTFIX=($(curl --silent --insecure https://dockerapi/containers/json | jq -r '.[] | {name: .Config.Labels["com.docker.compose.service"], id: .Id}' | jq -rc 'select( .name | tostring | contains("postfix-mailcow")) | .id' | tr "\n" " "))
     if [[ -z ${POSTFIX} ]]; then
@@ -53,7 +55,7 @@ if [[ ${SQL_UPGRADE_RETURN} == 'warning' ]]; then
     exit 1
   else
     rm /mysql_upgrade_loop
-    echo "MySQL was not applied previously, skipping. Restart php-fpm-mailcow to retry or run mysql_upgrade manually."
+    echo "MySQL upgrade was not applied previously, skipping. Restart php-fpm-mailcow to retry or run mysql_upgrade manually."
     while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
       echo "Waiting for SQL to return..."
       sleep 2
