@@ -472,6 +472,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $addresses  = array_map('trim', preg_split( "/( |,|;|\n)/", $_data['address']));
           $gotos      = array_map('trim', preg_split( "/( |,|;|\n)/", $_data['goto']));
           $active = intval($_data['active']);
+          $sogo_visible = intval($_data['sogo_visible']);
           $goto_null = intval($_data['goto_null']);
           $goto_spam = intval($_data['goto_spam']);
           $goto_ham = intval($_data['goto_ham']);
@@ -625,8 +626,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
-            $stmt = $pdo->prepare("INSERT INTO `alias` (`address`, `public_comment`, `private_comment`, `goto`, `domain`, `active`)
-              VALUES (:address, :public_comment, :private_comment, :goto, :domain, :active)");
+            $stmt = $pdo->prepare("INSERT INTO `alias` (`address`, `public_comment`, `private_comment`, `goto`, `domain`, `sogo_visible`, `active`)
+              VALUES (:address, :public_comment, :private_comment, :goto, :domain, :sogo_visible, :active)");
             if (!filter_var($address, FILTER_VALIDATE_EMAIL) === true) {
               $stmt->execute(array(
                 ':address' => '@'.$domain,
@@ -635,6 +636,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':address' => '@'.$domain,
                 ':goto' => $goto,
                 ':domain' => $domain,
+                ':sogo_visible' => $sogo_visible,
                 ':active' => $active
               ));
             }
@@ -645,6 +647,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':private_comment' => $private_comment,
                 ':goto' => $goto,
                 ':domain' => $domain,
+                ':sogo_visible' => $sogo_visible,
                 ':active' => $active
               ));
             }
@@ -1697,6 +1700,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $is_now = mailbox('get', 'alias_details', $id);
             if (!empty($is_now)) {
               $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
+              $sogo_visible = (isset($_data['sogo_visible'])) ? intval($_data['sogo_visible']) : $is_now['sogo_visible_int'];
               $goto_null = (isset($_data['goto_null'])) ? intval($_data['goto_null']) : 0;
               $goto_spam = (isset($_data['goto_spam'])) ? intval($_data['goto_spam']) : 0;
               $goto_ham = (isset($_data['goto_ham'])) ? intval($_data['goto_ham']) : 0;
@@ -1831,6 +1835,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 `public_comment` = :public_comment,
                 `private_comment` = :private_comment,
                 `goto` = :goto,
+                `sogo_visible`= :sogo_visible,
                 `active`= :active
                   WHERE `id` = :id");
               $stmt->execute(array(
@@ -1838,6 +1843,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':public_comment' => $public_comment,
                 ':private_comment' => $private_comment,
                 ':goto' => $goto,
+                ':sogo_visible' => $sogo_visible,
                 ':active' => $active,
                 ':id' => $id
               ));
@@ -2958,7 +2964,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             `public_comment`,
             `private_comment`,
             `active` as `active_int`,
+            `sogo_visible` as `sogo_visible_int`,
             CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`,
+            CASE `sogo_visible` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `sogo_visible`,
             `created`,
             `modified`
               FROM `alias`
@@ -2987,7 +2995,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $aliasdata['address'] = $row['address'];
           (!filter_var($aliasdata['address'], FILTER_VALIDATE_EMAIL)) ? $aliasdata['is_catch_all'] = 1 : $aliasdata['is_catch_all'] = 0;
           $aliasdata['active'] = $row['active'];
+          $aliasdata['sogo_visible'] = $row['sogo_visible'];
           $aliasdata['active_int'] = $row['active_int'];
+          $aliasdata['sogo_visible_int'] = $row['sogo_visible_int'];
           $aliasdata['created'] = $row['created'];
           $aliasdata['modified'] = $row['modified'];
           if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $aliasdata['domain'])) {

@@ -42,6 +42,7 @@ $lang['success']['queue_command_success'] = "Queue-Aufgabe erfolgreich ausgefüh
 $lang['danger']['unknown'] = "Ein unbekannter Fehler trat auf";
 $lang['danger']['malformed_username'] = "Benutzername hat ein falsches Format";
 $lang['info']['awaiting_tfa_confirmation'] = "Warte auf TFA Verifizierung";
+$lang['info']['session_expires'] = "Die Sitzung wird in etwa 15 Sekunden beendet";
 $lang['success']['logged_in_as'] = "Eingeloggt als %s";
 $lang['danger']['login_failed'] = "Anmeldung fehlgeschlagen";
 $lang['danger']['set_acl_failed'] = "ACL konnte nicht gesetzt werden";
@@ -331,6 +332,11 @@ Die Ausführung erfolgt in nachstehender Reihenfolge. Ein fehlgeschlagenes Scrip
 
 $lang['info']['no_action'] = 'Keine Aktion anwendbar';
 
+$lang['edit']['sogo_visible'] = 'Alias in SOGo sichtbar';
+$lang['edit']['sogo_visible_info'] = 'Diese Option hat lediglich Einfluss auf Objekte, die in SOGo darstellbar sind (geteilte oder nicht-geteilte Alias-Adressen mit dem Ziel mindestens einer lokalen Mailbox).';
+$lang['mailbox']['sogo_visible'] = 'Alias Sichtbarkeit in SOGo';
+$lang['mailbox']['sogo_visible_y'] = 'Alias in SOGo anzeigen';
+$lang['mailbox']['sogo_visible_n'] = 'Alias in SOGo verbergen';
 $lang['edit']['syncjob'] = 'Sync-Job bearbeiten';
 $lang['edit']['save'] = 'Änderungen speichern';
 $lang['edit']['username'] = 'Benutzername';

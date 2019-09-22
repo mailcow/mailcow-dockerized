@@ -146,6 +146,18 @@ $(document).ready(function() {
     }
   });
 
+  // Reload after session timeout
+  var session_lifetime = <?=(intval($SESSION_LIFETIME) * 1000) + 15000;?>;
+  <?php
+  if (isset($_SESSION['mailcow_cc_username'])):
+  ?>
+  setTimeout(function() {
+    location.reload();
+  }, session_lifetime);
+  <?php
+  endif;
+  ?>
+
   // CSRF
   $('<input type="hidden" value="<?= $_SESSION['CSRF']['TOKEN']; ?>">').attr('name', 'csrf_token').appendTo('form');
   if (sessionStorage.scrollTop != "undefined") {
