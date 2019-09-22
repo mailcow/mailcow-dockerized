@@ -43,6 +43,7 @@ $lang['success']['queue_command_success'] = "Queue command completed successfull
 $lang['danger']['unknown'] = "An unknown error occurred";
 $lang['danger']['malformed_username'] = "Malformed username";
 $lang['info']['awaiting_tfa_confirmation'] = "Awaiting TFA confirmation";
+$lang['info']['session_expires'] = "Your session will expire in about 15 seconds";
 $lang['success']['logged_in_as'] = "Logged in as %s";
 $lang['danger']['login_failed'] = "Login failed";
 $lang['danger']['set_acl_failed'] = "Failed to set ACL";
@@ -339,6 +340,11 @@ Each filter will be processed in the described order. Neither a failed script no
 $lang['info']['no_action'] = 'No action applicable';
 
 
+$lang['edit']['sogo_visible'] = 'Alias is visible in SOGo';
+$lang['edit']['sogo_visible_info'] = 'This option only affects objects, that can be displayed in SOGo (shared or non-shared alias addresses pointing to at least one local mailbox).';
+$lang['mailbox']['sogo_visible'] = 'Alias is visible in SOGo';
+$lang['mailbox']['sogo_visible_y'] = 'Show alias in SOGo';
+$lang['mailbox']['sogo_visible_n'] = 'Hide alias in SOGo';
 $lang['edit']['syncjob'] = 'Edit sync job';
 $lang['edit']['client_id'] = 'Client ID';
 $lang['edit']['client_secret'] = 'Client secret';
