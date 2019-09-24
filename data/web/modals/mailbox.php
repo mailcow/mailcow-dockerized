@@ -284,6 +284,11 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
               <div class="checkbox">
                 <label><input class="goto_checkbox" type="checkbox" value="1" name="goto_ham"> <?=$lang['add']['goto_ham'];?></label>
               </div>
+              <hr>
+              <div class="checkbox">
+                <label><input type="checkbox" value="1" name="sogo_visible" checked> <?=$lang['edit']['sogo_visible'];?></label>
+              </div>
+              <p class="help-block"><?=$lang['edit']['sogo_visible_info'];?></p>
             </div>
           </div>
           <div class="form-group">
