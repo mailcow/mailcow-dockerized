@@ -6,6 +6,10 @@ if [[ "${SKIP_CLAMD}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   exit 0
 fi
 
+# Cleaning up garbage
+echo "Cleaning up tmp files..."
+rm -rf /var/lib/clamav/clamav-*.tmp
+
 # Prepare whitelist
 
 mkdir -p /run/clamav /var/lib/clamav
