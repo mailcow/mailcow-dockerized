@@ -49,7 +49,7 @@ $(document).ready(function() {
     backdrop: 'static',
     keyboard: false
   });
-  $('#u2f_status_auth').html('<p><span class="glyphicon glyphicon-refresh glyphicon-spin"></span> Initializing, please wait...</p>');
+  $('#u2f_status_auth').html('<p><span class="glyphicon glyphicon-refresh glyphicon-spin"></span> ' + lang_tfa.init_u2f + '</p>');
   $('#ConfirmTFAModal').on('shown.bs.modal', function(){
       $(this).find('input[name=token]').focus();
       // If U2F
@@ -111,33 +111,42 @@ $(document).ready(function() {
     if ($(this).val() == "u2f") {
       $('#U2FModal').modal('show');
       $("option:selected").prop("selected", false);
-      $('#u2f_status_reg').html('<p><span class="glyphicon glyphicon-refresh glyphicon-spin"></span> Initializing, please wait...</p>');
-      $.ajax({
-        type: "GET",
-        cache: false,
-        dataType: 'script',
-        url: "/api/v1/get/u2f-registration/<?= (isset($_SESSION['mailcow_cc_username'])) ? rawurlencode($_SESSION['mailcow_cc_username']) : null; ?>",
-        complete: function(data){
-          data;
-          setTimeout(function() {
-            console.log("Ready to register");
-            $('#u2f_status_reg').html(lang_tfa.waiting_usb_register);
-            u2f.register(appId, registerRequests, registeredKeys, function(deviceResponse) {
-              var form  = document.getElementById('u2f_reg_form');
-              var reg   = document.getElementById('u2f_register_data');
-              console.log("Register callback: ", data);
-              if (deviceResponse.errorCode && deviceResponse.errorCode != 0) {
-                var u2f_return_code = document.getElementById('u2f_return_code');
-                u2f_return_code.style.display = u2f_return_code.style.display === 'none' ? '' : null;
-                if (deviceResponse.errorCode == "4") { deviceResponse.errorCode = "4 - The presented device is not eligible for this request. For a registration request this may mean that the token is already registered, and for a sign request it may mean that the token does not know the presented key handle"; }
-                u2f_return_code.innerHTML = 'Error code: ' + deviceResponse.errorCode;
-                return;
-              }
-              reg.value = JSON.stringify(deviceResponse);
-              form.submit();
-            });
-          }, 1000);
-        }
+      $("#start_u2f_register").click(function(){
+        $('#u2f_return_code').html('');
+        $('#u2f_return_code').hide();
+        $('#u2f_status_reg').html('<p><span class="glyphicon glyphicon-refresh glyphicon-spin"></span> ' + lang_tfa.init_u2f + '</p>');
+        $.ajax({
+          type: "GET",
+          cache: false,
+          dataType: 'script',
+          url: "/api/v1/get/u2f-registration/<?= (isset($_SESSION['mailcow_cc_username'])) ? rawurlencode($_SESSION['mailcow_cc_username']) : null; ?>",
+          complete: function(data){
+            data;
+            setTimeout(function() {
+              console.log("Ready to register");
+              $('#u2f_status_reg').html(lang_tfa.waiting_usb_register);
+              u2f.register(appId, registerRequests, registeredKeys, function(deviceResponse) {
+                var form  = document.getElementById('u2f_reg_form');
+                var reg   = document.getElementById('u2f_register_data');
+                console.log("Register callback: ", data);
+                if (deviceResponse.errorCode && deviceResponse.errorCode != 0) {
+                  var u2f_return_code = document.getElementById('u2f_return_code');
+                  u2f_return_code.style.display = u2f_return_code.style.display === 'none' ? '' : null;
+                  if (deviceResponse.errorCode == "4") {
+                    deviceResponse.errorCode = "4 - The presented device is not eligible for this request. For a registration request this may mean that the token is already registered, and for a sign request it may mean that the token does not know the presented key handle";
+                  }
+                  else if (deviceResponse.errorCode == "5") {
+                    deviceResponse.errorCode = "5 - Timeout reached before request could be satisfied.";
+                  }
+                  u2f_return_code.innerHTML = lang_tfa.error_code + ': ' + deviceResponse.errorCode + ' ' + lang_tfa.reload_retry;
+                  return;
+                }
+                reg.value = JSON.stringify(deviceResponse);
+                form.submit();
+              });
+            }, 1000);
+          }
+        });
       });
     }
     if ($(this).val() == "none") {
