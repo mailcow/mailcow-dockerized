@@ -228,7 +228,7 @@ class container_post(Resource):
           container.restart()
           return jsonify(type='warning', msg='mysql_upgrade: upgrade was applied', text=sql_return.output.decode('utf-8'))
       else:
-        return jsonify(type='error', msg='mysql_upgrade: error running command')
+        return jsonify(type='error', msg='mysql_upgrade: error running command', text=sql_return.output.decode('utf-8'))
 
 
   # api call: container_post - post_action: exec - cmd: reload - task: dovecot

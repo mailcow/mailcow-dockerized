@@ -95,7 +95,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.46
+      image: mailcow/phpfpm:1.47
       build: ./data/Dockerfiles/phpfpm
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
@@ -394,7 +394,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:1.33
+      image: mailcow/dockerapi:1.34
       restart: always
       build: ./data/Dockerfiles/dockerapi
       oom_kill_disable: true
