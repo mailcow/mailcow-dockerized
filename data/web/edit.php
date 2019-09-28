@@ -28,6 +28,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           <br />
           <form class="form-horizontal" data-id="editalias" role="form" method="post">
             <input type="hidden" value="0" name="active">
+            <input type="hidden" value="0" name="sogo_visible">
             <div class="form-group">
               <label class="control-label col-sm-2" for="address"><?=$lang['edit']['alias'];?></label>
               <div class="col-sm-10">
@@ -37,7 +38,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <label class="control-label col-sm-2" for="goto"><?=$lang['edit']['target_address'];?></label>
               <div class="col-sm-10">
-                <textarea id="textarea_alias_goto" class="form-control" autocapitalize="none" autocorrect="off" rows="10" id="goto" name="goto" required><?= (!preg_match('/^(null|ham|spam)@localhost$/i', $result['goto'])) ? htmlspecialchars($result['goto']) : null; ?></textarea>
+                <textarea id="textarea_alias_goto" class="form-control" autocapitalize="none" autocorrect="off" rows="10" id="goto" name="goto" required><?= (!preg_match('/^(null|ham|spam)@localhost$/i', $result['goto'])) ? str_replace(',', ', ', htmlspecialchars($result['goto'])) : null; ?></textarea>
                 <div class="checkbox">
                   <label><input class="goto_checkbox" type="checkbox" value="1" name="goto_null" <?= ($result['goto'] == "null@localhost") ? "checked" : null; ?>> <?=$lang['add']['goto_null'];?></label>
                 </div>
@@ -47,6 +48,11 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                 <div class="checkbox">
                   <label><input class="goto_checkbox" type="checkbox" value="1" name="goto_ham" <?= ($result['goto'] == "ham@localhost") ? "checked" : null; ?>> <?=$lang['add']['goto_ham'];?></label>
                 </div>
+                <hr>
+                <div class="checkbox">
+                  <label><input type="checkbox" value="1" name="sogo_visible" <?php if (isset($result['sogo_visible_int']) && $result['sogo_visible_int']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['sogo_visible'];?></label>
+                </div>
+                <p class="help-block"><?=$lang['edit']['sogo_visible_info'];?></p>
               </div>
             </div>
             <hr>

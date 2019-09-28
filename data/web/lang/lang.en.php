@@ -43,6 +43,7 @@ $lang['success']['queue_command_success'] = "Queue command completed successfull
 $lang['danger']['unknown'] = "An unknown error occurred";
 $lang['danger']['malformed_username'] = "Malformed username";
 $lang['info']['awaiting_tfa_confirmation'] = "Awaiting TFA confirmation";
+$lang['info']['session_expires'] = "Your session will expire in about 15 seconds";
 $lang['success']['logged_in_as'] = "Logged in as %s";
 $lang['danger']['login_failed'] = "Login failed";
 $lang['danger']['set_acl_failed'] = "Failed to set ACL";
@@ -339,6 +340,11 @@ Each filter will be processed in the described order. Neither a failed script no
 $lang['info']['no_action'] = 'No action applicable';
 
 
+$lang['edit']['sogo_visible'] = 'Alias is visible in SOGo';
+$lang['edit']['sogo_visible_info'] = 'This option only affects objects, that can be displayed in SOGo (shared or non-shared alias addresses pointing to at least one local mailbox).';
+$lang['mailbox']['sogo_visible'] = 'Alias is visible in SOGo';
+$lang['mailbox']['sogo_visible_y'] = 'Show alias in SOGo';
+$lang['mailbox']['sogo_visible_n'] = 'Hide alias in SOGo';
 $lang['edit']['syncjob'] = 'Edit sync job';
 $lang['edit']['client_id'] = 'Client ID';
 $lang['edit']['client_secret'] = 'Client secret';
@@ -532,7 +538,11 @@ $lang['tfa']['tfa'] = "Two-factor authentication";
 $lang['tfa']['set_tfa'] = "Set two-factor authentication method";
 $lang['tfa']['yubi_otp'] = "Yubico OTP authentication";
 $lang['tfa']['key_id'] = "An identifier for your YubiKey";
+$lang['tfa']['init_u2f'] = "Initializing, please wait...";
+$lang['tfa']['start_u2f_validation'] = "Start validation";
+$lang['tfa']['reload_retry'] = "- (reload browser if the error persists)";
 $lang['tfa']['key_id_totp'] = "An identifier for your key";
+$lang['tfa']['error_code'] = "Error code";
 $lang['tfa']['api_register'] = 'mailcow uses the Yubico Cloud API. Please get an API key for your key <a href="https://upgrade.yubico.com/getapikey/" target="_blank">here</a>';
 $lang['tfa']['u2f'] = "U2F authentication";
 $lang['tfa']['none'] = "Deactivate";
@@ -647,7 +657,8 @@ $lang['admin']['forwarding_hosts'] = 'Forwarding Hosts';
 $lang['admin']['forwarding_hosts_hint'] = 'Incoming messages are unconditionally accepted from any hosts listed here. These hosts are then not checked against DNSBLs or subjected to greylisting. Spam received from them is never rejected, but optionally it can be filed into the Junk folder. The most common use for this is to specify mail servers on which you have set up a rule that forwards incoming emails to your mailcow server.';
 $lang['admin']['forwarding_hosts_add_hint'] = 'You can either specify IPv4/IPv6 addresses, networks in CIDR notation, host names (which will be resolved to IP addresses), or domain names (which will be resolved to IP addresses by querying SPF records or, in their absence, MX records).';
 $lang['admin']['relayhosts_hint'] = 'Define sender-dependent transports to be able to select them in a domains configuration dialog.<br>
-  The transport service is always "smtp:". A users individual outbound TLS policy setting is taken into account.';
+  The transport service is always "smtp:". A users individual outbound TLS policy setting is taken into account.<br>
+  Affects selected domains including alias domains.';
 $lang['admin']['transports_hint'] = '→ A transport map entry <b>overrules</b> a sender-dependent transport map</b>.<br>
 → Outbound TLS policy settings per-user are ignored and can only be enforced by TLS policy map entries.<br>
 → The transport service for defined transports is always "smtp:".<br>
@@ -716,6 +727,7 @@ $lang['admin']['help_text'] = "Override help text below login mask (HTML allowed
 $lang['admin']['title_name'] = '"mailcow UI" website title';
 $lang['admin']['main_name'] = '"mailcow UI" name';
 $lang['admin']['apps_name'] = '"mailcow Apps" name';
+$lang['admin']['ui_impress'] = 'Impress, Footer note (HTML allowed)';
 
 $lang['admin']['customize'] = "Customize";
 $lang['admin']['change_logo'] = "Change logo";

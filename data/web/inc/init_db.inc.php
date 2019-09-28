@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "01092019_1240";
+    $db_version = "27092019_1040";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -19,14 +19,17 @@ function init_db_schema() {
       SELECT goto, IFNULL(GROUP_CONCAT(address SEPARATOR ' '), '') AS address FROM alias
       WHERE address!=goto
       AND active = '1'
+      AND sogo_visible = '1'
       AND address NOT LIKE '@%'
       GROUP BY goto;",
+    // START
     // Unused at the moment - we cannot allow to show a foreign mailbox as sender address in SOGo, as SOGo does not like this
     // We need to create delegation in SOGo AND set a sender_acl in mailcow to allow to send as user X
     "grouped_sender_acl" => "CREATE VIEW grouped_sender_acl (username, send_as_acl) AS
       SELECT logged_in_as, IFNULL(GROUP_CONCAT(send_as SEPARATOR ' '), '') AS send_as_acl FROM sender_acl
       WHERE send_as NOT LIKE '@%'
       GROUP BY logged_in_as;",
+    // END 
     "grouped_sender_acl_external" => "CREATE VIEW grouped_sender_acl_external (username, send_as_acl) AS
       SELECT logged_in_as, IFNULL(GROUP_CONCAT(send_as SEPARATOR ' '), '') AS send_as_acl FROM sender_acl
       WHERE send_as NOT LIKE '@%' AND external = '1'
@@ -147,6 +150,7 @@ function init_db_schema() {
           "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
           "private_comment" => "TEXT",
           "public_comment" => "TEXT",
+          "sogo_visible" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
         ),
         "keys" => array(
@@ -326,7 +330,7 @@ function init_db_schema() {
           "spam_policy" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "delimiter_action" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "syncjobs" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "eas_reset" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "eas_reset" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "sogo_profile_reset" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "quarantine" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "quarantine_attachments" => "TINYINT(1) NOT NULL DEFAULT '1'",
@@ -776,6 +780,73 @@ function init_db_schema() {
         "keys" => array(
           "primary" => array(
             "" => array("c_uid")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "oauth_clients" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "client_id" => "VARCHAR(80) NOT NULL",
+          "client_secret" => "VARCHAR(80)",
+          "redirect_uri" => "VARCHAR(2000)",
+          "grant_types" => "VARCHAR(80)",
+          "scope" => "VARCHAR(4000)",
+          "user_id" => "VARCHAR(80)"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("client_id")
+          ),
+          "unique" => array(
+            "id" => array("id")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "oauth_access_tokens" => array(
+        "cols" => array(
+          "access_token" => "VARCHAR(40) NOT NULL",
+          "client_id" => "VARCHAR(80) NOT NULL",
+          "user_id" => "VARCHAR(80)",
+          "expires" => "TIMESTAMP NOT NULL",
+          "scope" => "VARCHAR(4000)"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("access_token")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "oauth_authorization_codes" => array(
+        "cols" => array(
+          "authorization_code" => "VARCHAR(40) NOT NULL",
+          "client_id" => "VARCHAR(80) NOT NULL",
+          "user_id" => "VARCHAR(80)",
+          "redirect_uri" => "VARCHAR(2000)",
+          "expires" => "TIMESTAMP NOT NULL",
+          "scope" => "VARCHAR(4000)",
+          "id_token" => "VARCHAR(1000)"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("authorization_code")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "oauth_refresh_tokens" => array(
+        "cols" => array(
+          "refresh_token" => "VARCHAR(40) NOT NULL",
+          "client_id" => "VARCHAR(80) NOT NULL",
+          "user_id" => "VARCHAR(80)",
+          "expires" => "TIMESTAMP NOT NULL",
+          "scope" => "VARCHAR(4000)"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("refresh_token")
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"

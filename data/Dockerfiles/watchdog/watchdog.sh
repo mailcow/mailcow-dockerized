@@ -6,7 +6,7 @@ trap "kill 0" EXIT
 # Prepare
 BACKGROUND_TASKS=()
 echo "Waiting for containers to settle..."
-sleep 10
+sleep 30
 
 if [[ "${USE_WATCHDOG}" =~ ^([nN][oO]|[nN])+$ ]]; then
   echo -e "$(date) - USE_WATCHDOG=n, skipping watchdog..."

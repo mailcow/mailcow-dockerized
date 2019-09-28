@@ -63,6 +63,9 @@ RUN apk add -U --no-cache autoconf \
   && docker-php-ext-install -j 4 exif gd gettext intl ldap opcache pcntl pdo pdo_mysql soap sockets xmlrpc zip \
   && docker-php-ext-configure imap --with-imap --with-imap-ssl \
   && docker-php-ext-install -j 4 imap \
+  && curl --silent --show-error https://getcomposer.org/installer | php \
+  && mv composer.phar /usr/local/bin/composer \
+  && chmod +x /usr/local/bin/composer \
   && apk del --purge autoconf \
     cyrus-sasl-dev \
     freetype-dev \

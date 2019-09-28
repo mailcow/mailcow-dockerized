@@ -216,18 +216,19 @@ class container_post(Resource):
   # api call: container_post - post_action: exec - cmd: system - task: mysql_upgrade
   def container_post__exec__system__mysql_upgrade(self, container_id):
     for container in docker_client.containers.list(filters={"id": container_id}):
-      cmd = "/usr/bin/mysql_upgrade -uroot -p'" + os.environ['DBROOT'].replace("'", "'\\''") + "'\n"
-      cmd_response = exec_cmd_container(container, cmd, user='mysql')
-
-      matched = False
-      for line in cmd_response.split("\n"):
-        if 'is already upgraded to' in line:
-          matched = True
-      if matched:
-        return jsonify(type='success', msg='mysql_upgrade: already upgraded')
+      sql_return = container.exec_run(["/bin/bash", "-c", "/usr/bin/mysql_upgrade -uroot -p'" + os.environ['DBROOT'].replace("'", "'\\''") + "'\n"], user='mysql')
+      if sql_return.exit_code == 0:
+        matched = False
+        for line in sql_return.output.decode('utf-8').split("\n"):
+          if 'is already upgraded to' in line:
+            matched = True
+        if matched:
+          return jsonify(type='success', msg='mysql_upgrade: already upgraded', text=sql_return.output.decode('utf-8'))
+        else:
+          container.restart()
+          return jsonify(type='warning', msg='mysql_upgrade: upgrade was applied', text=sql_return.output.decode('utf-8'))
       else:
-        container.restart()
-        return jsonify(type='warning', msg='mysql_upgrade: upgrade was applied')
+        return jsonify(type='error', msg='mysql_upgrade: error running command', text=sql_return.output.decode('utf-8'))
 
 
   # api call: container_post - post_action: exec - cmd: reload - task: dovecot
