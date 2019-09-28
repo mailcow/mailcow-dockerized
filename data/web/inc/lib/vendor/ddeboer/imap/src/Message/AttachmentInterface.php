@@ -19,7 +19,7 @@ interface AttachmentInterface extends PartInterface
     /**
      * Get attachment file size.
      *
-     * @return int Number of bytes
+     * @return null|int Number of bytes
      */
     public function getSize();
 

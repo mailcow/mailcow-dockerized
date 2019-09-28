@@ -21,11 +21,12 @@ This extension can be used to...
 
 Yes. All known issues have been reproduced, fixed and tested.
 
-We use Travis CI to help ensure code quality. You can see real-time statistics below:
+We use GitHub Actions, Codecov, Codacy to help ensure code quality. You can see real-time statistics below:
 
-[![Build Status](https://img.shields.io/travis/php-mime-mail-parser/php-mime-mail-parser/master.svg?style=flat-square)](https://travis-ci.com/php-mime-mail-parser/php-mime-mail-parser)
-[![Coverage](https://img.shields.io/coveralls/php-mime-mail-parser/php-mime-mail-parser.svg?style=flat-square)](https://coveralls.io/r/php-mime-mail-parser/php-mime-mail-parser)
-[![Quality Score](https://img.shields.io/scrutinizer/g/php-mime-mail-parser/php-mime-mail-parser.svg?style=flat-square)](https://scrutinizer-ci.com/g/php-mime-mail-parser/php-mime-mail-parser)
+[![Actions Status](https://wdp9fww0r9.execute-api.us-west-2.amazonaws.com/production/badge/php-mime-mail-parser/php-mime-mail-parser?style=flat-square)](https://wdp9fww0r9.execute-api.us-west-2.amazonaws.com/production/results/php-mime-mail-parser/php-mime-mail-parser)
+[![Coverage](https://img.shields.io/codecov/c/gh/php-mime-mail-parser/php-mime-mail-parser?style=flat-square)](https://codecov.io/gh/php-mime-mail-parser/php-mime-mail-parser)
+[![Code Quality](https://img.shields.io/codacy/grade/4e0e44fee21147ddbdd18ff976251875?style=flat-square)](https://app.codacy.com/app/php-mime-mail-parser/php-mime-mail-parser)
+
 
 ## How do I install it?
 

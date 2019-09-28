@@ -83,7 +83,7 @@ interface MailboxInterface extends \Countable, \IteratorAggregate
      *
      * @return MessageIteratorInterface
      */
-    public function getMessages(ConditionInterface $search = null, int $sortCriteria = null, bool $descending = false): MessageIteratorInterface;
+    public function getMessages(ConditionInterface $search = null, int $sortCriteria = null, bool $descending = false, string $charset = null): MessageIteratorInterface;
 
     /**
      * Get message iterator for a sequence.
