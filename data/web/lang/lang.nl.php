@@ -642,7 +642,7 @@ $lang['admin']['in_use_by'] = 'In gebruik door';
 $lang['admin']['forwarding_hosts'] = 'Doorstuurhosts';
 $lang['admin']['forwarding_hosts_hint'] = 'Inkomende berichten worden onvoorwaardelijk geaccepteerd vanaf iedere host hieronder vermeld. Deze hosts worden hierdoor niet gecontroleerd op DNSBLs, en zullen de greylisting omzeilen. Spam wordt daarentegen zoals gebruikelijk in de spamfolder geplaatst. Dit wordt vaak gebruikt om mailservers te specificeren die mails doorsturen naar deze Mailcow-server.';
 $lang['admin']['forwarding_hosts_add_hint'] = 'Het is mogelijk om IPv4- of IPv6-adressen, netwerken in CIDR-notatie, hostnames (worden omgezet naar IP-adressen) of domeinnamen (worden tevens omgezet naar IP-adressen of, bij gebrek daaraan, MX-records) op te geven.';
-$lang['admin']['relayhosts_hint'] = 'Stel afzender-afhankelijke transportkaarten in om deze te kunnen gebruiken bij de configuratie van een domein.<br>De transportservice is altijd "smtp:". Er wordt rekening gehouden met het uitgaande versleutelingsbeleid van individuele gebruikers.';
+$lang['admin']['relayhosts_hint'] = 'Stel afzender-afhankelijke transportkaarten in om deze te kunnen gebruiken bij de configuratie van een domein.<br>De transportservice is altijd "smtp:". Er wordt rekening gehouden met het uitgaande versleutelingsbeleid van individuele gebruikers.<br>Beïnvloedt geselecteerde domeinen, inclusief bijbehorende aliasdomeinen.';
 $lang['admin']['transports_hint'] = '→ Een transportkaart wordt boven een afzender-afhankelijke transportkaart verkozen.<br>
     → Het uitgaande versleutelingsbeleid van individuele gebruikers wordt genegeerd en kan enkel worden gehandhaafd doormiddel van globaal versleutelingsbeleid.<br>
     → De transportservice is altijd "smtp:".<br>
@@ -706,10 +706,11 @@ $lang['admin']['quota_notification_sender'] = "Afzender van notificaties";
 $lang['admin']['quota_notification_subject'] = "Onderwerp van notificaties";
 $lang['admin']['quota_notification_html'] = "Notificatiesjabloon:<br><small>Laat leeg om de standaardsjabloon te herstellen.</small>";
 $lang['admin']['ui_texts'] = "Labels en teksten";
-$lang['admin']['help_text'] = "Pas hulpteksten onder inlogvenster aan (HTML toegestaan)";
+$lang['admin']['help_text'] = "Hulpteksten onder inlogvenster (HTML toegestaan)";
 $lang['admin']['title_name'] = '"Mailcow" (website-titel)';
 $lang['admin']['main_name'] = '"Mailcow"';
 $lang['admin']['apps_name'] = '"Mailcow-apps"';
+$lang['admin']['ui_impress'] = 'Footer-vermelding (HTML toegestaan)';
 
 $lang['admin']['customize'] = "Uiterlijk";
 $lang['admin']['change_logo'] = "Logo";
