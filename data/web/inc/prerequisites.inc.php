@@ -86,6 +86,33 @@ if (fsockopen("tcp://dockerapi", 443, $errno, $errstr) === false) {
 exit;
 }
 
+// OAuth2
+class mailcowPdo extends OAuth2\Storage\Pdo {
+  public function __construct($connection, $config = array()) {
+    parent::__construct($connection, $config);
+    $this->config['user_table'] = 'mailbox';
+  }
+  public function checkUserCredentials($username, $password) {
+    if (check_login($username, $password) == 'user') {
+      return true;
+    }
+    return false;
+  }
+  public function getUserDetails($username) {
+    return $this->getUser($username);
+  }
+}
+$oauth2_scope_storage = new OAuth2\Storage\Memory(array('default_scope' => 'profile', 'supported_scopes' => array('profile')));
+$oauth2_storage = new mailcowPdo(array('dsn' => $dsn, 'username' => $database_user, 'password' => $database_pass));
+$oauth2_server = new OAuth2\Server($oauth2_storage, array(
+    'always_issue_new_refresh_token' => true,
+    'refresh_token_lifetime'         => 2678400,
+));
+$oauth2_server->setScopeUtil(new OAuth2\Scope($oauth2_scope_storage));
+$oauth2_server->addGrantType(new OAuth2\GrantType\AuthorizationCode($oauth2_storage));
+$oauth2_server->addGrantType(new OAuth2\GrantType\UserCredentials($oauth2_storage));
+$oauth2_server->addGrantType(new OAuth2\GrantType\RefreshToken($oauth2_storage));
+
 function exception_handler($e) {
     if ($e instanceof PDOException) {
       $_SESSION['return'][] = array(
@@ -173,6 +200,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.policy.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.dkim.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.fwdhost.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.mailq.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.oauth2.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.ratelimit.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.transports.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.rsettings.inc.php';

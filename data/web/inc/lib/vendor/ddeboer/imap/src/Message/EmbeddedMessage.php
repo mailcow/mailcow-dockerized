@@ -43,7 +43,7 @@ final class EmbeddedMessage extends AbstractMessage implements EmbeddedMessageIn
     public function getRawHeaders(): string
     {
         if (null === $this->rawHeaders) {
-            $rawHeaders = \explode("\r\n\r\n", $this->getRawMessage(), 2);
+            $rawHeaders       = \explode("\r\n\r\n", $this->getRawMessage(), 2);
             $this->rawHeaders = \current($rawHeaders);
         }
 

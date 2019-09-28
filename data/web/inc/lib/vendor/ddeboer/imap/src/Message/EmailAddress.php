@@ -36,9 +36,9 @@ final class EmailAddress
      */
     public function __construct(string $mailbox, string $hostname = null, string $name = null)
     {
-        $this->mailbox = $mailbox;
+        $this->mailbox  = $mailbox;
         $this->hostname = $hostname;
-        $this->name = $name;
+        $this->name     = $name;
 
         if (null !== $hostname) {
             $this->address = $mailbox . '@' . $hostname;
