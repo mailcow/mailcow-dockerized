@@ -44,12 +44,12 @@ function domain_admin($_action, $_data = null) {
         WHERE `username` = :username");
       $stmt->execute(array(':username' => $username));
       $num_results[] = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-      
+
       $stmt = $pdo->prepare("SELECT `username` FROM `admin`
         WHERE `username` = :username");
       $stmt->execute(array(':username' => $username));
       $num_results[] = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-      
+
       $stmt = $pdo->prepare("SELECT `username` FROM `domain_admins`
         WHERE `username` = :username");
       $stmt->execute(array(':username' => $username));
@@ -373,7 +373,7 @@ function domain_admin($_action, $_data = null) {
       }
       $stmt = $pdo->query("SELECT DISTINCT
         `username`
-          FROM `domain_admins` 
+          FROM `domain_admins`
             WHERE `username` IN (
               SELECT `username` FROM `admin`
                 WHERE `superadmin`!='1'
@@ -409,7 +409,7 @@ function domain_admin($_action, $_data = null) {
         ':domain_admin' => $_data
       ));
       $row = $stmt->fetch(PDO::FETCH_ASSOC);
-      if (empty($row)) { 
+      if (empty($row)) {
         return false;
       }
       $domainadmindata['username'] = $row['username'];
@@ -443,6 +443,19 @@ function domain_admin($_action, $_data = null) {
       }
 
       return $domainadmindata;
+    break;
+    case 'total_quota':
+      if ($_SESSION['mailcow_cc_role'] != "admin") {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }
+      $stmt = $pdo->query("SELECT SUM(`quota`) AS `quota` FROM `domain`");
+      $row = $stmt->fetch(PDO::FETCH_ASSOC);
+      return $row['quota'];
     break;
   }
 }
