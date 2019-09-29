@@ -111,6 +111,7 @@ abstract class AbstractMessage extends AbstractPart
      */
     final public function getDate(): ?\DateTimeImmutable
     {
+        /** @var null|string $dateHeader */
         $dateHeader = $this->getHeaders()->get('date');
         if (null === $dateHeader) {
             return null;
@@ -118,9 +119,9 @@ abstract class AbstractMessage extends AbstractPart
 
         $alteredValue = $dateHeader;
         $alteredValue = \str_replace(',', '', $alteredValue);
-        $alteredValue = \preg_replace('/^[a-zA-Z]+ ?/', '', $alteredValue);
-        $alteredValue = \preg_replace('/ +\(.*\)/', '', $alteredValue);
-        $alteredValue = \preg_replace('/\bUT\b/', 'UTC', $alteredValue);
+        $alteredValue = (string) \preg_replace('/^[a-zA-Z]+ ?/', '', $alteredValue);
+        $alteredValue = (string) \preg_replace('/ +\(.*\)/', '', $alteredValue);
+        $alteredValue = (string) \preg_replace('/\bUT\b/', 'UTC', $alteredValue);
         if (0 === \preg_match('/\d\d:\d\d:\d\d.* [\+\-]\d\d:?\d\d/', $alteredValue)) {
             $alteredValue .= ' +0000';
         }
@@ -230,27 +231,30 @@ abstract class AbstractMessage extends AbstractPart
     final public function getAttachments(): array
     {
         if (null === $this->attachments) {
-            static $gatherAttachments;
-            if (null === $gatherAttachments) {
-                $gatherAttachments = static function (PartInterface $part) use (&$gatherAttachments): array {
-                    $attachments = [];
-                    foreach ($part->getParts() as $childPart) {
-                        if ($childPart instanceof Attachment) {
-                            $attachments[] = $childPart;
-                        }
-                        if ($childPart->hasChildren()) {
-                            $attachments = \array_merge($attachments, $gatherAttachments($childPart));
-                        }
-                    }
-
-                    return $attachments;
-                };
-            }
-
-            $this->attachments = $gatherAttachments($this);
+            $this->attachments = self::gatherAttachments($this);
         }
 
         return $this->attachments;
+    }
+
+    /**
+     * @param PartInterface $part
+     *
+     * @return array
+     */
+    private static function gatherAttachments(PartInterface $part): array
+    {
+        $attachments = [];
+        foreach ($part->getParts() as $childPart) {
+            if ($childPart instanceof Attachment) {
+                $attachments[] = $childPart;
+            }
+            if ($childPart->hasChildren()) {
+                $attachments = \array_merge($attachments, self::gatherAttachments($childPart));
+            }
+        }
+
+        return $attachments;
     }
 
     /**
@@ -264,7 +268,7 @@ abstract class AbstractMessage extends AbstractPart
     }
 
     /**
-     * @param array $addresses Addesses
+     * @param \stdClass[] $addresses
      *
      * @return array
      */

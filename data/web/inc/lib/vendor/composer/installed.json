@@ -1,17 +1,77 @@
 [
     {
-        "name": "ddeboer/imap",
-        "version": "1.6.0",
-        "version_normalized": "1.6.0.0",
+        "name": "bshaffer/oauth2-server-php",
+        "version": "v1.11.1",
+        "version_normalized": "1.11.1.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/ddeboer/imap.git",
-            "reference": "4d3b31c7cc5eb3cf3a8a0369fabd0d6e3f39cede"
+            "url": "https://github.com/bshaffer/oauth2-server-php.git",
+            "reference": "5a0c8000d4763b276919e2106f54eddda6bc50fa"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/ddeboer/imap/zipball/4d3b31c7cc5eb3cf3a8a0369fabd0d6e3f39cede",
-            "reference": "4d3b31c7cc5eb3cf3a8a0369fabd0d6e3f39cede",
+            "url": "https://api.github.com/repos/bshaffer/oauth2-server-php/zipball/5a0c8000d4763b276919e2106f54eddda6bc50fa",
+            "reference": "5a0c8000d4763b276919e2106f54eddda6bc50fa",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.9"
+        },
+        "require-dev": {
+            "aws/aws-sdk-php": "~2.8",
+            "firebase/php-jwt": "~2.2",
+            "mongodb/mongodb": "^1.1",
+            "phpunit/phpunit": "^4.0",
+            "predis/predis": "dev-master",
+            "thobbs/phpcassa": "dev-master"
+        },
+        "suggest": {
+            "aws/aws-sdk-php": "~2.8 is required to use DynamoDB storage",
+            "firebase/php-jwt": "~2.2 is required to use JWT features",
+            "mongodb/mongodb": "^1.1 is required to use MongoDB storage",
+            "predis/predis": "Required to use Redis storage",
+            "thobbs/phpcassa": "Required to use Cassandra storage"
+        },
+        "time": "2018-12-04T00:29:32+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "OAuth2": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Brent Shaffer",
+                "email": "bshafs@gmail.com",
+                "homepage": "http://brentertainment.com"
+            }
+        ],
+        "description": "OAuth2 Server for PHP",
+        "homepage": "http://github.com/bshaffer/oauth2-server-php",
+        "keywords": [
+            "auth",
+            "oauth",
+            "oauth2"
+        ]
+    },
+    {
+        "name": "ddeboer/imap",
+        "version": "1.8.0",
+        "version_normalized": "1.8.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/ddeboer/imap.git",
+            "reference": "ff985d72916267cba2f944e7c9ee654c69893219"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/ddeboer/imap/zipball/ff985d72916267cba2f944e7c9ee654c69893219",
+            "reference": "ff985d72916267cba2f944e7c9ee654c69893219",
             "shasum": ""
         },
         "require": {
@@ -21,13 +81,14 @@
             "php": "^7.1"
         },
         "require-dev": {
-            "friendsofphp/php-cs-fixer": "^2.13",
-            "phpstan/phpstan": "^0.9.1",
-            "phpstan/phpstan-phpunit": "^0.9.3",
-            "phpunit/phpunit": "^7.4",
+            "friendsofphp/php-cs-fixer": "^2.14",
+            "phpstan/phpstan": "^0.11",
+            "phpstan/phpstan-phpunit": "^0.11",
+            "phpstan/phpstan-strict-rules": "^0.11.0",
+            "phpunit/phpunit": "^7.5",
             "zendframework/zend-mail": "^2.10"
         },
-        "time": "2018-12-04T13:35:19+00:00",
+        "time": "2019-04-15T09:18:52+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -222,34 +283,34 @@
     },
     {
         "name": "php-mime-mail-parser/php-mime-mail-parser",
-        "version": "2.11.1",
-        "version_normalized": "2.11.1.0",
+        "version": "5.0.5",
+        "version_normalized": "5.0.5.0",
         "source": {
             "type": "git",
             "url": "https://github.com/php-mime-mail-parser/php-mime-mail-parser.git",
-            "reference": "4769e942ed0dbbdd7882fc390b119d625463c8af"
+            "reference": "27983433aabeccee832573c3c56e6a4855e57745"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/php-mime-mail-parser/php-mime-mail-parser/zipball/4769e942ed0dbbdd7882fc390b119d625463c8af",
-            "reference": "4769e942ed0dbbdd7882fc390b119d625463c8af",
+            "url": "https://api.github.com/repos/php-mime-mail-parser/php-mime-mail-parser/zipball/27983433aabeccee832573c3c56e6a4855e57745",
+            "reference": "27983433aabeccee832573c3c56e6a4855e57745",
             "shasum": ""
         },
         "require": {
             "ext-mailparse": "*",
-            "php": "^5.4.0 || ^7.0"
+            "php": "^7.1"
         },
         "replace": {
             "exorus/php-mime-mail-parser": "*",
             "messaged/php-mime-mail-parser": "*"
         },
         "require-dev": {
-            "phpunit/php-token-stream": "^1.3.0",
-            "phpunit/phpunit": "^4.0 || ^5.0",
-            "satooshi/php-coveralls": "0.*",
-            "squizlabs/php_codesniffer": "2.*"
+            "php-coveralls/php-coveralls": "^2.1",
+            "phpunit/php-token-stream": "^3.0",
+            "phpunit/phpunit": "^7.0",
+            "squizlabs/php_codesniffer": "^3.4"
         },
-        "time": "2018-04-30T05:55:59+00:00",
+        "time": "2019-09-23T11:57:58+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -262,12 +323,6 @@
             "MIT"
         ],
         "authors": [
-            {
-                "name": "bucabay",
-                "email": "gabe@fijiwebdesign.com",
-                "homepage": "http://www.fijiwebdesign.com",
-                "role": "Developer"
-            },
             {
                 "name": "eXorus",
                 "email": "exorus.spam@gmail.com",
@@ -291,15 +346,23 @@
                 "email": "alkne@gmail.com",
                 "homepage": "https://code.google.com/p/php-mime-mail-parser",
                 "role": "Developer"
+            },
+            {
+                "name": "bucabay",
+                "email": "gabe@fijiwebdesign.com",
+                "homepage": "http://www.fijiwebdesign.com",
+                "role": "Developer"
             }
         ],
-        "description": "Fully Tested Mailparse Extension Wrapper for PHP 5.4+",
+        "description": "A fully tested email parser for PHP 7.1+ (mailparse extension wrapper).",
         "homepage": "https://github.com/php-mime-mail-parser/php-mime-mail-parser",
         "keywords": [
             "MimeMailParser",
             "mail",
             "mailparse",
-            "mime"
+            "mime",
+            "parser",
+            "php"
         ]
     },
     {
@@ -383,17 +446,17 @@
     },
     {
         "name": "robthree/twofactorauth",
-        "version": "1.6.5",
-        "version_normalized": "1.6.5.0",
+        "version": "1.6.7",
+        "version_normalized": "1.6.7.0",
         "source": {
             "type": "git",
             "url": "https://github.com/RobThree/TwoFactorAuth.git",
-            "reference": "f5f58a4c62d0336a0e6175856894a51f3565dad2"
+            "reference": "3407c33775391fa8c36f7d766f26c5e59a736374"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/RobThree/TwoFactorAuth/zipball/f5f58a4c62d0336a0e6175856894a51f3565dad2",
-            "reference": "f5f58a4c62d0336a0e6175856894a51f3565dad2",
+            "url": "https://api.github.com/repos/RobThree/TwoFactorAuth/zipball/3407c33775391fa8c36f7d766f26c5e59a736374",
+            "reference": "3407c33775391fa8c36f7d766f26c5e59a736374",
             "shasum": ""
         },
         "require": {
@@ -402,7 +465,7 @@
         "require-dev": {
             "phpunit/phpunit": "@stable"
         },
-        "time": "2018-06-09T10:09:59+00:00",
+        "time": "2019-06-21T08:51:04+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {

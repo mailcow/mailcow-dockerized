@@ -27,7 +27,7 @@
     <Compile Include="demo\demo.php" />
     <Compile Include="demo\loader.php" />
     <Compile Include="lib\Providers\Qr\BaseHTTPQRCodeProvider.php" />
-    <Compile Include="lib\Providers\Qr\GoogleQRCodeProvider.php" />
+    <Compile Include="lib\Providers\Qr\ImageChartsQRCodeProvider.php" />
     <Compile Include="lib\Providers\Qr\IQRCodeProvider.php" />
     <Compile Include="lib\Providers\Qr\QRException.php" />
     <Compile Include="lib\Providers\Qr\QRicketProvider.php" />

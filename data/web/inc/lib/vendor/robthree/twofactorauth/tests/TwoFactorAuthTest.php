@@ -4,7 +4,7 @@ require_once 'lib/TwoFactorAuthException.php';
 
 require_once 'lib/Providers/Qr/IQRCodeProvider.php';
 require_once 'lib/Providers/Qr/BaseHTTPQRCodeProvider.php';
-require_once 'lib/Providers/Qr/GoogleQRCodeProvider.php';
+require_once 'lib/Providers/Qr/ImageChartsQRCodeProvider.php';
 require_once 'lib/Providers/Qr/QRException.php';
 
 require_once 'lib/Providers/Rng/IRNGProvider.php';

@@ -43,7 +43,7 @@ final class OrConditions implements ConditionInterface
      */
     public function toString(): string
     {
-        $conditions = \array_map(function (ConditionInterface $condition) {
+        $conditions = \array_map(static function (ConditionInterface $condition) {
             return $condition->toString();
         }, $this->conditions);
 
