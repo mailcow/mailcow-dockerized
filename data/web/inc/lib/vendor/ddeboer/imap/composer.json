@@ -28,10 +28,11 @@
         "ext-mbstring": "*"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^2.13",
-        "phpstan/phpstan": "^0.9.1",
-        "phpstan/phpstan-phpunit": "^0.9.3",
-        "phpunit/phpunit": "^7.4",
+        "friendsofphp/php-cs-fixer": "^2.14",
+        "phpstan/phpstan": "^0.11",
+        "phpstan/phpstan-phpunit": "^0.11",
+        "phpstan/phpstan-strict-rules": "^0.11.0",
+        "phpunit/phpunit": "^7.5",
         "zendframework/zend-mail": "^2.10"
     },
     "autoload": {

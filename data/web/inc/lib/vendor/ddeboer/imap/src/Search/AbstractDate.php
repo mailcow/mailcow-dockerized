@@ -32,7 +32,7 @@ abstract class AbstractDate implements ConditionInterface
      */
     public function __construct(DateTimeInterface $date, string $dateFormat = 'j-M-Y')
     {
-        $this->date = $date;
+        $this->date       = $date;
         $this->dateFormat = $dateFormat;
     }
 

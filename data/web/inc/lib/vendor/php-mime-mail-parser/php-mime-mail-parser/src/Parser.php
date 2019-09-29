@@ -268,7 +268,7 @@ class Parser
     {
         if (isset($this->parts[1])) {
             $headers = $this->getPart('headers', $this->parts[1]);
-            foreach ($headers as $name => &$value) {
+            foreach ($headers as &$value) {
                 if (is_array($value)) {
                     foreach ($value as &$v) {
                         $v = $this->decodeSingleHeader($v);
@@ -514,20 +514,17 @@ class Parser
 
             if (isset($part['disposition-filename'])) {
                 $filename = $this->decodeHeader($part['disposition-filename']);
-                // Escape all potentially unsafe characters from the filename
-                $filename = preg_replace('((^\.)|\/|(\.$))', '_', $filename);
             } elseif (isset($part['content-name'])) {
                 // if we have no disposition but we have a content-name, it's a valid attachment.
                 // we simulate the presence of an attachment disposition with a disposition filename
                 $filename = $this->decodeHeader($part['content-name']);
-                // Escape all potentially unsafe characters from the filename
-                $filename = preg_replace('((^\.)|\/|(\.$))', '_', $filename);
                 $disposition = 'attachment';
             } elseif (in_array($part['content-type'], $non_attachment_types, true)
                 && $disposition !== 'attachment') {
                 // it is a message body, no attachment
                 continue;
-            } elseif (substr($part['content-type'], 0, 10) !== 'multipart/') {
+            } elseif (substr($part['content-type'], 0, 10) !== 'multipart/'
+                && $part['content-type'] !== 'text/plain; (error)') {
                 // if we cannot get it by getMessageBody(), we assume it is an attachment
                 $disposition = 'attachment';
             }
@@ -539,6 +536,9 @@ class Parser
                 if ($filename == 'noname') {
                     $nonameIter++;
                     $filename = 'noname'.$nonameIter;
+                } else {
+                    // Escape all potentially unsafe characters from the filename
+                    $filename = preg_replace('((^\.)|\/|[\n|\r|\n\r]|(\.$))', '_', $filename);
                 }
 
                 $headersAttachments = $this->getPart('headers', $part);

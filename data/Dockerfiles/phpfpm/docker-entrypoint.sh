@@ -57,7 +57,8 @@ until [[ ${SQL_UPGRADE_STATUS} == 'success' ]]; do
     echo "MySQL is up-to-date - debug output:"
     echo ${SQL_FULL_UPGRADE_RETURN}
   else
-    echo "No valid reponse for mysql_upgrade was received"
+    echo "No valid reponse for mysql_upgrade was received, debug output:"
+    echo ${SQL_FULL_UPGRADE_RETURN}
   fi
 done
 

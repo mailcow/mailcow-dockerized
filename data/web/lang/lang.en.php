@@ -657,7 +657,8 @@ $lang['admin']['forwarding_hosts'] = 'Forwarding Hosts';
 $lang['admin']['forwarding_hosts_hint'] = 'Incoming messages are unconditionally accepted from any hosts listed here. These hosts are then not checked against DNSBLs or subjected to greylisting. Spam received from them is never rejected, but optionally it can be filed into the Junk folder. The most common use for this is to specify mail servers on which you have set up a rule that forwards incoming emails to your mailcow server.';
 $lang['admin']['forwarding_hosts_add_hint'] = 'You can either specify IPv4/IPv6 addresses, networks in CIDR notation, host names (which will be resolved to IP addresses), or domain names (which will be resolved to IP addresses by querying SPF records or, in their absence, MX records).';
 $lang['admin']['relayhosts_hint'] = 'Define sender-dependent transports to be able to select them in a domains configuration dialog.<br>
-  The transport service is always "smtp:". A users individual outbound TLS policy setting is taken into account.';
+  The transport service is always "smtp:". A users individual outbound TLS policy setting is taken into account.<br>
+  Affects selected domains including alias domains.';
 $lang['admin']['transports_hint'] = '→ A transport map entry <b>overrules</b> a sender-dependent transport map</b>.<br>
 → Outbound TLS policy settings per-user are ignored and can only be enforced by TLS policy map entries.<br>
 → The transport service for defined transports is always "smtp:".<br>
@@ -726,6 +727,7 @@ $lang['admin']['help_text'] = "Override help text below login mask (HTML allowed
 $lang['admin']['title_name'] = '"mailcow UI" website title';
 $lang['admin']['main_name'] = '"mailcow UI" name';
 $lang['admin']['apps_name'] = '"mailcow Apps" name';
+$lang['admin']['ui_impress'] = 'Impress, Footer note (HTML allowed)';
 
 $lang['admin']['customize'] = "Customize";
 $lang['admin']['change_logo'] = "Change logo";

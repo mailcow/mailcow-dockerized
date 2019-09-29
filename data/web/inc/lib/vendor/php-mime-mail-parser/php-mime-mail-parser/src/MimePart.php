@@ -84,9 +84,9 @@ class MimePart implements \ArrayAccess
     {
         if (is_null($offset)) {
             $this->part[] = $value;
-        } else {
-            $this->part[$offset] = $value;
+            return;
         }
+        $this->part[$offset] = $value;
     }
 
     /**

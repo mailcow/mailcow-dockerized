@@ -633,7 +633,8 @@ $lang['admin']['forwarding_hosts'] = 'Weiterleitungs-Hosts';
 $lang['admin']['forwarding_hosts_hint'] = 'Eingehende Nachrichten werden von den hier gelisteten Hosts bedingungslos akzeptiert. Diese Hosts werden dann nicht mit DNSBLs abgeglichen oder Greylisting unterworfen. Von ihnen empfangener Spam wird nie abgelehnt, optional kann er aber in den Spam-Ordner einsortiert werden. Die übliche Verwendung für diese Funktion ist, um Mailserver anzugeben, auf denen eine Weiterleitung zu Ihrem mailcow-Server eingerichtet wurde.';
 $lang['admin']['forwarding_hosts_add_hint'] = 'Sie können entweder IPv4/IPv6-Adressen, Netzwerke in CIDR-Notation, Hostnamen (die zu IP-Adressen aufgelöst werden), oder Domainnamen (die zu IP-Adressen aufgelöst werden, indem ihr SPF-Record abgefragt wird oder, in dessen Abwesenheit, ihre MX-Records) angeben.';
 $lang['admin']['relayhosts_hint'] = 'Erstellen Sie senderabhängige Transporte, um diese im Einstellungsdialog einer Domain auszuwählen.<br>
-  Der Transporttyp lautet immer "smtp:". Benutzereinstellungen bezüglich Verschlüsselungsrichtlinie werden beim Transport berücksichtigt.';
+  Der Transporttyp lautet immer "smtp:". Benutzereinstellungen bezüglich Verschlüsselungsrichtlinie werden beim Transport berücksichtigt.<br>
+  Gilt neben ausgewählter Domain auch für untergeordnete Alias-Domains.';
 $lang['admin']['transports_hint'] = '→ Transport Maps <b>überwiegen</b> senderabhängige Transport Maps.<br>
 → Transport Maps ignorieren Mailbox-Einstellungen für ausgehende Verschlüsselung. Eine serverweite TLS-Richtlinie wird jedoch angewendet.<br>
 → Der Transport erfolgt immer via "smtp:".<br>
@@ -710,6 +711,7 @@ $lang['admin']['help_text'] = "Hilfstext unter Login-Maske (HTML zulässig)";
 $lang['admin']['title_name'] = '"mailcow UI" Webseiten Titel';
 $lang['admin']['main_name'] = '"mailcow UI" Name';
 $lang['admin']['apps_name'] = '"mailcow Apps" Name';
+$lang['admin']['ui_impress'] = 'Impressum, Footer (HTML zulässig)';
 
 $lang['admin']['customize'] = "UI Anpassung";
 $lang['admin']['change_logo'] = "Logo ändern";
@@ -882,7 +884,7 @@ $lang['admin']['customer_id'] = 'Kunde';
 $lang['admin']['service_id'] = 'Service';
 
 $lang['admin']['lookup_mx'] = 'Ziel gegen MX prüfen (etwa .outlook.com, um alle Ziele mit MX *.outlook.com zu routen)';
-$lang['edit']['mbox_rl_info'] = 'Dieses Limit wird auf den SASL Loginnamen angewendet und betrifft daher alle Absenderadressen, die der eingeloggte Benutzer verwendet. Eub Mailbox Ratelimit überwiegt ein Domain-weites Ratelimit.';
+$lang['edit']['mbox_rl_info'] = 'Dieses Limit wird auf den SASL Loginnamen angewendet und betrifft daher alle Absenderadressen, die der eingeloggte Benutzer verwendet. Bei Mailbox Ratelimit überwiegt ein Domain-weites Ratelimit.';
 
 $lang['add']['relayhost_wrapped_tls_info'] = 'Bitte <b>keine</b> TLS-wrapped Ports verwenden (etwa SMTPS via Port 465/tcp).<br>
 Der Transport wird stattdessen STARTTLS anfordern, um TLS zu verwenden. TLS kann unter "TLS Policy Maps" erzwungen werden.';

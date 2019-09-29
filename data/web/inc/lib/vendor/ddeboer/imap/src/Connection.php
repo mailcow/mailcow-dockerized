@@ -7,6 +7,7 @@ namespace Ddeboer\Imap;
 use Ddeboer\Imap\Exception\CreateMailboxException;
 use Ddeboer\Imap\Exception\DeleteMailboxException;
 use Ddeboer\Imap\Exception\ImapGetmailboxesException;
+use Ddeboer\Imap\Exception\ImapNumMsgException;
 use Ddeboer\Imap\Exception\InvalidResourceException;
 use Ddeboer\Imap\Exception\MailboxDoesNotExistException;
 
@@ -46,7 +47,7 @@ final class Connection implements ConnectionInterface
     public function __construct(ImapResourceInterface $resource, string $server)
     {
         $this->resource = $resource;
-        $this->server = $server;
+        $this->server   = $server;
     }
 
     /**
@@ -139,7 +140,13 @@ final class Connection implements ConnectionInterface
      */
     public function count()
     {
-        return \imap_num_msg($this->resource->getStream());
+        $return = \imap_num_msg($this->resource->getStream());
+
+        if (false === $return) {
+            throw new ImapNumMsgException('imap_num_msg failed');
+        }
+
+        return $return;
     }
 
     /**
@@ -202,13 +209,13 @@ final class Connection implements ConnectionInterface
         }
 
         $this->mailboxNames = [];
-        $mailboxesInfo = \imap_getmailboxes($this->resource->getStream(), $this->server, '*');
+        $mailboxesInfo      = \imap_getmailboxes($this->resource->getStream(), $this->server, '*');
         if (!\is_array($mailboxesInfo)) {
             throw new ImapGetmailboxesException('imap_getmailboxes failed');
         }
 
         foreach ($mailboxesInfo as $mailboxInfo) {
-            $name = \mb_convert_encoding(\str_replace($this->server, '', $mailboxInfo->name), 'UTF-8', 'UTF7-IMAP');
+            $name                      = \mb_convert_encoding(\str_replace($this->server, '', $mailboxInfo->name), 'UTF-8', 'UTF7-IMAP');
             $this->mailboxNames[$name] = $mailboxInfo;
         }
     }

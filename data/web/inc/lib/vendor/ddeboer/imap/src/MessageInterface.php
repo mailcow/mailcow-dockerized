@@ -101,6 +101,11 @@ interface MessageInterface extends Message\BasicMessageInterface
     public function delete(): void;
 
     /**
+     * Undelete message.
+     */
+    public function undelete(): void;
+
+    /**
      * Set Flag Message.
      *
      * @param string $flag \Seen, \Answered, \Flagged, \Deleted, and \Draft

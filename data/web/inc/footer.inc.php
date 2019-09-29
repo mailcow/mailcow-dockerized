@@ -174,7 +174,16 @@ $(document).ready(function() {
   }
 });
 </script>
-
+<?php
+if (!empty($UI_TEXTS['ui_impress'])):
+?>
+  <div class="container" style="margin-bottom:20px;color:#959595;">
+  <hr>
+    <?=$UI_TEXTS['ui_impress'];?>
+  </div>
+<?php
+endif;
+?>
 </body>
 </html>
 <?php

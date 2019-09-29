@@ -2,8 +2,8 @@
 
 namespace RobThree\Auth\Providers\Qr;
 
-// https://developers.google.com/chart/infographics/docs/qr_codes
-class GoogleQRCodeProvider extends BaseHTTPQRCodeProvider 
+// https://image-charts.com
+class ImageChartsQRCodeProvider extends BaseHTTPQRCodeProvider 
 {
     public $errorcorrectionlevel;
     public $margin;
@@ -31,8 +31,8 @@ class GoogleQRCodeProvider extends BaseHTTPQRCodeProvider
     
     public function getUrl($qrtext, $size) 
     {
-        return 'https://chart.googleapis.com/chart?cht=qr'
-            . '&chs=' . $size . 'x' . $size
+        return 'https://image-charts.com/chart?cht=qr'
+            . '&chs=' . ceil($size/2) . 'x' . ceil($size/2)
             . '&chld=' . $this->errorcorrectionlevel . '|' . $this->margin
             . '&chl=' . rawurlencode($qrtext);
     }

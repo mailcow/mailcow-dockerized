@@ -974,6 +974,10 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
               <label for="help_text"><?=$lang['admin']['help_text'];?>:</label>
               <textarea class="form-control" id="help_text" name="help_text" rows="7"><?=$ui_texts['help_text'];?></textarea>
             </div>
+            <div class="form-group">
+              <label for="ui_impress"><?=$lang['admin']['ui_impress'];?>:</label>
+              <textarea class="form-control" id="ui_impress" name="ui_impress" rows="7"><?=$ui_texts['ui_impress'];?></textarea>
+            </div>
             <button class="btn btn-default" data-action="edit_selected" data-item="ui" data-id="uitexts" data-api-url='edit/ui_texts' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
           </form>
         </div>

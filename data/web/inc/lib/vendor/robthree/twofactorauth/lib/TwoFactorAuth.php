@@ -212,7 +212,7 @@ class TwoFactorAuth
     {
         // Set default QR Code provider if none was specified
         if (null === $this->qrcodeprovider) {
-            return $this->qrcodeprovider = new Providers\Qr\GoogleQRCodeProvider();
+            return $this->qrcodeprovider = new Providers\Qr\QRServerProvider();
         }
         return $this->qrcodeprovider;
     }
