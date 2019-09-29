@@ -44,8 +44,9 @@ else {
           $exec_fields = array('cmd' => 'system', 'task' => 'df', 'dir' => '/var/vmail');
           $vmail_df = explode(',', json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields), true));
           $domainQuota = round(domain_admin('total_quota')/1024);
+          $inactive_bytes = round(mailbox('get','inactive_bytes')/1024/1024/1024);
           $quotaPercent1 = round(($domainQuota/substr($vmail_df[3], 0, -1))*100);
-          $quotaPercent2 = round((($domainQuota-substr($vmail_df[2], 0, -1))/substr($vmail_df[3], 0, -1))*100);
+          $quotaPercent2 = round((($domainQuota-substr($vmail_df[2], 0, -1)+$inactive_bytes)/substr($vmail_df[3], 0, -1))*100);
           $quotaPercent2 = ($quotaPercent2+substr($vmail_df[4], 0, -1)>100) ? 100-substr($vmail_df[4], 0, -1) : $quotaPercent2; //handling overcommitment
         ?>
         <div role="tabpanel" class="tab-pane active" id="tab-containers">
