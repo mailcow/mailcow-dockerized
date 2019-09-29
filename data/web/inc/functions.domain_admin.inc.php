@@ -453,7 +453,7 @@ function domain_admin($_action, $_data = null) {
         );
         return false;
       }
-      $stmt = $pdo->query("SELECT SUM(`quota`) AS `quota` FROM `domain`");
+      $stmt = $pdo->query("SELECT SUM(`quota`) AS `quota` FROM `domain` WHERE `active`=1");
       $row = $stmt->fetch(PDO::FETCH_ASSOC);
       return $row['quota'];
     break;
