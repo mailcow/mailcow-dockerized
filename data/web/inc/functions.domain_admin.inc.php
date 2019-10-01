@@ -444,18 +444,5 @@ function domain_admin($_action, $_data = null) {
 
       return $domainadmindata;
     break;
-    case 'total_quota':
-      if ($_SESSION['mailcow_cc_role'] != "admin") {
-        $_SESSION['return'][] = array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => 'access_denied'
-        );
-        return false;
-      }
-      $stmt = $pdo->query("SELECT SUM(`quota`) AS `quota` FROM `domain` WHERE `active`=1");
-      $row = $stmt->fetch(PDO::FETCH_ASSOC);
-      return $row['quota'];
-    break;
   }
 }
