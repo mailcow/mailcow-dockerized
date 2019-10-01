@@ -3254,7 +3254,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
           return $resourcedata;
         break;
-        case 'inactive_bytes':
+        case 'quota_stats':
+          $quotadata = array();
           if ($_SESSION['mailcow_cc_role'] != "admin") {
             return false;
           }
@@ -3263,9 +3264,13 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 WHERE `mailbox`.`kind` NOT REGEXP 'location|thing|group'
                   AND `mailbox`.`username` = `quota2`.`username`
                   AND `domain`.`domain` = `mailbox`.`domain`
-                  AND `domain`.`active` = 0");
+                  AND `domain`.`active` = 1");
           $row = $stmt->fetch(PDO::FETCH_ASSOC);
-          return $row['bytes'];
+          $quotadata['used_bytes'] = $row['bytes']/1024;
+          $stmt = $pdo->query("SELECT SUM(`quota`) AS `quota` FROM `domain` WHERE `active`=1");
+          $row = $stmt->fetch(PDO::FETCH_ASSOC);
+          $quotadata['total_quota'] = $row['quota']*1024;
+          return $quotadata;
         break;
       }
     break;

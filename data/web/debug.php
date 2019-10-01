@@ -43,11 +43,11 @@ else {
         <?php
           $exec_fields = array('cmd' => 'system', 'task' => 'df', 'dir' => '/var/vmail');
           $vmail_df = explode(',', json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields), true));
-          $domainQuota = round(domain_admin('total_quota')/1024);
-          $inactive_bytes = round(mailbox('get','inactive_bytes')/1024/1024/1024);
-          $quotaPercent1 = round(($domainQuota/substr($vmail_df[3], 0, -1))*100);
-          $quotaPercent2 = round((($domainQuota-substr($vmail_df[2], 0, -1)+$inactive_bytes)/substr($vmail_df[3], 0, -1))*100);
-          $quotaPercent2 = ($quotaPercent2+substr($vmail_df[4], 0, -1)>100) ? 100-substr($vmail_df[4], 0, -1) : $quotaPercent2; //handling overcommitment
+          $used_percent = substr($vmail_df[4], 0, -1);
+          $quota_stats = mailbox('get','quota_stats');
+          $quotaPercent1 = round(($quota_stats['total_quota']/$vmail_df[3])*100);
+          $quotaPercent2 = round((($quota_stats['total_quota']-$quota_stats['used_bytes'])/$vmail_df[3])*100);
+          $quotaPercent2 = ($quotaPercent2+$used_percent>100) ? 100-$used_percent : $quotaPercent2;
         ?>
         <div role="tabpanel" class="tab-pane active" id="tab-containers">
           <div class="panel panel-default">
@@ -58,15 +58,15 @@ else {
               <div class="row">
                 <div class="col-sm-3">
                   <p>/var/vmail on <?=$vmail_df[0];?></p>
-                  <p class="disk_space"><?=$lang['debug']['disk_space'];?> <?=$vmail_df[3];?>B</p>
+                  <p class="disk_space"><?=$lang['debug']['disk_space'];?> <?=formatBytes($vmail_df[3]*1024);?></p>
                 </div>
                 <div class="col-sm-9">
                   <div class="progress">
-                    <div class="progress-bar progress-bar-info" role="progressbar" style="width:<?=$vmail_df[4];?>"></div>
+                    <div class="progress-bar progress-bar-info" role="progressbar" style="width:<?=$used_percent;?>%"></div>
                     <div class="progress-bar progress-bar-committed" role="progressbar" style="width:<?=$quotaPercent2;?>%"></div>
                   </div>
-                  <p><span class="container-indicator label usage-info progress-bar-info">&nbsp;</span> <?=$lang['debug']['disk_used'];?> <?=$vmail_df[2];?>B (<?=$vmail_df[4];?>)</p>
-                  <p><span class="container-indicator label usage-info progress-bar-committed">&nbsp;</span> <?=$lang['debug']['total_quota'];?> <?=$domainQuota;?>GB (<?=$quotaPercent1;?>%)</p>
+                  <p><span class="container-indicator label usage-info progress-bar-info">&nbsp;</span> <?=$lang['debug']['disk_used'];?> <?=formatBytes($vmail_df[2]*1024);?> (<?=$used_percent;?>%)</p>
+                  <p><span class="container-indicator label usage-info progress-bar-committed">&nbsp;</span> <?=$lang['debug']['total_quota'];?> <?=formatBytes($quota_stats['total_quota']*1024);?> (<?=$quotaPercent1;?>%)</p>
                 </div>
               </div>
             </div>
