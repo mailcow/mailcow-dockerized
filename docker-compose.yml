@@ -394,7 +394,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:1.34
+      image: mailcow/dockerapi:1.35
       restart: always
       build: ./data/Dockerfiles/dockerapi
       oom_kill_disable: true
