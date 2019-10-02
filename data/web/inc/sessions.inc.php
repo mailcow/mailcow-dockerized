@@ -60,6 +60,7 @@ if (!empty($_SERVER['HTTP_X_API_KEY'])) {
     else {
       $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for API_USER by " . $_SERVER['REMOTE_ADDR']);
       error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
+      http_response_code(401);
       echo json_encode(array(
         'type' => 'error',
         'msg' => 'api access denied for ip ' . $_SERVER['REMOTE_ADDR']
@@ -71,6 +72,7 @@ if (!empty($_SERVER['HTTP_X_API_KEY'])) {
   else {
     $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for API_USER by " . $_SERVER['REMOTE_ADDR']);
     error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
+    http_response_code(401);
     echo json_encode(array(
       'type' => 'error',
       'msg' => 'authentication failed'
