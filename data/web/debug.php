@@ -43,11 +43,6 @@ else {
         <?php
           $exec_fields = array('cmd' => 'system', 'task' => 'df', 'dir' => '/var/vmail');
           $vmail_df = explode(',', json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields), true));
-          $used_percent = substr($vmail_df[4], 0, -1);
-          $quota_stats = mailbox('get','quota_stats');
-          $quotaPercent1 = round(($quota_stats['total_quota']/$vmail_df[3])*100);
-          $quotaPercent2 = round((($quota_stats['total_quota']-$quota_stats['used_bytes'])/$vmail_df[3])*100);
-          $quotaPercent2 = ($quotaPercent2+$used_percent>100) ? 100-$used_percent : $quotaPercent2;
         ?>
         <div role="tabpanel" class="tab-pane active" id="tab-containers">
           <div class="panel panel-default">
@@ -58,15 +53,12 @@ else {
               <div class="row">
                 <div class="col-sm-3">
                   <p>/var/vmail on <?=$vmail_df[0];?></p>
-                  <p class="disk_space"><?=$lang['debug']['disk_space'];?> <?=formatBytes($vmail_df[3]*1024);?></p>
+                  <p><?=$vmail_df[2];?> / <?=$vmail_df[1];?> (<?=$vmail_df[4];?>)</p>
                 </div>
                 <div class="col-sm-9">
                   <div class="progress">
-                    <div class="progress-bar progress-bar-info" role="progressbar" style="width:<?=$used_percent;?>%"></div>
-                    <div class="progress-bar progress-bar-committed" role="progressbar" style="width:<?=$quotaPercent2;?>%"></div>
+                    <div class="progress-bar progress-bar-info" role="progressbar" style="width:<?=$vmail_df[4];?>"></div>
                   </div>
-                  <p><span class="container-indicator label usage-info progress-bar-info">&nbsp;</span> <?=$lang['debug']['disk_used'];?> <?=formatBytes($vmail_df[2]*1024);?> (<?=$used_percent;?>%)</p>
-                  <p><span class="container-indicator label usage-info progress-bar-committed">&nbsp;</span> <?=$lang['debug']['total_quota'];?> <?=formatBytes($quota_stats['total_quota']*1024);?> (<?=$quotaPercent1;?>%)</p>
                 </div>
               </div>
             </div>
@@ -352,6 +344,7 @@ $lang_admin = json_encode($lang['admin']);
 echo "var lang = ". $lang_admin . ";\n";
 echo "var csrf_token = '". $_SESSION['CSRF']['TOKEN'] . "';\n";
 echo "var log_pagination_size = '". $LOG_PAGINATION_SIZE . "';\n";
+
 ?>
 </script>
 <?php
