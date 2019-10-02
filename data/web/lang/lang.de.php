@@ -149,8 +149,8 @@ $lang['success']['sogo_profile_reset'] = "ActiveSync Gerät des Benutzers %s wur
 $lang['success']['resource_removed'] = 'Ressource %s wurde entfernt';
 $lang['warning']['cannot_delete_self'] = 'Kann derzeit eingeloggten Benutzer nicht entfernen';
 $lang['warning']['no_active_admin'] = 'Kann letzten aktiven Administrator nicht deaktivieren';
-$lang['danger']['max_quota_in_use'] = 'Mailbox-Speicherplatzlimit muss größer oder gleich %d MiB sein';
-$lang['danger']['domain_quota_m_in_use'] = 'Domain-Speicherplatzlimit muss größer oder gleich %d MiB sein';
+$lang['danger']['max_quota_in_use'] = 'Mailbox Speicherplatzlimit muss größer oder gleich %d MiB sein';
+$lang['danger']['domain_quota_m_in_use'] = 'Domain Speicherplatzlimit muss größer oder gleich %d MiB sein';
 $lang['danger']['mailboxes_in_use'] = 'Maximale Anzahl an Mailboxen muss größer oder gleich %d sein';
 $lang['danger']['aliases_in_use'] = 'Maximale Anzahl an Aliassen muss größer oder gleich %d sein';
 $lang['danger']['sender_acl_invalid'] = 'Sender ACL %s ist ungültig';
@@ -375,7 +375,7 @@ $lang['edit']['mailbox'] = 'Mailbox bearbeiten';
 $lang['edit']['description'] = 'Beschreibung';
 $lang['edit']['max_aliases'] = 'Max. Aliasse';
 $lang['edit']['max_quota'] = 'Max. Größe per Mailbox (MiB)';
-$lang['edit']['domain_quota'] = 'Domain-Speicherplatz gesamt (MiB)';
+$lang['edit']['domain_quota'] = 'Domain Speicherplatz gesamt (MiB)';
 $lang['edit']['backup_mx_options'] = 'Backup MX Optionen';
 $lang['edit']['relay_domain'] = 'Diese Domain relayen';
 $lang['edit']['relay_all'] = 'Alle Empfänger-Adressen relayen';
@@ -474,7 +474,7 @@ $lang['add']['description'] = 'Beschreibung';
 $lang['add']['max_aliases'] = 'Max. mögliche Aliasse';
 $lang['add']['max_mailboxes'] = 'Max. mögliche Mailboxen';
 $lang['add']['mailbox_quota_m'] = 'Max. Speicherplatz pro Mailbox (MiB)';
-$lang['add']['domain_quota_m'] = 'Domain-Speicherplatz gesamt (MiB)';
+$lang['add']['domain_quota_m'] = 'Domain Speicherplatz gesamt (MiB)';
 $lang['add']['backup_mx_options'] = 'Backup MX Optionen';
 $lang['add']['relay_all'] = 'Alle Empfänger-Adressen relayen';
 $lang['add']['relay_domain'] = 'Relay Domain';
@@ -545,7 +545,7 @@ $lang['tfa']['confirm_totp_token'] = "Bitte bestätigen Sie die Änderung durch 
 
 $lang['admin']['rspamd-com_settings'] = '<a href="https://rspamd.com/doc/configuration/settings.html#settings-structure" target="_blank">Rspamd docs</a>
   - Ein Name wird automatisch generiert. Beispielinhalte zur Einsicht stehen nachstehend bereit.';
-
+  
 $lang['admin']['no_new_rows'] = 'Keine weiteren Zeilen vorhanden';
 $lang['admin']['additional_rows'] = ' zusätzliche Zeilen geladen'; // parses to 'n additional rows were added'
 $lang['admin']['private_key'] = 'Private Key';
@@ -824,13 +824,6 @@ $lang['debug']['solr_started_at'] = 'Gestartet am';
 $lang['debug']['solr_last_modified'] = 'Zuletzt geändert';
 $lang['debug']['solr_size'] = 'Größe';
 $lang['debug']['solr_docs'] = 'Dokumente';
-
-$lang['debug']['disk_usage'] = 'Festplattenauslastung';
-$lang['debug']['containers_info'] = "Container-Informationen";
-
-$lang['debug']['disk_space'] = "Verfügbarer Speicherplatz:";
-$lang['debug']['disk_used'] = "Von Mailboxen belegter Speicherplatz:";
-$lang['debug']['total_quota'] = "Zugewiesener Domain-Speicherplatz:";
 
 $lang['quarantine']['release_body'] = "Die ursprüngliche Nachricht wurde als EML-Datei im Anhang hinterlegt.";
 $lang['danger']['release_send_failed'] = "Die Nachricht konnte nicht versendet werden: %s";

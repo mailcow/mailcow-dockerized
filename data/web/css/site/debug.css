@@ -45,13 +45,3 @@ tbody {
   width: 15px;
   height: 15px;
 }
-.disk_space {
-    margin-top: 20px;
-}
-.progress-bar-committed {
-    background-color: #B6E1F2;
-}
-.usage-info {
-    display: inline-block;
-    margin-right: 5px;
-}
