@@ -45,8 +45,8 @@ else {
           $vmail_df = explode(',', json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields), true));
           $used_percent = substr($vmail_df[4], 0, -1);
           $quota_stats = mailbox('get','quota_stats');
-          $quotaPercent1 = round(($quota_stats['total_quota']/$vmail_df[1])*100);
-          $quotaPercent2 = round((($quota_stats['total_quota']-$quota_stats['used_bytes'])/$vmail_df[1])*100);
+          $quotaPercent1 = round(($quota_stats['total_quota']/$vmail_df[3])*100);
+          $quotaPercent2 = round((($quota_stats['total_quota']-$quota_stats['used_bytes'])/$vmail_df[3])*100);
           $quotaPercent2 = ($quotaPercent2+$used_percent>100) ? 100-$used_percent : $quotaPercent2;
         ?>
         <div role="tabpanel" class="tab-pane active" id="tab-containers">
@@ -58,7 +58,7 @@ else {
               <div class="row">
                 <div class="col-sm-3">
                   <p>/var/vmail on <?=$vmail_df[0];?></p>
-                  <p class="disk_space"><?=$lang['debug']['disk_space'];?> <?=formatBytes($vmail_df[1]*1024);?></p>
+                  <p class="disk_space"><?=$lang['debug']['disk_space'];?> <?=formatBytes($vmail_df[3]*1024);?></p>
                 </div>
                 <div class="col-sm-9">
                   <div class="progress">
