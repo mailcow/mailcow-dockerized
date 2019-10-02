@@ -142,6 +142,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "mailbox":
             process_add_return(mailbox('add', 'mailbox', $attr));
           break;
+          case "oauth2-client":
+            process_add_return(oauth2('add', 'client', $attr));
+          break;
           case "domain":
             process_add_return(mailbox('add', 'domain', $attr));
           break;
@@ -1055,6 +1058,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
         switch ($category) {
           case "alias":
             process_delete_return(mailbox('delete', 'alias', array('id' => $items)));
+          break;
+          case "oauth2-client":
+            process_delete_return(oauth2('delete', 'client', array('id' => $items)));
           break;
           case "relayhost":
             process_delete_return(relayhost('delete', array('id' => $items)));

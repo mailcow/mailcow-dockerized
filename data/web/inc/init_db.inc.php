@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "27092019_1040";
+    $db_version = "29092019_1040";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -1053,6 +1053,17 @@ CREATE EVENT clean_spamalias
 ON SCHEDULE EVERY 1 DAY DO 
 BEGIN
   DELETE FROM spamalias WHERE validity < UNIX_TIMESTAMP();
+END;
+//
+DELIMITER ;';
+    $events[] = 'DROP EVENT IF EXISTS clean_oauth2;
+DELIMITER //
+CREATE EVENT clean_oauth2 
+ON SCHEDULE EVERY 1 DAY DO 
+BEGIN
+  DELETE FROM oauth_refresh_tokens WHERE expires < NOW();
+  DELETE FROM oauth_access_tokens WHERE expires < NOW();
+  DELETE FROM oauth_authorization_codes WHERE expires < NOW();
 END;
 //
 DELIMITER ;';
