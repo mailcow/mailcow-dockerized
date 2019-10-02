@@ -711,7 +711,39 @@ $lang['admin']['help_text'] = "Hilfstext unter Login-Maske (HTML zulässig)";
 $lang['admin']['title_name'] = '"mailcow UI" Webseiten Titel';
 $lang['admin']['main_name'] = '"mailcow UI" Name';
 $lang['admin']['apps_name'] = '"mailcow Apps" Name';
-$lang['admin']['ui_impress'] = 'Impressum, Footer (HTML zulässig)';
+$lang['admin']['ui_footer'] = 'Footer (HTML zulässig)';
+
+$lang['admin']['oauth2_info'] = 'Die OAuth2 Implementierung untersützt den Grant Type "Authorization Code" mit Refresh Tokens.<br>
+Der Server wird automatisch einen neuen Refresh Token ausstellen, sobald ein vorheriger Token gegen einen Access Token eingetauscht wurde.<br><br>
+→ Der Standard Scope lautet <i>profile</i>. Nur Mailbox-Benutzer können sich gegen OAuth2 authentifizieren. Wird kein Scope angegeben, verwendet das System per Standard <i>profile</i>.<br>
+→ Der <i>state</i> Parameter wird im Zuge des Autorisierungsprozesses benötigt.<br><br>
+Die Pfade für die OAuth2 API lauten wie folgt: <br>
+<ul>
+  <li>Authorization Endpoint: <code>/oauth/authorize</code></li>
+  <li>Token Endpoint: <code>/oauth/token</code></li>
+  <li>Resource Page:  <code>/oauth/profile</code></li>
+</ul>
+Die Regenerierung des Client Secrets wird vorhandene Authorization Codes nicht invalidieren, dennoch wird der Renew des Access Tokens durch einen Refresh Token nicht mehr gelingen.<br><br>
+Das Entfernen aller Client Tokens verursacht die umgehende Terminierung aller aktiven OAuth2 Sessions. Clients müssen sich erneut gegen die OAuth2 Anwendung authentifizieren.';
+
+$lang['admin']['oauth2_client_id'] = "Client ID";
+$lang['admin']['oauth2_client_secret'] = "Client Secret";
+$lang['admin']['oauth2_redirect_uri'] = "Redirect URI";
+$lang['admin']['oauth2_revoke_tokens'] = 'Alle Client Tokens entfernen';
+$lang['admin']['oauth2_renew_secret'] = 'Neues Client Secret generieren';
+$lang['edit']['client_id'] = 'Client ID';
+$lang['edit']['client_secret'] = 'Client Secret';
+$lang['edit']['scope'] = 'Scope';
+$lang['edit']['grant_types'] = 'Grant types';
+$lang['edit']['redirect_uri'] = 'Redirect/Callback URL';
+$lang['oauth2']['scope_ask_permission'] = 'Eine Anwendung hat um die folgenden Berechtigungen gebeten';
+$lang['oauth2']['profile'] = 'Profil';
+$lang['oauth2']['profile_desc'] = 'Persönliche Informationen anzeigen: Benutzername, Name, Erstellzeitpunkt, Änderungszeitpunkt, Status';
+$lang['oauth2']['permit'] = 'Anwendung authorisieren';
+$lang['oauth2']['authorize_app'] = 'Anwendung authorisieren';
+$lang['oauth2']['deny'] = 'Ablehnen';
+$lang['oauth2']['access_denied'] = 'Bitte als Mailbox-Nutzer einloggen, um den Zugriff via OAuth2 zu erlauben.';
+
 
 $lang['admin']['customize'] = "UI Anpassung";
 $lang['admin']['change_logo'] = "Logo ändern";
@@ -835,14 +867,6 @@ $lang['success']['tls_policy_map_entry_deleted'] = 'TLS-Richtlinie mit der ID %s
 $lang['mailbox']['add_tls_policy_map'] = "TLS-Richtlinieneintrag hinzufügen";
 $lang['danger']['tls_policy_map_parameter_invalid'] = "Parameter ist ungültig";
 $lang['danger']['temp_error'] = "Temporärer Fehler";
-
-$lang['oauth2']['scope_ask_permission'] = 'Eine Anwendung hat um die folgenden Berechtigungen gebeten';
-$lang['oauth2']['profile'] = 'Profil';
-$lang['oauth2']['profile_desc'] = 'Persönliche Informationen anzeigen: Benutzername, Name, Erstellzeitpunkt, Änderungszeitpunkt, Status';
-$lang['oauth2']['permit'] = 'Anwendung authorisieren';
-$lang['oauth2']['authorize_app'] = 'Anwendung authorisieren';
-$lang['oauth2']['deny'] = 'Ablehnen';
-$lang['oauth2']['access_denied'] = 'Bitte als Mailbox-Nutzer einloggen, um den Zugriff via OAuth2 zu erlauben.';
 
 $lang['admin']['sys_mails'] = 'System-E-Mails';
 $lang['admin']['subject'] = 'Betreff';

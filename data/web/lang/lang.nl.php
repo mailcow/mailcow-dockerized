@@ -710,7 +710,7 @@ $lang['admin']['help_text'] = "Hulpteksten onder inlogvenster (HTML toegestaan)"
 $lang['admin']['title_name'] = '"Mailcow" (website-titel)';
 $lang['admin']['main_name'] = '"Mailcow"';
 $lang['admin']['apps_name'] = '"Mailcow-apps"';
-$lang['admin']['ui_impress'] = 'Footer-vermelding (HTML toegestaan)';
+$lang['admin']['ui_footer'] = 'Footer-vermelding (HTML toegestaan)';
 
 $lang['admin']['customize'] = "Uiterlijk";
 $lang['admin']['change_logo'] = "Logo";
