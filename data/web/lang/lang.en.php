@@ -849,6 +849,10 @@ $lang['debug']['disk_usage'] = 'Disk usage';
 $lang['debug']['containers_info'] = "Container information";
 $lang['debug']['restart_container'] = 'Restart';
 
+$lang['debug']['disk_space'] = "Available disk space:";
+$lang['debug']['disk_used'] = "Disk space occupied by mailboxes:";
+$lang['debug']['total_quota'] = "Total amount of assigned domain quota:";
+
 $lang['quarantine']['release_body'] = "We have attached your message as eml file to this message.";
 $lang['danger']['release_send_failed'] = "Message could not be released: %s";
 $lang['quarantine']['release_subject'] = "Potentially damaging quarantine item %s";
@@ -936,4 +940,3 @@ $lang['mailbox']['alias_domain_backupmx'] = 'Alias domain inactive for relay dom
 
 $lang['danger']['extra_acl_invalid'] = 'External sender address "%s" is invalid';
 $lang['danger']['extra_acl_invalid_domain'] = 'External sender "%s" uses an invalid domain';
-
