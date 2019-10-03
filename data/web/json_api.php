@@ -69,6 +69,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
 
       // check for valid json
       if ($action != 'get' && $requestDecoded === null) {
+        http_response_code(400);
         echo json_encode(array(
             'type' => 'error',
             'msg' => 'Request body doesn\'t contain valid json!'
@@ -112,9 +113,11 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             'msg' => 'Task completed'
           ));
           if ($return === false) {
+            http_response_code(200);
             echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_failure;
           }
           else {
+            http_response_code(200);
             echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_success;
           }
         }
@@ -201,6 +204,14 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
       case "get":
         function process_get_return($data) {
           echo (!isset($data) || empty($data)) ? '{}' : json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        }
+        if ($action != 'get' ) {
+          http_response_code(400);
+          echo json_encode(array(
+              'type' => 'error',
+              'msg' => 'Only GET method is allowed!'
+          ));
+          exit
         }
         switch ($category) {
           case "rspamd":
@@ -1042,9 +1053,11 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             'msg' => 'Task completed'
           ));
           if ($return === false) {
+            http_response_code(200);
             echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_failure;
           }
           else {
+            http_response_code(200);
             echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_success;
           }
         }
@@ -1148,9 +1161,11 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             'msg' => 'Task completed'
           ));
           if ($return === false) {
+            http_response_code(200);
             echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_failure;
           }
           else {
+            http_response_code(200);
             echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_success;
           }
         }
@@ -1273,6 +1288,14 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           break;
         }
       break;
+      default;
+        http_response_code(404);
+        echo json_encode(array(
+          'type' => 'error',
+          'msg' => 'route not found'
+        ));
+        unset($_POST);
+        die();
     }
   }
 }
