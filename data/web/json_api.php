@@ -221,6 +221,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               'type' => 'error',
               'msg' => 'only GET method is allowed'
           ));
+          unset($_POST);
           die();
         }
         switch ($category) {
