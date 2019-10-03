@@ -129,11 +129,12 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           $attr = (array)json_decode($_POST['attr'], true);
           unset($attr['csrf_token']);
         }
+        // only allow POST requests to POST API endpoints
         if ($_SERVER['REQUEST_METHOD'] != 'POST') {
           http_response_code(405);
           echo json_encode(array(
               'type' => 'error',
-              'msg' => 'Only POST method is allowed!'
+              'msg' => 'only POST method is allowed'
           ));
           die();
         }
@@ -213,11 +214,12 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
         function process_get_return($data) {
           echo (!isset($data) || empty($data)) ? '{}' : json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         }
+        // only allow GET requests to GET API endpoints
         if ($_SERVER['REQUEST_METHOD'] != 'GET') {
           http_response_code(405);
           echo json_encode(array(
               'type' => 'error',
-              'msg' => 'Only GET method is allowed!'
+              'msg' => 'only GET method is allowed'
           ));
           die();
         }
@@ -1076,11 +1078,12 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
         else {
           $items = (array)json_decode($_POST['items'], true);
         }
+        // only allow POST requests to POST API endpoints
         if ($_SERVER['REQUEST_METHOD'] != 'POST') {
           http_response_code(405);
           echo json_encode(array(
               'type' => 'error',
-              'msg' => 'Only POST method is allowed!'
+              'msg' => 'only POST method is allowed'
           ));
           die();
         }
@@ -1304,6 +1307,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           break;
         }
       break;
+      // return no route found if no case is matched
       default;
         http_response_code(404);
         echo json_encode(array(
