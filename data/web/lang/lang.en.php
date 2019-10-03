@@ -276,7 +276,7 @@ $lang['mailbox']['tls_policy_maps_info'] = 'This policy map overrides outgoing T
 $lang['mailbox']['tls_enforce_in'] = 'Enforce TLS incoming';
 $lang['mailbox']['tls_enforce_out'] = 'Enforce TLS outgoing';
 $lang['mailbox']['tls_map_dest'] = 'Destination';
-$lang['mailbox']['tls_map_dest_info'] = 'Examples: example.org, .example.org, mail@example.org, [mail.example.org]:25';
+$lang['mailbox']['tls_map_dest_info'] = 'Examples: example.org, .example.org, [mail.example.org]:25';
 $lang['mailbox']['tls_map_policy'] = 'Policy';
 $lang['mailbox']['tls_map_parameters'] = 'Parameters';
 $lang['mailbox']['tls_map_parameters_info'] = 'Empty or parameters, for example: protocols=!SSLv2 ciphers=medium exclude=3DES';

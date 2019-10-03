@@ -272,7 +272,7 @@ $lang['mailbox']['tls_policy_maps_info'] = 'Nachstehende Richtlinien erzwingen T
 $lang['mailbox']['tls_enforce_in'] = 'TLS eingehend erzwingen';
 $lang['mailbox']['tls_enforce_out'] = 'TLS ausgehend erzwingen';
 $lang['mailbox']['tls_map_dest'] = 'Ziel';
-$lang['mailbox']['tls_map_dest_info'] = 'Beispiele: example.org, .example.org, mail@example.org, [mail.example.org]:25';
+$lang['mailbox']['tls_map_dest_info'] = 'Beispiele: example.org, .example.org, [mail.example.org]:25';
 $lang['mailbox']['tls_map_policy'] = 'Richtlinie';
 $lang['mailbox']['tls_map_parameters'] = 'Parameter';
 $lang['mailbox']['tls_map_parameters_info'] = 'Leer oder Parameter, Beispiele: protocols=!SSLv2 ciphers=medium exclude=3DES';

@@ -272,7 +272,7 @@ $lang['mailbox']['tls_policy_maps_info'] = 'Deze opties worden boven het versleu
 $lang['mailbox']['tls_enforce_in'] = 'Forceer inkomende versleuteling';
 $lang['mailbox']['tls_enforce_out'] = 'Forceer uitgaande versleuteling';
 $lang['mailbox']['tls_map_dest'] = 'Bestemming';
-$lang['mailbox']['tls_map_dest_info'] = 'Voorbeeld: example.org, .example.org, mail@example.org, [mail.example.org]:25';
+$lang['mailbox']['tls_map_dest_info'] = 'Voorbeeld: example.org, .example.org, [mail.example.org]:25';
 $lang['mailbox']['tls_map_policy'] = 'Beleid';
 $lang['mailbox']['tls_map_parameters'] = 'Parameters';
 $lang['mailbox']['tls_map_parameters_info'] = 'Voorbeeld: protocols=!SSLv2 ciphers=medium exclude=3DES';
