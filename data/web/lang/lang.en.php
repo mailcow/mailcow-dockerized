@@ -276,7 +276,7 @@ $lang['mailbox']['tls_policy_maps_info'] = 'This policy map overrides outgoing T
 $lang['mailbox']['tls_enforce_in'] = 'Enforce TLS incoming';
 $lang['mailbox']['tls_enforce_out'] = 'Enforce TLS outgoing';
 $lang['mailbox']['tls_map_dest'] = 'Destination';
-$lang['mailbox']['tls_map_dest_info'] = 'Examples: example.org, .example.org, mail@example.org, [mail.example.org]:25';
+$lang['mailbox']['tls_map_dest_info'] = 'Examples: example.org, .example.org, [mail.example.org]:25';
 $lang['mailbox']['tls_map_policy'] = 'Policy';
 $lang['mailbox']['tls_map_parameters'] = 'Parameters';
 $lang['mailbox']['tls_map_parameters_info'] = 'Empty or parameters, for example: protocols=!SSLv2 ciphers=medium exclude=3DES';
@@ -346,11 +346,6 @@ $lang['mailbox']['sogo_visible'] = 'Alias is visible in SOGo';
 $lang['mailbox']['sogo_visible_y'] = 'Show alias in SOGo';
 $lang['mailbox']['sogo_visible_n'] = 'Hide alias in SOGo';
 $lang['edit']['syncjob'] = 'Edit sync job';
-$lang['edit']['client_id'] = 'Client ID';
-$lang['edit']['client_secret'] = 'Client secret';
-$lang['edit']['scope'] = 'Scope';
-$lang['edit']['grant_types'] = 'Grant types';
-$lang['edit']['redirect_uri'] = 'Redirect/Callback URL';
 $lang['edit']['hostname'] = 'Hostname';
 $lang['edit']['encryption'] = 'Encryption';
 $lang['edit']['maxage'] = 'Maximum age of messages in days that will be polled from remote<br><small>(0 = ignore age)</small>';
@@ -679,6 +674,38 @@ $lang['admin']['credentials_transport_warning'] = '<b>Warning</b>: Adding a new 
 $lang['admin']['destination'] = 'Destination';
 $lang['admin']['nexthop'] = 'Next hop';
 
+$lang['admin']['oauth2_info'] = 'The OAuth2 implementation supports the grant type "Authorization Code" and issues refresh tokens.<br>
+The server also automatically issues new refresh tokens, after a refresh token has been used.<br><br>
+→ The default scope is <i>profile</i>. Only mailbox users can be authenticated against OAuth2. If the scope parameter is omitted, it falls back to <i>profile</i>.<br>
+→ The <i>state</i> parameter is required to be sent by the client as part of the authorize request.<br><br>
+Pathes for requests to the OAuth2 API: <br>
+<ul>
+  <li>Authorization endpoint: <code>/oauth/authorize</code></li>
+  <li>Token endpoint: <code>/oauth/token</code></li>
+  <li>Resource page:  <code>/oauth/profile</code></li>
+</ul>
+Regenerating the client secret will not expire existing authorization codes, but they will fail to renew their token.<br><br>
+Revoking client tokens will cause immediate termination of all active sessions. All clients need to re-authenticate.';
+
+$lang['admin']['oauth2_client_id'] = "Client ID";
+$lang['admin']['oauth2_client_secret'] = "Client secret";
+$lang['admin']['oauth2_redirect_uri'] = "Redirect URI";
+$lang['admin']['oauth2_revoke_tokens'] = 'Revoke all client tokens';
+$lang['admin']['oauth2_renew_secret'] = 'Generate new client secret';
+$lang['edit']['client_id'] = 'Client ID';
+$lang['edit']['client_secret'] = 'Client secret';
+$lang['edit']['scope'] = 'Scope';
+$lang['edit']['grant_types'] = 'Grant types';
+$lang['edit']['redirect_uri'] = 'Redirect/Callback URL';
+$lang['oauth2']['scope_ask_permission'] = 'An application asked for the following permissions';
+$lang['oauth2']['profile'] = 'Profile';
+$lang['oauth2']['profile_desc'] = 'View personal information: username, full name, created, modified, active';
+$lang['oauth2']['permit'] = 'Authorize application';
+$lang['oauth2']['authorize_app'] = 'Authorize application';
+$lang['oauth2']['deny'] = 'Deny';
+$lang['oauth2']['access_denied'] = 'Please login as mailbox owner to grant access via OAuth2.';
+
+
 $lang['success']['forwarding_host_removed'] = "Forwarding host %s has been removed";
 $lang['success']['forwarding_host_added'] = "Forwarding host %s has been added";
 $lang['success']['relayhost_removed'] = "Map entry %s has been removed";
@@ -727,7 +754,7 @@ $lang['admin']['help_text'] = "Override help text below login mask (HTML allowed
 $lang['admin']['title_name'] = '"mailcow UI" website title';
 $lang['admin']['main_name'] = '"mailcow UI" name';
 $lang['admin']['apps_name'] = '"mailcow Apps" name';
-$lang['admin']['ui_impress'] = 'Impress, Footer note (HTML allowed)';
+$lang['admin']['ui_footer'] = 'Footer (HTML allowed)';
 
 $lang['admin']['customize'] = "Customize";
 $lang['admin']['change_logo'] = "Change logo";
@@ -863,14 +890,6 @@ $lang['success']['tls_policy_map_entry_deleted'] = 'TLS policy map ID %s has bee
 $lang['mailbox']['add_recipient_map_entry'] = 'Add recipient map';
 $lang['danger']['tls_policy_map_parameter_invalid'] = "Policy parameter is invalid";
 $lang['danger']['temp_error'] = "Temporary error";
-
-$lang['oauth2']['scope_ask_permission'] = 'An application asked for the following permissions';
-$lang['oauth2']['profile'] = 'Profile';
-$lang['oauth2']['profile_desc'] = 'View personal information: username, full name, created, modified, active';
-$lang['oauth2']['permit'] = 'Authorize application';
-$lang['oauth2']['authorize_app'] = 'Authorize application';
-$lang['oauth2']['deny'] = 'Deny';
-$lang['oauth2']['access_denied'] = 'Please login as mailbox owner to grant access via OAuth2.';
 
 $lang['admin']['sys_mails'] = 'System mails';
 $lang['admin']['subject'] = 'Subject';

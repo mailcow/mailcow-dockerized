@@ -3806,6 +3806,18 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt->execute(array(
               ':username' => $username
             ));
+            $stmt = $pdo->prepare("DELETE FROM `oauth_access_tokens` WHERE `user_id` = :username");
+            $stmt->execute(array(
+              ':username' => $username
+            ));
+            $stmt = $pdo->prepare("DELETE FROM `oauth_refresh_tokens` WHERE `user_id` = :username");
+            $stmt->execute(array(
+              ':username' => $username
+            ));
+            $stmt = $pdo->prepare("DELETE FROM `oauth_authorization_codes` WHERE `user_id` = :username");
+            $stmt->execute(array(
+              ':username' => $username
+            ));
             $stmt = $pdo->prepare("SELECT `address`, `goto` FROM `alias`
                 WHERE `goto` REGEXP :username");
             $stmt->execute(array(':username' => '(^|,)'.$username.'($|,)'));

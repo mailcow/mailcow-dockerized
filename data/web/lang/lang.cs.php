@@ -279,7 +279,7 @@ $lang['mailbox']['tls_policy_maps_info'] = 'Tato mapa přepisuje pravidla odchoz
 $lang['mailbox']['tls_enforce_in'] = 'Vynutit TLS pro příchozí';
 $lang['mailbox']['tls_enforce_out'] = 'Vynutit TLS pro odchozí';
 $lang['mailbox']['tls_map_dest'] = 'Cíl';
-$lang['mailbox']['tls_map_dest_info'] = 'Příklady: example.org, .example.org, mail@example.org, [mail.example.org]:25';
+$lang['mailbox']['tls_map_dest_info'] = 'Příklady: example.org, .example.org, [mail.example.org]:25';
 $lang['mailbox']['tls_map_policy'] = 'Pravidlo';
 $lang['mailbox']['tls_map_parameters'] = 'Parametry';
 $lang['mailbox']['tls_map_parameters_info'] = 'Prázdné nebo parametry, například: protocols=!SSLv2 ciphers=medium exclude=3DES';
