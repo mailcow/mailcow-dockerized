@@ -211,7 +211,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               'type' => 'error',
               'msg' => 'Only GET method is allowed!'
           ));
-          exit
+          die();
         }
         switch ($category) {
           case "rspamd":
