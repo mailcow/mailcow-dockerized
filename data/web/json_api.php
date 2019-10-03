@@ -135,6 +135,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               'type' => 'error',
               'msg' => 'Only POST method is allowed!'
           ));
+          die();
         }
         switch ($category) {
           case "time_limited_alias":
@@ -1081,6 +1082,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               'type' => 'error',
               'msg' => 'Only POST method is allowed!'
           ));
+          die();
         }
         switch ($category) {
           case "alias":
