@@ -113,11 +113,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             'msg' => 'Task completed'
           ));
           if ($return === false) {
-            http_response_code(200);
             echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_failure;
           }
           else {
-            http_response_code(200);
             echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_success;
           }
         }
@@ -1064,11 +1062,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             'msg' => 'Task completed'
           ));
           if ($return === false) {
-            http_response_code(200);
             echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_failure;
           }
           else {
-            http_response_code(200);
             echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_success;
           }
         }
@@ -1181,11 +1177,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             'msg' => 'Task completed'
           ));
           if ($return === false) {
-            http_response_code(200);
             echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_failure;
           }
           else {
-            http_response_code(200);
             echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_success;
           }
         }
