@@ -205,7 +205,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
         function process_get_return($data) {
           echo (!isset($data) || empty($data)) ? '{}' : json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         }
-        if ($action != 'get' ) {
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
           http_response_code(400);
           echo json_encode(array(
               'type' => 'error',
