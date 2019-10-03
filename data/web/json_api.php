@@ -1192,6 +1192,15 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           unset($attr['csrf_token']);
           $items = isset($_POST['items']) ? (array)json_decode($_POST['items'], true) : null;
         }
+        // only allow POST requests to POST API endpoints
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+          http_response_code(405);
+          echo json_encode(array(
+              'type' => 'error',
+              'msg' => 'only POST method is allowed'
+          ));
+          die();
+        }
         switch ($category) {
           case "bcc":
             process_edit_return(bcc('edit', array_merge(array('id' => $items), $attr)));
