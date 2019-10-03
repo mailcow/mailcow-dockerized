@@ -589,6 +589,13 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 }
                 echo (isset($logs) && !empty($logs)) ? json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '{}';
               break;
+              default:
+                http_response_code(404);
+                echo json_encode(array(
+                  'type' => 'error',
+                  'msg' => 'route not found'
+                ));
+                die();
             }
           break;
           case "mailbox":
