@@ -206,6 +206,14 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "tls-policy-map":
             process_add_return(tls_policy_maps('add', $attr));
           break;
+          default:
+            http_response_code(404);
+            echo json_encode(array(
+              'type' => 'error',
+              'msg' => 'route not found'
+            ));
+            unset($_POST);
+            die();
         }
       break;
       case "get":
@@ -1047,8 +1055,12 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             }
           break;
           default:
-            echo '{}';
-          break;
+            http_response_code(404);
+            echo json_encode(array(
+              'type' => 'error',
+              'msg' => 'route not found'
+            ));
+            die();
         }
       break;
       case "delete":
@@ -1164,6 +1176,14 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "rlhash":
             echo ratelimit('delete', null, implode($items));
           break;
+          default:
+            http_response_code(404);
+            echo json_encode(array(
+              'type' => 'error',
+              'msg' => 'route not found'
+            ));
+            unset($_POST);
+            die();
         }
       break;
       case "edit":
@@ -1309,10 +1329,18 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               process_edit_return(edit_user_account($attr));
             }
           break;
+          default:
+            http_response_code(404);
+            echo json_encode(array(
+              'type' => 'error',
+              'msg' => 'route not found'
+            ));
+            unset($_POST);
+            die();
         }
       break;
       // return no route found if no case is matched
-      default;
+      default:
         http_response_code(404);
         echo json_encode(array(
           'type' => 'error',
