@@ -129,6 +129,12 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           $attr = (array)json_decode($_POST['attr'], true);
           unset($attr['csrf_token']);
         }
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+          http_response_code(405);
+          echo json_encode(array(
+              'type' => 'error',
+              'msg' => 'Only POST method is allowed!'
+          ));
         switch ($category) {
           case "time_limited_alias":
             process_add_return(mailbox('add', 'time_limited_alias', $attr));
@@ -206,7 +212,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           echo (!isset($data) || empty($data)) ? '{}' : json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         }
         if ($_SERVER['REQUEST_METHOD'] != 'GET') {
-          http_response_code(400);
+          http_response_code(405);
           echo json_encode(array(
               'type' => 'error',
               'msg' => 'Only GET method is allowed!'
@@ -1068,6 +1074,12 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
         else {
           $items = (array)json_decode($_POST['items'], true);
         }
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+          http_response_code(405);
+          echo json_encode(array(
+              'type' => 'error',
+              'msg' => 'Only POST method is allowed!'
+          ));
         switch ($category) {
           case "alias":
             process_delete_return(mailbox('delete', 'alias', array('id' => $items)));
