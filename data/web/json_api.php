@@ -206,6 +206,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "tls-policy-map":
             process_add_return(tls_policy_maps('add', $attr));
           break;
+          // return no route found if no case is matched
           default:
             http_response_code(404);
             echo json_encode(array(
@@ -589,6 +590,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 }
                 echo (isset($logs) && !empty($logs)) ? json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '{}';
               break;
+              // return no route found if no case is matched
               default:
                 http_response_code(404);
                 echo json_encode(array(
@@ -1061,6 +1063,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                   break;
             }
           break;
+          // return no route found if no case is matched
           default:
             http_response_code(404);
             echo json_encode(array(
@@ -1183,6 +1186,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "rlhash":
             echo ratelimit('delete', null, implode($items));
           break;
+          // return no route found if no case is matched
           default:
             http_response_code(404);
             echo json_encode(array(
@@ -1336,6 +1340,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               process_edit_return(edit_user_account($attr));
             }
           break;
+          // return no route found if no case is matched
           default:
             http_response_code(404);
             echo json_encode(array(
