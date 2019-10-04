@@ -23,12 +23,12 @@ if (isset($_GET['domain'])) {
     }
     else {
       echo "No such domain in context";
-      die();
+      exit();
     }
   }
   else {
     echo "Invalid domain name";
-    die();
+    exit();
   }
 }
 
@@ -422,6 +422,6 @@ foreach ($records as $record) {
 <?php
 } else {
   echo "Session invalid";
-  die();
+  exit();
 }
 ?>

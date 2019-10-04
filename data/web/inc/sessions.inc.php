@@ -66,7 +66,7 @@ if (!empty($_SERVER['HTTP_X_API_KEY'])) {
         'msg' => 'api access denied for ip ' . $_SERVER['REMOTE_ADDR']
       ));
       unset($_POST);
-      die();
+      exit();
     }
   }
   else {
@@ -78,7 +78,7 @@ if (!empty($_SERVER['HTTP_X_API_KEY'])) {
       'msg' => 'authentication failed'
     ));
     unset($_POST);
-    die();
+    exit();
   }
 }
 
