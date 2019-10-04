@@ -134,7 +134,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               'type' => 'error',
               'msg' => 'only POST method is allowed'
           ));
-          die();
+          exit();
         }
         switch ($category) {
           case "time_limited_alias":
@@ -213,7 +213,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               'msg' => 'route not found'
             ));
             unset($_POST);
-            die();
+            exit();
         }
       break;
       case "get":
@@ -228,7 +228,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               'msg' => 'only GET method is allowed'
           ));
           unset($_POST);
-          die();
+          exit();
         }
         switch ($category) {
           case "rspamd":
@@ -595,7 +595,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                   'type' => 'error',
                   'msg' => 'route not found'
                 ));
-                die();
+                exit();
             }
           break;
           case "mailbox":
@@ -1067,7 +1067,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               'type' => 'error',
               'msg' => 'route not found'
             ));
-            die();
+            exit();
         }
       break;
       case "delete":
@@ -1101,7 +1101,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               'type' => 'error',
               'msg' => 'only POST method is allowed'
           ));
-          die();
+          exit();
         }
         switch ($category) {
           case "alias":
@@ -1190,7 +1190,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               'msg' => 'route not found'
             ));
             unset($_POST);
-            die();
+            exit();
         }
       break;
       case "edit":
@@ -1226,7 +1226,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               'type' => 'error',
               'msg' => 'only POST method is allowed'
           ));
-          die();
+          exit();
         }
         switch ($category) {
           case "bcc":
@@ -1343,7 +1343,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               'msg' => 'route not found'
             ));
             unset($_POST);
-            die();
+            exit();
         }
       break;
       // return no route found if no case is matched
@@ -1354,7 +1354,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           'msg' => 'route not found'
         ));
         unset($_POST);
-        die();
+        exit();
     }
   }
 }
