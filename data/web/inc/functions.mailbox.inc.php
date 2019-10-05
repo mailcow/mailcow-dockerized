@@ -810,7 +810,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $name = $local_part;
           }
           $active = intval($_data['active']);
-          $quota_b		= ($quota_m * 1048576);      
+          $quota_b		= ($quota_m * 1048576);
           $mailbox_attrs = json_encode(
             array(
               'force_pw_update' => strval(intval($MAILBOX_DEFAULT_ATTRIBUTES['force_pw_update'])),
@@ -2121,7 +2121,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             }
             // if already 1 == ok
             if ((!isset($_SESSION['acl']['sogo_access']) || $_SESSION['acl']['sogo_access'] != "1") &&
-            (intval($_data['sogo_access']) == 0 && intval($is_now['attributes']['sogo_access'] != 0))) {
+            (intval($_data['sogo_access']) == 1 && intval($is_now['attributes']['sogo_access'] != 1))) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
