@@ -2065,7 +2065,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             if (!empty($is_now)) {
               $active     = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
               (int)$force_pw_update = (isset($_data['force_pw_update'])) ? intval($_data['force_pw_update']) : intval($is_now['attributes']['force_pw_update']);
-              (int)$sogo_access = (isset($_data['sogo_access'])) ? intval($_data['sogo_access']) : intval($is_now['attributes']['sogo_access']);
+              (int)$sogo_access = (isset($_data['sogo_access']) && isset($_SESSION['acl']['sogo_access']) && $_SESSION['acl']['sogo_access'] == "1") ? intval($_data['sogo_access']) : intval($is_now['attributes']['sogo_access']);
               (int)$quota_m = (isset_has_content($_data['quota'])) ? intval($_data['quota']) : ($is_now['quota'] / 1048576);
               $name       = (!empty($_data['name'])) ? ltrim(rtrim($_data['name'], '>'), '<') : $is_now['name'];
               $domain     = $is_now['domain'];
@@ -2118,16 +2118,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 'msg' => array('mailbox_quota_left_exceeded', ($is_now['max_new_quota'] / 1048576))
               );
               continue;
-            }
-            // if already 1 == ok
-            if ((!isset($_SESSION['acl']['sogo_access']) || $_SESSION['acl']['sogo_access'] != "1") &&
-            (intval($_data['sogo_access']) == 1 && intval($is_now['attributes']['sogo_access'] != 1))) {
-              $_SESSION['return'][] = array(
-                'type' => 'danger',
-                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                'msg' => 'access_denied'
-              );
-              return false;
             }
             $extra_acls = array();
             if (isset($_data['extended_sender_acl'])) {
