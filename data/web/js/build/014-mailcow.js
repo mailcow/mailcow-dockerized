@@ -196,7 +196,7 @@ $(document).ready(function() {
         if ($(htmlResponse).find('span').hasClass('text-success')) {
           $('#triggerRestartContainer').html('<span class="glyphicon glyphicon-ok"></span> ');
           setTimeout(function(){
-            $('#RestartContainer').modal('toggle'); 
+            $('#RestartContainer').modal('toggle');
             window.location = window.location.href.split("#")[0];
           }, 1200);
         } else {

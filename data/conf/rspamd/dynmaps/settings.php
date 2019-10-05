@@ -91,7 +91,7 @@ function ucl_rcpts($object, $type) {
       $rcpt[] = str_replace('/', '\/', $row['address']);
     }
     // Aliases by alias domains
-    $stmt = $pdo->prepare("SELECT CONCAT(`local_part`, '@', `alias_domain`.`alias_domain`) AS `alias` FROM `mailbox` 
+    $stmt = $pdo->prepare("SELECT CONCAT(`local_part`, '@', `alias_domain`.`alias_domain`) AS `alias` FROM `mailbox`
       LEFT OUTER JOIN `alias_domain` ON `mailbox`.`domain` = `alias_domain`.`target_domain`
       WHERE `mailbox`.`username` = :object");
     $stmt->execute(array(
@@ -158,7 +158,7 @@ while ($row = array_shift($rows)) {
     rcpt = <?=json_encode($rcpt, JSON_UNESCAPED_SLASHES);?>;
 <?php
   }
-  $stmt = $pdo->prepare("SELECT `option`, `value` FROM `filterconf` 
+  $stmt = $pdo->prepare("SELECT `option`, `value` FROM `filterconf`
     WHERE (`option` = 'highspamlevel' OR `option` = 'lowspamlevel')
       AND `object`= :object");
   $stmt->execute(array(':object' => $row['object']));

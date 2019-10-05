@@ -443,7 +443,7 @@ $lang['user']['hourly'] = 'Ieder uur';
 $lang['user']['daily'] = 'Dagelijks';
 $lang['user']['weekly'] = 'Wekelijks';
 $lang['user']['quarantine_notification_info'] = 'Zodra een notificatie is verzonden, worden de items als gelezen gemarkeerd en zullen er geen meldingen meer over diezelfde items verstuurd worden.';
-    
+
 $lang['add']['generate'] = 'genereer';
 $lang['add']['syncjob'] = 'Voeg een nieuwe synchronisatietaak toe';
 $lang['add']['syncjob_hint'] = 'Wees ervan bewust dat de authenticatiedata onversleuteld wordt opgeslagen!';
@@ -659,7 +659,7 @@ $lang['admin']['relayhosts'] = 'Afzender-afhankelijke transportkaarten';
 $lang['admin']['transport_maps'] = 'Transportkaarten';
 $lang['admin']['routing'] = 'Routing';
 $lang['admin']['credentials_transport_warning'] = '<b>Waarschuwing</b>: Bij het toevoegen van een nieuwe transportkaart zullen de inloggegevens voor alle items met een overeenkomende nexthop-kolom worden overgeschreven.';
-    
+
 $lang['admin']['destination'] = 'Bestemming';
 $lang['admin']['nexthop'] = 'Nexthop';
 $lang['success']['forwarding_host_removed'] = "Doorstuurhost %s is verwijderd";
@@ -785,7 +785,7 @@ $lang['debug']['solr_status'] = 'Status van Solr';
 $lang['debug']['solr_dead'] = 'Solr is uitgeschakeld, uitgevallen of nog bezig met opstarten.';
 $lang['debug']['logs'] = 'Logs';
 $lang['debug']['log_info'] = '<p>Mailcows <b>geheugenlogs</b> worden elke minuut afgesneden naar maximaal %d regels om de stabiliteit te garanderen.<br>Geheugenlogs zijn niet bedoeld om opgeslagen te worden. Alle applicaties die geheugenlogs verzamelen, worden ook naar het Docker-proces gelogd.<br>De geheugenlogs kunnen gebruikt worden voor het oplossen van kleine problemen met specifieke containers.</p><p><b>Externe logs</b> worden verzameld doormiddel van de API van deze applicaties.</p><p><b>Statische logs</b> zijn activiteitenlogs. Deze worden niet naar het Docker-proces gestuurd.</p>';
-    
+
 $lang['debug']['in_memory_logs'] = 'Geheugenlogs';
 $lang['debug']['external_logs'] = 'Externe logs';
 $lang['debug']['static_logs'] = 'Statische logs';
@@ -858,7 +858,7 @@ $lang['admin']['includes'] = 'Inclusief';
 $lang['admin']['text'] = 'Tekst';
 $lang['admin']['activate_send'] = 'Bevestig bovenstaande gegevens';
 $lang['admin']['send'] = 'Verstuur';
-    
+
 $lang['warning']['ip_invalid'] = 'Ongeldig IP overgeslagen: %s';
 $lang['danger']['text_empty'] = 'De tekst dient ingevuld te worden';
 $lang['danger']['subject_empty'] = 'Het onderwerp dient ingevuld te worden';

@@ -397,7 +397,7 @@ foreach ($records as $record) {
     ($state == state_missing || $state == state_nomatch)) {
       $state = state_optional;
   }
-  
+
   if ($state == state_nomatch) {
     $state = array();
     foreach ($currents as $current) {

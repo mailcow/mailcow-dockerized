@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/solid.min.css" integrity="sha256-3FfMfpeajSEpxWZTFowWZPTv7k3GEu7w4rQv49EWsEY=" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-themes@1.1.0/themes/prism-a11y-dark.css" integrity="sha256-d2qy226pP+oHAtEQPujaiXPslYW1Rmtla3Ivu1fFYxU=" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-switch@2.0.0/dist/css/bulma-switch.min.css" integrity="sha256-jCV/cXwP13w0GNHLgFx6SFgTNAvJPvS5MIhuE30Ng08=" crossorigin="anonymous">
-    
+
     <style>
       @media screen and (min-width: 768px) {
         .navbar-burger {
@@ -482,9 +482,9 @@
         const to = node.getBoundingClientRect();
         if (from.left === to.left && from.right === to.right && from.top === to.top && from.bottom === to.bottom)
             return noop;
-        const { delay = 0, duration = 300, easing = identity, 
+        const { delay = 0, duration = 300, easing = identity,
         // @ts-ignore todo: should this be separated from destructuring? Or start/end added to public api and documentation?
-        start: start_time = now() + delay, 
+        start: start_time = now() + delay,
         // @ts-ignore todo:
         end = start_time + duration, tick = noop, css } = fn(node, { from, to }, params);
         let running = true;
@@ -6094,15 +6094,15 @@
         function isString (value) {
             return Object.prototype.toString.apply(value) === '[object String]';
         }
-        
+
         function isNumber (value) {
             return Object.prototype.toString.apply(value) === '[object Number]';
         }
-        
+
         function isBoolean (value) {
             return Object.prototype.toString.apply(value) === '[object Boolean]';
         }
-        
+
         function join (arr, separator) {
             var
                 result = '',
@@ -11411,7 +11411,7 @@
     }
 
     function instance$1($$self, $$props, $$invalidate) {
-    	
+
 
       let { config = {}, tagActions = [], tagHeaders = [], currentSlug, actionsCount, isCollapsed, handleClick, tocClick, searchClick } = $$props;
 
@@ -12178,7 +12178,7 @@
     }
 
     function instance$5($$self, $$props, $$invalidate) {
-    	
+
 
       let { description, headers, contentType, example, schema } = $$props;
 
@@ -12423,7 +12423,7 @@
     }
 
     function instance$6($$self, $$props, $$invalidate) {
-    	
+
 
       let { title, description, headers, statusCode, contentType, example, schema } = $$props;
 
@@ -13158,7 +13158,7 @@
 
     	component_subscribe($$self, env, $$value => { $env = $$value; $$invalidate('$env', $env); });
 
-    	
+
 
       function handleClick() {
         auth.remove($env);
@@ -13321,7 +13321,7 @@
     	};
     }
 
-    // (51:33) 
+    // (51:33)
     function create_if_block_3(ctx) {
     	var div1, div0, p, current;
 
@@ -13689,7 +13689,7 @@
     	component_subscribe($$self, env, $$value => { $env = $$value; $$invalidate('$env', $env); });
     	component_subscribe($$self, auth, $$value => { $auth = $$value; $$invalidate('$auth', $auth); });
 
-    	
+
 
       let { environments, authenticating } = $$props;
 
@@ -16027,7 +16027,7 @@
     	component_subscribe($$self, auth, $$value => { $auth = $$value; $$invalidate('$auth', $auth); });
     	component_subscribe($$self, token, $$value => { $token = $$value; $$invalidate('$token', $token); });
 
-    	
+
 
       let { show = true, environments, currentAction, currentSample, requestHeaders, requestParameters, requestBody } = $$props;
 
@@ -16355,7 +16355,7 @@
     }
 
     function instance$h($$self, $$props, $$invalidate) {
-    	
+
 
       let { show, count, index, request, response } = $$props;
 
@@ -17345,7 +17345,7 @@
 
     	component_subscribe($$self, env, $$value => { $env = $$value; $$invalidate('$env', $env); });
 
-    	
+
 
       let { title, description, actions, tagActions, config } = $$props;
 

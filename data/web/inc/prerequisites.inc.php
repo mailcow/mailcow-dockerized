@@ -138,7 +138,7 @@ set_exception_handler('exception_handler');
 // TODO: Move function
 function get_remote_ip($anonymize = null) {
   global $ANONYMIZE_IPS;
-  if ($anonymize === null) { 
+  if ($anonymize === null) {
     $anonymize = $ANONYMIZE_IPS;
   }
   elseif ($anonymize !== true && $anonymize !== false)  {

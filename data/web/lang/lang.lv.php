@@ -2,7 +2,7 @@
 /*
  * English language file
  */
-// 326, 365, 416, 419, 420, 421, 424, Relayhost, 469 running. 
+// 326, 365, 416, 419, 420, 421, 424, Relayhost, 469 running.
 
 $lang['footer']['loading'] = "Lūdzu uzgaidiet...";
 $lang['header']['restart_sogo'] = 'Restartēt SOGo';

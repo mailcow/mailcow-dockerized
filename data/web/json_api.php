@@ -1223,7 +1223,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           break;
           case "filter":
             process_edit_return(mailbox('edit', 'filter', array_merge(array('id' => $items), $attr)));
-          break;          
+          break;
           case "resource":
             process_edit_return(mailbox('edit', 'resource', array_merge(array('name' => $items), $attr)));
           break;

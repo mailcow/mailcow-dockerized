@@ -98,7 +98,7 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
             }
           }
           else {
-            if (isset($decoded_response['Config']['Labels']['com.docker.compose.project']) 
+            if (isset($decoded_response['Config']['Labels']['com.docker.compose.project'])
               && $decoded_response['Config']['Labels']['com.docker.compose.project'] == strtolower(getenv('COMPOSE_PROJECT_NAME'))) {
               unset($container['Config']['Env']);
               $out[$decoded_response['Config']['Labels']['com.docker.compose.service']]['State'] = $decoded_response['State'];

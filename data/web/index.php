@@ -85,7 +85,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               foreach ($row as $key => $val):
             ?>
               <a href="<?= htmlspecialchars($val); ?>" role="button" class="btn btn-lg btn-default"><?= htmlspecialchars($key); ?></a>&nbsp;
-            <?php 
+            <?php
               endforeach;
             }
           }

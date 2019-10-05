@@ -5,7 +5,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
   ini_set('session.gc_maxlifetime', $SESSION_LIFETIME);
 }
 
-if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && 
+if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&
   strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) == "https") {
   if (session_status() !== PHP_SESSION_ACTIVE) {
     ini_set("session.cookie_secure", 1);

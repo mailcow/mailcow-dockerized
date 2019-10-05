@@ -30,10 +30,10 @@ catch(PDOException $e) {
 
 if (isset($_GET['only_email'])) {
   $onlyEmailAccount = true;
-  $description = 'IMAP';  
+  $description = 'IMAP';
 } else {
   $onlyEmailAccount = false;
-  $description = 'IMAP, CalDAV, CardDAV'; 
+  $description = 'IMAP, CalDAV, CardDAV';
 }
 
 echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";

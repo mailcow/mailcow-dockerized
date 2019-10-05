@@ -69,7 +69,7 @@
 	</test>
 
 	<test name="false" />
-	
+
 	<test name="header">
 		<parameter type="matchtype" occurrence="optional" />
 		<parameter type="comparator" occurrence="optional" />

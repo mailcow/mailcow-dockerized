@@ -397,7 +397,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
               ?>
               </select>
             </div>
-          </div> 
+          </div>
           <div class="form-group">
             <label class="control-label col-sm-2" for="host1"><?=$lang['add']['hostname'];?></label>
             <div class="col-sm-10">

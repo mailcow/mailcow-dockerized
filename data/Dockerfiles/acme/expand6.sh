@@ -58,7 +58,7 @@ function expand_quibble() {
       2) quibble="00$quibble";;
       3) quibble="0$quibble";;
     esac
-    addr_array[$i]=$quibble 
+    addr_array[$i]=$quibble
   done
   # reconstruct addr from quibbles
   return_str=${addr_array[*]}
@@ -77,17 +77,17 @@ function expand() {
     if [[ $1 == "::"* ]]; then
       front_addr=0
     else
-      front_addr=$(echo $1 | sed -r 's;([^ ]+)::.*;\1;') 
+      front_addr=$(echo $1 | sed -r 's;([^ ]+)::.*;\1;')
     fi
     # check for trailing zeros on back_addr
     if [[ $1 == *"::" ]]; then
       back_addr=0
     else
-      back_addr=$(echo $1 | sed -r 's;.*::([^ ]+);\1;') 
+      back_addr=$(echo $1 | sed -r 's;.*::([^ ]+);\1;')
     fi
     front_addr=$(expand_quibble $front_addr)
     back_addr=$(expand_quibble $back_addr)
-    
+
     new_addr=$empty_addr
     front_addr_len=${#front_addr}
     back_addr_len=${#back_addr}
@@ -96,7 +96,7 @@ function expand() {
 
     #fill_str=${empty_addr[0]:0:$num_zeros}
     new_addr="$front_addr:${empty_addr[0]:0:$num_zeros}$back_addr"
-    
+
     # return expanded address
     echo $new_addr
   else

@@ -395,7 +395,7 @@ jQuery(function($){
               width: '100%',
               height: '100%'
             },
-      
+
             slices: {
               0: { color: '#DC3023' },
               1: { color: '#59ABE3' },

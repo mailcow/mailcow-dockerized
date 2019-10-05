@@ -365,7 +365,7 @@ function alertbox_log_parser($_data){
       }
       $log_array[] = array('msg' => json_encode($msg), 'type' => json_encode($type));
     }
-    if (!empty($log_array)) { 
+    if (!empty($log_array)) {
       return $log_array;
     }
   }
@@ -709,7 +709,7 @@ function user_get_alias_details($username) {
   }
   return $data;
 }
-function is_valid_domain_name($domain_name) { 
+function is_valid_domain_name($domain_name) {
 	if (empty($domain_name)) {
 		return false;
 	}
@@ -748,7 +748,7 @@ function set_tfa($_data) {
     );
     return false;
   }
-  
+
 	switch ($_data["tfa_method"]) {
 		case "yubi_otp":
       $key_id = (!isset($_data["key_id"])) ? 'unidentified' : $_data["key_id"];
@@ -783,7 +783,7 @@ function set_tfa($_data) {
 			try {
         // We could also do a modhex translation here
         $yubico_modhex_id = substr($_data["otp_token"], 0, 12);
-        $stmt = $pdo->prepare("DELETE FROM `tfa` 
+        $stmt = $pdo->prepare("DELETE FROM `tfa`
           WHERE `username` = :username
             AND (`authmech` != 'yubi_otp')
             OR (`authmech` = 'yubi_otp' AND `secret` LIKE :modhex)");
@@ -950,7 +950,7 @@ function get_tfa($username = null) {
       WHERE `username` = :username AND `active` = '1'");
   $stmt->execute(array(':username' => $username));
   $row = $stmt->fetch(PDO::FETCH_ASSOC);
-  
+
 	switch ($row["authmech"]) {
 		case "yubi_otp":
       $data['name'] = "yubi_otp";
@@ -1013,7 +1013,7 @@ function verify_tfa_login($username, $token) {
       WHERE `username` = :username AND `active` = '1'");
   $stmt->execute(array(':username' => $username));
   $row = $stmt->fetch(PDO::FETCH_ASSOC);
-  
+
 	switch ($row["authmech"]) {
 		case "yubi_otp":
 			if (!ctype_alnum($token) || strlen($token) != 44) {
@@ -1362,7 +1362,7 @@ function get_u2f_registrations($username) {
 }
 function get_logs($application, $lines = false) {
   if ($lines === false) {
-    $lines = $GLOBALS['LOG_LINES'] - 1; 
+    $lines = $GLOBALS['LOG_LINES'] - 1;
   }
   elseif(is_numeric($lines) && $lines >= 1) {
     $lines = abs(intval($lines) - 1);

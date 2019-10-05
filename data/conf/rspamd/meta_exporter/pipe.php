@@ -86,10 +86,10 @@ $rcpt_final_mailboxes = array();
 foreach (json_decode($rcpts, true) as $rcpt) {
   // Remove tag
   $rcpt = preg_replace('/^(.*?)\+.*(@.*)$/', '$1$2', $rcpt);
-  
+
   // Break rcpt into local part and domain part
   $parsed_rcpt = parse_email($rcpt);
-  
+
   // Skip if not a mailcow handled domain
   try {
     if (!$redis->hGet('DOMAIN_MAP', $parsed_rcpt['domain'])) {
@@ -232,7 +232,7 @@ foreach ($rcpt_final_mailboxes as $rcpt) {
         WHERE `rcpt` = :rcpt2
         ORDER BY id DESC
         LIMIT :retention_size
-      ) x 
+      ) x
     );');
     $stmt->execute(array(
       ':rcpt' => $rcpt,

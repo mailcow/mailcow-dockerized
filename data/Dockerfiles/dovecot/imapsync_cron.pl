@@ -49,8 +49,8 @@ sub sig_handler {
   die "sig_handler received signal, preparing to exit...\n";
 };
 
-open my $file, '<', "/etc/sogo/sieve.creds"; 
-my $creds = <$file>; 
+open my $file, '<', "/etc/sogo/sieve.creds";
+my $creds = <$file>;
 close $file;
 my ($master_user, $master_pass) = split /:/, $creds;
 my $sth = $dbh->prepare("SELECT id,
@@ -152,9 +152,9 @@ while ($row = $sth->fetchrow_arrayref()) {
     $is_running = $dbh->prepare("UPDATE imapsync SET is_running = 1 WHERE id = ?");
     $is_running->bind_param( 1, ${id} );
     $is_running->execute();
-    
+
     run [@$generated_cmds, @$custom_params_ref], '&>', \my $stdout;
-    
+
     $update = $dbh->prepare("UPDATE imapsync SET returned_text = ? WHERE id = ?");
     $update->bind_param( 1, ${stdout} );
     $update->bind_param( 2, ${id} );

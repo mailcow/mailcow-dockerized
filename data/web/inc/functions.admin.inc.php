@@ -261,7 +261,7 @@ function admin($_action, $_data = null) {
         ':admin' => $_data
       ));
       $row = $stmt->fetch(PDO::FETCH_ASSOC);
-      if (empty($row)) { 
+      if (empty($row)) {
         return false;
       }
       $admindata['username'] = $row['username'];

@@ -2881,7 +2881,7 @@ sub cgisetcontext
 
         # tail -f behaviour on by default
         $mysync->{ tail } = defined  $mysync->{ tail }  ? $mysync->{ tail } : 1 ;
-        
+
         # not sure it's for good
         @useheader = qw( Message-Id ) ;
 

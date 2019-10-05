@@ -4,23 +4,23 @@ error_reporting(0);
 function get_spf_allowed_hosts($check_domain)
 {
 	$hosts = array();
-	
+
 	$records = dns_get_record($check_domain, DNS_TXT);
 	foreach ($records as $record)
 	{
 		$txt = explode(' ', $record['entries'][0]);
 		if (array_shift($txt) != 'v=spf1') // only handle SPF records
 			continue;
-		
+
 		foreach ($txt as $mech)
 		{
 			$qual = substr($mech, 0, 1);
 			if ($qual == '-' || $qual == '~') // only handle pass or neutral records
 				continue(2);
-			
+
 			if ($qual == '+' || $qual == '?')
 				$mech = substr($mech, 1); // remove the qualifier
-			
+
 			if (strpos($mech, '=') !== FALSE) // handle a modifier
 			{
 				$mod = explode('=', $mech);
@@ -45,7 +45,7 @@ function get_spf_allowed_hosts($check_domain)
 						$cidr = $split[1];
 					}
 				}
-				
+
 				$new_hosts = array();
         if ($mech == 'include' && $check_domain != $domain) // handle an inclusion
 				{
@@ -63,7 +63,7 @@ function get_spf_allowed_hosts($check_domain)
 				{
 					$new_hosts = array($domain);
 				}
-				
+
 				if (isset($cidr)) // add CIDR specification if present
 				{
 					foreach ($new_hosts as &$host)
@@ -72,12 +72,12 @@ function get_spf_allowed_hosts($check_domain)
 					}
 					unset($host);
 				}
-				
+
 				$hosts = array_unique(array_merge($hosts,$new_hosts), SORT_REGULAR);
 			}
 		}
 	}
-	
+
 	return $hosts;
 }
 
@@ -106,7 +106,7 @@ function get_mx_hosts($domain)
 function get_a_hosts($domain)
 {
 	$hosts = array();
-	
+
 	$a_records = dns_get_record($domain, DNS_A);
 	foreach ($a_records as $a_record)
 	{
@@ -117,7 +117,7 @@ function get_a_hosts($domain)
 	{
 		$hosts[] = $a_record['ipv6'];
 	}
-	
+
 	return $hosts;
 }
 
@@ -126,11 +126,11 @@ function get_outgoing_hosts_best_guess($domain)
 	// try the SPF record to get hosts that are allowed to send outgoing mails for this domain
 	$hosts = get_spf_allowed_hosts($domain);
 	if ($hosts) return $hosts;
-	
+
 	// try the MX record to get mail servers for this domain
 	$hosts = get_mx_hosts($domain);
 	if ($hosts) return $hosts;
-	
+
 	// fall back to the A record to get the host name for this domain
 	return get_a_hosts($domain);
 }

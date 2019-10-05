@@ -9,7 +9,7 @@
     border-radius: 0px;
     padding: 0px;
     width:50%;
-  }  
+  }
   #progressbar > div {
     background-color: #ff9c9c;
     width: {{percent}}%;
