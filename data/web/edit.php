@@ -712,8 +712,8 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               <small class="help-block"><?=$lang['edit']['force_pw_update_info'];?></small>
               </div>
             </div>
-          </div>
-          <div class="form-group">
+          </div>		  
+          <div data-acl="<?=$_SESSION['acl']['sogo_access'];?>" class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
               <div class="checkbox">
               <label><input type="checkbox" value="1" name="sogo_access" <?=($result['attributes']['sogo_access']=="1") ? "checked" : null;?>> <?=$lang['edit']['sogo_access'];?></label>

@@ -420,6 +420,7 @@ $lang['acl']['recipient_maps'] = 'Empfängerumschreibungen';
 $lang['acl']['unlimited_quota'] = 'Unendliche Quota für Mailboxen';
 $lang['acl']['extend_sender_acl'] = 'Eingabe externer Absenderadressen erlauben';
 $lang['acl']['prohibited'] = 'Untersagt durch Richtlinie';
+$lang['acl']['sogo_access'] = 'SOGo Zugriffsrecht';
 
 $lang['edit']['extended_sender_acl'] = 'Externe Absenderadressen';
 $lang['edit']['extended_sender_acl_info'] = 'Der DKIM Domainkey der externen Absenderdomain sollte in diesen Server importiert werden, falls vorhanden.<br>
@@ -545,7 +546,7 @@ $lang['tfa']['confirm_totp_token'] = "Bitte bestätigen Sie die Änderung durch 
 
 $lang['admin']['rspamd-com_settings'] = '<a href="https://rspamd.com/doc/configuration/settings.html#settings-structure" target="_blank">Rspamd docs</a>
   - Ein Name wird automatisch generiert. Beispielinhalte zur Einsicht stehen nachstehend bereit.';
-  
+
 $lang['admin']['no_new_rows'] = 'Keine weiteren Zeilen vorhanden';
 $lang['admin']['additional_rows'] = ' zusätzliche Zeilen geladen'; // parses to 'n additional rows were added'
 $lang['admin']['private_key'] = 'Private Key';
