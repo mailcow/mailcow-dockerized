@@ -12,10 +12,14 @@ if (isset($_POST["verify_tfa_login"])) {
 
 if (isset($_POST["quick_release"])) {
 	quarantine('quick_release', $_POST["quick_release"]);
+} elseif($_GET['action'] == "quick_release" && isset($_GET['hash'])) {
+	quarantine('quick_release', $_GET['hash']);
 }
 
 if (isset($_POST["quick_delete"])) {
 	quarantine('quick_delete', $_POST["quick_delete"]);
+} elseif ($_GET['action'] == "quick_delete" && isset($_GET['hash'])) {
+	quarantine('quick_delete', $_GET['hash']);
 }
 
 if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {

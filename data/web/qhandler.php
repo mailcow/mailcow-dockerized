@@ -2,6 +2,15 @@
 session_start();
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/header.inc.php';
+
+if(!isset($_POST['quick_release']) && $_GET['action'] == "quick_release") {
+    $_POST['quick_release'] = $_GET['hash'];
+}
+
+if(!isset($_POST['quick_delete']) && $_GET['action'] == "quick_delete") {
+    $_POST['quick_delete'] = $_GET['hash'];
+}
+
 if (preg_match("/^([a-f0-9]{64})$/", $_POST['quick_release']) || preg_match("/^([a-f0-9]{64})$/", $_POST['quick_delete'])) {
 ?>
 <div class="container">
