@@ -213,7 +213,6 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               'type' => 'error',
               'msg' => 'route not found'
             ));
-            unset($_POST);
             exit();
         }
       break;
@@ -228,7 +227,6 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               'type' => 'error',
               'msg' => 'only GET method is allowed'
           ));
-          unset($_POST);
           exit();
         }
         switch ($category) {
@@ -1193,7 +1191,6 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               'type' => 'error',
               'msg' => 'route not found'
             ));
-            unset($_POST);
             exit();
         }
       break;
@@ -1347,7 +1344,6 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               'type' => 'error',
               'msg' => 'route not found'
             ));
-            unset($_POST);
             exit();
         }
       break;
@@ -1358,7 +1354,6 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           'type' => 'error',
           'msg' => 'route not found'
         ));
-        unset($_POST);
         exit();
     }
   }
