@@ -200,7 +200,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
           </div>
         </div>
     </div>
-
+  
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Rspamd UI</h3>
@@ -654,7 +654,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
         if (!empty($f2b_data['active_bans'])):
           foreach ($f2b_data['active_bans'] as $active_bans):
           ?>
-          <p><span class="label label-info" style="padding:4px;font-size:85%;"><span class="glyphicon glyphicon-filter"></span> <?=$active_bans['network'];?> (<?=$active_bans['banned_until'];?>) -
+          <p><span class="label label-info" style="padding:4px;font-size:85%;"><span class="glyphicon glyphicon-filter"></span> <?=$active_bans['network'];?> (<?=$active_bans['banned_until'];?>) - 
             <?php
             if ($active_bans['queued_for_unban'] == 0):
             ?>

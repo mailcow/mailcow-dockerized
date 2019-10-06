@@ -712,7 +712,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               <small class="help-block"><?=$lang['edit']['force_pw_update_info'];?></small>
               </div>
             </div>
-          </div>		  
+          </div>
           <div data-acl="<?=$_SESSION['acl']['sogo_access'];?>" class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
               <div class="checkbox">

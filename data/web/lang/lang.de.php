@@ -546,7 +546,7 @@ $lang['tfa']['confirm_totp_token'] = "Bitte bestätigen Sie die Änderung durch 
 
 $lang['admin']['rspamd-com_settings'] = '<a href="https://rspamd.com/doc/configuration/settings.html#settings-structure" target="_blank">Rspamd docs</a>
   - Ein Name wird automatisch generiert. Beispielinhalte zur Einsicht stehen nachstehend bereit.';
-
+  
 $lang['admin']['no_new_rows'] = 'Keine weiteren Zeilen vorhanden';
 $lang['admin']['additional_rows'] = ' zusätzliche Zeilen geladen'; // parses to 'n additional rows were added'
 $lang['admin']['private_key'] = 'Private Key';
