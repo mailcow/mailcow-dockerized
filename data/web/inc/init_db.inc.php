@@ -933,7 +933,7 @@ function init_db_schema() {
           }
           if (strtolower($key_type) == 'unique') {
             foreach ($key_content as $key_name => $key_values) {
-              $fields = "`" . implode("`, `", $key_values) . "`"; 
+              $fields = "`" . implode("`, `", $key_values) . "`";
               $stmt = $pdo->query("SHOW KEYS FROM `" . $table . "` WHERE Key_name = '" . $key_name . "'");
               $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
               $is_drop = ($num_results != 0) ? "DROP INDEX `" . $key_name . "`, " : "";
@@ -942,7 +942,7 @@ function init_db_schema() {
           }
           if (strtolower($key_type) == 'fkey') {
             foreach ($key_content as $key_name => $key_values) {
-              $fields = "`" . implode("`, `", $key_values) . "`"; 
+              $fields = "`" . implode("`, `", $key_values) . "`";
               $stmt = $pdo->query("SHOW KEYS FROM `" . $table . "` WHERE Key_name = '" . $key_name . "'");
               $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
               if ($num_results != 0) {
