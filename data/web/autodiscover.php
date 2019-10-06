@@ -5,8 +5,10 @@ $default_autodiscover_config = $autodiscover_config;
 if (file_exists('inc/vars.local.inc.php')) {
     include_once 'inc/vars.local.inc.php';
 }
-$autodiscover_config = array_merge($default_autodiscover_config,
-    $autodiscover_config);
+$autodiscover_config = array_merge(
+    $default_autodiscover_config,
+    $autodiscover_config
+);
 
 // Redis
 $redis = new Redis();
@@ -31,11 +33,11 @@ if (strpos($data, 'autodiscover/outlook/responseschema') !== false) {
 //$dsn = $database_type . ":host=" . $database_host . ";dbname=" . $database_name;
 $dsn = $database_type . ':unix_socket=' . $database_sock . ';dbname='
     . $database_name;
-$opt = [
+$opt = array(
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     PDO::ATTR_EMULATE_PREPARES => false,
-];
+);
 $pdo = new PDO($dsn, $database_user, $database_pass, $opt);
 
 $login_user = strtolower(trim($_SERVER['PHP_AUTH_USER']));
@@ -48,12 +50,12 @@ if (empty($login_user)
     || $login_role !== 'user'
 ) {
     $json = json_encode(
-        [
+        array(
             'time' => time(),
             'ua' => $_SERVER['HTTP_USER_AGENT'],
             'user' => $login_user ?: 'none', // get login_user, if exists
             'service' => 'Error: must be authenticated',
-        ]
+        )
     );
     $redis->lPush('AUTODISCOVER_LOG', $json);
     header('WWW-Authenticate: Basic realm="' . $_SERVER['HTTP_HOST'] . '"');
@@ -67,20 +69,21 @@ echo '<?xml version="1.0" encoding="utf-8" ?>' . PHP_EOL;
 if (!$data) {
     try {
         $json = json_encode(
-            [
+            array(
                 'time' => time(),
                 'ua' => $_SERVER['HTTP_USER_AGENT'],
                 'user' => $login_user,
                 'service' => 'Error: invalid or missing request data',
-            ]
+            )
         );
         $redis->lPush('AUTODISCOVER_LOG', $json);
         $redis->lTrim('AUTODISCOVER_LOG', 0, 100);
-    } catch (Exception $e) {
-        $_SESSION['return'][] = [
+    }
+    catch (Exception $e) {
+        $_SESSION['return'][] = array(
             'type' => 'danger',
             'msg' => 'Redis: ' . $e,
-        ];
+        );
 
         return false;
     }
@@ -103,7 +106,8 @@ if (!$data) {
 try {
     $discover = new SimpleXMLElement($data);
     $email = $discover->Request->EMailAddress;
-} catch (Exception $e) {
+}
+catch (Exception $e) {
     $email = $login_user;
 }
 
@@ -112,9 +116,10 @@ $username = trim($email);
 try {
     $stmt
         = $pdo->prepare('SELECT `name` FROM `mailbox` WHERE `username`= :username');
-    $stmt->execute([':username' => $username]);
+    $stmt->execute(array(':username' => $username));
     $MailboxData = $stmt->fetch(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
+}
+catch (PDOException $e) {
     die('Failed to determine name from SQL');
 }
 if (!empty($MailboxData['name'])) {
@@ -126,20 +131,21 @@ $displayname = htmlspecialchars($displayname, ENT_XML1 | ENT_QUOTES, 'UTF-8');
 
 try {
     $json = json_encode(
-        [
+        array(
             'time' => time(),
             'ua' => $_SERVER['HTTP_USER_AGENT'],
             'user' => $login_user,
             'service' => $autodiscover_config['autodiscoverType'],
-        ]
+        )
     );
     $redis->lPush('AUTODISCOVER_LOG', $json);
     $redis->lTrim('AUTODISCOVER_LOG', 0, 100);
-} catch (Exception $e) {
-    $_SESSION['return'][] = [
+}
+catch (Exception $e) {
+    $_SESSION['return'][] = array(
         'type' => 'danger',
         'msg' => 'Redis: ' . $e,
-    ];
+    );
 
     return false;
 } ?>
