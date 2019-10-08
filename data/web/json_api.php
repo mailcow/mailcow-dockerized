@@ -1357,4 +1357,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
         exit();
     }
   }
+  if ($_SESSION['mailcow_cc_api'] === true) {
+    if (isset($_SESSION['mailcow_cc_api']) && $_SESSION['mailcow_cc_api'] === true) {
+      unset($_SESSION['return']);
+    }
+  }
 }
