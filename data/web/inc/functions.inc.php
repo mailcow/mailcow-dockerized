@@ -386,6 +386,12 @@ function verify_hash($hash, $password) {
       return true;
     }
   }
+  elseif (preg_match('/^{PLAIN-MD5}/i', $hash)) {
+    $hash = preg_replace('/^{PLAIN-MD5}/i', '', $hash);
+    if (md5($password) == $hash) {
+      return true;
+    }
+  }
   elseif (preg_match('/^{SHA512-CRYPT}/i', $hash)) {
     // Remove tag if any
     $hash = preg_replace('/^{SHA512-CRYPT}/i', '', $hash);
