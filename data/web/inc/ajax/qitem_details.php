@@ -91,6 +91,19 @@ if (!empty($_GET['id']) && ctype_alnum($_GET['id'])) {
         );
       }
     }
+    if (isset($_GET['eml'])) {
+      $dl_filename = str_replace('/', '_', $data['subject']);
+      header('Pragma: public');
+      header('Expires: 0');
+      header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+      header('Cache-Control: private', false);
+      header('Content-Type: message/rfc822');
+      header('Content-Disposition: attachment; filename="'. $dl_filename . '.eml";');
+      header('Content-Transfer-Encoding: binary');
+      header('Content-Length: ' . strlen($mailc['msg']));
+      echo $mailc['msg'];
+      exit;
+    }
     if (isset($_GET['att'])) {
       if ($_SESSION['acl']['quarantine_attachments'] == 0) {
         exit(json_encode('Forbidden'));
