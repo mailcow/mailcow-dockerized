@@ -428,6 +428,7 @@ $lang['acl']['recipient_maps'] = 'Recipient maps';
 $lang['acl']['unlimited_quota'] = 'Unlimited quota for mailboxes';
 $lang['acl']['extend_sender_acl'] = 'Allow to extend sender ACL by external addresses';
 $lang['acl']['prohibited'] = 'Prohibited by ACL';
+$lang['acl']['sogo_access'] = 'Allow management of SOGo access';
 
 $lang['edit']['extended_sender_acl'] = 'External sender addresses';
 $lang['edit']['extended_sender_acl_info'] = 'A DKIM domain key should be imported, if available.<br>
@@ -938,4 +939,3 @@ $lang['mailbox']['alias_domain_backupmx'] = 'Alias domain inactive for relay dom
 
 $lang['danger']['extra_acl_invalid'] = 'External sender address "%s" is invalid';
 $lang['danger']['extra_acl_invalid_domain'] = 'External sender "%s" uses an invalid domain';
-
