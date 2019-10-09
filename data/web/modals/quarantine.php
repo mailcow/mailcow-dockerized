@@ -14,6 +14,11 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
       <div class="modal-body">
         <div id="qid_error" style="display:none" class="alert alert-danger"></div>
         <div class="form-group">
+          <label for="qid_detail_symbols"><h4><?=$lang['quarantine']['rspamd_result'];?>:</h4></label>
+          <p><?=$lang['quarantine']['spam_score'];?>: <span id="qid_detail_score"></span></p>
+          <p id="qid_detail_symbols"></p>
+        </div>
+        <div class="form-group">
           <label for="qid_detail_subj"><h4><?=$lang['quarantine']['subj'];?>:</h4></label>
           <p id="qid_detail_subj"></p>
         </div>
