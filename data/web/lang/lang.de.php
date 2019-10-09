@@ -777,6 +777,7 @@ $lang['quarantine']['quarantine'] = "Quarantäne";
 $lang['quarantine']['qinfo'] = 'Das Quarantänesystem speichert abgelehnte Nachrichten in der Datenbank. Dem Sender wird <em>nicht</em> signalisiert, dass seine E-Mail zugestellt wurde.
   <br>"' . $lang['quarantine']['learn_spam_delete'] . '" lernt Nachrichten nach bayesscher Statistik als Spam und erstellt Fuzzy Hashes ausgehend von der jeweiligen Nachricht, um ähnliche Inhalte zukünftig zu unterbinden.
   <br>Der Prozess des Lernens kann abhängig vom System zeitintensiv sein.';
+$lang['quarantine']['download_eml'] = "Herunterladen (.eml)";
 $lang['quarantine']['release'] = "Freigeben";
 $lang['quarantine']['empty'] = 'Keine Einträge';
 $lang['quarantine']['toggle_all'] = 'Alle auswählen';
