@@ -54,6 +54,10 @@ if (!empty($_GET['id']) && ctype_alnum($_GET['id'])) {
       $data['recipients'] = $recipientsList;
     }
 
+    // Get rspamd score
+    $data['score'] = $mailc['score'];
+    // Get rspamd symbols
+    $data['symbols'] = json_decode($mailc['symbols']);
     // Get text/plain content
     $data['text_plain'] = $mail_parser->getMessageBody('text');
     // Get html content and convert to text
