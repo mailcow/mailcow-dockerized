@@ -794,6 +794,7 @@ $lang['quarantine']['learn_spam_delete'] = "Learn as spam and delete";
 $lang['quarantine']['qinfo'] = 'The quarantine system will save rejected mail to the database, while the sender will <em>not</em> be given the impression of a delivered mail.
   <br>"' . $lang['quarantine']['learn_spam_delete'] . '" will learn a message as spam via Bayesian theorem and also calculate fuzzy hashes to deny similar messages in the future.
   <br>Please be aware that learning multiple messages can be - depending on your system - time consuming.';
+$lang['quarantine']['download_eml'] = "Download (.eml)";
 $lang['quarantine']['release'] = "Release";
 $lang['quarantine']['empty'] = 'No results';
 $lang['quarantine']['toggle_all'] = 'Toggle all';
