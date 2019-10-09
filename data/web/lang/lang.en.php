@@ -808,6 +808,7 @@ $lang['quarantine']['sender'] = "Sender";
 $lang['quarantine']['show_item'] = "Show item";
 $lang['quarantine']['check_hash'] = "Search file hash @ VT";
 $lang['quarantine']['qitem'] = "Quarantine item";
+$lang['quarantine']['rspamd_result'] = "Rspamd result";
 $lang['quarantine']['subj'] = "Subject";
 $lang['quarantine']['recipients'] = "Recipients";
 $lang['quarantine']['text_plain_content'] = "Content (text/plain)";
