@@ -713,7 +713,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               </div>
             </div>
           </div>
-          <div class="form-group">
+          <div data-acl="<?=$_SESSION['acl']['sogo_access'];?>" class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
               <div class="checkbox">
               <label><input type="checkbox" value="1" name="sogo_access" <?=($result['attributes']['sogo_access']=="1") ? "checked" : null;?>> <?=$lang['edit']['sogo_access'];?></label>
