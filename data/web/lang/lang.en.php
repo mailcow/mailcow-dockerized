@@ -243,7 +243,7 @@ $lang['user']['eas_reset_help'] = 'In many cases a device cache reset will help 
 
 $lang['user']['sogo_profile_reset'] = 'Reset SOGo profile';
 $lang['user']['sogo_profile_reset_now'] = 'Reset profile now';
-$lang['user']['sogo_profile_reset_help'] = 'This will destroy a users SOGo profile and <b>delete all data irretrievable</b>.';
+$lang['user']['sogo_profile_reset_help'] = 'This will destroy a users SOGo profile and <b>delete all contact and calendar data irretrievable</b>.';
 
 $lang['user']['encryption'] = 'Encryption';
 $lang['user']['username'] = 'Username';
