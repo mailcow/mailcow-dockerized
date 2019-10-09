@@ -46,6 +46,8 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             <li role="separator" class="divider"></li>
             <li><a data-action="edit_selected" data-id="qitems_single" data-item="" data-api-url='edit/qitem' data-api-attr='{"action":"learnspam"}' href="#"><?=$lang['quarantine']['learn_spam_delete'];?></a></li>
             <li role="separator" class="divider"></li>
+            <li><a data-id="qitems_single" data-item="" onclick="window.open('/inc/ajax/qitem_details.php?id=' + $(this).data('item') + '&eml', '_blank')" href="#"><?=$lang['quarantine']['download_eml'];?></a></li>
+            <li role="separator" class="divider"></li>
             <li><a data-action="delete_selected" data-id="qitems_single" data-item="" data-api-url='delete/qitem' href="#"><?=$lang['quarantine']['remove'];?></a></li>
           </ul>
         </div>
