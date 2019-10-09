@@ -69,6 +69,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
 
       // check for valid json
       if ($action != 'get' && $requestDecoded === null) {
+        http_response_code(400);
         echo json_encode(array(
             'type' => 'error',
             'msg' => 'Request body doesn\'t contain valid json!'
@@ -125,6 +126,15 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
         else {
           $attr = (array)json_decode($_POST['attr'], true);
           unset($attr['csrf_token']);
+        }
+        // only allow POST requests to POST API endpoints
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+          http_response_code(405);
+          echo json_encode(array(
+              'type' => 'error',
+              'msg' => 'only POST method is allowed'
+          ));
+          exit();
         }
         switch ($category) {
           case "time_limited_alias":
@@ -196,11 +206,28 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "tls-policy-map":
             process_add_return(tls_policy_maps('add', $attr));
           break;
+          // return no route found if no case is matched
+          default:
+            http_response_code(404);
+            echo json_encode(array(
+              'type' => 'error',
+              'msg' => 'route not found'
+            ));
+            exit();
         }
       break;
       case "get":
         function process_get_return($data) {
           echo (!isset($data) || empty($data)) ? '{}' : json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        }
+        // only allow GET requests to GET API endpoints
+        if ($_SERVER['REQUEST_METHOD'] != 'GET') {
+          http_response_code(405);
+          echo json_encode(array(
+              'type' => 'error',
+              'msg' => 'only GET method is allowed'
+          ));
+          exit();
         }
         switch ($category) {
           case "rspamd":
@@ -561,6 +588,14 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 }
                 echo (isset($logs) && !empty($logs)) ? json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '{}';
               break;
+              // return no route found if no case is matched
+              default:
+                http_response_code(404);
+                echo json_encode(array(
+                  'type' => 'error',
+                  'msg' => 'route not found'
+                ));
+                exit();
             }
           break;
           case "mailbox":
@@ -1026,9 +1061,14 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                   break;
             }
           break;
+          // return no route found if no case is matched
           default:
-            echo '{}';
-          break;
+            http_response_code(404);
+            echo json_encode(array(
+              'type' => 'error',
+              'msg' => 'route not found'
+            ));
+            exit();
         }
       break;
       case "delete":
@@ -1054,6 +1094,15 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
         }
         else {
           $items = (array)json_decode($_POST['items'], true);
+        }
+        // only allow POST requests to POST API endpoints
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+          http_response_code(405);
+          echo json_encode(array(
+              'type' => 'error',
+              'msg' => 'only POST method is allowed'
+          ));
+          exit();
         }
         switch ($category) {
           case "alias":
@@ -1135,6 +1184,14 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "rlhash":
             echo ratelimit('delete', null, implode($items));
           break;
+          // return no route found if no case is matched
+          default:
+            http_response_code(404);
+            echo json_encode(array(
+              'type' => 'error',
+              'msg' => 'route not found'
+            ));
+            exit();
         }
       break;
       case "edit":
@@ -1162,6 +1219,15 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           $attr = (array)json_decode($_POST['attr'], true);
           unset($attr['csrf_token']);
           $items = isset($_POST['items']) ? (array)json_decode($_POST['items'], true) : null;
+        }
+        // only allow POST requests to POST API endpoints
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+          http_response_code(405);
+          echo json_encode(array(
+              'type' => 'error',
+              'msg' => 'only POST method is allowed'
+          ));
+          exit();
         }
         switch ($category) {
           case "bcc":
@@ -1271,8 +1337,29 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               process_edit_return(edit_user_account($attr));
             }
           break;
+          // return no route found if no case is matched
+          default:
+            http_response_code(404);
+            echo json_encode(array(
+              'type' => 'error',
+              'msg' => 'route not found'
+            ));
+            exit();
         }
       break;
+      // return no route found if no case is matched
+      default:
+        http_response_code(404);
+        echo json_encode(array(
+          'type' => 'error',
+          'msg' => 'route not found'
+        ));
+        exit();
+    }
+  }
+  if ($_SESSION['mailcow_cc_api'] === true) {
+    if (isset($_SESSION['mailcow_cc_api']) && $_SESSION['mailcow_cc_api'] === true) {
+      unset($_SESSION['return']);
     }
   }
 }
