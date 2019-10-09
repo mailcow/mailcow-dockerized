@@ -420,6 +420,7 @@ $lang['acl']['recipient_maps'] = 'Empfängerumschreibungen';
 $lang['acl']['unlimited_quota'] = 'Unendliche Quota für Mailboxen';
 $lang['acl']['extend_sender_acl'] = 'Eingabe externer Absenderadressen erlauben';
 $lang['acl']['prohibited'] = 'Untersagt durch Richtlinie';
+$lang['acl']['sogo_access'] = 'Verwalten des SOGo Zugriffsrechts erlauben';
 
 $lang['edit']['extended_sender_acl'] = 'Externe Absenderadressen';
 $lang['edit']['extended_sender_acl_info'] = 'Der DKIM Domainkey der externen Absenderdomain sollte in diesen Server importiert werden, falls vorhanden.<br>

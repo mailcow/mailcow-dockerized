@@ -487,7 +487,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
           <button class="btn btn-sm btn-default" data-action="add_item" data-id="dkim" data-api-url='add/dkim' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add'];?></button>
         </form>
 
-        <legend data-target="#import_dkim" style="margin-top:40px;cursor:pointer" class="arrow-toggle"" unselectable="on" data-toggle="collapse">
+        <legend data-target="#import_dkim" style="margin-top:40px;cursor:pointer" class="arrow-toggle" unselectable="on" data-toggle="collapse">
           <span style="font-size:12px" class="arrow rotate glyphicon glyphicon-menu-down"></span> <?=$lang['admin']['import_private_key'];?>
         </legend>
         <div id="import_dkim" class="collapse">
@@ -1005,8 +1005,8 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
         </div>
       </div>
     </div>
-  </div>
-  </div>
+    </div>
+    </div>
   </div>
 
   <div role="tabpanel" class="tab-pane" id="tab-sys-mails">
