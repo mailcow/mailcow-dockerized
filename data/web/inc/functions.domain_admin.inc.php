@@ -31,7 +31,7 @@ function domain_admin($_action, $_data = null) {
         );
         return false;
       }
-      if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $username)) || empty ($username)) {
+      if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $username)) || empty ($username) || $username == 'API') {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
