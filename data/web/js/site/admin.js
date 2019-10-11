@@ -43,7 +43,7 @@ jQuery(function($){
     var current_page = JSON.parse(localStorage.getItem('current_page'));
   }
   function table_admin_ready(ft, name) {
-    heading = ft.$el.parents('.tab-pane').find('.panel-heading')
+    heading = ft.$el.parents('.panel').find('.panel-heading')
     var ft_paging = ft.use(FooTable.Paging)
     $(heading).children('.table-lines').text(function(){
       return ft_paging.totalRows;
