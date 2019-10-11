@@ -3561,6 +3561,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt->execute(array(
               ':domain' => $domain,
             ));
+            $stmt = $pdo->query("DELETE FROM `admin` WHERE `superadmin` = 0 AND `username` NOT IN (SELECT `username`FROM `domain_admins`);");
             try {
               $redis->hDel('DOMAIN_MAP', $domain);
               $redis->hDel('RL_VALUE', $domain);
