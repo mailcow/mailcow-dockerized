@@ -208,7 +208,7 @@ jQuery(function($){
         .tooltip();
     }
     $('.refresh_table').prop("disabled", false);
-    heading = ft.$el.parents('.tab-pane').find('.panel-heading')
+    heading = ft.$el.parents('.panel').find('.panel-heading')
     var ft_paging = ft.use(FooTable.Paging)
     $(heading).children('.table-lines').text(function(){
       return ft_paging.totalRows;

@@ -18,7 +18,7 @@ jQuery(function($){
     eval(draw_table + '()');
   });
   function table_log_ready(ft, name) {
-    heading = ft.$el.parents('.tab-pane').find('.panel-heading')
+    heading = ft.$el.parents('.panel').find('.panel-heading')
     var ft_paging = ft.use(FooTable.Paging)
     $(heading).children('.table-lines').text(function(){
       return ft_paging.totalRows;
@@ -446,7 +446,7 @@ jQuery(function($){
       "on": {
         "ready.ft.table": function(e, ft){
           table_log_ready(ft, 'rspamd_history');
-          heading = ft.$el.parents('.tab-pane').find('.panel-heading')
+          heading = ft.$el.parents('.panel').find('.panel-heading')
           $(heading).children('.table-lines').text(function(){
             var ft_paging = ft.use(FooTable.Paging)
             return ft_paging.totalRows;
@@ -625,7 +625,7 @@ jQuery(function($){
       return;
     }
     if (ft = FooTable.get($('#' + log_table))) {
-      var heading = ft.$el.parents('.tab-pane').find('.panel-heading')
+      var heading = ft.$el.parents('.panel').find('.panel-heading')
       var ft_paging = ft.use(FooTable.Paging)
       var load_rows = (ft_paging.totalRows + 1) + '-' + (ft_paging.totalRows + new_nrows)
       $.get('/api/v1/get/logs/' + log_url + '/' + load_rows).then(function(data){
