@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "11102019_0840";
+    $db_version = "1102019_1040";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -1088,6 +1088,7 @@ DELIMITER ;';
 
     // Fix dangling domain admins
     $stmt = $pdo->query("DELETE FROM `admin` WHERE `superadmin` = 0 AND `username` NOT IN (SELECT `username`FROM `domain_admins`);");
+    $stmt = $pdo->query("DELETE FROM `da_acl` WHERE `username` NOT IN (SELECT `username`FROM `domain_admins`);");
 
     // Migrate attributes
     $stmt = $pdo->query("UPDATE `mailbox` SET `attributes` = '{}' WHERE `attributes` = '' OR `attributes` IS NULL;");
