@@ -468,7 +468,7 @@ jQuery(function($){
       else {
         item.rcpt = item.rcpt_smtp.join(", ");
       }
-      Object.keys(item.symbols).sort(function (a, b) {
+      item.symbols = Object.keys(item.symbols).sort(function (a, b) {
         if (item.symbols[a].score === 0) return 1
         if (item.symbols[b].score === 0) return -1
         if (item.symbols[b].score < 0 && item.symbols[a].score < 0) {
@@ -493,17 +493,9 @@ jQuery(function($){
         if (sym.options) {
           str += ' [' + sym.options.join(", ") + "]";
         }
-        item.symbols[key].str = str;
-      });
+        return str
+      }).join('<br>\n');
       item.subject = escapeHtml(item.subject);
-      item.symbols = Object.keys(item.symbols).
-      map(function(key) {
-        return item.symbols[key];
-      }).sort(function(e1, e2) {
-        return Math.abs(e1.score) < Math.abs(e2.score);
-      }).map(function(e) {
-        return e.str;
-      }).join("<br>\n");
       var scan_time = item.time_real.toFixed(3) + ' / ' + item.time_virtual.toFixed(3);
       item.scan_time = {
         "options": {
