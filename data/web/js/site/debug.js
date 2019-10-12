@@ -481,7 +481,7 @@ jQuery(function($){
         }
         var str = '<strong>' + key + '</strong> ' + sym.score_formatted;
         if (sym.options) {
-          str += ' [' + sym.options.join(",") + "]";
+          str += ' [' + sym.options.join(", ") + "]";
         }
         item.symbols[key].str = str;
       });
