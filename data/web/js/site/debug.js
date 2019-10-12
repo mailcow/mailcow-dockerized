@@ -468,7 +468,17 @@ jQuery(function($){
       else {
         item.rcpt = item.rcpt_smtp.join(", ");
       }
-      Object.keys(item.symbols).map(function(key) {
+      Object.keys(item.symbols).sort(function (a, b) {
+        if (item.symbols[a].score === 0) return 1
+        if (item.symbols[b].score === 0) return -1
+        if (item.symbols[b].score < 0 && item.symbols[a].score < 0) {
+          return item.symbols[a].score - item.symbols[b].score
+        }
+        if (item.symbols[b].score > 0 && item.symbols[a].score > 0) {
+          return item.symbols[b].score - item.symbols[a].score
+        }
+        return item.symbols[b].score - item.symbols[a].score
+      }).map(function(key) {
         var sym = item.symbols[key];
         if (sym.score < 0) {
           sym.score_formatted = '(<span class="text-success"><b>' + sym.score + '</b></span>)'
