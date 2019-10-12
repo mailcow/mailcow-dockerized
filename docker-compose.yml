@@ -68,7 +68,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.46
+      image: mailcow/rspamd:1.47
       build: ./data/Dockerfiles/rspamd
       stop_grace_period: 30s
       depends_on:
@@ -171,7 +171,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.89
+      image: mailcow/dovecot:1.90
       build: ./data/Dockerfiles/dovecot
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -339,7 +339,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.29
+      image: mailcow/netfilter:1.30
       build: ./data/Dockerfiles/netfilter
       stop_grace_period: 30s
       depends_on:
@@ -361,7 +361,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.59
+      image: mailcow/watchdog:1.60
       # Debug
       #command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog
