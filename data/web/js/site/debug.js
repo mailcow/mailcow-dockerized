@@ -470,8 +470,11 @@ jQuery(function($){
       }
       Object.keys(item.symbols).map(function(key) {
         var sym = item.symbols[key];
-        if (sym.score <= 0) {
+        if (sym.score < 0) {
           sym.score_formatted = '(<span class="text-success"><b>' + sym.score + '</b></span>)'
+        }
+        else if (sym.score === 0) {
+          sym.score_formatted = '(<span><b>' + sym.score + '</b></span>)'
         }
         else {
           sym.score_formatted = '(<span class="text-danger"><b>' + sym.score + '</b></span>)'
