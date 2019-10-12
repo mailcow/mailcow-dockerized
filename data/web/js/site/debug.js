@@ -468,29 +468,34 @@ jQuery(function($){
       else {
         item.rcpt = item.rcpt_smtp.join(", ");
       }
-      Object.keys(item.symbols).map(function(key) {
+      item.symbols = Object.keys(item.symbols).sort(function (a, b) {
+        if (item.symbols[a].score === 0) return 1
+        if (item.symbols[b].score === 0) return -1
+        if (item.symbols[b].score < 0 && item.symbols[a].score < 0) {
+          return item.symbols[a].score - item.symbols[b].score
+        }
+        if (item.symbols[b].score > 0 && item.symbols[a].score > 0) {
+          return item.symbols[b].score - item.symbols[a].score
+        }
+        return item.symbols[b].score - item.symbols[a].score
+      }).map(function(key) {
         var sym = item.symbols[key];
-        if (sym.score <= 0) {
+        if (sym.score < 0) {
           sym.score_formatted = '(<span class="text-success"><b>' + sym.score + '</b></span>)'
+        }
+        else if (sym.score === 0) {
+          sym.score_formatted = '(<span><b>' + sym.score + '</b></span>)'
         }
         else {
           sym.score_formatted = '(<span class="text-danger"><b>' + sym.score + '</b></span>)'
         }
         var str = '<strong>' + key + '</strong> ' + sym.score_formatted;
         if (sym.options) {
-          str += ' [' + sym.options.join(",") + "]";
+          str += ' [' + sym.options.join(", ") + "]";
         }
-        item.symbols[key].str = str;
-      });
+        return str
+      }).join('<br>\n');
       item.subject = escapeHtml(item.subject);
-      item.symbols = Object.keys(item.symbols).
-      map(function(key) {
-        return item.symbols[key];
-      }).sort(function(e1, e2) {
-        return Math.abs(e1.score) < Math.abs(e2.score);
-      }).map(function(e) {
-        return e.str;
-      }).join("<br>\n");
       var scan_time = item.time_real.toFixed(3) + ' / ' + item.time_virtual.toFixed(3);
       item.scan_time = {
         "options": {
