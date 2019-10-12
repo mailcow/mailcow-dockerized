@@ -98,6 +98,12 @@ jQuery(function($){
           data.symbols.sort(function (a, b) {
             if (a.score === 0) return 1
             if (b.score === 0) return -1
+            if (b.score < 0 && a.score < 0) {
+              return a.score - b.score
+            }
+            if (b.score > 0 && a.score > 0) {
+              return b.score - a.score
+            }
             return b.score - a.score
           })
           $.each(data.symbols, function (index, value) {
