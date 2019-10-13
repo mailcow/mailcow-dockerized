@@ -496,7 +496,10 @@ jQuery(function($){
         return str
       }).join('<br>\n');
       item.subject = escapeHtml(item.subject);
-      var scan_time = item.time_real.toFixed(3) + ' / ' + item.time_virtual.toFixed(3);
+      var scan_time = item.time_real.toFixed(3);
+      if (item.time_virtual) {
+        scan_time += ' / ' + item.time_virtual.toFixed(3);
+      }
       item.scan_time = {
         "options": {
           "sortValue": item.time_real
