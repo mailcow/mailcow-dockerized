@@ -328,12 +328,6 @@ else
   exit 1
 fi
 
-read -r -p "Are you sure you want to update mailcow: dockerized? All containers will be stopped. [y/N] " response
-if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-  echo "OK, exiting."
-  exit 0
-fi
-
 DIFF_DIRECTORY=update_diffs
 DIFF_FILE=${DIFF_DIRECTORY}/diff_before_update_$(date +"%Y-%m-%d-%H-%M-%S")
 echo -e "\e[32mSaving diff to ${DIFF_FILE}...\e[0m"
@@ -344,6 +338,12 @@ git diff >> ${DIFF_FILE}
 
 echo -e "\e[32mPrefetching images...\e[0m"
 prefetch_images
+
+read -r -p "Are you sure you want to update mailcow: dockerized? All containers will be stopped. [y/N] " response
+if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  echo "OK, exiting."
+  exit 0
+fi
 
 echo -e "Stopping mailcow... "
 sleep 2
