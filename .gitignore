@@ -31,6 +31,7 @@ data/conf/dovecot/extra.conf
 data/conf/dovecot/shared_namespace.conf
 data/conf/rspamd/custom/*
 data/conf/portainer/
+data/hooks/
 data/gitea/
 data/gogs/
 data/conf/sogo/plist_ldap
