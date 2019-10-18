@@ -260,4 +260,12 @@ fi
 # Collect SA rules once now
 /usr/local/bin/sa-rules.sh
 
+# Run hooks
+for file in /hooks/*; do
+  if [ -x "${file}" ]; then
+    echo "Running hook ${file}"
+    "${file}"
+  fi
+done
+
 exec "$@"
