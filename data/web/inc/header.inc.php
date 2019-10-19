@@ -30,7 +30,14 @@
       $css_minifier->add('/web/css/site/index.css');
     }
   ?>
-  <style><?=$css_minifier->minify();?></style>
+  <style><?php
+      $CSSPath = '/tmp/' . $css_minifier->getDataHash() . '.css';
+      if(file_exists($CSSPath)) {
+          echo file_get_contents($CSSPath);
+      } else {
+          echo $css_minifier->minify($CSSPath);
+      }
+      ?></style>
   <?php if (strtolower(trim($DEFAULT_THEME)) != "lumen"): ?>
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/<?= strtolower(trim($DEFAULT_THEME)); ?>/bootstrap.min.css">
   <?php endif; ?>
