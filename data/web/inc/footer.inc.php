@@ -3,7 +3,14 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/footer.php';
 logger();
 ?>
 <div style="margin-bottom: 100px;"></div>
-<script type='text/javascript'><?=$js_minifier->minify();?></script>
+<script type='text/javascript'><?php
+    $JSPath = '/tmp/' . $js_minifier->getDataHash() . '.js';
+    if(file_exists($JSPath)) {
+        echo file_get_contents($JSPath);
+    } else {
+        echo $js_minifier->minify($JSPath);
+    }
+    ?></script>
 <script>
 <?php
 $lang_footer = json_encode($lang['footer']);
