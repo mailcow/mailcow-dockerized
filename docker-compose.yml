@@ -173,7 +173,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.91
+      image: mailcow/dovecot:1.92
       build: ./data/Dockerfiles/dovecot
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
