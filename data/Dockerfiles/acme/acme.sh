@@ -196,6 +196,10 @@ while true; do
     exec $(readlink -f "$0")
   fi
   while read domains; do
+    if [[ -z "${domains}" ]]; then
+      # ignore empty lines
+      continue
+    fi
     SQL_DOMAIN_ARR+=("${domains}")
   done <<< "${SQL_DOMAINS}"
 
