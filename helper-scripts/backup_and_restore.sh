@@ -211,6 +211,10 @@ elif [[ ${1} == "restore" ]]; then
     echo "No datasets found"
     exit 1
   fi
+
+  echo "[ 0 ] all"
+  # find all files in folder with .tar.gz extension, print their base names, remove backup_, remove .tar, remove .gz
+  FILE_SELECTION[0]=$(find "${FOLDER_SELECTION[${input_sel}]}" -type f -name "*.tar.gz" -printf "%f\n" | sed 's/backup_*//' | sed 's/\.[^.]*$//' | sed 's/\.[^.]*$//')
   for file in $(ls -f "${FOLDER_SELECTION[${input_sel}]}"); do
     if [[ ${file} =~ vmail ]]; then
       echo "[ ${i} ] - Mail directory (/var/vmail)"
@@ -239,8 +243,8 @@ elif [[ ${1} == "restore" ]]; then
     fi
   done
   echo
-  input_sel=0
-  while [[ ${input_sel} -lt 1 ||  ${input_sel} -gt ${i} ]]; do
+  input_sel=-1
+  while [[ ${input_sel} -lt 0 ||  ${input_sel} -gt ${i} ]]; do
     read -p "Select a dataset to restore: " input_sel
   done
   echo "Restoring ${FILE_SELECTION[${input_sel}]} from ${RESTORE_POINT}..."
