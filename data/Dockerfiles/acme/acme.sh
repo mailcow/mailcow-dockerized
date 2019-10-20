@@ -283,6 +283,15 @@ while true; do
     declare -a VALIDATED_DOMAINS_SORTED
     VALIDATED_DOMAINS_SORTED=(${VALIDATED_DOMAINS_ARR[0]} $(echo ${VALIDATED_DOMAINS_ARR[@]:1} | xargs -n1 | sort -u | xargs))
 
+    # remove all domain names that are already inside the server certificate (SERVER_SAN_VALIDATED)
+    for domain in "${SERVER_SAN_VALIDATED[@]}"; do
+      for i in "${!VALIDATED_DOMAINS_SORTED[@]}"; do
+        if [[ ${VALIDATED_DOMAINS_SORTED[i]} = $domain ]]; then
+          unset 'VALIDATED_DOMAINS_SORTED[i]'
+        fi
+      done
+    done
+
     if [[ ! -z ${VALIDATED_DOMAINS_SORTED[*]} ]]; then
       CERT_NAME=${VALIDATED_DOMAINS_SORTED[0]}
       VALIDATED_CERTIFICATES+=("${CERT_NAME}")
