@@ -1,0 +1,38 @@
+---
+
+- name: Make sure git is installed
+  package:
+    name: git
+    state: present
+
+- name: Clone the master branch of mailcow-dockerized repo
+  git:
+    repo: https://github.com/mailcow/mailcow-dockerized
+    dest: /opt/mailcow-dockerized
+    umask: "0022"
+    #force: yes # overwrite modified files
+  ignore_errors: yes
+
+- name: Add mail.* on ADDITIONAL_SAN
+  replace:
+    path: /opt/mailcow-dockerized/generate_config.sh
+    regexp: "^ADDITIONAL_SAN.*"
+    replace: "ADDITIONAL_SAN=mail.*"
+
+- name: Generate a configuration file
+  shell: ./generate_config.sh
+  environment:
+    MAILCOW_HOSTNAME: "{{ inventory_hostname }}"
+    MAILCOW_TZ: "{{ timezone_selection }}"
+  args:
+    chdir: /opt/mailcow-dockerized
+    creates: mailcow.conf # is linked from .env - https://docs.docker.com/compose/env-file/
+  register: mailcow_generate_config
+
+- name: Pull the images and run the compose file
+  docker_service:
+    project_name: mailcowdockerized # name is fixed in mailcow.conf
+    project_src: /opt/mailcow-dockerized
+    state: present
+    pull: yes
+  when: mailcow_generate_config is changed
