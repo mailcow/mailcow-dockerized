@@ -7,7 +7,7 @@
 
 - name: Clone the master branch of mailcow-dockerized repo
   git:
-    repo: https://github.com/mailcow/mailcow-dockerized
+    repo: https://github.com/mailcow/mailcow-dockerized.git
     dest: /opt/mailcow-dockerized
     umask: "0022"
     #force: yes # overwrite modified files
