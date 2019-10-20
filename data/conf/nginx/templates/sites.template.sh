@@ -18,9 +18,10 @@ for cert_dir in /etc/ssl/mail/*/ ; do
   fi
   # do not create vhost for default-certificate. the cert is already in the default server listen
   domains="$(cat ${cert_dir}domains | sed -e 's/^[[:space:]]*//')"
-  if [[ "${domains}" == "" ]] || [[ "${domains}" == "${MAILCOW_HOSTNAME}"* ]]; then
-    continue
-  fi
+  case "${domains}" in
+    "") continue;;
+    "${MAILCOW_HOSTNAME}"*) continue;;
+  esac
   echo -n '
 server {
   include /etc/nginx/conf.d/listen_plain.active;
