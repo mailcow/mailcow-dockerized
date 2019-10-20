@@ -131,11 +131,13 @@ settings {
     rcpt_mime = "/null@localhost/i";
     from_mime = "/watchdog@localhost/i";
     apply "default" {
+      symbols_enabled = ["MILTER_HEADERS"];
       actions {
         reject = 9999.0;
         greylist = 9998.0;
         "add header" = 9997.0;
       }
+
     }
   }
 <?php
