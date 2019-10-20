@@ -1612,4 +1612,22 @@ function solr_status() {
   }
   return false;
 }
+
+function cleanupJS($ignore = '', $folder = '/tmp/*.js') {
+    foreach (glob($folder) as $filename) {
+        if(strpos($filename, $ignore) !== false) {
+            continue;
+        }
+        unlink($filename);
+    }
+}
+
+function cleanupCSS($ignore = '', $folder = '/tmp/*.css') {
+    foreach (glob($folder) as $filename) {
+        if(strpos($filename, $ignore) !== false) {
+            continue;
+        }
+        unlink($filename);
+    }
+}
 ?>
