@@ -238,11 +238,11 @@ $lang['user']['tag_help_example'] = 'Voorbeeld van een e-maildres met tag: ik<b>
 
 $lang['user']['eas_reset'] = 'Herstel ActiveSync-apparaatcache';
 $lang['user']['eas_reset_now'] = 'Herstel nu';
-$lang['user']['eas_reset_help'] = 'In de meeste gevallen verhelpt dit problemen met ActiveSync op je apparaten<br><b>Let wel:</b> alle mails, contacten en agenda''s zullen opnieuw gedownload worden!';
+$lang['user']['eas_reset_help'] = "In de meeste gevallen verhelpt dit problemen met ActiveSync op je apparaten<br><b>Let wel:</b> alle mails, contacten en agenda''s zullen opnieuw gedownload worden!";
 
 $lang['user']['sogo_profile_reset'] = 'Herstel SOGo-profiel';
 $lang['user']['sogo_profile_reset_now'] = 'Herstel nu';
-$lang['user']['sogo_profile_reset_help'] = 'Dit zal het SOGo-profiel van deze gebruiker verwijderen, en daarbij <b>alle gegevens, inclusief contacten en agenda''s, permanent verwijderen</b>.';
+$lang['user']['sogo_profile_reset_help'] = "Dit zal het SOGo-profiel van deze gebruiker verwijderen, en daarbij <b>alle gegevens, inclusief contacten en agenda''s, permanent verwijderen</b>.";
 
 $lang['user']['encryption'] = 'Versleuteling';
 $lang['user']['username'] = 'Gebruikersnaam';
@@ -423,9 +423,7 @@ $lang['acl']['prohibited'] = 'Toegang geweigerd';
 $lang['acl']['sogo_access'] = 'Sta beheren van SOGo-toegang toe';
 
 $lang['edit']['extended_sender_acl'] = 'Externe verzendadressen';
-$lang['edit']['extended_sender_acl_info'] = 'Wanneer mogelijk dient er een DKIM-sleutel geïmporteerd te worden. Vergeet niet om deze server toe te voegen aan het SPF-record <br>
-    Zodra er een domein of aliasdomein wordt toegevoegd aan deze server, overeenkomend met een extern verzendadres, wordt het externe adres verwijderd.<br>
-    Gebruik @domain.tld om verzenden vanuit *@domain.tld toe te staan.';
+$lang['edit']['extended_sender_acl_info'] = 'Wanneer mogelijk dient er een DKIM-sleutel geïmporteerd te worden. Vergeet niet om deze server toe te voegen aan het SPF-record <br>Zodra er een domein of aliasdomein wordt toegevoegd aan deze server, overeenkomend met een extern verzendadres, wordt het externe adres verwijderd.<br>Gebruik @domain.tld om verzenden vanuit *@domain.tld toe te staan.';
 $lang['edit']['sender_acl_info'] = 'Als postvakgebruiker A toegestaan is te verzenden als postvakgebruiker B, zal het verzendadres niet automatisch worden weergegeven in het "van"-veld in SOGo. Postvakgebruiker A dient hiervoor een aparte vermelding te maken in SOGo. Dit is niet van toepassing op aliasadressen.';
 
 $lang['mailbox']['quarantine_notification'] = 'Quarantaine-notificaties';
@@ -639,11 +637,7 @@ $lang['admin']['forwarding_hosts'] = 'Doorstuurhosts';
 $lang['admin']['forwarding_hosts_hint'] = 'Inkomende berichten worden onvoorwaardelijk geaccepteerd vanaf iedere host hieronder vermeld. Deze hosts worden hierdoor niet gecontroleerd op DNSBLs, en zullen de greylisting omzeilen. Spam wordt daarentegen zoals gebruikelijk in de spamfolder geplaatst. Dit wordt vaak gebruikt om mailservers te specificeren die mails doorsturen naar deze Mailcow-server.';
 $lang['admin']['forwarding_hosts_add_hint'] = 'Het is mogelijk om IPv4- of IPv6-adressen, netwerken in CIDR-notatie, hostnames (worden omgezet naar IP-adressen) of domeinnamen (worden tevens omgezet naar IP-adressen of, bij gebrek daaraan, MX-records) op te geven.';
 $lang['admin']['relayhosts_hint'] = 'Stel afzender-afhankelijke transportkaarten in om deze te kunnen gebruiken bij de configuratie van een domein.<br>De transportservice is altijd "smtp:". Er wordt rekening gehouden met het uitgaande versleutelingsbeleid van individuele gebruikers.<br>Beïnvloedt geselecteerde domeinen, inclusief bijbehorende aliasdomeinen.';
-$lang['admin']['transports_hint'] = '→ Een transportkaart wordt boven een afzender-afhankelijke transportkaart verkozen.<br>
-    → Het uitgaande versleutelingsbeleid van individuele gebruikers wordt genegeerd en kan enkel worden gehandhaafd doormiddel van globaal versleutelingsbeleid.<br>
-    → De transportservice is altijd "smtp:".<br>
-    → Adressen overeenkomend met "/localhost$/" zullen altijd via "local:" getransporteerd worden, hierdoor zullen "*"-bestemmingen niet van toepassing zijn op deze adressen.<br>
-    → Om de inloggegevens van een (voorbeeld) nexthop "[host]:25" te bepalen, zoekt Postfix <b>altijd</b> naar "nexthop" voodat er wordt gekeken naar "[nexthop]:25". Dit maakt het onmogelijk om "nexthop" en "[nexthop]:25" tegelijkertijd te gebruiken.';
+$lang['admin']['transports_hint'] = '→ Een transportkaart wordt boven een afzender-afhankelijke transportkaart verkozen.<br>→ Het uitgaande versleutelingsbeleid van individuele gebruikers wordt genegeerd en kan enkel worden gehandhaafd doormiddel van globaal versleutelingsbeleid.<br>→ De transportservice is altijd "smtp:".<br>→ Adressen overeenkomend met "/localhost$/" zullen altijd via "local:" getransporteerd worden, hierdoor zullen "*"-bestemmingen niet van toepassing zijn op deze adressen.<br>→ Om de inloggegevens van een (voorbeeld) nexthop "[host]:25" te bepalen, zoekt Postfix <b>altijd</b> naar "nexthop" voodat er wordt gekeken naar "[nexthop]:25". Dit maakt het onmogelijk om "nexthop" en "[nexthop]:25" tegelijkertijd te gebruiken.';
 $lang['admin']['add_relayhost_hint'] = 'Wees ervan bewust dat de authenticatiedata onversleuteld wordt opgeslagen!';
 $lang['admin']['add_transports_hint'] = 'Wees ervan bewust dat de authenticatiedata onversleuteld wordt opgeslagen!';
 $lang['admin']['host'] = 'Host';
@@ -895,8 +889,7 @@ $lang['admin']['service_id'] = 'Servicenummer';
 $lang['admin']['lookup_mx'] = 'Match bestemming aan MX (gebruik .outlook.com om alle mail gericht aan MX *.outlook.com over deze hop te laten gaan)';
 $lang['edit']['mbox_rl_info'] = 'Deze ratelimit wordt toegepast op de postvakgebruiker, en geldt voor elk "van"-adres gebruikt door de huidige postvakgebruiker. Een postvak-ratelimit gaat boven een domein-ratelimit.';
 
-$lang['add']['relayhost_wrapped_tls_info'] = 'Gebruik <b>geen</b> in TLS-gewrapte poorten (meestal gebruikt op poort 465).<br>
-    Gebruik elke niet-gewrapte poort en initieer STARTTLS. Beleid om verleuteling te forceren kan worden ingesteld bij "Globaal versleutelingsbeleid".';
+$lang['add']['relayhost_wrapped_tls_info'] = 'Gebruik <b>geen</b> in TLS-gewrapte poorten (meestal gebruikt op poort 465).<br>Gebruik elke niet-gewrapte poort en initieer STARTTLS. Beleid om verleuteling te forceren kan worden ingesteld bij "Globaal versleutelingsbeleid".';
 
 $lang['admin']['transport_dest_format'] = 'Voorbeeld: example.org, .example.org, *, postvak@example.org (meerdere waarden zijn kommagescheiden)';
 
