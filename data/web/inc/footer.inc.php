@@ -9,7 +9,7 @@ logger();
         echo file_get_contents($JSPath);
     } else {
         echo $js_minifier->minify($JSPath);
-        cleanupCSS($css_minifier->getDataHash());
+        cleanupJS($js_minifier->getDataHash());
     }
     ?></script>
 <script>
