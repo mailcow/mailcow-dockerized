@@ -36,6 +36,7 @@
           echo file_get_contents($CSSPath);
       } else {
           echo $css_minifier->minify($CSSPath);
+          cleanupCSS($css_minifier->getDataHash());
       }
       ?></style>
   <?php if (strtolower(trim($DEFAULT_THEME)) != "lumen"): ?>
