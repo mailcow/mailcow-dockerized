@@ -131,7 +131,8 @@ settings {
     rcpt_mime = "/null@localhost/i";
     from_mime = "/watchdog@localhost/i";
     apply "default" {
-      symbols_enabled = ["MILTER_HEADERS"];
+      symbols_disabled = ["HISTORY_SAVE", "ARC", "ARC_SIGNED", "DKIM", "DKIM_SIGNED", "CLAM_VIRUS"];
+      want_spam = yes;
       actions {
         reject = 9999.0;
         greylist = 9998.0;
