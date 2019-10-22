@@ -914,3 +914,6 @@ $lang['mailbox']['alias_domain_backupmx'] = 'Alias-Domain für Relay-Domain inak
 
 $lang['danger']['extra_acl_invalid'] = 'Externe Absenderadresse "%s" ist ungültig';
 $lang['danger']['extra_acl_invalid_domain'] = 'Externe Absenderadresse "%s" verwendet eine ungültige Domain';
+
+$lang['admin']['rspamd_global_filters'] = 'Globale Rspamd Filter';
+$lang['admin']['rspamd_global_filters'] = 'Globale Rspamd Filter';
