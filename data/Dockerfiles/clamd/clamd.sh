@@ -38,10 +38,13 @@ sed -i '/^\s*$/d' /var/lib/clamav/whitelist.ign2
 
 BACKGROUND_TASKS=()
 
+echo "Running freshclam..."
+freshclam
+
 (
 while true; do
-  freshclam
   sleep 12600
+  freshclam
 done
 ) &
 BACKGROUND_TASKS+=($!)
