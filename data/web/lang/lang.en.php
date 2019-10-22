@@ -939,3 +939,6 @@ $lang['mailbox']['alias_domain_backupmx'] = 'Alias domain inactive for relay dom
 
 $lang['danger']['extra_acl_invalid'] = 'External sender address "%s" is invalid';
 $lang['danger']['extra_acl_invalid_domain'] = 'External sender "%s" uses an invalid domain';
+
+$lang['admin']['rspamd_global_filters'] = 'Global Rspamd filters';
+$lang['admin']['rspamd_global_filters_info'] = 'Global Rspamd filters';
