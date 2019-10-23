@@ -9,8 +9,8 @@ if [[ ! ${1} =~ (backup|restore) ]]; then
   exit 1
 fi
 
-if [[ ${1} == "backup" && ! ${2} =~ (crypt|vmail|redis|rspamd|postfix|mysql|all) ]]; then
-  echo "Second parameter needs to be 'vmail', 'crypt', 'redis', 'rspamd', 'postfix', 'mysql' or 'all'"
+if [[ ${1} == "backup" && ! ${2} =~ (crypt|vmail|redis|rspamd|postfix|mysql|all|--delete-days) ]]; then
+  echo "Second parameter needs to be 'vmail', 'crypt', 'redis', 'rspamd', 'postfix', 'mysql', 'all' or '--delete-days'"
   exit 1
 fi
 
@@ -99,6 +99,14 @@ function backup() {
         --entrypoint= \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
         ${SQLIMAGE} /bin/sh -c "mysqldump -hmysql -uroot -p${DBROOT} --all-databases | gzip > /backup/backup_mysql.gz"
+      ;;&
+    --delete-days)
+      shift
+      if [[ "${1}" =~ ^[0-9]+$ ]]; then
+        find ${BACKUP_LOCATION}/* -maxdepth 0 -mmin +$((${1}*60*24)) -exec rm -rvf {} \;
+      else
+        echo "Parameter of --delete-days is not a number."
+      fi
       ;;
     esac
     shift
