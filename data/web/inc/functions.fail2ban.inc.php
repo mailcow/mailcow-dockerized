@@ -131,7 +131,7 @@ function fail2ban($_action, $_data = null) {
               if (valid_network($network)) {
                 $redis->hSet('F2B_BLACKLIST', $network, 1);
                 $redis->hDel('F2B_WHITELIST', $network, 1);
-                $response = docker('post', 'netfilter-mailcow', 'restart');
+                //$response = docker('post', 'netfilter-mailcow', 'restart');
               }
               else  {
                 $_SESSION['return'][] = array(
