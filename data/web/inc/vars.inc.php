@@ -154,3 +154,13 @@ $MAILBOX_DEFAULT_ATTRIBUTES['quarantine_notification'] = 'hourly';
 // Default mailbox format, should not be changed unless you know exactly, what you do, keep the trailing ":"
 // Check dovecot.conf for further changes (e.g. shared namespace)
 $MAILBOX_DEFAULT_ATTRIBUTES['mailbox_format'] = 'maildir:';
+
+// Set visible Rspamd maps in mailcow UI, do not change unless you know what you are doing
+$RSPAM_MAPS = array(
+  'global_mime_from_blacklist.map',
+  'global_mime_from_whitelist.map',
+  'global_rcpt_blacklist.map',
+  'global_rcpt_whitelist.map',
+  'global_smtp_from_blacklist.map',
+  'global_smtp_from_whitelist.map'
+);
