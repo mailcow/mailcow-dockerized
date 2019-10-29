@@ -945,5 +945,6 @@ $lang['danger']['extra_acl_invalid_domain'] = 'External sender "%s" uses an inva
 $lang['admin']['rspamd_global_filters_agree'] = "I will be careful!";
 $lang['admin']['rspamd_global_filters'] = 'Global filter maps';
 $lang['admin']['rspamd_global_filters_info'] = 'Global filter maps contain different kind of global black and whitelists. Their names explain their purpose. All content must contain valid regular expression in the format of "/pattern/options" (e.g. <code>/.+@domain\.tld/i</code>).<br>
-  Although rudimentary checks are being executed on each line of regex, Rspamds functionality can be broken, if it fails to read the syntax correctly.';
+  Although rudimentary checks are being executed on each line of regex, Rspamds functionality can be broken, if it fails to read the syntax correctly.<br>
+  Rspamd will try to read the map content when changed. If you experience problems, <a href="" data-toggle="modal" data-container="rspamd-mailcow" data-target="#RestartContainer">restart Rspamd</a> to enforce a map reload.';
 

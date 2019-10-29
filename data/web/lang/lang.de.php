@@ -922,4 +922,5 @@ $lang['admin']['rspamd_global_filters'] = 'Globale Filter-Maps';
 $lang['admin']['rspamd_global_filters_info'] = 'Globale Filter-Maps steuern globales White- und Blacklisting dieses Servers. Die akzeptierte Form für Einträge sind <b>ausschließlich</b> Regular Expressions.
   Trotz rudimentärer Überprüfung der Map, kann es zu fehlerhaften Einträgen kommen, die Rspamd im schlechtesten Fall mit unvorhersehbarer Funktionalität bestraft.<br>
   Das korrekte Format lautet "/pattern/options" (Beispiel: <code>/.+@domain\.tld/i</code>).<br>
-  Der Name der Map beschreibt die jeweilige Funktion.';
+  Der Name der Map beschreibt die jeweilige Funktion.<br>
+  Rspamd versucht die Maps umgehend aufzulösen. Bei Problemen sollte <a href="" data-toggle="modal" data-container="rspamd-mailcow" data-target="#RestartContainer">Rspamd manuell neugestartet werden</a>.';
