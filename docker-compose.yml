@@ -474,7 +474,12 @@ services:
         - TZ=${TZ}
       image: robbertkl/ipv6nat
       restart: always
-      privileged: true
+      cap-drop:
+        - ALL
+      cap-add:
+        - NET_RAW
+        - NET_ADMIN
+        - SYS_MODULE
       network_mode: "host"
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
