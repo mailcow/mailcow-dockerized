@@ -1,5 +1,18 @@
 #!/bin/bash
 
+echo "Waiting for PHP to settle..."
+sleep 10
+
+until nc phpfpm 9001 -z; do
+  echo "Waiting for PHP on port 9001..."
+  sleep 3
+done
+
+until nc phpfpm 9002 -z; do
+  echo "Waiting for PHP on port 9002..."
+  sleep 3
+done
+
 mkdir -p /etc/rspamd/plugins.d \
   /etc/rspamd/custom
 
