@@ -209,7 +209,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.mailq.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.oauth2.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.ratelimit.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.transports.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.rsettings.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.rspamd.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.tls_policy_maps.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.fail2ban.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.docker.inc.php';

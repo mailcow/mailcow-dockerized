@@ -156,7 +156,7 @@ $MAILBOX_DEFAULT_ATTRIBUTES['quarantine_notification'] = 'hourly';
 $MAILBOX_DEFAULT_ATTRIBUTES['mailbox_format'] = 'maildir:';
 
 // Set visible Rspamd maps in mailcow UI, do not change unless you know what you are doing
-$RSPAM_MAPS = array(
+$RSPAMD_MAPS = array(
   'global_mime_from_blacklist.map',
   'global_mime_from_whitelist.map',
   'global_rcpt_blacklist.map',

@@ -3,6 +3,7 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
 jQuery(function($){
   // http://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery
   var entityMap={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;","/":"&#x2F;","`":"&#x60;","=":"&#x3D;"};
+  function jq(myid) {return "#" + myid.replace( /(:|\.|\[|\]|,|=|@)/g, "\\$1" );}
   function escapeHtml(n){return String(n).replace(/[&<>"'`=\/]/g,function(n){return entityMap[n]})}
   function humanFileSize(i){if(Math.abs(i)<1024)return i+" B";var B=["KiB","MiB","GiB","TiB","PiB","EiB","ZiB","YiB"],e=-1;do{i/=1024,++e}while(Math.abs(i)>=1024&&e<B.length-1);return i.toFixed(1)+" "+B[e]}
   function hashCode(t){for(var n=0,r=0;r<t.length;r++)n=t.charCodeAt(r)+((n<<5)-n);return n}
@@ -29,6 +30,33 @@ jQuery(function($){
   $("#mass_exclude").change(function(){ $("#mass_include").selectpicker('deselectAll'); });
   $("#mass_include").change(function(){ $("#mass_exclude").selectpicker('deselectAll'); });
   $("#mass_disarm").click(function() { $("#mass_send").attr("disabled", !this.checked); });
+  $(".validate_rspamd_regex").click(function( event ) {
+    event.preventDefault();
+    var regex_map_id = $(this).data('regex-map');
+    var regex_data = $(jq(regex_map_id)).val();
+    $.ajax({
+      dataType: 'json',
+      url: "/inc/ajax/regex_validation.php",
+      type: "get",
+      data: { regex: regex_data },
+      complete: function(data) {
+        var response = (data.responseText);
+        response_obj = JSON.parse(response);
+        if (response_obj.type == "success") {
+          $('button[data-id="' + regex_map_id + '"]').attr({"disabled": false});
+        }
+        mailcow_alert_box(response_obj.msg, response_obj.type);
+      },
+    });
+  });
+	$('.textarea-code').on('keyup', function() {
+    $('.submit_rspamd_regex').attr({"disabled": true});
+	});
+  $("#show_rspamd_global_filters").click(function() {
+    $.get("inc/ajax/show_rspamd_global_filters.php");
+    $("#confirm_show_rspamd_global_filters").hide();
+    $("#rspamd_global_filters").removeClass("hidden");
+  });
   $("#super_delete").click(function() { return confirm(lang.queue_ays); });
   $(".refresh_table").on('click', function(e) {
     e.preventDefault();
