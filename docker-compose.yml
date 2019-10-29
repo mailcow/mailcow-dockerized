@@ -474,9 +474,9 @@ services:
         - TZ=${TZ}
       image: robbertkl/ipv6nat
       restart: always
-      cap-drop:
+      cap_drop:
         - ALL
-      cap-add:
+      cap_add:
         - NET_RAW
         - NET_ADMIN
         - SYS_MODULE
