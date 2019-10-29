@@ -68,7 +68,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.49
+      image: mailcow/rspamd:1.50
       build: ./data/Dockerfiles/rspamd
       stop_grace_period: 30s
       depends_on:
@@ -105,7 +105,7 @@ services:
         - ./data/hooks/dovecot:/hooks
         - ./data/web:/web:rw
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
-        - ./data/conf/rspamd/custom/:/rspamd_custom_maps:rw
+        - ./data/conf/rspamd/custom/:/rspamd_custom_maps
         - rspamd-vol-1:/var/lib/rspamd
         - mysql-socket-vol-1:/var/run/mysqld/
         - ./data/conf/sogo/:/etc/sogo/
