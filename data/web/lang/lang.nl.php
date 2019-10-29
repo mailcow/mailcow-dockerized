@@ -74,6 +74,8 @@ $lang['danger']['private_key_error'] = "Privésleutel-fout: %s";
 $lang['danger']['map_content_empty'] = "Inhoud dient ingevuld te zijn";
 $lang['success']['settings_map_added'] = "Instellingen toegevoegd";
 $lang['danger']['settings_map_invalid'] = "Instellingen ongeldig";
+$lang['danger']['global_map_invalid'] = "Globaal filter %s is ongeldig";
+$lang['danger']['global_map_write_error'] = "Globaal filter %s kon niet opgeslagen worden: %s";
 $lang['danger']['settings_map_removed'] = "Instellingen verwijderd: %s";
 $lang['danger']['invalid_host'] = "Ongeldige host gespecificeerd: %s";
 $lang['danger']['relayhost_invalid'] = "Invoer %s is ongeldig";
@@ -480,7 +482,7 @@ $lang['add']['relay_domain'] = 'Schakel dit domein door';
 $lang['add']['relay_all_info'] = '<small>Wanneer er wordt gekozen om <b>niet</b> alle ontvangers door te schakelen, dient er per ontvanger een blind postvak aangemaakt te worden.</small>';
 $lang['add']['alias_address'] = 'Aliasadres(sen)';
 $lang['add']['alias_address_info'] = '<small>Volledig(e) e-mailadres(sen) of @example.com, om een catch-all aan te maken voor een domein (kommagescheiden). <b>Enkel Mailcow-domeinen</b>.</small>';
-$lang['add']['alias_domain_info'] = '<small>Alleen geldige domeinnamen (kommagescheiden).</small>';
+$lang['add']['alias_domain_info'] = '<small>Enkel geldige domeinnamen (kommagescheiden).</small>';
 $lang['add']['target_address'] = 'Doeladressen';
 $lang['add']['target_address_info'] = '<small>Volledig(e) e-mailadres(sen) (kommagescheiden).</small>';
 $lang['add']['alias_domain'] = 'Aliasdomein';
@@ -889,7 +891,7 @@ $lang['admin']['service_id'] = 'Servicenummer';
 $lang['admin']['lookup_mx'] = 'Match bestemming aan MX (gebruik .outlook.com om alle mail gericht aan MX *.outlook.com over deze hop te laten gaan)';
 $lang['edit']['mbox_rl_info'] = 'Deze ratelimit wordt toegepast op de postvakgebruiker, en geldt voor elk "van"-adres gebruikt door de huidige postvakgebruiker. Een postvak-ratelimit gaat boven een domein-ratelimit.';
 
-$lang['add']['relayhost_wrapped_tls_info'] = 'Gebruik <b>geen</b> in TLS-gewrapte poorten (meestal gebruikt op poort 465).<br>Gebruik elke niet-gewrapte poort en initieer STARTTLS. Beleid om verleuteling te forceren kan worden ingesteld bij "Globaal versleutelingsbeleid".';
+$lang['add']['relayhost_wrapped_tls_info'] = 'Gebruik <b>geen</b> in TLS verpakte poorten (meestal poort 465).<br>Gebruik een reguliere poort en initieer STARTTLS. Beleid om verleuteling te forceren kan worden ingesteld bij "Globaal versleutelingsbeleid".';
 
 $lang['admin']['transport_dest_format'] = 'Voorbeeld: example.org, .example.org, *, postvak@example.org (meerdere waarden zijn kommagescheiden)';
 
@@ -897,3 +899,7 @@ $lang['mailbox']['alias_domain_backupmx'] = 'Aliasdomein inactief voor doorstuur
 
 $lang['danger']['extra_acl_invalid'] = 'Extern verzendadres "%s" is ongeldig';
 $lang['danger']['extra_acl_invalid_domain'] = 'Extern verzendadres "%s" gebruikt een ongeldig domein';
+
+$lang['admin']['rspamd_global_filters_agree'] = "Ik ben me ervan bewust dat aanpassingen desastreuze gevolgen kunnen hebben";
+$lang['admin']['rspamd_global_filters'] = 'Globale filters';
+$lang['admin']['rspamd_global_filters_info'] = 'Ieder globaal filter heeft zijn eigen functie, zie de namen. De velden kunnen enkel regular expressions bevatten met het formaat "/pattern/options", bijvoorbeeld <code>/.+@domain\.tld/i</code>.<br>Ondanks dat alle invoer wordt gecontroleerd op fouten, is het toch mogelijk dat Rspamd onbruikbaar wordt als deze de invoer niet kan lezen.';
