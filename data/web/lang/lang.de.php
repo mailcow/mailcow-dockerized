@@ -71,6 +71,8 @@ $lang['danger']['private_key_error'] = "Schlüsselfehler: %s";
 $lang['danger']['map_content_empty'] = "Inhalt darf nicht leer sein";
 $lang['success']['settings_map_added'] = "Regel wurde gespeichert";
 $lang['danger']['settings_map_invalid'] = "Regel ID %s ist ungültig";
+$lang['danger']['global_map_invalid'] = "Rspamd Map %s ist ungültig";
+$lang['danger']['global_map_write_error'] = "Kann globale Map ID %s nicht schreiben: %s";
 $lang['success']['settings_map_removed'] = "Regeln wurden entfernt: %s";
 $lang['danger']['invalid_host'] = "Ungültiger Host: %s";
 $lang['danger']['relayhost_invalid'] = "Mapeintrag %s ist ungültig";
@@ -915,5 +917,9 @@ $lang['mailbox']['alias_domain_backupmx'] = 'Alias-Domain für Relay-Domain inak
 $lang['danger']['extra_acl_invalid'] = 'Externe Absenderadresse "%s" ist ungültig';
 $lang['danger']['extra_acl_invalid_domain'] = 'Externe Absenderadresse "%s" verwendet eine ungültige Domain';
 
-$lang['admin']['rspamd_global_filters'] = 'Globale Rspamd Filter';
-$lang['admin']['rspamd_global_filters'] = 'Globale Rspamd Filter';
+$lang['admin']['rspamd_global_filters_agree'] = "Ich werde vorsichtig sein!";
+$lang['admin']['rspamd_global_filters'] = 'Globale Filter-Maps';
+$lang['admin']['rspamd_global_filters_info'] = 'Globale Filter-Maps steuern globales White- und Blacklisting dieses Servers. Die akzeptierte Form für Einträge sind <b>ausschließlich</b> Regular Expressions.
+  Trotz rudimentärer Überprüfung der Map, kann es zu fehlerhaften Einträgen kommen, die Rspamd im schlechtesten Fall mit unvorhersehbarer Funktionalität bestraft.<br>
+  Das korrekte Format lautet "/pattern/options" (Beispiel: <code>/.+@domain\.tld/i</code>).<br>
+  Der Name der Map beschreibt die jeweilige Funktion.';
