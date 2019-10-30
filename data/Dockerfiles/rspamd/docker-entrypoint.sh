@@ -61,7 +61,7 @@ touch /etc/rspamd/custom/global_mime_from_blacklist.map \
   /etc/rspamd/custom/bad_words_de.map
 
 # www-data (82) group needs to write to these files
-chown root:root /etc/rspamd/custom/
+chown _rspamd:_rspamd /etc/rspamd/custom/
 chmod 0755 /etc/rspamd/custom/
 chown -R _rspamd:www-access /etc/rspamd/custom/*
 chmod -R 664 /etc/rspamd/custom/*
