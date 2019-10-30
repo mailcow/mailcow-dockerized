@@ -1,4 +1,4 @@
-level = "silent";
+level = "info";
 type = "console";
 systemd = false;
 .include "$CONFDIR/logging.inc"

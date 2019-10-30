@@ -235,6 +235,8 @@ function rspamd($_action, $_data = null) {
             }
             fwrite($map_handle, $map_content . PHP_EOL);
             fclose($map_handle);
+            sleep(1.5);
+            touch('/rspamd_custom_maps/' . $map);
           }
         }
         catch (Exception $e) {
