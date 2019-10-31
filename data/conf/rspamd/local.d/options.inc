@@ -7,5 +7,3 @@ dns {
   retransmits = 2;
 }
 disable_monitoring = true;
-lua_gc_step = 10;
-lua_gc_pause = 10;
