@@ -21,9 +21,9 @@ if (rspamd_presetsElem && rspamdPresets) {
      */
     setTimeout(function () {
       document.getElementById(elemID).addEventListener('click', function (e) {
+        e.preventDefault();
         document.querySelector('form[data-id=rsetting] #adminRspamdSettingsDesc').value = item.description;
         document.querySelector('form[data-id=rsetting] #adminRspamdSettingsContent').value = item.codeValue;
-        e.preventDefault();
         return true;
       });
     }, 0)
