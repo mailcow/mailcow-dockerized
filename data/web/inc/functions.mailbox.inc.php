@@ -44,18 +44,38 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             return false;
           }
           $stmt = $pdo->prepare("SELECT `domain` FROM `mailbox` WHERE `username` = :username");
-          $stmt->execute(array(':username' => $_SESSION['mailcow_cc_username']));
+          $username = $_SESSION['mailcow_cc_username'];
+          $stmt->execute(array(':username' => $username));
           $domain = $stmt->fetch(PDO::FETCH_ASSOC)['domain'];
           $validity = strtotime("+".$_data["validity"]." hour"); 
           $letters = 'abcefghijklmnopqrstuvwxyz1234567890';
           $random_name = substr(str_shuffle($letters), 0, 24);
+          $temp_email = ($random_name . '@' . $domain);
           $stmt = $pdo->prepare("INSERT INTO `spamalias` (`address`, `goto`, `validity`) VALUES
             (:address, :goto, :validity)");
           $stmt->execute(array(
-            ':address' => $random_name . '@' . $domain,
+            ':address' => $temp_email,
             ':goto' => $username,
             ':validity' => $validity
           ));
+          $stmt = $pdo->prepare("SELECT `id` FROM `alias` WHERE `address`=:domain AND `goto` = :username");
+          $stmt->execute(array(':username' => $username, ':domain' => '@' . $domain));
+          $count =  $stmt->rowCount();
+          
+          if($count > 0){
+            $stmt = $pdo->prepare("INSERT INTO `sieve_filters` (`username`, `script_data`, `script_desc`, `script_name`, `filter_type`)
+            VALUES (:username, :script_data, :script_desc, :script_name, :filter_type)");
+            $prefilter_tempEmail = 'require ["reject"];if address :is "To" "' .  $temp_email . '" {
+              reject "Not Accepted";
+            }';
+            $stmt->execute(array(
+              ':username' => $username,
+              ':script_data' => $prefilter_tempEmail,
+              ':script_desc' => $temp_email . " drop",
+              ':script_name' => "inactive",
+              ':filter_type' => "prefilter"
+            ));
+          }
           $_SESSION['return'][] = array(
             'type' => 'success',
             'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),

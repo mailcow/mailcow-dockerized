@@ -1053,6 +1053,7 @@ DELIMITER //
 CREATE EVENT clean_spamalias 
 ON SCHEDULE EVERY 1 DAY DO 
 BEGIN
+  UPDATE sieve_filters SET script_name = \'active\' WHERE left(script_desc, LENGTH(script_desc)-5) IN (select address from spamalias where validity < UNIX_TIMESTAMP());
   DELETE FROM spamalias WHERE validity < UNIX_TIMESTAMP();
 END;
 //
