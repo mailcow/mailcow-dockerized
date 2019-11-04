@@ -52,7 +52,7 @@
 .navbar-nav {
   margin: 0;
 }
-.navbar-fixed-bottom .navbar-collapse, 
+.navbar-fixed-bottom .navbar-collapse,
 .navbar-fixed-top .navbar-collapse {
   max-height: 1000px
 }
@@ -83,9 +83,9 @@
 }
 pre{white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-o-pre-wrap;word-wrap:break-word;}
 .footable-sortable {
-  -webkit-user-select: none;  
-  -moz-user-select: none;    
-  -ms-user-select: none;      
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
 }
 /* Fix modal moving content left */
@@ -157,13 +157,13 @@ nav .glyphicon {
 }
 .haveibeenpwned {
   cursor: pointer;
-  -webkit-user-select: none;  
-  -moz-user-select: none;    
-  -ms-user-select: none;      
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
 }
 .full-width-select {
-  width: 100%!important;  
+  width: 100%!important;
 }
 .tooltip {
   font-family: inherit;
@@ -177,4 +177,7 @@ nav .glyphicon {
   margin-top: 100px;
   margin-bottom: 20px;
   color: #959595;
+}
+.footable-toggleBigger {
+  font-size: 20px;
 }
