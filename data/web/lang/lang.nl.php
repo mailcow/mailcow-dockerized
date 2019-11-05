@@ -454,11 +454,11 @@ $lang['add']['enc_method'] = 'Versleutelingsmethode';
 $lang['add']['mins_interval'] = 'Interval (min)';
 $lang['add']['exclude'] = 'Sluit objecten uit (regex)';
 $lang['add']['delete2duplicates'] = 'Verwijder duplicaten op de bestemming';
-$lang['add']['delete1'] = 'Verwijder van oorsprong wanneer voltooid';
-$lang['add']['delete2'] = 'Verwijder berichten die zich niet in de oorsprong bevinden';
+$lang['add']['delete1'] = 'Verwijder van bron wanneer voltooid';
+$lang['add']['delete2'] = 'Verwijder berichten die zich niet in de bron bevinden';
 $lang['edit']['delete2duplicates'] = 'Verwijder duplicaten op de bestemming';
-$lang['edit']['delete1'] = 'Verwijder van oorsprong wanneer voltooid';
-$lang['edit']['delete2'] = 'Verwijder berichten die zich niet in de oorsprong bevinden';
+$lang['edit']['delete1'] = 'Verwijder van bron wanneer voltooid';
+$lang['edit']['delete2'] = 'Verwijder berichten die zich niet in de bron bevinden';
 $lang['add']['custom_params'] = 'Aangepaste parameters';
 $lang['add']['custom_params_hint'] = 'Goed: --param=xy, fout: --param xy';
 $lang['add']['subscribeall'] = 'Abonneer op alle mappen';
@@ -655,7 +655,7 @@ $lang['admin']['credentials_transport_warning'] = '<b>Waarschuwing</b>: Bij het 
 $lang['admin']['destination'] = 'Bestemming';
 $lang['admin']['nexthop'] = 'Nexthop';
 
-$lang['admin']['oauth2_info'] = 'De OAuth2-implementatie ondersteunt de grant type "Authorization Code" en geeft refresh-tokens uit.<br>De server geeft automatisch nieuwe refresh-tokens uit, nadat een refresh-token is gebruikt.<br><br>→ De standaard scope is <i>profiel</i>. Enkel postvakgebruikers kunnen OAuth2 gebruiken om zich te authenticeren. Als de scope-parameter wordt weggelaten, zal deze terugvallen op <i>profiel</i>.<br>→ De <i>state</i>-parameter dient verstuurd te worden door de client als onderdeel van het authorize-request.<br><br>Paden voor requests naar de OAuth2-API: <br><ul><li>Authorization endpoint: <code>/oauth/authorize</code></li><li>Token endpoint: <code>/oauth/token</code></li><li>Resource page:  <code>/oauth/profile</code></li></ul>Het regenereren van de client-secret zal oudere authorization codes niet doen verlopen, maar het verversen van de tokens zal niet langer werken.<br><br>Het intrekken van client-tokens zal alle actieve sessies per direct beëindigen. Alle clients dienen zich opnieuw te authenticeren.';
+$lang['admin']['oauth2_info'] = 'De OAuth2-implementatie ondersteunt de grant type "Authorization Code" en geeft refresh-tokens uit.<br>De server geeft automatisch nieuwe refresh-tokens uit nadat er één is gebruikt.<br><br>→ De standaard scope is <i>profiel</i>. Enkel postvakgebruikers kunnen OAuth2 gebruiken om zich te authenticeren. Als de scope-parameter wordt weggelaten, zal deze terugvallen op <i>profiel</i>.<br>→ De <i>state</i>-parameter dient verstuurd te worden door de client als onderdeel van het authorize-request.<br><br>Paden voor requests naar de OAuth2-API: <br><ul><li>Authorization endpoint: <code>/oauth/authorize</code></li><li>Token endpoint: <code>/oauth/token</code></li><li>Resource page:  <code>/oauth/profile</code></li></ul>Het regenereren van de client-secret zal oudere authorization codes niet doen verlopen. Het verversen van de tokens zal echter niet langer werken.<br><br>Het intrekken van client-tokens zal alle actieve sessies per direct beëindigen. Alle clients dienen zich opnieuw te authenticeren.';
 
 $lang['admin']['oauth2_client_id'] = "Client-ID";
 $lang['admin']['oauth2_client_secret'] = "Client-secret";
