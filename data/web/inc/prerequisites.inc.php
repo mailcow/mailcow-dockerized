@@ -19,16 +19,20 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/vendor/autoload.php';
 // Load Sieve
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/sieve/SieveParser.php';
 
+// minifierExtended
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/JSminifierExtended.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/CSSminifierExtended.php';
+
 // Minify JS
 use MatthiasMullie\Minify;
-$js_minifier = new Minify\JS();
+$js_minifier = new JSminifierExtended();
 $js_dir = array_diff(scandir('/web/js/build'), array('..', '.'));
 foreach ($js_dir as $js_file) {
   $js_minifier->add('/web/js/build/' . $js_file);
 }
 
 // Minify CSS
-$css_minifier = new Minify\CSS();
+$css_minifier = new CSSminifierExtended();
 $css_dir = array_diff(scandir('/web/css/build'), array('..', '.'));
 foreach ($css_dir as $css_file) {
   $css_minifier->add('/web/css/build/' . $css_file);
@@ -105,13 +109,15 @@ class mailcowPdo extends OAuth2\Storage\Pdo {
 $oauth2_scope_storage = new OAuth2\Storage\Memory(array('default_scope' => 'profile', 'supported_scopes' => array('profile')));
 $oauth2_storage = new mailcowPdo(array('dsn' => $dsn, 'username' => $database_user, 'password' => $database_pass));
 $oauth2_server = new OAuth2\Server($oauth2_storage, array(
-    'always_issue_new_refresh_token' => true,
-    'refresh_token_lifetime'         => 2678400,
+    'refresh_token_lifetime'         => $REFRESH_TOKEN_LIFETIME,
+    'access_lifetime'                => $ACCESS_TOKEN_LIFETIME,
 ));
 $oauth2_server->setScopeUtil(new OAuth2\Scope($oauth2_scope_storage));
 $oauth2_server->addGrantType(new OAuth2\GrantType\AuthorizationCode($oauth2_storage));
 $oauth2_server->addGrantType(new OAuth2\GrantType\UserCredentials($oauth2_storage));
-$oauth2_server->addGrantType(new OAuth2\GrantType\RefreshToken($oauth2_storage));
+$oauth2_server->addGrantType(new OAuth2\GrantType\RefreshToken($oauth2_storage, array(
+    'always_issue_new_refresh_token' => true
+)));
 
 function exception_handler($e) {
     if ($e instanceof PDOException) {
@@ -203,7 +209,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.mailq.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.oauth2.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.ratelimit.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.transports.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.rsettings.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.rspamd.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.tls_policy_maps.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.fail2ban.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.docker.inc.php';

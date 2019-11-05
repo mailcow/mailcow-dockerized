@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Create temp directories
-[[ ! -d /tmp/sa-rules-schaal ]] && mkdir -p /tmp/sa-rules-schaal
+#[[ ! -d /tmp/sa-rules-schaal ]] && mkdir -p /tmp/sa-rules-schaal
 [[ ! -d /tmp/sa-rules-heinlein ]] && mkdir -p /tmp/sa-rules-heinlein
 
 # Hash current SA rules
@@ -13,18 +13,20 @@ fi
 
 # Deploy
 ## Heinlein
-curl --connect-timeout 15 --max-time 30 http://www.spamassassin.heinlein-support.de/$(dig txt 1.4.3.spamassassin.heinlein-support.de +short | tr -d '"').tar.gz --output /tmp/sa-rules-heinlein.tar.gz
+curl --connect-timeout 15 --retry 10 --max-time 30 http://www.spamassassin.heinlein-support.de/$(dig txt 1.4.3.spamassassin.heinlein-support.de +short | tr -d '"').tar.gz --output /tmp/sa-rules-heinlein.tar.gz
 if gzip -t /tmp/sa-rules-heinlein.tar.gz; then
   tar xfvz /tmp/sa-rules-heinlein.tar.gz -C /tmp/sa-rules-heinlein
   cat /tmp/sa-rules-heinlein/*cf > /etc/rspamd/custom/sa-rules
 fi
 ## Schaal
-curl --connect-timeout 15 --max-time 30 http://sa.schaal-it.net/$(dig txt 1.4.3.sa.schaal-it.net +short | tr -d '"').tar.gz --output /tmp/sa-rules-schaal.tar.gz
-if gzip -t /tmp/sa-rules-schaal.tar.gz; then
-  tar xfvz /tmp/sa-rules-schaal.tar.gz -C /tmp/sa-rules-schaal
-  # Append, do not overwrite
-  cat /tmp/sa-rules-schaal/*cf >> /etc/rspamd/custom/sa-rules
-fi
+#curl --connect-timeout 15 --max-time 30 http://sa.schaal-it.net/$(dig txt 1.4.3.sa.schaal-it.net +short | tr -d '"').tar.gz --output /tmp/sa-rules-schaal.tar.gz
+#if gzip -t /tmp/sa-rules-schaal.tar.gz; then
+#  tar xfvz /tmp/sa-rules-schaal.tar.gz -C /tmp/sa-rules-schaal
+#  # Append, do not overwrite
+#  cat /tmp/sa-rules-schaal/*cf >> /etc/rspamd/custom/sa-rules
+#fi
+
+sed -i -e 's/\([^\\]\)\$\([^\/]\)/\1\\$\2/g' /etc/rspamd/custom/sa-rules
 
 if [[ "$(cat /etc/rspamd/custom/sa-rules | md5sum | cut -d' ' -f1)" != "${HASH_SA_RULES}" ]]; then
   CONTAINER_NAME=rspamd-mailcow

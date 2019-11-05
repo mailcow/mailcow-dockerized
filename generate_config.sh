@@ -191,6 +191,11 @@ ADDITIONAL_SAN=
 
 SKIP_LETS_ENCRYPT=n
 
+# Create seperate certificates for all domains - y/n
+# this will allow adding more than 100 domains, but some email clients will not be able to connect with alternative hostnames
+# see https://wiki.dovecot.org/SSL/SNIClientSupport
+ENABLE_SSL_SNI=n
+
 # Skip IPv4 check in ACME container - y/n
 
 SKIP_IP_CHECK=n
@@ -269,4 +274,4 @@ mkdir -p data/assets/ssl
 chmod 600 mailcow.conf
 
 # copy but don't overwrite existing certificate
-cp -n data/assets/ssl-example/*.pem data/assets/ssl/
+cp -n -d data/assets/ssl-example/*.pem data/assets/ssl/

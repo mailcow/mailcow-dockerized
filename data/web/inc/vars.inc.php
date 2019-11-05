@@ -73,11 +73,11 @@ $autodiscover_config = array(
 // Uses HTTP_ACCEPT_LANGUAGE header
 $DETECT_LANGUAGE = true;
 
-// Change default language, "cs", "de", "en", "es", "nl", "pt", "ru"
+// Change default language
 $DEFAULT_LANG = 'en';
 
 // Available languages
-$AVAILABLE_LANGUAGES = array('cs', 'de', 'en', 'es', 'fr', 'lv', 'nl', 'pl', 'pt', 'ru', 'it', 'ca');
+$AVAILABLE_LANGUAGES = array('ca', 'cs', 'de', 'en', 'es', 'fi', 'fr', 'it', 'lv', 'nl', 'pl', 'pt', 'ru');
 
 // Change theme (default: lumen)
 // Needs to be one of those: cerulean, cosmo, cyborg, darkly, flatly, journal, lumen, paper, readable, sandstone,
@@ -129,6 +129,10 @@ $DOCKER_TIMEOUT = 60;
 // Anonymize IPs logged via UI
 $ANONYMIZE_IPS = true;
 
+// OAuth2 settings
+$REFRESH_TOKEN_LIFETIME = 2678400;
+$ACCESS_TOKEN_LIFETIME = 86400;
+
 // MAILBOX_DEFAULT_ATTRIBUTES define default attributes for new mailboxes
 // These settings will not change existing mailboxes
 
@@ -150,3 +154,16 @@ $MAILBOX_DEFAULT_ATTRIBUTES['quarantine_notification'] = 'hourly';
 // Default mailbox format, should not be changed unless you know exactly, what you do, keep the trailing ":"
 // Check dovecot.conf for further changes (e.g. shared namespace)
 $MAILBOX_DEFAULT_ATTRIBUTES['mailbox_format'] = 'maildir:';
+
+// Set visible Rspamd maps in mailcow UI, do not change unless you know what you are doing
+$RSPAMD_MAPS = array(
+  'Header-From: Blacklist' => 'global_mime_from_blacklist.map',
+  'Header-From: Whitelist' => 'global_mime_from_whitelist.map',
+  'Envelope Sender Blacklist' => 'global_smtp_from_blacklist.map',
+  'Envelope Sender Whitelist' => 'global_smtp_from_whitelist.map',
+  'Recipient Blacklist' => 'global_rcpt_blacklist.map',
+  'Recipient Whitelist' => 'global_rcpt_whitelist.map',
+  'Fishy TLDS (only fired in combination with bad words)' => 'fishy_tlds.map',
+  'Bad Words (only fired in combination with fishy TLDs)' => 'bad_words.map',
+  'Bad Words DE (only fired in combination with fishy TLDs)' => 'bad_words_de.map'
+);

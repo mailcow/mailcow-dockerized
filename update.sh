@@ -168,6 +168,7 @@ CONFIG_ARRAY=(
   "ACL_ANYONE"
   "SOLR_HEAP"
   "SKIP_SOLR"
+  "ENABLE_SSL_SNI"
   "ALLOW_ADMIN_EMAIL_LOGIN"
   "SKIP_HTTP_VERIFICATION"
   "SOGO_EXPIRE_SESSION"
@@ -275,7 +276,15 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# Solr is disabled by default after upgrading from non-Solr to Solr-enabled mailcows.' >> mailcow.conf
       echo '# Disable Solr or if you do not want to store a readable index of your mails in solr-vol-1.' >> mailcow.conf
       echo "SKIP_SOLR=y" >> mailcow.conf
-  fi
+    fi
+  elif [[ ${option} == "ENABLE_SSL_SNI" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Create seperate certificates for all domains - y/n' >> mailcow.conf
+      echo '# this will allow adding more than 100 domains, but some email clients will not be able to connect with alternative hostnames' >> mailcow.conf
+      echo '# see https://wiki.dovecot.org/SSL/SNIClientSupport' >> mailcow.conf
+      echo "ENABLE_SSL_SNI=n" >> mailcow.conf
+    fi
   elif [[ ${option} == "MAILDIR_SUB" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
@@ -407,7 +416,7 @@ docker-compose pull
 
 # Fix missing SSL, does not overwrite existing files
 [[ ! -d data/assets/ssl ]] && mkdir -p data/assets/ssl
-cp -n data/assets/ssl-example/*.pem data/assets/ssl/
+cp -n -d data/assets/ssl-example/*.pem data/assets/ssl/
 
 echo -e "Checking IPv6 settings... "
 if grep -q 'SYSCTL_IPV6_DISABLED=1' mailcow.conf; then
@@ -425,12 +434,6 @@ fi
 # Checking for old project name bug
 sed -i 's#COMPOSEPROJECT_NAME#COMPOSE_PROJECT_NAME#g' mailcow.conf
 
-echo -e "Fixing PHP-FPM worker ports for Nginx sites..."
-sed -i 's#phpfpm:9000#phpfpm:9002#g' data/conf/nginx/*.conf
-if ls data/conf/nginx/*.custom 1> /dev/null 2>&1; then
-  sed -i 's#phpfpm:9000#phpfpm:9002#g' data/conf/nginx/*.custom
-fi
-
 # Fix Rspamd maps
 if [ -f data/conf/rspamd/custom/global_from_blacklist.map ]; then
   mv data/conf/rspamd/custom/global_from_blacklist.map data/conf/rspamd/custom/global_smtp_from_blacklist.map
@@ -442,11 +445,6 @@ fi
 echo -e "\e[32mStarting mailcow...\e[0m"
 sleep 2
 docker-compose up -d --remove-orphans
-
-if [[ -f "data/web/nextcloud/occ" ]]; then
-  echo "Setting Nextcloud Redis timeout to 0.0..."
-  docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ config:system:set redis timeout --value=0.0 --type=integer"
-fi
 
 echo -e "\e[32mCollecting garbage...\e[0m"
 docker_garbage
