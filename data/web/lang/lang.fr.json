@@ -97,7 +97,6 @@
     "user": {
         "messages": "messages",
         "in_use": "Utilisé",
-        "user_change_fn": "",
         "user_settings": "Paramètres utilisateur",
         "mailbox_details": "Détails des boîtes",
         "change_password": "Changement de mot de passe",

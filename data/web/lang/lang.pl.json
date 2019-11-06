@@ -96,7 +96,6 @@
     "user": {
         "messages": "wiadomości",
         "in_use": "Użyte",
-        "user_change_fn": "",
         "user_settings": "Ustawienia użytkownika",
         "mailbox_details": " Szczegóły skrzynki",
         "change_password": "Zmień hasło",

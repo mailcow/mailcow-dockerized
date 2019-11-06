@@ -163,7 +163,6 @@
         "awaiting_tfa_confirmation": "En espera de confirmación de TFA"
     },
     "user": {
-        "user_change_fn": "",
         "user_settings": "Configuración del usuario",
         "mailbox_details": "Detalles del buzón",
         "change_password": "Cambiar contraseña",

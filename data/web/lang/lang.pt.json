@@ -75,7 +75,6 @@
         "no_action": "Nenhuma ação foi definida"
     },
     "user": {
-        "user_change_fn": "",
         "user_settings": "Configurações do usuário",
         "mailbox_details": "Detalhes da conta",
         "change_password": "Alterar senha",

@@ -92,7 +92,6 @@
     "user": {
         "messages": "messaggi",
         "in_use": "Utilizzati",
-        "user_change_fn": "",
         "user_settings": "Impostazioni utente",
         "mailbox_details": "Dettagli casella",
         "change_password": "Cambia password",

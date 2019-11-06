@@ -97,7 +97,6 @@
     "user": {
         "messages": "письма",
         "in_use": "Используется",
-        "user_change_fn": "",
         "user_settings": "Настройки пользователя",
         "mailbox_details": "Сведения о почтовом ящике",
         "change_password": "Смена пароля",
