@@ -104,7 +104,8 @@
         "app_links": "Saglabāt izmaiņas lietotņu saitēm",
         "ui_texts": "Saglabāt UI izmaiņas tekstiem",
         "reset_main_logo": "Atjaunot noklusējuma logotipu",
-        "items_released": "Atlasītie vienumi tika izlaisti"
+        "items_released": "Atlasītie vienumi tika izlaisti",
+        "item_deleted": "Vērtība %s veiksmīgi dzēsta"
     },
     "user": {
         "loading": "Ielādē...",
@@ -189,7 +190,8 @@
         "action": "Rīcība",
         "edit": "Labot",
         "remove": "Noņemt",
-        "create_syncjob": "Izveidot jaunu sinhronizācijas darbu"
+        "create_syncjob": "Izveidot jaunu sinhronizācijas darbu",
+        "save_changes": "Saglabāt izmaiņas"
     },
     "admin": {
         "spamfilter": "Mēstuļu filtrs",
@@ -272,7 +274,13 @@
         "remove_row": "Noņemt rindu",
         "add_row": "Pievienot rindu",
         "reset_default": "Atiestatīt uz noklusējumu",
-        "merged_vars_hint": "Pelēkās rindas tika apvienotas <code>vars.(local.)inc.php</code> un nevar tikt modificētas."
+        "merged_vars_hint": "Pelēkās rindas tika apvienotas <code>vars.(local.)inc.php</code> un nevar tikt modificētas.",
+        "subject": "Priekšmets",
+        "recipients": "Adresāts",
+        "sender": "Sūtītājs",
+        "rsetting_desc": "Īss apraksts",
+        "dkim_private_key": "Privāta atslēga",
+        "domain": "Domēns"
     },
     "start": {
         "mailcow_apps_detail": "Izmantojiet lietotni mailcow, lai piekļūtu savam pastam, kalendāram, kontaktiem un citām lietām.",
@@ -348,7 +356,12 @@
         "recipient_map_info": "Saņēmēju kartes tiek izmantotas, lai aizstātu ziņas galamērķa adresi pirms tā tiek piegādāta.",
         "recipient_map_old": "Oriģinālais saņēmējs",
         "recipient_map_new": "Jauns saņēmējs",
-        "add_recipient_map_entry": "Pievienot saņēmēja karti"
+        "add_recipient_map_entry": "Pievienot saņēmēja karti",
+        "recipient_map": "saņēmēja karte",
+        "bcc_destination": "BCC galamērķi/s",
+        "no_record_single": "Nav ieraksta",
+        "tls_enforce_out": "Piespiest TLS izejošajiem",
+        "tls_enforce_in": "Piespiest TLS ienākošajiem"
     },
     "info": {
         "no_action": "No action applicable"
@@ -518,5 +531,11 @@
         "atts": "Pielikumi",
         "release_body": "Šim ziņojumam mēs esam pievienojuši jūsu ziņojumu kā eml failu.",
         "release_subject": "Potenciāli kaitīgs karantīnas vienums %s"
+    },
+    "acl": {
+        "recipient_maps": "Saņēmēja kartes",
+        "filters": "Filtri",
+        "bcc_maps": "BCC kartes",
+        "syncjobs": "Sinhronizācijas uzdevumi"
     }
 }
