@@ -205,7 +205,13 @@
         "toggle_all": "Inverti tutti",
         "quick_actions": "Azione veloce",
         "activate": "Attiva",
-        "deactivate": "Disattiva"
+        "deactivate": "Disattiva",
+        "sync_jobs": "Processi di sync",
+        "excludes": "Esclude",
+        "last_run": "Ultima esecuzione",
+        "mins_interval": "Intervallo (min)",
+        "tls_enforce_out": "Imponi TLS in uscita",
+        "tls_enforce_in": "Imponi TLS in ingresso"
     },
     "info": {
         "no_action": "Azione non applicabile"
@@ -355,6 +361,19 @@
         "forwarding_hosts": "Inoltro degli host",
         "forwarding_hosts_hint": "I messaggi in entrata sono accettati in maniera incondizionata da tutti gli host elencati qui. Questi host sono quindi non controllati contro DNSBL o sottoposti a greylisting. Spam ricevuti da loro non viene mai rifiutata e sempre archiviata nella cartella Junk. L'utilizzo più comune per questo è quello di specificare i server di posta elettronica su cui è stata impostata una regola che inoltra le email in arrivo al server mailcow.",
         "forwarding_hosts_add_hint": "È possibile specificare indirizzi IPv4 / IPv6, reti nella notazione CIDR, nomi host (che verranno risolti in indirizzi IP) o nomi di dominio (che verranno risolti agli indirizzi IP richiamando i record SPF o, in assenza, i record MX) .",
-        "add_forwarding_host": "Aggiungi host inoltro"
+        "add_forwarding_host": "Aggiungi host inoltro",
+        "host": "Hostname",
+        "domain": "Dominio",
+        "spamfilter": "Filtri spam"
+    },
+    "acl": {
+        "syncjobs": "Processi di sync"
+    },
+    "quarantine": {
+        "action": "Azione",
+        "remove": "Elimina",
+        "quick_actions": "Azione veloce",
+        "toggle_all": "Inverti tutti",
+        "empty": "Nessun risultato"
     }
 }
