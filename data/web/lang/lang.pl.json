@@ -232,7 +232,10 @@
         "forwarding_hosts_add_hint": "Możesz albo wyszczególnić adresy IPv4/IPv6, sieci w notacji CIDR, nazwy hostów (które zostaną rozłożone na adresy IP), albo nazwy domen (które zostaną rozłożone na adresy IP poprzez sprawdzanie rekordów SPF lub, w razie ich braku, rekordów MX).",
         "host": "Host",
         "source": "źródło",
-        "add_forwarding_host": "Dodaj hosta przekazującego"
+        "add_forwarding_host": "Dodaj hosta przekazującego",
+        "quarantine": "Kwarantanna",
+        "dkim_private_key": "Klucz prywatny",
+        "domain": "Domena"
     },
     "start": {
         "mailcow_apps_detail": "Użyj aplikacji mailcow, aby mieć dostęp do wiadomości, kalendarza, kontaktów i innych.",
@@ -283,7 +286,14 @@
         "never": "Nigdy",
         "hourly": "Co godzinę",
         "daily": "Co dzień",
-        "weekly": "Co tydzień"
+        "weekly": "Co tydzień",
+        "inactive": "Nieaktywny",
+        "sync_jobs": "Polecenie synchronizacji",
+        "excludes": "Wyłączenia",
+        "last_run": "Ostatnie uruchomienie",
+        "mins_interval": "Zakres (min)",
+        "tls_enforce_out": "Uruchom TLS wychodzące",
+        "tls_enforce_in": "Uruchom TLS przychodzące"
     },
     "info": {
         "no_action": "Żadne działanie nie ma zastosowania"
@@ -396,5 +406,17 @@
         "scan_qr_code": "Zeskanuj następujący kod aplikacją uwierzytelniającą lub wprowadź kod ręcznie.",
         "enter_qr_code": "Twój kod TOTP, jeśli Twoje urządzenie nie skanuje kodów QR.",
         "confirm_totp_token": "Potwierdź zmiany przez wprowadzenie wygenerowanego tokenu"
+    },
+    "acl": {
+        "sogo_profile_reset": "Usuń profil SOGo (webmail)",
+        "syncjobs": "Polecenie synchronizacji"
+    },
+    "quarantine": {
+        "action": "Działanie",
+        "remove": "Usuń",
+        "quick_actions": "Szybkie działania",
+        "toggle_all": "Zaznacz wszystkie",
+        "empty": "Brak wyników",
+        "quarantine": "Kwarantanna"
     }
 }
