@@ -492,7 +492,8 @@
         "domain": "Domain",
         "queue_deliver_mail": "Ausliefern",
         "queue_unhold_mail": "Freigeben",
-        "queue_hold_mail": "Zurückhalten"
+        "queue_hold_mail": "Zurückhalten",
+        "f2b_list_info": "Ein Host oder Netzwerk auf der Blacklist wird immer eine Whitelist-Einheit überwiegen. <b>Die Aktualisierung der Liste dauert einige Sekunden.</b>"
     },
     "start": {
         "mailcow_apps_detail": "Verwenden Sie mailcow Apps, um E-Mails abzurufen, Kalender und Kontakte zu verwalten und vieles mehr.",
@@ -533,7 +534,8 @@
         "spam_score": "Bewertung",
         "qhandler_success": "Aktion wurde an das System übergeben. Sie dürfen dieses Fenster nun schließen.",
         "release_body": "Die ursprüngliche Nachricht wurde als EML-Datei im Anhang hinterlegt.",
-        "release_subject": "Potentiell schädliche Nachricht aus Quarantäne: %s"
+        "release_subject": "Potentiell schädliche Nachricht aus Quarantäne: %s",
+        "confirm_delete": "Bestätigen Sie die Löschung dieses Elements."
     },
     "mailbox": {
         "tls_policy_maps": "TLS-Richtlinien",
@@ -885,6 +887,7 @@
         "restart_container": "Neustart",
         "disk_usage": "Festplattennutzung",
         "logs": "Protokolle",
-        "containers_info": "Container-Information"
+        "containers_info": "Container-Information",
+        "system_containers": "System & Container"
     }
 }
