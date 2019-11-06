@@ -67,7 +67,8 @@
         "alias_removed": "Apelido %s removido com sucesso",
         "alias_domain_removed": "Encaminhamento de Domínio %s removido com sucesso",
         "domain_admin_removed": "Administrator do domínio %s removido com sucesso",
-        "mailbox_removed": "Conta %s removida com sucesso"
+        "mailbox_removed": "Conta %s removida com sucesso",
+        "resource_modified": "A conta %s foi alterada com sucesso"
     },
     "info": {
         "fetchmail_planned": "Procedimento de retirada de emails foi agendado. Verifique o processo mais tarde.",
@@ -118,7 +119,12 @@
         "tls_policy": "Regras de Encryptação",
         "tls_enforce_in": "Forçar TLS na entrada",
         "tls_enforce_out": "Forçar TLS na saída",
-        "no_record": "Nenhum registro"
+        "no_record": "Nenhum registro",
+        "remove": "Remover",
+        "edit": "Editar",
+        "action": "Ação",
+        "active": "Ativo",
+        "username": "Administrador"
     },
     "start": {
         "mailcow_apps_detail": "Use um mailcow app para acessar seus emails, calendário, contatos e outras informações.",
@@ -157,7 +163,11 @@
         "add_domain": "Adicionar Domínio",
         "add_domain_alias": "Adicionar Apelido de Domínio",
         "add_mailbox": "Adicionar Conta de Email",
-        "add_alias": "Adicionar Apelido"
+        "add_alias": "Adicionar Apelido",
+        "no_record_single": "Nenhum registro",
+        "description": "Descrição:",
+        "tls_enforce_out": "Forçar TLS na saída",
+        "tls_enforce_in": "Forçar TLS na entrada"
     },
     "edit": {
         "save": "Salvar",
@@ -187,7 +197,8 @@
         "sender_acl": "Permitir Enviar como",
         "previous": "Voltar",
         "unchanged_if_empty": "Deixar em branco para não modificar",
-        "dont_check_sender_acl": "Não verificar o remetente para o domínio %s"
+        "dont_check_sender_acl": "Não verificar o remetente para o domínio %s",
+        "username": "Administrador"
     },
     "add": {
         "domain": "Domínio",
@@ -215,7 +226,8 @@
         "select_domain": "Selecione um domínio antes",
         "password": "Senha:",
         "password_repeat": "Confirmar a senha (repetir):",
-        "port": "Port"
+        "port": "Port",
+        "username": "Administrador"
     },
     "login": {
         "username": "Usuário",
@@ -253,6 +265,13 @@
         "admin_details": "Editar informações do administrator",
         "unchanged_if_empty": "Deixar em branco para não alterar",
         "access": "Acessos",
-        "no_record": "Nenhum registro"
+        "no_record": "Nenhum registro",
+        "filter_table": "Procurar",
+        "domain": "Domínio",
+        "spamfilter": "Filtro de Spam"
+    },
+    "quarantine": {
+        "action": "Ação",
+        "remove": "Remover"
     }
 }
