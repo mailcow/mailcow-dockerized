@@ -103,7 +103,8 @@
         "app_links": "S'han desat els canvis als enallaços a App",
         "ui_texts": "S'han desat els canvis als noms de App",
         "reset_main_logo": "Restablir el logo per defecte",
-        "items_released": "S'han alliberat els elements seleccionats"
+        "items_released": "S'han alliberat els elements seleccionats",
+        "item_deleted": "S'ha esborrat %s"
     },
     "user": {
         "loading": "Carregant...",
@@ -268,7 +269,14 @@
         "remove_row": "Eliminar fila",
         "add_row": "Afegir fila",
         "reset_default": "Restablir",
-        "merged_vars_hint": "Les files en gris venen de <code>vars.(local.)inc.php</code> i no es poden modificar."
+        "merged_vars_hint": "Les files en gris venen de <code>vars.(local.)inc.php</code> i no es poden modificar.",
+        "subject": "Assumpte",
+        "quarantine": "Quarantena",
+        "recipients": "Recipients",
+        "sender": "Emissor",
+        "rsetting_desc": "Short description",
+        "dkim_private_key": "Clau privada",
+        "domain": "Domini"
     },
     "start": {
         "mailcow_apps_detail": "Tria una aplicació (de moment només SOGo) per a accedir als teus correus, calendari, contactes i més.",
@@ -347,7 +355,11 @@
         "recipient_map_old": "Destinatari original",
         "recipient_map_new": "Nou destinatari",
         "add_recipient_map_entry": "Afegir 'Recipient map'",
-        "add_sender_map_entry": "Afegir 'Sender map'"
+        "add_sender_map_entry": "Afegir 'Sender map'",
+        "recipient_map": "Recipient map",
+        "bcc_destination": "Destí/ns BCC",
+        "tls_enforce_out": "Forçar TLS al enviar",
+        "tls_enforce_in": "Forçar TLS al rebre"
     },
     "info": {
         "no_action": "No hi ha cap acció aplicable"
@@ -517,5 +529,11 @@
         "atts": "Adjunts",
         "release_body": "Hem adjuntat el teu missatge com a eml en aquest missatge.",
         "release_subject": "Element potencialment perillós %s en quarantena"
+    },
+    "acl": {
+        "recipient_maps": "Recipient maps",
+        "filters": "Filtres",
+        "bcc_maps": "BCC maps",
+        "syncjobs": "Feines de sincronització"
     }
 }
