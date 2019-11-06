@@ -91,7 +91,8 @@
         "forwarding_host_removed": "Перенаправление узла %s удалено",
         "forwarding_host_added": "Перенаправление узла %s добавлено",
         "relayhost_removed": "Промежуточный узел %s удален",
-        "relayhost_added": "Промежуточный узел %s добавлен"
+        "relayhost_added": "Промежуточный узел %s добавлен",
+        "item_deleted": "Элемент %s успешно удален"
     },
     "user": {
         "messages": "письма",
@@ -234,7 +235,9 @@
         "remove_row": "Удалить строку",
         "add_row": "Добавить строку",
         "reset_default": "Восстановить по умолчанию",
-        "merged_vars_hint": "Серым цветом выделены строки полученные из <code>vars.(local.)inc.php</code> и не могут быть изменены."
+        "merged_vars_hint": "Серым цветом выделены строки полученные из <code>vars.(local.)inc.php</code> и не могут быть изменены.",
+        "dkim_private_key": "Закрытый ключ",
+        "domain": "Домен"
     },
     "start": {
         "mailcow_apps_detail": "Используйте приложения для доступа к вашей почте, календарю, контактам и многое другое.",
@@ -282,7 +285,12 @@
         "deactivate": "Отключить",
         "owner": "Владелец",
         "mins_interval": "Интервал (минуты)",
-        "last_run": "Последний запуск"
+        "last_run": "Последний запуск",
+        "inactive": "Неактивный",
+        "sync_jobs": "Задания синхронизации",
+        "excludes": "Исключает",
+        "tls_enforce_out": "Принудительное TLS исходящих",
+        "tls_enforce_in": "Принудительное TLS входящих"
     },
     "info": {
         "no_action": "Действий не предусмотрено"
@@ -401,5 +409,15 @@
         "scan_qr_code": "Please scan the following code with your authenticator app or enter the code manually.",
         "enter_qr_code": "Your TOTP code if your device cannot scan QR codes",
         "confirm_totp_token": "Please confirm your changes by entering the generated token"
+    },
+    "acl": {
+        "syncjobs": "Задания синхронизации"
+    },
+    "quarantine": {
+        "action": "Действия",
+        "remove": "Удалить",
+        "quick_actions": "Действия",
+        "toggle_all": "Выбрать все",
+        "empty": "Нет результатов"
     }
 }
