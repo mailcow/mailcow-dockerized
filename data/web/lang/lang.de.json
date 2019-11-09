@@ -310,7 +310,7 @@
     "admin": {
         "spamfilter": "Spamfilter",
         "domain_s": "Domain(s)",
-        "rspamd-com_settings": "<a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd docs</a>\r\n  - Ein Name wird automatisch generiert. Beispielinhalte zur Einsicht stehen nachstehend bereit.",
+        "rspamd-com_settings": "Ein Name wird automatisch generiert. Beispielinhalte zur Einsicht stehen nachstehend bereit. Siehe auch <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd docs</a>",
         "no_new_rows": "Keine weiteren Zeilen vorhanden",
         "additional_rows": " zusätzliche Zeilen geladen",
         "private_key": "Private Key",
@@ -646,7 +646,11 @@
         "alias_domain_backupmx": "Alias-Domain für Relay-Domain inaktiv",
         "add_domain_record_first": "Bitte zuerst eine Domain hinzufügen",
         "no": "&#10005;",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "insert_preset": "Beispiel \"%s\" laden",
+        "sieve_preset_header": "Beispielinhalte zur Einsicht stehen nachstehend bereit. Siehe auch <a href=\"https://de.wikipedia.org/wiki/Sieve\" target=\"_blank\">Wikipedia</a>.",
+        "sieve_preset_1": "E-Mails mit potenziell gefährlichen Dateitypen abweisen",
+        "sieve_preset_2": "E-Mail eines bestimmten Absenders immer als gelesen markieren"
     },
     "edit": {
         "sogo_visible": "Alias in SOGo sichtbar",
