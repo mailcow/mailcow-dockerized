@@ -601,11 +601,11 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "mailbox":
             switch ($object) {
               case "all":
-                if(empty($extra)) {
+                if (empty($extra)) {
                   $domains = mailbox('get', 'domains');
                 }
                 else {
-                  $domains = [ $extra ];
+                  $domains = array($extra);
                 }
                 if (!empty($domains)) {
                   foreach ($domains as $domain) {
@@ -945,11 +945,11 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "alias":
             switch ($object) {
               case "all":
-                if(empty($extra)) {
+                if (empty($extra)) {
                   $domains = array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains'));
                 }
                 else {
-                  $domains = [ $extra ];
+                  $domains = array($extra);
                 }
                 if (!empty($domains)) {
                   foreach ($domains as $domain) {
