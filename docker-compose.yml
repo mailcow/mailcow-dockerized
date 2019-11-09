@@ -30,6 +30,7 @@ services:
         - MYSQL_DATABASE=${DBNAME}
         - MYSQL_USER=${DBUSER}
         - MYSQL_PASSWORD=${DBPASS}
+#        - MYSQL_INITDB_SKIP_TZINFO=1
       restart: always
       ports:
         - "${SQL_PORT:-127.0.0.1:13306}:3306"
@@ -174,7 +175,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.96
+      image: mailcow/dovecot:1.97
       build: ./data/Dockerfiles/dovecot
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
