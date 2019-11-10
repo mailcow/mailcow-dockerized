@@ -563,6 +563,7 @@
         "active": "Aktivní",
         "action": "Akce",
         "backup_mx": "Záložní MX",
+        "domain_admins": "Správci domén",
         "domain_aliases": "Doménové aliasy",
         "target_domain": "Cílová doména",
         "target_address": "Cílová adresa",

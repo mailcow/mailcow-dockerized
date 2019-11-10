@@ -563,6 +563,7 @@
         "active": "Aktiivinen",
         "action": "Toiminnot",
         "backup_mx": "Varmuuskopiointi MX",
+        "domain_admins": "Verkkotunnuksien järjestelmänvalvojat",
         "domain_aliases": "Domain alueiden aliakset",
         "target_domain": "Kohde verkkotunnus alue",
         "target_address": "Siiretty osoitteseen",

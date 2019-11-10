@@ -565,6 +565,7 @@
         "active": "Actief",
         "action": "Handeling",
         "backup_mx": "Secundaire MX",
+        "domain_admins": "Domeinbeheerders",
         "domain_aliases": "Domeinaliassen",
         "target_domain": "Doeldomein",
         "target_address": "Doeladres",
