@@ -399,6 +399,9 @@ jQuery(function($){
               },
               display: function(context) {
                 return context.dataset.data[context.dataIndex] !== 0;
+              },
+              formatter: function(value, context) {
+                return Math.round(value/total*100) + '%';
               }
             }
           }
