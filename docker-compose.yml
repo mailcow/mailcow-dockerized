@@ -30,7 +30,7 @@ services:
         - MYSQL_DATABASE=${DBNAME}
         - MYSQL_USER=${DBUSER}
         - MYSQL_PASSWORD=${DBPASS}
-#        - MYSQL_INITDB_SKIP_TZINFO=1
+        - MYSQL_INITDB_SKIP_TZINFO=1
       restart: always
       ports:
         - "${SQL_PORT:-127.0.0.1:13306}:3306"
@@ -97,7 +97,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.52
+      image: mailcow/phpfpm:1.53
       build: ./data/Dockerfiles/phpfpm
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
@@ -401,7 +401,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:1.35
+      image: mailcow/dockerapi:1.36
       restart: always
       build: ./data/Dockerfiles/dockerapi
       oom_kill_disable: true
