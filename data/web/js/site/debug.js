@@ -410,7 +410,7 @@ jQuery(function($){
 
         var chart = new Chart(chartcanvas.getContext("2d"), {
           plugins: [ChartDataLabels],
-          type: 'pie',
+          type: 'doughnut',
           data: graphdata,
           options: options
         });
