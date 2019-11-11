@@ -283,7 +283,7 @@
         "eas_reset": "Tyhjennä ActiveSync-laitteen väli muisti",
         "eas_reset_now": "Tyhjennä",
         "eas_reset_help": "Monissa tapauksissa laitteen väli muistin nollaaminen auttaa palauttamaan rikki menneen ActiveSync-profiilin.<br><b>Huomio:</b> Kaikki elementit ladataan uudelleen!",
-        "sogo_profile_reset": " Tyhjennä SOGo - Webmail profile",
+        "sogo_profile_reset": "Tyhjennä SOGo - Webmail profile",
         "sogo_profile_reset_now": "Tyhjennä profiili",
         "sogo_profile_reset_help": "Tämä tuhoaa käyttäjän SOGo Webmail-profiilin ja <b>poistaa kaikki yhteys-ja kalenteri tiedot..</b>.",
         "encryption": "Salaus",
@@ -438,7 +438,7 @@
         "quota_notifications_vars": "{{percent}} on yhtä suuri kuin käyttäjän nykyinen kiintiö<br>{{username}} on postilaatikon nimi",
         "active_rspamd_settings_map": "Aktiiviset asetukset",
         "quota_notifications_info": "Kiintiöilmoitukset lähetetään käyttäjille kerran ylittäessään 80% ja kerran ylittäessään 95% käytöstä.",
-        "quarantine_retention_size": " Pidätykset per postilaatikko:<br><small>0 ilmaisee <b>inactive</b>.</small>",
+        "quarantine_retention_size": "Pidätykset per postilaatikko:<br><small>0 ilmaisee <b>inactive</b>.</small>",
         "quarantine_max_size": "Suurin koko MiB: nä (suuremmat elementit hylätään):<br><small>0 tekee <b>ei</b> ilmoittaa rajoittamaton.</small>",
         "quarantine_max_age": "Enimmäisikä päivinä<br><small>Arvon on oltava vähintään 1 päivä.</small>",
         "quarantine_exclude_domains": "Sulje verkkotunnukset ja alias-verkkotunnukset pois",
@@ -641,7 +641,8 @@
         "recipient_map_new": "Uusi vastaanottaja",
         "add_recipient_map_entry": "Lisää vastaanottajan kartta",
         "mailbox_defquota": "Tilin koko",
-        "alias_domain_backupmx": "Alias verkkotunnus alue passiivinen välitys verkkotunnus alueella"
+        "alias_domain_backupmx": "Alias verkkotunnus alue passiivinen välitys verkkotunnus alueella",
+        "insert_preset": "Lisää esimerkki esimääritetty \"%s\""
     },
     "edit": {
         "sogo_visible": "Alias näkyy SOGo-kohteessa",
