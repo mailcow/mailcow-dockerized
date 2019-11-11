@@ -569,6 +569,7 @@
         "active": "Aktiv",
         "action": "Aktion",
         "backup_mx": "Backup MX",
+        "domain_admins": "Domain-Administratoren",
         "domain_aliases": "Domain-Aliasse",
         "target_domain": "Ziel-Domain",
         "target_address": "Ziel-Adresse",

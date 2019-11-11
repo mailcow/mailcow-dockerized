@@ -262,6 +262,7 @@
         "active": "Activo",
         "action": "Acción",
         "backup_mx": "MX de respaldo",
+        "domain_admins": "Administradores por dominio",
         "domain_aliases": "Alias de dominio",
         "target_domain": "Dominio destino",
         "target_address": "Dirección destino",

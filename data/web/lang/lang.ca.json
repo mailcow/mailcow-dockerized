@@ -298,6 +298,7 @@
         "active": "Actiu",
         "action": "Acció",
         "backup_mx": "Backup MX",
+        "domain_admins": "Administradores de dominio",
         "domain_aliases": "Àlies de domini",
         "target_domain": "Domini destí",
         "target_address": "Direcció Goto",

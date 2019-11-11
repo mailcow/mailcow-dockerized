@@ -303,6 +303,7 @@
         "active": "Aktīvs",
         "action": "Rīcība",
         "backup_mx": "Rezerves kopija MX",
+        "domain_admins": "Domēna administratori",
         "domain_aliases": "Domēna aliases",
         "target_domain": "Mērķa domēns",
         "target_address": "Doties uz  adresi",
