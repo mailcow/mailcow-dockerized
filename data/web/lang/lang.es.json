@@ -343,7 +343,8 @@
         "excludes": "Excluye",
         "last_run": "Última ejecución",
         "mins_interval": "Intervalo (min)",
-        "no_record_single": "Sin registro"
+        "no_record_single": "Sin registro",
+        "insert_preset": "Insertar ejemplo preestablecido \"%s\""
     },
     "start": {
         "mailcow_apps_detail": "Utiliza una aplicación de mailcow para acceder a tus correos, calendario, contactos y más.",
