@@ -1,6 +1,6 @@
 {
     "header": {
-        "apps": "Apps",
+        "apps": "AppsTEST",
         "restart_sogo": "Restart SOGo",
         "restart_netfilter": "Restart netfilter",
         "mailcow_settings": "Configuration",
