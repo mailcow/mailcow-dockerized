@@ -354,7 +354,7 @@
         "rsetting_content": "Regelinhalt",
         "rsetting_none": "Keine Regel hinterlegt",
         "rsetting_no_selection": "Bitte eine Regel auswählen",
-        "rsettings_preset_1": "Alles außer DKIM und Ratelimits für authentifizierte Benutzer deaktivieren\"",
+        "rsettings_preset_1": "Alles außer DKIM und Ratelimits für authentifizierte Benutzer deaktivieren",
         "rsettings_preset_2": "Spam an Postmaster-Addressen nicht blockieren",
         "rsettings_insert_preset": "Beispiel \"%s\" laden",
         "rsetting_add_rule": "Regel hinzufügen",
