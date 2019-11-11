@@ -533,7 +533,8 @@
         "confirm_delete": "Confirm the deletion of this element.",
         "qhandler_success": "Request successfully sent to the system. You can now close the window.",
         "release_body": "We have attached your message as eml file to this message.",
-        "release_subject": "Potentially damaging quarantine item %s"
+        "release_subject": "Potentially damaging quarantine item %s",
+        "notified": "Notified"
     },
     "mailbox": {
         "tls_policy_maps": "TLS policy maps",
