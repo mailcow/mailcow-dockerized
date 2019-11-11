@@ -259,6 +259,7 @@
         "active": "Активный",
         "action": "Действия",
         "backup_mx": "Резервное копирование MX",
+        "domain_admins": "Администраторы домена",
         "domain_aliases": "Псевдонимы доменов",
         "target_domain": "Целевой домен",
         "target_address": "Основной адрес",
