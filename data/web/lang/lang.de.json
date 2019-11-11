@@ -534,7 +534,8 @@
         "qhandler_success": "Aktion wurde an das System übergeben. Sie dürfen dieses Fenster nun schließen.",
         "release_body": "Die ursprüngliche Nachricht wurde als EML-Datei im Anhang hinterlegt.",
         "release_subject": "Potentiell schädliche Nachricht aus Quarantäne: %s",
-        "confirm_delete": "Bestätigen Sie die Löschung dieses Elements."
+        "confirm_delete": "Bestätigen Sie die Löschung dieses Elements.",
+        "notified": "Benachrichtigt"
     },
     "mailbox": {
         "tls_policy_maps": "TLS-Richtlinien",
