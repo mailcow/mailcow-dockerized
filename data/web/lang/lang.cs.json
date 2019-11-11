@@ -271,7 +271,7 @@
         "running": "Běží",
         "tls_policy_warning": "<strong>Varování:</strong> Pokud se rozhodnete vynutit šifrovaný přenos pošty, může dojít ke ztrátě e-mailů.<br>Zprávy, které nesplňují tuto politiku, budou poštovním systémem odmítnuty.<br>Tato volba ovlivňuje primární e-mailovou adresu (přihlašovací jméno), všechny adresy odvozené z doménových aliasů i aliasy, jež mají tuto poštovní chránku jako cíl.",
         "tls_policy": "Politika šifrování",
-        "tls_enforce_in": "Vynutit TLS pro příchozí poštu ",
+        "tls_enforce_in": "Vynutit TLS pro příchozí poštu",
         "tls_enforce_out": "Vynutit TLS pro odchozí poštu",
         "no_record": "Žádný záznam",
         "tag_handling": "Zacházení s označkovanou poštou",
@@ -641,7 +641,8 @@
         "recipient_map_new": "Nový přijemce",
         "add_recipient_map_entry": "Přidat mapu příjemce",
         "mailbox_defquota": "Výchozí velikost schránky",
-        "alias_domain_backupmx": "Doménový alias není aktivní pro předávanou doménu"
+        "alias_domain_backupmx": "Doménový alias není aktivní pro předávanou doménu",
+        "insert_preset": "Vložit příklad nastavení \"%s\""
     },
     "edit": {
         "sogo_visible": "Alias dostupný v SOGo",
