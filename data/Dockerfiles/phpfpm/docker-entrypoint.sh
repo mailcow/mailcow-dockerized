@@ -77,7 +77,7 @@ fi
 
 # Check mysql tz import
 TZ_CHECK=$(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT CONVERT_TZ('2019-11-02 23:33:00','Europe/Berlin','UTC') AS time;" -BN 2> /dev/null)
-if [[ -z ${TZ_CHECK} ]]; then
+if [[ -z ${TZ_CHECK} ]] || [[ "${TZ_CHECK}" == "NULL" ]]; then
   SQL_FULL_TZINFO_IMPORT_RETURN=$(curl --silent --insecure -XPOST https://dockerapi/containers/${CONTAINER_ID}/exec -d '{"cmd":"system", "task":"mysql_tzinfo_to_sql"}' --silent -H 'Content-type: application/json')
   echo "MySQL mysql_tzinfo_to_sql - debug output:"
   echo ${SQL_FULL_TZINFO_IMPORT_RETURN}
