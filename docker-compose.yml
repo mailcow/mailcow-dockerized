@@ -229,7 +229,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.41
+      image: mailcow/postfix:1.42
       build: ./data/Dockerfiles/postfix
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
@@ -346,7 +346,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.30
+      image: mailcow/netfilter:1.31
       build: ./data/Dockerfiles/netfilter
       stop_grace_period: 30s
       depends_on:
