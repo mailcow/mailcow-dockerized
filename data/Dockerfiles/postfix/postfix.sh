@@ -313,9 +313,14 @@ if [ -f /opt/postfix/conf/extra.cf ]; then
   cat /opt/postfix/conf/extra.cf >> /opt/postfix/conf/main.cf
 fi
 
+if [ ! -f /opt/postfix/conf/custom_transport.pcre ]; then
+  echo "Creating dummy custom_transport.pcre"
+  touch /opt/postfix/conf/custom_transport.pcre
+fi
+
 # Fix Postfix permissions
-chown -R root:postfix /opt/postfix/conf/sql/
-chmod 640 /opt/postfix/conf/sql/*.cf
+chown -R root:postfix /opt/postfix/conf/sql/ /opt/postfix/conf/custom_transport.pcre
+chmod 640 /opt/postfix/conf/sql/*.cf /opt/postfix/conf/custom_transport.pcre
 chgrp -R postdrop /var/spool/postfix/public
 chgrp -R postdrop /var/spool/postfix/maildrop
 postfix set-permissions
