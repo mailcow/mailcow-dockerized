@@ -17,8 +17,14 @@ function presets($_action, $_data = null)
   global $lang;
   if ($_action === 'get') {
     $kind = strtolower(trim($_data));
-    if (!in_array($kind, ['rspamd', 'sieve'], true)) {
+    $langSection = 'admin';
+
+    if (!in_array($kind, ['admin-rspamd', 'mailbox-sieve'], true)) {
       return [];
+    }
+
+    if ($kind === 'mailbox-sieve') {
+      $langSection = 'mailbox';
     }
 
     $presets = [];
@@ -27,12 +33,9 @@ function presets($_action, $_data = null)
 
       /* get translated headlines */
       if (isset($preset['headline']) && strpos($preset['headline'], 'lang.') === 0) {
-        $textName = trim(substr($preset['headline'], 5));
-
-        if ($kind === 'rspamd') {
-          $preset['headline'] = $lang['admin'][$textName];
-        } elseif ($kind === 'sieve') {
-          $preset['headline'] = $lang['mailbox'][$textName];
+        $langTextName = trim(substr($preset['headline'], 5));
+        if (isset($lang[$langSection][$langTextName])) {
+          $preset['headline'] = $lang[$langSection][$langTextName];
         }
       }
 
