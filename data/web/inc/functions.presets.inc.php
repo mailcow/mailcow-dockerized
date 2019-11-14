@@ -1,7 +1,4 @@
 <?php
-
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/Spyc.php';
-
 function presets($_action, $_data = null)
 {
   if ($_SESSION['mailcow_cc_role'] !== 'admin') {
