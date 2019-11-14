@@ -8,6 +8,10 @@ var rspamdPresets = [
     codeValue: 'priority = 10;\nrcpt = "/postmaster@.*/";\nwant_spam = yes;'
   }
 ];
+/*
+TODO: aus API holen:
+/api/v1/get/rspamd/sieve/
+ */
 
 var rspamd_presetsElem = document.getElementById("rspamd_presets");
 if (rspamd_presetsElem && rspamdPresets) {
