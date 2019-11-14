@@ -8,6 +8,10 @@ var sieveMailboxPresets = [
     codeValue: 'require ["envelope", "imap4flags"];\nif envelope "from" "mark@me-read.com"\n{\n   setflag "\\\\seen";\n}'
   }
 ];
+/*
+TODO: aus API holen:
+/api/v1/get/rspamd/sieve/
+ */
 
 var sieve_presetsElem = document.getElementById("sieve_presets");
 if (sieve_presetsElem && sieveMailboxPresets) {
