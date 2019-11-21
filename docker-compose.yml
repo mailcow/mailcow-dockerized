@@ -53,7 +53,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.32
+      image: mailcow/clamd:1.33
       build: ./data/Dockerfiles/clamd
       restart: always
       dns:
