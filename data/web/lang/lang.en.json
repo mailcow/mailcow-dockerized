@@ -655,7 +655,7 @@
     },
     "edit": {
         "sogo_visible": "Alias is visible in SOGo",
-        "sogo_visible_info": "This option only affects objects, that can be displayed in SOGo (shared or non-shared alias addresses pointing to at least one local mailbox).",
+        "sogo_visible_info": "This option only affects objects, that can be displayed in SOGo (shared or non-shared alias addresses pointing to at least one local mailbox). Please note that if option is disabled, users will not be able to select alias address as sender in SOGo.",
         "syncjob": "Edit sync job",
         "hostname": "Hostname",
         "encryption": "Encryption",
@@ -711,7 +711,7 @@
         "comment_info": "A private comment is not visible to the user, while a public comment is shown as tooltip when hovering it in a users overview",
         "extended_sender_acl": "External sender addresses",
         "extended_sender_acl_info": "A DKIM domain key should be imported, if available.<br>\r\n  Remember to add this server to the corresponding SPF TXT record.<br>\r\n  Whenever a domain or alias domain is added to this server, that overlaps with an external address, the external address is removed.<br>\r\n  Use @domain.tld to allow to send as *@domain.tld.",
-        "sender_acl_info": "If mailbox user A is allowed to send as mailbox user B, the sender address is not automatically displayed as selectable \"from\" field in SOGo.<br>\r\n  Mailbox user A needs to create a delegation in SOGo to allow mailbox user b to select their address as sender. This behaviour does not apply to alias addresses.",
+        "sender_acl_info": "If mailbox user A is allowed to send as mailbox user B, the sender address is not automatically displayed as selectable \"from\" field in SOGo.<br>\r\n  Mailbox user B needs to create a delegation in SOGo to allow mailbox user A to select their address as sender. Delegation is avaible in SOGo from Menu (3 dots) right after user email in Mail view. This behaviour does not apply to alias addresses.",
         "nexthop": "Next hop",
         "timeout1": "Timeout for connection to remote host",
         "timeout2": "Timeout for connection to local host",
