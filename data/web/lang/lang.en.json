@@ -655,7 +655,7 @@
     },
     "edit": {
         "sogo_visible": "Alias is visible in SOGo",
-        "sogo_visible_info": "This option only affects objects, that can be displayed in SOGo (shared or non-shared alias addresses pointing to at least one local mailbox). Please note that if option is disabled, users will not be able to select alias address as sender in SOGo.",
+        "sogo_visible_info": "This option only affects objects, that can be displayed in SOGo (shared or non-shared alias addresses pointing to at least one local mailbox). If hidden, an alias will not appear as selectable sender in SOGo.",
         "syncjob": "Edit sync job",
         "hostname": "Hostname",
         "encryption": "Encryption",
