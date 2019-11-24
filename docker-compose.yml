@@ -3,7 +3,6 @@ services:
 
     unbound-mailcow:
       image: mailcow/unbound:1.9
-      build: ./data/Dockerfiles/unbound
       environment:
         - TZ=${TZ}
       volumes:
@@ -54,7 +53,6 @@ services:
 
     clamd-mailcow:
       image: mailcow/clamd:1.33
-      build: ./data/Dockerfiles/clamd
       restart: always
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -70,7 +68,6 @@ services:
 
     rspamd-mailcow:
       image: mailcow/rspamd:1.56
-      build: ./data/Dockerfiles/rspamd
       stop_grace_period: 30s
       depends_on:
         - nginx-mailcow
@@ -98,7 +95,6 @@ services:
 
     php-fpm-mailcow:
       image: mailcow/phpfpm:1.54
-      build: ./data/Dockerfiles/phpfpm
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -147,7 +143,6 @@ services:
 
     sogo-mailcow:
       image: mailcow/sogo:1.63
-      build: ./data/Dockerfiles/sogo
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -176,7 +171,6 @@ services:
 
     dovecot-mailcow:
       image: mailcow/dovecot:1.97
-      build: ./data/Dockerfiles/dovecot
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       cap_add:
@@ -230,7 +224,6 @@ services:
 
     postfix-mailcow:
       image: mailcow/postfix:1.42
-      build: ./data/Dockerfiles/postfix
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
         - ./data/assets/ssl:/etc/ssl/mail/:ro
@@ -317,7 +310,6 @@ services:
       depends_on:
         - nginx-mailcow
       image: mailcow/acme:1.63
-      build: ./data/Dockerfiles/acme
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -347,7 +339,6 @@ services:
 
     netfilter-mailcow:
       image: mailcow/netfilter:1.31
-      build: ./data/Dockerfiles/netfilter
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -371,7 +362,6 @@ services:
       image: mailcow/watchdog:1.62
       # Debug
       #command: /watchdog.sh
-      build: ./data/Dockerfiles/watchdog
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       volumes:
@@ -403,7 +393,6 @@ services:
     dockerapi-mailcow:
       image: mailcow/dockerapi:1.36
       restart: always
-      build: ./data/Dockerfiles/dockerapi
       oom_kill_disable: true
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -419,7 +408,6 @@ services:
 
     solr-mailcow:
       image: mailcow/solr:1.7
-      build: ./data/Dockerfiles/solr
       restart: always
       volumes:
         - solr-vol-1:/opt/solr/server/solr/dovecot-fts/data
@@ -437,7 +425,6 @@ services:
     olefy-mailcow:
       image: mailcow/olefy:1.2
       restart: always
-      build: ./data/Dockerfiles/olefy
       environment:
         - TZ=${TZ}
         - OLEFY_BINDADDRESS=0.0.0.0
