@@ -69,7 +69,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.55
+      image: mailcow/rspamd:1.56
       build: ./data/Dockerfiles/rspamd
       stop_grace_period: 30s
       depends_on:
@@ -146,7 +146,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.62
+      image: mailcow/sogo:1.63
       build: ./data/Dockerfiles/sogo
       environment:
         - DBNAME=${DBNAME}
@@ -368,7 +368,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.61
+      image: mailcow/watchdog:1.62
       # Debug
       #command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog
