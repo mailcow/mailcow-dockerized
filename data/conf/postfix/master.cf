@@ -6,18 +6,20 @@ smtpd      pass  -       -       n       -       -       smtpd
   -o smtpd_sender_restrictions=permit_mynetworks,reject_unlisted_sender,reject_unknown_sender_domain
 
 # smtpd tls-wrapped (smtps) on 465/tcp
+# TLS protocol can be modified by setting smtps_smtpd_tls_mandatory_protocols in extra.cf
 smtps    inet  n       -       n       -       -       smtpd
   -o smtpd_tls_wrappermode=yes
   -o smtpd_client_restrictions=permit_mynetworks,permit_sasl_authenticated,reject
-  -o smtpd_tls_mandatory_protocols=!SSLv2,!SSLv3
+  -o smtpd_tls_mandatory_protocols=$smtps_smtpd_tls_mandatory_protocols
   -o tls_preempt_cipherlist=yes
 
 # smtpd with starttls on 587/tcp
+# TLS protocol can be modified by setting submission_smtpd_tls_mandatory_protocols in extra.cf
 submission inet n       -       n       -       -       smtpd
   -o smtpd_client_restrictions=permit_mynetworks,permit_sasl_authenticated,reject
   -o smtpd_enforce_tls=yes
   -o smtpd_tls_security_level=encrypt
-  -o smtpd_tls_mandatory_protocols=!SSLv2,!SSLv3
+  -o smtpd_tls_mandatory_protocols=$submission_smtpd_tls_mandatory_protocols
   -o tls_preempt_cipherlist=yes
 
 # used by SOGo

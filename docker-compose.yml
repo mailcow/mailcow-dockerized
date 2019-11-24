@@ -223,7 +223,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.42
+      image: mailcow/postfix:1.43
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
         - ./data/assets/ssl:/etc/ssl/mail/:ro
