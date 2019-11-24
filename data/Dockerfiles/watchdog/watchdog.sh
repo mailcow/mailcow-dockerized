@@ -442,7 +442,7 @@ fail2ban_checks() {
 acme_checks() {
   err_count=0
   diff_c=0
-  THRESHOLD=1
+  THRESHOLD=2
   ACME_LOG_STATUS=$(redis-cli -h redis GET ACME_FAIL_TIME)
   if [[ -z "${ACME_LOG_STATUS}" ]]; then
     redis-cli -h redis SET ACME_FAIL_TIME 0
