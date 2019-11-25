@@ -1,0 +1,31 @@
+version: '2.1'
+services:
+
+    php-fpm-mailcow:
+      volumes:
+        - /var/run/mysqld/mysqld.sock:/var/run/mysqld/mysqld.sock
+
+    sogo-mailcow:
+      volumes:
+        - /var/run/mysqld/mysqld.sock:/var/run/mysqld/mysqld.sock
+
+    dovecot-mailcow:
+      volumes:
+        - /var/run/mysqld/mysqld.sock:/var/run/mysqld/mysqld.sock
+
+    postfix-mailcow:
+      volumes:
+        - /var/run/mysqld/mysqld.sock:/var/run/mysqld/mysqld.sock
+
+    acme-mailcow:
+      volumes:
+        - /var/run/mysqld/mysqld.sock:/var/run/mysqld/mysqld.sock
+
+    watchdog-mailcow:
+      volumes:
+        - /var/run/mysqld/mysqld.sock:/var/run/mysqld/mysqld.sock
+
+    mysql-mailcow:
+      image: alpine:3.8
+      command: /bin/true
+      restart: "no"
