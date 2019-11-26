@@ -18,6 +18,8 @@ services:
 
     mysql-mailcow:
       image: mariadb:10.3
+      depends_on:
+        - unbound-mailcow
       stop_grace_period: 45s
       volumes:
         - mysql-vol-1:/var/lib/mysql/
@@ -171,6 +173,8 @@ services:
 
     dovecot-mailcow:
       image: mailcow/dovecot:1.97
+      depends_on:
+        - mysql-mailcow
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       cap_add:
@@ -223,7 +227,9 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.43
+      image: mailcow/postfix:1.44
+      depends_on:
+        - mysql-mailcow
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
         - ./data/assets/ssl:/etc/ssl/mail/:ro
