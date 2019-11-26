@@ -2,7 +2,7 @@ version: '2.1'
 services:
 
     unbound-mailcow:
-      image: mailcow/unbound:1.9
+      image: mailcow/unbound:1.10
       environment:
         - TZ=${TZ}
       volumes:
