@@ -1059,7 +1059,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                 <option value="none" <?=($result['policy'] != 'none') ?: 'selected';?>>none</option>
                 <option value="may" <?=($result['policy'] != 'may') ?: 'selected';?>>may</option>
                 <option value="encrypt" <?=($result['policy'] != 'encrypt') ?: 'selected';?>>encrypt</option>
-                <option value="dane" <?=($result['policy'] != 'dane') ?: 'selected';?>>dane-only</option>
+                <option value="dane" <?=($result['policy'] != 'dane') ?: 'selected';?>>dane</option>
                 <option value="dane-only" <?=($result['policy'] != 'dane-only') ?: 'selected';?>>dane-only</option>
                 <option value="fingerprint" <?=($result['policy'] != 'fingerprint') ?: 'selected';?>>fingerprint</option>
                 <option value="verify" <?=($result['policy'] != 'verify') ?: 'selected';?>>verify</option>
