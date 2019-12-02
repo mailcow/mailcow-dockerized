@@ -15,6 +15,9 @@ fi
 # Exit on error and pipefail
 set -o pipefail
 
+# switch working directory
+cd "$(dirname "$(readlink -f "$0")")"
+
 # Setting high dc timeout
 export COMPOSE_HTTP_TIMEOUT=600
 
@@ -23,7 +26,7 @@ PATH=$PATH:/opt/bin
 
 umask 0022
 
-for bin in curl docker-compose docker git awk sha1sum; do
+for bin in curl docker git awk sha1sum; do
   if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
 done
 
@@ -89,7 +92,6 @@ docker_garbage() {
   echo "If you want to cleanup further garbage collected by Docker, please make sure all containers are up and running before cleaning your system by executing \"docker system prune\""
 }
 
-
 while (($#)); do
   case "${1}" in
     --check|-c)
@@ -138,7 +140,7 @@ source mailcow.conf
 DOTS=${MAILCOW_HOSTNAME//[^.]};
 if [ ${#DOTS} -lt 2 ]; then
   echo "MAILCOW_HOSTNAME (${MAILCOW_HOSTNAME}) is not a FQDN!"
-  echo "Please change it to a FQDN and run docker-compose down followed by docker-compose up -d"
+  echo "Please change it to a FQDN and run update.sh again"
   exit 1
 fi
 
@@ -325,9 +327,22 @@ git fetch origin #${BRANCH}
 git checkout origin/${BRANCH} update.sh
 SHA1_2=$(sha1sum update.sh)
 if [[ ${SHA1_1} != ${SHA1_2} ]]; then
-  echo "update.sh changed, please run this script again, exiting."
   chmod +x update.sh
+  echo "update.sh changed, rerun with newer version..."
+  exec bash ./update.sh
   exit 0
+fi
+
+echo -e "\e[32mChecking for newer docker-compose...\e[0m"
+COMPOSE_VERSION_CURRENT=$(./docker-compose version --short 2>/dev/null || echo "none")
+COMPOSE_VERSION_EXPECTED=1.24.1
+if [[ "$COMPOSE_VERSION_EXPECTED" != "$COMPOSE_VERSION_CURRENT" ]]; then
+  if [[ -w ./docker-compose || ! -f ./docker-compose ]]; then
+    curl -#L https://github.com/docker/compose/releases/download/${COMPOSE_VERSION_EXPECTED}/run.sh > ./docker-compose
+    chmod +x ./docker-compose
+  else
+    echo -e "\e[33mWARNING: ./docker-compose is not writable. Version $COMPOSE_VERSION_EXPECTED is expected, but $COMPOSE_VERSION_CURRENT is installed\e[0m"
+  fi
 fi
 
 if [[ -f mailcow.conf ]]; then
@@ -354,9 +369,9 @@ git diff >> ${DIFF_FILE}
 echo -e "\e[32mPrefetching images...\e[0m"
 prefetch_images
 
-echo -e "Stopping mailcow... "
+echo -e "\e[32mStopping mailcow...\e[0m"
 sleep 2
-docker-compose down
+./docker-compose down
 
 # Silently fixing remote url from andryyy to mailcow
 git remote set-url origin https://github.com/mailcow/mailcow-dockerized
@@ -386,45 +401,25 @@ elif [[ ${MERGE_RETURN} == 1 ]]; then
 elif [[ ${MERGE_RETURN} != 0 ]]; then
   echo -e "\e[31m\nOh no, something went wrong. Please check the error message above.\e[0m"
   echo
-  echo "Run docker-compose up -d to restart your stack without updates or try again after fixing the mentioned errors."
+  echo "Run ./docker-compose up -d to restart your stack without updates or try again after fixing the mentioned errors."
   exit 1
-fi
-
-echo -e "\e[32mFetching new docker-compose version...\e[0m"
-sleep 2
-if [[ ! -z $(which pip) && $(pip list --local | grep -c docker-compose) == 1 ]]; then
-  true
-  #prevent breaking a working docker-compose installed with pip
-elif [[ $(curl -sL -w "%{http_code}" https://www.servercow.de/docker-compose/latest.php -o /dev/null) == "200" ]]; then
-  LATEST_COMPOSE=$(curl -#L https://www.servercow.de/docker-compose/latest.php)
-  COMPOSE_VERSION=$(docker-compose version --short)
-  if [[ "$LATEST_COMPOSE" != "$COMPOSE_VERSION" ]]; then
-    if [[ -w $(which docker-compose) ]]; then
-      curl -#L https://github.com/docker/compose/releases/download/${LATEST_COMPOSE}/docker-compose-$(uname -s)-$(uname -m) > $(which docker-compose)
-      chmod +x $(which docker-compose)
-    else
-      echo -e "\e[33mWARNING: $(which docker-compose) is not writable, but new version $LATEST_COMPOSE is available (installed: $COMPOSE_VERSION)\e[0m"
-    fi
-  fi
-else
-  echo -e "\e[33mCannot determine latest docker-compose version, skipping...\e[0m"
 fi
 
 echo -e "\e[32mFetching new images, if any...\e[0m"
 sleep 2
-docker-compose pull
+./docker-compose pull
 
 # Fix missing SSL, does not overwrite existing files
 [[ ! -d data/assets/ssl ]] && mkdir -p data/assets/ssl
 cp -n -d data/assets/ssl-example/*.pem data/assets/ssl/
 
-echo -e "Checking IPv6 settings... "
+echo -e "\e[32mChecking IPv6 settings...\e[0m"
 if grep -q 'SYSCTL_IPV6_DISABLED=1' mailcow.conf; then
   echo
   echo '!! IMPORTANT !!'
   echo
   echo 'SYSCTL_IPV6_DISABLED was removed due to complications. IPv6 can be disabled by editing "docker-compose.yml" and setting "enable_ipv6: true" to "enable_ipv6: false".'
-  echo 'This setting will only be active after a complete shutdown of mailcow by running "docker-compose down" followed by "docker-compose up -d".'
+  echo 'This setting will only be active after a complete shutdown of mailcow by running "./docker-compose down" followed by "./docker-compose up -d".'
   echo
   echo '!! IMPORTANT !!'
   echo
@@ -444,7 +439,7 @@ fi
 
 echo -e "\e[32mStarting mailcow...\e[0m"
 sleep 2
-docker-compose up -d --remove-orphans
+./docker-compose up -d --remove-orphans
 
 echo -e "\e[32mCollecting garbage...\e[0m"
 docker_garbage
@@ -453,4 +448,4 @@ docker_garbage
 #echo
 #git reflog --color=always | grep "Before update on "
 #echo
-#echo "Use \"git reset --hard hash-on-the-left\" and run docker-compose up -d afterwards."
+#echo "Use \"git reset --hard hash-on-the-left\" and run ./docker-compose up -d afterwards."
