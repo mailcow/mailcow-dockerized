@@ -365,7 +365,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.62
+      image: mailcow/watchdog:1.63
       # Debug
       #command: /watchdog.sh
       dns:
@@ -376,6 +376,7 @@ services:
         - ./data/assets/ssl:/etc/ssl/mail/:ro
       restart: always
       environment:
+        - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
         - LOG_LINES=${LOG_LINES:-9999}
         - TZ=${TZ}
         - DBNAME=${DBNAME}
