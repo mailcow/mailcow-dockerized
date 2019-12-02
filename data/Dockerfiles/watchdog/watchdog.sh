@@ -30,9 +30,30 @@ until [[ $(redis-cli -h redis-mailcow PING) == "PONG" ]]; do
   sleep 2
 done
 
+# One-time check
+if grep -qi "$(echo ${IPV6_NETWORK} | cut -d: -f1-3)" <<< "$(ip a s)"; then
+  if [[ -z "$(get_ipv6)" ]]; then
+    mail_error "ipv6-config" "enable_ipv6 is true in docker-compose.yml, but an IPv6 link could not be established. Please verify your IPv6 connection."
+  fi
+fi
+
 redis-cli -h redis-mailcow DEL F2B_RES > /dev/null
 
 # Common functions
+get_ipv6(){
+  local IPV6=
+  local IPV6_SRCS=
+  local TRY=
+  IPV6_SRCS[0]="ip6.korves.net"
+  IPV6_SRCS[1]="ip6.mailcow.email"
+  until [[ ! -z ${IPV6} ]] || [[ ${TRY} -ge 10 ]]; do
+    IPV6=$(curl --connect-timeout 3 -m 10 -L6s ${IPV6_SRCS[$RANDOM % ${#IPV6_SRCS[@]} ]} | grep "^\([0-9a-fA-F]\{0,4\}:\)\{1,7\}[0-9a-fA-F]\{0,4\}$")
+    [[ ! -z ${TRY} ]] && sleep 1
+    TRY=$((TRY+1))
+  done
+  echo ${IPV6}
+}
+
 array_diff() {
   # https://stackoverflow.com/questions/2312762, Alex Offshore
   eval local ARR1=\(\"\${$2[@]}\"\)
@@ -79,13 +100,14 @@ function mail_error() {
   IFS=',' read -r -a MAIL_RCPTS <<< "${WATCHDOG_NOTIFY_EMAIL}"
   for rcpt in "${MAIL_RCPTS[@]}"; do
     RCPT_DOMAIN=
-    RCPT_MX=
+    #RCPT_MX=
     RCPT_DOMAIN=$(echo ${rcpt} | awk -F @ {'print $NF'})
-    RCPT_MX=$(dig +short ${RCPT_DOMAIN} mx | sort -n | awk '{print $2; exit}')
-    if [[ -z ${RCPT_MX} ]]; then
-      log_msg "Cannot determine MX for ${rcpt}, skipping email notification..."
-      return 1
-    fi
+    # Latest smtp-cli looks up mx via dns
+    #RCPT_MX=$(dig +short ${RCPT_DOMAIN} mx | sort -n | awk '{print $2; exit}')
+    #if [[ -z ${RCPT_MX} ]]; then
+    #  log_msg "Cannot determine MX for ${rcpt}, skipping email notification..."
+    #  return 1
+    #fi
     [ -f "/tmp/${1}" ] && BODY="/tmp/${1}"
     timeout 10s ./smtp-cli --missing-modules-ok \
       --charset=UTF-8 \
@@ -93,8 +115,9 @@ function mail_error() {
       --body-plain="${BODY}" \
       --to=${rcpt} \
       --from="watchdog@${MAILCOW_HOSTNAME}" \
-      --server="${RCPT_MX}" \
-      --hello-host=${MAILCOW_HOSTNAME}
+      --hello-host=${MAILCOW_HOSTNAME} \
+      --ipv4
+      #--server="${RCPT_MX}"
     log_msg "Sent notification email to ${rcpt}"
   done
 }
