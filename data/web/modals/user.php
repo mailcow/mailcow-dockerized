@@ -171,7 +171,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
         <h3 class="modal-title"><?=$lang['add']['app_password'];?></h3>
       </div>
       <div class="modal-body">
-				<form class="form-horizontal" data-cached-form="true" role="form" data-id="add_syncjob">
+				<form class="form-horizontal" data-cached-form="true" role="form" data-id="add_apppasswd">
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="app_name"><?=$lang['add']['app_name'];?></label>
 						<div class="col-sm-10">
@@ -200,7 +200,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
-              <button class="btn btn-default" data-action="add_item" data-id="add_syncjob" data-api-url='add/syncjob' data-api-attr='{}' href="#"><?=$lang['admin']['add'];?></button>
+              <button class="btn btn-default" data-action="add_item" data-id="add_apppasswd" data-api-url='add/app-passwd' data-api-attr='{}' href="#"><?=$lang['admin']['add'];?></button>
 						</div>
 					</div>
 				</form>

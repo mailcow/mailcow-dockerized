@@ -1324,9 +1324,9 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           <form class="form-horizontal" data-id="editapp" role="form" method="post">
             <input type="hidden" value="0" name="active">
             <div class="form-group">
-              <label class="control-label col-sm-2" for="name">App</label>
+              <label class="control-label col-sm-2" for="app_name">App</label>
               <div class="col-sm-10">
-              <input type="text" class="form-control" name="name" id="name" value="<?=htmlspecialchars($result['name'], ENT_QUOTES, 'UTF-8');?>" required maxlength="255">
+              <input type="text" class="form-control" name="app_name" id="app_name" value="<?=htmlspecialchars($result['name'], ENT_QUOTES, 'UTF-8');?>" required maxlength="255">
               </div>
             </div>
             <div class="form-group">

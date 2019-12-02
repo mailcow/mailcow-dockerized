@@ -21,9 +21,9 @@ function app_passwd($_action, $_data = null) {
   }
   switch ($_action) {
     case 'add':
-      $name = trim($_data['name']);
-      $password     = $_data['password'];
-      $password2    = $_data['password2'];
+      $app_name = trim($_data['app_name']);
+      $password     = $_data['app_passwd'];
+      $password2    = $_data['app_passwd2'];
       $active = intval($_data['active']);
       $domain = mailbox('get', 'mailbox_details', $username)['domain'];
       if (empty($domain)) {
@@ -34,26 +34,24 @@ function app_passwd($_action, $_data = null) {
         );
         return false;
       }
-      if (!empty($password) && !empty($password2)) {
-        if (!preg_match('/' . $GLOBALS['PASSWD_REGEP'] . '/', $password)) {
-          $_SESSION['return'][] = array(
-            'type' => 'danger',
-            'log' => array(__FUNCTION__, $_action, $_data_log),
-            'msg' => 'password_complexity'
-          );
-          return false;
-        }
-        if ($password != $password2) {
-          $_SESSION['return'][] = array(
-            'type' => 'danger',
-            'log' => array(__FUNCTION__, $_action, $_data_log),
-            'msg' => 'password_mismatch'
-          );
-          return false;
-        }
-        $password_hashed = hash_password($password);
+      if (!preg_match('/' . $GLOBALS['PASSWD_REGEP'] . '/', $password)) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'password_complexity'
+        );
+        return false;
       }
-      if (empty($name)) {
+      if ($password != $password2) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'password_mismatch'
+        );
+        return false;
+      }
+      $password_hashed = hash_password($password);
+      if (empty($app_name)) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
@@ -63,12 +61,12 @@ function app_passwd($_action, $_data = null) {
       }
       try {
         $stmt = $pdo->prepare("INSERT INTO `app_passwd` (`name`, `mailbox`, `domain`, `password`, `active`)
-          VALUES (:name, :mailbox, :domain, :password, :active)");
+          VALUES (:app_name, :mailbox, :domain, :password, :active)");
         $stmt->execute(array(
-          ':name' => $name,
-          ':mailbox' => $mailbox,
+          ':app_name' => $app_name,
+          ':mailbox' => $username,
           ':domain' => $domain,
-          ':password' => $password,
+          ':password' => $password_hashed,
           ':active' => $active
         ));
       }
@@ -91,7 +89,7 @@ function app_passwd($_action, $_data = null) {
       foreach ($ids as $id) {
         $is_now = app_passwd('details', $id);
         if (!empty($is_now)) {
-          $name = (!empty($_data['name'])) ? $_data['name'] : $is_now['name'];
+          $app_name = (!empty($_data['app_name'])) ? $_data['app_name'] : $is_now['name'];
           $password = (!empty($_data['password'])) ? $_data['password'] : null;
           $password2 = (!empty($_data['password2'])) ? $_data['password2'] : null;
           $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
@@ -100,11 +98,11 @@ function app_passwd($_action, $_data = null) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data_log),
-            'msg' => array('settings_map_invalid', $id)
+            'msg' => array('app_passwd_id_invalid', $id)
           );
           continue;
         }
-        $name = trim($name);
+        $app_name = trim($app_name);
         if (!empty($password) && !empty($password2)) {
           if (!preg_match('/' . $GLOBALS['PASSWD_REGEP'] . '/', $password)) {
             $_SESSION['return'][] = array(
@@ -134,12 +132,12 @@ function app_passwd($_action, $_data = null) {
         }
         try {
           $stmt = $pdo->prepare("UPDATE `app_passwd` SET
-            `name` = :name,
+            `name` = :app_name,
             `mailbox` = :username,
             `active` = :active
               WHERE `id` = :id");
           $stmt->execute(array(
-            ':name' => $name,
+            ':app_name' => $app_name,
             ':username' => $username,
             ':active' => $active,
             ':id' => $id
