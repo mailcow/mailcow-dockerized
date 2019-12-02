@@ -836,7 +836,7 @@
         "unlimited_quota": "Unlimited quota for mailboxes",
         "extend_sender_acl": "Allow to extend sender ACL by external addresses",
         "prohibited": "Prohibited by ACL",
-        "sogo_access": "Allow management of SOGo access"
+        "sogo_access": "Allow management of SOGo access",
         "app_passwds": "Manage app passwords"
     },
     "login": {
