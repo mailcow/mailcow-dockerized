@@ -30,13 +30,6 @@ until [[ $(redis-cli -h redis-mailcow PING) == "PONG" ]]; do
   sleep 2
 done
 
-# One-time check
-if grep -qi "$(echo ${IPV6_NETWORK} | cut -d: -f1-3)" <<< "$(ip a s)"; then
-  if [[ -z "$(get_ipv6)" ]]; then
-    mail_error "ipv6-config" "enable_ipv6 is true in docker-compose.yml, but an IPv6 link could not be established. Please verify your IPv6 connection."
-  fi
-fi
-
 redis-cli -h redis-mailcow DEL F2B_RES > /dev/null
 
 # Common functions
@@ -160,6 +153,13 @@ get_container_ip() {
   done
   [[ ${LOOP_C} -gt 5 ]] && echo 240.0.0.0 || echo ${CONTAINER_IP}
 }
+
+# One-time check
+if grep -qi "$(echo ${IPV6_NETWORK} | cut -d: -f1-3)" <<< "$(ip a s)"; then
+  if [[ -z "$(get_ipv6)" ]]; then
+    mail_error "ipv6-config" "enable_ipv6 is true in docker-compose.yml, but an IPv6 link could not be established. Please verify your IPv6 connection."
+  fi
+fi
 
 nginx_checks() {
   err_count=0
