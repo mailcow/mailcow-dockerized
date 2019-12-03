@@ -100,7 +100,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
     <li role="presentation"><a href="#SpamAliases" aria-controls="SpamAliases" role="tab" data-toggle="tab"><?=$lang['user']['spam_aliases'];?></a></li>
     <li role="presentation"><a href="#Spamfilter" aria-controls="Spamfilter" role="tab" data-toggle="tab"><?=$lang['user']['spamfilter'];?></a></li>
     <li role="presentation"><a href="#Syncjobs" aria-controls="Syncjobs" role="tab" data-toggle="tab"><?=$lang['user']['sync_jobs'];?></a></li>
-    <!-- <li role="presentation"><a href="#AppPasswds" aria-controls="AppPasswds" role="tab" data-toggle="tab"><?=$lang['user']['app_passwds'];?></a></li> -->
+    <li role="presentation"><a href="#AppPasswds" aria-controls="AppPasswds" role="tab" data-toggle="tab"><?=$lang['user']['app_passwds'];?></a></li>
   </ul>
   <hr>
 
