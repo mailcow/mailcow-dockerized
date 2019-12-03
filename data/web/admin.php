@@ -97,7 +97,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
               </div>
               <p class="help-block">
                 <?=$lang['admin']['customer_id'];?>: <?=(isset($_SESSION['gal']['c'])) ? $_SESSION['gal']['c'] : '?';?> -
-                <?=$lang['admin']['service_id'];?>: <?=(isset($_SESSION['gal']['s'])) ? $_SESSION['gal']['s'] : '?';?>
+                <?=$lang['admin']['service_id'];?>: <?=(isset($_SESSION['gal']['s'])) ? $_SESSION['gal']['s'] : '?';?> -
                 <?=$lang['admin']['sal_level'];?>: <?=(isset($_SESSION['gal']['m'])) ? $_SESSION['gal']['m'] : '?';?>
               </p>
             </div>
