@@ -666,6 +666,8 @@
         "sieve_preset_2": "E-Mail eines bestimmten Absenders immer als gelesen markieren"
     },
     "edit": {
+        "app_name": "App Name",
+        "app_passwd": "App Passwörter",
         "sogo_visible": "Alias in SOGo sichtbar",
         "sogo_visible_info": "Diese Option hat lediglich Einfluss auf Objekte, die in SOGo darstellbar sind (geteilte oder nicht-geteilte Alias-Adressen mit dem Ziel mindestens einer lokalen Mailbox).",
         "syncjob": "Sync-Job bearbeiten",

@@ -665,6 +665,8 @@
         "sieve_preset_2": "Always mark the e-mail of a specific sender as seen"
     },
     "edit": {
+        "app_name": "App name",
+        "app_passwd": "App password",
         "sogo_visible": "Alias is visible in SOGo",
         "sogo_visible_info": "This option only affects objects, that can be displayed in SOGo (shared or non-shared alias addresses pointing to at least one local mailbox). If hidden, an alias will not appear as selectable sender in SOGo.",
         "syncjob": "Edit sync job",
