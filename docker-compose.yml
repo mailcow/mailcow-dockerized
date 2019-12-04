@@ -172,7 +172,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.99
+      image: mailcow/dovecot:1.101
       depends_on:
         - mysql-mailcow
       dns:
@@ -365,7 +365,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.64
+      image: mailcow/watchdog:1.65
       # Debug
       #command: /watchdog.sh
       dns:
