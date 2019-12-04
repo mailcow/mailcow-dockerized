@@ -114,6 +114,10 @@ EOF
 
 cat <<EOF > /var/lib/dovecot/app-passdb.lua
 function auth_password_verify(req, pass)
+  if req.domain == nil then
+    req.log_info(req, "Domain cannot be empty")
+    return dovecot.auth.PASSDB_RESULT_USER_UNKNOWN, "No such user"
+  end
   local cur,errorString = con:execute(string.format([[SELECT mailbox, password FROM app_passwd
     WHERE mailbox = '%s'
       AND active = '1'
@@ -121,13 +125,13 @@ function auth_password_verify(req, pass)
   local row = cur:fetch ({}, "a")
   while row do
     if req.password_verify(req, row.password, pass) == 1 then
-      req.log_warning(req, string.format("User %s logged in with app password", row.mailbox))
+      req.log_info(req, string.format("User %s logged in with app password", row.mailbox))
       cur:close()
       return dovecot.auth.PASSDB_RESULT_OK, "password=" .. pass
     end
     row = cur:fetch (row, "a")
   end
-  return dovecot.auth.PASSDB_RESULT_USER_UNKNOWN, "no such user"
+  return dovecot.auth.PASSDB_RESULT_USER_UNKNOWN, "No such user"
 end
 
 function script_init()
