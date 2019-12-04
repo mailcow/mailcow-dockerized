@@ -755,7 +755,7 @@
         "nexthop": "Nexthop",
         "port": "Poort",
         "app_name": "Naam van app",
-        "app_password": "Voeg appwachtwoord toe",
+        "app_password": "Maak appwachtwoord aan",
         "username": "Gebruikersnaam",
         "enc_method": "Versleutelingsmethode",
         "mins_interval": "Interval (min)",
