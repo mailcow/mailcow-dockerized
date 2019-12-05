@@ -206,6 +206,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "tls-policy-map":
             process_add_return(tls_policy_maps('add', $attr));
           break;
+          case "app-passwd":
+            process_add_return(app_passwd('add', $attr));
+          break;
           // return no route found if no case is matched
           default:
             http_response_code(404);
@@ -277,6 +280,33 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
 
               default:
                 $data = mailbox('get', 'domain_details', $object);
+                process_get_return($data);
+              break;
+            }
+          break;
+
+          case "app-passwd":
+            switch ($object) {
+              case "all":
+                $app_passwds = app_passwd('get');
+                if (!empty($app_passwds)) {
+                  foreach ($app_passwds as $app_passwd) {
+                    if ($details = app_passwd('details', $app_passwd['id'])) {
+                      $data[] = $details;
+                    }
+                    else {
+                      continue;
+                    }
+                  }
+                  process_get_return($data);
+                }
+                else {
+                  echo '{}';
+                }
+              break;
+
+              default:
+                $data = app_passwd('details', $object);
                 process_get_return($data);
               break;
             }
@@ -1121,6 +1151,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "oauth2-client":
             process_delete_return(oauth2('delete', 'client', array('id' => $items)));
           break;
+          case "app-passwd":
+            process_delete_return(app_passwd('delete', array('id' => $items)));
+          break;
           case "relayhost":
             process_delete_return(relayhost('delete', array('id' => $items)));
           break;
@@ -1248,6 +1281,9 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           break;
           case "recipient_map":
             process_edit_return(recipient_map('edit', array_merge(array('id' => $items), $attr)));
+          break;
+          case "app-passwd":
+            process_edit_return(app_passwd('edit', array_merge(array('id' => $items), $attr)));
           break;
           case "tls-policy-map":
             process_edit_return(tls_policy_maps('edit', array_merge(array('id' => $items), $attr)));

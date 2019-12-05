@@ -56,7 +56,9 @@
         "bcc_exists": "Ein BCC Map Eintrag %s existiert bereits als Typ %s",
         "private_key_error": "Schlüsselfehler: %s",
         "map_content_empty": "Inhalt darf nicht leer sein",
+        "app_name_empty": "App Name darf nicht leer sein",
         "settings_map_invalid": "Regel ID %s ist ungültig",
+        "app_passwd_id_invalid": "App Passwort ID %s ist ungültig",
         "global_map_invalid": "Rspamd Map %s ist ungültig",
         "global_map_write_error": "Kann globale Map ID %s nicht schreiben: %s",
         "invalid_host": "Ungültiger Host: %s",
@@ -144,7 +146,9 @@
         "bcc_edited": "BCC Map Eintrag %s wurde geändert",
         "bcc_deleted": "BCC Map Einträge gelöscht: %s",
         "settings_map_added": "Regel wurde gespeichert",
+        "app_passwd_added": "App Password wurde gespeichert",
         "settings_map_removed": "Regeln wurden entfernt: %s",
+        "app_passwd_removed": "App Passwort ID %s wurde entfernt",
         "saved_settings": "Regel wurde gespeichert",
         "dkim_removed": "DKIM-Key %s wurde entfernt",
         "dkim_added": "DKIM-Key %s wurde hinzugefügt",
@@ -212,6 +216,10 @@
         "session_ua": "Formular-Token ungültig: User-Agent-Validierungsfehler"
     },
     "user": {
+        "create_app_passwd": "Erstelle App Passwort",
+        "app_passwds": "App Passwörter",
+        "app_name": "App Name",
+        "app_hint": "App Passwörter sind alternative Passwörter für den <b>IMAP und SMTP</b> Login am Mailserver. Der Benutzername bleibt unverändert.<br>SOGo (und damit ActiveSync) ist mit diesem Kennwort nicht verwendbar.",
         "loading": "Lade...",
         "force_pw_update": "Das Passwort für diesen Benutzer <b>muss</b> geändert werden, damit die Zugriffssperre auf die Groupwarekomponenten wieder freigeschaltet wird.",
         "active_sieve": "Aktiver Filter",
@@ -224,8 +232,10 @@
         "change_password": "Passwort ändern",
         "client_configuration": "Konfigurationsanleitungen für E-Mail-Programme und Smartphones anzeigen",
         "new_password": "Neues Passwort",
+        "password": "Passwort",
         "save_changes": "Änderungen speichern",
         "password_now": "Aktuelles Passwort (Änderungen bestätigen)",
+        "password_repeat": "Passwort (Wiederholung)",
         "new_password_repeat": "Neues Passwort (Wiederholung)",
         "new_password_description": "Mindestanforderung: 6 Zeichen lang, Buchstaben und Zahlen.",
         "spam_aliases": "Temporäre E-Mail Aliasse",
@@ -310,7 +320,7 @@
     "admin": {
         "spamfilter": "Spamfilter",
         "domain_s": "Domain(s)",
-        "rspamd-com_settings": "<a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd docs</a>\r\n  - Ein Name wird automatisch generiert. Beispielinhalte zur Einsicht stehen nachstehend bereit.",
+        "rspamd-com_settings": "Ein Name wird automatisch generiert. Beispielinhalte zur Einsicht stehen nachstehend bereit. Siehe auch <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd docs</a>",
         "no_new_rows": "Keine weiteren Zeilen vorhanden",
         "additional_rows": " zusätzliche Zeilen geladen",
         "private_key": "Private Key",
@@ -354,7 +364,7 @@
         "rsetting_content": "Regelinhalt",
         "rsetting_none": "Keine Regel hinterlegt",
         "rsetting_no_selection": "Bitte eine Regel auswählen",
-        "rsettings_preset_1": "Alles außer DKIM und Ratelimits für authentifizierte Benutzer deaktivieren\"",
+        "rsettings_preset_1": "Alles außer DKIM und Ratelimits für authentifizierte Benutzer deaktivieren",
         "rsettings_preset_2": "Spam an Postmaster-Addressen nicht blockieren",
         "rsettings_insert_preset": "Beispiel \"%s\" laden",
         "rsetting_add_rule": "Regel hinzufügen",
@@ -475,6 +485,7 @@
         "validate_license_now": "GUID erneut verifizieren",
         "customer_id": "Kunde",
         "service_id": "Service",
+        "sal_level": "Moo-Level",
         "lookup_mx": "Ziel gegen MX prüfen (etwa .outlook.com, um alle Ziele mit MX *.outlook.com zu routen)",
         "transport_dest_format": "Syntax: example.org, .example.org, *, box@example.org (mehrere Werte getrennt durch Komma einzugeben)",
         "rspamd_global_filters_agree": "Ich werde vorsichtig sein!",
@@ -534,7 +545,8 @@
         "qhandler_success": "Aktion wurde an das System übergeben. Sie dürfen dieses Fenster nun schließen.",
         "release_body": "Die ursprüngliche Nachricht wurde als EML-Datei im Anhang hinterlegt.",
         "release_subject": "Potentiell schädliche Nachricht aus Quarantäne: %s",
-        "confirm_delete": "Bestätigen Sie die Löschung dieses Elements."
+        "confirm_delete": "Bestätigen Sie die Löschung dieses Elements.",
+        "notified": "Benachrichtigt"
     },
     "mailbox": {
         "tls_policy_maps": "TLS-Richtlinien",
@@ -569,6 +581,7 @@
         "active": "Aktiv",
         "action": "Aktion",
         "backup_mx": "Backup MX",
+        "domain_admins": "Domain-Administratoren",
         "domain_aliases": "Domain-Aliasse",
         "target_domain": "Ziel-Domain",
         "target_address": "Ziel-Adresse",
@@ -646,9 +659,15 @@
         "alias_domain_backupmx": "Alias-Domain für Relay-Domain inaktiv",
         "add_domain_record_first": "Bitte zuerst eine Domain hinzufügen",
         "no": "&#10005;",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "insert_preset": "Beispiel \"%s\" laden",
+        "sieve_preset_header": "Beispielinhalte zur Einsicht stehen nachstehend bereit. Siehe auch <a href=\"https://de.wikipedia.org/wiki/Sieve\" target=\"_blank\">Wikipedia</a>.",
+        "sieve_preset_1": "E-Mails mit potenziell gefährlichen Dateitypen abweisen",
+        "sieve_preset_2": "E-Mail eines bestimmten Absenders immer als gelesen markieren"
     },
     "edit": {
+        "app_name": "App Name",
+        "app_passwd": "App Passwörter",
         "sogo_visible": "Alias in SOGo sichtbar",
         "sogo_visible_info": "Diese Option hat lediglich Einfluss auf Objekte, die in SOGo darstellbar sind (geteilte oder nicht-geteilte Alias-Adressen mit dem Ziel mindestens einer lokalen Mailbox).",
         "syncjob": "Sync-Job bearbeiten",
@@ -739,6 +758,8 @@
         "generate": "generieren",
         "syncjob": "Syncjob hinzufügen",
         "syncjob_hint": "Passwörter werden unverschlüsselt abgelegt!",
+        "app_password": "App Passwort hinzufügen",
+        "app_name": "App Name",
         "hostname": "Host",
         "destination": "Ziel",
         "nexthop": "Next Hop",
@@ -818,7 +839,8 @@
         "unlimited_quota": "Unendliche Quota für Mailboxen",
         "extend_sender_acl": "Eingabe externer Absenderadressen erlauben",
         "prohibited": "Untersagt durch Richtlinie",
-        "sogo_access": "Verwalten des SOGo Zugriffsrechts erlauben"
+        "sogo_access": "Verwalten des SOGo Zugriffsrechts erlauben",
+        "app_passwds": "App Passwörter verwalten"
     },
     "login": {
         "username": "Benutzername",
