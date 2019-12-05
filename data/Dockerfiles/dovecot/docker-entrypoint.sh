@@ -306,4 +306,8 @@ for file in /hooks/*; do
   fi
 done
 
+# For some strange, unknown and stupid reason, Dovecot may run into a race condition, when this file is not touched before it is read by dovecot/auth
+# May be related to something inside Docker, I seriously don't know
+touch /var/lib/dovecot/app-passdb.lua
+
 exec "$@"
