@@ -20,6 +20,7 @@ jQuery(function($){
   function table_log_ready(ft, name) {
     heading = ft.$el.parents('.panel').find('.panel-heading')
     var ft_paging = ft.use(FooTable.Paging)
+    $('.refresh_table').prop("disabled", false);
     $(heading).children('.table-lines').text(function(){
       return ft_paging.totalRows;
     })
@@ -56,6 +57,9 @@ jQuery(function($){
       "filtering": {"enabled": true,"delay": 1200,"position": "left","placeholder": lang.filter_table},
       "sorting": {"enabled": true},
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_log_ready(ft, 'autodiscover_logs');
         },
@@ -88,6 +92,9 @@ jQuery(function($){
       "filtering": {"enabled": true,"delay": 1200,"position": "left","placeholder": lang.filter_table},
       "sorting": {"enabled": true},
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_log_ready(ft, 'postfix_logs');
         },
@@ -121,6 +128,9 @@ jQuery(function($){
       "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table},
       "sorting": {"enabled": true},
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_log_ready(ft, 'postfix_logs');
         },
@@ -155,6 +165,9 @@ jQuery(function($){
       "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table},
       "sorting": {"enabled": true},
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_log_ready(ft, 'api_logs');
         },
@@ -197,6 +210,9 @@ jQuery(function($){
       "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table},
       "sorting": {"enabled": true},
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_log_ready(ft, 'rl_logs');
         },
@@ -234,6 +250,9 @@ jQuery(function($){
       "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table},
       "sorting": {"enabled": true},
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_log_ready(ft, 'ui_logs');
         },
@@ -265,6 +284,9 @@ jQuery(function($){
       "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table},
       "sorting": {"enabled": true},
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_log_ready(ft, 'acme_logs');
         },
@@ -297,6 +319,9 @@ jQuery(function($){
       "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table},
       "sorting": {"enabled": true},
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_log_ready(ft, 'netfilter_logs');
         },
@@ -329,6 +354,9 @@ jQuery(function($){
       "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table},
       "sorting": {"enabled": true},
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_log_ready(ft, 'sogo_logs');
         },
@@ -361,6 +389,9 @@ jQuery(function($){
       "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table},
       "sorting": {"enabled": true},
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_log_ready(ft, 'dovecot_logs');
         },
@@ -452,6 +483,9 @@ jQuery(function($){
       "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table},
       "sorting": {"enabled": true},
       "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
         "ready.ft.table": function(e, ft){
           table_log_ready(ft, 'rspamd_history');
           heading = ft.$el.parents('.panel').find('.panel-heading')
