@@ -40,7 +40,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               <table id="domain_table" class="table table-striped"></table>
             </div>
             <div class="mass-actions-mailbox">
-              <div class="btn-group dropup">
+              <div class="btn-group">
                 <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="domain" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
                 <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
@@ -71,7 +71,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               <table id="mailbox_table" class="table table-striped"></table>
             </div>
             <div class="mass-actions-mailbox">
-              <div class="btn-group dropup">
+              <div class="btn-group">
                 <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="mailbox" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
                 <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
@@ -112,7 +112,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               <table id="resource_table" class="table table-striped"></table>
             </div>
             <div class="mass-actions-mailbox">
-              <div class="btn-group dropup">
+              <div class="btn-group">
                 <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="resource" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
                 <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
@@ -145,7 +145,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               <table id="aliasdomain_table" class="table table-striped"></table>
             </div>
             <div class="mass-actions-mailbox">
-              <div class="btn-group dropup">
+              <div class="btn-group">
                 <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="alias-domain" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
                 <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
@@ -172,7 +172,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               <table id="alias_table" class="table table-striped"></table>
             </div>
             <div class="mass-actions-mailbox">
-              <div class="btn-group dropup">
+              <div class="btn-group">
                 <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="alias" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
                 <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
@@ -202,7 +202,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               <table class="table table-striped" id="sync_job_table"></table>
             </div>
             <div class="mass-actions-mailbox">
-              <div class="btn-group dropup" data-acl="<?=$_SESSION['acl']['syncjobs'];?>">
+              <div class="btn-group" data-acl="<?=$_SESSION['acl']['syncjobs'];?>">
                 <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="syncjob" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
                 <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
@@ -232,7 +232,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               <table class="table table-striped" id="filter_table"></table>
             </div>
             <div class="mass-actions-mailbox">
-              <div class="btn-group dropup" data-acl="<?=$_SESSION['acl']['filters'];?>">
+              <div class="btn-group" data-acl="<?=$_SESSION['acl']['filters'];?>">
                 <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="filter_item" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
                 <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
@@ -263,7 +263,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               <table class="table table-striped" id="bcc_table"></table>
             </div>
             <div class="mass-actions-mailbox">
-              <div class="btn-group dropup" data-acl="<?=$_SESSION['acl']['bcc_maps'];?>">
+              <div class="btn-group" data-acl="<?=$_SESSION['acl']['bcc_maps'];?>">
                 <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="bcc" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
                 <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
@@ -291,7 +291,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               <table class="table table-striped" id="recipient_map_table"></table>
             </div>
             <div class="mass-actions-mailbox" style="display: <?php echo $display; ?>">
-              <div class="btn-group dropup">
+              <div class="btn-group">
                 <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="recipient_map" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
                 <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
@@ -319,7 +319,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               <table class="table table-striped" id="tls_policy_table"></table>
             </div>
             <div class="mass-actions-mailbox">
-              <div class="btn-group dropup">
+              <div class="btn-group">
                 <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="tls-policy-map" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
                 <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
