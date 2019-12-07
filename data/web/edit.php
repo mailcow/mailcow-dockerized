@@ -1321,7 +1321,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         if (!empty($result)) {
         ?>
           <h4><?=$lang['edit']['app_passwd'];?></h4>
-          <form class="form-horizontal" data-id="editapp" role="form" method="post">
+          <form class="form-horizontal" data-pwgen-length="32" data-id="editapp" role="form" method="post">
             <input type="hidden" value="0" name="active">
             <div class="form-group">
               <label class="control-label col-sm-2" for="app_name"><?=$lang['edit']['app_name'];?></label>
