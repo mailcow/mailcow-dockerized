@@ -15,7 +15,12 @@ $(document).ready(function() {
   $(".generate_password").click(function( event ) {
     event.preventDefault();
     $('[data-hibp]').trigger('input');
-    var random_passwd = GPW.pronounceable(8)
+    if (typeof($(this).closest("form").data('pwgen-length')) == "number") {
+      var random_passwd = GPW.pronounceable($(this).closest("form").data('pwgen-length'))
+    }
+    else {
+      var random_passwd = GPW.pronounceable(8)
+    }
     $(this).closest("form").find('[data-pwgen-field]').attr('type', 'text');
     $(this).closest("form").find('[data-pwgen-field]').val(random_passwd);
   });
