@@ -216,6 +216,7 @@
         "ip_invalid": "Skipped invalid IP: %s"
     },
     "user": {
+        "generate": "generate",
         "create_app_passwd": "Create app password",
         "app_passwds": "App passwords",
         "app_name": "App name",
@@ -665,6 +666,7 @@
         "sieve_preset_2": "Always mark the e-mail of a specific sender as seen"
     },
     "edit": {
+        "generate": "generate",
         "app_name": "App name",
         "app_passwd": "App password",
         "sogo_visible": "Alias is visible in SOGo",

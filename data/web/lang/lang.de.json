@@ -216,6 +216,7 @@
         "session_ua": "Formular-Token ungültig: User-Agent-Validierungsfehler"
     },
     "user": {
+        "generate": "generieren",
         "create_app_passwd": "Erstelle App Passwort",
         "app_passwds": "App Passwörter",
         "app_name": "App Name",
@@ -666,6 +667,7 @@
         "sieve_preset_2": "E-Mail eines bestimmten Absenders immer als gelesen markieren"
     },
     "edit": {
+        "generate": "generieren",
         "app_name": "App Name",
         "app_passwd": "App Passwörter",
         "sogo_visible": "Alias in SOGo sichtbar",

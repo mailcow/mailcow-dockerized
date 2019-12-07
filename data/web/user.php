@@ -503,6 +503,7 @@ echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
 </script>
 <?php
 $js_minifier->add('/web/js/site/user.js');
+$js_minifier->add('/web/js/site/pwgen.js');
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
 }
 else {
