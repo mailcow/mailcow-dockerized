@@ -1,5 +1,6 @@
 rebuild-images.sh
 data/conf/sogo/sieve.creds
+data/conf/clamav/whitelist.ign2
 data/conf/phpfpm/sogo-sso/sogo-sso.pass
 data/conf/dovecot/dovecot-master.passwd
 data/conf/dovecot/dovecot-master.userdb
