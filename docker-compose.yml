@@ -62,7 +62,6 @@ services:
         - TZ=${TZ}
         - SKIP_CLAMD=${SKIP_CLAMD:-n}
       volumes:
-        - ./data/conf/clamav/whitelist.ign2:/var/lib/clamav/whitelist.ign2
         - ./data/conf/clamav/:/etc/clamav/
       networks:
         mailcow-network:

@@ -37,6 +37,9 @@ chmod 750 /run/clamav
 stat /var/lib/clamav/whitelist.ign2
 dos2unix /var/lib/clamav/whitelist.ign2
 sed -i '/^\s*$/d' /var/lib/clamav/whitelist.ign2
+# Copying to /etc/clamav to expose file as-is to administrator
+cp -p /var/lib/clamav/whitelist.ign2 /etc/clamav/whitelist.ign2
+
 
 BACKGROUND_TASKS=()
 
