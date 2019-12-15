@@ -108,6 +108,11 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                 <button class="btn btn-xs btn-default refresh_table" data-draw="draw_resource_table" data-table="resource_table"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
+            <div class="panel-body help-block">
+            <p><span class="label label-success"><?=$lang['mailbox']['booking_0_short'];?></span> - <?=$lang['mailbox']['booking_0'];?></p>
+            <p><span class="label label-warning"><?=$lang['mailbox']['booking_lt0_short'];?></span> - <?=$lang['mailbox']['booking_lt0'];?></p>
+            <p><span class="label label-danger"><?=$lang['mailbox']['booking_custom_short'];?></span> - <?=$lang['mailbox']['booking_custom'];?></p>
+            </div>
             <div class="table-responsive">
               <table id="resource_table" class="table table-striped"></table>
             </div>
@@ -123,12 +128,6 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                 </ul>
                 <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addResourceModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_resource'];?></a>
               </div>
-            </div>
-            <hr>
-            <div class="panel-body help-block">
-            <p><span class="label label-success"><?=$lang['mailbox']['booking_0_short'];?></span> - <?=$lang['mailbox']['booking_0'];?></p>
-            <p><span class="label label-warning"><?=$lang['mailbox']['booking_lt0_short'];?></span> - <?=$lang['mailbox']['booking_lt0'];?></p>
-            <p><span class="label label-danger"><?=$lang['mailbox']['booking_custom_short'];?></span> - <?=$lang['mailbox']['booking_custom'];?></p>
             </div>
           </div>
         </div>
@@ -167,6 +166,9 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default refresh_table" data-draw="draw_alias_table" data-table="alias_table"><?=$lang['admin']['refresh'];?></button>
               </div>
+            </div>
+            <div class="panel-body help-block">
+            <?=$lang['mailbox']['alias_domain_alias_hint'];?>
             </div>
             <div class="table-responsive">
               <table id="alias_table" class="table table-striped"></table>
