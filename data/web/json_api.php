@@ -1071,21 +1071,25 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                   break;
             }
           break;
-          case "presets-admin-rspamd":
-            process_get_return(presets('get', 'admin-rspamd', $object));
-            break;
-          case "presets-mailbox-sieve":
-            process_get_return(presets('get', 'mailbox-sieve', $object));
-            break;
+          case "presets":
+            switch ($object) {
+              case "rspamd":
+                process_get_return(presets('get', 'rspamd'));
+              case "sieve":
+              break;
+                process_get_return(presets('get', 'sieve'));
+              break;
+            }
           break;
-          // return no route found if no case is matched
-          default:
-            http_response_code(404);
-            echo json_encode(array(
-              'type' => 'error',
-              'msg' => 'route not found'
-            ));
-            exit();
+        break;
+        // return no route found if no case is matched
+        default:
+          http_response_code(404);
+          echo json_encode(array(
+            'type' => 'error',
+            'msg' => 'route not found'
+          ));
+          exit();
         }
       break;
       case "delete":
