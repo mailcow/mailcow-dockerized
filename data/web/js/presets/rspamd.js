@@ -3,7 +3,7 @@ var rspamd_presetsElem = document.getElementById("rspamd_presets");
 if (rspamd_presetsElem) {
   $.ajax({
     dataType: 'json',
-    url: '/api/v1/get/presets-admin-rspamd/all',
+    url: '/api/v1/get/presets/rspamd',
     jsonp: false,
     complete: function (data) {
       if (data.responseText !== '{}') {
