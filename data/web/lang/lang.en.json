@@ -555,6 +555,7 @@
     },
     "mailbox": {
         "tls_policy_maps": "TLS policy maps",
+        "sogo_allow_admin_hint": "Administrative SOGo logins are only available for mailboxes with an existing SOGo profile. A user must have been logged in to SOGo at least once.",
         "tls_policy_maps_long": "Outgoing TLS policy map overrides",
         "tls_policy_maps_info": "This policy map overrides outgoing TLS transport rules independently of a users TLS policy settings.<br>\r\n  Please check <a href=\"http://www.postfix.org/postconf.5.html#smtp_tls_policy_maps\" target=\"_blank\">the \"smtp_tls_policy_maps\" docs</a> for further information.",
         "tls_enforce_in": "Enforce TLS incoming",

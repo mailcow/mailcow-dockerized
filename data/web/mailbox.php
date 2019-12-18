@@ -67,6 +67,15 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                 <button class="btn btn-xs btn-default refresh_table" data-draw="draw_mailbox_table" data-table="mailbox_table"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
+            <?php
+            if (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["ALLOW_ADMIN_EMAIL_LOGIN"])):
+            ?>
+            <div class="panel-body help-block">
+            <?=$lang['mailbox']['sogo_allow_admin_hint'];?>
+            </div>
+            <?php
+            endif;
+            ?>
             <div class="table-responsive">
               <table id="mailbox_table" class="table table-striped"></table>
             </div>

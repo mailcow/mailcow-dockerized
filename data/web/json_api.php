@@ -1097,16 +1097,16 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             switch ($object) {
               default:
                 $data = dkim('details', $object);
-                  process_get_return($data);
-                  break;
+                process_get_return($data);
+                break;
             }
           break;
           case "presets":
             switch ($object) {
               case "rspamd":
                 process_get_return(presets('get', 'rspamd'));
-              case "sieve":
               break;
+              case "sieve":
                 process_get_return(presets('get', 'sieve'));
               break;
             }
