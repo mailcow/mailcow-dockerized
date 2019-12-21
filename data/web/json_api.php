@@ -288,10 +288,21 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           case "app-passwd":
             switch ($object) {
               case "all":
-                $app_passwds = app_passwd('get');
+                if (empty($extra)) {
+                  $app_passwds = app_passwd('get');
+                }
+                else {
+                  $app_passwds = app_passwd('get', array('username' => $extra));
+                }
                 if (!empty($app_passwds)) {
                   foreach ($app_passwds as $app_passwd) {
-                    if ($details = app_passwd('details', $app_passwd['id'])) {
+                    if (empty($extra)) {
+                      $details = app_passwd('details', array('id' => $app_passwd['id']));
+                    }
+                    else {
+                      $details = app_passwd('details', array('id' => $app_passwd['id'], 'username' => $extra));
+                    }
+                    if ($details !== false) {
                       $data[] = $details;
                     }
                     else {
@@ -306,7 +317,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               break;
 
               default:
-                $data = app_passwd('details', $object);
+                $data = app_passwd('details', array('id' => $object));
                 process_get_return($data);
               break;
             }

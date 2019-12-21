@@ -200,7 +200,7 @@ function app_passwd($_action, $_data = null) {
           FROM `app_passwd`
             WHERE `id` = :id
               AND `mailbox` = :username");
-      $stmt->execute(array(':id' => $_data, ':username' => $username));
+      $stmt->execute(array(':id' => $_data['id'], ':username' => $username));
       $app_passwd_data = $stmt->fetch(PDO::FETCH_ASSOC);
       return $app_passwd_data;
     break;
