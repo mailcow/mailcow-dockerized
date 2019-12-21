@@ -378,6 +378,7 @@
         "rsetting_no_selection": "Please select a rule",
         "rsettings_preset_1": "Disable all but DKIM and rate limit for authenticated users",
         "rsettings_preset_2": "Postmasters want spam",
+        "rsettings_preset_3": "Only allow specific senders for a mailbox (i.e. usage as internal mailbox only)",
         "rsettings_insert_preset": "Insert example preset \"%s\"",
         "rsetting_add_rule": "Add rule",
         "queue_ays": "Please confirm you want to delete all items from the current queue.",

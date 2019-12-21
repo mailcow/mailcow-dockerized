@@ -372,6 +372,7 @@
         "rsetting_no_selection": "Bitte eine Regel auswählen",
         "rsettings_preset_1": "Alles außer DKIM und Ratelimits für authentifizierte Benutzer deaktivieren",
         "rsettings_preset_2": "Spam an Postmaster-Addressen nicht blockieren",
+        "rsettings_preset_3": "Nur einem oder vielen Absendern erlauben, eine Mailbox anzuschreiben (etwa interne Mailboxen)",
         "rsettings_insert_preset": "Beispiel \"%s\" laden",
         "rsetting_add_rule": "Regel hinzufügen",
         "admin_domains": "Domain-Zuweisungen",
