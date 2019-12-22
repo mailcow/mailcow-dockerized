@@ -509,7 +509,8 @@
         "transport_dest_format": "Syntax: example.org, .example.org, *, box@example.org (multiple values can be comma-separated)",
         "rspamd_global_filters_agree": "I will be careful!",
         "rspamd_global_filters": "Global filter maps",
-        "rspamd_global_filters_info": "Global filter maps contain different kind of global black and whitelists. Their names explain their purpose. All content must contain valid regular expression in the format of \"/pattern/options\" (e.g. <code>/.+@domain\\.tld/i</code>).<br>\r\n  Although rudimentary checks are being executed on each line of regex, Rspamds functionality can be broken, if it fails to read the syntax correctly.<br>\r\n  Rspamd will try to read the map content when changed. If you experience problems, <a href=\"\" data-toggle=\"modal\" data-container=\"rspamd-mailcow\" data-target=\"#RestartContainer\">restart Rspamd</a> to enforce a map reload."
+        "rspamd_global_filters_info": "Global filter maps contain different kind of global black and whitelists.",
+        "rspamd_global_filters_regex": "Their names explain their purpose. All content must contain valid regular expression in the format of \"/pattern/options\" (e.g. <code>/.+@domain\\.tld/i</code>).<br>\r\n  Although rudimentary checks are being executed on each line of regex, Rspamds functionality can be broken, if it fails to read the syntax correctly.<br>\r\n  Rspamd will try to read the map content when changed. If you experience problems, <a href=\"\" data-toggle=\"modal\" data-container=\"rspamd-mailcow\" data-target=\"#RestartContainer\">restart Rspamd</a> to enforce a map reload."
     },
     "start": {
         "mailcow_apps_detail": "Use a mailcow app to access your mails, calendar, contacts and more.",

@@ -442,23 +442,31 @@ jQuery(function($){
   });
 });
 $(window).load(function(){
-  initial_width = $("#sidebar-admin").width();
-  $("#scrollbox").css("width", initial_width);
+  initial_width_config = $("#sidebar-admin-config").width();
+  initial_width_maps = $("#sidebar-admin-maps").width();
+  $("#scrollbox-config").css("width", initial_width_config);
+  $("#scrollbox-maps").css("width", initial_width_maps);
   if (sessionStorage.scrollTop > 70) {
-    $('#scrollbox').addClass('scrollboxFixed');
+    $('#scrollbox-config').addClass('scrollboxFixed');
+    $('#scrollbox-maps').addClass('scrollboxFixed');
   }
   $(window).bind('scroll', function() {
     if ($(window).scrollTop() > 70) {
-      $('#scrollbox').addClass('scrollboxFixed');
+      $('#scrollbox-config').addClass('scrollboxFixed');
+      $('#scrollbox-maps').addClass('scrollboxFixed');
     } else {
-      $('#scrollbox').removeClass('scrollboxFixed');
+      $('#scrollbox-config').removeClass('scrollboxFixed');
+      $('#scrollbox-maps').removeClass('scrollboxFixed');
     }
   });
 });
 function resizeScrollbox() {
-  on_resize_width = $("#sidebar-admin").width();
-  $("#scrollbox").removeAttr("style");
-  $("#scrollbox").css("width", on_resize_width);
+  on_resize_width_config = $("#sidebar-admin-config").width();
+  on_resize_width_maps = $("#sidebar-admin-maps").width();
+  $("#scrollbox-config").removeAttr("style");
+  $("#scrollbox-config").css("width", on_resize_width_config);
+  $("#scrollbox-maps").removeAttr("style");
+  $("#scrollbox-maps").css("width", on_resize_width_maps);
 }
 $(window).on('resize', resizeScrollbox);
 $('a[data-toggle="tab"]').on('shown.bs.tab', resizeScrollbox);

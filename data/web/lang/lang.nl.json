@@ -499,7 +499,8 @@
         "transport_dest_format": "Voorbeeld: example.org, .example.org, *, postvak@example.org (meerdere waarden zijn kommagescheiden)",
         "rspamd_global_filters_agree": "Ik ben me ervan bewust dat aanpassingen desastreuze gevolgen kunnen hebben",
         "rspamd_global_filters": "Globale filters",
-        "rspamd_global_filters_info": "Ieder globaal filter heeft zijn eigen functie, zie de namen. De velden kunnen enkel regular expressions bevatten met het formaat \"/pattern/options\", bijvoorbeeld <code>/.+@domain\\.tld/i</code>.<br>Ondanks dat alle invoer wordt gecontroleerd op fouten, is het toch mogelijk dat Rspamd onbruikbaar wordt als deze de invoer niet kan lezen.<br>Als je problemen ervaart, <a href=\"\" data-toggle=\"modal\" data-container=\"rspamd-mailcow\" data-target=\"#RestartContainer\">herstart Rspamd</a> dan om de filters opnieuw te laten lezen."
+        "rspamd_global_filters_info": "Ieder globaal filter heeft zijn eigen functie, zie de namen.",
+        "rspamd_global_filters_regex": "De velden kunnen enkel regular expressions bevatten met het formaat \"/pattern/options\", bijvoorbeeld <code>/.+@domain\\.tld/i</code>.<br>Ondanks dat alle invoer wordt gecontroleerd op fouten, is het toch mogelijk dat Rspamd onbruikbaar wordt als deze de invoer niet kan lezen.<br>Als je problemen ervaart, <a href=\"\" data-toggle=\"modal\" data-container=\"rspamd-mailcow\" data-target=\"#RestartContainer\">herstart Rspamd</a> dan om de filters opnieuw te laten lezen."
     },
     "start": {
         "mailcow_apps_detail": "Gebruik een Mailcow-app om je mails, agenda, contacten en meer te bekijken.",
