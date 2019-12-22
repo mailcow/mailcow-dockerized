@@ -165,5 +165,5 @@ $RSPAMD_MAPS = array(
   'Recipient Whitelist' => 'global_rcpt_whitelist.map',
   'Fishy TLDS (only fired in combination with bad words)' => 'fishy_tlds.map',
   'Bad Words (only fired in combination with fishy TLDs)' => 'bad_words.map',
-  'Bad Words DE (only fired in combination with fishy TLDs)' => 'bad_words_de.map'
+  'Bad languages' => 'bad_languages.map',
 );
