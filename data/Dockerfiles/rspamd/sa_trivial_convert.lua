@@ -88,19 +88,6 @@ local function handle_header_def(hline, cur_rule)
           end
         end, fun.tail(args))
 
-        local function split_hdr_param(param, headers)
-          for _,hh in ipairs(headers) do
-            local nparam = {}
-            for k,v in pairs(param) do
-              if k ~= 'header' then
-                nparam[k] = v
-              end
-            end
-
-            nparam['header'] = hh
-            table.insert(hdr_params, nparam)
-          end
-        end
         -- Some header rules require splitting to check of multiple headers
         if cur_param['header'] == 'MESSAGEID' then
           -- Special case for spamassassin
@@ -112,7 +99,7 @@ local function handle_header_def(hline, cur_rule)
         end
     end
 
-    cur_rule['ordinary'] = ordinary
+    cur_rule['ordinary'] = ordinary and (not (#hdr_params > 1))
     cur_rule['header'] = hdr_params
   end
 end
@@ -151,12 +138,10 @@ local function process_sa_conf(f)
   local function parse_score(words)
     if #words == 3 then
       -- score rule <x>
-      lua_util.debugm(N, rspamd_config, 'found score for %1: %2', words[2], words[3])
       return tonumber(words[3])
     elseif #words == 6 then
       -- score rule <x1> <x2> <x3> <x4>
       -- we assume here that bayes and network are enabled and select <x4>
-      lua_util.debugm(N, rspamd_config, 'found score for %1: %2', words[2], words[6])
       return tonumber(words[6])
     else
       rspamd_logger.errx(rspamd_config, 'invalid score for %1', words[2])
@@ -196,13 +181,10 @@ local function process_sa_conf(f)
       return
     else
       if string.match(l, '^ifplugin') then
-        local ls = split(l)
-
         skip_to_endif = true
         if_nested = if_nested + 1
         table.insert(complicated, l)
       elseif string.match(l, '^if !plugin%(') then
-         local pname = string.match(l, '^if !plugin%(([A-Za-z:]+)%)')
          skip_to_endif = true
          if_nested = if_nested + 1
         table.insert(complicated, l)
@@ -383,6 +365,7 @@ local function handle_rule(what, syms, hdr)
   local mtype
   local filter
   local fname
+  local header
   local sym = what:upper()
   if what == 'sabody' then
     mtype = 'content'
@@ -418,7 +401,6 @@ local function handle_rule(what, syms, hdr)
     header = header,
     symbols = {}
   }
-  
   local re_file = io.open(fname, 'w')
 
   for k,r in pairs(syms) do
@@ -455,6 +437,7 @@ rspamd_logger.messagex('stored multimap conf in %s', 'auto_multimap.conf')
 local sa_remain = io.open('auto_sa.conf', 'w')
 fun.each(function(l) 
   sa_remain:write(l)
+  sa_remain:write('\n')
 end, fun.filter(function(l) return not string.match(l, '^%s+$') end, complicated))
 sa_remain:close()
 rspamd_logger.messagex('stored sa remains conf in %s', 'auto_sa.conf')
