@@ -1117,6 +1117,56 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
               break;
             }
           break;
+          case "status":
+            switch ($object) {
+              case "containers":
+                $containers = (docker('info'));
+                foreach ($containers as $container => $container_info) {
+                  $container . ' (' . $container_info['Config']['Image'] . ')';
+                  $containerstarttime = ($container_info['State']['StartedAt']);
+                  $containerstate = ($container_info['State']['Status']);
+                  $containerimage = ($container_info['Config']['Image']);
+                  $temp[$container] = array(
+                    'type' => 'info',
+                    'container' => $container,
+                    'state' => $containerstate,
+                    'started_at' => $containerstarttime,
+                    'image' => $containerimage
+                  );
+                }
+                echo json_encode($temp, JSON_UNESCAPED_SLASHES);
+              break;
+              case "vmail":
+                $exec_fields_vmail = array('cmd' => 'system', 'task' => 'df', 'dir' => '/var/vmail');
+                $vmail_df = explode(',', json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields_vmail), true));
+                $temp = array(
+                  'type' => 'info',
+                  'disk' => $vmail_df[0],
+                  'used' => $vmail_df[2],
+                  'total'=> $vmail_df[1],
+                  'used_percent' => $vmail_df[4]
+                );
+                echo json_encode($temp, JSON_UNESCAPED_SLASHES);
+            break;
+            case "solr":
+              $solr_status = solr_status();
+              $solr_size = ($solr_status['status']['dovecot-fts']['index']['size']);
+              $solr_documents = ($solr_status['status']['dovecot-fts']['index']['numDocs']);
+              if (strtolower(getenv('SKIP_SOLR')) != 'n') {
+                $solr_enabled = false;
+              }
+              else {
+                $solr_enabled = true;
+              }
+              echo json_encode(array(
+                'type' => 'info',
+                'solr_enabled' => $solr_enabled,
+                'solr_size' => $solr_size,
+                'solr_documents' => $solr_documents
+              ));
+            break;
+            }
+          break;
         break;
         // return no route found if no case is matched
         default:
