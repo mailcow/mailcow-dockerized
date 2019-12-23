@@ -50,6 +50,7 @@ touch /etc/rspamd/custom/global_mime_from_blacklist.map \
   /etc/rspamd/custom/global_mime_from_whitelist.map \
   /etc/rspamd/custom/global_rcpt_whitelist.map \
   /etc/rspamd/custom/global_smtp_from_whitelist.map \
+  /etc/rspamd/custom/bad_languages.map \
   /etc/rspamd/custom/sa-rules \
   /etc/rspamd/custom/dovecot_trusted.map \
   /etc/rspamd/custom/ip_wl.map \
