@@ -62,11 +62,6 @@ jQuery(function($){
     draw_table = $(this).data('draw');
     eval(draw_table + '()');
   });
-  if (localStorage.getItem("current_page") === null) {
-    var current_page = {};
-  } else {
-    var current_page = JSON.parse(localStorage.getItem('current_page'));
-  }
   function table_admin_ready(ft, name) {
     heading = ft.$el.parents('.panel').find('.panel-heading')
     var ft_paging = ft.use(FooTable.Paging)
