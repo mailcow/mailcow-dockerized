@@ -442,6 +442,22 @@ jQuery(function($){
   });
 });
 $(window).load(function(){
+  $('.sidebar').affix({
+        offset: {
+            top: 0
+        }
+    }).on('affix.bs.affix',function(){
+        setAffixContainerSize();
+    });
+
+    /*Setting the width of the sidebar (I took 10px of its value which is the margin between cols in my Bootstrap CSS*/
+    function setAffixContainerSize(){
+        $('.sidebar').width($('.sidebar').parent().innerWidth()-10);
+    }
+
+    $(window).resize(function(){
+        setAffixContainerSize();
+    });
   initial_width_config = $("#sidebar-admin-config").width();
   initial_width_maps = $("#sidebar-admin-maps").width();
   $("#scrollbox-config").css("width", initial_width_config);
