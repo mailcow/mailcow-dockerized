@@ -1153,16 +1153,19 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 echo json_encode($temp, JSON_UNESCAPED_SLASHES);
             break;
             case "solr":
+              $solr_status = solr_status();
               $solr_size = ($solr_status['status']['dovecot-fts']['index']['size']);
               $solr_documents = ($solr_status['status']['dovecot-fts']['index']['numDocs']);
 
               if (strtolower(getenv('SKIP_SOLR')) != 'n') {
-                $solr_status = false;
+                $solr_enabled = false;
+              } else {
+                $solr_enabled = true;
               }
 
               echo json_encode(array(
                 'type' => 'info',
-                'solr_enabled' => $solr_status,
+                'solr_enabled' => $solr_enabled,
                 'solr_size' => $solr_size,
                 'solr_documents' => $solr_documents
               ));
