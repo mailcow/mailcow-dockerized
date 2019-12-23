@@ -93,6 +93,11 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
         $_POST['items'] = $request;
       }
 
+      // system
+      if ($action == 'system') {
+        $_POST['items'] = $request;
+      }
+
     }
     api_log($_POST);
 
@@ -1462,6 +1467,85 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             ));
             exit();
         }
+        case "system":
+          function process_delete_return($return) {
+            $generic_failure = json_encode(array(
+              'type' => 'error',
+              'msg' => 'Cannot perfom operation'
+            ));
+            $generic_success = json_encode(array(
+              'type' => 'success',
+              'msg' => 'Task completed'
+            ));
+            if ($return === false) {
+              echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_failure;
+            }
+            else {
+              echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_success;
+            }
+          }
+          if (!isset($_POST['items'])) {
+            echo $request_incomplete;
+            exit;
+          }
+          else {
+            $items = (array)json_decode($_POST['items'], true);
+          }
+          // only allow POST requests to POST API endpoints
+          if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+            http_response_code(405);
+            echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'only POST method is allowed'
+            ));
+            exit();
+          }
+          switch ($category) {
+            case "containers":
+              if (preg_match('/^[a-z\-]{0,}-mailcow/', $items['container'])) {
+                if (preg_match('(restart|stop|start)', $items['action'])) {
+                  $response = docker('post', $items['container'], $items['action']);
+                  $response = json_decode($response, true);
+                  if ($response['type'] == "success") {
+                    echo json_encode(array(
+                      'type' => 'info',
+                      'action' => $items['action'],
+                      'container' => $items['container'],
+                      'msg' => 'done'
+                    ));
+                  }
+                  else {
+                    echo json_encode(array(
+                      'type' => 'error',
+                      'action' => $items['action'],
+                      'container' => $items['container'],
+                      'msg' => $response['msg']
+                    ));
+                  }
+                }
+                else {
+                  echo json_encode(array(
+                    'type' => 'error',
+                    'msg' => 'your action is invalid'
+                  ));
+                }
+              }
+              else {
+                echo json_encode(array(
+                  'type' => 'error',
+                  'msg' => 'your container name is invalid'
+                ));
+              }
+            break;
+            // return no route found if no case is matched
+            default:
+              http_response_code(404);
+              echo json_encode(array(
+                'type' => 'error',
+                'msg' => 'route not found'
+              ));
+              exit();
+          }
       break;
       // return no route found if no case is matched
       default:
