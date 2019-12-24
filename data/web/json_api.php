@@ -1468,22 +1468,6 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
             exit();
         }
         case "system":
-          function process_delete_return($return) {
-            $generic_failure = json_encode(array(
-              'type' => 'error',
-              'msg' => 'Cannot perfom operation'
-            ));
-            $generic_success = json_encode(array(
-              'type' => 'success',
-              'msg' => 'Task completed'
-            ));
-            if ($return === false) {
-              echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_failure;
-            }
-            else {
-              echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_success;
-            }
-          }
           if (!isset($_POST['items'])) {
             echo $request_incomplete;
             exit;
