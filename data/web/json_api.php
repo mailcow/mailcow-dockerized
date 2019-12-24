@@ -1487,7 +1487,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
           switch ($category) {
             case "containers":
               if (preg_match('/^[a-z\-]{0,}-mailcow/', $items['container'])) {
-                if (preg_match('(restart|stop|start)', $items['action'])) {
+                if (preg_match('/^(restart|stop|start)$', $items['action'])) {
                   $response = docker('post', $items['container'], $items['action']);
                   $response = json_decode($response, true);
                   if ($response['type'] == "success") {
