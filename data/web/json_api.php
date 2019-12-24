@@ -1510,14 +1510,14 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                 else {
                   echo json_encode(array(
                     'type' => 'error',
-                    'msg' => 'your action is invalid'
+                    'msg' => 'action is invalid'
                   ));
                 }
               }
               else {
                 echo json_encode(array(
                   'type' => 'error',
-                  'msg' => 'your container name is invalid'
+                  'msg' => 'container name is invalid'
                 ));
               }
             break;
