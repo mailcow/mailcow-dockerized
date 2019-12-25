@@ -77,7 +77,3 @@ table tbody tr {
 table tbody tr td input[type="checkbox"] {
   cursor: pointer;
 }
-.nav-tabs>li>a:hover, .nav-tabs>li>a:focus, .nav-tabs>li.active>a, .nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus, .nav-tabs .open>a, .nav-tabs .open>a:hover, .nav-tabs .open>a:focus {
-  padding-bottom: 10px;
-  margin-top: 6px;
-}

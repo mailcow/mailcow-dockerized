@@ -11,7 +11,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
 ?>
 <div class="container">
 
-  <ul class="nav nav-tabs nav-justified" role="tablist">
+  <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#tab-access" aria-controls="tab-access" role="tab" data-toggle="tab"><?=$lang['admin']['access'];?></a></li>
     <li role="presentation"><a href="#tab-config" aria-controls="tab-config" role="tab" data-toggle="tab"><?=$lang['admin']['configuration'];?></a></li>
     <li role="presentation"><a href="#tab-routing" aria-controls="tab-routing" role="tab" data-toggle="tab"><?=$lang['admin']['routing'];?></a></li>
