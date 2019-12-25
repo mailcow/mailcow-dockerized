@@ -56,13 +56,6 @@ $(document).ready(function() {
     'use strict';
     if ($('a[data-toggle="tab"]').length) {
       $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        $("ul.nav-tabs li a").parent().find("a").each(function(){
-          var t = $(this).text();
-          t = t.replace(/^⤏ /, '');
-          $(this).text(t);
-        });
-        $(this).prepend("⤏ ");
-
         if ($(this).data('dont-remember') == 1) {
           return true;
         }
