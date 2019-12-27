@@ -673,7 +673,12 @@
         "insert_preset": "Beispiel \"%s\" laden",
         "sieve_preset_header": "Beispielinhalte zur Einsicht stehen nachstehend bereit. Siehe auch <a href=\"https://de.wikipedia.org/wiki/Sieve\" target=\"_blank\">Wikipedia</a>.",
         "sieve_preset_1": "E-Mails mit potenziell gefährlichen Dateitypen abweisen",
-        "sieve_preset_2": "E-Mail eines bestimmten Absenders immer als gelesen markieren"
+        "sieve_preset_2": "E-Mail eines bestimmten Absenders immer als gelesen markieren",
+        "sieve_preset_3": "Lautlos löschen, weitere Ausführung von Filtern verhindern",
+        "sieve_preset_4": "Nach INBOX einsortieren und weitere Filterbearbeitung stoppen",
+        "sieve_preset_5": "Auto-Responder (Vacation, Urlaub)",
+        "sieve_preset_6": "E-Mails mit Nachricht abweisen",
+        "sieve_preset_7": "Weiterleiten und behalten oder verwerfen"
     },
     "edit": {
         "generate": "generieren",
