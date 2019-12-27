@@ -672,7 +672,12 @@
         "insert_preset": "Insert example preset \"%s\"",
         "sieve_preset_header": "Please see the example presets below. For more details see <a href=\"https://en.wikipedia.org/wiki/Sieve_(mail_filtering_language)\" target=\"_blank\">Wikipedia</a>.",
         "sieve_preset_1": "Discard mail with probable dangerous file types",
-        "sieve_preset_2": "Always mark the e-mail of a specific sender as seen"
+        "sieve_preset_2": "Always mark the e-mail of a specific sender as seen",
+        "sieve_preset_3": "Discard silently, stop all further sieve processing",
+        "sieve_preset_4": "File into INBOX, skip further processing by sieve filters",
+        "sieve_preset_5": "Auto responder (vacation)",
+        "sieve_preset_6": "Reject mail with reponse",
+        "sieve_preset_7": "Redirect and keep/drop"
     },
     "edit": {
         "generate": "generate",
