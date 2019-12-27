@@ -1186,7 +1186,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             <div class="form-group">
               <label class="control-label col-sm-3" for="<?=$rspamd_regex_map;?>"><?=$rspamd_regex_desc;?><br><small><?=$rspamd_regex_map;?></small></label>
               <div class="col-sm-9">
-                <textarea id="<?=$rspamd_regex_map;?>" spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control textarea-code" rows="10" name="rspamd_regex_map_data" required><?=file_get_contents('/rspamd_custom_maps/' . $rspamd_regex_map);?></textarea>
+                <textarea id="<?=$rspamd_regex_map;?>" spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control textarea-code" rows="10" name="rspamd_map_data" required><?=file_get_contents('/rspamd_custom_maps/' . $rspamd_regex_map);?></textarea>
               </div>
             </div>
             <div class="form-group">
