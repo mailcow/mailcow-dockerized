@@ -797,7 +797,7 @@
         "select_domain": "Selecteer eerst een domein",
         "password": "Wachtwoord",
         "password_repeat": "Herhaal wachtwoord",
-        "restart_sogo_hint": "SOGo dient opnieuw opgestart te worden nadat een domein is toegevoegd",
+        "post_domain_add": "SOGo dient opnieuw opgestart te worden nadat een domein is toegevoegd",
         "goto_null": "Houd mail achterwege",
         "goto_ham": "Leer als <span class=\"text-success\"><b>ham</b></span>",
         "goto_spam": "Leer als <span class=\"text-danger\"><b>spam</b></span>",
