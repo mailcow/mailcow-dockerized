@@ -820,7 +820,7 @@
         "select_domain": "Bitte zuerst eine Domain auswählen",
         "password": "Passwort",
         "password_repeat": "Passwort (Wiederholung)",
-        "restart_sogo_hint": "Der SOGo Container muss nach dem Hinzufügen einer neuen Domain neugestartet werden!",
+        "post_domain_add": "Der SOGo Container, \"sogo-mailcow\" muss nach dem Hinzufügen einer Domain neugestartet werden!<br><br>Im Anschluss sollte die DNS-Konfiguration der Domain überprüft- und \"acme-mailcow\" gegebenenfalls neugestartet werden, um Änderungen am Zertifikat zu übernehmen (autoconfig.&lt;domain&gt;, autodiscover.&lt;domain&gt;).<br>Dieser Schritt ist optional und wird alle 24 Stunden automatisch ausgeführt.",
         "goto_null": "Nachrichten sofort verwerfen",
         "goto_ham": "Nachrichten als <span class=\"text-success\"><b>Ham</b></span> lernen",
         "goto_spam": "Nachrichten als <span class=\"text-danger\"><b>Spam</b></span> lernen",

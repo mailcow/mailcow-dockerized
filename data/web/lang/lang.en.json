@@ -819,7 +819,7 @@
         "select_domain": "Please select a domain first",
         "password": "Password",
         "password_repeat": "Confirmation password (repeat)",
-        "restart_sogo_hint": "You will need to restart the SOGo service container after adding a new domain!",
+        "post_domain_add": "The SOGo container, \"sogo-mailcow\", needs to be restarted after adding a new domain!<br><br>Additionally the domains DNS configuration should be reviewed. Once the DNS configuration is approved, restart \"acme-mailcow\" to automatically generate certificates for your new domain (autoconfig.&lt;domain&gt;, autodiscover.&lt;domain&gt;).<br>This step is optional and will be retried every 24 hours.",
         "goto_null": "Silently discard mail",
         "goto_ham": "Learn as <span class=\"text-success\"><b>ham</b></span>",
         "goto_spam": "Learn as <span class=\"text-danger\"><b>spam</b></span>",
