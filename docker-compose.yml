@@ -6,7 +6,7 @@ services:
       environment:
         - TZ=${TZ}
       volumes:
-        - ./data/hooks/dovecot:/hooks
+        - ./data/hooks/unbound:/hooks
         - ./data/conf/unbound/unbound.conf:/etc/unbound/unbound.conf:ro
       restart: always
       tty: true
@@ -77,7 +77,7 @@ services:
       environment:
         - TZ=${TZ}
       volumes:
-        - ./data/hooks/dovecot:/hooks
+        - ./data/hooks/rspamd:/hooks
         - ./data/conf/rspamd/custom/:/etc/rspamd/custom
         - ./data/conf/rspamd/override.d/:/etc/rspamd/override.d
         - ./data/conf/rspamd/local.d/:/etc/rspamd/local.d
@@ -101,7 +101,7 @@ services:
       depends_on:
         - redis-mailcow
       volumes:
-        - ./data/hooks/dovecot:/hooks
+        - ./data/hooks/phpfpm:/hooks
         - ./data/web:/web:rw
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
         - ./data/conf/rspamd/custom/:/rspamd_custom_maps
@@ -365,7 +365,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.66
+      image: mailcow/watchdog:1.67
       # Debug
       #command: /watchdog.sh
       dns:
