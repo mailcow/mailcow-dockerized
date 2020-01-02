@@ -402,7 +402,7 @@ fi
 
 echo -e "\e[32mFetching new docker-compose version...\e[0m"
 sleep 2
-if [[ ! -z $(which pip) && $(pip list --local | grep -c docker-compose) == 1 ]]; then
+if [[ ! -z $(which pip) && $(pip list --local 2>&1 | grep -v DEPRECATION | grep -c docker-compose) == 1 ]]; then
   true
   #prevent breaking a working docker-compose installed with pip
 elif [[ $(curl -sL -w "%{http_code}" https://www.servercow.de/docker-compose/latest.php -o /dev/null) == "200" ]]; then
