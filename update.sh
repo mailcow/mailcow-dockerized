@@ -452,6 +452,15 @@ if [ -f data/conf/rspamd/custom/global_from_whitelist.map ]; then
   mv data/conf/rspamd/custom/global_from_whitelist.map data/conf/rspamd/custom/global_smtp_from_whitelist.map
 fi
 
+# Fix deprecated metrics.conf
+if [ -f "data/conf/rspamd/local.d/metrics.conf" ]; then
+  if [ ! -z "$(git diff --name-only origin/master data/conf/rspamd/local.d/metrics.conf)" ]; then
+    echo -e "\e[33mWARNING\e[0m - Please migrate your customizations of data/conf/rspamd/local.d/metrics.conf to actions.conf and groups.conf after this update."
+    echo "The deprecated configuration file metrics.conf will be moved to metrics.conf_deprecated after updating mailcow."
+  fi
+  mv data/conf/rspamd/local.d/metrics.conf data/conf/rspamd/local.d/metrics.conf_deprecated
+fi
+
 echo -e "\e[32mStarting mailcow...\e[0m"
 sleep 2
 docker-compose up -d --remove-orphans
