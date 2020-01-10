@@ -457,6 +457,7 @@
         "quota_notifications_vars": "{{percent}} equals the current quota of the user<br>{{username}} is the mailbox name",
         "active_rspamd_settings_map": "Active settings map",
         "quota_notifications_info": "Quota notications are sent to users once when crossing 80% and once when crossing 95% usage.",
+        "quarantine_bcc": "Send a copy of all notifications (BCC) to this recipient:<br><small>Leave empty to disable. <b>Unsigned, unchecked mail. Should be delivered internally only.</b></small>",
         "quarantine_retention_size": "Retentions per mailbox:<br><small>0 indicates <b>inactive</b>.</small>",
         "quarantine_max_size": "Maximum size in MiB (larger elements are discarded):<br><small>0 does <b>not</b> indicate unlimited.</small>",
         "quarantine_max_age": "Maximum age in days<br><small>Value must be equal to or greater than 1 day.</small>",
