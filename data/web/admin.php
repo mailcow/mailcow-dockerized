@@ -692,25 +692,39 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
     <div class="panel panel-default">
       <div class="panel-heading"><?=$lang['admin']['quarantine'];?></div>
       <div class="panel-body">
-       <?php $q_data = quarantine('settings');?>
+        <?php $q_data = quarantine('settings');
+        if (empty($q_data['retention_size']) || empty($q_data['max_size'])):
+        ?>
+        <div class="panel-body"><div class="alert alert-info"><?=$lang['quarantine']['disabled_by_config'];?></div></div>
+        <?php
+        endif;
+        ?>
         <form class="form" data-id="quarantine" role="form" method="post">
           <div class="row">
-            <div class="col-sm-4">
+            <div class="col-sm-6">
               <div class="form-group">
                 <label for="retention_size"><?=$lang['admin']['quarantine_retention_size'];?></label>
                 <input type="number" class="form-control" name="retention_size" value="<?=$q_data['retention_size'];?>" placeholder="0" required>
               </div>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-6">
               <div class="form-group">
                 <label for="max_size"><?=$lang['admin']['quarantine_max_size'];?></label>
                 <input type="number" class="form-control" name="max_size" value="<?=$q_data['max_size'];?>" placeholder="0" required>
               </div>
             </div>
-            <div class="col-sm-4">
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
               <div class="form-group">
                 <label for="max_age"><?=$lang['admin']['quarantine_max_age'];?></label>
                 <input type="number" class="form-control" name="max_age" value="<?=$q_data['max_age'];?>" min="1" required>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="sender"><span class="glyphicon glyphicon-copy"></span> <?=$lang['admin']['quarantine_global_rcpt'];?></label>
+                <input type="email" class="form-control" name="global_rcpt" value="<?=htmlspecialchars($q_data['global_rcpt']);?>" placeholder="">
               </div>
             </div>
           </div>
@@ -718,7 +732,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             <div class="col-sm-6">
               <div class="form-group">
                 <label for="sender"><?=$lang['admin']['quarantine_notification_sender'];?>:</label>
-                <input type="text" class="form-control" name="sender" value="<?=htmlspecialchars($q_data['sender']);?>" placeholder="quarantine@localhost">
+                <input type="email" class="form-control" name="sender" value="<?=htmlspecialchars($q_data['sender']);?>" placeholder="quarantine@localhost">
               </div>
             </div>
             <div class="col-sm-6">
@@ -728,6 +742,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
               </div>
             </div>
           </div>
+          <hr>
           <div class="row">
             <div class="col-sm-12">
               <legend data-target="#quarantine_template" style="cursor:pointer" class="arrow-toggle" unselectable="on" data-toggle="collapse">
@@ -779,7 +794,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
           <div class="col-sm-6">
             <div class="form-group">
               <label for="sender"><?=$lang['admin']['quarantine_notification_sender'];?>:</label>
-              <input type="text" class="form-control" name="sender" value="<?=htmlspecialchars($qw_data['sender']);?>" placeholder="quota-warning@localhost">
+              <input type="email" class="form-control" name="sender" value="<?=htmlspecialchars($qw_data['sender']);?>" placeholder="quota-warning@localhost">
             </div>
           </div>
           <div class="col-sm-6">
