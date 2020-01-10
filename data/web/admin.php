@@ -723,8 +723,8 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             </div>
             <div class="col-sm-6">
               <div class="form-group">
-                <label for="sender"><span class="glyphicon glyphicon-copy"></span> <?=$lang['admin']['quarantine_global_rcpt'];?></label>
-                <input type="email" class="form-control" name="global_rcpt" value="<?=htmlspecialchars($q_data['global_rcpt']);?>" placeholder="">
+                <label for="sender"><span class="glyphicon glyphicon-copy"></span> <?=$lang['admin']['quarantine_bcc'];?></label>
+                <input type="email" class="form-control" name="bcc" value="<?=htmlspecialchars($q_data['bcc']);?>" placeholder="">
               </div>
             </div>
           </div>
