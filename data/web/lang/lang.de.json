@@ -437,6 +437,7 @@
         "quarantine": "Quarantäne",
         "active_rspamd_settings_map": "Derzeit aktive Settings Map",
         "quota_notifications_info": "Quota Benachrichtigungen werden an Mailboxen versendet, die 80 respektive 95 Prozent der zur Verfügung stehenden Quota überschreiten.",
+        "quarantine_bcc": "Eine Kopie aller Benachrichtigungen (BCC) an folgendes Postfach senden:<br><small>Leer bedeutet deaktiviert. <b>Unsignierte, ungeprüfte E-Mail. Sollte nur intern zugestellt werden.</b></small>",
         "quarantine_retention_size": "Rückhaltungen pro Mailbox:<br><small>0 bedeutet <b>inaktiv</b>.</small>",
         "quarantine_max_size": "Maximale Größe in MiB (größere Elemente werden verworfen):<br><small>0 bedeutet <b>nicht</b> unlimitiert.</small>",
         "quarantine_max_age": "Maximales Alter in Tagen<br><small>Wert muss größer oder gleich 1 Tag sein.</small>",
