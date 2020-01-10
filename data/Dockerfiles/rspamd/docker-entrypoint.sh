@@ -27,12 +27,26 @@ until [[ ! -z ${DOVECOT_V4} ]]; do
   DOVECOT_V4=$(dig a dovecot +short)
   DOVECOT_V6=$(dig aaaa dovecot +short)
   [[ ! -z ${DOVECOT_V4} ]] && break;
-  echo "Waiting for Dovecot"
+  echo "Waiting for Dovecot..."
   sleep 3
 done
 echo ${DOVECOT_V4}/32 > /etc/rspamd/custom/dovecot_trusted.map
 if [[ ! -z ${DOVECOT_V6} ]]; then
   echo ${DOVECOT_V6}/128 >> /etc/rspamd/custom/dovecot_trusted.map
+fi
+
+RSPAMD_V4=
+RSPAMD_V6=
+until [[ ! -z ${RSPAMD_V4} ]]; do
+  RSPAMD_V4=$(dig a rspamd +short)
+  RSPAMD_V6=$(dig aaaa rspamd +short)
+  [[ ! -z ${RSPAMD_V4} ]] && break;
+  echo "Waiting for Rspamd..."
+  sleep 3
+done
+echo ${RSPAMD_V4}/32 > /etc/rspamd/custom/rspamd_trusted.map
+if [[ ! -z ${RSPAMD_V6} ]]; then
+  echo ${RSPAMD_V6}/128 >> /etc/rspamd/custom/rspamd_trusted.map
 fi
 
 chown -R _rspamd:_rspamd /var/lib/rspamd \
@@ -53,6 +67,7 @@ touch /etc/rspamd/custom/global_mime_from_blacklist.map \
   /etc/rspamd/custom/bad_languages.map \
   /etc/rspamd/custom/sa-rules \
   /etc/rspamd/custom/dovecot_trusted.map \
+  /etc/rspamd/custom/rspamd_trusted.map \
   /etc/rspamd/custom/ip_wl.map \
   /etc/rspamd/custom/fishy_tlds.map \
   /etc/rspamd/custom/bad_words.map \
