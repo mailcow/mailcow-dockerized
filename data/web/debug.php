@@ -4,8 +4,9 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admin") {
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/header.inc.php';
 $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
-$solr_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_SOLR"]) === false) ? solr_status() : false;
-$clamd_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_CLAMD"]) === false) ? true : false;
+echo $_ENV["SKIP_SOLR"];
+$solr_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_SOLR"])) ? false : solr_status();
+$clamd_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_CLAMD"])) ? true : false;
 ?>
 <div class="container">
 
@@ -102,6 +103,7 @@ $clamd_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_CLAMD"]) ===
             <ul class="list-group">
             <?php
             $containers = (docker('info'));
+            ksort($containers);
             foreach ($containers as $container => $container_info) {
               if ($container == 'clamd-mailcow' && $clamd_status === false) { continue; }
               if ($container == 'solr-mailcow' && $solr_status === false) { continue; }
