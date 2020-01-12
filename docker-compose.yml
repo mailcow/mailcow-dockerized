@@ -69,13 +69,15 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.58
+      image: mailcow/rspamd:1.59
       stop_grace_period: 30s
       depends_on:
         - nginx-mailcow
         - dovecot-mailcow
       environment:
         - TZ=${TZ}
+        - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
+        - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
       volumes:
         - ./data/hooks/rspamd:/hooks
         - ./data/conf/rspamd/custom/:/etc/rspamd/custom
