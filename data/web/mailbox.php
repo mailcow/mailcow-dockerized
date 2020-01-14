@@ -34,7 +34,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               <?=$lang['mailbox']['domains'];?> <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default refresh_table" data-draw="draw_domain_table" data-table="domain_table"><?=$lang['admin']['refresh'];?></button>
-                <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addDomainModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_domain'];?></button>
+                <? if($_SESSION['mailcow_cc_role'] == "admin"): ?><button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addDomainModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_domain'];?></button><? endif; ?>
               </div>
             </div>
             <!-- <div class="mass-actions-mailbox" data-actions-header="true"></div> -->
