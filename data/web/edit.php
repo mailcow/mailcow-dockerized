@@ -843,7 +843,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <label class="control-label col-sm-2" for="nexthop"><?=$lang['edit']['nexthop'];?></label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" name="nexthop" value="<?=htmlspecialchars($result['nexthop'], ENT_QUOTES, 'UTF-8');?>" required>
+                <input type="text" class="form-control" name="nexthop" placeholder='[0.0.0.0], [0.0.0.0]:25, host:25, host, [host]:25' value="<?=htmlspecialchars($result['nexthop'], ENT_QUOTES, 'UTF-8');?>" required>
               </div>
             </div>
             <div class="form-group">
