@@ -328,6 +328,7 @@ while true; do
         log_f "Found orphaned certificate: ${EXISTING_CERT} - archiving it at ${ACME_BASE}/backups/${EXISTING_CERT}/"
         BACKUP_DIR=${ACME_BASE}/backups/${EXISTING_CERT}/${DATE}
         # archive rsa cert and any other files
+        mkdir -p ${ACME_BASE}/backups/${EXISTING_CERT}
         mv ${ACME_BASE}/${EXISTING_CERT} ${BACKUP_DIR}
         CERT_CHANGED=1
         CERT_AMOUNT_CHANGED=1
