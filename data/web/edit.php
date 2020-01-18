@@ -709,7 +709,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="col-sm-offset-2 col-sm-10">
               <div class="checkbox">
               <label><input type="checkbox" value="1" name="force_pw_update" <?=($result['attributes']['force_pw_update']=="1") ? "checked" : null;?>> <?=$lang['edit']['force_pw_update'];?></label>
-              <small class="help-block"><?=$lang['edit']['force_pw_update_info'];?></small>
+              <small class="help-block"><?=sprintf($lang['edit']['force_pw_update_info'], $UI_TEXTS['main_name']);?></small>
               </div>
             </div>
           </div>
