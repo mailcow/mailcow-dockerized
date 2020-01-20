@@ -1,0 +1,120 @@
+---
+kind: pipeline
+name: integration-testing
+
+platform:
+  os: linux
+  arch: amd64
+
+clone:
+  disable: true
+
+steps:
+
+- name: download-tests
+  pull: default
+  image: timovibritannia/ansible
+  commands:
+  - wget $TEST_DOWNLOAD_URL --quiet
+  - unzip -qq mailcow-integration-tests.zip
+  - rm mailcow-integration-tests.zip
+  environment:
+    TEST_DOWNLOAD_URL:
+      from_secret: TEST_DOWNLOAD_URL
+  when:
+    branch:
+    - master
+    event:
+    - push
+
+- name: lint
+  pull: default
+  image: timovibritannia/ansible
+  commands:
+  - ansible-lint ./
+  when:
+    branch:
+    - master
+    event:
+    - push
+
+- name: create-server
+  pull: default
+  image: timovibritannia/ansible
+  commands:
+  - chmod +x ci.sh
+  - ./ci.sh
+  - ansible-playbook mailcow-start-server.yml --diff
+  environment:
+    ANSIBLE_HOST_KEY_CHECKING: false
+    ANSIBLE_FORCE_COLOR: true
+    VAULT_PW:
+      from_secret: VAULT_PW
+  when:
+    branch:
+    - master
+    event:
+    - push
+
+- name: setup-server
+  pull: default
+  image: timovibritannia/ansible
+  commands:
+  - chmod +x ci.sh
+  - ./ci.sh
+  - sleep 60
+  - ansible-playbook mailcow-setup-server.yml --private-key /drone/src/id_ssh_rsa --diff
+  environment:
+    ANSIBLE_HOST_KEY_CHECKING: false
+    ANSIBLE_FORCE_COLOR: true
+    VAULT_PW:
+      from_secret: VAULT_PW
+  when:
+    branch:
+    - master
+    event:
+    - push
+
+- name: run-tests
+  pull: default
+  image: timovibritannia/ansible
+  commands:
+  - chmod +x ci.sh
+  - ./ci.sh
+  - ansible-playbook mailcow-integration-tests.yml --private-key /drone/src/id_ssh_rsa --diff
+  environment:
+    ANSIBLE_HOST_KEY_CHECKING: false
+    ANSIBLE_FORCE_COLOR: true
+    VAULT_PW:
+      from_secret: VAULT_PW
+  when:
+    branch:
+    - master
+    event:
+    - push
+
+- name: delete-server
+  pull: default
+  image: timovibritannia/ansible
+  commands:
+  - chmod +x ci.sh
+  - ./ci.sh
+  - ansible-playbook mailcow-delete-server.yml --diff
+  environment:
+    ANSIBLE_HOST_KEY_CHECKING: false
+    ANSIBLE_FORCE_COLOR: true
+    VAULT_PW:
+      from_secret: VAULT_PW
+  when:
+    branch:
+    - master
+    event:
+    - push
+    status:
+    - failure
+    - success
+---
+kind: signature
+hmac: d45bd1594ef12eb12b0035eb787d3372a6693825d8dbeb75c339979302b3941c
+
+...
