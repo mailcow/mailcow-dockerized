@@ -24,6 +24,7 @@ data/assets/ssl/*
 *.iml
 data/web/.well-known/acme-challenge
 data/web/nextcloud*/
+data/web/rc*/
 data/conf/rspamd/local.d/*
 data/conf/rspamd/override.d/*
 !data/conf/nginx/dynmaps.conf
