@@ -147,9 +147,11 @@ chmod 600 mailcow.conf
 source mailcow.conf
 DOTS=${MAILCOW_HOSTNAME//[^.]};
 if [ ${#DOTS} -lt 2 ]; then
-  echo "MAILCOW_HOSTNAME (${MAILCOW_HOSTNAME}) is not a FQDN!"
-  echo "Please change it to a FQDN and run docker-compose down followed by docker-compose up -d"
-  exit 1
+  read -r -p "MAILCOW_HOSTNAME (${MAILCOW_HOSTNAME}) is not a FQDN! The use of mailcow without a FQDN is not supported. Are you sure you want to continue? [y/N] " response
+  if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+    echo "OK, exiting."
+    exit 0
+  fi
 fi
 
 if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusybBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\""; exit 1; fi
