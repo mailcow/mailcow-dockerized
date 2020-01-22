@@ -50,8 +50,8 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
         $port = null;
       }
       else {
-        echo "Invalid transport";
-        die();
+        $port = substr($hostname_w_port, strrpos($hostname_w_port, ':') + 1);
+        $hostname = rtrim($hostname_w_port, ':' . $port);
       }
     }
     // Try to get MX if host is not [host]
