@@ -16,7 +16,7 @@ done
 # Wait for updated schema
 DBV_NOW=$(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT version FROM versions WHERE application = 'db_schema';" -BN)
 DBV_NEW=$(grep -oE '\$db_version = .*;' init_db.inc.php | sed 's/$db_version = //g;s/;//g' | cut -d \" -f2)
-while [[ ${DBV_NOW} != ${DBV_NEW} ]]; do
+while [[ "${DBV_NOW}" != "${DBV_NEW}" ]]; do
   echo "Waiting for schema update..."
   DBV_NOW=$(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT version FROM versions WHERE application = 'db_schema';" -BN)
   DBV_NEW=$(grep -oE '\$db_version = .*;' init_db.inc.php | sed 's/$db_version = //g;s/;//g' | cut -d \" -f2)
@@ -38,7 +38,7 @@ SELECT
    if(json_extract(attributes, '$.force_pw_update') LIKE '%0%', if(json_extract(attributes, '$.sogo_access') LIKE '%1%', password, '{SSHA256}A123A123A321A321A321B321B321B123B123B321B432F123E321123123321321'), '{SSHA256}A123A123A321A321A321B321B321B123B123B321B432F123E321123123321321'),
    mailbox.name,
    mailbox.username,
-   IFNULL(GROUP_CONCAT(ga.aliases SEPARATOR ' '), ''),
+   IFNULL(GROUP_CONCAT(ga.aliases ORDER BY ga.aliases SEPARATOR ' '), ''),
    IFNULL(gda.ad_alias, ''),
    IFNULL(external_acl.send_as_acl, ''),
    mailbox.kind,
