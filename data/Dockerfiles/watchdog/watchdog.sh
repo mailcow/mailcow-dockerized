@@ -161,6 +161,39 @@ if grep -qi "$(echo ${IPV6_NETWORK} | cut -d: -f1-3)" <<< "$(ip a s)"; then
   fi
 fi
 
+external_checks() {
+  err_count=0
+  diff_c=0
+  THRESHOLD=1
+  # Reduce error count by 2 after restarting an unhealthy container
+  GUID=$(mysql -u${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT version FROM versions WHERE application = 'GUID'" -BN)
+  trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
+  while [ ${err_count} -lt ${THRESHOLD} ]; do
+    err_c_cur=${err_count}
+    CHECK_REPONSE="$(curl --connect-timeout 3 -m 10 -4 -s https://checks.mailcow.email -X POST -dguid=${GUID} 2> /dev/null)"
+    if [[ ! -z "${CHECK_REPONSE}" ]] && [[ "$(echo ${CHECK_REPONSE} | jq -r .response)" == "critical" ]]; then
+      echo ${CHECK_REPONSE} | jq -r .out > /tmp/external_checks
+      err_count=$(( ${err_count} + 1 ))
+    fi
+    CHECK_REPONSE6="$(curl --connect-timeout 3 -m 10 -6 -s https://checks.mailcow.email -X POST -dguid=${GUID} 2> /dev/null)"
+    if [[ ! -z "${CHECK_REPONSE6}" ]] && [[ "$(echo ${CHECK_REPONSE6} | jq -r .response)" == "critical" ]]; then
+      echo ${CHECK_REPONSE} | jq -r .out > /tmp/external_checks
+      err_count=$(( ${err_count} + 1 ))
+    fi
+    [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
+    [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
+    progress "External checks" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
+    if [[ $? == 10 ]]; then
+      diff_c=0
+      sleep 60
+    else
+      diff_c=0
+      sleep $(( ( RANDOM % 20 ) + 120 ))
+    fi
+  done
+  return 1
+}
+
 nginx_checks() {
   err_count=0
   diff_c=0
@@ -611,6 +644,20 @@ PID=$!
 echo "Spawned nginx_checks with PID ${PID}"
 BACKGROUND_TASKS+=(${PID})
 
+if [[ ${WATCHDOG_EXTERNAL_CHECKS} =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+(
+while true; do
+  if ! external_checks; then
+    log_msg "External checks hit error limit"
+    echo external_checks > /tmp/com_pipe
+  fi
+done
+) &
+PID=$!
+echo "Spawned external_checks with PID ${PID}"
+BACKGROUND_TASKS+=(${PID})
+fi
+
 (
 while true; do
   if ! mysql_checks; then
@@ -823,6 +870,9 @@ while true; do
   if [[ ${com_pipe_answer} == "ratelimit" ]]; then
     log_msg "At least one ratelimit was applied"
     [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}" "Please see mailcow UI logs for further information."
+  elif [[ ${com_pipe_answer} == "external_checks" ]]; then
+    log_msg "Your mailcow is an open relay!"
+    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}" "Please stop mailcow now and check your network configuration!"
   elif [[ ${com_pipe_answer} == "acme-mailcow" ]]; then
     log_msg "acme-mailcow did not complete successfully"
     [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}" "Please check acme-mailcow for further information."

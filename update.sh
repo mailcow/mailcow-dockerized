@@ -308,6 +308,14 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# Notify about banned IP. Includes whois lookup.' >> mailcow.conf
       echo "WATCHDOG_NOTIFY_BAN=y" >> mailcow.conf
   fi
+  elif [[ ${option} == "WATCHDOG_EXTERNAL_CHECKS" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Checks if mailcow is an open relay. Requires a SAL. More checks will follow.' >> mailcow.conf
+      echo '# No data is collected. Opt-in and anonymous.' >> mailcow.conf
+      echo '# Will only work with unmodified mailcow setups.' >> mailcow.conf
+      echo "WATCHDOG_EXTERNAL_CHECKS=n" >> mailcow.conf
+  fi
   elif [[ ${option} == "SOGO_EXPIRE_SESSION" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"

@@ -242,6 +242,13 @@ ALLOW_ADMIN_EMAIL_LOGIN=n
 # Notify about banned IP (includes whois lookup)
 WATCHDOG_NOTIFY_BAN=y
 
+# Checks if mailcow is an open relay. Requires a SAL. More checks will follow.
+# https://www.servercow.de/mailcow?lang=en
+# https://www.servercow.de/mailcow?lang=de
+# No data is collected. Opt-in and anonymous.
+# Will only work with unmodified mailcow setups.
+WATCHDOG_EXTERNAL_CHECKS=n
+
 # Max log lines per service to keep in Redis logs
 
 LOG_LINES=9999
