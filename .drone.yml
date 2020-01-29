@@ -15,7 +15,7 @@ steps:
   pull: default
   image: timovibritannia/ansible
   commands:
-  - git clone https://github.com/mailcow/mailcow-integration-tests.git .
+  - git clone https://github.com/mailcow/mailcow-integration-tests.git --branch $(curl -sL https://api.github.com/repos/mailcow/mailcow-integration-tests/releases/latest | jq -r '.tag_name') --single-branch .
   - wget -O group_vars/all/secrets.yml $SECRETS_DOWNLOAD_URL --quiet
   environment:
     SECRETS_DOWNLOAD_URL:
@@ -114,6 +114,6 @@ steps:
     - success
 ---
 kind: signature
-hmac: 9c4ca886f432d00abeb42bf1c8f86af44fa2b92691f514274e6479b0dc8a0ee5
+hmac: d0ded978bd57646ae10307a3e7fd6584658e285929596ad1ee391cf7330d6338
 
 ...
