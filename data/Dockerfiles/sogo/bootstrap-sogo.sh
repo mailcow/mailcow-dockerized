@@ -25,11 +25,11 @@ done
 echo "DB schema is ${DBV_NOW}"
 
 # Recreate view
+if [[ "${MASTER}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "DROP VIEW IF EXISTS sogo_view"
 
-mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "DROP VIEW IF EXISTS sogo_view"
-
-while [[ ${VIEW_OK} != 'OK' ]]; do
-  mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
+  while [[ ${VIEW_OK} != 'OK' ]]; do
+    mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
 CREATE VIEW sogo_view (c_uid, domain, c_name, c_password, c_cn, mail, aliases, ad_aliases, ext_acl, kind, multiple_bookings) AS 
 SELECT
    mailbox.username,
@@ -59,27 +59,47 @@ WHERE
 GROUP BY
    mailbox.username;
 EOF
-  if [[ ! -z $(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "SELECT 'OK' FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'sogo_view'") ]]; then
-    VIEW_OK=OK
-  else
-    echo "Will retry to setup SOGo view in 3s"
-    sleep 3
-  fi
-done
+    if [[ ! -z $(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "SELECT 'OK' FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'sogo_view'") ]]; then
+      VIEW_OK=OK
+    else
+      echo "Will retry to setup SOGo view in 3s..."
+      sleep 3
+    fi
+  done
+else
+  while [[ ${VIEW_OK} != 'OK' ]]; do
+    if [[ ! -z $(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "SELECT 'OK' FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'sogo_view'") ]]; then
+      VIEW_OK=OK
+    else
+      echo "Waiting for SOGo view to be created by master..."
+      sleep 3
+    fi
+  done
+fi
 
 # Wait for static view table if missing after update and update content
-
-while [[ ${STATIC_VIEW_OK} != 'OK' ]]; do
-  if [[ ! -z $(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "SELECT 'OK' FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '_sogo_static_view'") ]]; then
-    STATIC_VIEW_OK=OK
-    echo "Updating _sogo_static_view content..."
-    mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "REPLACE INTO _sogo_static_view (c_uid, domain, c_name, c_password, c_cn, mail, aliases, ad_aliases, ext_acl, kind, multiple_bookings) SELECT c_uid, domain, c_name, c_password, c_cn, mail, aliases, ad_aliases, ext_acl, kind, multiple_bookings from sogo_view;"
-    mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "DELETE FROM _sogo_static_view WHERE c_uid NOT IN (SELECT username FROM mailbox WHERE active = '1')"
-  else
-    echo "Waiting for database initialization..."
-    sleep 3
-  fi
-done
+if [[ "${MASTER}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  while [[ ${STATIC_VIEW_OK} != 'OK' ]]; do
+    if [[ ! -z $(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "SELECT 'OK' FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '_sogo_static_view'") ]]; then
+      STATIC_VIEW_OK=OK
+      echo "Updating _sogo_static_view content..."
+      mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "REPLACE INTO _sogo_static_view (c_uid, domain, c_name, c_password, c_cn, mail, aliases, ad_aliases, ext_acl, kind, multiple_bookings) SELECT c_uid, domain, c_name, c_password, c_cn, mail, aliases, ad_aliases, ext_acl, kind, multiple_bookings from sogo_view;"
+      mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "DELETE FROM _sogo_static_view WHERE c_uid NOT IN (SELECT username FROM mailbox WHERE active = '1')"
+    else
+      echo "Waiting for database initialization by master..."
+      sleep 3
+    fi
+  done
+else
+  while [[ ${STATIC_VIEW_OK} != 'OK' ]]; do
+    if [[ ! -z $(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "SELECT 'OK' FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '_sogo_static_view'") ]]; then
+      STATIC_VIEW_OK=OK
+    else
+      echo "Waiting for database initialization by master..."
+      sleep 3
+    fi
+  done
+fi
 
 # Recreate password update trigger
 
@@ -224,9 +244,12 @@ echo "Syncing web content with named volume"
 rsync -a /usr/lib/GNUstep/SOGo/. /sogo_web/
 
 # Creating cronjobs
-echo "* * * * *   sogo   /usr/sbin/sogo-ealarms-notify -p /etc/sogo/sieve.creds 2>/dev/null" > /etc/cron.d/sogo
-echo "* * * * *   sogo   /usr/sbin/sogo-tool expire-sessions ${SOGO_EXPIRE_SESSION}" >> /etc/cron.d/sogo
-echo "0 0 * * *   sogo   /usr/sbin/sogo-tool update-autoreply -p /etc/sogo/sieve.creds" >> /etc/cron.d/sogo
-
+if [[ "${MASTER}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  echo "* * * * *   sogo   /usr/sbin/sogo-ealarms-notify -p /etc/sogo/sieve.creds 2>/dev/null" > /etc/cron.d/sogo
+  echo "* * * * *   sogo   /usr/sbin/sogo-tool expire-sessions ${SOGO_EXPIRE_SESSION}" >> /etc/cron.d/sogo
+  echo "0 0 * * *   sogo   /usr/sbin/sogo-tool update-autoreply -p /etc/sogo/sieve.creds" >> /etc/cron.d/sogo
+else
+  rm /etc/cron.d/sogo
+fi
 
 exec gosu sogo /usr/sbin/sogod
