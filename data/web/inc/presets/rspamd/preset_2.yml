@@ -3,7 +3,7 @@ content: |
   priority = 10;
   rcpt = "/postmaster@.*/";
   apply {
-    symbols_enabled = ["DKIM_SIGNED", "RATELIMITED", "RATELIMIT_UPDATE", "RATELIMIT_CHECK", "DYN_RL_CHECK", "HISTORY_SAVE", "MILTER_HEADERS", "ARC_SIGNED"];
+    symbols_enabled = ["DKIM_SIGNED", "HISTORY_SAVE", "MILTER_HEADERS", "ARC_SIGNED"];
   actions {
       greylist = null;
     }
