@@ -91,13 +91,13 @@ EOF
 echo -n ${ACL_ANYONE} > /etc/dovecot/acl_anyone
 
 if [[ "${SKIP_SOLR}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-echo -n 'quota acl zlib listescape mail_crypt mail_crypt_acl mail_log notify' > /etc/dovecot/mail_plugins
-echo -n 'quota imap_quota imap_acl acl zlib imap_zlib imap_sieve listescape mail_crypt mail_crypt_acl notify mail_log' > /etc/dovecot/mail_plugins_imap
-echo -n 'quota sieve acl zlib listescape mail_crypt mail_crypt_acl' > /etc/dovecot/mail_plugins_lmtp
+echo -n 'quota acl zlib listescape mail_crypt mail_crypt_acl mail_log notify replication' > /etc/dovecot/mail_plugins
+echo -n 'quota imap_quota imap_acl acl zlib imap_zlib imap_sieve listescape mail_crypt mail_crypt_acl notify replication mail_log' > /etc/dovecot/mail_plugins_imap
+echo -n 'quota sieve acl zlib listescape mail_crypt mail_crypt_acl notify replication' > /etc/dovecot/mail_plugins_lmtp
 else
-echo -n 'quota acl zlib listescape mail_crypt mail_crypt_acl mail_log notify fts fts_solr' > /etc/dovecot/mail_plugins
-echo -n 'quota imap_quota imap_acl acl zlib imap_zlib imap_sieve listescape mail_crypt mail_crypt_acl notify mail_log fts fts_solr' > /etc/dovecot/mail_plugins_imap
-echo -n 'quota sieve acl zlib listescape mail_crypt mail_crypt_acl fts fts_solr' > /etc/dovecot/mail_plugins_lmtp
+echo -n 'quota acl zlib listescape mail_crypt mail_crypt_acl mail_log notify fts fts_solr replication' > /etc/dovecot/mail_plugins
+echo -n 'quota imap_quota imap_acl acl zlib imap_zlib imap_sieve listescape mail_crypt mail_crypt_acl notify mail_log fts fts_solr replication' > /etc/dovecot/mail_plugins_imap
+echo -n 'quota sieve acl zlib listescape mail_crypt mail_crypt_acl fts fts_solr notify replication' > /etc/dovecot/mail_plugins_lmtp
 fi
 chmod 644 /etc/dovecot/mail_plugins /etc/dovecot/mail_plugins_imap /etc/dovecot/mail_plugins_lmtp /templates/quarantine.tpl
 
@@ -136,6 +136,10 @@ function auth_password_verify(req, pass)
     row = cur:fetch (row, "a")
   end
   return dovecot.auth.PASSDB_RESULT_USER_UNKNOWN, "No such user"
+end
+
+function auth_passdb_lookup(req)
+   return dovecot.auth.PASSDB_RESULT_USER_UNKNOWN, ""
 end
 
 function script_init()
@@ -185,7 +189,7 @@ done
 RAND_USER=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 16 | head -n 1)
 RAND_PASS=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 24 | head -n 1)
 
-echo ${RAND_USER}@mailcow.local:{SHA1}$(echo -n ${RAND_PASS} | sha1sum | awk '{print $1}') > /etc/dovecot/dovecot-master.passwd
+echo ${RAND_USER}@mailcow.local:{SHA1}$(echo -n ${RAND_PASS} | sha1sum | awk '{print $1}'):::::: > /etc/dovecot/dovecot-master.passwd
 echo ${RAND_USER}@mailcow.local::5000:5000:::: > /etc/dovecot/dovecot-master.userdb
 echo ${RAND_USER}@mailcow.local:${RAND_PASS} > /etc/sogo/sieve.creds
 
@@ -227,7 +231,7 @@ sed -i "s/__DBUSER__/${DBUSER}/g" /usr/local/bin/imapsync_cron.pl /usr/local/bin
 sed -i "s/__DBPASS__/${DBPASS}/g" /usr/local/bin/imapsync_cron.pl /usr/local/bin/quarantine_notify.py /usr/local/bin/clean_q_aged.sh /etc/dovecot/lua/app-passdb.lua
 sed -i "s/__DBNAME__/${DBNAME}/g" /usr/local/bin/imapsync_cron.pl /usr/local/bin/quarantine_notify.py /usr/local/bin/clean_q_aged.sh /etc/dovecot/lua/app-passdb.lua
 sed -i "s/__LOG_LINES__/${LOG_LINES}/g" /usr/local/bin/trim_logs.sh
-if [[ "${MASTER}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+if [[ "${MASTER}" =~ ^([nN][oO]|[nN])+$ ]]; then
 # Toggling MASTER will result in a rebuild of containers, so the quota script will be recreated
 cat <<'EOF' > /usr/local/bin/quota_notify.py
 #!/usr/bin/python3
@@ -301,6 +305,8 @@ IMAPSYNC_TABLE=$(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBP
 # Envsubst maildir_gc
 echo "$(envsubst < /usr/local/bin/maildir_gc.sh)" > /usr/local/bin/maildir_gc.sh
 
+# GUID generation
+# Will fail and restart until versions exists (ok)
 PUBKEY_MCRYPT=$(doveconf -P | grep -i mail_crypt_global_public_key | cut -d '<' -f2)
 if [ -f ${PUBKEY_MCRYPT} ]; then
   GUID=$(cat <(echo ${MAILCOW_HOSTNAME}) /mail_crypt/ecpubkey.pem | sha256sum | cut -d ' ' -f1 | tr -cd "[a-fA-F0-9.:/] ")
@@ -329,5 +335,9 @@ done
 # For some strange, unknown and stupid reason, Dovecot may run into a race condition, when this file is not touched before it is read by dovecot/auth
 # May be related to something inside Docker, I seriously don't know
 touch /etc/dovecot/lua/app-passdb.lua
+
+if [[ ! -z ${REDIS_SLAVEOF_IP} ]]; then
+  cp /etc/syslog-ng/syslog-ng-redis_slave.conf /etc/syslog-ng/syslog-ng.conf
+fi
 
 exec "$@"
