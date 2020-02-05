@@ -30,7 +30,14 @@ until [[ $(redis-cli -h redis-mailcow PING) == "PONG" ]]; do
   sleep 2
 done
 
-redis-cli -h redis-mailcow DEL F2B_RES > /dev/null
+# Do not attempt to write to slave
+if [[ ! -z ${REDIS_SLAVEOF_IP} ]]; then
+  REDIS_CMDLINE="redis-cli -h ${REDIS_SLAVEOF_IP} -p ${REDIS_SLAVEOF_PORT}"
+else
+  REDIS_CMDLINE="redis-cli -h redis -p 6379"
+fi
+
+${REDIS_CMDLINE} DEL F2B_RES > /dev/null
 
 # Common functions
 get_ipv6(){
@@ -65,7 +72,7 @@ progress() {
   [[ ${CURRENT} -gt ${TOTAL} ]] && return
   [[ ${CURRENT} -lt 0 ]] && CURRENT=0
   PERCENT=$(( 200 * ${CURRENT} / ${TOTAL} % 2 + 100 * ${CURRENT} / ${TOTAL} ))
-  redis-cli -h redis LPUSH WATCHDOG_LOG "{\"time\":\"$(date +%s)\",\"service\":\"${SERVICE}\",\"lvl\":\"${PERCENT}\",\"hpnow\":\"${CURRENT}\",\"hptotal\":\"${TOTAL}\",\"hpdiff\":\"${DIFF}\"}" > /dev/null
+  ${REDIS_CMDLINE} LPUSH WATCHDOG_LOG "{\"time\":\"$(date +%s)\",\"service\":\"${SERVICE}\",\"lvl\":\"${PERCENT}\",\"hpnow\":\"${CURRENT}\",\"hptotal\":\"${TOTAL}\",\"hpdiff\":\"${DIFF}\"}" > /dev/null
   log_msg "${SERVICE} health level: ${PERCENT}% (${CURRENT}/${TOTAL}), health trend: ${DIFF}" no_redis
   # Return 10 to indicate a dead service
   [ ${CURRENT} -le 0 ] && return 10
@@ -73,7 +80,7 @@ progress() {
 
 log_msg() {
   if [[ ${2} != "no_redis" ]]; then
-    redis-cli -h redis LPUSH WATCHDOG_LOG "{\"time\":\"$(date +%s)\",\"message\":\"$(printf '%s' "${1}" | \
+    ${REDIS_CMDLINE} LPUSH WATCHDOG_LOG "{\"time\":\"$(date +%s)\",\"message\":\"$(printf '%s' "${1}" | \
       tr '\r\n%&;$"_[]{}-' ' ')\"}" > /dev/null
   fi
   echo $(date) $(printf '%s\n' "${1}")
@@ -252,6 +259,7 @@ unbound_checks() {
 }
 
 redis_checks() {
+  # A check for the local redis container
   err_count=0
   diff_c=0
   THRESHOLD=5
@@ -465,20 +473,20 @@ fail2ban_checks() {
   err_count=0
   diff_c=0
   THRESHOLD=1
-  F2B_LOG_STATUS=($(redis-cli -h redis-mailcow --raw HKEYS F2B_ACTIVE_BANS))
+  F2B_LOG_STATUS=($(${REDIS_CMDLINE} --raw HKEYS F2B_ACTIVE_BANS))
   F2B_RES=
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
     err_c_cur=${err_count}
     F2B_LOG_STATUS_PREV=(${F2B_LOG_STATUS[@]})
-    F2B_LOG_STATUS=($(redis-cli -h redis-mailcow --raw HKEYS F2B_ACTIVE_BANS))
+    F2B_LOG_STATUS=($(${REDIS_CMDLINE} --raw HKEYS F2B_ACTIVE_BANS))
     array_diff F2B_RES F2B_LOG_STATUS F2B_LOG_STATUS_PREV
     if [[ ! -z "${F2B_RES}" ]]; then
       err_count=$(( ${err_count} + 1 ))
-      echo -n "${F2B_RES[@]}" | tr -cd "[a-fA-F0-9.:/] " | timeout 3s redis-cli -x -h redis-mailcow SET F2B_RES > /dev/null
+      echo -n "${F2B_RES[@]}" | tr -cd "[a-fA-F0-9.:/] " | timeout 3s ${REDIS_CMDLINE} -x SET F2B_RES > /dev/null
       if [ $? -ne 0 ]; then
-         redis-cli -x -h redis-mailcow DEL F2B_RES
+         ${REDIS_CMDLINE} -x DEL F2B_RES
       fi
     fi
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
@@ -501,7 +509,7 @@ acme_checks() {
   THRESHOLD=1
   ACME_LOG_STATUS=$(redis-cli -h redis GET ACME_FAIL_TIME)
   if [[ -z "${ACME_LOG_STATUS}" ]]; then
-    redis-cli -h redis SET ACME_FAIL_TIME 0
+    ${REDIS_CMDLINE} SET ACME_FAIL_TIME 0
     ACME_LOG_STATUS=0
   fi
   # Reduce error count by 2 after restarting an unhealthy container
@@ -673,7 +681,7 @@ BACKGROUND_TASKS+=(${PID})
 (
 while true; do
   if ! redis_checks; then
-    log_msg "Redis hit error limit"
+    log_msg "Local Redis hit error limit"
     echo redis-mailcow > /tmp/com_pipe
   fi
 done
@@ -877,9 +885,9 @@ while true; do
     log_msg "acme-mailcow did not complete successfully"
     [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}" "Please check acme-mailcow for further information."
   elif [[ ${com_pipe_answer} == "fail2ban" ]]; then
-    F2B_RES=($(timeout 4s redis-cli -h redis-mailcow --raw GET F2B_RES 2> /dev/null))
+    F2B_RES=($(timeout 4s ${REDIS_CMDLINE} --raw GET F2B_RES 2> /dev/null))
     if [[ ! -z "${F2B_RES}" ]]; then
-      redis-cli -h redis-mailcow DEL F2B_RES > /dev/null
+      ${REDIS_CMDLINE} DEL F2B_RES > /dev/null
       host=
       for host in "${F2B_RES[@]}"; do
         log_msg "Banned ${host}"
