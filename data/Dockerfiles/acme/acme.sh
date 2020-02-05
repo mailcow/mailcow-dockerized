@@ -2,6 +2,13 @@
 set -o pipefail
 exec 5>&1
 
+# Do not attempt to write to slave
+if [[ ! -z ${REDIS_SLAVEOF_IP} ]]; then
+  export REDIS_CMDLINE="redis-cli -h ${REDIS_SLAVEOF_IP} -p ${REDIS_SLAVEOF_PORT}"
+else
+  export REDIS_CMDLINE="redis-cli -h redis -p 6379"
+fi
+
 source /srv/functions.sh
 # Thanks to https://github.com/cvmiller -> https://github.com/cvmiller/expand6
 source /srv/expand6.sh
@@ -315,7 +322,7 @@ while true; do
   if [[ -z ${VALIDATED_CERTIFICATES[*]} ]]; then
     log_f "Cannot validate any hostnames, skipping Let's Encrypt for 1 hour."
     log_f "Use SKIP_LETS_ENCRYPT=y in mailcow.conf to skip it permanently."
-    redis-cli -h redis SET ACME_FAIL_TIME "$(date +%s)"
+    ${REDIS_CMDLINE} SET ACME_FAIL_TIME "$(date +%s)"
     sleep 1h
     exec $(readlink -f "$0")
   fi
@@ -356,7 +363,7 @@ while true; do
       ;;
     *) # non-zero
       log_f "Some errors occurred, retrying in 30 minutes..."
-      redis-cli -h redis SET ACME_FAIL_TIME "$(date +%s)"
+      ${REDIS_CMDLINE} SET ACME_FAIL_TIME "$(date +%s)"
       sleep 30m
       exec $(readlink -f "$0")
       ;;
