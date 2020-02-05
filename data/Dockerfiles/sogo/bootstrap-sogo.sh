@@ -26,8 +26,8 @@ echo "DB schema is ${DBV_NOW}"
 
 # Recreate view
 if [[ "${MASTER}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  echo "We are master, preparing sogo_view..."
   mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "DROP VIEW IF EXISTS sogo_view"
-
   while [[ ${VIEW_OK} != 'OK' ]]; do
     mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
 CREATE VIEW sogo_view (c_uid, domain, c_name, c_password, c_cn, mail, aliases, ad_aliases, ext_acl, kind, multiple_bookings) AS 
@@ -79,6 +79,7 @@ fi
 
 # Wait for static view table if missing after update and update content
 if [[ "${MASTER}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  echo "We are master, preparing _sogo_static_view..."
   while [[ ${STATIC_VIEW_OK} != 'OK' ]]; do
     if [[ ! -z $(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "SELECT 'OK' FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '_sogo_static_view'") ]]; then
       STATIC_VIEW_OK=OK
@@ -86,7 +87,7 @@ if [[ "${MASTER}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
       mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "REPLACE INTO _sogo_static_view (c_uid, domain, c_name, c_password, c_cn, mail, aliases, ad_aliases, ext_acl, kind, multiple_bookings) SELECT c_uid, domain, c_name, c_password, c_cn, mail, aliases, ad_aliases, ext_acl, kind, multiple_bookings from sogo_view;"
       mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "DELETE FROM _sogo_static_view WHERE c_uid NOT IN (SELECT username FROM mailbox WHERE active = '1')"
     else
-      echo "Waiting for database initialization by master..."
+      echo "Waiting for database initialization..."
       sleep 3
     fi
   done
@@ -101,11 +102,12 @@ else
   done
 fi
 
+
 # Recreate password update trigger
-
-mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "DROP TRIGGER IF EXISTS sogo_update_password"
-
-while [[ ${TRIGGER_OK} != 'OK' ]]; do
+if [[ "${MASTER}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  echo "We are master, preparing update trigger..."
+  mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "DROP TRIGGER IF EXISTS sogo_update_password"
+  while [[ ${TRIGGER_OK} != 'OK' ]]; do
   mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
 DELIMITER -
 CREATE TRIGGER sogo_update_password AFTER UPDATE ON _sogo_static_view
@@ -116,14 +118,14 @@ END;
 -
 DELIMITER ;
 EOF
-  if [[ ! -z $(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "SELECT 'OK' FROM INFORMATION_SCHEMA.TRIGGERS WHERE TRIGGER_NAME = 'sogo_update_password'") ]]; then
-    TRIGGER_OK=OK
-  else
-    echo "Will retry to setup SOGo password update trigger in 3s"
-    sleep 3
-  fi
-done
-
+    if [[ ! -z $(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "SELECT 'OK' FROM INFORMATION_SCHEMA.TRIGGERS WHERE TRIGGER_NAME = 'sogo_update_password'") ]]; then
+      TRIGGER_OK=OK
+    else
+      echo "Will retry to setup SOGo password update trigger in 3s"
+      sleep 3
+    fi
+  done
+fi
 
 if [[ "${ALLOW_ADMIN_EMAIL_LOGIN}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   TRUST_PROXY="YES"
