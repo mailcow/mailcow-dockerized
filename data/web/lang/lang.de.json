@@ -575,7 +575,7 @@
         "booking_0_short": "Immer verfügbar",
         "booking_lt0_short": "Weiches Limit",
         "booking_custom_short": "Hartes Limit",
-        "alias_domain_alias_hint": "Alias-Adressen werden <b>nicht</b> automatisch auch auf Domain-Alias Adressen angewendet. Eine Alias-Adresse <code>mein-alias@domain</code> bildet demnach <b>nicht</b> die Adresse <code>mein-alias@alias-domain</code> ab.",
+        "alias_domain_alias_hint": "Alias-Adressen werden <b>nicht</b> automatisch auch auf Domain-Alias Adressen angewendet. Eine Alias-Adresse <code>mein-alias@domain</code> bildet demnach <b>nicht</b> die Adresse <code>mein-alias@alias-domain</code> ab.<br>E-Mail-Weiterleitungen an externe Postfächer sollten über Sieve (SOGo Weiterleitung oder im Reiter \"Filter\") angelegt werden.",
         "domain": "Domain",
         "spam_aliases": "Temp. Alias",
         "alias": "Alias",
