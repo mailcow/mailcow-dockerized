@@ -233,8 +233,12 @@ USE_WATCHDOG=n
 
 ALLOW_ADMIN_EMAIL_LOGIN=n
 
-# Send notifications by mail (no DKIM signature, sent from watchdog@MAILCOW_HOSTNAME)
-# Can by multiple rcpts, NO quotation marks
+# Send notifications by mail (sent from watchdog@MAILCOW_HOSTNAME)
+# CAUTION:
+# 1. You should use external recipients
+# 2. Mails are sent unsigned (no DKIM)
+# 3. If you use DMARC, create a separate DMARC policy ("v=DMARC1; p=none;" in _dmarc.MAILCOW_HOSTNAME)
+# Multiple rcpts allowed, NO quotation marks, NO spaces
 
 #WATCHDOG_NOTIFY_EMAIL=a@example.com,b@example.com,c@example.com
 #WATCHDOG_NOTIFY_EMAIL=
