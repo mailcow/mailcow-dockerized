@@ -34,6 +34,7 @@ milter_protocol = 6
 minimal_backoff_time = 300s
 plaintext_reject_code = 550
 postscreen_access_list = permit_mynetworks,
+  cidr:/opt/postfix/conf/custom_postscreen_whitelist.cidr,
   cidr:/opt/postfix/conf/postscreen_access.cidr,
   tcp:127.0.0.1:10027
 postscreen_bare_newline_enable = no
