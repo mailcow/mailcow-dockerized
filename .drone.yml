@@ -15,12 +15,11 @@ steps:
   pull: default
   image: timovibritannia/ansible
   commands:
-  - wget $TEST_DOWNLOAD_URL --quiet
-  - unzip -qq mailcow-integration-tests.zip
-  - rm mailcow-integration-tests.zip
+  - git clone https://github.com/mailcow/mailcow-integration-tests.git --branch $(curl -sL https://api.github.com/repos/mailcow/mailcow-integration-tests/releases/latest | jq -r '.tag_name') --single-branch .
+  - wget -O group_vars/all/secrets.yml $SECRETS_DOWNLOAD_URL --quiet
   environment:
-    TEST_DOWNLOAD_URL:
-      from_secret: TEST_DOWNLOAD_URL
+    SECRETS_DOWNLOAD_URL:
+      from_secret: SECRETS_DOWNLOAD_URL
   when:
     branch:
     - master
@@ -62,7 +61,7 @@ steps:
   commands:
   - chmod +x ci.sh
   - ./ci.sh
-  - sleep 60
+  - sleep 120
   - ansible-playbook mailcow-setup-server.yml --private-key /drone/src/id_ssh_rsa --diff
   environment:
     ANSIBLE_HOST_KEY_CHECKING: false
@@ -115,6 +114,6 @@ steps:
     - success
 ---
 kind: signature
-hmac: d45bd1594ef12eb12b0035eb787d3372a6693825d8dbeb75c339979302b3941c
+hmac: d0ded978bd57646ae10307a3e7fd6584658e285929596ad1ee391cf7330d6338
 
 ...
