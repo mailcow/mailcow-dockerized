@@ -31,7 +31,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
     // Explode to hostname and port
     if ($has_bracket_and_port) {
       $port = substr($hostname_w_port, strrpos($hostname_w_port, ':') + 1);
-      $hostname = rtrim($hostname_w_port, ':' . $port);
+      $hostname = preg_replace('/'. preg_quote(':' . $port, '/') . '$/', '', $hostname_w_port);
       if (filter_var($hostname, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
         $hostname = '[' . $hostname . ']:';
       }
@@ -39,7 +39,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
     else {
       if ($is_ipv4_and_has_port) {
         $port = substr($hostname_w_port, strrpos($hostname_w_port, ':') + 1);
-        $hostname = rtrim($hostname_w_port, ':' . $port);
+        $hostname = preg_replace('/'. preg_quote(':' . $port, '/') . '$/', '', $hostname_w_port);
       }
       if (filter_var($hostname_w_port, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
         $hostname = $hostname_w_port;
@@ -51,7 +51,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
       }
       else {
         $port = substr($hostname_w_port, strrpos($hostname_w_port, ':') + 1);
-        $hostname = rtrim($hostname_w_port, ':' . $port);
+        $hostname = preg_replace('/'. preg_quote(':' . $port, '/') . '$/', '', $hostname_w_port);
       }
     }
     // Try to get MX if host is not [host]
