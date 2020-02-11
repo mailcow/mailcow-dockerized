@@ -120,6 +120,9 @@ while (($#)); do
     --ours)
       MERGE_STRATEGY=ours
     ;;
+    --skip-start)
+      SKIP_START=y
+    ;;
     --gc)
       echo -e "\e[32mCollecting garbage...\e[0m"
       docker_garbage
@@ -470,9 +473,13 @@ if [ -f "data/conf/rspamd/local.d/metrics.conf" ]; then
   mv data/conf/rspamd/local.d/metrics.conf data/conf/rspamd/local.d/metrics.conf_deprecated
 fi
 
-echo -e "\e[32mStarting mailcow...\e[0m"
-sleep 2
-docker-compose up -d --remove-orphans
+if [[ ${SKIP_START} == "y" ]]; then
+  echo -e "\e[33mNot starting mailcow, please run \"docker-compose up -d --remove-orphans\" to start mailcow.\e[0m"
+else
+  echo -e "\e[32mStarting mailcow...\e[0m"
+  sleep 2
+  docker-compose up -d --remove-orphans
+fi
 
 echo -e "\e[32mCollecting garbage...\e[0m"
 docker_garbage
