@@ -113,6 +113,7 @@
         "invalid_mime_type": "Invalid mime type",
         "imagick_exception": "Error: Imagick exception while reading image",
         "spam_learn_error": "Spam learn error: %s",
+        "ham_learn_error": "Ham learn error: %s",
         "release_send_failed": "Message could not be released: %s",
         "invalid_recipient_map_new": "Invalid new recipient specified: %s",
         "invalid_recipient_map_old": "Invalid original recipient specified: %s",
@@ -130,6 +131,7 @@
         "extra_acl_invalid_domain": "External sender \"%s\" uses an invalid domain"
     },
     "success": {
+        "learned_ham": "Successfully learned ID % as ham",
         "verified_totp_login": "Verified TOTP login",
         "verified_u2f_login": "Verified U2F login",
         "verified_yotp_login": "Verified Yubico OTP login",

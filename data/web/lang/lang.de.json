@@ -113,6 +113,7 @@
         "invalid_mime_type": "Grafik konnte nicht validiert werden: Ungültiger MIME-Type",
         "imagick_exception": "Fataler Bildverarbeitungsfehler",
         "spam_learn_error": "Spam Lernfehler: %s",
+        "ham_learn_error": "Ham Lernfehler: %s",
         "release_send_failed": "Die Nachricht konnte nicht versendet werden: %s",
         "invalid_recipient_map_new": "Neuer Empfänger \"%s\" ist ungültig",
         "invalid_recipient_map_old": "Originaler Empfänger \"%s\" ist ungültig",
@@ -130,6 +131,7 @@
         "extra_acl_invalid_domain": "Externe Absenderadresse \"%s\" verwendet eine ungültige Domain"
     },
     "success": {
+        "learned_ham": "ID %s wurde erfolreich als Ham gelernt",
         "verified_totp_login": "TOTP Anmeldung verifiziert",
         "verified_u2f_login": "U2F Anmeldung verifiziert",
         "verified_yotp_login": "Yubico OTP Anmeldung verifiziert",
