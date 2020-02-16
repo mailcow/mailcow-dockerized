@@ -488,7 +488,7 @@
         "text": "Text",
         "activate_send": "Senden-Button freischalten",
         "send": "Senden",
-        "api_info": "Das API befindet sich noch in Entwicklung, eine Dokumentation ist ausstehend.",
+        "api_info": "Das API befindet sich noch in Entwicklung, die Dokumentation kann unter <a href=\"/api\">/api</a> abgerufen werden.",
         "guid_and_license": "GUID & Lizenz",
         "guid": "GUID - Eindeutige Instanz-ID",
         "license_info": "Eine Lizenz ist nicht erforderlich, hilft jedoch der Entwicklung mailcows.<br><a href=\"https://www.servercow.de/mailcow#sal\" target=\"_blank\" alt=\"SAL Bestellung\">Hier kann die mailcow GUID registriert werden.</a> Alternativ ist <a href=\"https://www.servercow.de/mailcow#support\" target=\"_blank\" alt=\"SAL Bestellung\">die Bestellung von Support-Paketen möglich</a>.",

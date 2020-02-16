@@ -500,7 +500,7 @@
         "text": "Text",
         "activate_send": "Activate send button",
         "send": "Send",
-        "api_info": "The API is a work in progress.",
+        "api_info": "The API is a work in progress. The documentation can be found at <a href=\"/api\">/api</a>",
         "guid_and_license": "GUID & License",
         "guid": "GUID - unique instance ID",
         "license_info": "A license is not required but helps further development.<br><a href=\"https://www.servercow.de/mailcow?lang=en#sal\" target=\"_blank\" alt=\"SAL order\">Register your GUID here</a> or <a href=\"https://www.servercow.de/mailcow?lang=en#support\" target=\"_blank\" alt=\"Support order\">buy support for your mailcow installation.</a>",
