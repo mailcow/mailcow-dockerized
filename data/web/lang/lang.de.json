@@ -427,6 +427,7 @@
         "nexthop": "Next Hop",
         "api_allow_from": "IP-Adressen für Zugriff",
         "api_key": "API-Key",
+        "api_skip_ip_check": "IP-Check für API nicht ausführen",
         "activate_api": "API aktivieren",
         "regen_api_key": "API-Key regenerieren",
         "ban_list_info": "Übersicht ausgesperrter Netzwerke: <b>Netzwerk (verbleibende Banzeit) - [Aktionen]</b>.<br />IPs, die zum Entsperren eingereiht werden, verlassen die Liste aktiver Bans nach wenigen Sekunden.<br />Rote Labels sind Indikatoren für aktive Blacklisteinträge.",
