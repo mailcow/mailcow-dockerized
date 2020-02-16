@@ -447,6 +447,7 @@
         "relay_run": "Run test",
         "api_allow_from": "Allow API access from these IPs (separated by comma or new line)",
         "api_key": "API key",
+        "api_skip_ip_check": "Skip IP check for API",
         "activate_api": "Activate API",
         "regen_api_key": "Regenerate API key",
         "ban_list_info": "See a list of banned IPs below: <b>network (remaining ban time) - [actions]</b>.<br />IPs queued to be unbanned will be removed from the active ban list within a few seconds.<br />Red labels indicate active permanent bans by blacklisting.",

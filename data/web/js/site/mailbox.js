@@ -48,6 +48,13 @@ $(document).ready(function() {
       $(this.$domain).closest("select").selectpicker();
     }
   });
+  // todo
+  $('[data-page-size]').on('click', function(e){
+    e.preventDefault();
+    var newSize = $(this).data('page-size');
+    var nextTable = $(this).nextAll('.table-responsive').find('table');
+    FooTable.get(nextTable).pageSize(newSize);
+  });
   // Clone mailbox mass actions
   $("div").find("[data-actions-header='true'").each(function() {
     $(this).html($(this).nextAll('.mass-actions-mailbox:first').html());
