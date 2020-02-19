@@ -241,10 +241,11 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.45
+      image: mailcow/postfix:1.46
       depends_on:
         - mysql-mailcow
       volumes:
+        - ./data/hooks/postfix:/hooks
         - ./data/conf/postfix:/opt/postfix/conf
         - ./data/assets/ssl:/etc/ssl/mail/:ro
         - postfix-vol-1:/var/spool/postfix
