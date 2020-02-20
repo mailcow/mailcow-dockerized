@@ -123,6 +123,9 @@ function auth_password_verify(req, pass)
   if req.domain == nil then
     return dovecot.auth.PASSDB_RESULT_USER_UNKNOWN, "No such user"
   end
+  if cur == nil then
+    script_init()
+  end
   local cur,errorString = con:execute(string.format([[SELECT mailbox, password FROM app_passwd
     WHERE mailbox = '%s'
       AND active = '1'
