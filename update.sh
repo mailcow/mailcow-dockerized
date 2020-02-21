@@ -376,9 +376,15 @@ git diff >> ${DIFF_FILE}
 echo -e "\e[32mPrefetching images...\e[0m"
 prefetch_images
 
-echo -e "Stopping mailcow... "
+echo -e "\e[32mStopping mailcow...\e[0m"
 sleep 2
+MAILCOW_CONTAINERS=($(docker-compose ps -q))
 docker-compose down
+echo -e "\e[32mChecking for remaining containers...\e[0m"
+sleep 2
+for container in "${MAILCOW_CONTAINERS[@]}"; do
+  docker rm -f "$container" 2> /dev/null
+done
 
 # Silently fixing remote url from andryyy to mailcow
 git remote set-url origin https://github.com/mailcow/mailcow-dockerized
