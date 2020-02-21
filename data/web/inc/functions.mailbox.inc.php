@@ -324,6 +324,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
           $domain				= idn_to_ascii(strtolower(trim($_data['domain'])), 0, INTL_IDNA_VARIANT_UTS46);
           $description  = $_data['description'];
+          if (empty($description)) {
+            $description = $domain;
+          }
           $aliases			= $_data['aliases'];
           $mailboxes    = $_data['mailboxes'];
           $defquota			= $_data['defquota'];
