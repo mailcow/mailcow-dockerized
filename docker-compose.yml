@@ -386,7 +386,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.69
+      image: mailcow/watchdog:1.70
       # Debug
       #command: /watchdog.sh
       dns:
@@ -416,6 +416,22 @@ services:
         - HTTPS_PORT=${HTTPS_PORT:-443}
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
+        - EXTERNAL_CHECKS_THRESHOLD=1
+        - NGINX_THRESHOLD=5
+        - UNBOUND_THRESHOLD=5
+        - REDIS_THRESHOLD=5
+        - MYSQL_THRESHOLD=5
+        - SOGO_THRESHOLD=3
+        - POSTFIX_THRESHOLD=8
+        - CLAMD_THRESHOLD=15
+        - DOVECOT_THRESHOLD=12
+        - PHPFPM_THRESHOLD=5
+        - RATELIMIT_THRESHOLD=1
+        - FAIL2BAN_THRESHOLD=1
+        - ACME_THRESHOLD=1
+        - IPV6NAT_THRESHOLD=1
+        - RSPAMD_THRESHOLD=5
+        - OLEFY_THRESHOLD=5
       networks:
         mailcow-network:
           aliases:
