@@ -1,4 +1,8 @@
 $(document).ready(function() {
+  function validateEmail(email) {
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+  }
   function is_active(elem) {
     if ($(elem).data('submitted') == '1') {
       return true;
@@ -100,8 +104,7 @@ $(document).ready(function() {
           }
         }
         if ($(this).attr("type") == 'email') {
-          var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-          if (!emailReg.test($(this).val())) {
+          if (!validateEmail($(this).val())) {
             invalid = true;
             $(this).addClass('inputMissingAttr');
           } else {
