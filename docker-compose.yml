@@ -152,7 +152,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.71
+      image: mailcow/sogo:1.72
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -175,6 +175,7 @@ services:
         - ./data/conf/sogo/custom-sogo.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/custom-sogo.js
         - mysql-socket-vol-1:/var/run/mysqld/
         - sogo-web-vol-1:/sogo_web
+        - sogo-userdata-backup-vol-1:/sogo_backup
       restart: always
       networks:
         mailcow-network:
@@ -540,3 +541,4 @@ volumes:
   postfix-vol-1:
   crypt-vol-1:
   sogo-web-vol-1:
+  sogo-userdata-backup-vol-1:
