@@ -678,6 +678,9 @@
     "scope_ask_permission": "Приложение запросило доступ к"
   },
   "quarantine": {
+    "refresh": "Обновить",
+    "table_size": "Размер таблицы",
+    "table_size_show_n": "Отображать %s полей",
     "action": "Действия",
     "atts": "Вложения",
     "check_hash": "Поиск по хешу файла на @ VT",

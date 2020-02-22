@@ -521,6 +521,7 @@
         "help": "Toon/verberg hulppaneel"
     },
     "quarantine": {
+        "refresh": "Ververs",
         "disabled_by_config": "De huidige systeemconfiguratie deactiveert de quarantainefunctionaliteit.",
         "quarantine": "Quarantaine",
         "learn_spam_delete": "Markeer als spam en verwijder",

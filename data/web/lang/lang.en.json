@@ -523,6 +523,9 @@
         "help": "Show/Hide help panel"
     },
     "quarantine": {
+        "refresh": "Refresh",
+        "table_size": "Table size",
+        "table_size_show_n": "Show %s items",
         "disabled_by_config": "The current system configuration disables the quarantine functionality.",
         "quarantine": "Quarantine",
         "learn_spam_delete": "Learn as spam and delete",
