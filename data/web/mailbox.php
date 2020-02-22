@@ -33,8 +33,19 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             <div class="panel-heading">
               <?=$lang['mailbox']['domains'];?> <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_domain_table" data-table="domain_table"><?=$lang['admin']['refresh'];?></button>
                 <? if($_SESSION['mailcow_cc_role'] == "admin"): ?><button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addDomainModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_domain'];?></button><? endif; ?>
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_domain_table" data-table="domain_table"><?=$lang['admin']['refresh'];?></button>
+                <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" data-table-id="domain_table" role="menu">
+                  <li><a href="#" data-page-size="3"><?=sprintf($lang['mailbox']['table_size_show_n'], 3);?></a></li>
+                  <li><a href="#" data-page-size="10"><?=sprintf($lang['mailbox']['table_size_show_n'], 10);?></a></li>
+                  <li><a href="#" data-page-size="20"><?=sprintf($lang['mailbox']['table_size_show_n'], 20);?></a></li>
+                  <li><a href="#" data-page-size="50"><?=sprintf($lang['mailbox']['table_size_show_n'], 50);?></a></li>
+                  <li><a href="#" data-page-size="100"><?=sprintf($lang['mailbox']['table_size_show_n'], 100);?></a></li>
+                  <li><a href="#" data-page-size="200"><?=sprintf($lang['mailbox']['table_size_show_n'], 200);?></a></li>
+                </ul>
               </div>
             </div>
             <!-- <div class="mass-actions-mailbox" data-actions-header="true"></div> -->
@@ -68,6 +79,17 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default refresh_table" data-draw="draw_mailbox_table" data-table="mailbox_table"><?=$lang['admin']['refresh'];?></button>
                 <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addMailboxModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_mailbox'];?></button>
+                <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" data-table-id="mailbox_table" role="menu">
+                  <li><a href="#" data-page-size="3"><?=sprintf($lang['mailbox']['table_size_show_n'], 3);?></a></li>
+                  <li><a href="#" data-page-size="10"><?=sprintf($lang['mailbox']['table_size_show_n'], 10);?></a></li>
+                  <li><a href="#" data-page-size="20"><?=sprintf($lang['mailbox']['table_size_show_n'], 20);?></a></li>
+                  <li><a href="#" data-page-size="50"><?=sprintf($lang['mailbox']['table_size_show_n'], 50);?></a></li>
+                  <li><a href="#" data-page-size="100"><?=sprintf($lang['mailbox']['table_size_show_n'], 100);?></a></li>
+                  <li><a href="#" data-page-size="200"><?=sprintf($lang['mailbox']['table_size_show_n'], 200);?></a></li>
+                </ul>
               </div>
             </div>
             <?php
@@ -120,6 +142,17 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default refresh_table" data-draw="draw_resource_table" data-table="resource_table"><?=$lang['admin']['refresh'];?></button>
                 <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addResourceModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_resource'];?></button>
+                <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" data-table-id="resource_table" role="menu">
+                  <li><a href="#" data-page-size="3"><?=sprintf($lang['mailbox']['table_size_show_n'], 3);?></a></li>
+                  <li><a href="#" data-page-size="10"><?=sprintf($lang['mailbox']['table_size_show_n'], 10);?></a></li>
+                  <li><a href="#" data-page-size="20"><?=sprintf($lang['mailbox']['table_size_show_n'], 20);?></a></li>
+                  <li><a href="#" data-page-size="50"><?=sprintf($lang['mailbox']['table_size_show_n'], 50);?></a></li>
+                  <li><a href="#" data-page-size="100"><?=sprintf($lang['mailbox']['table_size_show_n'], 100);?></a></li>
+                  <li><a href="#" data-page-size="200"><?=sprintf($lang['mailbox']['table_size_show_n'], 200);?></a></li>
+                </ul>
               </div>
             </div>
             <div class="panel-body help-block">
@@ -154,6 +187,17 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default refresh_table" data-draw="draw_aliasdomain_table" data-table="aliasdomain_table"><?=$lang['admin']['refresh'];?></button>
                 <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addAliasDomainModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_domain_alias'];?></button>
+                <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" data-table-id="aliasdomain_table" role="menu">
+                  <li><a href="#" data-page-size="3"><?=sprintf($lang['mailbox']['table_size_show_n'], 3);?></a></li>
+                  <li><a href="#" data-page-size="10"><?=sprintf($lang['mailbox']['table_size_show_n'], 10);?></a></li>
+                  <li><a href="#" data-page-size="20"><?=sprintf($lang['mailbox']['table_size_show_n'], 20);?></a></li>
+                  <li><a href="#" data-page-size="50"><?=sprintf($lang['mailbox']['table_size_show_n'], 50);?></a></li>
+                  <li><a href="#" data-page-size="100"><?=sprintf($lang['mailbox']['table_size_show_n'], 100);?></a></li>
+                  <li><a href="#" data-page-size="200"><?=sprintf($lang['mailbox']['table_size_show_n'], 200);?></a></li>
+                </ul>
               </div>
             </div>
             <!-- <div class="mass-actions-mailbox" data-actions-header="true"></div> -->
@@ -183,6 +227,17 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default refresh_table" data-draw="draw_alias_table" data-table="alias_table"><?=$lang['admin']['refresh'];?></button>
                 <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addAliasModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_alias'];?></button>
+                <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" data-table-id="alias_table" role="menu">
+                  <li><a href="#" data-page-size="3"><?=sprintf($lang['mailbox']['table_size_show_n'], 3);?></a></li>
+                  <li><a href="#" data-page-size="10"><?=sprintf($lang['mailbox']['table_size_show_n'], 10);?></a></li>
+                  <li><a href="#" data-page-size="20"><?=sprintf($lang['mailbox']['table_size_show_n'], 20);?></a></li>
+                  <li><a href="#" data-page-size="50"><?=sprintf($lang['mailbox']['table_size_show_n'], 50);?></a></li>
+                  <li><a href="#" data-page-size="100"><?=sprintf($lang['mailbox']['table_size_show_n'], 100);?></a></li>
+                  <li><a href="#" data-page-size="200"><?=sprintf($lang['mailbox']['table_size_show_n'], 200);?></a></li>
+                </ul>
               </div>
             </div>
             <div class="panel-body help-block">
@@ -218,6 +273,17 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default refresh_table" data-draw="draw_sync_job_table" data-table="sync_job_table"><?=$lang['admin']['refresh'];?></button>
                 <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addSyncJobModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['create_syncjob'];?></button>
+                <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" data-table-id="sync_job_table" role="menu">
+                  <li><a href="#" data-page-size="3"><?=sprintf($lang['mailbox']['table_size_show_n'], 3);?></a></li>
+                  <li><a href="#" data-page-size="10"><?=sprintf($lang['mailbox']['table_size_show_n'], 10);?></a></li>
+                  <li><a href="#" data-page-size="20"><?=sprintf($lang['mailbox']['table_size_show_n'], 20);?></a></li>
+                  <li><a href="#" data-page-size="50"><?=sprintf($lang['mailbox']['table_size_show_n'], 50);?></a></li>
+                  <li><a href="#" data-page-size="100"><?=sprintf($lang['mailbox']['table_size_show_n'], 100);?></a></li>
+                  <li><a href="#" data-page-size="200"><?=sprintf($lang['mailbox']['table_size_show_n'], 200);?></a></li>
+                </ul>
               </div>
             </div>
             <!-- <div class="mass-actions-mailbox" data-actions-header="true"></div> -->
@@ -249,6 +315,17 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default refresh_table" data-draw="draw_filter_table" data-table="filter_table"><?=$lang['admin']['refresh'];?></button>
                 <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addFilterModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_filter'];?></button>
+                <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" data-table-id="filter_table" role="menu">
+                  <li><a href="#" data-page-size="3"><?=sprintf($lang['mailbox']['table_size_show_n'], 3);?></a></li>
+                  <li><a href="#" data-page-size="10"><?=sprintf($lang['mailbox']['table_size_show_n'], 10);?></a></li>
+                  <li><a href="#" data-page-size="20"><?=sprintf($lang['mailbox']['table_size_show_n'], 20);?></a></li>
+                  <li><a href="#" data-page-size="50"><?=sprintf($lang['mailbox']['table_size_show_n'], 50);?></a></li>
+                  <li><a href="#" data-page-size="100"><?=sprintf($lang['mailbox']['table_size_show_n'], 100);?></a></li>
+                  <li><a href="#" data-page-size="200"><?=sprintf($lang['mailbox']['table_size_show_n'], 200);?></a></li>
+                </ul>
               </div>
             </div>
             <p style="margin:10px" class="help-block"><?=$lang['mailbox']['sieve_info'];?></p>
@@ -282,6 +359,17 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default refresh_table" data-draw="draw_bcc_table" data-table="bcc_table"><?=$lang['admin']['refresh'];?></button>
                 <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addBCCModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_bcc_entry'];?></button>
+                <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" data-table-id="bcc_table" role="menu">
+                  <li><a href="#" data-page-size="3"><?=sprintf($lang['mailbox']['table_size_show_n'], 3);?></a></li>
+                  <li><a href="#" data-page-size="10"><?=sprintf($lang['mailbox']['table_size_show_n'], 10);?></a></li>
+                  <li><a href="#" data-page-size="20"><?=sprintf($lang['mailbox']['table_size_show_n'], 20);?></a></li>
+                  <li><a href="#" data-page-size="50"><?=sprintf($lang['mailbox']['table_size_show_n'], 50);?></a></li>
+                  <li><a href="#" data-page-size="100"><?=sprintf($lang['mailbox']['table_size_show_n'], 100);?></a></li>
+                  <li><a href="#" data-page-size="200"><?=sprintf($lang['mailbox']['table_size_show_n'], 200);?></a></li>
+                </ul>
               </div>
             </div>
             <p style="margin:10px" class="help-block"><?=$lang['mailbox']['bcc_info'];?></p>
@@ -312,6 +400,17 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default refresh_table" data-draw="draw_recipient_map_table" data-table="recipient_map_table"><?=$lang['admin']['refresh'];?></button>
                 <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addRecipientMapModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_recipient_map_entry'];?></button>
+                <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" data-table-id="recipient_map_table" role="menu">
+                  <li><a href="#" data-page-size="3"><?=sprintf($lang['mailbox']['table_size_show_n'], 3);?></a></li>
+                  <li><a href="#" data-page-size="10"><?=sprintf($lang['mailbox']['table_size_show_n'], 10);?></a></li>
+                  <li><a href="#" data-page-size="20"><?=sprintf($lang['mailbox']['table_size_show_n'], 20);?></a></li>
+                  <li><a href="#" data-page-size="50"><?=sprintf($lang['mailbox']['table_size_show_n'], 50);?></a></li>
+                  <li><a href="#" data-page-size="100"><?=sprintf($lang['mailbox']['table_size_show_n'], 100);?></a></li>
+                  <li><a href="#" data-page-size="200"><?=sprintf($lang['mailbox']['table_size_show_n'], 200);?></a></li>
+                </ul>
               </div>
             </div>
             <p style="margin:10px" class="help-block"><?=$lang['mailbox']['recipient_map_info'];?></p>
@@ -342,6 +441,17 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default refresh_table" data-draw="draw_tls_policy_table" data-table="tls_policy_table"><?=$lang['admin']['refresh'];?></button>
                 <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addTLSPolicyMapAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_tls_policy_map'];?></button>
+                <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" data-table-id="tls_policy_table" role="menu">
+                  <li><a href="#" data-page-size="3"><?=sprintf($lang['mailbox']['table_size_show_n'], 3);?></a></li>
+                  <li><a href="#" data-page-size="10"><?=sprintf($lang['mailbox']['table_size_show_n'], 10);?></a></li>
+                  <li><a href="#" data-page-size="20"><?=sprintf($lang['mailbox']['table_size_show_n'], 20);?></a></li>
+                  <li><a href="#" data-page-size="50"><?=sprintf($lang['mailbox']['table_size_show_n'], 50);?></a></li>
+                  <li><a href="#" data-page-size="100"><?=sprintf($lang['mailbox']['table_size_show_n'], 100);?></a></li>
+                  <li><a href="#" data-page-size="200"><?=sprintf($lang['mailbox']['table_size_show_n'], 200);?></a></li>
+                </ul>
               </div>
             </div>
             <p style="margin:10px" class="help-block"><?=$lang['mailbox']['tls_policy_maps_info'];?></p>
