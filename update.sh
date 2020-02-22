@@ -367,10 +367,10 @@ fi
 
 DIFF_DIRECTORY=update_diffs
 DIFF_FILE=${DIFF_DIRECTORY}/diff_before_update_$(date +"%Y-%m-%d-%H-%M-%S")
-echo -e "\e[32mSaving diff to ${DIFF_FILE}...\e[0m"
-mkdir -p ${DIFF_DIRECTORY}
 mv diff_before_update* ${DIFF_DIRECTORY}/ 2> /dev/null
 if ! git diff-index --quiet HEAD; then
+  echo -e "\e[32mSaving diff to ${DIFF_FILE}...\e[0m"
+  mkdir -p ${DIFF_DIRECTORY}
   git diff --stat > ${DIFF_FILE}
   git diff >> ${DIFF_FILE}
 fi
