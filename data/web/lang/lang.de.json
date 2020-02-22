@@ -524,6 +524,9 @@
         "help": "Hilfe ein-/ausblenden"
     },
     "quarantine": {
+        "refresh": "Neu laden",
+        "table_size": "Tabellengröße",
+        "table_size_show_n": "Zeige %s Einträge",
         "disabled_by_config": "Die derzeitige Konfiguration deaktiviert die Funktion des Quarantäne-Systems.",
         "learn_spam_delete": "Als Spam lernen und löschen",
         "quarantine": "Quarantäne",

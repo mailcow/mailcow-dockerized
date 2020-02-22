@@ -48,7 +48,7 @@ $(document).ready(function() {
       $(this.$domain).closest("select").selectpicker();
     }
   });
-  // todo
+  // Set paging
   $('[data-page-size]').on('click', function(e){
     e.preventDefault();
     var new_size = $(this).data('page-size');
