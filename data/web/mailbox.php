@@ -77,8 +77,8 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             <div class="panel-heading">
               <?=$lang['mailbox']['mailboxes'];?> <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_mailbox_table" data-table="mailbox_table"><?=$lang['admin']['refresh'];?></button>
                 <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addMailboxModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_mailbox'];?></button>
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_mailbox_table" data-table="mailbox_table"><?=$lang['admin']['refresh'];?></button>
                 <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
                   <span class="caret"></span>
                 </button>
@@ -140,8 +140,8 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             <div class="panel-heading">
               <?=$lang['mailbox']['resources'];?> <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_resource_table" data-table="resource_table"><?=$lang['admin']['refresh'];?></button>
                 <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addResourceModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_resource'];?></button>
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_resource_table" data-table="resource_table"><?=$lang['admin']['refresh'];?></button>
                 <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
                   <span class="caret"></span>
                 </button>
@@ -185,8 +185,8 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             <div class="panel-heading">
               <?=$lang['mailbox']['domain_aliases'];?> <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_aliasdomain_table" data-table="aliasdomain_table"><?=$lang['admin']['refresh'];?></button>
                 <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addAliasDomainModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_domain_alias'];?></button>
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_aliasdomain_table" data-table="aliasdomain_table"><?=$lang['admin']['refresh'];?></button>
                 <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
                   <span class="caret"></span>
                 </button>
@@ -225,8 +225,8 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             <div class="panel-heading">
               <?=$lang['mailbox']['aliases'];?> <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_alias_table" data-table="alias_table"><?=$lang['admin']['refresh'];?></button>
                 <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addAliasModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_alias'];?></button>
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_alias_table" data-table="alias_table"><?=$lang['admin']['refresh'];?></button>
                 <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
                   <span class="caret"></span>
                 </button>
@@ -271,8 +271,8 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             <div class="panel-heading">
               <?=$lang['mailbox']['sync_jobs'];?> <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_sync_job_table" data-table="sync_job_table"><?=$lang['admin']['refresh'];?></button>
                 <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addSyncJobModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['create_syncjob'];?></button>
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_sync_job_table" data-table="sync_job_table"><?=$lang['admin']['refresh'];?></button>
                 <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
                   <span class="caret"></span>
                 </button>
@@ -313,8 +313,8 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             <div class="panel-heading">
               <?=$lang['mailbox']['filters'];?> <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_filter_table" data-table="filter_table"><?=$lang['admin']['refresh'];?></button>
                 <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addFilterModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_filter'];?></button>
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_filter_table" data-table="filter_table"><?=$lang['admin']['refresh'];?></button>
                 <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
                   <span class="caret"></span>
                 </button>
@@ -357,8 +357,8 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             <div class="panel-heading">
               <?=$lang['mailbox']['bcc_maps'];?> <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_bcc_table" data-table="bcc_table"><?=$lang['admin']['refresh'];?></button>
                 <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addBCCModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_bcc_entry'];?></button>
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_bcc_table" data-table="bcc_table"><?=$lang['admin']['refresh'];?></button>
                 <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
                   <span class="caret"></span>
                 </button>
@@ -398,8 +398,8 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             <div class="panel-heading">
               <?=$lang['mailbox']['recipient_maps'];?> <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_recipient_map_table" data-table="recipient_map_table"><?=$lang['admin']['refresh'];?></button>
                 <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addRecipientMapModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_recipient_map_entry'];?></button>
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_recipient_map_table" data-table="recipient_map_table"><?=$lang['admin']['refresh'];?></button>
                 <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
                   <span class="caret"></span>
                 </button>
@@ -439,8 +439,8 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             <div class="panel-heading">
               <?=$lang['mailbox']['tls_policy_maps_long'];?> <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_tls_policy_table" data-table="tls_policy_table"><?=$lang['admin']['refresh'];?></button>
                 <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addTLSPolicyMapAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_tls_policy_map'];?></button>
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_tls_policy_table" data-table="tls_policy_table"><?=$lang['admin']['refresh'];?></button>
                 <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
                   <span class="caret"></span>
                 </button>
