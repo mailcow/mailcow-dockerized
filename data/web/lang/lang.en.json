@@ -560,6 +560,8 @@
         "notified": "Notified"
     },
     "mailbox": {
+        "table_size": "Table size",
+        "table_size_show_n": "Show %s items",
         "tls_policy_maps": "TLS policy maps",
         "sogo_allow_admin_hint": "Administrative SOGo logins are only available for mailboxes with an existing SOGo profile. A user must have been logged in to SOGo at least once.",
         "tls_policy_maps_long": "Outgoing TLS policy map overrides",

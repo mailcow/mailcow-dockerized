@@ -51,9 +51,19 @@ $(document).ready(function() {
   // todo
   $('[data-page-size]').on('click', function(e){
     e.preventDefault();
-    var newSize = $(this).data('page-size');
-    var nextTable = $(this).nextAll('.table-responsive').find('table');
-    FooTable.get(nextTable).pageSize(newSize);
+    var new_size = $(this).data('page-size');
+    var parent_ul = $(this).closest('ul');
+    var table_id = $(parent_ul).data('table-id');
+    FooTable.get('#' + table_id).pageSize(new_size);
+    //$(this).parent().addClass('active').siblings().removeClass('active')
+    heading = $(this).parents('.panel').find('.panel-heading')
+    var n_results = $(heading).children('.table-lines').text().split(' / ')[1];
+    $(heading).children('.table-lines').text(function(){
+      if (new_size > n_results) {
+        new_size = n_results;
+      }
+      return new_size + ' / ' + n_results;
+    })
   });
   // Clone mailbox mass actions
   $("div").find("[data-actions-header='true'").each(function() {
@@ -208,7 +218,12 @@ jQuery(function($){
     heading = ft.$el.parents('.panel').find('.panel-heading')
     var ft_paging = ft.use(FooTable.Paging)
     $(heading).children('.table-lines').text(function(){
-      return ft_paging.totalRows;
+      var total_rows = ft_paging.totalRows;
+      var size = ft_paging.size;
+      if (size > total_rows) {
+        size = total_rows;
+      }
+      return size + ' / ' + total_rows;
     })
   }
   function draw_domain_table() {
