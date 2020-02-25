@@ -340,6 +340,7 @@ jQuery(function($){
         {"name":"spam_aliases","filterable": false,"title":lang.spam_aliases,"breakpoints":"all"},
         {"name":"tls_enforce_in","filterable": false,"title":lang.tls_enforce_in,"breakpoints":"all"},
         {"name":"tls_enforce_out","filterable": false,"title":lang.tls_enforce_out,"breakpoints":"all"},
+        {"name":"last_mail_login","breakpoints":"xs sm","formatter":function unix_time_format(tm) { if (tm == '') { return lang.no; } else { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString(); }},"title":lang.last_mail_login,"style":{"width":"170px"}},
         {"name":"quarantine_notification","filterable": false,"title":lang.quarantine_notification,"breakpoints":"all"},
         {"name":"in_use","filterable": false,"type":"html","title":lang.in_use,"sortValue": function(value){
           return Number($(value).find(".progress-bar").attr('aria-valuenow'));
