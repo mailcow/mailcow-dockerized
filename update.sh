@@ -134,11 +134,12 @@ while (($#)); do
       exit 0
     ;;
     --help|-h)
-    echo './update.sh [-c|--check, --ours, --gc, -h|--help]
+    echo './update.sh [-c|--check, --ours, --gc, --skip-start, -h|--help]
 
   -c|--check   -   Check for updates and exit (exit codes => 0: update available, 3: no updates)
   --ours       -   Use merge strategy "ours" to solve conflicts in favor of non-mailcow code (local changes)
   --gc         -   Run garbage collector to delete old image tags
+  --skip-start -   Do not start mailcow after update
 '
     exit 1
   esac
