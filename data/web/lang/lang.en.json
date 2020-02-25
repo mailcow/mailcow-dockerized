@@ -563,6 +563,7 @@
         "notified": "Notified"
     },
     "mailbox": {
+        "last_mail_login": "Last mail login",
         "table_size": "Table size",
         "table_size_show_n": "Show %s items",
         "tls_policy_maps": "TLS policy maps",
