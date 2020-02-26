@@ -103,7 +103,7 @@ $(document).ready(function() {
             $(this).removeClass('inputMissingAttr');
           }
         }
-        if ($(this).attr("type") == 'email') {
+        if ($(this).val() && $(this).attr("type") == 'email') {
           if (!validateEmail($(this).val())) {
             invalid = true;
             $(this).addClass('inputMissingAttr');
