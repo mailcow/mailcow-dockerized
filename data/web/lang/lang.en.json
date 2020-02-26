@@ -218,6 +218,8 @@
         "ip_invalid": "Skipped invalid IP: %s"
     },
     "user": {
+        "no_last_login": "No last UI login information",
+        "last_mail_login": "Last mail login",
         "apple_connection_profile": "Apple connection profile",
         "apple_connection_profile_mailonly": "This connection profile includes IMAP and SMTP configuration parameters for an Apple device.",
         "apple_connection_profile_complete": "This connection profile includes IMAP and SMTP parameters as well as CalDAV (calendars) and CardDAV (contacts) pathes for an Apple device.",
