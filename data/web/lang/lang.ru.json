@@ -821,6 +821,7 @@
     "yubi_otp": "Yubico OTP аутентификация"
   },
   "user": {
+    "last_mail_login": "Последний вход",
     "action": "Действия",
     "active": "Активный",
     "active_sieve": "Включенные фильтры",

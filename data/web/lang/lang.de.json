@@ -218,6 +218,8 @@
         "session_ua": "Formular-Token ungültig: User-Agent-Validierungsfehler"
     },
     "user": {
+        "last_mail_login": "Letzter Mail-Login",
+        "no_last_login": "Keine letzte UI Anmeldung gespeichert",
         "generate": "generieren",
         "apple_connection_profile": "Apple Verbindungsprofil",
         "apple_connection_profile_mailonly": "Dieses Verbindungsprofil beinhaltet IMAP und SMTP Konfigurationen für ein Apple Gerät.",
