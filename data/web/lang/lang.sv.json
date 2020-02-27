@@ -782,7 +782,7 @@
         "public_comment": "Offentlig kommentar",
         "private_comment": "Privat kommentar",
         "comment_info": "En privat kommentar är inte synlig för användaren, medan en offentlig kommentar visas i användaröversikten",
-        "generate": "generera",,
+        "generate": "generera",
         "syncjob": "Lägg till synkroniseringsjobb",
         "syncjob_hint": "Observera att lösenord sparas i vanlig klartext!",
         "hostname": "Värd",
