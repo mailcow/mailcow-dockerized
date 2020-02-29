@@ -12,5 +12,12 @@ Or just spread the word: moo.
 
 Please see [the official documentation](https://mailcow.github.io/mailcow-dockerized-docs/) for installation and support instructions. 🐄
 
+🐛 **If you found a critical security issue or simply want to report a bug, please mail us to [info at servercow.de](mailto:info@servercow.de).**
+
 **Important**: mailcow makes use of various open-source software. Please assure you agree with their license before using mailcow.
 Any part of mailcow itself is released under **GNU General Public License, Version 3**.
+
+## Want to chat?
+
+[Telegram mailcow channel](https://telegram.me/mailcow)
+[Telegram mailcow Off-Topic channel](https://t.me/mailcowOfftopic)
