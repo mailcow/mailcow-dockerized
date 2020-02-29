@@ -8,7 +8,7 @@ You can also [get a SAL](https://www.servercow.de/mailcow?lang=en#sal) which is 
 
 Or just spread the word: moo.
 
-## Info, documentation and supoprt
+## Info, documentation and support
 
 Please see [the official documentation](https://mailcow.github.io/mailcow-dockerized-docs/) for installation and support instructions. 🐄
 
