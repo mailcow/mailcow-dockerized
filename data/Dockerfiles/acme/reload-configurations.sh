@@ -39,5 +39,6 @@ if [[ "${CERT_AMOUNT_CHANGED}" == "1" ]]; then
 else
   reload_nginx
   reload_dovecot
-  reload_postfix
+  #reload_postfix
+  restart_container ${POSTFIX}
 fi
