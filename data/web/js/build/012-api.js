@@ -1,4 +1,5 @@
 $(document).ready(function() {
+  mass_action = false;
   function validateEmail(email) {
     var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
@@ -35,7 +36,11 @@ $(document).ready(function() {
   };
   // Collect values of input fields with name "multi_select" and same data-id to js array multi_data[data-id]
   var multi_data = [];
-  $(document).on('change', 'input[name=multi_select]:checkbox', function() {
+  $(document).on('change', 'input[name=multi_select]:checkbox', function(e) {
+    if(mass_action === true) {
+      multi_data = [];
+      mass_action = false;
+    }
     if ($(this).is(':checked') && $(this).data('id')) {
       var id = $(this).data('id');
       if (typeof multi_data[id] == "undefined") {
@@ -45,7 +50,9 @@ $(document).ready(function() {
     }
     else {
       var id = $(this).data('id');
-      multi_data[id].splice($.inArray($(this).val(), multi_data[id]),1);
+      if (typeof multi_data[id] !== "undefined") {
+        multi_data[id].splice($.inArray($(this).val(), multi_data[id]),1);
+      }
     }
   });
 
@@ -68,6 +75,7 @@ $(document).ready(function() {
 
   // Select or deselect all checkboxes with same data-id
   $(document).on('click', '#toggle_multi_select_all', function(e) {
+    mass_action = true
     e.preventDefault();
     id = $(this).data("id");
     var all_checkboxes = $("input[data-id=" + id + "]:enabled");
