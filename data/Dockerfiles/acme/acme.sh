@@ -345,6 +345,7 @@ while true; do
 
   # reload on new or changed certificates
   if [[ "${CERT_CHANGED}" == "1" ]]; then
+    rm -f "${ACME_BASE}/force_renew" 2> /dev/null
     CERT_AMOUNT_CHANGED=${CERT_AMOUNT_CHANGED} /srv/reload-configurations.sh
   fi
 
