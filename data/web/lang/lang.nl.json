@@ -70,7 +70,7 @@
         "object_is_not_numeric": "Waarde %s is niet numeriek",
         "alias_empty": "Aliasadres dient ingevuld te worden",
         "last_key": "De laatste sleutel kan niet worden verwijderd",
-        "goto_empty": "Doeladres dient ingevuld te worden",
+        "goto_empty": "Een aliasadres dient ten minste één doeladres te hebben",
         "policy_list_from_exists": "Er bestaat reeds een vermelding met dezelfde naam",
         "policy_list_from_invalid": "Invoer is ongeldig",
         "alias_invalid": "Aliasadres %s is ongeldig",
@@ -218,6 +218,8 @@
         "ip_invalid": "Ongeldig IP-adres overgeslagen: %s"
     },
     "user": {
+        "no_last_login": "Geen informatie over vorige login",
+        "last_mail_login": "Vorige mail login",
         "apple_connection_profile": "Apple-verbindingsprofiel",
         "apple_connection_profile_mailonly": "Dit verbindingsprofiel bevat de configuratie voor mail op een Apple-apparaat.",
         "apple_connection_profile_complete": "Dit verbindingsprofiel bevat de configuratie voor mail, contacten en agenda's op een Apple-apparaat.",
@@ -561,6 +563,7 @@
         "notified": "Verwittigd"
     },
     "mailbox": {
+        "last_mail_login": "Vorige mail login",
         "table_size": "Tabelgrootte",
         "table_size_show_n": "Toon %s items",
         "tls_policy_maps": "Globaal versleutelingsbeleid",
