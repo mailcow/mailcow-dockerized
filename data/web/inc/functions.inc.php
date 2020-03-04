@@ -1275,7 +1275,12 @@ function license($action, $data = null) {
           $_SESSION['gal']['valid'] = "true";
           $_SESSION['gal']['c'] = $json_return['c'];
           $_SESSION['gal']['s'] = $json_return['s'];
-          $_SESSION['gal']['m'] = str_repeat('🐄', substr_count($json_return['m'], 'o'));
+          if ($json_return['m'] == 'NoMoore') {
+            $_SESSION['gal']['m'] = '🐄';
+          }
+          else {
+            $_SESSION['gal']['m'] = str_repeat('🐄', substr_count($json_return['m'], 'o'));
+          }
         }
         elseif ($json_return['response'] === "invalid") {
           $_SESSION['gal']['valid'] = "false";
