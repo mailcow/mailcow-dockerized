@@ -120,6 +120,7 @@
         "recipient_map_entry_exists": "A Recipient map entry \"%s\" exists",
         "tls_policy_map_entry_exists": "A TLS policy map entry \"%s\" exists",
         "tls_policy_map_parameter_invalid": "Policy parameter is invalid",
+        "tls_policy_map_dest_invalid": "Policy destination is invalid",
         "temp_error": "Temporary error",
         "text_empty": "Text must not be empty",
         "subject_empty": "Subject must not be empty",
