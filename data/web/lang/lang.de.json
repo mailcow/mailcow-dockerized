@@ -120,6 +120,7 @@
         "recipient_map_entry_exists": "Eine Empfängerumschreibung für Objekt \"%s\" existiert bereits",
         "tls_policy_map_entry_exists": "Eine TLS-Richtlinie \"%s\" existiert bereits",
         "tls_policy_map_parameter_invalid": "Parameter ist ungültig",
+        "tls_policy_map_dest_invalid": "Ziel ist ungültig",
         "temp_error": "Temporärer Fehler",
         "text_empty": "Text darf nicht leer sein",
         "subject_empty": "Betreff darf nicht leer sein",
