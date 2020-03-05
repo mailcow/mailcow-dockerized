@@ -73,6 +73,22 @@ while true; do
       --include 'rogue.hdb' \
       --include 'sanesecurity.ftm' \
       --include 'sigwhitelist.ign2' \
+      --include 'foxhole_generic.cdb' \
+      --include 'foxhole_filename.cdb' \
+      --include 'bofhland_cracked_URL.ndb' \
+      --include 'bofhland_malware_attach.hdb' \
+      --include 'bofhland_malware_URL.ndb' \
+      --include 'bofhland_phishing_URL.ndb' \
+      --include 'porcupine.hsb' \
+      --include 'porcupine.ndb' \
+      --include 'winnow_malware.hdb' \
+      --include 'winnow_malware_links.ndb' \
+      --include 'winnow_extended_malware.hdb' \
+      --include 'winnow.attachments.hdb' \
+      --include 'winnow_bad_cw.hdb' \
+      --include 'spamattach.hdb' \
+      --include 'malware.expert.hdb' \
+      --include 'mbl.ndb' \
       --exclude='*' /var/lib/clamav/
     CE=$?
     chmod 755 /var/lib/clamav/
