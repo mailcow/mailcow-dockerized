@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "16022020_1804";
+    $db_version = "05032020_0715";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -16,7 +16,7 @@ function init_db_schema() {
 
     $views = array(
     "grouped_mail_aliases" => "CREATE VIEW grouped_mail_aliases (username, aliases) AS
-      SELECT goto, IFNULL(GROUP_CONCAT(address SEPARATOR ' '), '') AS address FROM alias
+      SELECT goto, IFNULL(GROUP_CONCAT(address ORDER BY address SEPARATOR ' '), '') AS address FROM alias
       WHERE address!=goto
       AND active = '1'
       AND sogo_visible = '1'
