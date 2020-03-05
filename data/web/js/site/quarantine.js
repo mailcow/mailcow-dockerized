@@ -164,8 +164,9 @@ jQuery(function($){
             if (value.score > 0) highlightClass = 'negative'
             else if (value.score < 0) highlightClass = 'positive'
             else highlightClass = 'neutral'
-            $('#qid_detail_symbols').append('<span class="rspamd-symbol ' + highlightClass + '" title="' + (value.options ? value.options.join(', ') : '') + '">' + value.name + ' (<span class="score">' + value.score + '</span>)</span>');
+            $('#qid_detail_symbols').append('<span data-toggle="tooltip" class="rspamd-symbol ' + highlightClass + '" title="' + (value.options ? value.options.join(', ') : '') + '">' + value.name + ' (<span class="score">' + value.score + '</span>)</span>');
           });
+          $('[data-toggle="tooltip"]').tooltip()
         }
 
         $('#qid_detail_recipients').html('');
