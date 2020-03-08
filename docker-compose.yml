@@ -333,7 +333,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.68
+      image: mailcow/acme:1.69
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -387,7 +387,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.71
+      image: mailcow/watchdog:1.72
       # Debug
       #command: /watchdog.sh
       dns:

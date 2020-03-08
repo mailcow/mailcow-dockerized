@@ -9,6 +9,11 @@ else
   export REDIS_CMDLINE="redis-cli -h redis -p 6379"
 fi
 
+until [[ $(${REDIS_CMDLINE} PING) == "PONG" ]]; do
+  echo "Waiting for Redis..."
+  sleep 2
+done
+
 source /srv/functions.sh
 # Thanks to https://github.com/cvmiller -> https://github.com/cvmiller/expand6
 source /srv/expand6.sh
