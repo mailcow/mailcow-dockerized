@@ -184,7 +184,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.113
+      image: mailcow/dovecot:1.114
       depends_on:
         - mysql-mailcow
       dns:
