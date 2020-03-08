@@ -69,7 +69,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.61
+      image: mailcow/rspamd:1.64
       stop_grace_period: 30s
       depends_on:
         - nginx-mailcow
@@ -333,7 +333,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.67
+      image: mailcow/acme:1.68
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -387,7 +387,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.70
+      image: mailcow/watchdog:1.71
       # Debug
       #command: /watchdog.sh
       dns:

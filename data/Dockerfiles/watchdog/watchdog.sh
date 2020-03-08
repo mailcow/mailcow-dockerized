@@ -454,6 +454,10 @@ ratelimit_checks() {
     RL_LOG_STATUS=$(redis-cli -h redis LRANGE RL_LOG 0 0 | jq .qid)
     if [[ ${RL_LOG_STATUS_PREV} != ${RL_LOG_STATUS} ]]; then
       err_count=$(( ${err_count} + 1 ))
+      echo 'Last 10 applied ratelimits (may overlap with previous reports).' > /tmp/ratelimit
+      echo 'Full ratelimit buckets can be emptied by deleting the ratelimit hash from within mailcow UI (see /debug -> Protocols -> Ratelimit):' >> /tmp/ratelimit
+      echo >> /tmp/ratelimit
+      redis-cli --raw -h redis LRANGE RL_LOG 0 10 | jq . >> /tmp/ratelimit
     fi
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
     [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
@@ -877,7 +881,7 @@ while true; do
   fi
   if [[ ${com_pipe_answer} == "ratelimit" ]]; then
     log_msg "At least one ratelimit was applied"
-    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}" "Please see mailcow UI logs for further information."
+    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}"
   elif [[ ${com_pipe_answer} == "external_checks" ]]; then
     log_msg "Your mailcow is an open relay!"
     [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}" "Please stop mailcow now and check your network configuration!"
