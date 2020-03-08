@@ -317,8 +317,15 @@ IMAPSYNC_TABLE=$(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBP
 echo "$(envsubst < /usr/local/bin/maildir_gc.sh)" > /usr/local/bin/maildir_gc.sh
 
 # GUID generation
-# Will fail and restart until versions exists (ok)
-PUBKEY_MCRYPT=$(doveconf -P | grep -i mail_crypt_global_public_key | cut -d '<' -f2)
+while [[ ${VERSIONS_OK} != 'OK' ]]; do
+  if [[ ! -z $(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "SELECT 'OK' FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = \"${DBNAME}\" AND TABLE_NAME = 'versions'") ]]; then
+    VERSIONS_OK=OK
+  else
+    echo "Waiting for versions table to be created..."
+    sleep 3
+  fi
+done
+PUBKEY_MCRYPT=$(doveconf -P | grep -i mail_crypt_global_public_key 2> /dev/null| cut -d '<' -f2)
 if [ -f ${PUBKEY_MCRYPT} ]; then
   GUID=$(cat <(echo ${MAILCOW_HOSTNAME}) /mail_crypt/ecpubkey.pem | sha256sum | cut -d ' ' -f1 | tr -cd "[a-fA-F0-9.:/] ")
   if [ ${#GUID} -eq 64 ]; then
