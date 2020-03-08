@@ -25,17 +25,17 @@ while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${D
   sleep 2
 done
 
-until [[ $(redis-cli -h redis-mailcow PING) == "PONG" ]]; do
-  echo "Waiting for Redis..."
-  sleep 2
-done
-
 # Do not attempt to write to slave
 if [[ ! -z ${REDIS_SLAVEOF_IP} ]]; then
   REDIS_CMDLINE="redis-cli -h ${REDIS_SLAVEOF_IP} -p ${REDIS_SLAVEOF_PORT}"
 else
   REDIS_CMDLINE="redis-cli -h redis -p 6379"
 fi
+
+until [[ $(${REDIS_CMDLINE} PING) == "PONG" ]]; do
+  echo "Waiting for Redis..."
+  sleep 2
+done
 
 ${REDIS_CMDLINE} DEL F2B_RES > /dev/null
 
