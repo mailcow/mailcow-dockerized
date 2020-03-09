@@ -1,16 +1,17 @@
 ---
 name: Bug report
-about: Report a bug for this project
+about: Report a bug for this project. NOT to be used for support questions.
 
 ---
 
 <!--
+  Please DO NOT delete this template or use it for support questions.
   You are welcome to visit us on our community channels listed at https://mailcow.github.io/mailcow-dockerized-docs/#community-support
-  For commercial support, please check https://mailcow.github.io/mailcow-dockerized-docs/#commercial-support
+  For official support, please check https://mailcow.github.io/mailcow-dockerized-docs/#commercial-support
 -->
 
-**Prior to placing the issue, please check following:** *(fill out each checkbox with a `X` once done)*
-- [ ] I understand, that not following below instructions might result in immediate closing and deletion of my issue.
+**Prior to placing the issue, please check following:** *(fill out each checkbox with an `X` once done)*
+- [ ] I understand, that not following or deleting the below instructions, will result in immediate closing and deletion of my issue.
 - [ ] I have understood that answers are voluntary and community-driven, and not commercial support.
 - [ ] I have verified that my issue has not been already answered in the past. I also checked previous [issues](https://github.com/mailcow/mailcow-dockerized/issues).
 
