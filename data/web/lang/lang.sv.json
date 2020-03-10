@@ -120,6 +120,7 @@
         "recipient_map_entry_exists": "Adress omskrivningen \"%s\" existerar redan",
         "tls_policy_map_entry_exists": "TLS policyföreskriften \"%s\" existerar redan",
         "tls_policy_map_parameter_invalid": "Policy parameter är ogiltig",
+        "tls_policy_map_dest_invalid": "Destinationen är ogiltig",
         "temp_error": "Tillfälligt fel",
         "text_empty": "Texten i medelandet kan inte vara tom",
         "subject_empty": "Ämnesraden kan inte vara tomt",
