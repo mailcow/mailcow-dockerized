@@ -152,7 +152,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.72
+      image: mailcow/sogo:1.73
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -333,7 +333,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.69
+      image: mailcow/acme:1.70
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -352,6 +352,8 @@ services:
         - TZ=${TZ}
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
+        - SNAT_TO_SOURCE=${SNAT_TO_SOURCE:-n}
+        - SNAT6_TO_SOURCE=${SNAT6_TO_SOURCE:-n}
       volumes:
         - ./data/web/.well-known/acme-challenge:/var/www/acme:rw
         - ./data/assets/ssl:/var/lib/acme/:rw
