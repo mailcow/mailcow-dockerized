@@ -74,7 +74,7 @@
         "policy_list_from_invalid": "Eintrag hat ein ungültiges Format",
         "alias_invalid": "Alias-Adresse %s ist ungültig",
         "goto_invalid": "Ziel-Adresse %s ist ungültig",
-        "last_key": "Letzter Key kann nicht gelöscht werden",
+        "last_key": "Letzter Key kann nicht gelöscht werden, bitte stattdessen die 2FA deaktivieren.",
         "alias_domain_invalid": "Alias-Domain %s ist ungültig",
         "target_domain_invalid": "Ziel-Domain %s ist ungültig",
         "object_exists": "Objekt %s existiert bereits",
