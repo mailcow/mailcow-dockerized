@@ -328,7 +328,9 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                 </ul>
               </div>
             </div>
-            <p style="margin:10px" class="help-block"><?=$lang['mailbox']['sieve_info'];?></p>
+            <div class="panel-body">
+              <p class="help-block"><?=$lang['mailbox']['sieve_info'];?></p><br>
+            </div>
             <!-- <div class="mass-actions-mailbox" data-actions-header="true"></div> -->
             <div class="table-responsive">
               <table class="table table-striped" id="filter_table"></table>
@@ -347,6 +349,49 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <li><a data-action="delete_selected" data-text="<?=$lang['user']['eas_reset'];?>?" data-id="filter_item" data-api-url='delete/filter' href="#"><?=$lang['mailbox']['remove'];?></a></li>
                 </ul>
                 <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addFilterModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_filter'];?></a>
+              </div>
+            </div>
+            <div class="panel-body">
+              <?php
+              $global_filters = mailbox('get', 'global_filter_details');
+              ?>
+              <div class="row">
+                <div class="col-lg-6">
+                <h5>Global Prefilter</h5>
+                <form class="form-horizontal" data-cached-form="false" role="form" data-id="add_prefilter">
+                  <div class="form-group">
+                    <div class="col-sm-12">
+                      <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code script_data" rows="10" name="script_data" required><?=$global_filters['prefilter'];?></textarea>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="col-sm-10 add_filter_btns">
+                      <div class="btn-group">
+                        <button class="btn btn-sm btn-default validate_sieve" href="#"><?=$lang['add']['validate'];?></button>
+                        <button class="btn btn-sm btn-success add_sieve_script" data-action="add_item" data-id="add_prefilter" data-api-url='add/global-filter' data-api-attr='{"filter_type":"prefilter"}' href="#" disabled><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+                </div>
+                <div class="col-lg-6">
+                <h5>Global Postfilter</h5>
+                <form class="form-horizontal" data-cached-form="false" role="form" data-id="add_postfilter">
+                  <div class="form-group">
+                    <div class="col-sm-12">
+                      <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code script_data" rows="10" name="script_data" required><?=$global_filters['postfilter'];?></textarea>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="col-sm-10 add_filter_btns">
+                      <div class="btn-group">
+                        <button class="btn btn-sm btn-default validate_sieve" href="#"><?=$lang['add']['validate'];?></button>
+                        <button class="btn btn-sm btn-success add_sieve_script" data-action="add_item" data-id="add_postfilter" data-api-url='add/global-filter' data-api-attr='{"filter_type":"postfilter"}' href="#" disabled><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+                </div>
               </div>
             </div>
           </div>

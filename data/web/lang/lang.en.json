@@ -24,6 +24,8 @@
         "hibp_ok": "No match found."
     },
     "danger": {
+        "invalid_filter_type": "Invalid filter type",
+        "file_open_error": "File cannot be opened for writing",
         "transport_dest_exists": "Transport destination \"%s\" exists",
         "unlimited_quota_acl": "Unlimited quota prohibited by ACL",
         "mysql_error": "MySQL error: %s",
@@ -61,6 +63,7 @@
         "app_passwd_id_invalid": "App password ID %s invalid",
         "global_map_invalid": "Global map ID %s invalid",
         "global_map_write_error": "Could not write global map ID %s: %s",
+        "global_filter_write_error": "Could not write filter file: %s",
         "invalid_host": "Invalid host specified: %s",
         "relayhost_invalid": "Map entry %s is invalid",
         "dkim_domain_or_sel_invalid": "DKIM domain or selector invalid: %s",
@@ -132,6 +135,7 @@
         "extra_acl_invalid_domain": "External sender \"%s\" uses an invalid domain"
     },
     "success": {
+        "global_filter_written": "Filter was successfully written to file",
         "learned_ham": "Successfully learned ID % as ham",
         "verified_totp_login": "Verified TOTP login",
         "verified_u2f_login": "Verified U2F login",
@@ -634,7 +638,7 @@
         "last_run": "Last run",
         "excludes": "Excludes",
         "last_run_reset": "Schedule next",
-        "sieve_info": "You can store multiple filters per user, but only one prefilter and one postfilter can be active at the same time.<br>\r\nEach filter will be processed in the described order. Neither a failed script nor an issued \"keep;\" will stop processing of further scripts.<br>\r\n<a href=\"https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/global_sieve_before\" target=\"_blank\">Global sieve prefilter</a> → Prefilter → User scripts → Postfilter → <a href=\"https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/global_sieve_after\" target=\"_blank\">Global sieve postfilter</a>",
+        "sieve_info": "You can store multiple filters per user, but only one prefilter and one postfilter can be active at the same time.<br>\r\nEach filter will be processed in the described order. Neither a failed script nor an issued \"keep;\" will stop processing of further scripts.<br><br>Global sieve prefilter → Prefilter → User scripts → Postfilter → Global sieve postfilter",
         "sogo_visible": "Alias is visible in SOGo",
         "sogo_visible_y": "Show alias in SOGo",
         "sogo_visible_n": "Hide alias in SOGo",

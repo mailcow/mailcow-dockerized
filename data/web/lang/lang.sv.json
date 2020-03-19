@@ -634,7 +634,7 @@
         "last_run": "Senaste körningen",
         "excludes": "Exkluderar",
         "last_run_reset": "Schemalägg nästa",
-        "sieve_info": "Du kan skapa flera filter per användare, men bara ett förfilter och ett postfilter kan vara aktiva samtidigt.<br>\r\nVarje filter bearbetas i den beskrivna ordningen nedan. Varken ett misslyckat filter som kör fel, eller kommandot \"keep:\" stoppar bearbetningen av övriga filter.<br>\r\n<a href=\"https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/global_sieve_before\" target=\"_blank\">Globala sieve förfilter</a> → Prefilter → User scripts → Postfilter → <a href=\"https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/global_sieve_after\" target=\"_blank\">Global sieve postfilter</a>",
+        "sieve_info": "Du kan skapa flera filter per användare, men bara ett förfilter och ett postfilter kan vara aktiva samtidigt.<br>\r\nVarje filter bearbetas i den beskrivna ordningen nedan. Varken ett misslyckat filter som kör fel, eller kommandot \"keep:\" stoppar bearbetningen av övriga filter.<br><br>Globala sieve förfilter → Prefilter → User scripts → Postfilter → Global sieve postfilter",
         "sogo_visible": "Visa detta alias i SOGo",
         "sogo_visible_y": "Visa alias i SOGo",
         "sogo_visible_n": "Dölj alias i SOGo",

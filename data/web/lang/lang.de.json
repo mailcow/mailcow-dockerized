@@ -24,6 +24,8 @@
         "apps": "Apps"
     },
     "danger": {
+        "invalid_filter_type": "Ungültiger Filtertyp",
+        "file_open_error": "Datei kann nicht zum Schreiben geöffnet werden",
         "transport_dest_exists": "Transport Maps Ziel \"%s\" existiert bereits",
         "unlimited_quota_acl": "Unendliche Quota untersagt durch ACL",
         "mysql_error": "MySQL Fehler: %s",
@@ -60,6 +62,7 @@
         "settings_map_invalid": "Regel ID %s ist ungültig",
         "app_passwd_id_invalid": "App Passwort ID %s ist ungültig",
         "global_map_invalid": "Rspamd Map %s ist ungültig",
+        "global_filter_write_error": "Kann Filterdatei nicht schreiben: %s",
         "global_map_write_error": "Kann globale Map ID %s nicht schreiben: %s",
         "invalid_host": "Ungültiger Host: %s",
         "relayhost_invalid": "Mapeintrag %s ist ungültig",
@@ -132,6 +135,7 @@
         "extra_acl_invalid_domain": "Externe Absenderadresse \"%s\" verwendet eine ungültige Domain"
     },
     "success": {
+        "global_filter_written": "Filterdatei wurde erfolreich geschrieben",
         "learned_ham": "ID %s wurde erfolreich als Ham gelernt",
         "verified_totp_login": "TOTP Anmeldung verifiziert",
         "verified_u2f_login": "U2F Anmeldung verifiziert",
@@ -632,7 +636,7 @@
         "last_run": "Letzte Ausführung",
         "last_run_reset": "Als nächstes ausführen",
         "excludes": "Ausschlüsse",
-        "sieve_info": "Es können mehrere Filter pro Benutzer existieren, aber nur ein Filter eines Typs (Pre-/Postfilter) kann gleichzeitig aktiv sein.<br>\r\nDie Ausführung erfolgt in nachstehender Reihenfolge. Ein fehlgeschlagenes Script sowie der Befehl \"keep;\" stoppen die weitere Verarbeitung <b>nicht</b>.<br>\r\n<a href=\"https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/global_sieve_before\" target=\"_blank\">Global sieve prefilter</a> → Prefilter → User scripts → Postfilter → <a href=\"https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/global_sieve_after\" target=\"_blank\">Global sieve postfilter</a>",
+        "sieve_info": "Es können mehrere Filter pro Benutzer existieren, aber nur ein Filter eines Typs (Pre-/Postfilter) kann gleichzeitig aktiv sein.<br>\r\nDie Ausführung erfolgt in nachstehender Reihenfolge. Ein fehlgeschlagenes Script sowie der Befehl \"keep;\" stoppen die weitere Verarbeitung <b>nicht</b>.<br><br>Global sieve prefilter → Prefilter → User scripts → Postfilter → Global sieve postfilter",
         "sogo_visible": "Alias Sichtbarkeit in SOGo",
         "sogo_visible_y": "Alias in SOGo anzeigen",
         "sogo_visible_n": "Alias in SOGo verbergen",
