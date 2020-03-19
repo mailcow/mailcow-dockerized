@@ -146,12 +146,15 @@ $(document).ready(function() {
   });
   // Disable submit button on script change
 	$('.textarea-code').on('keyup', function() {
-    $('#add_filter_btns > #add_sieve_script').attr({"disabled": true});
+    // Disable all "save" buttons, could be a "related button only" function, todo
+    $('.add_sieve_script').attr({"disabled": true});
 	});
   // Validate script data
-  $("#validate_sieve").click(function( event ) {
+  $(".validate_sieve").click(function( event ) {
     event.preventDefault();
-    var script = $('#script_data').val();
+    var validation_button = $(this);
+    // Get script_data textarea content from form the button was clicked in
+    var script = $('textarea[name="script_data"]', $(this).parents('form:first')).val();
     $.ajax({
       dataType: 'json',
       url: "/inc/ajax/sieve_validation.php",
@@ -161,7 +164,7 @@ $(document).ready(function() {
         var response = (data.responseText);
         response_obj = JSON.parse(response);
         if (response_obj.type == "success") {
-          $('#add_filter_btns > #add_sieve_script').attr({"disabled": false});
+          $(validation_button).next().attr({"disabled": false});
         }
         mailcow_alert_box(response_obj.msg, response_obj.type);
       },

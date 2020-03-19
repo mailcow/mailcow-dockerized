@@ -633,7 +633,7 @@
     "running": "В процессе выполнения",
     "set_postfilter": "Использовать как постфильтр",
     "set_prefilter": "Использовать как предв. фильтр",
-    "sieve_info": "Вы можете сохранить несколько фильтров для каждого пользователя, но только один предварительный фильтр и один постфильтр могут быть активными одновременно.<br>\r\n Каждый фильтр будет обработан в описанном порядке. Не сломаный скрипт, не <code>keep;</code> не остановит обработку дальнейших скриптов.<br>\r\n <a href=\"https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/global_sieve_before\" target=\"_blank\">Global sieve prefilter</a> → Prefilter → User scripts → Postfilter → <a href=\"https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/global_sieve_after\" target=\"_blank\">Global sieve postfilter</a>",
+    "sieve_info": "Вы можете сохранить несколько фильтров для каждого пользователя, но только один предварительный фильтр и один постфильтр могут быть активными одновременно.<br>\r\n Каждый фильтр будет обработан в описанном порядке. Не сломаный скрипт, не <code>keep;</code> не остановит обработку дальнейших скриптов.<br><br>Global sieve prefilter → Prefilter → User scripts → Postfilter → Global sieve postfilter",
     "sieve_preset_1": "Discard mail with probable dangerous file types",
     "sieve_preset_2": "Always mark the e-mail of a specific sender as seen",
     "sieve_preset_3": "Discard silently, stop all further sieve processing",
