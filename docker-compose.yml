@@ -45,6 +45,8 @@ services:
       volumes:
         - redis-vol-1:/data/
       restart: always
+      ports:
+        - "${REDIS_PORT:-127.0.0.1:7654}:6379"
       environment:
         - TZ=${TZ}
       networks:
@@ -100,7 +102,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.57
+      image: mailcow/phpfpm:1.58
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -118,6 +120,8 @@ services:
         - ./data/conf/phpfpm/php-conf.d/opcache-recommended.ini:/usr/local/etc/php/conf.d/opcache-recommended.ini
         - ./data/conf/phpfpm/php-conf.d/upload.ini:/usr/local/etc/php/conf.d/upload.ini
         - ./data/conf/phpfpm/php-conf.d/other.ini:/usr/local/etc/php/conf.d/zzz-other.ini
+        - ./data/conf/dovecot/global_sieve_before:/global_sieve/before
+        - ./data/conf/dovecot/global_sieve_after:/global_sieve/after
         - ./data/assets/templates:/tpls
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -366,7 +370,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.32
+      image: mailcow/netfilter:1.33
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
