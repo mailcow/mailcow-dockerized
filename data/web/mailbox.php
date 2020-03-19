@@ -351,7 +351,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                 <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addFilterModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_filter'];?></a>
               </div>
             </div>
-            <div class="panel-body">
+            <div class="panel-body <?=($_SESSION['mailcow_cc_role'] == "admin") ?: 'hidden';?>">
               <?php
               $global_filters = mailbox('get', 'global_filter_details');
               ?>
