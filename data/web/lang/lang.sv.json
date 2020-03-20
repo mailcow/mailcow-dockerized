@@ -69,7 +69,7 @@
         "mailbox_quota_exceeds_domain_quota": "Kvotgränsen överskrider maxgränsen för domänens kvotgräns",
         "object_is_not_numeric": "Värdet %s är inte numeriskt",
         "alias_empty": "Aliasadressen kan inte vara tomt",
-        "last_key": "Den senaste nyckeln kan inte tas bort",
+        "last_key": "Den senaste nyckeln kan inte tas bort, avaktivera istället multifaktorautentisering (2FA)",
         "goto_empty": "En aliasadress måste peka mot minst en giltig destinationsadress",
         "policy_list_from_exists": "En post med detta namn existerar redan",
         "policy_list_from_invalid": "Posten har ett ogiltigt format",
