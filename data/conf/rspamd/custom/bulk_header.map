@@ -1,1 +1,6 @@
 /X-CSA-Complaints: .*/i
+/X-EMV-Platform; .*/i
+/X-Mailer: promio.*/i
+/.*nur-1-click*/i
+/.*episerver.*/i
+/.*supergewinne.*/i
