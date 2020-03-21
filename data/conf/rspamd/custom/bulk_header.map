@@ -9,3 +9,4 @@
 /X-Mailer: AWeber.*/i
 /.*regiofinder.*/i
 /.*EmailSocket.*/i
+/List-Unsubscribe:.*respread.*/i
