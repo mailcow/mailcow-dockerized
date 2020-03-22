@@ -372,6 +372,12 @@ if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   exit 0
 fi
 
+echo -e "\e[32mValidating docker-compose stack configuration...\e[0m"
+if ! docker-compose config -q; then
+  echo -e "\e[31m\nOh no, something went wrong. Please check the error message above.\e[0m"
+  exit 1
+fi
+
 DIFF_DIRECTORY=update_diffs
 DIFF_FILE=${DIFF_DIRECTORY}/diff_before_update_$(date +"%Y-%m-%d-%H-%M-%S")
 mv diff_before_update* ${DIFF_DIRECTORY}/ 2> /dev/null
