@@ -3,6 +3,7 @@
 // Slave does not serve UI
 if (!preg_match('/y|yes/i', getenv('MASTER'))) {
   header('Location: /SOGo', true, 307);
+  exit;
 }
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/vars.inc.php';

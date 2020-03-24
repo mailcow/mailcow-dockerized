@@ -12,6 +12,14 @@ function init_db_schema() {
       if ($stmt->fetch(PDO::FETCH_ASSOC)['version'] == $db_version) {
         return true;
       }
+      if (!preg_match('/y|yes/i', getenv('MASTER'))) {
+        $_SESSION['return'][] = array(
+          'type' => 'warning',
+          'log' => array(__FUNCTION__),
+          'msg' => 'Database not initialized: not running db_init on slave.'
+        );
+        return true;
+      }
     }
 
     $views = array(
