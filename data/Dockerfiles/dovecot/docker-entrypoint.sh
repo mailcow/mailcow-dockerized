@@ -44,7 +44,7 @@ EOF
 # Write last logins to Redis
 if [[ ! -z ${REDIS_SLAVEOF_IP} ]]; then
   cp /etc/syslog-ng/syslog-ng-redis_slave.conf /etc/syslog-ng/syslog-ng.conf
-  echo -n "redis:host=${REDIS_SLAVEOF_IP}:port={REDIS_SLAVEOF_PORT}" > /etc/dovecot/last_login
+  echo -n "redis:host=${REDIS_SLAVEOF_IP}:port=${REDIS_SLAVEOF_PORT}" > /etc/dovecot/last_login
 else
   echo -n "redis:host=${IPV4_NETWORK}.249:port=6379" > /etc/dovecot/last_login
 fi
