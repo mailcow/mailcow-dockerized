@@ -45,13 +45,28 @@ else
     exit 1
   fi
 fi
+
 BACKUP_LOCATION=$(echo ${BACKUP_LOCATION} | sed 's#/$##')
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 COMPOSE_FILE=${SCRIPT_DIR}/../docker-compose.yml
+
+if [ ! -f ${COMPOSE_FILE} ]; then
+  echo "Compose file not found"
+  exit 1
+fi
+
 echo "Using ${BACKUP_LOCATION} as backup/restore location."
 echo
+
 source ${SCRIPT_DIR}/../mailcow.conf
-CMPS_PRJ=$(echo $COMPOSE_PROJECT_NAME | tr -cd "[A-Za-z-_]")
+
+if [[ -z ${COMPOSE_PROJECT_NAME} ]]; then
+  echo "Could not determine compose project name"
+  exit 1
+else
+  echo "Found project name ${COMPOSE_PROJECT_NAME}"
+  CMPS_PRJ=$(echo ${COMPOSE_PROJECT_NAME} | tr -cd "[A-Za-z-_]")
+fi
 
 function backup() {
   DATE=$(date +"%Y-%m-%d-%H-%M-%S")
@@ -93,18 +108,24 @@ function backup() {
       ;;&
     mysql|all)
       SQLIMAGE=$(grep -iEo '(mysql|mariadb)\:.+' ${COMPOSE_FILE})
-      docker run --rm \
-        --network $(docker network ls -qf name=${CMPS_PRJ}_) \
-        -v $(docker volume ls -qf name=${CMPS_PRJ}_mysql-vol-1):/var/lib/mysql/:ro \
-        --entrypoint= \
-        -v ${BACKUP_LOCATION}/mailcow-${DATE}/mysql:/backup \
-        ${SQLIMAGE} /bin/sh -c "mariabackup --host mysql --user root --password ${DBROOT} --backup --rsync --target-dir=/backup"
-
-      docker run --rm \
-        --network $(docker network ls -qf name=${CMPS_PRJ}_) \
-        --entrypoint= \
-        -v ${BACKUP_LOCATION}/mailcow-${DATE}/mysql:/backup \
-        ${SQLIMAGE} /bin/sh -c "mariabackup --prepare --target-dir=/backup"
+      if [[ -z "${SQLIMAGE}" ]]; then
+        echo "Could not determine SQL image version, skipping backup..."
+        shift
+        continue
+      else
+        echo "Using SQL image ${SQLIMAGE}, starting..."
+        docker run --rm \
+          --network $(docker network ls -qf name=${CMPS_PRJ}_) \
+          -v $(docker volume ls -qf name=${CMPS_PRJ}_mysql-vol-1):/var/lib/mysql/:ro \
+          --entrypoint= \
+          -v ${BACKUP_LOCATION}/mailcow-${DATE}/mysql:/backup \
+          ${SQLIMAGE} /bin/sh -c "mariabackup --host mysql --user root --password ${DBROOT} --backup --rsync --target-dir=/backup"
+        docker run --rm \
+          --network $(docker network ls -qf name=${CMPS_PRJ}_) \
+          --entrypoint= \
+          -v ${BACKUP_LOCATION}/mailcow-${DATE}/mysql:/backup \
+          ${SQLIMAGE} /bin/sh -c "mariabackup --prepare --target-dir=/backup"
+      fi
       ;;&
     --delete-days)
       shift
@@ -120,7 +141,10 @@ function backup() {
 }
 
 function restore() {
+  echo
+  echo "Stopping watchdog-mailcow..."
   docker stop $(docker ps -qf name=watchdog-mailcow)
+  echo
   RESTORE_LOCATION="${1}"
   shift
   while (( "$#" )); do
@@ -178,10 +202,18 @@ function restore() {
       ;;
     mysql)
       SQLIMAGE=$(grep -iEo '(mysql|mariadb)\:.+' ${COMPOSE_FILE})
-      docker stop $(docker ps -qf name=mysql-mailcow)
+      read -p "mailcow will be stopped and the corresponding mailcow.conf file of the backup will be restored, do you want to proceed? [y|N] " MYSQL_STOP_MAILCOW
+      if [[ ${MYSQL_STOP_MAILCOW,,} =~ ^(yes|y)$ ]]; then
+        echo "Stopping mailcow..."
+        docker-compose down
+      else
+        echo "OK, skipped."
+        shift
+        continue
+      fi
+      #docker stop $(docker ps -qf name=mysql-mailcow)
       if [[ -d "${RESTORE_LOCATION}/mysql" ]]; then
       docker run --rm \
-        --network $(docker network ls -qf name=${CMPS_PRJ}_) \
         -v $(docker volume ls -qf name=${CMPS_PRJ}_mysql-vol-1):/var/lib/mysql/:rw \
         --entrypoint= \
         -v ${RESTORE_LOCATION}/mysql:/backup \
@@ -199,11 +231,18 @@ function restore() {
         gunzip < backup/backup_mysql.gz | mysql -uroot && \
         mysql -uroot -e SHUTDOWN;"
       fi
-      docker start $(docker ps -aqf name=mysql-mailcow)
+      echo "Copying mailcow.conf..."
+      mv mailcow.conf mailcow.conf_backup_$(date +"%Y-%m-%d-%H-%M-%S")
+      cp ${RESTORE_LOCATION}/mailcow.conf mailcow.conf
+      echo "Starting mailcow..."
+      docker-compose up -d
+      #docker start $(docker ps -aqf name=mysql-mailcow)
       ;;
     esac
     shift
   done
+  echo
+  echo "Starting watchdog-mailcow..."
   docker start $(docker ps -aqf name=watchdog-mailcow)
 }
 
