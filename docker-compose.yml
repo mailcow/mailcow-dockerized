@@ -71,7 +71,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.64
+      image: mailcow/rspamd:1.65
       stop_grace_period: 30s
       depends_on:
         - nginx-mailcow
