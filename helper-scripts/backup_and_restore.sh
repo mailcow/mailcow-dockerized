@@ -65,7 +65,7 @@ if [[ -z ${COMPOSE_PROJECT_NAME} ]]; then
   exit 1
 else
   echo "Found project name ${COMPOSE_PROJECT_NAME}"
-  CMPS_PRJ=$(echo ${COMPOSE_PROJECT_NAME} | tr -cd "[A-Za-z-_]")
+  CMPS_PRJ=$(echo ${COMPOSE_PROJECT_NAME} | tr -cd "[0-9A-Za-z-_]")
 fi
 
 function backup() {
