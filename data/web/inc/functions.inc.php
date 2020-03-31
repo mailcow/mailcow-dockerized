@@ -1638,20 +1638,31 @@ function solr_status() {
 }
 
 function cleanupJS($ignore = '', $folder = '/tmp/*.js') {
-    foreach (glob($folder) as $filename) {
-        if(strpos($filename, $ignore) !== false) {
-            continue;
-        }
-        unlink($filename);
+  $now = time();
+  foreach (glob($folder) as $filename) {
+    if(strpos($filename, $ignore) !== false) {
+      continue;
     }
+    if (is_file($filename)) {
+      if ($now - filemtime($filename) >= 60 * 60) {
+        unlink($filename);
+      }
+    }
+  }
 }
 
 function cleanupCSS($ignore = '', $folder = '/tmp/*.css') {
-    foreach (glob($folder) as $filename) {
-        if(strpos($filename, $ignore) !== false) {
-            continue;
-        }
-        unlink($filename);
+  $now = time();
+  foreach (glob($folder) as $filename) {
+    if(strpos($filename, $ignore) !== false) {
+      continue;
     }
+    if (is_file($filename)) {
+      if ($now - filemtime($filename) >= 60 * 60) {
+        unlink($filename);
+      }
+    }
+  }
 }
+
 ?>
