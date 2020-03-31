@@ -3262,7 +3262,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           if ($last_mail_login === false) {
             $last_mail_login = '';
           }
-          $stmt = $pdo->prepare("SELECT
+          if (preg_match('/y|yes/i', getenv('MASTER'))) {
+            $stmt = $pdo->prepare("SELECT
               `domain`.`backupmx`,
               `mailbox`.`username`,
               `mailbox`.`name`,
@@ -3276,6 +3277,23 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               `quota2`.`messages`
                 FROM `mailbox`, `quota2`, `domain`
                   WHERE `mailbox`.`kind` NOT REGEXP 'location|thing|group' AND `mailbox`.`username` = `quota2`.`username` AND `domain`.`domain` = `mailbox`.`domain` AND `mailbox`.`username` = :mailbox");
+          }
+          else {
+            $stmt = $pdo->prepare("SELECT
+              `domain`.`backupmx`,
+              `mailbox`.`username`,
+              `mailbox`.`name`,
+              `mailbox`.`active` AS `active_int`,
+              CASE `mailbox`.`active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`,
+              `mailbox`.`domain`,
+              `mailbox`.`local_part`,
+              `mailbox`.`quota`,
+              `quota2replica`.`bytes`,
+              `attributes`,
+              `quota2replica`.`messages`
+                FROM `mailbox`, `quota2replica`, `domain`
+                  WHERE `mailbox`.`kind` NOT REGEXP 'location|thing|group' AND `mailbox`.`username` = `quota2replica`.`username` AND `domain`.`domain` = `mailbox`.`domain` AND `mailbox`.`username` = :mailbox");
+          }
           $stmt->execute(array(
             ':mailbox' => $_data,
           ));
