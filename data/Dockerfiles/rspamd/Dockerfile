@@ -12,8 +12,8 @@ RUN apt-get update && apt-get install -y \
   apt-transport-https \
   dnsutils \
   netcat \
-  && apt-key adv --fetch-keys https://rspamd.com/apt/gpg.key \
-  && echo "deb [arch=amd64] https://rspamd.com/apt/ $CODENAME main" > /etc/apt/sources.list.d/rspamd.list \
+  && apt-key adv --fetch-keys https://rspamd.com/apt-stable/gpg.key \
+  && echo "deb [arch=amd64] https://rspamd.com/apt-stable/ $CODENAME main" > /etc/apt/sources.list.d/rspamd.list \
   && apt-get update \
   && apt-get --no-install-recommends -y install rspamd redis-tools \
   && rm -rf /var/lib/apt/lists/* \
