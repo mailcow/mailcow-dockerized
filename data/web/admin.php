@@ -137,7 +137,10 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
           <div class="form-group">
             <label class="control-label col-sm-3" for="admin_api_key"><?=$lang['admin']['api_key'];?>:</label>
             <div class="col-sm-9">
-              <input type="text" class="form-control" placeholder="-" value="<?=htmlspecialchars($api['api_key']);?>" readonly>
+              <div class="input-group">
+                <span class="input-group-addon">Read-Write</span>
+                <input type="text" class="form-control" placeholder="-" value="<?=htmlspecialchars($api['api_key']);?>" readonly>
+              </div>
             </div>
           </div>
           <div class="form-group">
