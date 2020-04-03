@@ -220,7 +220,8 @@
         "fuzzy_learn_error": "Fuzzy Lernfehler: %s",
         "ip_invalid": "Ungültige IP übersprungen: %s",
         "session_token": "Formular-Token ungültig: Token stimmt nicht überein",
-        "session_ua": "Formular-Token ungültig: User-Agent-Validierungsfehler"
+        "session_ua": "Formular-Token ungültig: User-Agent-Validierungsfehler",
+        "quota_exceeded_scope": "Domain-Quota erschöpft: Es können nur noch unlimiterte Mailboxen in dieser Domain erstellt werden."
     },
     "user": {
         "last_mail_login": "Letzter Mail-Login",

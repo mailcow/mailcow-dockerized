@@ -220,7 +220,8 @@
         "no_active_admin": "Cannot deactivate last active admin",
         "hash_not_found": "Hash not found or already deleted",
         "fuzzy_learn_error": "Fuzzy hash learn error: %s",
-        "ip_invalid": "Skipped invalid IP: %s"
+        "ip_invalid": "Skipped invalid IP: %s",
+        "quota_exceeded_scope": "Domain quota exceeded: Only unlimited/unrated mailboxes can be created in this domain scope."
     },
     "user": {
         "no_last_login": "No last UI login information",
