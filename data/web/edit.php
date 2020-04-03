@@ -25,7 +25,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         if (!empty($result)) {
         ?>
           <h4><?=$lang['edit']['alias'];?></h4>
-          <br />
+          <br>
           <form class="form-horizontal" data-id="editalias" role="form" method="post">
             <input type="hidden" value="0" name="active">
             <input type="hidden" value="0" name="sogo_visible">
@@ -96,7 +96,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
       if (!empty($result)) {
       ?>
       <h4><?=$lang['edit']['domain_admin'];?></h4>
-      <br />
+      <br>
       <form class="form-horizontal" data-id="editdomainadmin" role="form" method="post">
         <input type="hidden" value="0" name="active">
         <div class="form-group">
@@ -194,7 +194,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
       if (!empty($result)) {
       ?>
       <h4><?=$lang['edit']['domain_admin'];?></h4>
-      <br />
+      <br>
       <form class="form-horizontal" data-id="editadmin" role="form" method="post">
         <input type="hidden" value="0" name="active">
         <div class="form-group">
@@ -258,6 +258,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <input type="hidden" value="0" name="backupmx">
             <input type="hidden" value="0" name="gal">
             <input type="hidden" value="0" name="relay_all_recipients">
+            <input type="hidden" value="0" name="relay_unknown_only">
             <div class="form-group">
               <label class="control-label col-sm-2" for="description"><?=$lang['edit']['description'];?></label>
               <div class="col-sm-10">
@@ -317,9 +318,13 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               <div class="col-sm-10">
                 <div class="checkbox">
                   <label><input type="checkbox" value="1" name="backupmx" <?=(isset($result['backupmx_int']) && $result['backupmx_int']=="1") ? "checked" : null;?>> <?=$lang['edit']['relay_domain'];?></label>
-                  <br />
+                  <br>
                   <label><input type="checkbox" value="1" name="relay_all_recipients" <?=(isset($result['relay_all_recipients_int']) && $result['relay_all_recipients_int']=="1") ? "checked" : null;?>> <?=$lang['edit']['relay_all'];?></label>
                   <p><?=$lang['edit']['relay_all_info'];?></p>
+                  <label><input type="checkbox" value="1" name="relay_unknown_only" <?=(isset($result['relay_unknown_only_int']) && $result['relay_unknown_only_int']=="1") ? "checked" : null;?>> <?=$lang['edit']['relay_unknown_only'];?></label>
+                  <br>
+                  <p><?=$lang['edit']['relay_transport_info'];?></p>
+                  <hr style="margin:25px 0px 0px 0px">
                 </div>
               </div>
             </div>
@@ -576,7 +581,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           </div>
           <div class="form-group">
             <label class="control-label col-sm-2" for="quota"><?=$lang['edit']['quota_mb'];?>
-              <br /><span id="quotaBadge" class="badge">max. <?=intval($result['max_new_quota'] / 1048576)?> MiB</span>
+              <br><span id="quotaBadge" class="badge">max. <?=intval($result['max_new_quota'] / 1048576)?> MiB</span>
             </label>
             <div class="col-sm-10">
               <input type="number" name="quota" style="width:100%" min="0" max="<?=intval($result['max_new_quota'] / 1048576);?>" value="<?=intval($result['quota']) / 1048576;?>" class="form-control">
@@ -945,7 +950,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         if (!empty($result)) {
           ?>
           <h4><?=$lang['mailbox']['bcc_map'];?></h4>
-          <br />
+          <br>
           <form class="form-horizontal" data-id="editbcc" role="form" method="post">
             <input type="hidden" value="0" name="active">
             <div class="form-group">
@@ -996,7 +1001,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         if (!empty($result)) {
           ?>
           <h4><?=$lang['mailbox']['recipient_map']?>: <?=$result['recipient_map_old'];?></h4>
-          <br />
+          <br>
           <form class="form-horizontal" data-id="edit_recipient_map" role="form" method="post">
             <input type="hidden" value="0" name="active">
             <div class="form-group">
@@ -1042,7 +1047,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         if (!empty($result)) {
           ?>
           <h4><?=$lang['mailbox']['tls_policy_maps']?>: <?=$result['dest'];?></h4>
-          <br />
+          <br>
           <form class="form-horizontal" data-id="edit_tls_policy_maps" role="form" method="post">
             <input type="hidden" value="0" name="active">
             <div class="form-group">
