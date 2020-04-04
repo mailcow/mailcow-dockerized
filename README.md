@@ -19,6 +19,8 @@ Any part of mailcow itself is released under **GNU General Public License, Versi
 
 ## Want to chat?
 
+[mailcow forum : mailcow.farm ](https://mailcow.farm)
+
 [Telegram mailcow channel](https://telegram.me/mailcow)
 
 [Telegram mailcow Off-Topic channel](https://t.me/mailcowOfftopic)
