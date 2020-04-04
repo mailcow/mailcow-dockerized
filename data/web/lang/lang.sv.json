@@ -216,7 +216,8 @@
         "no_active_admin": "Den senaste kända administratören kan inte inaktiveras",
         "hash_not_found": "Kontrollsumman hittas inte. Den kan redan vara borttagen",
         "fuzzy_learn_error": "En oklar kontrollsumma resulterade i ett inlärningsfel: %s",
-        "ip_invalid": "Skippar en ogiltig IP-adress: %s"
+        "ip_invalid": "Skippar en ogiltig IP-adress: %s",
+        "quota_exceeded_scope": "Domänkvoten fylld: Endast postlådor med obegränsade kvoter kan skapas för den här domänen."
     },
     "user": {
         "no_last_login": "Senaste inloggningen till UI saknas",
@@ -736,7 +737,9 @@
         "backup_mx_options": "Backup MX inställningar",
         "relay_domain": "Relädomän",
         "relay_all": "Vidarebefordra alla mottagare",
-        "relay_all_info": "<small>Om <b>inte</b> alla mottagare ska vidarebefordras måste (\"blinda\") postlådor skapas för varje adress som ska vidarebefordras.",
+        "relay_all_info": "↪ Om <b>inte</b> alla mottagare ska vidarebefordras måste (\"blinda\") postlådor skapas för varje adress som ska vidarebefordras.",
+        "relay_unknown_only": "Vidarebefodra endast om det saknas en lokal postlåda. Existerar det en postlåda kommer det levereras lokalt.",
+        "relay_transport_info": "<div class=\"label label-info\">Info</div> Transportkartor kan skapas för att definiera enskilda destinationer för en relädomän.",
         "full_name": "Fullständigt namn",
         "quota_mb": "Kvot (MiB)",
         "sender_acl": "Tillåt att skicka som",
@@ -816,7 +819,9 @@
         "backup_mx_options": "Backup MX instälningar",
         "relay_all": "Vidarebefordra alla mottagaradresser",
         "relay_domain": "Vidarebefordra denna domän",
-        "relay_all_info": "<small>Om <b>inte</b> alla mottagare ska vidarebefordras måste (\"blinda\") postlådor skapas för varje adress som ska vidarebefordras.",
+        "relay_all_info": "↪ Om <b>inte</b> alla mottagare ska vidarebefordras måste (\"blinda\") postlådor skapas för varje adress som ska vidarebefordras.",
+        "relay_unknown_only": "Vidarebefodra endast om det saknas en lokal postlåda. Existerar det en postlåda kommer det levereras lokalt.",
+        "relay_transport_info": "<div class=\"label label-info\">Info</div> Transportkartor kan skapas för att definiera enskilda destinationer för en relädomän.",
         "alias_address": "Alias-adress/adresser",
         "alias_address_info": "<small>Fulständig e-postadress/adresser, eller @example.com för att fånga alla meddelanden för en domän (kommaseparerade). <b>endast mailcow domäner</b>.</small>",
         "alias_domain_info": "<small>Endast giltiga domännamn (kommaseparerade).</small>",
