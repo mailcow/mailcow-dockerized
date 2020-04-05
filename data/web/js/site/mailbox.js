@@ -287,7 +287,13 @@ jQuery(function($){
             }
             item.action += '<a href="#dnsInfoModal" class="btn btn-xs btn-info" data-toggle="modal" data-domain="' + encodeURIComponent(item.domain_name) + '"><span class="glyphicon glyphicon-question-sign"></span> DNS</a></div>';
             if (item.backupmx_int == 1) {
-              item.domain_name = '<span class="glyphicon glyphicon-export"></span> ' + item.domain_name;
+              if (item.relay_unknown_only_int == 1) {
+                item.domain_name = '<div class="label label-info">Relay Non-Local</div> ' + item.domain_name;
+              } else if (item.relay_all_recipients_int == 1) {
+                item.domain_name = '<div class="label label-info">Relay All</div> ' + item.domain_name;
+              } else {
+                item.domain_name = '<div class="label label-info">Relay</div> ' + item.domain_name;
+              }
             }
           });
         }
