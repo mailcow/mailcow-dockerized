@@ -3220,7 +3220,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 WHERE `kind` NOT REGEXP 'location|thing|group'
                   AND `domain` = :domain");
           $stmt->execute(array(':domain' => $row['domain']));
-          $MailboxDataDomain	= $stmt->fetch(PDO::FETCH_ASSOC);
+          $MailboxDataDomain = $stmt->fetch(PDO::FETCH_ASSOC);
+          $stmt = $pdo->prepare("SELECT SUM(bytes) AS `bytes_total`, SUM(messages) AS `msgs_total` FROM `quota2`
+            WHERE `username` IN (
+              SELECT `username` FROM `mailbox`
+                WHERE `domain` = :domain
+            );");
+          $stmt->execute(array(':domain' => $row['domain']));
+          $SumQuotaInUse = $stmt->fetch(PDO::FETCH_ASSOC);
           $rl = ratelimit('get', 'domain', $_data);
           $domaindata['max_new_mailbox_quota']	= ($row['quota'] * 1048576) - $MailboxDataDomain['in_use'];
           if ($domaindata['max_new_mailbox_quota'] > ($row['maxquota'] * 1048576)) {
@@ -3231,6 +3238,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $domaindata['def_new_mailbox_quota'] = ($row['defquota'] * 1048576);
           }
           $domaindata['quota_used_in_domain'] = $MailboxDataDomain['in_use'];
+          $domaindata['bytes_total'] = $SumQuotaInUse['bytes_total'];
+          $domaindata['msgs_total'] = $SumQuotaInUse['msgs_total'];
           $domaindata['mboxes_in_domain'] = $MailboxDataDomain['count'];
           $domaindata['mboxes_left'] = $row['mailboxes']	- $MailboxDataDomain['count'];
           $domaindata['domain_name'] = $row['domain'];
