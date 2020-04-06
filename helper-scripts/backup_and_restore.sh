@@ -118,13 +118,11 @@ function backup() {
           --network $(docker network ls -qf name=${CMPS_PRJ}_) \
           -v $(docker volume ls -qf name=${CMPS_PRJ}_mysql-vol-1):/var/lib/mysql/:ro \
           --entrypoint= \
-          -v ${BACKUP_LOCATION}/mailcow-${DATE}/mysql:/backup \
-          ${SQLIMAGE} /bin/sh -c "mariabackup --host mysql --user root --password ${DBROOT} --backup --rsync --target-dir=/backup"
-        docker run --rm \
-          --network $(docker network ls -qf name=${CMPS_PRJ}_) \
-          --entrypoint= \
-          -v ${BACKUP_LOCATION}/mailcow-${DATE}/mysql:/backup \
-          ${SQLIMAGE} /bin/sh -c "mariabackup --prepare --target-dir=/backup"
+          -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
+          ${SQLIMAGE} /bin/sh -c "mariabackup --host mysql --user root --password ${DBROOT} --backup --rsync --target-dir=/backup_mariadb ; \
+          mariabackup --prepare --target-dir=/backup_mariadb ; \
+          chown -R mysql:mysql /backup_mariadb ; \
+          /bin/tar --warning='no-file-ignored' --use-compress-program='gzip --rsyncable --best' -Pcvpf /backup/backup_mariadb.tar.gz /backup_mariadb ;"
       fi
       ;;&
     --delete-days)
@@ -240,6 +238,15 @@ function restore() {
           echo Restoring... && \
           gunzip < backup/backup_mysql.gz | mysql -uroot && \
           mysql -uroot -e SHUTDOWN;"
+        elif [[ -f "${RESTORE_LOCATION}/backup_mariadb.tar.gz" ]]; then
+        docker run --rm \
+          -v $(docker volume ls -qf name=${CMPS_PRJ}_mysql-vol-1):/backup_mariadb/:rw \
+          --entrypoint= \
+          -v ${RESTORE_LOCATION}:/backup \
+          ${SQLIMAGE} /bin/bash -c "shopt -s dotglob ; \
+            /bin/rm -rf /backup_mariadb/* ; \
+            /bin/tar -Pxvzf /backup/backup_mariadb.tar.gz ; \
+            rsync -avh --usermap=root:mysql --groupmap=root:mysql /backup/ /var/lib/mysql/ ;"
         fi
         echo "Modifying mailcow.conf..."
         source ${RESTORE_LOCATION}/mailcow.conf
@@ -284,7 +291,7 @@ elif [[ ${1} == "restore" ]]; then
   echo
   declare -A FILE_SELECTION
   RESTORE_POINT="${FOLDER_SELECTION[${input_sel}]}"
-  if [[ -z $(find "${FOLDER_SELECTION[${input_sel}]}" -maxdepth 1 -type f,d -regex ".*\(redis\|rspamd\|mysql\|crypt\|vmail\|postfix\).*") ]]; then
+  if [[ -z $(find "${FOLDER_SELECTION[${input_sel}]}" -maxdepth 1 -type f,d -regex ".*\(redis\|rspamd\|mariadb\|mysql\|crypt\|vmail\|postfix\).*") ]]; then
     echo "No datasets found"
     exit 1
   fi
@@ -313,7 +320,7 @@ elif [[ ${1} == "restore" ]]; then
       echo "[ ${i} ] - Postfix data"
       FILE_SELECTION[${i}]="postfix"
       ((i++))
-    elif [[ ${file} =~ mysql ]]; then
+    elif [[ ${file} =~ mysql ]] || [[ ${file} =~ mariadb ]]; then
       echo "[ ${i} ] - SQL DB"
       FILE_SELECTION[${i}]="mysql"
       ((i++))
