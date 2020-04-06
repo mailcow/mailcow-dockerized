@@ -3238,8 +3238,18 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $domaindata['def_new_mailbox_quota'] = ($row['defquota'] * 1048576);
           }
           $domaindata['quota_used_in_domain'] = $MailboxDataDomain['in_use'];
-          $domaindata['bytes_total'] = $SumQuotaInUse['bytes_total'];
-          $domaindata['msgs_total'] = $SumQuotaInUse['msgs_total'];
+          if (!empty($SumQuotaInUse['bytes_total'])) {
+            $domaindata['bytes_total'] = $SumQuotaInUse['bytes_total'];
+          }
+          else {
+            $domaindata['bytes_total'] = 0;
+          }
+          if (!empty($SumQuotaInUse['msgs_total'])) {
+            $domaindata['msgs_total'] = $SumQuotaInUse['msgs_total'];
+          }
+          else {
+            $domaindata['msgs_total'] = 0;
+          }
           $domaindata['mboxes_in_domain'] = $MailboxDataDomain['count'];
           $domaindata['mboxes_left'] = $row['mailboxes']	- $MailboxDataDomain['count'];
           $domaindata['domain_name'] = $row['domain'];
