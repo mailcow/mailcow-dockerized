@@ -572,6 +572,7 @@
         "notified": "Benachrichtigt"
     },
     "mailbox": {
+        "stats": "Statistik",
         "last_mail_login": "Letzter Mail-Login",
         "table_size": "Tabellengröße",
         "table_size_show_n": "Zeige %s Einträge",
