@@ -393,7 +393,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.72
+      image: mailcow/watchdog:1.73
       # Debug
       #command: /watchdog.sh
       dns:
@@ -410,10 +410,12 @@ services:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
+        - DBROOT=${DBROOT}
         - USE_WATCHDOG=${USE_WATCHDOG:-n}
         - WATCHDOG_NOTIFY_EMAIL=${WATCHDOG_NOTIFY_EMAIL}
         - WATCHDOG_NOTIFY_BAN=${WATCHDOG_NOTIFY_BAN:-y}
         - WATCHDOG_EXTERNAL_CHECKS=${WATCHDOG_EXTERNAL_CHECKS:-n}
+        - WATCHDOG_MYSQL_REPLICATION_CHECKS=${WATCHDOG_MYSQL_REPLICATION_CHECKS:-n}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
         - IP_BY_DOCKER_API=${IP_BY_DOCKER_API:-0}
@@ -428,6 +430,7 @@ services:
         - UNBOUND_THRESHOLD=5
         - REDIS_THRESHOLD=5
         - MYSQL_THRESHOLD=5
+        - MYSQL_REPLICATION_THRESHOLD=1
         - SOGO_THRESHOLD=3
         - POSTFIX_THRESHOLD=8
         - CLAMD_THRESHOLD=15
