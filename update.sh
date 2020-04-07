@@ -3,20 +3,20 @@
 # Check permissions
 if [ "$(id -u)" -ne "0" ]; then
   echo "You need to be root"
-  exit 1
+  exit 2
 fi
 
 if [[ "$(uname -r)" =~ ^4\.15\.0-60 ]]; then
   echo "DO NOT RUN mailcow ON THIS UBUNTU KERNEL!";
   echo "Please update to 5.x or use another distribution."
-  exit 1
+  exit 2
 fi
 
 if [[ "$(uname -r)" =~ ^4\.4\. ]]; then
   if grep -q Ubuntu <<< $(uname -a); then
     echo "DO NOT RUN mailcow ON THIS UBUNTU KERNEL!"
     echo "Please update to linux-generic-hwe-16.04 by running \"apt-get install --install-recommends linux-generic-hwe-16.04\""
-    exit 1
+    exit 2
   fi
   echo "mailcow on a 4.4.x kernel is not supported. It may or may not work, please upgrade your kernel or continue at your own risk."
   read -p "Press any key to continue..." < /dev/tty
@@ -34,7 +34,7 @@ PATH=$PATH:/opt/bin
 umask 0022
 
 for bin in curl docker-compose docker git awk sha1sum; do
-  if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
+  if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 2; fi
 done
 
 export LC_ALL=C
@@ -42,14 +42,14 @@ DATE=$(date +%Y-%m-%d_%H_%M_%S)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 function prefetch_images() {
-  [[ -z ${BRANCH} ]] && { echo -e "\e[33m\nUnknown branch...\e[0m"; exit 1; }
+  [[ -z ${BRANCH} ]] && { echo -e "\e[33m\nUnknown branch...\e[0m"; exit 2; }
   git fetch origin #${BRANCH}
   while read image; do
     RET_C=0
     until docker pull ${image}; do
       RET_C=$((RET_C + 1))
       echo -e "\e[33m\nError pulling $image, retrying...\e[0m"
-      [ ${RET_C} -gt 3 ] && { echo -e "\e[31m\nToo many failed retries, exiting\e[0m"; exit 1; }
+      [ ${RET_C} -gt 3 ] && { echo -e "\e[31m\nToo many failed retries, exiting\e[0m"; exit 2; }
       sleep 1
     done
   done < <(git show origin/${BRANCH}:docker-compose.yml | grep "image:" | awk '{ gsub("image:","", $3); print $2 }')
@@ -88,17 +88,20 @@ docker_garbage() {
     echo
     echo "    docker rmi ${IMGS_TO_DELETE[*]}"
     echo
-    read -r -p "Do you want to delete old image tags right now? [y/N] " response
-    if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-      docker rmi ${IMGS_TO_DELETE[*]}
+    if [ ! $FORCE ]; then
+      read -r -p "Do you want to delete old image tags right now? [y/N] " response
+      if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+        docker rmi ${IMGS_TO_DELETE[*]}
+      else
+        echo "OK, skipped."
+      fi
     else
-      echo "OK, skipped."
+      echo "Skipped image removal because of force mode."
     fi
   fi
   echo -e "\e[32mFurther cleanup...\e[0m"
   echo "If you want to cleanup further garbage collected by Docker, please make sure all containers are up and running before cleaning your system by executing \"docker system prune\""
 }
-
 
 while (($#)); do
   case "${1}" in
@@ -133,6 +136,10 @@ while (($#)); do
       prefetch_images
       exit 0
     ;;
+    -f|--force)
+      echo -e "\e[32mForcing Update...\e[0m"
+      FORCE=true
+    ;;
     --help|-h)
     echo './update.sh [-c|--check, --ours, --gc, --skip-start, -h|--help]
 
@@ -140,24 +147,25 @@ while (($#)); do
   --ours       -   Use merge strategy "ours" to solve conflicts in favor of non-mailcow code (local changes)
   --gc         -   Run garbage collector to delete old image tags
   --skip-start -   Do not start mailcow after update
+  -f|--force   -   Force update, do not ask questions
 '
-    exit 1
+    exit 2
   esac
   shift
 done
 
-[[ ! -f mailcow.conf ]] && { echo "mailcow.conf is missing"; exit 1;}
+[[ ! -f mailcow.conf ]] && { echo "mailcow.conf is missing"; exit 2;}
 chmod 600 mailcow.conf
 source mailcow.conf
 DOTS=${MAILCOW_HOSTNAME//[^.]};
 if [ ${#DOTS} -lt 2 ]; then
   echo "MAILCOW_HOSTNAME (${MAILCOW_HOSTNAME}) is not a FQDN!"
   echo "Please change it to a FQDN and run docker-compose down followed by docker-compose up -d"
-  exit 1
+  exit 2
 fi
 
-if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusybBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\""; exit 1; fi
-if cp --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusybBox cp detected, please install coreutils, \"apk add --no-cache --upgrade coreutils\""; exit 1; fi
+if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusybBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\""; exit 2; fi
+if cp --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusybBox cp detected, please install coreutils, \"apk add --no-cache --upgrade coreutils\""; exit 2; fi
 
 CONFIG_ARRAY=(
   "SKIP_LETS_ENCRYPT"
@@ -343,39 +351,41 @@ echo -en "Checking internet connection... "
 timeout 3 ping -c 1 9.9.9.9 > /dev/null
 if [[ $? != 0 ]]; then
   echo -e "\e[31mfailed\e[0m"
-  exit 1
+  exit 2
 else
   echo -e "\e[32mOK\e[0m"
 fi
 
-echo -e "\e[32mChecking for newer update script...\e[0m"
-SHA1_1=$(sha1sum update.sh)
-git fetch origin #${BRANCH}
-git checkout origin/${BRANCH} update.sh
-SHA1_2=$(sha1sum update.sh)
-if [[ ${SHA1_1} != ${SHA1_2} ]]; then
-  echo "update.sh changed, please run this script again, exiting."
-  chmod +x update.sh
-  exit 0
-fi
+# echo -e "\e[32mChecking for newer update script...\e[0m"
+# SHA1_1=$(sha1sum update.sh)
+# git fetch origin #${BRANCH}
+# git checkout origin/${BRANCH} update.sh
+# SHA1_2=$(sha1sum update.sh)
+# if [[ ${SHA1_1} != ${SHA1_2} ]]; then
+#   echo "update.sh changed, please run this script again, exiting."
+#   chmod +x update.sh
+#   exit 1
+# fi
 
 if [[ -f mailcow.conf ]]; then
   source mailcow.conf
 else
   echo -e "\e[31mNo mailcow.conf - is mailcow installed?\e[0m"
-  exit 1
+  exit 2
 fi
 
-read -r -p "Are you sure you want to update mailcow: dockerized? All containers will be stopped. [y/N] " response
-if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-  echo "OK, exiting."
-  exit 0
+if [ ! $FORCE ]; then
+  read -r -p "Are you sure you want to update mailcow: dockerized? All containers will be stopped. [y/N] " response
+  if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+    echo "OK, exiting."
+    exit 0
+  fi
 fi
 
 echo -e "\e[32mValidating docker-compose stack configuration...\e[0m"
 if ! docker-compose config -q; then
   echo -e "\e[31m\nOh no, something went wrong. Please check the error message above.\e[0m"
-  exit 1
+  exit 2
 fi
 
 DIFF_DIRECTORY=update_diffs
@@ -418,7 +428,7 @@ git merge -X${MERGE_STRATEGY:-theirs} -Xpatience -m "After update on ${DATE}"
 MERGE_RETURN=$?
 if [[ ${MERGE_RETURN} == 128 ]]; then
   echo -e "\e[31m\nOh no, what happened?\n=> You most likely added files to your local mailcow instance that were now added to the official mailcow repository. Please move them to another location before updating mailcow.\e[0m"
-  exit 1
+  exit 2
 elif [[ ${MERGE_RETURN} == 1 ]]; then
   echo -e "\e[93mPotenial conflict, trying to fix...\e[0m"
   git status --porcelain | grep -E "UD|DU" | awk '{print $2}' | xargs rm -v
@@ -430,7 +440,7 @@ elif [[ ${MERGE_RETURN} != 0 ]]; then
   echo -e "\e[31m\nOh no, something went wrong. Please check the error message above.\e[0m"
   echo
   echo "Run docker-compose up -d to restart your stack without updates or try again after fixing the mentioned errors."
-  exit 1
+  exit 2
 fi
 
 echo -e "\e[32mFetching new docker-compose version...\e[0m"
