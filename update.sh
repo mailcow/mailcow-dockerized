@@ -356,16 +356,16 @@ else
   echo -e "\e[32mOK\e[0m"
 fi
 
-# echo -e "\e[32mChecking for newer update script...\e[0m"
-# SHA1_1=$(sha1sum update.sh)
-# git fetch origin #${BRANCH}
-# git checkout origin/${BRANCH} update.sh
-# SHA1_2=$(sha1sum update.sh)
-# if [[ ${SHA1_1} != ${SHA1_2} ]]; then
-#   echo "update.sh changed, please run this script again, exiting."
-#   chmod +x update.sh
-#   exit 1
-# fi
+echo -e "\e[32mChecking for newer update script...\e[0m"
+SHA1_1=$(sha1sum update.sh)
+git fetch origin #${BRANCH}
+git checkout origin/${BRANCH} update.sh
+SHA1_2=$(sha1sum update.sh)
+if [[ ${SHA1_1} != ${SHA1_2} ]]; then
+  echo "update.sh changed, please run this script again, exiting."
+  chmod +x update.sh
+  exit 1
+fi
 
 if [[ -f mailcow.conf ]]; then
   source mailcow.conf
