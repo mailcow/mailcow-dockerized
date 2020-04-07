@@ -220,7 +220,8 @@
         "no_active_admin": "Nemožno deaktivovať posledného aktívneho admina",
         "hash_not_found": "Chýbajúci hash",
         "fuzzy_learn_error": "Chyba počas učenia Fuzzy hash: %s",
-        "ip_invalid": "Preskočená neplatná IP adresa: %s"
+        "ip_invalid": "Preskočená neplatná IP adresa: %s",
+        "quota_exceeded_scope": "Prekročená kvóta domény, pre túto doménu je možné vytvárať iba neobmedzené poštové schránky."
     },
     "user": {
         "no_last_login": "Žiadne informácie o UI prihlásení.",
@@ -570,6 +571,7 @@
         "notified": "Notifikovaný"
     },
     "mailbox": {
+        "stats": "Štatistika",
         "last_mail_login": "Posledné poštové prihlásenie",
         "table_size": "Veľkosť tabuľky",
         "table_size_show_n": "Zobraziť %s položiek",
@@ -738,9 +740,11 @@
         "max_quota": "Max. kvóta pre poštovú schránku (MiB)",
         "domain_quota": "Kvóta domény",
         "backup_mx_options": "Možnosti MX zálohy",
-        "relay_domain": "Preposielať doménu",
+        "relay_domain": "Preposielať túto doménu",
         "relay_all": "Preposielať všetkých prijemcov",
-        "relay_all_info": "<small> Ak sa rozhodnete <b>nepreposielať</b> všetkých príjemcov, budete musieť pridať (\"tzv. slepú\") poštovú schránku pre každého príjemcu.</small>",
+        "relay_all_info": "↪ Ak sa rozhodnete <b>nepreposielať</b> všetkých príjemcov, budete musieť pridať (\"tzv. slepú\") poštovú schránku pre každého príjemcu.",
+        "relay_unknown_only": "Preposielať len neexistujúce poštové schránky. Existujúce budú doručené lokálne.",
+        "relay_transport_info": "<div class=\"label label-info\">Info</div> Môžete definovať transportné mapy pre vlastné určenie cieľa pre túto doménu. Ak nie sú nastavené, použije sa MX záznam.",
         "full_name": "Celé meno",
         "quota_mb": "Kvóta (MiB)",
         "sender_acl": "Povoliť odosielanie ako",
@@ -820,7 +824,9 @@
         "backup_mx_options": "Možnosti MX zálohy",
         "relay_all": "Preposielať všetkým príjemcom",
         "relay_domain": "Preposielať túto doménu",
-        "relay_all_info": "small> Ak sa rozhodnete <b>nepreposielať</b> všetkých príjemcov, budete musieť pridať (\"tzv. slepú\") poštovú schránku pre každého príjemcu.</small>",
+        "relay_all_info": "↪ Ak sa rozhodnete <b>nepreposielať</b> všetkých príjemcov, budete musieť pridať (\"tzv. slepú\") poštovú schránku pre každého príjemcu.",
+        "relay_unknown_only": "Preposielať len neexistujúce poštové schránky. Existujúce budú doručené lokálne.",
+        "relay_transport_info": "<div class=\"label label-info\">Info</div> Môžete definovať transportné mapy pre vlastné určenie cieľa pre túto doménu. Ak nie sú nastavené, použije sa MX záznam.",
         "alias_address": "Alias adresa/y",
         "alias_address_info": "<small>Celá emailová adresa/y alebo @example.com, na zachytenie všetkých správ pre doménu (oddelené čiarkou) <b>iba domény tomto serveri</b>.</small>",
         "alias_domain_info": "<small>Len platné mená domén (oddelené čiarkou).</small>",
