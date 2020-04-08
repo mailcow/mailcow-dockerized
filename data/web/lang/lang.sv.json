@@ -567,6 +567,7 @@
         "notified": "Anmält"
     },
     "mailbox": {
+        "stats": "Statistik",
         "last_mail_login": "Senaste inloggningen",
         "table_size": "Tabellstorlek",
         "table_size_show_n": "Visa %s objekt",
