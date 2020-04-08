@@ -63,8 +63,8 @@ $symbols  = $headers['X-Rspamd-Symbols'];
 $raw_size = (int)$_SERVER['CONTENT_LENGTH'];
 
 if (empty($sender)) {
-  error_log("QUARANTINE: Unknown sender, assuming null@localhost");
-  $sender = 'null@localhost';
+  error_log("QUARANTINE: Unknown sender, assuming empty-env-from@localhost");
+  $sender = 'empty-env-from@localhost';
 }
 
 try {
