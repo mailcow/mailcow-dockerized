@@ -132,7 +132,7 @@ if [[ ${API_ALLOW_FROM} != "invalid" ]] && \
   if [[ ! -z ${VALIDATED_IPS} ]]; then
     mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
 DELETE FROM api;
-INSERT INTO api (api_key, active, allow_from) VALUES ("${API_KEY}", "1", "${VALIDATED_IPS}");
+INSERT INTO api (api_key, active, allow_from, access) VALUES ("${API_KEY}", "1", "${VALIDATED_IPS}", "rw");
 EOF
   fi
 fi

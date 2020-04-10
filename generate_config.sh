@@ -277,6 +277,7 @@ IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
 
 # Create or override API key for web ui
 # You _must_ define API_ALLOW_FROM, which is a comma separated list of IPs
+# The API key defined here has read-write access
 # API_KEY allowed chars: a-z, A-Z, 0-9, -
 
 #API_KEY=
