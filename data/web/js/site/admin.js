@@ -46,24 +46,6 @@ jQuery(function($){
       $('button[data-id="' + regex_map_id + '"]').attr({"disabled": false});
     }
   });
-  $('.btn-api-ro').click(function() {
-    $('#api_rw').hide()
-    $('#api_ro').show()
-    $(this).addClass('active')
-    $('.btn-api-rw, .btn-api-hide').removeClass('active')
-  });
-  $('.btn-api-rw').click(function() {
-    $('#api_ro').hide()
-    $('#api_rw').show()
-    $(this).addClass('active')
-    $('.btn-api-ro, .btn-api-hide').removeClass('active')
-  });
-  $('.btn-api-hide').click(function() {
-    $('#api_ro').hide()
-    $('#api_rw').hide()
-    $(this).addClass('active')
-    $('.btn-api-ro, .btn-api-rw').removeClass('active')
-  });
 	$('.textarea-code').on('keyup', function() {
     $('.submit_rspamd_regex').attr({"disabled": true});
 	});
@@ -259,7 +241,7 @@ jQuery(function($){
         {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"name":"queue_id","type":"text","title":"QID","style":{"width":"50px"}},
         {"name":"queue_name","type":"text","title":"Queue","style":{"width":"120px"}},
-        {"name":"arrival_time","sorted": true,"direction": "DESC","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},"title":lang.arrival_time,"style":{"width":"170px"}},
+        {"name":"arrival_time","sorted": true,"direction": "DESC","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});},"title":lang.arrival_time,"style":{"width":"170px"}},
         {"name":"message_size","style":{"whiteSpace":"nowrap"},"title":lang.message_size,"formatter": function(value){
           return humanFileSize(value);
         }},
