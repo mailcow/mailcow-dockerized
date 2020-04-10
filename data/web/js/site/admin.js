@@ -46,6 +46,24 @@ jQuery(function($){
       $('button[data-id="' + regex_map_id + '"]').attr({"disabled": false});
     }
   });
+  $('.btn-api-ro').click(function() {
+    $('#api_rw').hide()
+    $('#api_ro').show()
+    $(this).addClass('active')
+    $('.btn-api-rw, .btn-api-hide').removeClass('active')
+  });
+  $('.btn-api-rw').click(function() {
+    $('#api_ro').hide()
+    $('#api_rw').show()
+    $(this).addClass('active')
+    $('.btn-api-ro, .btn-api-hide').removeClass('active')
+  });
+  $('.btn-api-hide').click(function() {
+    $('#api_ro').hide()
+    $('#api_rw').hide()
+    $(this).addClass('active')
+    $('.btn-api-ro, .btn-api-rw').removeClass('active')
+  });
 	$('.textarea-code').on('keyup', function() {
     $('.submit_rspamd_regex').attr({"disabled": true});
 	});
@@ -360,13 +378,22 @@ jQuery(function($){
   draw_transport_maps();
   draw_queue();
   // API IP check toggle
-  $("#skip_ip_check").click(function( event ) {
-   $("#skip_ip_check").not(this).prop('checked', false);
-    if ($("#skip_ip_check:checked").length > 0) {
-      $('#allow_from').prop('disabled', true);
+  $("#skip_ip_check_ro").click(function( event ) {
+   $("#skip_ip_check_ro").not(this).prop('checked', false);
+    if ($("#skip_ip_check_ro:checked").length > 0) {
+      $('#allow_from_ro').prop('disabled', true);
     }
     else {
-      $("#allow_from").removeAttr('disabled');
+      $("#allow_from_ro").removeAttr('disabled');
+    }
+  });
+  $("#skip_ip_check_rw").click(function( event ) {
+   $("#skip_ip_check_rw").not(this).prop('checked', false);
+    if ($("#skip_ip_check_rw:checked").length > 0) {
+      $('#allow_from_rw').prop('disabled', true);
+    }
+    else {
+      $("#allow_from_rw").removeAttr('disabled');
     }
   });
   // Relayhost

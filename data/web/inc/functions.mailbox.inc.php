@@ -3343,6 +3343,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $stmt = $pdo->prepare("SELECT `maxquota`, `quota` FROM  `domain` WHERE `domain` = :domain");
           $stmt->execute(array(':domain' => $row['domain']));
           $DomainQuota  = $stmt->fetch(PDO::FETCH_ASSOC);
+          $stmt = $pdo->prepare("SELECT IFNULL(COUNT(`active`), 0) AS `pushover_active` FROM `pushover` WHERE `username` = :username AND `active` = 1");
+          $stmt->execute(array(':username' => $_data));
+          $PushoverActive  = $stmt->fetch(PDO::FETCH_ASSOC);
           $stmt = $pdo->prepare("SELECT COALESCE(SUM(`quota`), 0) as `in_use` FROM `mailbox` WHERE `kind` NOT REGEXP 'location|thing|group' AND `domain` = :domain AND `username` != :username");
           $stmt->execute(array(':domain' => $row['domain'], ':username' => $_data));
           $MailboxUsage	= $stmt->fetch(PDO::FETCH_ASSOC);
@@ -3375,6 +3378,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $mailboxdata['percent_in_use'] = ($row['quota'] == 0) ? '- ' : round((intval($row['bytes']) / intval($row['quota'])) * 100);
           $mailboxdata['messages'] = $row['messages'];
           $mailboxdata['spam_aliases'] = $SpamaliasUsage['sa_count'];
+          $mailboxdata['pushover_active'] = ($PushoverActive['pushover_active'] == 1) ? $lang['mailbox']['yes'] : $lang['mailbox']['no'];
           if ($mailboxdata['percent_in_use'] === '- ') {
             $mailboxdata['percent_class'] = "info";
           }

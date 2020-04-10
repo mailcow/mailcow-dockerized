@@ -230,6 +230,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.dkim.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.fwdhost.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.mailq.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.oauth2.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.pushover.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.ratelimit.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.transports.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.rspamd.inc.php';
