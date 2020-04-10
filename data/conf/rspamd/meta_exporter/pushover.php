@@ -17,7 +17,7 @@ try {
   $pdo = new PDO($dsn, $database_user, $database_pass, $opt);
 }
 catch (PDOException $e) {
-  error_log("QUARANTINE: " . $e . PHP_EOL);
+  error_log("NOTIFY: " . $e . PHP_EOL);
   http_response_code(501);
   exit;
 }
@@ -46,44 +46,13 @@ if (!function_exists('getallheaders'))  {
   }
 }
 
-$raw_data_content = file_get_contents('php://input');
-$raw_data = mb_convert_encoding($raw_data_content, 'HTML-ENTITIES', "UTF-8");
+
 $headers = getallheaders();
 
 $qid      = $headers['X-Rspamd-Qid'];
-$subject  = $headers['X-Rspamd-Subject'];
-$score    = $headers['X-Rspamd-Score'];
 $rcpts    = $headers['X-Rspamd-Rcpt'];
-$user     = $headers['X-Rspamd-User'];
 $ip       = $headers['X-Rspamd-Ip'];
-$action   = $headers['X-Rspamd-Action'];
-$sender   = $headers['X-Rspamd-From'];
-$symbols  = $headers['X-Rspamd-Symbols'];
-
-$raw_size = (int)$_SERVER['CONTENT_LENGTH'];
-
-if (empty($sender)) {
-  error_log("QUARANTINE: Unknown sender, assuming empty-env-from@localhost" . PHP_EOL);
-  $sender = 'empty-env-from@localhost';
-}
-
-try {
-  $max_size = (int)$redis->Get('Q_MAX_SIZE');
-  if (($max_size * 1048576) < $raw_size) {
-    error_log(sprintf("QUARANTINE: Message too large: %d b exceeds %d b", $raw_size, ($max_size * 1048576)) . PHP_EOL);
-    http_response_code(505);
-    exit;
-  }
-  if ($exclude_domains = $redis->Get('Q_EXCLUDE_DOMAINS')) {
-    $exclude_domains = json_decode($exclude_domains, true);
-  }
-  $retention_size = (int)$redis->Get('Q_RETENTION_SIZE');
-}
-catch (RedisException $e) {
-  error_log("QUARANTINE: " . $e . PHP_EOL);
-  http_response_code(504);
-  exit;
-}
+$subject  = $headers['X-Rspamd-Subject'];
 
 $rcpt_final_mailboxes = array();
 
@@ -91,10 +60,10 @@ $rcpt_final_mailboxes = array();
 foreach (json_decode($rcpts, true) as $rcpt) {
   // Remove tag
   $rcpt = preg_replace('/^(.*?)\+.*(@.*)$/', '$1$2', $rcpt);
-  
+
   // Break rcpt into local part and domain part
   $parsed_rcpt = parse_email($rcpt);
-  
+
   // Skip if not a mailcow handled domain
   try {
     if (!$redis->hGet('DOMAIN_MAP', $parsed_rcpt['domain'])) {
@@ -102,15 +71,9 @@ foreach (json_decode($rcpts, true) as $rcpt) {
     }
   }
   catch (RedisException $e) {
-    error_log("QUARANTINE: " . $e . PHP_EOL);
+    error_log("NOTIFY: " . $e . PHP_EOL);
     http_response_code(504);
     exit;
-  }
-
-  // Skip if domain is excluded
-  if (in_array($parsed_rcpt['domain'], $exclude_domains)) {
-    error_log(sprintf("QUARANTINE: Skipped domain %s", $parsed_rcpt['domain']) . PHP_EOL);
-    continue;
   }
 
   // Always assume rcpt is not a final mailbox but an alias for a mailbox or further aliases
@@ -204,7 +167,6 @@ foreach (json_decode($rcpts, true) as $rcpt) {
       $loop_c++;
       error_log("RCPT RESOVLER: http pipe: goto array count on loop #". $loop_c . " is " . count($gotos_array) . PHP_EOL);
     }
-    return $rcpt_final_mailboxes;
   }
   catch (PDOException $e) {
     error_log("RCPT RESOVLER: " . $e->getMessage() . PHP_EOL);
@@ -213,43 +175,31 @@ foreach (json_decode($rcpts, true) as $rcpt) {
   }
 }
 
-foreach ($rcpt_final_mailboxes as $rcpt) {
-  error_log("QUARANTINE: quarantine pipe: processing quarantine message for rcpt " . $rcpt . PHP_EOL);
-  try {
-    $stmt = $pdo->prepare("INSERT INTO `quarantine` (`qid`, `subject`, `score`, `sender`, `rcpt`, `symbols`, `user`, `ip`, `msg`, `action`)
-      VALUES (:qid, :subject, :score, :sender, :rcpt, :symbols, :user, :ip, :msg, :action)");
-    $stmt->execute(array(
-      ':qid' => $qid,
-      ':subject' => $subject,
-      ':score' => $score,
-      ':sender' => $sender,
-      ':rcpt' => $rcpt,
-      ':symbols' => $symbols,
-      ':user' => $user,
-      ':ip' => $ip,
-      ':msg' => $raw_data,
-      ':action' => $action
+
+foreach ($rcpt_final_mailboxes as $rcpt_final) {
+  $stmt = $pdo->prepare("SELECT * FROM `pushover`
+    WHERE `username` = :username AND `active` = '1'");
+  $stmt->execute(array(
+    ':username' => $rcpt
+  ));
+  $api_data = $stmt->fetch(PDO::FETCH_ASSOC);
+  if (isset($api_data['key']) && isset($api_data['token'])) {
+    $title = (!empty($api_data['title'])) ? $api_data['title'] : 'Mail';
+    $text = (!empty($api_data['text'])) ? $api_data['text'] : 'You\'ve got mail 📧';
+    curl_setopt_array($ch = curl_init(), array(
+      CURLOPT_URL => "https://api.pushover.net/1/messages.json",
+      CURLOPT_POSTFIELDS => array(
+    "token" => $api_data['token'],
+    "user" => $api_data['key'],
+    "title" => $title,
+    "message" => sprintf("%s", str_replace('{SUBJECT}', $subject, $text))
+      ),
+      CURLOPT_SAFE_UPLOAD => true,
+      CURLOPT_RETURNTRANSFER => true,
     ));
-    $stmt = $pdo->prepare('DELETE FROM `quarantine` WHERE `rcpt` = :rcpt AND `id` NOT IN (
-      SELECT `id`
-      FROM (
-        SELECT `id`
-        FROM `quarantine`
-        WHERE `rcpt` = :rcpt2
-        ORDER BY id DESC
-        LIMIT :retention_size
-      ) x 
-    );');
-    $stmt->execute(array(
-      ':rcpt' => $rcpt,
-      ':rcpt2' => $rcpt,
-      ':retention_size' => $retention_size
-    ));
-  }
-  catch (PDOException $e) {
-    error_log("QUARANTINE: " . $e->getMessage() . PHP_EOL);
-    http_response_code(503);
-    exit;
+    $result = curl_exec($ch);
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    error_log("NOTIFY: result: " . $httpcode . PHP_EOL);
   }
 }
-
