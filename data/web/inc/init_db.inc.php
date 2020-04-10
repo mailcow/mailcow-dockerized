@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "03042020_0915";
+    $db_version = "09042020_1403";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -374,6 +374,7 @@ function init_db_schema() {
           "syncjobs" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "eas_reset" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "sogo_profile_reset" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "pushover" => "TINYINT(1) NOT NULL DEFAULT '0'",
           // quarantine is for quarantine actions, todo: rename
           "quarantine" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "quarantine_attachments" => "TINYINT(1) NOT NULL DEFAULT '1'",
@@ -534,6 +535,7 @@ function init_db_schema() {
           "sogo_access" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "app_passwds" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "bcc_maps" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "pushover" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "filters" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "ratelimit" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "spam_policy" => "TINYINT(1) NOT NULL DEFAULT '1'",
@@ -826,6 +828,22 @@ function init_db_schema() {
         "keys" => array(
           "primary" => array(
             "" => array("c_folder_id", "c_name")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "pushover" => array(
+        "cols" => array(
+          "username" => "VARCHAR(255) NOT NULL",
+          "key" => "VARCHAR(255) NOT NULL",
+          "token" => "VARCHAR(255) NOT NULL",
+          "title" => "TEXT",
+          "text" => "TEXT",
+          "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("username")
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"

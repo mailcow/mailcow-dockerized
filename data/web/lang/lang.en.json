@@ -30,6 +30,9 @@
         "unlimited_quota_acl": "Unlimited quota prohibited by ACL",
         "mysql_error": "MySQL error: %s",
         "redis_error": "Redis error: %s",
+        "pushover_token": "Pushover token has a wrong format",
+        "pushover_key": "Pushover key has a wrong format",
+        "pushover_credentials_missing": "Pushover token and or key missing",
         "unknown_tfa_method": "Unknown TFA method",
         "totp_verification_failed": "TOTP verification failed",
         "u2f_verification_failed": "U2F verification failed: %s",
@@ -135,6 +138,7 @@
         "extra_acl_invalid_domain": "External sender \"%s\" uses an invalid domain"
     },
     "success": {
+        "pushover_settings_edited": "Pushover settings successfully set, please verify credentials.",
         "global_filter_written": "Filter was successfully written to file",
         "learned_ham": "Successfully learned ID % as ham",
         "verified_totp_login": "Verified TOTP login",
@@ -221,11 +225,19 @@
         "hash_not_found": "Hash not found or already deleted",
         "fuzzy_learn_error": "Fuzzy hash learn error: %s",
         "ip_invalid": "Skipped invalid IP: %s",
-        "quota_exceeded_scope": "Domain quota exceeded: Only unlimited/unrated mailboxes can be created in this domain scope."
+        "quota_exceeded_scope": "Domain quota exceeded: Only unlimited mailboxes can be created in this domain scope."
     },
     "user": {
+        "pushover_info": "Push notification settings will apply to all clean (non-spam) mail delivered to <b>%s</b> including aliases (shared, non-shared, tagged).",
+        "verify": "Verify",
+        "pushover_verify": "Verify credentials",
+        "title": "Title",
+        "pushover_title": "Notification title",
+        "text": "Text",
+        "pushover_text": "Notification text ({SUBJECT} will be replaced by mail subject)",
         "no_last_login": "No last UI login information",
         "last_mail_login": "Last mail login",
+        "save": "Save changes",
         "apple_connection_profile": "Apple connection profile",
         "apple_connection_profile_mailonly": "This connection profile includes IMAP and SMTP configuration parameters for an Apple device.",
         "apple_connection_profile_complete": "This connection profile includes IMAP and SMTP parameters as well as CalDAV (calendars) and CardDAV (contacts) pathes for an Apple device.",
@@ -334,6 +346,13 @@
         "spam_score_reset": "Reset to server default"
     },
     "admin": {
+        "pushover_info": "Push notification settings will apply to all clean (non-spam) mail delivered to <b>%s</b> including aliases (shared, non-shared, tagged).",
+        "verify": "Verify",
+        "pushover_verify": "Verify credentials",
+        "title": "Title",
+        "pushover_title": "Notification title",
+        "text": "Text",
+        "pushover_text": "Notification text ({SUBJECT} will be replaced by mail subject)",
         "spamfilter": "Spam filter",
         "domain": "Domain",
         "domain_s": "Domain/s",
@@ -857,6 +876,7 @@
         "relayhost_wrapped_tls_info": "Please do <b>not</b> use TLS-wrapped ports (mostly used on port 465).<br>\r\nUse any non-wrapped port and issue STARTTLS. A TLS policy to enforce TLS can be created in \"TLS policy maps\"."
     },
     "acl": {
+        "pushover": "Pushover",
         "spam_alias": "Temporary aliases",
         "tls_policy": "TLS policy",
         "spam_score": "Spam score",
