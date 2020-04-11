@@ -57,7 +57,7 @@ if (!empty($_SERVER['HTTP_X_API_KEY'])) {
       $_SESSION['mailcow_cc_username'] = 'API';
       $_SESSION['mailcow_cc_role'] = 'admin';
       $_SESSION['mailcow_cc_api'] = true;
-      if ($api_return['api_key'] == 'rw') {
+      if ($api_return['access'] == 'rw') {
         $_SESSION['mailcow_cc_api_access'] = 'rw';
       }
       else {
