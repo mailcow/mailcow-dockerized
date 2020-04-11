@@ -204,7 +204,6 @@ foreach (json_decode($rcpts, true) as $rcpt) {
       $loop_c++;
       error_log("RCPT RESOVLER: http pipe: goto array count on loop #". $loop_c . " is " . count($gotos_array) . PHP_EOL);
     }
-    return $rcpt_final_mailboxes;
   }
   catch (PDOException $e) {
     error_log("RCPT RESOVLER: " . $e->getMessage() . PHP_EOL);
@@ -213,8 +212,8 @@ foreach (json_decode($rcpts, true) as $rcpt) {
   }
 }
 
-foreach ($rcpt_final_mailboxes as $rcpt) {
-  error_log("QUARANTINE: quarantine pipe: processing quarantine message for rcpt " . $rcpt . PHP_EOL);
+foreach ($rcpt_final_mailboxes as $rcpt_final) {
+  error_log("QUARANTINE: quarantine pipe: processing quarantine message for rcpt " . $rcpt_final . PHP_EOL);
   try {
     $stmt = $pdo->prepare("INSERT INTO `quarantine` (`qid`, `subject`, `score`, `sender`, `rcpt`, `symbols`, `user`, `ip`, `msg`, `action`)
       VALUES (:qid, :subject, :score, :sender, :rcpt, :symbols, :user, :ip, :msg, :action)");
@@ -223,7 +222,7 @@ foreach ($rcpt_final_mailboxes as $rcpt) {
       ':subject' => $subject,
       ':score' => $score,
       ':sender' => $sender,
-      ':rcpt' => $rcpt,
+      ':rcpt' => $rcpt_final,
       ':symbols' => $symbols,
       ':user' => $user,
       ':ip' => $ip,
@@ -241,8 +240,8 @@ foreach ($rcpt_final_mailboxes as $rcpt) {
       ) x 
     );');
     $stmt->execute(array(
-      ':rcpt' => $rcpt,
-      ':rcpt2' => $rcpt,
+      ':rcpt' => $rcpt_final,
+      ':rcpt2' => $rcpt_final,
       ':retention_size' => $retention_size
     ));
   }

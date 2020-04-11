@@ -177,10 +177,11 @@ foreach (json_decode($rcpts, true) as $rcpt) {
 
 
 foreach ($rcpt_final_mailboxes as $rcpt_final) {
+  error_log("NOTIFY: pushover pipe: processing pushover message for rcpt " . $rcpt_final . PHP_EOL);
   $stmt = $pdo->prepare("SELECT * FROM `pushover`
     WHERE `username` = :username AND `active` = '1'");
   $stmt->execute(array(
-    ':username' => $rcpt
+    ':username' => $rcpt_final
   ));
   $api_data = $stmt->fetch(PDO::FETCH_ASSOC);
   if (isset($api_data['key']) && isset($api_data['token'])) {
