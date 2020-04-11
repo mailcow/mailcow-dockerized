@@ -185,6 +185,7 @@ CONFIG_ARRAY=(
   "COMPOSE_PROJECT_NAME"
   "SQL_PORT"
   "API_KEY"
+  "API_KEY_READ_ONLY"
   "API_ALLOW_FROM"
   "MAILDIR_GC_TIME"
   "MAILDIR_SUB"
@@ -249,6 +250,12 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo '# Create or override API key for web UI' >> mailcow.conf
       echo "#API_KEY=" >> mailcow.conf
+    fi
+  elif [[ ${option} == "API_KEY_READ_ONLY" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Create or override read-only API key for web UI' >> mailcow.conf
+      echo "#API_KEY_READ_ONLY=" >> mailcow.conf
     fi
   elif [[ ${option} == "API_ALLOW_FROM" ]]; then
     if ! grep -q ${option} mailcow.conf; then
