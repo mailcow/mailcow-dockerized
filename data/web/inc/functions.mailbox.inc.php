@@ -117,6 +117,21 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 fwrite($filter_handle, $script_data);
                 fclose($filter_handle);
               }
+              $restart_reponse = json_decode(docker('post', 'dovecot-mailcow', 'restart'), true);
+              if ($restart_reponse['type'] == "success") {
+                $_SESSION['return'][] = array(
+                  'type' => 'success',
+                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                  'msg' => 'dovecot_restart_success'
+                );
+              }
+              else {
+                $_SESSION['return'][] = array(
+                  'type' => 'warning',
+                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                  'msg' => 'dovecot_restart_failed'
+                );
+              }
             }
             catch (Exception $e) {
               $_SESSION['return'][] = array(
