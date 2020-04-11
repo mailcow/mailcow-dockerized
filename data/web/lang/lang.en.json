@@ -138,6 +138,7 @@
         "extra_acl_invalid_domain": "External sender \"%s\" uses an invalid domain"
     },
     "success": {
+        "dovecot_restart_success": "Dovecot was restarted successfully",
         "pushover_settings_edited": "Pushover settings successfully set, please verify credentials.",
         "global_filter_written": "Filter was successfully written to file",
         "learned_ham": "Successfully learned ID % as ham",
@@ -217,6 +218,7 @@
         "no_action": "No action applicable"
     },
     "warning": {
+        "dovecot_restart_failed": "Dovecot failed to restart, please check the logs",
         "domain_added_sogo_failed": "Added domain but failed to restart SOGo, please check your server logs.",
         "session_ua": "Form token invalid: User-Agent validation error",
         "session_token": "Form token invalid: Token mismatch",
@@ -659,7 +661,7 @@
         "last_run": "Last run",
         "excludes": "Excludes",
         "last_run_reset": "Schedule next",
-        "sieve_info": "You can store multiple filters per user, but only one prefilter and one postfilter can be active at the same time.<br>\r\nEach filter will be processed in the described order. Neither a failed script nor an issued \"keep;\" will stop processing of further scripts.<br><br>Global sieve prefilter → Prefilter → User scripts → Postfilter → Global sieve postfilter",
+        "sieve_info": "You can store multiple filters per user, but only one prefilter and one postfilter can be active at the same time.<br>\r\nEach filter will be processed in the described order. Neither a failed script nor an issued \"keep;\" will stop processing of further scripts. Changes to global sieve scripts will trigger a restart of Dovecot.<br><br>Global sieve prefilter → Prefilter → User scripts → Postfilter → Global sieve postfilter",
         "sogo_visible": "Alias is visible in SOGo",
         "sogo_visible_y": "Show alias in SOGo",
         "sogo_visible_n": "Hide alias in SOGo",

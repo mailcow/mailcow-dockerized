@@ -138,6 +138,7 @@
         "extra_acl_invalid_domain": "Externe Absenderadresse \"%s\" verwendet eine ungültige Domain"
     },
     "success": {
+        "dovecot_restart_success": "Dovecot wurde erfolgreich neu gestartet",
         "pushover_settings_edited": "Pushover Konfiguration gespeichert, bitte den Zugang im Anschluss verifizieren.",
         "global_filter_written": "Filterdatei wurde erfolreich geschrieben",
         "learned_ham": "ID %s wurde erfolreich als Ham gelernt",
@@ -217,6 +218,7 @@
         "no_action": "Keine Aktion anwendbar"
     },
     "warning": {
+        "dovecot_restart_failed": "Dovecot wurde nicht erfolgreich neu gestartet, bitte prüfen Sie die Logs.",
         "domain_added_sogo_failed": "Domain wurde hinzugefügt, aber SOGo konnte nicht neugestartet werden",
         "cannot_delete_self": "Kann derzeit eingeloggten Benutzer nicht entfernen",
         "no_active_admin": "Kann letzten aktiven Administrator nicht deaktivieren",
@@ -658,7 +660,7 @@
         "last_run": "Letzte Ausführung",
         "last_run_reset": "Als nächstes ausführen",
         "excludes": "Ausschlüsse",
-        "sieve_info": "Es können mehrere Filter pro Benutzer existieren, aber nur ein Filter eines Typs (Pre-/Postfilter) kann gleichzeitig aktiv sein.<br>\r\nDie Ausführung erfolgt in nachstehender Reihenfolge. Ein fehlgeschlagenes Script sowie der Befehl \"keep;\" stoppen die weitere Verarbeitung <b>nicht</b>.<br><br>Global sieve prefilter → Prefilter → User scripts → Postfilter → Global sieve postfilter",
+        "sieve_info": "Es können mehrere Filter pro Benutzer existieren, aber nur ein Filter eines Typs (Pre-/Postfilter) kann gleichzeitig aktiv sein.<br>\r\nDie Ausführung erfolgt in nachstehender Reihenfolge. Ein fehlgeschlagenes Script sowie der Befehl \"keep;\" stoppen die weitere Verarbeitung <b>nicht</b>. Änderungen an globalen Sieve-Filtern bewirken einen Neustart von Dovecot.<br><br>Global sieve prefilter → Prefilter → User scripts → Postfilter → Global sieve postfilter",
         "sogo_visible": "Alias Sichtbarkeit in SOGo",
         "sogo_visible_y": "Alias in SOGo anzeigen",
         "sogo_visible_n": "Alias in SOGo verbergen",
