@@ -24,6 +24,9 @@
         "hibp_ok": "Ingen träff."
     },
     "danger": {
+        "pushover_token": "Pushover nyckeln har ett felaktigt format",
+        "pushover_key": "Pushover hemligheten har ett felaktigt format",
+        "pushover_credentials_missing": "Pushover nyckeln och/eller hemligheten är felaktig",
         "transport_dest_exists": "Transportdestinationen \"%s\" existerar redan",
         "unlimited_quota_acl": "På grund av en åtkomstlista tillåts inte en obegränsad kvot",
         "mysql_error": "MySQL fel: %s",
@@ -132,6 +135,8 @@
         "extra_acl_invalid_domain": "Den externa avsändaren \"%s\" använder en ogiltig domän"
     },
     "success": {
+        "dovecot_restart_success": "Dovecot kunde startas om",
+        "pushover_settings_edited": "Konfigurationen för Pushover är sparad, kontrollera att det finns korrekt åtkomst.",
         "learned_ham": "Markerade ID %s som felaktig spam markering",
         "verified_totp_login": "Verifierad TOTP inloggning",
         "verified_u2f_login": "Verifierad U2F inloggning",
@@ -209,6 +214,7 @@
         "no_action": "Ingen åtgärd möjlig"
     },
     "warning": {
+        "dovecot_restart_failed": "Dovecot kunde inte startas om, kontrollera Dovecot loggen.",
         "domain_added_sogo_failed": "Domänen lades till men SOGo kunde inte startas om.",
         "session_ua": "Formulärstämpeln är ogiltig: User-Agenten kunde inte valideras",
         "session_token": "Formulärstämpeln är ogiltig: Stämpeln matchar inte",
@@ -220,8 +226,16 @@
         "quota_exceeded_scope": "Domänkvoten fylld: Endast postlådor med obegränsade kvoter kan skapas för den här domänen."
     },
     "user": {
-        "no_last_login": "Senaste inloggningen till UI saknas",
+        "pushover_info": "Push-aviseringar kommer visas för alla meddelanden (gäller inte skräppost) som skickas till <b>%s</b>, inklusive kopplade aliasadresser (delade, icke-delade, taggade).",
+        "verify": "Verifiera",
+        "pushover_verify": "Verifiera anslutningen",
+        "title": "Titel",
+        "pushover_title": "Meddelande titel",
+        "text": "Text",
+        "pushover_text": "Meddelandetext ({SUBJECT} byts ut mot ämnesraden)",
         "last_mail_login": "Senaste inloggningen",
+        "no_last_login": "Senaste inloggningen till UI saknas",
+        "save": "Spara ändringarna",
         "apple_connection_profile": "Apple anslutningsprofil",
         "apple_connection_profile_mailonly": "Denna anslutningsprofil inkluderar både konfigurationsparametrar till IMAP och SMTP för en Apple-enhet.",
         "apple_connection_profile_complete": "Denna anslutningsprofil inkluderar både konfigurationsparametrar till IMAP, SMTP, CalDAV (för kalendrar) och CardDAV (för kontakter) för en Apple-enhet.",
@@ -330,6 +344,13 @@
         "spam_score_reset": "Återställ till serverns standardinställning"
     },
     "admin": {
+        "pushover_info": "Push-aviseringar kommer visas för alla meddelanden (gäller inte skräppost) som skickas till <b>%s</b>, inklusive kopplade aliasadresser (delade, icke-delade, taggade).",
+        "verify": "Verifiera",
+        "pushover_verify": "Verifiera anslutningen",
+        "title": "Titel",
+        "pushover_title": "Meddelande titel",
+        "text": "Text",
+        "pushover_text": "Meddelandetext ({SUBJECT} byts ut mot ämnesraden)","acl"
         "spamfilter": "Spamfilter",
         "domain": "Domän",
         "domain_s": "Domäner",
@@ -636,7 +657,7 @@
         "last_run": "Senaste körningen",
         "excludes": "Exkluderar",
         "last_run_reset": "Schemalägg nästa",
-        "sieve_info": "Du kan skapa flera filter per användare, men bara ett förfilter och ett postfilter kan vara aktiva samtidigt.<br>\r\nVarje filter bearbetas i den beskrivna ordningen nedan. Varken ett misslyckat filter som kör fel, eller kommandot \"keep:\" stoppar bearbetningen av övriga filter.<br><br>Globala sieve förfilter → Prefilter → User scripts → Postfilter → Global sieve postfilter",
+        "sieve_info": "Du kan skapa flera filter per användare, men bara ett förfilter och ett postfilter kan vara aktiva samtidigt.<br>\r\nVarje filter bearbetas i den beskrivna ordningen nedan. Varken ett misslyckat filter som kör fel, eller kommandot \"keep:\" stoppar bearbetningen av övriga filter. Ändringar på ett globalt filter kommer att trigga em omstart av Dovecot<br><br>Globala sieve förfilter → Prefilter → User scripts → Postfilter → Global sieve postfilter",
         "sogo_visible": "Visa detta alias i SOGo",
         "sogo_visible_y": "Visa alias i SOGo",
         "sogo_visible_n": "Dölj alias i SOGo",
@@ -853,6 +874,7 @@
         "relayhost_wrapped_tls_info": "Använd <b>inte</b> TLS-bundna portar (exempelvis SMTPS via port 465).<br>\r\nTrafiken kommer istället transporteras med TLS genom att använda STARTTLS. En sådan TLS-policy kan skapas under \"TLS-policyföreskrifter\"."
     },
     "acl": {
+        "pushover": "Pushover",
         "spam_alias": "Tillfälliga e-postalias",
         "tls_policy": "Krypteringspolicy",
         "spam_score": "Skräppost-betyg",
