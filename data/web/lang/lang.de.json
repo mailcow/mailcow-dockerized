@@ -238,7 +238,6 @@
         "text": "Text",
         "pushover_text": "Notification Text ({SUBJECT} entspricht dem Mail-Betreff)",
         "last_mail_login": "Letzter Mail-Login",
-        "last_mail_login": "Letzter Mail-Login",
         "no_last_login": "Keine letzte UI Anmeldung gespeichert",
         "save": "Änderungen speichern",
         "generate": "generieren",
