@@ -97,6 +97,21 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 fwrite($filter_handle, $script_data);
                 fclose($filter_handle);
               }
+              $restart_response = json_decode(docker('post', 'dovecot-mailcow', 'restart'), true);
+              if ($restart_response['type'] == "success") {
+                $_SESSION['return'][] = array(
+                  'type' => 'success',
+                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                  'msg' => 'dovecot_restart_success'
+                );
+              }
+              else {
+                $_SESSION['return'][] = array(
+                  'type' => 'warning',
+                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                  'msg' => 'dovecot_restart_failed'
+                );
+              }
             }
             catch (Exception $e) {
               $_SESSION['return'][] = array(
@@ -117,8 +132,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 fwrite($filter_handle, $script_data);
                 fclose($filter_handle);
               }
-              $restart_reponse = json_decode(docker('post', 'dovecot-mailcow', 'restart'), true);
-              if ($restart_reponse['type'] == "success") {
+              $restart_response = json_decode(docker('post', 'dovecot-mailcow', 'restart'), true);
+              if ($restart_response['type'] == "success") {
                 $_SESSION['return'][] = array(
                   'type' => 'success',
                   'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -548,8 +563,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ratelimit('edit', 'domain', array('rl_value' => $_data['rl_value'], 'rl_frame' => $_data['rl_frame'], 'object' => $domain));
           }
           if (!empty($restart_sogo)) {
-            $restart_reponse = json_decode(docker('post', 'sogo-mailcow', 'restart'), true);
-            if ($restart_reponse['type'] == "success") {
+            $restart_response = json_decode(docker('post', 'sogo-mailcow', 'restart'), true);
+            if ($restart_response['type'] == "success") {
               $_SESSION['return'][] = array(
                 'type' => 'success',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
