@@ -3330,9 +3330,13 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
           $mailboxdata = array();
           $rl = ratelimit('get', 'mailbox', $_data);
-          $last_mail_login = $redis->Get('last-login/' . $_data);
-          if ($last_mail_login === false) {
-            $last_mail_login = '';
+          $last_imap_login = $redis->Get('last-login/imap/' . $_data);
+          $last_pop3_login = $redis->Get('last-login/pop3/' . $_data);
+          if ($last_imap_login === false || $GLOBALS['SHOW_LAST_LOGIN'] === false) {
+            $last_imap_login = '0';
+          }
+          if ($last_pop3_login === false || $GLOBALS['SHOW_LAST_LOGIN'] === false) {
+            $last_pop3_login = '0';
           }
           if (preg_match('/y|yes/i', getenv('MASTER'))) {
             $stmt = $pdo->prepare("SELECT
@@ -3397,7 +3401,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
           $mailboxdata['is_relayed'] = $row['backupmx'];
           $mailboxdata['name'] = $row['name'];
-          $mailboxdata['last_mail_login'] = $last_mail_login;
+          $mailboxdata['last_imap_login'] = $last_imap_login;
+          $mailboxdata['last_pop3_login'] = $last_pop3_login;
           $mailboxdata['active'] = $row['active'];
           $mailboxdata['active_int'] = $row['active_int'];
           $mailboxdata['domain'] = $row['domain'];

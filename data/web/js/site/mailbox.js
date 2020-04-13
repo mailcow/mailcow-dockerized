@@ -204,6 +204,7 @@ jQuery(function($){
   function escapeHtml(n){return String(n).replace(/[&<>"'`=\/]/g,function(n){return entityMap[n]})}
   // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
   function humanFileSize(i){if(Math.abs(i)<1024)return i+" B";var B=["KiB","MiB","GiB","TiB","PiB","EiB","ZiB","YiB"],e=-1;do{i/=1024,++e}while(Math.abs(i)>=1024&&e<B.length-1);return i.toFixed(1)+" "+B[e]}
+  function unix_time_format(i){return""==i?lang.no:new Date(i?1e3*i:0).toLocaleDateString(void 0,{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"})}
   $(".refresh_table").on('click', function(e) {
     e.preventDefault();
     var table_name = $(this).data('table');
@@ -245,17 +246,11 @@ jQuery(function($){
         "sortValue": function(value){
           res = value.split("/");
           return Number(res[0]);
-        },
-        },
-        {"name":"stats","style":{"whiteSpace":"nowrap"},"title":lang.stats,"formatter": function(value){
+        }},
+        {"name":"stats","sortable": false,"style":{"whiteSpace":"nowrap"},"title":lang.stats,"formatter": function(value){
           res = value.split("/");
           return '<span class="glyphicon glyphicon-file" aria-hidden="true"></span> ' + res[0] + ' / ' + humanFileSize(res[1]);
-        },
-        "sortValue": function(value){
-          res = value.split("/");
-          return Number(res[0]);
-        },
-        },
+        }},
         {"name":"def_quota_for_mbox","title":lang.mailbox_defquota,"breakpoints":"xs sm md","style":{"width":"125px"}},
         {"name":"max_quota_for_mbox","title":lang.mailbox_quota,"breakpoints":"xs sm","style":{"width":"125px"}},
         {"name":"rl","title":"RL","breakpoints":"xs sm md lg","style":{"maxWidth":"100px","width":"100px"}},
@@ -361,7 +356,16 @@ jQuery(function($){
         {"name":"spam_aliases","filterable": false,"title":lang.spam_aliases,"breakpoints":"all"},
         {"name":"tls_enforce_in","filterable": false,"title":lang.tls_enforce_in,"breakpoints":"all"},
         {"name":"tls_enforce_out","filterable": false,"title":lang.tls_enforce_out,"breakpoints":"all"},
-        {"name":"last_mail_login","breakpoints":"xs sm","formatter":function unix_time_format(tm) { if (tm == '') { return lang.no; } else { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"}); }},"title":lang.last_mail_login,"style":{"width":"170px"}},
+        {"name":"last_mail_login","breakpoints":"xs sm","title":lang.last_mail_login,"style":{"width":"170px"},
+        "sortValue": function(value){
+          res = value.split("/");
+          return Math.max(res[0], res[1]);
+        },
+        "formatter": function(value){
+          res = value.split("/");
+          return '<div class="label label-last">IMAP @ ' + unix_time_format(Number(res[0])) + '</div> ' +
+            '<div class="label label-last">POP3 @ ' + unix_time_format(Number(res[1])) + '</div>';
+        }},
         {"name":"quarantine_notification","filterable": false,"title":lang.quarantine_notification,"breakpoints":"all"},
         {"name":"in_use","filterable": false,"type":"html","title":lang.in_use,"sortValue": function(value){
           return Number($(value).find(".progress-bar-mailbox").attr('aria-valuenow'));
@@ -384,6 +388,7 @@ jQuery(function($){
           $.each(data, function (i, item) {
             item.quota = item.quota_used + "/" + item.quota;
             item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
+            item.last_mail_login = item.last_imap_login + '/' + item.last_pop3_login;
             if (!item.rl) {
               item.rl = '∞';
             } else {
