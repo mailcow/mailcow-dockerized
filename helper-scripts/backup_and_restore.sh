@@ -245,8 +245,7 @@ function restore() {
           -v ${RESTORE_LOCATION}:/backup \
           ${SQLIMAGE} /bin/bash -c "shopt -s dotglob ; \
             /bin/rm -rf /backup_mariadb/* ; \
-            /bin/tar -Pxvzf /backup/backup_mariadb.tar.gz ; \
-            rsync -avh --usermap=root:mysql --groupmap=root:mysql /backup/ /var/lib/mysql/ ;"
+            /bin/tar -Pxvzf /backup/backup_mariadb.tar.gz"
         fi
         echo "Modifying mailcow.conf..."
         source ${RESTORE_LOCATION}/mailcow.conf
