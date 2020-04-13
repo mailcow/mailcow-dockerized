@@ -157,6 +157,8 @@ $MAILBOX_DEFAULT_ATTRIBUTES['quarantine_notification'] = 'hourly';
 // Check dovecot.conf for further changes (e.g. shared namespace)
 $MAILBOX_DEFAULT_ATTRIBUTES['mailbox_format'] = 'maildir:';
 
+// Show last IMAP and POP3 logins
+$SHOW_LAST_LOGIN = true;
 
 
 // Set visible Rspamd maps in mailcow UI, do not change unless you know what you are doing
