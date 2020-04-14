@@ -189,7 +189,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.117
+      image: mailcow/dovecot:1.118
       depends_on:
         - mysql-mailcow
       dns:
@@ -394,7 +394,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.73
+      image: mailcow/watchdog:1.74
       # Debug
       #command: /watchdog.sh
       dns:
@@ -436,6 +436,7 @@ services:
         - POSTFIX_THRESHOLD=8
         - CLAMD_THRESHOLD=15
         - DOVECOT_THRESHOLD=12
+        - DOVECOT_REPL_THRESHOLD=2
         - PHPFPM_THRESHOLD=5
         - RATELIMIT_THRESHOLD=1
         - FAIL2BAN_THRESHOLD=1
