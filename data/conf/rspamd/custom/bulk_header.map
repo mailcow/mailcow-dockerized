@@ -3,7 +3,6 @@
 /.*nur-1-click*/i
 /.*episerver.*/i
 /.*supergewinne.*/i
-/.*mailer-service\.de/i
 /List-Unsubscribe.*nbps\.eu/i
 /X-Mailer: AWeber.*/i
 /.*regiofinder.*/i
