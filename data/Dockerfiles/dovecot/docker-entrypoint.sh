@@ -7,6 +7,20 @@ while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${D
   sleep 2
 done
 
+# Do not attempt to write to slave
+if [[ ! -z ${REDIS_SLAVEOF_IP} ]]; then
+  REDIS_CMDLINE="redis-cli -h ${REDIS_SLAVEOF_IP} -p ${REDIS_SLAVEOF_PORT}"
+else
+  REDIS_CMDLINE="redis-cli -h redis -p 6379"
+fi
+
+until [[ $(${REDIS_CMDLINE} PING) == "PONG" ]]; do
+  echo "Waiting for Redis..."
+  sleep 2
+done
+
+${REDIS_CMDLINE} SET DOVECOT_REPL_HEALTH 1 > /dev/null
+
 # Create missing directories
 [[ ! -d /etc/dovecot/sql/ ]] && mkdir -p /etc/dovecot/sql/
 [[ ! -d /etc/dovecot/lua/ ]] && mkdir -p /etc/dovecot/lua/
