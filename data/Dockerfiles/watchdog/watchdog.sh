@@ -438,6 +438,33 @@ dovecot_checks() {
   return 1
 }
 
+dovecot_repl_checks() {
+  err_count=0
+  diff_c=0
+  THRESHOLD=${DOVECOT_REPL_THRESHOLD}
+  D_REPL_STATUS=$(redis-cli -h redis -r GET DOVECOT_REPL_HEALTH)
+  # Reduce error count by 2 after restarting an unhealthy container
+  trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
+  while [ ${err_count} -lt ${THRESHOLD} ]; do
+    err_c_cur=${err_count}
+    D_REPL_STATUS=$(redis-cli --raw -h redis GET DOVECOT_REPL_HEALTH)
+    if [[ "${D_REPL_STATUS}" != "1" ]]; then
+      err_count=$(( ${err_count} + 1 ))
+    fi
+    [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
+    [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
+    progress "Dovecot replication" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
+    if [[ $? == 10 ]]; then
+      diff_c=0
+      sleep 1
+    else
+      diff_c=0
+      sleep $(( ( RANDOM % 60 ) + 20 ))
+    fi
+  done
+  return 1
+}
+
 phpfpm_checks() {
   err_count=0
   diff_c=0
@@ -809,6 +836,18 @@ BACKGROUND_TASKS+=(${PID})
 
 (
 while true; do
+  if ! dovecot_repl_checks; then
+    log_msg "Dovecot hit error limit"
+    echo dovecot_repl_checks > /tmp/com_pipe
+  fi
+done
+) &
+PID=$!
+echo "Spawned dovecot_repl_checks with PID ${PID}"
+BACKGROUND_TASKS+=(${PID})
+
+(
+while true; do
   if ! rspamd_checks; then
     log_msg "Rspamd hit error limit"
     echo rspamd-mailcow > /tmp/com_pipe
@@ -924,6 +963,9 @@ while true; do
     [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}" "Please stop mailcow now and check your network configuration!"
   elif [[ ${com_pipe_answer} == "mysql_repl_checks" ]]; then
     log_msg "MySQL replication is not working properly"
+    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}"
+  elif [[ ${com_pipe_answer} == "dovecot_repl_checks" ]]; then
+    log_msg "Dovecot replication is not working properly" "Please check doveadm replicator status"
     [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}"
   elif [[ ${com_pipe_answer} == "acme-mailcow" ]]; then
     log_msg "acme-mailcow did not complete successfully"
