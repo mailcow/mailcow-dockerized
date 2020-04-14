@@ -11,7 +11,7 @@
 /List-Unsubscribe:.*respread.*/i
 /.*greenflamingo.*/i
 /.*senderemailglobal.*/i
-/.*promio\.net*/i
-/.*promio\.de*/i
-/.*mailer-service\.com*/i
-/.*mailer-service\.de*/i
+/.*promio\.net.*/i
+/.*promio\.de.*/i
+/.*mailer-service\.com.*/i
+/.*mailer-service\.de.*/i
