@@ -43,6 +43,21 @@ function pushover($_action, $_data = null) {
         }
         $key = $_data['key'];
         $token = $_data['token'];
+        $evaluate_x_prio = $_data['evaluate_x_prio'];
+        $only_x_prio = $_data['only_x_prio'];
+        $senders = array_map('trim', preg_split( "/( |,|;|\n)/", $_data['senders']));
+        foreach ($senders as $i => &$sender) {
+          if (empty($sender)) {
+            continue;
+          }
+          if (!filter_var($sender, FILTER_VALIDATE_EMAIL) === true) {
+            unset($senders[$i]);
+            continue;
+          }
+        }
+        $senders = array_filter($senders);
+        if (empty($senders)) { $senders = ''; }
+        $senders = implode(",", $senders);
         if (!ctype_alnum($key) || strlen($key) != 30) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
@@ -62,11 +77,19 @@ function pushover($_action, $_data = null) {
         $title = $_data['title'];
         $text = $_data['text'];
         $active = intval($_data['active']);
-        $stmt = $pdo->prepare("REPLACE INTO `pushover` (`username`, `key`, `token`, `title`, `text`, `active`)
-          VALUES (:username, :key, :token, :title, :text, :active)");
+        $po_attributes = json_encode(
+          array(
+            'evaluate_x_prio' => strval(intval($evaluate_x_prio)),
+            'only_x_prio' => strval(intval($only_x_prio))
+          )
+        );
+        $stmt = $pdo->prepare("REPLACE INTO `pushover` (`username`, `key`, `attributes`, `senders`, `token`, `title`, `text`, `active`)
+          VALUES (:username, :key, :po_attributes, :senders, :token, :title, :text, :active)");
         $stmt->execute(array(
           ':username' => $username,
           ':key' => $key,
+          ':po_attributes' => $po_attributes,
+          ':senders' => $senders,
           ':token' => $token,
           ':title' => $title,
           ':text' => $text,
@@ -93,6 +116,7 @@ function pushover($_action, $_data = null) {
         ':username' => $_data
       ));
       $data = $stmt->fetch(PDO::FETCH_ASSOC);
+      $data['attributes'] = json_decode($data['attributes'], true);
       if (empty($data)) {
         return false;
       }
