@@ -130,8 +130,7 @@ $DOCKER_TIMEOUT = 60;
 $ANONYMIZE_IPS = true;
 
 // Split DKIM key notation (bind format)
-$SPLIT_DKIM_255 = true;
-
+$SPLIT_DKIM_255 = false;
 
 // OAuth2 settings
 $REFRESH_TOKEN_LIFETIME = 2678400;
