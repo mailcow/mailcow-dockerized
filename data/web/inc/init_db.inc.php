@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "16042020_1004";
+    $db_version = "16042020_2104";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -841,6 +841,7 @@ function init_db_schema() {
           "title" => "TEXT",
           "text" => "TEXT",
           "senders" => "TEXT",
+          "senders_regex" => "TEXT",
           "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
         ),
         "keys" => array(
