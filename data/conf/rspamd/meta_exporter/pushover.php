@@ -202,12 +202,21 @@ foreach ($rcpt_final_mailboxes as $rcpt_final) {
     $senders = explode(',', $api_data['senders']);
     $senders = array_filter($senders);
     $senders_regex = $api_data['senders_regex'];
-    $sender_validated = true;
-    if (!empty($senders_regex) && !preg_match($senders_regex, $sender)) {
-      $sender_validated = false;
+    $sender_validated = false;
+    if (empty($senders) && empty($senders_regex)) {
+      $sender_validated = true;
     }
-    if (!empty($senders) && !in_array($sender, $senders)) {
-      $sender_validated = false;
+    else {
+      if (!empty($senders)) {
+        if (in_array($sender, $senders)) {
+          $sender_validated = true;
+        }
+      }
+      if (!empty($senders_regex) && $sender_validated !== true) {
+        if (preg_match($senders_regex, $sender)) {
+          $sender_validated = true;
+        }
+      }
     }
     if ($sender_validated === false) {
       error_log("NOTIFY: pushover pipe: skipping unwanted sender " . $sender);
