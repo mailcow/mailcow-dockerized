@@ -60,7 +60,7 @@ $symbols_array = json_decode($headers['X-Rspamd-Symbols'], true);
 if (is_array($symbols_array)) {
   foreach ($symbols_array as $symbol) {
     if ($symbol['name'] == 'HAS_X_PRIO_ONE') {
-      $priority = 2;
+      $priority = 1;
       break;
     }
   }
@@ -189,7 +189,7 @@ foreach (json_decode($rcpts, true) as $rcpt) {
 
 
 foreach ($rcpt_final_mailboxes as $rcpt_final) {
-  error_log("NOTIFY: pushover pipe: processing pushover message for rcpt " . $rcpt_final . " with priority " . $priority . PHP_EOL);
+  error_log("NOTIFY: pushover pipe: processing pushover message for rcpt " . $rcpt_final . PHP_EOL);
   $stmt = $pdo->prepare("SELECT * FROM `pushover`
     WHERE `username` = :username AND `active` = '1'");
   $stmt->execute(array(
@@ -217,9 +217,10 @@ foreach ($rcpt_final_mailboxes as $rcpt_final) {
       "priority" => $priority,
       "message" => sprintf("%s", str_replace(array('{SUBJECT}', '{SENDER}'), array($subject, $sender), $text))
     );
-    if ($attributes['evaluate_x_prio'] == "1" && $priority == 2) {
+    if ($attributes['evaluate_x_prio'] == "1" && $priority == 1) {
       $post_fields['expire'] = 600;
       $post_fields['retry'] = 120;
+      $post_fields['priority'] = 2;
     }
     curl_setopt_array($ch = curl_init(), array(
       CURLOPT_URL => "https://api.pushover.net/1/messages.json",
