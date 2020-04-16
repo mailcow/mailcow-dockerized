@@ -201,6 +201,7 @@ foreach ($rcpt_final_mailboxes as $rcpt_final) {
     $text = (!empty($api_data['text'])) ? $api_data['text'] : 'You\'ve got mail 📧';
     $attributes = json_decode($api_data['attributes'], true);
     $senders = explode(',', $api_data['senders']);
+    $senders = array_filter($senders);
     if (!empty($senders) && !in_array($sender, $senders)) {
       error_log("NOTIFY: pushover pipe: skipping unwanted sender " . $sender);
       continue;
