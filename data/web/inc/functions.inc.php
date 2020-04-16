@@ -1,4 +1,7 @@
 <?php
+function is_valid_regex($exp) {
+  return @preg_match($exp, '') !== false;
+}
 function isset_has_content($var) {
   if (isset($var) && $var != "") {
     return true;
