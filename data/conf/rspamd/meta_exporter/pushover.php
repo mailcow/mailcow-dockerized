@@ -46,7 +46,6 @@ if (!function_exists('getallheaders'))  {
   }
 }
 
-
 $headers = getallheaders();
 
 $qid      = $headers['X-Rspamd-Qid'];
