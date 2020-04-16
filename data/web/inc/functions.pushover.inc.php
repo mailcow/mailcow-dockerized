@@ -54,6 +54,7 @@ function pushover($_action, $_data = null) {
             unset($senders[$i]);
             continue;
           }
+          $senders[$i] = preg_replace('/\.(?=.*?@gmail\.com$)/', '$1', $sender);
         }
         $senders = array_filter($senders);
         if (empty($senders)) { $senders = ''; }
