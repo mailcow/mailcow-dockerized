@@ -30,6 +30,9 @@
         "unlimited_quota_acl": "Neobmedzené kvóta je zakázaná cez ACL",
         "mysql_error": "MySQL chyba: %s",
         "redis_error": "Redis chyba: %s",
+        "pushover_token": "Pushover token má chybný formát",
+        "pushover_key": "Pushover key má chybný formát",
+        "pushover_credentials_missing": "Pushover token a/alebo key chýba",
         "unknown_tfa_method": "Neznáma TFA metóda",
         "totp_verification_failed": "TOTP overenie zlyhalo",
         "u2f_verification_failed": "U2F overenie zlyhalo: %s",
@@ -135,6 +138,8 @@
         "extra_acl_invalid_domain": "Externý odosielateľ \"%s\" používa neplatnú doménu"
     },
     "success": {
+        "dovecot_restart_success": "Dovecot sa úspešne reštartoval",
+        "pushover_settings_edited": "Pushover úspešne nastavený, skontrolujte si prístupové údaje.",
         "global_filter_written": "Filter bol úspešne zapísaný do súboru",
         "learned_ham": "ID % úspešne naučené ako ham",
         "verified_totp_login": "Overený TOTP login",
@@ -213,6 +218,7 @@
         "no_action": "Nie je možné podstúpiť ďalšie kroky"
     },
     "warning": {
+        "dovecot_restart_failed": "Reštart dovecotu zlyhal, skontroplujte prosím systémové správy",
         "domain_added_sogo_failed": "Doména pridaná, ale nastala chyba v reštartovaní SOGo, prosím, skontrolujte si serverové logy.",
         "session_ua": "Formulárový token neplatný: User-Agent validation error",
         "session_token": "Formulárový token neplatný: Tokenová nezhoda",
@@ -224,8 +230,19 @@
         "quota_exceeded_scope": "Prekročená kvóta domény, pre túto doménu je možné vytvárať iba neobmedzené poštové schránky."
     },
     "user": {
+        "pushover_info": "Push notifikácie budú aplikované na všetky správy s výnimkou spamu doručené pre <b>%s</b> vrátane aliasov (zdieľané, nezdieľané, označené).",
+        "verify": "Overiť",
+        "pushover_verify": "Overiť prístupové údaje",
+        "title": "Názov",
+        "pushover_title": "Názov notifikácie",
+        "text": "Text",
+        "pushover_text": "Text notifikácie",
+        "pushover_vars": "Ak nie je definovaný žiadny filter odosielateľa, zohľadnia sa všetky správy.<br>Priama kontrola odosielateľa a regulárne výrazy sa kontrolujú nezávisle od seba, <b>nezávisia od seba navzájom <b> a vykonávajú sa postupne.<br>Použiteľné premenné pre názov a text (dodržujte pokyny na ochranu osobných údajov)",
+        "pushover_sender_array": "Zohľadňujú sa nasledujúce adresy odosielateľa <small>(oddelené čiarkou)</small>",
+        "pushover_sender_regex": "Užívateľ vybraný regulérnym výrazom",
         "no_last_login": "Žiadne informácie o UI prihlásení.",
         "last_mail_login": "Posledné poštové prihlásenie",
+        "save": "Uložiť zmeny",
         "apple_connection_profile": "Apple konfiguračný profil",
         "apple_connection_profile_mailonly": "Tento profil zahŕňa IMAP a SMTP konfiguračné parametre pre zariadenia Apple.",
         "apple_connection_profile_complete": "Tento profil zahŕňa IMAP a SMTP parametre, ako aj CalDAV (kalendáre) a CardDAV (kontakty) pre zariadenia Apple.",
@@ -334,6 +351,16 @@
         "spam_score_reset": "Obnoviť pôvodné spam nastavenia"
     },
     "admin": {
+        "pushover_info": "Push notifikácie budú aplikované na všetky správy s výnimkou spamu doručené pre <b>%s</b> vrátane aliasov (zdieľané, nezdieľané, označené).",
+        "verify": "Overiť",
+        "pushover_verify": "Overiť prístupové údaje",
+        "title": "Názov",
+        "pushover_title": "Názov notifikácie",
+        "text": "Text",
+        "pushover_text": "Text notifikácie",
+        "pushover_vars": "Ak nie je definovaný žiadny filter odosielateľa, zohľadnia sa všetky správy.<br>Priama kontrola odosielateľa a regulárne výrazy sa kontrolujú nezávisle od seba, <b>nezávisia od seba navzájom <b> a vykonávajú sa postupne.<br>Použiteľné premenné pre názov a text (dodržujte pokyny na ochranu osobných údajov)",
+        "pushover_sender_array": "Zohľadňujú sa nasledujúce adresy odosielateľa <small>(oddelené čiarkou)</small>",
+        "pushover_sender_regex": "Užívateľ vybraný regulérnym výrazom",
         "spamfilter": "Spam filter",
         "domain": "Doména",
         "domain_s": "Doména/y",
@@ -506,7 +533,6 @@
         "include_exclude_info": "Podľa predvolených nastavení – so žiadnym výberom- <b>všetky schránky</b> sú adresované",
         "excludes": "Vylúčiť týchto príjemcov",
         "includes": "Zahrnúť týchto príjemcov",
-        "text": "Text",
         "activate_send": "Aktivovať tlačidlo odoslania",
         "send": "Odoslať",
         "api_info": "API momentálne pracuje. Dokumentáciu nájdete na <a href=\"/api\">/api</a>",
@@ -640,7 +666,7 @@
         "last_run": "Posledné spustenie",
         "excludes": "Vyraďuje",
         "last_run_reset": "Naplánovať ďalší",
-        "sieve_info": "Môžete uchovávať viacero filtrov pre užívateľa, ale iba jeden prefilter a jeden postfilter môže byť aktívny v daný okamih.<br>\r\n Každý filter bude spracovaný v nastavenom poradí. Ani zlyhanie skriptu alebo zadržanie nezastaví spracovanie ďalších skriptov.<br><br>Globálny sieve prefilter → Prefilter → Skripty užívateľa → Postfilter → Globálny sieve postfilter",
+        "sieve_info": "Môžete uchovávať viacero filtrov pre užívateľa, ale iba jeden prefilter a jeden postfilter môže byť aktívny v daný okamih.<br>\r\n Každý filter bude spracovaný v nastavenom poradí. Ani zlyhanie skriptu alebo zadržanie nezastaví spracovanie ďalších skriptov. Po úprave sieve filtrov bude nasledovať reštart dovecotu.<br><br>Globálny sieve prefilter → Prefilter → Skripty užívateľa → Postfilter → Globálny sieve postfilter",
         "sogo_visible": "Alias je viditeľný v SOGo",
         "sogo_visible_y": "Ukázať alias v SOGo",
         "sogo_visible_n": "Skryť alias v SOGo",
@@ -699,8 +725,10 @@
         "sieve_preset_7": "Presmerovať a uchovať/zahodiť"
     },
     "edit": {
-        "generate": "generovať",
+        "evaluate_x_prio": "Eskalovať správy s vysokou prioritou [<code>X-Priority: 1</code>]",
+        "only_x_prio": "Vyberať len správy s vysokou prioritou [<code>X-Priority: 1</code>]",
         "app_name": "Meno aplikácie",
+        "generate": "generovať",
         "app_passwd": "Heslo aplikácie",
         "sogo_visible": "Alias je viditeľný v SOGo",
         "sogo_visible_info": "Táto voľba ovplyvňuje len objekty, ktoré dokážu byť zobrazené v SOGo (zdieľané alebo nezdieľané alias adresy ukazujúc na minimálne jednu lokálnu poštovú schránku). Ak je skrytý, alias nebude prezentovaný ako voliteľný odosielateľ v SOGo.",
@@ -857,6 +885,7 @@
         "relayhost_wrapped_tls_info": "Prosím <b>nepoužívajte</b> TLS-wrapped porty (najviac používane na prote 465).<br>\r\nPoužite non-wrapped port a STARTTLS. Výnutená TLS pravidlá môže byť vytvorená v \"TLS mapách\"."
     },
     "acl": {
+        "pushover": "Pushover",
         "spam_alias": "Dočasné aliasy",
         "tls_policy": "TLS pravidlá",
         "spam_score": "Spam hodnota",
