@@ -3756,6 +3756,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt->execute(array(
               ':domain' => '%@'.$domain,
             ));
+            $stmt = $pdo->prepare("DELETE FROM `pushover` WHERE `username` LIKE :domain");
+            $stmt->execute(array(
+              ':domain' => '%@'.$domain,
+            ));
             $stmt = $pdo->prepare("DELETE FROM `quota2replica` WHERE `username` LIKE :domain");
             $stmt->execute(array(
               ':domain' => '%@'.$domain,
@@ -3951,6 +3955,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               curl_close($curl);
             }
             $stmt = $pdo->prepare("DELETE FROM `alias` WHERE `goto` = :username");
+            $stmt->execute(array(
+              ':username' => $username
+            ));
+            $stmt = $pdo->prepare("DELETE FROM `pushover` WHERE `username` = :username");
             $stmt->execute(array(
               ':username' => $username
             ));
