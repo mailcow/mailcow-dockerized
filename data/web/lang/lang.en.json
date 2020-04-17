@@ -232,6 +232,7 @@
     "user": {
         "pushover_info": "Push notification settings will apply to all clean (non-spam) mail delivered to <b>%s</b> including aliases (shared, non-shared, tagged).",
         "verify": "Verify",
+        "advanced_settings": "Advanced settings",
         "pushover_verify": "Verify credentials",
         "title": "Title",
         "pushover_title": "Notification title",
@@ -353,6 +354,7 @@
     "admin": {
         "pushover_info": "Push notification settings will apply to all clean (non-spam) mail delivered to <b>%s</b> including aliases (shared, non-shared, tagged).",
         "verify": "Verify",
+        "advanced_settings": "Advanced settings",
         "pushover_verify": "Verify credentials",
         "title": "Title",
         "pushover_title": "Notification title",

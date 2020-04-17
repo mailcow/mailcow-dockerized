@@ -744,6 +744,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             </div>
             <div class="col-sm-10">
               <p class="help-block"><?=$lang['admin']['pushover_vars'];?>: <code>{SUBJECT}</code>, <code>{SENDER}</code></p>
+              <p class="help-block"><?=sprintf($lang['admin']['pushover_info'], $mailbox);?></p>
               <div class="form-group">
                 <div class="row">
                   <div class="col-sm-6">
@@ -770,26 +771,10 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                       <input type="text" class="form-control" name="text" value="<?=$pushover_data['text'];?>" placeholder="You've got mail 📧">
                     </div>
                   </div>
-                  <div class="col-sm-6">
+                  <div class="col-sm-12">
                     <div class="form-group">
                       <label for="text"><?=$lang['admin']['pushover_sender_array'];?></label>
                       <input type="text" class="form-control" name="senders" value="<?=$pushover_data['senders'];?>" placeholder="sender1@example.com, sender2@example.com">
-                    </div>
-                  </div>
-                  <div class="col-sm-6">
-                    <div class="form-group">
-                      <label for="text"><?=$lang['admin']['pushover_sender_regex'];?></label>
-                      <input type="text" class="form-control" name="senders_regex" value="<?=$pushover_data['senders_regex'];?>" placeholder="(.*@example\.org|foo@example\.com)" regex="true">
-                    </div>
-                  </div>
-                  <div class="col-sm-12">
-                    <div class="checkbox">
-                    <label><input type="checkbox" value="1" name="evaluate_x_prio" <?=($pushover_data['attributes']['evaluate_x_prio']=="1") ? "checked" : null;?>> <?=$lang['edit']['evaluate_x_prio'];?></label>
-                    </div>
-                  </div>
-                  <div class="col-sm-12">
-                    <div class="checkbox">
-                    <label><input type="checkbox" value="1" name="only_x_prio" <?=($pushover_data['attributes']['only_x_prio']=="1") ? "checked" : null;?>> <?=$lang['edit']['only_x_prio'];?></label>
                     </div>
                   </div>
                   <div class="col-sm-12">
@@ -797,10 +782,27 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                     <label><input type="checkbox" value="1" name="active" <?=($pushover_data['active']=="1") ? "checked" : null;?>> <?=$lang['edit']['active'];?></label>
                     </div>
                   </div>
+                  <div class="col-sm-12">
+                    <legend style="cursor:pointer;margin-top:10px" data-target="#po_advanced" class="arrow-toggle" unselectable="on" data-toggle="collapse">
+                      <span style="font-size:12px" class="arrow rotate glyphicon glyphicon-menu-down"></span> <?=$lang['user']['advanced_settings'];?>
+                    </legend>
+                  </div>
+                  <div class="col-sm-12">
+                    <div id="po_advanced" class="collapse">
+                      <div class="form-group">
+                        <label for="text"><?=$lang['admin']['pushover_sender_regex'];?></label>
+                        <input type="text" class="form-control" name="senders_regex" value="<?=$pushover_data['senders_regex'];?>" placeholder="/(.*@example\.org$|^foo@example\.com$)/i" regex="true">
+                        <div class="checkbox">
+                          <label><input type="checkbox" value="1" name="evaluate_x_prio" <?=($pushover_data['attributes']['evaluate_x_prio']=="1") ? "checked" : null;?>> <?=$lang['edit']['evaluate_x_prio'];?></label>
+                        </div>
+                        <div class="checkbox">
+                          <label><input type="checkbox" value="1" name="only_x_prio" <?=($pushover_data['attributes']['only_x_prio']=="1") ? "checked" : null;?>> <?=$lang['edit']['only_x_prio'];?></label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <hr>
-              <p><?=sprintf($lang['admin']['pushover_info'], $mailbox);?></p>
               <div class="btn-group" data-acl="<?=$_SESSION['acl']['pushover'];?>">
                   <a class="btn btn-sm btn-default" data-action="edit_selected" data-id="pushover" data-item="<?=htmlspecialchars($mailbox);?>" data-api-url='edit/pushover' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></a>
                   <a class="btn btn-sm btn-default" data-action="edit_selected" data-id="pushover-test" data-item="<?=htmlspecialchars($mailbox);?>" data-api-url='edit/pushover-test' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['admin']['pushover_verify'];?></a>
