@@ -13,6 +13,7 @@ $(document).ready(function() {
       }
     });
   });
+  $(".arrow-toggle").on('click', function(e) { e.preventDefault(); $(this).find('.arrow').toggleClass("animation"); });
 });
 jQuery(function($){
   // http://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery

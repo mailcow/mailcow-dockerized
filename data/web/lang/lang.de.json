@@ -232,6 +232,7 @@
     "user": {
         "pushover_info": "Push-Benachrichtungen werden angewendet auf alle nicht-Spam Nachrichten zugestellt an <b>%s</b>, einschließlich Alias-Adressen (shared, non-shared, tagged).",
         "verify": "Verifizieren",
+        "advanced_settings": "Erweiterte Einstellungen",
         "pushover_verify": "Verbindung verifizieren",
         "title": "Title",
         "pushover_title": "Notification Titel",
@@ -353,6 +354,7 @@
     "admin": {
         "pushover_info": "Push-Benachrichtungen werden angewendet auf alle nicht-Spam Nachrichten zugestellt an <b>%s</b>, einschließlich Alias-Adressen (shared, non-shared, tagged).",
         "verify": "Verifizieren",
+        "advanced_settings": "Erweiterte Einstellungen",
         "pushover_verify": "Verbindung verifizieren",
         "title": "Title",
         "pushover_title": "Notification Titel",

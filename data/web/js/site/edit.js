@@ -1,4 +1,5 @@
 $(document).ready(function() {
+  $(".arrow-toggle").on('click', function(e) { e.preventDefault(); $(this).find('.arrow').toggleClass("animation"); });
   $(".goto_checkbox").click(function( event ) {
    $("form[data-id='editalias'] .goto_checkbox").not(this).prop('checked', false);
     if ($("form[data-id='editalias'] .goto_checkbox:checked").length > 0) {
