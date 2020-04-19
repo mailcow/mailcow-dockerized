@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "16042020_2104";
+    $db_version = "19042020_1437";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -372,9 +372,9 @@ function init_db_schema() {
           "spam_policy" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "delimiter_action" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "syncjobs" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "eas_reset" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "sogo_profile_reset" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "pushover" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "eas_reset" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "sogo_profile_reset" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "pushover" => "TINYINT(1) NOT NULL DEFAULT '1'",
           // quarantine is for quarantine actions, todo: rename
           "quarantine" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "quarantine_attachments" => "TINYINT(1) NOT NULL DEFAULT '1'",
