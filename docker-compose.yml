@@ -371,7 +371,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.33
+      image: mailcow/netfilter:1.34
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
