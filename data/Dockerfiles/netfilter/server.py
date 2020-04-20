@@ -298,7 +298,7 @@ def watch():
             ip = ipaddress.ip_address(addr)
             if ip.is_private or ip.is_loopback:
               continue
-            logWarn('%s matched rule id %d (regex: %s)' % (addr, rule_id, rule_regex))
+            logWarn('%s matched rule id %d (%s)' % (addr, rule_id, item['data']))
             ban(addr)
 
 def snat4(snat_target):
