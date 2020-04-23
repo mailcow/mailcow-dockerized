@@ -343,7 +343,7 @@ while [[ ${VERSIONS_OK} != 'OK' ]]; do
     sleep 3
   fi
 done
-PUBKEY_MCRYPT=$(doveconf -P | grep -i mail_crypt_global_public_key 2> /dev/null| cut -d '<' -f2)
+PUBKEY_MCRYPT=$(doveconf -P 2> /dev/null | grep -i mail_crypt_global_public_key | cut -d '<' -f2)
 if [ -f ${PUBKEY_MCRYPT} ]; then
   GUID=$(cat <(echo ${MAILCOW_HOSTNAME}) /mail_crypt/ecpubkey.pem | sha256sum | cut -d ' ' -f1 | tr -cd "[a-fA-F0-9.:/] ")
   if [ ${#GUID} -eq 64 ]; then
