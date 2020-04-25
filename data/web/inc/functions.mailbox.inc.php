@@ -43,7 +43,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
-          $domain = mailbox('get', 'mailbox_details', $username)
+          $domain = mailbox('get', 'mailbox_details', $username)['domain'];
           if (!is_valid_domain_name($domain)) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
