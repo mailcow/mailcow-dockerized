@@ -404,6 +404,7 @@ jQuery(function($){
   function rspamd_pie_graph() {
     $.ajax({
       url: '/api/v1/get/rspamd/actions',
+      async: false,
       success: function(data){
 
         var total = 0;
