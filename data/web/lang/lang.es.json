@@ -23,6 +23,7 @@
     "add": {
         "activate_filter_warn": "Todos los demás filtros se desactivarán cuando este filtro se active.",
         "active": "Activo",
+        "add": "Agregar",
         "add_domain_only": "Agregar dominio solamente",
         "add_domain_restart": "Agregar dominio y reiniciar SOGo",
         "alias_address": "Dirección(es) alias:",
@@ -465,6 +466,7 @@
         "action": "Acción",
         "activate": "Activar",
         "active": "Activo",
+        "add": "Agregar",
         "add_alias": "Agregar alias",
         "add_bcc_entry": "Añadir regla de BCC",
         "add_domain": "Agregar dominio",

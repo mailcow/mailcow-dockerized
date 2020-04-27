@@ -25,6 +25,7 @@
     "add": {
         "activate_filter_warn": "Pokud je zaškrtlá volba \"Aktivní\", budou všechny ostatní filtry deaktivovány.",
         "active": "Aktivní",
+        "add": "Přidat",
         "add_domain_only": "Přidat doménu",
         "add_domain_restart": "Přidat doménu a restartovat SOGo",
         "alias_address": "Adresa/y aliasů",
@@ -526,6 +527,7 @@
         "action": "Akce",
         "activate": "Zapnout",
         "active": "Aktivní",
+        "add": "Přidat",
         "add_alias": "Přidat alias",
         "add_bcc_entry": "Přidat BCC mapu",
         "add_domain": "Přidat doménu",

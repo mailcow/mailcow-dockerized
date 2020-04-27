@@ -129,6 +129,9 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             <input type="number" class="form-control" name="quota" value="10240" required>
             </div>
           </div>
+          <?php
+          if (getenv('SKIP_SOGO') != "y") {
+          ?>
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
               <div class="checkbox">
@@ -137,6 +140,9 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
               </div>
             </div>
           </div>
+          <?php
+          }
+          ?>
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
               <div class="checkbox">
@@ -177,11 +183,29 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
           <hr>
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
+              <?php
+              if (getenv('SKIP_SOGO') != "y") {
+              ?>
               <button class="btn btn-default" data-action="add_item" data-id="add_domain" data-api-url='add/domain' data-api-attr='{}' href="#"><?=$lang['add']['add_domain_only'];?></button>
               <button class="btn btn-default" data-action="add_item" data-id="add_domain" data-api-url='add/domain' data-api-attr='{"restart_sogo":"1"}' href="#"><?=$lang['add']['add_domain_restart'];?></button>
+              <?php
+              }
+              else {
+              ?>
+              <button class="btn btn-default" data-action="add_item" data-id="add_domain" data-api-url='add/domain' data-api-attr='{}' href="#"><?=$lang['add']['add'];?></button>
+              <?php
+              }
+              ?>
             </div>
           </div>
+          <?php
+          // TODO: Separate SOGo-related text
+          if (getenv('SKIP_SOGO') != "y") {
+          ?>
           <p><span class="glyphicon glyphicon-exclamation-sign text-danger"></span> <?=$lang['add']['post_domain_add'];?></p>
+          <?php
+          }
+          ?>
         </form>
       </div>
     </div>
@@ -289,11 +313,17 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
               <div class="checkbox">
                 <label><input class="goto_checkbox" type="checkbox" value="1" name="goto_ham"> <?=$lang['add']['goto_ham'];?></label>
               </div>
+              <?php
+              if (getenv('SKIP_SOGO') != "y") {
+              ?>
               <hr>
               <div class="checkbox">
                 <label><input type="checkbox" value="1" name="sogo_visible" checked> <?=$lang['edit']['sogo_visible'];?></label>
               </div>
               <p class="help-block"><?=$lang['edit']['sogo_visible_info'];?></p>
+              <?php
+              }
+              ?>
             </div>
           </div>
           <div class="form-group">

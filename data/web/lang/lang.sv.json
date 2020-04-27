@@ -27,6 +27,7 @@
     "add": {
         "activate_filter_warn": "Alla andra filter av den här typen kommer inaktiveras om det här skriptet markeras som aktivt.",
         "active": "Aktiv",
+        "add": "Lägg till",
         "add_domain_only": "Lägg bara till domänen",
         "add_domain_restart": "Lägg till domänen, och starta om SOGo",
         "alias_address": "Alias-adress/adresser",
@@ -573,6 +574,7 @@
         "action": "Åtgärd",
         "activate": "Aktivera",
         "active": "Aktiv",
+        "add": "Lägg till",
         "add_alias": "Lägg till alias",
         "add_bcc_entry": "Lägg till ny koppling",
         "add_domain": "Lägg till domän",

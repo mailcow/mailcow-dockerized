@@ -108,7 +108,7 @@
           <li<?= (preg_match("/quarantine/i", $_SERVER['REQUEST_URI'])) ? ' class="active"' : ''; ?>><a href="/quarantine"><span class="glyphicon glyphicon-briefcase"></span> <?= $lang['header']['quarantine']; ?></a></li>
           <?php
           }
-          if ($_SESSION['mailcow_cc_role'] == 'admin') {
+          if ($_SESSION['mailcow_cc_role'] == 'admin' && getenv('SKIP_SOGO') != "y") {
           ?>
           <li><a href data-toggle="modal" data-container="sogo-mailcow" data-target="#RestartContainer"><span class="glyphicon glyphicon-refresh"></span> <?= $lang['header']['restart_sogo']; ?></a></li>
           <?php

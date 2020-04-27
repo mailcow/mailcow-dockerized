@@ -4,6 +4,7 @@
     },
     "add": {
         "active": "Attiva",
+        "add": "Aggiungi",
         "alias_address": "Indirizzo alias/es:",
         "alias_address_info": "<small>Indirizzo e-mail completo/es @example.com, per catturare tutti i messaggi di un dominio (separati da virgola). <b>solo domini mailcow</b>.</small>",
         "alias_domain": "Dominio alias",
@@ -203,6 +204,7 @@
         "action": "Azione",
         "activate": "Attiva",
         "active": "Attiva",
+        "add": "Aggiungi",
         "add_alias": "Aggiungi alias",
         "add_domain": "Aggiungi Dominio",
         "add_domain_alias": "Aggiungi alias Dominio",

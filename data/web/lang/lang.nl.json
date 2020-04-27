@@ -27,6 +27,7 @@
     "add": {
         "activate_filter_warn": "Alle andere filters worden gedeactiveerd zolang deze geactiveerd is.",
         "active": "Actief",
+        "add": "Toevoegen",
         "add_domain_only": "Voeg alleen domein toe",
         "add_domain_restart": "Voeg domein toe en herstart SOGo",
         "alias_address": "Aliasadres(sen)",
@@ -570,6 +571,7 @@
         "action": "Handeling",
         "activate": "Activeer",
         "active": "Actief",
+        "add": "Toevoegen",
         "add_alias": "Voeg alias toe",
         "add_bcc_entry": "Voeg BCC-map toe",
         "add_domain": "Voeg domein toe",

@@ -5,6 +5,7 @@
     },
     "add": {
         "active": "Aktywny",
+        "add": "Dodaj",
         "alias_address": "Alias/y:",
         "alias_address_info": "<small>Pełny/e adres/y email lub @example.com, aby przejąć wszystkie wiadomości dla domeny (oddzielone przecinkami). <b>tylko domeny mailcow</b>.</small>",
         "alias_domain": "Alias domeny",
@@ -219,6 +220,7 @@
         "action": "Działanie",
         "activate": "Aktywuj",
         "active": "Aktywny",
+        "add": "Dodaj",
         "add_alias": "Dodaj alias",
         "add_domain": "Dodaj domenę",
         "add_domain_alias": "Dodaj alias domeny",

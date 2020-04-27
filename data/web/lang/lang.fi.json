@@ -25,6 +25,7 @@
     "add": {
         "activate_filter_warn": "Kaikki muut suodattimet deaktivoidaan, kun aktiivinen on valittu.",
         "active": "Aktiivinen",
+        "add": "Lisää",
         "add_domain_only": "Lisää vain verkkotunnus alue",
         "add_domain_restart": "Lisää verkkotunnus alue ja käynnistä SOGo uudelleen",
         "alias_address": "Alias osoite",
@@ -526,6 +527,7 @@
         "action": "Toiminnot",
         "activate": "Aktivoi",
         "active": "Aktiivinen",
+        "add": "Lisää",
         "add_alias": "Lisää alias",
         "add_bcc_entry": "Lisää piilo kopio kartta",
         "add_domain": "Lisää verkkotunnus alue",

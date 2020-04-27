@@ -169,6 +169,7 @@ if cp --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusybBox cp det
 
 CONFIG_ARRAY=(
   "SKIP_LETS_ENCRYPT"
+  "SKIP_SOGO"
   "USE_WATCHDOG"
   "WATCHDOG_NOTIFY_EMAIL"
   "WATCHDOG_NOTIFY_BAN"
