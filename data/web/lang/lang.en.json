@@ -27,6 +27,7 @@
     "add": {
         "activate_filter_warn": "All other filters will be deactivated, when active is checked.",
         "active": "Active",
+        "add": "Add",
         "add_domain_only": "Add domain only",
         "add_domain_restart": "Add domain and restart SOGo",
         "alias_address": "Alias address/es",
@@ -572,6 +573,7 @@
         "action": "Action",
         "activate": "Activate",
         "active": "Active",
+        "add": "Add",
         "add_alias": "Add alias",
         "add_bcc_entry": "Add BCC map",
         "add_domain": "Add domain",

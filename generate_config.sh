@@ -218,6 +218,10 @@ SKIP_HTTP_VERIFICATION=n
 
 SKIP_CLAMD=${SKIP_CLAMD}
 
+# Skip SOGo: Will disable SOGo integration and therefore webmail, DAV protocols and ActiveSync support (experimental) - y/n
+
+SKIP_SOGO=n
+
 # Skip Solr on low-memory systems or if you do not want to store a readable index of your mails in solr-vol-1.
 
 SKIP_SOLR=${SKIP_SOLR}

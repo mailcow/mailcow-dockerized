@@ -27,6 +27,7 @@
     "add": {
         "activate_filter_warn": "Alle anderen Filter diesen Typs werden deaktiviert, falls dieses Script aktiv markiert wird.",
         "active": "Aktiv",
+        "add": "Hinzufügen",
         "add_domain_only": "Nur Domain hinzufügen",
         "add_domain_restart": "Domain hinzufügen und SOGo neustarten",
         "alias_address": "Alias-Adresse(n)",
@@ -573,6 +574,7 @@
         "action": "Aktion",
         "activate": "Aktivieren",
         "active": "Aktiv",
+        "add": "Hinzufügen",
         "add_alias": "Alias hinzufügen",
         "add_bcc_entry": "BCC-Eintrag hinzufügen",
         "add_domain": "Domain hinzufügen",

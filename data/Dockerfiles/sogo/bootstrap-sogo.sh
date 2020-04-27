@@ -258,4 +258,10 @@ else
   rm /etc/cron.d/sogo
 fi
 
+if [[ "${SKIP_SOGO}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  echo "SKIP_SOGO=y, skipping SOGo..."
+  sleep 365d
+  exit 0
+fi
+
 exec gosu sogo /usr/sbin/sogod

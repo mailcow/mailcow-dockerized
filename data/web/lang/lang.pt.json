@@ -1,6 +1,7 @@
 {
     "add": {
         "active": "Ativo",
+        "add": "Salvar",
         "alias_address": "Apelidos:",
         "alias_address_info": "<small>Endereço de email completo ou @example.com, para uma conta coringa -catch all. (separado por vírgula). <b>apenas domínios cadastrados</b>.</small>",
         "alias_domain": "Encaminhamento de Domínio",
@@ -164,6 +165,7 @@
     "mailbox": {
         "action": "Ação",
         "active": "Ativo",
+        "add": "Salvar",
         "add_alias": "Adicionar Apelido",
         "add_domain": "Adicionar Domínio",
         "add_domain_alias": "Adicionar Apelido de Domínio",

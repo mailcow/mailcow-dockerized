@@ -8,6 +8,7 @@
     "add": {
         "activate_filter_warn": "All other filters will be deactivated, when active is checked.",
         "active": "Actiu",
+        "add": "Afegir",
         "add_domain_only": "Afegir el domini",
         "add_domain_restart": "Afegir el domini i reiniciar SOGo",
         "alias_address": "Dirección/es àlies:",
@@ -292,6 +293,7 @@
         "action": "Acció",
         "activate": "Activar",
         "active": "Actiu",
+        "add": "Afegir",
         "add_alias": "Afegir àlies",
         "add_bcc_entry": "Afegir BCC map",
         "add_domain": "Afegir domini",
