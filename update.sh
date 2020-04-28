@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
 # Check permissions
-if [ "$(id -u)" -ne "0" ]; then
-  echo "You need to be root"
-  exit 1
+if groups | grep -vq docker; then
+  if [ "$(id -u)" -ne "0" ]; then
+    echo "You need to be root or in the docker group."
+    exit 1
+  fi
 fi
 
 if [[ "$(uname -r)" =~ ^4\.15\.0-60 ]]; then
