@@ -317,6 +317,12 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# see https://wiki.dovecot.org/SSL/SNIClientSupport' >> mailcow.conf
       echo "ENABLE_SSL_SNI=n" >> mailcow.conf
     fi
+  elif [[ ${option} == "SKIP_SOGO" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Skip SOGo: Will disable SOGo integration and therefore webmail, DAV protocols and ActiveSync support (experimental, unsupported, not fully implemented) - y/n' >> mailcow.conf
+      echo "SKIP_SOGO=n" >> mailcow.conf
+    fi
   elif [[ ${option} == "MAILDIR_SUB" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"

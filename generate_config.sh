@@ -218,7 +218,7 @@ SKIP_HTTP_VERIFICATION=n
 
 SKIP_CLAMD=${SKIP_CLAMD}
 
-# Skip SOGo: Will disable SOGo integration and therefore webmail, DAV protocols and ActiveSync support (experimental) - y/n
+# Skip SOGo: Will disable SOGo integration and therefore webmail, DAV protocols and ActiveSync support (experimental, unsupported, not fully implemented) - y/n
 
 SKIP_SOGO=n
 
