@@ -92,15 +92,11 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                 </ul>
               </div>
             </div>
-            <?php
-            if (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["ALLOW_ADMIN_EMAIL_LOGIN"]) && getenv('SKIP_SOGO') != "y"):
-            ?>
+            <?php if (getenv('ALLOW_ADMIN_EMAIL_LOGIN') == "y" && getenv('SKIP_SOGO') != "y") { ?>
             <div class="panel-body help-block">
             <?=$lang['mailbox']['sogo_allow_admin_hint'];?>
             </div>
-            <?php
-            endif;
-            ?>
+            <?php } ?>
             <!-- <div class="mass-actions-mailbox" data-actions-header="true"></div> -->
             <div class="table-responsive">
               <table id="mailbox_table" class="table table-striped"></table>
@@ -256,16 +252,11 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <li><a data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
                   <li role="separator" class="divider"></li>
                   <li><a data-action="delete_selected" data-id="alias" data-api-url='delete/alias' href="#"><?=$lang['mailbox']['remove'];?></a></li>
-                  <?php
-                  if (getenv('SKIP_SOGO') != "y") {
-                  ?>
+                  <?php if (getenv('SKIP_SOGO') != "y") { ?>
                   <li role="separator" class="divider"></li>
                   <li><a data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"sogo_visible":"1"}' href="#"><?=$lang['mailbox']['sogo_visible_y'];?></a></li>
                   <li><a data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"sogo_visible":"0"}' href="#"><?=$lang['mailbox']['sogo_visible_n'];?></a></li>
-                  <?php
-                  }
-                  ?>
-                  
+                  <?php } ?>
                 </ul>
                 <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addAliasModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_alias'];?></a>
               </div>

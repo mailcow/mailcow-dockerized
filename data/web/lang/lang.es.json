@@ -388,6 +388,7 @@
         "gal_info": "El GAL contiene todos los objetos de un dominio y no puede ser editado por ningún usuario. Falta información de disponibilidad en SOGo, si está desactivada. <b>Reinicia SOGo para aplicar los cambios.</b>",
         "grant_types": "Grant types",
         "hostname": "Hostname",
+        "inactive": "Inactivo",
         "kind": "Tipo",
         "mailbox": "Editar buzón",
         "mailbox_quota_def": "Cuota de buzón predeterminada",

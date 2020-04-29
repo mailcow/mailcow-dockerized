@@ -162,6 +162,7 @@
         "exclude": "Wyklucz obiekty (regex)",
         "full_name": "Pełna nazwa",
         "hostname": "Nazwa hosta",
+        "inactive": "Nieaktywny",
         "kind": "Rodzaj",
         "mailbox": "Edytuj skrzynkę",
         "max_aliases": "Maks. liczba aliasów",

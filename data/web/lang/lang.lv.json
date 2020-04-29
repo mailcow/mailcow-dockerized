@@ -228,6 +228,7 @@
         "force_pw_update_info": "Šis lietotājs varēs pieslēgties tikai %s.",
         "full_name": "Pilns vārds",
         "hostname": "Hosta nosaukums",
+        "inactive": "Neaktīvs",
         "kind": "Veids",
         "mailbox": "Rediģēt pastkasti",
         "max_aliases": "Maks. aliases",

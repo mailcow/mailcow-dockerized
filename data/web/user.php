@@ -307,6 +307,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
           <p class="help-block"><?=$lang['user']['quarantine_notification_info'];?></p>
           </div>
         </div>
+        <?php if (getenv('SKIP_SOGO') != "y") { ?>
         <hr>
         <div class="row">
           <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['eas_reset'];?>:</div>
@@ -322,6 +323,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
           <p class="help-block"><?=$lang['user']['sogo_profile_reset_help'];?></p>
           </div>
         </div>
+        <?php } ?>
       </div>
     </div>
   </div>

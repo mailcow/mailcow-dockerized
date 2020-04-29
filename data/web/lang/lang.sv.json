@@ -472,6 +472,7 @@
         "generate": "generera",
         "grant_types": "Grant-typer",
         "hostname": "Värdnamn",
+        "inactive": "Inaktiv",
         "kind": "Typ",
         "mailbox": "Ändra postlåda",
         "mailbox_quota_def": "Standard kvot på postlådor",
