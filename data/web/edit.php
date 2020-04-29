@@ -28,7 +28,9 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           <br>
           <form class="form-horizontal" data-id="editalias" role="form" method="post">
             <input type="hidden" value="0" name="active">
+            <?php if (getenv('SKIP_SOGO') != "y") { ?>
             <input type="hidden" value="0" name="sogo_visible">
+            <?php } ?>
             <div class="form-group">
               <label class="control-label col-sm-2" for="address"><?=$lang['edit']['alias'];?></label>
               <div class="col-sm-10">
@@ -48,17 +50,13 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                 <div class="checkbox">
                   <label><input class="goto_checkbox" type="checkbox" value="1" name="goto_ham" <?= ($result['goto'] == "ham@localhost") ? "checked" : null; ?>> <?=$lang['add']['goto_ham'];?></label>
                 </div>
-                <?php
-                if (getenv('SKIP_SOGO') != "y") {
-                ?>
+                <?php if (getenv('SKIP_SOGO') != "y") { ?>
                 <hr>
                 <div class="checkbox">
                   <label><input type="checkbox" value="1" name="sogo_visible" <?php if (isset($result['sogo_visible_int']) && $result['sogo_visible_int']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['sogo_visible'];?></label>
                 </div>
                 <p class="help-block"><?=$lang['edit']['sogo_visible_info'];?></p>
-                <?php
-                }
-                ?>
+                <?php } ?>
               </div>
             </div>
             <hr>
@@ -577,7 +575,6 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         <h4><?=$lang['edit']['mailbox'];?></h4>
         <form class="form-horizontal" data-id="editmailbox" role="form" method="post">
           <input type="hidden" value="default" name="sender_acl">
-          <input type="hidden" value="0" name="active">
           <input type="hidden" value="0" name="force_pw_update">
           <input type="hidden" value="0" name="sogo_access">
           <div class="form-group">
@@ -712,9 +709,11 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           </div>
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-              <div class="checkbox">
-              <label><input type="checkbox" value="1" name="active" <?=($result['active_int']=="1") ? "checked" : null;?>> <?=$lang['edit']['active'];?></label>
-              </div>
+            <select name="active" class="form-control">
+              <option value="1" <?=($result['active_int']=="1") ? 'selected' : null;?>><?=$lang['edit']['active'];?></option>
+              <option value="2" <?=($result['active_int']=="2") ? 'selected' : null;?>><?=$lang['edit']['disable_login'];?></option>
+              <option value="0" <?=($result['active_int']=="0") ? 'selected' : null;?>><?=$lang['edit']['inactive'];?></option>
+            </select>
             </div>
           </div>
           <div class="form-group">
@@ -725,9 +724,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               </div>
             </div>
           </div>
-          <?php
-          if (getenv('SKIP_SOGO') != "y") {
-          ?>
+          <?php if (getenv('SKIP_SOGO') != "y") { ?>
           <div data-acl="<?=$_SESSION['acl']['sogo_access'];?>" class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
               <div class="checkbox">
@@ -736,9 +733,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               </div>
             </div>
           </div>
-          <?php
-          }
-          ?>
+          <?php } ?>
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
               <button class="btn btn-success" data-action="edit_selected" data-id="editmailbox" data-item="<?=htmlspecialchars($result['username']);?>" data-api-url='edit/mailbox' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>

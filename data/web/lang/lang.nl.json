@@ -469,6 +469,7 @@
         "generate": "genereer",
         "grant_types": "Grant types",
         "hostname": "Hostname",
+        "inactive": "Inactief",
         "kind": "Soort",
         "mailbox": "Wijzig postvak",
         "mailbox_quota_def": "Standaard postvakquotum",

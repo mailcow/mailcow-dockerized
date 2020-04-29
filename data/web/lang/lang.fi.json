@@ -437,6 +437,7 @@
         "gal_info": "GAL ( kalenteri ) sisältää kaikki verkkotunnus alueen objektit, eikä yksikään käyttäjä voi muokata sitä. Vapaat ja varatut ajat-tiedot SOGosta puuttuu, jos se on poistettu käytöstä! <b>Uudelleen käynnistä SOGo ja ota muutokset käyttöön.</b>",
         "grant_types": "Oikeus tyypiy",
         "hostname": "Hostname",
+        "inactive": "Passiivinen",
         "kind": "Kiltti",
         "mailbox": "Muokkaa sähköposti tiliä",
         "mailbox_quota_def": "Sähköpostin oletus kiintiö",

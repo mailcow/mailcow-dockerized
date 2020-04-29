@@ -181,6 +181,7 @@
         "exclude": "Objets à exclure (expression régulière)",
         "full_name": "Nom complet",
         "hostname": "Nom d'hôte",
+        "inactive": "Inactif",
         "kind": "Type",
         "mailbox": "Éditer la boîte",
         "max_aliases": "Alias max.",
