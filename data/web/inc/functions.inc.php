@@ -555,6 +555,9 @@ function formatBytes($size, $precision = 2) {
 	return round(pow(1024, $base - floor($base)), $precision) . $suffixes[floor($base)];
 }
 function update_sogo_static_view() {
+  if (getenv('SKIP_SOGO') == "y") {
+    return true;
+  }
   global $pdo;
   global $lang;
   $stmt = $pdo->query("SELECT 'OK' FROM INFORMATION_SCHEMA.TABLES
