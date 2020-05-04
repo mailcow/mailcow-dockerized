@@ -262,6 +262,7 @@ for option in ${CONFIG_ARRAY[@]}; do
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo '# Must be set for API_KEY to be active' >> mailcow.conf
+      echo '# IPs only, no networks (networks can be set via UI)' >> mailcow.conf
       echo "#API_ALLOW_FROM=" >> mailcow.conf
     fi
   elif [[ ${option} == "SNAT_TO_SOURCE" ]]; then
