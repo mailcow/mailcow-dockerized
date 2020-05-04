@@ -323,6 +323,9 @@ fi
 # Fix more than 1 hardlink issue
 touch /etc/crontab /etc/cron.*/*
 
+# Prepare environment file for cronjobs
+printenv | sed 's/^\(.*\)$/export \1/g' > /source_env.sh
+
 # Clean old PID if any
 [[ -f /var/run/dovecot/master.pid ]] && rm /var/run/dovecot/master.pid
 
