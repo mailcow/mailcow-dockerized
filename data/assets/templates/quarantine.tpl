@@ -24,7 +24,7 @@
   </style>
   </head>
   <body>
-    <p>Hi!<br>
+    <p>Hi {{username}}!<br>
     {% if counter == 1 %}
     There is 1 new message waiting in quarantine:<br>
     {% else %}
