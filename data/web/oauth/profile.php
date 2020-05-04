@@ -22,15 +22,7 @@ if (!empty($mailbox)) {
       'modified' => (!empty($mailbox['modified']) ? $mailbox['modified'] : ''),
       'active' => (!empty($mailbox['active']) ? $mailbox['active'] : ''),
     ));
-    if ($GLOBALS['OAUTH2_FORGET_SESSION_AFTER_LOGIN'] === true) {
-      session_unset();
-      session_destroy();
-    }
     exit;
-  }
-  if ($GLOBALS['OAUTH2_FORGET_SESSION_AFTER_LOGIN'] === true) {
-    session_unset();
-    session_destroy();
   }
 }
 echo json_encode(array(
