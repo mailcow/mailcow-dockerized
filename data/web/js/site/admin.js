@@ -21,6 +21,7 @@ jQuery(function($){
   $("#mass_exclude").change(function(){ $("#mass_include").selectpicker('deselectAll'); });
   $("#mass_include").change(function(){ $("#mass_exclude").selectpicker('deselectAll'); });
   $("#mass_disarm").click(function() { $("#mass_send").attr("disabled", !this.checked); });
+  $(".admin-ays-dialog").click(function() { return confirm(lang.ays); });
   $(".validate_rspamd_regex").click(function( event ) {
     event.preventDefault();
     var regex_map_id = $(this).data('regex-map');
