@@ -118,21 +118,18 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
     /web/nextcloud/occ --no-warnings config:system:set redis dbindex --value=10 --type=integer; \
     /web/nextcloud/occ --no-warnings config:system:set memcache.locking --value='\OC\Memcache\Redis' --type=string; \
     /web/nextcloud/occ --no-warnings config:system:set memcache.local --value='\OC\Memcache\Redis' --type=string; \
-    /web/nextcloud/occ --no-warnings config:system:set trusted_domains 1 --value=${MAILCOW_HOSTNAME}; \
+    /web/nextcloud/occ --no-warnings config:system:set trusted_domains 1 --value=${NC_SUBD}; \
     /web/nextcloud/occ --no-warnings config:system:set trusted_proxies 0 --value=${IPV6_NETWORK}; \
     /web/nextcloud/occ --no-warnings config:system:set trusted_proxies 1 --value=${IPV4_NETWORK}.0/24; \
-    /web/nextcloud/occ --no-warnings config:system:set overwritewebroot --value=/nextcloud; \
-    /web/nextcloud/occ --no-warnings config:system:set overwritehost --value=${MAILCOW_HOSTNAME}; \
+    /web/nextcloud/occ --no-warnings config:system:set overwritehost --value=${NC_SUBD}; \
     /web/nextcloud/occ --no-warnings config:system:set overwriteprotocol --value=https; \
+    /web/nextcloud/occ --no-warnings config:system:set overwritewebroot --value=/; \
     /web/nextcloud/occ --no-warnings config:system:set mail_smtpmode --value=smtp; \
     /web/nextcloud/occ --no-warnings config:system:set mail_smtpauthtype --value=LOGIN; \
     /web/nextcloud/occ --no-warnings config:system:set mail_from_address --value=nextcloud; \
     /web/nextcloud/occ --no-warnings config:system:set mail_domain --value=${MAILCOW_HOSTNAME}; \
     /web/nextcloud/occ --no-warnings config:system:set mail_smtphost --value=postfix; \
     /web/nextcloud/occ --no-warnings config:system:set mail_smtpport --value=588; \
-    /web/nextcloud/occ --no-warnings config:system:set trusted_domains 1 --value=${NC_SUBD}; \
-    /web/nextcloud/occ --no-warnings config:system:set overwritewebroot --value=/; \
-    /web/nextcloud/occ --no-warnings config:system:set overwritehost --value=${NC_SUBD}; \
     /web/nextcloud/occ --no-warnings db:convert-filecache-bigint -n"
 
     # Not installing by default, broke too often
