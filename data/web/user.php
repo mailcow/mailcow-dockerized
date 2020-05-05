@@ -394,12 +394,12 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 				<div class="col-sm-10">
 				</div>
         <div class="btn-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
-          <a data-acl="<?=$_SESSION['acl']['spam_score'];?>" type="button" class="btn btn-sm btn-success" data-action="edit_selected"
+          <a type="button" class="btn btn-sm btn-success" data-action="edit_selected"
             data-item="<?= htmlentities($username); ?>"
             data-id="spam_score"
             data-api-url='edit/spam-score'
             data-api-attr='{}'><?=$lang['user']['save_changes'];?></a>
-          <a data-acl="<?=$_SESSION['acl']['spam_score'];?>" type="button" class="btn btn-sm btn-default" data-action="edit_selected"
+          <a type="button" class="btn btn-sm btn-default" data-action="edit_selected"
             data-item="<?= htmlentities($username); ?>"
             data-id="spam_score_reset"
             data-api-url='edit/spam-score'
