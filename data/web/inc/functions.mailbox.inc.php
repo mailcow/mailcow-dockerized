@@ -777,10 +777,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':active' => $active
               ));
             }
+            $id = $pdo->lastInsertId();
             $_SESSION['return'][] = array(
               'type' => 'success',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => array('alias_added', $address)
+              'msg' => array('alias_added', $address, $id)
             );
           }
         break;
@@ -3105,24 +3106,46 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
         break;
         case 'alias_details':
           $aliasdata = array();
-          $stmt = $pdo->prepare("SELECT
-            `id`,
-            `domain`,
-            `goto`,
-            `address`,
-            `public_comment`,
-            `private_comment`,
-            `active` as `active_int`,
-            `sogo_visible` as `sogo_visible_int`,
-            CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`,
-            CASE `sogo_visible` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `sogo_visible`,
-            `created`,
-            `modified`
-              FROM `alias`
-                  WHERE `id` = :id AND `address` != `goto`");
-          $stmt->execute(array(
-            ':id' => intval($_data),
-          ));
+          if (is_numeric($_data)) {
+            $stmt = $pdo->prepare("SELECT
+              `id`,
+              `domain`,
+              `goto`,
+              `address`,
+              `public_comment`,
+              `private_comment`,
+              `active` as `active_int`,
+              `sogo_visible` as `sogo_visible_int`,
+              CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`,
+              CASE `sogo_visible` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `sogo_visible`,
+              `created`,
+              `modified`
+                FROM `alias`
+                    WHERE `id` = :id AND `address` != `goto`");
+              $stmt->execute(array(
+                ':id' => intval($_data),
+              ));
+          } else {
+            $stmt = $pdo->prepare("SELECT
+              `id`,
+              `domain`,
+              `goto`,
+              `address`,
+              `public_comment`,
+              `private_comment`,
+              `active` as `active_int`,
+              `sogo_visible` as `sogo_visible_int`,
+              CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`,
+              CASE `sogo_visible` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `sogo_visible`,
+              `created`,
+              `modified`
+                FROM `alias`
+                    WHERE `address` = :address AND `address` != `goto`");
+
+            $stmt->execute(array(
+              ':address' => $_data,
+            ));
+          }
           $row = $stmt->fetch(PDO::FETCH_ASSOC);
           $stmt = $pdo->prepare("SELECT `target_domain` FROM `alias_domain` WHERE `alias_domain` = :domain");
           $stmt->execute(array(
