@@ -297,6 +297,9 @@ MAILDIR_SUB=Maildir
 # SOGo session timeout in minutes
 SOGO_EXPIRE_SESSION=480
 
+# default behaviour for SPAM-handling (reject/discard)
+RSPAMD_DEFAULT=reject
+
 EOF
 
 mkdir -p data/assets/ssl
