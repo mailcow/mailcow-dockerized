@@ -138,3 +138,11 @@
     </div><!--/.container-fluid -->
   </nav>
   <form action="/" method="post" id="logout"><input type="hidden" name="logout"></form>
+  <?php if (!empty($UI_TEXTS['ui_announcement_text']) &&
+    in_array($UI_TEXTS['ui_announcement_type'], array('info', 'warning', 'danger')) &&
+    $UI_TEXTS['ui_announcement_active'] == 1 &&
+    parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) != '/') { ?>
+  <div class="container">
+    <div class="alert alert-<?=$UI_TEXTS['ui_announcement_type'];?>"><?=$UI_TEXTS['ui_announcement_text'];?></div>
+  </div>
+  <?php } ?>

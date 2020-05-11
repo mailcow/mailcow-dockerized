@@ -182,13 +182,9 @@ $(document).ready(function() {
 </script>
 
   <div class="container footer">
-    <?php
-    if (!empty($UI_TEXTS['ui_footer'])):
-    ?>
-     <hr><?=$UI_TEXTS['ui_footer'];?>
-    <?php
-    endif;
-    ?>
+  <?php if (!empty($UI_TEXTS['ui_footer'])) { ?>
+   <hr><?=$UI_TEXTS['ui_footer'];?>
+  <?php } ?>
   </div>
 </body>
 </html>
