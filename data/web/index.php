@@ -32,6 +32,9 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
         <div class="panel-heading"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <?= $lang['login']['login']; ?></div>
         <div class="panel-body">
           <div class="text-center mailcow-logo"><img src="<?=($main_logo = customize('get', 'main_logo')) ? $main_logo : '/img/cow_mailcow.svg';?>" alt="mailcow"></div>
+          <?php if (!empty($UI_TEXTS['ui_announcement_text']) && in_array($UI_TEXTS['ui_announcement_type'], array('info', 'warning', 'danger')) && $UI_TEXTS['ui_announcement_active'] == 1) { ?>
+          <div class="alert alert-<?=$UI_TEXTS['ui_announcement_type'];?>"><?=$UI_TEXTS['ui_announcement_text'];?></div>
+          <?php } ?>
           <legend><?= isset($_SESSION['oauth2_request']) ? $lang['oauth2']['authorize_app'] : $UI_TEXTS['main_name'];?></legend>
             <?php
             if (strpos($_SESSION['index_query_string'], 'mobileconfig') !== false) {
