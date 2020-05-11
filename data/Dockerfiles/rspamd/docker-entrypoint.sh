@@ -79,6 +79,10 @@ EOF
   redis-cli -h redis-mailcow SLAVEOF NO ONE
 fi
 
+if [[ "${RSPAMD_DEFAULT}" == discard ]]; then
+echo "discard_on_reject = true;" >> /etc/rspamd/override.d/worker-proxy.inc
+fi
+
 chown -R _rspamd:_rspamd /var/lib/rspamd \
   /etc/rspamd/local.d \
   /etc/rspamd/override.d \
