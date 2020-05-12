@@ -102,7 +102,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.61
+      image: mailcow/phpfpm:1.62
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -373,7 +373,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.35
+      image: mailcow/netfilter:1.36
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
