@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "19042020_1437";
+    $db_version = "12052020_1828";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -747,7 +747,7 @@ function init_db_schema() {
         "cols" => array(
           "c_folder_id" => "INT NOT NULL",
           "c_name" => "VARCHAR(255) NOT NULL",
-          "c_uid" => "VARCHAR(255) NOT NULL",
+          "c_uid" => "VARCHAR(1000) NOT NULL",
           "c_startdate" => "INT",
           "c_enddate" => "INT",
           "c_cycleenddate" => "INT",
