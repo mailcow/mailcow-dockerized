@@ -56,7 +56,8 @@ RUN apk add -U --no-cache autoconf \
   && pecl clear-cache \
   && docker-php-ext-configure intl \
   && docker-php-ext-configure exif \
-  && docker-php-ext-configure gd \
+  && docker-php-ext-configure gd --with-freetype=/usr/include/ \  
+    --with-jpeg=/usr/include/ \
   && docker-php-ext-install -j 4 exif gd gettext intl ldap opcache pcntl pdo pdo_mysql soap sockets xmlrpc zip \
   && docker-php-ext-configure imap --with-imap --with-imap-ssl \
   && docker-php-ext-install -j 4 imap \
