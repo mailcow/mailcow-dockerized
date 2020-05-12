@@ -456,48 +456,4 @@ jQuery(function($){
       add_table_row($('#app_link_table'));
   });
 });
-$(window).load(function(){
-  $('.sidebar').affix({
-        offset: {
-            top: 0
-        }
-    }).on('affix.bs.affix',function(){
-        setAffixContainerSize();
-    });
 
-    /*Setting the width of the sidebar (I took 10px of its value which is the margin between cols in my Bootstrap CSS*/
-    function setAffixContainerSize(){
-        $('.sidebar').width($('.sidebar').parent().innerWidth()-10);
-    }
-
-    $(window).resize(function(){
-        setAffixContainerSize();
-    });
-  initial_width_config = $("#sidebar-admin-config").width();
-  initial_width_maps = $("#sidebar-admin-maps").width();
-  $("#scrollbox-config").css("width", initial_width_config);
-  $("#scrollbox-maps").css("width", initial_width_maps);
-  if (sessionStorage.scrollTop > 70) {
-    $('#scrollbox-config').addClass('scrollboxFixed');
-    $('#scrollbox-maps').addClass('scrollboxFixed');
-  }
-  $(window).bind('scroll', function() {
-    if ($(window).scrollTop() > 70) {
-      $('#scrollbox-config').addClass('scrollboxFixed');
-      $('#scrollbox-maps').addClass('scrollboxFixed');
-    } else {
-      $('#scrollbox-config').removeClass('scrollboxFixed');
-      $('#scrollbox-maps').removeClass('scrollboxFixed');
-    }
-  });
-});
-function resizeScrollbox() {
-  on_resize_width_config = $("#sidebar-admin-config").width();
-  on_resize_width_maps = $("#sidebar-admin-maps").width();
-  $("#scrollbox-config").removeAttr("style");
-  $("#scrollbox-config").css("width", on_resize_width_config);
-  $("#scrollbox-maps").removeAttr("style");
-  $("#scrollbox-maps").css("width", on_resize_width_maps);
-}
-$(window).on('resize', resizeScrollbox);
-$('a[data-toggle="tab"]').on('shown.bs.tab', resizeScrollbox);
