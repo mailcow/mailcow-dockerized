@@ -13,11 +13,27 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
 
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#tab-access" aria-controls="tab-access" role="tab" data-toggle="tab"><?=$lang['admin']['access'];?></a></li>
-    <li role="presentation"><a href="#tab-config" aria-controls="tab-config" role="tab" data-toggle="tab"><?=$lang['admin']['configuration'];?></a></li>
+    <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['admin']['configuration'];?>
+      <span class="caret"></span></a>
+      <ul class="dropdown-menu">
+        <li role="presentation"><a href="#tab-config-dkim" aria-controls="tab-config-dkim" role="tab" data-toggle="tab"><?=$lang['admin']['dkim_keys'];?></a></li>
+        <li role="presentation"><a href="#tab-config-fwdhosts" aria-controls="tab-config-fwdhosts" role="tab" data-toggle="tab"><?=$lang['admin']['forwarding_hosts'];?></a></li>
+        <li role="presentation"><a href="#tab-config-f2b" aria-controls="tab-config-f2b" role="tab" data-toggle="tab"><?=$lang['admin']['f2b_parameters'];?></a></li>
+        <li role="presentation"><a href="#tab-config-quarantine" aria-controls="tab-config-quarantine" role="tab" data-toggle="tab"><?=$lang['admin']['quarantine'];?></a></li>
+        <li role="presentation"><a href="#tab-config-quota" aria-controls="tab-config-quota" role="tab" data-toggle="tab"><?=$lang['admin']['quota_notifications'];?></a></li>
+        <li role="presentation"><a href="#tab-config-rsettings" aria-controls="tab-config-rsettings" role="tab" data-toggle="tab"><?=$lang['admin']['rspamd_settings_map'];?></a></li>
+        <li role="presentation"><a href="#tab-config-customize" aria-controls="tab-config-customize" role="tab" data-toggle="tab"><?=$lang['admin']['customize'];?></a></li>
+      </ul>
+    </li>
     <li role="presentation"><a href="#tab-routing" aria-controls="tab-routing" role="tab" data-toggle="tab"><?=$lang['admin']['routing'];?></a></li>
     <li role="presentation"><a href="#tab-sys-mails" aria-controls="tab-sys-mails" role="tab" data-toggle="tab"><?=$lang['admin']['sys_mails'];?></a></li>
     <li role="presentation"><a href="#tab-mailq" aria-controls="tab-mailq" role="tab" data-toggle="tab"><?=$lang['admin']['queue_manager'];?></a></li>
-    <li role="presentation"><a href="#tab-rspamdmaps" aria-controls="tab-rspamdmaps" role="tab" data-toggle="tab"><?=$lang['admin']['rspamd_global_filters'];?></a></li>
+    <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['admin']['rspamd_global_filters'];?>
+      <span class="caret"></span></a>
+      <ul class="dropdown-menu">
+        <li role="presentation"><a href="#tab-globalfilter-regex" aria-controls="tab-globalfilter-regex" role="tab" data-toggle="tab">Regex maps</a></li>
+      </ul>
+    </li>
   </ul>
 
   <div class="row">
@@ -413,22 +429,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
     </div>
   </div>
 
-  <div role="tabpanel" class="tab-pane" id="tab-config">
-    <div class="row">
-    <div id="sidebar-admin-config" class="col-sm-3 hidden-xs">
-      <div id="scrollbox-config" class="list-group">
-        <a href="#dkim" class="list-group-item"><?=$lang['admin']['dkim_keys'];?></a>
-        <a href="#fwdhosts" class="list-group-item"><?=$lang['admin']['forwarding_hosts'];?></a>
-        <a href="#f2bparams" class="list-group-item"><?=$lang['admin']['f2b_parameters'];?></a>
-        <a href="#quarantine" class="list-group-item"><?=$lang['admin']['quarantine'];?></a>
-        <a href="#quota" class="list-group-item"><?=$lang['admin']['quota_notifications'];?></a>
-        <a href="#rsettings" class="list-group-item"><?=$lang['admin']['rspamd_settings_map'];?></a>
-        <a href="#customize" class="list-group-item"><?=$lang['admin']['customize'];?></a>
-        <a href="#top" class="list-group-item" style="border-top:1px dashed #dadada">↸ <?=$lang['admin']['to_top'];?></a>
-      </div>
-    </div>
-    <div class="col-sm-9">
-    <span class="anchor" id="dkim"></span>
+  <div role="tabpanel" class="tab-pane" id="tab-config-dkim">
     <div class="panel panel-default">
       <div class="panel-heading"><?=$lang['admin']['dkim_keys'];?></div>
       <div class="panel-body">
@@ -579,52 +580,52 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
           <span style="font-size:12px" class="arrow rotate glyphicon glyphicon-menu-down"></span> <?=$lang['admin']['duplicate_dkim'];?>
         </legend>
         <div id="duplicate_dkim" class="collapse">
-        <form class="form-horizontal" data-id="dkim_duplicate" role="form" method="post">
-          <div class="form-group">
-            <label class="control-label col-sm-2" for="from_domain"><?=$lang['admin']['dkim_from'];?>:</label>
-            <div class="col-sm-10">
-            <select data-style="btn btn-default btn-sm"
-              data-live-search="true"
-              data-id="dkim_duplicate"
-              title="<?=$lang['admin']['dkim_from_title'];?>"
-              name="from_domain" id="from_domain" class="full-width-select form-control" required>
-              <?php
-              foreach ($dkim_domains as $dkim) {
-              ?>
-              <option value="<?=$dkim;?>"><?=$dkim;?></option>
-              <?php
-              }
-              ?>
-            </select>
+          <form class="form-horizontal" data-id="dkim_duplicate" role="form" method="post">
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="from_domain"><?=$lang['admin']['dkim_from'];?>:</label>
+              <div class="col-sm-10">
+              <select data-style="btn btn-default btn-sm"
+                data-live-search="true"
+                data-id="dkim_duplicate"
+                title="<?=$lang['admin']['dkim_from_title'];?>"
+                name="from_domain" id="from_domain" class="full-width-select form-control" required>
+                <?php
+                foreach ($dkim_domains as $dkim) {
+                ?>
+                <option value="<?=$dkim;?>"><?=$dkim;?></option>
+                <?php
+                }
+                ?>
+              </select>
+              </div>
             </div>
-          </div>
-          <div class="form-group">
-            <label class="control-label col-sm-2" for="to_domain"><?=$lang['admin']['dkim_to'];?>:</label>
-            <div class="col-sm-10">
-            <select
-              data-live-search="true"
-              data-style="btn btn-default btn-sm"
-              data-id="dkim_duplicate"
-              title="<?=$lang['admin']['dkim_to_title'];?>"
-              name="to_domain" id="to_domain" class="full-width-select form-control" multiple required>
-              <?php
-              foreach (array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains')) as $domain) {
-              ?>
-              <option value="<?=$domain;?>"><?=$domain;?></option>
-              <?php
-              }
-              ?>
-            </select>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="to_domain"><?=$lang['admin']['dkim_to'];?>:</label>
+              <div class="col-sm-10">
+              <select
+                data-live-search="true"
+                data-style="btn btn-default btn-sm"
+                data-id="dkim_duplicate"
+                title="<?=$lang['admin']['dkim_to_title'];?>"
+                name="to_domain" id="to_domain" class="full-width-select form-control" multiple required>
+                <?php
+                foreach (array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains')) as $domain) {
+                ?>
+                <option value="<?=$domain;?>"><?=$domain;?></option>
+                <?php
+                }
+                ?>
+              </select>
+              </div>
             </div>
-          </div>
-          <button class="btn btn-sm btn-default" data-action="add_item" data-id="dkim_duplicate" data-api-url='add/dkim_duplicate' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-duplicate"></span> <?=$lang['admin']['duplicate'];?></button>
-        </form>
+            <button class="btn btn-sm btn-default" data-action="add_item" data-id="dkim_duplicate" data-api-url='add/dkim_duplicate' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-duplicate"></span> <?=$lang['admin']['duplicate'];?></button>
+          </form>
         </div>
-
       </div>
     </div>
+  </div>
 
-    <span class="anchor" id="fwdhosts"></span>
+  <div role="tabpanel" class="tab-pane" id="tab-config-fwdhosts">
     <div class="panel panel-default">
       <div class="panel-heading"><?=$lang['admin']['forwarding_hosts'];?></div>
       <div class="panel-body">
@@ -661,8 +662,9 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
         </form>
       </div>
     </div>
+  </div>
 
-    <span class="anchor" id="f2bparams"></span>
+  <div role="tabpanel" class="tab-pane" id="tab-config-f2b">
     <div class="panel panel-default">
       <div class="panel-heading"><?=$lang['admin']['f2b_parameters'];?></div>
       <div class="panel-body">
@@ -752,8 +754,9 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
         ?>
       </div>
     </div>
+  </div>
 
-    <span class="anchor" id="quarantine"></span>
+  <div role="tabpanel" class="tab-pane" id="tab-config-quarantine">
     <div class="panel panel-default">
       <div class="panel-heading"><?=$lang['admin']['quarantine'];?></div>
       <div class="panel-body">
@@ -847,8 +850,9 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
         </form>
       </div>
     </div>
+  </div>
 
-    <span class="anchor" id="quota"></span>
+  <div role="tabpanel" class="tab-pane" id="tab-config-quota">
     <div class="panel panel-default">
       <div class="panel-heading"><?=$lang['admin']['quota_notifications'];?></div>
       <div class="panel-body">
@@ -895,8 +899,9 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
       </form>
       </div>
     </div>
+  </div>
 
-    <span class="anchor" id="rsettings"></span>
+  <div role="tabpanel" class="tab-pane" id="tab-config-rsettings">
     <div class="panel panel-default">
       <div class="panel-heading"><?=$lang['admin']['rspamd_settings_map'];?></div>
       <div class="panel-body">
@@ -982,8 +987,9 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
         </form>
       </div>
     </div>
+  </div>
 
-    <span class="anchor" id="customize"></span>
+  <div role="tabpanel" class="tab-pane" id="tab-config-customize">
     <div class="panel panel-default">
       <div class="panel-heading"><?=$lang['admin']['customize'];?></div>
       <div class="panel-body">
@@ -996,7 +1002,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
           </p>
         </form>
         <?php
-        if ($main_logo = customize('get', 'main_logo')):
+        if ($main_logo = customize('get', 'main_logo')) {
           $specs = customize('get', 'main_logo_specs');
         ?>
         <div class="row">
@@ -1015,9 +1021,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             </form>
           </div>
         </div>
-        <?php
-        endif;
-        ?>
+        <?php } ?>
         <legend><?=$lang['admin']['app_links'];?></legend>
         <p class="help-block"><?=$lang['admin']['merged_vars_hint'];?></p>
         <form class="form-inline" data-id="app_links" role="form" method="post">
@@ -1030,7 +1034,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             <?php
             $app_links = customize('get', 'app_links');
             foreach ($app_links as $row) {
-              foreach ($row as $key => $val):
+              foreach ($row as $key => $val) {
             ?>
             <tr>
               <td><input class="input-sm form-control" data-id="app_links" type="text" name="app" required value="<?=$key;?>"></td>
@@ -1038,18 +1042,16 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
               <td><a href="#" role="button" class="btn btn-xs btn-default" type="button"><?=$lang['admin']['remove_row'];?></a></td>
             </tr>
             <?php
-              endforeach;
+              }
             }
-            foreach ($MAILCOW_APPS as $app):
+            foreach ($MAILCOW_APPS as $app) {
             ?>
             <tr>
               <td><input class="input-sm form-control" value="<?=htmlspecialchars($app['name']);?>" disabled></td>
               <td><input class="input-sm form-control" value="<?=htmlspecialchars($app['link']);?>" disabled></td>
               <td>&nbsp;</td>
             </tr>
-            <?php
-            endforeach;
-            ?>
+            <?php } ?>
           </table>
           <p><div class="btn-group">
             <button class="btn btn-sm btn-success" data-action="edit_selected" data-item="admin" data-id="app_links" data-reload="no" data-api-url='edit/app_links' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
@@ -1098,8 +1100,6 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
         </div>
       </div>
     </div>
-    </div>
-    </div>
   </div>
 
   <div role="tabpanel" class="tab-pane" id="tab-sys-mails">
@@ -1138,11 +1138,11 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
               <select id="mass_exclude" name="mass_exclude[]" data-live-search="true" data-width="100%"  size="30" multiple>
               <?php
               if (!empty($mailboxes)) {
-                foreach (array_filter($mailboxes) as $mailbox):
+                foreach (array_filter($mailboxes) as $mailbox) {
                 ?>
                 <option><?=htmlspecialchars($mailbox);?></option>
                 <?php
-                endforeach;
+                }
               }
               ?>
               </select>
@@ -1152,11 +1152,11 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
               <select id="mass_include" name="mass_include[]" data-live-search="true" data-width="100%"  size="30" multiple>
               <?php
               if (!empty($mailboxes)) {
-                foreach (array_filter($mailboxes) as $mailbox):
+                foreach (array_filter($mailboxes) as $mailbox) {
                 ?>
                 <option><?=htmlspecialchars($mailbox);?></option>
                 <?php
-                endforeach;
+                }
               }
               ?>
               </select>
@@ -1229,68 +1229,58 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
     </div>
   </div>
 
-  <div role="tabpanel" class="tab-pane" id="tab-rspamdmaps">
-    <div class="row">
-    <div id="sidebar-admin-maps" class="col-sm-2 hidden-xs">
-      <div id="scrollbox-maps" class="list-group">
-        <a href="#regexmaps" class="list-group-item">Regex maps</a>
-        <!-- <a href="#standardmaps" class="list-group-item">Standard maps</a> -->
-        <a href="#top" class="list-group-item" style="border-top:1px dashed #dadada">↸ <?=$lang['admin']['to_top'];?></a>
+  <div role="tabpanel" class="tab-pane" id="tab-globalfilter-regex">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <?=$lang['admin']['rspamd_global_filters'];?>
       </div>
-    </div>
-    <div class="col-sm-10">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <?=$lang['admin']['rspamd_global_filters'];?>
+      <div class="panel-body">
+        <p><?=$lang['admin']['rspamd_global_filters_info'];?></p>
+        <div id="confirm_show_rspamd_global_filters" class="<?=($_SESSION['show_rspamd_global_filters'] === true) ? 'hidden' : '';?>">
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <label>
+                <input type="checkbox" id="show_rspamd_global_filters"> <?=$lang['admin']['rspamd_global_filters_agree'];?>
+              </label>
+            </div>
+          </div>
         </div>
-        <div class="panel-body">
-          <p><?=$lang['admin']['rspamd_global_filters_info'];?></p>
-          <div id="confirm_show_rspamd_global_filters" class="<?=($_SESSION['show_rspamd_global_filters'] === true) ? 'hidden' : '';?>">
-            <div class="form-group">
-              <div class="col-sm-offset-2 col-sm-10">
-                <label>
-                  <input type="checkbox" id="show_rspamd_global_filters"> <?=$lang['admin']['rspamd_global_filters_agree'];?>
-                </label>
-              </div>
+        <div id="rspamd_global_filters" class="<?=($_SESSION['show_rspamd_global_filters'] !== true) ? 'hidden' : '';?>">
+        <hr>
+        <span class="anchor" id="regexmaps"></span>
+        <h4>Regex Maps</h4>
+        <p><?=$lang['admin']['rspamd_global_filters_regex'];?></p>
+        <ul>
+        <?php
+        foreach ($RSPAMD_MAPS['regex'] as $rspamd_regex_desc => $rspamd_regex_map):
+        ?>
+        <li><a href="#<?=$rspamd_regex_map;?>"><?=$rspamd_regex_desc;?></a> (<small><?=$rspamd_regex_map;?></small>)</li>
+        <?php
+        endforeach;
+        ?>
+        </ul>
+        <?php
+        foreach ($RSPAMD_MAPS['regex'] as $rspamd_regex_desc => $rspamd_regex_map):
+        ?>
+        <hr>
+        <span class="anchor" id="<?=$rspamd_regex_map;?>"></span>
+        <form class="form-horizontal" data-id="<?=$rspamd_regex_map;?>" role="form" method="post">
+          <div class="form-group">
+            <label class="control-label col-sm-3" for="<?=$rspamd_regex_map;?>"><?=$rspamd_regex_desc;?><br><small><?=$rspamd_regex_map;?></small></label>
+            <div class="col-sm-9">
+              <textarea id="<?=$rspamd_regex_map;?>" spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control textarea-code" rows="10" name="rspamd_map_data" required><?=file_get_contents('/rspamd_custom_maps/' . $rspamd_regex_map);?></textarea>
             </div>
           </div>
-          <div id="rspamd_global_filters" class="<?=($_SESSION['show_rspamd_global_filters'] !== true) ? 'hidden' : '';?>">
-          <hr>
-          <span class="anchor" id="regexmaps"></span>
-          <h4>Regex Maps</h4>
-          <p><?=$lang['admin']['rspamd_global_filters_regex'];?></p>
-          <ul>
-          <?php
-          foreach ($RSPAMD_MAPS['regex'] as $rspamd_regex_desc => $rspamd_regex_map):
-          ?>
-          <li><a href="#<?=$rspamd_regex_map;?>"><?=$rspamd_regex_desc;?></a> (<small><?=$rspamd_regex_map;?></small>)</li>
-          <?php
-          endforeach;
-          ?>
-          </ul>
-          <?php
-          foreach ($RSPAMD_MAPS['regex'] as $rspamd_regex_desc => $rspamd_regex_map):
-          ?>
-          <hr>
-          <span class="anchor" id="<?=$rspamd_regex_map;?>"></span>
-          <form class="form-horizontal" data-id="<?=$rspamd_regex_map;?>" role="form" method="post">
-            <div class="form-group">
-              <label class="control-label col-sm-3" for="<?=$rspamd_regex_map;?>"><?=$rspamd_regex_desc;?><br><small><?=$rspamd_regex_map;?></small></label>
-              <div class="col-sm-9">
-                <textarea id="<?=$rspamd_regex_map;?>" spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control textarea-code" rows="10" name="rspamd_map_data" required><?=file_get_contents('/rspamd_custom_maps/' . $rspamd_regex_map);?></textarea>
-              </div>
+          <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+              <button class="btn btn-xs btn-default validate_rspamd_regex" data-regex-map="<?=$rspamd_regex_map;?>" href="#"><?=$lang['add']['validate'];?></button>
+              <button class="btn btn-xs btn-success submit_rspamd_regex" data-action="edit_selected" data-id="<?=$rspamd_regex_map;?>" data-item="<?=htmlspecialchars($rspamd_regex_map);?>" data-api-url='edit/rspamd-map' data-api-attr='{}' href="#" disabled><?=$lang['edit']['save'];?></button>
             </div>
-            <div class="form-group">
-              <div class="col-sm-offset-3 col-sm-9">
-                <button class="btn btn-xs btn-default validate_rspamd_regex" data-regex-map="<?=$rspamd_regex_map;?>" href="#"><?=$lang['add']['validate'];?></button>
-                <button class="btn btn-xs btn-success submit_rspamd_regex" data-action="edit_selected" data-id="<?=$rspamd_regex_map;?>" data-item="<?=htmlspecialchars($rspamd_regex_map);?>" data-api-url='edit/rspamd-map' data-api-attr='{}' href="#" disabled><?=$lang['edit']['save'];?></button>
-              </div>
-            </div>
-          </form>
-          <?php
-          endforeach;
-          ?>
           </div>
+        </form>
+        <?php
+        endforeach;
+        ?>
         </div>
       </div>
     </div>
