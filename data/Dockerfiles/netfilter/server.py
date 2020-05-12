@@ -496,7 +496,7 @@ if __name__ == '__main__':
   watch_thread.daemon = True
   watch_thread.start()
 
-  if os.getenv('SNAT_TO_SOURCE') and os.getenv('SNAT_TO_SOURCE') is not 'n':
+  if os.getenv('SNAT_TO_SOURCE') and os.getenv('SNAT_TO_SOURCE') != 'n':
     try:
       snat_ip = os.getenv('SNAT_TO_SOURCE')
       snat_ipo = ipaddress.ip_address(snat_ip)
@@ -507,7 +507,7 @@ if __name__ == '__main__':
     except ValueError:
       print(os.getenv('SNAT_TO_SOURCE') + ' is not a valid IPv4 address')
 
-  if os.getenv('SNAT6_TO_SOURCE') and os.getenv('SNAT6_TO_SOURCE') is not 'n':
+  if os.getenv('SNAT6_TO_SOURCE') and os.getenv('SNAT6_TO_SOURCE') != 'n':
     try:
       snat_ip = os.getenv('SNAT6_TO_SOURCE')
       snat_ipo = ipaddress.ip_address(snat_ip)
