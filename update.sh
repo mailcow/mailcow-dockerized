@@ -41,7 +41,17 @@ export LC_ALL=C
 DATE=$(date +%Y-%m-%d_%H_%M_%S)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
-function prefetch_images() {
+check_online_status() {
+  CHECK_ONLINE_IPS=(1.1.1.1 9.9.9.9 8.8.8.8)
+  for ip in "${CHECK_ONLINE_IPS[@]}"; do
+    if timeout 3 ping -c 1 ${ip} > /dev/null; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+prefetch_images() {
   [[ -z ${BRANCH} ]] && { echo -e "\e[33m\nUnknown branch...\e[0m"; exit 1; }
   git fetch origin #${BRANCH}
   while read image; do
@@ -363,8 +373,7 @@ for option in ${CONFIG_ARRAY[@]}; do
 done
 
 echo -en "Checking internet connection... "
-timeout 3 ping -c 1 9.9.9.9 > /dev/null
-if [[ $? != 0 ]]; then
+if ! check_online_status; then
   echo -e "\e[31mfailed\e[0m"
   exit 1
 else
