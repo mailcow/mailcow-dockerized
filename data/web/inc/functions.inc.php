@@ -579,8 +579,10 @@ function check_login($user, $pass) {
 		}
 	}
 	$stmt = $pdo->prepare("SELECT `password` FROM `mailbox`
+      INNER JOIN domain on mailbox.domain = domain.domain
 			WHERE `kind` NOT REGEXP 'location|thing|group'
-        AND `active`='1'
+        AND `mailbox`.`active`='1'
+        AND `domain`.`active`='1'
         AND `username` = :user");
 	$stmt->execute(array(':user' => $user));
 	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
