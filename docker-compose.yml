@@ -453,7 +453,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:1.36
+      image: mailcow/dockerapi:1.37
       restart: always
       oom_kill_disable: true
       dns:
