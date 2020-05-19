@@ -248,6 +248,7 @@ jQuery(function($){
         }},
         {"name":"sender","title":lang.sender, "type": "text","breakpoints":"xs sm"},
         {"name":"recipients","title":lang.recipients, "type": "text","style":{"word-break":"break-all","min-width":"300px"},"breakpoints":"xs sm md"},
+        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"220px","width":"220px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
       ],
       "rows": $.ajax({
         dataType: 'json',
@@ -301,6 +302,9 @@ jQuery(function($){
           return escapeHtml(i);
         });
         item.recipients = rcpts.join('<hr style="margin:1px!important">');
+        item.action = '<div class="btn-group">' +
+          '<a href="#" data-toggle="modal" data-target="#showQueuedMsg" data-queue-id="' + encodeURI(item.queue_id) + '" class="btn btn-xs btn-default">' + lang.queue_show_message + '</a>' +
+          '</div>';
       });
     } else if (table == 'forwardinghoststable') {
       $.each(data, function (i, item) {
@@ -412,6 +416,22 @@ jQuery(function($){
       $('#transport_id').val(button.data('transport-id'));
       $('#transport_type').val(button.data('transport-type'));
     }
+  })
+  // Queue item
+  $('#showQueuedMsg').on('show.bs.modal', function (e) {
+    $('#queue_msg_content').text("Loading...");
+    button = $(e.relatedTarget)
+    if (button != null) {
+      $('#queue_id').text(button.data('queue-id'));
+    }
+    $.ajax({
+        type: 'GET',
+        url: '/api/v1/get/postcat/' + button.data('queue-id'),
+        dataType: 'text',
+        complete: function (data) {
+          $('#queue_msg_content').text(data.responseText);
+        }
+    });
   })
   $('#test_transport').on('click', function (e) {
     e.preventDefault();
