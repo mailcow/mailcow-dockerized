@@ -436,7 +436,7 @@ function alertbox_log_parser($_data){
       else {
         $msg = $return['msg'];
       }
-      $log_array[] = array('msg' => json_encode($msg), 'type' => json_encode($type));
+      $log_array[] = array('msg' => $msg, 'type' => json_encode($type));
     }
     if (!empty($log_array)) { 
       return $log_array;
