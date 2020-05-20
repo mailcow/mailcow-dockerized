@@ -192,6 +192,7 @@
         "last_applied": "Senast tillämpat",
         "license_info": "En licens är inte ett krav, men hjälper till att stödja vidareutveckling.<br><a href=\"https://www.servercow.de/mailcow?lang=en#sal\" target=\"_blank\" alt=\"SAL order\">Registrera ditt installations-ID här</a> or <a href=\"https://www.servercow.de/mailcow?lang=en#support\" target=\"_blank\" alt=\"Support order\">köp support för din mailcow installation.</a>",
         "link": "Länk",
+        "loading": "Vänta...",
         "logo_info": "Bilden skalas till en höjd av 40px till översta navigationsfältet, och en maximal bredd av 250px på startsidan. En skalbar grafik rekommenderas.",
         "lookup_mx": "Kontrollera destinationen mot MX-uppslaget (.outlook.com för att dirigera all e-posttrafik med MX-uppslaget *.outlook.com över denna server)",
         "main_name": "Rubrik på webbplatsen",

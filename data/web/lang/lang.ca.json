@@ -109,6 +109,7 @@
         "in_use_by": "En ús per",
         "inactive": "Inactiu",
         "link": "Enllaç",
+        "loading": "Si et plau espera ...",
         "logo_info": "La vostra imatge es reduirà a una alçada de 40 píxels per a la barra de navegació superior i un màx. ample de 250 px per a la pàgina d'inici. És molt recomanable un gràfic escalable",
         "main_name": "Nom de \"mailcow UI\"",
         "merged_vars_hint": "Les files en gris venen de <code>vars.(local.)inc.php</code> i no es poden modificar.",

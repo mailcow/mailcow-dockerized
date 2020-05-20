@@ -180,6 +180,7 @@
         "last_applied": "Viimeksi käytetty",
         "license_info": "Lisenssiä ei vaadita, mutta se auttaa kehittämään ohjelmaa jatkossa.<br><a href=\"https://www.servercow.de/mailcow?lang=en#sal\" target=\"_blank\" alt=\"SAL order\">Rekisteröi GUID-tunnus täältä</a> or <a href=\"https://www.servercow.de/mailcow?lang=en#support\" target=\"_blank\" alt=\"Support order\">Osta tuki mailcow-asennusta varten.</a>",
         "link": "Linkki",
+        "loading": "Ole hyvä ja odota...",
         "logo_info": "Kuvasi skaalataan ylimmän navigointipalkin 40 pikselin korkeudelle ja korkeintaan. leveys 250 sivua aloitussivulle. Skaalautuva grafiikka on erittäin suositeltavaa.",
         "lookup_mx": "Määränpää vastaan MX (. outlook.com reitittää kaikki Mail suunnattu MX *. outlook.com yli tämän hop)",
         "main_name": "\"mailcow UI \"nimi",

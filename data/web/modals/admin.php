@@ -215,8 +215,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
         <h3 class="modal-title"><span class="glyphicon glyphicon-hourglass" style="font-size:18px"></span> ID <span id="queue_id"></span></h3>
       </div>
       <div class="modal-body">
-        <pre id="queue_msg_content">
-        </pre>
+        <textarea class="form-control" id="queue_msg_content" name="content" rows="40"></textarea>
       </div>
     </div>
   </div>

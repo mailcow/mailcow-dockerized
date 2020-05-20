@@ -190,6 +190,7 @@
         "last_applied": "Naposledy aplikované",
         "license_info": "Licencia nie je potrebná, ale napomáha ďalšiemu vývoju.<br><a href=\"https://www.servercow.de/mailcow?lang=en#sal\" target=\"_blank\" alt=\"SAL order\">Registrujte váš GUID tu</a> alebo <a href=\"https://www.servercow.de/mailcow?lang=en#support\" target=\"_blank\" alt=\"Objednávka podpory\">zakúpte si podporu pre vašu mailcow inštaláciu.</a>",
         "link": "Odkaz",
+        "loading": "Prosím čakajte...",
         "logo_info": "Váš obrázok bude upravený na výšku 40px pre vrchný navigačný riadok a na maximálnu šírku 250px pre úvodnú stránku. Odporúča sa škálovateľná grafika.",
         "lookup_mx": "Overiť cieľ voči MX záznamu (doručenie pre .outlook.com bude smerované cez MX *.outlook.com na konkrétny server)",
         "main_name": "\"mailcow UI\" meno",

@@ -164,6 +164,7 @@
         "include_exclude_info": "Por defecto - sin selección - <b>todos los buzones</b> son notificados.",
         "includes": "Incluye a estos destinatarios",
         "link": "Enlace",
+        "loading": "Espera por favor...",
         "logo_info": "La imagen se escalará a una altura de 40 px para la barra de navegación superior y un máx. de ancho de 250 px para la página de inicio. Un gráfico escalable es muy recomendable.",
         "main_name": "Nombre \"mailcow UI\"",
         "merged_vars_hint": "Las filas grises fueron incorporadas de <code>vars.(local.)inc.php</code> y no son modificables.",
