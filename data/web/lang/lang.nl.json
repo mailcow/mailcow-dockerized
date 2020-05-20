@@ -191,6 +191,7 @@
         "last_applied": "Voor het laatst toegepast",
         "license_info": "Een licentie is niet vereist. Je steunt hier echter wel de ontwikkeling van Mailcow mee.<br><a href=\"https://www.servercow.de/mailcow?lang=nl#sal\" target=\"_blank\" alt=\"SAL order\">Registreer je GUID hier</a>, of <a href=\"https://www.servercow.de/mailcow?lang=nl#support\" target=\"_blank\" alt=\"Support order\">schaf ondersteuning aan voor deze installatie.</a>",
         "link": "Link",
+        "loading": "Even geduld aub...",
         "logo_info": "De afbeelding zal worden geschaald naar een hoogte van 40px voor de navigatiebar, en naar een breedte van 250px voor de startpagina.",
         "lookup_mx": "Match bestemming aan MX (gebruik .outlook.com om alle mail gericht aan MX *.outlook.com over deze hop te laten gaan)",
         "main_name": "\"Mailcow\"",

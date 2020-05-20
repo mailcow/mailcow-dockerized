@@ -419,7 +419,7 @@ jQuery(function($){
   })
   // Queue item
   $('#showQueuedMsg').on('show.bs.modal', function (e) {
-    $('#queue_msg_content').text("Loading...");
+    $('#queue_msg_content').text(lang.loading);
     button = $(e.relatedTarget)
     if (button != null) {
       $('#queue_id').text(button.data('queue-id'));

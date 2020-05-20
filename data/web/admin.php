@@ -31,7 +31,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
     <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['admin']['rspamd_global_filters'];?>
       <span class="caret"></span></a>
       <ul class="dropdown-menu">
-        <li role="presentation"><a href="#tab-globalfilter-regex" aria-controls="tab-globalfilter-regex" role="tab" data-toggle="tab">Regex maps</a></li>
+        <li role="presentation"><a href="#tab-globalfilter-regex" aria-controls="tab-globalfilter-regex" role="tab" data-toggle="tab"><?=$lang['admin']['regex_maps'];?></a></li>
       </ul>
     </li>
   </ul>
@@ -1248,7 +1248,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
         <div id="rspamd_global_filters" class="<?=($_SESSION['show_rspamd_global_filters'] !== true) ? 'hidden' : '';?>">
         <hr>
         <span class="anchor" id="regexmaps"></span>
-        <h4>Regex Maps</h4>
+        <h4><?=$lang['admin']['regex_maps'];?></h4>
         <p><?=$lang['admin']['rspamd_global_filters_regex'];?></p>
         <ul>
         <?php

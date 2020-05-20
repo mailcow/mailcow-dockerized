@@ -89,6 +89,7 @@
         "in_use_by": "Utilisé par",
         "inactive": "Inactif",
         "link": "Lien",
+        "loading": "Veuillez patienter...",
         "logo_info": "Votre image sera redimensionnée à une hauteur de 40 pixels pour la barre de navigation du haut et à un maximum de 250 pixels en largeur pour la page d'accueil. Un graphique extensible est fortement recommandé.",
         "merged_vars_hint": "Les lignes grisées ont été importées depuis <code>vars.(local.)inc.php</code> et ne peuvent pas être modifiées.",
         "message": "Message",

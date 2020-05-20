@@ -498,7 +498,6 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               </div>
             </div>
             <p style="margin:10px" class="help-block"><?=$lang['mailbox']['tls_policy_maps_info'];?></p>
-            <p style="margin:10px" class="help-block"><?=$lang['mailbox']['tls_policy_maps_enforced_tls'];?></p>
             <!-- <div class="mass-actions-mailbox" data-actions-header="true"></div> -->
             <div class="table-responsive">
               <table class="table table-striped" id="tls_policy_table"></table>

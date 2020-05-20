@@ -79,6 +79,7 @@
         "import": "Importuj",
         "import_private_key": "Importuj klucz prywatny",
         "inactive": "Nieaktywny",
+        "loading": "Proszę czekać...",
         "message": "Wiadomość",
         "no_record": "Brak rekordu",
         "password": "Hasło",

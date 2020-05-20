@@ -69,6 +69,7 @@
         "forwarding_hosts_add_hint": "È possibile specificare indirizzi IPv4 / IPv6, reti nella notazione CIDR, nomi host (che verranno risolti in indirizzi IP) o nomi di dominio (che verranno risolti agli indirizzi IP richiamando i record SPF o, in assenza, i record MX) .",
         "forwarding_hosts_hint": "I messaggi in entrata sono accettati in maniera incondizionata da tutti gli host elencati qui. Questi host sono quindi non controllati contro DNSBL o sottoposti a greylisting. Spam ricevuti da loro non viene mai rifiutata e sempre archiviata nella cartella Junk. L'utilizzo più comune per questo è quello di specificare i server di posta elettronica su cui è stata impostata una regola che inoltra le email in arrivo al server mailcow.",
         "host": "Hostname",
+        "loading": "Attendere...",
         "no_record": "Nessun risultato",
         "password": "Password",
         "password_repeat": "Conferma password(ripeti)",
