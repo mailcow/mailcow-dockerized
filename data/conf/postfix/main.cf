@@ -171,7 +171,6 @@ smtpd_milters = inet:rspamd:9900
 non_smtpd_milters = inet:rspamd:9900
 milter_mail_macros = i {mail_addr} {client_addr} {client_name} {auth_authen}
 mydestination = localhost.localdomain, localhost
-# Prefere IPv4, useful for v4-only envs
 smtp_address_preference = any
 smtp_sender_dependent_authentication = yes
 smtp_sasl_auth_enable = yes
