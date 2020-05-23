@@ -113,6 +113,7 @@ function mail_error() {
       --charset=UTF-8 \
       --subject="${SUBJECT}" \
       --body-plain="${BODY}" \
+      --add-header="X-Priority: 1" \
       --to=${rcpt} \
       --from="watchdog@${MAILCOW_HOSTNAME}" \
       --hello-host=${MAILCOW_HOSTNAME} \
