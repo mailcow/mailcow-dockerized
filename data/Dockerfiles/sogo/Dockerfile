@@ -47,6 +47,10 @@ COPY supervisord.conf /etc/supervisor/supervisord.conf
 COPY acl.diff /acl.diff
 COPY stop-supervisor.sh /usr/local/sbin/stop-supervisor.sh
 COPY docker-entrypoint.sh /
+COPY sogo-restore-userdata.sh /usr/local/sbin/sogo-restore-userdata.sh
+
+RUN chown sogo:sogo /usr/local/sbin/sogo-restore-userdata.sh \
+    && chmod u+x /usr/local/sbin/sogo-restore-userdata.sh
 
 RUN chmod +x /bootstrap-sogo.sh \
   /usr/local/sbin/stop-supervisor.sh
