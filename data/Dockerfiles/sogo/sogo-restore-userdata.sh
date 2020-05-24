@@ -1,4 +1,4 @@
-#!/usr/bin env bash
+#!/usr/bin/env bash
 
 MYBACKUPDIR=/sogo_backup
 USE_SIEVE=$(grep 'SOGoSieveScriptsEnabled = YES;' /etc/sogo/sogo.conf|cut -d '=' -f 2)
