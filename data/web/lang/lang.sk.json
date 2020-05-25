@@ -771,7 +771,7 @@
         "admin_api_modified": "Zmeny v API uložené",
         "admin_modified": "Zmeny v administrácii uložené",
         "admin_removed": "Administrátor %s odstránený ",
-        "alias_added": "Alias adresa %s pridaná",
+        "alias_added": "Alias adresa %s (%d) pridaná",
         "alias_domain_removed": "Alias doména %s odstránená ",
         "alias_modified": "Zmeny v alias adrese %s uložené",
         "alias_removed": "Alias %s odstránený",

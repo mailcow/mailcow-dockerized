@@ -695,7 +695,7 @@
         "admin_api_modified": "Změna API uložena",
         "admin_modified": "Změny správce uloženy",
         "admin_removed": "Správce %s odebrán",
-        "alias_added": "Byl přidán alias %s",
+        "alias_added": "Byl přidán alias %s (%d)",
         "alias_domain_removed": "Doménový alias %s odebrán",
         "alias_modified": "Změny aliasu %s uloženy",
         "alias_removed": "Alias %s odebrán",
