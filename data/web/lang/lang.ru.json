@@ -780,7 +780,7 @@
         "admin_api_modified": "Изменения в API сохранены",
         "admin_modified": "Изменения администратора сохранены",
         "admin_removed": "Администратор %s удален",
-        "alias_added": "Псевдоним %s добавлен",
+        "alias_added": "Псевдоним %s (%d) добавлен",
         "alias_domain_removed": "Псевдоним домена %s удален",
         "alias_modified": "Изменения псевдонима %s сохранены",
         "alias_removed": "Псевдоним %s удален",

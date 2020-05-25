@@ -779,7 +779,7 @@
         "admin_api_modified": "Änderungen an API wurden gespeichert",
         "admin_modified": "Änderungen am Administrator wurden gespeichert",
         "admin_removed": "Administrator %s wurde entfernt",
-        "alias_added": "Alias-Adresse %s wurden angelegt",
+        "alias_added": "Alias-Adresse %s (%d) wurde angelegt",
         "alias_domain_removed": "Alias-Domain %s wurde entfernt",
         "alias_modified": "Änderungen an Alias %s wurden gespeichert",
         "alias_removed": "Alias-Adresse %s wurde entfernt",
