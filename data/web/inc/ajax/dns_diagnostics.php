@@ -368,7 +368,7 @@ foreach ($records as $record) {
       $record[2] == $spf_link) {
         $state = state_nomatch;
         $rslt = get_spf_allowed_hosts($record[0]);
-        if(in_array($ip, $rslt) && in_array($ip6, $rslt)){
+        if(in_array($ip, $rslt) && in_array(expand_ipv6($ip6), $rslt)){
             $state = state_good;
         }
         $state .= '<br />' . $current[$data_field[$current['type']]].state_optional;

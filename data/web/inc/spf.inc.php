@@ -1,6 +1,12 @@
 <?php
 error_reporting(0);
 
+function expand_ipv6($ip) {
+	$hex = unpack("H*hex", inet_pton($ip));
+	$ip = substr(preg_replace("/([A-f0-9]{4})/", "$1:", $hex['hex']), 0, -1);
+	return $ip;
+}
+
 function get_spf_allowed_hosts($check_domain)
 {
 	$hosts = array();
@@ -33,6 +39,8 @@ function get_spf_allowed_hosts($check_domain)
 			else
 			{
 				unset($cidr);
+				// reset domain to check_domain
+				$domain = $check_domain;
 				if (strpos($mech, ':') !== FALSE) // handle a domain specification
 				{
 					$split = explode(':', $mech);
@@ -77,7 +85,11 @@ function get_spf_allowed_hosts($check_domain)
 			}
 		}
 	}
-	
+	foreach ($hosts as &$host) {
+		if (filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+			$host = expand_ipv6($host);
+		}
+	}
 	return $hosts;
 }
 
