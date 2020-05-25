@@ -777,10 +777,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':active' => $active
               ));
             }
+            $id = $pdo->lastInsertId();
             $_SESSION['return'][] = array(
               'type' => 'success',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => array('alias_added', $address)
+              'msg' => array('alias_added', $address, $id)
             );
           }
         break;
@@ -3119,9 +3120,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             `created`,
             `modified`
               FROM `alias`
-                  WHERE `id` = :id AND `address` != `goto`");
+                  WHERE (`id` = :id OR `address` = :address) AND `address` != `goto`");
           $stmt->execute(array(
-            ':id' => intval($_data),
+              ':id' => $_data,
+              ':address' => $_data,
           ));
           $row = $stmt->fetch(PDO::FETCH_ASSOC);
           $stmt = $pdo->prepare("SELECT `target_domain` FROM `alias_domain` WHERE `alias_domain` = :domain");
@@ -3823,7 +3825,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             }
             $stmt = $pdo->prepare("DELETE FROM `alias` WHERE `id` = :id");
             $stmt->execute(array(
-              ':id' => $id
+              ':id' => $alias_data['id']
             ));
             $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE `send_as` = :alias_address");
             $stmt->execute(array(

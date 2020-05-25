@@ -696,7 +696,7 @@
         "admin_api_modified": "API-muutokset on tallennettu",
         "admin_modified": "Järjestelmänvalvojan muutokset on tallennettu",
         "admin_removed": "Ylläpitäjä %s on poistettu",
-        "alias_added": "Alias osoite %s on lisätty",
+        "alias_added": "Alias osoite %s (%d) on lisätty",
         "alias_domain_removed": "Alias verkkotunnus %s on poistettu",
         "alias_modified": "Muutokset alias osoitteseen %s on tallennettu",
         "alias_removed": "Alias %s on poistettu",

@@ -774,7 +774,7 @@
         "admin_api_modified": "Wijzigingen aan de API zijn opgeslagen",
         "admin_modified": "Wijzigingen aan administrator zijn opgeslagen",
         "admin_removed": "Administrator %s is verwijderd",
-        "alias_added": "Aliasadres %s is toegevoegd",
+        "alias_added": "Aliasadres %s (%d) is toegevoegd",
         "alias_domain_removed": "Aliasdomein %s is verwijderd",
         "alias_modified": "Wijzigingen aan alias %s zijn opgeslagen",
         "alias_removed": "Alias %s is verwijderd",

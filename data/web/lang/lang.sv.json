@@ -778,7 +778,7 @@
         "admin_api_modified": "Ändringarna på API:et har sparats",
         "admin_modified": "Ändringarna för administratören har sparats",
         "admin_removed": "Administratören %s har tagits bort",
-        "alias_added": "Aliasadressen %s har lagts till",
+        "alias_added": "Aliasadressen %s (%d) har lagts till",
         "alias_domain_removed": "Aliasdomänen %s har tagits bort",
         "alias_modified": "Ändringarna på aliasadressen %s har sparats",
         "alias_removed": "Aliasadressen %s har tagits bort",
