@@ -1977,7 +1977,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':goto' => $goto,
                 ':sogo_visible' => $sogo_visible,
                 ':active' => $active,
-                ':id' => $id
+                ':id' => $is_now['id']
               ));
             }
             $_SESSION['return'][] = array(
