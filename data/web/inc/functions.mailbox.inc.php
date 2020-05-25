@@ -3825,7 +3825,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             }
             $stmt = $pdo->prepare("DELETE FROM `alias` WHERE `id` = :id");
             $stmt->execute(array(
-              ':id' => $id
+              ':id' => $alias_data['id']
             ));
             $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE `send_as` = :alias_address");
             $stmt->execute(array(
