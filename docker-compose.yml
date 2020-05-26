@@ -2,7 +2,7 @@ version: '2.1'
 services:
 
     unbound-mailcow:
-      image: mailcow/unbound:1.11
+      image: mailcow/unbound:1.12
       environment:
         - TZ=${TZ}
       volumes:
@@ -191,7 +191,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.124
+      image: mailcow/dovecot:1.125
       depends_on:
         - mysql-mailcow
       dns:
