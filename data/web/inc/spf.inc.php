@@ -1,12 +1,6 @@
 <?php
 error_reporting(0);
 
-function expand_ipv6($ip) {
-	$hex = unpack("H*hex", inet_pton($ip));
-	$ip = substr(preg_replace("/([A-f0-9]{4})/", "$1:", $hex['hex']), 0, -1);
-	return $ip;
-}
-
 function get_spf_allowed_hosts($check_domain)
 {
 	$hosts = array();
