@@ -1306,6 +1306,7 @@ echo "var log_pagination_size = '". $LOG_PAGINATION_SIZE . "';\n";
 <?php
 $js_minifier->add('/web/js/site/admin.js');
 $js_minifier->add('/web/js/presets/rspamd.js');
+$js_minifier->add('/web/js/site/pwgen.js');
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
 } else {
 	header('Location: /');

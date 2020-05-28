@@ -177,6 +177,7 @@
         "forwarding_hosts_add_hint": "Sie können entweder IPv4/IPv6-Adressen, Netzwerke in CIDR-Notation, Hostnamen (die zu IP-Adressen aufgelöst werden), oder Domainnamen (die zu IP-Adressen aufgelöst werden, indem ihr SPF-Record abgefragt wird oder, in dessen Abwesenheit, ihre MX-Records) angeben.",
         "forwarding_hosts_hint": "Eingehende Nachrichten werden von den hier gelisteten Hosts bedingungslos akzeptiert. Diese Hosts werden dann nicht mit DNSBLs abgeglichen oder Greylisting unterworfen. Von ihnen empfangener Spam wird nie abgelehnt, optional kann er aber in den Spam-Ordner einsortiert werden. Die übliche Verwendung für diese Funktion ist, um Mailserver anzugeben, auf denen eine Weiterleitung zu Ihrem mailcow-Server eingerichtet wurde.",
         "from": "Absender",
+        "generate": "generieren",
         "guid": "GUID - Eindeutige Instanz-ID",
         "guid_and_license": "GUID & Lizenz",
         "hash_remove_info": "Das Entfernen eines Ratelimit Hashes - sofern noch existent - bewirkt den Reset gezählter Nachrichten dieses Elements.<br>\r\n  Jeder Hash wird durch eine eindeutige Farbe gekennzeichnet.",

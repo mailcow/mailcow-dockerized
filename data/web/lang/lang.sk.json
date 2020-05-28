@@ -175,6 +175,7 @@
         "forwarding_hosts_add_hint": "Môžete buď špecifikovať IPv4/IPv6 adresy, siete v CIDR notácii, hostiteľské mená (ktoré budú preložené na IP adresy), alebo doménové mená (ktoré budú ako IP získané z SPF záznamov, alebo v prípade ich neprítomnosti, pomocou MX záznamov).",
         "forwarding_hosts_hint": "Prichádzajúce správy sú bezpodmienečne prijaté z uvedených hostiteľov. Nekontroluje sa ich prítomnosť v DNSBL a neaplikuje sa u nich greylisting. Spam z uvedených hostiteľov sa neodmieta, ale občas môže skončiť nevyžiadanej pošte. Najčastejšie sa tu definujú hostitelia ktorý doručujú alebo majú presmerovanú poštu na tento server.",
         "from": "Od",
+        "generate": "generovať",
         "guid": "GUID – unikátne ID",
         "guid_and_license": "GUID & Licencia",
         "hash_remove_info": "Odstránením hashu pre limit prenosu (ak stále existuje), sa kompletne resetuje počítadlo.<br>\r\n Každý hash je označený individuálnou farbou.",
