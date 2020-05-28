@@ -176,6 +176,7 @@
         "forwarding_hosts_add_hint": "Het is mogelijk om IPv4- of IPv6-adressen, netwerken in CIDR-notatie, hostnames (worden omgezet naar IP-adressen) of domeinnamen (worden tevens omgezet naar IP-adressen of, bij gebrek daaraan, MX-records) op te geven.",
         "forwarding_hosts_hint": "Inkomende berichten worden onvoorwaardelijk geaccepteerd vanaf iedere host hieronder vermeld. Deze hosts worden hierdoor niet gecontroleerd op DNSBLs, en zullen de greylisting omzeilen. Spam wordt daarentegen zoals gebruikelijk in de spamfolder geplaatst. Dit wordt vaak gebruikt om mailservers te specificeren die forwarden naar deze Mailcow-server.",
         "from": "Afzender",
+        "generate": "genereer",
         "guid": "Identificatienummer - GUID",
         "guid_and_license": "Licentie en identificatie",
         "hash_remove_info": "Het verwijderen van een ratelimit-hash, indien nog aanwezig, zal zijn teller volledig herstellen.<br>Elke hash wordt aangeduid met een aparte kleur.",

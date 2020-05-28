@@ -176,6 +176,7 @@
         "forwarding_hosts_add_hint": "You can either specify IPv4/IPv6 addresses, networks in CIDR notation, host names (which will be resolved to IP addresses), or domain names (which will be resolved to IP addresses by querying SPF records or, in their absence, MX records).",
         "forwarding_hosts_hint": "Incoming messages are unconditionally accepted from any hosts listed here. These hosts are then not checked against DNSBLs or subjected to greylisting. Spam received from them is never rejected, but optionally it can be filed into the Junk folder. The most common use for this is to specify mail servers on which you have set up a rule that forwards incoming emails to your mailcow server.",
         "from": "From",
+        "generate": "generate",
         "guid": "GUID - unique instance ID",
         "guid_and_license": "GUID & License",
         "hash_remove_info": "Removing a ratelimit hash (if still existing) will reset its counter completely.<br>\r\n  Each hash is indicated by an individual color.",
