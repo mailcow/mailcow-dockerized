@@ -157,7 +157,7 @@ while (($#)); do
     echo './update.sh [-c|--check, --ours, --gc, --skip-start, -h|--help]
 
   -c|--check           -   Check for updates and exit (exit codes => 0: update available, 3: no updates)
-  --ours               -   Use merge strategy "ours" to solve conflicts in favor of non-mailcow code (local changes)
+  --ours               -   Use merge strategy "ours" to solve conflicts in favor of non-mailcow code (local changes over remote changes), not recommended!
   --gc                 -   Run garbage collector to delete old image tags
   --no-update-compose  -   Do not update docker-compose
   --prefetch           -   Only prefetch new images and exit (useful to prepare updates)
