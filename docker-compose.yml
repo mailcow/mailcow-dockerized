@@ -396,7 +396,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.77
+      image: mailcow/watchdog:1.78
       # Debug
       #command: /watchdog.sh
       dns:
@@ -404,6 +404,7 @@ services:
       volumes:
         - rspamd-vol-1:/var/lib/rspamd
         - mysql-socket-vol-1:/var/run/mysqld/
+        - postfix-vol-1:/var/spool/postfix
         - ./data/assets/ssl:/etc/ssl/mail/:ro
       restart: always
       environment:
@@ -447,6 +448,8 @@ services:
         - IPV6NAT_THRESHOLD=1
         - RSPAMD_THRESHOLD=5
         - OLEFY_THRESHOLD=5
+        - MAILQ_THRESHOLD=3
+        - MAILQ_CRIT=30
       networks:
         mailcow-network:
           aliases:
