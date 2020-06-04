@@ -70,6 +70,7 @@ def notify_rcpt(rcpt, msg_count, quarantine_acl):
   text = html2text.html2text(html)
   count = 0
   while count < 15:
+    count += 1
     try:
       server = smtplib.SMTP('postfix', 590, 'quarantine')
       server.ehlo()
