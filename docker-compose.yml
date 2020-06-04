@@ -139,6 +139,8 @@ services:
         - POP_PORT=${POP_PORT:-110}
         - POPS_PORT=${POPS_PORT:-995}
         - SIEVE_PORT=${SIEVE_PORT:-4190}
+        - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
+        - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
         - SUBMISSION_PORT=${SUBMISSION_PORT:-587}
         - SMTPS_PORT=${SMTPS_PORT:-465}
         - SMTP_PORT=${SMTP_PORT:-25}
@@ -191,7 +193,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.125
+      image: mailcow/dovecot:1.126
       depends_on:
         - mysql-mailcow
       dns:
