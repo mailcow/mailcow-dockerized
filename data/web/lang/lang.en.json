@@ -46,7 +46,7 @@
         "delete2duplicates": "Delete duplicates on destination",
         "description": "Description",
         "destination": "Destination",
-        "disable_login": "Disallow login",
+        "disable_login": "Disallow login (mail is not rejected)",
         "domain": "Domain",
         "domain_matches_hostname": "Domain %s matches hostname",
         "domain_quota_m": "Total domain quota (MiB)",

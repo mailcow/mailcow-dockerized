@@ -46,7 +46,7 @@
         "delete2duplicates": "Lösche Duplikate im Ziel",
         "description": "Beschreibung",
         "destination": "Ziel",
-        "disable_login": "Login verbieten",
+        "disable_login": "Login verbieten (Mails werden weiterhin angenommen)",
         "domain": "Domain",
         "domain_matches_hostname": "Domain %s darf nicht dem Hostnamen entsprechen",
         "domain_quota_m": "Domain Speicherplatz gesamt (MiB)",
