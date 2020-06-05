@@ -117,7 +117,7 @@ function backup() {
       else
         echo "Using SQL image ${SQLIMAGE}, starting..."
         docker run --name mailcow-backup --rm \
-          --network $(docker network ls -qf name=${CMPS_PRJ}_) \
+          --network $(docker network ls -qf name=${CMPS_PRJ}_mailcow-network) \
           -v $(docker volume ls -qf name=${CMPS_PRJ}_mysql-vol-1):/var/lib/mysql/:ro \
           --entrypoint= \
           -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
