@@ -677,7 +677,7 @@
         "release_subject": "Mahdollisesti vahingoittava karanteeni aihe %s",
         "remove": "Poista",
         "rspamd_result": "Rspamd-tulos",
-        "sender": "Lähettäjä",
+        "sender": "Lähettäjä (SMTP)",
         "show_item": "Näytä tuote",
         "spam_score": "Pisteet",
         "subj": "Aihe",
