@@ -758,7 +758,7 @@
         "remove": "Remove",
         "rspamd_result": "Rspamd result",
         "sender": "Sender (SMTP)",
-        "sender_header": "Sender (From header)",
+        "sender_header": "Sender (\"From\" header)",
         "quick_release_link": "Open quick release link",
         "quick_delete_link": "Open quick delete link",
         "show_item": "Show item",
