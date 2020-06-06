@@ -23,7 +23,9 @@ function rrmdir($src) {
 function addAddresses(&$list, $mail, $headerName) {
   $addresses = $mail->getAddresses($headerName);
   foreach ($addresses as $address) {
-    $list[] = array('address' => $address['address'], 'type' => $headerName);
+    if (filter_var($address['address'], FILTER_VALIDATE_EMAIL)) {
+      $list[] = array('address' => $address['address'], 'type' => $headerName);
+    }
   }
 }
 
@@ -51,6 +53,7 @@ if (!empty($_GET['hash']) && ctype_alnum($_GET['hash'])) {
       addAddresses($recipientsList, $mail_parser, 'to');
       addAddresses($recipientsList, $mail_parser, 'cc');
       addAddresses($recipientsList, $mail_parser, 'bcc');
+      $recipientsList[] = array('address' => $mailc['rcpt'], 'type' => 'SMTP');
       $data['recipients'] = $recipientsList;
     }
     // Get from
@@ -72,6 +75,10 @@ elseif (!empty($_GET['id']) && ctype_alnum($_GET['id'])) {
   }
   $tmpdir = '/tmp/' . $_GET['id'] . '/';
   $mailc = quarantine('details', $_GET['id']);
+  if ($mailc === false) {
+    echo json_encode(array('error' => 'Access denied'));
+    exit;
+  }
   if (strlen($mailc['msg']) > 10485760) {
     echo json_encode(array('error' => 'Message size exceeds 10 MiB.'));
     exit;
@@ -101,6 +108,7 @@ elseif (!empty($_GET['id']) && ctype_alnum($_GET['id'])) {
       addAddresses($recipientsList, $mail_parser, 'to');
       addAddresses($recipientsList, $mail_parser, 'cc');
       addAddresses($recipientsList, $mail_parser, 'bcc');
+      $recipientsList[] = array('address' => $mailc['rcpt'], 'type' => 'SMTP');
       $data['recipients'] = $recipientsList;
     }
     // Get from
