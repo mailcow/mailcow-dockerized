@@ -602,7 +602,7 @@
         "release_body": "Adjuntamos el mensaje en formato eml a este correo.",
         "release_subject": "Mensaje de cuarentena potencialmente dañino %s",
         "remove": "Remover",
-        "sender": "Remitente",
+        "sender": "Remitente (SMTP)",
         "show_item": "Mostrar item",
         "spam_score": "Puntaje",
         "subj": "Asunto",

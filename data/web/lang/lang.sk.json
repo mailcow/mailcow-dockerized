@@ -750,7 +750,7 @@
         "release_subject": "Potenciálne nebezpečná položka v karanténne %s",
         "remove": "Odstrániť",
         "rspamd_result": "Rspamd výsledok",
-        "sender": "Odosielateľ",
+        "sender": "Odosielateľ (SMTP)",
         "show_item": "Ukázať súbor",
         "spam_score": "Výsledok",
         "subj": "Predmet",

@@ -676,7 +676,7 @@
         "release_subject": "Potenciálně škodlivá položka v karanténě %s",
         "remove": "Smazat",
         "rspamd_result": "Skóre Rspamd",
-        "sender": "Odesílatel",
+        "sender": "Odesílatel (SMTP)",
         "show_item": "Zobrazit položku",
         "spam_score": "Skóre",
         "subj": "Předmět",

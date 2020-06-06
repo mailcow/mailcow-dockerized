@@ -757,7 +757,7 @@
         "release_subject": "Potentiellt skadlig karantänsmeddelande %s",
         "remove": "Ta bort",
         "rspamd_result": "Rspamd resultat",
-        "sender": "Avsändare",
+        "sender": "Avsändare (SMTP)",
         "show_item": "Visa objekt",
         "spam_score": "Betyg",
         "subj": "Ämne",

@@ -759,7 +759,7 @@
         "release_subject": "Потенциально опасное письмо %s",
         "remove": "Удалить",
         "rspamd_result": "Результат Rspamd",
-        "sender": "Отправитель",
+        "sender": "Отправитель (SMTP)",
         "show_item": "Показать",
         "spam_score": "Оценка",
         "subj": "Тема письма",

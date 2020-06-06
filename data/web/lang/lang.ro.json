@@ -757,7 +757,7 @@
         "release_subject": "Element în carantină potențial dăunător %s",
         "remove": "Elimină",
         "rspamd_result": "Rezultat Rspamd",
-        "sender": "Expeditor",
+        "sender": "Expeditor (SMTP)",
         "show_item": "Afișează elementul",
         "spam_score": "Scor",
         "subj": "Subiect",

@@ -144,7 +144,8 @@ jQuery(function($){
         $('#qid_detail_subj').text(data.subject);
         $('#qid_detail_text').text(data.text_plain);
         $('#qid_detail_text_from_html').text(data.text_html);
-
+        $('#qid_detail_hfrom').text(data.header_from);
+        $('#qid_detail_efrom').text(data.env_from);
         $('#qid_detail_score').text(data.score);
         $('#qid_detail_symbols').html('');
         if (typeof data.symbols !== 'undefined') {
