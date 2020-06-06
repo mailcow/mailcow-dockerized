@@ -761,7 +761,7 @@
         "quick_release_link": "Quick-Release Link öffnen",
         "quick_delete_link": "Quick-Delete Link öffnen",
         "sender": "Sender (SMTP)",
-        "sender_header": "Sender (From-Header)",
+        "sender_header": "Sender (\"From\"-Header)",
         "show_item": "Details",
         "spam_score": "Bewertung",
         "subj": "Betreff",
