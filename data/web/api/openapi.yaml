@@ -156,6 +156,33 @@ paths:
         Using this endpoint you can create a new app password for a specific
         mailbox.
       operationId: Create App Password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                active: '1'
+                username: info@domain.tld
+                app_name: wordpress
+                app_passwd: keyleudecticidechothistishownsan31
+                app_passwd2: keyleudecticidechothistishownsan31
+              properties:
+                active:
+                  description: is alias active or not
+                  type: boolean
+                username:
+                  description: mailbox for which the app password should be created
+                  type: string
+                app_name:
+                  description: name of your app password
+                  type: string
+                app_passwd:
+                  description: your app password
+                  type: string
+                app_passwd2:
+                    description: your app password
+                    type: string
+              type: object
       summary: Create App Password
   /api/v1/add/bcc:
     post:
