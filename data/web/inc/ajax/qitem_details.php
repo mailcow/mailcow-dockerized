@@ -53,7 +53,7 @@ if (!empty($_GET['hash']) && ctype_alnum($_GET['hash'])) {
       addAddresses($recipientsList, $mail_parser, 'to');
       addAddresses($recipientsList, $mail_parser, 'cc');
       addAddresses($recipientsList, $mail_parser, 'bcc');
-      $recipientsList[] = array('address' => $mailc['rcpt'], 'type' => 'SMTP');
+      $recipientsList[] = array('address' => $mailc['rcpt'], 'type' => 'smtp');
       $data['recipients'] = $recipientsList;
     }
     // Get from
@@ -108,7 +108,7 @@ elseif (!empty($_GET['id']) && ctype_alnum($_GET['id'])) {
       addAddresses($recipientsList, $mail_parser, 'to');
       addAddresses($recipientsList, $mail_parser, 'cc');
       addAddresses($recipientsList, $mail_parser, 'bcc');
-      $recipientsList[] = array('address' => $mailc['rcpt'], 'type' => 'SMTP');
+      $recipientsList[] = array('address' => $mailc['rcpt'], 'type' => 'smtp');
       $data['recipients'] = $recipientsList;
     }
     // Get from
