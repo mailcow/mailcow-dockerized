@@ -1528,7 +1528,7 @@ paths:
               properties:
                 items:
                   description: contains list of app passwords you want to delete
-                  type: array
+                  type: object
               type: object
       summary: Delete App Password
   /api/v1/delete/bcc:
@@ -1591,7 +1591,7 @@ paths:
               properties:
                 items:
                   description: contains list of bcc maps you want to delete
-                  type: array
+                  type: object
               type: object
       summary: Delete BCC Map
   /api/v1/delete/dkim:
@@ -1725,7 +1725,7 @@ paths:
               properties:
                 items:
                   description: contains list of domains you want to delete
-                  type: array
+                  type: object
               type: object
       summary: Delete domain
   /api/v1/delete/domain-admin:
@@ -1785,7 +1785,7 @@ paths:
               properties:
                 items:
                   description: contains list of usernames of the users you want to delete
-                  type: array
+                  type: object
               type: object
       summary: Delete Domain Admin
   /api/v1/delete/domain-policy:
@@ -1859,7 +1859,7 @@ paths:
               properties:
                 items:
                   description: contains list of domain policys you want to delete
-                  type: array
+                  type: object
               type: object
       summary: Delete domain policy
   /api/v1/delete/fwdhost:
@@ -2009,7 +2009,7 @@ paths:
               properties:
                 items:
                   description: contains list of mailboxes you want to delete
-                  type: array
+                  type: object
               type: object
       summary: Delete mailbox
   /api/v1/delete/mailq:
@@ -2113,7 +2113,7 @@ paths:
               properties:
                 items:
                   description: contains list of oAuth clients you want to delete
-                  type: array
+                  type: object
               type: object
       summary: Delete oAuth Client
   /api/v1/delete/qitem:
@@ -2175,7 +2175,7 @@ paths:
               properties:
                 items:
                   description: contains list of emails you want to delete
-                  type: array
+                  type: object
               type: object
       summary: Delete mails in Quarantine
   /api/v1/delete/recipient_map:
@@ -2238,7 +2238,7 @@ paths:
               properties:
                 items:
                   description: contains list of recipient maps you want to delete
-                  type: array
+                  type: object
               type: object
       summary: Delete Recipient Map
   /api/v1/delete/relayhost:
@@ -2302,7 +2302,7 @@ paths:
                   description: >-
                     contains list of Sender-Dependent Transport you want to
                     delete
-                  type: array
+                  type: object
               type: object
       summary: Delete Sender-Dependent Transports
   /api/v1/delete/resource:
@@ -2366,7 +2366,7 @@ paths:
               properties:
                 items:
                   description: contains list of Resources you want to delete
-                  type: array
+                  type: object
               type: object
       summary: Delete Resources
   /api/v1/delete/syncjob:
@@ -2426,7 +2426,7 @@ paths:
               properties:
                 items:
                   description: contains list of aliases you want to delete
-                  type: array
+                  type: object
               type: object
       summary: Delete sync job
   /api/v1/delete/tls-policy-map:
@@ -2489,7 +2489,7 @@ paths:
               properties:
                 items:
                   description: contains list of tls policy maps you want to delete
-                  type: array
+                  type: object
               type: object
       summary: Delete TLS Policy Map
   /api/v1/delete/transport:
@@ -2551,7 +2551,7 @@ paths:
               properties:
                 items:
                   description: contains list of transport maps you want to delete
-                  type: array
+                  type: object
               type: object
       summary: Delete Transport Maps
   /api/v1/edit/alias:
@@ -2651,7 +2651,7 @@ paths:
                   type: object
                 items:
                   description: contains list of aliases you want update
-                  type: array
+                  type: object
               type: object
       summary: Update alias
   /api/v1/edit/domain:
@@ -2774,7 +2774,7 @@ paths:
                   type: object
                 items:
                   description: contains list of domain names you want update
-                  type: array
+                  type: object
               type: object
       summary: Update domain
   /api/v1/edit/fail2ban:
@@ -2967,14 +2967,14 @@ paths:
                       type: number
                     sender_acl:
                       description: list of allowed send from addresses
-                      type: array
+                      type: object
                     sogo_access:
                       description: is access to SOGo webmail active or not
                       type: boolean
                   type: object
                 items:
                   description: contains list of mailboxes you want update
-                  type: array
+                  type: object
               type: object
       summary: Update mailbox
   /api/v1/edit/mailq:
@@ -3124,7 +3124,7 @@ paths:
                   type: object
                 items:
                   description: contains list of mailboxes you want to delete
-                  type: array
+                  type: object
               type: object
       summary: Update Pushover settings
   /api/v1/edit/quarantine_notification:
@@ -3172,7 +3172,7 @@ paths:
                   description: >-
                     contains list of mailboxes you want set qurantine
                     notifications
-                  type: array
+                  type: object
               type: object
       summary: Quarantine Notifications
   /api/v1/edit/syncjob:
@@ -3329,7 +3329,7 @@ paths:
                   type: object
                 items:
                   description: contains list of aliases you want update
-                  type: array
+                  type: object
               type: object
       summary: Update sync job
   /api/v1/edit/user-acl:
@@ -3421,11 +3421,11 @@ paths:
                   properties:
                     user_acl:
                       description: contains a list of active user acls
-                      type: array
+                      type: object
                   type: object
                 items:
                   description: contains list of mailboxes you want to delete
-                  type: array
+                  type: object
               type: object
       summary: Update mailbox ACL
   '/api/v1/get/alias/{id}':
@@ -4682,7 +4682,7 @@ paths:
                   type: object
                 items:
                   description: contains list of mailboxes you want to edit the ratelimit of
-                  type: array
+                  type: object
               type: object
       summary: Edit mailbox ratelimits
   /api/v1/edit/rl-domain/:
@@ -4759,7 +4759,7 @@ paths:
                   type: object
                 items:
                   description: contains list of domains you want to edit the ratelimit of
-                  type: array
+                  type: object
               type: object
       summary: Edit domain ratelimits 
   /api/v1/get/status/containers:
