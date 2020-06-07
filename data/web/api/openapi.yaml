@@ -27,6 +27,23 @@ components:
       type: apiKey
       in: header
       name: X-API-Key
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              type:
+                type: string
+                example: error
+              msg:
+                type: string
+                example: authentication failed
+            required:
+            - type
+            - msg
 
 security:
   - ApiKeyAuth: []
@@ -35,6 +52,8 @@ paths:
   /api/v1/add/alias:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -112,6 +131,8 @@ paths:
   /api/v1/add/app-passwd:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -183,6 +204,8 @@ paths:
   /api/v1/add/bcc:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -250,6 +273,8 @@ paths:
   /api/v1/add/dkim:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -311,6 +336,8 @@ paths:
   /api/v1/add/dkim_duplicate:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -368,6 +395,8 @@ paths:
   /api/v1/add/domain:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -513,6 +542,8 @@ paths:
   /api/v1/add/domain-admin:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -587,6 +618,8 @@ paths:
   /api/v1/add/domain-policy:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -653,6 +686,8 @@ paths:
   /api/v1/add/fwdhost:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -712,6 +747,8 @@ paths:
   /api/v1/add/mailbox:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -797,6 +834,8 @@ paths:
   /api/v1/add/oauth2-client:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -847,6 +886,8 @@ paths:
   /api/v1/add/recipient_map:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -911,6 +952,8 @@ paths:
   /api/v1/add/relayhost:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -972,6 +1015,8 @@ paths:
   /api/v1/add/resource:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -1065,6 +1110,8 @@ paths:
   /api/v1/add/syncjob:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -1129,6 +1176,8 @@ paths:
   /api/v1/add/tls-policy-map:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -1207,6 +1256,8 @@ paths:
   /api/v1/add/transport/all:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -1276,6 +1327,8 @@ paths:
   /api/v1/delete/alias:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -1342,6 +1395,8 @@ paths:
   /api/v1/delete/app-passwd:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -1394,6 +1449,8 @@ paths:
   /api/v1/delete/bcc:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -1449,6 +1506,8 @@ paths:
   /api/v1/delete/dkim:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -1499,6 +1558,8 @@ paths:
   /api/v1/delete/domain:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -1567,6 +1628,8 @@ paths:
   /api/v1/delete/domain-admin:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -1619,6 +1682,8 @@ paths:
   /api/v1/delete/domain-policy:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -1685,6 +1750,8 @@ paths:
   /api/v1/delete/fwdhost:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -1751,6 +1818,8 @@ paths:
   /api/v1/delete/mailbox:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -1819,6 +1888,8 @@ paths:
   /api/v1/delete/mailq:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -1852,6 +1923,8 @@ paths:
   /api/v1/delete/oauth2-client:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -1907,6 +1980,8 @@ paths:
   /api/v1/delete/qitem:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -1961,6 +2036,8 @@ paths:
   /api/v1/delete/recipient_map:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -2016,6 +2093,8 @@ paths:
   /api/v1/delete/relayhost:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -2072,6 +2151,8 @@ paths:
   /api/v1/delete/resource:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -2128,6 +2209,8 @@ paths:
   /api/v1/delete/syncjob:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -2180,6 +2263,8 @@ paths:
   /api/v1/delete/tls-policy-map:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -2235,6 +2320,8 @@ paths:
   /api/v1/delete/transport:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -2289,6 +2376,8 @@ paths:
   /api/v1/edit/alias:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -2381,6 +2470,8 @@ paths:
   /api/v1/edit/domain:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             '*/*':
@@ -2496,6 +2587,8 @@ paths:
   /api/v1/edit/fail2ban:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             '*/*':
@@ -2572,6 +2665,8 @@ paths:
   /api/v1/edit/mailbox:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -2680,6 +2775,8 @@ paths:
   /api/v1/edit/mailq:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -2713,6 +2810,8 @@ paths:
   /api/v1/edit/pushover:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -2814,6 +2913,8 @@ paths:
   /api/v1/edit/quarantine_notification:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           description: OK
           headers: {}
@@ -2854,6 +2955,8 @@ paths:
   /api/v1/edit/syncjob:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -3003,6 +3106,8 @@ paths:
   /api/v1/edit/user-acl:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -3112,6 +3217,8 @@ paths:
           schema:
             type: string
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -3169,6 +3276,8 @@ paths:
           schema:
             type: string
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -3216,6 +3325,8 @@ paths:
           schema:
             type: string
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -3255,6 +3366,8 @@ paths:
           schema:
             type: string
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -3280,6 +3393,8 @@ paths:
   /api/v1/get/domain-admin/all:
     get:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -3325,6 +3440,8 @@ paths:
           schema:
             type: string
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -3395,6 +3512,8 @@ paths:
   /api/v1/get/fail2ban:
     get:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -3423,6 +3542,8 @@ paths:
   /api/v1/get/fwdhost/all:
     get:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -3459,6 +3580,8 @@ paths:
           schema:
             type: string
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -3498,6 +3621,8 @@ paths:
           schema:
             type: string
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -3537,6 +3662,8 @@ paths:
           schema:
             type: string
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -3577,6 +3704,8 @@ paths:
           schema:
             type: string
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -3617,6 +3746,8 @@ paths:
           schema:
             type: string
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -3657,6 +3788,8 @@ paths:
           schema:
             type: string
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -3695,6 +3828,8 @@ paths:
           schema:
             type: string
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -3741,6 +3876,8 @@ paths:
           schema:
             type: string
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           description: OK
           headers: {}
@@ -3770,6 +3907,8 @@ paths:
           schema:
             type: string
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -3811,6 +3950,8 @@ paths:
           schema:
             type: string
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -3861,6 +4002,8 @@ paths:
           schema:
             type: string
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -3899,6 +4042,8 @@ paths:
   /api/v1/get/mailq/all:
     get:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -3943,6 +4088,8 @@ paths:
           schema:
             type: string
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -3980,6 +4127,8 @@ paths:
           schema:
             type: string
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -4013,6 +4162,8 @@ paths:
           schema:
             type: string
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -4032,6 +4183,8 @@ paths:
   /api/v1/get/quarantine/all:
     get:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -4078,6 +4231,8 @@ paths:
           schema:
             type: string
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -4122,6 +4277,8 @@ paths:
           schema:
             type: string
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -4146,6 +4303,8 @@ paths:
   /api/v1/get/resource/all:
     get:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -4184,6 +4343,8 @@ paths:
           schema:
             type: string
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -4222,6 +4383,8 @@ paths:
           schema:
             type: string
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -4246,6 +4409,8 @@ paths:
   /api/v1/edit/rl-mbox/:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -4292,6 +4457,8 @@ paths:
   /api/v1/edit/rl-domain/:
     post:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -4361,6 +4528,8 @@ paths:
   /api/v1/get/status/containers:
     get:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -4487,6 +4656,8 @@ paths:
   /api/v1/get/status/solr:
     get:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -4509,6 +4680,8 @@ paths:
   /api/v1/get/status/vmail:
     get:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -4532,6 +4705,8 @@ paths:
   /api/v1/get/syncjobs/all/no_log:
     get:
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -4600,6 +4775,8 @@ paths:
           schema:
             type: string
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
@@ -4645,6 +4822,8 @@ paths:
           schema:
             type: string
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '200':
           content:
             application/json:
