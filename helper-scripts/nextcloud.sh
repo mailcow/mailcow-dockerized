@@ -25,7 +25,6 @@ fi
 [[ ${NC_PURGE} == "y" ]] && [[ ${NC_INSTALL} == "y" ]] && { echo "Cannot use -p and -i at the same time"; }
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-cd ${SCRIPT_DIR}/../
 source mailcow.conf
 
 if [[ ${NC_PURGE} == "y" ]]; then
