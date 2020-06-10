@@ -1011,7 +1011,7 @@ while true; do
     [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}" "Please stop mailcow now and check your network configuration!"
   elif [[ ${com_pipe_answer} == "mysql_repl_checks" ]]; then
     log_msg "MySQL replication is not working properly"
-    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}"
+    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}" "Please check doveadm replicator status"
   elif [[ ${com_pipe_answer} == "dovecot_repl_checks" ]]; then
     log_msg "Dovecot replication is not working properly" "Please check doveadm replicator status"
     [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}"
