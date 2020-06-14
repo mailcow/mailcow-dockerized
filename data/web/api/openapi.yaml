@@ -831,6 +831,7 @@ paths:
                   type: number
               type: object
       summary: Create mailbox
+
   /api/v1/add/oauth2-client:
     post:
       responses:
@@ -4417,12 +4418,34 @@ paths:
               examples:
                 response:
                   value:
-                    - frame: s
-                      mailbox: leon@mailcow.tld
-                      value: '5'
-                    - frame: s
-                      mailbox: lisa@mailcow.tld
-                      value: '3'
+                    - type: success
+                      log:
+                      - ratelimit
+                      - edit
+                      - mailbox
+                      - object:
+                        - info@domain.tld
+                        rl_value: "10"
+                        rl_frame: h
+                      msg:
+                      - rl_saved
+                      - info@domain.tld
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
           description: OK
           headers: {}
       tags:
@@ -4472,12 +4495,11 @@ paths:
                         - domain
                         - object: 
                           - domain.tld
-                          - rl_value: "50"
-                            rl_frame: "h"
+                          rl_value: "50"
+                          rl_frame: "h"
                       msg:
                         - rl_saved
                         - domain.tld
-                      type: success
               schema:
                 properties:
                   log:
@@ -4847,6 +4869,61 @@ paths:
       description: Using this endpoint you can get all Transport Maps.
       operationId: Get Transport Maps
       summary: Get Transport Maps
+  /api/v1/edit/spam-score/:
+    post:
+      responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      log:
+                      - mailbox
+                      - edit
+                      - spam_score
+                      - username:
+                        - info@domain.tld
+                        spam_score: '8,15'
+                      msg:
+                      - mailbox_modified
+                      - info@domain.tld
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Mailboxes
+      description: >-
+        Using this endpoint you can edit the spam filter score for a certain mailbox.
+      operationId: Edit mailbox spam filter score
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                - items:
+                  - info@domain.tld
+                  attr:
+                    spam_score: '8,15'
+      summary: Edit mailbox spam filter score
 
 tags:
   - name: Domains
