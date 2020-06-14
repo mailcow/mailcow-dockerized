@@ -1,4 +1,7 @@
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
 function is_valid_regex($exp) {
   return @preg_match($exp, '') !== false;
 }
@@ -355,6 +358,11 @@ function pem_to_der($pem_key) {
   unset($lines[0]);
   return base64_decode(implode('', $lines));
 }
+function expand_ipv6($ip) {
+	$hex = unpack("H*hex", inet_pton($ip));
+	$ip = substr(preg_replace("/([A-f0-9]{4})/", "$1:", $hex['hex']), 0, -1);
+	return $ip;
+}
 function generate_tlsa_digest($hostname, $port, $starttls = null) {
   if (!is_valid_domain_name($hostname)) {
     return "Not a valid hostname";
@@ -436,7 +444,7 @@ function alertbox_log_parser($_data){
       else {
         $msg = $return['msg'];
       }
-      $log_array[] = array('msg' => json_encode($msg), 'type' => json_encode($type));
+      $log_array[] = array('msg' => $msg, 'type' => json_encode($type));
     }
     if (!empty($log_array)) { 
       return $log_array;
@@ -579,8 +587,10 @@ function check_login($user, $pass) {
 		}
 	}
 	$stmt = $pdo->prepare("SELECT `password` FROM `mailbox`
+      INNER JOIN domain on mailbox.domain = domain.domain
 			WHERE `kind` NOT REGEXP 'location|thing|group'
-        AND `active`='1'
+        AND `mailbox`.`active`='1'
+        AND `domain`.`active`='1'
         AND `username` = :user");
 	$stmt->execute(array(':user' => $user));
 	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);

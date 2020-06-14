@@ -42,8 +42,11 @@ $(document).ready(function() {
   $alertbox_log_parser = alertbox_log_parser($_SESSION);
   if (is_array($alertbox_log_parser)) {
     foreach($alertbox_log_parser as $log) {
+      $alerts[$log['type']][] = $log['msg'];
+    }
+    foreach($alerts as $alert_type => $alert_msg) {
   ?>
-  mailcow_alert_box(<?=$log['msg'];?>, <?=$log['type'];?>);
+  mailcow_alert_box(<?=json_encode(implode('<hr class="alert-hr">', $alert_msg));?>, <?=$alert_type;?>);
   <?php
     }
   unset($_SESSION['return']);
@@ -183,7 +186,7 @@ $(document).ready(function() {
 
   <div class="container footer">
   <?php if (!empty($UI_TEXTS['ui_footer'])) { ?>
-   <hr><?=$UI_TEXTS['ui_footer'];?>
+   <hr><span class="footer-text-enc"><?=str_rot13($UI_TEXTS['ui_footer']);?></span>
   <?php } ?>
   </div>
 </body>

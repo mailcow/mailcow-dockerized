@@ -22,7 +22,7 @@ services:
         - unbound-mailcow
       stop_grace_period: 45s
       volumes:
-        - mysql-vol-1:/var/lib/mysql/
+        - ./perm-data/mysql:/var/lib/mysql/
         - mysql-socket-vol-1:/var/run/mysqld/
         - ./data/conf/mysql/:/etc/mysql/conf.d/:ro
       environment:
@@ -43,7 +43,7 @@ services:
     redis-mailcow:
       image: redis:5-alpine
       volumes:
-        - redis-vol-1:/data/
+        - ./perm-data/redis:/data/
       restart: always
       ports:
         - "${REDIS_PORT:-127.0.0.1:7654}:6379"
@@ -91,7 +91,7 @@ services:
         - ./data/conf/rspamd/lua/:/etc/rspamd/lua/:ro
         - ./data/conf/rspamd/rspamd.conf.local:/etc/rspamd/rspamd.conf.local
         - ./data/conf/rspamd/rspamd.conf.override:/etc/rspamd/rspamd.conf.override
-        - rspamd-vol-1:/var/lib/rspamd
+        - ./perm-data/rspamd:/var/lib/rspamd
       restart: always
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -111,7 +111,7 @@ services:
         - ./data/web:/web:rw
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
         - ./data/conf/rspamd/custom/:/rspamd_custom_maps
-        - rspamd-vol-1:/var/lib/rspamd
+        - ./perm-data/rspamd:/var/lib/rspamd
         - mysql-socket-vol-1:/var/run/mysqld/
         - ./data/conf/sogo/:/etc/sogo/
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro
@@ -181,8 +181,8 @@ services:
         - ./data/web/inc/init_db.inc.php:/init_db.inc.php
         - ./data/conf/sogo/custom-sogo.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/custom-sogo.js
         - mysql-socket-vol-1:/var/run/mysqld/
-        - sogo-web-vol-1:/sogo_web
-        - sogo-userdata-backup-vol-1:/sogo_backup
+        - ./perm-data/sogo-web:/sogo_web
+        - ./perm-data/sogo-userdata-backup:/sogo_backup
       restart: always
       networks:
         mailcow-network:
@@ -204,12 +204,12 @@ services:
         - ./data/assets/ssl:/etc/ssl/mail/:ro
         - ./data/conf/sogo/:/etc/sogo/
         - ./data/conf/phpfpm/sogo-sso/:/etc/phpfpm/
-        - vmail-vol-1:/var/vmail
-        - vmail-attachments-vol-1:/var/attachments
-        - crypt-vol-1:/mail_crypt/
+        - ./perm-data/vmail:/var/vmail
+        - ./perm-data/vmail-attachments:/var/attachments
+        - ./perm-data/crypt:/mail_crypt/
         - ./data/conf/rspamd/custom/:/etc/rspamd/custom
         - ./data/assets/templates:/templates
-        - rspamd-vol-1:/var/lib/rspamd
+        - ./perm-data/rspamd:/var/lib/rspamd
         - mysql-socket-vol-1:/var/run/mysqld/
       environment:
         - LOG_LINES=${LOG_LINES:-9999}
@@ -256,9 +256,9 @@ services:
         - ./data/hooks/postfix:/hooks
         - ./data/conf/postfix:/opt/postfix/conf
         - ./data/assets/ssl:/etc/ssl/mail/:ro
-        - postfix-vol-1:/var/spool/postfix
-        - crypt-vol-1:/var/lib/zeyple
-        - rspamd-vol-1:/var/lib/rspamd
+        - ./perm-data/postfix:/var/spool/postfix
+        - ./perm-data/crypt:/var/lib/zeyple
+        - ./perm-data/rspamd:/var/lib/rspamd
         - mysql-socket-vol-1:/var/run/mysqld/
       environment:
         - LOG_LINES=${LOG_LINES:-9999}
@@ -327,10 +327,10 @@ services:
         - ./data/assets/ssl/:/etc/ssl/mail/:ro
         - ./data/conf/nginx/:/etc/nginx/conf.d/:rw
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro
-        - sogo-web-vol-1:/usr/lib/GNUstep/SOGo/
-      ports:
-        - "${HTTPS_BIND:-0.0.0.0}:${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
-        - "${HTTP_BIND:-0.0.0.0}:${HTTP_PORT:-80}:${HTTP_PORT:-80}"
+        - ./perm-data/sogo-web:/usr/lib/GNUstep/SOGo/
+#      ports:
+#        - "${HTTPS_BIND:-0.0.0.0}:${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
+#        - "${HTTP_BIND:-0.0.0.0}:${HTTP_PORT:-80}:${HTTP_PORT:-80}"
       restart: always
       networks:
         mailcow-network:
@@ -402,7 +402,7 @@ services:
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       volumes:
-        - rspamd-vol-1:/var/lib/rspamd
+        - ./perm-data/rspamd:/var/lib/rspamd
         - mysql-socket-vol-1:/var/run/mysqld/
         - ./data/assets/ssl:/etc/ssl/mail/:ro
       restart: always
@@ -472,7 +472,7 @@ services:
       image: mailcow/solr:1.7
       restart: always
       volumes:
-        - solr-vol-1:/opt/solr/server/solr/dovecot-fts/data
+        - ./perm-data/solr:/opt/solr/server/solr/dovecot-fts/data
       ports:
         - "${SOLR_PORT:-127.0.0.1:18983}:8983"
       environment:
@@ -543,16 +543,4 @@ networks:
         - subnet: ${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
 
 volumes:
-  # Storage for email files
-  vmail-vol-1:
-  # Storage for attachments (deduplicated)
-  vmail-attachments-vol-1:
-  mysql-vol-1:
   mysql-socket-vol-1:
-  redis-vol-1:
-  rspamd-vol-1:
-  solr-vol-1:
-  postfix-vol-1:
-  crypt-vol-1:
-  sogo-web-vol-1:
-  sogo-userdata-backup-vol-1:
