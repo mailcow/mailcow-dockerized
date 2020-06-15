@@ -130,7 +130,7 @@ function backup() {
     --delete-days)
       shift
       if [[ "${1}" =~ ^[0-9]+$ ]]; then
-        find ${BACKUP_LOCATION}/* -maxdepth 0 -mmin +$((${1}*60*24)) -exec rm -rvf {} \;
+        find ${BACKUP_LOCATION}/mailcow-* -maxdepth 0 -mmin +$((${1}*60*24)) -exec rm -rvf {} \;
       else
         echo "Parameter of --delete-days is not a number."
       fi
