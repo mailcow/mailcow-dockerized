@@ -816,7 +816,7 @@
         "item_released": "Elementul %s a fost eliberat",
         "items_deleted": "Elementul %s a fost șters cu succes",
         "items_released": "Elementele selectate au fost eliberate",
-        "learned_ham": "A fost învățat cu succes ID % ca ham",
+        "learned_ham": "A fost învățat cu succes ID %s ca ham",
         "license_modified": "Modificările la licență au fost salvate",
         "logged_in_as": "Conectat ca %s",
         "mailbox_added": "Cutia poștală %s a fost adăugată",
