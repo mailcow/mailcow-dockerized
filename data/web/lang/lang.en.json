@@ -819,7 +819,7 @@
         "item_released": "Item %s released",
         "items_deleted": "Item %s successfully deleted",
         "items_released": "Selected items were released",
-        "learned_ham": "Successfully learned ID % as ham",
+        "learned_ham": "Successfully learned ID %s as ham",
         "license_modified": "Changes to license have been saved",
         "logged_in_as": "Logged in as %s",
         "mailbox_added": "Mailbox %s has been added",
