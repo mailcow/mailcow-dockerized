@@ -408,7 +408,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
               </div>
               <div class="form-group">
                 <label for="password"><?=$lang['admin']['password'];?></label>
-                <input class="form-control" name="password">
+                <input class="form-control input-sm" name="password">
               </div>
               <!-- <div class="form-group">
                 <label>
