@@ -688,6 +688,7 @@
         "sieve_preset_5": "Auto responder (vacation)",
         "sieve_preset_6": "Reject mail with reponse",
         "sieve_preset_7": "Redirect and keep/drop",
+        "sieve_preset_8": "Discard message sent to an alias address the sender is part of",
         "sieve_preset_header": "Please see the example presets below. For more details see <a href=\"https://en.wikipedia.org/wiki/Sieve_(mail_filtering_language)\" target=\"_blank\">Wikipedia</a>.",
         "sogo_allow_admin_hint": "Administrative SOGo logins are only available for mailboxes with an existing SOGo profile. A user must have been logged in to SOGo at least once.",
         "sogo_visible": "Alias is visible in SOGo",
