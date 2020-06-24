@@ -52,3 +52,4 @@ update_diffs/
 .github/
 docker-compose.override.yml
 refresh_images.sh
+perm-data

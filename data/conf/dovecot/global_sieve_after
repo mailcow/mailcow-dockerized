@@ -8,7 +8,7 @@ require "subaddress";
 require "envelope";
 
 if header :contains "X-Spam-Flag" "YES" {
-  fileinto "Junk";
+  fileinto "Spam";
 }
 
 if allof (
