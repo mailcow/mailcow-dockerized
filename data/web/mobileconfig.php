@@ -97,13 +97,13 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         <false/>
         <key>SMIMESigningUserOverrideable</key>
         <true/>
-		    <key>SMIMESigningCertificateUUIDUserOverrideable</key>
+        <key>SMIMESigningCertificateUUIDUserOverrideable</key>
         <true/>
-		    <key>SMIMEEncryptByDefaultUserOverrideable</key>
+        <key>SMIMEEncryptByDefaultUserOverrideable</key>
         <true/>
-		    <key>SMIMEEncryptionCertificateUUIDUserOverrideable</key>
+        <key>SMIMEEncryptionCertificateUUIDUserOverrideable</key>
         <true/>
-		    <key>SMIMEEnableEncryptionPerMessageSwitch</key>
+        <key>SMIMEEnableEncryptionPerMessageSwitch</key>
         <true/>
       </dict>
       <?php if($onlyEmailAccount === false): ?>
