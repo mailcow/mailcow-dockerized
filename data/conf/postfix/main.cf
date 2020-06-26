@@ -119,7 +119,8 @@ smtpd_recipient_restrictions = permit_sasl_authenticated,
   permit_mynetworks,
   check_recipient_access proxy:mysql:/opt/postfix/conf/sql/mysql_tls_enforce_in_policy.cf,
   reject_invalid_helo_hostname,
-  reject_unauth_destination
+  reject_unauth_destination,
+  reject
 smtpd_sasl_auth_enable = yes
 smtpd_sasl_authenticated_header = yes
 smtpd_sasl_path = inet:dovecot:10001
