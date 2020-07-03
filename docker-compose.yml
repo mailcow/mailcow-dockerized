@@ -342,7 +342,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.70
+      image: mailcow/acme:1.71
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -353,6 +353,7 @@ services:
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
         - SKIP_LETS_ENCRYPT=${SKIP_LETS_ENCRYPT:-n}
+        - DIRECTORY_URL=${DIRECTORY_URL:-}
         - ENABLE_SSL_SNI=${ENABLE_SSL_SNI:-n}
         - SKIP_IP_CHECK=${SKIP_IP_CHECK:-n}
         - SKIP_HTTP_VERIFICATION=${SKIP_HTTP_VERIFICATION:-n}
