@@ -302,13 +302,13 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             <div class="form-group">
               <label class="control-label col-sm-3" for="rspamd_ui_pass"><?=$lang['admin']['password'];?>:</label>
               <div class="col-sm-9">
-              <input type="password" class="form-control" name="rspamd_ui_pass" required>
+              <input type="password" class="form-control" name="rspamd_ui_pass" autocomplete="new-password" required>
               </div>
             </div>
             <div class="form-group">
               <label class="control-label col-sm-3" for="rspamd_ui_pass2"><?=$lang['admin']['password_repeat'];?>:</label>
               <div class="col-sm-9">
-              <input type="password" class="form-control" name="rspamd_ui_pass2" required>
+              <input type="password" class="form-control" name="rspamd_ui_pass2" autocomplete="new-password" required>
               </div>
             </div>
             <div class="form-group">
