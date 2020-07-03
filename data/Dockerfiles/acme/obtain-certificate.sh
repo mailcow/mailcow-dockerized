@@ -39,6 +39,7 @@ if [[ "${LE_STAGING}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   DIRECTORY_URL='--directory-url https://acme-staging-v02.api.letsencrypt.org/directory'
 elif [[ ! -z "${DIRECTORY_URL}" ]]; then
   log_f "Using custom directory URL ${DIRECTORY_URL}"
+  DIRECTORY_URL="--directory-url ${DIRECTORY_URL}"
 fi
 
 if [[ -f ${DOMAINS_FILE} && "$(cat ${DOMAINS_FILE})" ==  "${CERT_DOMAINS[*]}" ]]; then
