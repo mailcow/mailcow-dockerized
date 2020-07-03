@@ -60,7 +60,13 @@ $(document).ready(function() {
   });
   $('#u2f_status_auth').html('<p><span class="glyphicon glyphicon-refresh glyphicon-spin"></span> ' + lang_tfa.init_u2f + '</p>');
   $('#ConfirmTFAModal').on('shown.bs.modal', function(){
-      $(this).find('input[name=token]').focus();
+      var tokenInput = $(this).find('input[name=token]')
+      tokenInput.focus()
+      $(document).on("keydown", function(e) {
+        if (!$(tokenInput).is(":focus"))
+          if (e.which != 9 && e.which != 13)
+          tokenInput.focus();
+      });
       // If U2F
       if(document.getElementById("u2f_auth_data") !== null) {
         $.ajax({
