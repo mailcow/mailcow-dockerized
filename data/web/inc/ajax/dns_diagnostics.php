@@ -431,6 +431,11 @@ foreach ($records as $record) {
       $label = "@";
     $vals = array();
     if(strpos($val, "<a") !== FALSE) {
+      if(is_array($record[3]) && count($record[3]) == 1 && $record[3][0] == state_optional)
+      {
+        $record[3][0] = "**TODO**";
+        $label = ';' . $label;
+      }
       foreach ($record[3] as $val) {
         $val = str_replace(state_optional, '', $val);
         $val = str_replace(state_good, '', $val);
