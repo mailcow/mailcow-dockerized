@@ -132,6 +132,7 @@ DBROOT=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 | head -c 28)
 # You should use HTTPS, but in case of SSL offloaded reverse proxies:
 # Might be important: This will also change the binding within the container.
 # If you use a proxy within Docker, point it to the ports you set below.
+# Do _not_ use IP:PORT in HTTP(S)_BIND or HTTP(S)_PORT
 # IMPORTANT: Do not use port 8081, 9081 or 65510!
 
 HTTP_PORT=80
@@ -145,7 +146,6 @@ HTTPS_BIND=0.0.0.0
 # ------------------------------
 # You should leave that alone
 # Format: 11.22.33.44:25 or 0.0.0.0:465 etc.
-# Do _not_ use IP:PORT in HTTP(S)_BIND or HTTP(S)_PORT
 
 SMTP_PORT=25
 SMTPS_PORT=465
