@@ -451,7 +451,7 @@ services:
         - IPV6NAT_THRESHOLD=1
         - RSPAMD_THRESHOLD=5
         - OLEFY_THRESHOLD=5
-        - MAILQ_THRESHOLD=3
+        - MAILQ_THRESHOLD=20
         - MAILQ_CRIT=30
       networks:
         mailcow-network:
