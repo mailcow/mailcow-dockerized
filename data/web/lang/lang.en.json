@@ -358,7 +358,7 @@
         "ip_list_empty": "List of allowed IPs cannot be empty",
         "is_alias": "%s is already known as an alias address",
         "is_alias_or_mailbox": "%s is already known as an alias, a mailbox or an alias address expanded from an alias domain.",
-        "is_spam_alias": "%s is already known as a spam alias address",
+        "is_spam_alias": "%s is already known as a temporary alias address (spam alias address)",
         "last_key": "Last key cannot be deleted, please deactivate TFA instead.",
         "login_failed": "Login failed",
         "mailbox_defquota_exceeds_mailbox_maxquota": "Default quota exceeds max quota limit",
