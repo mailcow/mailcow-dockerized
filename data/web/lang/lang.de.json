@@ -359,7 +359,7 @@
         "ip_list_empty": "Liste erlaubter IPs darf nicht leer sein",
         "is_alias": "%s lautet bereits eine Alias-Adresse",
         "is_alias_or_mailbox": "Eine Mailbox, ein Alias oder eine sich aus einer Alias-Domain ergebende Adresse mit dem Namen %s ist bereits vorhanden",
-        "is_spam_alias": "%s lautet bereits eine Spam-Alias-Adresse",
+        "is_spam_alias": "%s lautet bereits eine temporäre Alias-Adresse (Spam-Alias-Adresse)",
         "last_key": "Letzter Key kann nicht gelöscht werden, bitte stattdessen die 2FA deaktivieren.",
         "login_failed": "Anmeldung fehlgeschlagen",
         "mailbox_defquota_exceeds_mailbox_maxquota": "Standard-Quota überschreitet das Limit der maximal erlaubten Größe einer Mailbox",
