@@ -264,10 +264,12 @@ WATCHDOG_EXTERNAL_CHECKS=n
 LOG_LINES=9999
 
 # Internal IPv4 /24 subnet, format n.n.n (expands to n.n.n.0/24)
+# Use private IPv4 addresses only, see https://en.wikipedia.org/wiki/Private_network#Private_IPv4_addresses
 
 IPV4_NETWORK=172.22.1
 
 # Internal IPv6 subnet in fc00::/7
+# Use private IPv6 addresses only, see https://en.wikipedia.org/wiki/Private_network#Private_IPv6_addresses
 
 IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
 
