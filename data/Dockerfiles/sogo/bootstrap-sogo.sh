@@ -30,7 +30,7 @@ if [[ "${MASTER}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "DROP VIEW IF EXISTS sogo_view"
   while [[ ${VIEW_OK} != 'OK' ]]; do
     mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
-CREATE VIEW sogo_view (c_uid, domain, c_name, c_password, c_cn, mail, aliases, ad_aliases, ext_acl, kind, multiple_bookings) AS 
+CREATE VIEW sogo_view (c_uid, domain, c_name, c_password, c_cn, mail, aliases, ad_aliases, ext_acl, kind, multiple_bookings) AS
 SELECT
    mailbox.username,
    mailbox.domain,
@@ -244,6 +244,9 @@ chmod 600 /var/lib/sogo/GNUstep/Defaults/sogod.plist
 # Rsync web content
 echo "Syncing web content with named volume"
 rsync -a /usr/lib/GNUstep/SOGo/. /sogo_web/
+
+echo "Syncing overlay web resources"
+rsync -a /etc/sogo/WebServerResources /sogo_web/
 
 # Chown backup path
 chown -R sogo:sogo /sogo_backup
