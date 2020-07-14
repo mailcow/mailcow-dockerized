@@ -181,7 +181,6 @@ services:
       volumes:
         - ./data/conf/sogo/:/etc/sogo/
         - ./data/web/inc/init_db.inc.php:/init_db.inc.php
-        - ./data/conf/sogo/custom-sogo.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/custom-sogo.js
         - mysql-socket-vol-1:/var/run/mysqld/
         - sogo-web-vol-1:/sogo_web
         - sogo-userdata-backup-vol-1:/sogo_backup
