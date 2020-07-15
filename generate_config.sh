@@ -287,7 +287,6 @@ IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
 # An API key defined as API_KEY_READ_ONLY has read-only access
 # Allowed chars for API_KEY and API_KEY_READ_ONLY: a-z, A-Z, 0-9, -
 # You can define API_KEY and/or API_KEY_READ_ONLY
-# Using CIDR is not yet implemented within mailcow.conf, use the UI to allow networks.
 
 #API_KEY=
 #API_KEY_READ_ONLY=
