@@ -87,23 +87,23 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
             if (!empty($MAILCOW_APPS)) {
               foreach ($MAILCOW_APPS as $app) {
                 if (getenv('SKIP_SOGO') == "y" && preg_match('/^\/SOGo/i', $app['link'])) { continue; }
-              ?>
+              ?>  
                 <a href="<?= htmlspecialchars($app['link']); ?>" role="button" style="margin-bottom:3pt" title="<?= htmlspecialchars($app['description']); ?>" class="btn btn-primary"><?= htmlspecialchars($app['name']); ?></a>&nbsp;
               <?php
-              }
-              $app_links = customize('get', 'app_links');
-              if (!empty($app_links)) {
-                foreach ($app_links as $row) {
-                  foreach ($row as $key => $val) {
-                ?>
-                  <a href="<?= htmlspecialchars($val); ?>" role="button" style="margin-bottom:3pt" class="btn btn-primary"><?= htmlspecialchars($key); ?></a>&nbsp;
-                <?php 
-                  }
-                }
-              }
-            }
-          }
-          ?>
+              }   
+            }     
+            $app_links = customize('get', 'app_links');
+            if (!empty($app_links)) {
+              foreach ($app_links as $row) {
+                foreach ($row as $key => $val) { 
+              ?>    
+                <a href="<?= htmlspecialchars($val); ?>" role="button" style="margin-bottom:3pt" class="btn btn-primary"><?= htmlspecialchars($key); ?></a>&nbsp;
+              <?php 
+                } 
+              }     
+            }     
+          }     
+          ?> 
         </div>
       </div>
     </div>
