@@ -9,6 +9,7 @@ ENV MEMCACHED_PECL 3.1.5
 ENV REDIS_PECL 5.2.1
 
 RUN apk add -U --no-cache autoconf \
+  aspell-dev \
   bash \
   c-client \
   cyrus-sasl-dev \
@@ -59,13 +60,14 @@ RUN apk add -U --no-cache autoconf \
   && docker-php-ext-configure exif \
   && docker-php-ext-configure gd --with-freetype=/usr/include/ \  
     --with-jpeg=/usr/include/ \
-  && docker-php-ext-install -j 4 exif gd gettext intl ldap opcache pcntl pdo pdo_mysql soap sockets xmlrpc zip bcmath gmp \
+  && docker-php-ext-install -j 4 exif gd gettext intl ldap opcache pcntl pdo pdo_mysql pspell soap sockets xmlrpc zip bcmath gmp \
   && docker-php-ext-configure imap --with-imap --with-imap-ssl \
   && docker-php-ext-install -j 4 imap \
   && curl --silent --show-error https://getcomposer.org/installer | php \
   && mv composer.phar /usr/local/bin/composer \
   && chmod +x /usr/local/bin/composer \
   && apk del --purge autoconf \
+    aspell-dev \
     cyrus-sasl-dev \
     freetype-dev \
     g++ \
