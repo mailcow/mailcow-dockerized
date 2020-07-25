@@ -6,10 +6,11 @@ ENV IMAGICK_PECL 3.4.4
 # Mailparse is pulled from master branch
 #ENV MAILPARSE_PECL 3.0.2
 ENV MEMCACHED_PECL 3.1.5
-ENV REDIS_PECL 5.2.1
+ENV REDIS_PECL 5.3.1
 
 RUN apk add -U --no-cache autoconf \
   aspell-dev \
+  aspell-libs \
   bash \
   c-client \
   cyrus-sasl-dev \
