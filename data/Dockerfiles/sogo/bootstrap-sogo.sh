@@ -238,6 +238,11 @@ chmod 600 /var/lib/sogo/GNUstep/Defaults/sogod.plist
 #  fi
 #fi
 
+# Patch MailUI default search settings
+if patch -R -sfN --dry-run /usr/lib/GNUstep/SOGo/Templates/MailerUI/UIxMailFolderTemplate.wox < /search_by_subject_or_from.diff > /dev/null; then
+  patch -R /usr/lib/GNUstep/SOGo/Templates/MailerUI/UIxMailFolderTemplate.wox < /selected_subject_or_from.diff;
+fi
+
 # Copy logo, if any
 [[ -f /etc/sogo/sogo-full.svg ]] && cp /etc/sogo/sogo-full.svg /usr/lib/GNUstep/SOGo/WebServerResources/img/sogo-full.svg
 
