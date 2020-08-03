@@ -74,7 +74,6 @@ services:
       image: mailcow/rspamd:1.68
       stop_grace_period: 30s
       depends_on:
-        - nginx-mailcow
         - dovecot-mailcow
       environment:
         - TZ=${TZ}
@@ -160,7 +159,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.81
+      image: mailcow/sogo:1.82
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
