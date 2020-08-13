@@ -320,7 +320,7 @@ foreach ($records as &$record) {
   }
   else {
     $currents = dns_get_record($record[0], $record_types[$record[1]]);
-    if ($record[0] == $mailcow_hostname && ($record[1] == "A" | $record[1] == "AAAA")) {
+    if ($record[0] == $mailcow_hostname && ($record[1] == "A" || $record[1] == "AAAA")) {
       if (!empty(dns_get_record($record[0], DNS_CNAME))) {
         $currents[0]['ip'] = state_missing . ' <b>(CNAME)</b>';
         $currents[0]['ipv6'] = state_missing . ' <b>(CNAME)</b>';
