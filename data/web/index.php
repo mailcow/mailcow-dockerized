@@ -91,14 +91,14 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
                 <a href="<?= htmlspecialchars($app['link']); ?>" role="button" style="margin-bottom:3pt" title="<?= htmlspecialchars($app['description']); ?>" class="btn btn-primary"><?= htmlspecialchars($app['name']); ?></a>&nbsp;
               <?php
               }
-              $app_links = customize('get', 'app_links');
-              if (!empty($app_links)) {
-                foreach ($app_links as $row) {
-                  foreach ($row as $key => $val) {
-                ?>
-                  <a href="<?= htmlspecialchars($val); ?>" role="button" style="margin-bottom:3pt" class="btn btn-primary"><?= htmlspecialchars($key); ?></a>&nbsp;
-                <?php 
-                  }
+            }
+            $app_links = customize('get', 'app_links');
+            if (!empty($app_links)) {
+              foreach ($app_links as $row) {
+                foreach ($row as $key => $val) {
+              ?>
+                <a href="<?= htmlspecialchars($val); ?>" role="button" style="margin-bottom:3pt" class="btn btn-primary"><?= htmlspecialchars($key); ?></a>&nbsp;
+              <?php
                 }
               }
             }
