@@ -1085,7 +1085,11 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
                 <option <?=($ui_texts['ui_announcement_type'] == 'danger') ? 'selected' : null;?> value="danger"><?=$lang['admin']['ui_header_announcement_type_danger'];?></option>
               </select></p>
               <p><textarea class="form-control" id="ui_announcement_text" name="ui_announcement_text" rows="7"><?=$ui_texts['ui_announcement_text'];?></textarea></p>
-              <p><input type="checkbox" name="ui_announcement_active" <?=($ui_texts['ui_announcement_active'] == 1) ? 'checked' : null;?>> <?=$lang['admin']['ui_header_announcement_active'];?></p>
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" name="ui_announcement_active" class="form-check-input" <?=($ui_texts['ui_announcement_active'] == 1) ? 'checked' : null;?>> <?=$lang['admin']['ui_header_announcement_active'];?>
+                </label>
+              </div>
             </div>
             <hr>
             <div class="form-group">
