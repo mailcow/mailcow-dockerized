@@ -1,4 +1,7 @@
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
 function quarantine($_action, $_data = null) {
 	global $pdo;
 	global $redis;
@@ -304,6 +307,12 @@ function quarantine($_action, $_data = null) {
         else {
           $bcc = $_data['bcc'];
         }
+        if (!filter_var($_data['redirect'], FILTER_VALIDATE_EMAIL)) {
+          $redirect = '';
+        }
+        else {
+          $redirect = $_data['redirect'];
+        }
         if (!filter_var($_data['sender'], FILTER_VALIDATE_EMAIL)) {
           $sender = '';
         }
@@ -323,6 +332,7 @@ function quarantine($_action, $_data = null) {
           $redis->Set('Q_RELEASE_FORMAT', $release_format);
           $redis->Set('Q_SENDER', $sender);
           $redis->Set('Q_BCC', $bcc);
+          $redis->Set('Q_REDIRECT', $redirect);
           $redis->Set('Q_SUBJ', $subject);
           $redis->Set('Q_HTML', $html);
         }
@@ -790,6 +800,7 @@ function quarantine($_action, $_data = null) {
         $settings['subject'] = $redis->Get('Q_SUBJ');
         $settings['sender'] = $redis->Get('Q_SENDER');
         $settings['bcc'] = $redis->Get('Q_BCC');
+        $settings['redirect'] = $redis->Get('Q_REDIRECT');
         $settings['html_tmpl'] = htmlspecialchars($redis->Get('Q_HTML'));
         if (empty($settings['html_tmpl'])) {
           $settings['html_tmpl'] = htmlspecialchars(file_get_contents("/tpls/quarantine.tpl"));
