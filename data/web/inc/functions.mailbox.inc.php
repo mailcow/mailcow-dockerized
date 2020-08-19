@@ -2010,7 +2010,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $is_now = mailbox('get', 'domain_details', $domain);
               if (!empty($is_now)) {
                 $gal                  = (isset($_data['gal'])) ? intval($_data['gal']) : $is_now['gal_int'];
-                $description          = (!empty($_data['description'])) ? $_data['description'] : $is_now['description'];
+                $description          = (!empty($_data['description']) && isset($_SESSION['acl']['domain_desc']) && $_SESSION['acl']['domain_desc'] == "1") ? $_data['description'] : $is_now['description'];
               }
               else {
                 $_SESSION['return'][] = array(

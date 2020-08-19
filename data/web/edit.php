@@ -263,7 +263,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <input type="hidden" value="0" name="gal">
             <input type="hidden" value="0" name="relay_all_recipients">
             <input type="hidden" value="0" name="relay_unknown_only">
-            <div class="form-group">
+            <div class="form-group" data-acl="<?=$_SESSION['acl']['domain_desc'];?>">
               <label class="control-label col-sm-2" for="description"><?=$lang['edit']['description'];?></label>
               <div class="col-sm-10">
                 <input type="text" class="form-control" name="description" value="<?=htmlspecialchars($result['description']);?>">
