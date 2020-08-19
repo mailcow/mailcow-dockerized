@@ -22,7 +22,8 @@
         "spam_score": "Spam score",
         "syncjobs": "Sync jobs",
         "tls_policy": "TLS policy",
-        "unlimited_quota": "Unlimited quota for mailboxes"
+        "unlimited_quota": "Unlimited quota for mailboxes",
+        "domain_desc": "Change domain description"
     },
     "add": {
         "activate_filter_warn": "All other filters will be deactivated, when active is checked.",

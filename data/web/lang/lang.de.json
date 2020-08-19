@@ -22,7 +22,8 @@
         "spam_score": "Spam-Bewertung",
         "syncjobs": "Sync Jobs",
         "tls_policy": "Verschlüsselungsrichtlinie",
-        "unlimited_quota": "Unendliche Quota für Mailboxen"
+        "unlimited_quota": "Unendliche Quota für Mailboxen",
+        "domain_desc": "Domainbeschreibung ändern"
     },
     "add": {
         "activate_filter_warn": "Alle anderen Filter diesen Typs werden deaktiviert, falls dieses Script aktiv markiert wird.",
