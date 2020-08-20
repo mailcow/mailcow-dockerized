@@ -25,6 +25,9 @@ services:
         - mysql-vol-1:/var/lib/mysql/
         - mysql-socket-vol-1:/var/run/mysqld/
         - ./data/conf/mysql/:/etc/mysql/conf.d/:ro
+      env_file:
+        - mailcow.conf
+        - mysql.conf
       environment:
         - TZ=${TZ}
         - MYSQL_ROOT_PASSWORD=${DBROOT}
@@ -124,6 +127,9 @@ services:
         - ./data/assets/templates:/tpls
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
+      env_file:
+        - mailcow.conf
+        - mysql.conf
       environment:
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
@@ -160,6 +166,9 @@ services:
 
     sogo-mailcow:
       image: mailcow/sogo:1.83
+      env_file:
+        - mailcow.conf
+        - mysql.conf
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -212,6 +221,9 @@ services:
         - ./data/assets/templates:/templates
         - rspamd-vol-1:/var/lib/rspamd
         - mysql-socket-vol-1:/var/run/mysqld/
+      env_file:
+        - mailcow.conf
+        - mysql.conf
       environment:
         - LOG_LINES=${LOG_LINES:-9999}
         - DBNAME=${DBNAME}
@@ -262,6 +274,9 @@ services:
         - crypt-vol-1:/var/lib/zeyple
         - rspamd-vol-1:/var/lib/rspamd
         - mysql-socket-vol-1:/var/run/mysqld/
+      env_file:
+        - mailcow.conf
+        - mysql.conf
       environment:
         - LOG_LINES=${LOG_LINES:-9999}
         - TZ=${TZ}
@@ -346,6 +361,9 @@ services:
       image: mailcow/acme:1.73
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
+      env_file:
+        - mailcow.conf
+        - mysql.conf
       environment:
         - LOG_LINES=${LOG_LINES:-9999}
         - ADDITIONAL_SAN=${ADDITIONAL_SAN}
@@ -412,6 +430,9 @@ services:
         - postfix-vol-1:/var/spool/postfix
         - ./data/assets/ssl:/etc/ssl/mail/:ro
       restart: always
+      env_file:
+        - mailcow.conf
+        - mysql.conf
       environment:
         - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
         - LOG_LINES=${LOG_LINES:-9999}
@@ -467,6 +488,9 @@ services:
       oom_kill_disable: true
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
+      env_file:
+        - mailcow.conf
+        - mysql.conf
       environment:
         - DBROOT=${DBROOT}
         - TZ=${TZ}

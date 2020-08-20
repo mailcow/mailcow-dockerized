@@ -31,6 +31,9 @@ if [ -f mailcow.conf ]; then
     [yY][eE][sS]|[yY])
       mv mailcow.conf mailcow.conf_backup
       chmod 600 mailcow.conf_backup
+
+      mv mysql.conf mysql.conf_backup
+      chmod 600 mysql.conf_backup
       ;;
     *)
       exit 1
@@ -120,10 +123,7 @@ MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
 DBNAME=mailcow
 DBUSER=mailcow
 
-# Please use long, random alphanumeric strings (A-Za-z0-9)
-
-DBPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 | head -c 28)
-DBROOT=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 | head -c 28)
+# See mysql.conf for DBPASS and DBROOT
 
 # ------------------------------
 # HTTP/S Bindings
@@ -300,9 +300,22 @@ SOGO_EXPIRE_SESSION=480
 
 EOF
 
+cat << EOF > mysql.conf
+# ------------------------------
+# SQL database configuration
+# ------------------------------
+
+# Please use long, random alphanumeric strings (A-Za-z0-9)
+
+DBPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 | head -c 28)
+DBROOT=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 | head -c 28)
+
+EOF
+
 mkdir -p data/assets/ssl
 
 chmod 600 mailcow.conf
+chmod 600 mysql.conf
 
 # copy but don't overwrite existing certificate
 cp -n -d data/assets/ssl-example/*.pem data/assets/ssl/
