@@ -766,6 +766,9 @@ paths:
                           password: '*'
                           password2: '*'
                           quota: '3072'
+                          force_pw_update: '1'
+                          tls_enforce_in: '1'
+                          tls_enforce_out: '1'
                         - null
                       msg:
                         - mailbox_added
@@ -807,6 +810,9 @@ paths:
                 password: atedismonsin
                 password2: atedismonsin
                 quota: '3072'
+                force_pw_update: '1'
+                tls_enforce_in: '1'
+                tls_enforce_out: '1'
               properties:
                 active:
                   description: is mailbox active or not
@@ -829,6 +835,15 @@ paths:
                 quota:
                   description: mailbox quota
                   type: number
+                force_pw_update:
+                  description: forces the user to update its password on first login
+                  type: boolean
+                tls_enforce_in:
+                  description: force inbound email tls encryption
+                  type: boolean
+                tls_enforce_out:
+                  description: force oubound tmail tls encryption
+                  type: boolean
               type: object
       summary: Create mailbox
 
