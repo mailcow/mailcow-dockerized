@@ -1234,9 +1234,9 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               <label class="control-label col-sm-2" for="enc1"><?=$lang['edit']['encryption'];?></label>
               <div class="col-sm-10">
                 <select id="enc1" name="enc1">
-                  <option <?=($result['enc1'] == "TLS") ? "selected" : null;?>>TLS</option>
-                  <option <?=($result['enc1'] == "SSL") ? "selected" : null;?>>SSL</option>
-                  <option <?=($result['enc1'] == "PLAIN") ? "selected" : null;?>>PLAIN</option>
+                  <option value="SSL" <?=($result['enc1'] == "SSL") ? "selected" : null;?>>SSL</option>
+                  <option value="TLS" <?=($result['enc1'] == "TLS") ? "selected" : null;?>>STARTTLS</option>
+                  <option value="PLAIN" <?=($result['enc1'] == "PLAIN") ? "selected" : null;?>>PLAIN</option>
                 </select>
               </div>
             </div>

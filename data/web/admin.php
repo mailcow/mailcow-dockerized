@@ -698,6 +698,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
               <input type="number" class="form-control" name="netban_ipv6" value="<?=$f2b_data['netban_ipv6'];?>" required>
             </div>
           </div>
+          <hr>
           <p class="help-block"><?=$lang['admin']['f2b_list_info'];?></p>
           <div class="form-group">
             <label for="whitelist"><?=$lang['admin']['f2b_whitelist'];?>:</label>
@@ -708,9 +709,39 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             <textarea class="form-control" name="blacklist" rows="5"><?=$f2b_data['blacklist'];?></textarea>
           </div>
           <div class="btn-group">
-            <button class="btn btn-success" data-action="edit_selected" data-item="self" data-id="f2b" data-api-url='edit/fail2ban' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
-            <a href="#" role="button" class="btn btn-default" data-toggle="modal" data-container="netfilter-mailcow" data-target="#RestartContainer"><span class="glyphicon glyphicon-refresh"></span> <?= $lang['header']['restart_netfilter']; ?></a>
+            <button class="btn btn-sm btn-success" data-action="edit_selected" data-item="self" data-id="f2b" data-api-url='edit/fail2ban' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+            <a href="#" role="button" class="btn btn-sm btn-default" data-toggle="modal" data-container="netfilter-mailcow" data-target="#RestartContainer"><span class="glyphicon glyphicon-refresh"></span> <?= $lang['header']['restart_netfilter']; ?></a>
           </div>
+        </form>
+        <hr>
+        <h4><?=$lang['admin']['f2b_filter'];?></h4>
+        <p class="help-block"><?=$lang['admin']['f2b_regex_info'];?></p>
+        <form class="form-inline" data-id="f2b_regex" role="form" method="post">
+          <table class="table table-condensed" id="f2b_regex_table">
+            <tr>
+              <th width="50px">ID</th>
+              <th>RegExp</th>
+              <th width="100px">&nbsp;</th>
+            </tr>
+            <?php
+            if (!empty($f2b_data['regex'])) {
+              foreach ($f2b_data['regex'] as $regex_id => $regex_val) {
+            ?>
+            <tr>
+              <td><input disabled class="input-sm form-control" style="text-align:center" data-id="f2b_regex" type="text" name="app" required value="<?=$regex_id;?>"></td>
+              <td><input class="input-sm form-control regex-input" data-id="f2b_regex" type="text" name="regex" required value="<?=htmlspecialchars($regex_val);?>"></td>
+              <td><a href="#" role="button" class="btn btn-xs btn-default" type="button"><?=$lang['admin']['remove_row'];?></a></td>
+            </tr>
+            <?php
+              }
+            }
+            ?>
+          </table>
+          <p><div class="btn-group">
+            <button class="btn btn-sm btn-success" data-action="edit_selected" data-item="admin" data-id="f2b_regex" data-reload="no" data-api-url='edit/fail2ban' data-api-attr='{"action":"edit-regex"}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+            <button class="btn btn-sm btn-default admin-ays-dialog" data-action="edit_selected" data-item="self" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"reset-regex"}' href="#"><?=$lang['admin']['reset_default'];?></button>
+            <button class="btn btn-sm btn-default" type="button" id="add_f2b_regex_row"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add_row'];?></button>
+          </div></p>
         </form>
         <hr>
         <p class="help-block"><?=$lang['admin']['ban_list_info'];?></p>
