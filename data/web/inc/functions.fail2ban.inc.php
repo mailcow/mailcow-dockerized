@@ -129,7 +129,9 @@ function fail2ban($_action, $_data = null) {
               $regex_array[$rule_id] = $regex;
               $rule_id++;
             }
-            $redis->Set('F2B_REGEX', json_encode($regex_array, JSON_UNESCAPED_SLASHES));
+            if (!empty($regex_array)) {
+              $redis->Set('F2B_REGEX', json_encode($regex_array, JSON_UNESCAPED_SLASHES));
+            }
           }
           else {
             $_SESSION['return'][] = array(
