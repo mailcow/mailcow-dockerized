@@ -165,6 +165,7 @@ REDIS_PORT=127.0.0.1:7654
 TZ=${MAILCOW_TZ}
 
 # Fixed project name
+# Please use lowercase letters only
 
 COMPOSE_PROJECT_NAME=mailcowdockerized
 
