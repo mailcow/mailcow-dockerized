@@ -418,7 +418,7 @@ def genNetworkList(list):
     hostname_ips = []
     for rdtype in ['A', 'AAAA']:
       try:
-        answer = resolver.query(qname=hostname, rdtype=rdtype, lifetime=3)
+        answer = resolver.resolve(qname=hostname, rdtype=rdtype, lifetime=3)
       except dns.exception.Timeout:
         logInfo('Hostname %s timedout on resolve' % hostname)
         break
