@@ -305,7 +305,10 @@ def watch():
       refreshF2bregex()
       for rule_id, rule_regex in f2bregex.items():
         if item['data'] and item['type'] == 'message':
-          result = re.search(rule_regex, item['data'])
+          try:
+            result = re.search(rule_regex, item['data'])
+          except re.error:
+            result = False
           if result:
             addr = result.group(1)
             ip = ipaddress.ip_address(addr)
