@@ -164,7 +164,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
                     <div class="form-group">
                       <label class="control-label col-sm-3"><?=$lang['admin']['api_key'];?>:</label>
                       <div class="col-sm-9">
-                        <pre><?=(empty(htmlspecialchars($api_ro['api_key']))) ? '-' : htmlspecialchars($api_ro['api_key']);?></pre>
+                        <pre><?=(empty($api_ro['api_key'])) ? '-' : htmlspecialchars($api_ro['api_key']);?></pre>
                       </div>
                     </div>
                     <div class="form-group">
@@ -178,7 +178,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
                       <div class="col-sm-offset-3 col-sm-9">
                         <div class="btn-group">
                           <button class="btn btn-sm btn-success" name="admin_api[ro]" type="submit" href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
-                          <button class="btn btn-sm btn-default admin-ays-dialog" name="admin_api_regen_key[ro]" type="submit" href="#"><?=$lang['admin']['regen_api_key'];?></button>
+                          <button class="btn btn-sm btn-default admin-ays-dialog" name="admin_api_regen_key[ro]" type="submit" href="#" <?=(!empty($api_ro['api_key'])) ?: 'disabled';?>><?=$lang['admin']['regen_api_key'];?></button>
                         </div>
                       </div>
                     </div>
@@ -209,7 +209,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
                     <div class="form-group">
                       <label class="control-label col-sm-3" for="admin_api_key"><?=$lang['admin']['api_key'];?>:</label>
                       <div class="col-sm-9">
-                        <pre><?=(empty(htmlspecialchars($api_rw['api_key']))) ? '-' : htmlspecialchars($api_rw['api_key']);?></pre>
+                        <pre><?=(empty($api_rw['api_key'])) ? '-' : htmlspecialchars($api_rw['api_key']);?></pre>
                       </div>
                     </div>
                     <div class="form-group">
@@ -223,7 +223,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
                       <div class="col-sm-offset-3 col-sm-9">
                         <div class="btn-group">
                           <button class="btn btn-sm btn-success" name="admin_api[rw]" type="submit" href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
-                          <button class="btn btn-sm btn-default admin-ays-dialog" name="admin_api_regen_key[rw]" type="submit" href="#"><?=$lang['admin']['regen_api_key'];?></button>
+                          <button class="btn btn-sm btn-default admin-ays-dialog" name="admin_api_regen_key[rw]" type="submit" <?=(!empty($api_rw['api_key'])) ?: 'disabled';?> href="#"><?=$lang['admin']['regen_api_key'];?></button>
                         </div>
                       </div>
                     </div>
