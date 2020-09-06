@@ -707,6 +707,10 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
                   }
                   echo (isset($logs) && !empty($logs)) ? json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '{}';
                 break;
+                case "rspamd-stats":
+                  $logs = get_logs('rspamd-stats');
+                  echo (isset($logs) && !empty($logs)) ? json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '{}';
+                break;
                 // return no route found if no case is matched
                 default:
                   http_response_code(404);
