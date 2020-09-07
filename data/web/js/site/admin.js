@@ -465,7 +465,7 @@ jQuery(function($){
     if (type == "app_link") {
     cols = '<td><input class="input-sm form-control" data-id="app_links" type="text" name="app" required></td>';
     cols += '<td><input class="input-sm form-control" data-id="app_links" type="text" name="href" required></td>';
-    cols += '<td><a href="#" role="button" class="btn btn-xs btn-default" type="button">">' + lang.remove_row + '</a></td>';
+    cols += '<td><a href="#" role="button" class="btn btn-xs btn-default" type="button">' + lang.remove_row + '</a></td>';
     } else if (type == "f2b_regex") {
     cols = '<td><input style="text-align:center" class="input-sm form-control" data-id="f2b_regex" type="text" value="+" disabled></td>';
     cols += '<td><input class="input-sm form-control regex-input" data-id="f2b_regex" type="text" name="regex" required></td>';
