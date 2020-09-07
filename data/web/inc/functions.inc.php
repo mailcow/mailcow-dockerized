@@ -446,7 +446,7 @@ function alertbox_log_parser($_data){
       }
       $log_array[] = array('msg' => $msg, 'type' => json_encode($type));
     }
-    if (!empty($log_array)) { 
+    if (!empty($log_array)) {
       return $log_array;
     }
   }
@@ -729,7 +729,6 @@ function edit_user_account($_data) {
 	);
 }
 function user_get_alias_details($username) {
-	global $lang;
 	global $pdo;
   $data['direct_aliases'] = false;
   $data['shared_aliases'] = false;
@@ -801,7 +800,7 @@ function user_get_alias_details($username) {
   }
   return $data;
 }
-function is_valid_domain_name($domain_name) { 
+function is_valid_domain_name($domain_name) {
 	if (empty($domain_name)) {
 		return false;
 	}
@@ -811,7 +810,6 @@ function is_valid_domain_name($domain_name) {
 		   && preg_match("/^[^\.]{1,63}(\.[^\.]{1,63})*$/", $domain_name));
 }
 function set_tfa($_data) {
-	global $lang;
 	global $pdo;
 	global $yubi;
 	global $u2f;
@@ -840,7 +838,7 @@ function set_tfa($_data) {
     );
     return false;
   }
-  
+
 	switch ($_data["tfa_method"]) {
 		case "yubi_otp":
       $key_id = (!isset($_data["key_id"])) ? 'unidentified' : $_data["key_id"];
@@ -875,7 +873,7 @@ function set_tfa($_data) {
 			try {
         // We could also do a modhex translation here
         $yubico_modhex_id = substr($_data["otp_token"], 0, 12);
-        $stmt = $pdo->prepare("DELETE FROM `tfa` 
+        $stmt = $pdo->prepare("DELETE FROM `tfa`
           WHERE `username` = :username
             AND (`authmech` != 'yubi_otp')
             OR (`authmech` = 'yubi_otp' AND `secret` LIKE :modhex)");
@@ -1042,7 +1040,7 @@ function get_tfa($username = null) {
       WHERE `username` = :username AND `active` = '1'");
   $stmt->execute(array(':username' => $username));
   $row = $stmt->fetch(PDO::FETCH_ASSOC);
-  
+
 	switch ($row["authmech"]) {
 		case "yubi_otp":
       $data['name'] = "yubi_otp";
@@ -1097,7 +1095,6 @@ function get_tfa($username = null) {
 }
 function verify_tfa_login($username, $token) {
 	global $pdo;
-	global $lang;
 	global $yubi;
 	global $u2f;
 	global $tfa;
@@ -1105,7 +1102,7 @@ function verify_tfa_login($username, $token) {
       WHERE `username` = :username AND `active` = '1'");
   $stmt->execute(array(':username' => $username));
   $row = $stmt->fetch(PDO::FETCH_ASSOC);
-  
+
 	switch ($row["authmech"]) {
 		case "yubi_otp":
 			if (!ctype_alnum($token) || strlen($token) != 44) {
@@ -1231,7 +1228,6 @@ function verify_tfa_login($username, $token) {
 }
 function admin_api($access, $action, $data = null) {
 	global $pdo;
-	global $lang;
 	if ($_SESSION['mailcow_cc_role'] != "admin") {
 		$_SESSION['return'][] =  array(
 			'type' => 'danger',
@@ -1419,7 +1415,6 @@ function license($action, $data = null) {
   }
 }
 function rspamd_ui($action, $data = null) {
-	global $lang;
 	if ($_SESSION['mailcow_cc_role'] != "admin") {
 		$_SESSION['return'][] =  array(
 			'type' => 'danger',
@@ -1494,7 +1489,7 @@ function get_u2f_registrations($username) {
 }
 function get_logs($application, $lines = false) {
   if ($lines === false) {
-    $lines = $GLOBALS['LOG_LINES'] - 1; 
+    $lines = $GLOBALS['LOG_LINES'] - 1;
   }
   elseif(is_numeric($lines) && $lines >= 1) {
     $lines = abs(intval($lines) - 1);
@@ -1505,7 +1500,6 @@ function get_logs($application, $lines = false) {
     $to = intval($to);
     if ($from < 1 || $to < $from) { return false; }
   }
-	global $lang;
 	global $redis;
 	global $pdo;
 	if ($_SESSION['mailcow_cc_role'] != "admin") {
@@ -1675,6 +1669,20 @@ function get_logs($application, $lines = false) {
       $data_array = json_decode($history, true);
       curl_close($curl);
       return $data_array['rows'];
+    }
+    curl_close($curl);
+    return false;
+  }
+  if ($application == "rspamd-stats") {
+    $curl = curl_init();
+    curl_setopt($curl, CURLOPT_UNIX_SOCKET_PATH, '/var/lib/rspamd/rspamd.sock');
+    curl_setopt($curl, CURLOPT_URL,"http://rspamd/stat");
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    $stats = curl_exec($curl);
+    if (!curl_errno($curl)) {
+      $data_array = json_decode($stats, true);
+      curl_close($curl);
+      return $data_array;
     }
     curl_close($curl);
     return false;

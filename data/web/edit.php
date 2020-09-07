@@ -101,7 +101,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
       ?>
       <h4><?=$lang['edit']['domain_admin'];?></h4>
       <br>
-      <form class="form-horizontal" data-id="editdomainadmin" role="form" method="post">
+      <form class="form-horizontal" data-id="editdomainadmin" role="form" method="post" autocomplete="off">
         <input type="hidden" value="0" name="active">
         <div class="form-group">
           <label class="control-label col-sm-2" for="username_new"><?=$lang['edit']['username'];?></label>
@@ -131,13 +131,13 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         <div class="form-group">
           <label class="control-label col-sm-2" for="password"><?=$lang['edit']['password'];?> (<a href="#" class="generate_password"><?=$lang['edit']['generate'];?></a>)</label>
           <div class="col-sm-10">
-          <input type="password" data-pwgen-field="true" data-hibp="true" class="form-control" name="password" placeholder="">
+          <input type="password" data-pwgen-field="true" data-hibp="true" class="form-control" name="password" placeholder="" autocomplete="new-password">
           </div>
         </div>
         <div class="form-group">
           <label class="control-label col-sm-2" for="password2"><?=$lang['edit']['password_repeat'];?></label>
           <div class="col-sm-10">
-          <input type="password" data-pwgen-field="true" class="form-control" name="password2">
+          <input type="password" data-pwgen-field="true" class="form-control" name="password2" autocomplete="new-password">
           </div>
         </div>
         <div class="form-group">
@@ -199,7 +199,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
       ?>
       <h4><?=$lang['edit']['domain_admin'];?></h4>
       <br>
-      <form class="form-horizontal" data-id="editadmin" role="form" method="post">
+      <form class="form-horizontal" data-id="editadmin" role="form" method="post" autocomplete="off">
         <input type="hidden" value="0" name="active">
         <div class="form-group">
           <label class="control-label col-sm-2" for="username_new"><?=$lang['edit']['username'];?></label>
@@ -210,13 +210,13 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         <div class="form-group">
           <label class="control-label col-sm-2" for="password"><?=$lang['edit']['password'];?> (<a href="#" class="generate_password"><?=$lang['edit']['generate'];?></a>)</label>
           <div class="col-sm-10">
-          <input type="password" data-pwgen-field="true" data-hibp="true" class="form-control" name="password" placeholder="">
+          <input type="password" data-pwgen-field="true" data-hibp="true" class="form-control" name="password" placeholder="" autocomplete="new-password">
           </div>
         </div>
         <div class="form-group">
           <label class="control-label col-sm-2" for="password2"><?=$lang['edit']['password_repeat'];?></label>
           <div class="col-sm-10">
-          <input type="password" data-pwgen-field="true" class="form-control" name="password2">
+          <input type="password" data-pwgen-field="true" class="form-control" name="password2" autocomplete="new-password">
           </div>
         </div>
         <div class="form-group">
@@ -263,7 +263,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <input type="hidden" value="0" name="gal">
             <input type="hidden" value="0" name="relay_all_recipients">
             <input type="hidden" value="0" name="relay_unknown_only">
-            <div class="form-group">
+            <div class="form-group" data-acl="<?=$_SESSION['acl']['domain_desc'];?>">
               <label class="control-label col-sm-2" for="description"><?=$lang['edit']['description'];?></label>
               <div class="col-sm-10">
                 <input type="text" class="form-control" name="description" value="<?=htmlspecialchars($result['description']);?>">
@@ -693,13 +693,13 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           <div class="form-group">
             <label class="control-label col-sm-2" for="password"><?=$lang['edit']['password'];?> (<a href="#" class="generate_password"><?=$lang['edit']['generate'];?></a>)</label>
             <div class="col-sm-10">
-            <input type="password" data-pwgen-field="true" data-hibp="true" class="form-control" name="password" placeholder="<?=$lang['edit']['unchanged_if_empty'];?>">
+            <input type="password" data-pwgen-field="true" data-hibp="true" class="form-control" name="password" placeholder="<?=$lang['edit']['unchanged_if_empty'];?>" autocomplete="new-password">
             </div>
           </div>
           <div class="form-group">
             <label class="control-label col-sm-2" for="password2"><?=$lang['edit']['password_repeat'];?></label>
             <div class="col-sm-10">
-            <input type="password" data-pwgen-field="true" class="form-control" name="password2">
+            <input type="password" data-pwgen-field="true" class="form-control" name="password2" autocomplete="new-password">
             </div>
           </div>
           <div data-acl="<?=$_SESSION['acl']['extend_sender_acl'];?>" class="form-group">
@@ -1234,17 +1234,17 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               <label class="control-label col-sm-2" for="enc1"><?=$lang['edit']['encryption'];?></label>
               <div class="col-sm-10">
                 <select id="enc1" name="enc1">
-                  <option <?=($result['enc1'] == "TLS") ? "selected" : null;?>>TLS</option>
-                  <option <?=($result['enc1'] == "SSL") ? "selected" : null;?>>SSL</option>
-                  <option <?=($result['enc1'] == "PLAIN") ? "selected" : null;?>>PLAIN</option>
+                  <option value="SSL" <?=($result['enc1'] == "SSL") ? "selected" : null;?>>SSL</option>
+                  <option value="TLS" <?=($result['enc1'] == "TLS") ? "selected" : null;?>>STARTTLS</option>
+                  <option value="PLAIN" <?=($result['enc1'] == "PLAIN") ? "selected" : null;?>>PLAIN</option>
                 </select>
               </div>
             </div>
             <div class="form-group">
               <label class="control-label col-sm-2" for="mins_interval"><?=$lang['edit']['mins_interval'];?></label>
               <div class="col-sm-10">
-                <input type="number" class="form-control" name="mins_interval" min="1" max="3600" value="<?=htmlspecialchars($result['mins_interval'], ENT_QUOTES, 'UTF-8');?>" required>
-                <small class="help-block">1-3600</small>
+                <input type="number" class="form-control" name="mins_interval" min="1" max="43800" value="<?=htmlspecialchars($result['mins_interval'], ENT_QUOTES, 'UTF-8');?>" required>
+                <small class="help-block">1-43800</small>
               </div>
             </div>
             <div class="form-group">
@@ -1426,13 +1426,13 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <label class="control-label col-sm-2" for="password"><?=$lang['edit']['password'];?> (<a href="#" class="generate_password"><?=$lang['edit']['generate'];?></a>)</label>
               <div class="col-sm-10">
-              <input type="password" data-pwgen-field="true" data-hibp="true" class="form-control" name="password" placeholder="">
+              <input type="password" data-pwgen-field="true" data-hibp="true" class="form-control" name="password" placeholder="" autocomplete="new-password">
               </div>
             </div>
             <div class="form-group">
               <label class="control-label col-sm-2" for="password2"><?=$lang['edit']['password_repeat'];?></label>
               <div class="col-sm-10">
-              <input type="password" data-pwgen-field="true" class="form-control" name="password2">
+              <input type="password" data-pwgen-field="true" class="form-control" name="password2" autocomplete="new-password">
               </div>
             </div>
             <div class="form-group">

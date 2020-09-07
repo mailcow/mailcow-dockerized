@@ -164,7 +164,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
                     <div class="form-group">
                       <label class="control-label col-sm-3"><?=$lang['admin']['api_key'];?>:</label>
                       <div class="col-sm-9">
-                        <pre><?=(empty(htmlspecialchars($api_ro['api_key']))) ? '-' : htmlspecialchars($api_ro['api_key']);?></pre>
+                        <pre><?=(empty($api_ro['api_key'])) ? '-' : htmlspecialchars($api_ro['api_key']);?></pre>
                       </div>
                     </div>
                     <div class="form-group">
@@ -178,7 +178,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
                       <div class="col-sm-offset-3 col-sm-9">
                         <div class="btn-group">
                           <button class="btn btn-sm btn-success" name="admin_api[ro]" type="submit" href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
-                          <button class="btn btn-sm btn-default admin-ays-dialog" name="admin_api_regen_key[ro]" type="submit" href="#"><?=$lang['admin']['regen_api_key'];?></button>
+                          <button class="btn btn-sm btn-default admin-ays-dialog" name="admin_api_regen_key[ro]" type="submit" href="#" <?=(!empty($api_ro['api_key'])) ?: 'disabled';?>><?=$lang['admin']['regen_api_key'];?></button>
                         </div>
                       </div>
                     </div>
@@ -209,7 +209,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
                     <div class="form-group">
                       <label class="control-label col-sm-3" for="admin_api_key"><?=$lang['admin']['api_key'];?>:</label>
                       <div class="col-sm-9">
-                        <pre><?=(empty(htmlspecialchars($api_rw['api_key']))) ? '-' : htmlspecialchars($api_rw['api_key']);?></pre>
+                        <pre><?=(empty($api_rw['api_key'])) ? '-' : htmlspecialchars($api_rw['api_key']);?></pre>
                       </div>
                     </div>
                     <div class="form-group">
@@ -223,7 +223,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
                       <div class="col-sm-offset-3 col-sm-9">
                         <div class="btn-group">
                           <button class="btn btn-sm btn-success" name="admin_api[rw]" type="submit" href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
-                          <button class="btn btn-sm btn-default admin-ays-dialog" name="admin_api_regen_key[rw]" type="submit" href="#"><?=$lang['admin']['regen_api_key'];?></button>
+                          <button class="btn btn-sm btn-default admin-ays-dialog" name="admin_api_regen_key[rw]" type="submit" <?=(!empty($api_rw['api_key'])) ?: 'disabled';?> href="#"><?=$lang['admin']['regen_api_key'];?></button>
                         </div>
                       </div>
                     </div>
@@ -302,13 +302,13 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             <div class="form-group">
               <label class="control-label col-sm-3" for="rspamd_ui_pass"><?=$lang['admin']['password'];?>:</label>
               <div class="col-sm-9">
-              <input type="password" class="form-control" name="rspamd_ui_pass" required>
+              <input type="password" class="form-control" name="rspamd_ui_pass" autocomplete="new-password" required>
               </div>
             </div>
             <div class="form-group">
               <label class="control-label col-sm-3" for="rspamd_ui_pass2"><?=$lang['admin']['password_repeat'];?>:</label>
               <div class="col-sm-9">
-              <input type="password" class="form-control" name="rspamd_ui_pass2" required>
+              <input type="password" class="form-control" name="rspamd_ui_pass2" autocomplete="new-password" required>
               </div>
             </div>
             <div class="form-group">
@@ -698,6 +698,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
               <input type="number" class="form-control" name="netban_ipv6" value="<?=$f2b_data['netban_ipv6'];?>" required>
             </div>
           </div>
+          <hr>
           <p class="help-block"><?=$lang['admin']['f2b_list_info'];?></p>
           <div class="form-group">
             <label for="whitelist"><?=$lang['admin']['f2b_whitelist'];?>:</label>
@@ -708,9 +709,39 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             <textarea class="form-control" name="blacklist" rows="5"><?=$f2b_data['blacklist'];?></textarea>
           </div>
           <div class="btn-group">
-            <button class="btn btn-success" data-action="edit_selected" data-item="self" data-id="f2b" data-api-url='edit/fail2ban' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
-            <a href="#" role="button" class="btn btn-default" data-toggle="modal" data-container="netfilter-mailcow" data-target="#RestartContainer"><span class="glyphicon glyphicon-refresh"></span> <?= $lang['header']['restart_netfilter']; ?></a>
+            <button class="btn btn-sm btn-success" data-action="edit_selected" data-item="self" data-id="f2b" data-api-url='edit/fail2ban' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+            <a href="#" role="button" class="btn btn-sm btn-default" data-toggle="modal" data-container="netfilter-mailcow" data-target="#RestartContainer"><span class="glyphicon glyphicon-refresh"></span> <?= $lang['header']['restart_netfilter']; ?></a>
           </div>
+        </form>
+        <hr>
+        <h4><?=$lang['admin']['f2b_filter'];?></h4>
+        <p class="help-block"><?=$lang['admin']['f2b_regex_info'];?></p>
+        <form class="form-inline" data-id="f2b_regex" role="form" method="post">
+          <table class="table table-condensed" id="f2b_regex_table">
+            <tr>
+              <th width="50px">ID</th>
+              <th>RegExp</th>
+              <th width="100px">&nbsp;</th>
+            </tr>
+            <?php
+            if (!empty($f2b_data['regex'])) {
+              foreach ($f2b_data['regex'] as $regex_id => $regex_val) {
+            ?>
+            <tr>
+              <td><input disabled class="input-sm form-control" style="text-align:center" data-id="f2b_regex" type="text" name="app" required value="<?=$regex_id;?>"></td>
+              <td><input class="input-sm form-control regex-input" data-id="f2b_regex" type="text" name="regex" required value="<?=htmlspecialchars($regex_val);?>"></td>
+              <td><a href="#" role="button" class="btn btn-xs btn-default" type="button"><?=$lang['admin']['remove_row'];?></a></td>
+            </tr>
+            <?php
+              }
+            }
+            ?>
+          </table>
+          <p><div class="btn-group">
+            <button class="btn btn-sm btn-success" data-action="edit_selected" data-item="admin" data-id="f2b_regex" data-reload="no" data-api-url='edit/fail2ban' data-api-attr='{"action":"edit-regex"}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+            <button class="btn btn-sm btn-default admin-ays-dialog" data-action="edit_selected" data-item="self" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"reset-regex"}' href="#"><?=$lang['admin']['reset_default'];?></button>
+            <button class="btn btn-sm btn-default" type="button" id="add_f2b_regex_row"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add_row'];?></button>
+          </div></p>
         </form>
         <hr>
         <p class="help-block"><?=$lang['admin']['ban_list_info'];?></p>
@@ -767,84 +798,81 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
         <?php
         endif;
         ?>
-        <form class="form" data-id="quarantine" role="form" method="post">
-          <div class="row">
-            <div class="col-sm-6">
-              <div class="form-group">
-                <label for="retention_size"><?=$lang['admin']['quarantine_retention_size'];?></label>
-                <input type="number" class="form-control" name="retention_size" value="<?=$q_data['retention_size'];?>" placeholder="0" required>
-              </div>
-            </div>
-            <div class="col-sm-6">
-              <div class="form-group">
-                <label for="max_size"><?=$lang['admin']['quarantine_max_size'];?></label>
-                <input type="number" class="form-control" name="max_size" value="<?=$q_data['max_size'];?>" placeholder="0" required>
-              </div>
+        <form class="form-horizontal" data-id="quarantine" role="form" method="post">
+          <div class="form-group">
+            <label class="col-sm-4 control-label" for="retention_size"><?=$lang['admin']['quarantine_retention_size'];?></label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="retention_size" value="<?=$q_data['retention_size'];?>" placeholder="0" required>
             </div>
           </div>
-          <div class="row">
-            <div class="col-sm-6">
-              <div class="form-group">
-                <label for="max_age"><?=$lang['admin']['quarantine_max_age'];?></label>
-                <input type="number" class="form-control" name="max_age" value="<?=$q_data['max_age'];?>" min="1" required>
-              </div>
-            </div>
-            <div class="col-sm-6">
-              <div class="form-group">
-                <label for="sender"><span class="glyphicon glyphicon-copy"></span> <?=$lang['admin']['quarantine_bcc'];?></label>
-                <input type="email" class="form-control" name="bcc" value="<?=htmlspecialchars($q_data['bcc']);?>" placeholder="">
-              </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label" for="max_size"><?=$lang['admin']['quarantine_max_size'];?></label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="max_size" value="<?=$q_data['max_size'];?>" placeholder="0" required>
             </div>
           </div>
-          <div class="row">
-            <div class="col-sm-6">
-              <div class="form-group">
-                <label for="sender"><?=$lang['admin']['quarantine_notification_sender'];?>:</label>
-                <input type="email" class="form-control" name="sender" value="<?=htmlspecialchars($q_data['sender']);?>" placeholder="quarantine@localhost">
-              </div>
-            </div>
-            <div class="col-sm-6">
-              <div class="form-group">
-                <label for="subject"><?=$lang['admin']['quarantine_notification_subject'];?>:</label>
-                <input type="text" class="form-control" name="subject" value="<?=htmlspecialchars($q_data['subject']);?>" placeholder="Spam Quarantine Notification">
-              </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label" for="max_age"><?=$lang['admin']['quarantine_max_age'];?></label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="max_age" value="<?=$q_data['max_age'];?>" min="1" required>
             </div>
           </div>
           <hr>
-          <div class="row">
-            <div class="col-sm-12">
-              <legend data-target="#quarantine_template" style="cursor:pointer" class="arrow-toggle" unselectable="on" data-toggle="collapse">
-                <span style="font-size:12px" class="arrow rotate glyphicon glyphicon-menu-down"></span> <?=$lang['admin']['quarantine_notification_html'];?>
-              </legend>
-              <div id="quarantine_template" class="collapse" >
-                <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code" rows="20" name="html_tmpl"><?=$q_data['html_tmpl'];?></textarea>
-              </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label" for="sender"><span class="glyphicon glyphicon-share-alt"></span> <?=$lang['admin']['quarantine_redirect'];?></label>
+            <div class="col-sm-8">
+              <input type="email" class="form-control" name="redirect" value="<?=htmlspecialchars($q_data['redirect']);?>" placeholder="">
             </div>
           </div>
-          <div class="row">
-            <div class="col-sm-6">
-              <div class="form-group">
-                <label for="release_format"><?=$lang['admin']['quarantine_release_format'];?>:</label>
-                <select data-width="100%" name="release_format" class="selectpicker" title="<?=$lang['tfa']['select'];?>">
-                  <option <?=($q_data['release_format'] == 'raw') ? 'selected' : null;?> value="raw"><?=$lang['admin']['quarantine_release_format_raw'];?></option>
-                  <option <?=($q_data['release_format'] == 'attachment') ? 'selected' : null;?> value="attachment"><?=$lang['admin']['quarantine_release_format_att'];?></option>
-                </select>
-              </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label" for="sender"><span class="glyphicon glyphicon-copy"></span> <?=$lang['admin']['quarantine_bcc'];?></label>
+            <div class="col-sm-8">
+              <input type="email" class="form-control" name="bcc" value="<?=htmlspecialchars($q_data['bcc']);?>" placeholder="">
             </div>
-            <div class="col-sm-6">
-              <div class="form-group">
-                <label for="exclude_domains"><?=$lang['admin']['quarantine_exclude_domains'];?>:</label><br />
-                <select data-width="100%" name="exclude_domains" class="selectpicker" title="<?=$lang['tfa']['select'];?>" multiple>
-                <?php
-                foreach (array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains')) as $domain):
-                ?>
-                  <option <?=(in_array($domain, $q_data['exclude_domains'])) ? 'selected' : null;?>><?=htmlspecialchars($domain);?></option>
-                <?php
-                endforeach;
-                ?>
-                </select>
-              </div>
+          </div>
+          <hr>
+          <div class="form-group">
+            <label class="col-sm-4 control-label" for="sender"><?=$lang['admin']['quarantine_notification_sender'];?>:</label>
+            <div class="col-sm-8">
+              <input type="email" class="form-control" name="sender" value="<?=htmlspecialchars($q_data['sender']);?>" placeholder="quarantine@localhost">
             </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label" for="subject"><?=$lang['admin']['quarantine_notification_subject'];?>:</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" name="subject" value="<?=htmlspecialchars($q_data['subject']);?>" placeholder="Spam Quarantine Notification">
+            </div>
+          </div>
+          <hr>
+          <div class="form-group">
+            <label class="col-sm-4 control-label" for="release_format"><?=$lang['admin']['quarantine_release_format'];?>:</label>
+            <div class="col-sm-8">
+              <select data-width="100%" name="release_format" class="selectpicker" title="<?=$lang['tfa']['select'];?>">
+                <option <?=($q_data['release_format'] == 'raw') ? 'selected' : null;?> value="raw"><?=$lang['admin']['quarantine_release_format_raw'];?></option>
+                <option <?=($q_data['release_format'] == 'attachment') ? 'selected' : null;?> value="attachment"><?=$lang['admin']['quarantine_release_format_att'];?></option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label" for="exclude_domains"><?=$lang['admin']['quarantine_exclude_domains'];?>:</label><br />
+            <div class="col-sm-8">
+              <select data-width="100%" name="exclude_domains" class="selectpicker" title="<?=$lang['tfa']['select'];?>" multiple>
+              <?php
+              foreach (array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains')) as $domain):
+              ?>
+                <option <?=(in_array($domain, $q_data['exclude_domains'])) ? 'selected' : null;?>><?=htmlspecialchars($domain);?></option>
+              <?php
+              endforeach;
+              ?>
+              </select>
+            </div>
+          </div>
+          <hr>
+          <legend data-target="#quarantine_template" style="cursor:pointer" class="arrow-toggle" unselectable="on" data-toggle="collapse">
+            <span style="font-size:12px" class="arrow rotate glyphicon glyphicon-menu-down"></span> <?=$lang['admin']['quarantine_notification_html'];?>
+          </legend>
+          <div id="quarantine_template" class="collapse" >
+            <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code" rows="40" name="html_tmpl"><?=$q_data['html_tmpl'];?></textarea>
           </div>
           <button class="btn btn-sm btn-success" data-action="edit_selected" data-item="self" data-id="quarantine" data-api-url='edit/quarantine' data-api-attr='{"action":"settings"}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
         </form>
@@ -1088,7 +1116,11 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
                 <option <?=($ui_texts['ui_announcement_type'] == 'danger') ? 'selected' : null;?> value="danger"><?=$lang['admin']['ui_header_announcement_type_danger'];?></option>
               </select></p>
               <p><textarea class="form-control" id="ui_announcement_text" name="ui_announcement_text" rows="7"><?=$ui_texts['ui_announcement_text'];?></textarea></p>
-              <p><input type="checkbox" name="ui_announcement_active" <?=($ui_texts['ui_announcement_active'] == 1) ? 'checked' : null;?>> <?=$lang['admin']['ui_header_announcement_active'];?></p>
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" name="ui_announcement_active" class="form-check-input" <?=($ui_texts['ui_announcement_active'] == 1) ? 'checked' : null;?>> <?=$lang['admin']['ui_header_announcement_active'];?>
+                </label>
+              </div>
             </div>
             <hr>
             <div class="form-group">

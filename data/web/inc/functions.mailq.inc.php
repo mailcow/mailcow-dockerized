@@ -45,7 +45,6 @@ function mailq($_action, $_data = null) {
       );
     }
   }
-	global $lang;
   if ($_action == 'get') {
     $mailq_lines = docker('post', 'postfix-mailcow', 'exec', array('cmd' => 'mailq', 'task' => 'list'));
     $lines = 0;
@@ -72,7 +71,7 @@ function mailq($_action, $_data = null) {
       }
     }
     if (!isset($line) || empty($line)) {
-      return '{}';
+      return '[]';
     }
     else {
       return json_encode($line);
