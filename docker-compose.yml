@@ -406,7 +406,7 @@ services:
       volumes:
         - ./perm-data/rspamd:/var/lib/rspamd
         - mysql-socket-vol-1:/var/run/mysqld/
-        - postfix-vol-1:/var/spool/postfix
+        - ./perm-data/postfix:/var/spool/postfix
         - ./data/assets/ssl:/etc/ssl/mail/:ro
       restart: always
       environment:
