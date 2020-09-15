@@ -363,8 +363,9 @@ jQuery(function($){
         },
         "formatter": function(value){
           res = value.split("/");
-          return '<div class="label label-last">IMAP @ ' + unix_time_format(Number(res[0])) + '</div> ' +
-            '<div class="label label-last">POP3 @ ' + unix_time_format(Number(res[1])) + '</div>';
+          return '<div class="label label-last-in">IMAP @ ' + unix_time_format(Number(res[0])) + '</div><br>' +
+            '<div class="label label-last-in">POP3 @ ' + unix_time_format(Number(res[1])) + '</div><br>' + 
+            '<div class="label label-last-out">SMTP @ ' + unix_time_format(Number(res[2])) + '</div>';
         }},
         {"name":"quarantine_notification","filterable": false,"title":lang.quarantine_notification,"breakpoints":"all"},
         {"name":"in_use","filterable": false,"type":"html","title":lang.in_use,"sortValue": function(value){
@@ -388,7 +389,7 @@ jQuery(function($){
           $.each(data, function (i, item) {
             item.quota = item.quota_used + "/" + item.quota;
             item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
-            item.last_mail_login = item.last_imap_login + '/' + item.last_pop3_login;
+            item.last_mail_login = item.last_imap_login + '/' + item.last_pop3_login + '/' + item.last_smtp_login;
             if (!item.rl) {
               item.rl = '∞';
             } else {
