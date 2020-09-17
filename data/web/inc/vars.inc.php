@@ -157,6 +157,15 @@ $MAILBOX_DEFAULT_ATTRIBUTES['sogo_access'] = true;
 // Send notification when quarantine is not empty (never, hourly, daily, weekly)
 $MAILBOX_DEFAULT_ATTRIBUTES['quarantine_notification'] = 'hourly';
 
+// Mailbox has IMAP access by default
+$MAILBOX_DEFAULT_ATTRIBUTES['imap_access'] = true;
+
+// Mailbox has POP3 access by default
+$MAILBOX_DEFAULT_ATTRIBUTES['pop3_access'] = true;
+
+// Mailbox has SMTP access by default
+$MAILBOX_DEFAULT_ATTRIBUTES['smtp_access'] = true;
+
 // Default mailbox format, should not be changed unless you know exactly, what you do, keep the trailing ":"
 // Check dovecot.conf for further changes (e.g. shared namespace)
 $MAILBOX_DEFAULT_ATTRIBUTES['mailbox_format'] = 'maildir:';

@@ -62,7 +62,7 @@ function rsettings($_action, $_data = null) {
         if (!empty($is_now)) {
           $content = (!empty($_data['content'])) ? $_data['content'] : $is_now['content'];
           $desc = (!empty($_data['desc'])) ? $_data['desc'] : $is_now['desc'];
-          $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
+          $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active'];
         }
         else {
           $_SESSION['return'][] = array(
@@ -148,8 +148,7 @@ function rsettings($_action, $_data = null) {
       $stmt = $pdo->prepare("SELECT `id`,
         `desc`,
         `content`,
-        `active` AS `active_int`,
-        CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`
+        `active`
           FROM `settingsmap`
             WHERE `id` = :id");
       $stmt->execute(array(':id' => $_data));
@@ -303,8 +302,7 @@ function rspamd($_action, $_data = null) {
       $stmt = $pdo->prepare("SELECT `id`,
         `desc`,
         `content`,
-        `active` AS `active_int`,
-        CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`
+        `active`
           FROM `settingsmap`
             WHERE `id` = :id");
       $stmt->execute(array(':id' => $_data));
