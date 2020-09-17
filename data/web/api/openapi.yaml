@@ -3505,8 +3505,7 @@ paths:
                       created: "2019-10-02 10:29:41"
                       selected_domains:
                         - mailcow.tld
-                      tfa_active: "&#10005;"
-                      tfa_active_int: null
+                      tfa_active: "0"
                       unselected_domains:
                         - awesomemailcow.de
                         - mailcowisgreat.de
@@ -3550,15 +3549,13 @@ paths:
                     - active: "1"
                       aliases_in_domain: 0
                       aliases_left: 400
-                      backupmx: "&#10008;"
-                      backupmx_int: 0
+                      backupmx: "0"
                       bytes_total: "5076666944"
                       def_new_mailbox_quota: 3221225472
                       def_quota_for_mbox: 3221225472
                       description: Some description
                       domain_name: domain.tld
-                      gal: "&#10008;"
-                      gal_int: 0
+                      gal: "0"
                       lang: en
                       max_new_mailbox_quota: 10737418240
                       max_num_aliases_for_domain: 400
@@ -3569,22 +3566,19 @@ paths:
                       mboxes_left: 10
                       msgs_total: "172440"
                       quota_used_in_domain: "0"
-                      relay_all_recipients: "&#10008;"
-                      relay_all_recipients_int: 0
+                      relay_all_recipients: "0"
                       relayhost: "0"
                       rl: false
                     - active: "1"
                       aliases_in_domain: 0
                       aliases_left: 400
                       backupmx: "1"
-                      backupmx_int: 1
                       bytes_total: "5076666944"
                       def_new_mailbox_quota: 3221225472
                       def_quota_for_mbox: 3221225472
                       description: domain description
                       domain_name: domain2.tld
-                      gal: "&#10008;"
-                      gal_int: 0
+                      gal: "0"
                       lang: cs
                       max_new_mailbox_quota: 10737418240
                       max_num_aliases_for_domain: 400
@@ -3595,8 +3589,7 @@ paths:
                       mboxes_left: 10
                       msgs_total: "172440"
                       quota_used_in_domain: "0"
-                      relay_all_recipients: "&#10008;"
-                      relay_all_recipients_int: 0
+                      relay_all_recipients: "0"
                       relayhost: "0"
                       rl: false
           description: OK
@@ -4945,8 +4938,7 @@ paths:
                     - active: "1"
                       destination: example.org
                       id: 1
-                      lookup_mx: "&#10005;"
-                      lookup_mx_int: 0
+                      lookup_mx: "0"
                       nexthop: "host:25"
                       password: supersecurepw
                       password_short: sup...
