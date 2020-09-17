@@ -192,7 +192,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.130
+      image: mailcow/dovecot:1.131
       depends_on:
         - mysql-mailcow
       dns:
@@ -251,7 +251,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.52
+      image: mailcow/postfix:1.53
       depends_on:
         - mysql-mailcow
       volumes:
