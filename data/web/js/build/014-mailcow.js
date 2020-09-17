@@ -147,6 +147,11 @@ $(document).ready(function() {
         event.preventDefault();
       });
     }
+    if ($(this).is("select")) {
+      $(this).prop('disabled', true);
+      $(this).append('<option value="acl-disabled" selected="selected">(' + lang_acl.prohibited + ')</option>');
+      $(this).selectpicker('refresh');
+    }
     if ($(this).hasClass('btn-group')) {
       $(this).find('a').each(function(){
         $(this).removeClass('dropdown-toggle')
