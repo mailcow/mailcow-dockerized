@@ -617,6 +617,7 @@
         "alias_domain_alias_hint": "Alias-Adressen werden <b>nicht</b> automatisch auch auf Domain-Alias Adressen angewendet. Eine Alias-Adresse <code>mein-alias@domain</code> bildet demnach <b>nicht</b> die Adresse <code>mein-alias@alias-domain</code> ab.<br>E-Mail-Weiterleitungen an externe Postfächer sollten über Sieve (SOGo Weiterleitung oder im Reiter \"Filter\") angelegt werden.",
         "alias_domain_backupmx": "Alias-Domain für Relay-Domain inaktiv",
         "aliases": "Aliasse",
+        "allowed_protocols": "Allowed protocols",
         "backup_mx": "Relay Domain",
         "bcc": "BCC",
         "bcc_destination": "BCC-Ziel",
