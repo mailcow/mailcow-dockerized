@@ -72,7 +72,7 @@ jQuery(function($){
   function draw_postfix_logs() {
     ft_postfix_logs = FooTable.init('#postfix_log', {
       "columns": [
-        {"name":"time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},"title":lang.time,"style":{"width":"170px"}},
+        {"name":"time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});},"title":lang.time,"style":{"width":"170px"}},
         {"name":"priority","title":lang.priority,"style":{"width":"80px"}},
         {"name":"message","title":lang.message},
       ],
@@ -107,7 +107,7 @@ jQuery(function($){
   function draw_watchdog_logs() {
     ft_watchdog_logs = FooTable.init('#watchdog_log', {
       "columns": [
-        {"name":"time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},"title":lang.time,"style":{"width":"170px"}},
+        {"name":"time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});},"title":lang.time,"style":{"width":"170px"}},
         {"name":"service","title":"Service"},
         {"name":"trend","title":"Trend"},
         {"name":"message","title":lang.message},
