@@ -156,6 +156,7 @@
         "dkim_to": "To",
         "dkim_to_title": "Target domain/s - will be overwritten",
         "domain": "Domain",
+        "domain_admin": "Domain administrator",
         "domain_admins": "Domain administrators",
         "domain_s": "Domain/s",
         "duplicate": "Duplicate",
