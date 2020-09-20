@@ -181,6 +181,7 @@ fi
 
 if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusybBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\""; exit 1; fi
 if cp --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusybBox cp detected, please install coreutils, \"apk add --no-cache --upgrade coreutils\""; exit 1; fi
+if sed --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusybBox sed detected, please install gnu sed, \"apk add --no-cache --upgrade sed\""; exit 1; fi
 
 CONFIG_ARRAY=(
   "SKIP_LETS_ENCRYPT"
@@ -215,7 +216,7 @@ CONFIG_ARRAY=(
   "REDIS_PORT"
 )
 
-sed -i '$a\' mailcow.conf
+sed -i --follow-symlinks '$a\' mailcow.conf
 for option in ${CONFIG_ARRAY[@]}; do
   if [[ ${option} == "ADDITIONAL_SAN" ]]; then
     if ! grep -q ${option} mailcow.conf; then
@@ -525,7 +526,7 @@ if grep -q 'SYSCTL_IPV6_DISABLED=1' mailcow.conf; then
 fi
 
 # Checking for old project name bug
-sed -i 's#COMPOSEPROJECT_NAME#COMPOSE_PROJECT_NAME#g' mailcow.conf
+sed -i --follow-symlinks 's#COMPOSEPROJECT_NAME#COMPOSE_PROJECT_NAME#g' mailcow.conf
 
 # Fix Rspamd maps
 if [ -f data/conf/rspamd/custom/global_from_blacklist.map ]; then
