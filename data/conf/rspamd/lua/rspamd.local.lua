@@ -14,6 +14,80 @@ local monitoring_hosts = rspamd_config:add_map{
 }
 
 rspamd_config:register_symbol({
+  name = 'SMTP_ACCESS',
+  type = 'postfilter',
+  callback = function(task)
+    local util = require("rspamd_util")
+    local rspamd_logger = require "rspamd_logger"
+    local rspamd_ip = require 'rspamd_ip'
+    local uname = task:get_user()
+    local limited_access = task:get_symbol("SMTP_LIMITED_ACCESS")
+
+    if not uname then
+      return false
+    end
+
+    if not limited_access then
+      return false
+    end
+
+    local hash_key = 'SMTP_ALLOW_NETS_' .. uname
+
+    local redis_params = rspamd_parse_redis_server('smtp_access')
+    local ip = task:get_from_ip()
+
+    if ip == nil or not ip:is_valid() then
+      return false
+    end
+
+    local from_ip_string = tostring(ip)
+    smtp_access_table = {from_ip_string}
+
+    local maxbits = 128
+    local minbits = 32
+    if ip:get_version() == 4 then
+        maxbits = 32
+        minbits = 8
+    end
+    for i=maxbits,minbits,-1 do
+      local nip = ip:apply_mask(i):to_string() .. "/" .. i
+      table.insert(smtp_access_table, nip)
+    end
+    local function smtp_access_cb(err, data)
+      if err then
+        rspamd_logger.infox(rspamd_config, "smtp_access query request for ip %s returned invalid or empty data (\"%s\") or error (\"%s\")", ip, data, err)
+        return false
+      else
+        rspamd_logger.infox(rspamd_config, "checking ip %s for smtp_access in %s", from_ip_string, hash_key)
+        for k,v in pairs(data) do
+          if (v and v ~= userdata and v == '1') then
+            rspamd_logger.infox(rspamd_config, "found ip in smtp_access map")
+            task:insert_result(true, 'SMTP_ACCESS', 0.0, from_ip_string)
+            return true
+          end
+        end
+        rspamd_logger.infox(rspamd_config, "couldnt find ip in smtp_access map")
+        task:insert_result(true, 'SMTP_ACCESS', 999.0, from_ip_string)
+        return true
+      end
+    end
+    table.insert(smtp_access_table, 1, hash_key)
+    local redis_ret_user = rspamd_redis_make_request(task,
+      redis_params, -- connect params
+      hash_key, -- hash key
+      false, -- is write
+      smtp_access_cb, --callback
+      'HMGET', -- command
+      smtp_access_table -- arguments
+    )
+    if not redis_ret_user then
+      rspamd_logger.infox(rspamd_config, "cannot check smtp_access redis map")
+    end
+  end,
+  priority = 10
+})
+
+rspamd_config:register_symbol({
   name = 'KEEP_SPAM',
   type = 'prefilter',
   callback = function(task)
@@ -53,8 +127,8 @@ rspamd_config:register_symbol({
       else
         for k,v in pairs(data) do
           if (v and v ~= userdata and v == '1') then
-            rspamd_logger.infox(rspamd_config, "found ip in keep_spam map, setting pre-result", v)
-            task:set_pre_result('accept', 'IP matched with forward hosts')
+            rspamd_logger.infox(rspamd_config, "found ip in keep_spam map, setting pre-result")
+            task:set_pre_result('accept', 'ip matched with forward hosts')
           end
         end
       end
