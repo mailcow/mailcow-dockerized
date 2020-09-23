@@ -206,7 +206,7 @@ services:
         - ./data/conf/sogo/:/etc/sogo/
         - ./data/conf/phpfpm/sogo-sso/:/etc/phpfpm/
         - vmail-vol-1:/var/vmail
-        - vmail-attachments-vol-1:/var/attachments
+        - vmail-index-vol-1:/var/vmail_index
         - crypt-vol-1:/mail_crypt/
         - ./data/conf/rspamd/custom/:/etc/rspamd/custom
         - ./data/assets/templates:/templates
@@ -552,10 +552,8 @@ networks:
         - subnet: ${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
 
 volumes:
-  # Storage for email files
   vmail-vol-1:
-  # Storage for attachments (deduplicated)
-  vmail-attachments-vol-1:
+  vmail-index-vol-1:
   mysql-vol-1:
   mysql-socket-vol-1:
   redis-vol-1:
