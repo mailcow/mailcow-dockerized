@@ -180,7 +180,7 @@ ACL_ANYONE=disallow
 # How long should objects remain in the garbage until they are being deleted? (value in minutes)
 # Check interval is hourly
 
-MAILDIR_GC_TIME=1440
+MAILDIR_GC_TIME=7200
 
 # Additional SAN for the certificate
 #
@@ -251,7 +251,7 @@ ALLOW_ADMIN_EMAIL_LOGIN=n
 #WATCHDOG_NOTIFY_EMAIL=
 
 # Notify about banned IP (includes whois lookup)
-WATCHDOG_NOTIFY_BAN=y
+WATCHDOG_NOTIFY_BAN=n
 
 # Checks if mailcow is an open relay. Requires a SAL. More checks will follow.
 # https://www.servercow.de/mailcow?lang=en

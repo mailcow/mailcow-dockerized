@@ -148,9 +148,10 @@ $(document).ready(function() {
       });
     }
     if ($(this).is("select")) {
-      $(this).prop('disabled', true);
-      $(this).append('<option value="acl-disabled" selected="selected">(' + lang_acl.prohibited + ')</option>');
-      $(this).selectpicker('refresh');
+      $(this).selectpicker('destroy');
+      $(this).replaceWith(function() { 
+        return '<label class="control-label"><b>' + this.innerText + '</b></label>'; 
+      });
     }
     if ($(this).hasClass('btn-group')) {
       $(this).find('a').each(function(){

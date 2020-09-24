@@ -356,6 +356,9 @@ jQuery(function($){
         {"name":"spam_aliases","filterable": false,"title":lang.spam_aliases,"breakpoints":"all"},
         {"name":"tls_enforce_in","filterable": false,"title":lang.tls_enforce_in,"breakpoints":"all"},
         {"name":"tls_enforce_out","filterable": false,"title":lang.tls_enforce_out,"breakpoints":"all"},
+        {"name":"smtp_access","filterable": false,"title":"SMTP","breakpoints":"all"},
+        {"name":"imap_access","filterable": false,"title":"IMAP","breakpoints":"all"},
+        {"name":"pop3_access","filterable": false,"title":"POP3","breakpoints":"all"},
         {"name":"last_mail_login","breakpoints":"xs sm","title":lang.last_mail_login,"style":{"width":"170px"},
         "sortValue": function(value){
           res = value.split("/");
@@ -403,6 +406,9 @@ jQuery(function($){
             item.chkbox = '<input type="checkbox" data-id="mailbox" name="multi_select" value="' + encodeURIComponent(item.username) + '" />';
             item.tls_enforce_in = '<span class="text-' + (item.attributes.tls_enforce_in == 1 ? 'success' : 'danger') + ' glyphicon glyphicon-lock"></span>';
             item.tls_enforce_out = '<span class="text-' + (item.attributes.tls_enforce_out == 1 ? 'success' : 'danger') + ' glyphicon glyphicon-lock"></span>';
+            item.pop3_access = '<span class="text-' + (item.attributes.pop3_access == 1 ? 'success' : 'danger') + ' glyphicon glyphicon-' + (item.attributes.pop3_access == 1 ? 'ok' : 'remove') + '"></span>';
+            item.imap_access = '<span class="text-' + (item.attributes.imap_access == 1 ? 'success' : 'danger') + ' glyphicon glyphicon-' + (item.attributes.imap_access == 1 ? 'ok' : 'remove') + '"></span>';
+            item.smtp_access = '<span class="text-' + (item.attributes.smtp_access == 1 ? 'success' : 'danger') + ' glyphicon glyphicon-' + (item.attributes.smtp_access == 1 ? 'ok' : 'remove') + '"></span>';
             if (item.attributes.quarantine_notification === 'never') {
               item.quarantine_notification = lang.never;
             } else if (item.attributes.quarantine_notification === 'hourly') {

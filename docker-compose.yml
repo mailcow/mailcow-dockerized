@@ -159,7 +159,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.84
+      image: mailcow/sogo:1.85
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -192,7 +192,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.131
+      image: mailcow/dovecot:1.133
       depends_on:
         - mysql-mailcow
       dns:
@@ -206,7 +206,7 @@ services:
         - ./data/conf/sogo/:/etc/sogo/:z
         - ./data/conf/phpfpm/sogo-sso/:/etc/phpfpm/:z
         - vmail-vol-1:/var/vmail:Z
-        - vmail-attachments-vol-1:/var/attachments:Z
+        - vmail-index-vol-1:/var/vmail_indexs:Z
         - crypt-vol-1:/mail_crypt/:z
         - ./data/conf/rspamd/custom/:/etc/rspamd/custom:z
         - ./data/assets/templates:/templates:z
@@ -556,10 +556,8 @@ networks:
         - subnet: ${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
 
 volumes:
-  # Storage for email files
   vmail-vol-1:
-  # Storage for attachments (deduplicated)
-  vmail-attachments-vol-1:
+  vmail-index-vol-1:
   mysql-vol-1:
   mysql-socket-vol-1:
   redis-vol-1:
