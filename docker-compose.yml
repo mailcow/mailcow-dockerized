@@ -206,7 +206,7 @@ services:
         - ./data/conf/sogo/:/etc/sogo/:z
         - ./data/conf/phpfpm/sogo-sso/:/etc/phpfpm/:z
         - vmail-vol-1:/var/vmail:Z
-        - vmail-index-vol-1:/var/vmail_indexs:Z
+        - vmail-index-vol-1:/var/vmail_index:Z
         - crypt-vol-1:/mail_crypt/:z
         - ./data/conf/rspamd/custom/:/etc/rspamd/custom:z
         - ./data/assets/templates:/templates:z
