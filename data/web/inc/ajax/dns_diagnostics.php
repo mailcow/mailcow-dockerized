@@ -161,7 +161,7 @@ if ($_SESSION['mailcow_cc_role'] == "admin") {
 $records[] = array(
   $domain,
   'MX',
-  $mailcow_hostname
+  '10 '.$mailcow_hostname
 );
 if (!in_array($domain, $alias_domains)) {
   $records[] = array(
@@ -172,8 +172,9 @@ if (!in_array($domain, $alias_domains)) {
   $records[] = array(
     '_autodiscover._tcp.'.$domain,
     'SRV',
-    $mailcow_hostname.
-    ' '.$https_port
+    '10 10'. // Priority and Weight
+    ' '.$https_port.
+    ' '.$mailcow_hostname
   );
   $records[] = array(
     'autoconfig.'.$domain,
@@ -208,7 +209,9 @@ if (!in_array($domain, $alias_domains)) {
       $records[] = array(
         '_pop3._tcp.' . $domain,
         'SRV',
-        $autodiscover_config['pop3']['server'] . ' ' . $autodiscover_config['pop3']['tlsport']
+        '10 10'.  // Priority and Weight
+        ' '.$autodiscover_config['pop3']['tlsport'].
+        ' '.$autodiscover_config['pop3']['server']
       );
     }
   }
@@ -225,7 +228,9 @@ if (!in_array($domain, $alias_domains)) {
       $records[] = array(
         '_pop3s._tcp.' . $domain,
         'SRV',
-        $autodiscover_config['pop3']['server'] . ' ' . $autodiscover_config['pop3']['port']
+        '10 10' . // Priority and Weight
+        ' ' . $autodiscover_config['pop3']['port'].
+        ' ' . $autodiscover_config['pop3']['server']
       );
     }
   }
@@ -233,42 +238,52 @@ if (!in_array($domain, $alias_domains)) {
     $records[] = array(
       '_pop3s._tcp.' . $domain,
       'SRV',
-      '. 0'
+      '0 0 0 .'
     );
   }
   if ($autodiscover_config['imap']['tlsport'] != '143') {
     $records[] = array(
       '_imap._tcp.' . $domain,
       'SRV',
-      $autodiscover_config['imap']['server'] . ' ' . $autodiscover_config['imap']['tlsport']
+      '10 10 '. // Priority and Weight
+      ' ' . $autodiscover_config['imap']['tlsport'].
+      ' '.$autodiscover_config['imap']['server']
     );
   }
   if ($autodiscover_config['imap']['port'] != '993') {
     $records[] = array(
       '_imaps._tcp.' . $domain,
       'SRV',
-      $autodiscover_config['imap']['server'] . ' ' . $autodiscover_config['imap']['port']
+      '10 10'. // Priority and Weight
+      ' ' . $autodiscover_config['imap']['port'].
+      $autodiscover_config['imap']['server']
     );
   }
   if ($autodiscover_config['smtp']['tlsport'] != '587') {
     $records[] = array(
       '_submission._tcp.' . $domain,
       'SRV',
-      $autodiscover_config['smtp']['server'] . ' ' . $autodiscover_config['smtp']['tlsport']
+      '10 10'. // Priority and Weight
+      ' '.$autodiscover_config['smtp']['tlsport'].
+      $autodiscover_config['smtp']['server']
     );
   }
   if ($autodiscover_config['smtp']['port'] != '465') {
     $records[] = array(
       '_smtps._tcp.' . $domain,
       'SRV',
-      $autodiscover_config['smtp']['server'] . ' ' . $autodiscover_config['smtp']['port']
+      '10 10'. // Priority and Weight
+      ' '.$autodiscover_config['smtp']['port'].
+      $autodiscover_config['smtp']['server']
     );
   }
   if ($autodiscover_config['sieve']['port'] != '4190') {
     $records[] = array(
       '_sieve._tcp.' . $domain,
       'SRV',
-      $autodiscover_config['sieve']['server'] . ' ' . $autodiscover_config['sieve']['port']
+      '10 10'. // Priority and Weight
+      ' '. $autodiscover_config['sieve']['port'].
+      $autodiscover_config['sieve']['server']
     );
   }
 }
@@ -286,7 +301,7 @@ $data_field = array(
   'A' => 'ip',
   'AAAA' => 'ipv6',
   'CNAME' => 'target',
-  'MX' => 'target',
+  'MX' => 'data',
   'PTR' => 'target',
   'SRV' => 'data',
   'TLSA' => 'data',
@@ -329,10 +344,16 @@ foreach ($records as &$record) {
     if ($record[1] == 'SRV') {
       foreach ($currents as &$current) {
         if ($current['target'] == '') {
+          $current['pri'] = '0';
+          $current['weight'] = '0';
           $current['target'] = '.';
           $current['port'] = '0';
         }
-        $current['data'] = $current['target'] . ' ' . $current['port'];
+
+        $current['data'] = $current['pri'].
+          ' '.$current['weight'].
+          ' '.$current['port'].
+          ' '. $current['target'];
       }
       unset($current);
     }
@@ -345,6 +366,11 @@ foreach ($records as &$record) {
     elseif ($record[1] == 'AAAA') {
       foreach ($currents as &$current) {
         $current['ipv6'] = expand_ipv6($current['ipv6']);
+      }
+    }
+    elseif ($record[1] == 'MX') {
+      foreach ($currents as &$current) {
+        $current['data'] = $current['pri'] . ' ' . $current['target'];
       }
     }
   }
@@ -393,6 +419,14 @@ foreach ($records as &$record) {
         if ($dkim_matches_current[1] == $dkim_matches_good[1]) {
           $state = state_good;
         }
+    }
+    elseif ($current['type'] == 'MX') {
+      preg_match('/^\d+\s(.*)/m', $record[2], $mx_matches_current);
+      if ($mx_matches_current[1] == $current['target']) {
+        $state = state_good;
+      } else {
+        $state = state_missing . ' ' . $current[$data_field[$current['type']]];
+      }
     }
     elseif ($current['type'] != 'TXT' &&
       isset($data_field[$current['type']]) && $state != state_good) {
