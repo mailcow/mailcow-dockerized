@@ -50,6 +50,18 @@ until ping dockerapi -c1 > /dev/null; do
 done
 log_f "OK" no_date
 
+log_f "Waiting for Postfix..." no_nl
+until ping postfix -c1 > /dev/null; do
+  sleep 1
+done
+log_f "OK" no_date
+
+log_f "Waiting for Dovecot..." no_nl
+until ping dovecot -c1 > /dev/null; do
+  sleep 1
+done
+log_f "OK" no_date
+
 ACME_BASE=/var/lib/acme
 SSL_EXAMPLE=/var/lib/ssl-example
 
@@ -124,7 +136,10 @@ log_f "OK" no_date
 log_f "Initializing, please wait... "
 
 while true; do
-
+  POSTFIX_CERT_SERIAL="$(echo | openssl s_client -connect postfix:25 -starttls smtp 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
+  DOVECOT_CERT_SERIAL="$(echo | openssl s_client -connect dovecot:143 -starttls imap 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
+  POSTFIX_CERT_SERIAL_NEW="$(echo | openssl s_client -connect postfix:25 -starttls smtp 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
+  DOVECOT_CERT_SERIAL_NEW="$(echo | openssl s_client -connect dovecot:143 -starttls imap 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
   # Re-using previous acme-mailcow account and domain keys
   if [[ ! -f ${ACME_BASE}/acme/key.pem ]]; then
     log_f "Generating missing domain private rsa key..."
@@ -351,7 +366,27 @@ while true; do
   # reload on new or changed certificates
   if [[ "${CERT_CHANGED}" == "1" ]]; then
     rm -f "${ACME_BASE}/force_renew" 2> /dev/null
-    CERT_AMOUNT_CHANGED=${CERT_AMOUNT_CHANGED} /srv/reload-configurations.sh
+    RELOAD_LOOP_C=1
+    while [[ "${POSTFIX_CERT_SERIAL}" == "${POSTFIX_CERT_SERIAL_NEW}" ]] || [[ "${DOVECOT_CERT_SERIAL}" == "${DOVECOT_CERT_SERIAL_NEW}" ]] || [[ ${#POSTFIX_CERT_SERIAL_NEW} -ne 36 ]] || [[ ${#DOVECOT_CERT_SERIAL_NEW} -ne 36 ]]; do
+      log_f "Reloading or restarting services... (${RELOAD_LOOP_C})"
+      RELOAD_LOOP_C=$((RELOAD_LOOP_C + 1))
+      CERT_AMOUNT_CHANGED=${CERT_AMOUNT_CHANGED} /srv/reload-configurations.sh
+      log_f "Waiting for containers to settle..."
+      sleep 10
+      until nc -z dovecot 143; do
+        sleep 1
+      done
+      until nc -z postfix 25; do
+        sleep 1
+      done
+      POSTFIX_CERT_SERIAL_NEW="$(echo | openssl s_client -connect postfix:25 -starttls smtp 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
+      DOVECOT_CERT_SERIAL_NEW="$(echo | openssl s_client -connect dovecot:143 -starttls imap 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
+      if [[ ${RELOAD_LOOP_C} -gt 3 ]]; then
+        log_f "Some services do return old end dates, something went wrong!"
+        ${REDIS_CMDLINE} SET ACME_FAIL_TIME "$(date +%s)"
+        break;
+      fi
+    done
   fi
 
   case "$CERT_ERRORS" in
