@@ -98,13 +98,13 @@ foreach (json_decode($rcpts, true) as $rcpt) {
   //                               alias3 ---> mailbox4
   //
   try {
-    $stmt = $pdo->prepare("SELECT `goto` FROM `alias` WHERE `address` = :rcpt AND (`active` = '1' OR `active` = '2')");
+    $stmt = $pdo->prepare("SELECT `goto` FROM `alias` WHERE `address` = :rcpt AND `active` = '1'");
     $stmt->execute(array(
       ':rcpt' => $rcpt
     ));
     $gotos = $stmt->fetch(PDO::FETCH_ASSOC)['goto'];
     if (empty($gotos)) {
-      $stmt = $pdo->prepare("SELECT `goto` FROM `alias` WHERE `address` = :rcpt AND (`active` = '1' OR `active` = '2')");
+      $stmt = $pdo->prepare("SELECT `goto` FROM `alias` WHERE `address` = :rcpt AND `active` = '1'");
       $stmt->execute(array(
         ':rcpt' => '@' . $parsed_rcpt['domain']
       ));
@@ -143,7 +143,7 @@ foreach (json_decode($rcpts, true) as $rcpt) {
             error_log("RCPT RESOVLER:" . $goto . " is not a mailcow handled mailbox or alias address" . PHP_EOL);
           }
           else {
-            $stmt = $pdo->prepare("SELECT `goto` FROM `alias` WHERE `address` = :goto AND (`active` = '1' OR `active` = '2')");
+            $stmt = $pdo->prepare("SELECT `goto` FROM `alias` WHERE `address` = :goto AND `active` = '1'");
             $stmt->execute(array(':goto' => $goto));
             $goto_branch = $stmt->fetch(PDO::FETCH_ASSOC)['goto'];
             if ($goto_branch) {
