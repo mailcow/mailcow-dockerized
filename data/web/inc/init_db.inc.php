@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "20092020_2000";
+    $db_version = "26092020_2000";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -543,6 +543,7 @@ function init_db_schema() {
           "extend_sender_acl" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "unlimited_quota" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "protocol_access" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "smtp_ip_access" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "alias_domains" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "domain_desc" => "TINYINT(1) NOT NULL DEFAULT '0'"
           ),
