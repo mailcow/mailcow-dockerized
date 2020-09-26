@@ -127,7 +127,7 @@ foreach (json_decode($rcpts, true) as $rcpt) {
       // Loop through all found gotos
       foreach ($gotos_array as $index => &$goto) {
         error_log("RCPT RESOVLER: http pipe: query " . $goto . " as username from mailbox" . PHP_EOL);
-        $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `username` = :goto AND `active`= '1';");
+        $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `username` = :goto AND (`active`= '1' OR `active`= '2');");
         $stmt->execute(array(':goto' => $goto));
         $username = $stmt->fetch(PDO::FETCH_ASSOC)['username'];
         if (!empty($username)) {
