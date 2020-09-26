@@ -416,7 +416,9 @@ function domain_admin($_action, $_data = null) {
       }
       $domainadmindata['username'] = $row['username'];
       $domainadmindata['tfa_active'] = (is_null($row['tfa_active'])) ? 0 : $row['tfa_active'];
+      $domainadmindata['tfa_active_int'] = (is_null($row['tfa_active'])) ? 0 : $row['tfa_active'];
       $domainadmindata['active'] = $row['active'];
+      $domainadmindata['active_int'] = $row['active'];
       $domainadmindata['created'] = $row['created'];
       // GET SELECTED
       $stmt = $pdo->prepare("SELECT `domain` FROM `domain`
