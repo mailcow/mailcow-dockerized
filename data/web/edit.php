@@ -572,6 +572,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
       $rl = ratelimit('get', 'mailbox', $mailbox);
       $pushover_data = pushover('get', $mailbox);
       $quarantine_notification = mailbox('get', 'quarantine_notification', $mailbox);
+      $get_tls_policy = mailbox('get', 'tls_policy', $mailbox);
       if (!empty($result)) {
         ?>
         <h4><?=$lang['edit']['mailbox'];?></h4>
@@ -692,6 +693,25 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             </div>
           </div>
           <div class="form-group">
+            <label class="control-label col-sm-2" for="sender_acl"><?=$lang['user']['tls_policy'];?></label>
+            <div class="col-sm-10">
+              <div class="btn-group" data-acl="<?=$_SESSION['acl']['tls_policy'];?>">
+                <button type="button" class="btn btn-sm btn-default <?=($get_tls_policy['tls_enforce_in'] == "1") ? "active" : null;?>"
+                  data-action="edit_selected"
+                  data-item="<?= htmlentities($mailbox); ?>"
+                  data-id="tls_policy"
+                  data-api-url='edit/tls_policy'
+                  data-api-attr='{"tls_enforce_in":<?=($get_tls_policy['tls_enforce_in'] == "1") ? "0" : "1";?>}'><?=$lang['user']['tls_enforce_in'];?></button>
+                <button type="button" class="btn btn-sm btn-default <?=($get_tls_policy['tls_enforce_out'] == "1") ? "active" : null;?>"
+                  data-action="edit_selected"
+                  data-item="<?= htmlentities($mailbox); ?>"
+                  data-id="tls_policy"
+                  data-api-url='edit/tls_policy'
+                  data-api-attr='{"tls_enforce_out":<?=($get_tls_policy['tls_enforce_out'] == "1") ? "0" : "1";?>}'><?=$lang['user']['tls_enforce_out'];?></button>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
             <label class="control-label col-sm-2" for="password"><?=$lang['edit']['password'];?> (<a href="#" class="generate_password"><?=$lang['edit']['generate'];?></a>)</label>
             <div class="col-sm-10">
             <input type="password" data-pwgen-field="true" data-hibp="true" class="form-control" name="password" placeholder="<?=$lang['edit']['unchanged_if_empty'];?>" autocomplete="new-password">
@@ -718,6 +738,13 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               <option value="pop3" <?=($result['attributes']['pop3_access']=="1") ? 'selected' : null;?>>POP3</option>
               <option value="smtp" <?=($result['attributes']['smtp_access']=="1") ? 'selected' : null;?>>SMTP</option>
             </select>
+            </div>
+          </div>
+          <div hidden data-acl="<?=$_SESSION['acl']['smtp_ip_access'];?>" class="form-group">
+            <label class="control-label col-sm-2" for="allow_from_smtp"><?=$lang['edit']['allow_from_smtp'];?></label>
+            <div class="col-sm-10">
+            <input type="text" class="form-control" name="allow_from_smtp" value="<?=empty($allow_from_smtp) ? '' : $allow_from_smtp; ?>" placeholder="1.1.1.1, 10.2.0.0/24, ...">
+            <small class="help-block"><?=$lang['edit']['allow_from_smtp_info'];?></small>
             </div>
           </div>
           <hr>
