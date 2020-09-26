@@ -572,6 +572,11 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             <label for="private_key_file"><?=$lang['admin']['private_key'];?>: (RSA PKCS#8)</label>
             <textarea class="form-control input-sm" rows="10" name="private_key_file" id="private_key_file" required placeholder="-----BEGIN RSA KEY-----"></textarea>
           </div>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" name="overwrite_existing" value="1"> <?=$lang['admin']['dkim_overwrite_key'];?>
+            </label>
+          </div>
           <button class="btn btn-sm btn-default" data-action="add_item" data-id="dkim_import" data-api-url='add/dkim_import' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['import'];?></button>
         </form>
         </div>
