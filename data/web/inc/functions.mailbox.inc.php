@@ -3166,7 +3166,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $aliasdata['address'] = $row['address'];
           (!filter_var($aliasdata['address'], FILTER_VALIDATE_EMAIL)) ? $aliasdata['is_catch_all'] = 1 : $aliasdata['is_catch_all'] = 0;
           $aliasdata['active'] = $row['active'];
+          $aliasdata['active_int'] = $row['active'];
           $aliasdata['sogo_visible'] = $row['sogo_visible'];
+          $aliasdata['sogo_visible_int'] = $row['sogo_visible'];
           $aliasdata['created'] = $row['created'];
           $aliasdata['modified'] = $row['modified'];
           if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $aliasdata['domain'])) {
@@ -3198,6 +3200,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $aliasdomaindata['parent_is_backupmx'] = $row_parent['backupmx'];
           $aliasdomaindata['target_domain'] = $row['target_domain'];
           $aliasdomaindata['active'] = $row['active'];
+          $aliasdomaindata['active_int'] = $row['active'];
           $aliasdomaindata['rl'] = $rl;
           $aliasdomaindata['created'] = $row['created'];
           $aliasdomaindata['modified'] = $row['modified'];
@@ -3310,11 +3313,16 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $domaindata['max_quota_for_domain'] = $row['quota'] * 1048576;
           $domaindata['relayhost'] = $row['relayhost'];
           $domaindata['backupmx'] = $row['backupmx'];
+          $domaindata['backupmx_int'] = $row['backupmx'];
           $domaindata['gal'] = $row['gal'];
+          $domaindata['gal_int'] = $row['gal'];
           $domaindata['rl'] = $rl;
           $domaindata['active'] = $row['active'];
+          $domaindata['active_int'] = $row['active'];
           $domaindata['relay_all_recipients'] = $row['relay_all_recipients'];
+          $domaindata['relay_all_recipients_int'] = $row['relay_all_recipients'];
           $domaindata['relay_unknown_only'] = $row['relay_unknown_only'];
+          $domaindata['relay_unknown_only_int'] = $row['relay_unknown_only'];
           $stmt = $pdo->prepare("SELECT COUNT(*) AS `alias_count` FROM `alias`
             WHERE (`domain`= :domain OR `domain` IN (SELECT `alias_domain` FROM `alias_domain` WHERE `target_domain` = :domain2))
               AND `address` NOT IN (
@@ -3421,6 +3429,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $mailboxdata['last_smtp_login'] = $last_smtp_login;
           $mailboxdata['last_pop3_login'] = $last_pop3_login;
           $mailboxdata['active'] = $row['active'];
+          $mailboxdata['active_int'] = $row['active'];
           $mailboxdata['domain'] = $row['domain'];
           $mailboxdata['local_part'] = $row['local_part'];
           $mailboxdata['quota'] = $row['quota'];
@@ -3467,6 +3476,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $resourcedata['multiple_bookings'] = $row['multiple_bookings'];
           $resourcedata['description'] = $row['name'];
           $resourcedata['active'] = $row['active'];
+          $resourcedata['active_int'] = $row['active'];
           $resourcedata['domain'] = $row['domain'];
           $resourcedata['local_part'] = $row['local_part'];
           if (!isset($resourcedata['domain']) ||
