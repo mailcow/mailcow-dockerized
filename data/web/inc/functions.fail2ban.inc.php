@@ -171,6 +171,7 @@ function fail2ban($_action, $_data = null) {
             }
             // Whitelist network
             elseif ($_data['action'] == "whitelist") {
+              if (empty($network)) { continue; }
               if (valid_network($network)) {
                 try {
                   $redis->hSet('F2B_WHITELIST', $network, 1);
@@ -197,6 +198,7 @@ function fail2ban($_action, $_data = null) {
             }
             // Blacklist network
             elseif ($_data['action'] == "blacklist") {
+              if (empty($network)) { continue; }
               if (valid_network($network) && !in_array($network, array(
                 '0.0.0.0',
                 '0.0.0.0/0',
