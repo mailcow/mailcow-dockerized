@@ -401,7 +401,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.82
+      image: mailcow/watchdog:1.83
       # Debug
       #command: /watchdog.sh
       dns:
