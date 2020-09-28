@@ -491,11 +491,11 @@ cert_checks() {
     host_ip_postfix=$(get_container_ip postfix)
     host_ip_dovecot=$(get_container_ip dovecot)
     err_c_cur=${err_count}
-    /usr/lib/nagios/plugins/check_smtp -H ${host_ip_postfix} -p 25 -4 -S -D 7 2>> /tmp/certcheck 1>&2; err_count=$(( ${err_count} + $? ))
+    /usr/lib/nagios/plugins/check_smtp -H ${host_ip_postfix} -p 589 -4 -S -D 7 2>> /tmp/certcheck 1>&2; err_count=$(( ${err_count} + $? ))
     /usr/lib/nagios/plugins/check_imap -H ${host_ip_dovecot} -p 993 -4 -S -D 7 2>> /tmp/certcheck 1>&2; err_count=$(( ${err_count} + $? ))
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
     [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
-    progress "Certificate expiry check" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
+    progress "Primary certificate expiry check" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
     # Always sleep 5 minutes, mail notifications are limited
     sleep 300
   done
