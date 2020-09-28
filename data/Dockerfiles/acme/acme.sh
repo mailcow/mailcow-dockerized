@@ -44,23 +44,23 @@ if [[ "${SKIP_LETS_ENCRYPT}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   exec $(readlink -f "$0")
 fi
 
-log_f "Waiting for Docker API..." no_nl
+log_f "Waiting for Docker API..."
 until ping dockerapi -c1 > /dev/null; do
   sleep 1
 done
-log_f "OK" no_date
+log_f "Docker API OK"
 
-log_f "Waiting for Postfix..." no_nl
+log_f "Waiting for Postfix..."
 until ping postfix -c1 > /dev/null; do
   sleep 1
 done
-log_f "OK" no_date
+log_f "Postfix OK"
 
-log_f "Waiting for Dovecot..." no_nl
+log_f "Waiting for Dovecot..."
 until ping dovecot -c1 > /dev/null; do
   sleep 1
 done
-log_f "OK" no_date
+log_f "Dovecot OK"
 
 ACME_BASE=/var/lib/acme
 SSL_EXAMPLE=/var/lib/ssl-example
@@ -72,7 +72,7 @@ mkdir -p ${ACME_BASE}/acme
 [[ -f ${ACME_BASE}/acme/private/account.key ]] && mv ${ACME_BASE}/acme/private/account.key ${ACME_BASE}/acme/account.pem
 if [[ -f ${ACME_BASE}/acme/key.pem && -f ${ACME_BASE}/acme/cert.pem ]]; then
   if verify_hash_match ${ACME_BASE}/acme/cert.pem ${ACME_BASE}/acme/key.pem; then
-    log_f "Migrating to SNI folder structure..." no_nl
+    log_f "Migrating to SNI folder structure..."
     CERT_DOMAIN=($(openssl x509 -noout -text -in ${ACME_BASE}/acme/cert.pem | grep "Subject:" | sed -e 's/\(Subject:\)\|\(CN = \)\|\(CN=\)//g' | sed -e 's/^[[:space:]]*//'))
     CERT_DOMAINS=(${CERT_DOMAIN} $(openssl x509 -noout -text -in ${ACME_BASE}/acme/cert.pem | grep "DNS:" | sed -e 's/\(DNS:\)\|,//g' | sed "s/${CERT_DOMAIN}//" | sed -e 's/^[[:space:]]*//'))
     mkdir -p ${ACME_BASE}/${CERT_DOMAIN}
@@ -112,20 +112,26 @@ fi
 
 chmod 600 ${ACME_BASE}/key.pem
 
-log_f "Waiting for database... " no_nl
-while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
+log_f "Waiting for database..."
+while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent > /dev/null; do
   sleep 2
 done
-log_f "OK" no_date
+log_f "Database OK"
 
-log_f "Waiting for Nginx... " no_nl
+log_f "Waiting for Nginx..."
 until $(curl --output /dev/null --silent --head --fail http://nginx:8081); do
   sleep 2
 done
-log_f "OK" no_date
+log_f "Nginx OK"
+
+log_f "Waiting for resolver..."
+until dig letsencrypt.org +time=3 +tries=1 @unbound > /dev/null; do
+  sleep 2
+done
+log_f "Resolver OK"
 
 # Waiting for domain table
-log_f "Waiting for domain table... " no_nl
+log_f "Waiting for domain table..."
 while [[ -z ${DOMAIN_TABLE} ]]; do
   curl --silent http://nginx/ >/dev/null 2>&1
   DOMAIN_TABLE=$(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SHOW TABLES LIKE 'domain'" -Bs)
@@ -133,7 +139,7 @@ while [[ -z ${DOMAIN_TABLE} ]]; do
 done
 log_f "OK" no_date
 
-log_f "Initializing, please wait... "
+log_f "Initializing, please wait..."
 
 while true; do
   POSTFIX_CERT_SERIAL="$(echo | openssl s_client -connect postfix:25 -starttls smtp 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
@@ -196,10 +202,10 @@ while true; do
   ADDITIONAL_WC_ARR+=('autodiscover' 'autoconfig')
 
   # Start IP detection
-  log_f "Detecting IP addresses... " no_nl
+  log_f "Detecting IP addresses..."
   IPV4=$(get_ipv4)
   IPV6=$(get_ipv6)
-  log_f "OK" no_date
+  log_f "OK: ${IPV4}, ${IPV6:-"0000:0000:0000:0000:0000:0000:0000:0000"}"
 
   # Hard-fail on CAA errors for MAILCOW_HOSTNAME
   MH_PARENT_DOMAIN=$(echo ${MAILCOW_HOSTNAME} | cut -d. -f2-)
@@ -297,8 +303,11 @@ while true; do
       CERT_ERRORS=1
     fi
     # copy hostname certificate to default/server certificate
-    cp ${ACME_BASE}/${CERT_NAME}/cert.pem ${ACME_BASE}/cert.pem
-    cp ${ACME_BASE}/${CERT_NAME}/key.pem ${ACME_BASE}/key.pem
+    # do not a key when cert is missing, this can lead to a mismatch of cert/key
+    if [[ -f ${ACME_BASE}/${CERT_NAME}/cert.pem ]]; then
+      cp ${ACME_BASE}/${CERT_NAME}/cert.pem ${ACME_BASE}/cert.pem
+      cp ${ACME_BASE}/${CERT_NAME}/key.pem ${ACME_BASE}/key.pem
+    fi
   fi
 
   # individual certificates for SNI [@]
