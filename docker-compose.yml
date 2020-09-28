@@ -71,7 +71,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.70
+      image: mailcow/rspamd:1.71
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -343,7 +343,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.75
+      image: mailcow/acme:1.76
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
