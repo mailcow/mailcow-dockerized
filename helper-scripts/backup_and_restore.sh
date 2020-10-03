@@ -51,9 +51,15 @@ fi
 BACKUP_LOCATION=$(echo ${BACKUP_LOCATION} | sed 's#/$##')
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 COMPOSE_FILE=${SCRIPT_DIR}/../docker-compose.yml
+ENV_FILE=${SCRIPT_DIR}/../.env
 
 if [ ! -f ${COMPOSE_FILE} ]; then
   echo "Compose file not found"
+  exit 1
+fi
+
+if [ ! -f ${ENV_FILE} ]; then
+  echo "Environment file not found"
   exit 1
 fi
 
@@ -219,7 +225,7 @@ function restore() {
           continue
         else
           echo "Stopping mailcow..."
-          docker-compose down
+          docker-compose -f ${COMPOSE_FILE} --env-file ${ENV_FILE} down
         fi
         #docker stop $(docker ps -qf name=mysql-mailcow)
         if [[ -d "${RESTORE_LOCATION}/mysql" ]]; then
@@ -257,7 +263,7 @@ function restore() {
         sed -i --follow-symlinks "/DBROOT/c\DBROOT=${DBROOT}" ${SCRIPT_DIR}/../mailcow.conf
         source ${SCRIPT_DIR}/../mailcow.conf
         echo "Starting mailcow..."
-        docker-compose up -d
+        docker-compose -f ${COMPOSE_FILE} --env-file ${ENV_FILE} up -d
         #docker start $(docker ps -aqf name=mysql-mailcow)
       fi
       ;;
