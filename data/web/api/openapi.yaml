@@ -1490,9 +1490,7 @@ paths:
           application/json:
             schema:
               items:
-                example:
-                  - "6"
-                  - "9"
+                example: "6"
                 type: string
               type: array
       summary: Delete alias
@@ -2539,7 +2537,7 @@ paths:
                   goto: destination@domain.tld
                   private_comment: private comment
                   public_comment: public comment
-                items: "6"
+                items: ["6"]
               properties:
                 attr:
                   properties:
@@ -5020,9 +5018,9 @@ tags:
   - name: Fordwarding Hosts
     description: Forwarding Hosts enable you to send mail using a relay
   - name: Logs
-    description: Get all mailcow sysmte logs
+    description: Get all mailcow system logs
   - name: Queue Manager
-    description: Manage the postfix mailque
+    description: Manage the postfix mail queue
   - name: Quarantine
     description: Check what emails went to quarantine
   - name: Fail2Ban
@@ -5032,7 +5030,7 @@ tags:
   - name: Domain admin
     description: Create or udpdate domain admin users
   - name: Address Rewriting
-    description: Create BBC maps or recipient maps
+    description: Create BCC maps or recipient maps
   - name: Outgoing TLS Policy Map Overrides
     description: Force global TLS policys
   - name: oAuth Clients
