@@ -433,11 +433,10 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
     <div class="panel panel-default">
       <div class="panel-heading"><?=$lang['admin']['dkim_keys'];?></div>
       <div class="panel-body">
-        <div class="mass-actions-admin">
-          <div class="btn-group btn-group-sm">
-            <button type="button" id="toggle_multi_select_all" data-id="dkim" class="btn btn-default"><?=$lang['mailbox']['toggle_all'];?></button>
-            <button type="button" data-action="delete_selected" name="delete_selected" data-id="dkim" data-api-url="delete/dkim" class="btn btn-danger"><?=$lang['admin']['remove'];?></button>
-          </div>
+        <div class="btn-group" data-toggle="button" style="margin-bottom: 20px;">
+          <a class="btn btn-sm btn-default active" href="#" data-toggle="collapse" data-target=".dkim_key_valid"><?=$lang['admin']['dkim_key_valid'];?></a>
+          <a class="btn btn-sm btn-default active" href="#" data-toggle="collapse" data-target=".dkim_key_unused"><?=$lang['admin']['dkim_key_unused'];?></a>
+          <a class="btn btn-sm btn-default active" href="#" data-toggle="collapse" data-target=".dkim_key_missing"><?=$lang['admin']['dkim_key_missing'];?></a>
         </div>
         <?php
         foreach(mailbox('get', 'domains') as $domain) {
@@ -445,7 +444,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
               $dkim_domains[] = $domain;
               ($GLOBALS['SHOW_DKIM_PRIV_KEYS'] === true) ?: $dkim['privkey'] = base64_encode('Please set $SHOW_DKIM_PRIV_KEYS to true to show DKIM private keys.');
           ?>
-            <div class="row">
+            <div class="row collapse in dkim_key_valid">
               <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" /></div>
               <div class="col-md-3">
                 <p><?=$lang['admin']['domain'];?>: <strong><?=htmlspecialchars($domain);?></strong>
@@ -464,7 +463,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
           }
           else {
           ?>
-          <div class="row">
+          <div class="row collapse in dkim_key_missing">
             <div class="col-md-1"><input class="dkim_missing" type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" disabled /></div>
             <div class="col-md-3">
               <p><?=$lang['admin']['domain'];?>: <strong><?=htmlspecialchars($domain);?></strong><br /><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
@@ -479,7 +478,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
               $dkim_domains[] = $alias_domain;
               ($GLOBALS['SHOW_DKIM_PRIV_KEYS'] === true) ?: $dkim['privkey'] = base64_encode('Please set $SHOW_DKIM_PRIV_KEYS to true to show DKIM private keys.');
             ?>
-              <div class="row">
+              <div class="row collapse in dkim_key_valid">
               <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$alias_domain;?>" /></div>
                 <div class="col-md-2 col-md-offset-1">
                   <p><small>↳ Alias-Domain: <strong><?=htmlspecialchars($alias_domain);?></strong></small>
@@ -498,7 +497,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             }
             else {
             ?>
-            <div class="row">
+            <div class="row collapse in dkim_key_missing">
               <div class="col-md-1"><input class="dkim_missing" type="checkbox" data-id="dkim" name="multi_select" value="<?=$alias_domain;?>" disabled /></div>
               <div class="col-md-2 col-md-offset-1">
                 <p><small>↳ Alias-Domain: <strong><?=htmlspecialchars($alias_domain);?></strong><br /></small><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
@@ -515,7 +514,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             $dkim_domains[] = $blind;
             ($GLOBALS['SHOW_DKIM_PRIV_KEYS'] === true) ?: $dkim['privkey'] = base64_encode('Please set $SHOW_DKIM_PRIV_KEYS to true to show DKIM private keys.');
           ?>
-            <div class="row">
+            <div class="row collapse in dkim_key_unused">
               <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$blind;?>" /></div>
               <div class="col-md-3">
                 <p><?=$lang['admin']['domain'];?>: <strong><?=htmlspecialchars($blind);?></strong>
@@ -534,6 +533,12 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
           }
         }
         ?>
+        <div class="mass-actions-admin">
+          <div class="btn-group btn-group-sm">
+            <button type="button" id="toggle_multi_select_all" data-id="dkim" class="btn btn-default"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></button>
+            <button type="button" data-action="delete_selected" name="delete_selected" data-id="dkim" data-api-url="delete/dkim" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> <?=$lang['admin']['remove'];?></button>
+          </div>
+        </div>
 
         <legend style="margin-top:40px"><?=$lang['admin']['dkim_add_key'];?></legend>
         <form class="form" data-id="dkim" role="form" method="post">
