@@ -124,6 +124,7 @@ while (($#)); do
       fi
       if [[ -z $(git log HEAD --pretty=format:"%H" | grep "${LATEST_REV}") ]]; then
         echo "Updated code is available."
+        git log --date=short --pretty=format:"%ad - %s" $(git rev-parse --short HEAD)..origin/master
         exit 0
       else
         echo "No updates available."
