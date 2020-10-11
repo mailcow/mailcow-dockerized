@@ -615,6 +615,105 @@ paths:
                   type: string
               type: object
       summary: Create Domain Admin user
+  /api/v1/edit/da-acl:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      log:
+                      - acl
+                      - edit
+                      - testadmin
+                      - username:
+                        - testadmin
+                        da_acl:
+                        - syncjobs
+                        - quarantine
+                        - login_as
+                        - sogo_access
+                        - app_passwds
+                        - bcc_maps
+                        - pushover
+                        - filters
+                        - ratelimit
+                        - spam_policy
+                        - extend_sender_acl
+                        - unlimited_quota
+                        - protocol_access
+                        - smtp_ip_access
+                        - alias_domains
+                        - domain_desc
+                      msg:
+                      - acl_saved
+                      - testadmin
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Domain admin
+      description: >-
+        Using this endpoint you can edit the ACLs of a Domain Admin user. This user
+        has full control over a domain, and can create new mailboxes and
+        aliases.
+      operationId: Edit Domain Admin user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                items:
+                - testadmin
+                attr:
+                  da_acl:
+                  - syncjobs
+                  - quarantine
+                  - login_as
+                  - sogo_access
+                  - app_passwds
+                  - bcc_maps
+                  - pushover
+                  - filters
+                  - ratelimit
+                  - spam_policy
+                  - extend_sender_acl
+                  - unlimited_quota
+                  - protocol_access
+                  - smtp_ip_access
+                  - alias_domains
+                  - domain_desc
+              properties:
+                items:
+                  description: contains the domain admin username you want to edit
+                  type: object
+                attr:
+                  properties:
+                    da_acl:
+                      description: contains the list of acl names that are active for this user
+                      type: object
+                  type: object
+      summary: Edit Domain Admin ACL
   /api/v1/add/domain-policy:
     post:
       responses:
