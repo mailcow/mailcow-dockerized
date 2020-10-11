@@ -434,9 +434,9 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
       <div class="panel-heading"><?=$lang['admin']['dkim_keys'];?></div>
       <div class="panel-body">
         <div class="btn-group" data-toggle="button" style="margin-bottom: 20px;">
-          <a class="btn btn-sm btn-default active" href="#" data-toggle="collapse" data-target="dkim_key_valid"><?=$lang['admin']['dkim_key_valid'];?></a>
-          <a class="btn btn-sm btn-default active" href="#" data-toggle="collapse" data-target="dkim_key_unused"><?=$lang['admin']['dkim_key_unused'];?></a>
-          <a class="btn btn-sm btn-default active" href="#" data-toggle="collapse" data-target="dkim_key_missing"><?=$lang['admin']['dkim_key_missing'];?></a>
+          <a class="btn btn-sm btn-default active" href="#" data-toggle="collapse" data-target=".dkim_key_valid"><?=$lang['admin']['dkim_key_valid'];?></a>
+          <a class="btn btn-sm btn-default active" href="#" data-toggle="collapse" data-target=".dkim_key_unused"><?=$lang['admin']['dkim_key_unused'];?></a>
+          <a class="btn btn-sm btn-default active" href="#" data-toggle="collapse" data-target=".dkim_key_missing"><?=$lang['admin']['dkim_key_missing'];?></a>
         </div>
         <?php
         foreach(mailbox('get', 'domains') as $domain) {
