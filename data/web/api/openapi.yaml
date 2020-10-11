@@ -677,7 +677,7 @@ paths:
         Using this endpoint you can edit the ACLs of a Domain Admin user. This user
         has full control over a domain, and can create new mailboxes and
         aliases.
-      operationId: Edit Domain Admin user
+      operationId: Edit Domain Admin ACL
       requestBody:
         content:
           application/json:
@@ -714,6 +714,93 @@ paths:
                       type: object
                   type: object
       summary: Edit Domain Admin ACL
+  /api/v1/edit/domain-admin:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      log:
+                        - domain_admin
+                        - edit
+                        - username: testadmin
+                          active: ["0","1"]
+                          username_new: testadmin
+                          domains: ["domain.tld"]
+                          password: "*"
+                          password2: "*"
+                      msg:
+                        - domain_admin_modified
+                        - testadmin
+              schema:
+                properties:
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Domain admin
+      description: >-
+        Using this endpoint you can edit a existing Domain Admin user. This user
+        has full control over a domain, and can create new mailboxes and
+        aliases.
+      operationId: Edit Domain Admin user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                items:
+                - testadmin
+                attr:
+                  active:
+                  - '0'
+                  - '1'
+                  username_new: testadmin
+                  domains: ["domain.tld"]
+                  password: supersecurepassword
+                  password2: supersecurepassword
+              properties:
+                attr:
+                  properties:
+                    active:
+                      description: is the domain admin active or not
+                      type: array
+                    username_new:
+                      description: the username of the domain admin, change this to change the username
+                      type: string
+                    domains:
+                      description: a list of all domains managed by this domain admin
+                      type: array
+                    password:
+                      description: the new domain admin user password
+                      type: string
+                    password2:
+                      description: the new domain admin user password for confirmation
+                      type: string
+                  type: object
+                items:
+                  description: contains the domain admin username you want to edit
+                  type: object
+      summary: Edit Domain Admin user
   /api/v1/add/domain-policy:
     post:
       responses:
