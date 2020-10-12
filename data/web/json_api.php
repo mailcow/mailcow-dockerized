@@ -54,7 +54,7 @@ if (isset($_SESSION['mailcow_cc_role']) || isset($_SESSION['pending_mailcow_cc_u
     $extra =      (isset($query[3])) ? $query[3] : null;
 
     // accept json in request body
-    if($_SERVER['HTTP_CONTENT_TYPE'] === 'application/json') {
+    if(strpos($_SERVER['HTTP_CONTENT_TYPE'], 'application/json') !== false) {
       $request = file_get_contents('php://input');
       $requestDecoded = json_decode($request, true);
 
