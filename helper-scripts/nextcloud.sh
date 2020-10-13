@@ -149,7 +149,7 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
   echo "Login as admin with password: ${ADMIN_NC_PASS}"
 
 elif [[ ${NC_RESETPW} == "y" ]]; then
-    printf 'You are about to set a new Passwort for a Nextcloud user.\n\nDo not use this option if your Nextcloud is configured to use mailcow for authentication.\nSet a new password for the corresponding mailbox in mailcow, instead.\n\n'
+    printf 'You are about to set a new password for a Nextcloud user.\n\nDo not use this option if your Nextcloud is configured to use mailcow for authentication.\nSet a new password for the corresponding mailbox in mailcow, instead.\n\n'
     read -r -p "Continue? [y/N] " response
     response=${response,,}
     if [[ ! "$response" =~ ^(yes|y)$ ]]; then
