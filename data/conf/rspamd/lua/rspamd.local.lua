@@ -119,7 +119,7 @@ rspamd_config:register_symbol({
   end
 
   end,
-  priority = 1
+  priority = 19
 })
 
 rspamd_config:register_symbol({
