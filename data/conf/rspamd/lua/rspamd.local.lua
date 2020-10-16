@@ -88,6 +88,41 @@ rspamd_config:register_symbol({
 })
 
 rspamd_config:register_symbol({
+  name = 'DIRECT_ALIAS_EXPANDER',
+  type = 'prefilter',
+  callback = function(task)
+  local rspamd_http = require "rspamd_http"
+  local rcpts = task:get_recipients('smtp')
+  local rspamd_logger = require "rspamd_logger"
+
+  local function http_callback(err_message, code, body, headers)
+    if body ~= nil and body ~= "" then
+      rspamd_logger.infox(rspamd_config, "expanding alias to \"%s\"", body)
+      local final = {}
+      local rcpt = {}
+      final.addr = body
+      table.insert(rcpt, final)
+      task:set_recipients('smtp', rcpt)
+    end
+  end
+
+  if rcpts and #rcpts == 1 then
+  for _,rcpt in ipairs(rcpts) do
+    rspamd_http.request({
+      task=task,
+      url='http://nginx:8081/aliasexp.php',
+      body=task:get_content(),
+      callback=http_callback,
+      headers={Rcpt=rcpt['addr']},
+    })
+  end
+  end
+
+  end,
+  priority = 1
+})
+
+rspamd_config:register_symbol({
   name = 'KEEP_SPAM',
   type = 'prefilter',
   callback = function(task)
