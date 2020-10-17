@@ -366,9 +366,9 @@ jQuery(function($){
         },
         "formatter": function(value){
           res = value.split("/");
-          return '<div class="label label-last-in">IMAP @ ' + unix_time_format(Number(res[0])) + '</div><br>' +
-            '<div class="label label-last-in">POP3 @ ' + unix_time_format(Number(res[1])) + '</div><br>' + 
-            '<div class="label label-last-out">SMTP @ ' + unix_time_format(Number(res[2])) + '</div>';
+          return '<div class="label label-last-login">IMAP @ ' + unix_time_format(Number(res[0])) + '</div><br>' +
+            '<div class="label label-last-login">POP3 @ ' + unix_time_format(Number(res[1])) + '</div><br>' + 
+            '<div class="label label-last-login">SMTP @ ' + unix_time_format(Number(res[2])) + '</div>';
         }},
         {"name":"quarantine_notification","filterable": false,"title":lang.quarantine_notification,"breakpoints":"all"},
         {"name":"in_use","filterable": false,"type":"html","title":lang.in_use,"sortValue": function(value){
