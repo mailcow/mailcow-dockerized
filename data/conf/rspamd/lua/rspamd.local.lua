@@ -111,7 +111,7 @@ rspamd_config:register_symbol({
     rspamd_http.request({
       task=task,
       url='http://nginx:8081/aliasexp.php',
-      body=task:get_content(),
+      body='',
       callback=http_callback,
       headers={Rcpt=rcpt['addr']},
     })
