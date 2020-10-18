@@ -514,10 +514,10 @@ jQuery(function($){
     if (table == 'rspamd_history') {
     $.each(data, function (i, item) {
       if (item.rcpt_mime != "") {
-        item.rcpt = item.rcpt_mime.join(", ");
+        item.rcpt = escapeHtml(item.rcpt_mime.join(", "));
       }
       else {
-        item.rcpt = item.rcpt_smtp.join(", ");
+        item.rcpt = escapeHtml(item.rcpt_smtp.join(", "));
       }
       item.symbols = Object.keys(item.symbols).sort(function (a, b) {
         if (item.symbols[a].score === 0) return 1
