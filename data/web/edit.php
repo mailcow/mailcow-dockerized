@@ -592,8 +592,13 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               <br><span id="quotaBadge" class="badge">max. <?=intval($result['max_new_quota'] / 1048576)?> MiB</span>
             </label>
             <div class="col-sm-10">
-              <input type="number" name="quota" style="width:100%" min="0" max="<?=intval($result['max_new_quota'] / 1048576);?>" value="<?=intval($result['quota']) / 1048576;?>" class="form-control">
+              <?php
+              $quotaMin = ((!isset($_SESSION['acl']['unlimited_quota']) || $_SESSION['acl']['unlimited_quota'] != "1") && intval($result['quota']) > 0) ? 1 : 0;
+              ?>
+              <input type="number" name="quota" style="width:100%" min="<?=$quotaMin?>" max="<?=intval($result['max_new_quota'] / 1048576);?>" value="<?=intval($result['quota']) / 1048576;?>" class="form-control">
+              <?php if($quotaMin === 0): ?>
               <small class="help-block">0 = ∞</small>
+              <?php endif; ?>
             </div>
           </div>
           <div class="form-group">
