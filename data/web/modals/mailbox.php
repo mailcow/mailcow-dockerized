@@ -42,13 +42,9 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             <label class="control-label col-sm-2" for="addInputQuota"><?=$lang['add']['quota_mb'];?>
               <br /><span id="quotaBadge" class="badge">max. - MiB</span>
             </label>
-            <?php
-              $quotaMin = (!isset($_SESSION['acl']['unlimited_quota']) || $_SESSION['acl']['unlimited_quota'] != "1") > 0) ? 1 : 0;
-            ?>
-            <input type="text" class="form-control" name="quota" min="<?=$quotaMin?>" max="" id="addInputQuota" disabled value="<?=$lang['add']['select_domain'];?>" required>
-            <?php if($quotaMin === 0): ?>
+            <div class="col-sm-10">
+            <input type="text" class="form-control" name="quota" min="0" max="" id="addInputQuota" disabled value="<?=$lang['add']['select_domain'];?>" required>
             <small class="help-block">0 = ∞</small>
-            <?php endif; ?>
             <div class="label label-warning addInputQuotaExhausted" style="display:none;"><?=$lang['warning']['quota_exceeded_scope'];?></div>
             </div>
           </div>
