@@ -303,6 +303,14 @@ MAILDIR_SUB=Maildir
 # SOGo session timeout in minutes
 SOGO_EXPIRE_SESSION=480
 
+# DOVECOT_MASTER_USER and DOVECOT_MASTER_PASS must both be provided. No special chars.
+# Empty by default to auto-generate master user and password on start.
+# User expands to DOVECOT_MASTER_USER@mailcow.local
+# LEAVE EMPTY IF UNSURE
+DOVECOT_MASTER_USER=
+# LEAVE EMPTY IF UNSURE
+DOVECOT_MASTER_PASS=
+
 EOF
 
 mkdir -p data/assets/ssl
