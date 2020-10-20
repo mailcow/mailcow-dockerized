@@ -192,7 +192,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.133
+      image: mailcow/dovecot:1.134
       depends_on:
         - mysql-mailcow
       dns:
@@ -213,6 +213,8 @@ services:
         - rspamd-vol-1:/var/lib/rspamd:z
         - mysql-socket-vol-1:/var/run/mysqld/:z
       environment:
+        - DOVECOT_MASTER_USER=${DOVECOT_MASTER_USER:-}
+        - DOVECOT_MASTER_PASS=${DOVECOT_MASTER_PASS:-}
         - LOG_LINES=${LOG_LINES:-9999}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
