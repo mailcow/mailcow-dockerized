@@ -498,7 +498,7 @@ services:
             - solr
 
     olefy-mailcow:
-      image: mailcow/olefy:1.4
+      image: mailcow/olefy:1.5
       restart: always
       environment:
         - TZ=${TZ}
