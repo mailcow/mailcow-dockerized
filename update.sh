@@ -378,7 +378,7 @@ for option in ${CONFIG_ARRAY[@]}; do
   elif [[ ${option} == "DOVECOT_MASTER_USER" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
-      echo '# DOVECOT_MASTER_USER and DOVECOT_MASTER_PASS must _both_ be provided. No special chars.' >> mailcow.conf
+      echo '# DOVECOT_MASTER_USER and _PASS must _both_ be provided. No special chars.' >> mailcow.conf
       echo '# Empty by default to auto-generate master user and password on start.' >> mailcow.conf
       echo '# User expands to DOVECOT_MASTER_USER@mailcow.local' >> mailcow.conf
       echo '# LEAVE EMPTY IF UNSURE' >> mailcow.conf
