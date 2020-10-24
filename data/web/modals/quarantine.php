@@ -27,6 +27,10 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
           <p id="qid_detail_recipients"></p>
         </div>
         <div class="form-group">
+          <label for="qid_detail_fuzzy"><h4>Fuzzy Hashes:</h4></label>
+          <p id="qid_detail_fuzzy"></p>
+        </div>
+        <div class="form-group">
           <label for="qid_detail_hfrom"><h4><?=$lang['quarantine']['sender_header'];?>:</h4></label>
           <p><span class="mail-address-item" id="qid_detail_hfrom"></span></p>
         </div>

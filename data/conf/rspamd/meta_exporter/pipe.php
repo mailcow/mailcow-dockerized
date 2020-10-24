@@ -51,6 +51,7 @@ $raw_data = mb_convert_encoding($raw_data_content, 'HTML-ENTITIES', "UTF-8");
 $headers = getallheaders();
 
 $qid      = $headers['X-Rspamd-Qid'];
+$fuzzy    = $headers['X-Rspamd-Fuzzy'];
 $subject  = $headers['X-Rspamd-Subject'];
 $score    = $headers['X-Rspamd-Score'];
 $rcpts    = $headers['X-Rspamd-Rcpt'];
@@ -215,8 +216,8 @@ foreach (json_decode($rcpts, true) as $rcpt) {
 foreach ($rcpt_final_mailboxes as $rcpt_final) {
   error_log("QUARANTINE: quarantine pipe: processing quarantine message for rcpt " . $rcpt_final . PHP_EOL);
   try {
-    $stmt = $pdo->prepare("INSERT INTO `quarantine` (`qid`, `subject`, `score`, `sender`, `rcpt`, `symbols`, `user`, `ip`, `msg`, `action`)
-      VALUES (:qid, :subject, :score, :sender, :rcpt, :symbols, :user, :ip, :msg, :action)");
+    $stmt = $pdo->prepare("INSERT INTO `quarantine` (`qid`, `subject`, `score`, `sender`, `rcpt`, `symbols`, `user`, `ip`, `msg`, `action`, `fuzzy_hashes`)
+      VALUES (:qid, :subject, :score, :sender, :rcpt, :symbols, :user, :ip, :msg, :action, :fuzzy_hashes)");
     $stmt->execute(array(
       ':qid' => $qid,
       ':subject' => $subject,
@@ -227,7 +228,8 @@ foreach ($rcpt_final_mailboxes as $rcpt_final) {
       ':user' => $user,
       ':ip' => $ip,
       ':msg' => $raw_data,
-      ':action' => $action
+      ':action' => $action,
+      ':fuzzy_hashes' => $fuzzy
     ));
     $stmt = $pdo->prepare('DELETE FROM `quarantine` WHERE `rcpt` = :rcpt AND `id` NOT IN (
       SELECT `id`
