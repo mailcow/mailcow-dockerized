@@ -71,7 +71,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.73
+      image: mailcow/rspamd:1.74
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -192,7 +192,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.133
+      image: mailcow/dovecot:1.134
       depends_on:
         - mysql-mailcow
       dns:
@@ -213,6 +213,8 @@ services:
         - rspamd-vol-1:/var/lib/rspamd:z
         - mysql-socket-vol-1:/var/run/mysqld/:z
       environment:
+        - DOVECOT_MASTER_USER=${DOVECOT_MASTER_USER:-}
+        - DOVECOT_MASTER_PASS=${DOVECOT_MASTER_PASS:-}
         - LOG_LINES=${LOG_LINES:-9999}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -496,7 +498,7 @@ services:
             - solr
 
     olefy-mailcow:
-      image: mailcow/olefy:1.4
+      image: mailcow/olefy:1.5
       restart: always
       environment:
         - TZ=${TZ}
