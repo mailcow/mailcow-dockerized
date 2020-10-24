@@ -56,6 +56,10 @@ elseif (in_array($_GET['action'], array('release', 'delete'))) {
               <label for="qid_detail_recipients"><h4><?=$lang['quarantine']['recipients'];?>:</h4></label>
               <p id="qid_detail_recipients"></p>
             </div>
+            <div class="form-group">
+              <label for="qid_detail_fuzzy"><h4>Fuzzy Hashes:</h4></label>
+              <p id="qid_detail_fuzzy"></p>
+            </div>
             <form method="post" autofill="off">
             <div class="form-group">
               <button type="submit" class="btn btn-success" name="quick_release" value="<?=$_GET['hash'];?>"><?= $lang['tfa']['confirm']; ?></button>

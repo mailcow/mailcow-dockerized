@@ -148,6 +148,7 @@ jQuery(function($){
         $('#qid_detail_efrom').text(data.env_from);
         $('#qid_detail_score').text(data.score);
         $('#qid_detail_symbols').html('');
+        $('#qid_detail_fuzzy').html('');
         if (typeof data.symbols !== 'undefined') {
           data.symbols.sort(function (a, b) {
             if (a.score === 0) return 1
@@ -169,7 +170,13 @@ jQuery(function($){
           });
           $('[data-toggle="tooltip"]').tooltip()
         }
-
+        if (data.fuzzy_hashes !== null) {
+          $.each(data.fuzzy_hashes, function (index, value) {
+            $('#qid_detail_fuzzy').append('<p style="font-family:monospace">' + value + '</p>');
+          });
+        } else {
+          $('#qid_detail_fuzzy').append('-');
+        }
         $('#qid_detail_recipients').html('');
         if (typeof data.recipients !== 'undefined') {
           $.each(data.recipients, function(index, value) {

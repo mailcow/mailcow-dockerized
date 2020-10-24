@@ -63,6 +63,8 @@ if (!empty($_GET['hash']) && ctype_alnum($_GET['hash'])) {
     $data['score'] = $mailc['score'];
     // Get rspamd symbols
     $data['symbols'] = json_decode($mailc['symbols']);
+    // Get fuzzy hashes
+    $data['fuzzy_hashes'] = json_decode($mailc['fuzzy_hashes']);
     $data['subject'] = $mail_parser->getHeader('subject');
     (empty($data['subject'])) ? $data['subject'] = '-' : null;
     echo json_encode($data);
@@ -118,6 +120,8 @@ elseif (!empty($_GET['id']) && ctype_alnum($_GET['id'])) {
     $data['score'] = $mailc['score'];
     // Get rspamd symbols
     $data['symbols'] = json_decode($mailc['symbols']);
+    // Get fuzzy hashes
+    $data['fuzzy_hashes'] = json_decode($mailc['fuzzy_hashes']);
     // Get text/plain content
     $data['text_plain'] = $mail_parser->getMessageBody('text');
     // Get html content and convert to text
