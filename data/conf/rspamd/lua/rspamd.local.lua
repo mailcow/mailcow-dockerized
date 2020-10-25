@@ -88,12 +88,52 @@ rspamd_config:register_symbol({
 })
 
 rspamd_config:register_symbol({
+  name = 'POSTMASTER_HANDLER',
+  type = 'prefilter',
+  callback = function(task)
+  local rcpts = task:get_recipients('smtp')
+  local rspamd_logger = require "rspamd_logger"
+  local lua_util = require "lua_util"
+  local from = task:get_from(1)
+
+  -- not applying to mails with more than one rcpt to avoid bypassing filters by addressing postmaster
+  if rcpts and #rcpts == 1 then
+    for _,rcpt in ipairs(rcpts) do
+      local rcpt_split = rspamd_str_split(rcpt['addr'], '@')
+      if #rcpt_split == 2 then
+        if rcpt_split[1] == 'postmaster' then
+          task:set_pre_result('accept', 'whitelisting postmaster smtp rcpt')
+          return
+        end
+      end
+    end
+  end
+
+  if from then
+    for _,fr in ipairs(from) do
+      local fr_split = rspamd_str_split(fr['addr'], '@')
+      if #fr_split == 2 then
+        if fr_split[1] == 'postmaster' then
+          -- no whitelist, keep signatures
+          task:insert_result(true, 'POSTMASTER_FROM', -2500.0, from_ip_string)
+          return
+        end
+      end
+    end
+  end
+
+  end,
+  priority = 19
+})
+
+rspamd_config:register_symbol({
   name = 'DIRECT_ALIAS_EXPANDER',
   type = 'prefilter',
   callback = function(task)
   local rspamd_http = require "rspamd_http"
   local rcpts = task:get_recipients('smtp')
   local rspamd_logger = require "rspamd_logger"
+  local lua_util = require "lua_util"
 
   local function http_callback(err_message, code, body, headers)
     if body ~= nil and body ~= "" then
@@ -108,18 +148,25 @@ rspamd_config:register_symbol({
 
   if rcpts and #rcpts == 1 then
   for _,rcpt in ipairs(rcpts) do
-    rspamd_http.request({
-      task=task,
-      url='http://nginx:8081/aliasexp.php',
-      body='',
-      callback=http_callback,
-      headers={Rcpt=rcpt['addr']},
-    })
+    local rcpt_split = rspamd_str_split(rcpt['addr'], '@')
+    if #rcpt_split == 2 then
+      if rcpt_split[1] == 'postmaster' then
+        rspamd_logger.infox(rspamd_config, "not expanding postmaster alias")
+      end
+    else
+      rspamd_http.request({
+        task=task,
+        url='http://nginx:8081/aliasexp.php',
+        body='',
+        callback=http_callback,
+        headers={Rcpt=rcpt['addr']},
+      })
+    end
   end
   end
 
   end,
-  priority = 19
+  priority = 18
 })
 
 rspamd_config:register_symbol({
