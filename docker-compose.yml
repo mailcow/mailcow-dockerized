@@ -119,8 +119,8 @@ services:
         - ./data/conf/phpfpm/php-conf.d/opcache-recommended.ini:/usr/local/etc/php/conf.d/opcache-recommended.ini:Z
         - ./data/conf/phpfpm/php-conf.d/upload.ini:/usr/local/etc/php/conf.d/upload.ini:Z
         - ./data/conf/phpfpm/php-conf.d/other.ini:/usr/local/etc/php/conf.d/zzz-other.ini:Z
-        - ./data/conf/dovecot/global_sieve_before:/global_sieve/before:Z
-        - ./data/conf/dovecot/global_sieve_after:/global_sieve/after:Z
+        - ./data/conf/dovecot/global_sieve_before:/global_sieve/before:z
+        - ./data/conf/dovecot/global_sieve_after:/global_sieve/after:z
         - ./data/assets/templates:/tpls:z
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -180,7 +180,7 @@ services:
       volumes:
         - ./data/conf/sogo/:/etc/sogo/:z
         - ./data/web/inc/init_db.inc.php:/init_db.inc.php:Z
-        - ./data/conf/sogo/custom-sogo.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/custom-sogo.js:Z
+        - ./data/conf/sogo/custom-sogo.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/custom-sogo.js:z
         - mysql-socket-vol-1:/var/run/mysqld/:z
         - sogo-web-vol-1:/sogo_web:z
         - sogo-userdata-backup-vol-1:/sogo_backup:Z
@@ -369,7 +369,7 @@ services:
         - SNAT_TO_SOURCE=${SNAT_TO_SOURCE:-n}
         - SNAT6_TO_SOURCE=${SNAT6_TO_SOURCE:-n}
       volumes:
-        - ./data/web/.well-known/acme-challenge:/var/www/acme:rw,Z
+        - ./data/web/.well-known/acme-challenge:/var/www/acme:rw,z
         - ./data/assets/ssl:/var/lib/acme/:rw,z
         - ./data/assets/ssl-example:/var/lib/ssl-example/:ro,Z
         - mysql-socket-vol-1:/var/run/mysqld/:z
