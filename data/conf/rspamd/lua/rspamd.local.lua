@@ -123,50 +123,7 @@ rspamd_config:register_symbol({
   end
 
   end,
-  priority = 19
-})
-
-rspamd_config:register_symbol({
-  name = 'DIRECT_ALIAS_EXPANDER',
-  type = 'prefilter',
-  callback = function(task)
-  local rspamd_http = require "rspamd_http"
-  local rcpts = task:get_recipients('smtp')
-  local rspamd_logger = require "rspamd_logger"
-  local lua_util = require "lua_util"
-
-  local function http_callback(err_message, code, body, headers)
-    if body ~= nil and body ~= "" then
-      rspamd_logger.infox(rspamd_config, "expanding alias to \"%s\"", body)
-      local final = {}
-      local rcpt = {}
-      final.addr = body
-      table.insert(rcpt, final)
-      task:set_recipients('smtp', rcpt)
-    end
-  end
-
-  if rcpts and #rcpts == 1 then
-  for _,rcpt in ipairs(rcpts) do
-    local rcpt_split = rspamd_str_split(rcpt['addr'], '@')
-    if #rcpt_split == 2 then
-      if rcpt_split[1] == 'postmaster' then
-        rspamd_logger.infox(rspamd_config, "not expanding postmaster alias")
-      end
-    else
-      rspamd_http.request({
-        task=task,
-        url='http://nginx:8081/aliasexp.php',
-        body='',
-        callback=http_callback,
-        headers={Rcpt=rcpt['addr']},
-      })
-    end
-  end
-  end
-
-  end,
-  priority = 18
+  priority = 10
 })
 
 rspamd_config:register_symbol({
@@ -256,6 +213,10 @@ rspamd_config:register_symbol({
   callback = function(task)
     local util = require("rspamd_util")
     local rspamd_logger = require "rspamd_logger"
+    local redis_params = rspamd_parse_redis_server('taghandler')
+    local rspamd_http = require "rspamd_http"
+    local rcpts = task:get_recipients('smtp')
+    local lua_util = require "lua_util"
 
     local tagged_rcpt = task:get_symbol("TAGGED_RCPT")
     local mailcow_domain = task:get_symbol("RCPT_MAILCOW_DOMAIN")
@@ -271,26 +232,85 @@ rspamd_config:register_symbol({
         return true
       end
 
-      local wants_subject_tag = task:get_symbol("RCPT_WANTS_SUBJECT_TAG")
-      local wants_subfolder_tag = task:get_symbol("RCPT_WANTS_SUBFOLDER_TAG")
+      local function http_callback(err_message, code, body, headers)
+        if body ~= nil and body ~= "" then
+          rspamd_logger.infox(rspamd_config, "expanding alias to \"%s\"", body)
 
-      if wants_subject_tag then
-        rspamd_logger.infox("user wants subject modified for tagged mail")
-        local sbj = task:get_header('Subject')
-        new_sbj = '=?UTF-8?B?' .. tostring(util.encode_base64('[' .. tag .. '] ' .. sbj)) .. '?='
-        task:set_milter_reply({
-          remove_headers = {['Subject'] = 1},
-          add_headers = {['Subject'] = new_sbj}
-        })
-      elseif wants_subfolder_tag then
-        rspamd_logger.infox("Add X-Moo-Tag header")
-        task:set_milter_reply({
-          add_headers = {['X-Moo-Tag'] = 'YES'}
-        })
+          local function tag_callback_subject(err, data)
+            if err or type(data) ~= 'string' then
+              rspamd_logger.infox(rspamd_config, "subject tag handler rcpt %s returned invalid or empty data (\"%s\") or error (\"%s\") - trying subfolder tag handler...", body, data, err)
+
+              local function tag_callback_subfolder(err, data)
+                if err or type(data) ~= 'string' then
+                  rspamd_logger.infox(rspamd_config, "subfolder tag handler for rcpt %s returned invalid or empty data (\"%s\") or error (\"%s\")", body, data, err)
+                else
+                  rspamd_logger.infox("Add X-Moo-Tag header")
+                  task:set_milter_reply({
+                    add_headers = {['X-Moo-Tag'] = 'YES'}
+                  })
+                end
+              end
+
+              local redis_ret_subfolder = rspamd_redis_make_request(task,
+                redis_params, -- connect params
+                body, -- hash key
+                false, -- is write
+                tag_callback_subfolder, --callback
+                'HGET', -- command
+                {'RCPT_WANTS_SUBFOLDER_TAG', body} -- arguments
+              )
+              if not redis_ret_subfolder then
+                rspamd_logger.infox(rspamd_config, "cannot make request to load tag handler for rcpt")
+              end
+
+            else
+              rspamd_logger.infox("user wants subject modified for tagged mail")
+              local sbj = task:get_header('Subject')
+              new_sbj = '=?UTF-8?B?' .. tostring(util.encode_base64('[' .. tag .. '] ' .. sbj)) .. '?='
+              task:set_milter_reply({
+                remove_headers = {['Subject'] = 1},
+                add_headers = {['Subject'] = new_sbj}
+              })
+            end
+          end
+
+          local redis_ret_subject = rspamd_redis_make_request(task,
+            redis_params, -- connect params
+            body, -- hash key
+            false, -- is write
+            tag_callback_subject, --callback
+            'HGET', -- command
+            {'RCPT_WANTS_SUBJECT_TAG', body} -- arguments
+          )
+          if not redis_ret_subject then
+            rspamd_logger.infox(rspamd_config, "cannot make request to load tag handler for rcpt")
+          end
+
+        end
       end
+
+      if rcpts and #rcpts == 1 then
+        for _,rcpt in ipairs(rcpts) do
+          local rcpt_split = rspamd_str_split(rcpt['addr'], '@')
+          if #rcpt_split == 2 then
+            if rcpt_split[1] == 'postmaster' then
+              rspamd_logger.infox(rspamd_config, "not expanding postmaster alias")
+            else
+              rspamd_http.request({
+                task=task,
+                url='http://nginx:8081/aliasexp.php',
+                body='',
+                callback=http_callback,
+                headers={Rcpt=rcpt['addr']},
+              })
+            end
+          end
+        end
+      end
+
     end
   end,
-  priority = 11
+  priority = 19
 })
 
 rspamd_config:register_symbol({
