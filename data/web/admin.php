@@ -822,6 +822,12 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             </div>
           </div>
           <div class="form-group">
+            <label class="col-sm-4 control-label" for="max_score"><?=$lang['admin']['quarantine_max_score'];?></label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="max_score" value="<?=$q_data['max_score'];?>" placeholder="9999.0">
+            </div>
+          </div>
+          <div class="form-group">
             <label class="col-sm-4 control-label" for="max_age"><?=$lang['admin']['quarantine_max_age'];?></label>
             <div class="col-sm-8">
               <input type="number" class="form-control" name="max_age" value="<?=$q_data['max_age'];?>" min="1" required>

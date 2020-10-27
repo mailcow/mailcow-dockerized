@@ -226,6 +226,7 @@
         "quarantine_exclude_domains": "Exclude domains and alias-domains",
         "quarantine_max_age": "Maximum age in days<br><small>Value must be equal to or greater than 1 day.</small>",
         "quarantine_max_size": "Maximum size in MiB (larger elements are discarded):<br><small>0 does <b>not</b> indicate unlimited.</small>",
+        "quarantine_max_score": "Discard notification if spam score of a mail is higher than this value:<br><small>Defaults to 9999.0</small>",
         "quarantine_notification_html": "Notification email template:<br><small>Leave empty to restore default template.</small>",
         "quarantine_notification_sender": "Notification email sender",
         "quarantine_notification_subject": "Notification email subject",

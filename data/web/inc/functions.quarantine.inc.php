@@ -299,6 +299,12 @@ function quarantine($_action, $_data = null) {
           $release_format = 'raw';
         }
         $max_size = $_data['max_size'];
+        if ($_data['max_score'] == "") {
+          $max_score = '';
+        }
+        else {
+          $max_score = floatval($_data['max_score']);
+        }
         $max_age = intval($_data['max_age']);
         $subject = $_data['subject'];
         if (!filter_var($_data['bcc'], FILTER_VALIDATE_EMAIL)) {
@@ -327,6 +333,7 @@ function quarantine($_action, $_data = null) {
         try {
           $redis->Set('Q_RETENTION_SIZE', intval($retention_size));
           $redis->Set('Q_MAX_SIZE', intval($max_size));
+          $redis->Set('Q_MAX_SCORE', $max_score);
           $redis->Set('Q_MAX_AGE', $max_age);
           $redis->Set('Q_EXCLUDE_DOMAINS', json_encode($exclude_domains));
           $redis->Set('Q_RELEASE_FORMAT', $release_format);
@@ -794,6 +801,7 @@ function quarantine($_action, $_data = null) {
           $settings['exclude_domains'] = json_decode($redis->Get('Q_EXCLUDE_DOMAINS'), true);
         }
         $settings['max_size'] = $redis->Get('Q_MAX_SIZE');
+        $settings['max_score'] = $redis->Get('Q_MAX_SCORE');
         $settings['max_age'] = $redis->Get('Q_MAX_AGE');
         $settings['retention_size'] = $redis->Get('Q_RETENTION_SIZE');
         $settings['release_format'] = $redis->Get('Q_RELEASE_FORMAT');
