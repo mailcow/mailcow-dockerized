@@ -167,7 +167,8 @@ catch (PDOException $e) {
   exit;
 }
 
-if (count($rcpt_final_mailboxes) == 1 && $rcpt_final_mailboxes[0] != $rcpt) {
+// Does also return the mailbox name if question == answer (query == mailbox)
+if (count($rcpt_final_mailboxes) == 1) {
   error_log("ALIASEXP: direct alias " . $rcpt . " expanded to " . $rcpt_final_mailboxes[0] . PHP_EOL);
   echo trim($rcpt_final_mailboxes[0]);
 }

@@ -234,7 +234,7 @@ rspamd_config:register_symbol({
 
       local function http_callback(err_message, code, body, headers)
         if body ~= nil and body ~= "" then
-          rspamd_logger.infox(rspamd_config, "expanding alias to \"%s\"", body)
+          rspamd_logger.infox(rspamd_config, "expanding rcpt to \"%s\"", body)
 
           local function tag_callback_subject(err, data)
             if err or type(data) ~= 'string' then
