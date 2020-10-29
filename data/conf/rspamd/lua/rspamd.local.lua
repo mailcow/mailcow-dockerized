@@ -113,9 +113,9 @@ rspamd_config:register_symbol({
     for _,fr in ipairs(from) do
       local fr_split = rspamd_str_split(fr['addr'], '@')
       if #fr_split == 2 then
-        if fr_split[1] == 'postmaster' then
+        if fr_split[1] == 'postmaster' and task:get_user() then
           -- no whitelist, keep signatures
-          task:insert_result(true, 'POSTMASTER_FROM', -2500.0, from_ip_string)
+          task:insert_result(true, 'POSTMASTER_FROM', -2500.0)
           return
         end
       end
