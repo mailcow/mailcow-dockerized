@@ -17,7 +17,7 @@ $database_name = getenv('DBNAME');
 
 // Other variables
 $mailcow_hostname = getenv('MAILCOW_HOSTNAME');
-$default_pass_scheme = getenv('MAILCOW_PASS_SCHEME') === false ? 'SSHA256' : getenv('MAILCOW_PASS_SCHEME');
+$default_pass_scheme = getenv('MAILCOW_PASS_SCHEME');
 
 // Autodiscover settings
 // ===
