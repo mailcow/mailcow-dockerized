@@ -98,7 +98,7 @@ function hash_password($password) {
       $pw_hash = "{SSHA512}".base64_encode(hash('sha512', $password . $salt_str, true) . $salt_str);
       break;
     case "BLF-CRYPT":
-	    $pw_hash = "{BLF-CRYPT}" . password_hash($password, PASSWORD_DEFAULT);
+	    $pw_hash = "{BLF-CRYPT}" . password_hash($password, PASSWORD_BCRYPT);
       break;
   }
   return $pw_hash;
