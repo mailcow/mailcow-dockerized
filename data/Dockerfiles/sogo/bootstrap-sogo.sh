@@ -203,7 +203,7 @@ while read -r line gal
                     <key>type</key>
                     <string>sql</string>
                     <key>userPasswordAlgorithm</key>
-                    <string>ssha256</string>
+                    <string>${MAILCOW_PASS_SCHEME}</string>
                     <key>prependPasswordScheme</key>
                     <string>YES</string>
                     <key>viewURL</key>

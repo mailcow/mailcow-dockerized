@@ -84,8 +84,21 @@ function ip_acl($ip, $networks) {
   return false;
 }
 function hash_password($password) {
-	$salt_str = bin2hex(openssl_random_pseudo_bytes(8));
-	return "{SSHA256}".base64_encode(hash('sha256', $password . $salt_str, true) . $salt_str);
+  // default_pass_scheme is determined in vars.inc.php (or corresponding local file)
+  // in case default pass scheme is not defined, NULL is returned.
+  // Only SSHA256 and BLF-CRYPT is supported by standard for hashing.
+	global $default_pass_scheme;
+  $pwHash = NULL;
+	switch (strtoupper($default_pass_scheme)) {
+    case "SSHA256":
+      $salt_str = bin2hex(openssl_random_pseudo_bytes(8));
+      $pwHash = "{SSHA256}".base64_encode(hash('sha256', $password . $salt_str, true) . $salt_str);
+      break;
+    case "BLF-CRYPT":
+	    $pwHash = "{BLF-CRYPT}" . password_hash($password, PASSWORD_DEFAULT);
+      break;
+  }
+  return $pwHash;
 }
 function last_login($user) {
   global $pdo;
@@ -499,6 +512,12 @@ function verify_hash($hash, $password) {
   }
   elseif (preg_match('/^{MD5-CRYPT}/i', $hash)) {
     $hash = preg_replace('/^{MD5-CRYPT}/i', '', $hash);
+    if (password_verify($password, $hash)) {
+      return true;
+    }
+  } 
+  elseif (preg_match('/^{BLF-CRYPT}/i', $hash)) {
+    $hash = preg_replace('/^{BLF-CRYPT}/i', '', $hash);
     if (password_verify($password, $hash)) {
       return true;
     }

@@ -217,6 +217,7 @@ CONFIG_ARRAY=(
   "REDIS_PORT"
   "DOVECOT_MASTER_USER"
   "DOVECOT_MASTER_PASS"
+  "MAILCOW_PASS_SCHEME"
 )
 
 sed -i --follow-symlinks '$a\' mailcow.conf
@@ -389,6 +390,12 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo '# LEAVE EMPTY IF UNSURE' >> mailcow.conf
       echo "DOVECOT_MASTER_PASS=" >> mailcow.conf
+  fi
+  elif [[ ${option} == "MAILCOW_PASS_SCHEME" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Password hash algorithm' >> mailcow.conf
+      echo "MAILCOW_PASS_SCHEME=SSHA256" >> mailcow.conf
   fi
   elif ! grep -q ${option} mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"
