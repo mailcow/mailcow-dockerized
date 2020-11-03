@@ -68,6 +68,10 @@ if (empty($sender)) {
   $sender = 'empty-env-from@localhost';
 }
 
+if ($fuzzy == 'unknown') {
+  $fuzzy = '[]';
+}
+
 try {
   $max_size = (int)$redis->Get('Q_MAX_SIZE');
   if (($max_size * 1048576) < $raw_size) {
@@ -216,8 +220,15 @@ foreach (json_decode($rcpts, true) as $rcpt) {
 foreach ($rcpt_final_mailboxes as $rcpt_final) {
   error_log("QUARANTINE: quarantine pipe: processing quarantine message for rcpt " . $rcpt_final . PHP_EOL);
   try {
-    $stmt = $pdo->prepare("INSERT INTO `quarantine` (`qid`, `subject`, `score`, `sender`, `rcpt`, `symbols`, `user`, `ip`, `msg`, `action`, `fuzzy_hashes`)
-      VALUES (:qid, :subject, :score, :sender, :rcpt, :symbols, :user, :ip, :msg, :action, :fuzzy_hashes)");
+    // Fall back to reject
+    if ($action == "add header") {
+      $action = "header";
+    }
+    else {
+      $action = "reject";
+    }
+    $stmt = $pdo->prepare("INSERT INTO `quarantine` (`qid`, `subject`, `score`, `sender`, `rcpt`, `symbols`, `user`, `ip`, `msg`, `action`, `fuzzy_hashes`, `type`)
+      VALUES (:qid, :subject, :score, :sender, :rcpt, :symbols, :user, :ip, :msg, :action, :fuzzy_hashes, :type)");
     $stmt->execute(array(
       ':qid' => $qid,
       ':subject' => $subject,
@@ -229,7 +240,8 @@ foreach ($rcpt_final_mailboxes as $rcpt_final) {
       ':ip' => $ip,
       ':msg' => $raw_data,
       ':action' => $action,
-      ':fuzzy_hashes' => $fuzzy
+      ':fuzzy_hashes' => $fuzzy,
+      ':type' => $action
     ));
     $stmt = $pdo->prepare('DELETE FROM `quarantine` WHERE `rcpt` = :rcpt AND `id` NOT IN (
       SELECT `id`
