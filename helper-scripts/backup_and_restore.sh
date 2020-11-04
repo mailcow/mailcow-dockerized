@@ -129,7 +129,7 @@ function backup() {
           -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup \
           ${SQLIMAGE} /bin/sh -c "mariabackup --host mysql --user root --password ${DBROOT} --backup --rsync --target-dir=/backup_mariadb ; \
           mariabackup --prepare --target-dir=/backup_mariadb ; \
-          chown -R mysql:mysql /backup_mariadb ; \
+          chown -R 999:999 /backup_mariadb ; \
           /bin/tar --warning='no-file-ignored' --use-compress-program='gzip --rsyncable' -Pcvpf /backup/backup_mariadb.tar.gz /backup_mariadb ;"
       fi
       ;;&
