@@ -59,7 +59,7 @@ def query_mysql(query, headers = True, update = False):
     cnx.close()
 
 def notify_rcpt(rcpt, msg_count, quarantine_acl):
-  meta_query = query_mysql('SELECT SHA2(CONCAT(id, qid), 256) AS qhash, id, subject, score, sender, created FROM quarantine WHERE notified = 0 AND rcpt = "%s" AND score < %f' % (rcpt, max_score))
+  meta_query = query_mysql('SELECT SHA2(CONCAT(id, qid), 256) AS qhash, id, subject, score, sender, created, action FROM quarantine WHERE notified = 0 AND rcpt = "%s" AND score < %f' % (rcpt, max_score))
   if r.get('Q_HTML'):
     try:
       template = Template(r.get('Q_HTML'))
