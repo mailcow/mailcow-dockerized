@@ -329,6 +329,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $mins_interval        = $_data['mins_interval'];
           $enc1                 = $_data['enc1'];
           $custom_params        = (empty(trim($_data['custom_params']))) ? '' : trim($_data['custom_params']);
+          // Workaround, fixme
+          if (strpos($custom_params, 'pipemess')) {
+            $custom_params = '';
+          }
           if (empty($subfolder2)) {
             $subfolder2 = "";
           }
@@ -1637,6 +1641,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 'msg' => 'access_denied'
               );
               continue;
+            }
+            if (strpos($custom_params, 'pipemess')) {
+              $custom_params = '';
             }
             if (empty($subfolder2)) {
               $subfolder2 = "";

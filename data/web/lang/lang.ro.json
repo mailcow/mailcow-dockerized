@@ -744,7 +744,6 @@
         "notified": "Notificat",
         "qhandler_success": "Solicitare trimisă cu succes la sistem. Acum poți închide fereastra.",
         "qid": "Rspamd QID",
-        "qinfo": "Sistemul de carantină va salva emailurile respinse în baza de date, în timp ce expeditorului <em>nu</em> i se va da impresia unui email livrat.\n  <br>\"Învață ca spam și șterge\" va învăța un mesaj ca spam prin teorema Bayesiană și va calcula, de asemenea, hash-uri fuzzy pentru a nega mesaje similare în viitor.\n  <br>Reține că învățarea mai multor mesaje poate fi - în funcție de sistemul tău - consumatoare de timp.",
         "qitem": "Pune în carantină elementul",
         "quarantine": "Carantină",
         "quick_actions": "Acţiuni",

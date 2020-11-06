@@ -10,6 +10,14 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#tab-domains" aria-controls="tab-domains" role="tab" data-toggle="tab"><?=$lang['mailbox']['domains'];?></a></li>
     <li role="presentation"><a href="#tab-mailboxes" aria-controls="tab-mailboxes" role="tab" data-toggle="tab"><?=$lang['mailbox']['mailboxes'];?></a></li>
+    <?php /* <li class="dropdown">
+      <a class="dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['mailboxes'];?>
+      <span class="caret"></span></a>
+      <ul class="dropdown-menu">
+        <li role="presentation"><a href="#tab-mailboxes" aria-controls="tab-mailboxes" role="tab" data-toggle="tab"><?=$lang['mailbox']['mailboxes'];?></a></li>
+        <li role="presentation"><a href="#tab-mailbox-defaults" aria-controls="tab-mailbox-defaults" role="tab" data-toggle="tab"><?=$lang['mailbox']['mailbox_defaults'];?></a></li>
+      </ul>
+    </li> */ ?>
     <li role="presentation"><a href="#tab-resources" aria-controls="tab-resources" role="tab" data-toggle="tab"><?=$lang['mailbox']['resources'];?></a></li>
     <li class="dropdown">
       <a class="dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['aliases'];?>
@@ -68,6 +76,17 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addDomainModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_domain'];?></a>
                 <? endif; ?>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div role="tabpanel" class="tab-pane" id="tab-mailbox-defaults">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <?=$lang['mailbox']['mailbox_defaults'];?>
+            </div>
+            <div class="panel-body help-block">
+            <?=$lang['mailbox']['mailbox_defaults_info'];?>
             </div>
           </div>
         </div>

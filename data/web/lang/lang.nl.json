@@ -759,7 +759,6 @@
         "notified": "Verwittigd",
         "qhandler_success": "Aanvraag succesvol verzonden naar het systeem. Je kunt nu het venster sluiten.",
         "qid": "Rspamd QID",
-        "qinfo": "Het quarantainesysteem slaat geweigerde mail op, terwijl het voor de afzender lijkt alsof deze <em>niet</em> ontvangen is.<br>\"Markeer als spam en verwijder\" traint het systeem om soortgelijke mails in de toekomst opnieuw als spam te markeren.<br>Wanneer er op meerdere berichten tegelijkertijd wordt getraind kan dit mogelijk enige tijd duren.",
         "qitem": "Quarantaine-item",
         "quarantine": "Quarantaine",
         "quick_actions": "Handelingen",

@@ -61,6 +61,8 @@ if (!empty($_GET['hash']) && ctype_alnum($_GET['hash'])) {
     $data['env_from'] = $mailc['sender'];
     // Get rspamd score
     $data['score'] = $mailc['score'];
+    // Get rspamd action
+    $data['action'] = $mailc['action'];
     // Get rspamd symbols
     $data['symbols'] = json_decode($mailc['symbols']);
     // Get fuzzy hashes
@@ -118,6 +120,8 @@ elseif (!empty($_GET['id']) && ctype_alnum($_GET['id'])) {
     $data['env_from'] = $mailc['sender'];
     // Get rspamd score
     $data['score'] = $mailc['score'];
+    // Get rspamd action
+    $data['action'] = $mailc['action'];
     // Get rspamd symbols
     $data['symbols'] = json_decode($mailc['symbols']);
     // Get fuzzy hashes
