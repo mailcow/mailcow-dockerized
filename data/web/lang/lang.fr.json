@@ -755,7 +755,6 @@
 		"notified": "Notifié",
 		"qhandler_success": "Demande envoyée avec succès au système. Vous pouvez maintenant fermer la fenêtre.",
 		"qid": "Rspamd QID",
-		"qinfo": "Le système de quarantaine enregistre le courrier rejeté dans la base de données, tandis que l’expéditeur <em>ne</em> reçoit l’impression d’un courrier livré.\r\n  <br>\"Apprendre comme spam et supprimer\" apprendra un message comme spam via le théorème bayésien et calculera également des hachages flous pour refuser des messages similaires à l’avenir.\r\n  <br>Veuillez noter que - selon votre système - l’apprentissage de plusieurs messages peut prendre beaucoup de temps.",
 		"qitem": "Élément de quarantaine",
 		"quarantine": "Quarantaine",
 		"quick_actions": "Actions",

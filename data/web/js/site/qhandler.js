@@ -16,10 +16,11 @@ jQuery(function($){
       $('#qid_detail_subj').text(data.subject);
       $('#qid_detail_hfrom').text(data.header_from);
       $('#qid_detail_efrom').text(data.env_from);
-      $('#qid_detail_score').text(data.score);
+      $('#qid_detail_score').html('');
       $('#qid_detail_symbols').html('');
+      $('#qid_detail_recipients').html('');
       $('#qid_detail_fuzzy').html('');
-      if (data.fuzzy_hashes !== null) {
+      if (typeof data.fuzzy_hashes === 'object' && data.fuzzy_hashes !== null && data.fuzzy_hashes.length !== 0) {
         $.each(data.fuzzy_hashes, function (index, value) {
           $('#qid_detail_fuzzy').append('<p style="font-family:monospace">' + value + '</p>');
         });
@@ -47,7 +48,13 @@ jQuery(function($){
         });
         $('[data-toggle="tooltip"]').tooltip()
       }
-      $('#qid_detail_recipients').html('');
+      if (typeof data.score !== 'undefined' && typeof data.action !== 'undefined') {
+        if (data.action === "add header") {
+          $('#qid_detail_score').append('<span class="label-rspamd-action label label-warning"><b>' + data.score + '</b> - ' + lang.junk_folder + '</span>');
+        } else {
+          $('#qid_detail_score').append('<span class="label-rspamd-action label label-danger"><b>' + data.score + '</b> - ' + lang.rejected + '</span>');
+        }
+      }
       if (typeof data.recipients !== 'undefined') {
         $.each(data.recipients, function(index, value) {
           var elem = $('<span class="mail-address-item"></span>');

@@ -764,7 +764,6 @@
         "notified": "Anmält",
         "qhandler_success": "Begäran skickas till systemet. Du kan nu stänga fönstret.",
         "qid": "Rspamd QID",
-        "qinfo": "Karantänssystemet sparar avvisade e-post meddelanden till databasen, avsändaren komer <b>inte</b> informeras om att e-postmeddelandet har levererats.\r\n  <br>\"Markera och kom ihåg som skräppost och ta bort\" Kommer med hjälp av Bayes sats hitta skräppost och samtidigt kalkylera en kontrollsumma för att i framtiden kasta liknande meddelanden automatiskt.\r\n<br>Observera att det kan vara tidskrävande att processa dessa meddelanden, beroende på hur kraftfullt system är.<br>Svartlistade objekt undantas från karantän.",
         "qitem": "Objekt i karantän",
         "quarantine": "Karantän",
         "quick_actions": "Åtgärder",

@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "31102020_1810";
+    $db_version = "06112020_1010";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -258,7 +258,6 @@ function init_db_schema() {
           "subject" => "VARCHAR(500)",
           "score" => "FLOAT(8,2)",
           "ip" => "VARCHAR(50)",
-          "type" => "ENUM('reject','header') DEFAULT 'reject'",
           "action" => "CHAR(20) NOT NULL DEFAULT 'unknown'",
           "symbols" => "JSON",
           "fuzzy_hashes" => "JSON",
@@ -1130,6 +1129,9 @@ function init_db_schema() {
       $pdo->query("DROP VIEW IF EXISTS `" . $view . "`;");
       $pdo->query($create);
     }
+    
+    // Mitigate imapsync pipemess issue
+    $pdo->query("UPDATE `imapsync` SET `custom_params` = '' WHERE `custom_params` LIKE '%pipemess%';");
 
     // Inject admin if not exists
     $stmt = $pdo->query("SELECT NULL FROM `admin`"); 
