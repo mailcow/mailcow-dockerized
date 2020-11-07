@@ -1,6 +1,7 @@
 ---
 name: 💡 Feature Request
 about: Suggest an idea for mailcow.
+labels: bug, Needs triage
 ---
 
 <!--

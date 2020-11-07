@@ -1,6 +1,7 @@
 ---
 name: 🐞 Bug Report
 about: Report a reproducible bug for mailcow. (NOT to be used for support questions.)
+labels: bug, Needs triage
 ---
 
 <!--
