@@ -16,7 +16,7 @@ about: Suggest an idea for mailcow.
 ## Summary
 
 A clear and concise description of what the problem is.
-Ex. I'm always frustrated when [...]
+For example: I'm always frustrated when [...]
 
 ## Motivation
 
