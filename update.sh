@@ -395,7 +395,7 @@ for option in ${CONFIG_ARRAY[@]}; do
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo '# Password hash algorithm' >> mailcow.conf
-      echo "MAILCOW_PASS_SCHEME=SSHA256" >> mailcow.conf
+      echo "MAILCOW_PASS_SCHEME=BLF-CRYPT" >> mailcow.conf
   fi
   elif ! grep -q ${option} mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"

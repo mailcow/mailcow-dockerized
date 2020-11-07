@@ -118,7 +118,7 @@ cat << EOF > mailcow.conf
 MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
 
 # Password hash algorithm
-MAILCOW_PASS_SCHEME=SSHA256
+MAILCOW_PASS_SCHEME=BLF-CRYPT
 
 # ------------------------------
 # SQL database configuration
