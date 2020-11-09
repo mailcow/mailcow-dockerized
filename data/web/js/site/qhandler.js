@@ -6,10 +6,6 @@ jQuery(function($){
     data: { hash: qitem },
     dataType: 'json',
     success: function(data){
-      if (typeof data.error !== 'undefined') {
-        qError.text(data.error);
-        qError.show();
-      }
       $('[data-id="qitems_single"]').each(function(index) {
         $(this).attr("data-item", qitem);
       });
@@ -61,6 +57,12 @@ jQuery(function($){
           elem.text(value.address + ' (' + value.type.toUpperCase() + ')');
           $('#qid_detail_recipients').append(elem);
         });
+      }
+    },
+    error: function(data){
+      if (typeof data.error !== 'undefined') {
+        qError.text("Error loading quarantine item");
+        qError.show();
       }
     }
   });
