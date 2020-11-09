@@ -212,6 +212,7 @@ CONFIG_ARRAY=(
   "SKIP_SOLR"
   "ENABLE_SSL_SNI"
   "ALLOW_ADMIN_EMAIL_LOGIN"
+  "ALLOW_ADMIN_EMAIL_LOGIN_ROUNDCUBE"
   "SKIP_HTTP_VERIFICATION"
   "SOGO_EXPIRE_SESSION"
   "REDIS_PORT"
@@ -374,6 +375,13 @@ for option in ${CONFIG_ARRAY[@]}; do
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo "REDIS_PORT=127.0.0.1:7654" >> mailcow.conf
+  fi
+  elif [[ ${option} == "ALLOW_ADMIN_EMAIL_LOGIN_ROUNDCUBE" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Allow admins to log into Roundcube as email user (without any password)' >> mailcow.conf
+      echo '# Roundcube with plugin dovecot_impersonate must be installed first' >> mailcow.conf
+      echo 'ALLOW_ADMIN_EMAIL_LOGIN_ROUNDCUBE=$ALLOW_ADMIN_EMAIL_LOGIN' >> mailcow.conf
   fi
   elif [[ ${option} == "DOVECOT_MASTER_USER" ]]; then
     if ! grep -q ${option} mailcow.conf; then

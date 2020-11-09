@@ -618,10 +618,15 @@ echo "var role = '". $role . "';\n";
 echo "var is_dual = " . $is_dual . ";\n";
 echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
 $ALLOW_ADMIN_EMAIL_LOGIN = (preg_match(
-	"/^([yY][eE][sS]|[yY])+$/",
+	"/^(yes|y)+$/i",
     $_ENV["ALLOW_ADMIN_EMAIL_LOGIN"]
 )) ? "true" : "false";
 echo "var ALLOW_ADMIN_EMAIL_LOGIN = " . $ALLOW_ADMIN_EMAIL_LOGIN . ";\n";
+$ALLOW_ADMIN_EMAIL_LOGIN_ROUNDCUBE = (preg_match(
+  "/^(yes|y)+$/i",
+  $_ENV["ALLOW_ADMIN_EMAIL_LOGIN_ROUNDCUBE"]
+)) ? "true" : "false";
+echo "var ALLOW_ADMIN_EMAIL_LOGIN_ROUNDCUBE = " . $ALLOW_ADMIN_EMAIL_LOGIN_ROUNDCUBE . ";\n";
 ?>
 </script>
 <?php

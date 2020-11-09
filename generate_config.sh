@@ -240,6 +240,11 @@ SOLR_HEAP=1024
 
 ALLOW_ADMIN_EMAIL_LOGIN=n
 
+# Allow admins to log into Roundcube as email user (without any password)
+# Roundcube with plugin dovecot_impersonate must be installed first
+
+ALLOW_ADMIN_EMAIL_LOGIN_ROUNDCUBE=\$ALLOW_ADMIN_EMAIL_LOGIN
+
 # Enable watchdog (watchdog-mailcow) to restart unhealthy containers
 
 USE_WATCHDOG=y

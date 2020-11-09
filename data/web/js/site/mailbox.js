@@ -426,6 +426,9 @@ jQuery(function($){
               if (ALLOW_ADMIN_EMAIL_LOGIN) {
                 item.action += '<a href="/sogo-auth.php?login=' + encodeURIComponent(item.username) + '" class="login_as btn btn-xs btn-primary" target="_blank"><span class="glyphicon glyphicon-envelope"></span> SOGo</a>';
               }
+              if (ALLOW_ADMIN_EMAIL_LOGIN_ROUNDCUBE) {
+                item.action += '<a href="/rc-auth.php?login=' + encodeURIComponent(item.username) + '" class="login_as btn btn-xs btn-primary" target="_blank"><span class="glyphicon glyphicon-envelope"></span> Roundcube</a>';
+              }
               item.action += '</div>';
             }
             else {
