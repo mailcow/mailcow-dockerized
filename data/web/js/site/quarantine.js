@@ -139,10 +139,7 @@ jQuery(function($){
       data: { id: qitem },
       dataType: 'json',
       success: function(data){
-        if (typeof data.error !== 'undefined') {
-          qError.text(data.error);
-          qError.show();
-        }
+
         $('[data-id="qitems_single"]').each(function(index) {
           $(this).attr("data-item", qitem);
         });
@@ -210,6 +207,12 @@ jQuery(function($){
         }
         else {
           qAtts.text('-');
+        }
+      },
+      error: function(data){
+        if (typeof data.error !== 'undefined') {
+          qError.text("Error loading quarantine item");
+          qError.show();
         }
       }
     });

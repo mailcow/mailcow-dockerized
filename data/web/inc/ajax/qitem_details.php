@@ -197,7 +197,9 @@ elseif (!empty($_GET['id']) && ctype_alnum($_GET['id'])) {
         exit;
       }
     }
+    $data = mb_convert_encoding($data, "UTF-8", "auto");
     echo json_encode($data);
   }
+
 }
 ?>
