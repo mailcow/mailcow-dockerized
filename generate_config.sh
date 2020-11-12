@@ -118,6 +118,8 @@ cat << EOF > mailcow.conf
 MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
 
 # Password hash algorithm
+# Only certain password hash algorithm are supported. For a fully list of supported schemes,
+# see https://mailcow.github.io/mailcow-dockerized-docs/model-passwd/
 MAILCOW_PASS_SCHEME=BLF-CRYPT
 
 # ------------------------------
