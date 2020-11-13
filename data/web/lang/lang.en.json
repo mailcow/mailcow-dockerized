@@ -783,6 +783,7 @@
         "release_body": "We have attached your message as eml file to this message.",
         "release_subject": "Potentially damaging quarantine item %s",
         "remove": "Remove",
+        "rewrite_subject": "Rewrite subject",
         "rspamd_result": "Rspamd result",
         "sender": "Sender (SMTP)",
         "sender_header": "Sender (\"From\" header)",
