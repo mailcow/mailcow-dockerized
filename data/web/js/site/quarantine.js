@@ -86,6 +86,8 @@ jQuery(function($){
               item.rspamdaction = '<span class="label label-danger">' + lang.rejected + '</span>';
             } else if (item.action === "add header") {
               item.rspamdaction = '<span class="label label-warning">' + lang.junk_folder + '</span>';
+            } else if (item.action === "rewrite subject") {
+              item.rspamdaction = '<span class="label label-warning">' + lang.rewrite_subject + '</span>';
             }
             if(item.notified > 0) {
               item.notified = '&#10004;';
@@ -182,8 +184,10 @@ jQuery(function($){
         if (typeof data.score !== 'undefined' && typeof data.action !== 'undefined') {
           if (data.action == "add header") {
             $('#qid_detail_score').append('<span class="label-rspamd-action label label-warning"><b>' + data.score + '</b> - ' + lang.junk_folder + '</span>');
-          } else {
+          } else if (data.action == "reject") {
             $('#qid_detail_score').append('<span class="label-rspamd-action label label-danger"><b>' + data.score + '</b> - ' + lang.rejected + '</span>');
+          } else if (data.action == "rewrite subject") {
+            $('#qid_detail_score').append('<span class="label-rspamd-action label label-warning"><b>' + data.score + '</b> - ' + lang.rewrite_subject + '</span>');
           }
         }
         if (typeof data.recipients !== 'undefined') {
