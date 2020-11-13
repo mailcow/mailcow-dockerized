@@ -783,6 +783,7 @@
         "release_body": "Die ursprüngliche Nachricht wurde als EML-Datei im Anhang hinterlegt.",
         "release_subject": "Potentiell schädliche Nachricht aus Quarantäne: %s",
         "remove": "Entfernen",
+        "rewrite_subject": "Betreff geändert",
         "rspamd_result": "Rspamd Ergebnis",
         "quick_release_link": "Quick-Release Link öffnen",
         "quick_delete_link": "Quick-Delete Link öffnen",
