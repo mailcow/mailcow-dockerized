@@ -85,10 +85,10 @@ function ip_acl($ip, $networks) {
 }
 function hash_password($password) {
   // default_pass_scheme is determined in vars.inc.php (or corresponding local file)
-  // in case default pass scheme is not defined, NULL is returned.
+  // in case default pass scheme is not defined, falling back to BLF-CRYPT.
   global $default_pass_scheme;
   $pw_hash = NULL;
-	switch (strtoupper($default_pass_scheme)) {
+  switch (strtoupper($default_pass_scheme)) {
     case "SSHA256":
       $salt_str = bin2hex(openssl_random_pseudo_bytes(8));
       $pw_hash = "{SSHA256}".base64_encode(hash('sha256', $password . $salt_str, true) . $salt_str);
@@ -98,7 +98,8 @@ function hash_password($password) {
       $pw_hash = "{SSHA512}".base64_encode(hash('sha512', $password . $salt_str, true) . $salt_str);
       break;
     case "BLF-CRYPT":
-	    $pw_hash = "{BLF-CRYPT}" . password_hash($password, PASSWORD_BCRYPT);
+    default:
+      $pw_hash = "{BLF-CRYPT}" . password_hash($password, PASSWORD_BCRYPT);
       break;
   }
   return $pw_hash;
