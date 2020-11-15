@@ -173,6 +173,13 @@ $MAILBOX_DEFAULT_ATTRIBUTES['mailbox_format'] = 'maildir:';
 // Show last IMAP and POP3 logins
 $SHOW_LAST_LOGIN = true;
 
+// UV flag handling in FIDO2/WebAuthn - defaults to false to allow iOS logins
+// true = required
+// false = preferred
+// string 'required' 'preferred' 'discouraged'
+$FIDO2_UV_FLAG = 'preferred';
+$FIDO2_USER_PRESENT_FLAG = true;
+$FIDO2_FORMATS = array('android-key', 'android-safetynet', 'fido-u2f', 'none', 'packed', 'tpm');
 
 // Set visible Rspamd maps in mailcow UI, do not change unless you know what you are doing
 $RSPAMD_MAPS = array(

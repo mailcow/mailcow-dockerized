@@ -425,6 +425,7 @@
         "totp_verification_failed": "TOTP-Verifizierung fehlgeschlagen",
         "transport_dest_exists": "Transport Maps Ziel \"%s\" existiert bereits",
         "u2f_verification_failed": "U2F-Verifizierung fehlgeschlagen: %s",
+        "fido2_verification_failed": "FIDO2-Verifizierung fehlgeschlagen: %s",
         "unknown": "Ein unbekannter Fehler trat auf",
         "unknown_tfa_method": "Unbekannte TFA Methode",
         "unlimited_quota_acl": "Unendliche Quota untersagt durch ACL",
@@ -598,8 +599,10 @@
     },
     "login": {
         "delayed": "Login wurde zur Sicherheit um %s Sekunde/n verzögert.",
+        "fido2_webauthn": "FIDO2/WebAuthn",
         "login": "Anmelden",
         "mobileconfig_info": "Bitte als Mailbox-Benutzer einloggen, um das Verbindungsprofil herunterzuladen.",
+        "other_logins": "Key Login",
         "password": "Passwort",
         "username": "Benutzername"
     },
@@ -880,6 +883,7 @@
         "upload_success": "Datei wurde erfolgreich hochgeladen",
         "verified_totp_login": "TOTP-Anmeldung verifiziert",
         "verified_u2f_login": "U2F-Anmeldung verifiziert",
+        "verified_fido2_login": "FIDO2-Anmeldung verifiziert",
         "verified_yotp_login": "Yubico OTP-Anmeldung verifiziert"
     },
     "tfa": {
@@ -902,9 +906,23 @@
         "tfa": "Zwei-Faktor-Authentifizierung",
         "totp": "Time-based OTP (Google Authenticator etc.)",
         "u2f": "U2F-Authentifizierung",
-        "waiting_usb_auth": "<i>Warte auf USB-Gerät...</i><br><br>Bitte jetzt den vorgesehenen Taster des U2F-USB-Gerätes berühren.",
-        "waiting_usb_register": "<i>Warte auf USB-Gerät...</i><br><br>Bitte zuerst das obere Passwortfeld ausfüllen und erst dann den vorgesehenen Taster des U2F USB-Gerätes berühren.",
+        "waiting_usb_auth": "<i>Warte auf USB-Gerät...</i><br><br>Bitte jetzt den vorgesehenen Taster des USB-Gerätes berühren.",
+        "waiting_usb_register": "<i>Warte auf USB-Gerät...</i><br><br>Bitte zuerst das obere Passwortfeld ausfüllen und erst dann den vorgesehenen Taster des USB-Gerätes berühren.",
         "yubi_otp": "Yubico OTP-Authentifizierung"
+    },
+    "fido2": {
+        "set_fn": "Benutzerfreundlichen Namen konfigurieren",
+        "fn": "Benutzerfreundlicher Name",
+        "rename": "umbenennen",
+        "confirm": "Bestätigen",
+        "register_status": "Registrierungsstatus",
+        "known_ids": "Bekannte IDs",
+        "none": "Deaktiviert",
+        "set_fido2": "Registriere FIDO2 Gerät",
+        "start_fido2_validation": "Starte FIDO2 Validierung",
+        "fido2_auth": "Anmeldung über FIDO2",
+        "fido2_success": "Das Gerät wurde erfolgreich registriert",
+        "fido2_validation_failed": "Validierung fehlgeschlagen"
     },
     "user": {
         "action": "Aktion",

@@ -425,6 +425,7 @@
         "totp_verification_failed": "TOTP verification failed",
         "transport_dest_exists": "Transport destination \"%s\" exists",
         "u2f_verification_failed": "U2F verification failed: %s",
+        "fido2_verification_failed": "U2F verification failed: %s",
         "unknown": "An unknown error occurred",
         "unknown_tfa_method": "Unknown TFA method",
         "unlimited_quota_acl": "Unlimited quota prohibited by ACL",
@@ -598,8 +599,10 @@
     },
     "login": {
         "delayed": "Login was delayed by %s seconds.",
+        "fido2_webauthn": "FIDO2/WebAuthn",
         "login": "Login",
         "mobileconfig_info": "Please login as mailbox user to download the requested Apple connection profile.",
+        "other_logins": "Key login",
         "password": "Password",
         "username": "Username"
     },
@@ -880,6 +883,7 @@
         "upload_success": "File uploaded successfully",
         "verified_totp_login": "Verified TOTP login",
         "verified_u2f_login": "Verified U2F login",
+        "verified_fido2_login": "Verified FIDO2 login",
         "verified_yotp_login": "Verified Yubico OTP login"
     },
     "tfa": {
@@ -902,9 +906,23 @@
         "tfa": "Two-factor authentication",
         "totp": "Time-based OTP (Google Authenticator, Authy, etc.)",
         "u2f": "U2F authentication",
-        "waiting_usb_auth": "<i>Waiting for USB device...</i><br><br>Please tap the button on your U2F USB device now.",
-        "waiting_usb_register": "<i>Waiting for USB device...</i><br><br>Please enter your password above and confirm your U2F registration by tapping the button on your U2F USB device.",
+        "waiting_usb_auth": "<i>Waiting for USB device...</i><br><br>Please tap the button on your USB device now.",
+        "waiting_usb_register": "<i>Waiting for USB device...</i><br><br>Please enter your password above and confirm your registration by tapping the button on your USB device.",
         "yubi_otp": "Yubico OTP authentication"
+    },
+    "fido2": {
+        "set_fn": "Set friendly name",
+        "fn": "Friendly name",
+        "rename": "rename",
+        "confirm": "Confirm",
+        "register_status": "Registration status",
+        "known_ids": "Known IDs",
+        "none": "Disabled",
+        "set_fido2": "Register FIDO2 device",
+        "start_fido2_validation": "Start FIDO2 validation",
+        "fido2_auth": "Login with FIDO2",
+        "fido2_success": "Device successfully registered",
+        "fido2_validation_failed": "Validation failed"
     },
     "user": {
         "action": "Action",
