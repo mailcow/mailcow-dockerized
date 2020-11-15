@@ -783,6 +783,7 @@
         "release_body": "Det ursprungliga meddelandet har bifogats som en EML-fil till detta meddelande.",
         "release_subject": "Potentiellt skadlig karantänsmeddelande %s",
         "remove": "Ta bort",
+        "rewrite_subject": "Skriv om ämnesraden",
         "rspamd_result": "Rspamd resultat",
         "quick_release_link": "Öppna snabblänk - Släpp på",
         "quick_delete_link": "Öppna snabblänk - Kasta",
