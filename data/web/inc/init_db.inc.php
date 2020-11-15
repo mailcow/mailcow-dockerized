@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "06112020_1010";
+    $db_version = "15112020_1110";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -80,6 +80,31 @@ function init_db_schema() {
         "keys" => array(
           "primary" => array(
             "" => array("username")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "fido2" => array(
+        "cols" => array(
+          "username" => "VARCHAR(255) NOT NULL",
+          "friendlyName" => "VARCHAR(255)",
+          "rpId" => "VARCHAR(255) NOT NULL",
+          "credentialPublicKey" => "TEXT NOT NULL",
+          "certificateChain" => "TEXT",
+          // Can be null for format "none"
+          "certificate" => "TEXT",
+          "certificateIssuer" => "VARCHAR(255)",
+          "certificateSubject" => "VARCHAR(255)",
+          "signatureCounter" => "INT",
+          "AAGUID" => "BLOB",
+          "credentialId" => "BLOB NOT NULL",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE NOW(0)",
+          "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
+        ),
+        "keys" => array(
+          "unique" => array(
+            "fido2_username_CID" => array("username", "certificateSubject")
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
