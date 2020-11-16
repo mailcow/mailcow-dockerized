@@ -38,7 +38,6 @@ class AttestationObject {
         switch ($enc['fmt']) {
             case 'android-key': $this->_attestationFormat = new Format\AndroidKey($enc, $this->_authenticatorData); break;
             case 'android-safetynet': $this->_attestationFormat = new Format\AndroidSafetyNet($enc, $this->_authenticatorData); break;
-            case 'apple': $this->_attestationFormat = new Format\Apple($enc, $this->_authenticatorData); break;
             case 'fido-u2f': $this->_attestationFormat = new Format\U2f($enc, $this->_authenticatorData); break;
             case 'none': $this->_attestationFormat = new Format\None($enc, $this->_authenticatorData); break;
             case 'packed': $this->_attestationFormat = new Format\Packed($enc, $this->_authenticatorData); break;

@@ -10,7 +10,6 @@ require_once 'Attestation/Format/FormatBase.php';
 require_once 'Attestation/Format/None.php';
 require_once 'Attestation/Format/AndroidKey.php';
 require_once 'Attestation/Format/AndroidSafetyNet.php';
-require_once 'Attestation/Format/Apple.php';
 require_once 'Attestation/Format/Packed.php';
 require_once 'Attestation/Format/Tpm.php';
 require_once 'Attestation/Format/U2f.php';
@@ -43,7 +42,6 @@ class WebAuthn {
         $this->_rpId = $rpId;
         $this->_rpIdHash = \hash('sha256', $rpId, true);
         ByteBuffer::$useBase64UrlEncoding = !!$useBase64UrlEncoding;
-        $supportedFormats = array('android-key', 'android-safetynet', 'apple', 'fido-u2f', 'none', 'packed', 'tpm');
 
         if (!\function_exists('\openssl_open')) {
             throw new WebAuthnException('OpenSSL-Module not installed');;
@@ -53,16 +51,16 @@ class WebAuthn {
             throw new WebAuthnException('SHA256 not supported by this openssl installation.');
         }
 
-        // default: all format
+        // default value
         if (!is_array($allowedFormats)) {
-            $allowedFormats = $supportedFormats;
+            $allowedFormats = array('android-key', 'fido-u2f', 'packed', 'tpm');
         }
         $this->_formats = $allowedFormats;
 
         // validate formats
-        $invalidFormats = \array_diff($this->_formats, $supportedFormats);
+        $invalidFormats = \array_diff($this->_formats, array('android-key', 'android-safetynet', 'fido-u2f', 'none', 'packed', 'tpm'));
         if (!$this->_formats || $invalidFormats) {
-            throw new WebAuthnException('invalid formats on construct: ' . implode(', ', $invalidFormats));
+            throw new WebAuthnException('Invalid formats on construct: ' . implode(', ', $invalidFormats));
         }
     }
 
@@ -108,13 +106,10 @@ class WebAuthn {
      *                                             true = required
      *                                             false = preferred
      *                                             string 'required' 'preferred' 'discouraged'
-     * @param bool|null $crossPlatformAttachment   true for cross-platform devices (eg. fido usb),
-     *                                             false for platform devices (eg. windows hello, android safetynet),
-     *                                             null for both
      * @param array $excludeCredentialIds a array of ids, which are already registered, to prevent re-registration
      * @return \stdClass
      */
-    public function getCreateArgs($userId, $userName, $userDisplayName, $timeout=20, $requireResidentKey=false, $requireUserVerification=false, $crossPlatformAttachment=null, $excludeCredentialIds=array()) {
+    public function getCreateArgs($userId, $userName, $userDisplayName, $timeout=20, $requireResidentKey=false, $requireUserVerification=false, $excludeCredentialIds=array()) {
 
         // validate User Verification Requirement
         if (\is_bool($requireUserVerification)) {
@@ -137,9 +132,6 @@ class WebAuthn {
         $args->publicKey->authenticatorSelection->userVerification = $requireUserVerification;
         if ($requireResidentKey) {
             $args->publicKey->authenticatorSelection->requireResidentKey = true;
-        }
-        if (is_bool($crossPlatformAttachment)) {
-            $args->publicKey->authenticatorSelection->authenticatorAttachment = $crossPlatformAttachment ? 'cross-platform' : 'platform';
         }
 
         // user
@@ -286,22 +278,22 @@ class WebAuthn {
         // 2. Let C, the client data claimed as collected during the credential creation,
         //    be the result of running an implementation-specific JSON parser on JSONtext.
         if (!\is_object($clientData)) {
-            throw new WebAuthnException('invalid client data', WebAuthnException::INVALID_DATA);
+            throw new WebAuthnException('Invalid client data', WebAuthnException::INVALID_DATA);
         }
 
         // 3. Verify that the value of C.type is webauthn.create.
         if (!\property_exists($clientData, 'type') || $clientData->type !== 'webauthn.create') {
-            throw new WebAuthnException('invalid type', WebAuthnException::INVALID_TYPE);
+            throw new WebAuthnException('Invalid type', WebAuthnException::INVALID_TYPE);
         }
 
         // 4. Verify that the value of C.challenge matches the challenge that was sent to the authenticator in the create() call.
         if (!\property_exists($clientData, 'challenge') || ByteBuffer::fromBase64Url($clientData->challenge)->getBinaryString() !== $challenge->getBinaryString()) {
-            throw new WebAuthnException('invalid challenge', WebAuthnException::INVALID_CHALLENGE);
+            throw new WebAuthnException('Invalid challenge', WebAuthnException::INVALID_CHALLENGE);
         }
 
         // 5. Verify that the value of C.origin matches the Relying Party's origin.
         if (!\property_exists($clientData, 'origin') || !$this->_checkOrigin($clientData->origin)) {
-            throw new WebAuthnException('invalid origin', WebAuthnException::INVALID_ORIGIN);
+            throw new WebAuthnException('Invalid origin', WebAuthnException::INVALID_ORIGIN);
         }
 
         // Attestation
@@ -309,27 +301,27 @@ class WebAuthn {
 
         // 9. Verify that the RP ID hash in authData is indeed the SHA-256 hash of the RP ID expected by the RP.
         if (!$attestationObject->validateRpIdHash($this->_rpIdHash)) {
-            throw new WebAuthnException('invalid rpId hash', WebAuthnException::INVALID_RELYING_PARTY);
+            throw new WebAuthnException('Invalid rpId hash', WebAuthnException::INVALID_RELYING_PARTY);
         }
 
         // 14. Verify that attStmt is a correct attestation statement, conveying a valid attestation signature
         if (!$attestationObject->validateAttestation($clientDataHash)) {
-            throw new WebAuthnException('invalid certificate signature', WebAuthnException::INVALID_SIGNATURE);
+            throw new WebAuthnException('Invalid certificate signature', WebAuthnException::INVALID_SIGNATURE);
         }
 
         // 15. If validation is successful, obtain a list of acceptable trust anchors
         if (is_array($this->_caFiles) && !$attestationObject->validateRootCertificate($this->_caFiles)) {
-            throw new WebAuthnException('invalid root certificate', WebAuthnException::CERTIFICATE_NOT_TRUSTED);
+            throw new WebAuthnException('Invalid root certificate', WebAuthnException::CERTIFICATE_NOT_TRUSTED);
         }
 
         // 10. Verify that the User Present bit of the flags in authData is set.
         if ($requireUserPresent && !$attestationObject->getAuthenticatorData()->getUserPresent()) {
-            throw new WebAuthnException('user not present during authentication', WebAuthnException::USER_PRESENT);
+            throw new WebAuthnException('User not present during authentication', WebAuthnException::USER_PRESENT);
         }
 
         // 11. If user verification is required for this registration, verify that the User Verified bit of the flags in authData is set.
         if ($requireUserVerification && !$attestationObject->getAuthenticatorData()->getUserVerified()) {
-            throw new WebAuthnException('user not verificated during authentication', WebAuthnException::USER_VERIFICATED);
+            throw new WebAuthnException('User not verificated during authentication', WebAuthnException::USER_VERIFICATED);
         }
 
         $signCount = $attestationObject->getAuthenticatorData()->getSignCount();
@@ -387,38 +379,38 @@ class WebAuthn {
 
         // 5. Let JSONtext be the result of running UTF-8 decode on the value of cData.
         if (!\is_object($clientData)) {
-            throw new WebAuthnException('invalid client data', WebAuthnException::INVALID_DATA);
+            throw new WebAuthnException('Invalid client data', WebAuthnException::INVALID_DATA);
         }
 
         // 7. Verify that the value of C.type is the string webauthn.get.
         if (!\property_exists($clientData, 'type') || $clientData->type !== 'webauthn.get') {
-            throw new WebAuthnException('invalid type', WebAuthnException::INVALID_TYPE);
+            throw new WebAuthnException('Invalid type', WebAuthnException::INVALID_TYPE);
         }
 
         // 8. Verify that the value of C.challenge matches the challenge that was sent to the
         //    authenticator in the PublicKeyCredentialRequestOptions passed to the get() call.
         if (!\property_exists($clientData, 'challenge') || ByteBuffer::fromBase64Url($clientData->challenge)->getBinaryString() !== $challenge->getBinaryString()) {
-            throw new WebAuthnException('invalid challenge', WebAuthnException::INVALID_CHALLENGE);
+            throw new WebAuthnException('Invalid challenge', WebAuthnException::INVALID_CHALLENGE);
         }
 
         // 9. Verify that the value of C.origin matches the Relying Party's origin.
         if (!\property_exists($clientData, 'origin') || !$this->_checkOrigin($clientData->origin)) {
-            throw new WebAuthnException('invalid origin', WebAuthnException::INVALID_ORIGIN);
+            throw new WebAuthnException('Invalid origin', WebAuthnException::INVALID_ORIGIN);
         }
 
         // 11. Verify that the rpIdHash in authData is the SHA-256 hash of the RP ID expected by the Relying Party.
         if ($authenticatorObj->getRpIdHash() !== $this->_rpIdHash) {
-            throw new WebAuthnException('invalid rpId hash', WebAuthnException::INVALID_RELYING_PARTY);
+            throw new WebAuthnException('Invalid rpId hash', WebAuthnException::INVALID_RELYING_PARTY);
         }
 
         // 12. Verify that the User Present bit of the flags in authData is set
         if ($requireUserPresent && !$authenticatorObj->getUserPresent()) {
-            throw new WebAuthnException('user not present during authentication', WebAuthnException::USER_PRESENT);
+            throw new WebAuthnException('User not present during authentication', WebAuthnException::USER_PRESENT);
         }
 
         // 13. If user verification is required for this assertion, verify that the User Verified bit of the flags in authData is set.
         if ($requireUserVerification && !$authenticatorObj->getUserVerified()) {
-            throw new WebAuthnException('user not verificated during authentication', WebAuthnException::USER_VERIFICATED);
+            throw new WebAuthnException('User not verificated during authentication', WebAuthnException::USER_VERIFICATED);
         }
 
         // 14. Verify the values of the client extension outputs
@@ -436,7 +428,7 @@ class WebAuthn {
         }
 
         if (\openssl_verify($dataToVerify, $signature, $publicKey, OPENSSL_ALGO_SHA256) !== 1) {
-            throw new WebAuthnException('invalid signature', WebAuthnException::INVALID_SIGNATURE);
+            throw new WebAuthnException('Invalid signature', WebAuthnException::INVALID_SIGNATURE);
         }
 
         // 17. If the signature counter value authData.signCount is nonzero,
