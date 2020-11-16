@@ -167,7 +167,11 @@ $(document).ready(function() {
         throw new Error();
       }
     }).catch(function(err) {
-      mailcow_alert_box(lang_fido2.fido2_validation_failed, "danger");
+      if (typeof err.message === 'undefined') {
+        mailcow_alert_box(lang_fido2.fido2_validation_failed, "danger");
+      } else {
+        mailcow_alert_box(lang_fido2.fido2_validation_failed + ":<br><i>" + err.message + "</i>", "danger");
+      }
     });
   });
   // Set TFA/FIDO2
