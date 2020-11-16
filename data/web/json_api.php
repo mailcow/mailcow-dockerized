@@ -150,7 +150,7 @@ if (isset($_GET['query'])) {
             $attestationObject = base64_decode($post->attestationObject);
             $challenge = $_SESSION['challenge'];
             try {
-              $data = $WebAuthn->processCreate($clientDataJSON, $attestationObject, $challenge, $GLOBALS['FIDO2_UV_FLAG'], $GLOBALS['FIDO2_USER_PRESENT_FLAG']);
+              $data = $WebAuthn->processCreate($clientDataJSON, $attestationObject, $challenge, $GLOBALS['FIDO2_UV_FLAG_REGISTER'], $GLOBALS['FIDO2_USER_PRESENT_FLAG']);
             }
             catch (Throwable $ex) {
               $return = new stdClass();
@@ -285,7 +285,7 @@ if (isset($_GET['query'])) {
             exit;
           }
           try {
-            $WebAuthn->processGet($clientDataJSON, $authenticatorData, $signature, $process_fido2['pub_key'], $challenge, null, $GLOBALS['FIDO2_UV_FLAG'], $GLOBALS['FIDO2_USER_PRESENT_FLAG']);
+            $WebAuthn->processGet($clientDataJSON, $authenticatorData, $signature, $process_fido2['pub_key'], $challenge, null, $GLOBALS['FIDO2_UV_FLAG_LOGIN'], $GLOBALS['FIDO2_USER_PRESENT_FLAG']);
           }
           catch (Throwable $ex) {
             unset($process_fido2);
@@ -356,7 +356,7 @@ if (isset($_GET['query'])) {
             $_SESSION["mailcow_cc_username"] == $object) {
               // Exclude existing CredentialIds, if any
               $excludeCredentialIds = fido2(array("action" => "get_user_cids"));
-              $createArgs = $WebAuthn->getCreateArgs($_SESSION["mailcow_cc_username"], $_SESSION["mailcow_cc_username"], $_SESSION["mailcow_cc_username"], 30, true, $GLOBALS['FIDO2_UV_FLAG'], $excludeCredentialIds);
+              $createArgs = $WebAuthn->getCreateArgs($_SESSION["mailcow_cc_username"], $_SESSION["mailcow_cc_username"], $_SESSION["mailcow_cc_username"], 30, true, $GLOBALS['FIDO2_UV_FLAG_REGISTER'], $excludeCredentialIds);
               print(json_encode($createArgs));
               $_SESSION['challenge'] = $WebAuthn->getChallenge();
               return;
@@ -395,7 +395,7 @@ if (isset($_GET['query'])) {
             // return;
           // }
           $ids = NULL;
-          $getArgs = $WebAuthn->getGetArgs($ids, 30, true, true, true, true, $GLOBALS['FIDO2_UV_FLAG']);
+          $getArgs = $WebAuthn->getGetArgs($ids, 30, true, true, true, true, $GLOBALS['FIDO2_UV_FLAG_LOGIN']);
           print(json_encode($getArgs));
           $_SESSION['challenge'] = $WebAuthn->getChallenge();
           return;

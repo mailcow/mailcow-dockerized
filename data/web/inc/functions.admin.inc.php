@@ -229,6 +229,14 @@ function admin($_action, $_data = null) {
         $stmt->execute(array(
           ':username' => $username,
         ));
+        $stmt = $pdo->prepare("DELETE FROM `tfa` WHERE `username` = :username");
+        $stmt->execute(array(
+          ':username' => $username,
+        ));
+        $stmt = $pdo->prepare("DELETE FROM `fido2` WHERE `username` = :username");
+        $stmt->execute(array(
+          ':username' => $username,
+        ));
         $_SESSION['return'][] = array(
           'type' => 'success',
           'log' => array(__FUNCTION__, $_action, $_data_log),
