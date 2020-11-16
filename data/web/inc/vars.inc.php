@@ -178,7 +178,8 @@ $SHOW_LAST_LOGIN = true;
 // true = required
 // false = preferred
 // string 'required' 'preferred' 'discouraged'
-$FIDO2_UV_FLAG = 'preferred';
+$FIDO2_UV_FLAG_REGISTER = 'preferred';
+$FIDO2_UV_FLAG_LOGIN = 'preferred'; // iOS ignores the key via NFC if required - known issue
 $FIDO2_USER_PRESENT_FLAG = true;
 $FIDO2_FORMATS = array('android-key', 'android-safetynet', 'fido-u2f', 'none', 'packed', 'tpm');
 

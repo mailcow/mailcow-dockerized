@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "15112020_1110";
+    $db_version = "16112020_1210";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -101,11 +101,6 @@ function init_db_schema() {
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "modified" => "DATETIME ON UPDATE NOW(0)",
           "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
-        ),
-        "keys" => array(
-          "unique" => array(
-            "fido2_username_CID" => array("username", "certificateSubject")
-          )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
