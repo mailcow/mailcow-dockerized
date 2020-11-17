@@ -11,11 +11,11 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title"><?=$lang['fido2']['set_fn'];?></h3>
-        <p class="help-block" id="fido2_subject_desc" data-fido2-subject=""></p>
+        <p class="help-block" style="word-break:break-all" id="fido2_subject_desc" data-fido2-subject=""></p>
       </div>
       <div class="modal-body">
         <form class="form-horizontal" data-cached-form="false" data-id="fido2ChangeFn" role="form" method="post" autocomplete="off">
-          <input type="hidden" class="form-control" name="fido2_subject" id="fido2_subject">
+          <input type="hidden" class="form-control" name="fido2_cid" id="fido2_cid">
           <div class="form-group">
             <label class="control-label col-sm-4" for="fido2_fn"><?=$lang['fido2']['fn'];?>:</label>
             <div class="col-sm-8">

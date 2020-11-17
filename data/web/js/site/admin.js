@@ -457,7 +457,7 @@ jQuery(function($){
   $('#fido2ChangeFn').on('show.bs.modal', function (e) {
     rename_link = $(e.relatedTarget)
     if (rename_link != null) {
-      $('#fido2_subject').val(rename_link.data('subject'));
+      $('#fido2_cid').val(rename_link.data('cid'));
       $('#fido2_subject_desc').text(Base64.decode(rename_link.data('subject')));
     }
   })

@@ -1037,11 +1037,11 @@ function fido2($_data) {
       }
       return $cids;
 		break;
-    case "get_pub_key":
+    case "get_by_b64cid":
       if (!isset($_data['cid']) || empty($_data['cid'])) {
         return false;
       }
-      $stmt = $pdo->prepare("SELECT `certificateSubject`, `username`, `credentialPublicKey` FROM `fido2` WHERE TO_BASE64(`credentialId`) = :cid");
+      $stmt = $pdo->prepare("SELECT `certificateSubject`, `username`, `credentialPublicKey`, SHA2(`credentialId`, 256) AS `cid` FROM `fido2` WHERE TO_BASE64(`credentialId`) = :cid");
       $stmt->execute(array(':cid' => $_data['cid']));
       $row = $stmt->fetch(PDO::FETCH_ASSOC);
       if (empty($row) || empty($row['credentialPublicKey']) || empty($row['username'])) {
@@ -1049,7 +1049,8 @@ function fido2($_data) {
       }
       $data['pub_key'] = $row['credentialPublicKey'];
       $data['username'] = $row['username'];
-      $data['key_id'] = $row['certificateSubject'];
+      $data['subject'] = $row['certificateSubject'];
+      $data['cid'] = $row['cid'];
       return $data;
 		break;
 		case "get_friendly_names":
@@ -1058,11 +1059,15 @@ function fido2($_data) {
         $_SESSION['mailcow_cc_role'] != "admin") {
           return false;
       }
-      $stmt = $pdo->prepare("SELECT `certificateSubject`, `friendlyName` FROM `fido2` WHERE `username` = :username");
+      $stmt = $pdo->prepare("SELECT SHA2(`credentialId`, 256) AS `cid`, `certificateSubject`, `friendlyName` FROM `fido2` WHERE `username` = :username");
       $stmt->execute(array(':username' => $username));
       $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
       while($row = array_shift($rows)) {
-        $fns[] = array("subject" => $row['certificateSubject'], "fn" => $row['friendlyName']);
+        $fns[] = array(
+          "subject" => $row['certificateSubject'],
+          "fn" => $row['friendlyName'],
+          "cid" => $row['cid']
+        );
       }
       return $fns;
 		break;
@@ -1077,8 +1082,11 @@ function fido2($_data) {
           );
           return false;
       }
-      $stmt = $pdo->prepare("DELETE FROM `fido2` WHERE `username` = :username AND `certificateSubject` = :certificateSubject");
-      $stmt->execute(array(':username' => $username, ':certificateSubject' => $_data['post_data']['unset_fido2_key']));
+      $stmt = $pdo->prepare("DELETE FROM `fido2` WHERE `username` = :username AND SHA2(`credentialId`, 256) = :cid");
+      $stmt->execute(array(
+        ':username' => $username,
+        ':cid' => $_data['post_data']['unset_fido2_key']
+      ));
 			$_SESSION['return'][] =  array(
 				'type' => 'success',
         'log' => array(__FUNCTION__, $_data_log),
@@ -1096,11 +1104,11 @@ function fido2($_data) {
           );
           return false;
       }
-      $stmt = $pdo->prepare("UPDATE `fido2` SET `friendlyName` = :friendlyName WHERE `certificateSubject` = :certificateSubject AND `username` = :username");
+      $stmt = $pdo->prepare("UPDATE `fido2` SET `friendlyName` = :friendlyName WHERE SHA2(`credentialId`, 256) = :cid AND `username` = :username");
       $stmt->execute(array(
         ':username' => $username,
         ':friendlyName' => $_data['fido2_attrs']['fido2_fn'],
-        ':certificateSubject' => base64_decode($_data['fido2_attrs']['fido2_subject'])
+        ':cid' => $_data['fido2_attrs']['fido2_cid']
       ));
 			$_SESSION['return'][] =  array(
 				'type' => 'success',
