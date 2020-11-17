@@ -277,7 +277,7 @@ if (isset($_GET['query'])) {
           $signature = base64_decode($post->signature);
           $id = base64_decode($post->id);
           $challenge = $_SESSION['challenge'];
-          $process_fido2 = fido2(array("action" => "get_pub_key", "cid" => $post->id));
+          $process_fido2 = fido2(array("action" => "get_by_b64cid", "cid" => $post->id));
           if ($process_fido2['pub_key'] === false) {
             $return = new stdClass();
             $return->success = false;
@@ -296,7 +296,6 @@ if (isset($_GET['query'])) {
           }
           $return = new stdClass();
           $return->success = true;
-          $_SESSION["fido2_subject"] = $process_fido2['key_id'];
           $stmt = $pdo->prepare("SELECT `superadmin` FROM `admin` WHERE `username` = :username");
           $stmt->execute(array(':username' => $process_fido2['username']));
           $obj_props = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -307,6 +306,7 @@ if (isset($_GET['query'])) {
             $_SESSION["mailcow_cc_role"] = "domainadmin";
           }
           $_SESSION["mailcow_cc_username"] = $process_fido2['username'];
+          $_SESSION["fido2_cid"] = $process_fido2['cid'];
           $_SESSION['return'][] =  array(
             'type' => 'success',
             'log' => array("fido2_login"),

@@ -71,7 +71,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
           <div class="col-sm-3 col-xs-5 text-right"><?=$lang['tfa']['tfa'];?>:</div>
           <div class="col-sm-9 col-xs-7">
             <p id="tfa_pretty"><?=$tfa_data['pretty'];?></p>
-              <div id="tfa_additional">
+              <div id="tfa_keys">
                 <?php
                 if (!empty($tfa_data['additional'])) {
                   foreach ($tfa_data['additional'] as $key_info) {
@@ -112,30 +112,35 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
         <div class="row">
           <div class="col-sm-3 col-xs-5 text-right"><?=$lang['fido2']['known_ids'];?>:</div>
           <div class="col-sm-9 col-xs-7">
-              <div id="tfa_additional">
+              <div class="table-responsive">
+              <table class="table table-striped table-hover table-condensed" id="fido2_keys">
+                <tr>
+                  <th>ID</th>
+                  <th style="min-width:240px;text-align: right"><?=$lang['admin']['action'];?></th>
+                </tr>
                 <?php
                 if (!empty($fido2_data)) {
                   foreach ($fido2_data as $key_info) {
                 ?>
-                <form style="display:inline;" method="post">
-                  <input type="hidden" name="unset_fido2_key" value="<?=$key_info['subject'];?>" />
-                  <p><div data-toggle="tooltip" data-placement="top" title="<?=$key_info['subject'];?>" class="label label-keys label-<?=($_SESSION['fido2_subject'] == $key_info['subject']) ? 'success' : 'default'; ?>">
-                    <?=(!empty($key_info['fn']))?$key_info['fn']:$key_info['subject'];?>
-                    <a href="#" class="key-action" onClick='return confirm("<?=$lang['admin']['ays'];?>")?$(this).closest("form").submit():"";'>
-                      [<?=strtolower($lang['admin']['remove']);?>]
-                    </a>
-                    <a href="#" class="key-action" data-subject="<?=base64_encode($key_info['subject']);?>" data-toggle="modal" data-target="#fido2ChangeFn">
-                      [<?=strtolower($lang['fido2']['rename']);?>]
-                    </a>
-                  </div></p>
-                </form>
+                <tr>
+                  <td>
+                    <?=($_SESSION['fido2_cid'] == $key_info['cid']) ? '→ ' : NULL; ?><?=(!empty($key_info['fn']))?$key_info['fn']:$key_info['subject'];?>
+                  </td>
+                  <td style="min-width:240px;text-align: right">
+                    <form style="display:inline;" method="post">
+                    <input type="hidden" name="unset_fido2_key" value="<?=$key_info['cid'];?>" />
+                    <div class="btn-group">
+                    <a href="#" class="btn btn-xs btn-default" data-cid="<?=$key_info['cid'];?>" data-subject="<?=base64_encode($key_info['subject']);?>" data-toggle="modal" data-target="#fido2ChangeFn"><span class="glyphicon glyphicon-pencil"></span> <?=strtolower($lang['fido2']['rename']);?></a>
+                    <a href="#" onClick='return confirm("<?=$lang['admin']['ays'];?>")?$(this).closest("form").submit():"";' class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> <?=strtolower($lang['admin']['remove']);?></a>
+                    </form>
+                    </div>
+                  </td>
+                </tr>
                 <?php
                   }
                 }
-                else {
-                  echo "-";
-                }
                 ?>
+              </table>
               </div>
               <br>
           </div>
