@@ -296,6 +296,15 @@ jQuery(function($){
   draw_wl_policy_mailbox_table();
   draw_bl_policy_mailbox_table();
 
+  // FIDO2 friendly name modal
+  $('#fido2ChangeFn').on('show.bs.modal', function (e) {
+    rename_link = $(e.relatedTarget)
+    if (rename_link != null) {
+      $('#fido2_cid').val(rename_link.data('cid'));
+      $('#fido2_subject_desc').text(Base64.decode(rename_link.data('subject')));
+    }
+  })
+
   // Sieve data modal
   $('#userFilterModal').on('show.bs.modal', function(e) {
     $('#user_sieve_filter').text(lang.loading);

@@ -453,6 +453,14 @@ jQuery(function($){
       $('#priv_key_pre').text(decoded_key);
     }
   })
+  // FIDO2 friendly name modal
+  $('#fido2ChangeFn').on('show.bs.modal', function (e) {
+    rename_link = $(e.relatedTarget)
+    if (rename_link != null) {
+      $('#fido2_cid').val(rename_link.data('cid'));
+      $('#fido2_subject_desc').text(Base64.decode(rename_link.data('subject')));
+    }
+  })
   // App links
   function add_table_row(table_id, type) {
     var row = $('<tr />');

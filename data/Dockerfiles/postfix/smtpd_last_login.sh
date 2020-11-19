@@ -16,7 +16,8 @@ while read QUERY; do
     echo -ne "action=dunno\n\n"
   # We found a username, log and return
   elif [[ "${QUERY[0]}" =~ sasl_username ]]; then
-    ${REDIS_CMDLINE} SET "last-login/smtp/$(echo ${QUERY[0]#sasl_username=})" "$(date +%s)"
+    MUSER=$(printf "%q" ${QUERY[0]#sasl_username=})
+    ${REDIS_CMDLINE} SET "last-login/smtp/$MUSER" "$(date +%s)"
     echo -ne "action=dunno\n\n"
   fi
 done

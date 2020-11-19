@@ -759,7 +759,6 @@
         "notified": "Notifikovaný",
         "qhandler_success": "Požiadavka úspešne odoslaná systému. Môžete zavrieť okno.",
         "qid": "Rspamd QID",
-        "qinfo": "Karanténny systém uloží neprijatú poštu do databázy a odosielateľ <em>nebude</em> informovaný o jej nedoručení.\r\n  <br>\"Naučiť ako spam a vymazať\" naučí správu ako spam pomocou Bayesian teorému a taktiež vypočíta \"fuzzy hashes\", aby sa v budúcnosti zabránilo prijímaní podobných správ.\r\n  <br>Prosím majte na pamäti, že učenie viacerých správ naraz, môže byť – záleží na vašom systéme – časovo náročné.",
         "qitem": "Karanténna položka",
         "quarantine": "Karanténa",
         "quick_actions": "Akcia",

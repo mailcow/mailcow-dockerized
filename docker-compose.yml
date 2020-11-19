@@ -56,7 +56,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.37
+      image: mailcow/clamd:1.38
       restart: always
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -71,7 +71,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.72
+      image: mailcow/rspamd:1.74
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -119,8 +119,8 @@ services:
         - ./data/conf/phpfpm/php-conf.d/opcache-recommended.ini:/usr/local/etc/php/conf.d/opcache-recommended.ini:Z
         - ./data/conf/phpfpm/php-conf.d/upload.ini:/usr/local/etc/php/conf.d/upload.ini:Z
         - ./data/conf/phpfpm/php-conf.d/other.ini:/usr/local/etc/php/conf.d/zzz-other.ini:Z
-        - ./data/conf/dovecot/global_sieve_before:/global_sieve/before:Z
-        - ./data/conf/dovecot/global_sieve_after:/global_sieve/after:Z
+        - ./data/conf/dovecot/global_sieve_before:/global_sieve/before:z
+        - ./data/conf/dovecot/global_sieve_after:/global_sieve/after:z
         - ./data/assets/templates:/tpls:z
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -133,6 +133,7 @@ services:
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
+        - MAILCOW_PASS_SCHEME=${MAILCOW_PASS_SCHEME:-BLF-CRYPT}
         - IMAP_PORT=${IMAP_PORT:-143}
         - IMAPS_PORT=${IMAPS_PORT:-993}
         - POP_PORT=${POP_PORT:-110}
@@ -159,7 +160,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.90
+      image: mailcow/sogo:1.92
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -167,6 +168,7 @@ services:
         - TZ=${TZ}
         - LOG_LINES=${LOG_LINES:-9999}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
+        - MAILCOW_PASS_SCHEME=${MAILCOW_PASS_SCHEME:-BLF-CRYPT}
         - ACL_ANYONE=${ACL_ANYONE:-disallow}
         - ALLOW_ADMIN_EMAIL_LOGIN=${ALLOW_ADMIN_EMAIL_LOGIN:-n}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
@@ -180,7 +182,7 @@ services:
       volumes:
         - ./data/conf/sogo/:/etc/sogo/:z
         - ./data/web/inc/init_db.inc.php:/init_db.inc.php:Z
-        - ./data/conf/sogo/custom-sogo.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/custom-sogo.js:Z
+        - ./data/conf/sogo/custom-sogo.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/custom-sogo.js:z
         - mysql-socket-vol-1:/var/run/mysqld/:z
         - sogo-web-vol-1:/sogo_web:z
         - sogo-userdata-backup-vol-1:/sogo_backup:Z
@@ -192,7 +194,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.133
+      image: mailcow/dovecot:1.136
       depends_on:
         - mysql-mailcow
       dns:
@@ -213,12 +215,15 @@ services:
         - rspamd-vol-1:/var/lib/rspamd:z
         - mysql-socket-vol-1:/var/run/mysqld/:z
       environment:
+        - DOVECOT_MASTER_USER=${DOVECOT_MASTER_USER:-}
+        - DOVECOT_MASTER_PASS=${DOVECOT_MASTER_PASS:-}
         - LOG_LINES=${LOG_LINES:-9999}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
         - TZ=${TZ}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
+        - MAILCOW_PASS_SCHEME=${MAILCOW_PASS_SCHEME:-BLF-CRYPT}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
         - ALLOW_ADMIN_EMAIL_LOGIN=${ALLOW_ADMIN_EMAIL_LOGIN:-n}
         - MAILDIR_GC_TIME=${MAILDIR_GC_TIME:-1440}
@@ -251,7 +256,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.56
+      image: mailcow/postfix:1.57
       depends_on:
         - mysql-mailcow
       volumes:
@@ -367,7 +372,7 @@ services:
         - SNAT_TO_SOURCE=${SNAT_TO_SOURCE:-n}
         - SNAT6_TO_SOURCE=${SNAT6_TO_SOURCE:-n}
       volumes:
-        - ./data/web/.well-known/acme-challenge:/var/www/acme:rw,Z
+        - ./data/web/.well-known/acme-challenge:/var/www/acme:rw,z
         - ./data/assets/ssl:/var/lib/acme/:rw,z
         - ./data/assets/ssl-example:/var/lib/ssl-example/:ro,Z
         - mysql-socket-vol-1:/var/run/mysqld/:z
@@ -401,7 +406,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.84
+      image: mailcow/watchdog:1.85
       # Debug
       #command: /watchdog.sh
       dns:
@@ -436,26 +441,26 @@ services:
         - HTTPS_PORT=${HTTPS_PORT:-443}
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
-        - EXTERNAL_CHECKS_THRESHOLD=1
-        - NGINX_THRESHOLD=5
-        - UNBOUND_THRESHOLD=5
-        - REDIS_THRESHOLD=5
-        - MYSQL_THRESHOLD=5
-        - MYSQL_REPLICATION_THRESHOLD=1
-        - SOGO_THRESHOLD=3
-        - POSTFIX_THRESHOLD=8
-        - CLAMD_THRESHOLD=15
-        - DOVECOT_THRESHOLD=12
-        - DOVECOT_REPL_THRESHOLD=20
-        - PHPFPM_THRESHOLD=5
-        - RATELIMIT_THRESHOLD=1
-        - FAIL2BAN_THRESHOLD=1
-        - ACME_THRESHOLD=1
-        - IPV6NAT_THRESHOLD=1
-        - RSPAMD_THRESHOLD=5
-        - OLEFY_THRESHOLD=5
-        - MAILQ_THRESHOLD=20
-        - MAILQ_CRIT=30
+        - EXTERNAL_CHECKS_THRESHOLD=${EXTERNAL_CHECKS_THRESHOLD:-1}
+        - NGINX_THRESHOLD=${NGINX_THRESHOLD:-5}
+        - UNBOUND_THRESHOLD=${UNBOUND_THRESHOLD:-5}
+        - REDIS_THRESHOLD=${REDIS_THRESHOLD:-5}
+        - MYSQL_THRESHOLD=${MYSQL_THRESHOLD:-5}
+        - MYSQL_REPLICATION_THRESHOLD=${MYSQL_REPLICATION_THRESHOLD:-1}
+        - SOGO_THRESHOLD=${SOGO_THRESHOLD:-3}
+        - POSTFIX_THRESHOLD=${POSTFIX_THRESHOLD:-8}
+        - CLAMD_THRESHOLD=${CLAMD_THRESHOLD:-15}
+        - DOVECOT_THRESHOLD=${DOVECOT_THRESHOLD:-12}
+        - DOVECOT_REPL_THRESHOLD=${DOVECOT_REPL_THRESHOLD:-20}
+        - PHPFPM_THRESHOLD=${PHPFPM_THRESHOLD:-5}
+        - RATELIMIT_THRESHOLD=${RATELIMIT_THRESHOLD:-1}
+        - FAIL2BAN_THRESHOLD=${FAIL2BAN_THRESHOLD:-1}
+        - ACME_THRESHOLD=${ACME_THRESHOLD:-1}
+        - IPV6NAT_THRESHOLD=${IPV6NAT_THRESHOLD:-1}
+        - RSPAMD_THRESHOLD=${RSPAMD_THRESHOLD:-5}
+        - OLEFY_THRESHOLD=${OLEFY_THRESHOLD:-5}
+        - MAILQ_THRESHOLD=${MAILQ_THRESHOLD:-20}
+        - MAILQ_CRIT=${MAILQ_CRIT:-30}
       networks:
         mailcow-network:
           aliases:
@@ -496,7 +501,7 @@ services:
             - solr
 
     olefy-mailcow:
-      image: mailcow/olefy:1.4
+      image: mailcow/olefy:1.5
       restart: always
       environment:
         - TZ=${TZ}

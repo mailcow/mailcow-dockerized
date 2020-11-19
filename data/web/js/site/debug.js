@@ -54,7 +54,7 @@ jQuery(function($){
       }),
       "empty": lang.empty,
       "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "filtering": {"enabled": true,"delay": 1200,"position": "left","placeholder": lang.filter_table},
+      "filtering": {"enabled": true,"delay": 1200,"position": "left","placeholder": lang.filter_table,"connectors": false},
       "sorting": {"enabled": true},
       "on": {
         "destroy.ft.table": function(e, ft){
@@ -89,7 +89,7 @@ jQuery(function($){
       }),
       "empty": lang.empty,
       "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "filtering": {"enabled": true,"delay": 1200,"position": "left","placeholder": lang.filter_table},
+      "filtering": {"enabled": true,"delay": 1200,"position": "left","placeholder": lang.filter_table,"connectors": false},
       "sorting": {"enabled": true},
       "on": {
         "destroy.ft.table": function(e, ft){
@@ -125,7 +125,7 @@ jQuery(function($){
       }),
       "empty": lang.empty,
       "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table},
+      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table,"connectors": false},
       "sorting": {"enabled": true},
       "on": {
         "destroy.ft.table": function(e, ft){
@@ -162,7 +162,7 @@ jQuery(function($){
       }),
       "empty": lang.empty,
       "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table},
+      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table,"connectors": false},
       "sorting": {"enabled": true},
       "on": {
         "destroy.ft.table": function(e, ft){
@@ -207,7 +207,7 @@ jQuery(function($){
       }),
       "empty": lang.empty,
       "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table},
+      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table,"connectors": false},
       "sorting": {"enabled": true},
       "on": {
         "destroy.ft.table": function(e, ft){
@@ -247,7 +247,7 @@ jQuery(function($){
       }),
       "empty": lang.empty,
       "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table},
+      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table,"connectors": false},
       "sorting": {"enabled": true},
       "on": {
         "destroy.ft.table": function(e, ft){
@@ -281,7 +281,7 @@ jQuery(function($){
       }),
       "empty": lang.empty,
       "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table},
+      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table,"connectors": false},
       "sorting": {"enabled": true},
       "on": {
         "destroy.ft.table": function(e, ft){
@@ -316,7 +316,7 @@ jQuery(function($){
       }),
       "empty": lang.empty,
       "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table},
+      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table,"connectors": false},
       "sorting": {"enabled": true},
       "on": {
         "destroy.ft.table": function(e, ft){
@@ -351,7 +351,7 @@ jQuery(function($){
       }),
       "empty": lang.empty,
       "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table},
+      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table,"connectors": false},
       "sorting": {"enabled": true},
       "on": {
         "destroy.ft.table": function(e, ft){
@@ -386,7 +386,7 @@ jQuery(function($){
       }),
       "empty": lang.empty,
       "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table},
+      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table,"connectors": false},
       "sorting": {"enabled": true},
       "on": {
         "destroy.ft.table": function(e, ft){
@@ -489,7 +489,7 @@ jQuery(function($){
       }),
       "empty": lang.empty,
       "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table},
+      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table,"connectors": false},
       "sorting": {"enabled": true},
       "on": {
         "destroy.ft.table": function(e, ft){
@@ -514,10 +514,10 @@ jQuery(function($){
     if (table == 'rspamd_history') {
     $.each(data, function (i, item) {
       if (item.rcpt_mime != "") {
-        item.rcpt = item.rcpt_mime.join(", ");
+        item.rcpt = escapeHtml(item.rcpt_mime.join(", "));
       }
       else {
-        item.rcpt = item.rcpt_smtp.join(", ");
+        item.rcpt = escapeHtml(item.rcpt_smtp.join(", "));
       }
       item.symbols = Object.keys(item.symbols).sort(function (a, b) {
         if (item.symbols[a].score === 0) return 1

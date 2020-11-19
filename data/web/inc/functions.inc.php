@@ -84,8 +84,25 @@ function ip_acl($ip, $networks) {
   return false;
 }
 function hash_password($password) {
-	$salt_str = bin2hex(openssl_random_pseudo_bytes(8));
-	return "{SSHA256}".base64_encode(hash('sha256', $password . $salt_str, true) . $salt_str);
+  // default_pass_scheme is determined in vars.inc.php (or corresponding local file)
+  // in case default pass scheme is not defined, falling back to BLF-CRYPT.
+  global $default_pass_scheme;
+  $pw_hash = NULL;
+  switch (strtoupper($default_pass_scheme)) {
+    case "SSHA256":
+      $salt_str = bin2hex(openssl_random_pseudo_bytes(8));
+      $pw_hash = "{SSHA256}".base64_encode(hash('sha256', $password . $salt_str, true) . $salt_str);
+      break;
+    case "SSHA512":
+      $salt_str = bin2hex(openssl_random_pseudo_bytes(8));
+      $pw_hash = "{SSHA512}".base64_encode(hash('sha512', $password . $salt_str, true) . $salt_str);
+      break;
+    case "BLF-CRYPT":
+    default:
+      $pw_hash = "{BLF-CRYPT}" . password_hash($password, PASSWORD_BCRYPT);
+      break;
+  }
+  return $pw_hash;
 }
 function last_login($user) {
   global $pdo;
@@ -499,6 +516,12 @@ function verify_hash($hash, $password) {
   }
   elseif (preg_match('/^{MD5-CRYPT}/i', $hash)) {
     $hash = preg_replace('/^{MD5-CRYPT}/i', '', $hash);
+    if (password_verify($password, $hash)) {
+      return true;
+    }
+  } 
+  elseif (preg_match('/^{BLF-CRYPT}/i', $hash)) {
+    $hash = preg_replace('/^{BLF-CRYPT}/i', '', $hash);
     if (password_verify($password, $hash)) {
       return true;
     }
@@ -924,20 +947,10 @@ function set_tfa($_data) {
 		case "totp":
       $key_id = (!isset($_data["key_id"])) ? 'unidentified' : $_data["key_id"];
       if ($tfa->verifyCode($_POST['totp_secret'], $_POST['totp_confirm_token']) === true) {
-        try {
         $stmt = $pdo->prepare("DELETE FROM `tfa` WHERE `username` = :username");
         $stmt->execute(array(':username' => $username));
         $stmt = $pdo->prepare("INSERT INTO `tfa` (`username`, `key_id`, `authmech`, `secret`, `active`) VALUES (?, ?, 'totp', ?, '1')");
         $stmt->execute(array($username, $key_id, $_POST['totp_secret']));
-        }
-        catch (PDOException $e) {
-          $_SESSION['return'][] =  array(
-            'type' => 'danger',
-            'log' => array(__FUNCTION__, $_data_log),
-            'msg' => array('mysql_error', $e)
-          );
-          return false;
-        }
         $_SESSION['return'][] =  array(
           'type' => 'success',
           'log' => array(__FUNCTION__, $_data_log),
@@ -953,18 +966,150 @@ function set_tfa($_data) {
       }
 		break;
 		case "none":
-			try {
-				$stmt = $pdo->prepare("DELETE FROM `tfa` WHERE `username` = :username");
-				$stmt->execute(array(':username' => $username));
-			}
-			catch (PDOException $e) {
-				$_SESSION['return'][] =  array(
-					'type' => 'danger',
-          'log' => array(__FUNCTION__, $_data_log),
-					'msg' => array('mysql_error', $e)
-				);
-				return false;
-			}
+      $stmt = $pdo->prepare("DELETE FROM `tfa` WHERE `username` = :username");
+      $stmt->execute(array(':username' => $username));
+			$_SESSION['return'][] =  array(
+				'type' => 'success',
+        'log' => array(__FUNCTION__, $_data_log),
+				'msg' => array('object_modified', htmlspecialchars($username))
+			);
+		break;
+	}
+}
+function fido2($_data) {
+	global $pdo;
+  $_data_log = $_data;
+  // Not logging registration data, only actions
+  // Silent errors for "get" requests
+	switch ($_data["action"]) {
+		case "register":
+      $username = $_SESSION['mailcow_cc_username'];
+      if ($_SESSION['mailcow_cc_role'] != "domainadmin" &&
+        $_SESSION['mailcow_cc_role'] != "admin") {
+          $_SESSION['return'][] =  array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $_data["action"]),
+            'msg' => 'access_denied'
+          );
+          return false;
+      }
+      $stmt = $pdo->prepare("INSERT INTO `fido2` (`username`, `rpId`, `credentialPublicKey`, `certificateChain`, `certificate`, `certificateIssuer`, `certificateSubject`, `signatureCounter`, `AAGUID`, `credentialId`)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+      $stmt->execute(array(
+        $username,
+        $_data['registration']->rpId,
+        $_data['registration']->credentialPublicKey,
+        $_data['registration']->certificateChain,
+        $_data['registration']->certificate,
+        $_data['registration']->certificateIssuer,
+        $_data['registration']->certificateSubject,
+        $_data['registration']->signatureCounter,
+        $_data['registration']->AAGUID,
+        $_data['registration']->credentialId)
+      );
+      $_SESSION['return'][] =  array(
+        'type' => 'success',
+        'log' => array(__FUNCTION__, $_data["action"]),
+        'msg' => array('object_modified', $username)
+      );
+		break;
+		case "get_user_cids":
+      // Used to exclude existing CredentialIds while registering
+      $username = $_SESSION['mailcow_cc_username'];
+      if ($_SESSION['mailcow_cc_role'] != "domainadmin" &&
+        $_SESSION['mailcow_cc_role'] != "admin") {
+          return false;
+      }
+      $stmt = $pdo->prepare("SELECT `credentialId` FROM `fido2` WHERE `username` = :username");
+      $stmt->execute(array(':username' => $username));
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      while($row = array_shift($rows)) {
+        $cids[] = $row['credentialId'];
+      }
+      return $cids;
+		break;
+		case "get_all_cids":
+      // Only needed when using fido2 with username
+      $stmt = $pdo->query("SELECT `credentialId` FROM `fido2`");
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      while($row = array_shift($rows)) {
+        $cids[] = $row['credentialId'];
+      }
+      return $cids;
+		break;
+    case "get_by_b64cid":
+      if (!isset($_data['cid']) || empty($_data['cid'])) {
+        return false;
+      }
+      $stmt = $pdo->prepare("SELECT `certificateSubject`, `username`, `credentialPublicKey`, SHA2(`credentialId`, 256) AS `cid` FROM `fido2` WHERE TO_BASE64(`credentialId`) = :cid");
+      $stmt->execute(array(':cid' => $_data['cid']));
+      $row = $stmt->fetch(PDO::FETCH_ASSOC);
+      if (empty($row) || empty($row['credentialPublicKey']) || empty($row['username'])) {
+        return false;
+      }
+      $data['pub_key'] = $row['credentialPublicKey'];
+      $data['username'] = $row['username'];
+      $data['subject'] = $row['certificateSubject'];
+      $data['cid'] = $row['cid'];
+      return $data;
+		break;
+		case "get_friendly_names":
+      $username = $_SESSION['mailcow_cc_username'];
+      if ($_SESSION['mailcow_cc_role'] != "domainadmin" &&
+        $_SESSION['mailcow_cc_role'] != "admin") {
+          return false;
+      }
+      $stmt = $pdo->prepare("SELECT SHA2(`credentialId`, 256) AS `cid`, `certificateSubject`, `friendlyName` FROM `fido2` WHERE `username` = :username");
+      $stmt->execute(array(':username' => $username));
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      while($row = array_shift($rows)) {
+        $fns[] = array(
+          "subject" => $row['certificateSubject'],
+          "fn" => $row['friendlyName'],
+          "cid" => $row['cid']
+        );
+      }
+      return $fns;
+		break;
+		case "unset_fido2_key":
+      $username = $_SESSION['mailcow_cc_username'];
+      if ($_SESSION['mailcow_cc_role'] != "domainadmin" &&
+        $_SESSION['mailcow_cc_role'] != "admin") {
+          $_SESSION['return'][] =  array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $_data["action"]),
+            'msg' => 'access_denied'
+          );
+          return false;
+      }
+      $stmt = $pdo->prepare("DELETE FROM `fido2` WHERE `username` = :username AND SHA2(`credentialId`, 256) = :cid");
+      $stmt->execute(array(
+        ':username' => $username,
+        ':cid' => $_data['post_data']['unset_fido2_key']
+      ));
+			$_SESSION['return'][] =  array(
+				'type' => 'success',
+        'log' => array(__FUNCTION__, $_data_log),
+				'msg' => array('object_modified', htmlspecialchars($username))
+			);
+		break;
+    case "edit_fn":
+      $username = $_SESSION['mailcow_cc_username'];
+      if ($_SESSION['mailcow_cc_role'] != "domainadmin" &&
+        $_SESSION['mailcow_cc_role'] != "admin") {
+          $_SESSION['return'][] =  array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $_data["action"]),
+            'msg' => 'access_denied'
+          );
+          return false;
+      }
+      $stmt = $pdo->prepare("UPDATE `fido2` SET `friendlyName` = :friendlyName WHERE SHA2(`credentialId`, 256) = :cid AND `username` = :username");
+      $stmt->execute(array(
+        ':username' => $username,
+        ':friendlyName' => $_data['fido2_attrs']['fido2_fn'],
+        ':cid' => $_data['fido2_attrs']['fido2_cid']
+      ));
 			$_SESSION['return'][] =  array(
 				'type' => 'success',
         'log' => array(__FUNCTION__, $_data_log),

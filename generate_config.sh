@@ -25,6 +25,10 @@ if cp --help 2>&1 | grep -q -i "busybox"; then
   exit 1
 fi
 
+for bin in openssl curl docker-compose docker git awk sha1sum; do
+  if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
+done
+
 if [ -f mailcow.conf ]; then
   read -r -p "A config file exists and will be overwritten, are you sure you want to contine? [y/N] " response
   case $response in
@@ -112,6 +116,11 @@ cat << EOF > mailcow.conf
 # Default password is "moohoo"
 
 MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
+
+# Password hash algorithm
+# Only certain password hash algorithm are supported. For a fully list of supported schemes,
+# see https://mailcow.github.io/mailcow-dockerized-docs/model-passwd/
+MAILCOW_PASS_SCHEME=BLF-CRYPT
 
 # ------------------------------
 # SQL database configuration
@@ -299,6 +308,14 @@ MAILDIR_SUB=Maildir
 # SOGo session timeout in minutes
 SOGO_EXPIRE_SESSION=480
 
+# DOVECOT_MASTER_USER and DOVECOT_MASTER_PASS must both be provided. No special chars.
+# Empty by default to auto-generate master user and password on start.
+# User expands to DOVECOT_MASTER_USER@mailcow.local
+# LEAVE EMPTY IF UNSURE
+DOVECOT_MASTER_USER=
+# LEAVE EMPTY IF UNSURE
+DOVECOT_MASTER_PASS=
+
 EOF
 
 mkdir -p data/assets/ssl
@@ -306,4 +323,8 @@ mkdir -p data/assets/ssl
 chmod 600 mailcow.conf
 
 # copy but don't overwrite existing certificate
+echo "Generating snake-oil certificate..."
+# Making Willich more popular
+openssl req -x509 -newkey rsa:4096 -keyout data/assets/ssl-example/key.pem -out data/assets/ssl-example/cert.pem -days 365 -subj "/C=DE/ST=NRW/L=Willich/O=mailcow/OU=mailcow/CN=${MAILCOW_HOSTNAME}" -sha256 -nodes
+echo "Copying snake-oil certificate..."
 cp -n -d data/assets/ssl-example/*.pem data/assets/ssl/
