@@ -425,6 +425,7 @@
         "totp_verification_failed": "TOTP-verifiering misslyckades",
         "transport_dest_exists": "Transportdestinationen \"%s\" existerar redan",
         "u2f_verification_failed": "U2F-verifiering misslyckades: %s",
+        "fido2_verification_failed": "U2F-verifiering misslyckades: %s",
         "unknown": "Ett fel har inträffat",
         "unknown_tfa_method": "Okänd TFA method",
         "unlimited_quota_acl": "På grund av en åtkomstlista tillåts inte en obegränsad kvot",
@@ -598,8 +599,10 @@
     },
     "login": {
         "delayed": "Av säkerhetsskäl har inloggning inaktiverats i %s sekunder.",
+        "fido2_webauthn": "FIDO2/WebAuthn",
         "login": "Logga in",
         "mobileconfig_info": "Logga in som en användare av brevlåda för att ladda ner den begärda Apple-anslutningsprofilen.",
+        "other_logins": "Loggain med nyckel",
         "password": "Lösenord",
         "username": "Användarnamn"
     },
@@ -880,6 +883,7 @@
         "upload_success": "Filen har laddats upp",
         "verified_totp_login": "Verifierad TOTP inloggning",
         "verified_u2f_login": "Verifierad U2F inloggning",
+        "verified_fido2_login": "Verifierad FIDO2 inloggning",
         "verified_yotp_login": "Verifierad Yubico OTP inloggning"
     },
     "tfa": {
@@ -902,9 +906,23 @@
         "tfa": "Tvåfaktorsautentisering",
         "totp": "Tidsbaserad OTP (Google Authenticator, Authy, mm)",
         "u2f": "U2F-autentisering",
-        "waiting_usb_auth": "<i>Väntar på USB-enhet...</i><br><br>Tryck på knappen på U2F USB-enheten nu.",
-        "waiting_usb_register": "<i>Väntar på USB-enhet...</i><br><br>Vänligen fyll i det övre lösenordsfältet först och tryck sedan på knappen på U2F-enheten.",
+        "waiting_usb_auth": "<i>Väntar på USB-enhet...</i><br><br>Tryck på knappen på USB-enheten nu.",
+        "waiting_usb_register": "<i>Väntar på USB-enhet...</i><br><br>Vänligen fyll i det övre lösenordsfältet först och tryck sedan på knappen på USB-enheten.",
         "yubi_otp": "Yubico OTP-autentisering"
+    },
+    "fido2": {
+        "set_fn": "Ange ett eget namn",
+        "fn": "Eget namn",
+        "rename": "Döp om",
+        "confirm": "Bekräfta",
+        "register_status": "Registreringsstatus",
+        "known_ids": "Kända IDs",
+        "none": "Avaktiverad",
+        "set_fido2": "Registrera FIDO2-enhet",
+        "start_fido2_validation": "Starta FIDO2 verifiering",
+        "fido2_auth": "Loggain med FIDO2",
+        "fido2_success": "Enheten har registrerats",
+        "fido2_validation_failed": "Verifiering misslyckades"
     },
     "user": {
         "action": "Åtgärd",
