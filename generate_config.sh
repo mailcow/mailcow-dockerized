@@ -17,11 +17,11 @@ if [[ "$(uname -r)" =~ ^4\.4\. ]]; then
 fi
 
 if grep --help 2>&1 | grep -q -i "busybox"; then
-  echo "BusybBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\""
+  echo "BusyBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\""
   exit 1
 fi
 if cp --help 2>&1 | grep -q -i "busybox"; then
-  echo "BusybBox cp detected, please install coreutils, \"apk add --no-cache --upgrade coreutils\""
+  echo "BusyBox cp detected, please install coreutils, \"apk add --no-cache --upgrade coreutils\""
   exit 1
 fi
 
