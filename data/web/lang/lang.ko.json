@@ -745,7 +745,7 @@
         "low_danger": "Low danger",
         "medium_danger": "Medium danger",
         "neutral_danger": "중립/평가 없음",
-        "notified": "Notified",
+        "notified": "알림 받음",
         "qhandler_success": "요청을 시스템에 성공적으로 보냈습니다. 이 창을 닫아도 괜찮습니다.",
         "qid": "Rspamd QID",
         "qinfo": "검역소 시스템은 거부된 메일을 데이터베이스에 저장하는 동시에 발신자는 메일 발송이 <em>실패</em>했다는 신호를 받습니다. <br>\"스팸으로 배우고 삭제\"는 Bayesian theorem를 통하여 해당 메일을 스팸으로 배우고, 추후에 오는 비슷한 메세지를 거부할 수 있도록 fuzzy hash를 생성합니다.\r\n <br>사용하고 있는 시스템에 따라서 다수으 메세지를 학습하는데 오랜 시간이 걸릴 수 있습니다.",
@@ -757,7 +757,7 @@
         "recipients": "수신자들",
         "refresh": "새로 고침",
         "release": "Release",
-        "release_body": "We have attached your message as eml file to this message.",
+        "release_body": "이 메세지에 당신의 메세지가 eml 파일로 첨부되어 있습니다.",
         "release_subject": "Potentially damaging quarantine item %s",
         "remove": "제거",
         "rspamd_result": "Rspamd 결과",
@@ -768,11 +768,11 @@
         "show_item": "아이템 보기",
         "spam_score": "점수",
         "subj": "제목",
-        "table_size": "Table size",
-        "table_size_show_n": "Show %s items",
+        "table_size": "테이블 크기",
+        "table_size_show_n": "%s개 항목 보기",
         "text_from_html_content": "내용 (converted html)",
-        "text_plain_content": "Content (text/plain)",
-        "toggle_all": "Toggle all"
+        "text_plain_content": "내용 (text/plain)",
+        "toggle_all": "모두 토글"
     },
     "start": {
         "help": "Show/Hide help panel",
