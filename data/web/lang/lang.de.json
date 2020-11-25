@@ -419,6 +419,7 @@
         "targetd_relay_domain": "Ziel-Domain %s ist eine Relay-Domain",
         "temp_error": "Temporärer Fehler",
         "text_empty": "Text darf nicht leer sein",
+        "tfa_token_invalid": "TFA Token ungültig",
         "tls_policy_map_dest_invalid": "Ziel ist ungültig",
         "tls_policy_map_entry_exists": "Eine TLS-Richtlinie \"%s\" existiert bereits",
         "tls_policy_map_parameter_invalid": "Parameter ist ungültig",
