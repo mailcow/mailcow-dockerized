@@ -1059,12 +1059,12 @@ function fido2($_data) {
         $_SESSION['mailcow_cc_role'] != "admin") {
           return false;
       }
-      $stmt = $pdo->prepare("SELECT SHA2(`credentialId`, 256) AS `cid`, `certificateSubject`, `friendlyName` FROM `fido2` WHERE `username` = :username");
+      $stmt = $pdo->prepare("SELECT SHA2(`credentialId`, 256) AS `cid`, `created`, `certificateSubject`, `friendlyName` FROM `fido2` WHERE `username` = :username");
       $stmt->execute(array(':username' => $username));
       $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
       while($row = array_shift($rows)) {
         $fns[] = array(
-          "subject" => $row['certificateSubject'],
+          "subject" => (empty($row['certificateSubject']) ? 'Unknown (' . $row['created'] . ')' : $row['certificateSubject']),
           "fn" => $row['friendlyName'],
           "cid" => $row['cid']
         );

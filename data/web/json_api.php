@@ -401,27 +401,16 @@ if (isset($_GET['query'])) {
           return;
         break;
       }
-      if (!isset($_SESSION['pending_mailcow_cc_username'])) {
+      if (isset($_SESSION['mailcow_cc_role'])) {
         switch ($category) {
           case "rspamd":
             switch ($object) {
               case "actions":
-                $curl = curl_init();
-                curl_setopt($curl, CURLOPT_UNIX_SOCKET_PATH, '/var/lib/rspamd/rspamd.sock');
-                curl_setopt($curl, CURLOPT_URL,"http://rspamd/stat");
-                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                $data = curl_exec($curl);
+                $data = rspamd_actions();
                 if ($data) {
-                  $return = array();
-                  $stats_array = json_decode($data, true)['actions'];
-                  $stats_array['soft reject'] = $stats_array['soft reject'] + $stats_array['greylist'];
-                  unset($stats_array['greylist']);
-                  foreach ($stats_array as $action => $count) {
-                    $return[] = array($action, $count);
-                  }
-                  echo json_encode($return, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                  echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
                 }
-                elseif (!isset($data) || empty($data)) {
+                else {
                   echo '{}';
                 }
               break;
@@ -1295,53 +1284,55 @@ if (isset($_GET['query'])) {
             }
           break;
           case "status":
-            switch ($object) {
-              case "containers":
-                $containers = (docker('info'));
-                foreach ($containers as $container => $container_info) {
-                  $container . ' (' . $container_info['Config']['Image'] . ')';
-                  $containerstarttime = ($container_info['State']['StartedAt']);
-                  $containerstate = ($container_info['State']['Status']);
-                  $containerimage = ($container_info['Config']['Image']);
-                  $temp[$container] = array(
+            if ($_SESSION['mailcow_cc_role'] == "admin") {
+              switch ($object) {
+                case "containers":
+                  $containers = (docker('info'));
+                  foreach ($containers as $container => $container_info) {
+                    $container . ' (' . $container_info['Config']['Image'] . ')';
+                    $containerstarttime = ($container_info['State']['StartedAt']);
+                    $containerstate = ($container_info['State']['Status']);
+                    $containerimage = ($container_info['Config']['Image']);
+                    $temp[$container] = array(
+                      'type' => 'info',
+                      'container' => $container,
+                      'state' => $containerstate,
+                      'started_at' => $containerstarttime,
+                      'image' => $containerimage
+                    );
+                  }
+                  echo json_encode($temp, JSON_UNESCAPED_SLASHES);
+                break;
+                case "vmail":
+                  $exec_fields_vmail = array('cmd' => 'system', 'task' => 'df', 'dir' => '/var/vmail');
+                  $vmail_df = explode(',', json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields_vmail), true));
+                  $temp = array(
                     'type' => 'info',
-                    'container' => $container,
-                    'state' => $containerstate,
-                    'started_at' => $containerstarttime,
-                    'image' => $containerimage
+                    'disk' => $vmail_df[0],
+                    'used' => $vmail_df[2],
+                    'total'=> $vmail_df[1],
+                    'used_percent' => $vmail_df[4]
                   );
-                }
-                echo json_encode($temp, JSON_UNESCAPED_SLASHES);
+                  echo json_encode($temp, JSON_UNESCAPED_SLASHES);
               break;
-              case "vmail":
-                $exec_fields_vmail = array('cmd' => 'system', 'task' => 'df', 'dir' => '/var/vmail');
-                $vmail_df = explode(',', json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields_vmail), true));
-                $temp = array(
+              case "solr":
+                $solr_status = solr_status();
+                $solr_size = ($solr_status['status']['dovecot-fts']['index']['size']);
+                $solr_documents = ($solr_status['status']['dovecot-fts']['index']['numDocs']);
+                if (strtolower(getenv('SKIP_SOLR')) != 'n') {
+                  $solr_enabled = false;
+                }
+                else {
+                  $solr_enabled = true;
+                }
+                echo json_encode(array(
                   'type' => 'info',
-                  'disk' => $vmail_df[0],
-                  'used' => $vmail_df[2],
-                  'total'=> $vmail_df[1],
-                  'used_percent' => $vmail_df[4]
-                );
-                echo json_encode($temp, JSON_UNESCAPED_SLASHES);
-            break;
-            case "solr":
-              $solr_status = solr_status();
-              $solr_size = ($solr_status['status']['dovecot-fts']['index']['size']);
-              $solr_documents = ($solr_status['status']['dovecot-fts']['index']['numDocs']);
-              if (strtolower(getenv('SKIP_SOLR')) != 'n') {
-                $solr_enabled = false;
+                  'solr_enabled' => $solr_enabled,
+                  'solr_size' => $solr_size,
+                  'solr_documents' => $solr_documents
+                ));
+              break;
               }
-              else {
-                $solr_enabled = true;
-              }
-              echo json_encode(array(
-                'type' => 'info',
-                'solr_enabled' => $solr_enabled,
-                'solr_size' => $solr_size,
-                'solr_documents' => $solr_documents
-              ));
-            break;
             }
           break;
         break;
