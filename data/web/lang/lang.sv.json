@@ -419,6 +419,7 @@
         "targetd_relay_domain": "Måldomänen %s är en relädomän",
         "temp_error": "Tillfälligt fel",
         "text_empty": "Texten i medelandet kan inte vara tom",
+        "tfa_token_invalid": "TFA-nyckeln är ogiltig",
         "tls_policy_map_dest_invalid": "Destinationen är ogiltig",
         "tls_policy_map_entry_exists": "TLS policyföreskriften \"%s\" existerar redan",
         "tls_policy_map_parameter_invalid": "Policy parameter är ogiltig",
@@ -1058,7 +1059,7 @@
         "ip_invalid": "Skippar en ogiltig IP-adress: %s",
         "no_active_admin": "Den senaste kända administratören kan inte inaktiveras",
         "quota_exceeded_scope": "Domänkvoten fylld: Endast postlådor med obegränsade kvoter kan skapas för den här domänen.",
-        "session_token": "Formulärstämpeln är ogiltig: Stämpeln matchar inte",
-        "session_ua": "Formulärstämpeln är ogiltig: User-Agenten kunde inte valideras"
+        "session_token": "Formulär-nyckeln är ogiltig: Nyckeln matchar inte",
+        "session_ua": "Formulär-nyckeln är ogiltig: User-Agenten kunde inte valideras"
     }
 }
