@@ -949,7 +949,7 @@
         "pushover_text": "알림 메세지",
         "pushover_title": "알림 제목",
         "pushover_vars": "송신자 필터가 정의되지 않으면 모든 메일에 대해서 알림을 보냅니다.<br>정규식 필터와 송신자 확인은 독립적으로 정의할 수 있으며, 이 순서대로 확인합니다. 이 둘은 서로에게 의존하지 않습니다.<br>알림 제목과 내용을 위한 사용 가능한 변수 (데이터 보호 정책을 참고하세요)",
-        "pushover_verify": "API 확인,
+        "pushover_verify": "API 확인",
         "quarantine_notification": "검역소 알림",
         "quarantine_notification_info": "알림이 보내지면 해당 항목은 \"알림 보냄\" 이라고 표시되며, 해당 항목에 대한 알림은 더 이상 보내지 않습니다.",
         "remove": "제거",
