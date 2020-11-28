@@ -167,6 +167,12 @@ $MAILBOX_DEFAULT_ATTRIBUTES['pop3_access'] = true;
 // Mailbox has SMTP access by default
 $MAILBOX_DEFAULT_ATTRIBUTES['smtp_access'] = true;
 
+// Mailbox receives notifications about...
+// "add_header" - mail that was put into the Junk folder
+// "reject" - mail that was rejected
+// "all" - mail that was rejected and put into the Junk folder
+$MAILBOX_DEFAULT_ATTRIBUTES['quarantine_category'] = 'reject';
+
 // Default mailbox format, should not be changed unless you know exactly, what you do, keep the trailing ":"
 // Check dovecot.conf for further changes (e.g. shared namespace)
 $MAILBOX_DEFAULT_ATTRIBUTES['mailbox_format'] = 'maildir:';

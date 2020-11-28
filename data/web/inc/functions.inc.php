@@ -332,6 +332,9 @@ function hasDomainAccess($username, $role, $domain) {
 }
 function hasMailboxObjectAccess($username, $role, $object) {
 	global $pdo;
+	if (empty($username) || empty($role) || empty($object)) {
+		return false;
+	}
 	if (!filter_var(html_entity_decode(rawurldecode($username)), FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $username))) {
 		return false;
 	}

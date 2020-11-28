@@ -1576,6 +1576,9 @@ if (isset($_GET['query'])) {
         case "quarantine_notification":
           process_edit_return(mailbox('edit', 'quarantine_notification', array_merge(array('username' => $items), $attr)));
         break;
+        case "quarantine_category":
+          process_edit_return(mailbox('edit', 'quarantine_category', array_merge(array('username' => $items), $attr)));
+        break;
         case "qitem":
           process_edit_return(quarantine('edit', array_merge(array('id' => $items), $attr)));
         break;

@@ -116,7 +116,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             <?=$lang['mailbox']['sogo_allow_admin_hint'];?>
             </div>
             <?php } ?>
-            <!-- <div class="mass-actions-mailbox" data-actions-header="true"></div> -->
+            <div class="mass-actions-mailbox" data-actions-header="true"></div>
             <div class="table-responsive">
               <table id="mailbox_table" class="table table-striped"></table>
             </div>
@@ -144,6 +144,10 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_notification' data-api-attr='{"quarantine_notification":"weekly"}' href="#"><?=$lang['user']['weekly'];?></a></li>
                   <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_notification' data-api-attr='{"quarantine_notification":"never"}' href="#"><?=$lang['user']['never'];?></a></li>
                   <li role="separator" class="divider"></li>
+                  <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_category' data-api-attr='{"quarantine_category":"reject"}' href="#"><?=$lang['user']['q_reject'];?></a></li>
+                  <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_category' data-api-attr='{"quarantine_category":"add_header"}' href="#"><?=$lang['user']['q_add_header'];?></a></li>
+                  <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_category' data-api-attr='{"quarantine_category":"all"}' href="#"><?=$lang['user']['q_all'];?></a></li>
+                  <li role="separator" class="divider"></li>
                   <li class="dropdown-header"><?=$lang['mailbox']['allowed_protocols'];?></li>
                   <li class="dropdown-header">IMAP</li>
                   <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"imap_access":1}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
@@ -165,6 +169,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['mailbox'];?> <span class="caret"></span></a>
                   <ul class="dropdown-menu">
                     <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
+                    <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"active":"2"}' href="#"><?=$lang['mailbox']['disable_login'];?></a></li>
                     <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
                     <li role="separator" class="divider"></li>
                     <li><a data-action="delete_selected" data-id="mailbox" data-api-url='delete/mailbox' href="#"><?=$lang['mailbox']['remove'];?></a></li>
@@ -205,6 +210,10 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                     <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_notification' data-api-attr='{"quarantine_notification":"daily"}' href="#"><?=$lang['user']['daily'];?></a></li>
                     <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_notification' data-api-attr='{"quarantine_notification":"weekly"}' href="#"><?=$lang['user']['weekly'];?></a></li>
                     <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_notification' data-api-attr='{"quarantine_notification":"never"}' href="#"><?=$lang['user']['never'];?></a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_category' data-api-attr='{"quarantine_category":"reject"}' href="#"><?=$lang['user']['q_reject'];?></a></li>
+                    <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_category' data-api-attr='{"quarantine_category":"add_header"}' href="#"><?=$lang['user']['q_add_header'];?></a></li>
+                    <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_category' data-api-attr='{"quarantine_category":"all"}' href="#"><?=$lang['user']['q_all'];?></a></li>
                   </ul>
                 </div>
                 <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addMailboxModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_mailbox'];?></a>

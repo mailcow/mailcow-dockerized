@@ -371,13 +371,14 @@ jQuery(function($){
             '<div class="label label-last-login">SMTP @ ' + unix_time_format(Number(res[2])) + '</div>';
         }},
         {"name":"quarantine_notification","filterable": false,"title":lang.quarantine_notification,"breakpoints":"all"},
+        {"name":"quarantine_category","filterable": false,"title":lang.quarantine_category,"breakpoints":"all"},
         {"name":"in_use","filterable": false,"type":"html","title":lang.in_use,"sortValue": function(value){
           return Number($(value).find(".progress-bar-mailbox").attr('aria-valuenow'));
         },
         },
         {"name":"messages","filterable": false,"title":lang.msg_num,"breakpoints":"xs sm md"},
         {"name":"rl","title":"RL","breakpoints":"all","style":{"width":"125px"}},
-        {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'&#10003;':0==value&&'&#10005;';}},
+        {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'&#10003;':(0==value?'&#10005;':2==value&&'&#8212;');}},
         {"name":"action","filterable": false,"sortable": false,"style":{"min-width":"290px","text-align":"right"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
       ],
       "empty": lang.empty,
@@ -417,6 +418,13 @@ jQuery(function($){
               item.quarantine_notification = lang.daily;
             } else if (item.attributes.quarantine_notification === 'weekly') {
               item.quarantine_notification = lang.weekly;
+            }
+            if (item.attributes.quarantine_category === 'reject') {
+              item.quarantine_category = '<span class="text-danger">' + lang.q_reject + '</span>';
+            } else if (item.attributes.quarantine_category === 'add_header') {
+              item.quarantine_category = '<span class="text-warning">' + lang.q_add_header + '</span>';
+            } else if (item.attributes.quarantine_category === 'all') {
+              item.quarantine_category = lang.q_all;
             }
             if (acl_data.login_as === 1) {
             item.action = '<div class="btn-group">' +
