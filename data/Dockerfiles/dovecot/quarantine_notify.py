@@ -58,8 +58,13 @@ def query_mysql(query, headers = True, update = False):
     cur.close()
     cnx.close()
 
-def notify_rcpt(rcpt, msg_count, quarantine_acl):
-  meta_query = query_mysql('SELECT SHA2(CONCAT(id, qid), 256) AS qhash, id, subject, score, sender, created, action FROM quarantine WHERE notified = 0 AND rcpt = "%s" AND score < %f' % (rcpt, max_score))
+def notify_rcpt(rcpt, msg_count, quarantine_acl, category):
+  if category == "add_header": category = "add header"
+  meta_query = query_mysql('SELECT SHA2(CONCAT(id, qid), 256) AS qhash, id, subject, score, sender, created, action FROM quarantine WHERE notified = 0 AND rcpt = "%s" AND score < %f AND (action = "%s" OR "all" = "%s")' % (rcpt, max_score, category, category))
+  print("%s: %d of %d messages qualify for notification" % (rcpt, len(meta_query), msg_count))
+  if len(meta_query) == 0:
+    return
+  msg_count = len(meta_query)
   if r.get('Q_HTML'):
     try:
       template = Template(r.get('Q_HTML'))
@@ -117,6 +122,11 @@ records = query_mysql('SELECT IFNULL(user_acl.quarantine, 0) AS quarantine_acl, 
 for record in records:
   attrs = ''
   attrs_json = ''
+  time_trans = {
+    "hourly": 3600,
+    "daily": 86400,
+    "weekly": 604800
+  }
   try:
     last_notification = int(r.hget('Q_LAST_NOTIFIED', record['rcpt']))
     if last_notification > time_now:
@@ -133,18 +143,8 @@ for record in records:
   else:
     # if it's bytes then decode and load it
     attrs = json.loads(attrs.decode('utf-8'))
-  if attrs['quarantine_notification'] not in ('hourly', 'daily', 'weekly', 'never'):
-    print('Abnormal quarantine_notification value')
+  if attrs['quarantine_notification'] not in ('hourly', 'daily', 'weekly'):
     continue
-  if attrs['quarantine_notification'] == 'hourly':
-    if last_notification == 0 or (last_notification + 3600) < time_now:
-      print("Notifying %s: Considering %d new items in quarantine" % (record['rcpt'], record['counter']))
-      notify_rcpt(record['rcpt'], record['counter'], record['quarantine_acl'])
-  elif attrs['quarantine_notification'] == 'daily':
-    if last_notification == 0 or (last_notification + 86400) < time_now:
-      print("Notifying %s: Considering %d new items in quarantine" % (record['rcpt'], record['counter']))
-      notify_rcpt(record['rcpt'], record['counter'], record['quarantine_acl'])
-  elif attrs['quarantine_notification'] == 'weekly':
-    if last_notification == 0 or (last_notification + 604800) < time_now:
-      print("Notifying %s: Considering %d new items in quarantine" % (record['rcpt'], record['counter']))
-      notify_rcpt(record['rcpt'], record['counter'], record['quarantine_acl'])
+  if last_notification == 0 or (last_notification + time_trans[attrs['quarantine_notification']]) < time_now:
+    print("Notifying %s: Considering %d new items in quarantine (policy: %s)" % (record['rcpt'], record['counter'], attrs['quarantine_notification']))
+    notify_rcpt(record['rcpt'], record['counter'], record['quarantine_acl'], attrs['quarantine_category'])

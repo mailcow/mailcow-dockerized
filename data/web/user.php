@@ -337,6 +337,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
         <?php
         // Show quarantine_notification options
         $quarantine_notification = mailbox('get', 'quarantine_notification', $username);
+        $quarantine_category = mailbox('get', 'quarantine_category', $username);
         ?>
         <div class="row">
           <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['quarantine_notification'];?>:</div>
@@ -368,6 +369,32 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
               data-api-attr='{"quarantine_notification":"weekly"}'><?=$lang['user']['weekly'];?></button>
           </div>
           <p class="help-block"><?=$lang['user']['quarantine_notification_info'];?></p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['quarantine_category'];?>:</div>
+          <div class="col-md-9 col-xs-7">
+          <div class="btn-group" data-acl="<?=$_SESSION['acl']['quarantine_category'];?>">
+            <button type="button" class="btn btn-sm btn-default <?=($quarantine_category == "reject") ? "active" : null;?>"
+              data-action="edit_selected"
+              data-item="<?= htmlentities($username); ?>"
+              data-id="quarantine_category"
+              data-api-url='edit/quarantine_category'
+              data-api-attr='{"quarantine_category":"reject"}'><?=$lang['user']['q_reject'];?></button>
+            <button type="button" class="btn btn-sm btn-default <?=($quarantine_category == "add_header") ? "active" : null;?>"
+              data-action="edit_selected"
+              data-item="<?= htmlentities($username); ?>"
+              data-id="quarantine_category"
+              data-api-url='edit/quarantine_category'
+              data-api-attr='{"quarantine_category":"add_header"}'><?=$lang['user']['q_add_header'];?></button>
+            <button type="button" class="btn btn-sm btn-default <?=($quarantine_category == "all") ? "active" : null;?>"
+              data-action="edit_selected"
+              data-item="<?= htmlentities($username); ?>"
+              data-id="quarantine_category"
+              data-api-url='edit/quarantine_category'
+              data-api-attr='{"quarantine_category":"all"}'><?=$lang['user']['q_all'];?></button>
+          </div>
+          <p class="help-block"><?=$lang['user']['quarantine_category_info'];?></p>
           </div>
         </div>
         <?php if (getenv('SKIP_SOGO') != "y") { ?>
