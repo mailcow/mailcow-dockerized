@@ -1550,7 +1550,7 @@ if (isset($_GET['query'])) {
           process_edit_return(mailbox('edit', 'alias', array_merge(array('id' => $items), $attr)));
         break;
         case "rspamd-map":
-          process_edit_return(rspamd('edit', array_merge(array('map' => $items), $attr)));
+          process_edit_return(rspamd_maps('edit', array_merge(array('map' => $items), $attr)));
         break;
         case "fido2-fn":
           process_edit_return(fido2(array('action' => 'edit_fn', 'fido2_attrs' => $attr)));
