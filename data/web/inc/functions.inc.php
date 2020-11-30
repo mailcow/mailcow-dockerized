@@ -206,7 +206,8 @@ function sys_mail($_data) {
     if (!empty($mass_html)) {
       $mail->Body = $mass_html;
       $mail->AltBody = $mass_text;
-    } else {
+    }
+    else {
       $mail->Body = $mass_text;
     }
     $mail->XMailer = 'MooMassMail';
