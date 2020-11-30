@@ -143,6 +143,7 @@ function sys_mail($_data) {
   $mailboxes = array();
   $mass_from = $_data['mass_from'];
   $mass_text = $_data['mass_text'];
+  $mass_html = $_data['mass_html'];
   $mass_subject = $_data['mass_subject'];
   if (!filter_var($mass_from, FILTER_VALIDATE_EMAIL)) {
 		$_SESSION['return'][] =  array(
@@ -202,7 +203,12 @@ function sys_mail($_data) {
     $mail->setFrom($mass_from);
     $mail->Subject = $mass_subject;
     $mail->CharSet ="UTF-8";
-    $mail->Body = $mass_text;
+    if (!empty($mass_html)) {
+      $mail->Body = $mass_html;
+      $mail->AltBody = $mass_text;
+    } else {
+      $mail->Body = $mass_text;
+    }
     $mail->XMailer = 'MooMassMail';
     foreach ($rcpts as $rcpt) {
       $mail->AddAddress($rcpt);
