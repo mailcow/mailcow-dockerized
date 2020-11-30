@@ -949,6 +949,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $pop3_access = (isset($_data['pop3_access'])) ? intval($_data['pop3_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['pop3_access']);
           $smtp_access = (isset($_data['smtp_access'])) ? intval($_data['smtp_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['smtp_access']);
           $quarantine_notification = (isset($_data['quarantine_notification'])) ? strval($_data['quarantine_notification']) : strval($MAILBOX_DEFAULT_ATTRIBUTES['quarantine_notification']);
+          $quarantine_category = (isset($_data['quarantine_category'])) ? strval($_data['quarantine_category']) : strval($MAILBOX_DEFAULT_ATTRIBUTES['quarantine_category']);
           $quota_b		= ($quota_m * 1048576);
           $mailbox_attrs = json_encode(
             array(
@@ -960,7 +961,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'pop3_access' => strval($pop3_access),
               'smtp_access' => strval($smtp_access),
               'mailbox_format' => strval($MAILBOX_DEFAULT_ATTRIBUTES['mailbox_format']),
-              'quarantine_notification' => strval($quarantine_notification)
+              'quarantine_notification' => strval($quarantine_notification),
+              'quarantine_category' => strval($quarantine_category)
             )
           );
           if (!is_valid_domain_name($domain)) {
@@ -1400,6 +1402,65 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 WHERE `username` = :username");
             $stmt->execute(array(
               ':quarantine_notification' => $quarantine_notification,
+              ':username' => $username
+            ));
+            $_SESSION['return'][] = array(
+              'type' => 'success',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              'msg' => array('mailbox_modified', $username)
+            );
+          }
+        break;
+        case 'quarantine_category':
+          if (!is_array($_data['username'])) {
+            $usernames = array();
+            $usernames[] = $_data['username'];
+          }
+          else {
+            $usernames = $_data['username'];
+          }
+          if (!isset($_SESSION['acl']['quarantine_category']) || $_SESSION['acl']['quarantine_category'] != "1" ) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              'msg' => 'access_denied'
+            );
+            return false;
+          }
+          foreach ($usernames as $username) {
+            if (!filter_var($username, FILTER_VALIDATE_EMAIL) || !hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'access_denied'
+              );
+              continue;
+            }
+            $is_now = mailbox('get', 'quarantine_category', $username);
+            if (!empty($is_now)) {
+              $quarantine_category = (isset($_data['quarantine_category'])) ? $_data['quarantine_category'] : $is_now['quarantine_category'];
+            }
+            else {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'access_denied'
+              );
+              continue;
+            }
+            if (!in_array($quarantine_category, array('add_header', 'reject', 'all'))) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'access_denied'
+              );
+              continue;
+            }
+            $stmt = $pdo->prepare("UPDATE `mailbox`
+              SET `attributes` = JSON_SET(`attributes`, '$.quarantine_category', :quarantine_category)
+                WHERE `username` = :username");
+            $stmt->execute(array(
+              ':quarantine_category' => $quarantine_category,
               ':username' => $username
             ));
             $_SESSION['return'][] = array(
@@ -2802,6 +2863,22 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $attrs = $stmt->fetch(PDO::FETCH_ASSOC);
           $attrs = json_decode($attrs['attributes'], true);
           return $attrs['quarantine_notification'];
+        break;
+        case 'quarantine_category':
+          $attrs = array();
+          if (isset($_data) && filter_var($_data, FILTER_VALIDATE_EMAIL)) {
+            if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
+              return false;
+            }
+          }
+          else {
+            $_data = $_SESSION['mailcow_cc_username'];
+          }
+          $stmt = $pdo->prepare("SELECT `attributes` FROM `mailbox` WHERE `username` = :username");
+          $stmt->execute(array(':username' => $_data));
+          $attrs = $stmt->fetch(PDO::FETCH_ASSOC);
+          $attrs = json_decode($attrs['attributes'], true);
+          return $attrs['quarantine_category'];
         break;
         case 'filters':
           $filters = array();
