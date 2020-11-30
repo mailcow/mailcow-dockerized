@@ -1279,6 +1279,13 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             </div>
           </div>
           <div class="form-group">
+            <label class="control-label col-sm-2" for="mass_html"><?=$lang['admin']['html'];?> (<?=$lang['admin']['optional'];?>):</label>
+            <div class="col-sm-10">
+              <textarea class="form-control" rows="10" name="mass_html" id="mass_html"></textarea>
+              <p class="small">↪ <a target="_blank" href="https://templates.mailchimp.com/resources/html-to-text/"><?=$lang['admin']['convert_html_to_text'];?></a></p>
+            </div>
+          </div>
+          <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
               <label>
                 <input type="checkbox" id="mass_disarm"> <?=$lang['admin']['activate_send'];?>
