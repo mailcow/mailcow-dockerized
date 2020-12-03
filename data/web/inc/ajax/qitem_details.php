@@ -66,7 +66,7 @@ if (!empty($_GET['hash']) && ctype_alnum($_GET['hash'])) {
     $data['symbols'] = json_decode($mailc['symbols']);
     // Get fuzzy hashes
     $data['fuzzy_hashes'] = json_decode($mailc['fuzzy_hashes']);
-    $data['subject'] = $mail_parser->getHeader('subject');
+    $data['subject'] = mb_convert_encoding($mail_parser->getHeader('subject'), "UTF-8", "auto");
     (empty($data['subject'])) ? $data['subject'] = '-' : null;
     echo json_encode($data);
   }
@@ -139,6 +139,7 @@ elseif (!empty($_GET['id']) && ctype_alnum($_GET['id'])) {
     (empty($data['text_plain'])) ? $data['text_plain'] = '-' : null;
     // Get subject
     $data['subject'] = $mail_parser->getHeader('subject');
+    $data['subject'] = mb_convert_encoding($mail_parser->getHeader('subject'), "UTF-8", "auto");
     (empty($data['subject'])) ? $data['subject'] = '-' : null;
     // Get attachments
     if (is_dir($tmpdir)) {
@@ -196,7 +197,6 @@ elseif (!empty($_GET['id']) && ctype_alnum($_GET['id'])) {
         exit;
       }
     }
-    $data = mb_convert_encoding($data, "UTF-8", "auto");
     echo json_encode($data);
   }
 
