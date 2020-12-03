@@ -78,7 +78,7 @@ $DETECT_LANGUAGE = true;
 $DEFAULT_LANG = 'en';
 
 // Available languages
-$AVAILABLE_LANGUAGES = array('ca', 'cs', 'de', 'en', 'es', 'fi', 'fr', 'hu', 'it', 'lv', 'nl', 'pl', 'pt', 'ro', 'ru', 'sk', 'sv', 'zh');
+$AVAILABLE_LANGUAGES = array('ca', 'cs', 'de', 'en', 'es', 'fi', 'fr', 'hu', 'it', 'ko', 'lv', 'nl', 'pl', 'pt', 'ro', 'ru', 'sk', 'sv', 'zh');
 
 // Change theme (default: lumen)
 // Needs to be one of those: cerulean, cosmo, cyborg, darkly, flatly, journal, lumen, paper, readable, sandstone,
