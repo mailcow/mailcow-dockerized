@@ -219,6 +219,15 @@ jQuery(function($){
       },
       error: function(data){
         if (typeof data.error !== 'undefined') {
+          $('#qid_detail_subj').text('-');
+          $('#qid_detail_hfrom').text('-');
+          $('#qid_detail_efrom').text('-');
+          $('#qid_detail_score').html('-');
+          $('#qid_detail_recipients').html('-');
+          $('#qid_detail_symbols').html('-');
+          $('#qid_detail_fuzzy').html('-');
+          $('#qid_detail_text').text('-');
+          $('#qid_detail_text_from_html').text('-');
           qError.text("Error loading quarantine item");
           qError.show();
         }
