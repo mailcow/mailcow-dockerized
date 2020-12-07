@@ -111,6 +111,7 @@ jQuery(function($){
       }),
       "empty": lang.empty,
       "paging": {"enabled": true,"limit": 5,"size": pagination_size},
+      "state": {"enabled": true},
       "sorting": {"enabled": true},
       "filtering": {"enabled": true,"position": "left","connectors": false,"placeholder": lang.filter_table},
       "toggleSelector": "table tbody span.footable-toggle",
