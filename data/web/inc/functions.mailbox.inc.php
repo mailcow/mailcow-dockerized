@@ -1055,7 +1055,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               return false;
             }
             // support pre hashed passwords
-            if(preg_match('/^{SSHA256}|{SHA512-CRYPT}|{SSHA512}|{MD5-CRYPT}|{PLAIN-MD5}/i', $password)) {
+            if(preg_match('/^{SSHA256}|{SSHA}|{SHA512-CRYPT}|{SSHA512}|{MD5-CRYPT}|{PLAIN-MD5}/i', $password)) {
               $password_hashed = $password;
             } else {
               $password_hashed = hash_password($password);
