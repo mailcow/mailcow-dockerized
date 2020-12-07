@@ -1055,9 +1055,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               return false;
             }
             // support pre hashed passwords
-            if(preg_match('/^{SSHA256}|{SSHA}|{SHA512-CRYPT}|{SSHA512}|{MD5-CRYPT}|{PLAIN-MD5}/i', $password)) {
+            if (preg_match('/^({SSHA256}|{SSHA}|{SHA512-CRYPT}|{SSHA512}|{MD5-CRYPT}|{PLAIN-MD5})/i', $password)) {
               $password_hashed = $password;
-            } else {
+            }
+            else {
               $password_hashed = hash_password($password);
             }
           }
@@ -2555,7 +2556,13 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 );
                 continue;
               }
-              $password_hashed = hash_password($password);
+              // support pre hashed passwords
+              if (preg_match('/^({SSHA256}|{SSHA}|{SHA512-CRYPT}|{SSHA512}|{MD5-CRYPT}|{PLAIN-MD5})/i', $password)) {
+                $password_hashed = $password;
+              }
+              else {
+                $password_hashed = hash_password($password);
+              }
               $stmt = $pdo->prepare("UPDATE `mailbox` SET
                   `password` = :password_hashed
                     WHERE `username` = :username");
