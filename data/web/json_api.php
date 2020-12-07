@@ -136,7 +136,7 @@ if (isset($_GET['query'])) {
         ));
         exit();
       }
-      
+
       switch ($category) {
         // fido2-registration via POST
         case "fido2-registration":
@@ -306,7 +306,9 @@ if (isset($_GET['query'])) {
             $_SESSION["mailcow_cc_role"] = "domainadmin";
           }
           $_SESSION["mailcow_cc_username"] = $process_fido2['username'];
+          $_SESSION['mailcow_cc_last_login'] = last_login($process_fido2['username']);
           $_SESSION["fido2_cid"] = $process_fido2['cid'];
+          unset($_SESSION["challenge"]);
           $_SESSION['return'][] =  array(
             'type' => 'success',
             'log' => array("fido2_login"),
