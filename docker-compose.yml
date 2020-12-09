@@ -94,7 +94,6 @@ services:
       restart: always
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
-      hostname: rspamd
       networks:
         mailcow-network:
           aliases:
@@ -248,7 +247,6 @@ services:
         nofile:
           soft: 20000
           hard: 40000
-      hostname: ${MAILCOW_HOSTNAME}
       networks:
         mailcow-network:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.250
@@ -284,7 +282,6 @@ services:
       restart: always
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
-      hostname: ${MAILCOW_HOSTNAME}
       networks:
         mailcow-network:
           aliases:
