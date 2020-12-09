@@ -183,14 +183,15 @@ elseif (!empty($_GET['id']) && ctype_alnum($_GET['id'])) {
       }
       $dl_id = intval($_GET['att']);
       $dl_filename = filter_var($data['attachments'][$dl_id][0], FILTER_SANITIZE_STRING);
-      $dl_filename = strlen($dl_filename) > 30 ? substr($dl_filename,0,30) : $dl_filename;
+      $dl_filename_short = strlen($dl_filename) > 20 ? substr($dl_filename, 0, 20) : $dl_filename;
+      $dl_filename_extension = pathinfo($tmpdir . $dl_filename)['extension'];
       if (!is_dir($tmpdir . $dl_filename) && file_exists($tmpdir . $dl_filename)) {
         header('Pragma: public');
         header('Expires: 0');
         header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
         header('Cache-Control: private', false);
         header('Content-Type: ' . $data['attachments'][$dl_id][1]);
-        header('Content-Disposition: attachment; filename="'. $dl_filename . '";');
+        header('Content-Disposition: attachment; filename="'. $dl_filename_short . '.' . $dl_filename_extension . '";');
         header('Content-Transfer-Encoding: binary');
         header('Content-Length: ' . $data['attachments'][$dl_id][2]);
         readfile($tmpdir . $dl_filename);
