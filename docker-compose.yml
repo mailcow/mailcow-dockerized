@@ -92,6 +92,7 @@ services:
         - ./data/conf/rspamd/rspamd.conf.override:/etc/rspamd/rspamd.conf.override:Z
         - rspamd-vol-1:/var/lib/rspamd:z
       restart: always
+      hostname: rspamd
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       networks:
