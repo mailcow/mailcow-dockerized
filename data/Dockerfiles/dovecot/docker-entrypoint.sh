@@ -271,6 +271,7 @@ fi
 sed -i "s/__DBUSER__/${DBUSER}/g" /usr/local/bin/imapsync_cron.pl /usr/local/bin/quarantine_notify.py /usr/local/bin/clean_q_aged.sh /etc/dovecot/lua/app-passdb.lua
 sed -i "s/__DBPASS__/${DBPASS}/g" /usr/local/bin/imapsync_cron.pl /usr/local/bin/quarantine_notify.py /usr/local/bin/clean_q_aged.sh /etc/dovecot/lua/app-passdb.lua
 sed -i "s/__DBNAME__/${DBNAME}/g" /usr/local/bin/imapsync_cron.pl /usr/local/bin/quarantine_notify.py /usr/local/bin/clean_q_aged.sh /etc/dovecot/lua/app-passdb.lua
+sed -i "s/__MAILCOW_HOSTNAME__/${MAILCOW_HOSTNAME}/g" /usr/local/bin/quarantine_notify.py
 sed -i "s/__LOG_LINES__/${LOG_LINES}/g" /usr/local/bin/trim_logs.sh
 if [[ "${MASTER}" =~ ^([nN][oO]|[nN])+$ ]]; then
 # Toggling MASTER will result in a rebuild of containers, so the quota script will be recreated

@@ -26,6 +26,7 @@ while True:
     break
 
 time_now = int(time.time())
+mailcow_hostname = '__MAILCOW_HOSTNAME__'
 
 max_score = float(r.get('Q_MAX_SCORE') or "9999.0")
 if max_score == "":
@@ -75,7 +76,7 @@ def notify_rcpt(rcpt, msg_count, quarantine_acl, category):
   else:
     with open('/templates/quarantine.tpl') as file_:
       template = Template(file_.read())
-  html = template.render(meta=meta_query, username=rcpt, counter=msg_count, hostname=socket.gethostname(), quarantine_acl=quarantine_acl)
+  html = template.render(meta=meta_query, username=rcpt, counter=msg_count, hostname=mailcow_hostname, quarantine_acl=quarantine_acl)
   text = html2text.html2text(html)
   count = 0
   while count < 15:
