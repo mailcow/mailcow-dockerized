@@ -71,7 +71,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.74
+      image: mailcow/rspamd:1.75
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -92,9 +92,9 @@ services:
         - ./data/conf/rspamd/rspamd.conf.override:/etc/rspamd/rspamd.conf.override:Z
         - rspamd-vol-1:/var/lib/rspamd:z
       restart: always
+      hostname: rspamd
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
-      hostname: rspamd
       networks:
         mailcow-network:
           aliases:
@@ -160,7 +160,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.92
+      image: mailcow/sogo:1.93
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -194,7 +194,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.137
+      image: mailcow/dovecot:1.138
       depends_on:
         - mysql-mailcow
       dns:
@@ -248,7 +248,6 @@ services:
         nofile:
           soft: 20000
           hard: 40000
-      hostname: ${MAILCOW_HOSTNAME}
       networks:
         mailcow-network:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.250
@@ -256,7 +255,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.57
+      image: mailcow/postfix:1.58
       depends_on:
         - mysql-mailcow
       volumes:
@@ -275,6 +274,7 @@ services:
         - DBPASS=${DBPASS}
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
+        - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
       cap_add:
         - NET_BIND_SERVICE
       ports:
@@ -284,7 +284,6 @@ services:
       restart: always
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
-      hostname: ${MAILCOW_HOSTNAME}
       networks:
         mailcow-network:
           aliases:

@@ -64,10 +64,10 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             <li role="separator" class="divider"></li>
             <li><a data-action="edit_selected" data-id="qitems_single" data-item="" data-api-url='edit/qitem' data-api-attr='{"action":"learnspam"}' href="#"><?=$lang['quarantine']['learn_spam_delete'];?></a></li>
             <li role="separator" class="divider"></li>
-            <li><a data-id="qitems_single" data-item="" onclick="window.open('/inc/ajax/qitem_details.php?id=' + $(this).data('item') + '&eml', '_blank')" href="#"><?=$lang['quarantine']['download_eml'];?></a></li>
+            <li><a data-id="qitems_single" data-item="" id="quick_download_link" href="#"><?=$lang['quarantine']['download_eml'];?></a></li>
             <li role="separator" class="divider"></li>
-            <li><a data-id="qitems_single" data-item="" onclick="window.open('/inc/ajax/qitem_details.php?id=' + $(this).data('item') + '&quick_release', '_blank')" href="#"><?=$lang['quarantine']['quick_release_link'];?></a></li>
-            <li><a data-id="qitems_single" data-item="" onclick="window.open('/inc/ajax/qitem_details.php?id=' + $(this).data('item') + '&quick_delete', '_blank')" href="#"><?=$lang['quarantine']['quick_delete_link'];?></a></li>
+            <li><a data-id="qitems_single" data-item="" id="quick_release_link" href="#"><?=$lang['quarantine']['quick_release_link'];?></a></li>
+            <li><a data-id="qitems_single" data-item="" id="quick_delete_link" href="#"><?=$lang['quarantine']['quick_delete_link'];?></a></li>
             <li role="separator" class="divider"></li>
             <li><a data-action="delete_selected" data-id="qitems_single" data-item="" data-api-url='delete/qitem' href="#"><?=$lang['quarantine']['remove'];?></a></li>
           </ul>

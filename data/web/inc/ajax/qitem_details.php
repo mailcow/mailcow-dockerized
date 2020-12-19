@@ -66,7 +66,7 @@ if (!empty($_GET['hash']) && ctype_alnum($_GET['hash'])) {
     $data['symbols'] = json_decode($mailc['symbols']);
     // Get fuzzy hashes
     $data['fuzzy_hashes'] = json_decode($mailc['fuzzy_hashes']);
-    $data['subject'] = $mail_parser->getHeader('subject');
+    $data['subject'] = mb_convert_encoding($mail_parser->getHeader('subject'), "UTF-8", "auto");
     (empty($data['subject'])) ? $data['subject'] = '-' : null;
     echo json_encode($data);
   }
@@ -139,6 +139,7 @@ elseif (!empty($_GET['id']) && ctype_alnum($_GET['id'])) {
     (empty($data['text_plain'])) ? $data['text_plain'] = '-' : null;
     // Get subject
     $data['subject'] = $mail_parser->getHeader('subject');
+    $data['subject'] = mb_convert_encoding($mail_parser->getHeader('subject'), "UTF-8", "auto");
     (empty($data['subject'])) ? $data['subject'] = '-' : null;
     // Get attachments
     if (is_dir($tmpdir)) {
@@ -182,21 +183,21 @@ elseif (!empty($_GET['id']) && ctype_alnum($_GET['id'])) {
       }
       $dl_id = intval($_GET['att']);
       $dl_filename = filter_var($data['attachments'][$dl_id][0], FILTER_SANITIZE_STRING);
-      $dl_filename = strlen($dl_filename) > 30 ? substr($dl_filename,0,30) : $dl_filename;
+      $dl_filename_short = strlen($dl_filename) > 20 ? substr($dl_filename, 0, 20) : $dl_filename;
+      $dl_filename_extension = pathinfo($tmpdir . $dl_filename)['extension'];
       if (!is_dir($tmpdir . $dl_filename) && file_exists($tmpdir . $dl_filename)) {
         header('Pragma: public');
         header('Expires: 0');
         header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
         header('Cache-Control: private', false);
         header('Content-Type: ' . $data['attachments'][$dl_id][1]);
-        header('Content-Disposition: attachment; filename="'. $dl_filename . '";');
+        header('Content-Disposition: attachment; filename="'. $dl_filename_short . '.' . $dl_filename_extension . '";');
         header('Content-Transfer-Encoding: binary');
         header('Content-Length: ' . $data['attachments'][$dl_id][2]);
         readfile($tmpdir . $dl_filename);
         exit;
       }
     }
-    $data = mb_convert_encoding($data, "UTF-8", "auto");
     echo json_encode($data);
   }
 

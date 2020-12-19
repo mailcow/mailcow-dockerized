@@ -89,6 +89,10 @@ function hash_password($password) {
   global $default_pass_scheme;
   $pw_hash = NULL;
   switch (strtoupper($default_pass_scheme)) {
+    case "SSHA":
+      $salt_str = bin2hex(openssl_random_pseudo_bytes(8));
+      $pw_hash = "{SSHA}".base64_encode(hash('sha1', $password . $salt_str, true) . $salt_str);
+      break;
     case "SSHA256":
       $salt_str = bin2hex(openssl_random_pseudo_bytes(8));
       $pw_hash = "{SSHA256}".base64_encode(hash('sha256', $password . $salt_str, true) . $salt_str);
@@ -491,6 +495,20 @@ function verify_hash($hash, $password) {
     $osalt = str_replace($ohash, '', $dhash);
     // Check single salted SHA256 hash against extracted hash
     if (hash_equals(hash('sha256', $password . $osalt, true), $ohash)) {
+      return true;
+    }
+  }
+  elseif (preg_match('/^{SSHA}/i', $hash)) {
+    // Remove tag if any
+    $hash = preg_replace('/^{SSHA}/i', '', $hash);
+    // Decode hash
+    $dhash = base64_decode($hash);
+    // Get first 20 bytes of binary which equals a SSHA hash
+    $ohash = substr($dhash, 0, 20);
+    // Remove SSHA hash from decoded hash to get original salt string
+    $osalt = str_replace($ohash, '', $dhash);
+    // Check single salted SSHA hash against extracted hash
+    if (hash_equals(hash('sha1', $password . $osalt, true), $ohash)) {
       return true;
     }
   }

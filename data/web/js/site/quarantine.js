@@ -111,6 +111,7 @@ jQuery(function($){
       }),
       "empty": lang.empty,
       "paging": {"enabled": true,"limit": 5,"size": pagination_size},
+      "state": {"enabled": true},
       "sorting": {"enabled": true},
       "filtering": {"enabled": true,"position": "left","connectors": false,"placeholder": lang.filter_table},
       "toggleSelector": "table tbody span.footable-toggle",
@@ -130,7 +131,7 @@ jQuery(function($){
 
   $('body').on('click', '.show_qid_info', function (e) {
     e.preventDefault();
-    var qitem = $(this).data('item');
+    var qitem = $(this).attr('data-item');
     var qError = $("#qid_error");
 
     $('#qidDetailModal').modal('show');
@@ -145,6 +146,10 @@ jQuery(function($){
         $('[data-id="qitems_single"]').each(function(index) {
           $(this).attr("data-item", qitem);
         });
+
+        $("#quick_download_link").attr("onclick", "window.open('/inc/ajax/qitem_details.php?id=" + qitem + "&eml', '_blank')");
+        $("#quick_release_link").attr("onclick", "window.open('/inc/ajax/qitem_details.php?id=" + qitem + "&quick_release', '_blank')");
+        $("#quick_delete_link").attr("onclick", "window.open('/inc/ajax/qitem_details.php?id=" + qitem + "&quick_delete', '_blank')");
 
         $('#qid_detail_subj').text(data.subject);
         $('#qid_detail_hfrom').text(data.header_from);
@@ -215,6 +220,15 @@ jQuery(function($){
       },
       error: function(data){
         if (typeof data.error !== 'undefined') {
+          $('#qid_detail_subj').text('-');
+          $('#qid_detail_hfrom').text('-');
+          $('#qid_detail_efrom').text('-');
+          $('#qid_detail_score').html('-');
+          $('#qid_detail_recipients').html('-');
+          $('#qid_detail_symbols').html('-');
+          $('#qid_detail_fuzzy').html('-');
+          $('#qid_detail_text').text('-');
+          $('#qid_detail_text_from_html').text('-');
           qError.text("Error loading quarantine item");
           qError.show();
         }

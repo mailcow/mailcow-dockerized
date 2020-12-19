@@ -783,13 +783,15 @@ paths:
                   properties:
                     active:
                       description: is the domain admin active or not
-                      type: array
+                      type: boolean
                     username_new:
                       description: the username of the domain admin, change this to change the username
                       type: string
                     domains:
                       description: a list of all domains managed by this domain admin
                       type: array
+                      items:
+                        type: string
                     password:
                       description: the new domain admin user password
                       type: string
@@ -4728,9 +4730,10 @@ paths:
             schema:
               example:
                 attr:
-                  - rl_vlaue: "10"
-                    rl_frame: "h"
-                items: info@domain.tld
+                  rl_vlaue: "10"
+                  rl_frame: "h"
+                items:
+                  - info@domain.tld
               properties:
                 attr:
                   properties:
@@ -4798,9 +4801,10 @@ paths:
             schema:
               example:
                 attr:
-                  - rl_vlaue: "10"
-                    rl_frame: "h"
-                items: domain.tld
+                  rl_vlaue: "10"
+                  rl_frame: "h"
+                items:
+                  - domain.tld
               properties:
                 attr:
                   properties:
