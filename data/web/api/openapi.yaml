@@ -533,6 +533,7 @@ paths:
                     - s
                     - m
                     - h
+                    - d
                   type: string
                 rl_value:
                   description: rate limit value
