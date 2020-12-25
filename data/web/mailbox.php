@@ -360,7 +360,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             <div class="panel-heading">
               <?=$lang['mailbox']['sync_jobs'];?> <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right hidden-xs">
-                <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addSyncJobModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['create_syncjob'];?></button>
+                <button data-acl="<?=$_SESSION['acl']['syncjobs'];?>" class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addSyncJobModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['create_syncjob'];?></button>
                 <button class="btn btn-xs btn-default refresh_table" data-draw="draw_sync_job_table" data-table="sync_job_table"><?=$lang['admin']['refresh'];?></button>
                 <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
                   <span class="caret"></span>
