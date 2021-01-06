@@ -410,6 +410,8 @@ services:
       #command: /watchdog.sh
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
+      tmpfs:
+        - /tmp
       volumes:
         - rspamd-vol-1:/var/lib/rspamd:z
         - mysql-socket-vol-1:/var/run/mysqld/:z
