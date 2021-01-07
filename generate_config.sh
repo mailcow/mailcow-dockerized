@@ -156,7 +156,7 @@ HTTPS_BIND=
 # Other bindings
 # ------------------------------
 # You should leave that alone
-# Format: 11.22.33.44:25 or 0.0.0.0:465 etc.
+# Format: 11.22.33.44:25 or 12.34.56.78:465 etc.
 
 SMTP_PORT=25
 SMTPS_PORT=465
