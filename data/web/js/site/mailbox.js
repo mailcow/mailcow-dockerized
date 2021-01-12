@@ -125,18 +125,6 @@ $(document).ready(function() {
       }
     });
   });
-  // Add Mailbox Modal
-  var addMailboxModalShown = false;
-  $('#addMailboxModal').on('show.bs.modal', function(e) {
-    if (addMailboxModalShown) {
-      return;
-    }
-    addMailboxModalShown = true;
-    var $domainSelect = $("#mailbox_table select");
-    if ($domainSelect[0].selectedIndex > 0) { // not "All Domains"
-      $("#addSelectDomain").val($domainSelect.val()).change().selectpicker("render");
-    }
-  });
   // Log modal
   $('#dnsInfoModal').on('show.bs.modal', function(e) {
     var domain = $(e.relatedTarget).data('domain');
