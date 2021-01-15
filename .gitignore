@@ -22,6 +22,7 @@ data/conf/nextcloud-*.bak
 data/web/inc/vars.local.inc.php
 data/web/css/build/0081-custom-mailcow.css
 data/assets/ssl/*
+data/assets/ssl-example/*
 .vscode/*
 .idea
 *.iml
