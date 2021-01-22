@@ -514,8 +514,8 @@ else
   echo -e "\e[32mFetching new docker-compose version...\e[0m"
   echo -e "\e[32mTrying to determine GLIBC version...\e[0m"
   if ldd --version > /dev/null; then
-    GLIBC_V=$(ldd --version | grep GLIBC | rev | cut -d ' ' -f1 | rev | cut -d '.' -f2)
-    if [ ${GLIBC_V} -gt 27 ]; then
+    GLIBC_V=$(ldd --version | grep -E '(GLIBC|GNU libc)' | rev | cut -d ' ' -f1 | rev | cut -d '.' -f2)
+    if [ ! -z "${GLIBC_V}" ] && [ ${GLIBC_V} -gt 27 ]; then
       DC_DL_SUFFIX=
     else
       DC_DL_SUFFIX=legacy
