@@ -54,12 +54,12 @@
       // background color of menus (autocomplete and contextual menus)
       '200': 'F5F5F5',
       // background color of sidebar
-      '300': 'F3F3F3',
+      '300': 'E5E5E5',
        // background color of the busy periods of the attendees editor
       '1000': '4C566A'
     });
     var greenCow = $mdThemingProvider.extendPalette('green', {
-      '600': 'f3f3f3'
+      '600': 'E5E5E5'
     });
 
     $mdThemingProvider.definePalette('frost-grey', greyMap);
