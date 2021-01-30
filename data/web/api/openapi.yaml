@@ -126,6 +126,9 @@ paths:
                 goto_spam:
                   description: learn as spam
                   type: boolean
+                sogo_visible:
+                  description: toggle visibility as selectable sender in SOGo
+                  type: boolean
               type: object
       summary: Create alias
   /api/v1/add/app-passwd:
@@ -2752,6 +2755,9 @@ paths:
                       type: string
                     public_comment:
                       type: string
+                    sogo_visible:
+                      description: toggle visibility as selectable sender in SOGo
+                      type: boolean
                   type: object
                 items:
                   description: contains list of aliases you want update
