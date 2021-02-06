@@ -3035,7 +3035,8 @@ paths:
                     - domain3.tld
                     - "*"
                   sogo_access: "1"
-                items: info@domain.tld
+                items:
+                  - info@domain.tld
               properties:
                 attr:
                   properties:
