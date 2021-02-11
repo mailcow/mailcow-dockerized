@@ -453,7 +453,7 @@ function generate_tlsa_digest($hostname, $port, $starttls = null) {
     return 'Error: Cannot read peer certificate';
   }
 }
-function alertbox_log_parser($_data){
+function alertbox_log_parser($_data) {
   global $lang;
   if (isset($_data['return'])) {
     foreach ($_data['return'] as $return) {
@@ -483,11 +483,10 @@ function alertbox_log_parser($_data){
   }
   return false;
 }
-function verify_salted_hash($hash, $password, $algo, $salt_length)
-{
+function verify_salted_hash($hash, $password, $algo, $salt_length) {
   // Decode hash
   $dhash = base64_decode($hash);
-  // Get first 20 bytes of binary which equals a SSHA hash
+  // Get first n bytes of binary which equals a SSHA hash
   $ohash = substr($dhash, 0, $salt_length);
   // Remove SSHA hash from decoded hash to get original salt string
   $osalt = str_replace($ohash, '', $dhash);
@@ -497,9 +496,7 @@ function verify_salted_hash($hash, $password, $algo, $salt_length)
   }
   return false;
 }
-
-function verify_hash($hash, $password)
-{
+function verify_hash($hash, $password) {
   if (preg_match('/^{(.+)}(.+)/i', $hash, $hash_array)) {
     $scheme = strtoupper($hash_array[1]);
     $hash = $hash_array[2];
