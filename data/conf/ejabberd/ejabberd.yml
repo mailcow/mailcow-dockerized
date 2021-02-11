@@ -34,6 +34,10 @@ sql_type: sqlite
 sql_database: /sqlite/sqlite.db
 default_db: sql
 
+certfiles:
+  - /ejabberd_ssl/cert.pem
+  - /ejabberd_ssl/key.pem
+
 listen:
   -
     port: 5222
