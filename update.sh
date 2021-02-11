@@ -218,6 +218,8 @@ CONFIG_ARRAY=(
   "DOVECOT_MASTER_USER"
   "DOVECOT_MASTER_PASS"
   "MAILCOW_PASS_SCHEME"
+  "XMPP_C22_PORT"
+  "XMPP_S2S_PORT"
 )
 
 sed -i --follow-symlinks '$a\' mailcow.conf
@@ -398,6 +400,14 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# Only certain password hash algorithm are supported. For a fully list of supported schemes,' >> mailcow.conf
       echo '# see https://mailcow.github.io/mailcow-dockerized-docs/model-passwd/' >> mailcow.conf
       echo "MAILCOW_PASS_SCHEME=BLF-CRYPT" >> mailcow.conf
+  fi
+  elif [[ ${option} == "XMPP_C22_PORT" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "XMPP_C22_PORT=5222" >> mailcow.conf
+  fi
+  elif [[ ${option} == "XMPP_S2S_PORT" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "XMPP_S2S_PORT=5269" >> mailcow.conf
   fi
   elif ! grep -q ${option} mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"
