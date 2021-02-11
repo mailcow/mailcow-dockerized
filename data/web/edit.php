@@ -394,15 +394,6 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         <div class="col-sm-6">
           <h4><?=$lang['user']['spamfilter_wl'];?></h4>
           <p><?=$lang['user']['spamfilter_wl_desc'];?></p>
-          <div class="table-responsive">
-            <table class="table table-striped table-condensed" id="wl_policy_domain_table"></table>
-          </div>
-          <div class="mass-actions-user">
-            <div class="btn-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
-              <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="policy_wl_domain" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
-              <a class="btn btn-sm btn-danger" data-action="delete_selected" data-id="policy_wl_domain" data-api-url='delete/domain-policy' href="#"><?=$lang['mailbox']['remove'];?></a></li>
-            </div>
-          </div>
           <form class="form-inline" data-id="add_wl_policy_domain">
             <div class="input-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
               <input type="text" class="form-control" name="object_from" placeholder="*@example.org" required>
@@ -411,19 +402,19 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               </span>
             </div>
           </form>
+          <div class="mass-actions-user">
+            <div class="btn-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
+              <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="policy_wl_domain" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
+              <a class="btn btn-sm btn-danger" data-action="delete_selected" data-id="policy_wl_domain" data-api-url='delete/domain-policy' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-striped table-condensed" id="wl_policy_domain_table"></table>
+          </div>
         </div>
         <div class="col-sm-6">
           <h4><?=$lang['user']['spamfilter_bl'];?></h4>
           <p><?=$lang['user']['spamfilter_bl_desc'];?></p>
-          <div class="table-responsive">
-            <table class="table table-striped table-condensed" id="bl_policy_domain_table"></table>
-          </div>
-          <div class="mass-actions-user">
-            <div class="btn-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
-              <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="policy_bl_domain" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
-              <a class="btn btn-sm btn-danger" data-action="delete_selected" data-id="policy_bl_domain" data-api-url='delete/domain-policy' href="#"><?=$lang['mailbox']['remove'];?></a></li>
-            </div>
-          </div>
           <form class="form-inline" data-id="add_bl_policy_domain">
             <div class="input-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
               <input type="text" class="form-control" name="object_from" placeholder="*@example.org" required>
@@ -432,6 +423,15 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               </span>
             </div>
           </form>
+          <div class="mass-actions-user">
+            <div class="btn-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
+              <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="policy_bl_domain" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
+              <a class="btn btn-sm btn-danger" data-action="delete_selected" data-id="policy_bl_domain" data-api-url='delete/domain-policy' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-striped table-condensed" id="bl_policy_domain_table"></table>
+          </div>
         </div>
       </div>
           <?php
