@@ -424,9 +424,6 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                 <div class="col-sm-6">
                   <h4><?=$lang['user']['spamfilter_wl'];?></h4>
                   <p><?=$lang['user']['spamfilter_wl_desc'];?></p>
-                  <div class="table-responsive">
-                    <table class="table table-striped table-condensed" id="wl_policy_domain_table"></table>
-                  </div>
                   <div class="mass-actions-user">
                     <div class="btn-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
                       <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="policy_wl_domain" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
@@ -441,13 +438,13 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                       </span>
                     </div>
                   </form>
+                  <div class="table-responsive">
+                    <table class="table table-striped table-condensed" id="wl_policy_domain_table"></table>
+                  </div>
                 </div>
                 <div class="col-sm-6">
                   <h4><?=$lang['user']['spamfilter_bl'];?></h4>
                   <p><?=$lang['user']['spamfilter_bl_desc'];?></p>
-                  <div class="table-responsive">
-                    <table class="table table-striped table-condensed" id="bl_policy_domain_table"></table>
-                  </div>
                   <div class="mass-actions-user">
                     <div class="btn-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
                       <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="policy_bl_domain" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
@@ -462,6 +459,9 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                       </span>
                     </div>
                   </form>
+                  <div class="table-responsive">
+                    <table class="table table-striped table-condensed" id="bl_policy_domain_table"></table>
+                  </div>
                 </div>
               </div>
             </div>
