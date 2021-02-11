@@ -22,11 +22,6 @@ while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${D
   sleep 2
 done
 
-if [[ -z "$(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e 'SELECT domain FROM domain WHERE xmpp = 1')" ]]; then
-  echo "No XMPP host configured, sleeping the sleep of the righteous, waiting for someone to wake me up..."
-  exec su-exec ejabberd tini -g -- sleep 365d
-fi
-
 # We dont want to give global write access to ejabberd in this directory
 chown -R root:root /var/www/authentication
 
@@ -89,5 +84,10 @@ for file in /hooks/*; do
 done
 
 alias ejabberdctl="su-exec ejabberd /home/ejabberd/bin/ejabberdctl --node ejabberd@${MAILCOW_HOSTNAME}"
+
+if [[ -z "$(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e 'SELECT domain FROM domain WHERE xmpp = 1')" ]]; then
+  echo "No XMPP host configured, sleeping the sleep of the righteous, waiting for someone to wake me up..."
+  exec su-exec ejabberd tini -g -- sleep 365d
+fi
 
 exec su-exec ejabberd tini -g -- /home/ejabberd/bin/ejabberdctl --node ejabberd@${MAILCOW_HOSTNAME} foreground
