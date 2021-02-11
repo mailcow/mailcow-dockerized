@@ -167,6 +167,12 @@ $MAILBOX_DEFAULT_ATTRIBUTES['pop3_access'] = true;
 // Mailbox has SMTP access by default
 $MAILBOX_DEFAULT_ATTRIBUTES['smtp_access'] = true;
 
+// Mailbox has XMPP access by default (if domain has XMPP enabled)
+$MAILBOX_DEFAULT_ATTRIBUTES['xmpp_access'] = true;
+
+// Mailbox is XMPP admin by default (bad)
+$MAILBOX_DEFAULT_ATTRIBUTES['xmpp_admin'] = false;
+
 // Mailbox receives notifications about...
 // "add_header" - mail that was put into the Junk folder
 // "reject" - mail that was rejected
