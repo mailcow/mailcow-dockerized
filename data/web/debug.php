@@ -108,7 +108,7 @@ $xmpp_status = xmpp_control('status');
                   <?php
                   if ($xmpp_status !== false) {
                   ?>
-                    <p><?=$lang['debug']['online_users'];?>: <?=$xmpp_status['onlineusers'];?></p>
+                    <p><?=$lang['debug']['online_users'];?>: <?=(empty($xmpp_status['onlineusers'])) ? '-' : $xmpp_status['onlineusers'];?></p>
                     <p><?=$lang['debug']['started_at'];?>: <span class="parse_s_ago"><?=$xmpp_status['uptimeseconds'];?></span></p>
                     <?php
                     if (!empty($xmpp_status['muc_online_rooms'])) {
