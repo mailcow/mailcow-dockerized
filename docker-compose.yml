@@ -525,7 +525,7 @@ services:
             - olefy
 
     ejabberd-mailcow:
-      image: mailcow/ejabberd:1.0
+      image: mailcow/ejabberd:1.1
       volumes:
         - ./data/conf/ejabberd/ejabberd.yml:/home/ejabberd/conf/ejabberd.yml:z
         - xmpp-vol-1:/home/ejabberd/database:z
@@ -533,6 +533,7 @@ services:
         - ./data/assets/ejabberd/sqlite:/sqlite:z
         - ./data/conf/ejabberd/autogen:/ejabberd/:z
         - mysql-socket-vol-1:/var/run/mysqld/:z
+        - ./data/assets/ssl:/ssl:ro,z
       restart: always
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
