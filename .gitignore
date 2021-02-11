@@ -54,3 +54,4 @@ update_diffs/
 docker-compose.override.yml
 refresh_images.sh
 data/conf/sogo/sogo-full.svg
+data/conf/ejabberd/autogen/*
