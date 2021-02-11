@@ -185,8 +185,9 @@ services:
       volumes:
         - ./data/conf/sogo/:/etc/sogo/:z
         - ./data/web/inc/init_db.inc.php:/init_db.inc.php:Z
-        - ./data/conf/sogo/custom-sogo.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/custom-sogo.js:z
+        - ./data/conf/sogo/custom-favicon.ico:/usr/lib/GNUstep/SOGo/WebServerResources/img/sogo.ico:z
         - ./data/conf/sogo/custom-theme.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/theme.js:z
+        - ./data/conf/sogo/custom-sogo.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/custom-sogo.js:z
         - mysql-socket-vol-1:/var/run/mysqld/:z
         - sogo-web-vol-1:/sogo_web:z
         - sogo-userdata-backup-vol-1:/sogo_backup:Z
@@ -414,6 +415,8 @@ services:
       #command: /watchdog.sh
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
+      tmpfs:
+        - /tmp
       volumes:
         - rspamd-vol-1:/var/lib/rspamd:z
         - mysql-socket-vol-1:/var/run/mysqld/:z
