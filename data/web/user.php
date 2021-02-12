@@ -212,7 +212,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
           </div>
           <div class="col-md-9 col-xs-7">
               <p><?=$mailboxdata['local_part'];?>@<b><?=$mailboxdata['domain_xmpp_prefix'];?>.<?=$mailboxdata['domain'];?></b>
-              <?php if ($mailboxdata['attributes']['xmpp_access'] == 1) { ?>
+              <?php if ($mailboxdata['attributes']['xmpp_admin'] == 1) { ?>
               <div class="label label-warning">Administrator</div>
               <?php } ?>
               </p>
