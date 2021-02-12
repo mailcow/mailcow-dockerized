@@ -489,7 +489,7 @@ for container in "${MAILCOW_CONTAINERS[@]}"; do
   docker rm -f "$container" 2> /dev/null
 done
 
-[[ ! -f data/conf/nginx/ejabberd.conf ]] && mv data/conf/nginx/ejabberd.conf data/conf/nginx/ZZZ-ejabberd.conf
+[[ -f data/conf/nginx/ejabberd.conf ]] && mv data/conf/nginx/ejabberd.conf data/conf/nginx/ZZZ-ejabberd.conf
 
 # Silently fixing remote url from andryyy to mailcow
 git remote set-url origin https://github.com/mailcow/mailcow-dockerized
