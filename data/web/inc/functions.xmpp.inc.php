@@ -180,8 +180,10 @@ function xmpp_rebuild_configs() {
 server {
   root /web;
 
-  listen 80;
-  listen [::]:80;
+  include /etc/nginx/conf.d/listen_ssl.active;
+
+  ssl_certificate /etc/ssl/mail/cert.pem;
+  ssl_certificate_key /etc/ssl/mail/key.pem;
 
   server_name *.%s %s;
 
