@@ -98,16 +98,16 @@ class mailcowCommandExecutor implements CommandExecutorInterface {
             return hash_equals(hash($scheme, $password, true), $hash);
 
           case "SMD5":
-            return verify_salted_hash($hash, $password, 'md5', 16);
+            return self::verify_salted_hash($hash, $password, 'md5', 16);
 
           case "SSHA":
-            return verify_salted_hash($hash, $password, 'sha1', 20);
+            return self::verify_salted_hash($hash, $password, 'sha1', 20);
 
           case "SSHA256":
-            return verify_salted_hash($hash, $password, 'sha256', 32);
+            return self::verify_salted_hash($hash, $password, 'sha256', 32);
 
           case "SSHA512":
-            return verify_salted_hash($hash, $password, 'sha512', 64);
+            return self::verify_salted_hash($hash, $password, 'sha512', 64);
 
           default:
             return false;

@@ -101,13 +101,13 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.70
+      image: mailcow/phpfpm:1.71
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
       volumes:
         - ./data/hooks/phpfpm:/hooks:Z
-        - ./data/web:/web:rw,z
+        - ./data/web:/web:z
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro,z
         - ./data/conf/rspamd/custom/:/rspamd_custom_maps:z
         - rspamd-vol-1:/var/lib/rspamd:z
@@ -123,6 +123,7 @@ services:
         - ./data/conf/dovecot/global_sieve_after:/global_sieve/after:z
         - ./data/assets/templates:/tpls:z
         - ./data/conf/ejabberd/autogen:/ejabberd/:z
+        - ./data/conf/nginx/:/etc/nginx/conf.d/:z
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -324,6 +325,7 @@ services:
         until ping sogo -c1 > /dev/null; do sleep 1; done &&
         until ping redis -c1 > /dev/null; do sleep 1; done &&
         until ping rspamd -c1 > /dev/null; do sleep 1; done &&
+        until ping ejabberd -c1 > /dev/null; do sleep 1; done &&
         exec nginx -g 'daemon off;'"
       environment:
         - HTTPS_PORT=${HTTPS_PORT:-443}
@@ -337,7 +339,7 @@ services:
         - ./data/web:/web:ro,z
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro,z
         - ./data/assets/ssl/:/etc/ssl/mail/:ro,z
-        - ./data/conf/nginx/:/etc/nginx/conf.d/:rw,Z
+        - ./data/conf/nginx/:/etc/nginx/conf.d/:z
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro,z
         - sogo-web-vol-1:/usr/lib/GNUstep/SOGo/:z
       ports:
@@ -376,8 +378,8 @@ services:
         - SNAT_TO_SOURCE=${SNAT_TO_SOURCE:-n}
         - SNAT6_TO_SOURCE=${SNAT6_TO_SOURCE:-n}
       volumes:
-        - ./data/web/.well-known/acme-challenge:/var/www/acme:rw,z
-        - ./data/assets/ssl:/var/lib/acme/:rw,z
+        - ./data/web/.well-known/acme-challenge:/var/www/acme:z
+        - ./data/assets/ssl:/var/lib/acme/:z
         - ./data/assets/ssl-example:/var/lib/ssl-example/:ro,Z
         - mysql-socket-vol-1:/var/run/mysqld/:z
       restart: always
@@ -525,7 +527,7 @@ services:
             - olefy
 
     ejabberd-mailcow:
-      image: mailcow/ejabberd:1.1
+      image: mailcow/ejabberd:1.2
       volumes:
         - ./data/conf/ejabberd/ejabberd.yml:/home/ejabberd/conf/ejabberd.yml:z
         - xmpp-vol-1:/home/ejabberd/database:z
