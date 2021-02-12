@@ -172,6 +172,7 @@ SOLR_PORT=127.0.0.1:18983
 REDIS_PORT=127.0.0.1:7654
 XMPP_C2S_PORT=5222
 XMPP_S2S_PORT=5269
+XMPP_HTTPS_PORT=5443
 
 # Your timezone
 # See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for a list of timezones
