@@ -140,7 +140,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
       $records[] = array(
         '_xmpp-client._tcp.' . $domain_details['xmpp_prefix'] . '.' . $domain,
         'SRV',
-        $mailcow_hostname . ' ' . array_pop(explode(':', getenv('XMPP_C22_PORT')))
+        $mailcow_hostname . ' ' . array_pop(explode(':', getenv('XMPP_C2S_PORT')))
       );
       $records[] = array(
         '_xmpp-server._tcp.' . $domain_details['xmpp_prefix'] . '.' . $domain,

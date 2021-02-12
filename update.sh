@@ -218,7 +218,7 @@ CONFIG_ARRAY=(
   "DOVECOT_MASTER_USER"
   "DOVECOT_MASTER_PASS"
   "MAILCOW_PASS_SCHEME"
-  "XMPP_C22_PORT"
+  "XMPP_C2S_PORT"
   "XMPP_S2S_PORT"
 )
 
@@ -401,9 +401,9 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# see https://mailcow.github.io/mailcow-dockerized-docs/model-passwd/' >> mailcow.conf
       echo "MAILCOW_PASS_SCHEME=BLF-CRYPT" >> mailcow.conf
   fi
-  elif [[ ${option} == "XMPP_C22_PORT" ]]; then
+  elif [[ ${option} == "XMPP_C2S_PORT" ]]; then
     if ! grep -q ${option} mailcow.conf; then
-      echo "XMPP_C22_PORT=5222" >> mailcow.conf
+      echo "XMPP_C2S_PORT=5222" >> mailcow.conf
   fi
   elif [[ ${option} == "XMPP_S2S_PORT" ]]; then
     if ! grep -q ${option} mailcow.conf; then

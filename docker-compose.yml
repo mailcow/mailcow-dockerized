@@ -146,7 +146,7 @@ services:
         - SUBMISSION_PORT=${SUBMISSION_PORT:-587}
         - SMTPS_PORT=${SMTPS_PORT:-465}
         - SMTP_PORT=${SMTP_PORT:-25}
-        - XMPP_C22_PORT=${XMPP_C22_PORT:-5222}
+        - XMPP_C2S_PORT=${XMPP_C2S_PORT:-5222}
         - XMPP_S2S_PORT=${XMPP_S2S_PORT:-5269}
         - API_KEY=${API_KEY:-invalid}
         - API_KEY_READ_ONLY=${API_KEY_READ_ONLY:-invalid}
@@ -551,7 +551,7 @@ services:
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
       ports:
-        - "${XMPP_C22_PORT:-5222}:5222"
+        - "${XMPP_C2S_PORT:-5222}:5222"
         - "${XMPP_S2S_PORT:-5269}:5269"
         - "${XMPP_HTTPS_PORT:-5443}:5443"
       networks:
