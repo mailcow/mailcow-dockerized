@@ -6,15 +6,19 @@ $(document).ready(function() {
     var started_s_ago = parseInt($(this).text(), 10);
     if (typeof started_s_ago != 'NaN') {
       var started_date = new Date((ts_now - started_s_ago) * 1000);
-      var started_local_date = started_date.toLocaleDateString(undefined, {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit"
-      });
-      $(this).text(started_local_date);
+      if (started_date instanceof Date && !isNaN(started_date)) {
+        var started_local_date = started_date.toLocaleDateString(undefined, {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit"
+        });
+        $(this).text(started_local_date);
+      } else {
+        $(this).text('-');
+      }
     }
   });
   // Parse general dates
