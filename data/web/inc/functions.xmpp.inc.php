@@ -181,6 +181,7 @@ server {
   root /web;
 
   include /etc/nginx/conf.d/listen_ssl.active;
+  include /etc/nginx/conf.d/listen_plain.active;
 
   ssl_certificate /etc/ssl/mail/cert.pem;
   ssl_certificate_key /etc/ssl/mail/key.pem;
