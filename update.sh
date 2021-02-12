@@ -220,6 +220,7 @@ CONFIG_ARRAY=(
   "MAILCOW_PASS_SCHEME"
   "XMPP_C2S_PORT"
   "XMPP_S2S_PORT"
+  "XMPP_HTTPS_PORT"
 )
 
 sed -i --follow-symlinks '$a\' mailcow.conf
@@ -409,6 +410,10 @@ for option in ${CONFIG_ARRAY[@]}; do
     if ! grep -q ${option} mailcow.conf; then
       echo "XMPP_S2S_PORT=5269" >> mailcow.conf
   fi
+  elif [[ ${option} == "XMPP_HTTPS_PORT" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "XMPP_HTTPS_PORT=5443" >> mailcow.conf
+  fi
   elif ! grep -q ${option} mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"
     echo "${option}=n" >> mailcow.conf
@@ -483,6 +488,8 @@ sleep 2
 for container in "${MAILCOW_CONTAINERS[@]}"; do
   docker rm -f "$container" 2> /dev/null
 done
+
+[[ ! -f data/conf/nginx/ejabberd.conf ]] && mv data/conf/nginx/ejabberd.conf data/conf/nginx/ZZZ-ejabberd.conf
 
 # Silently fixing remote url from andryyy to mailcow
 git remote set-url origin https://github.com/mailcow/mailcow-dockerized

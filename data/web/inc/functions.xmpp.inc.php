@@ -6,7 +6,7 @@ function xmpp_control($_action, $_data = null) {
     case 'reload':
       $curl = curl_init();
       curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
-      curl_setopt($curl, CURLOPT_URL, 'https://ejabberd:5443/api/reload_config');
+      curl_setopt($curl, CURLOPT_URL, 'http://ejabberd:5280/api/reload_config');
       curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
       curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
       curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
@@ -32,7 +32,7 @@ function xmpp_control($_action, $_data = null) {
     case 'restart':
       $curl = curl_init();
       curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
-      curl_setopt($curl, CURLOPT_URL, 'https://ejabberd:5443/api/restart');
+      curl_setopt($curl, CURLOPT_URL, 'http://ejabberd:5280/api/restart');
       curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
       curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
       curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
@@ -82,7 +82,7 @@ function xmpp_control($_action, $_data = null) {
         ) as $stat => $url) {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
-        curl_setopt($curl, CURLOPT_URL, 'https://ejabberd:5443/api/' . $url);
+        curl_setopt($curl, CURLOPT_URL, 'http://ejabberd:5280/api/' . $url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
@@ -128,10 +128,10 @@ function xmpp_rebuild_configs() {
 
     touch('/ejabberd/ejabberd_hosts.yml');
     touch('/ejabberd/ejabberd_acl.yml');
-    touch('/etc/nginx/conf.d/ejabberd.conf');
+    touch('/etc/nginx/conf.d/ZZZ-ejabberd.conf');
     $ejabberd_hosts_md5 = md5_file('/ejabberd/ejabberd_hosts.yml');
     $ejabberd_acl_md5 = md5_file('/ejabberd/ejabberd_acl.yml');
-    $ejabberd_site_md5 = md5_file('/etc/nginx/conf.d/ejabberd.conf');
+    $ejabberd_site_md5 = md5_file('/etc/nginx/conf.d/ZZZ-ejabberd.conf');
 
     if (!empty($xmpp_domains)) {
       // Handle hosts file
@@ -165,12 +165,12 @@ function xmpp_rebuild_configs() {
       fclose($acl_handle);
 
       // Handle Nginx site
-      $site_handle = @fopen('/etc/nginx/conf.d/ejabberd.conf', 'r+');
+      $site_handle = @fopen('/etc/nginx/conf.d/ZZZ-ejabberd.conf', 'r+');
       if ($site_handle !== false) {
         ftruncate($site_handle, 0);
         fclose($site_handle);
       }
-      $site_handle = fopen('/etc/nginx/conf.d/ejabberd.conf', 'w');
+      $site_handle = fopen('/etc/nginx/conf.d/ZZZ-ejabberd.conf', 'w');
       if (!$site_handle) {
         throw new Exception($lang['danger']['file_open_error']);
       }
@@ -248,7 +248,7 @@ EOF;
       );
     }
 
-    if (md5_file('/etc/nginx/conf.d/ejabberd.conf') != $ejabberd_site_md5) {
+    if (md5_file('/etc/nginx/conf.d/ZZZ-ejabberd.conf') != $ejabberd_site_md5) {
       $response = json_decode(docker('post', 'nginx-mailcow', 'exec', array("cmd" => "reload", "task" => "nginx"), 'Content-type: application/json'), true);
       if (isset($response['type']) && $response['type'] == "success") {
         $_SESSION['return'][] = array(

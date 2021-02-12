@@ -53,13 +53,11 @@ listen:
     module: ejabberd_s2s_in
     max_stanza_size: 524288
   -
-    port: 5443
+    port: EJABBERD_HTTPS
     ip: "::"
     module: ejabberd_http
     tls: true
     request_handlers:
-      /admin: ejabberd_web_admin
-      /api: mod_http_api
       /captcha: ejabberd_captcha
       /upload: mod_http_upload
       /ws: ejabberd_http_ws
@@ -69,6 +67,7 @@ listen:
     module: ejabberd_http
     request_handlers:
       /admin: ejabberd_web_admin
+      /api: mod_http_api
   -
     module: ejabberd_http
     port: 5281
@@ -161,7 +160,6 @@ modules:
   mod_fail2ban: {}
   mod_http_api: {}
   mod_http_upload:
-    put_url: https://@HOST@:5443/upload
     docroot: /var/www/upload
     custom_headers:
       "Access-Control-Allow-Origin": "https://@HOST@"
