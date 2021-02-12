@@ -443,7 +443,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
           $domain				= idn_to_ascii(strtolower(trim($_data['domain'])), 0, INTL_IDNA_VARIANT_UTS46);
           $description  = $_data['description'];
-          $xmpp_prefix  = $_data['xmpp_prefix'];
+          $xmpp_prefix = preg_replace('/[^\da-z-]/i', '', $_data['xmpp_prefix']);
           if (empty($description)) {
             $description = $domain;
           }
@@ -2115,6 +2115,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 );
                 continue;
               }
+              $xmpp_prefix = preg_replace('/[^\da-z-]/i', '', $xmpp_prefix);
               $stmt = $pdo->prepare("UPDATE `domain` SET
               `description` = :description,
               `gal` = :gal,
@@ -2167,6 +2168,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 );
                 continue;
               }
+              $xmpp_prefix = preg_replace('/[^\da-z-]/i', '', $xmpp_prefix);
               // todo: should be using api here
               $stmt = $pdo->prepare("SELECT
                   COUNT(*) AS count,
