@@ -93,7 +93,7 @@ listen:
     module: mod_mqtt
     backlog: 1000
 
-s2s_use_starttls: optional
+s2s_use_starttls: required
 c2s_protocol_options: 'TLS_OPTIONS'
 s2s_protocol_options: 'TLS_OPTIONS'
 c2s_ciphers: 'TLS_CIPHERS'
