@@ -221,6 +221,8 @@ CONFIG_ARRAY=(
   "XMPP_C2S_PORT"
   "XMPP_S2S_PORT"
   "XMPP_HTTPS_PORT"
+  "XMPP_C2S_TLS_PORT"
+  "XMPP_S2S_TLS_PORT"
 )
 
 sed -i --follow-symlinks '$a\' mailcow.conf
@@ -413,6 +415,14 @@ for option in ${CONFIG_ARRAY[@]}; do
   elif [[ ${option} == "XMPP_HTTPS_PORT" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "XMPP_HTTPS_PORT=5443" >> mailcow.conf
+  fi
+  elif [[ ${option} == "XMPP_C2S_TLS_PORT" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "XMPP_C2S_TLS_PORT=5223" >> mailcow.conf
+  fi
+  elif [[ ${option} == "XMPP_S2S_TLS_PORT" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "XMPP_S2S_TLS_PORT=5270" >> mailcow.conf
   fi
   elif ! grep -q ${option} mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"
