@@ -186,7 +186,7 @@ server {
   ssl_certificate /etc/ssl/mail/cert.pem;
   ssl_certificate_key /etc/ssl/mail/key.pem;
 
-  server_name *.%s %s;
+  server_name %s conference.%s proxy.%s pubsub.%s upload.%s;
 
   if (\$request_uri ~* "%%0A|%%0D") {
     return 403;
@@ -209,7 +209,13 @@ server {
 }
 
 EOF;
-        fwrite($site_handle, sprintf($site_config, $xmpp_domains[$domain]['xmpp_host'], $xmpp_domains[$domain]['xmpp_host']));
+        fwrite($site_handle, sprintf($site_config,
+          $xmpp_domains[$domain]['xmpp_host'],
+          $xmpp_domains[$domain]['xmpp_host'],
+          $xmpp_domains[$domain]['xmpp_host'],
+          $xmpp_domains[$domain]['xmpp_host'],
+          $xmpp_domains[$domain]['xmpp_host']
+        ));
       }
       fclose($site_handle);
     }
