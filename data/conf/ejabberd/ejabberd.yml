@@ -196,8 +196,10 @@ modules:
       - flat
       - pep
     force_node_config:
+      "eu.siacs.conversations.axolotl.*":
+        access_model: open
       ## Avoid buggy clients to make their bookmarks public
-      storage:bookmarks:
+      "storage:bookmarks":
         access_model: whitelist
   mod_push: {}
   mod_push_keepalive: {}
