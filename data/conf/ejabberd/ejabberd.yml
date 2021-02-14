@@ -29,6 +29,12 @@ define_macro:
     - "cipher_server_preference"
     - "no_compression"
 
+c2s_ciphers: 'TLS_CIPHERS'
+s2s_ciphers: 'TLS_CIPHERS'
+c2s_protocol_options: 'TLS_OPTIONS'
+s2s_protocol_options: 'TLS_OPTIONS'
+s2s_use_starttls: required
+
 new_sql_schema: true
 sql_type: sqlite
 sql_database: /sqlite/sqlite.db
@@ -66,8 +72,13 @@ listen:
     ip: "::"
     module: ejabberd_http
     request_handlers:
-      /admin: ejabberd_web_admin
       /api: mod_http_api
+  -
+    port: 5282
+    ip: "::"
+    module: ejabberd_http
+    request_handlers:
+      /xmpp: ejabberd_web_admin
   -
     module: ejabberd_http
     port: 5281
@@ -78,8 +89,6 @@ listen:
     ip: "::"
     module: mod_mqtt
     backlog: 1000
-
-s2s_use_starttls: optional
 
 acme:
   auto: true
