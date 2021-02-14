@@ -531,6 +531,7 @@
         "xmpp_access_info": "XMPP måste aktiveras på den här domänen.",
         "xmpp_admin": "XMPP Administratör",
         "xmpp_admin_info": "<b>Varning:</b> Befodrar en användare till XMPP-administratör på den här domänen.",
+        "xmpp_example_jid": "<b>Exempel JID</b> (Använd samma lösenord som på postlådan)",
         "generate": "generera",
         "grant_types": "Grant-typer",
         "hostname": "Värdnamn",
