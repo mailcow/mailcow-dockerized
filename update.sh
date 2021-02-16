@@ -421,6 +421,7 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# You can understand this as server_name directive in Nginx.' >> mailcow.conf
       echo '# Comma separated list without spaces! Example: ADDITIONAL_SERVER_NAMES=a.b.c,d.e.f' >> mailcow.conf
       echo 'ADDITIONAL_SERVER_NAMES=' >> mailcow.conf
+    fi
   elif [[ ${option} == "XMPP_HTTPS_PORT" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "XMPP_HTTPS_PORT=5443" >> mailcow.conf
