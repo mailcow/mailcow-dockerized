@@ -527,7 +527,7 @@ services:
             - olefy
 
     ejabberd-mailcow:
-      image: mailcow/ejabberd:1.3
+      image: mailcow/ejabberd:1.4
       volumes:
         - ./data/conf/ejabberd/ejabberd.yml:/home/ejabberd/conf/ejabberd.yml:z
         - xmpp-vol-1:/home/ejabberd/database:z
