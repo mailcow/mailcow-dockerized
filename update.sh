@@ -221,6 +221,7 @@ CONFIG_ARRAY=(
   "XMPP_C2S_PORT"
   "XMPP_S2S_PORT"
   "XMPP_HTTPS_PORT"
+  "ADDITIONAL_SERVER_NAMES"
 )
 
 sed -i --follow-symlinks '$a\' mailcow.conf
@@ -410,6 +411,16 @@ for option in ${CONFIG_ARRAY[@]}; do
     if ! grep -q ${option} mailcow.conf; then
       echo "XMPP_S2S_PORT=5269" >> mailcow.conf
   fi
+  elif [[ ${option} == "ADDITIONAL_SERVER_NAMES" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo '# Additional server names for mailcow UI' >> mailcow.conf
+      echo '#' >> mailcow.conf
+      echo '# Specify alternative addresses for the mailcow UI to respond to' >> mailcow.conf
+      echo '# This is useful when you set mail.* as ADDITIONAL_SAN and want to make sure mail.maildomain.com will always point to the mailcow UI.' >> mailcow.conf
+      echo '# If the server name does not match a known site, Nginx decides by best-guess and may redirect users to the wrong web root.' >> mailcow.conf
+      echo '# You can understand this as server_name directive in Nginx.' >> mailcow.conf
+      echo '# Comma separated list without spaces! Example: ADDITIONAL_SERVER_NAMES=a.b.c,d.e.f' >> mailcow.conf
+      echo 'ADDITIONAL_SERVER_NAMES=' >> mailcow.conf
   elif [[ ${option} == "XMPP_HTTPS_PORT" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "XMPP_HTTPS_PORT=5443" >> mailcow.conf
