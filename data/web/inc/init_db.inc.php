@@ -1234,6 +1234,7 @@ function init_db_schema() {
 }
 if (php_sapi_name() == "cli") {
   include '/web/inc/vars.inc.php';
+  include '/web/inc/functions.docker.inc.php';
   include '/web/inc/functions.xmpp.inc.php';
   // $now = new DateTime();
   // $mins = $now->getOffset() / 60;
