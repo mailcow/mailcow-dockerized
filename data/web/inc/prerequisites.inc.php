@@ -67,6 +67,7 @@ $WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/ro
 $WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/googleHardware.pem');
 $WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/microsoftTpmCollection.pem');
 $WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/huawei.pem');
+$WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/trustkey.pem');
 
 // Redis
 $redis = new Redis();
