@@ -28,8 +28,9 @@
         "unlimited_quota": "Obegränsad kvot för postlådor",
         "domain_desc": "Ändra domänbeskrivningen",
         "xmpp_admin": "Ändra XMPP administratörs-status på en användare",
-        "xmpp_access": "Ändra XMPP-åtkomsten på en användare",
-        "xmpp_prefix": "Ändra XMPP subdomän"
+        "xmpp_domain_access": "Ändra XMPP-åtkomsten på en domän",
+        "xmpp_mailbox_access": "Ändra XMPP-åtkomsten på en användare",
+        "xmpp_prefix": "Ändra XMPP-subdomän/prefix"
     },
     "add": {
         "activate_filter_warn": "Alla andra filter av den här typen kommer inaktiveras om det här skriptet markeras som aktivt.",
