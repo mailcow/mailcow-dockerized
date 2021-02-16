@@ -197,7 +197,8 @@ modules:
     access_mam:
       - allow
     default_room_options:
-      mam: true
+      mam: false
+      persistent: false
   mod_muc_admin: {}
   mod_offline:
     access_max_user_messages: max_user_offline_messages
