@@ -326,7 +326,7 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# Solr is a prone to run OOM on large systems and should be monitored. Unmonitored Solr setups are not recommended.' >> mailcow.conf
       echo '# Solr will refuse to start with total system memory below or equal to 2 GB.' >> mailcow.conf
       echo "SOLR_HEAP=1024" >> mailcow.conf
-  fi
+    fi
   elif [[ ${option} == "SKIP_SOLR" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
@@ -354,13 +354,13 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# MAILDIR_SUB defines a path in a users virtual home to keep the maildir in. Leave empty for updated setups.' >> mailcow.conf
       echo "#MAILDIR_SUB=Maildir" >> mailcow.conf
       echo "MAILDIR_SUB=" >> mailcow.conf
-  fi
+    fi
   elif [[ ${option} == "WATCHDOG_NOTIFY_BAN" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo '# Notify about banned IP. Includes whois lookup.' >> mailcow.conf
       echo "WATCHDOG_NOTIFY_BAN=y" >> mailcow.conf
-  fi
+    fi
   elif [[ ${option} == "WATCHDOG_EXTERNAL_CHECKS" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
@@ -368,18 +368,18 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# No data is collected. Opt-in and anonymous.' >> mailcow.conf
       echo '# Will only work with unmodified mailcow setups.' >> mailcow.conf
       echo "WATCHDOG_EXTERNAL_CHECKS=n" >> mailcow.conf
-  fi
+    fi
   elif [[ ${option} == "SOGO_EXPIRE_SESSION" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo '# SOGo session timeout in minutes' >> mailcow.conf
       echo "SOGO_EXPIRE_SESSION=480" >> mailcow.conf
-  fi
+    fi
   elif [[ ${option} == "REDIS_PORT" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo "REDIS_PORT=127.0.0.1:7654" >> mailcow.conf
-  fi
+    fi
   elif [[ ${option} == "DOVECOT_MASTER_USER" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
@@ -388,13 +388,13 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# User expands to DOVECOT_MASTER_USER@mailcow.local' >> mailcow.conf
       echo '# LEAVE EMPTY IF UNSURE' >> mailcow.conf
       echo "DOVECOT_MASTER_USER=" >> mailcow.conf
-  fi
+    fi
   elif [[ ${option} == "DOVECOT_MASTER_PASS" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo '# LEAVE EMPTY IF UNSURE' >> mailcow.conf
       echo "DOVECOT_MASTER_PASS=" >> mailcow.conf
-  fi
+    fi
   elif [[ ${option} == "MAILCOW_PASS_SCHEME" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
@@ -402,15 +402,15 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# Only certain password hash algorithm are supported. For a fully list of supported schemes,' >> mailcow.conf
       echo '# see https://mailcow.github.io/mailcow-dockerized-docs/model-passwd/' >> mailcow.conf
       echo "MAILCOW_PASS_SCHEME=BLF-CRYPT" >> mailcow.conf
-  fi
+    fi
   elif [[ ${option} == "XMPP_C2S_PORT" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "XMPP_C2S_PORT=5222" >> mailcow.conf
-  fi
+    fi
   elif [[ ${option} == "XMPP_S2S_PORT" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "XMPP_S2S_PORT=5269" >> mailcow.conf
-  fi
+    fi
   elif [[ ${option} == "ADDITIONAL_SERVER_NAMES" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo '# Additional server names for mailcow UI' >> mailcow.conf
@@ -425,7 +425,7 @@ for option in ${CONFIG_ARRAY[@]}; do
   elif [[ ${option} == "XMPP_HTTPS_PORT" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "XMPP_HTTPS_PORT=5443" >> mailcow.conf
-  fi
+    fi
   elif ! grep -q ${option} mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"
     echo "${option}=n" >> mailcow.conf
