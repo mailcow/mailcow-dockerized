@@ -28,8 +28,9 @@
         "unlimited_quota": "Unendliche Quota für Mailboxen",
         "domain_desc": "Domainbeschreibung ändern",
         "xmpp_admin": "Benutzer zum XMPP-Administrator ernennen",
-        "xmpp_access": "XMPP-Zugang eines Benutzers einstellen",
-        "xmpp_prefix": "XMPP-Subdomain ändern"
+        "xmpp_domain_access": "XMPP-Zugang einer Domain konfigurieren",
+        "xmpp_mailbox_access": "XMPP-Zugang eines Benutzers einstellen",
+        "xmpp_prefix": "XMPP-Subdomain/Prefix ändern"
     },
     "add": {
         "activate_filter_warn": "Alle anderen Filter diesen Typs werden deaktiviert, falls dieses Script aktiv markiert wird.",

@@ -27,9 +27,10 @@
         "tls_policy": "TLS policy",
         "unlimited_quota": "Unlimited quota for mailboxes",
         "domain_desc": "Change domain description",
-        "xmpp_admin": "Change XMPP admin status of a user",
-        "xmpp_access": "Change XMPP access for a user",
-        "xmpp_prefix": "Change XMPP subdomain"
+        "xmpp_admin": "Promote XMPP user to administrator",
+        "xmpp_domain_access": "Configure XMPP domain access",
+        "xmpp_mailbox_access": "Configure XMPP user access",
+        "xmpp_prefix": "Change XMPP subdomain (prefix)"
     },
     "add": {
         "activate_filter_warn": "All other filters will be deactivated, when active is checked.",
