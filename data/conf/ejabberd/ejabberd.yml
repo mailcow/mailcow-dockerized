@@ -147,8 +147,8 @@ shaper:
 shaper_rules:
   max_user_sessions: 10
   max_user_offline_messages:
-    5000: admin
-    100: all
+    1000: admin
+    1000: all
   c2s_shaper:
     none: admin
     normal: all
@@ -168,16 +168,24 @@ modules:
   mod_disco: {}
   mod_fail2ban: {}
   mod_http_api: {}
+  mod_http_upload_quota:
+    max_days: 30
   mod_http_upload:
     docroot: /var/www/upload
     custom_headers:
       "Access-Control-Allow-Origin": "https://@HOST@"
       "Access-Control-Allow-Methods": "GET,HEAD,PUT,OPTIONS"
       "Access-Control-Allow-Headers": "Content-Type"
+    thumbnail: true
+    jid_in_url: node
+    file_mode: "0600"
+    dir_mode: "0700"
   mod_last: {}
   mod_mam:
     clear_archive_on_room_destroy: true
-    default: roster
+    default: never
+    compress_xml: true
+    request_activates_archiving: true
   mod_mqtt: {}
   mod_muc:
     access:
