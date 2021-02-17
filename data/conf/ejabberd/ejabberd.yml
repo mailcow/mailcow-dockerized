@@ -82,6 +82,7 @@ listen:
   -
     module: ejabberd_http
     port: 5281
+    ip: "::"
     request_handlers:
       /.well-known/acme-challenge: ejabberd_acme
   -
