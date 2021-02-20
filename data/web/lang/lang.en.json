@@ -799,6 +799,7 @@
         "danger": "Danger",
         "deliver_inbox": "Deliver to inbox",
         "disabled_by_config": "The current system configuration disables the quarantine functionality. Please set \"retentions per mailbox\" and a \"maximum size\" for quarantine elements.",
+        "settings_info": "Maximum amount of elements to be quarantined: %s<br>Maximum email size: %s MiB",
         "download_eml": "Download (.eml)",
         "empty": "No results",
         "high_danger": "High",
