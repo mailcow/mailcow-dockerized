@@ -79,7 +79,9 @@ $DETECT_LANGUAGE = true;
 $DEFAULT_LANG = 'en';
 
 // Available languages
-$AVAILABLE_LANGUAGES = array('ca', 'cs', 'de', 'en', 'es', 'fi', 'fr', 'hu', 'it', 'ko', 'lv', 'nl', 'pl', 'pt', 'ro', 'ru', 'sk', 'sv', 'zh');
+// Use (ISO 639-1) Code standard 
+// See https://www.loc.gov/standards/iso639-2/php/code_list.php
+$AVAILABLE_LANGUAGES = array('ca', 'cs', 'da', 'de', 'en', 'es', 'fi', 'fr', 'hu', 'it', 'ko', 'lv', 'nl', 'pl', 'pt', 'ro', 'ru', 'sk', 'sv', 'zh');
 
 // Change theme (default: lumen)
 // Needs to be one of those: cerulean, cosmo, cyborg, darkly, flatly, journal, lumen, paper, readable, sandstone,
