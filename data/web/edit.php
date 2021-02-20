@@ -352,14 +352,6 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                 </div>
               </div>
               <hr>
-              <div class="form-group" data-acl="<?=$_SESSION['acl']['xmpp_mailbox_access'];?>">
-                <div class="col-sm-offset-2 col-sm-10">
-                  <div class="checkbox">
-                    <label><input type="checkbox" value="1" name="xmpp" <?=(isset($result['xmpp']) && $result['xmpp']=="1") ? "checked" : null;?>> <?=$lang['edit']['xmpp'];?></label>
-                    <small class="help-block"><?=$lang['edit']['xmpp_info'];?></small>
-                  </div>
-                </div>
-              </div>
               <div class="form-group" data-acl="<?=$_SESSION['acl']['xmpp_prefix'];?>">
                 <label class="control-label col-sm-2" for="xmpp_prefix"><?=$lang['edit']['xmpp_prefix'];?></label>
                 <div class="col-md-10">
@@ -369,6 +361,14 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                   </div>
                   <small class="help-block"><?=sprintf($lang['edit']['xmpp_prefix_info'], getenv('MAILCOW_HOSTNAME'));?></small>
                   <p><?=$lang['edit']['xmpp_example_jid'];?>: <code>username@<span class="xmpp-prefix-preview"></span>.<?=htmlspecialchars($domain, ENT_QUOTES, 'UTF-8');?></code></p>
+                </div>
+              </div>
+              <div class="form-group" data-acl="<?=$_SESSION['acl']['xmpp_mailbox_access'];?>">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <div class="checkbox">
+                    <label><input type="checkbox" value="1" name="xmpp" <?=(isset($result['xmpp']) && $result['xmpp']=="1") ? "checked" : null;?>> <?=$lang['edit']['xmpp'];?></label>
+                    <small class="help-block"><?=$lang['edit']['xmpp_info'];?></small>
+                  </div>
                 </div>
               </div>
               <hr>
