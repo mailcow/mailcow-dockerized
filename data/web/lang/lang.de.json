@@ -798,6 +798,7 @@
         "danger": "Gefahr",
         "deliver_inbox": "In Posteingang zustellen",
         "disabled_by_config": "Die derzeitige Konfiguration deaktiviert die Funktion des Quarantäne-Systems. Zur Funktion muss eine Anzahl an Rückhaltungen pro Mailbox sowie ein Limit für die maximale Größe pro Element definiert werden.",
+        "settings_info": "Maximale Anzahl der zurückgehaltenen E-Mails: %s<br>Maximale Größe einer zu speichernden E-Mail: %s MiB",
         "download_eml": "Herunterladen (.eml)",
         "empty": "Keine Einträge",
         "high_danger": "Hoch",
