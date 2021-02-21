@@ -469,7 +469,7 @@
         "online_users": "Gebruikers online",
         "size": "Grootte",
         "started_at": "Opgestart op",
-        "solr_status": "Status van Solr",
+        "solr_status": "Solr-status",
         "uptime": "Uptime",
         "started_on": "Gestart op",
         "static_logs": "Statische logs",
