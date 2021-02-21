@@ -151,6 +151,7 @@
         "ban_list_info": "Se en lista över banlysta IP-adresser nedan: <b>nätverk (återstående banlysningstid) - [åtgärd]</b>.<br />IP-adresser som står i kö för att tas bort från den aktiva banlysningslistan tas bort inom några sekunder.<br />Röd markering indikerar en aktiv permanent banlysning pga. en svartlistning.",
         "change_logo": "Byt logotyp",
         "configuration": "Konfiguration",
+        "convert_html_to_text": "Konventera HTML till oformaterad text",
         "credentials_transport_warning": "<b>Varning</b>: När en ny reläserver läggs till uppdateras uppgifterna för alla reläservrar som hör till samma värd.",
         "customer_id": "Kundnummer",
         "customize": "Anpassa gränssnittet",
@@ -202,6 +203,7 @@
         "hash_remove_info": "Ta bort kontrollsumman för hastighetsbegränsningen. Det kommer att återställa räknaren helt och hållet.<br>\r\n Varje kontrollsumma är unikt med en induviduell färg.",
         "help_text": "Hjälptext på inloggningssidan (HTML är tillåtet)",
         "host": "Värd",
+        "html": "HTML",
         "import": "Importera",
         "import_private_key": "Importera en privatnyckel",
         "in_use_by": "Används av",
@@ -230,6 +232,7 @@
         "oauth2_redirect_uri": "omdirigerings URI",
         "oauth2_renew_secret": "Generera ny klienthemlighet",
         "oauth2_revoke_tokens": "Återkalla alla klientnycklar",
+        "optional": "Valfri",
         "password": "Lösenord",
         "password_repeat": "Lösenord (igen)",
         "priority": "Prioritet",
@@ -798,6 +801,7 @@
         "danger": "Fara",
         "deliver_inbox": "Leverera till inboxen",
         "disabled_by_config": "Med nuvarande konfigurationen är karantänfunktionen inaktiverad. För att aktivera funktionen behöver inställningen för antal meddelanden att förvara i karantän, och storleksgräns per meddelanden i karantän anges.",
+        "settings_info": "Maximalt antal e-postmeddelanden som placeras i karantän: %s<br>Maximal storlek på e-postmeddelanden som sparas: %s MiB",
         "download_eml": "Ladda ner (.eml)",
         "empty": "Inga resultat",
         "high_danger": "Hög",
@@ -922,7 +926,10 @@
         "verified_totp_login": "Verifierad TOTP inloggning",
         "verified_u2f_login": "Verifierad U2F inloggning",
         "verified_fido2_login": "Verifierad FIDO2 inloggning",
-        "verified_yotp_login": "Verifierad Yubico OTP inloggning"
+        "verified_yotp_login": "Verifierad Yubico OTP inloggning",
+        "xmpp_restarted": "XMPP-tjänsten har startat om",
+        "xmpp_reloaded": "XMPP-tjänsten har laddats om",
+        "xmpp_maps_updated": "XMPP-kopplingen har aktiverats"
     },
     "tfa": {
         "api_register": "%s använder Yubico Moln-API. Vänligen skaffa en API-nyckel för din nyckel <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">här</a>",
@@ -942,6 +949,7 @@
         "set_tfa": "Metod för tvåfaktorsautentisering",
         "start_u2f_validation": "Startar validering",
         "tfa": "Tvåfaktorsautentisering",
+        "tfa_token_invalid": "TFA nyckeln är ogiltig!",
         "totp": "Tidsbaserad OTP (Google Authenticator, Authy, mm)",
         "u2f": "U2F-autentisering",
         "waiting_usb_auth": "<i>Väntar på USB-enhet...</i><br><br>Tryck på knappen på USB-enheten nu.",
@@ -960,10 +968,7 @@
         "start_fido2_validation": "Starta FIDO2 verifiering",
         "fido2_auth": "Loggain med FIDO2",
         "fido2_success": "Enheten har registrerats",
-        "fido2_validation_failed": "Verifiering misslyckades",
-        "xmpp_restarted": "XMPP-tjänsten startades om",
-        "xmpp_reloaded": "XMPP-tjänsten laddades om",
-        "xmpp_maps_updated": "XMPP-kopplingen uppdaterades"
+        "fido2_validation_failed": "Verifiering misslyckades"
     },
     "user": {
         "action": "Åtgärd",
