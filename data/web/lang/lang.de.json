@@ -959,7 +959,7 @@
     "fido2": {
         "set_fn": "Benutzerfreundlichen Namen konfigurieren",
         "fn": "Benutzerfreundlicher Name",
-        "rename": "umbenennen",
+        "rename": "Umbenennen",
         "confirm": "Bestätigen",
         "register_status": "Registrierungsstatus",
         "known_ids": "Bekannte IDs",

@@ -957,7 +957,7 @@
     "fido2": {
         "set_fn": "Set friendly name",
         "fn": "Friendly name",
-        "rename": "rename",
+        "rename": "Rename",
         "confirm": "Confirm",
         "register_status": "Registration status",
         "known_ids": "Known IDs",
