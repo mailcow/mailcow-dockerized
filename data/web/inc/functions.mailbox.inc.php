@@ -2361,19 +2361,19 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
+            if ((($is_now['quota_used'] / 1048576) + $quota_m) > $DomainData['quota']) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => array('mailbox_quota_left_exceeded', ($is_now['max_new_quota'] / 1048576))
+              );
+              continue;
+            }
             if ($quota_m > $DomainData['maxquota']) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
                 'msg' => array('mailbox_quota_exceeded', $DomainData['maxquota'])
-              );
-              continue;
-            }
-            if (((($is_now['quota_used'] / 1048576) - $quota_m) + $quota_m) > $DomainData['quota']) {
-              $_SESSION['return'][] = array(
-                'type' => 'danger',
-                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                'msg' => array('mailbox_quota_left_exceeded', ($is_now['max_new_quota'] / 1048576))
               );
               continue;
             }
