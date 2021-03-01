@@ -46,8 +46,7 @@ get_ipv6(){
   local IPV6=
   local IPV6_SRCS=
   local TRY=
-  IPV6_SRCS[0]="ip6.korves.net"
-  IPV6_SRCS[1]="ip6.mailcow.email"
+  IPV6_SRCS[0]="ip6.mailcow.email"
   until [[ ! -z ${IPV6} ]] || [[ ${TRY} -ge 10 ]]; do
     IPV6=$(curl --connect-timeout 3 -m 10 -L6s ${IPV6_SRCS[$RANDOM % ${#IPV6_SRCS[@]} ]} | grep "^\([0-9a-fA-F]\{0,4\}:\)\{1,7\}[0-9a-fA-F]\{0,4\}$")
     [[ ! -z ${TRY} ]] && sleep 1
