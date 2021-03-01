@@ -447,12 +447,12 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           if (empty($description)) {
             $description = $domain;
           }
-          $aliases			= $_data['aliases'];
-          $mailboxes    = $_data['mailboxes'];
-          $defquota			= $_data['defquota'];
-          $maxquota			= $_data['maxquota'];
-          $restart_sogo = $_data['restart_sogo'];
-          $quota				= $_data['quota'];
+          $aliases			= (int)$_data['aliases'];
+          $mailboxes    = (int)$_data['mailboxes'];
+          $defquota			= (int)$_data['defquota'];
+          $maxquota			= (int)$_data['maxquota'];
+          $restart_sogo = (int)$_data['restart_sogo'];
+          $quota				= (int)$_data['quota'];
           if ($defquota > $maxquota) {
             $_SESSION['return'][] = array(
                 'type' => 'danger',
