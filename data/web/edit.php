@@ -356,7 +356,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                 <label class="control-label col-sm-2" for="xmpp_prefix"><?=$lang['edit']['xmpp_prefix'];?></label>
                 <div class="col-md-10">
                   <div class="input-group">
-                    <input type="text" class="form-control" id="xmpp-prefix" name="xmpp_prefix" value="<?=htmlspecialchars($result['xmpp_prefix'], ENT_QUOTES, 'UTF-8');?>" required>
+                    <input type="text" class="form-control" id="xmpp-prefix" name="xmpp_prefix" value="<?=(!empty($result['xmpp_prefix'])) ? htmlspecialchars($result['xmpp_prefix'], ENT_QUOTES, 'UTF-8') : 'im';?>" required>
                     <span class="input-group-addon">.<?=htmlspecialchars($domain, ENT_QUOTES, 'UTF-8');?></span>
                   </div>
                   <small class="help-block"><?=sprintf($lang['edit']['xmpp_prefix_info'], getenv('MAILCOW_HOSTNAME'));?></small>
