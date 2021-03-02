@@ -1,4 +1,4 @@
-/* -*- Mode: javascript; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* EXAMPLE - EXAMPLE - EXAMPLE - EXAMPLE - EXAMPLE - EXAMPLE - EXAMPLE
 
 (function() {
   'use strict';
@@ -84,3 +84,5 @@
     $mdThemingProvider.generateThemesOnDemand(false);
   }
 })();
+
+*/
