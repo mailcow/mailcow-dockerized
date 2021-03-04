@@ -3303,7 +3303,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $aliasdata['domain'] = $row['domain'];
           $aliasdata['goto'] = $row['goto'];
           $aliasdata['address'] = $row['address'];
-          (!filter_var($aliasdata['address'], FILTER_VALIDATE_EMAIL)) ? $aliasdata['is_catch_all'] = 1 : $aliasdata['is_catch_all'] = 0;
           $aliasdata['active'] = $row['active'];
           $aliasdata['active_int'] = $row['active'];
           $aliasdata['sogo_visible'] = $row['sogo_visible'];
@@ -3312,6 +3311,13 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $aliasdata['is_regex_int'] = $row['is_regex'];
           $aliasdata['created'] = $row['created'];
           $aliasdata['modified'] = $row['modified'];
+
+          if (!$aliasdata['is_regex'] && !filter_var($aliasdata['address'], FILTER_VALIDATE_EMAIL)) {
+            $aliasdata['is_catch_all'] = 1;
+          } else {
+            $aliasdata['is_catch_all'] = 0;
+          }
+
           if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $aliasdata['domain'])) {
             return false;
           }
