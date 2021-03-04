@@ -745,7 +745,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
-            if ((!filter_var($address, FILTER_VALIDATE_EMAIL) === true) && !empty($local_part)) {
+            if ($is_regex == false && (!filter_var($address, FILTER_VALIDATE_EMAIL) === true) && !empty($local_part)) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -763,7 +763,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             }
             $stmt = $pdo->prepare("INSERT INTO `alias` (`address`, `public_comment`, `private_comment`, `goto`, `domain`, `sogo_visible`, `is_regex`, `active`)
               VALUES (:address, :public_comment, :private_comment, :goto, :domain, :sogo_visible, :is_regex, :active)");
-            if (!filter_var($address, FILTER_VALIDATE_EMAIL) === true) {
+            if (!$is_regex && !filter_var($address, FILTER_VALIDATE_EMAIL) === true) {
               $stmt->execute(array(
                 ':address' => '@'.$domain,
                 ':public_comment' => $public_comment,
