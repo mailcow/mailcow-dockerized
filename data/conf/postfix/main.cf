@@ -153,6 +153,7 @@ smtpd_tls_security_level = may
 tls_preempt_cipherlist = yes
 tls_ssl_options = NO_COMPRESSION, NO_RENEGOTIATION
 virtual_alias_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_alias_maps.cf,
+  proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_alias_maps_regexp.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_resource_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_spamalias_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_alias_domain_maps.cf
@@ -198,4 +199,6 @@ parent_domain_matches_subdomains = debug_peer_list,fast_flush_domains,mynetworks
 
 # DO NOT EDIT ANYTHING BELOW #
 # User overrides #
+
+myhostname = host.mailcow.local
 

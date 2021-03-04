@@ -320,6 +320,13 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
           </div>
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
+              <div class="checkbox">
+              <label><input type="checkbox" value="1" name="is_regex"> <?=$lang['add']['is_regex'];?></label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
               <button class="btn btn-default" data-action="add_item" data-id="add_alias" data-api-url='add/alias' data-api-attr='{}' href="#"><?=$lang['admin']['add'];?></button>
             </div>
           </div>

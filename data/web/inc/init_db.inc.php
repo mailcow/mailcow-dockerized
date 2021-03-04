@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "08022021_1000";
+    $db_version = "01032021_1001";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -179,7 +179,8 @@ function init_db_schema() {
           "private_comment" => "TEXT",
           "public_comment" => "TEXT",
           "sogo_visible" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
+          "active" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "is_regex" => "TINYINT(1) NOT NULL DEFAULT '0'"
         ),
         "keys" => array(
           "primary" => array(
