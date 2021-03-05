@@ -80,6 +80,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                 </div>
               </div>
             </div>
+           <?php if (getenv('ENABLE_REGEX_ALIAS') == "y") { ?>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
                 <div class="checkbox">
@@ -87,6 +88,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                 </div>
               </div>
             </div>
+            <?php } ?>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
                 <button class="btn btn-success" data-action="edit_selected" data-id="editalias" data-item="<?=htmlspecialchars($alias);?>" data-api-url='edit/alias' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></button>
