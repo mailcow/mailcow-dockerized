@@ -1381,7 +1381,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
         ?>
         <hr>
         <span class="anchor" id="<?=$rspamd_regex_map;?>"></span>
-        <form class="form-horizontal" data-id="<?=$rspamd_regex_map;?>" role="form" method="post">
+        <form class="form-horizontal" data-cached-form="false" data-id="<?=$rspamd_regex_map;?>" role="form" method="post">
           <div class="form-group">
             <label class="control-label col-sm-3" for="<?=$rspamd_regex_map;?>"><?=$rspamd_regex_desc;?><br><small><?=$rspamd_regex_map;?></small></label>
             <div class="col-sm-9">
