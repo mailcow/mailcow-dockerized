@@ -235,7 +235,12 @@ function domain_admin($_action, $_data = null) {
               );
               continue;
             }
-            $password_hashed = hash_password($password);
+            if (preg_match('/^{(ARGON2I|ARGON2ID|BLF-CRYPT|CLEAR|CLEARTEXT|CRYPT|DES-CRYPT|LDAP-MD5|MD5|MD5-CRYPT|PBKDF2|PLAIN|PLAIN-MD4|PLAIN-MD5|PLAIN-TRUNC|PLAIN-TRUNC|SHA|SHA1|SHA256|SHA256-CRYPT|SHA512|SHA512-CRYPT|SMD5|SSHA|SSHA256|SSHA512)}/i', $password)) {
+              $password_hashed = $password;
+            }
+            else {
+              $password_hashed = hash_password($password);
+            }
             $stmt = $pdo->prepare("UPDATE `admin` SET `username` = :username_new, `active` = :active, `password` = :password_hashed WHERE `username` = :username");
             $stmt->execute(array(
               ':password_hashed' => $password_hashed,
