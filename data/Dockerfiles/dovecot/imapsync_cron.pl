@@ -127,6 +127,7 @@ while ($row = $sth->fetchrow_arrayref()) {
   my $generated_cmds = [ "/usr/local/bin/imapsync",
   "--tmpdir", "/tmp",
   "--nofoldersizes",
+  "--addheader",
   ($timeout1 gt "0" ? () : ('--timeout1', $timeout1)),
   ($timeout2 gt "0" ? () : ('--timeout2', $timeout2)),
   ($exclude eq "" ? () : ("--exclude", $exclude)),
