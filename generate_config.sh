@@ -279,6 +279,9 @@ USE_WATCHDOG=y
 # Notify about banned IP (includes whois lookup)
 WATCHDOG_NOTIFY_BAN=n
 
+# Subject for watchdog mails. Defaults to "Watchdog ALERT" followed by the error message.
+#WATCHDOG_SUBJECT=
+
 # Checks if mailcow is an open relay. Requires a SAL. More checks will follow.
 # https://www.servercow.de/mailcow?lang=en
 # https://www.servercow.de/mailcow?lang=de

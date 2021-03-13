@@ -191,6 +191,7 @@ CONFIG_ARRAY=(
   "WATCHDOG_NOTIFY_EMAIL"
   "WATCHDOG_NOTIFY_BAN"
   "WATCHDOG_EXTERNAL_CHECKS"
+  "WATCHDOG_SUBJECT"
   "SKIP_CLAMD"
   "SKIP_IP_CHECK"
   "ADDITIONAL_SAN"
@@ -360,6 +361,12 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo '# Notify about banned IP. Includes whois lookup.' >> mailcow.conf
       echo "WATCHDOG_NOTIFY_BAN=y" >> mailcow.conf
+    fi
+  elif [[ ${option} == "WATCHDOG_SUBJECT" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Subject for watchdog mails. Defaults to "Watchdog ALERT" followed by the error message.' >> mailcow.conf
+      echo "#WATCHDOG_SUBJECT=" >> mailcow.conf
     fi
   elif [[ ${option} == "WATCHDOG_EXTERNAL_CHECKS" ]]; then
     if ! grep -q ${option} mailcow.conf; then

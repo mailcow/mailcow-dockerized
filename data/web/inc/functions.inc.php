@@ -88,23 +88,29 @@ function hash_password($password) {
   // in case default pass scheme is not defined, falling back to BLF-CRYPT.
   global $default_pass_scheme;
   $pw_hash = NULL;
-  switch (strtoupper($default_pass_scheme)) {
-    case "SSHA":
-      $salt_str = bin2hex(openssl_random_pseudo_bytes(8));
-      $pw_hash = "{SSHA}".base64_encode(hash('sha1', $password . $salt_str, true) . $salt_str);
-      break;
-    case "SSHA256":
-      $salt_str = bin2hex(openssl_random_pseudo_bytes(8));
-      $pw_hash = "{SSHA256}".base64_encode(hash('sha256', $password . $salt_str, true) . $salt_str);
-      break;
-    case "SSHA512":
-      $salt_str = bin2hex(openssl_random_pseudo_bytes(8));
-      $pw_hash = "{SSHA512}".base64_encode(hash('sha512', $password . $salt_str, true) . $salt_str);
-      break;
-    case "BLF-CRYPT":
-    default:
-      $pw_hash = "{BLF-CRYPT}" . password_hash($password, PASSWORD_BCRYPT);
-      break;
+  // support pre-hashed passwords
+  if (preg_match('/^{(ARGON2I|ARGON2ID|BLF-CRYPT|CLEAR|CLEARTEXT|CRYPT|DES-CRYPT|LDAP-MD5|MD5|MD5-CRYPT|PBKDF2|PLAIN|PLAIN-MD4|PLAIN-MD5|PLAIN-TRUNC|PLAIN-TRUNC|SHA|SHA1|SHA256|SHA256-CRYPT|SHA512|SHA512-CRYPT|SMD5|SSHA|SSHA256|SSHA512)}/i', $password)) {
+    $pw_hash = $password;
+  }
+  else {
+    switch (strtoupper($default_pass_scheme)) {
+      case "SSHA":
+        $salt_str = bin2hex(openssl_random_pseudo_bytes(8));
+        $pw_hash = "{SSHA}".base64_encode(hash('sha1', $password . $salt_str, true) . $salt_str);
+        break;
+      case "SSHA256":
+        $salt_str = bin2hex(openssl_random_pseudo_bytes(8));
+        $pw_hash = "{SSHA256}".base64_encode(hash('sha256', $password . $salt_str, true) . $salt_str);
+        break;
+      case "SSHA512":
+        $salt_str = bin2hex(openssl_random_pseudo_bytes(8));
+        $pw_hash = "{SSHA512}".base64_encode(hash('sha512', $password . $salt_str, true) . $salt_str);
+        break;
+      case "BLF-CRYPT":
+      default:
+        $pw_hash = "{BLF-CRYPT}" . password_hash($password, PASSWORD_BCRYPT);
+        break;
+    }
   }
   return $pw_hash;
 }
