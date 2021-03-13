@@ -109,7 +109,7 @@ function mail_error() {
     SUBJECT="${BODY}"
     BODY="Please see netfilter-mailcow for more details and triggered rules."
   else
-    SUBJECT="Watchdog ALERT: ${1}"
+    SUBJECT="${WATCHDOG_SUBJECT}: ${1}"
   fi
   IFS=',' read -r -a MAIL_RCPTS <<< "${WATCHDOG_NOTIFY_EMAIL}"
   for rcpt in "${MAIL_RCPTS[@]}"; do
