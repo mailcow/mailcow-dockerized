@@ -334,6 +334,22 @@ query = SELECT goto FROM alias
       AND mailbox.username = CONCAT('%u','@',alias_domain.target_domain)
       AND (mailbox.active = '1' OR mailbox.active ='2')
       AND alias_domain.active='1'
+  UNION
+  SELECT goto FROM alias
+  WHERE active='1'
+    AND (domain IN
+      (SELECT domain FROM domain
+        WHERE domain='%d'
+          AND active='1')
+      OR domain in (
+        SELECT alias_domain FROM alias_domain
+          WHERE alias_domain='%d'
+            AND active='1'
+      )
+    )
+   AND SUBSTRING(address,1,1) != '@' 
+   AND SUBSTRING_INDEX(SUBSTRING_INDEX('%s', '@', 1), '@', -1) REGEXP CONCAT('^',SUBSTRING_INDEX(SUBSTRING_INDEX(address, '@', 1), '@', -1),'$')
+   AND SUBSTRING_INDEX(SUBSTRING_INDEX('%s', '@', 2), '@', -1) = domain;
 EOF
 
 # Reject sasl usernames with smtp disabled
