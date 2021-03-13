@@ -164,7 +164,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.95
+      image: mailcow/sogo:1.96
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -200,7 +200,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.141
+      image: mailcow/dovecot:1.142
       depends_on:
         - mysql-mailcow
       dns:
@@ -413,7 +413,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.90
+      image: mailcow/watchdog:1.91
       # Debug
       #command: /watchdog.sh
       dns:
