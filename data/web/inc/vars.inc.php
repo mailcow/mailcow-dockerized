@@ -124,9 +124,6 @@ $SESSION_LIFETIME = 10800;
 // Label for OTP devices
 $OTP_LABEL = "mailcow UI";
 
-// Default "to" address in relay test tool
-$RELAY_TO = "null@hosted.mailcow.de";
-
 // How long to wait (in s) for cURL Docker requests
 $DOCKER_TIMEOUT = 60;
 
