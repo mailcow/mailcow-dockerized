@@ -15,6 +15,12 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
   else {
     $mail_from = "relay@example.org";
   }
+  if (isset($_GET['mail_rcpt']) && filter_var($_GET['mail_rcpt'], FILTER_VALIDATE_EMAIL)) {
+    $mail_rcpt = $_GET['mail_rcpt'];
+  }
+  else {
+    $mail_rcpt = "null@hosted.mailcow.de";
+  }
   if ($transport_type == 'transport-map') {
     $transport_details = transport('details', $transport_id);
     $nexthop = $transport_details['nexthop'];
@@ -130,7 +136,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
     $mail->Port = $port;
     $mail->setFrom($mail_from, 'Mailer');
     $mail->Subject = 'A subject for a SMTP test';
-    $mail->addAddress($RELAY_TO, 'Joe Null');
+    $mail->addAddress($mail_rcpt, 'Joe Null');
     $mail->Body = 'This is our test body';
     $mail->send();
   }
