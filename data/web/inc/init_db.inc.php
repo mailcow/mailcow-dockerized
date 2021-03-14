@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "01032021_1001";
+    $db_version = "01032021_1002";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -28,6 +28,7 @@ function init_db_schema() {
       WHERE address!=goto
       AND active = '1'
       AND sogo_visible = '1'
+      AND is_regex = '0'
       AND address NOT LIKE '@%'
       GROUP BY goto;",
     // START
