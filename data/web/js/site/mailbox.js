@@ -354,7 +354,7 @@ jQuery(function($){
           return Number(res[0]);
         },
         },
-        {"name":"spam_aliases","filterable": false,"title":lang.spam_aliases,"breakpoints":"all"},
+        /* {"name":"spam_aliases","filterable": false,"title":lang.spam_aliases,"breakpoints":"all"}, */
         {"name":"tls_enforce_in","filterable": false,"title":lang.tls_enforce_in,"breakpoints":"all"},
         {"name":"tls_enforce_out","filterable": false,"title":lang.tls_enforce_out,"breakpoints":"all"},
         {"name":"smtp_access","filterable": false,"title":"SMTP","breakpoints":"all"},
@@ -378,14 +378,14 @@ jQuery(function($){
         },
         },
         {"name":"messages","filterable": false,"title":lang.msg_num,"breakpoints":"xs sm md"},
-        {"name":"rl","title":"RL","breakpoints":"all","style":{"width":"125px"}},
+        /* {"name":"rl","title":"RL","breakpoints":"all","style":{"width":"125px"}}, */
         {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'&#10003;':(0==value?'&#10005;':2==value&&'&#8212;');}},
         {"name":"action","filterable": false,"sortable": false,"style":{"min-width":"290px","text-align":"right"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
       ],
       "empty": lang.empty,
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/mailbox/all',
+        url: '/api/v1/get/mailbox/reduced',
         jsonp: false,
         error: function () {
           console.log('Cannot draw mailbox table');
@@ -395,6 +395,7 @@ jQuery(function($){
             item.quota = item.quota_used + "/" + item.quota;
             item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
             item.last_mail_login = item.last_imap_login + '/' + item.last_pop3_login + '/' + item.last_smtp_login;
+            /*
             if (!item.rl) {
               item.rl = '∞';
             } else {
@@ -405,6 +406,7 @@ jQuery(function($){
                 item.rl = '↪ ' + item.rl + ' (via ' + item.domain + ')';
               }
             }
+            */
             item.chkbox = '<input type="checkbox" data-id="mailbox" name="multi_select" value="' + encodeURIComponent(item.username) + '" />';
             item.tls_enforce_in = '<span class="text-' + (item.attributes.tls_enforce_in == 1 ? 'success' : 'danger') + ' glyphicon glyphicon-lock"></span>';
             item.tls_enforce_out = '<span class="text-' + (item.attributes.tls_enforce_out == 1 ? 'success' : 'danger') + ' glyphicon glyphicon-lock"></span>';

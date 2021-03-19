@@ -841,6 +841,7 @@ if (isset($_GET['query'])) {
           case "mailbox":
             switch ($object) {
               case "all":
+              case "reduced":
                 if (empty($extra)) {
                   $domains = mailbox('get', 'domains');
                 }
@@ -852,7 +853,7 @@ if (isset($_GET['query'])) {
                     $mailboxes = mailbox('get', 'mailboxes', $domain);
                     if (!empty($mailboxes)) {
                       foreach ($mailboxes as $mailbox) {
-                        if ($details = mailbox('get', 'mailbox_details', $mailbox)) {
+                        if ($details = mailbox('get', 'mailbox_details', $mailbox, $object)) {
                           $data[] = $details;
                         }
                         else {
