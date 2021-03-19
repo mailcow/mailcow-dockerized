@@ -772,7 +772,7 @@ jQuery(function($){
         {"name":"domain","title":lang.domain,"breakpoints":"xs sm"},
         {"name":"public_comment","title":lang.public_comment,"breakpoints":"all"},
         {"name":"private_comment","title":lang.private_comment,"breakpoints":"all"},
-        {"name":"sogo_visible","title":lang.sogo_visible,"breakpoints":"all"},
+        {"name":"sogo_visible","title":lang.sogo_visible,"formatter": function(value){return 1==value?'&#10003;':0==value&&'&#10005;';},"breakpoints":"all"},
         {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'&#10003;':0==value&&'&#10005;';}},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
