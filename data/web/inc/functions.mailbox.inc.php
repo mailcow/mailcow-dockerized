@@ -1935,6 +1935,23 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               continue;
             }
             if ($_data['expand_alias'] === true || $_data['expand_alias'] == 1) {
+              $stmt = $pdo->prepare("SELECT `address` FROM `alias`
+                WHERE `address` = :address
+                  AND `domain` NOT IN (
+                    SELECT `alias_domain` FROM `alias_domain`
+                  )");
+              $stmt->execute(array(
+                ':address' => $address,
+              ));
+              $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+              if ($num_results == 0) {
+                $_SESSION['return'][] = array(
+                  'type' => 'warning',
+                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                  'msg' => array('is_not_primary_alias', htmlspecialchars($address))
+                );
+                continue;
+              }
               $stmt = $pdo->prepare("SELECT `goto`, GROUP_CONCAT(CONCAT(SUBSTRING(`alias`.`address`, 1, LOCATE('@', `alias`.`address`) - 1), '@', `alias_domain`.`alias_domain`)) AS `missing_alias`
                 FROM `alias` JOIN `alias_domain` ON `alias_domain`.`target_domain` = `alias`.`domain`
                     WHERE CONCAT(SUBSTRING(`alias`.`address`, 1, LOCATE('@', `alias`.`address`) - 1), '@', `alias_domain`.`alias_domain`) NOT IN (

@@ -1110,6 +1110,7 @@
         "fuzzy_learn_error": "Fuzzy Lernfehler: %s",
         "hash_not_found": "Hash nicht gefunden. Möglicherweise wurde dieser bereits gelöscht.",
         "ip_invalid": "Ungültige IP übersprungen: %s",
+        "is_not_primary_alias": "Überspringe nicht-primären Alias %s",
         "no_active_admin": "Kann letzten aktiven Administrator nicht deaktivieren",
         "quota_exceeded_scope": "Domain-Quota erschöpft: Es können nur noch unlimiterte Mailboxen in dieser Domain erstellt werden.",
         "session_token": "Formular-Token ungültig: Token stimmt nicht überein",

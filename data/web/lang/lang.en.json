@@ -1108,6 +1108,7 @@
         "fuzzy_learn_error": "Fuzzy hash learn error: %s",
         "hash_not_found": "Hash not found or already deleted",
         "ip_invalid": "Skipped invalid IP: %s",
+        "is_not_primary_alias": "Skipped non-primary alias %s",
         "no_active_admin": "Cannot deactivate last active admin",
         "quota_exceeded_scope": "Domain quota exceeded: Only unlimited mailboxes can be created in this domain scope.",
         "session_token": "Form token invalid: Token mismatch",
