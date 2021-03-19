@@ -328,7 +328,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
               </div>
             </div>
             <div class="panel-body help-block">
-            <?=$lang['mailbox']['alias_domain_alias_hint'];?>
+              <?=$lang['mailbox']['alias_domain_alias_hint'];?>
             </div>
             <!-- <div class="mass-actions-mailbox" data-actions-header="true"></div> -->
             <div class="table-responsive">
@@ -349,6 +349,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <li><a data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"sogo_visible":"0"}' href="#"><?=$lang['mailbox']['sogo_visible_n'];?></a></li>
                   <?php } ?>
                 </ul>
+                <a class="btn btn-sm btn-default" data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"expand_alias":true}' ><span class="glyphicon glyphicon-resize-full"></span> <?=$lang['mailbox']['add_alias_expand'];?></a>
                 <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addAliasModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_alias'];?></a>
               </div>
             </div>
