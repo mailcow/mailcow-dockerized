@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "08022021_1000";
+    $db_version = "09032021_1000";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -321,7 +321,8 @@ function init_db_schema() {
             "" => array("username")
           ),
           "key" => array(
-            "domain" => array("domain")
+            "domain" => array("domain"),
+            "kind" => array("kind")
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
