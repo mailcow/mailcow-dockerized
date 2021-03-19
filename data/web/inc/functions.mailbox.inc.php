@@ -1934,6 +1934,35 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
+            if ($_data['expand_alias'] === true || $_data['expand_alias'] == 1) {
+              $stmt = $pdo->prepare("SELECT `goto`, GROUP_CONCAT(CONCAT(SUBSTRING(`alias`.`address`, 1, LOCATE('@', `alias`.`address`) - 1), '@', `alias_domain`.`alias_domain`)) AS `missing_alias`
+                FROM `alias` JOIN `alias_domain` ON `alias_domain`.`target_domain` = `alias`.`domain`
+                    WHERE CONCAT(SUBSTRING(`alias`.`address`, 1, LOCATE('@', `alias`.`address`) - 1), '@', `alias_domain`.`alias_domain`) NOT IN (
+                      SELECT `address` FROM `alias` WHERE `address` != `goto`
+                    )
+                    AND `alias`.`address` NOT IN (
+                      SELECT `address` FROM `alias` WHERE `address` = `goto`
+                    )
+                    AND `address` = :address ;");
+              $stmt->execute(array(
+                ':address' => $address
+              ));
+              $missing_aliases = $stmt->fetch(PDO::FETCH_ASSOC);
+              if (!empty($missing_aliases['missing_alias'])) {
+                mailbox('add', 'alias', array(
+                  'address' => $missing_aliases['missing_alias'],
+                  'goto' => $missing_aliases['goto'],
+                  'sogo_visible' => 1,
+                  'active' => 1
+                ));
+              }
+              $_SESSION['return'][] = array(
+                'type' => 'success',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => array('alias_modified', htmlspecialchars($address))
+              );
+              continue;
+            }
             $domain = idn_to_ascii(substr(strstr($address, '@'), 1), 0, INTL_IDNA_VARIANT_UTS46);
             if ($is_now['address'] != $address) {
               $local_part = strstr($address, '@', true);
