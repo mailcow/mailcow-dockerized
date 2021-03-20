@@ -1109,7 +1109,7 @@
         "dovecot_restart_failed": "Dovecot kunde inte startas om, kontrollera Dovecot loggen.",
         "fuzzy_learn_error": "En oklar kontrollsumma resulterade i ett inlärningsfel: %s",
         "hash_not_found": "Kontrollsumman hittas inte. Den kan redan vara borttagen",
-        "ip_invalid": "Skippar en ogiltig IP-adress: %s",
+        "ip_invalid": "Hoppade över en ogiltig IP-adress: %s",
         "is_not_primary_alias": "Hoppade över en ej-primär alias: %s",
         "no_active_admin": "Den senaste kända administratören kan inte inaktiveras",
         "quota_exceeded_scope": "Domänkvoten fylld: Endast postlådor med obegränsade kvoter kan skapas på den här domänen.",
