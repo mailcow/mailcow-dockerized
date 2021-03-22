@@ -301,21 +301,24 @@ def watch():
   pubsub.subscribe('F2B_CHANNEL')
 
   while not quit_now:
-    for item in pubsub.listen():
-      refreshF2bregex()
-      for rule_id, rule_regex in f2bregex.items():
-        if item['data'] and item['type'] == 'message':
-          try:
-            result = re.search(rule_regex, item['data'])
-          except re.error:
-            result = False
-          if result:
-            addr = result.group(1)
-            ip = ipaddress.ip_address(addr)
-            if ip.is_private or ip.is_loopback:
-              continue
-            logWarn('%s matched rule id %s (%s)' % (addr, rule_id, item['data']))
-            ban(addr)
+    try:
+      for item in pubsub.listen():
+        refreshF2bregex()
+        for rule_id, rule_regex in f2bregex.items():
+          if item['data'] and item['type'] == 'message':
+            try:
+              result = re.search(rule_regex, item['data'])
+            except re.error:
+              result = False
+            if result:
+              addr = result.group(1)
+              ip = ipaddress.ip_address(addr)
+              if ip.is_private or ip.is_loopback:
+                continue
+              logWarn('%s matched rule id %s (%s)' % (addr, rule_id, item['data']))
+              ban(addr)
+    except Exception as ex:
+      logWarn('Could not read logline from pubsub, skipping...')
 
 def snat4(snat_target):
   global lock
