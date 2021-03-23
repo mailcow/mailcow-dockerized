@@ -390,7 +390,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.40
+      image: mailcow/netfilter:1.41
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
