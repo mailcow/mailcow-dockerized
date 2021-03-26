@@ -200,7 +200,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.142
+      image: mailcow/dovecot:1.143
       depends_on:
         - mysql-mailcow
       dns:
@@ -511,7 +511,7 @@ services:
             - solr
 
     olefy-mailcow:
-      image: mailcow/olefy:1.6
+      image: mailcow/olefy:1.7
       restart: always
       environment:
         - TZ=${TZ}
