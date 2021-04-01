@@ -200,7 +200,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.143
+      image: mailcow/dovecot:1.144
       depends_on:
         - mysql-mailcow
       dns:
@@ -261,7 +261,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.59
+      image: mailcow/postfix:1.60
       depends_on:
         - mysql-mailcow
       volumes:
@@ -529,7 +529,7 @@ services:
             - olefy
 
     ejabberd-mailcow:
-      image: mailcow/ejabberd:1.4
+      image: mailcow/ejabberd:1.5
       volumes:
         - ./data/conf/ejabberd/ejabberd.yml:/home/ejabberd/conf/ejabberd.yml:z
         - xmpp-vol-1:/home/ejabberd/database:z
