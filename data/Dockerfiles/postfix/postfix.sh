@@ -10,7 +10,7 @@ while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${D
   sleep 2
 done
 
-until dig +short mailcow.email @unbound > /dev/null; do
+until dig +short mailcow.email > /dev/null; do
   echo "Waiting for DNS..."
   sleep 1
 done
