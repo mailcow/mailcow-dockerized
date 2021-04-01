@@ -6,10 +6,6 @@ Please [consider a support contract with Servercow](https://www.servercow.de/mai
 
 You can also [get a SAL](https://www.servercow.de/mailcow?lang=en#sal) which is a one-time payment with no liabilities or returning fees.
 
-₿ If you like anonymous donations, please consider a Bitcoin donation via **1E5rgzgA1sS3QH7r1ToWxRC3GEavfsGMrx**
-
-![grafik](https://user-images.githubusercontent.com/2972950/111918092-beb7d680-8a83-11eb-9a98-1fe43d3e0deb.png)
-
 Or just spread the word: moo.
 
 ## Info, documentation and support
