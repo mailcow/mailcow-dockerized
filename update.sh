@@ -485,11 +485,6 @@ while read NAT_ID; do
   iptables -t nat -D POSTROUTING $NAT_ID
 done < <(iptables -L -vn -t nat --line-numbers | grep $IPV4_NETWORK | grep -E 'MASQUERADE.*all' | grep -v ${MAILCOW_BRIDGE} | cut -d' ' -f1)
 
-echo -e "\e[32mChecking for iptables-legacy...\e[0m"
-if update-alternatives --list iptables 2> /dev/null | grep -q /usr/sbin/iptables-legacy; then
-  update-alternatives --set iptables /usr/sbin/iptables-legacy
-fi
-
 DIFF_DIRECTORY=update_diffs
 DIFF_FILE=${DIFF_DIRECTORY}/diff_before_update_$(date +"%Y-%m-%d-%H-%M-%S")
 mv diff_before_update* ${DIFF_DIRECTORY}/ 2> /dev/null
