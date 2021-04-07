@@ -1007,7 +1007,7 @@ paths:
                 password2:
                   description: mailbox password for confirmation
                   type: string
-                pasword:
+                password:
                   description: mailbox password
                   type: string
                 quota:
@@ -3020,7 +3020,7 @@ paths:
                     password2:
                       description: new mailbox password for confirmation
                       type: string
-                    pasword:
+                    password:
                       description: new mailbox password
                       type: string
                     quota:
