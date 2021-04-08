@@ -2388,11 +2388,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               return false;
             }
-            $stmt = $pdo->prepare("SELECT `quota`, `maxquota`
-              FROM `domain`
-                WHERE `domain` = :domain");
-            $stmt->execute(array(':domain' => $domain));
-            $DomainData = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
@@ -2401,7 +2396,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
-            if ((($is_now['quota_used'] / 1048576) + $quota_m) > $DomainData['quota']) {
+            $DomainData = mailbox('get', 'domain_details', $domain);
+            if ($quota_m > ($is_now['max_new_quota'] / 1048576)) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -2409,11 +2405,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
-            if ($quota_m > $DomainData['maxquota']) {
+            if ($quota_m > $DomainData['max_quota_for_mbox']) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                'msg' => array('mailbox_quota_exceeded', $DomainData['maxquota'])
+                'msg' => array('mailbox_quota_exceeded', $DomainData['max_quota_for_mbox'])
               );
               continue;
             }
