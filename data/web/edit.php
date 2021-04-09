@@ -112,7 +112,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         <div class="form-group">
           <label class="control-label col-sm-2" for="domains"><?=$lang['edit']['domains'];?></label>
           <div class="col-sm-10">
-            <select data-live-search="true" class="full-width-select" name="domains" multiple required>
+            <select data-live-search="true" data-container="body" class="full-width-select" name="domains" multiple required>
             <?php
             foreach ($result['selected_domains'] as $domain):
             ?>
@@ -167,7 +167,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           </div>
           <div class="col-sm-10">
             <div class="form-group">
-              <select id="da_acl" name="da_acl" size="10" multiple>
+              <select id="da_acl" name="da_acl" size="10" data-container="body" multiple>
               <?php
               $da_acls = acl('get', 'domainadmin', $domain_admin);
               foreach ($da_acls as $acl => $val):
