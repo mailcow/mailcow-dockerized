@@ -101,7 +101,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.74
+      image: mailcow/phpfpm:1.75
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -164,7 +164,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.98
+      image: mailcow/sogo:1.99
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
