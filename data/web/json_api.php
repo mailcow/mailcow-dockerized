@@ -446,6 +446,20 @@ if (isset($_GET['query'])) {
             }
           break;
 
+          case "passwordpolicy":
+            switch ($object) {
+              case "html":
+                $password_complexity_rules = password_complexity('html');
+                if ($password_complexity_rules !== false) {
+                  process_get_return($password_complexity_rules);
+                }
+                else {
+                  echo '{}';
+                }
+              break;
+            }
+          break;
+
           case "app-passwd":
             switch ($object) {
               case "all":
@@ -1560,6 +1574,9 @@ if (isset($_GET['query'])) {
         break;
         case "app_links":
           process_edit_return(customize('edit', 'app_links', $attr));
+        break;
+        case "passwordpolicy":
+          process_edit_return(password_complexity('edit', $attr));
         break;
         case "relayhost":
           process_edit_return(relayhost('edit', array_merge(array('id' => $items), $attr)));
