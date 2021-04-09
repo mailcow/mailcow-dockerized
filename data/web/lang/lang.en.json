@@ -238,7 +238,7 @@
         "password_policy_length": "Minimum password length is %d",
         "password_policy_numbers": "Must contain at least one number",
         "password_policy_lowerupper": "Must contain lowercase and uppercase characters",
-        "password_policy_special_chars": "Must contain special chars",
+        "password_policy_special_chars": "Must contain special characters",
         "password_repeat": "Confirmation password (repeat)",
         "priority": "Priority",
         "private_key": "Private key",
