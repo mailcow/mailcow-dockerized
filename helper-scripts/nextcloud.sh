@@ -110,7 +110,6 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
     --database-name ${DBNAME} \
     --database-user ${DBUSER} \
     --database-pass ${DBPASS} \
-    --database-table-prefix nc_ \
     --admin-user admin \
     --admin-pass ${ADMIN_NC_PASS} \
       --data-dir /web/nextcloud/data
