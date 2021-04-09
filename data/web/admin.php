@@ -23,6 +23,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
         <li role="presentation"><a href="#tab-config-quarantine" aria-controls="tab-config-quarantine" role="tab" data-toggle="tab"><?=$lang['admin']['quarantine'];?></a></li>
         <li role="presentation"><a href="#tab-config-quota" aria-controls="tab-config-quota" role="tab" data-toggle="tab"><?=$lang['admin']['quota_notifications'];?></a></li>
         <li role="presentation"><a href="#tab-config-rsettings" aria-controls="tab-config-rsettings" role="tab" data-toggle="tab"><?=$lang['admin']['rspamd_settings_map'];?></a></li>
+        <li role="presentation"><a href="#tab-config-password-policy" aria-controls="tab-config-password-policy" role="tab" data-toggle="tab"><?=$lang['admin']['password_policy'];?></a></li>
         <li role="presentation"><a href="#tab-config-customize" aria-controls="tab-config-customize" role="tab" data-toggle="tab"><?=$lang['admin']['customize'];?></a></li>
       </ul>
     </li>
@@ -77,7 +78,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
                   foreach ($tfa_data['additional'] as $key_info) {
                 ?>
                 <form style="display:inline;" method="post">
-                  <input type="hidden" name="unset_tfa_key" value="<?=$key_info['id'];?>" />
+                  <input type="hidden" name="unset_tfa_key" value="<?=$key_info['id'];?>">
                   <div style="padding:4px;margin:4px" class="label label-keys label-<?=($_SESSION['tfa_id'] == $key_info['id']) ? 'success' : 'default'; ?>">
                   <?=$key_info['key_id'];?>
                   <a href="#" style="font-weight:bold;color:white" onClick="$(this).closest('form').submit()">[<?=$lang['admin']['remove'];?>]</a>
@@ -128,7 +129,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
                   </td>
                   <td style="min-width:240px;text-align: right">
                     <form style="display:inline;" method="post">
-                    <input type="hidden" name="unset_fido2_key" value="<?=$key_info['cid'];?>" />
+                    <input type="hidden" name="unset_fido2_key" value="<?=$key_info['cid'];?>">
                     <div class="btn-group">
                     <a href="#" class="btn btn-xs btn-default" data-cid="<?=$key_info['cid'];?>" data-subject="<?=base64_encode($key_info['subject']);?>" data-toggle="modal" data-target="#fido2ChangeFn"><span class="glyphicon glyphicon-pencil"></span> <?=$lang['fido2']['rename'];?></a>
                     <a href="#" onClick='return confirm("<?=$lang['admin']['ays'];?>")?$(this).closest("form").submit():"";' class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> <?=$lang['admin']['remove'];?></a>
@@ -381,7 +382,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
           </form>
           </div>
           <div class="col-sm-3">
-            <img class="img-responsive" src="/img/rspamd_logo.png" alt="Rspamd UI" />
+            <img class="img-responsive" src="/img/rspamd_logo.png" alt="Rspamd UI">
           </div>
         </div>
       </div>
@@ -507,7 +508,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
               ($GLOBALS['SHOW_DKIM_PRIV_KEYS'] === true) ?: $dkim['privkey'] = base64_encode('Please set $SHOW_DKIM_PRIV_KEYS to true to show DKIM private keys.');
           ?>
             <div class="row collapse in dkim_key_valid">
-              <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" /></div>
+              <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>"></div>
               <div class="col-md-3">
                 <p><?=$lang['admin']['domain'];?>: <strong><?=htmlspecialchars($domain);?></strong>
                   <p class="dkim-label"><span class="label label-success"><?=$lang['admin']['dkim_key_valid'];?></span></p>
@@ -526,7 +527,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
           else {
           ?>
           <div class="row collapse in dkim_key_missing">
-            <div class="col-md-1"><input class="dkim_missing" type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" disabled /></div>
+            <div class="col-md-1"><input class="dkim_missing" type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" disabled></div>
             <div class="col-md-3">
               <p><?=$lang['admin']['domain'];?>: <strong><?=htmlspecialchars($domain);?></strong><br><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
             </div>
@@ -541,7 +542,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
               ($GLOBALS['SHOW_DKIM_PRIV_KEYS'] === true) ?: $dkim['privkey'] = base64_encode('Please set $SHOW_DKIM_PRIV_KEYS to true to show DKIM private keys.');
             ?>
               <div class="row collapse in dkim_key_valid">
-              <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$alias_domain;?>" /></div>
+              <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$alias_domain;?>"></div>
                 <div class="col-md-2 col-md-offset-1">
                   <p><small>↳ Alias-Domain: <strong><?=htmlspecialchars($alias_domain);?></strong></small>
                     <p class="dkim-label"><span class="label label-success"><?=$lang['admin']['dkim_key_valid'];?></span></p>
@@ -560,7 +561,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             else {
             ?>
             <div class="row collapse in dkim_key_missing">
-              <div class="col-md-1"><input class="dkim_missing" type="checkbox" data-id="dkim" name="multi_select" value="<?=$alias_domain;?>" disabled /></div>
+              <div class="col-md-1"><input class="dkim_missing" type="checkbox" data-id="dkim" name="multi_select" value="<?=$alias_domain;?>" disabled></div>
               <div class="col-md-2 col-md-offset-1">
                 <p><small>↳ Alias-Domain: <strong><?=htmlspecialchars($alias_domain);?></strong><br></small><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
               </div>
@@ -577,7 +578,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             ($GLOBALS['SHOW_DKIM_PRIV_KEYS'] === true) ?: $dkim['privkey'] = base64_encode('Please set $SHOW_DKIM_PRIV_KEYS to true to show DKIM private keys.');
           ?>
             <div class="row collapse in dkim_key_unused">
-              <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$blind;?>" /></div>
+              <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$blind;?>"></div>
               <div class="col-md-3">
                 <p><?=$lang['admin']['domain'];?>: <strong><?=htmlspecialchars($blind);?></strong>
                   <p class="dkim-label"><span class="label label-warning"><?=$lang['admin']['dkim_key_unused'];?></span></p>
@@ -1208,6 +1209,49 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             <button class="btn btn-sm btn-success" data-action="edit_selected" data-item="ui" data-id="uitexts" data-api-url='edit/ui_texts' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
           </form>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div role="tabpanel" class="tab-pane" id="tab-config-password-policy">
+    <div class="panel panel-default">
+      <div class="panel-heading"><?=$lang['admin']['password_policy'];?></div>
+      <div class="panel-body">
+        <?php $password_complexity = password_complexity('get'); ?>
+        <form class="form-horizontal" data-id="passwordpolicy" role="form" method="post">
+          <?php
+          foreach ($password_complexity as $name => $value) {
+          if ($name == 'length') {
+          ?>
+          <div class="form-group">
+            <label class="control-label col-sm-3" for="<?=$name;?>"><?=$lang['admin']['password_length'];?>:</label>
+            <div class="col-sm-2">
+              <input type="number" class="form-control" min="3" max="64" name="<?=$name;?>" id="<?=$name;?>" value="<?=$value;?>" required>
+            </div>
+          </div>
+          <?php
+          } else {
+          ?>
+          <input type="hidden" name="<?=$name;?>" value="0">
+          <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+              <label>
+                <input type="checkbox" name="<?=$name;?>" id="<?=$name;?>" value="1" <?=($value == 1) ? 'checked' : null;?>> <?=$lang['admin']["password_policy_$name"];?>
+              </label>
+            </div>
+          </div>
+          <?php
+          }
+          }
+          ?>
+          <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+              <div class="btn-group">
+                <button class="btn btn-sm btn-success" data-item="passwordpolicy" data-action="edit_selected" data-id="passwordpolicy" data-api-url='edit/passwordpolicy' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+              </div>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
   </div>
