@@ -48,7 +48,7 @@ function admin($_action, $_data = null) {
           return false;
         }
       }
-      if (password_check($password_new, $password_new2) !== true) {
+      if (password_check($password2, $password2) !== true) {
         return false;
       }
       // support pre hashed passwords
@@ -127,7 +127,7 @@ function admin($_action, $_data = null) {
             continue;
           }
         }
-        if (!empty($password) && !empty($password2)) {
+        if (!empty($password)) {
           if (password_check($password, $password2) !== true) {
             return false;
           }
