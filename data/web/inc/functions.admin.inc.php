@@ -48,7 +48,7 @@ function admin($_action, $_data = null) {
           return false;
         }
       }
-      if (password_check($password2, $password2) !== true) {
+      if (password_check($password, $password2) !== true) {
         return false;
       }
       // support pre hashed passwords
