@@ -2582,23 +2582,25 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ));
               }
             }
-            if (password_check($password, $password2) !== true) {
-              continue;
+            if (!empty($password)) {
+              if (password_check($password, $password2) !== true) {
+                continue;
+              }
+              // support pre hashed passwords
+              if (preg_match('/^{(ARGON2I|ARGON2ID|BLF-CRYPT|CLEAR|CLEARTEXT|CRYPT|DES-CRYPT|LDAP-MD5|MD5|MD5-CRYPT|PBKDF2|PLAIN|PLAIN-MD4|PLAIN-MD5|PLAIN-TRUNC|PLAIN-TRUNC|SHA|SHA1|SHA256|SHA256-CRYPT|SHA512|SHA512-CRYPT|SMD5|SSHA|SSHA256|SSHA512)}/i', $password)) {
+                $password_hashed = $password;
+              }
+              else {
+                $password_hashed = hash_password($password);
+              }
+              $stmt = $pdo->prepare("UPDATE `mailbox` SET
+                  `password` = :password_hashed
+                    WHERE `username` = :username");
+              $stmt->execute(array(
+                ':password_hashed' => $password_hashed,
+                ':username' => $username
+              ));
             }
-            // support pre hashed passwords
-            if (preg_match('/^{(ARGON2I|ARGON2ID|BLF-CRYPT|CLEAR|CLEARTEXT|CRYPT|DES-CRYPT|LDAP-MD5|MD5|MD5-CRYPT|PBKDF2|PLAIN|PLAIN-MD4|PLAIN-MD5|PLAIN-TRUNC|PLAIN-TRUNC|SHA|SHA1|SHA256|SHA256-CRYPT|SHA512|SHA512-CRYPT|SMD5|SSHA|SSHA256|SSHA512)}/i', $password)) {
-              $password_hashed = $password;
-            }
-            else {
-              $password_hashed = hash_password($password);
-            }
-            $stmt = $pdo->prepare("UPDATE `mailbox` SET
-                `password` = :password_hashed
-                  WHERE `username` = :username");
-            $stmt->execute(array(
-              ':password_hashed' => $password_hashed,
-              ':username' => $username
-            ));
             // We could either set alias = 1 if alias = 2 or tune the Postfix alias table (that's what we did, TODO: to it the other way)
             $stmt = $pdo->prepare("UPDATE `alias` SET
                 `active` = :active
