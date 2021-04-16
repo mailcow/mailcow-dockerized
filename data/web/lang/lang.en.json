@@ -133,6 +133,8 @@
         "add_transports_hint": "Please be aware that authentication data, if any, will be stored as plain text.",
         "additional_rows": " additional rows were added",
         "admin": "Administrator",
+        "admins": "Administrators",
+        "admins_ldap": "LDAP Administrators",
         "admin_details": "Edit administrator details",
         "admin_domains": "Domain assignments",
         "advanced_settings": "Advanced settings",
