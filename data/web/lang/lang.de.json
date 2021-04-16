@@ -135,6 +135,8 @@
         "add_transports_hint": "Bitte beachten Sie, dass Anmeldedaten unverschlüsselt gespeichert werden.",
         "additional_rows": " zusätzliche Zeilen geladen",
         "admin": "Administrator",
+        "admins": "Administratoren",
+        "admins_ldap": "LDAP-Administratoren",
         "admin_details": "Administrator bearbeiten",
         "admin_domains": "Domain-Zuweisungen",
         "advanced_settings": "Erweiterte Einstellungen",

@@ -13,9 +13,18 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
 <div class="container">
 
   <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#tab-access" aria-controls="tab-access" role="tab" data-toggle="tab"><?=$lang['admin']['access'];?></a></li>
-    <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['admin']['configuration'];?>
-      <span class="caret"></span></a>
+    <li class="dropdown active">
+      <a class="dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['admin']['access'];?><span class="caret"></span></a>
+      <ul class="dropdown-menu">
+        <li class="active" data-dont-remember="1" role="presentation"><a href="#tab-config-admins" aria-controls="tab-config-admins" role="tab" data-toggle="tab"><?=$lang['admin']['admins'];?></a></li>
+        <!-- <li role="presentation"><a href="#tab-config-ldap-admins" aria-controls="tab-config-ldap-admins" role="tab" data-toggle="tab"><?=$lang['admin']['admins_ldap'];?></a></li> -->
+        <li role="presentation"><a href="#tab-config-oauth2" aria-controls="tab-config-oauth2" role="tab" data-toggle="tab">OAuth2 Apps</a></li>
+        <li role="presentation"><a href="#tab-config-rspamd" aria-controls="tab-config-rspamd" role="tab" data-toggle="tab">Rspamd UI</a></li>
+      </ul>
+    </li>
+
+    <li class="dropdown">
+      <a class="dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['admin']['configuration'];?><span class="caret"></span></a>
       <ul class="dropdown-menu">
         <li role="presentation"><a href="#tab-config-dkim" aria-controls="tab-config-dkim" role="tab" data-toggle="tab"><?=$lang['admin']['dkim_keys'];?></a></li>
         <li role="presentation"><a href="#tab-config-fwdhosts" aria-controls="tab-config-fwdhosts" role="tab" data-toggle="tab"><?=$lang['admin']['forwarding_hosts'];?></a></li>
@@ -41,7 +50,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
   <div class="row">
   <div class="col-md-12">
   <div class="tab-content" style="padding-top:20px">
-  <div role="tabpanel" class="tab-pane active" id="tab-access">
+  <div role="tabpanel" class="tab-pane active" id="tab-config-admins">
     <div class="panel panel-danger">
       <div class="panel-heading"><?=$lang['admin']['admin_details'];?></div>
       <div class="panel-body">
@@ -322,7 +331,17 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
           </div>
         </div>
     </div>
+  </div>
 
+  <div role="tabpanel" class="tab-pane" id="tab-config-ldap-admins">
+    <div class="panel panel-default">
+    <div class="panel-heading"><?=$lang['admin']['admins_ldap'];?></div>
+        <div class="panel-body">
+        </div>
+    </div>
+  </div>
+
+  <div role="tabpanel" class="tab-pane" id="tab-config-oauth2">
     <div class="panel panel-default">
     <div class="panel-heading">OAuth2 Apps</div>
         <div class="panel-body">
@@ -346,7 +365,9 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
           </div>
         </div>
     </div>
+  </div>
 
+  <div role="tabpanel" class="tab-pane" id="tab-config-rspamd">
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Rspamd UI</h3>
