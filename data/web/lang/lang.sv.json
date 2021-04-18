@@ -135,6 +135,8 @@
         "add_transports_hint": "Tänk på att autentiseringsdata lagras okrypterat.",
         "additional_rows": "ytterliggare rader har lagts till",
         "admin": "Administratör",
+        "admins": "Administratörer",
+        "admins_ldap": "LDAP-Administratörer",
         "admin_details": "Hantera administratörer",
         "admin_domains": "Tilldelad domän",
         "advanced_settings": "Avancerade inställningar",
