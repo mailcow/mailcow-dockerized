@@ -155,7 +155,7 @@ function password_complexity($_action, $_data = null) {
       $_SESSION['return'][] = array(
         'type' => 'success',
         'log' => array(__FUNCTION__, $_action, $_data),
-        'msg' => print_r($_data, true)
+        'msg' => 'password_policy_saved'
       );
     break;
     case 'get':
