@@ -45,7 +45,11 @@ data/conf/sogo/sieve.creds
 data/conf/sogo/sogo-full.svg
 data/gitea/
 data/gogs/
-data/hooks/
+data/hooks/dovecot
+data/hooks/phpfpm
+data/hooks/postfix
+data/hooks/rspamd
+data/hooks/unbound
 data/web/.well-known/acme-challenge
 data/web/css/build/0081-custom-mailcow.css
 data/web/inc/vars.local.inc.php
