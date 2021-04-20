@@ -504,6 +504,7 @@
     },
     "edit": {
         "active": "Aktiv",
+        "admin": "Administrator bearbeiten",
         "advanced_settings": "Erweiterte Einstellungen",
         "alias": "Alias bearbeiten",
         "allow_from_smtp": "Nur folgende IPs für <b>SMTP</b> erlauben",
