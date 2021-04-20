@@ -502,6 +502,7 @@
     },
     "edit": {
         "active": "Active",
+        "admin": "Edit administrator",
         "advanced_settings": "Advanced settings",
         "alias": "Edit alias",
         "allow_from_smtp": "Only allow these IPs to use <b>SMTP</b>",
