@@ -125,7 +125,7 @@ function backup() {
         docker run --name mailcow-backup --rm \
           --network $(docker network ls -qf name=${CMPS_PRJ}_mailcow-network) \
           -v $(docker volume ls -qf name=${CMPS_PRJ}_mysql-vol-1):/var/lib/mysql/:ro,z \
-          --entrypoint= \
+          -t --entrypoint= \
           --sysctl net.ipv6.conf.all.disable_ipv6=1 \
           -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
           ${SQLIMAGE} /bin/sh -c "mariabackup --host mysql --user root --password ${DBROOT} --backup --rsync --target-dir=/backup_mariadb ; \
