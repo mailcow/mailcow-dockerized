@@ -107,6 +107,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           <label class="control-label col-sm-2" for="username_new"><?=$lang['edit']['username'];?></label>
           <div class="col-sm-10">
             <input class="form-control" type="text" name="username_new" value="<?=htmlspecialchars($domain_admin);?>" required onkeyup="this.value = this.value.toLowerCase();" />
+            &rdsh; <kbd>a-z - _ .</kbd>
           </div>
         </div>
         <div class="form-group">
@@ -205,6 +206,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           <label class="control-label col-sm-2" for="username_new"><?=$lang['edit']['username'];?></label>
           <div class="col-sm-10">
             <input class="form-control" type="text" name="username_new" onkeyup="this.value = this.value.toLowerCase();" required value="<?=htmlspecialchars($admin);?>" />
+            &rdsh; <kbd>a-z - _ .</kbd>
           </div>
         </div>
         <div class="form-group">
