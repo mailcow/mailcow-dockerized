@@ -504,6 +504,7 @@
     },
     "edit": {
         "active": "Aktiv",
+        "admin": "Ändra administratör",
         "advanced_settings": "Avancerade inställningar",
         "alias": "Ändra alias",
         "allow_from_smtp": "Tillåt endast följande IP-adresser att använda <b>SMTP</b>",
