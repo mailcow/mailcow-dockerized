@@ -309,26 +309,30 @@ def watch():
   logInfo('Watching Redis channel F2B_CHANNEL')
   pubsub.subscribe('F2B_CHANNEL')
 
+  global quit_now
+  global exit_code
+
   while not quit_now:
+    try:
       for item in pubsub.listen():
-        try:
-          refreshF2bregex()
-          for rule_id, rule_regex in f2bregex.items():
-            if item['data'] and item['type'] == 'message':
-              try:
-                result = re.search(rule_regex, item['data'])
-              except re.error:
-                result = False
-              if result:
-                addr = result.group(1)
-                ip = ipaddress.ip_address(addr)
-                if ip.is_private or ip.is_loopback:
-                  continue
-                logWarn('%s matched rule id %s (%s)' % (addr, rule_id, item['data']))
-                ban(addr)
-        except Exception as ex:
-          logWarn('Could not read logline from pubsub, skipping...')
-          continue
+        refreshF2bregex()
+        for rule_id, rule_regex in f2bregex.items():
+          if item['data'] and item['type'] == 'message':
+            try:
+              result = re.search(rule_regex, item['data'])
+            except re.error:
+              result = False
+            if result:
+              addr = result.group(1)
+              ip = ipaddress.ip_address(addr)
+              if ip.is_private or ip.is_loopback:
+                continue
+              logWarn('%s matched rule id %s (%s)' % (addr, rule_id, item['data']))
+              ban(addr)
+    except Exception as ex:
+      logWarn('Error reading log line from pubsub')
+      quit_now = True
+      exit_code = 2
 
 def snat4(snat_target):
   global lock
