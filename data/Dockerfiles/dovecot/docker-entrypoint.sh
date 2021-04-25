@@ -7,7 +7,7 @@ while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${D
   sleep 2
 done
 
-until dig +short mailcow.email @unbound > /dev/null; do
+until dig +short mailcow.email > /dev/null; do
   echo "Waiting for DNS..."
   sleep 1
 done
@@ -185,6 +185,12 @@ function script_deinit()
 end
 EOF
 
+# Replace patterns in app-passdb.lua
+sed -i "s/__DBUSER__/${DBUSER}/g" /etc/dovecot/lua/app-passdb.lua
+sed -i "s/__DBPASS__/${DBPASS}/g" /etc/dovecot/lua/app-passdb.lua
+sed -i "s/__DBNAME__/${DBNAME}/g" /etc/dovecot/lua/app-passdb.lua
+
+
 # Migrate old sieve_after file
 [[ -f /etc/dovecot/sieve_after ]] && mv /etc/dovecot/sieve_after /etc/dovecot/global_sieve_after
 # Create global sieve scripts
@@ -269,15 +275,10 @@ else
     rm -f /etc/dovecot/sogo-sso.conf
 fi
 
-# Hard-code env vars to scripts due to cron not passing them to the scripts
-sed -i "s/__DBUSER__/${DBUSER}/g" /usr/local/bin/imapsync_cron.pl /usr/local/bin/quarantine_notify.py /usr/local/bin/clean_q_aged.sh /etc/dovecot/lua/app-passdb.lua
-sed -i "s/__DBPASS__/${DBPASS}/g" /usr/local/bin/imapsync_cron.pl /usr/local/bin/quarantine_notify.py /usr/local/bin/clean_q_aged.sh /etc/dovecot/lua/app-passdb.lua
-sed -i "s/__DBNAME__/${DBNAME}/g" /usr/local/bin/imapsync_cron.pl /usr/local/bin/quarantine_notify.py /usr/local/bin/clean_q_aged.sh /etc/dovecot/lua/app-passdb.lua
-sed -i "s/__MAILCOW_HOSTNAME__/${MAILCOW_HOSTNAME}/g" /usr/local/bin/quarantine_notify.py
-sed -i "s/__LOG_LINES__/${LOG_LINES}/g" /usr/local/bin/trim_logs.sh
+
 if [[ "${MASTER}" =~ ^([nN][oO]|[nN])+$ ]]; then
-# Toggling MASTER will result in a rebuild of containers, so the quota script will be recreated
-cat <<'EOF' > /usr/local/bin/quota_notify.py
+  # Toggling MASTER will result in a rebuild of containers, so the quota script will be recreated
+  cat <<'EOF' > /usr/local/bin/quota_notify.py
 #!/usr/bin/python3
 import sys
 sys.exit()
@@ -311,7 +312,7 @@ chmod g+rw /dev/console
 chown root:tty /dev/console
 chmod +x /usr/lib/dovecot/sieve/rspamd-pipe-ham \
   /usr/lib/dovecot/sieve/rspamd-pipe-spam \
-  /usr/local/bin/imapsync_cron.pl \
+  /usr/local/bin/imapsync_runner.pl \
   /usr/local/bin/postlogin.sh \
   /usr/local/bin/imapsync \
   /usr/local/bin/trim_logs.sh \
@@ -321,27 +322,6 @@ chmod +x /usr/lib/dovecot/sieve/rspamd-pipe-ham \
   /usr/local/sbin/stop-supervisor.sh \
   /usr/local/bin/quota_notify.py \
   /usr/local/bin/repl_health.sh
-
-if [[ "${MASTER}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-# Setup cronjobs
-echo '* * * * *    nobody  /usr/local/bin/imapsync_cron.pl 2>&1 | /usr/bin/logger' > /etc/cron.d/imapsync
-#echo '30 3 * * *   vmail /usr/local/bin/doveadm quota recalc -A' > /etc/cron.d/dovecot-sync
-echo '* * * * *    vmail /usr/local/bin/trim_logs.sh >> /dev/console 2>&1' > /etc/cron.d/trim_logs
-echo '25 * * * *   vmail /usr/local/bin/maildir_gc.sh >> /dev/console 2>&1' > /etc/cron.d/maildir_gc
-echo '30 1 * * *   root  /usr/local/bin/sa-rules.sh  >> /dev/console 2>&1' > /etc/cron.d/sa-rules
-echo '0 2 * * *    root  /usr/bin/curl http://solr:8983/solr/dovecot-fts/update?optimize=true >> /dev/console 2>&1' > /etc/cron.d/solr-optimize
-echo '*/20 * * * * vmail /usr/local/bin/quarantine_notify.py >> /dev/console 2>&1' > /etc/cron.d/quarantine_notify
-echo '15 4 * * * vmail /usr/local/bin/clean_q_aged.sh >> /dev/console 2>&1' > /etc/cron.d/clean_q_aged
-echo '*/5 * * * *  vmail /usr/local/bin/repl_health.sh >> /dev/console 2>&1' > /etc/cron.d/repl_health
-else
-echo '25 * * * *   vmail /usr/local/bin/maildir_gc.sh >> /dev/console 2>&1' > /etc/cron.d/maildir_gc
-echo '30 1 * * *   root  /usr/local/bin/sa-rules.sh  >> /dev/console 2>&1' > /etc/cron.d/sa-rules
-echo '0 2 * * *    root  /usr/bin/curl http://solr:8983/solr/dovecot-fts/update?optimize=true >> /dev/console 2>&1' > /etc/cron.d/solr-optimize
-echo '*/5 * * * *  vmail /usr/local/bin/repl_health.sh >> /dev/console 2>&1' > /etc/cron.d/repl_health
-fi
-
-# Fix more than 1 hardlink issue
-touch /etc/crontab /etc/cron.*/*
 
 # Prepare environment file for cronjobs
 printenv | sed 's/^\(.*\)$/export \1/g' > /source_env.sh

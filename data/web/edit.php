@@ -106,13 +106,14 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         <div class="form-group">
           <label class="control-label col-sm-2" for="username_new"><?=$lang['edit']['username'];?></label>
           <div class="col-sm-10">
-            <input class="form-control" type="text" name="username_new" value="<?=htmlspecialchars($domain_admin);?>" />
+            <input class="form-control" type="text" name="username_new" value="<?=htmlspecialchars($domain_admin);?>" required onkeyup="this.value = this.value.toLowerCase();" />
+            &rdsh; <kbd>a-z - _ .</kbd>
           </div>
         </div>
         <div class="form-group">
           <label class="control-label col-sm-2" for="domains"><?=$lang['edit']['domains'];?></label>
           <div class="col-sm-10">
-            <select data-live-search="true" class="full-width-select" name="domains" multiple required>
+            <select data-live-search="true" data-container="body" class="full-width-select" name="domains" multiple required>
             <?php
             foreach ($result['selected_domains'] as $domain):
             ?>
@@ -167,7 +168,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           </div>
           <div class="col-sm-10">
             <div class="form-group">
-              <select id="da_acl" name="da_acl" size="10" multiple>
+              <select id="da_acl" name="da_acl" size="10" data-container="body" multiple>
               <?php
               $da_acls = acl('get', 'domainadmin', $domain_admin);
               foreach ($da_acls as $acl => $val):
@@ -197,14 +198,15 @@ if (isset($_SESSION['mailcow_cc_role'])) {
       $result = admin('details', $admin);
       if (!empty($result)) {
       ?>
-      <h4><?=$lang['edit']['domain_admin'];?></h4>
+      <h4><?=$lang['edit']['admin'];?></h4>
       <br>
       <form class="form-horizontal" data-id="editadmin" role="form" method="post" autocomplete="off">
         <input type="hidden" value="0" name="active">
         <div class="form-group">
           <label class="control-label col-sm-2" for="username_new"><?=$lang['edit']['username'];?></label>
           <div class="col-sm-10">
-            <input class="form-control" type="text" name="username_new" value="<?=htmlspecialchars($admin);?>" />
+            <input class="form-control" type="text" name="username_new" onkeyup="this.value = this.value.toLowerCase();" required value="<?=htmlspecialchars($admin);?>" />
+            &rdsh; <kbd>a-z - _ .</kbd>
           </div>
         </div>
         <div class="form-group">

@@ -1045,32 +1045,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
-          if (!empty($password) && !empty($password2)) {
-            if (!preg_match('/' . $GLOBALS['PASSWD_REGEP'] . '/', $password)) {
-              $_SESSION['return'][] = array(
-                'type' => 'danger',
-                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                'msg' => 'password_complexity'
-              );
-              return false;
-            }
-            if ($password != $password2) {
-              $_SESSION['return'][] = array(
-                'type' => 'danger',
-                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                'msg' => 'password_mismatch'
-              );
-              return false;
-            }
-            $password_hashed = hash_password($password);
+          if (password_check($password, $password2) !== true) {
+            return false;
+          }
+          // support pre hashed passwords
+          if (preg_match('/^{(ARGON2I|ARGON2ID|BLF-CRYPT|CLEAR|CLEARTEXT|CRYPT|DES-CRYPT|LDAP-MD5|MD5|MD5-CRYPT|PBKDF2|PLAIN|PLAIN-MD4|PLAIN-MD5|PLAIN-TRUNC|PLAIN-TRUNC|SHA|SHA1|SHA256|SHA256-CRYPT|SHA512|SHA512-CRYPT|SMD5|SSHA|SSHA256|SSHA512)}/i', $password)) {
+            $password_hashed = $password;
           }
           else {
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => 'password_empty'
-            );
-            return false;
+            $password_hashed = hash_password($password);
           }
           if ($MailboxData['count'] >= $DomainData['mailboxes']) {
             $_SESSION['return'][] = array(
@@ -2388,11 +2371,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               return false;
             }
-            $stmt = $pdo->prepare("SELECT `quota`, `maxquota`
-              FROM `domain`
-                WHERE `domain` = :domain");
-            $stmt->execute(array(':domain' => $domain));
-            $DomainData = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
@@ -2401,7 +2379,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
-            if ((($is_now['quota_used'] / 1048576) + $quota_m) > $DomainData['quota']) {
+            $DomainData = mailbox('get', 'domain_details', $domain);
+            if ($quota_m > ($is_now['max_new_quota'] / 1048576)) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -2409,11 +2388,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
-            if ($quota_m > $DomainData['maxquota']) {
+            if ($quota_m > $DomainData['max_quota_for_mbox']) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                'msg' => array('mailbox_quota_exceeded', $DomainData['maxquota'])
+                'msg' => array('mailbox_quota_exceeded', $DomainData['max_quota_for_mbox'])
               );
               continue;
             }
@@ -2603,21 +2582,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ));
               }
             }
-            if (!empty($password) && !empty($password2)) {
-              if (!preg_match('/' . $GLOBALS['PASSWD_REGEP'] . '/', $password)) {
-                $_SESSION['return'][] = array(
-                  'type' => 'danger',
-                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                  'msg' => 'password_complexity'
-                );
-                continue;
-              }
-              if ($password != $password2) {
-                $_SESSION['return'][] = array(
-                  'type' => 'danger',
-                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                  'msg' => 'password_mismatch'
-                );
+            if (!empty($password)) {
+              if (password_check($password, $password2) !== true) {
                 continue;
               }
               // support pre hashed passwords

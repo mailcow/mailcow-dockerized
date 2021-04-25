@@ -114,6 +114,132 @@ function hash_password($password) {
   }
   return $pw_hash;
 }
+function password_complexity($_action, $_data = null) {
+	global $redis;
+	global $lang;
+  switch ($_action) {
+    case 'edit':
+      if ($_SESSION['mailcow_cc_role'] != "admin") {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }
+      $is_now = password_complexity('get');
+      if (!empty($is_now)) {
+        $length = (isset($_data['length']) && intval($_data['length']) >= 3) ? intval($_data['length']) : $is_now['length'];
+        $chars = (isset($_data['chars'])) ? intval($_data['chars']) : $is_now['chars'];
+        $lowerupper = (isset($_data['lowerupper'])) ? intval($_data['lowerupper']) : $is_now['lowerupper'];
+        $special_chars = (isset($_data['special_chars'])) ? intval($_data['special_chars']) : $is_now['special_chars'];
+        $numbers = (isset($_data['numbers'])) ? intval($_data['numbers']) : $is_now['numbers'];
+      }
+      try {
+        $redis->hMSet('PASSWD_POLICY', [
+          'length' => $length,
+          'chars' => $chars,
+          'special_chars' => $special_chars,
+          'lowerupper' => $lowerupper,
+          'numbers' => $numbers
+        ]);
+      }
+      catch (RedisException $e) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => array('redis_error', $e)
+        );
+        return false;
+      }
+      $_SESSION['return'][] = array(
+        'type' => 'success',
+        'log' => array(__FUNCTION__, $_action, $_data),
+        'msg' => 'password_policy_saved'
+      );
+    break;
+    case 'get':
+      try {
+        $length = $redis->hGet('PASSWD_POLICY', 'length');
+        $chars = $redis->hGet('PASSWD_POLICY', 'chars');
+        $special_chars = $redis->hGet('PASSWD_POLICY', 'special_chars');
+        $lowerupper = $redis->hGet('PASSWD_POLICY', 'lowerupper');
+        $numbers = $redis->hGet('PASSWD_POLICY', 'numbers');
+        return array(
+          'length' => $length,
+          'chars' => $chars,
+          'special_chars' => $special_chars,
+          'lowerupper' => $lowerupper,
+          'numbers' => $numbers
+        );
+      }
+      catch (RedisException $e) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => array('redis_error', $e)
+        );
+        return false;
+      }
+      return false;
+    break;
+    case 'html':
+      $policies = password_complexity('get');
+      foreach ($policies as $name => $value) {
+        if ($value != 0) {
+          $policy_text[] = sprintf($lang['admin']["password_policy_$name"], $value);
+        }
+      }
+      return '<p class="help-block small">- ' . implode('<br>- ', $policy_text) . '</p>';
+    break;
+  }
+}
+function password_check($password1, $password2) {
+  $password_complexity = password_complexity('get');
+
+  if (empty($password1) || empty($password2)) {
+    $_SESSION['return'][] = array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $_action, $_type),
+      'msg' => 'password_complexity'
+    );
+    return false;
+  }
+
+  if ($password1 != $password2) {
+    $_SESSION['return'][] = array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $_action, $_type),
+      'msg' => 'password_mismatch'
+    );
+    return false;
+  }
+
+  $given_password['length'] = strlen($password1);
+  $given_password['special_chars'] = preg_match('/[^a-zA-Z\d]/', $password1);
+  $given_password['chars'] = preg_match('/[a-zA-Z]/',$password1);
+  $given_password['numbers'] = preg_match('/\d/', $password1);
+  $lower = strlen(preg_replace("/[^a-z]/", '', $password1));
+  $upper = strlen(preg_replace("/[^A-Z]/", '', $password1));
+  $given_password['lowerupper'] = ($lower > 0 && $upper > 0) ? true : false;
+
+  if (
+    ($given_password['length'] < $password_complexity['length']) ||
+    ($password_complexity['special_chars'] == 1 && (intval($given_password['special_chars']) != $password_complexity['special_chars'])) ||
+    ($password_complexity['chars'] == 1 && (intval($given_password['chars']) != $password_complexity['chars'])) ||
+    ($password_complexity['numbers'] == 1 && (intval($given_password['numbers']) != $password_complexity['numbers'])) ||
+    ($password_complexity['lowerupper'] == 1 && (intval($given_password['lowerupper']) != $password_complexity['lowerupper']))
+  ) {
+    $_SESSION['return'][] = array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $_action, $_type),
+      'msg' => 'password_complexity'
+    );
+    return false;
+  }
+
+  return true;
+}
 function last_login($user) {
   global $pdo;
   $stmt = $pdo->prepare('SELECT `remote`, `time` FROM `logs`

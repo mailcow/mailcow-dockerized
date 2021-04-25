@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.12.0](https://github.com/ddeboer/imap/tree/1.12.0) (2021-04-02)
+
+[Full Changelog](https://github.com/ddeboer/imap/compare/1.11.0...1.12.0)
+
+**Implemented enhancements:**
+
+- Require PHP 7.4 for types attributes [\#496](https://github.com/ddeboer/imap/pull/496) ([Slamdunk](https://github.com/Slamdunk))
+- Add x-mac-ce charset as alias for windows-1250 [\#488](https://github.com/ddeboer/imap/pull/488) ([aixkalur](https://github.com/aixkalur))
+
+**Fixed bugs:**
+
+- Cannot decode a content with an uknown encoding [\#491](https://github.com/ddeboer/imap/issues/491)
+
+**Closed issues:**
+
+- Implement copyMove\(\) function [\#494](https://github.com/ddeboer/imap/issues/494)
+
+**Merged pull requests:**
+
+- Implement move with imap\_mail\_copy+CP\_MOVE [\#495](https://github.com/ddeboer/imap/pull/495) ([Slamdunk](https://github.com/Slamdunk))
+- Dev tools refactor [\#486](https://github.com/ddeboer/imap/pull/486) ([Slamdunk](https://github.com/Slamdunk))
+
 ## [1.11.0](https://github.com/ddeboer/imap/tree/1.11.0) (2020-11-30)
 
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.10.1...1.11.0)
