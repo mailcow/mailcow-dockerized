@@ -223,6 +223,7 @@ CONFIG_ARRAY=(
   "XMPP_S2S_PORT"
   "XMPP_HTTPS_PORT"
   "ADDITIONAL_SERVER_NAMES"
+  "ACME_CONTACT"
 )
 
 sed -i --follow-symlinks '$a\' mailcow.conf
@@ -433,6 +434,15 @@ for option in ${CONFIG_ARRAY[@]}; do
     if ! grep -q ${option} mailcow.conf; then
       echo "XMPP_HTTPS_PORT=5443" >> mailcow.conf
     fi
+  elif [[ ${option} == "ACME_CONTACT" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo '# Let\'s Encrypt registration contact information' >> mailcow.conf
+      echo '# Optional: Leave empty for none' >> mailcow.conf
+      echo '# This value is only used on first order!' >> mailcow.conf
+      echo '# Setting it at a later point will require the following steps:' >> mailcow.conf
+      echo '# https://mailcow.github.io/mailcow-dockerized-docs/debug-reset-tls/' >> mailcow.conf
+      echo 'ACME_CONTACT=' >> mailcow.conf
+  fi
   elif ! grep -q ${option} mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"
     echo "${option}=n" >> mailcow.conf
