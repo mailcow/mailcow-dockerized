@@ -336,6 +336,13 @@ DOVECOT_MASTER_USER=
 # LEAVE EMPTY IF UNSURE
 DOVECOT_MASTER_PASS=
 
+# Let's Encrypt registration contact information
+# Optional: Leave empty for none
+# This value is only used on first order!
+# Setting it at a later point will require the following steps:
+# https://mailcow.github.io/mailcow-dockerized-docs/debug-reset-tls/
+ACME_CONTACT=
+
 EOF
 
 mkdir -p data/assets/ssl
