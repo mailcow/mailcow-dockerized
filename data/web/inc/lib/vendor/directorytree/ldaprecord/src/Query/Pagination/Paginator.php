@@ -11,7 +11,7 @@ class Paginator extends AbstractPaginator
      */
     protected function fetchCookie()
     {
-        return $this->query->controls[LDAP_CONTROL_PAGEDRESULTS]['value']['cookie'];
+        return $this->query->controls[LDAP_CONTROL_PAGEDRESULTS]['value']['cookie'] ?? null;
     }
 
     /**
