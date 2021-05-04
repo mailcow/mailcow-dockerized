@@ -436,7 +436,7 @@ for option in ${CONFIG_ARRAY[@]}; do
     fi
   elif [[ ${option} == "ACME_CONTACT" ]]; then
     if ! grep -q ${option} mailcow.conf; then
-      echo '# Let\'s Encrypt registration contact information' >> mailcow.conf
+      echo '# Let´s Encrypt registration contact information' >> mailcow.conf
       echo '# Optional: Leave empty for none' >> mailcow.conf
       echo '# This value is only used on first order!' >> mailcow.conf
       echo '# Setting it at a later point will require the following steps:' >> mailcow.conf
