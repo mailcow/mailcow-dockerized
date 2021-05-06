@@ -559,7 +559,7 @@ services:
             - olefy
 
     ejabberd-mailcow:
-      image: mailcow/ejabberd:1.5
+      image: mailcow/ejabberd:1.6
       volumes:
         - ./data/conf/ejabberd/ejabberd.yml:/home/ejabberd/conf/ejabberd.yml:z
         - xmpp-vol-1:/home/ejabberd/database:z
