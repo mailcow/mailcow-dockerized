@@ -10,6 +10,7 @@ data/assets/ssl/*
 data/conf/borgmatic/
 data/conf/clamav/whitelist.ign2
 data/conf/dovecot/acl_anyone
+data/assets/dovecot-archive/archive_email
 data/conf/dovecot/dovecot-master.passwd
 data/conf/dovecot/dovecot-master.userdb
 data/conf/dovecot/extra.conf
