@@ -384,11 +384,12 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.78
+      image: mailcow/acme:1.79
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
         - LOG_LINES=${LOG_LINES:-9999}
+        - ACME_CONTACT=${ACME_CONTACT:-}
         - ADDITIONAL_SAN=${ADDITIONAL_SAN}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
         - DBNAME=${DBNAME}
@@ -558,7 +559,7 @@ services:
             - olefy
 
     ejabberd-mailcow:
-      image: mailcow/ejabberd:1.5
+      image: mailcow/ejabberd:1.6
       volumes:
         - ./data/conf/ejabberd/ejabberd.yml:/home/ejabberd/conf/ejabberd.yml:z
         - xmpp-vol-1:/home/ejabberd/database:z

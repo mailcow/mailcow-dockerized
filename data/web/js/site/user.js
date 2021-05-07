@@ -177,6 +177,7 @@ jQuery(function($){
         },
         success: function (data) {
           $.each(data, function (i, item) {
+            item.name = escapeHtml(item.name);
             if (acl_data.app_passwds === 1) {
               item.action = '<div class="btn-group">' +
                 '<a href="/edit/app-passwd/' + item.id + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +

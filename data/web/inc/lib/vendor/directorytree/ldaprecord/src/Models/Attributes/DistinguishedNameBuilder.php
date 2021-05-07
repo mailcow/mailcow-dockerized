@@ -193,6 +193,36 @@ class DistinguishedNameBuilder
     }
 
     /**
+     * Get the components of the DN.
+     *
+     * @param null|string $type
+     *
+     * @return array
+     */
+    public function components($type = null)
+    {
+        return is_null($type)
+            ? $this->components
+            : $this->componentsOfType($type);
+    }
+
+    /**
+     * Get the components of a particular type.
+     *
+     * @param string $type
+     *
+     * @return array
+     */
+    protected function componentsOfType($type)
+    {
+        $components = array_filter($this->components, function ($component) use ($type) {
+            return ([$name] = $component) && strtolower($name) === strtolower($type);
+        });
+
+        return array_values($components);
+    }
+
+    /**
      * Get the fully qualified DN.
      *
      * @return DistinguishedName
