@@ -148,7 +148,7 @@
         "arrival_time": "Čas príchodu (čas servera)",
         "authed_user": "Overený používateľ",
         "ays": "Naozaj chcete pokračovať?",
-        "ban_list_info": "Zobraziť zoznam zakázaných IP nižšie: <b>sieť (zostávajúci čas zákazu) - [akcia]</b>.<br />IP adresy zaradené na unban budú odstránené z aktívneho zoznamu v priebehu niekoľkých sekúnd.<br />Červené položky zobrazujú permanentné blokovanie.",
+        "ban_list_info": "Zoznam zakázaných IP je zobrazený nižšie: <b>sieť (zostávajúci čas zákazu) - [akcia]</b>.<br />IP adresy zaradené na unban budú odstránené z aktívneho zoznamu v priebehu niekoľkých sekúnd.<br />Červené položky zobrazujú permanentné blokovanie.",
         "change_logo": "Zmeniť logo",
         "configuration": "Konfigurácia",
         "convert_html_to_text": "Konvertovať HTML do obyčajného textu",
