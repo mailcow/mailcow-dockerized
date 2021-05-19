@@ -6,6 +6,11 @@ if [ "$(id -u)" -ne "0" ]; then
   exit 1
 fi
 
+# Run pre-update-hook
+if [ -f "$PWD/pre_update_hook.sh" ]; then
+  bash $PWD/pre_update_hook.sh
+fi
+
 if [[ "$(uname -r)" =~ ^4\.15\.0-60 ]]; then
   echo "DO NOT RUN mailcow ON THIS UBUNTU KERNEL!";
   echo "Please update to 5.x or use another distribution."
@@ -644,6 +649,11 @@ fi
 
 echo -e "\e[32mCollecting garbage...\e[0m"
 docker_garbage
+
+# Run post-update-hook
+if [ -f "$PWD/post_update_hook.sh" ]; then
+  bash $PWD/post_update_hook.sh
+fi
 
 #echo "In case you encounter any problem, hard-reset to a state before updating mailcow:"
 #echo
