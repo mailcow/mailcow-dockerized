@@ -752,7 +752,6 @@
 		"sieve_preset_7": "Rediriger et garder/déposer",
 		"sieve_preset_8": "Supprimer le message envoyé à une adresse alias dont fait partie l’expéditeur",
 		"sieve_preset_header": "Voir les exemples de préréglages ci-dessous. Pour plus de détails voir <a href=\"https://en.wikipedia.org/wiki/Sieve_(mail_filtering_language)\" target=\"_blank\">Wikipedia</a>.",
-		"sogo_allow_admin_hint": "Les connexions administratives Sogo ne sont disponibles que pour les boîtes mail avec un profil SOGo existant. Un utilisateur doit avoir été connecté à Sogo au moins une fois.",
 		"sogo_visible": "Alias visible dans SOGo",
 		"sogo_visible_n": "Masquer alias dans SOGo",
 		"sogo_visible_y": "Afficher alias dans SOGo",

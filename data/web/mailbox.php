@@ -113,7 +113,6 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             </div>
             <?php if (getenv('ALLOW_ADMIN_EMAIL_LOGIN') == "y" && getenv('SKIP_SOGO') != "y") { ?>
             <div class="panel-body help-block">
-            <?=$lang['mailbox']['sogo_allow_admin_hint'];?>
             </div>
             <?php } ?>
             <div class="mass-actions-mailbox" data-actions-header="true"></div>

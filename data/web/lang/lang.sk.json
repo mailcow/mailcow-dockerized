@@ -765,7 +765,6 @@
         "sieve_preset_7": "Presmerovať a uchovať/zahodiť",
         "sieve_preset_8": "Zahodiť správu odoslanú na alias adresu, ktorej je odosielateľ súčasťou",
         "sieve_preset_header": "Prosím pozrite sa na ukážku nižšie. Pre viac informácií pozrite <a href=\"https://en.wikipedia.org/wiki/Sieve_(mail_filtering_language)\" target=\"_blank\">Wikipedia</a>.",
-        "sogo_allow_admin_hint": "Administratívne SOGo prihlásenia sú dostupné pre poštové schránky s existujúcim SOGo profilom. Požívateľ musí byť prihlásený do SOGo najmenej raz.",
         "sogo_visible": "Alias je viditeľný v SOGo",
         "sogo_visible_n": "Skryť alias v SOGo",
         "sogo_visible_y": "Zobraziť alias v SOGo",
