@@ -1109,7 +1109,8 @@
         "waiting": "Waiting",
         "week": "week",
         "weekly": "Weekly",
-        "weeks": "weeks"
+        "weeks": "weeks",
+        "years": "years"
     },
     "warning": {
         "cannot_delete_self": "Cannot delete logged in user",

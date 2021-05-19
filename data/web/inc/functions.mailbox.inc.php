@@ -35,7 +35,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           else {
             $username = $_SESSION['mailcow_cc_username'];
           }
-          if (!is_numeric($_data["validity"]) || $_data["validity"] > 672) {
+          if (!is_numeric($_data["validity"]) || $_data["validity"] > 876600) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),

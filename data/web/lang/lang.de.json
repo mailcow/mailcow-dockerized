@@ -1111,7 +1111,8 @@
         "waiting": "Warte auf Ausführung",
         "week": "Woche",
         "weekly": "Wöchentlich",
-        "weeks": "Wochen"
+        "weeks": "Wochen",
+        "years": "Jahre"
     },
     "warning": {
         "cannot_delete_self": "Kann derzeit eingeloggten Benutzer nicht entfernen",
