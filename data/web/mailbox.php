@@ -111,10 +111,6 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                 </ul>
               </div>
             </div>
-            <?php if (getenv('ALLOW_ADMIN_EMAIL_LOGIN') == "y" && getenv('SKIP_SOGO') != "y") { ?>
-            <div class="panel-body help-block">
-            </div>
-            <?php } ?>
             <div class="mass-actions-mailbox" data-actions-header="true"></div>
             <div class="table-responsive">
               <table id="mailbox_table" class="table table-striped"></table>
