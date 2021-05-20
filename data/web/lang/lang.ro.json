@@ -762,7 +762,6 @@
         "sieve_preset_7": "Redirecționează și păstrează/aruncă",
         "sieve_preset_8": "Renunțați la mesajul trimis la o adresă alias din care face parte expeditorul",
         "sieve_preset_header": "Vedeți exemplul de presetări de mai jos. Pentru mai multe detalii accesați <a href=\"https://en.wikipedia.org/wiki/Sieve_(mail_filtering_language)\" target=\"_blank\">Wikipedia</a>.",
-        "sogo_allow_admin_hint": "Conectările SOGo administrative sunt disponibile numai pentru căsuțele poștale cu un profil SOGo existent. Un utilizator trebuie să se fi fost conectat la SOGo cel puțin o dată.",
         "sogo_visible": "Aliasul este vizibil în SOGo",
         "sogo_visible_n": "Ascunde alias în SOGo",
         "sogo_visible_y": "Afișază alias în SOGo",
