@@ -93,7 +93,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 		fido2(array("action" => "unset_fido2_key", "post_data" => $_POST));
 	}
 }
-if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admin") {
+if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admin" && !isset($_SESSION['mailcow_cc_api'])) {
   // TODO: Move file upload to API?
 	if (isset($_POST["submit_main_logo"])) {
     if ($_FILES['main_logo']['error'] == 0) {
