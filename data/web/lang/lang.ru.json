@@ -765,7 +765,6 @@
         "sieve_preset_7": "Redirect and keep/drop",
         "sieve_preset_8": "Discard message sent to an alias address the sender is part of",
         "sieve_preset_header": "Пожалуйста, ознакомьтесь с примерами ниже. Для более подробной информации прочитайте <a href=\"https://en.wikipedia.org/wiki/Sieve_(mail_filtering_language)\" target=\"_blank\">Sieve Wikipedia</a>.",
-        "sogo_allow_admin_hint": "Административные логины SOGo доступны только для почтовых ящиков с существующим профилем SOGo. Пользователь должен был войти в SOGo хотя бы один раз.",
         "sogo_visible": "Отображать псевдоним в SOGo",
         "sogo_visible_n": "Не отображать псевдоним в SOGo",
         "sogo_visible_y": "Отображать псевдоним в SOGo",

@@ -767,7 +767,6 @@
         "sieve_preset_7": "Vidarebefodra och behåll, eller kasta meddelandet.",
         "sieve_preset_8": "Kasta meddelanden som skickas till en alias-adress som avsändaren redan tillhör.",
         "sieve_preset_header": "Exempel på postfilter finns nedan. För mer information se <a href=\"https://en.wikipedia.org/wiki/Sieve_(mail_filtering_language)\" target=\"_blank\">Wikipedia</a>.",
-        "sogo_allow_admin_hint": "Administrativ SOGo-inloggning är endast tillgängliga för postlådor med en befintlig SOGo-profil. Användaren måste ha varit inloggad på SOGo minst en gång innan.",
         "sogo_visible": "Visa detta alias i SOGo",
         "sogo_visible_n": "Dölj alias i SOGo",
         "sogo_visible_y": "Visa alias i SOGo",
