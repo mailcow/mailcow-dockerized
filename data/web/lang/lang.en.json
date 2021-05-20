@@ -577,6 +577,7 @@
         "pushover_vars": "When no sender filter is defined, all mails will be considered.<br>Regex filters as well as exact sender checks can be defined individually and will be considered sequentially. They do not depend on each other.<br>Useable variables for text and title (please take note of data protection policies)",
         "pushover_verify": "Verify credentials",
         "quota_mb": "Quota (MiB)",
+        "quota_warning_bcc": "Quota warning BCC",
         "ratelimit": "Rate limit",
         "redirect_uri": "Redirect/Callback URL",
         "relay_all": "Relay all recipients",

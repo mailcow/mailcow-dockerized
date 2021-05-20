@@ -579,6 +579,7 @@
         "pushover_vars": "Wenn kein Sender-Filter definiert ist, werden alle E-Mails berücksichtigt.<br>Die direkte Absenderprüfung und reguläre Ausdrücke werden unabhängig voneinander geprüft, sie <b>hängen nicht voneinander ab</b> und werden der Reihe nach ausgeführt. <br>Verwendbare Variablen für Titel und Text (Datenschutzrichtlinien beachten)",
         "pushover_verify": "Verbindung verifizieren",
         "quota_mb": "Speicherplatz (MiB)",
+        "quota_warning_bcc": "Quota-Warnung BCC",
         "ratelimit": "Rate Limit",
         "redirect_uri": "Redirect/Callback-URL",
         "relay_all": "Alle Empfänger-Adressen relayen",
