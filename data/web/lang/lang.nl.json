@@ -751,7 +751,6 @@
         "sieve_preset_7": "Forward en behoud/verwijder",
         "sieve_preset_8": "Verwijder mail verstuurd naar een aliasadres van de afzender",
         "sieve_preset_header": "Zie de onderstaande voorbeelden. Raadpleeg <a href=\"https://en.wikipedia.org/wiki/Sieve_(mail_filtering_language)\" target=\"_blank\">Wikipedia</a> voor meer informatie.",
-        "sogo_allow_admin_hint": "Administratieve SOGo-logins zijn uitsluitend beschikbaar voor mailboxen met een bestaand SOGo-profiel. Een gebruiker moet zich ten minste één keer aanmelden bij SOGo.",
         "sogo_visible": "Alias tonen in SOGo",
         "sogo_visible_n": "Verberg alias in SOGo",
         "sogo_visible_y": "Toon alias in SOGo",
