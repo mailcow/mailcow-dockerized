@@ -725,7 +725,6 @@
         "sieve_preset_7": "Omdiriger og hold/slip",
         "sieve_preset_8": "Kassér besked sendt til en aliasadresse, som afsenderen er en del af",
         "sieve_preset_header": "Se eksemplet på forudindstillinger nedenfor. For flere detaljer se <a href=\"https://en.wikipedia.org/wiki/Sieve_(mail_filtering_language)\" target=\"_blank\">Wikipedia</a>.",
-        "sogo_allow_admin_hint": "Administrative SOGo-logins er kun tilgængelige for postkasser med en eksisterende SOGo-profil. En bruger skal have været logget på SOGo mindst én gang.",
         "sogo_visible": "Alias er synligt i SOGo",
         "sogo_visible_n": "Skjul alias i SOGo",
         "sogo_visible_y": "Vis alias i SOGo",

@@ -768,7 +768,6 @@
         "sieve_preset_7": "Weiterleiten und behalten oder verwerfen",
         "sieve_preset_8": "Nachricht verwerfen, wenn Absender und Alias-Ziel identisch sind.",
         "sieve_preset_header": "Beispielinhalte zur Einsicht stehen nachstehend bereit. Siehe auch <a href=\"https://de.wikipedia.org/wiki/Sieve\" target=\"_blank\">Wikipedia</a>.",
-        "sogo_allow_admin_hint": "Administrative SOGo-Logins sind nur für Mailboxen verfügbar, die bereits ein SOGo-Profil besitzen. Ein Benutzer muss zumindest einmal in SOGo eingeloggt gewesen sein, um ein Profil zu besitzen.",
         "sogo_visible": "Alias Sichtbarkeit in SOGo",
         "sogo_visible_n": "Alias in SOGo verbergen",
         "sogo_visible_y": "Alias in SOGo anzeigen",
