@@ -13,6 +13,17 @@ function isset_has_content($var) {
     return false;
   }
 }
+function readable_random_string($length = 8) {
+  $string = '';
+  $vowels = array('a', 'e', 'i', 'o', 'u');
+  $consonants = array('b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z');
+  $max = $length / 2;
+  for ($i = 1; $i <= $max; $i++) {
+    $string .= $consonants[rand(0,19)];
+    $string .= $vowels[rand(0,4)];
+  }
+  return $string;
+}
 // Validates ips and cidrs
 function valid_network($network) {
   if (filter_var($network, FILTER_VALIDATE_IP)) {
@@ -951,7 +962,6 @@ function user_get_alias_details($username) {
   $run = $stmt->fetchAll(PDO::FETCH_ASSOC);
   while ($row = array_shift($run)) {
     $data['shared_aliases'][$row['shared_aliases']]['public_comment'] = htmlspecialchars($row['public_comment']);
-
     //$data['shared_aliases'][] = $row['shared_aliases'];
   }
 
@@ -978,6 +988,7 @@ function user_get_alias_details($username) {
       continue;
     }
     $data['direct_aliases'][$row['ad_alias']]['public_comment'] = '↪ ' . $row['alias_domain'];
+    $data['alias_domains'][] = $row['alias_domain'];
   }
   $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(`send_as` SEPARATOR ', '), '&#10008;') AS `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `send_as` NOT LIKE '@%';");
   $stmt->execute(array(':username' => $username));

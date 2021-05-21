@@ -222,6 +222,11 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
         <hr>
         <?php // Get user information about aliases
         $user_get_alias_details = user_get_alias_details($username);
+        $user_domains[] = mailbox('get', 'mailbox_details', $username)['domain'];
+        $user_alias_domains = $user_get_alias_details['alias_domains'];
+        if (!empty($user_alias_domains)) {
+          $user_domains = array_merge($user_domains, $user_alias_domains);
+        }
         ?>
         <div class="row">
           <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['direct_aliases'];?>:
@@ -448,22 +453,29 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
           <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li><a data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"validity":"1"}' href="#"><?=$lang['user']['expire_in'];?> 1 <?=$lang['user']['hour'];?></a></li>
-            <li><a data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"validity":"6"}' href="#"><?=$lang['user']['expire_in'];?> 6 <?=$lang['user']['hours'];?></a></li>
             <li><a data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"validity":"24"}' href="#"><?=$lang['user']['expire_in'];?> 1 <?=$lang['user']['day'];?></a></li>
             <li><a data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"validity":"168"}' href="#"><?=$lang['user']['expire_in'];?> 1 <?=$lang['user']['week'];?></a></li>
-            <li><a data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"validity":"672"}' href="#"><?=$lang['user']['expire_in'];?> 4 <?=$lang['user']['weeks'];?></a></li>
+            <li><a data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"validity":"744"}' href="#"><?=$lang['user']['expire_in'];?> 1 <?=$lang['user']['month'];?></a></li>
+            <li><a data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"validity":"8760"}' href="#"><?=$lang['user']['expire_in'];?> 1 <?=$lang['user']['year'];?></a></li>
+            <li><a data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"validity":"87600"}' href="#"><?=$lang['user']['expire_in'];?> 10 <?=$lang['user']['years'];?></a></li>
             <li role="separator" class="divider"></li>
             <li><a data-action="delete_selected" data-id="tla" data-api-url='delete/time_limited_alias' href="#"><?=$lang['mailbox']['remove'];?></a></li>
           </ul>
         </div>
         <div class="btn-group">
-          <a class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['alias_create_random'];?> <span class="caret"></span></a>
+          <a class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['alias_create_random'];?>, 1 <?=$lang['user']['year'];?> <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a data-action="add_item" data-api-url='add/time_limited_alias' data-api-attr='{"validity":"1"}' href="#">1 <?=$lang['user']['hour'];?></a></li>
-            <li><a data-action="add_item" data-api-url='add/time_limited_alias' data-api-attr='{"validity":"6"}' href="#">6 <?=$lang['user']['hours'];?></a></li>
-            <li><a data-action="add_item" data-api-url='add/time_limited_alias' data-api-attr='{"validity":"24"}' href="#">1 <?=$lang['user']['day'];?></a></li>
-            <li><a data-action="add_item" data-api-url='add/time_limited_alias' data-api-attr='{"validity":"168"}' href="#">1 <?=$lang['user']['week'];?></a></li>
-            <li><a data-action="add_item" data-api-url='add/time_limited_alias' data-api-attr='{"validity":"672"}' href="#">4 <?=$lang['user']['weeks'];?></a></li>
+          <?php
+          foreach($user_domains as $domain) {
+          ?>
+            <li>
+              <a data-action="add_item" data-api-url='add/time_limited_alias' data-api-attr='{"domain":"<?=$domain;?>"}' href="#">
+                @ <?=$domain;?>
+              </a>
+            </li>
+          <?php
+          }
+          ?>
           </ul>
         </div>
       </div>
@@ -474,43 +486,28 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 		<h4><?=$lang['user']['spamfilter_behavior'];?></h4>
 		<form class="form-horizontal" role="form" data-id="spam_score" method="post">
 			<div class="form-group">
-				<div class="col-lg-6 col-sm-12">
-					<input data-acl="<?=$_SESSION['acl']['spam_score'];?>" name="spam_score" id="spam_score" type="text" style="width: 100%;"
-						data-provide="slider"
-						data-slider-min="1"
-						data-slider-max="2000"
-            data-slider-scale='logarithmic'
-						data-slider-step="0.5"
-						data-slider-range="true"
-						data-slider-tooltip='always'
-						data-slider-id="slider1"
-						data-slider-value="[<?=mailbox('get', 'spam_score', $username);?>]"
-						data-slider-step="1" />
-					<br /><br />
-					<ul>
-						<li><?=$lang['user']['spamfilter_green'];?></li>
-						<li><?=$lang['user']['spamfilter_yellow'];?></li>
-						<li><?=$lang['user']['spamfilter_red'];?></li>
+				<div class="col-lg-8 col-sm-12">
+          <div id="spam_score" data-provide="slider" data-acl="<?=$_SESSION['acl']['spam_score'];?>"></div>
+					<input id="spam_score_value" name="spam_score" type="hidden" value="<?=mailbox('get', 'spam_score', $username);?>">
+					<ul class="list-group list-group-flush">
+						<li class="list-group-item"><span class="label label-ham spam-ham-score"></span> <?=$lang['user']['spamfilter_green'];?></li>
+						<li class="list-group-item"><span class="label label-spam spam-spam-score"></span> <?=$lang['user']['spamfilter_yellow'];?></li>
+						<li class="list-group-item"><span class="label label-reject spam-reject-score"></span> <?=$lang['user']['spamfilter_red'];?></li>
 					</ul>
-					<p><?=$lang['user']['spamfilter_hint'];?></p>
 				</div>
 			</div>
-      <div class="form-group">
-				<div class="col-sm-10">
-				</div>
-        <div class="btn-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
-          <a type="button" class="btn btn-sm btn-success" data-action="edit_selected"
-            data-item="<?= htmlentities($username); ?>"
-            data-id="spam_score"
-            data-api-url='edit/spam-score'
-            data-api-attr='{}'><?=$lang['user']['save_changes'];?></a>
-          <a type="button" class="btn btn-sm btn-default" data-action="edit_selected"
-            data-item="<?= htmlentities($username); ?>"
-            data-id="spam_score_reset"
-            data-api-url='edit/spam-score'
-            data-api-attr='{"spam_score":"default"}'><?=$lang['user']['spam_score_reset'];?></a>
-        </div>
-			</div>
+      <div class="btn-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
+        <a type="button" class="btn btn-sm btn-success" data-action="edit_selected"
+          data-item="<?= htmlentities($username); ?>"
+          data-id="spam_score"
+          data-api-url='edit/spam-score'
+          data-api-attr='{}'><?=$lang['user']['save_changes'];?></a>
+        <a type="button" class="btn btn-sm btn-default" data-action="edit_selected"
+          data-item="<?= htmlentities($username); ?>"
+          data-id="spam_score_reset"
+          data-api-url='edit/spam-score'
+          data-api-attr='{"spam_score":"default"}'><?=$lang['user']['spam_score_reset'];?></a>
+      </div>
 		</form>
 		<hr>
 		<div class="row">
@@ -690,11 +687,12 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/modals/user.php';
 <script type='text/javascript'>
 <?php
 $lang_user = json_encode($lang['user']);
-echo "var lang = ". $lang_user . ";\n";
-echo "var acl = '". json_encode($_SESSION['acl']) . "';\n";
-echo "var csrf_token = '". $_SESSION['CSRF']['TOKEN'] . "';\n";
-echo "var mailcow_cc_username = '". $_SESSION['mailcow_cc_username'] . "';\n";
-echo "var pagination_size = '". $PAGINATION_SIZE . "';\n";
+echo "var lang = " . $lang_user . ";\n";
+echo "var user_spam_score = [" . mailbox('get', 'spam_score', $username) . "];\n";
+echo "var acl = '" . json_encode($_SESSION['acl']) . "';\n";
+echo "var csrf_token = '" . $_SESSION['CSRF']['TOKEN'] . "';\n";
+echo "var mailcow_cc_username = '" . $_SESSION['mailcow_cc_username'] . "';\n";
+echo "var pagination_size = '" . $PAGINATION_SIZE . "';\n";
 ?>
 </script>
 <?php

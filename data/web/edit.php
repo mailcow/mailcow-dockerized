@@ -262,6 +262,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <li class="active"><a data-toggle="tab" href="#dedit"><?=$lang['edit']['domain'];?></a></li>
             <li><a data-toggle="tab" href="#dratelimit"><?=$lang['edit']['ratelimit'];?></a></li>
             <li><a data-toggle="tab" href="#dspamfilter"><?=$lang['edit']['spam_filter'];?></a></li>
+            <li><a data-toggle="tab" href="#dqwbcc"><?=$lang['edit']['quota_warning_bcc'];?></a></li>
           </ul>
           <hr>
           <div class="tab-content">

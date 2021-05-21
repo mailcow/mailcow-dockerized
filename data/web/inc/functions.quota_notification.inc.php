@@ -65,3 +65,76 @@ function quota_notification($_action, $_data = null) {
     break;
   }
 }
+function quota_notification_bcc($_action, $_data = null) {
+	global $redis;
+	$_data_log = $_data;
+  if ($_SESSION['mailcow_cc_role'] != "admin" && $_SESSION['mailcow_cc_role'] != "domainadmin") {
+    $_SESSION['return'][] = array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $_action, $_data_log),
+      'msg' => 'access_denied'
+    );
+    return false;
+  }
+  switch ($_action) {
+    case 'edit':
+      $domain = $_data['domain'];
+      if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }
+      $active = intval($_data['active']);
+      $bcc_rcpt = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $_data['bcc_rcpt']);
+      if (filter_var($bcc_rcpt, FILTER_VALIDATE_EMAIL) === false) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }
+      try {
+        $redis->hSet('QW_BCC', $domain, json_encode(array('bcc_rcpt' => $bcc_rcpt, 'active' => $active)));
+      }
+      catch (RedisException $e) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('redis_error', $e)
+        );
+        return false;
+      }
+      $_SESSION['return'][] = array(
+        'type' => 'success',
+        'log' => array(__FUNCTION__, $_action, $_data_log),
+        'msg' => 'saved_settings'
+      );
+    break;
+    case 'get':
+      $domain = $_data['domain'];
+      if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }
+      try {
+        return json_decode($redis->hGet('QW_BCC', $domain), true);
+      }
+      catch (RedisException $e) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('redis_error', $e)
+        );
+        return false;
+      }
+    break;
+  }
+}
