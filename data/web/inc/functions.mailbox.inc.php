@@ -35,7 +35,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           else {
             $username = $_SESSION['mailcow_cc_username'];
           }
-          if (!is_numeric($_data["validity"]) || $_data["validity"] > 672) {
+          if (isset($_data["validity"]) && !filter_var($_data["validity"], FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 87600)))) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -43,8 +43,17 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
-          $domain = mailbox('get', 'mailbox_details', $username)['domain'];
-          if (!is_valid_domain_name($domain)) {
+          else {
+            // Default to 1 yr
+            $_data["validity"] = 8760;
+          }
+          $domain = $_data['domain'];
+          $valid_domains[] = mailbox('get', 'mailbox_details', $username)['domain'];
+          $valid_alias_domains = user_get_alias_details($username)['alias_domains'];
+          if (!empty($valid_alias_domains)) {
+            $valid_domains = array_merge($valid_domains, $valid_alias_domains);
+          }
+          if (!in_array($domain, $valid_domains)) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -52,13 +61,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
-          $validity = strtotime("+".$_data["validity"]." hour");
-          $letters = 'abcefghijklmnopqrstuvwxyz1234567890';
-          $random_name = substr(str_shuffle($letters), 0, 24);
+          $validity = strtotime("+" . $_data["validity"] . " hour");
           $stmt = $pdo->prepare("INSERT INTO `spamalias` (`address`, `goto`, `validity`) VALUES
             (:address, :goto, :validity)");
           $stmt->execute(array(
-            ':address' => $random_name . '@' . $domain,
+            ':address' => readable_random_string(rand(rand(3, 9), rand(3, 9))) . '.' . readable_random_string(rand(rand(3, 9), rand(3, 9))) . '@' . $domain,
             ':goto' => $username,
             ':validity' => $validity
           ));
@@ -3147,7 +3154,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
           $stmt = $pdo->prepare("SELECT `address`,
             `goto`,
-            `validity`
+            `validity`,
+            `created`,
+            `modified`
               FROM `spamalias`
                 WHERE `goto` = :username
                   AND `validity` >= :unixnow");

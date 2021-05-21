@@ -67,3 +67,58 @@ table tbody tr td input[type="checkbox"] {
   font-weight:bold;
   color:white !important;
 }
+svg {
+  display: inline-block;
+  vertical-align: middle;
+}
+.c-1-color,
+.label-ham {
+  background: #28b62c;
+}
+.c-2-color,
+.label-spam {
+  background: #fff233; color: #333;
+}
+.c-3-color,
+.label-reject {
+  background: #ff4136;
+}
+#spam_score {
+  margin-bottom: 10px;
+}
+.noUi-handle {
+  border: 1px solid #e2e2e2;
+  border-radius: 0px;
+  background: #eee;
+  cursor: default;
+  box-shadow: none;
+  border-top-width: 0px;
+  border-right-width: 1px;
+  border-bottom-width: 4px;
+  border-left-width: 1px;
+}
+.noUi-handle:hover {
+  background-color: #eee;
+  border-color: #e2e2e2;
+  margin-top: 1px;
+border-bottom-width: 3px;
+}
+.noUi-handle::after, .noUi-handle::before {
+  background: #555;
+}
+.noUi-target {
+  background: transparent;
+  border-radius: 0px;
+  border: 1px solid #D3D3D3;
+  box-shadow: none;
+}
+.noUi-connects {
+  border-radius: 0px;
+}
+.label-ham,
+.label-spam,
+.label-reject {
+  padding: .1em .5em .1em;
+  font-size: inherit;
+  font-weight: 400;
+}

@@ -195,7 +195,7 @@ $(document).ready(function() {
     } else if ($(this).hasClass('btn')) {
       $(this).attr("disabled", true);
     } else if ($(this).attr('data-provide') == 'slider') {
-      $(this).slider("disable");
+      $(this).attr('disabled', true);
     } else if ($(this).is(':checkbox')) {
       $(this).attr("disabled", true);
     }
