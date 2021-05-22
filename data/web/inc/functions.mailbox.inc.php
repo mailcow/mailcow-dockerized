@@ -1508,6 +1508,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
+            if ($lowspamlevel == $highspamlevel) {
+              $highspamlevel = $highspamlevel + 0.1;
+            }
             $stmt = $pdo->prepare("DELETE FROM `filterconf` WHERE `object` = :username
               AND (`option` = 'lowspamlevel' OR `option` = 'highspamlevel')");
             $stmt->execute(array(

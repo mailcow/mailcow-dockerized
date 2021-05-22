@@ -49,7 +49,7 @@ $xmpp_status = xmpp_control('status');
             <div class="panel-body">
               <div class="row">
                 <div class="col-sm-3">
-                  <p>Mail disk space via <?=$vmail_df[0];?></p>
+                  <p><i class="bi bi-hdd-fill"></i> <?=$vmail_df[0];?></p>
                   <p><?=$vmail_df[2];?> / <?=$vmail_df[1];?> (<?=$vmail_df[4];?>)</p>
                 </div>
                 <div class="col-sm-9">
@@ -173,7 +173,7 @@ $xmpp_status = xmpp_control('status');
               ?>
               <small>(<?=$lang['debug']['started_on'];?> <span class="parse_date"><?=$started;?></span>),
               <a href data-toggle="modal" data-container="<?=$container;?>" data-target="#RestartContainer"><?=$lang['debug']['restart_container'];?></a></small>
-              <span class="pull-right status-indicator label label-<?=($container_info['State'] !== false && !empty($container_info['State'])) ? (($container_info['State']['Running'] == 1) ? 'success' : 'danger') : 'default'; ?>">&nbsp;</span>
+              <i class="pull-right bi <?=($container_info['State'] !== false && !empty($container_info['State'])) ? (($container_info['State']['Running'] == 1) ? 'bi-app-indicator text-success' : 'bi-app text-danger') : 'default'; ?>"></i>
               </li>
               <?php
               }
