@@ -644,13 +644,13 @@ jQuery(function($){
         if (item.message == null) {
           item.message = 'Health level: ' + item.lvl + '% (' + item.hpnow + '/' + item.hptotal + ')';
           if (item.hpdiff < 0) {
-            item.trend = '<span class="label label-danger"><span class="glyphicon glyphicon-arrow-down"></span> ' + item.hpdiff + '</span>';
+            item.trend = '<span class="label label-danger"><i class="bi bi-caret-down-fill"></i> ' + item.hpdiff + '</span>';
           }
           else if (item.hpdiff == 0) {
-            item.trend = '<span class="label label-info"><span class="glyphicon glyphicon-arrow-right"></span> ' + item.hpdiff + '</span>';
+            item.trend = '<span class="label label-info"><i class="bi bi-caret-right-fill"></i> ' + item.hpdiff + '</span>';
           }
           else {
-            item.trend = '<span class="label label-success"><span class="glyphicon glyphicon-arrow-up"></span> ' + item.hpdiff + '</span>';
+            item.trend = '<span class="label label-success"><i class="bi bi-caret-up-fill"></i> ' + item.hpdiff + '</span>';
           }
         }
         else {
@@ -710,7 +710,7 @@ jQuery(function($){
         }
         item.indicator = '<span style="border-right:6px solid #' + intToRGB(hashCode(item.rl_hash)) + ';padding-left:5px;">&nbsp;</span>';
         if (item.rl_hash != 'err') {
-          item.action = '<a href="#" data-action="delete_selected" data-id="single-hash" data-api-url="delete/rlhash" data-item="' + encodeURI(item.rl_hash) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.reset_limit + '</a>';
+          item.action = '<a href="#" data-action="delete_selected" data-id="single-hash" data-api-url="delete/rlhash" data-item="' + encodeURI(item.rl_hash) + '" class="btn btn-xs btn-danger"><i class="bi bi-recycle"></i> ' + lang.reset_limit + '</a>';
         }
       });
     }

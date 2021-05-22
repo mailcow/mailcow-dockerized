@@ -430,7 +430,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                   <p><?=$lang['user']['spamfilter_wl_desc'];?></p>
                   <div class="mass-actions-user">
                     <div class="btn-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
-                      <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="policy_wl_domain" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
+                      <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="policy_wl_domain" href="#"><i class="bi bi-check-all"></i> <?=$lang['mailbox']['toggle_all'];?></a>
                       <a class="btn btn-sm btn-danger" data-action="delete_selected" data-id="policy_wl_domain" data-api-url='delete/domain-policy' href="#"><?=$lang['mailbox']['remove'];?></a></li>
                     </div>
                   </div>
@@ -451,7 +451,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                   <p><?=$lang['user']['spamfilter_bl_desc'];?></p>
                   <div class="mass-actions-user">
                     <div class="btn-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
-                      <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="policy_bl_domain" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
+                      <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="policy_bl_domain" href="#"><i class="bi bi-check-all"></i> <?=$lang['mailbox']['toggle_all'];?></a>
                       <a class="btn btn-sm btn-danger" data-action="delete_selected" data-id="policy_bl_domain" data-api-url='delete/domain-policy' href="#"><?=$lang['mailbox']['remove'];?></a></li>
                     </div>
                   </div>
@@ -912,8 +912,8 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                     </div>
                   </div>
                   <div class="col-sm-12">
-                    <legend style="cursor:pointer;margin-top:10px" data-target="#po_advanced" class="arrow-toggle" unselectable="on" data-toggle="collapse">
-                      <span style="font-size:12px" class="arrow rotate glyphicon glyphicon-menu-down"></span> <?=$lang['edit']['advanced_settings'];?>
+                    <legend style="cursor:pointer;margin-top:10px" data-target="#po_advanced" unselectable="on" data-toggle="collapse">
+                      <i class="bi bi-plus"></i> <?=$lang['edit']['advanced_settings'];?>
                     </legend>
                   </div>
                   <div class="col-sm-12">
@@ -934,8 +934,8 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               </div>
               <div class="btn-group" data-acl="<?=$_SESSION['acl']['pushover'];?>">
                   <a class="btn btn-sm btn-default" data-action="edit_selected" data-id="pushover" data-item="<?=htmlspecialchars($mailbox);?>" data-api-url='edit/pushover' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></a>
-                  <a class="btn btn-sm btn-default" data-action="edit_selected" data-id="pushover-test" data-item="<?=htmlspecialchars($mailbox);?>" data-api-url='edit/pushover-test' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['edit']['pushover_verify'];?></a>
-                  <a id="pushover_delete" class="btn btn-sm btn-danger" data-action="edit_selected" data-id="pushover-delete" data-item="<?=htmlspecialchars($mailbox);?>" data-api-url='edit/pushover' data-api-attr='{"delete":"true"}' href="#"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> <?=$lang['edit']['remove'];?></a>
+                  <a class="btn btn-sm btn-default" data-action="edit_selected" data-id="pushover-test" data-item="<?=htmlspecialchars($mailbox);?>" data-api-url='edit/pushover-test' data-api-attr='{}' href="#"><i class="bi bi-check-lg"></i> <?=$lang['edit']['pushover_verify'];?></a>
+                  <a id="pushover_delete" class="btn btn-sm btn-danger" data-action="edit_selected" data-id="pushover-delete" data-item="<?=htmlspecialchars($mailbox);?>" data-api-url='edit/pushover' data-api-attr='{"delete":"true"}' href="#"><i class="bi bi-recycle"></i> <?=$lang['edit']['remove'];?></a>
               </div>
             </div>
           </div>

@@ -29,7 +29,7 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
   <div class="row">
     <div class="col-md-offset-3 col-md-6">
       <div class="panel panel-default">
-        <div class="panel-heading"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <?= $lang['login']['login']; ?></div>
+        <div class="panel-heading"><i class="bi bi-person-bounding-box"></i> <?= $lang['login']['login']; ?></div>
         <div class="panel-body">
           <div class="text-center mailcow-logo"><img src="<?=($main_logo = customize('get', 'main_logo')) ? $main_logo : '/img/cow_mailcow.svg';?>" alt="mailcow"></div>
           <?php if (!empty($UI_TEXTS['ui_announcement_text']) && in_array($UI_TEXTS['ui_announcement_type'], array('info', 'warning', 'danger')) && $UI_TEXTS['ui_announcement_active'] == 1) { ?>
@@ -47,14 +47,14 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
             <div class="form-group">
               <label class="sr-only" for="login_user"><?= $lang['login']['username']; ?></label>
               <div class="input-group">
-                <div class="input-group-addon"><i class="glyphicon glyphicon-user"></i></div>
+                <div class="input-group-addon"><i class="bi bi-person-fill"></i></div>
                 <input name="login_user" autocorrect="off" autocapitalize="none" type="<?=(strpos($_SESSION['index_query_string'], 'mobileconfig') !== false) ? 'email' : 'text';?>" id="login_user" class="form-control" placeholder="<?= $lang['login']['username']; ?>" required="" autofocus="">
               </div>
             </div>
             <div class="form-group">
               <label class="sr-only" for="pass_user"><?= $lang['login']['password']; ?></label>
               <div class="input-group">
-                <div class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></div>
+                <div class="input-group-addon"><i class="bi bi-lock-fill"></i></div>
                 <input name="pass_user" type="password" id="pass_user" class="form-control" placeholder="<?= $lang['login']['password']; ?>" required="">
               </div>
             </div>
@@ -92,7 +92,7 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
             <?php } ?>
             <div id="fido2-alerts"></div>
           <?php if(!isset($_SESSION['oauth2_request'])) { ?>
-            <legend><span class="glyphicon glyphicon-link" aria-hidden="true"></span> <?=$UI_TEXTS['apps_name'];?></legend>
+            <legend><i class="bi bi-link-45deg"></i> <?=$UI_TEXTS['apps_name'];?></legend>
             <?php
             if (!empty($MAILCOW_APPS)) {
               foreach ($MAILCOW_APPS as $app) {
@@ -121,7 +121,7 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
     <div class="col-md-offset-3 col-md-6">
       <div class="panel panel-default">
         <div class="panel-heading">
-          <a data-toggle="collapse" href="#collapse1"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> <?= $lang['start']['help']; ?></a>
+          <a data-toggle="collapse" href="#collapse1"><i class="bi bi-patch-question-fill"></i> <?= $lang['start']['help']; ?></a>
         </div>
         <div id="collapse1" class="panel-collapse collapse">
           <div class="panel-body">

@@ -193,7 +193,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
           </div>
           <?php // TODO: Separate SOGo-related text
           if (getenv('SKIP_SOGO') != "y") { ?>
-          <p><span class="glyphicon glyphicon-exclamation-sign text-danger"></span> <?=$lang['add']['post_domain_add'];?></p>
+          <p><i class="bi bi-shield-fill-exclamation text-danger"></i> <?=$lang['add']['post_domain_add'];?></p>
           <?php } ?>
         </form>
       </div>
