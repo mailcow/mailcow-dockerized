@@ -382,7 +382,9 @@ class Builder
     protected function substituteBaseInDn($dn)
     {
         return str_replace(
-            '{base}', $this->baseDn, $dn instanceof Model ? $dn->getDn() : $dn
+            '{base}',
+            $this->baseDn,
+            $dn instanceof Model ? $dn->getDn() : $dn
         );
     }
 

@@ -104,6 +104,13 @@ interface LdapInterface
     public function isBound();
 
     /**
+     * Determine if the connection has been created.
+     *
+     * @return bool
+     */
+    public function isConnected();
+
+    /**
      * Determine the connection is able to modify passwords.
      *
      * @return bool

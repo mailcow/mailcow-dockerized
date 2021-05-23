@@ -19,7 +19,7 @@ class Entry extends BaseEntry implements OpenLDAP
     protected $guidKey = 'entryuuid';
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected static function boot()
     {

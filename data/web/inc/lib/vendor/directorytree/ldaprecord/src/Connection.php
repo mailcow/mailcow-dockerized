@@ -4,7 +4,6 @@ namespace LdapRecord;
 
 use Carbon\Carbon;
 use Closure;
-use Exception;
 use LdapRecord\Auth\Guard;
 use LdapRecord\Configuration\DomainConfiguration;
 use LdapRecord\Events\DispatcherInterface;
@@ -137,8 +136,6 @@ class Connection
     public function setLdapConnection(LdapInterface $ldap)
     {
         $this->ldap = $ldap;
-
-        $this->initialize();
 
         return $this;
     }
@@ -404,6 +401,10 @@ class Connection
      */
     public function auth()
     {
+        if (! $this->ldap->isConnected()) {
+            $this->initialize();
+        }
+
         $guard = call_user_func($this->authGuardResolver);
 
         $guard->setDispatcher(

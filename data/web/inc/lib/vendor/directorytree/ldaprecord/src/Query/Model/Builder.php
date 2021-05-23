@@ -287,7 +287,7 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getQuery()
     {
@@ -424,7 +424,7 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected function prepareWhereValue($field, $value, $raw = false)
     {
