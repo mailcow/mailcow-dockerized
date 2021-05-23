@@ -230,3 +230,9 @@ table.footable>tbody>tr.footable-empty>td {
   font-style:italic;
   font-size: 1rem;
 }
+.navbar-nav > li {
+  font-size: 1rem !important;
+}
+.dropdown-menu > li > a {
+  font-size: 1rem !important;
+}

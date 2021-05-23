@@ -104,7 +104,7 @@ table.footable > tbody > tr.footable-empty > th {
 }
 .fooicon {
   position: relative;
-  top: 1px;
+  top: 0px;
   display: inline-block;
   font-family: "bootstrap-icons" !important;
   font-style: normal;
@@ -123,10 +123,10 @@ table.footable > tbody > tr.footable-empty > th {
   content: "\f130";
 }
 .fooicon-plus:before {
-  content: "\f64d";
+  content: "\f4fc";
 }
 .fooicon-minus:before {
-  content: "\f63b";
+  content: "\f2e8";
 }
 .fooicon-search:before {
   content: "\f52a";
