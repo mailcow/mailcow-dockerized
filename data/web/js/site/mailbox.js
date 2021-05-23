@@ -291,7 +291,7 @@ jQuery(function($){
             else {
               item.action += '<a href="/edit/domain/' + encodeURIComponent(item.domain_name) + '" class="btn btn-xs btn-default"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>';
             }
-            item.action += '<a href="#dnsInfoModal" class="btn btn-xs btn-info" data-toggle="modal" data-domain="' + encodeURIComponent(item.domain_name) + '"><i class="bi bi-question-lg"></i> DNS</a></div>';
+            item.action += '<a href="#dnsInfoModal" class="btn btn-xs btn-info" data-toggle="modal" data-domain="' + encodeURIComponent(item.domain_name) + '"><i class="bi bi-globe2"></i> DNS</a></div>';
             if (item.backupmx == 1) {
               if (item.relay_unknown_only == 1) {
                 item.domain_name = '<div class="label label-info">Relay Non-Local</div> ' + item.domain_name;

@@ -127,9 +127,9 @@
             </ul>
           </li>
           <?php } if (!isset($_SESSION['dual-login']) && isset($_SESSION['mailcow_cc_username'])) { ?>
-            <li class="logged-in-as"><a href="#" onclick="logout.submit()"><b class="username-lia"><?= htmlspecialchars($_SESSION['mailcow_cc_username']); ?></b> <i class="bi bi-door-open"></i></a></li>
+            <li class="logged-in-as"><a href="#" onclick="logout.submit()"><b class="username-lia"><?= htmlspecialchars($_SESSION['mailcow_cc_username']); ?></b> <i class="bi bi-x-circle"></i></a></li>
           <?php } elseif (isset($_SESSION['dual-login'])) { ?>
-            <li class="logged-in-as"><a href="#" onclick="logout.submit()"><b class="username-lia"><?= htmlspecialchars($_SESSION['mailcow_cc_username']); ?> <span class="text-info">(<?= htmlspecialchars($_SESSION['dual-login']['username']); ?>)</span> </b><i class="bi bi-door-open"></i></a></li>
+            <li class="logged-in-as"><a href="#" onclick="logout.submit()"><b class="username-lia"><?= htmlspecialchars($_SESSION['mailcow_cc_username']); ?> <span class="text-info">(<?= htmlspecialchars($_SESSION['dual-login']['username']); ?>)</span> </b><i class="bi bi-x-circle"></i></a></li>
           <?php } if (!preg_match('/y|yes/i', getenv('MASTER'))) { ?>
             <li class="text-warning slave-info">[ slave ]</li>
           <?php } ?>

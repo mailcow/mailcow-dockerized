@@ -83,7 +83,7 @@ $xmpp_status = xmpp_control('status');
                   <p><?=$lang['debug']['started_at'];?>: <span class="parse_date"><?=$solr_status['status']['dovecot-fts']['startTime'];?></span></p>
                   <p><?=$lang['debug']['last_modified'];?>: <span class="parse_date"><?=$solr_status['status']['dovecot-fts']['index']['lastModified'];?></span></p>
                   <p><?=$lang['debug']['size'];?>: <?=$solr_status['status']['dovecot-fts']['index']['size'];?></p>
-                  <p><?=$lang['debug']['docs'];?>: <?=$solr_status['status']['dovecot-fts']['index']['numDocs'];?></p>
+                  <p><i class="bi bi-file-text"></i> <?=$lang['debug']['docs'];?>: <?=$solr_status['status']['dovecot-fts']['index']['numDocs'];?></p>
                   <?php
                   else:
                   ?>
