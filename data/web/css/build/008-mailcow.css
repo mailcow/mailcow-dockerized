@@ -160,9 +160,6 @@ legend {
 .lang-link-disabled  {
   cursor: not-allowed;
 }
-.dkim-label {
-  margin: 0 0 2px !important;
-}
 .overlay {
   background: #fff;
   position: absolute;
@@ -235,4 +232,13 @@ table.footable>tbody>tr.footable-empty>td {
 }
 .dropdown-menu > li > a {
   font-size: 1rem !important;
+}
+.label {
+  font-size:inherit;
+}
+[class^="bi-"]::before, [class*=" bi-"]::before {
+  vertical-align: -0.2em !important;
+}
+legend > [class^="bi-"]::before, legend > [class*=" bi-"]::before {
+  vertical-align: 0em !important;
 }

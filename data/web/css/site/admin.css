@@ -82,3 +82,6 @@ table tbody tr td input[type="checkbox"] {
   font-weight:bold;
   color:white !important;
 }
+.dkim-label {
+  margin: 0 0 8px !important;
+}

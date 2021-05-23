@@ -254,15 +254,16 @@ if (isset($_SESSION['mailcow_cc_role'])) {
       !empty($_GET["domain"])) {
         $domain = $_GET["domain"];
         $result = mailbox('get', 'domain_details', $domain);
+        $quota_notification_bcc = quota_notification_bcc('get', $domain);
         $rl = ratelimit('get', 'domain', $domain);
         $rlyhosts = relayhost('get');
         if (!empty($result)) {
         ?>
-          <ul class="nav nav-tabs">
+          <ul class="nav nav-tabs" role="tablist">
             <li class="active"><a data-toggle="tab" href="#dedit"><?=$lang['edit']['domain'];?></a></li>
             <li><a data-toggle="tab" href="#dratelimit"><?=$lang['edit']['ratelimit'];?></a></li>
             <li><a data-toggle="tab" href="#dspamfilter"><?=$lang['edit']['spam_filter'];?></a></li>
-            <!-- <li><a data-toggle="tab" href="#dqwbcc"><?=$lang['edit']['quota_warning_bcc'];?></a></li> -->
+            <li><a data-toggle="tab" href="#dqwbcc"><?=$lang['edit']['quota_warning_bcc'];?></a></li>
           </ul>
           <hr>
           <div class="tab-content">
@@ -466,6 +467,35 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                   <div class="table-responsive">
                     <table class="table table-striped table-condensed" id="bl_policy_domain_table"></table>
                   </div>
+                </div>
+              </div>
+            </div>
+            <div id="dqwbcc" class="tab-pane">
+              <div class="row">
+                <div class="col-sm-12">
+                  <h4><?=$lang['edit']['quota_warning_bcc'];?></h4>
+                  <p><?=$lang['edit']['quota_warning_bcc_info'];?></p>
+                  <form class="form-horizontal" data-id="quota_bcc">
+                    <input type="hidden" value="0" name="active">
+                    <div class="form-group">
+                      <label class="control-label col-sm-2" for="script_data"><?=$lang['edit']['target_address'];?>:</label>
+                      <div class="col-sm-10">
+                        <textarea spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control" rows="10" id="bcc_rcpt" name="bcc_rcpt"><?=implode(PHP_EOL, $quota_notification_bcc['bcc_rcpts']);?></textarea>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="col-sm-offset-2 col-sm-10">
+                        <div class="checkbox">
+                        <label><input type="checkbox" value="1" name="active" <?=($quota_notification_bcc['active']=="1") ? "checked" : "";?>> <?=$lang['edit']['active'];?></label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="col-sm-offset-2 col-sm-10">
+                        <button class="btn btn-success" data-action="edit_selected" data-id="quota_bcc" data-item="quota_bcc" data-api-url='edit/quota_notification_bcc' data-api-attr='{"domain":"<?=$domain;?>"}' href="#"><?=$lang['edit']['save'];?></button>
+                      </div>
+                    </div>
+                  </form>
                 </div>
               </div>
             </div>

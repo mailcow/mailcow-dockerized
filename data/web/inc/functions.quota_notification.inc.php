@@ -88,17 +88,27 @@ function quota_notification_bcc($_action, $_data = null) {
         return false;
       }
       $active = intval($_data['active']);
-      $bcc_rcpt = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $_data['bcc_rcpt']);
-      if (filter_var($bcc_rcpt, FILTER_VALIDATE_EMAIL) === false) {
-        $_SESSION['return'][] = array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => 'access_denied'
-        );
-        return false;
+      $bcc_rcpts = array_map('trim', preg_split( "/( |,|;|\n)/", $_data['bcc_rcpt']));
+      foreach ($bcc_rcpts as $i => &$rcpt) {
+        $rcpt = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $rcpt);
+          if (!empty($rcpt) && filter_var($rcpt, FILTER_VALIDATE_EMAIL) === false) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_data_log),
+              'msg' => array('goto_invalid', htmlspecialchars($rcpt))
+            );
+            unset($bcc_rcpts[$i]);
+            continue;
+          }
+      }
+      $bcc_rcpts = array_unique($bcc_rcpts);
+      $bcc_rcpts = array_filter($bcc_rcpts);
+      if (empty($bcc_rcpts)) {
+        $active = 0;
+        
       }
       try {
-        $redis->hSet('QW_BCC', $domain, json_encode(array('bcc_rcpt' => $bcc_rcpt, 'active' => $active)));
+        $redis->hSet('QW_BCC', $domain, json_encode(array('bcc_rcpts' => $bcc_rcpts, 'active' => $active)));
       }
       catch (RedisException $e) {
         $_SESSION['return'][] = array(
@@ -115,7 +125,7 @@ function quota_notification_bcc($_action, $_data = null) {
       );
     break;
     case 'get':
-      $domain = $_data['domain'];
+      $domain = $_data;
       if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
         $_SESSION['return'][] = array(
           'type' => 'danger',

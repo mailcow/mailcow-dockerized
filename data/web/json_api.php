@@ -319,8 +319,14 @@ if (isset($_GET['query'])) {
       }
     break;
     case "get":
-      function process_get_return($data) {
-        echo (!isset($data) || empty($data)) ? '{}' : json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+      function process_get_return($data, $object = true) {
+        if ($object === true) {
+          $ret_str = '{}';
+        }
+        else {
+          $ret_str = '[]';
+        }
+        echo (!isset($data) || empty($data)) ? $ret_str : json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
       }
       // only allow GET requests to GET API endpoints
       if ($_SERVER['REQUEST_METHOD'] != 'GET') {
@@ -1169,10 +1175,10 @@ if (isset($_GET['query'])) {
             // "all" will not print details
             switch ($object) {
               case "all":
-                process_get_return(quarantine('get'));
+                process_get_return(quarantine('get'), false);
               break;
               default:
-                process_get_return(quarantine('details', $object));
+                process_get_return(quarantine('details', $object), false);
               break;
             }
           break;
@@ -1607,6 +1613,9 @@ if (isset($_GET['query'])) {
         break;
         case "quota_notification":
           process_edit_return(quota_notification('edit', $attr));
+        break;
+        case "quota_notification_bcc":
+          process_edit_return(quota_notification_bcc('edit', $attr));
         break;
         case "mailq":
           process_edit_return(mailq('edit', array_merge(array('qid' => $items), $attr)));
