@@ -9,7 +9,7 @@ use LdapRecord\Query\Model\Builder;
 
 /**
  * @method bool exists($models = null) Determine if the relation contains all of the given models, or any models
- * @method bool contains($models) Determine if any of the given models are contained in the relation
+ * @method bool contains($models)      Determine if any of the given models are contained in the relation
  */
 abstract class Relation
 {

@@ -7,7 +7,7 @@ use LdapRecord\Configuration\ConfigurationException;
 class BooleanValidator extends Validator
 {
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function validate()
     {

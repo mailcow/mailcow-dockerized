@@ -7,7 +7,7 @@ use LdapRecord\Configuration\ConfigurationException;
 class StringOrNullValidator extends Validator
 {
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function validate()
     {

@@ -159,7 +159,9 @@ class HasMany extends OneToMany
     public function attach($model)
     {
         return $this->attemptFailableOperation(
-            $this->buildAttachCallback($model), $this->bypass['attach'], $model
+            $this->buildAttachCallback($model),
+            $this->bypass['attach'],
+            $model
         );
     }
 
@@ -213,7 +215,9 @@ class HasMany extends OneToMany
     public function detach($model)
     {
         return $this->attemptFailableOperation(
-            $this->buildDetachCallback($model), $this->bypass['detach'], $model
+            $this->buildDetachCallback($model),
+            $this->bypass['detach'],
+            $model
         );
     }
 
@@ -275,7 +279,8 @@ class HasMany extends OneToMany
         }
 
         throw ModelNotFoundException::forQuery(
-            $this->query->getUnescapedQuery(), $this->query->getDn()
+            $this->query->getUnescapedQuery(),
+            $this->query->getDn()
         );
     }
 

@@ -46,7 +46,7 @@ abstract class LdapBase implements LdapInterface
     protected $useTLS = false;
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function isUsingSSL()
     {
@@ -54,7 +54,7 @@ abstract class LdapBase implements LdapInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function isUsingTLS()
     {
@@ -62,7 +62,7 @@ abstract class LdapBase implements LdapInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function isBound()
     {
@@ -70,7 +70,15 @@ abstract class LdapBase implements LdapInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
+     */
+    public function isConnected()
+    {
+        return ! is_null($this->connection);
+    }
+
+    /**
+     * @inheritdoc
      */
     public function canChangePasswords()
     {
@@ -78,7 +86,7 @@ abstract class LdapBase implements LdapInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function ssl($enabled = true)
     {
@@ -88,7 +96,7 @@ abstract class LdapBase implements LdapInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function tls($enabled = true)
     {
@@ -98,7 +106,7 @@ abstract class LdapBase implements LdapInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function setOptions(array $options = [])
     {
@@ -108,7 +116,7 @@ abstract class LdapBase implements LdapInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getHost()
     {
@@ -116,7 +124,7 @@ abstract class LdapBase implements LdapInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getConnection()
     {
@@ -124,7 +132,7 @@ abstract class LdapBase implements LdapInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getProtocol()
     {
@@ -132,7 +140,7 @@ abstract class LdapBase implements LdapInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getExtendedError()
     {

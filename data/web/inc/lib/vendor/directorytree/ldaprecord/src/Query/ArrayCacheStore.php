@@ -16,7 +16,7 @@ class ArrayCacheStore implements CacheInterface
     protected $storage = [];
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function get($key, $default = null)
     {
@@ -38,7 +38,7 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function set($key, $value, $ttl = null)
     {
@@ -51,7 +51,7 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function delete($key)
     {
@@ -61,7 +61,7 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function clear()
     {
@@ -71,7 +71,7 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getMultiple($keys, $default = null)
     {
@@ -85,7 +85,7 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function setMultiple($values, $ttl = null)
     {
@@ -97,7 +97,7 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function deleteMultiple($keys)
     {
@@ -109,7 +109,7 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function has($key)
     {

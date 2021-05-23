@@ -215,16 +215,18 @@ trait HasPassword
      */
     public function determinePasswordHashMethod()
     {
-        if (! ($password = $this->password)) {
+        if (! $password = $this->password) {
             return;
         }
 
-        if (! ($method = Password::getHashMethod($password))) {
+        if (! $method = Password::getHashMethod($password)) {
             return;
         }
 
         [,$algo] = array_pad(
-            Password::getHashMethodAndAlgo($password) ?? [], $length = 2, $value = null
+            Password::getHashMethodAndAlgo($password) ?? [],
+            $length = 2,
+            $value = null
         );
 
         switch ($algo) {

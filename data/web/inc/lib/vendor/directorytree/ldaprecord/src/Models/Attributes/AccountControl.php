@@ -144,7 +144,8 @@ class AccountControl
         // of possible flags. This will allow us to see if
         // our AccountControl object contains any of them.
         $flagsUsed = array_intersect(
-            $this->extractFlags($flag), $this->values
+            $this->extractFlags($flag),
+            $this->values
         );
 
         return in_array($flag, $flagsUsed);

@@ -41,7 +41,7 @@ class Dispatcher implements DispatcherInterface
     protected $wildcardsCache = [];
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function listen($events, $listener)
     {
@@ -70,7 +70,7 @@ class Dispatcher implements DispatcherInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function hasListeners($eventName)
     {
@@ -78,7 +78,7 @@ class Dispatcher implements DispatcherInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function until($event, $payload = [])
     {
@@ -86,7 +86,7 @@ class Dispatcher implements DispatcherInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function fire($event, $payload = [], $halt = false)
     {
@@ -94,7 +94,7 @@ class Dispatcher implements DispatcherInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function dispatch($event, $payload = [], $halt = false)
     {
@@ -149,7 +149,7 @@ class Dispatcher implements DispatcherInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getListeners($eventName)
     {
@@ -321,7 +321,7 @@ class Dispatcher implements DispatcherInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function forget($event)
     {

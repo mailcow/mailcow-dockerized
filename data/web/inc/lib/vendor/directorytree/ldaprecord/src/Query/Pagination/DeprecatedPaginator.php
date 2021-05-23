@@ -14,7 +14,7 @@ class DeprecatedPaginator extends AbstractPaginator
     protected $cookie = '';
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected function fetchCookie()
     {
@@ -22,7 +22,7 @@ class DeprecatedPaginator extends AbstractPaginator
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected function prepareServerControls()
     {
@@ -30,7 +30,7 @@ class DeprecatedPaginator extends AbstractPaginator
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected function applyServerControls(LdapInterface $ldap)
     {
@@ -38,7 +38,7 @@ class DeprecatedPaginator extends AbstractPaginator
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected function updateServerControls(LdapInterface $ldap, $resource)
     {
@@ -46,7 +46,7 @@ class DeprecatedPaginator extends AbstractPaginator
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected function resetServerControls(LdapInterface $ldap)
     {
