@@ -684,6 +684,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 continue;
               }
             }
+            $gotos = array_unique($gotos);
             $gotos = array_filter($gotos);
             if (empty($gotos)) { return false; }
             $goto = implode(",", $gotos);
@@ -2082,6 +2083,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                   ':address' => $address
                 ));
               }
+              $gotos = array_unique($gotos);
               $gotos = array_filter($gotos);
               $goto = implode(",", $gotos);
             }

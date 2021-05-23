@@ -578,6 +578,7 @@
         "pushover_verify": "Verify credentials",
         "quota_mb": "Quota (MiB)",
         "quota_warning_bcc": "Quota warning BCC",
+        "quota_warning_bcc_info": "Warnings will be sent as separate copies to the following recipients. The subject will be suffixed by the corresponding username in brackets, for example: <code>Quota warning (user@example.com)</code>.",
         "ratelimit": "Rate limit",
         "redirect_uri": "Redirect/Callback URL",
         "relay_all": "Relay all recipients",
