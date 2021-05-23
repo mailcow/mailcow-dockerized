@@ -210,7 +210,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.145
+      image: mailcow/dovecot:1.146
       depends_on:
         - mysql-mailcow
       dns:
