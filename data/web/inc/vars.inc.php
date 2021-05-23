@@ -200,6 +200,7 @@ $RSPAMD_MAPS = array(
     'Bad Words DE (only fired in combination with fishy TLDs)' => 'bad_words_de.map',
     'Bad Languages' => 'bad_languages.map',
     'Bulk Mail Headers' => 'bulk_header.map',
+    'Bad (Junk) Mail Headers' => 'bad_header.map',
     'Monitoring Hosts' => 'monitoring_nolog.map'
   )
 );
