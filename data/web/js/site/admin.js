@@ -358,6 +358,11 @@ jQuery(function($){
   draw_oauth2_clients();
   draw_transport_maps();
   draw_queue();
+
+  $('body').on('click', 'span.footable-toggle', function () {
+    event.stopPropagation();
+  })
+
   // API IP check toggle
   $("#skip_ip_check_ro").click(function( event ) {
    $("#skip_ip_check_ro").not(this).prop('checked', false);
