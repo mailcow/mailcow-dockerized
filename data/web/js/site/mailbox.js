@@ -235,7 +235,7 @@ jQuery(function($){
   function draw_domain_table() {
     ft_domain_table = FooTable.init('#domain_table', {
       "columns": [
-        {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
+        {"name":"chkbox","title":"","style":{"min-width":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"sorted": true,"name":"domain_name","title":lang.domain,"style":{"width":"250px"}},
         {"name":"aliases","title":lang.aliases,"breakpoints":"xs sm"},
         {"name":"mailboxes","title":lang.mailboxes},
@@ -340,7 +340,7 @@ jQuery(function($){
   function draw_mailbox_table() {
     ft_mailbox_table = FooTable.init('#mailbox_table', {
       "columns": [
-        {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
+        {"name":"chkbox","title":"","style":{"min-width":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"sorted": true,"name":"username","style":{"word-break":"break-all","min-width":"120px"},"title":lang.username},
         {"name":"name","title":lang.fname,"style":{"word-break":"break-all","min-width":"120px"},"breakpoints":"xs sm md lg"},
         {"name":"domain","title":lang.domain,"breakpoints":"xs sm md lg"},
@@ -491,7 +491,7 @@ jQuery(function($){
   function draw_resource_table() {
     ft_resource_table = FooTable.init('#resource_table', {
       "columns": [
-        {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
+        {"name":"chkbox","title":"","style":{"min-width":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"sorted": true,"name":"description","title":lang.description,"style":{"width":"250px"}},
         {"name":"name","title":lang.alias},
         {"name":"kind","title":lang.kind},
@@ -564,7 +564,7 @@ jQuery(function($){
   function draw_bcc_table() {
     ft_bcc_table = FooTable.init('#bcc_table', {
       "columns": [
-        {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
+        {"name":"chkbox","title":"","style":{"min-width":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"sorted": true,"name":"id","title":"ID","style":{"maxWidth":"60px","width":"60px","text-align":"center"}},
         {"name":"type","title":lang.bcc_type},
         {"name":"local_dest","title":lang.bcc_local_dest},
@@ -633,7 +633,7 @@ jQuery(function($){
   function draw_recipient_map_table() {
     ft_recipient_map_table = FooTable.init('#recipient_map_table', {
       "columns": [
-        {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
+        {"name":"chkbox","title":"","style":{"min-width":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"sorted": true,"name":"id","title":"ID","style":{"maxWidth":"60px","width":"60px","text-align":"center"}},
         {"name":"recipient_map_old","title":lang.recipient_map_old},
         {"name":"recipient_map_new","title":lang.recipient_map_new},
@@ -697,7 +697,7 @@ jQuery(function($){
   function draw_tls_policy_table() {
     ft_tls_policy_table = FooTable.init('#tls_policy_table', {
       "columns": [
-        {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
+        {"name":"chkbox","title":"","style":{"min-width":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"sorted": true,"name":"id","title":"ID","style":{"maxWidth":"60px","width":"60px","text-align":"center"}},
         {"name":"dest","title":lang.tls_map_dest},
         {"name":"policy","title":lang.tls_map_policy},
@@ -767,7 +767,7 @@ jQuery(function($){
   function draw_alias_table() {
     ft_alias_table = FooTable.init('#alias_table', {
       "columns": [
-        {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
+        {"name":"chkbox","title":"","style":{"min-width":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"name":"id","title":"ID","style":{"maxWidth":"60px","width":"60px","text-align":"center"}},
         {"sorted": true,"name":"address","title":lang.alias,"style":{"width":"250px"}},
         {"name":"goto","title":lang.target_address},
@@ -866,7 +866,7 @@ jQuery(function($){
   function draw_aliasdomain_table() {
     ft_aliasdomain_table = FooTable.init('#aliasdomain_table', {
       "columns": [
-        {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
+        {"name":"chkbox","title":"","style":{"min-width":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"sorted": true,"name":"alias_domain","title":lang.alias,"style":{"width":"250px"}},
         {"name":"target_domain","title":lang.target_domain,"type":"html"},
         {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},

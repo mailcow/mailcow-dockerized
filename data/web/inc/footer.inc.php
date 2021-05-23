@@ -79,6 +79,7 @@ $(document).ready(function() {
     foreach($alertbox_log_parser as $log) {
       $alerts[$log['type']][] = $log['msg'];
     }
+    $alerts = array_filter(array_unique($alerts));
     foreach($alerts as $alert_type => $alert_msg) {
   ?>
   mailcow_alert_box(<?=json_encode(implode('<hr class="alert-hr">', $alert_msg));?>, <?=$alert_type;?>);
