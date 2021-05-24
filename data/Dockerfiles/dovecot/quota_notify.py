@@ -74,7 +74,7 @@ try:
         msg.attach(text_part)
         msg.attach(html_part)
         msg['To'] = rcpt
-        server = smtplib.SMTP('postfix', 588, 'quarantine')
+        server = smtplib.SMTP('postfix', 588, 'quotanotification')
         server.ehlo()
         server.sendmail(msg['From'], str(rcpt), msg.as_string())
         server.quit()
