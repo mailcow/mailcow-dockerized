@@ -94,7 +94,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'doma
                 <input type="hidden" name="unset_fido2_key" value="<?=$key_info['cid'];?>" />
                 <div class="btn-group">
                 <a href="#" class="btn btn-xs btn-default" data-cid="<?=$key_info['cid'];?>" data-subject="<?=base64_encode($key_info['subject']);?>" data-toggle="modal" data-target="#fido2ChangeFn"><i class="bi bi-pencil-fill"></i> <?=strtolower($lang['fido2']['rename']);?></a>
-                <a href="#" onClick='return confirm("<?=$lang['admin']['ays'];?>")?$(this).closest("form").submit():"";' class="btn btn-xs btn-danger"><i class="bi bi-recycle"></i> <?=strtolower($lang['admin']['remove']);?></a>
+                <a href="#" onClick='return confirm("<?=$lang['admin']['ays'];?>")?$(this).closest("form").submit():"";' class="btn btn-xs btn-danger"><i class="bi bi-trash"></i> <?=strtolower($lang['admin']['remove']);?></a>
                 </form>
                 </div>
               </td>
@@ -229,32 +229,33 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
         }
         ?>
         <div class="row">
-          <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['direct_aliases'];?>:
+          <div class="col-md-3 col-xs-5 text-right"><i class="bi bi-pin-angle"></i> <?=$lang['user']['direct_aliases'];?>:
             <p class="small"><?=$lang['user']['direct_aliases_desc'];?></p>
           </div>
           <div class="col-md-9 col-xs-7">
           <?php
-          if ($user_get_alias_details['direct_aliases'] === false) {
-            echo '&#10008;';
+          if (empty($user_get_alias_details['direct_aliases'])) {
+            echo '<i class="bi bi-x-lg"></i>';
           }
           else {
             foreach (array_filter($user_get_alias_details['direct_aliases']) as $direct_alias => $direct_alias_meta) {
               (!empty($direct_alias_meta['public_comment'])) ?
-                printf('%s &mdash; <span class="bg-info">%s</span><br>', $direct_alias, $direct_alias_meta['public_comment']) :
+                printf('%s &mdash; <i class="bi bi-chat-left"></i> %s<br>', $direct_alias, $direct_alias_meta['public_comment']) :
                 printf('%s<br>', $direct_alias);
             }
           }
           ?>
           </div>
         </div>
+        <br>
         <div class="row">
-          <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['shared_aliases'];?>:
+          <div class="col-md-3 col-xs-5 text-right"><i class="bi bi-share"></i> <?=$lang['user']['shared_aliases'];?>:
             <p class="small"><?=$lang['user']['shared_aliases_desc'];?></p>
           </div>
           <div class="col-md-9 col-xs-7">
           <?php
-          if ($user_get_alias_details['shared_aliases'] === false) {
-            echo '&#10008;';
+          if (empty($user_get_alias_details['shared_aliases'])) {
+            echo '<i class="bi bi-x-lg"></i>';
           }
           else {
             foreach (array_filter($user_get_alias_details['shared_aliases']) as $shared_alias => $shared_alias_meta) {
@@ -271,19 +272,19 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
         <div class="row">
           <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['aliases_also_send_as'];?>:</div>
           <div class="col-md-9 col-xs-7">
-          <p><?=($user_get_alias_details['aliases_also_send_as'] == '*') ? $lang['user']['sender_acl_disabled'] : $user_get_alias_details['aliases_also_send_as'];?></p>
+          <p><?=($user_get_alias_details['aliases_also_send_as'] == '*') ? $lang['user']['sender_acl_disabled'] : (empty($user_get_alias_details['aliases_also_send_as'])) ? '<i class="bi bi-x-lg"></i>' : '' ;?></p>
           </div>
         </div>
         <div class="row">
           <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['aliases_send_as_all'];?>:</div>
           <div class="col-md-9 col-xs-7">
-          <p><?=$user_get_alias_details['aliases_send_as_all'];?></p>
+          <p><?=(empty($user_get_alias_details['aliases_send_as_all'])) ? '<i class="bi bi-x-lg"></i>' : '' ;?></p>
           </div>
         </div>
         <div class="row">
           <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['is_catch_all'];?>:</div>
           <div class="col-md-9 col-xs-7">
-          <p><?=$user_get_alias_details['is_catch_all'];?></p>
+          <p><?=(empty($user_get_alias_details['is_catch_all'])) ? '<i class="bi bi-x-lg"></i>' : '' ;?></p>
           </div>
         </div>
         <hr>
@@ -648,7 +649,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
           <div class="btn-group" data-acl="<?=$_SESSION['acl']['pushover'];?>">
               <a class="btn btn-sm btn-default" data-action="edit_selected" data-id="pushover" data-item="<?=htmlspecialchars($username);?>" data-api-url='edit/pushover' data-api-attr='{}' href="#"><?=$lang['user']['save'];?></a>
               <a class="btn btn-sm btn-default" data-action="edit_selected" data-id="pushover-test" data-item="<?=htmlspecialchars($username);?>" data-api-url='edit/pushover-test' data-api-attr='{}' href="#"><i class="bi bi-check-all"></i> <?=$lang['user']['pushover_verify'];?></a>
-              <a id="pushover_delete" class="btn btn-sm btn-danger" data-action="edit_selected" data-id="pushover-delete" data-item="<?=htmlspecialchars($username);?>" data-api-url='edit/pushover' data-api-attr='{"delete":"true"}' href="#"><i class="bi bi-recycle"></i> <?=$lang['user']['remove'];?></a>
+              <a id="pushover_delete" class="btn btn-sm btn-danger" data-action="edit_selected" data-id="pushover-delete" data-item="<?=htmlspecialchars($username);?>" data-api-url='edit/pushover' data-api-attr='{"delete":"true"}' href="#"><i class="bi bi-trash"></i> <?=$lang['user']['remove'];?></a>
           </div>
         </div>
       </div>

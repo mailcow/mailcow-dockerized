@@ -940,8 +940,9 @@ function edit_user_account($_data) {
 }
 function user_get_alias_details($username) {
 	global $pdo;
-  $data['direct_aliases'] = false;
-  $data['shared_aliases'] = false;
+	global $lang;
+  $data['direct_aliases'] = array();
+  $data['shared_aliases'] = array();
   if ($_SESSION['mailcow_cc_role'] == "user") {
     $username	= $_SESSION['mailcow_cc_username'];
   }
@@ -987,22 +988,22 @@ function user_get_alias_details($username) {
     if (empty($row['ad_alias'])) {
       continue;
     }
-    $data['direct_aliases'][$row['ad_alias']]['public_comment'] = '↪ ' . $row['alias_domain'];
+    $data['direct_aliases'][$row['ad_alias']]['public_comment'] = '<span data-toggle="tooltip" title="' . $lang['add']['alias_domain'] . '">' . $row['alias_domain'] . '</span>';
     $data['alias_domains'][] = $row['alias_domain'];
   }
-  $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(`send_as` SEPARATOR ', '), '&#10008;') AS `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `send_as` NOT LIKE '@%';");
+  $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(`send_as` SEPARATOR ', '), '') AS `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `send_as` NOT LIKE '@%';");
   $stmt->execute(array(':username' => $username));
   $run = $stmt->fetchAll(PDO::FETCH_ASSOC);
   while ($row = array_shift($run)) {
     $data['aliases_also_send_as'] = $row['send_as'];
   }
-  $stmt = $pdo->prepare("SELECT CONCAT_WS(', ', IFNULL(GROUP_CONCAT(DISTINCT `send_as` SEPARATOR ', '), '&#10008;'), GROUP_CONCAT(DISTINCT CONCAT('@',`alias_domain`) SEPARATOR ', ')) AS `send_as` FROM `sender_acl` LEFT JOIN `alias_domain` ON `alias_domain`.`target_domain` =  TRIM(LEADING '@' FROM `send_as`) WHERE `logged_in_as` = :username AND `send_as` LIKE '@%';");
+  $stmt = $pdo->prepare("SELECT CONCAT_WS(', ', IFNULL(GROUP_CONCAT(DISTINCT `send_as` SEPARATOR ', '), ''), GROUP_CONCAT(DISTINCT CONCAT('@',`alias_domain`) SEPARATOR ', ')) AS `send_as` FROM `sender_acl` LEFT JOIN `alias_domain` ON `alias_domain`.`target_domain` =  TRIM(LEADING '@' FROM `send_as`) WHERE `logged_in_as` = :username AND `send_as` LIKE '@%';");
   $stmt->execute(array(':username' => $username));
   $run = $stmt->fetchAll(PDO::FETCH_ASSOC);
   while ($row = array_shift($run)) {
     $data['aliases_send_as_all'] = $row['send_as'];
   }
-  $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(`address` SEPARATOR ', '), '&#10008;') as `address` FROM `alias` WHERE `goto` REGEXP :username AND `address` LIKE '@%';");
+  $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(`address` SEPARATOR ', '), '') as `address` FROM `alias` WHERE `goto` REGEXP :username AND `address` LIKE '@%';");
   $stmt->execute(array(':username' => '(^|,)'.$username.'($|,)'));
   $run = $stmt->fetchAll(PDO::FETCH_ASSOC);
   while ($row = array_shift($run)) {

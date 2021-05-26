@@ -587,7 +587,7 @@
         "save": "Salvează modificările",
         "scope": "Scop",
         "sender_acl": "Permite trimiterea ca",
-        "sender_acl_disabled": "↳ <span class=\"label label-danger\">Verificarea expeditorului este dezactivată</span>",
+        "sender_acl_disabled": "<span class=\"label label-danger\">Verificarea expeditorului este dezactivată</span>",
         "sender_acl_info": "Dacă utilizatorului A de căsuță poștală îi este permis să trimită ca utilizatorul B, adresa expeditorului nu este afișată automat ca fiind câmp selectabil \"de la\" în SOGo.<br>\r\n  Utilizatorul căsuței poștale B trebuie să creeze o delegație în SOGo pentru a permite utilizatorul cutiei poștale A să selecteze adresa ca expeditor. Pentru a delega o cutie poștală în SOGo, utilizați meniul (trei puncte) din dreapta numelui căsuței poștale în stânga sus, în timp ce vă aflați în vizualizarea e-mailului. Acest comportament nu se aplică adreselor alias.",
         "sieve_desc": "Descriere scurtă",
         "sieve_type": "Tip filtru",

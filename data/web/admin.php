@@ -139,7 +139,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
                     <input type="hidden" name="unset_fido2_key" value="<?=$key_info['cid'];?>">
                     <div class="btn-group">
                     <a href="#" class="btn btn-xs btn-default" data-cid="<?=$key_info['cid'];?>" data-subject="<?=base64_encode($key_info['subject']);?>" data-toggle="modal" data-target="#fido2ChangeFn"><i class="bi bi-pencil-fill"></i> <?=$lang['fido2']['rename'];?></a>
-                    <a href="#" onClick='return confirm("<?=$lang['admin']['ays'];?>")?$(this).closest("form").submit():"";' class="btn btn-xs btn-danger"><i class="bi bi-recycle"></i> <?=$lang['admin']['remove'];?></a>
+                    <a href="#" onClick='return confirm("<?=$lang['admin']['ays'];?>")?$(this).closest("form").submit():"";' class="btn btn-xs btn-danger"><i class="bi bi-trash"></i> <?=$lang['admin']['remove'];?></a>
                     </form>
                     </div>
                   </td>
@@ -618,7 +618,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
         <div class="mass-actions-admin">
           <div class="btn-group btn-group-sm">
             <button type="button" id="toggle_multi_select_all" data-id="dkim" class="btn btn-default"><i class="bi bi-check-all"></i> <?=$lang['mailbox']['toggle_all'];?></button>
-            <button type="button" data-action="delete_selected" name="delete_selected" data-id="dkim" data-api-url="delete/dkim" class="btn btn-danger"><i class="bi bi-recycle"></i> <?=$lang['admin']['remove'];?></button>
+            <button type="button" data-action="delete_selected" name="delete_selected" data-id="dkim" data-api-url="delete/dkim" class="btn btn-danger"><i class="bi bi-trash"></i> <?=$lang['admin']['remove'];?></button>
           </div>
         </div>
 
@@ -1402,7 +1402,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             data-api-url='edit/mailq'
             data-api-attr='{"action":"super_delete"}'
             data-toggle="tooltip" title="postsuper -d ALL"
-            href="#"><i class="bi bi-recycle"></i> <?=$lang['admin']['delete_queue'];?></a>
+            href="#"><i class="bi bi-trash"></i> <?=$lang['admin']['delete_queue'];?></a>
         </div>
       </div>
       </div>

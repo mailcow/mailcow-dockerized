@@ -552,7 +552,7 @@
         "save": "Gem ændringer",
         "scope": "Anvendelsesområde",
         "sender_acl": "Tillad at sende som",
-        "sender_acl_disabled": "↳ <span class=\"label label-danger\">Afsenderkontrol er deaktiveret</span>",
+        "sender_acl_disabled": "<span class=\"label label-danger\">Afsenderkontrol er deaktiveret</span>",
         "sender_acl_info": "Hvis postkassebruger A har tilladelse til at sende som postkassebruger B, vises afsenderadressen ikke automatisk som valgbar \"from\" felt i SOGo.<br>\r\n  Postkassebruger B skal oprette en delegation i SOGo for at tillade postkassebruger A at vælge deres adresse som afsender. For at delegere en postkasse i SOGo skal du bruge menuen (tre prikker) til højre for dit postkassens navn øverst til venstre, mens du er i postvisningen. Denne adfærd gælder ikke for aliasadresser.",
         "sieve_desc": "Kort beskrivelse",
         "sieve_type": "Filtertype",

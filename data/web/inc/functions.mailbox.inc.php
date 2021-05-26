@@ -2141,6 +2141,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $xmpp                 = (isset($_data['xmpp']) && !empty($_SESSION['acl']['xmpp_domain_access']) && $_SESSION['acl']['xmpp_domain_access'] == "1") ? intval($_data['xmpp']) : $is_now['xmpp'];
                 $xmpp_prefix          = (!empty($_data['xmpp_prefix']) && !empty($_SESSION['acl']['xmpp_prefix']) && $_SESSION['acl']['xmpp_prefix'] == "1") ? $_data['xmpp_prefix'] : $is_now['xmpp_prefix'];
                 $description          = (!empty($_data['description']) && isset($_SESSION['acl']['domain_desc']) && $_SESSION['acl']['domain_desc'] == "1") ? $_data['description'] : $is_now['description'];
+                (int)$relayhost       = (isset($_data['relayhost']) && isset($_SESSION['acl']['domain_relayhost']) && $_SESSION['acl']['domain_relayhost'] == "1") ? intval($_data['relayhost']) : intval($is_now['relayhost']);
               }
               else {
                 $_SESSION['return'][] = array(
@@ -2359,6 +2360,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               (int)$smtp_access = (isset($_data['smtp_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") ? intval($_data['smtp_access']) : intval($is_now['attributes']['smtp_access']);
               (int)$xmpp_admin = (isset($_data['xmpp_admin']) && isset($_SESSION['acl']['xmpp_admin']) && $_SESSION['acl']['xmpp_admin'] == "1") ? intval($_data['xmpp_admin']) : intval($is_now['attributes']['xmpp_admin']);
               (int)$xmpp_access = (isset($_data['xmpp_access']) && isset($_SESSION['acl']['xmpp_mailbox_access']) && $_SESSION['acl']['xmpp_mailbox_access'] == "1") ? intval($_data['xmpp_access']) : intval($is_now['attributes']['xmpp_access']);
+              (int)$relayhost = (isset($_data['relayhost']) && isset($_SESSION['acl']['mailbox_relayhost']) && $_SESSION['acl']['mailbox_relayhost'] == "1") ? intval($_data['relayhost']) : intval($is_now['attributes']['relayhost']);
               (int)$quota_m = (isset_has_content($_data['quota'])) ? intval($_data['quota']) : ($is_now['quota'] / 1048576);
               $name       = (!empty($_data['name'])) ? ltrim(rtrim($_data['name'], '>'), '<') : $is_now['name'];
               $domain     = $is_now['domain'];
@@ -2631,6 +2633,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 `attributes` = JSON_SET(`attributes`, '$.pop3_access', :pop3_access),
                 `attributes` = JSON_SET(`attributes`, '$.xmpp_admin', :xmpp_admin),
                 `attributes` = JSON_SET(`attributes`, '$.xmpp_access', :xmpp_access),
+                `attributes` = JSON_SET(`attributes`, '$.relayhost', :relayhost),
                 `attributes` = JSON_SET(`attributes`, '$.smtp_access', :smtp_access)
                   WHERE `username` = :username");
             $stmt->execute(array(
@@ -2644,6 +2647,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               ':smtp_access' => $smtp_access,
               ':xmpp_admin' => $xmpp_admin,
               ':xmpp_access' => $xmpp_access,
+              ':relayhost' => $relayhost,
               ':username' => $username
             ));
             $_SESSION['return'][] = array(
@@ -3561,6 +3565,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $mailboxdata['active_int'] = $row['active'];
           $mailboxdata['domain'] = $row['domain'];
           $mailboxdata['domain_xmpp'] = $row['domain_xmpp'];
+          $mailboxdata['relayhost'] = $row['relayhost'];
           $mailboxdata['name'] = $row['name'];
           $mailboxdata['domain_xmpp_prefix'] = $row['domain_xmpp_prefix'];
           $mailboxdata['local_part'] = $row['local_part'];

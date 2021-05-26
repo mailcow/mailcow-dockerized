@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "21052021_0900";
+    $db_version = "25052021_0900";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -572,6 +572,8 @@ function init_db_schema() {
           "protocol_access" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "smtp_ip_access" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "alias_domains" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "mailbox_relayhost" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "domain_relayhost" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "xmpp_prefix" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "xmpp_domain_access" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "xmpp_mailbox_access" => "TINYINT(1) NOT NULL DEFAULT '0'",
@@ -1188,6 +1190,7 @@ function init_db_schema() {
     $pdo->query("UPDATE `pushover` SET `attributes` =  JSON_SET(`attributes`, '$.only_x_prio', \"0\") WHERE JSON_VALUE(`attributes`, '$.only_x_prio') IS NULL;");
     // mailbox
     $pdo->query("UPDATE `mailbox` SET `attributes` = '{}' WHERE `attributes` = '' OR `attributes` IS NULL;");
+    $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.relayhost', \"0\") WHERE JSON_VALUE(`attributes`, '$.relayhost') IS NULL;");
     $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.xmpp_access', \"1\") WHERE JSON_VALUE(`attributes`, '$.xmpp_access') IS NULL;");
     $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.xmpp_admin', \"0\") WHERE JSON_VALUE(`attributes`, '$.xmpp_admin') IS NULL;");
     $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.force_pw_update', \"0\") WHERE JSON_VALUE(`attributes`, '$.force_pw_update') IS NULL;");

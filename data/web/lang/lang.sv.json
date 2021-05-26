@@ -592,7 +592,7 @@
         "save": "Spara ändringar",
         "scope": "Omfattning",
         "sender_acl": "Tillåt att skicka som",
-        "sender_acl_disabled": "↳ <span class=\"label label-danger\">Avsändarkontroll är avaktiverad</span>",
+        "sender_acl_disabled": "<span class=\"label label-danger\">Avsändarkontroll är avaktiverad</span>",
         "sender_acl_info": "Om användaren A tillåts skicka som användaren B visas inte avsändaradressen automatiskt i \"från\" fältet i SOGo.<br>\r\n  Användaren B måste skapa en delegation i SOGo för att låta användaren A välja Användaren B's adress som avsändare. För att delegera en postlåda i SOGo, gå till menyn (tre punkter) till höger om ditt namn uppe till vänster i postvyn. Detta gäller inte för aliasadresser.",
         "sieve_desc": "Kort beskrivning",
         "sieve_type": "Filtertyp",
