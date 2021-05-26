@@ -41,3 +41,7 @@
   background-color: #fff;
   border: 0px solid #fff;
 }
+#sender_acl_disabled {
+  display:none;
+  margin-top:10px;
+}

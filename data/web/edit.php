@@ -281,6 +281,21 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                   <input type="text" class="form-control" name="description" value="<?=htmlspecialchars($result['description']);?>">
                 </div>
               </div>
+              <div class="form-group">
+                <label class="control-label col-sm-2" for="relayhost"><?=$lang['edit']['relayhost'];?></label>
+                <div class="col-sm-10">
+                  <select data-acl="<?=$_SESSION['acl']['domain_relayhost'];?>" data-live-search="true" id="relayhost" name="relayhost" class="form-control">
+                    <?php
+                    foreach ($rlyhosts as $rlyhost) {
+                    ?>
+                    <option class="<?=($rlyhost['active'] == 1) ? '' : 'background: #ff4136; color: #fff';?>" value="<?=$rlyhost['id'];?>" <?=($result['relayhost'] == $rlyhost['id']) ? 'selected' : null;?>>ID <?=$rlyhost['id'];?>: <?=$rlyhost['hostname'];?> (<?=$rlyhost['username'];?>)</option>
+                    <?php
+                    }
+                    ?>
+                    <option value="" <?=($result['relayhost'] == "0") ? 'selected' : null;?>>None</option>
+                  </select>
+                </div>
+              </div>
               <?php
               if ($_SESSION['mailcow_cc_role'] == "admin") {
               ?>
@@ -312,21 +327,6 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                 <label class="control-label col-sm-2" for="quota"><?=$lang['edit']['domain_quota'];?></label>
                 <div class="col-sm-10">
                   <input type="number" class="form-control" name="quota" value="<?=intval($result['max_quota_for_domain'] / 1048576);?>">
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="control-label col-sm-2" for="quota"><?=$lang['edit']['relayhost'];?></label>
-                <div class="col-sm-10">
-                  <select data-live-search="true" name="relayhost" class="form-control">
-                    <?php
-                    foreach ($rlyhosts as $rlyhost) {
-                    ?>
-                    <option value="<?=$rlyhost['id'];?>" <?=($result['relayhost'] == $rlyhost['id']) ? 'selected' : null;?>>ID <?=$rlyhost['id'];?>: <?=$rlyhost['hostname'];?> (<?=$rlyhost['username'];?>)</option>
-                    <?php
-                    }
-                    ?>
-                    <option value="" <?=($result['relayhost'] == "0") ? 'selected' : null;?>>None</option>
-                  </select>
                 </div>
               </div>
               <div class="form-group">
@@ -640,6 +640,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
       $quarantine_notification = mailbox('get', 'quarantine_notification', $mailbox);
       $quarantine_category = mailbox('get', 'quarantine_category', $mailbox);
       $get_tls_policy = mailbox('get', 'tls_policy', $mailbox);
+      $rlyhosts = relayhost('get');
       if (!empty($result)) {
         ?>
         <h4><?=$lang['edit']['mailbox'];?></h4>
@@ -724,8 +725,24 @@ if (isset($_SESSION['mailcow_cc_role'])) {
 
               ?>
               </select>
-              <div style="display:none" id="sender_acl_disabled"><?=$lang['edit']['sender_acl_disabled'];?></div>
+              <div id="sender_acl_disabled"><i class="bi bi-shield-exclamation"></i> <?=$lang['edit']['sender_acl_disabled'];?></div>
               <small class="help-block"><?=$lang['edit']['sender_acl_info'];?></small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="relayhost"><?=$lang['edit']['relayhost'];?></label>
+            <div class="col-sm-10">
+              <select data-acl="<?=$_SESSION['acl']['mailbox_relayhost'];?>" data-live-search="true" id="relayhost" name="relayhost" class="form-control">
+                <?php
+                foreach ($rlyhosts as $rlyhost) {
+                ?>
+                    <option style="<?=($rlyhost['active'] == 1) ? '' : 'background: #ff4136; color: #fff';?>" value="<?=$rlyhost['id'];?>" <?=($result['attributes']['relayhost'] == $rlyhost['id']) ? 'selected' : null;?>>ID <?=$rlyhost['id'];?>: <?=$rlyhost['hostname'];?> (<?=$rlyhost['username'];?>)</option>
+                <?php
+                }
+                ?>
+                <option value="" <?=($result['attributes']['relayhost'] == "0") ? 'selected' : null;?>>None</option>
+              </select>
+              <small class="help-block"><?=$lang['edit']['mailbox_relayhost_info'];?></small>
             </div>
           </div>
           <div class="form-group">
@@ -965,7 +982,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               <div class="btn-group" data-acl="<?=$_SESSION['acl']['pushover'];?>">
                   <a class="btn btn-sm btn-default" data-action="edit_selected" data-id="pushover" data-item="<?=htmlspecialchars($mailbox);?>" data-api-url='edit/pushover' data-api-attr='{}' href="#"><?=$lang['edit']['save'];?></a>
                   <a class="btn btn-sm btn-default" data-action="edit_selected" data-id="pushover-test" data-item="<?=htmlspecialchars($mailbox);?>" data-api-url='edit/pushover-test' data-api-attr='{}' href="#"><i class="bi bi-check-lg"></i> <?=$lang['edit']['pushover_verify'];?></a>
-                  <a id="pushover_delete" class="btn btn-sm btn-danger" data-action="edit_selected" data-id="pushover-delete" data-item="<?=htmlspecialchars($mailbox);?>" data-api-url='edit/pushover' data-api-attr='{"delete":"true"}' href="#"><i class="bi bi-recycle"></i> <?=$lang['edit']['remove'];?></a>
+                  <a id="pushover_delete" class="btn btn-sm btn-danger" data-action="edit_selected" data-id="pushover-delete" data-item="<?=htmlspecialchars($mailbox);?>" data-api-url='edit/pushover' data-api-attr='{"delete":"true"}' href="#"><i class="bi bi-trash"></i> <?=$lang['edit']['remove'];?></a>
               </div>
             </div>
           </div>

@@ -531,7 +531,7 @@
         "save": "Uložit změny",
         "scope": "Rozsah",
         "sender_acl": "Povolit odesílání jako",
-        "sender_acl_disabled": "↳ <span class=\"label label-danger\">Kontrola odesílatele vypnuta</span>",
+        "sender_acl_disabled": "<span class=\"label label-danger\">Kontrola odesílatele vypnuta</span>",
         "sender_acl_info": "Má-li uživatel schránky A dovoleno odesílat jako uživatel schránky B, nezobrazuje se adresa odesílatele B v seznamu \"Od\" v SOGo automaticky.<br>\r\n  Uživatel schránky A musí nejdříve v SOGo vytvořit pověření, jež umožní uživateli B vybrat svou adresu jako odesílatele. Tento mechanismus neplatí pro aliasy.",
         "sieve_desc": "Krátký popis",
         "sieve_type": "Typ filtru",

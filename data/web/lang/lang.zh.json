@@ -544,7 +544,7 @@
         "save": "保存更改",
         "scope": "范围",
         "sender_acl": "允许发送为",
-        "sender_acl_disabled": "↳ <span class=\"label label-danger\">发件人检查已关闭</span>",
+        "sender_acl_disabled": "<span class=\"label label-danger\">发件人检查已关闭</span>",
         "sender_acl_info": "如果允许邮箱用户A作为邮箱用户B发送邮件，发件人的地址不会在SOGo中\"来自\"区域自动地作为下拉可选项显示。<br>\r\n 邮箱用户B需要添加授权以允许邮箱用户A选择B的地址作为发件人；授权方法为，在SOGo中点击左上方邮箱地址右边的菜单按钮(三个点)并授权。",
         "sieve_desc": "简短描述",
         "sieve_type": "过滤器类型",

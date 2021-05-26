@@ -534,7 +534,7 @@
         "save": "Save changes",
         "scope": "Scope",
         "sender_acl": "Allow to send as",
-        "sender_acl_disabled": "↳ <span class=\"label label-danger\">Sender check is disabled</span>",
+        "sender_acl_disabled": "<span class=\"label label-danger\">Sender check is disabled</span>",
         "sender_acl_info": "If mailbox user A is allowed to send as mailbox user B, the sender address is not automatically displayed as selectable \"from\" field in SOGo.<br>\r\n  Mailbox user B needs to create a delegation in SOGo to allow mailbox user A to select their address as sender. To delegate a mailbox in SOGo, use the menu (three dots) to the right of your mailbox name in the upper left while in mail view. This behaviour does not apply to alias addresses.",
         "sieve_desc": "Short description",
         "sieve_type": "Filter type",

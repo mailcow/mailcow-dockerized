@@ -137,11 +137,11 @@ function relayhost($_action, $_data = null) {
       }
     break;
     case 'get':
-      if ($_SESSION['mailcow_cc_role'] != "admin") {
+      if ($_SESSION['mailcow_cc_role'] != "admin" && $_SESSION['mailcow_cc_role'] != "domainadmin") {
         return false;
       }
       $relayhosts = array();
-      $stmt = $pdo->query("SELECT `id`, `hostname`, `username` FROM `relayhosts`");
+      $stmt = $pdo->query("SELECT `id`, `hostname`, `username`, `active` FROM `relayhosts`");
       $relayhosts = $stmt->fetchAll(PDO::FETCH_ASSOC);
       return $relayhosts;
     break;
@@ -166,6 +166,11 @@ function relayhost($_action, $_data = null) {
         $used_by_domains = $stmt->fetch(PDO::FETCH_ASSOC)['used_by_domains'];
         $used_by_domains = (empty($used_by_domains)) ? '' : $used_by_domains;
         $relayhostdata['used_by_domains'] = $used_by_domains;
+        $stmt = $pdo->prepare("SELECT GROUP_CONCAT(`username` SEPARATOR ', ') AS `used_by_mailboxes` FROM `mailbox` WHERE JSON_VALUE(`attributes`, '$.relayhost') = :id");
+        $stmt->execute(array(':id' => $_data));
+        $used_by_mailboxes = $stmt->fetch(PDO::FETCH_ASSOC)['used_by_mailboxes'];
+        $used_by_mailboxes = (empty($used_by_mailboxes)) ? '' : $used_by_mailboxes;
+        $relayhostdata['used_by_mailboxes'] = $used_by_mailboxes;
       }
       return $relayhostdata;
     break;

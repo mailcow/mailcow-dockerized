@@ -710,7 +710,7 @@ jQuery(function($){
         }
         item.indicator = '<span style="border-right:6px solid #' + intToRGB(hashCode(item.rl_hash)) + ';padding-left:5px;">&nbsp;</span>';
         if (item.rl_hash != 'err') {
-          item.action = '<a href="#" data-action="delete_selected" data-id="single-hash" data-api-url="delete/rlhash" data-item="' + encodeURI(item.rl_hash) + '" class="btn btn-xs btn-danger"><i class="bi bi-recycle"></i> ' + lang.reset_limit + '</a>';
+          item.action = '<a href="#" data-action="delete_selected" data-id="single-hash" data-api-url="delete/rlhash" data-item="' + encodeURI(item.rl_hash) + '" class="btn btn-xs btn-danger"><i class="bi bi-trash"></i> ' + lang.reset_limit + '</a>';
         }
       });
     }

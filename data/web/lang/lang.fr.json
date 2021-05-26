@@ -578,7 +578,7 @@
 		"save": "Enregistrer les modifications",
 		"scope": "Portée",
 		"sender_acl": "Permettre d’envoyer comme",
-		"sender_acl_disabled": "↳ <span class=\"label label-danger\">Le contrôle de l’expéditeur est désactivé</span>",
+		"sender_acl_disabled": "<span class=\"label label-danger\">Le contrôle de l’expéditeur est désactivé</span>",
 		"sender_acl_info": "Si l’utilisateur de la boîte A est autorisé à envoyer en tant qu’utilisateur de la boîte B, l’adresse de l’expéditeur n’est pas automatiquement affichée comme sélectionnable du champ \"from\" dans SOGo.<br>\r\n  L’utilisateur B de la boîte doit créer une délégation dans Sogo pour permettre à l’utilisateur A de la boîte de sélectionner son adresse comme expéditeur. Pour déléguer une boîte dans Sogo, utilisez le menu (trois points) à droite du nom de votre boîte dans le coin supérieur gauche dans la vue de courrier. Ce comportement ne s’applique pas aux adresses alias.",
 		"sieve_desc": "Description courte",
 		"sieve_type": "Type de filtre",

@@ -125,16 +125,31 @@ query = SELECT GROUP_CONCAT(transport SEPARATOR '') AS transport_maps
         AND mailbox.active = '1'
     ), 'smtp_enforced_tls:', 'smtp:') AS 'transport'
     UNION ALL
-    SELECT hostname AS transport FROM relayhosts
+    SELECT COALESCE(
+      (SELECT hostname FROM relayhosts
+      LEFT OUTER JOIN mailbox ON JSON_UNQUOTE(JSON_VALUE(mailbox.attributes, '$.relayhost')) = relayhosts.id
+        WHERE relayhosts.active = '1'
+          AND (
+            mailbox.username IN (SELECT alias.goto from alias
+              JOIN mailbox ON mailbox.username = alias.goto
+                WHERE alias.active = '1'
+                  AND alias.address = '%s'
+                  AND alias.address NOT LIKE '@%%'
+            )
+          )
+      ),
+      (SELECT hostname FROM relayhosts
       LEFT OUTER JOIN domain ON domain.relayhost = relayhosts.id
         WHERE relayhosts.active = '1'
-          AND domain = '%d'
-          OR domain IN (
-            SELECT target_domain FROM alias_domain
-              WHERE alias_domain = '%d'
+          AND (domain.domain = '%d'
+            OR domain.domain IN (
+              SELECT target_domain FROM alias_domain
+                WHERE alias_domain = '%d'
+            )
           )
-  )
-  AS transport_view;
+      )
+    )
+  ) AS transport_view;
 EOF
 
 cat <<EOF > /opt/postfix/conf/sql/mysql_transport_maps.cf
