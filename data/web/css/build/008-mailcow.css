@@ -119,12 +119,12 @@ body.modal-open {
 }
 body {
   font-family: "Noto Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
-  font-size: 0.9rem;
+  font-size: 10.5pt;
   line-height: 1.5;
 }
 html {
   font-family: "Noto Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
-  font-size: 0.9rem;
+  font-size: 10.5pt;
   line-height: 1.5;
 }
 #mailcow-alert {
