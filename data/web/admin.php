@@ -1190,7 +1190,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
           <form class="form" data-id="uitexts" role="form" method="post">
             <div class="form-group">
               <label for="uitests_title_name"><?=$lang['admin']['title_name'];?>:</label>
-              <input type="text" class="form-control" id="uitests_title_name" placeholder="mailcow UI" value="<?=$ui_texts['title_name'];?>">
+              <input type="text" class="form-control" id="uitests_title_name" name="title_name" placeholder="mailcow UI" value="<?=$ui_texts['title_name'];?>">
             </div>
             <div class="form-group">
               <label for="uitests_main_name"><?=$lang['admin']['main_name'];?>:</label>
