@@ -431,19 +431,19 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
         <legend><?=$lang['admin']['add_relayhost'];?></legend>
         <p class="help-block"><?=$lang['admin']['add_relayhost_hint'];?></p>
         <div class="row">
-          <div class="col-md-6">
+          <div class="col-md-8">
             <form class="form" data-id="rlyhost" role="form" method="post">
               <div class="form-group">
                 <label for="rlyhost_hostname"><?=$lang['admin']['host'];?></label>
-                <input class="form-control input-sm" id="rlyhost_hostname" name="hostname" placeholder='[0.0.0.0], [0.0.0.0]:25, host:25, host, [host]:25' required>
+                <input class="form-control" id="rlyhost_hostname" name="hostname" placeholder='[0.0.0.0], [0.0.0.0]:25, host:25, host, [host]:25' required>
               </div>
               <div class="form-group">
                 <label for="rlyhost_username"><?=$lang['admin']['username'];?></label>
-                <input class="form-control input-sm" id="rlyhost_username" name="username">
+                <input class="form-control" id="rlyhost_username" name="username">
               </div>
               <div class="form-group">
                 <label for="rlyhost_password"><?=$lang['admin']['password'];?></label>
-                <input class="form-control input-sm" id="rlyhost_password" name="password">
+                <input class="form-control" id="rlyhost_password" name="password">
               </div>
               <button class="btn btn-default" data-action="add_item" data-id="rlyhost" data-api-url='add/relayhost' data-api-attr='{}' href="#"><i class="bi bi-plus-lg"></i> <?=$lang['admin']['add'];?></button>
             </form>
@@ -474,29 +474,29 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
         <legend><?=$lang['admin']['add_transport'];?></legend>
         <p class="help-block"><?=$lang['admin']['add_transports_hint'];?></p>
         <div class="row">
-          <div class="col-md-6">
+          <div class="col-md-8">
             <form class="form" data-id="transport" role="form" method="post">
               <div class="form-group">
                 <label for="transport_destination"><?=$lang['admin']['destination'];?></label>
-                <input class="form-control input-sm" id="transport_destination" name="destination" placeholder='<?=$lang['admin']['transport_dest_format'];?>' required>
+                <input class="form-control" id="transport_destination" name="destination" placeholder='<?=$lang['admin']['transport_dest_format'];?>' required>
               </div>
               <div class="form-group">
                 <label for="transport_nexthop"><?=$lang['admin']['nexthop'];?></label>
-                <input class="form-control input-sm" id="transport_nexthop" name="nexthop" placeholder='host:25, host, [host]:25, [0.0.0.0]:25' required>
+                <input class="form-control" id="transport_nexthop" name="nexthop" placeholder='host:25, host, [host]:25, [0.0.0.0]:25' required>
               </div>
               <div class="form-group">
                 <label for="transport_username"><?=$lang['admin']['username'];?></label>
-                <input class="form-control input-sm" id="transport_username" name="username">
+                <input class="form-control" id="transport_username" name="username">
               </div>
               <div class="form-group">
                 <label for="transport_password"><?=$lang['admin']['password'];?></label>
-                <input class="form-control input-sm" id="transport_password" name="password">
+                <input class="form-control" id="transport_password" name="password">
               </div>
-              <!-- <div class="form-group">
+              <div class="form-group">
                 <label>
-                  <input type="checkbox" name="lookup_mx" value="1"> <?=$lang['admin']['lookup_mx'];?>
+                  <input type="checkbox" name="is_mx_based" value="1"> <?=$lang['admin']['lookup_mx'];?>
                 </label>
-              </div> -->
+              </div>
               <div class="form-group">
                 <label>
                   <input type="checkbox" name="active" value="1"> <?=$lang['admin']['active'];?>

@@ -241,3 +241,6 @@ table.footable>tbody>tr.footable-empty>td {
 legend > [class^="bi-"]::before, legend > [class*=" bi-"]::before {
   vertical-align: 0em !important;
 }
+code {
+  font-size: inherit;
+}

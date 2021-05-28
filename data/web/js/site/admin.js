@@ -187,9 +187,9 @@ jQuery(function($){
         {"name":"id","type":"text","title":"ID","style":{"width":"50px"}},
         {"name":"hostname","type":"text","title":lang.host,"style":{"width":"250px"}},
         {"name":"username","title":lang.username,"breakpoints":"xs sm"},
-        {"name":"in_use_by","title":lang.in_use_by,"style":{"width":"110px"}, "type": "text","breakpoints":"xs sm"},
+        {"name":"in_use_by","title":lang.in_use_by,"style":{"min-width":"200px","width":"200px"}, "type": "text","breakpoints":"xs sm"},
         {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"220px","width":"220px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
+        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"250px","width":"250px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
       ],
       "rows": $.ajax({
         dataType: 'json',
@@ -213,11 +213,11 @@ jQuery(function($){
       "columns": [
         {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"name":"id","type":"text","title":"ID","style":{"width":"50px"}},
-        {"name":"destination","type":"text","title":lang.destination,"style":{"width":"250px"}},
-        {"name":"nexthop","type":"text","title":lang.nexthop,"style":{"width":"250px"}},
+        {"name":"destination","type":"text","title":lang.destination,"style":{"min-width":"300px","width":"300px"}},
+        {"name":"nexthop","type":"text","title":lang.nexthop,"style":{"min-width":"200px","width":"200px"}},
         {"name":"username","title":lang.username,"breakpoints":"xs sm"},
         {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"220px","width":"220px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
+        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"250px","width":"250px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
       ],
       "rows": $.ajax({
         dataType: 'json',
@@ -233,7 +233,12 @@ jQuery(function($){
       "empty": lang.empty,
       "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
       "sorting": {"enabled": true},
-      "toggleSelector": "table tbody span.footable-toggle"
+      "toggleSelector": "table tbody span.footable-toggle",
+      "on": {
+        "ready.ft.table": function(e, ft){
+          $('.mx-info').tooltip();
+        }
+      }
     });
   }
   function draw_queue() {
@@ -288,8 +293,11 @@ jQuery(function($){
       });
     } else if (table == 'transportstable') {
       $.each(data, function (i, item) {
+        if (item.is_mx_based) {
+          item.destination = '<i class="bi bi-info-circle-fill text-info mx-info" data-toggle="tooltip" title="' + lang.is_mx_based + '"></i> <code>' + item.destination + '</code>';
+        }
         if (item.username) {
-          item.username = '<span style="border-left:3px solid #' + intToRGB(hashCode(item.nexthop)) + ';padding-left:5px;">' + item.username + '</span>';
+          item.username = '<i style="color:#' + intToRGB(hashCode(item.nexthop)) + ';" class="bi bi-square-fill"></i> ' + item.username;
         }
         item.action = '<div class="btn-group">' +
           '<a href="#" data-toggle="modal" data-target="#testTransportModal" data-transport-id="' + encodeURI(item.id) + '" data-transport-type="transport-map" class="btn btn-xs btn-default"><i class="bi bi-caret-right-fill"></i> Test</a>' +
