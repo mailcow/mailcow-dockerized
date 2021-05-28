@@ -1095,6 +1095,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           <h4><?=$lang['edit']['resource'];?></h4>
           <form class="form-horizontal" role="form" method="post" data-id="edittransport">
             <input type="hidden" value="0" name="active">
+            <input type="hidden" value="0" name="is_mx_based">
             <div class="form-group">
               <label class="control-label col-sm-2" for="destination"><?=$lang['add']['destination'];?></label>
               <div class="col-sm-10">
@@ -1117,6 +1118,13 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               <label class="control-label col-sm-2" for="password"><?=$lang['add']['password'];?></label>
               <div class="col-sm-10">
                 <input type="text" data-hibp="true" class="form-control" name="password" value="<?=htmlspecialchars($result['password'], ENT_QUOTES, 'UTF-8');?>">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <div class="checkbox">
+                <label><input type="checkbox" value="1" name="is_mx_based" <?=($result['is_mx_based']=="1") ? "checked" : null;?>> <?=$lang['edit']['lookup_mx'];?></label>
+                </div>
               </div>
             </div>
             <div class="form-group">
