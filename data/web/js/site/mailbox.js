@@ -822,7 +822,7 @@ jQuery(function($){
               item.goto = '<span class="label label-success">Learn as ham</span>';
             }
             if (item.in_primary_domain !== "") {
-              item.domain = "↳ " + item.domain + " (" + item.in_primary_domain + ")";
+              item.domain = '<i class="bi bi-info-circle-fill alias-domain-info text-info" data-toggle="tooltip" title="' + lang.target_domain + ': ' + item.in_primary_domain + '"></i> ' + item.domain;
             }
           });
         }
@@ -854,6 +854,7 @@ jQuery(function($){
         },
         "ready.ft.table": function(e, ft){
           table_mailbox_ready(ft, 'alias_table');
+          $('.alias-domain-info').tooltip();
         },
         "after.ft.filtering": function(e, ft){
           table_mailbox_ready(ft, 'alias_table');
