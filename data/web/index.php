@@ -33,7 +33,7 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
         <div class="panel-body">
           <div class="text-center mailcow-logo"><img src="<?=($main_logo = customize('get', 'main_logo')) ? $main_logo : '/img/cow_mailcow.svg';?>" alt="mailcow"></div>
           <?php if (!empty($UI_TEXTS['ui_announcement_text']) && in_array($UI_TEXTS['ui_announcement_type'], array('info', 'warning', 'danger')) && $UI_TEXTS['ui_announcement_active'] == 1) { ?>
-          <div class="alert alert-<?=$UI_TEXTS['ui_announcement_type'];?> rot-enc"><?=str_rot13($UI_TEXTS['ui_announcement_text']);?></div>
+          <div class="alert alert-<?=$UI_TEXTS['ui_announcement_type'];?> rot-enc ui-announcement-alert"><?=str_rot13($UI_TEXTS['ui_announcement_text']);?></div>
           <?php } ?>
           <legend><?= isset($_SESSION['oauth2_request']) ? $lang['oauth2']['authorize_app'] : $UI_TEXTS['main_name'];?></legend>
             <?php
