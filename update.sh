@@ -123,7 +123,7 @@ while (($#)); do
         exit 99
       fi
       if [[ -z $(git log HEAD --pretty=format:"%H" | grep "${LATEST_REV}") ]]; then
-        echo $'Updated code is available.\nThe changes can be found here: https://github.com/mailcow/mailcow-dockerized/commits/master'
+        echo -e "Updated code is available.\nThe changes can be found here: https://github.com/mailcow/mailcow-dockerized/commits/master"
         git log --date=short --pretty=format:"%ad - %s" $(git rev-parse --short HEAD)..origin/master
         exit 0
       else
