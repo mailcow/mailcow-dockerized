@@ -30,4 +30,4 @@ jobs:
           stale-pr-label: "stale"
           operations-per-run: "50"
           #DRY-RUN
-          debug-only: "true"
+          debug-only: "false"
