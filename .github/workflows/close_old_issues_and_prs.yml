@@ -28,6 +28,7 @@ jobs:
           exempt-pr-labels: "pinned,security,enhancement"
           stale-issue-label: "stale"
           stale-pr-label: "stale"
-          operations-per-run: "50"
+          operations-per-run: "250"
+          ascending: "true"
           #DRY-RUN
           debug-only: "false"
