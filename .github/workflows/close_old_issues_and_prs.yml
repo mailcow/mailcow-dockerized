@@ -3,7 +3,7 @@ on:
   schedule:
     # Once every day at midnight UTC
     - cron: "0 0 * * *"
-  #workflow_dispatch:
+  workflow_dispatch:
 
 jobs:
   stale:
