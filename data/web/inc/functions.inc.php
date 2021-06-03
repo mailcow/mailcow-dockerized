@@ -949,6 +949,9 @@ function user_get_alias_details($username) {
   if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
     return false;
   }
+  if (!hasMailboxObjectAccess($username, $_SESSION['mailcow_cc_role'], $username)) {
+    return false;
+  }
   $data['address'] = $username;
   $stmt = $pdo->prepare("SELECT `address` AS `shared_aliases`, `public_comment` FROM `alias`
     WHERE `goto` REGEXP :username_goto
