@@ -173,16 +173,17 @@ done
 [[ ! -f mailcow.conf ]] && { echo "mailcow.conf is missing"; exit 1;}
 chmod 600 mailcow.conf
 source mailcow.conf
-DOTS=${MAILCOW_HOSTNAME//[^.]};
-if [ ${#DOTS} -lt 2 ]; then
-  echo "MAILCOW_HOSTNAME (${MAILCOW_HOSTNAME}) is not a FQDN!"
-  echo "Please change it to a FQDN and run docker-compose down followed by docker-compose up -d"
-  exit 1
-fi
 
 if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\""; exit 1; fi
 if cp --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox cp detected, please install coreutils, \"apk add --no-cache --upgrade coreutils\""; exit 1; fi
 if sed --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox sed detected, please install gnu sed, \"apk add --no-cache --upgrade sed\""; exit 1; fi
+
+FQDN=`echo ${MAILCOW_HOSTNAME} | grep -P '(?=^.{1,254}$)(^(?>(?!\d+\.)[a-zA-Z0-9_\-]{1,63}\.?)+(?>(?!\d+\.)[a-zA-Z0-9_\-]{1,63}\.)((?:[a-zA-Z]{2,})|xn--([a-zA-Z0-9]){4,})$)'`
+if [[ -z ${FQDN} ]; then
+  echo "MAILCOW_HOSTNAME (${MAILCOW_HOSTNAME}) is not a FQDN!"
+  echo "Please change it to a FQDN and run docker-compose down followed by docker-compose up -d"
+  exit 1
+fi
 
 CONFIG_ARRAY=(
   "SKIP_LETS_ENCRYPT"
