@@ -45,8 +45,8 @@ fi
 echo "Press enter to confirm the detected value '[value]' where applicable or enter a custom value."
 while [ -z "${MAILCOW_HOSTNAME}" ]; do
   read -p "Mail server hostname (FQDN) - this is not your mail domain, but your mail servers hostname: " -e MAILCOW_HOSTNAME
-  DOTS=${MAILCOW_HOSTNAME//[^.]};
-  if [ ${#DOTS} -lt 2 ] && [ ! -z ${MAILCOW_HOSTNAME} ]; then
+  FQDN=`echo ${MAILCOW_HOSTNAME} | grep -P '(?=^.{1,254}$)(^(?>(?!\d+\.)[a-zA-Z0-9_\-]{1,63}\.?)+(?>(?!\d+\.)[a-zA-Z0-9_\-]{1,63}\.)((?:[a-zA-Z]{2,})|xn--([a-zA-Z0-9]){4,})$)'`
+  if [ -z ${FQDN} ] && [ ! -z ${MAILCOW_HOSTNAME} ]; then
     echo "${MAILCOW_HOSTNAME} is not a FQDN"
     MAILCOW_HOSTNAME=
   fi
