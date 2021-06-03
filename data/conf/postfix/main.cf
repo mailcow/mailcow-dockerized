@@ -161,8 +161,9 @@ virtual_alias_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_alias_maps.
 virtual_gid_maps = static:5000
 virtual_mailbox_base = /var/vmail/
 virtual_mailbox_domains = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_domains_maps.cf
-recipient_bcc_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_recipient_bcc_maps.cf
-sender_bcc_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_sender_bcc_maps.cf
+# -- moved to rspamd on 2021-06-01
+#recipient_bcc_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_recipient_bcc_maps.cf
+#sender_bcc_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_sender_bcc_maps.cf
 recipient_canonical_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_recipient_canonical_maps.cf
 recipient_canonical_classes = envelope_recipient
 virtual_mailbox_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_mailbox_maps.cf
