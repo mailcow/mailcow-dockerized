@@ -565,13 +565,13 @@ jQuery(function($){
     ft_bcc_table = FooTable.init('#bcc_table', {
       "columns": [
         {"name":"chkbox","title":"","style":{"min-width":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
-        {"sorted": true,"name":"id","title":"ID","style":{"maxWidth":"60px","width":"60px","text-align":"center"}},
+        {"sorted": true,"name":"id","title":"ID","style":{"min-width":"60px","width":"60px","text-align":"center"}},
         {"name":"type","title":lang.bcc_type},
         {"name":"local_dest","title":lang.bcc_local_dest},
         {"name":"bcc_dest","title":lang.bcc_destinations},
         {"name":"domain","title":lang.domain,"breakpoints":"xs sm"},
-        {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
+        {"name":"active","filterable": false,"style":{"min-width":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
+        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
       "empty": lang.empty,
       "rows": $.ajax({
