@@ -179,7 +179,7 @@ if cp --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox cp dete
 if sed --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox sed detected, please install gnu sed, \"apk add --no-cache --upgrade sed\""; exit 1; fi
 
 FQDN=`echo ${MAILCOW_HOSTNAME} | grep -P '(?=^.{1,254}$)(^(?>(?!\d+\.)[a-zA-Z0-9_\-]{1,63}\.?)+(?>(?!\d+\.)[a-zA-Z0-9_\-]{1,63}\.)((?:[a-zA-Z]{2,})|xn--([a-zA-Z0-9]){4,})$)'`
-if [[ -z ${FQDN} ]; then
+if [ -z ${FQDN} ]; then
   echo "MAILCOW_HOSTNAME (${MAILCOW_HOSTNAME}) is not a FQDN!"
   echo "Please change it to a FQDN and run docker-compose down followed by docker-compose up -d"
   exit 1
