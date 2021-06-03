@@ -29,7 +29,7 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
   <div class="row">
     <div class="col-md-offset-3 col-md-6">
       <div class="panel panel-default">
-        <div class="panel-heading"><i class="bi bi-person-bounding-box"></i> <?= $lang['login']['login']; ?></div>
+        <div class="panel-heading"><i class="bi bi-person-fill"></i> <?= $lang['login']['login']; ?></div>
         <div class="panel-body">
           <div class="text-center mailcow-logo"><img src="<?=($main_logo = customize('get', 'main_logo')) ? $main_logo : '/img/cow_mailcow.svg';?>" alt="mailcow"></div>
           <?php if (!empty($UI_TEXTS['ui_announcement_text']) && in_array($UI_TEXTS['ui_announcement_type'], array('info', 'warning', 'danger')) && $UI_TEXTS['ui_announcement_active'] == 1) { ?>
