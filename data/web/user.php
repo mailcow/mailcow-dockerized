@@ -22,15 +22,8 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'doma
     <div class="row">
       <div class="col-sm-offset-3 col-sm-9">
         <p><a href="#pwChangeModal" data-toggle="modal">[<?=$lang['user']['change_password'];?>]</a></p>
-        <p>
-        <?php
-        if ($_SESSION['mailcow_cc_last_login']['remote']):
-        ?>
-        <i class="bi bi-person-bounding-box"></i> <span data-time="<?=$_SESSION['mailcow_cc_last_login']['time'];?>" class="last_login_date"></span> (<?=$_SESSION['mailcow_cc_last_login']['remote'];?>)
-        <?php
-        else: echo $lang['user']['no_last_login']; endif;
-        ?>
-        </p>
+        <div class="last-login"></div>
+        <div class="clear-last-logins"><?=$lang['user']['clear_recent_successful_connections'];?></div>
         <p>
       </div>
     </div>
@@ -181,15 +174,10 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
             <p><a href="#pwChangeModal" data-toggle="modal">[<?=$lang['user']['change_password'];?>]</a></p>
             <p><a target="_blank" href="https://mailcow.github.io/mailcow-dockerized-docs/client/#<?=$clientconfigstr;?>">[<?=$lang['user']['client_configuration'];?>]</a></p>
             <p><a href="#userFilterModal" data-toggle="modal">[<?=$lang['user']['show_sieve_filters'];?>]</a></p>
-            <p>
-            <?php
-            if ($_SESSION['mailcow_cc_last_login']['remote']):
-            ?>
-            <i class="bi bi-person-bounding-box"></i> <span data-time="<?=$_SESSION['mailcow_cc_last_login']['time'];?>" class="last_login_date"></span> (<?=$_SESSION['mailcow_cc_last_login']['remote'];?>)
-            <?php
-            else: echo $lang['user']['no_last_login']; endif;
-            ?>
-            </p>
+            <hr>
+            <h4><?=$lang['user']['recent_successful_connections'];?></h4>
+            <div class="last-login"></div>
+            <div class="clear-last-logins"><?=$lang['user']['clear_recent_successful_connections'];?></div>
           </div>
         </div>
         <hr>

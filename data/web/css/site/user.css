@@ -112,3 +112,11 @@ border-bottom-width: 3px;
   font-size: inherit;
   font-weight: 400;
 }
+.clear-last-logins {
+  cursor: pointer;
+  margin-top: 10px;
+  font-size:90%;
+  font-style: italic;
+  color: #158cba;
+  user-select:none;
+}

@@ -29,6 +29,7 @@ $xmpp_status = xmpp_control('status');
         <li role="presentation"><a href="#tab-rspamd-history" aria-controls="tab-rspamd-history" role="tab" data-toggle="tab">Rspamd</a></li>
         <li role="presentation"><span class="dropdown-desc"><?=$lang['debug']['static_logs'];?></span></li>
         <li role="presentation"><a href="#tab-ui" aria-controls="tab-ui" role="tab" data-toggle="tab">mailcow UI</a></li>
+        <li role="presentation"><a href="#tab-sasl" aria-controls="tab-sasl" role="tab" data-toggle="tab">SASL</a></li>
       </ul>
     </li>
   </ul>
@@ -212,6 +213,23 @@ $xmpp_status = xmpp_control('status');
             <div class="panel-body">
               <div class="table-responsive">
                 <table class="table table-striped table-condensed" id="ui_logs"></table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div role="tabpanel" class="tab-pane" id="tab-sasl">
+          <div class="panel panel-default">
+            <div class="panel-heading">SASL <span class="badge badge-info table-lines"></span>
+              <div class="btn-group pull-right">
+                <button class="btn btn-xs btn-default add_log_lines" data-post-process="sasl_log_table" data-table="sasl_logs" data-log-url="ui" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-default add_log_lines" data-post-process="sasl_log_table" data-table="sasl_logs" data-log-url="ui" data-nrows="10000">+ 10000</button>
+                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_sasl_logs" data-table="sasl_logs"><?=$lang['admin']['refresh'];?></button>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div class="table-responsive">
+                <table class="table table-striped table-condensed" id="sasl_logs"></table>
               </div>
             </div>
           </div>

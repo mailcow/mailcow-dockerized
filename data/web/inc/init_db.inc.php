@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "27052021_2000";
+    $db_version = "03062021_2320";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -506,6 +506,30 @@ function init_db_schema() {
         "keys" => array(
           "primary" => array(
             "" => array("id")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "sasl_logs" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "success" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "service" => "VARCHAR(32) NOT NULL DEFAULT ''",
+          "app_password" => "INT",
+          "username" => "VARCHAR(255) NOT NULL",
+          "real_rip" => "VARCHAR(64) NOT NULL",
+          "datetime" => "DATETIME(0) NOT NULL DEFAULT NOW(0)"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "key" => array(
+            "username" => array("username"),
+            "service" => array("service"),
+            "success" => array("success"),
+            "datetime" => array("datetime"),
+            "real_rip" => array("real_rip")
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
