@@ -132,7 +132,7 @@ table.footable > tbody > tr.footable-empty > th {
   content: "\f52a";
 }
 .fooicon-remove:before {
-  content: "\f64f";
+  content: "\f62a";
 }
 .fooicon-sort:before {
   content: "\f3c6";
@@ -147,7 +147,7 @@ table.footable > tbody > tr.footable-empty > th {
   content: "\f4c9";
 }
 .fooicon-trash:before {
-  content: "\f64f";
+  content: "\f62a";
 }
 .fooicon-eye-close:before {
   content: "\f33f";
