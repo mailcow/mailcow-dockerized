@@ -42,6 +42,7 @@ $(document).ready(function() {
   });
   $(".arrow-toggle").on('click', function(e) { e.preventDefault(); $(this).find('.arrow').toggleClass("animation"); });
   $("#pushover_delete").click(function() { return confirm(lang.delete_ays); });
+
 });
 jQuery(function($){
   // http://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery
@@ -70,8 +71,65 @@ jQuery(function($){
     return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
   }
   acl_data = JSON.parse(acl);
-  var last_login = $('.last_login_date').data('time');
-  $('.last_login_date').text(unix_time_format(last_login));
+
+  $('.clear-last-logins').on('click', function () {
+    if (confirm(lang.delete_ays)) {
+      last_logins('reset');
+    }
+  })
+
+  function last_logins(action) {
+    if (action == 'get') {
+      $.ajax({
+        dataType: 'json',
+        url: '/api/v1/get/last-login/' + encodeURIComponent(mailcow_cc_username),
+        jsonp: false,
+        error: function () {
+          console.log('error reading last logins');
+        },
+        success: function (data) {
+          $('.last-login').html();
+          if (data.ui.time) {
+            $('.last-login').html('<i class="bi bi-person-fill"></i> ' + lang.last_ui_login + ': ' + unix_time_format(data.ui.time));
+          } else {
+            $('.last-login').text(lang.no_last_login);
+          }
+          if (data.sasl) {
+            $('.last-login').append('<ul class="list-group">');
+            $.each(data.sasl, function (i, item) {
+              var datetime = new Date(item.datetime.replace(/-/g, "/"));
+              var local_datetime = datetime.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+              if (item.service == "smtp") { service = '<div class="label label-default">' + item.service.toUpperCase() + '<i class="bi bi-chevron-compact-right"></i></div>'; }
+              else if (item.service == "imap") { service = '<div class="label label-default"><i class="bi bi-chevron-compact-left"></i> ' + item.service.toUpperCase() + '</div>'; }
+              else { service = '<div class="label label-default">' + item.service.toUpperCase() + '</div>'; }
+              if (item.real_rip.startsWith("Web")) {
+                real_rip = item.real_rip;
+              } else {
+                real_rip = '<a href="https://bgp.he.net/ip/' + item.real_rip + '" target="_blank">' + item.real_rip + '</a>';
+              }
+              $('.last-login').append('<li class="list-group-item">' + 
+                local_datetime + ' ' + service + ' ' + lang.from + ' ' +
+                real_rip +
+              '</li>');
+            })
+            $('.last-login').append('</ul>');
+          }
+        }
+      })
+    } else if (action == 'reset') {
+      $.ajax({
+        dataType: 'json',
+        url: '/api/v1/get/reset-last-login/' + encodeURIComponent(mailcow_cc_username),
+        jsonp: false,
+        error: function () {
+          console.log('cannot reset last logins');
+        },
+        success: function (data) {
+          last_logins('get');
+        }
+      })
+    }
+  }
 
   function draw_tla_table() {
     ft_tla_table = FooTable.init('#tla_table', {
@@ -132,7 +190,7 @@ jQuery(function($){
         {"name":"log","title":"Log"},
         {"name":"active","filterable": false,"style":{"maxWidth":"70px","width":"70px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
         {"name":"is_running","filterable": false,"style":{"maxWidth":"120px","width":"100px"},"title":lang.status},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"240px","width":"240px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
+        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"260px","width":"260px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
       "empty": lang.empty,
       "rows": $.ajax({
@@ -324,6 +382,7 @@ jQuery(function($){
   draw_tla_table();
   draw_wl_policy_mailbox_table();
   draw_bl_policy_mailbox_table();
+  last_logins('get');
 
   // FIDO2 friendly name modal
   $('#fido2ChangeFn').on('show.bs.modal', function (e) {

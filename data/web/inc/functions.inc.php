@@ -251,20 +251,60 @@ function password_check($password1, $password2) {
 
   return true;
 }
-function last_login($user) {
+function last_login($action, $username) {
   global $pdo;
-  $stmt = $pdo->prepare('SELECT `remote`, `time` FROM `logs`
-    WHERE JSON_EXTRACT(`call`, "$[0]") = "check_login"
-      AND JSON_EXTRACT(`call`, "$[1]") = :user
-      AND `type` = "success" ORDER BY `time` DESC LIMIT 1');
-  $stmt->execute(array(':user' => $user));
-  $row = $stmt->fetch(PDO::FETCH_ASSOC);
-  if (!empty($row)) {
-    return $row;
+  switch ($action) {
+    case 'get':
+      if (filter_var($username, FILTER_VALIDATE_EMAIL) && hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
+        $stmt = $pdo->prepare('SELECT `real_rip`, MAX(`datetime`) as `datetime`, `service` FROM `sasl_logs`
+          WHERE `username` = :username
+            AND `success` = 1
+              GROUP BY `real_rip`, `service`
+              ORDER BY `datetime` DESC
+              LIMIT 5;');
+        $stmt->execute(array(':username' => $username));
+        $sasl = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($sasl as $k => $v) {
+          if (!filter_var($sasl[$k]['real_rip'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+            $sasl[$k]['real_rip'] = 'Web/EAS/Internal (' . $sasl[$k]['real_rip'] . ')';
+          }
+        }
+      }
+      else {
+        $sasl = array();
+      }
+      if ($_SESSION['mailcow_cc_role'] == "admin" || $username == $_SESSION['mailcow_cc_username']) {
+        $stmt = $pdo->prepare('SELECT `remote`, `time` FROM `logs`
+          WHERE JSON_EXTRACT(`call`, "$[0]") = "check_login"
+            AND JSON_EXTRACT(`call`, "$[1]") = :username
+            AND `type` = "success" ORDER BY `time` DESC LIMIT 1 OFFSET 1');
+        $stmt->execute(array(':username' => $username));
+        $ui = $stmt->fetch(PDO::FETCH_ASSOC);
+      }
+      else {
+        $ui = array();
+      }
+
+      return array('ui' => $ui, 'sasl' => $sasl);
+    break;
+    case 'reset':
+      if (filter_var($username, FILTER_VALIDATE_EMAIL) && hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
+        $stmt = $pdo->prepare('DELETE FROM `sasl_logs`
+          WHERE `username` = :username
+            AND `success` = 1;');
+        $stmt->execute(array(':username' => $username));
+      }
+      if ($_SESSION['mailcow_cc_role'] == "admin" || $username == $_SESSION['mailcow_cc_username']) {
+        $stmt = $pdo->prepare('DELETE FROM `logs`
+          WHERE JSON_EXTRACT(`call`, "$[0]") = "check_login"
+            AND JSON_EXTRACT(`call`, "$[1]") = :username
+            AND `type` = "success"');
+        $stmt->execute(array(':username' => $username));
+      }
+      return true;
+    break;
   }
-  else {
-    return false;
-  }
+  
 }
 function flush_memcached() {
   try {
@@ -1853,6 +1893,26 @@ function get_logs($application, $lines = false) {
     }
     else {
       $stmt = $pdo->prepare("SELECT * FROM `logs` ORDER BY `id` DESC LIMIT :lines");
+      $stmt->execute(array(
+        ':lines' => $lines + 1,
+      ));
+      $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    if (is_array($data)) {
+      return $data;
+    }
+  }
+  if ($application == "sasl") {
+    if (isset($from) && isset($to)) {
+      $stmt = $pdo->prepare("SELECT * FROM `sasl_logs` ORDER BY `id` DESC LIMIT :from, :to");
+      $stmt->execute(array(
+        ':from' => $from - 1,
+        ':to' => $to
+      ));
+      $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    else {
+      $stmt = $pdo->prepare("SELECT * FROM `sasl_logs` ORDER BY `id` DESC LIMIT :lines");
       $stmt->execute(array(
         ':lines' => $lines + 1,
       ));

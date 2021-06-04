@@ -3503,18 +3503,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             return false;
           }
           $mailboxdata = array();
-          $last_imap_login = $redis->Get('last-login/imap/' . $_data);
-          $last_smtp_login = $redis->Get('last-login/smtp/' . $_data);
-          $last_pop3_login = $redis->Get('last-login/pop3/' . $_data);
-          if ($last_imap_login === false || $GLOBALS['SHOW_LAST_LOGIN'] === false) {
-            $last_imap_login = '0';
-          }
-          if ($last_smtp_login === false || $GLOBALS['SHOW_LAST_LOGIN'] === false) {
-            $last_smtp_login = '0';
-          }
-          if ($last_pop3_login === false || $GLOBALS['SHOW_LAST_LOGIN'] === false) {
-            $last_pop3_login = '0';
-          }
           if (preg_match('/y|yes/i', getenv('MASTER'))) {
             $stmt = $pdo->prepare("SELECT
               `domain`.`backupmx`,
@@ -3575,10 +3563,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $mailboxdata['quota_used'] = intval($row['bytes']);
           $mailboxdata['percent_in_use'] = ($row['quota'] == 0) ? '- ' : round((intval($row['bytes']) / intval($row['quota'])) * 100);
 
-          $mailboxdata['last_imap_login'] = $last_imap_login;
-          $mailboxdata['last_smtp_login'] = $last_smtp_login;
-          $mailboxdata['last_pop3_login'] = $last_pop3_login;
-
           if ($mailboxdata['percent_in_use'] === '- ') {
             $mailboxdata['percent_class'] = "info";
           }
@@ -3592,11 +3576,43 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $mailboxdata['percent_class'] = "success";
           }
 
+          // Determine last logins
+          $stmt = $pdo->prepare("SELECT MAX(`datetime`) AS `datetime`, `service` FROM `sasl_logs`
+            WHERE `username` = :mailbox
+              AND `success` = 1
+                GROUP BY `service` DESC");
+          $stmt->execute(array(':mailbox' => $_data));
+          $SaslLogsData  = $stmt->fetchAll(PDO::FETCH_ASSOC);
+          foreach ($SaslLogsData as $SaslLogs) {
+            if ($SaslLogs['service'] == 'imap') {
+              $last_imap_login = strtotime($SaslLogs['datetime']);
+            }
+            else if ($SaslLogs['service'] == 'smtp') {
+              $last_smtp_login = strtotime($SaslLogs['datetime']);
+            }
+            else if ($SaslLogs['service'] == 'pop3') {
+              $last_pop3_login = strtotime($SaslLogs['datetime']);
+            }
+          }
+          if (!isset($last_imap_login) || $GLOBALS['SHOW_LAST_LOGIN'] === false) {
+            $last_imap_login = 0;
+          }
+          if (!isset($last_smtp_login) || $GLOBALS['SHOW_LAST_LOGIN'] === false) {
+            $last_smtp_login = 0;
+          }
+          if (!isset($last_pop3_login) || $GLOBALS['SHOW_LAST_LOGIN'] === false) {
+            $last_pop3_login = 0;
+          }
+          $mailboxdata['last_imap_login'] = $last_imap_login;
+          $mailboxdata['last_smtp_login'] = $last_smtp_login;
+          $mailboxdata['last_pop3_login'] = $last_pop3_login;
+
           if (!isset($_extra) || $_extra != 'reduced') {
             $rl = ratelimit('get', 'mailbox', $_data);
             $stmt = $pdo->prepare("SELECT `maxquota`, `quota` FROM  `domain` WHERE `domain` = :domain");
             $stmt->execute(array(':domain' => $row['domain']));
             $DomainQuota  = $stmt->fetch(PDO::FETCH_ASSOC);
+
             $stmt = $pdo->prepare("SELECT IFNULL(COUNT(`active`), 0) AS `pushover_active` FROM `pushover` WHERE `username` = :username AND `active` = 1");
             $stmt->execute(array(':username' => $_data));
             $PushoverActive  = $stmt->fetch(PDO::FETCH_ASSOC);
