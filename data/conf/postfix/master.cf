@@ -125,7 +125,6 @@ smtp_sender_cleanup unix n - y - 0 cleanup
 
 # start whitelist_fwd
 127.0.0.1:10027 inet n n n - 0 spawn user=nobody argv=/usr/local/bin/whitelist_forwardinghosts.sh
-127.0.0.1:10028 inet n n n - 0 spawn user=nobody argv=/usr/local/bin/smtpd_last_login.sh
 # end whitelist_fwd
 
 # start watchdog-specific

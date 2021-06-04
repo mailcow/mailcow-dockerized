@@ -395,9 +395,6 @@ if [[ ! -f /opt/postfix/conf/custom_postscreen_whitelist.cidr ]]; then
 EOF
 fi
 
-# Fix SMTP last login on slaves
-sed -i "s/__REDIS_SLAVEOF_IP__/${REDIS_SLAVEOF_IP}/g" /usr/local/bin/smtpd_last_login.sh
-
 # Fix Postfix permissions
 chown -R root:postfix /opt/postfix/conf/sql/ /opt/postfix/conf/custom_transport.pcre
 chmod 640 /opt/postfix/conf/sql/*.cf /opt/postfix/conf/custom_transport.pcre
