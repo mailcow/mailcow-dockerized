@@ -123,9 +123,13 @@ while (($#)); do
         exit 99
       fi
       if [[ -z $(git log HEAD --pretty=format:"%H" | grep "${LATEST_REV}") ]]; then
-        echo -e "Updated code is available.\nThe changes can be found here: https://github.com/mailcow/mailcow-dockerized/commits/master"
+        echo -e "Updated code is available.\nThe changes can be found here: https://github.com/mailcow/mailcow-dockerized/commits/master\n"
         git log --date=short --pretty=format:"%ad - %s" $(git rev-parse --short HEAD)..origin/master
-        exit 0
+        read -r -p "Do you want to update mailcow: dockerized? All containers will be stopped. [y/N] " response
+        if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+          echo "OK, exiting."
+          exit 0
+        fi
       else
         echo "No updates available."
         exit 3
