@@ -113,6 +113,11 @@ table.footable > tbody > tr.footable-empty > th {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+@-moz-document url-prefix() {
+  .fooicon {
+    top: 2px;
+  }
+}
 .fooicon:after,
 .fooicon:before {
   -webkit-box-sizing: border-box;

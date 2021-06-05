@@ -548,16 +548,17 @@ function hasMailboxObjectAccess($username, $role, $object) {
 }
 function hasAliasObjectAccess($username, $role, $object) {
 	global $pdo;
+	if (empty($username) || empty($role) || empty($object)) {
+		return false;
+	}
 	if (!filter_var(html_entity_decode(rawurldecode($username)), FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $username))) {
 		return false;
 	}
 	if ($role != 'admin' && $role != 'domainadmin' && $role != 'user') {
 		return false;
 	}
-	if ($username == $object) {
-		return true;
-	}
-  $stmt = $pdo->prepare("SELECT `domain` FROM `alias` WHERE `address` = :object");
+  // Do not verify mailboxes
+  $stmt = $pdo->prepare("SELECT `domain` FROM `alias` WHERE `address` = :object AND `address` != `goto`");
   $stmt->execute(array(':object' => $object));
   $row = $stmt->fetch(PDO::FETCH_ASSOC);
   if (isset($row['domain']) && hasDomainAccess($username, $role, $row['domain'])) {
@@ -1031,7 +1032,7 @@ function user_get_alias_details($username) {
     if (empty($row['ad_alias'])) {
       continue;
     }
-    $data['direct_aliases'][$row['ad_alias']]['public_comment'] = '<span data-toggle="tooltip" title="' . $lang['add']['alias_domain'] . '">' . $row['alias_domain'] . '</span>';
+    $data['direct_aliases'][$row['ad_alias']]['public_comment'] = $lang['add']['alias_domain'];
     $data['alias_domains'][] = $row['alias_domain'];
   }
   $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(`send_as` SEPARATOR ', '), '') AS `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `send_as` NOT LIKE '@%';");
