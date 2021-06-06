@@ -176,7 +176,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
             <p><a href="#userFilterModal" data-toggle="modal">[<?=$lang['user']['show_sieve_filters'];?>]</a></p>
             <hr>
             <h4><?=$lang['user']['recent_successful_connections'];?></h4>
-            <div class="last-login"></div>
+            <div class="last-login"><i class="bi bi-hourglass"></i> <?=$lang['user']['waiting'];?></div>
             <div class="clear-last-logins"><?=$lang['user']['clear_recent_successful_connections'];?></div>
           </div>
         </div>
