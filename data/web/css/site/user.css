@@ -120,3 +120,10 @@ border-bottom-width: 3px;
   color: #158cba;
   user-select:none;
 }
+.ip-location-flag {
+  border-radius: 4px;
+  top: 3px;
+}
+.xmpp-logo-user {
+  width:64px;
+}

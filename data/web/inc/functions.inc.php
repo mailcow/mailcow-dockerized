@@ -251,8 +251,10 @@ function password_check($password1, $password2) {
 
   return true;
 }
-function last_login($action, $username) {
+function last_login($action, $username, $sasl_limit = 10) {
   global $pdo;
+	global $redis;
+  $sasl_limit = intval($sasl_limit);
   switch ($action) {
     case 'get':
       if (filter_var($username, FILTER_VALIDATE_EMAIL) && hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
@@ -261,12 +263,50 @@ function last_login($action, $username) {
             AND `success` = 1
               GROUP BY `real_rip`, `service`
               ORDER BY `datetime` DESC
-              LIMIT 5;');
-        $stmt->execute(array(':username' => $username));
+              LIMIT :sasl_limit;');
+        $stmt->execute(array(':username' => $username, ':sasl_limit' => $sasl_limit));
         $sasl = $stmt->fetchAll(PDO::FETCH_ASSOC);
         foreach ($sasl as $k => $v) {
           if (!filter_var($sasl[$k]['real_rip'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
             $sasl[$k]['real_rip'] = 'Web/EAS/Internal (' . $sasl[$k]['real_rip'] . ')';
+          }
+          elseif (filter_var($sasl[$k]['real_rip'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+            try {
+              $sasl[$k]['location'] = $redis->hGet('IP_LOCATIONS', $sasl[$k]['real_rip']);
+            }
+            catch (RedisException $e) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_data_log),
+                'msg' => array('redis_error', $e)
+              );
+              return false;
+            }
+            if (!$sasl[$k]['location']) {
+              $curl = curl_init();
+              curl_setopt($curl, CURLOPT_URL,"https://dfdata.bella.network/lookup/" . $sasl[$k]['real_rip']);
+              curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+              $ip_data = curl_exec($curl);
+              if (!curl_errno($curl)) {
+                $ip_data_array = json_decode($ip_data, true);
+                if ($ip_data_array !== false and !empty($ip_data_array['location']['shortcountry'])) {
+                  $sasl[$k]['location'] = $ip_data_array['location']['shortcountry'];
+                    try {
+                      $redis->hSet('IP_LOCATIONS', $sasl[$k]['real_rip'], $sasl[$k]['location']);
+                    }
+                    catch (RedisException $e) {
+                      $_SESSION['return'][] = array(
+                        'type' => 'danger',
+                        'log' => array(__FUNCTION__, $_action, $_data_log),
+                        'msg' => array('redis_error', $e)
+                      );
+                      curl_close($curl);
+                      return false;
+                    }
+                }
+              }
+              curl_close($curl);
+            }
           }
         }
       }
