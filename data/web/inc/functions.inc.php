@@ -258,10 +258,11 @@ function last_login($action, $username, $sasl_limit = 10) {
   switch ($action) {
     case 'get':
       if (filter_var($username, FILTER_VALIDATE_EMAIL) && hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
-        $stmt = $pdo->prepare('SELECT `real_rip`, MAX(`datetime`) as `datetime`, `service` FROM `sasl_logs`
+        $stmt = $pdo->prepare('SELECT `real_rip`, MAX(`datetime`) as `datetime`, `service`, `app_password` FROM `sasl_logs`
+          LEFT OUTER JOIN `app_passwd` on `sasl_logs`.`app_password` = `app_passwd`.`id`
           WHERE `username` = :username
             AND `success` = 1
-              GROUP BY `real_rip`, `service`
+              GROUP BY `real_rip`, `service`, `app_password`
               ORDER BY `datetime` DESC
               LIMIT :sasl_limit;');
         $stmt->execute(array(':username' => $username, ':sasl_limit' => $sasl_limit));
@@ -286,11 +287,13 @@ function last_login($action, $username, $sasl_limit = 10) {
               $curl = curl_init();
               curl_setopt($curl, CURLOPT_URL,"https://dfdata.bella.network/lookup/" . $sasl[$k]['real_rip']);
               curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+              curl_setopt($curl, CURLOPT_USERAGENT, 'Moocow');
+              curl_setopt($curl, CURLOPT_TIMEOUT, 5);
               $ip_data = curl_exec($curl);
               if (!curl_errno($curl)) {
                 $ip_data_array = json_decode($ip_data, true);
-                if ($ip_data_array !== false and !empty($ip_data_array['location']['shortcountry'])) {
-                  $sasl[$k]['location'] = $ip_data_array['location']['shortcountry'];
+                if ($ip_data_array !== false and !empty($ip_data_array['location']['country'])) {
+                  $sasl[$k]['location'] = implode(', ', array_filter(array($ip_data_array['location']['country'], $ip_data_array['location']['city'])));
                     try {
                       $redis->hSet('IP_LOCATIONS', $sasl[$k]['real_rip'], $sasl[$k]['location']);
                     }

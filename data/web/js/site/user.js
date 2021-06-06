@@ -78,7 +78,7 @@ jQuery(function($){
     }
   })
 
-  function last_logins(action, lines = 5) {
+  function last_logins(action, lines = 10) {
     if (action == 'get') {
       $.ajax({
         dataType: 'json',
@@ -99,28 +99,11 @@ jQuery(function($){
             $.each(data.sasl, function (i, item) {
               var datetime = new Date(item.datetime.replace(/-/g, "/"));
               var local_datetime = datetime.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
-              if (item.location) {
-                ip_location = '<span class="lang-sm ip-location-flag" lang="' + item.location + '"></span>';
-              } else {
-                ip_location = '';
-              }
-              if (item.service == "smtp") {
-                service = '<div class="label label-default">' + item.service.toUpperCase() + '<i class="bi bi-chevron-compact-right"></i></div>';
-              } else if (item.service == "imap") {
-                service = '<div class="label label-default"><i class="bi bi-chevron-compact-left"></i> ' + item.service.toUpperCase() + '</div>';
-              } else {
-                service = '<div class="label label-default">' + item.service.toUpperCase() + '</div>';
-              }
-              if (item.real_rip.startsWith("Web")) {
-                real_rip = item.real_rip;
-              } else {
-                real_rip = '<a href="https://bgp.he.net/ip/' + item.real_rip + '" target="_blank">' + item.real_rip + '</a> ';
-              }
-              real_rip = real_rip + ' ' + ip_location;
-              $('.last-login').append('<li class="list-group-item">' + 
-                local_datetime + ' ' + service + ' ' + lang.from + ' ' +
-                real_rip +
-              '</li>');
+              item.app_password?app_password=', <a href="/edit/app-passwd/'+item.app_password+'">via App</a>':app_password="",item.location?ip_location=", "+item.location:ip_location="";
+              "smtp"==item.service?service='<div class="label label-default">'+item.service.toUpperCase()+'<i class="bi bi-chevron-compact-right"></i></div>':"imap"==item.service?service='<div class="label label-default"><i class="bi bi-chevron-compact-left"></i> '+item.service.toUpperCase()+"</div>":service='<div class="label label-default">'+item.service.toUpperCase()+"</div>";
+              item.real_rip.startsWith("Web")?real_rip=item.real_rip:real_rip='<a href="https://bgp.he.net/ip/'+item.real_rip+'" target="_blank">'+item.real_rip+"</a>";
+              ip_data = real_rip + ip_location + app_password;
+              $(".last-login").append('<li class="list-group-item">'+local_datetime+" "+service+" "+lang.from+" "+ip_data+"</li>");
             })
             $('.last-login').append('</ul>');
           }
