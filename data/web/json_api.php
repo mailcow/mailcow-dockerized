@@ -641,7 +641,12 @@ if (isset($_GET['query'])) {
 
           case "last-login":
             if ($object) {
-              $data = last_login('get', $object);
+              if (isset($extra) && intval($extra) >= 1) {
+                $data = last_login('get', $object, intval($extra));
+              }
+              else {
+                $data = last_login('get', $object);
+              }
               process_get_return($data);
             }
           break;
