@@ -72,7 +72,6 @@ submission inet n       -       n       -       -       smtpd
   -o smtpd_milters=
   -o non_smtpd_milters=
   -o syslog_name=postfix/bcc
-  -o smtpd_end_of_data_restrictions=$smtpd_last_auth
 
 # enforced smtp connector
 smtp_enforced_tls      unix  -       -       n       -       -       smtp
