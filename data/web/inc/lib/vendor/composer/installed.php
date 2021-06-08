@@ -40,12 +40,12 @@
     ),
     'directorytree/ldaprecord' => 
     array (
-      'pretty_version' => 'v2.4.4',
-      'version' => '2.4.4.0',
+      'pretty_version' => 'v2.4.6',
+      'version' => '2.4.6.0',
       'aliases' => 
       array (
       ),
-      'reference' => '2d1c4d71dd900b2f8245a6e32f67274795fac8a2',
+      'reference' => '824a49feae4da52a522b3ec60ecad508b8f4ed23',
     ),
     'exorus/php-mime-mail-parser' => 
     array (
@@ -56,12 +56,12 @@
     ),
     'illuminate/contracts' => 
     array (
-      'pretty_version' => 'v8.40.0',
-      'version' => '8.40.0.0',
+      'pretty_version' => 'v8.42.1',
+      'version' => '8.42.1.0',
       'aliases' => 
       array (
       ),
-      'reference' => '5152041a5c4ac4dbebb3c8ee72d05666c592ae08',
+      'reference' => '68036b4fb17ad40a599323bda3f2c0845c8100d8',
     ),
     'matthiasmullie/minify' => 
     array (
@@ -99,12 +99,12 @@
     ),
     'nesbot/carbon' => 
     array (
-      'pretty_version' => '2.47.0',
-      'version' => '2.47.0.0',
+      'pretty_version' => '2.48.0',
+      'version' => '2.48.0.0',
       'aliases' => 
       array (
       ),
-      'reference' => '606262fd8888b75317ba9461825a24fc34001e1e',
+      'reference' => 'd3c447f21072766cddec3522f9468a5849a76147',
     ),
     'paragonie/random_compat' => 
     array (
@@ -198,12 +198,12 @@
     ),
     'symfony/translation' => 
     array (
-      'pretty_version' => 'v5.2.7',
-      'version' => '5.2.7.0',
+      'pretty_version' => 'v5.2.9',
+      'version' => '5.2.9.0',
       'aliases' => 
       array (
       ),
-      'reference' => 'e37ece5242564bceea54d709eafc948377ec9749',
+      'reference' => '61af68dba333e2d376a325a29c2a3f2a605b4876',
     ),
     'symfony/translation-contracts' => 
     array (
@@ -223,12 +223,12 @@
     ),
     'symfony/var-dumper' => 
     array (
-      'pretty_version' => 'v5.2.7',
-      'version' => '5.2.7.0',
+      'pretty_version' => 'v5.2.8',
+      'version' => '5.2.8.0',
       'aliases' => 
       array (
       ),
-      'reference' => '27cb9f7cfa3853c736425c7233a8f68814b19636',
+      'reference' => 'd693200a73fae179d27f8f1b16b4faf3e8569eba',
     ),
     'tightenco/collect' => 
     array (

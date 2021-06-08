@@ -84,7 +84,7 @@ class ConnectionFake extends Connection
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function isConnected()
     {

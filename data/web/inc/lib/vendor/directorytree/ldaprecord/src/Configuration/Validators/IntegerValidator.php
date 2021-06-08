@@ -7,7 +7,7 @@ use LdapRecord\Configuration\ConfigurationException;
 class IntegerValidator extends Validator
 {
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function validate()
     {

@@ -5,7 +5,7 @@ namespace LdapRecord;
 class Ldap extends LdapBase
 {
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getEntries($searchResults)
     {
@@ -97,7 +97,7 @@ class Ldap extends LdapBase
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getLastError()
     {
@@ -109,17 +109,17 @@ class Ldap extends LdapBase
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getDetailedError()
     {
-        // If the returned error number is zero, the last LDAP operation
-        // succeeded. In such case we won't return a detailed error.
-        if ($number = $this->errNo()) {
-            $this->getOption(LDAP_OPT_DIAGNOSTIC_MESSAGE, $message);
-
-            return new DetailedError($number, $this->err2Str($number), $message);
+        if (! $number = $this->errNo()) {
+            return;
         }
+
+        $this->getOption(LDAP_OPT_DIAGNOSTIC_MESSAGE, $message);
+
+        return new DetailedError($number, $this->err2Str($number), $message);
     }
 
     /**
@@ -140,7 +140,7 @@ class Ldap extends LdapBase
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function setOption($option, $value)
     {
@@ -148,7 +148,7 @@ class Ldap extends LdapBase
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getOption($option, &$value = null)
     {
@@ -172,7 +172,7 @@ class Ldap extends LdapBase
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function startTLS()
     {
@@ -182,7 +182,7 @@ class Ldap extends LdapBase
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function connect($hosts = [], $port = 389)
     {
@@ -196,7 +196,7 @@ class Ldap extends LdapBase
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function close()
     {
@@ -210,12 +210,19 @@ class Ldap extends LdapBase
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = [])
     {
         return $this->executeFailableOperation(function () use (
-            $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls
+            $dn,
+            $filter,
+            $fields,
+            $onlyAttributes,
+            $size,
+            $time,
+            $deref,
+            $serverControls
         ) {
             return $this->supportsServerControlsInMethods() && ! empty($serverControls)
                 ? ldap_search($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls)
@@ -224,12 +231,19 @@ class Ldap extends LdapBase
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function listing($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = [])
     {
         return $this->executeFailableOperation(function () use (
-            $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls
+            $dn,
+            $filter,
+            $fields,
+            $onlyAttributes,
+            $size,
+            $time,
+            $deref,
+            $serverControls
         ) {
             return $this->supportsServerControlsInMethods() && ! empty($serverControls)
                 ? ldap_list($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls)
@@ -238,12 +252,19 @@ class Ldap extends LdapBase
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = [])
     {
         return $this->executeFailableOperation(function () use (
-            $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls
+            $dn,
+            $filter,
+            $fields,
+            $onlyAttributes,
+            $size,
+            $time,
+            $deref,
+            $serverControls
         ) {
             return $this->supportsServerControlsInMethods() && ! empty($serverControls)
                 ? ldap_read($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls)
@@ -252,12 +273,17 @@ class Ldap extends LdapBase
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function parseResult($result, &$errorCode, &$dn, &$errorMessage, &$referrals, &$serverControls = [])
     {
         return $this->executeFailableOperation(function () use (
-            $result, &$errorCode, &$dn, &$errorMessage, &$referrals, &$serverControls
+            $result,
+            &$errorCode,
+            &$dn,
+            &$errorMessage,
+            &$referrals,
+            &$serverControls
         ) {
             return $this->supportsServerControlsInMethods() && ! empty($serverControls)
                 ? ldap_parse_result($this->connection, $result, $errorCode, $dn, $errorMessage, $referrals, $serverControls)
@@ -266,7 +292,7 @@ class Ldap extends LdapBase
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function bind($username, $password)
     {
@@ -276,7 +302,7 @@ class Ldap extends LdapBase
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function add($dn, array $entry)
     {
@@ -286,7 +312,7 @@ class Ldap extends LdapBase
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function delete($dn)
     {
@@ -296,19 +322,22 @@ class Ldap extends LdapBase
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function rename($dn, $newRdn, $newParent, $deleteOldRdn = false)
     {
         return $this->executeFailableOperation(function () use (
-            $dn, $newRdn, $newParent, $deleteOldRdn
+            $dn,
+            $newRdn,
+            $newParent,
+            $deleteOldRdn
         ) {
             return ldap_rename($this->connection, $dn, $newRdn, $newParent, $deleteOldRdn);
         });
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function modify($dn, array $entry)
     {
@@ -318,7 +347,7 @@ class Ldap extends LdapBase
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function modifyBatch($dn, array $values)
     {
@@ -328,7 +357,7 @@ class Ldap extends LdapBase
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function modAdd($dn, array $entry)
     {
@@ -338,7 +367,7 @@ class Ldap extends LdapBase
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function modReplace($dn, array $entry)
     {
@@ -348,7 +377,7 @@ class Ldap extends LdapBase
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function modDelete($dn, array $entry)
     {
@@ -358,7 +387,7 @@ class Ldap extends LdapBase
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function controlPagedResult($pageSize = 1000, $isCritical = false, $cookie = '')
     {
@@ -368,7 +397,7 @@ class Ldap extends LdapBase
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function controlPagedResultResponse($result, &$cookie, &$estimated = null)
     {
@@ -378,7 +407,7 @@ class Ldap extends LdapBase
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function freeResult($result)
     {
@@ -386,7 +415,7 @@ class Ldap extends LdapBase
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function errNo()
     {
@@ -396,7 +425,7 @@ class Ldap extends LdapBase
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function err2Str($number)
     {
@@ -440,7 +469,7 @@ class Ldap extends LdapBase
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getDiagnosticMessage()
     {

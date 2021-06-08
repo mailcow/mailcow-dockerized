@@ -71,7 +71,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.76
+      image: mailcow/rspamd:1.77
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -198,9 +198,9 @@ services:
         ofelia.job-exec.sogo_sessions.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu sogo /usr/sbin/sogo-tool expire-sessions $${SOGO_EXPIRE_SESSION} || exit 0\""
         ofelia.job-exec.sogo_ealarms.schedule: "@every 1m"
         ofelia.job-exec.sogo_ealarms.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu sogo /usr/sbin/sogo-ealarms-notify -p /etc/sogo/sieve.creds || exit 0\""
-        ofelia.job-exec.sogo_eautoreply.schedule: "@every 1d"
+        ofelia.job-exec.sogo_eautoreply.schedule: "@every 24h"
         ofelia.job-exec.sogo_eautoreply.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu sogo /usr/sbin/sogo-tool update-autoreply -p /etc/sogo/sieve.creds || exit 0\""
-        ofelia.job-exec.sogo_backup.schedule: "@every 1d"
+        ofelia.job-exec.sogo_backup.schedule: "@every 24h"
         ofelia.job-exec.sogo_backup.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu sogo /usr/sbin/sogo-tool backup /sogo_backup ALL || exit 0\""
       restart: always
       networks:
@@ -210,7 +210,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.145
+      image: mailcow/dovecot:1.148
       depends_on:
         - mysql-mailcow
       dns:
@@ -268,13 +268,13 @@ services:
         ofelia.job-exec.dovecot_trim_logs.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu vmail /usr/local/bin/trim_logs.sh || exit 0\""
         ofelia.job-exec.dovecot_quarantine.schedule: "@every 20m"
         ofelia.job-exec.dovecot_quarantine.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu vmail /usr/local/bin/quarantine_notify.py || exit 0\""
-        ofelia.job-exec.dovecot_clean_q_aged.schedule: "@every 1d"
+        ofelia.job-exec.dovecot_clean_q_aged.schedule: "@every 24h"
         ofelia.job-exec.dovecot_clean_q_aged.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu vmail /usr/local/bin/clean_q_aged.sh || exit 0\""
         ofelia.job-exec.dovecot_maildir_gc.schedule: "@every 30m"
         ofelia.job-exec.dovecot_maildir_gc.command: "/bin/bash -c \"source /source_env.sh ; /usr/local/bin/gosu vmail /usr/local/bin/maildir_gc.sh\""
-        ofelia.job-exec.dovecot_sarules.schedule: "@every 1d"
+        ofelia.job-exec.dovecot_sarules.schedule: "@every 24h"
         ofelia.job-exec.dovecot_sarules.command: "/bin/bash -c \"/usr/local/bin/sa-rules.sh\""
-        ofelia.job-exec.dovecot_fts.schedule: "@every 1d"
+        ofelia.job-exec.dovecot_fts.schedule: "@every 24h"
         ofelia.job-exec.dovecot_fts.command: "/usr/bin/curl http://solr:8983/solr/dovecot-fts/update?optimize=true"
         ofelia.job-exec.dovecot_repl_health.schedule: "@every 5m"
         ofelia.job-exec.dovecot_repl_health.command: "/bin/bash -c \"/usr/local/bin/gosu vmail /usr/local/bin/repl_health.sh\""
@@ -290,7 +290,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.61
+      image: mailcow/postfix:1.65
       depends_on:
         - mysql-mailcow
       volumes:
@@ -574,7 +574,7 @@ services:
       hostname: ejabberd.mailcow.local
       labels:
         ofelia.enabled: "true"
-        ofelia.job-exec.ejabberd_certs.schedule: "@every 14d"
+        ofelia.job-exec.ejabberd_certs.schedule: "@every 168h"
         ofelia.job-exec.ejabberd_certs.command: "/sbin/su-exec ejabberd /home/ejabberd/bin/ejabberdctl --node ejabberd@$${MAILCOW_HOSTNAME} request-certificate all"
       extra_hosts:
         - "${MAILCOW_HOSTNAME}:127.0.0.1"

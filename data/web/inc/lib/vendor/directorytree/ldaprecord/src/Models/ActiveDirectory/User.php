@@ -57,7 +57,7 @@ class User extends Entry implements Authenticatable
     ];
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected static function boot()
     {

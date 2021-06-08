@@ -7,7 +7,7 @@ use LdapRecord\Configuration\ConfigurationException;
 class ArrayValidator extends Validator
 {
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function validate()
     {

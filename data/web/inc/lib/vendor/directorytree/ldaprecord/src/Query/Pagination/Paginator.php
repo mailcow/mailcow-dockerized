@@ -7,7 +7,7 @@ use LdapRecord\LdapInterface;
 class Paginator extends AbstractPaginator
 {
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected function fetchCookie()
     {
@@ -15,7 +15,7 @@ class Paginator extends AbstractPaginator
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected function prepareServerControls()
     {
@@ -25,7 +25,7 @@ class Paginator extends AbstractPaginator
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected function applyServerControls(LdapInterface $ldap)
     {
@@ -33,7 +33,7 @@ class Paginator extends AbstractPaginator
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected function updateServerControls(LdapInterface $ldap, $resource)
     {
@@ -62,7 +62,7 @@ class Paginator extends AbstractPaginator
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected function resetServerControls(LdapInterface $ldap)
     {

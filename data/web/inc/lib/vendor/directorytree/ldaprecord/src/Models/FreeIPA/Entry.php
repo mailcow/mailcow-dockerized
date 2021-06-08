@@ -29,7 +29,7 @@ class Entry extends BaseEntry implements FreeIPA
     ];
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected static function boot()
     {

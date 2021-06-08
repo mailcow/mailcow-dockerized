@@ -8,7 +8,7 @@ use Tightenco\Collect\Support\Collection as BaseCollection;
 class Collection extends BaseCollection
 {
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected function valueRetriever($value)
     {

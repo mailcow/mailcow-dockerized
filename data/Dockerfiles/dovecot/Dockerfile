@@ -74,6 +74,7 @@ RUN groupadd -g 5000 vmail \
   liburi-perl \
   libwww-perl \
   lua-sql-mysql \
+  lua-socket \
   mariadb-client \
   procps \
   python3-pip \
@@ -112,7 +113,6 @@ COPY clean_q_aged.sh /usr/local/bin/clean_q_aged.sh
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
 COPY syslog-ng-redis_slave.conf /etc/syslog-ng/syslog-ng-redis_slave.conf
 COPY imapsync /usr/local/bin/imapsync
-COPY postlogin.sh /usr/local/bin/postlogin.sh
 COPY imapsync_runner.pl /usr/local/bin/imapsync_runner.pl
 COPY report-spam.sieve /usr/lib/dovecot/sieve/report-spam.sieve
 COPY report-ham.sieve /usr/lib/dovecot/sieve/report-ham.sieve
