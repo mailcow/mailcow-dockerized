@@ -976,6 +976,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'smtp_access' => strval($smtp_access),
               'xmpp_access' => strval($xmpp_access),
               'xmpp_admin' => strval($xmpp_admin),
+              'passwd_update' => time(),
               'mailbox_format' => strval($MAILBOX_DEFAULT_ATTRIBUTES['mailbox_format']),
               'quarantine_notification' => strval($quarantine_notification),
               'quarantine_category' => strval($quarantine_category)
@@ -1099,6 +1100,12 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ':domain' => $domain,
             ':mailbox_attrs' => $mailbox_attrs,
             ':active' => $active
+          ));
+          $stmt = $pdo->prepare("UPDATE `mailbox` SET
+            `attributes` = JSON_SET(`attributes`, '$.passwd_update', NOW())
+              WHERE `username` = :username");
+          $stmt->execute(array(
+            ':username' => $username
           ));
           $stmt = $pdo->prepare("INSERT INTO `quota2` (`username`, `bytes`, `messages`)
             VALUES (:username, '0', '0') ON DUPLICATE KEY UPDATE `bytes` = '0', `messages` = '0';");
@@ -2608,14 +2615,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $password_hashed = hash_password($password);
               }
               $stmt = $pdo->prepare("UPDATE `mailbox` SET
-                  `password` = :password_hashed
+                  `password` = :password_hashed,
+                  `attributes` = JSON_SET(`attributes`, '$.passwd_update', NOW())
                     WHERE `username` = :username");
               $stmt->execute(array(
                 ':password_hashed' => $password_hashed,
                 ':username' => $username
               ));
             }
-            // We could either set alias = 1 if alias = 2 or tune the Postfix alias table (that's what we did, TODO: to it the other way)
+            // We could either set alias = 1 if alias = 2 or tune the Postfix alias table (that's what we did, TODO: do it the other way)
             $stmt = $pdo->prepare("UPDATE `alias` SET
                 `active` = :active
                   WHERE `address` = :address");

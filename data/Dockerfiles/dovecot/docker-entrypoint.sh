@@ -158,7 +158,8 @@ function auth_password_verify(req, pass)
   local cur,errorString = con:execute(string.format([[SELECT password FROM mailbox
     WHERE username = '%s'
       AND active = '1'
-      AND domain IN (SELECT domain FROM domain WHERE domain='%s' AND active='1')]], con:escape(req.user), con:escape(req.domain)))
+      AND domain IN (SELECT domain FROM domain WHERE domain='%s' AND active='1')
+      AND IFNULL(JSON_UNQUOTE(JSON_VALUE(attributes, '$.%s_access')), 1) = '1']], con:escape(req.user), con:escape(req.domain), con:escape(req.service)))
   local row = cur:fetch ({}, "a")
   while row do
     if req.password_verify(req, row.password, pass) == 1 then
@@ -171,10 +172,13 @@ function auth_password_verify(req, pass)
   end
 
   -- check against app passwds
-  local cur,errorString = con:execute(string.format([[SELECT id, password FROM app_passwd
+  local cur,errorString = con:execute(string.format([[SELECT app_passwd.id, app_passwd.password FROM app_passwd
+    INNER JOIN mailbox ON mailbox.username = app_passwd.mailbox
     WHERE mailbox = '%s'
-      AND active = '1'
-      AND domain IN (SELECT domain FROM domain WHERE domain='%s' AND active='1')]], con:escape(req.user), con:escape(req.domain)))
+      AND IFNULL(JSON_UNQUOTE(JSON_VALUE(mailbox.attributes, '$.%s_access')), 1) = '1'
+      AND app_passwd.active = '1'
+      AND mailbox.active = '1'
+      AND app_passwd.domain IN (SELECT domain FROM domain WHERE domain='%s' AND active='1')]], con:escape(req.user), con:escape(req.service), con:escape(req.domain)))
   local row = cur:fetch ({}, "a")
   while row do
     if req.password_verify(req, row.password, pass) == 1 then
@@ -360,7 +364,6 @@ chown root:tty /dev/console
 chmod +x /usr/lib/dovecot/sieve/rspamd-pipe-ham \
   /usr/lib/dovecot/sieve/rspamd-pipe-spam \
   /usr/local/bin/imapsync_runner.pl \
-  /usr/local/bin/postlogin.sh \
   /usr/local/bin/imapsync \
   /usr/local/bin/trim_logs.sh \
   /usr/local/bin/sa-rules.sh \

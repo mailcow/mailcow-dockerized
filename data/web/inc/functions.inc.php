@@ -273,7 +273,7 @@ function last_login($action, $username, $sasl_limit = 10) {
           }
           elseif (filter_var($sasl[$k]['real_rip'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
             try {
-              $sasl[$k]['location'] = $redis->hGet('IP_LOCATIONS', $sasl[$k]['real_rip']);
+              $sasl[$k]['location'] = $redis->hGet('IP_SHORTCOUNTRY', $sasl[$k]['real_rip']);
             }
             catch (RedisException $e) {
               $_SESSION['return'][] = array(
@@ -292,10 +292,10 @@ function last_login($action, $username, $sasl_limit = 10) {
               $ip_data = curl_exec($curl);
               if (!curl_errno($curl)) {
                 $ip_data_array = json_decode($ip_data, true);
-                if ($ip_data_array !== false and !empty($ip_data_array['location']['country'])) {
-                  $sasl[$k]['location'] = implode(', ', array_filter(array($ip_data_array['location']['country'], $ip_data_array['location']['city'])));
+                if ($ip_data_array !== false and !empty($ip_data_array['location']['shortcountry'])) {
+                  $sasl[$k]['location'] = $ip_data_array['location']['shortcountry'];
                     try {
-                      $redis->hSet('IP_LOCATIONS', $sasl[$k]['real_rip'], $sasl[$k]['location']);
+                      $redis->hSet('IP_SHORTCOUNTRY', $sasl[$k]['real_rip'], $ip_data_array['location']['shortcountry']);
                     }
                     catch (RedisException $e) {
                       $_SESSION['return'][] = array(
@@ -998,21 +998,14 @@ function edit_user_account($_data) {
 					return false;
 			}
 			$password_hashed = hash_password($password_new);
-			try {
-				$stmt = $pdo->prepare("UPDATE `mailbox` SET `password` = :password_hashed, `attributes` = JSON_SET(`attributes`, '$.force_pw_update', '0') WHERE `username` = :username");
-				$stmt->execute(array(
-					':password_hashed' => $password_hashed,
-					':username' => $username
-				));
-			}
-			catch (PDOException $e) {
-				$_SESSION['return'][] =  array(
-					'type' => 'danger',
-          'log' => array(__FUNCTION__, $_data_log),
-					'msg' => array('mysql_error', $e)
-				);
-				return false;
-			}
+      $stmt = $pdo->prepare("UPDATE `mailbox` SET `password` = :password_hashed,
+        `attributes` = JSON_SET(`attributes`, '$.force_pw_update', '0'),
+        `attributes` = JSON_SET(`attributes`, '$.passwd_update', NOW())
+          WHERE `username` = :username");
+      $stmt->execute(array(
+        ':password_hashed' => $password_hashed,
+        ':username' => $username
+      ));
 		}
 	}
   update_sogo_static_view();
