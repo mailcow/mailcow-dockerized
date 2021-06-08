@@ -23,8 +23,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'doma
       <div class="col-sm-offset-3 col-sm-9">
         <p><a href="#pwChangeModal" data-toggle="modal">[<?=$lang['user']['change_password'];?>]</a></p>
         <div class="last-login"></div>
-        <div class="clear-last-logins"><?=$lang['user']['clear_recent_successful_connections'];?></div>
-        <p>
+        <span class="clear-last-logins"><?=$lang['user']['clear_recent_successful_connections'];?></span>
       </div>
     </div>
     <hr>
@@ -177,7 +176,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
             <hr>
             <h4><?=$lang['user']['recent_successful_connections'];?></h4>
             <div class="last-login"><i class="bi bi-hourglass"></i> <?=$lang['user']['waiting'];?></div>
-            <div class="clear-last-logins"><?=$lang['user']['clear_recent_successful_connections'];?></div>
+            <span class="clear-last-logins"><?=$lang['user']['clear_recent_successful_connections'];?></span>
           </div>
         </div>
         <hr>

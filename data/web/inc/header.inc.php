@@ -62,12 +62,12 @@
           if (isset($_SESSION['mailcow_locale'])) {
           ?>
           <li class="dropdown<?=(isset($_SESSION['mailcow_locale']) && count($AVAILABLE_LANGUAGES) === 1) ? ' lang-link-disabled"' : '' ?>">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="lang-sm lang-lbl" lang="<?= $_SESSION['mailcow_locale']; ?>"></span><span class="caret"></span></a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="flag-icon flag-icon-<?= $_SESSION['mailcow_locale']; ?>"></span><span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
               <?php
-              foreach ($AVAILABLE_LANGUAGES as $language) {
+              foreach ($AVAILABLE_LANGUAGES as $c => $v) {
               ?>
-              <li<?= ($_SESSION['mailcow_locale'] == $language) ? ' class="active"' : ''; ?>><a href="?<?= http_build_query(array_merge($_GET, array('lang' => $language))); ?>"><span class="lang-xs lang-lbl-full" lang="<?= $language; ?>"></span></a></li>
+              <li<?= ($_SESSION['mailcow_locale'] == $c) ? ' class="active"' : ''; ?>><a href="?<?= http_build_query(array_merge($_GET, array('lang' => $c))); ?>"><span class="flag-icon flag-icon-<?=$c;?>"></span> <?=$v;?></a></li>
               <?php
               }
               ?>
