@@ -150,6 +150,7 @@ function auth_password_verify(req, pass)
     WHERE username = '%s'
       AND active = '1'
       AND domain IN (SELECT domain FROM domain WHERE domain='%s' AND active='1')
+      AND IFNULL(JSON_UNQUOTE(JSON_VALUE(mailbox.attributes, '$.force_pw_update')), 0) != '1'
       AND IFNULL(JSON_UNQUOTE(JSON_VALUE(attributes, '$.%s_access')), 1) = '1']], con:escape(req.user), con:escape(req.domain), con:escape(req.service)))
   local row = cur:fetch ({}, "a")
   while row do
