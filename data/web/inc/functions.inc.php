@@ -589,6 +589,7 @@ function hasMailboxObjectAccess($username, $role, $object) {
   }
 	return false;
 }
+// does also verify mailboxes as a mailbox is a alias == goto
 function hasAliasObjectAccess($username, $role, $object) {
 	global $pdo;
 	if (empty($username) || empty($role) || empty($object)) {
@@ -600,8 +601,7 @@ function hasAliasObjectAccess($username, $role, $object) {
 	if ($role != 'admin' && $role != 'domainadmin' && $role != 'user') {
 		return false;
 	}
-  // Do not verify mailboxes
-  $stmt = $pdo->prepare("SELECT `domain` FROM `alias` WHERE `address` = :object AND `address` != `goto`");
+  $stmt = $pdo->prepare("SELECT `domain` FROM `alias` WHERE `address` = :object");
   $stmt->execute(array(':object' => $object));
   $row = $stmt->fetch(PDO::FETCH_ASSOC);
   if (isset($row['domain']) && hasDomainAccess($username, $role, $row['domain'])) {
