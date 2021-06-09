@@ -57,8 +57,9 @@ table tbody tr td input[type="checkbox"] {
   font-size: 8pt !important;
 }
 .label-last-login {
-  line-height: 2.5;
+  line-height: 2.2;
   color: #4a4a4a!important;
+  padding: .2em .4em .3em !important;
   background-color: #ececec!important;
 }
 

@@ -251,21 +251,21 @@ function password_check($password1, $password2) {
 
   return true;
 }
-function last_login($action, $username, $sasl_limit = 10) {
+function last_login($action, $username, $sasl_limit_days = 7) {
   global $pdo;
 	global $redis;
-  $sasl_limit = intval($sasl_limit);
+  $sasl_limit_days = intval($sasl_limit_days);
   switch ($action) {
     case 'get':
       if (filter_var($username, FILTER_VALIDATE_EMAIL) && hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
         $stmt = $pdo->prepare('SELECT `real_rip`, MAX(`datetime`) as `datetime`, `service`, `app_password` FROM `sasl_logs`
           LEFT OUTER JOIN `app_passwd` on `sasl_logs`.`app_password` = `app_passwd`.`id`
           WHERE `username` = :username
+            AND HOUR(TIMEDIFF(NOW(), `datetime`)) < :sasl_limit_days
             AND `success` = 1
               GROUP BY `real_rip`, `service`, `app_password`
-              ORDER BY `datetime` DESC
-              LIMIT :sasl_limit;');
-        $stmt->execute(array(':username' => $username, ':sasl_limit' => $sasl_limit));
+              ORDER BY `datetime` DESC;');
+        $stmt->execute(array(':username' => $username, ':sasl_limit_days' => ($sasl_limit_days * 24)));
         $sasl = $stmt->fetchAll(PDO::FETCH_ASSOC);
         foreach ($sasl as $k => $v) {
           if (!filter_var($sasl[$k]['real_rip'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
