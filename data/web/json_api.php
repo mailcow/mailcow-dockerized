@@ -641,6 +641,7 @@ if (isset($_GET['query'])) {
 
           case "last-login":
             if ($object) {
+              // extra == days
               if (isset($extra) && intval($extra) >= 1) {
                 $data = last_login('get', $object, intval($extra));
               }

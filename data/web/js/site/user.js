@@ -72,17 +72,15 @@ jQuery(function($){
   }
   acl_data = JSON.parse(acl);
 
-  $('.clear-last-logins').on('click', function () {
-    if (confirm(lang.delete_ays)) {
-      last_logins('reset');
-    }
-  })
+  $('.clear-last-logins').on('click', function () {if (confirm(lang.delete_ays)) {last_logins('reset');}})
+  $(".login-history").on('click', function(e) {e.preventDefault(); last_logins('get', $(this).data('days'));$(this).addClass('active').siblings().removeClass('active');});
 
-  function last_logins(action, lines = 10) {
+  function last_logins(action, days = 7) {
     if (action == 'get') {
+      $('.last-login').html('<i class="bi bi-hourglass"></i>' +  lang.waiting);
       $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/last-login/' + encodeURIComponent(mailcow_cc_username) + '/' + lines,
+        url: '/api/v1/get/last-login/' + encodeURIComponent(mailcow_cc_username) + '/' + days,
         jsonp: false,
         error: function () {
           console.log('error reading last logins');

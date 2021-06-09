@@ -139,9 +139,6 @@ $OTP_LABEL = "mailcow UI";
 // How long to wait (in s) for cURL Docker requests
 $DOCKER_TIMEOUT = 60;
 
-// Anonymize IPs logged via UI
-$ANONYMIZE_IPS = true;
-
 // Split DKIM key notation (bind format)
 $SPLIT_DKIM_255 = false;
 

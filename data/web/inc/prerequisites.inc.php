@@ -172,29 +172,12 @@ function exception_handler($e) {
 set_exception_handler('exception_handler');
 
 // TODO: Move function
-function get_remote_ip($anonymize = null) {
-  global $ANONYMIZE_IPS;
-  if ($anonymize === null) {
-    $anonymize = $ANONYMIZE_IPS;
-  }
-  elseif ($anonymize !== true && $anonymize !== false)  {
-    $anonymize = true;
-  }
+function get_remote_ip() {
   $remote = $_SERVER['REMOTE_ADDR'];
   if (filter_var($remote, FILTER_VALIDATE_IP) === false) {
     return '0.0.0.0';
   }
-  if ($anonymize) {
-    if (strlen(inet_pton($remote)) == 4) {
-      return inet_ntop(inet_pton($remote) & inet_pton("255.255.255.0"));
-    }
-    elseif (strlen(inet_pton($remote)) == 16) {
-      return inet_ntop(inet_pton($remote) & inet_pton('ffff:ffff:ffff:ffff:0000:0000:0000:0000'));
-    }
-  }
-  else {
-    return $remote;
-  }
+  return $remote;
 }
 
 // Load core functions first

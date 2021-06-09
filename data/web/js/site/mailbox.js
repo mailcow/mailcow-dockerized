@@ -371,6 +371,7 @@ jQuery(function($){
             '<div class="label label-last-login">POP3 @ ' + unix_time_format(Number(res[1])) + '</div><br>' + 
             '<div class="label label-last-login">SMTP @ ' + unix_time_format(Number(res[2])) + '</div>';
         }},
+        {"name":"last_pw_change","filterable": false,"title":lang.last_pw_change,"breakpoints":"all"},
         {"name":"quarantine_notification","filterable": false,"title":lang.quarantine_notification,"breakpoints":"all"},
         {"name":"quarantine_category","filterable": false,"title":lang.quarantine_category,"breakpoints":"all"},
         {"name":"in_use","filterable": false,"type":"html","title":lang.in_use,"sortValue": function(value){
@@ -408,6 +409,12 @@ jQuery(function($){
             }
             */
             item.chkbox = '<input type="checkbox" data-id="mailbox" name="multi_select" value="' + encodeURIComponent(item.username) + '" />';
+            if (item.attributes.passwd_update != '0') {
+              var last_pw_change = new Date(item.attributes.passwd_update.replace(/-/g, "/"));
+              item.last_pw_change = last_pw_change.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+            } else {
+              item.last_pw_change = '-';
+            }
             item.tls_enforce_in = '<i class="text-' + (item.attributes.tls_enforce_in == 1 ? 'success bi bi-lock-fill' : 'danger bi bi-unlock-fill') + '"></i>';
             item.tls_enforce_out = '<i class="text-' + (item.attributes.tls_enforce_out == 1 ? 'success bi bi-lock-fill' : 'danger bi bi-unlock-fill') + '"></i>';
             item.pop3_access = '<i class="text-' + (item.attributes.pop3_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.pop3_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
