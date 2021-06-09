@@ -126,3 +126,7 @@ border-bottom-width: 3px;
 .xmpp-logo-user {
   width:64px;
 }
+.recent-login-success {
+  margin-top:2px;
+  margin-right:10px;
+}

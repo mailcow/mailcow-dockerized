@@ -174,9 +174,21 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
             <p><a target="_blank" href="https://mailcow.github.io/mailcow-dockerized-docs/client/#<?=$clientconfigstr;?>">[<?=$lang['user']['client_configuration'];?>]</a></p>
             <p><a href="#userFilterModal" data-toggle="modal">[<?=$lang['user']['show_sieve_filters'];?>]</a></p>
             <hr>
-            <h4><?=$lang['user']['recent_successful_connections'];?></h4>
-            <div class="last-login"><i class="bi bi-hourglass"></i> <?=$lang['user']['waiting'];?></div>
-            <span class="clear-last-logins"><?=$lang['user']['clear_recent_successful_connections'];?></span>
+            <h4 class="recent-login-success pull-left"><?=$lang['user']['recent_successful_connections'];?></h4>
+            <div class="dropdown pull-left">
+              <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="history_sasl_days" data-toggle="dropdown"><?=$lang['user']['login_history'];?> <span class="caret"></span></button>
+              <ul class="dropdown-menu">
+                <li class="login-history" data-days="1"><a href="#">1 <?=$lang['user']['day'];?></a></li>
+                <li class="login-history" data-days="7"><a href="#">1 <?=$lang['user']['week'];?></a></li>
+                <li class="login-history active" data-days="14"><a href="#">2 <?=$lang['user']['weeks'];?></a></li>
+                <li class="login-history" data-days="31"><a href="#">1 <?=$lang['user']['month'];?></a></li>
+              </ul>
+            </div>
+            <div class="clearfix"></div>
+            <div class="last-login"></div>
+            <span class="clear-last-logins">
+              <?=$lang['user']['clear_recent_successful_connections'];?>
+            </span>
           </div>
         </div>
         <hr>
