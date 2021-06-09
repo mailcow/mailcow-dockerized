@@ -271,7 +271,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
         <div class="row">
           <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['aliases_also_send_as'];?>:</div>
           <div class="col-md-9 col-xs-7">
-          <p><?=($user_get_alias_details['aliases_also_send_as'] == '*') ? $lang['user']['sender_acl_disabled'] : (empty($user_get_alias_details['aliases_also_send_as'])) ? '<i class="bi bi-x-lg"></i>' : '' ;?></p>
+          <p><?=($user_get_alias_details['aliases_also_send_as'] == '*') ? $lang['user']['sender_acl_disabled'] : (empty($user_get_alias_details['aliases_also_send_as'])) ? '<i class="bi bi-x-lg"></i>' : $user_get_alias_details['aliases_also_send_as'] ;?></p>
           </div>
         </div>
         <div class="row">
