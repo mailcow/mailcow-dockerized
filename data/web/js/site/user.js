@@ -99,7 +99,7 @@ jQuery(function($){
               var local_datetime = datetime.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
               item.app_password ? app_password = ' <a href="/edit/app-passwd/' + item.app_password + '">(App)</a>' : app_password = "", item.location ? ip_location = ' <span class="flag-icon flag-icon-' + item.location.toLowerCase() + '"></span>' : ip_location = "";
               "smtp" == item.service ? service = '<div class="label label-default">' + item.service.toUpperCase() + '<i class="bi bi-chevron-compact-right"></i></div>' : "imap" == item.service ? service = '<div class="label label-default"><i class="bi bi-chevron-compact-left"></i> ' + item.service.toUpperCase() + "</div>" : service = '<div class="label label-default">' + item.service.toUpperCase() + "</div>";
-              item.real_rip.startsWith("Web") ? real_rip = item.real_rip : real_rip = '<a href="https://www.virustotal.com/gui/ip-address/' + item.real_rip + '/detection" target="_blank">' + item.real_rip + "</a>";
+              item.real_rip.startsWith("Web") ? real_rip = item.real_rip : real_rip = '<a href="https://bgp.he.net/ip/' + item.real_rip + '" target="_blank">' + item.real_rip + "</a>";
               ip_data = real_rip + ip_location + app_password;
               $(".last-login").append('<li class="list-group-item">' + local_datetime + " " + service + " " + lang.from + " " + ip_data + "</li>");
             })
