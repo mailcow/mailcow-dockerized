@@ -1,1 +1,1 @@
-/Thread-Topic:\s[a-zA-Z]{3}\s[a-zA-Z]{2}\s*/i
+/Thread-Topic:\s[a-zA-Z]{3}\s[a-zA-Z]{2}[\s\r\n]{0,1}[^a-zA-Z0-9][\r\n]/i
