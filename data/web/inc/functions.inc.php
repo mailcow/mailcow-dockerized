@@ -962,10 +962,6 @@ function edit_user_account($_data) {
     );
     return false;
   }
-	if (isset($_data['user_new_pass']) && isset($_data['user_new_pass2'])) {
-		$password_new	= $_data['user_new_pass'];
-		$password_new2	= $_data['user_new_pass2'];
-	}
 	$stmt = $pdo->prepare("SELECT `password` FROM `mailbox`
 			WHERE `kind` NOT REGEXP 'location|thing|group'
         AND `username` = :user");
@@ -979,34 +975,27 @@ function edit_user_account($_data) {
     );
     return false;
   }
-	if (isset($password_new) && isset($password_new2)) {
-		if (!empty($password_new2) && !empty($password_new)) {
-			if ($password_new2 != $password_new) {
-				$_SESSION['return'][] =  array(
-					'type' => 'danger',
-          'log' => array(__FUNCTION__, $_data_log),
-					'msg' => 'password_mismatch'
-				);
-				return false;
-			}
-			if (!preg_match('/' . $GLOBALS['PASSWD_REGEP'] . '/', $password_new)) {
-					$_SESSION['return'][] =  array(
-						'type' => 'danger',
-            'log' => array(__FUNCTION__, $_data_log),
-						'msg' => 'password_complexity'
-					);
-					return false;
-			}
-			$password_hashed = hash_password($password_new);
-      $stmt = $pdo->prepare("UPDATE `mailbox` SET `password` = :password_hashed,
-        `attributes` = JSON_SET(`attributes`, '$.force_pw_update', '0'),
-        `attributes` = JSON_SET(`attributes`, '$.passwd_update', NOW())
-          WHERE `username` = :username");
-      $stmt->execute(array(
-        ':password_hashed' => $password_hashed,
-        ':username' => $username
-      ));
-		}
+	if (!empty($_data['user_new_pass']) && !empty($_data['user_new_pass2'])) {
+		$password_new	= $_data['user_new_pass'];
+		$password_new2	= $_data['user_new_pass2'];
+    if (password_check($password_new, $password_new2) !== true) {
+      return false;
+    }
+    // support pre hashed passwords
+    if (preg_match('/^{(ARGON2I|ARGON2ID|BLF-CRYPT|CLEAR|CLEARTEXT|CRYPT|DES-CRYPT|LDAP-MD5|MD5|MD5-CRYPT|PBKDF2|PLAIN|PLAIN-MD4|PLAIN-MD5|PLAIN-TRUNC|PLAIN-TRUNC|SHA|SHA1|SHA256|SHA256-CRYPT|SHA512|SHA512-CRYPT|SMD5|SSHA|SSHA256|SSHA512)}/i', $password)) {
+      $password_hashed = $password_new;
+    }
+    else {
+      $password_hashed = hash_password($password_new);
+    }
+    $stmt = $pdo->prepare("UPDATE `mailbox` SET `password` = :password_hashed,
+      `attributes` = JSON_SET(`attributes`, '$.force_pw_update', '0'),
+      `attributes` = JSON_SET(`attributes`, '$.passwd_update', NOW())
+        WHERE `username` = :username");
+    $stmt->execute(array(
+      ':password_hashed' => $password_hashed,
+      ':username' => $username
+    ));
 	}
   update_sogo_static_view();
 	$_SESSION['return'][] =  array(
