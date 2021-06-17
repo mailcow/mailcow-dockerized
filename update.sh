@@ -106,7 +106,8 @@ docker_garbage() {
         echo "OK, skipped."
       fi
     else
-      echo "Skipped image removal because of force mode."
+      echo "Running image removal without extra confirmation due to force mode."
+      docker rmi ${IMGS_TO_DELETE[*]}
     fi
   fi
   echo -e "\e[32mFurther cleanup...\e[0m"
