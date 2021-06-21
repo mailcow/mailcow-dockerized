@@ -210,7 +210,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.149
+      image: mailcow/dovecot:1.150
       depends_on:
         - mysql-mailcow
       dns:
@@ -321,6 +321,7 @@ services:
         - ${IPV4_NETWORK:-172.22.1}.254
       networks:
         mailcow-network:
+          ipv4_address: ${IPV4_NETWORK:-172.22.1}.253
           aliases:
             - postfix
 
@@ -443,7 +444,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.91
+      image: mailcow/watchdog:1.92
       # Debug
       #command: /watchdog.sh
       dns:
@@ -496,7 +497,6 @@ services:
         - RATELIMIT_THRESHOLD=${RATELIMIT_THRESHOLD:-1}
         - FAIL2BAN_THRESHOLD=${FAIL2BAN_THRESHOLD:-1}
         - ACME_THRESHOLD=${ACME_THRESHOLD:-1}
-        - IPV6NAT_THRESHOLD=${IPV6NAT_THRESHOLD:-1}
         - RSPAMD_THRESHOLD=${RSPAMD_THRESHOLD:-5}
         - OLEFY_THRESHOLD=${OLEFY_THRESHOLD:-5}
         - MAILQ_THRESHOLD=${MAILQ_THRESHOLD:-20}

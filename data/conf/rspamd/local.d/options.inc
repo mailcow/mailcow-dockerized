@@ -3,7 +3,8 @@ dns {
 }
 map_watch_interval = 30s;
 dns {
-  timeout = 4s;
-  retransmits = 2;
+  timeout = 6s;
+  retransmits = 4;
+  sockets = 16;
 }
 disable_monitoring = true;

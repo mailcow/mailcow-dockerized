@@ -80,7 +80,7 @@ $xmpp_status = xmpp_control('status');
                   <p><?=$lang['debug']['jvm_memory_solr'];?>: <?=$solr_status['jvm']['memory']['total'] - $solr_status['jvm']['memory']['free'];?> / <?=$solr_status['jvm']['memory']['total'];?>
                     (<?=round($solr_status['jvm']['memory']['raw']['used%']);?>%)</p>
                   <hr>
-                  <p><?=$lang['debug']['uptime'];?>: ~<?=round($solr_status['status']['dovecot-fts']['uptime'] / 1000 / 60 / 60);?>h</p>
+                  <p><?=$lang['debug']['uptime'];?>: <?=round($solr_status['status']['dovecot-fts']['uptime'] / 1000 / 60 / 60);?>h</p>
                   <p><?=$lang['debug']['started_at'];?>: <span class="parse_date"><?=$solr_status['status']['dovecot-fts']['startTime'];?></span></p>
                   <p><?=$lang['debug']['last_modified'];?>: <span class="parse_date"><?=$solr_status['status']['dovecot-fts']['index']['lastModified'];?></span></p>
                   <p><?=$lang['debug']['size'];?>: <?=$solr_status['status']['dovecot-fts']['index']['size'];?></p>
