@@ -345,7 +345,7 @@ rspamd_config:register_symbol({
       end
       lua_smtp.sendmail({
         task = task,
-        host = 'postfix',
+        host = os.getenv("IPV4_NETWORK") .. '.253',
         port = 591,
         from = task:get_from(stp)[1].addr,
         recipients = bcc_dest,
