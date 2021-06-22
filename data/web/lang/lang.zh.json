@@ -1040,7 +1040,7 @@
         "expire_in": "过期于",
         "force_pw_update": "你<b>必须</b>设置一个新密码以继续使用群件相关服务。",
         "from": "从",
-        "recent_successful_connections": "看起来是成功的连接",
+        "recent_successful_connections": "已成功的连接",
         "clear_recent_successful_connections": "清除已成功的连接",
         "generate": "生成",
         "hour": "小时",
