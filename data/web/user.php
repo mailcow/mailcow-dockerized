@@ -27,23 +27,26 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'doma
       </div>
     </div>
     <hr>
-    
+
     <? // TFA ?>
     <div class="row">
       <div class="col-sm-3 col-xs-5 text-right"><?=$lang['tfa']['tfa'];?></div>
         <div class="col-sm-9 col-xs-7">
           <p id="tfa_pretty"><?=$tfa_data['pretty'];?></p>
-            <table id="tfa_keys">
-              <?php if (!empty($tfa_data['additional'])):
-              foreach ($tfa_data['additional'] as $key_info): ?>
+            <div id="tfa_keys">
+              <?php
+              if (!empty($tfa_data['additional'])) {
+                foreach ($tfa_data['additional'] as $key_info) { ?>
                 <form style="display:inline;" method="post">
-                <input type="hidden" name="unset_tfa_key" value="<?=$key_info['id'];?>" />
-                <div class="label label-default">🔑 <?=$key_info['key_id'];?> <a href="#" style="font-weight:bold;color:white" onClick="$(this).closest('form').submit()">[<?=strtolower($lang['admin']['remove']);?>]</a></div>
-              </form>
-              <?php endforeach;
-              endif;?>
-            </table>
-            <br />
+                  <input type="hidden" name="unset_tfa_key" value="<?=$key_info['id'];?>" />
+                  <div class="label label-default"><i class="bi bi-key-fill"></i> <?=$key_info['key_id'];?> <a href="#" style="font-weight:bold;color:white" onClick='return confirm("<?=$lang['user']['delete_ays'];?>")?$(this).closest("form").submit():"";'>[<?=strtolower($lang['admin']['remove']);?>]</a></div>
+                </form>
+                <?php
+                }
+              }
+              ?>
+            </div>
+            <br>
         </div>
     </div>
     <div class="row">
@@ -58,12 +61,13 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'doma
       </div>
     </div>
 
+    <hr>
     <? // FIDO2 ?>
-    <legend style="margin-top:20px">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-      <path d="M17.81 4.47c-.08 0-.16-.02-.23-.06C15.66 3.42 14 3 12.01 3c-1.98 0-3.86.47-5.57 1.41-.24.13-.54.04-.68-.2-.13-.24-.04-.55.2-.68C7.82 2.52 9.86 2 12.01 2c2.13 0 3.99.47 6.03 1.52.25.13.34.43.21.67-.09.18-.26.28-.44.28zM3.5 9.72c-.1 0-.2-.03-.29-.09-.23-.16-.28-.47-.12-.7.99-1.4 2.25-2.5 3.75-3.27C9.98 4.04 14 4.03 17.15 5.65c1.5.77 2.76 1.86 3.75 3.25.16.22.11.54-.12.7-.23.16-.54.11-.7-.12-.9-1.26-2.04-2.25-3.39-2.94-2.87-1.47-6.54-1.47-9.4.01-1.36.7-2.5 1.7-3.4 2.96-.08.14-.23.21-.39.21zm6.25 12.07c-.13 0-.26-.05-.35-.15-.87-.87-1.34-1.43-2.01-2.64-.69-1.23-1.05-2.73-1.05-4.34 0-2.97 2.54-5.39 5.66-5.39s5.66 2.42 5.66 5.39c0 .28-.22.5-.5.5s-.5-.22-.5-.5c0-2.42-2.09-4.39-4.66-4.39-2.57 0-4.66 1.97-4.66 4.39 0 1.44.32 2.77.93 3.85.64 1.15 1.08 1.64 1.85 2.42.19.2.19.51 0 .71-.11.1-.24.15-.37.15zm7.17-1.85c-1.19 0-2.24-.3-3.1-.89-1.49-1.01-2.38-2.65-2.38-4.39 0-.28.22-.5.5-.5s.5.22.5.5c0 1.41.72 2.74 1.94 3.56.71.48 1.54.71 2.54.71.24 0 .64-.03 1.04-.1.27-.05.53.13.58.41.05.27-.13.53-.41.58-.57.11-1.07.12-1.21.12zM14.91 22c-.04 0-.09-.01-.13-.02-1.59-.44-2.63-1.03-3.72-2.1-1.4-1.39-2.17-3.24-2.17-5.22 0-1.62 1.38-2.94 3.08-2.94 1.7 0 3.08 1.32 3.08 2.94 0 1.07.93 1.94 2.08 1.94s2.08-.87 2.08-1.94c0-3.77-3.25-6.83-7.25-6.83-2.84 0-5.44 1.58-6.61 4.03-.39.81-.59 1.76-.59 2.8 0 .78.07 2.01.67 3.61.1.26-.03.55-.29.64-.26.1-.55-.04-.64-.29-.49-1.31-.73-2.61-.73-3.96 0-1.2.23-2.29.68-3.24 1.33-2.79 4.28-4.6 7.51-4.6 4.55 0 8.25 3.51 8.25 7.83 0 1.62-1.38 2.94-3.08 2.94s-3.08-1.32-3.08-2.94c0-1.07-.93-1.94-2.08-1.94s-2.08.87-2.08 1.94c0 1.71.66 3.31 1.87 4.51.95.94 1.86 1.46 3.27 1.85.27.07.42.35.35.61-.05.23-.26.38-.47.38z"/>
-    </svg>
-    <?=$lang['fido2']['fido2_auth'];?></legend>
+    <div class="row">
+      <div class="col-sm-3 col-xs-5 text-right">
+        <p><i class="bi bi-shield-fill-check"></i> <?=$lang['fido2']['fido2_auth'];?></p>
+      </div>
+    </div>
     <div class="row">
       <div class="col-sm-3 col-xs-5 text-right"><?=$lang['fido2']['known_ids'];?>:</div>
       <div class="col-sm-9 col-xs-7">
@@ -86,7 +90,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'doma
                 <input type="hidden" name="unset_fido2_key" value="<?=$key_info['cid'];?>" />
                 <div class="btn-group">
                 <a href="#" class="btn btn-xs btn-default" data-cid="<?=$key_info['cid'];?>" data-subject="<?=base64_encode($key_info['subject']);?>" data-toggle="modal" data-target="#fido2ChangeFn"><i class="bi bi-pencil-fill"></i> <?=strtolower($lang['fido2']['rename']);?></a>
-                <a href="#" onClick='return confirm("<?=$lang['admin']['ays'];?>")?$(this).closest("form").submit():"";' class="btn btn-xs btn-danger"><i class="bi bi-trash"></i> <?=strtolower($lang['admin']['remove']);?></a>
+                <a href="#" onClick='return confirm("<?=$lang['user']['delete_ays'];?>")?$(this).closest("form").submit():"";' class="btn btn-xs btn-danger"><i class="bi bi-trash"></i> <?=strtolower($lang['admin']['remove']);?></a>
                 </form>
                 </div>
               </td>
@@ -130,6 +134,8 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
   $username = $_SESSION['mailcow_cc_username'];
   $mailboxdata = mailbox('get', 'mailbox_details', $username);
   $pushover_data = pushover('get', $username);
+  $tfa_data = get_tfa();
+  $fido2_data = fido2(array("action" => "get_friendly_names"));
 
   $clientconfigstr = "host=" . urlencode($mailcow_hostname) . "&email=" . urlencode($username) . "&name=" . urlencode($mailboxdata['name']) . "&ui=" . urlencode(strtok($_SERVER['HTTP_HOST'], ':')) . "&port=" . urlencode($autodiscover_config['caldav']['port']);
   if ($autodiscover_config['useEASforOutlook'] == 'yes')
@@ -150,7 +156,14 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#userSettings" aria-controls="userSettings" role="tab" data-toggle="tab"><?=$lang['user']['mailbox_details'];?></a></li>
+    <li class="dropdown active">
+      <a class="dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['user']['mailbox'];?><span class="caret"></span></a>
+      <ul class="dropdown-menu">
+        <li role="presentation" class="active" data-dont-remember="1"><a href="#tab-user-auth" aria-controls="tab-user-auth" role="tab" data-toggle="tab"><?=$lang['user']['mailbox_general'];?></a></li>
+        <li role="presentation"><a href="#tab-user-details" aria-controls="tab-config-fwdhosts" role="tab" data-toggle="tab"><?=$lang['user']['mailbox_details'];?></a></li>
+        <li role="presentation"><a href="#tab-user-settings" aria-controls="tab-config-f2b" role="tab" data-toggle="tab"><?=$lang['user']['mailbox_settings'];?></a></li>
+      </ul>
+    </li>
     <li role="presentation"><a href="#SpamAliases" aria-controls="SpamAliases" role="tab" data-toggle="tab"><?=$lang['user']['spam_aliases'];?></a></li>
     <li role="presentation"><a href="#Spamfilter" aria-controls="Spamfilter" role="tab" data-toggle="tab"><?=$lang['user']['spamfilter'];?></a></li>
     <li role="presentation"><a href="#Syncjobs" aria-controls="Syncjobs" role="tab" data-toggle="tab"><?=$lang['user']['sync_jobs'];?></a></li>
@@ -161,16 +174,99 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 
   <div class="tab-content">
 
-  <div role="tabpanel" class="tab-pane active" id="userSettings">
+  <div role="tabpanel" class="tab-pane active" id="tab-user-auth">
     <div class="panel panel-default">
-      <div class="panel-heading"><?=$lang['user']['mailbox_details'];?></div>
+      <div class="panel-heading"><?=$lang['user']['mailbox_general'];?></div>
       <div class="panel-body">
+        <div class="row">
+          <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['in_use'];?>:</div>
+          <div class="col-md-5 col-xs-7">
+            <div class="progress">
+              <div class="progress-bar progress-bar-<?=$mailboxdata['percent_class'];?>" role="progressbar" aria-valuenow="<?=$mailboxdata['percent_in_use'];?>" aria-valuemin="0" aria-valuemax="100" style="min-width:2em;width: <?=$mailboxdata['percent_in_use'];?>%;">
+                <?=$mailboxdata['percent_in_use'];?>%
+              </div>
+            </div>
+            <p><?=formatBytes($mailboxdata['quota_used'], 2);?> / <?=($mailboxdata['quota'] == 0) ? '∞' : formatBytes($mailboxdata['quota'], 2);?><br><?=$mailboxdata['messages'];?> <?=$lang['user']['messages'];?></p>
+            <hr>
+            <p><a href="#pwChangeModal" data-toggle="modal"><i class="bi bi-pencil-fill"></i> <?=$lang['user']['change_password'];?></a></p>
+          </div>
+        </div>
+        <hr>
+        <? // FIDO2 ?>
+        <div class="row">
+          <div class="col-sm-3 col-xs-5 text-right">
+            <p><i class="bi bi-shield-fill-check"></i> <?=$lang['fido2']['fido2_auth'];?></p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3 col-xs-5 text-right">
+          <?=$lang['fido2']['known_ids'];?>:
+          </div>
+          <div class="col-sm-9 col-xs-7">
+            <div class="table-responsive">
+            <table class="table table-striped table-hover table-condensed" id="fido2_keys">
+              <tr>
+                <th>ID</th>
+                <th style="min-width:240px;text-align: right"><?=$lang['admin']['action'];?></th>
+              </tr>
+              <?php
+              if (!empty($fido2_data)) {
+                foreach ($fido2_data as $key_info) {
+              ?>
+              <tr>
+                <td>
+                  <?=($_SESSION['fido2_cid'] == $key_info['cid']) ? '<i class="bi bi-unlock-fill"></i> ' : NULL; ?><?=(!empty($key_info['fn']))?$key_info['fn']:$key_info['subject'];?>
+                </td>
+                <td style="min-width:240px;text-align: right">
+                  <form style="display:inline;" method="post">
+                  <input type="hidden" name="unset_fido2_key" value="<?=$key_info['cid'];?>" />
+                  <div class="btn-group">
+                  <a href="#" class="btn btn-xs btn-default" data-cid="<?=$key_info['cid'];?>" data-subject="<?=base64_encode($key_info['subject']);?>" data-toggle="modal" data-target="#fido2ChangeFn"><i class="bi bi-pencil-fill"></i> <?=strtolower($lang['fido2']['rename']);?></a>
+                  <a href="#" onClick='return confirm("<?=$lang['user']['delete_ays'];?>")?$(this).closest("form").submit():"";' class="btn btn-xs btn-danger"><i class="bi bi-trash"></i> <?=strtolower($lang['admin']['remove']);?></a>
+                  </form>
+                  </div>
+                </td>
+              </tr>
+              <?php
+                }
+              }
+              ?>
+            </table>
+            </div>
+            <br>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-offset-3 col-sm-9">
+            <button class="btn btn-sm btn-primary" id="register-fido2"><?=$lang['fido2']['set_fido2'];?></button>
+          </div>
+        </div>
+        <br>
+        <div class="row" id="status-fido2">
+          <div class="col-sm-3 col-xs-5 text-right"><?=$lang['fido2']['register_status'];?>:</div>
+          <div class="col-sm-9 col-xs-7">
+            <div id="fido2-alerts">-</div>
+          </div>
+          <br>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-md-3 col-xs-5 text-right"><i class="bi bi-file-earmark-text"></i> <?=$lang['user']['apple_connection_profile'];?>:</div>
+          <div class="col-md-9 col-xs-7">
+            <p><i class="bi bi-file-earmark-post"></i> <a href="/mobileconfig.php?only_email"><?=$lang['user']['email'];?></a> <small>IMAP, SMTP</small></p>
+            <p class="help-block"><?=$lang['user']['apple_connection_profile_mailonly'];?></p>
+            <?php if (getenv('SKIP_SOGO') != "y") { ?>
+            <p><i class="bi bi-file-earmark-post"></i> <a href="/mobileconfig.php"><?=$lang['user']['email_and_dav'];?></a> <small>IMAP, SMTP, Cal/CardDAV</small></p>
+            <p class="help-block"><?=$lang['user']['apple_connection_profile_complete'];?></p>
+            <?php } ?>
+          </div>
+        </div>
+        <hr>
         <div class="row">
           <div class="col-sm-offset-3 col-sm-9">
             <?php if ($mailboxdata['attributes']['force_pw_update'] == "1"): ?>
             <div class="alert alert-danger"><?=$lang['user']['force_pw_update'];?></div>
             <?php endif; ?>
-            <p><a href="#pwChangeModal" data-toggle="modal">[<?=$lang['user']['change_password'];?>]</a></p>
             <p><a target="_blank" href="https://mailcow.github.io/mailcow-dockerized-docs/client/#<?=$clientconfigstr;?>">[<?=$lang['user']['client_configuration'];?>]</a></p>
             <p><a href="#userFilterModal" data-toggle="modal">[<?=$lang['user']['show_sieve_filters'];?>]</a></p>
             <hr>
@@ -178,9 +274,9 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
             <div class="dropdown pull-left">
               <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="history_sasl_days" data-toggle="dropdown"><?=$lang['user']['login_history'];?> <span class="caret"></span></button>
               <ul class="dropdown-menu">
-                <li class="login-history" data-days="1"><a href="#">1 <?=$lang['user']['day'];?></a></li>
+                <li class="login-history active" data-days="1"><a href="#">1 <?=$lang['user']['day'];?></a></li>
                 <li class="login-history" data-days="7"><a href="#">1 <?=$lang['user']['week'];?></a></li>
-                <li class="login-history active" data-days="14"><a href="#">2 <?=$lang['user']['weeks'];?></a></li>
+                <li class="login-history" data-days="14"><a href="#">2 <?=$lang['user']['weeks'];?></a></li>
                 <li class="login-history" data-days="31"><a href="#">1 <?=$lang['user']['month'];?></a></li>
               </ul>
             </div>
@@ -191,20 +287,15 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
             </span>
           </div>
         </div>
-        <hr>
-        <div class="row">
-          <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['apple_connection_profile'];?>:</div>
-          <div class="col-md-9 col-xs-7">
-            <p><i class="bi bi-file-earmark-post"></i> <a href="/mobileconfig.php?only_email"><?=$lang['user']['email'];?></a> <small>IMAP, SMTP</small></p>
-            <p class="help-block"><?=$lang['user']['apple_connection_profile_mailonly'];?></p>
-            <?php if (getenv('SKIP_SOGO') != "y") { ?>
-            <p><i class="bi bi-file-earmark-post"></i> <a href="/mobileconfig.php"><?=$lang['user']['email_and_dav'];?></a> <small>IMAP, SMTP, Cal/CardDAV</small></p>
-            <p class="help-block"><?=$lang['user']['apple_connection_profile_complete'];?></p>
-            <?php } ?>
-          </div>
-        </div>
+      </div>
+    </div>
+  </div>
+
+  <div role="tabpanel" class="tab-pane" id="tab-user-details">
+    <div class="panel panel-default">
+      <div class="panel-heading"><?=$lang['user']['mailbox_details'];?></div>
+      <div class="panel-body">
         <?php if ($mailboxdata['attributes']['xmpp_access'] == 1 && $mailboxdata['domain_xmpp'] == 1) { ?>
-        <hr>
         <div class="row">
           <div class="col-md-3 col-xs-5 text-right">
             <img class="img-responsive pull-right xmpp-logo-user" alt="XMPP Logo" src="data:image/png;base64,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">
@@ -260,7 +351,6 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
             foreach (array_filter($user_get_alias_details['shared_aliases']) as $shared_alias => $shared_alias_meta) {
               (!empty($shared_alias_meta['public_comment'])) ?
                 printf('%s &mdash; <span class="bg-info">%s</span><br>', $shared_alias, $shared_alias_meta['public_comment']) :
-
                 printf('%s<br>', $shared_alias);
             }
           }
@@ -286,19 +376,14 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
           <p><?=(empty($user_get_alias_details['is_catch_all'])) ? '<i class="bi bi-x-lg"></i>' : '' ;?></p>
           </div>
         </div>
-        <hr>
-        <div class="row">
-          <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['in_use'];?>:</div>
-          <div class="col-md-5 col-xs-7">
-            <div class="progress">
-              <div class="progress-bar progress-bar-<?=$mailboxdata['percent_class'];?>" role="progressbar" aria-valuenow="<?=$mailboxdata['percent_in_use'];?>" aria-valuemin="0" aria-valuemax="100" style="min-width:2em;width: <?=$mailboxdata['percent_in_use'];?>%;">
-                <?=$mailboxdata['percent_in_use'];?>%
-              </div>
-            </div>
-            <p><?=formatBytes($mailboxdata['quota_used'], 2);?> / <?=($mailboxdata['quota'] == 0) ? '∞' : formatBytes($mailboxdata['quota'], 2);?><br><?=$mailboxdata['messages'];?> <?=$lang['user']['messages'];?></p>
-          </div>
-        </div>
-        <hr>
+      </div>
+    </div>
+  </div>
+
+  <div role="tabpanel" class="tab-pane" id="tab-user-settings">
+    <div class="panel panel-default">
+      <div class="panel-heading"><?=$lang['user']['mailbox_settings'];?></div>
+      <div class="panel-body">
         <?php
         // Show tagging options
         $get_tagging_options = mailbox('get', 'delimiter_action', $username);
@@ -481,7 +566,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
       </div>
     </div>
 	</div>
-
+  
 	<div role="tabpanel" class="tab-pane" id="Spamfilter">
 		<h4><?=$lang['user']['spamfilter_behavior'];?></h4>
 		<form class="form-horizontal" role="form" data-id="spam_score" method="post">

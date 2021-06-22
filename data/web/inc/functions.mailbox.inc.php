@@ -4263,6 +4263,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt->execute(array(
               ':username' => $username
             ));
+            $stmt = $pdo->prepare("DELETE FROM `tfa` WHERE `username` = :username");
+            $stmt->execute(array(
+              ':username' => $username,
+            ));
+            $stmt = $pdo->prepare("DELETE FROM `fido2` WHERE `username` = :username");
+            $stmt->execute(array(
+              ':username' => $username,
+            ));
             $stmt = $pdo->prepare("SELECT `address`, `goto` FROM `alias`
                 WHERE `goto` REGEXP :username");
             $stmt->execute(array(':username' => '(^|,)'.$username.'($|,)'));
