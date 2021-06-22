@@ -562,7 +562,7 @@
         "hostname": "主机名",
         "inactive": "禁用",
         "kind": "类型",
-       "lookup_mx": "此目标地址是匹配 MX 名称的正则表达式 (<code>.*google\\.com</code> 以通过此跃点将所有邮件定位到以 google.com 结尾的 MX 路由)",
+        "lookup_mx": "此目标地址是匹配 MX 名称的正则表达式 (<code>.*google\\.com</code> 以通过此跃点将所有邮件定位到以 google.com 结尾的 MX 路由)",
         "mailbox": "编辑邮箱",
         "mailbox_quota_def": "默认邮箱配额",
         "mailbox_relayhost_info": "仅应用于邮箱和直接别名，已覆盖域中继主机。",
