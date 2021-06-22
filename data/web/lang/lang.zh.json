@@ -26,7 +26,7 @@
         "syncjobs": "同步任务",
         "tls_policy": "TLS策略",
         "unlimited_quota": "无限邮箱容量配额",
-        "domain_desc": "更改域名描述"
+        "domain_desc": "更改域名描述",
         "mailbox_relayhost": "更改邮箱的中继主机",
         "domain_relayhost": "更改域的中继主机",
         "xmpp_admin": "将 XMPP 用户提升为管理员",
@@ -467,7 +467,7 @@
         "username_invalid": "不能使用用户名 %s",
         "validity_missing": "请设置有效期",
         "value_missing": "请填入所有值",
-        "yotp_verification_failed": "Yubico OTP认证失败: %s"
+        "yotp_verification_failed": "Yubico OTP认证失败: %s",
         "xmpp_restart_failed": "XMPP 无法重新启动",
         "xmpp_reload_failed": "无法重新加载 XMPP"
     },
@@ -497,7 +497,7 @@
         "login_time": "时间",
         "username": "用户名",
         "static_logs": "静态日志",
-        "system_containers": "系统和容器"
+        "system_containers": "系统和容器",
         "xmpp_status": "XMPP 状态"
     },
     "diagnostics": {
@@ -953,7 +953,7 @@
         "verified_totp_login": "TOTP登录验证成功",
         "verified_u2f_login": "U2F登录验证成功",
         "verified_fido2_login": "FIDO2登录验证成功",
-        "verified_yotp_login": "Yubico OTP登录验证成功"
+        "verified_yotp_login": "Yubico OTP登录验证成功",
         "xmpp_restarted": "XMPP 服务已重新启动",
         "xmpp_reloaded": "XMPP 服务已重新加载",
         "xmpp_maps_updated": "XMPP 规则已更新"
@@ -1135,7 +1135,7 @@
         "waiting": "等待中",
         "week": "周",
         "weekly": "每周",
-        "weeks": "周"
+        "weeks": "周",
         "year": "年",
         "years": "年"
     },
