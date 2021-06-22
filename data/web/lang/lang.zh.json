@@ -827,7 +827,7 @@
         "danger": "危险性",
         "deliver_inbox": "递送到收件箱",
         "disabled_by_config": "当前系统设置关闭了隔离功能，请设置 \"每个邮箱保留隔离项目数\" 和 \"最大文件大小\" 以开启隔离。",
-        "settings_info": "要隔离的最大元素数: %s<br>最大电子邮件大小: %s MiB",
+        "settings_info": "每个邮箱保留隔离项目数: %s<br>最大电子邮件大小: %s MiB",
         "download_eml": "下载 (.eml)",
         "empty": "结果为空",
         "high_danger": "高危险",
