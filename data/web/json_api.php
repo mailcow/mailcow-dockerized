@@ -141,7 +141,7 @@ if (isset($_GET['query'])) {
         // fido2-registration via POST
         case "fido2-registration":
           header('Content-Type: application/json');
-          if (isset($_SESSION["mailcow_cc_role"]) && ($_SESSION["mailcow_cc_role"] == "admin" || $_SESSION["mailcow_cc_role"] == "domainadmin")) {
+          if (isset($_SESSION["mailcow_cc_role"])) {
             $post = trim(file_get_contents('php://input'));
             if ($post) {
               $post = json_decode($post);
@@ -302,8 +302,21 @@ if (isset($_GET['query'])) {
           if ($obj_props['superadmin'] === 1) {
             $_SESSION["mailcow_cc_role"] = "admin";
           }
-          else {
+          elseif ($obj_props['superadmin'] === 0) {
             $_SESSION["mailcow_cc_role"] = "domainadmin";
+          }
+          else {
+            $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `username` = :username");
+            $stmt->execute(array(':username' => $process_fido2['username']));
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($row['username'] == $process_fido2['username']) {
+              $_SESSION["mailcow_cc_role"] = "user";
+            }
+          }
+          if (empty($_SESSION["mailcow_cc_role"])) {
+            session_unset();
+            session_destroy();
+            exit;
           }
           $_SESSION["mailcow_cc_username"] = $process_fido2['username'];
           $_SESSION["fido2_cid"] = $process_fido2['cid'];
@@ -339,17 +352,15 @@ if (isset($_GET['query'])) {
       switch ($category) {
         case "u2f-registration":
           header('Content-Type: application/javascript');
-          if (isset($_SESSION["mailcow_cc_role"]) &&
-            ($_SESSION["mailcow_cc_role"] == "admin" || $_SESSION["mailcow_cc_role"] == "domainadmin") &&
-            $_SESSION["mailcow_cc_username"] == $object) {
-              list($req, $sigs) = $u2f->getRegisterData(get_u2f_registrations($object));
-              $_SESSION['regReq'] = json_encode($req);
-              $_SESSION['regSigs'] = json_encode($sigs);
-              echo 'var req = ' . json_encode($req) . ';';
-              echo 'var registeredKeys = ' . json_encode($sigs) . ';';
-              echo 'var appId = req.appId;';
-              echo 'var registerRequests = [{version: req.version, challenge: req.challenge}];';
-              return;
+          if (isset($_SESSION["mailcow_cc_role"]) && $_SESSION["mailcow_cc_username"] == $object) {
+            list($req, $sigs) = $u2f->getRegisterData(get_u2f_registrations($object));
+            $_SESSION['regReq'] = json_encode($req);
+            $_SESSION['regSigs'] = json_encode($sigs);
+            echo 'var req = ' . json_encode($req) . ';';
+            echo 'var registeredKeys = ' . json_encode($sigs) . ';';
+            echo 'var appId = req.appId;';
+            echo 'var registerRequests = [{version: req.version, challenge: req.challenge}];';
+            return;
           }
           else {
             return;
@@ -358,9 +369,7 @@ if (isset($_GET['query'])) {
         // fido2-registration via GET
         case "fido2-registration":
           header('Content-Type: application/json');
-          if (isset($_SESSION["mailcow_cc_role"]) &&
-            ($_SESSION["mailcow_cc_role"] == "admin" || $_SESSION["mailcow_cc_role"] == "domainadmin") &&
-            $_SESSION["mailcow_cc_username"] == $object) {
+          if (isset($_SESSION["mailcow_cc_role"])) {
               // Exclude existing CredentialIds, if any
               $excludeCredentialIds = fido2(array("action" => "get_user_cids"));
               $createArgs = $WebAuthn->getCreateArgs($_SESSION["mailcow_cc_username"], $_SESSION["mailcow_cc_username"], $_SESSION["mailcow_cc_username"], 30, true, $GLOBALS['FIDO2_UV_FLAG_REGISTER'], $excludeCredentialIds);

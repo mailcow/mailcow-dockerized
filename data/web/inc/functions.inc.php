@@ -1097,8 +1097,7 @@ function set_tfa($_data) {
   $_data_log = $_data;
   !isset($_data_log['confirm_password']) ?: $_data_log['confirm_password'] = '*';
   $username = $_SESSION['mailcow_cc_username'];
-  if ($_SESSION['mailcow_cc_role'] != "domainadmin" &&
-    $_SESSION['mailcow_cc_role'] != "admin") {
+  if (!isset($_SESSION['mailcow_cc_role']) || empty($username)) {
       $_SESSION['return'][] =  array(
         'type' => 'danger',
         'log' => array(__FUNCTION__, $_data_log),
@@ -1107,18 +1106,35 @@ function set_tfa($_data) {
       return false;
   }
   $stmt = $pdo->prepare("SELECT `password` FROM `admin`
-      WHERE `username` = :user");
-  $stmt->execute(array(':user' => $username));
+      WHERE `username` = :username");
+  $stmt->execute(array(':username' => $username));
   $row = $stmt->fetch(PDO::FETCH_ASSOC);
-  if (!verify_hash($row['password'], $_data["confirm_password"])) {
-    $_SESSION['return'][] =  array(
-      'type' => 'danger',
-      'log' => array(__FUNCTION__, $_data_log),
-      'msg' => 'access_denied'
-    );
-    return false;
+  $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+  if (!empty($num_results)) {
+    if (!verify_hash($row['password'], $_data["confirm_password"])) {
+      $_SESSION['return'][] =  array(
+        'type' => 'danger',
+        'log' => array(__FUNCTION__, $_data_log),
+        'msg' => 'access_denied'
+      );
+      return false;
+    }
   }
-
+  $stmt = $pdo->prepare("SELECT `password` FROM `mailbox`
+      WHERE `username` = :username");
+  $stmt->execute(array(':username' => $username));
+  $row = $stmt->fetch(PDO::FETCH_ASSOC);
+  $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+  if (!empty($num_results)) {
+    if (!verify_hash($row['password'], $_data["confirm_password"])) {
+      $_SESSION['return'][] =  array(
+        'type' => 'danger',
+        'log' => array(__FUNCTION__, $_data_log),
+        'msg' => 'access_denied'
+      );
+      return false;
+    }
+  }
 	switch ($_data["tfa_method"]) {
 		case "yubi_otp":
       $key_id = (!isset($_data["key_id"])) ? 'unidentified' : $_data["key_id"];
@@ -1241,8 +1257,7 @@ function fido2($_data) {
 	switch ($_data["action"]) {
 		case "register":
       $username = $_SESSION['mailcow_cc_username'];
-      if ($_SESSION['mailcow_cc_role'] != "domainadmin" &&
-        $_SESSION['mailcow_cc_role'] != "admin") {
+      if (!isset($_SESSION['mailcow_cc_role']) || empty($username)) {
           $_SESSION['return'][] =  array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_data["action"]),
@@ -1273,9 +1288,8 @@ function fido2($_data) {
 		case "get_user_cids":
       // Used to exclude existing CredentialIds while registering
       $username = $_SESSION['mailcow_cc_username'];
-      if ($_SESSION['mailcow_cc_role'] != "domainadmin" &&
-        $_SESSION['mailcow_cc_role'] != "admin") {
-          return false;
+      if (!isset($_SESSION['mailcow_cc_role']) || empty($username)) {
+        return false;
       }
       $stmt = $pdo->prepare("SELECT `credentialId` FROM `fido2` WHERE `username` = :username");
       $stmt->execute(array(':username' => $username));
@@ -1312,9 +1326,8 @@ function fido2($_data) {
 		break;
 		case "get_friendly_names":
       $username = $_SESSION['mailcow_cc_username'];
-      if ($_SESSION['mailcow_cc_role'] != "domainadmin" &&
-        $_SESSION['mailcow_cc_role'] != "admin") {
-          return false;
+      if (!isset($_SESSION['mailcow_cc_role']) || empty($username)) {
+        return false;
       }
       $stmt = $pdo->prepare("SELECT SHA2(`credentialId`, 256) AS `cid`, `created`, `certificateSubject`, `friendlyName` FROM `fido2` WHERE `username` = :username");
       $stmt->execute(array(':username' => $username));
@@ -1330,14 +1343,13 @@ function fido2($_data) {
 		break;
 		case "unset_fido2_key":
       $username = $_SESSION['mailcow_cc_username'];
-      if ($_SESSION['mailcow_cc_role'] != "domainadmin" &&
-        $_SESSION['mailcow_cc_role'] != "admin") {
-          $_SESSION['return'][] =  array(
-            'type' => 'danger',
-            'log' => array(__FUNCTION__, $_data["action"]),
-            'msg' => 'access_denied'
-          );
-          return false;
+      if (!isset($_SESSION['mailcow_cc_role']) || empty($username)) {
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_data["action"]),
+          'msg' => 'access_denied'
+        );
+        return false;
       }
       $stmt = $pdo->prepare("DELETE FROM `fido2` WHERE `username` = :username AND SHA2(`credentialId`, 256) = :cid");
       $stmt->execute(array(
@@ -1352,14 +1364,13 @@ function fido2($_data) {
 		break;
     case "edit_fn":
       $username = $_SESSION['mailcow_cc_username'];
-      if ($_SESSION['mailcow_cc_role'] != "domainadmin" &&
-        $_SESSION['mailcow_cc_role'] != "admin") {
-          $_SESSION['return'][] =  array(
-            'type' => 'danger',
-            'log' => array(__FUNCTION__, $_data["action"]),
-            'msg' => 'access_denied'
-          );
-          return false;
+      if (!isset($_SESSION['mailcow_cc_role']) || empty($username)) {
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_data["action"]),
+          'msg' => 'access_denied'
+        );
+        return false;
       }
       $stmt = $pdo->prepare("UPDATE `fido2` SET `friendlyName` = :friendlyName WHERE SHA2(`credentialId`, 256) = :cid AND `username` = :username");
       $stmt->execute(array(
@@ -1383,14 +1394,13 @@ function unset_tfa_key($_data) {
   $_data_log = $_data;
   $id = intval($_data['unset_tfa_key']);
   $username = $_SESSION['mailcow_cc_username'];
-  if ($_SESSION['mailcow_cc_role'] != "domainadmin" &&
-    $_SESSION['mailcow_cc_role'] != "admin") {
-      $_SESSION['return'][] =  array(
-        'type' => 'danger',
-        'log' => array(__FUNCTION__, $_data_log),
-        'msg' => 'access_denied'
-      );
-      return false;
+  if (!isset($_SESSION['mailcow_cc_role']) || empty($username)) {
+    $_SESSION['return'][] =  array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $_data_log),
+      'msg' => 'access_denied'
+    );
+    return false;
   }
   try {
     if (!is_numeric($id)) {

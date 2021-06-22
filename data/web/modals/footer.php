@@ -1,5 +1,5 @@
 <?php
-if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "admin" || $_SESSION['mailcow_cc_role'] == "domainadmin")):
+if (isset($_SESSION['mailcow_cc_role'])) {
 ?>
 <div class="modal fade" id="YubiOTPModal" tabindex="-1" role="dialog" aria-labelledby="YubiOTPModalLabel">
   <div class="modal-dialog" role="document">
@@ -127,7 +127,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 </div>
 
 <?php
-endif;
+}
 if (isset($_SESSION['pending_tfa_method'])):
   $tfa_method = $_SESSION['pending_tfa_method'];
 ?>

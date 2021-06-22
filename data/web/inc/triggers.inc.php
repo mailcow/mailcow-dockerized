@@ -79,7 +79,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['acl']['login_as'] == "1") 
   }
 }
 
-if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "admin" || $_SESSION['mailcow_cc_role'] == "domainadmin")) {
+if (isset($_SESSION['mailcow_cc_role'])) {
 	if (isset($_POST["set_tfa"])) {
 		set_tfa($_POST);
 	}
