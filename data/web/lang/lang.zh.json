@@ -139,7 +139,7 @@
         "add_transports_hint": "请注意，任何认证数据都将以明文存储。",
         "additional_rows": " 已添加额外的行",
         "admin": "管理员",
-        "admins": "管理员",
+        "admins": "Administrators",
         "admins_ldap": "LDAP 管理员",
         "admin_details": "编辑管理员详情",
         "admin_domains": "分配域名",
