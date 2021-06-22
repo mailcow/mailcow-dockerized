@@ -498,7 +498,7 @@
         "username": "用户名",
         "static_logs": "静态日志",
         "system_containers": "系统和容器",
-        "xmpp_status": "XMPP 状态"
+        "xmpp_status": "XMPP状态"
     },
     "diagnostics": {
         "cname_from_a": "虽然此值记录为 A/AAAA 类型，但只要此记录指向了正确的资源则该行为是被支持的",
