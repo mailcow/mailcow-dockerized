@@ -556,7 +556,7 @@
         "xmpp_access_info": "必须为此域启用 XMPP。",
         "xmpp_admin": "XMPP 管理员",
         "xmpp_admin_info": "<b>危险:</b> 将用户提升为该域的 XMPP 管理员。",
-        "xmpp_example_jid": "<b>示例 JID</b> (使用邮箱密码登录)",
+        "xmpp_example_jid": "<b>JID示例</b> (使用邮箱密码登录)",
         "generate": "生成",
         "grant_types": "授权类型",
         "hostname": "主机名",
@@ -663,7 +663,7 @@
         "fido2_webauthn": "FIDO2/WebAuthn",
         "login": "登录",
         "mobileconfig_info": "请用邮箱用户登录以下载Apple连接描述文件。",
-        "other_logins": "一键登录",
+        "other_logins": "密钥登录",
         "password": "密码",
         "username": "用户名"
     },
