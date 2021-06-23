@@ -127,7 +127,7 @@ jQuery(function($){
   function draw_tla_table() {
     ft_tla_table = FooTable.init('#tla_table', {
       "columns": [
-        {"name":"chkbox","title":"","style":{"maxWidth":"40px","width":"40px","text-align":"center"},"filterable": false,"sortable": false,"type":"html"},
+        {"name":"chkbox","title":"","style":{"min-width":"60px","width":"60px","text-align":"center"},"filterable": false,"sortable": false,"type":"html"},
         {"name":"address","title":lang.alias},
         {"name":"validity","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});},"title":lang.alias_valid_until,"style":{"width":"170px"}},
         {"sorted": true,"sortValue": function(value){res = new Date(value);return res.getTime();},"direction":"DESC","name":"created","formatter":function date_format(datetime) { var date = new Date(datetime.replace(/-/g, "/")); return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});},"title":lang.created_on,"style":{"width":"170px"}},
@@ -172,7 +172,7 @@ jQuery(function($){
   function draw_sync_job_table() {
     ft_syncjob_table = FooTable.init('#sync_job_table', {
       "columns": [
-        {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px","text-align":"center"},"filterable": false,"sortable": false,"type":"html"},
+        {"name":"chkbox","title":"","style":{"min-width":"60px","width":"60px","text-align":"center"},"filterable": false,"sortable": false,"type":"html"},
         {"sorted": true,"name":"id","title":"ID","style":{"maxWidth":"60px","width":"60px","text-align":"center"}},
         {"name":"server_w_port","title":"Server"},
         {"name":"enc1","title":lang.encryption,"breakpoints":"all"},
