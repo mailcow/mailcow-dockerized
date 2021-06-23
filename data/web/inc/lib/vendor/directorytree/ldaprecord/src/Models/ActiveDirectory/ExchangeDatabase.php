@@ -16,6 +16,6 @@ class ExchangeDatabase extends Entry
     {
         parent::boot();
 
-        static::addGlobalScope(new Scopes\InConfigurationContext);
+        static::addGlobalScope(new Scopes\InConfigurationContext());
     }
 }

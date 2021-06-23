@@ -479,7 +479,7 @@ class CarbonPeriod implements Iterator, Countable, JsonSerializable
                 $interval = $part;
             } elseif ($start === null && $parsed = Carbon::make($part)) {
                 $start = $part;
-            } elseif ($end === null && $parsed = Carbon::make(static::addMissingParts($start, $part))) {
+            } elseif ($end === null && $parsed = Carbon::make(static::addMissingParts($start ?? '', $part))) {
                 $end = $part;
             } else {
                 throw new InvalidPeriodParameterException("Invalid ISO 8601 specification: $iso.");
@@ -641,7 +641,7 @@ class CarbonPeriod implements Iterator, Countable, JsonSerializable
             if ($this->dateInterval === null &&
                 (
                     \is_string($argument) && preg_match(
-                        '/^(\d(\d(?![\/-])|[^\d\/-]([\/-])?)*|P[T0-9].*|(?:\h*\d+(?:\.\d+)?\h*[a-z]+)+)$/i',
+                        '/^(-?\d(\d(?![\/-])|[^\d\/-]([\/-])?)*|P[T0-9].*|(?:\h*\d+(?:\.\d+)?\h*[a-z]+)+)$/i',
                         $argument
                     ) ||
                     $argument instanceof DateInterval ||

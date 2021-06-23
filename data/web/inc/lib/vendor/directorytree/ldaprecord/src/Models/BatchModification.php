@@ -269,7 +269,7 @@ class BatchModification
                 // A values key cannot be provided when
                 // a remove all type is selected.
                 return [
-                    static::KEY_ATTRIB  => $this->attribute,
+                    static::KEY_ATTRIB => $this->attribute,
                     static::KEY_MODTYPE => $this->type,
                 ];
             case LDAP_MODIFY_BATCH_REMOVE:
@@ -278,9 +278,9 @@ class BatchModification
                 // Fallthrough.
             case LDAP_MODIFY_BATCH_REPLACE:
                 return [
-                    static::KEY_ATTRIB  => $this->attribute,
+                    static::KEY_ATTRIB => $this->attribute,
                     static::KEY_MODTYPE => $this->type,
-                    static::KEY_VALUES  => $this->values,
+                    static::KEY_VALUES => $this->values,
                 ];
             default:
                 // If the modtype isn't recognized, we'll return null.

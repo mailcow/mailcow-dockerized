@@ -9,7 +9,7 @@ use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Attributes\MbString;
 use LdapRecord\Models\Attributes\Timestamp;
 use LdapRecord\Models\DetectsResetIntegers;
-use Tightenco\Collect\Support\Arr;
+use LdapRecord\Support\Arr;
 
 trait HasAttributes
 {
@@ -190,7 +190,7 @@ trait HasAttributes
             // We want to spin through all the mutated attributes for this model and call
             // the mutator for the attribute. We cache off every mutated attributes so
             // we don't have to constantly check on attributes that actually change.
-            if (! array_key_exists($key, $attributes)) {
+            if (! Arr::exists($attributes, $key)) {
                 continue;
             }
 
@@ -311,9 +311,9 @@ trait HasAttributes
      * @param string $type
      * @param mixed  $value
      *
-     * @return float|string
-     *
      * @throws LdapRecordException
+     *
+     * @return float|string
      */
     public function fromDateTime($type, $value)
     {
@@ -326,9 +326,9 @@ trait HasAttributes
      * @param mixed  $value
      * @param string $type
      *
-     * @return Carbon|false
-     *
      * @throws LdapRecordException
+     *
+     * @return Carbon|false
      */
     public function asDateTime($value, $type)
     {
@@ -876,9 +876,9 @@ trait HasAttributes
         // LDAP search results will contain the distinguished
         // name inside of the `dn` key. We will retrieve this,
         // and then set it on the model for accessibility.
-        if (array_key_exists('dn', $attributes)) {
-            $this->dn = is_array($attributes['dn'])
-                ? reset($attributes['dn'])
+        if (Arr::exists($attributes, 'dn')) {
+            $this->dn = Arr::accessible($attributes['dn'])
+                ? Arr::first($attributes['dn'])
                 : $attributes['dn'];
         }
 

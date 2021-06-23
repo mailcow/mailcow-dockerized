@@ -152,12 +152,15 @@ abstract class LdapBase implements LdapInterface
      *
      * @param Closure $operation
      *
-     * @return mixed
-     *
      * @throws LdapRecordException
+     *
+     * @return mixed
      */
     protected function executeFailableOperation(Closure $operation)
     {
+        // If some older versions of PHP, errors are reported instead of throwing
+        // exceptions, which could be a signifcant detriment to our application.
+        // Here, we will enforce these operations to throw exceptions instead.
         set_error_handler(function ($severity, $message, $file, $line) {
             if (! $this->shouldBypassError($message)) {
                 throw new ErrorException($message, $severity, $severity, $file, $line);
@@ -169,6 +172,9 @@ abstract class LdapBase implements LdapInterface
                 return $result;
             }
 
+            // If the failed query operation was a based on a query being executed
+            // -- such as a search, read, or listing, then we can safely return
+            // the failed response here and prevent throwning an exception.
             if ($this->shouldBypassFailure($method = debug_backtrace()[1]['function'])) {
                 return $result;
             }
@@ -208,6 +214,8 @@ abstract class LdapBase implements LdapInterface
     /**
      * Determine if the current PHP version supports server controls.
      *
+     * @deprecated
+     *
      * @return bool
      */
     public function supportsServerControlsInMethods()
@@ -223,18 +231,33 @@ abstract class LdapBase implements LdapInterface
      *
      * @return string
      */
-    protected function getConnectionString($hosts, $port)
+    protected function makeConnectionUris($hosts, $port)
     {
-        // If we are using SSL and using the default port, we
-        // will override it to use the default SSL port.
+        // If an attempt to connect via SSL protocol is being performed,
+        // and we are still using the default port, we will swap it
+        // for the default SSL port, for developer convenience.
         if ($this->isUsingSSL() && $port == static::PORT) {
             $port = static::PORT_SSL;
         }
 
-        $hosts = array_map(function ($host) use ($port) {
+        // The blank space here is intentional. PHP's LDAP extension
+        // requires additional hosts to be seperated by a blank
+        // space, so that it can parse each individually.
+        return implode(' ', $this->assembleHostUris($hosts, $port));
+    }
+
+    /**
+     * Assemble the host URI strings.
+     *
+     * @param array|string $hosts
+     * @param string       $port
+     *
+     * @return array
+     */
+    protected function assembleHostUris($hosts, $port)
+    {
+        return array_map(function ($host) use ($port) {
             return "{$this->getProtocol()}{$host}:{$port}";
         }, (array) $hosts);
-
-        return implode(' ', $hosts);
     }
 }

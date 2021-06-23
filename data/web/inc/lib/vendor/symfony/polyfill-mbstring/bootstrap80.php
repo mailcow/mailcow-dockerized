@@ -48,10 +48,10 @@ if (!function_exists('mb_detect_encoding')) {
     function mb_detect_encoding(?string $string, array|string|null $encodings = null, ?bool $strict = false): string|false { return p\Mbstring::mb_detect_encoding((string) $string, $encodings, (bool) $strict); }
 }
 if (!function_exists('mb_detect_order')) {
-    function mb_detect_order(array|string|null $encoding = null): array|bool { return p\Mbstring::mb_detect_order((string) $encoding); }
+    function mb_detect_order(array|string|null $encoding = null): array|bool { return p\Mbstring::mb_detect_order($encoding); }
 }
 if (!function_exists('mb_parse_str')) {
-    function mb_parse_str(?string $string, &$result = []): bool { parse_str((string) $string, $result); }
+    function mb_parse_str(?string $string, &$result = []): bool { parse_str((string) $string, $result); return (bool) $result; }
 }
 if (!function_exists('mb_strlen')) {
     function mb_strlen(?string $string, ?string $encoding = null): int { return p\Mbstring::mb_strlen((string) $string, $encoding); }
@@ -78,7 +78,7 @@ if (!function_exists('mb_stristr')) {
     function mb_stristr(?string $haystack, ?string $needle, ?bool $before_needle = false, ?string $encoding = null): string|false { return p\Mbstring::mb_stristr((string) $haystack, (string) $needle, (bool) $before_needle, $encoding); }
 }
 if (!function_exists('mb_strrchr')) {
-    function mb_strrchr(?string $haystack, ?string $needle, ?bool $before_needle = false, ?string $encoding = null): string|false { return p\Mbstring::mb_strrchr((string) $haystack, (string) $needle, $before_needle, (bool) $encoding); }
+    function mb_strrchr(?string $haystack, ?string $needle, ?bool $before_needle = false, ?string $encoding = null): string|false { return p\Mbstring::mb_strrchr((string) $haystack, (string) $needle, (bool) $before_needle, $encoding); }
 }
 if (!function_exists('mb_strrichr')) {
     function mb_strrichr(?string $haystack, ?string $needle, ?bool $before_needle = false, ?string $encoding = null): string|false { return p\Mbstring::mb_strrichr((string) $haystack, (string) $needle, (bool) $before_needle, $encoding); }

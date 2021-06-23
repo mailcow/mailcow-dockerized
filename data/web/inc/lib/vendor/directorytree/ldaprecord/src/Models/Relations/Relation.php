@@ -343,13 +343,11 @@ abstract class Relation
      */
     protected function determineModelFromRelated(Model $model, array $related)
     {
-        $objectClasses = $model->getAttribute('objectclass') ?? [];
-
         // We must normalize all the related models object class
         // names to the same case so we are able to properly
         // determine the owning model from search results.
         return array_search(
-            $this->normalizeObjectClasses($objectClasses),
+            $this->normalizeObjectClasses($model->getObjectClasses()),
             array_map([$this, 'normalizeObjectClasses'], $related)
         );
     }

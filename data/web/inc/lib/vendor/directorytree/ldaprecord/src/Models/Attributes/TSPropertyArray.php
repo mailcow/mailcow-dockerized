@@ -17,22 +17,22 @@ class TSPropertyArray
      * @var array
      */
     const DEFAULTS = [
-        'CtxCfgPresent'           => 2953518677,
-        'CtxWFProfilePath'        => '',
-        'CtxWFProfilePathW'       => '',
-        'CtxWFHomeDir'            => '',
-        'CtxWFHomeDirW'           => '',
-        'CtxWFHomeDirDrive'       => '',
-        'CtxWFHomeDirDriveW'      => '',
-        'CtxShadow'               => 1,
+        'CtxCfgPresent' => 2953518677,
+        'CtxWFProfilePath' => '',
+        'CtxWFProfilePathW' => '',
+        'CtxWFHomeDir' => '',
+        'CtxWFHomeDirW' => '',
+        'CtxWFHomeDirDrive' => '',
+        'CtxWFHomeDirDriveW' => '',
+        'CtxShadow' => 1,
         'CtxMaxDisconnectionTime' => 0,
-        'CtxMaxConnectionTime'    => 0,
-        'CtxMaxIdleTime'          => 0,
-        'CtxWorkDirectory'        => '',
-        'CtxWorkDirectoryW'       => '',
-        'CtxCfgFlags1'            => 2418077696,
-        'CtxInitialProgram'       => '',
-        'CtxInitialProgramW'      => '',
+        'CtxMaxConnectionTime' => 0,
+        'CtxMaxIdleTime' => 0,
+        'CtxWorkDirectory' => '',
+        'CtxWorkDirectoryW' => '',
+        'CtxCfgFlags1' => 2418077696,
+        'CtxInitialProgram' => '',
+        'CtxInitialProgramW' => '',
     ];
 
     /**

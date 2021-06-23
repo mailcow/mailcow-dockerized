@@ -24,7 +24,7 @@ class Entry extends BaseEntry implements FreeIPA
      * @var array
      */
     protected $defaultDates = [
-        'krblastpwdchange'      => 'ldap',
+        'krblastpwdchange' => 'ldap',
         'krbpasswordexpiration' => 'ldap',
     ];
 
