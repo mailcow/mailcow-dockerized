@@ -223,12 +223,23 @@ user = ${DBUSER}
 password = ${DBPASS}
 hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
-query = SELECT goto FROM alias
-  WHERE (
-      address='%s' OR
+query = IF (
+    SELECT goto FROM alias WHERE
+      address='%s'
+      AND (active='1' OR active='2')
+  ) IS NULL THEN
+  BEGIN
+    SELECT goto FROM alias WHERE
       address=CONCAT('@', '%d')
-    )
-    AND (active='1' OR active='2');
+      AND (active='1' OR active='2');
+  END;
+  ELSE
+  BEGIN
+    SELECT goto FROM alias WHERE
+      address='%s'
+      AND (active='1' OR active='2');
+  END;
+  END IF;
 EOF
 
 cat <<EOF > /opt/postfix/conf/sql/mysql_recipient_bcc_maps.cf
@@ -306,9 +317,18 @@ hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 # First select queries domain and alias_domain to determine if domains are active.
 query = SELECT goto FROM alias
-  WHERE (
-      address='%s'
-      OR address=CONCAT('@', '%d')
+  WHERE id IN (
+      SELECT COALESCE (
+        (
+          SELECT id FROM alias
+            WHERE address='%s'
+            AND (active='1' OR active='2')
+        ), (
+          SELECT id FROM alias
+            WHERE address='@%d'
+            AND (active='1' OR active='2')
+        )
+      )
     )
     AND active='1'
     AND (domain IN
@@ -340,7 +360,7 @@ query = SELECT goto FROM alias
     WHERE alias_domain.alias_domain = '%d'
       AND mailbox.username = CONCAT('%u','@',alias_domain.target_domain)
       AND (mailbox.active = '1' OR mailbox.active ='2')
-      AND alias_domain.active='1'
+      AND alias_domain.active='1';
 EOF
 
 # MX based routing
