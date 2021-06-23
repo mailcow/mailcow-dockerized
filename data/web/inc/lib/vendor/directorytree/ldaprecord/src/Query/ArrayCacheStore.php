@@ -43,7 +43,7 @@ class ArrayCacheStore implements CacheInterface
     public function set($key, $value, $ttl = null)
     {
         $this->storage[$key] = [
-            'value'     => $value,
+            'value' => $value,
             'expiresAt' => $this->parseDateInterval($ttl),
         ];
 

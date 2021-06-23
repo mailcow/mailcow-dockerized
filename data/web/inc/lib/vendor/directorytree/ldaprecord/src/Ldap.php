@@ -188,7 +188,7 @@ class Ldap extends LdapBase
     {
         $this->bound = false;
 
-        $this->host = $this->getConnectionString($hosts, $port);
+        $this->host = $this->makeConnectionUris($hosts, $port);
 
         return $this->connection = $this->executeFailableOperation(function () {
             return ldap_connect($this->host);

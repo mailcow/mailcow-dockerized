@@ -202,9 +202,9 @@ interface LdapInterface
      *
      * @link http://php.net/manual/en/function.ldap-start-tls.php
      *
-     * @return bool
-     *
      * @throws LdapRecordException
+     *
+     * @return bool
      */
     public function startTLS();
 
@@ -310,9 +310,9 @@ interface LdapInterface
      * @param string $username
      * @param string $password
      *
-     * @return bool
-     *
      * @throws LdapRecordException
+     *
+     * @return bool
      */
     public function bind($username, $password);
 
@@ -324,9 +324,9 @@ interface LdapInterface
      * @param string $dn
      * @param array  $entry
      *
-     * @return bool
-     *
      * @throws LdapRecordException
+     *
+     * @return bool
      */
     public function add($dn, array $entry);
 
@@ -337,9 +337,9 @@ interface LdapInterface
      *
      * @param string $dn
      *
-     * @return bool
-     *
      * @throws LdapRecordException
+     *
+     * @return bool
      */
     public function delete($dn);
 
@@ -353,9 +353,9 @@ interface LdapInterface
      * @param string $newParent
      * @param bool   $deleteOldRdn
      *
-     * @return bool
-     *
      * @throws LdapRecordException
+     *
+     * @return bool
      */
     public function rename($dn, $newRdn, $newParent, $deleteOldRdn = false);
 
@@ -367,9 +367,9 @@ interface LdapInterface
      * @param string $dn
      * @param array  $entry
      *
-     * @return bool
-     *
      * @throws LdapRecordException
+     *
+     * @return bool
      */
     public function modify($dn, array $entry);
 
@@ -381,9 +381,9 @@ interface LdapInterface
      * @param string $dn
      * @param array  $values
      *
-     * @return bool
-     *
      * @throws LdapRecordException
+     *
+     * @return bool
      */
     public function modifyBatch($dn, array $values);
 
@@ -395,9 +395,9 @@ interface LdapInterface
      * @param string $dn
      * @param array  $entry
      *
-     * @return bool
-     *
      * @throws LdapRecordException
+     *
+     * @return bool
      */
     public function modAdd($dn, array $entry);
 
@@ -409,9 +409,9 @@ interface LdapInterface
      * @param string $dn
      * @param array  $entry
      *
-     * @return bool
-     *
      * @throws LdapRecordException
+     *
+     * @return bool
      */
     public function modReplace($dn, array $entry);
 
@@ -423,9 +423,9 @@ interface LdapInterface
      * @param string $dn
      * @param array  $entry
      *
-     * @return bool
-     *
      * @throws LdapRecordException
+     *
+     * @return bool
      */
     public function modDelete($dn, array $entry);
 
