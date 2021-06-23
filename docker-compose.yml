@@ -164,7 +164,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.99
+      image: mailcow/sogo:1.100
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -210,7 +210,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.150
+      image: mailcow/dovecot:1.151
       depends_on:
         - mysql-mailcow
       dns:
@@ -346,7 +346,6 @@ services:
       command: /bin/sh -c "envsubst < /etc/nginx/conf.d/templates/listen_plain.template > /etc/nginx/conf.d/listen_plain.active &&
         envsubst < /etc/nginx/conf.d/templates/listen_ssl.template > /etc/nginx/conf.d/listen_ssl.active &&
         envsubst < /etc/nginx/conf.d/templates/sogo.template > /etc/nginx/conf.d/sogo.active &&
-        . /etc/nginx/conf.d/templates/sogo.auth_request.template.sh > /etc/nginx/conf.d/sogo_proxy_auth.active &&
         . /etc/nginx/conf.d/templates/server_name.template.sh > /etc/nginx/conf.d/server_name.active &&
         . /etc/nginx/conf.d/templates/sites.template.sh > /etc/nginx/conf.d/sites.active &&
         . /etc/nginx/conf.d/templates/sogo_eas.template.sh > /etc/nginx/conf.d/sogo_eas.active &&
