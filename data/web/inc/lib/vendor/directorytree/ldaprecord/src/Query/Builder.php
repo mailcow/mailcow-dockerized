@@ -14,10 +14,10 @@ use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Model;
 use LdapRecord\Query\Events\QueryExecuted;
 use LdapRecord\Query\Model\Builder as ModelBuilder;
-use LdapRecord\Query\Pagination\DeprecatedPaginator;
+use LdapRecord\Query\Pagination\LazyPaginator;
 use LdapRecord\Query\Pagination\Paginator;
+use LdapRecord\Support\Arr;
 use LdapRecord\Utilities;
-use Tightenco\Collect\Support\Arr;
 
 class Builder
 {
@@ -37,7 +37,7 @@ class Builder
      */
     public $filters = [
         'and' => [],
-        'or'  => [],
+        'or' => [],
         'raw' => [],
     ];
 
@@ -485,6 +485,60 @@ class Builder
     }
 
     /**
+     * Runs the paginate operation with the given filter.
+     *
+     * @param string $filter
+     * @param int    $perPage
+     * @param bool   $isCritical
+     *
+     * @return array
+     */
+    protected function runPaginate($filter, $perPage, $isCritical)
+    {
+        return $this->connection->run(function (LdapInterface $ldap) use ($filter, $perPage, $isCritical) {
+            return (new Paginator($this, $filter, $perPage, $isCritical))->execute($ldap);
+        });
+    }
+
+    /**
+     * Chunk the results of a paginated LDAP query.
+     *
+     * @param int     $pageSize
+     * @param Closure $callback
+     * @param bool    $isCritical
+     *
+     * @return void
+     */
+    public function chunk($pageSize, Closure $callback, $isCritical = false)
+    {
+        $start = microtime(true);
+
+        $query = $this->getQuery();
+
+        foreach ($this->runChunk($query, $pageSize, $isCritical) as $chunk) {
+            $callback($this->process($chunk));
+        }
+
+        $this->logQuery($this, 'chunk', $this->getElapsedTime($start));
+    }
+
+    /**
+     * Runs the chunk operation with the given filter.
+     *
+     * @param string $filter
+     * @param int    $perPage
+     * @param bool   $isCritical
+     *
+     * @return array
+     */
+    protected function runChunk($filter, $perPage, $isCritical)
+    {
+        return $this->connection->run(function (LdapInterface $ldap) use ($filter, $perPage, $isCritical) {
+            return (new LazyPaginator($this, $filter, $perPage, $isCritical))->execute($ldap);
+        });
+    }
+
+    /**
      * Processes and converts the given LDAP results into models.
      *
      * @param array $results
@@ -575,26 +629,6 @@ class Builder
     }
 
     /**
-     * Runs the paginate operation with the given filter.
-     *
-     * @param string $filter
-     * @param int    $perPage
-     * @param bool   $isCritical
-     *
-     * @return array
-     */
-    protected function runPaginate($filter, $perPage, $isCritical)
-    {
-        return $this->connection->run(function (LdapInterface $ldap) use ($filter, $perPage, $isCritical) {
-            $paginator = $ldap->supportsServerControlsInMethods()
-                ? new Paginator($this, $filter, $perPage, $isCritical)
-                : new DeprecatedPaginator($this, $filter, $perPage, $isCritical);
-
-            return $paginator->execute($ldap);
-        });
-    }
-
-    /**
      * Parses the given LDAP resource by retrieving its entries.
      *
      * @param resource $resource
@@ -660,9 +694,9 @@ class Builder
      *
      * @param array|string $columns
      *
-     * @return Model|static
-     *
      * @throws ObjectNotFoundException
+     *
+     * @return Model|static
      */
     public function firstOrFail($columns = ['*'])
     {
@@ -713,9 +747,9 @@ class Builder
      * @param string       $value
      * @param array|string $columns
      *
-     * @return Model
-     *
      * @throws ObjectNotFoundException
+     *
+     * @return Model
      */
     public function findByOrFail($attribute, $value, $columns = ['*'])
     {
@@ -796,9 +830,9 @@ class Builder
      * @param string       $dn
      * @param array|string $columns
      *
-     * @return Model|static
-     *
      * @throws ObjectNotFoundException
+     *
+     * @return Model|static
      */
     public function findOrFail($dn, $columns = ['*'])
     {
@@ -917,27 +951,24 @@ class Builder
      * @param string       $boolean
      * @param bool         $raw
      *
-     * @return $this
-     *
      * @throws InvalidArgumentException
+     *
+     * @return $this
      */
     public function where($field, $operator = null, $value = null, $boolean = 'and', $raw = false)
     {
         if (is_array($field)) {
-            // If the field is an array, we will assume it is an array of
-            // key-value pairs and can add them each as a where clause.
+            // If the field is an array, we will assume we have been
+            // provided with an array of key-value pairs and can
+            // add them each as their own seperate where clause.
             return $this->addArrayOfWheres($field, $boolean, $raw);
         }
 
-        // We'll bypass the 'has' and 'notHas' operator since they
-        // only require two arguments inside the where method.
-        $bypass = ['*', '!*'];
-
-        // Here we will make some assumptions about the operator. If only
-        // 2 values are passed to the method, we will assume that
-        // the operator is 'equals' and keep going.
-        if (func_num_args() === 2 && in_array($operator, $bypass) === false) {
-            list($value, $operator) = [$operator, '='];
+        // If we have been provided with two arguments not a "has" or
+        // "not has" operator, we'll assume the developer is creating
+        // an "equals" clause and set the proper operator in place.
+        if (func_num_args() === 2 && ! in_array($operator, ['*', '!*'])) {
+            [$value, $operator] = [$operator, '='];
         }
 
         if (! in_array($operator, $this->grammar->getOperators())) {
@@ -1378,35 +1409,49 @@ class Builder
     }
 
     /**
-     * Adds a filter onto the current query.
+     * Adds a filter binding onto the current query.
      *
      * @param string $type     The type of filter to add.
      * @param array  $bindings The bindings of the filter.
      *
-     * @return $this
-     *
      * @throws InvalidArgumentException
+     *
+     * @return $this
      */
     public function addFilter($type, array $bindings)
     {
         if (! array_key_exists($type, $this->filters)) {
-            throw new InvalidArgumentException("Filter type [$type] is invalid.");
+            throw new InvalidArgumentException("Filter type: [$type] is invalid.");
         }
 
-        // The required filter key bindings.
-        $required = ['field', 'operator', 'value'];
+        // Each filter clause require key bindings to be set. We
+        // will validate this here to ensure all of them have
+        // been provided, or throw an exception otherwise.
+        if ($missing = $this->missingBindingKeys($bindings)) {
+            $keys = implode(', ', $missing);
 
-        // Here we will ensure the proper key bindings are given.
-        if (count(array_intersect_key(array_flip($required), $bindings)) !== count($required)) {
-            // Retrieve the keys that are missing in the bindings array.
-            $missing = implode(', ', array_diff($required, array_flip($bindings)));
-
-            throw new InvalidArgumentException("Invalid filter bindings. Missing: [$missing] keys.");
+            throw new InvalidArgumentException("Invalid filter bindings. Missing: [$keys] keys.");
         }
 
         $this->filters[$type][] = $bindings;
 
         return $this;
+    }
+
+    /**
+     * Extract any missing required binding keys.
+     *
+     * @param array $bindings
+     *
+     * @return array
+     */
+    protected function missingBindingKeys($bindings)
+    {
+        $required = array_flip(['field', 'operator', 'value']);
+
+        $existing = array_intersect_key($required, $bindings);
+
+        return array_keys(array_diff_key($required, $existing));
     }
 
     /**
@@ -1426,7 +1471,7 @@ class Builder
      */
     public function clearFilters()
     {
-        foreach ($this->filters as $type => $filters) {
+        foreach (array_keys($this->filters) as $type) {
             $this->filters[$type] = [];
         }
 
@@ -1565,9 +1610,9 @@ class Builder
      * @param string $dn
      * @param array  $attributes
      *
-     * @return bool
-     *
      * @throws LdapRecordException
+     *
+     * @return bool
      */
     public function insert($dn, array $attributes)
     {
@@ -1683,9 +1728,9 @@ class Builder
      * @param string $method
      * @param array  $parameters
      *
-     * @return mixed
-     *
      * @throws BadMethodCallException
+     *
+     * @return mixed
      */
     public function __call($method, $parameters)
     {
@@ -1760,7 +1805,7 @@ class Builder
             if (is_numeric($key) && is_array($value)) {
                 // If the key is numeric and the value is an array, we'll
                 // assume we've been given an array with conditionals.
-                list($field, $condition) = $value;
+                [$field, $condition] = $value;
 
                 // Since a value is optional for some conditionals, we will
                 // try and retrieve the third parameter from the array,
@@ -1817,6 +1862,9 @@ class Builder
                 break;
             case 'read':
                 $event = new Events\Read(...$args);
+                break;
+            case 'chunk':
+                $event = new Events\Chunk(...$args);
                 break;
             case 'paginate':
                 $event = new Events\Paginate(...$args);

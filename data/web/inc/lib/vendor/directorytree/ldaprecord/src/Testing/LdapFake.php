@@ -5,6 +5,7 @@ namespace LdapRecord\Testing;
 use Exception;
 use LdapRecord\DetailedError;
 use LdapRecord\LdapBase;
+use LdapRecord\Support\Arr;
 use PHPUnit\Framework\Assert as PHPUnit;
 use PHPUnit\Framework\Constraint\Constraint;
 
@@ -73,7 +74,7 @@ class LdapFake extends LdapBase
      */
     public function expect($expectations = [])
     {
-        $expectations = is_array($expectations) ? $expectations : [$expectations];
+        $expectations = Arr::wrap($expectations);
 
         foreach ($expectations as $key => $expectation) {
             // If the key is non-numeric, we will assume
@@ -285,7 +286,7 @@ class LdapFake extends LdapBase
     {
         $this->bound = false;
 
-        $this->host = $this->getConnectionString($hosts, $port);
+        $this->host = $this->makeConnectionUris($hosts, $port);
 
         return $this->connection = $this->hasExpectations('connect')
             ? $this->resolveExpectation('connect', func_get_args())
@@ -448,9 +449,9 @@ class LdapFake extends LdapBase
      * @param string $method
      * @param array  $args
      *
-     * @return mixed
-     *
      * @throws Exception
+     *
+     * @return mixed
      */
     protected function resolveExpectation($method, $args = [])
     {
