@@ -223,17 +223,9 @@ user = ${DBUSER}
 password = ${DBPASS}
 hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
-query = SELECT COALESCE (
-    (
-      SELECT goto FROM alias
-        WHERE address='%s'
-        AND (active='1' OR active='2')
-    ), (
-      SELECT goto FROM alias
-        WHERE address='@%d'
-        AND (active='1' OR active='2')
-    )
-  );
+query = SELECT goto FROM alias
+  WHERE address='%s'
+    AND (active='1' OR active='2');
 EOF
 
 cat <<EOF > /opt/postfix/conf/sql/mysql_recipient_bcc_maps.cf
