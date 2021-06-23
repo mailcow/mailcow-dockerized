@@ -306,7 +306,10 @@ hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 # First select queries domain and alias_domain to determine if domains are active.
 query = SELECT goto FROM alias
-  WHERE address='%s'
+  WHERE (
+      address='%s'
+      OR address=CONCAT('@', '%d')
+    )
     AND active='1'
     AND (domain IN
       (SELECT domain FROM domain
