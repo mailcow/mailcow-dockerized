@@ -178,6 +178,17 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
     <div class="panel panel-default">
       <div class="panel-heading"><?=$lang['user']['mailbox_general'];?></div>
       <div class="panel-body">
+        <?php if (getenv('SKIP_SOGO') != "y") { ?>
+        <div class="row">
+          <div class="col-md-3 col-xs-5 text-right"></div>
+          <div class="col-md-3 col-xs-7">
+            <a target="_blank" href="/sogo-auth.php?login=<?=$username;?>" role="button" class="btn btn-default btn-block">
+              <i class="bi bi-inbox-fill"></i> <?=$lang['user']['open_webmail_sso'];?>
+            </a>
+          </div>
+        </div>
+        <hr>
+        <?php } ?>
         <div class="row">
           <div class="col-md-3 col-xs-5 text-right"><?=$lang['user']['in_use'];?>:</div>
           <div class="col-md-5 col-xs-7">

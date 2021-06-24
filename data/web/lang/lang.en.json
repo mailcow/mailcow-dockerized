@@ -1067,6 +1067,7 @@
         "no_active_filter": "No active filter available",
         "no_last_login": "No last UI login information",
         "no_record": "No record",
+        "open_webmail_sso": "Login to webmail",
         "password": "Password",
         "password_now": "Current password (confirm changes)",
         "password_repeat": "Password (repeat)",

@@ -1069,6 +1069,7 @@
         "no_active_filter": "Kein aktiver Filter vorhanden",
         "no_last_login": "Keine letzte UI-Anmeldung gespeichert",
         "no_record": "Kein Eintrag",
+        "open_webmail_sso": "In Webmail einloggen",
         "password": "Passwort",
         "password_now": "Aktuelles Passwort (Änderungen bestätigen)",
         "password_repeat": "Passwort (Wiederholung)",
