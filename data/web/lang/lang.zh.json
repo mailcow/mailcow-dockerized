@@ -1070,6 +1070,7 @@
         "no_active_filter": "没有启用的过滤器",
         "no_last_login": "没有最后UI登录信息",
         "no_record": "没有记录",
+        "open_webmail_sso": "登录webmail",
         "password": "密码",
         "password_now": "当前密码 (确认更改)",
         "password_repeat": "密码 (重复)",
