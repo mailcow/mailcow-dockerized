@@ -156,8 +156,8 @@ function auth_password_verify(req, pass)
   while row do
     if req.password_verify(req, row.password, pass) == 1 then
       cur:close()
-      con:execute(string.format([[INSERT INTO sasl_logs (success, service, app_password, username, real_rip)
-        VALUES (1, "%s", 0, "%s", "%s")]], con:escape(req.service), con:escape(req.user), con:escape(req.real_rip)))
+      con:execute(string.format([[INSERT INTO sasl_logs (service, app_password, username, real_rip)
+        VALUES ("%s", 0, "%s", "%s")]], con:escape(req.service), con:escape(req.user), con:escape(req.real_rip)))
       return dovecot.auth.PASSDB_RESULT_OK, "password=" .. pass
     end
     row = cur:fetch (row, "a")
@@ -176,15 +176,12 @@ function auth_password_verify(req, pass)
   while row do
     if req.password_verify(req, row.password, pass) == 1 then
       cur:close()
-      con:execute(string.format([[INSERT INTO sasl_logs (success, service, app_password, username, real_rip)
-        VALUES (1, "%s", %d, "%s", "%s")]], con:escape(req.service), row.id, con:escape(req.user), con:escape(req.real_rip)))
+      con:execute(string.format([[INSERT INTO sasl_logs (service, app_password, username, real_rip)
+        VALUES ("%s", %d, "%s", "%s")]], con:escape(req.service), row.id, con:escape(req.user), con:escape(req.real_rip)))
       return dovecot.auth.PASSDB_RESULT_OK, "password=" .. pass
     end
     row = cur:fetch (row, "a")
   end
-
-  con:execute(string.format([[INSERT INTO sasl_logs (success, service, app_password, username, real_rip)
-    VALUES (0, "%s", 0, "%s", "%s")]], con:escape(req.service), con:escape(req.user), con:escape(req.real_rip)))
 
   return dovecot.auth.PASSDB_RESULT_PASSWORD_MISMATCH, "Failed to authenticate"
 
