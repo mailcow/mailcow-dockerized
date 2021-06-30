@@ -846,7 +846,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
         if (!empty($f2b_data['active_bans'])):
           foreach ($f2b_data['active_bans'] as $active_bans):
           ?>
-          <p><span class="label label-info" style="padding:4px;font-size:85%;"><i class="bi bi-funnel-fill"></i> <?=$active_bans['network'];?> (<?=$active_bans['banned_until'];?>) -
+          <p><span class="label label-info" style="padding:4px;font-size:85%;"><i class="bi bi-funnel-fill"></i><a href="https://bgp.he.net/ip/<?=$active_bans['ip'];?>" target="_blank" style="color:white"> <?=$active_bans['network'];?></a>(<?=$active_bans['banned_until'];?>) -
             <?php
             if ($active_bans['queued_for_unban'] == 0):
             ?>
@@ -870,7 +870,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
         if (!empty($f2b_data['perm_bans'])):
           foreach ($f2b_data['perm_bans'] as $perm_bans):
           ?>
-          <span class="label label-danger" style="padding: 0.1em 0.4em 0.1em;"><i class="bi bi-funnel-fill"></i> <?=$perm_bans?></span>
+          <span class="label label-danger" style="padding: 0.1em 0.4em 0.1em;"><i class="bi bi-funnel-fill"></i><a href="https://bgp.he.net/ip/<?=$perm_bans['ip'];?>" target="_blank" style="color:white"> <?=$perm_bans['network'];?></a></span>
           <?php
           endforeach;
         endif;
