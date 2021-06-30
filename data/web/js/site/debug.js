@@ -304,7 +304,6 @@ jQuery(function($){
   function draw_sasl_logs() {
     ft_api_logs = FooTable.init('#sasl_logs', {
       "columns": [
-        {"name":"success","title":lang.success,"filterable": false,"style":{"width":"30px"}},
         {"name":"username","title":lang.username},
         {"name":"service","title":lang.service},
         {"name":"real_rip","title":"IP"},
@@ -710,12 +709,6 @@ jQuery(function($){
         if (item.service == "smtp") { item.service = '<div class="label label-default">' + item.service.toUpperCase() + '<i class="bi bi-chevron-compact-right"></i></div>'; }
         else if (item.service == "imap") { item.service = '<div class="label label-default"><i class="bi bi-chevron-compact-left"></i> ' + item.service.toUpperCase() + '</div>'; }
         else { item.service = '<div class="label label-default">' + item.service.toUpperCase() + '</div>'; }
-        if (item.success == 0) {
-          item.success = '<span class="label label-danger"><i class="bi bi-person-x-fill"></i></span>';
-        }
-        else {
-          item.success = '<span class="label label-success"><i class="bi bi-person-check-fill"></i></span>';
-        }
     });
     } else if (table == 'general_syslog') {
       $.each(data, function (i, item) {

@@ -262,7 +262,6 @@ function last_login($action, $username, $sasl_limit_days = 7) {
           LEFT OUTER JOIN `app_passwd` on `sasl_logs`.`app_password` = `app_passwd`.`id`
           WHERE `username` = :username
             AND HOUR(TIMEDIFF(NOW(), `datetime`)) < :sasl_limit_days
-            AND `success` = 1
               GROUP BY `real_rip`, `service`, `app_password`
               ORDER BY `datetime` DESC;');
         $stmt->execute(array(':username' => $username, ':sasl_limit_days' => ($sasl_limit_days * 24)));
@@ -333,8 +332,7 @@ function last_login($action, $username, $sasl_limit_days = 7) {
     case 'reset':
       if (filter_var($username, FILTER_VALIDATE_EMAIL) && hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
         $stmt = $pdo->prepare('DELETE FROM `sasl_logs`
-          WHERE `username` = :username
-            AND `success` = 1;');
+          WHERE `username` = :username');
         $stmt->execute(array(':username' => $username));
       }
       if ($_SESSION['mailcow_cc_role'] == "admin" || $username == $_SESSION['mailcow_cc_username']) {
