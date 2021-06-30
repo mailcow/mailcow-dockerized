@@ -113,7 +113,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         <div class="form-group">
           <label class="control-label col-sm-2" for="domains"><?=$lang['edit']['domains'];?></label>
           <div class="col-sm-10">
-            <select data-live-search="true" data-container="body" class="full-width-select" name="domains" multiple required>
+            <select data-live-search="true" class="full-width-select" name="domains" multiple required>
             <?php
             foreach ($result['selected_domains'] as $domain):
             ?>
