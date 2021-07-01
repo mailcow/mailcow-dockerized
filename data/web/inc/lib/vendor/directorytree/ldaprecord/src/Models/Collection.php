@@ -5,7 +5,7 @@ namespace LdapRecord\Models;
 use Closure;
 use LdapRecord\Models\Attributes\DistinguishedName;
 use LdapRecord\Query\Collection as QueryCollection;
-use Tightenco\Collect\Support\Arr;
+use LdapRecord\Support\Arr;
 
 class Collection extends QueryCollection
 {

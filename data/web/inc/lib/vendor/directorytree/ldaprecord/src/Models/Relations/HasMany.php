@@ -268,9 +268,9 @@ class HasMany extends OneToMany
      *
      * @param string $model
      *
-     * @return Model
-     *
      * @throws ModelNotFoundException
+     *
+     * @return Model
      */
     protected function getForeignModelByValueOrFail($model)
     {
@@ -293,9 +293,9 @@ class HasMany extends OneToMany
      * @param string|array $bypass
      * @param mixed        $value
      *
-     * @return mixed
-     *
      * @throws LdapRecordException
+     *
+     * @return mixed
      */
     protected function attemptFailableOperation($operation, $bypass, $value)
     {

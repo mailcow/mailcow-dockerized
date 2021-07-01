@@ -60,12 +60,13 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
             </div>
             <div class="form-group">
               <div class="btn-group">
-                <button type="submit" class="btn btn-success" value="Login"><?= $lang['login']['login']; ?></button>
                 <div class="btn-group">
-                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                  <?= $lang['login']['other_logins']; ?> <span class="caret"></span></button>
-                  <ul class="dropdown-menu" role="menu">
-                    <li><a href="#" id="fido2-login"><?= $lang['login']['fido2_webauthn']; ?></a></li>
+                  <button type="submit" class="btn btn-success" value="Login"><?= $lang['login']['login']; ?></button>
+                  <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><a href="#" id="fido2-login" style="line-height:1.4;"><i class="bi bi-shield-fill-check"></i> <?= $lang['login']['fido2_webauthn']; ?></a></li>
                   </ul>
                 </div>
               </div>

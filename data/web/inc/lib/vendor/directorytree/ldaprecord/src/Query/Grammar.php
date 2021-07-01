@@ -12,20 +12,20 @@ class Grammar
      * @var array
      */
     public $operators = [
-        '*'               => 'has',
-        '!*'              => 'notHas',
-        '='               => 'equals',
-        '!'               => 'doesNotEqual',
-        '!='              => 'doesNotEqual',
-        '>='              => 'greaterThanOrEquals',
-        '<='              => 'lessThanOrEquals',
-        '~='              => 'approximatelyEquals',
-        'starts_with'     => 'startsWith',
+        '*' => 'has',
+        '!*' => 'notHas',
+        '=' => 'equals',
+        '!' => 'doesNotEqual',
+        '!=' => 'doesNotEqual',
+        '>=' => 'greaterThanOrEquals',
+        '<=' => 'lessThanOrEquals',
+        '~=' => 'approximatelyEquals',
+        'starts_with' => 'startsWith',
         'not_starts_with' => 'notStartsWith',
-        'ends_with'       => 'endsWith',
-        'not_ends_with'   => 'notEndsWith',
-        'contains'        => 'contains',
-        'not_contains'    => 'notContains',
+        'ends_with' => 'endsWith',
+        'not_ends_with' => 'notEndsWith',
+        'contains' => 'contains',
+        'not_contains' => 'notContains',
     ];
 
     /**
@@ -142,15 +142,17 @@ class Grammar
     {
         $filter = $this->compileWheres($query, 'or');
 
-        if ($this->hasMultipleFilters($query)) {
-            // Here we will detect whether the entire query can be
-            // wrapped inside of an "or" statement by checking
-            // how many filter statements exist for each type.
-            if ($this->queryCanBeWrappedInSingleOrStatement($query)) {
-                $this->wrapper = 'or';
-            } else {
-                $filter = $this->compileOr($filter);
-            }
+        if (! $this->hasMultipleFilters($query)) {
+            return $filter;
+        }
+
+        // Here we will detect whether the entire query can be
+        // wrapped inside of an "or" statement by checking
+        // how many filter statements exist for each type.
+        if ($this->queryCanBeWrappedInSingleOrStatement($query)) {
+            $this->wrapper = 'or';
+        } else {
+            $filter = $this->compileOr($filter);
         }
 
         return $filter;
@@ -270,7 +272,9 @@ class Grammar
      */
     public function compileDoesNotEqual($field, $value)
     {
-        return $this->compileNot($this->compileEquals($field, $value));
+        return $this->compileNot(
+            $this->compileEquals($field, $value)
+        );
     }
 
     /**
@@ -360,7 +364,9 @@ class Grammar
      */
     public function compileNotStartsWith($field, $value)
     {
-        return $this->compileNot($this->compileStartsWith($field, $value));
+        return $this->compileNot(
+            $this->compileStartsWith($field, $value)
+        );
     }
 
     /**
@@ -420,7 +426,9 @@ class Grammar
      */
     public function compileNotContains($field, $value)
     {
-        return $this->compileNot($this->compileContains($field, $value));
+        return $this->compileNot(
+            $this->compileContains($field, $value)
+        );
     }
 
     /**
@@ -448,7 +456,9 @@ class Grammar
      */
     public function compileNotHas($field)
     {
-        return $this->compileNot($this->compileHas($field));
+        return $this->compileNot(
+            $this->compileHas($field)
+        );
     }
 
     /**
@@ -496,18 +506,44 @@ class Grammar
      *
      * @param array $where
      *
-     * @return string
-     *
      * @throws UnexpectedValueException
+     *
+     * @return string
      */
     protected function compileWhere(array $where)
     {
-        if (! array_key_exists($where['operator'], $this->operators)) {
-            throw new UnexpectedValueException('Invalid LDAP filter operator ['.$where['operator'].']');
-        }
-
-        $method = 'compile'.ucfirst($this->operators[$where['operator']]);
+        $method = $this->makeCompileMethod($where['operator']);
 
         return $this->{$method}($where['field'], $where['value']);
+    }
+
+    /**
+     * Make the compile method name for the operator.
+     *
+     * @param string $operator
+     *
+     * @throws UnexpectedValueException
+     *
+     * @return string
+     */
+    protected function makeCompileMethod($operator)
+    {
+        if (! $this->operatorExists($operator)) {
+            throw new UnexpectedValueException("Invalid LDAP filter operator ['$operator']");
+        }
+
+        return 'compile'.ucfirst($this->operators[$operator]);
+    }
+
+    /**
+     * Determine if the operator exists.
+     *
+     * @param string $operator
+     *
+     * @return bool
+     */
+    protected function operatorExists($operator)
+    {
+        return array_key_exists($operator, $this->operators);
     }
 }

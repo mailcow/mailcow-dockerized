@@ -13,6 +13,7 @@ use LdapRecord\Models\Attributes\Guid;
 use LdapRecord\Models\Events\Renamed;
 use LdapRecord\Models\Events\Renaming;
 use LdapRecord\Query\Model\Builder;
+use LdapRecord\Support\Arr;
 use UnexpectedValueException;
 
 /** @mixin Builder */
@@ -675,7 +676,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Get the models batch modifications to be processed.
+     * Get the model's batch modifications to be processed.
      *
      * @return array
      */
@@ -713,9 +714,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @param array|BatchModification $mod
      *
-     * @return $this
-     *
      * @throws InvalidArgumentException
+     *
+     * @return $this
      */
     public function addModification($mod = [])
     {
@@ -735,7 +736,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Get the models guid attribute key name.
+     * Get the model's guid attribute key name.
      *
      * @return string
      */
@@ -745,7 +746,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Get the models ANR attributes for querying when incompatible with ANR.
+     * Get the model's ANR attributes for querying when incompatible with ANR.
      *
      * @return array
      */
@@ -803,7 +804,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Get the models binary object GUID.
+     * Get the model's binary object GUID.
      *
      * @link https://msdn.microsoft.com/en-us/library/ms679021(v=vs.85).aspx
      *
@@ -815,7 +816,17 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Get the models string GUID.
+     * Get the model's object classes.
+     *
+     * @return array
+     */
+    public function getObjectClasses()
+    {
+        return $this->getAttribute('objectclass') ?: [];
+    }
+
+    /**
+     * Get the model's string GUID.
      *
      * @return string|null
      */
@@ -914,9 +925,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @param array $attributes The attributes to update or create for the current entry.
      *
-     * @return void
-     *
      * @throws \LdapRecord\LdapRecordException
+     *
+     * @return void
      */
     public function save(array $attributes = [])
     {
@@ -934,9 +945,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
     /**
      * Inserts the model into the directory.
      *
-     * @return void
-     *
      * @throws \LdapRecord\LdapRecordException
+     *
+     * @return void
      */
     protected function performInsert()
     {
@@ -975,9 +986,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
     /**
      * Updates the model in the directory.
      *
-     * @return void
-     *
      * @throws \LdapRecord\LdapRecordException
+     *
+     * @return void
      */
     protected function performUpdate()
     {
@@ -1020,10 +1031,10 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * @param string $attribute The attribute to create
      * @param mixed  $value     The value of the new attribute
      *
-     * @return void
-     *
      * @throws ModelDoesNotExistException
      * @throws \LdapRecord\LdapRecordException
+     *
+     * @return void
      */
     public function createAttribute($attribute, $value)
     {
@@ -1039,10 +1050,10 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @param array $attributes The attributes to update for the current entry.
      *
-     * @return void
-     *
      * @throws ModelDoesNotExistException
      * @throws \LdapRecord\LdapRecordException
+     *
+     * @return void
      */
     public function update(array $attributes = [])
     {
@@ -1057,10 +1068,10 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * @param string $attribute The attribute to modify
      * @param mixed  $value     The new value for the attribute
      *
-     * @return void
-     *
      * @throws ModelDoesNotExistException
      * @throws \LdapRecord\LdapRecordException
+     *
+     * @return void
      */
     public function updateAttribute($attribute, $value)
     {
@@ -1077,9 +1088,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * @param Collection|array|string $dns
      * @param bool                    $recursive
      *
-     * @return int
-     *
      * @throws \LdapRecord\LdapRecordException
+     *
+     * @return int
      */
     public static function destroy($dns, $recursive = false)
     {
@@ -1110,10 +1121,10 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @param bool $recursive Whether to recursively delete leaf nodes (models that are children).
      *
-     * @return void
-     *
      * @throws ModelDoesNotExistException
      * @throws \LdapRecord\LdapRecordException
+     *
+     * @return void
      */
     public function delete($recursive = false)
     {
@@ -1138,9 +1149,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
     /**
      * Deletes leaf nodes that are attached to the model.
      *
-     * @return Collection
-     *
      * @throws \LdapRecord\LdapRecordException
+     *
+     * @return Collection
      */
     protected function deleteLeafNodes()
     {
@@ -1160,38 +1171,36 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * Delete specific values in attributes:
      *
-     *     ["memberuid" => "username"]
+     *     ["memberuid" => "jdoe"]
      *
      * Delete an entire attribute:
      *
      *     ["memberuid" => []]
      *
-     * @return void
-     *
      * @throws ModelDoesNotExistException
      * @throws \LdapRecord\LdapRecordException
+     *
+     * @return void
      */
     public function deleteAttribute($attributes)
     {
         $this->validateExistence();
 
-        // If we have been given a string, we will assume we're
-        // removing a single attribute. Otherwise, we will
-        // assume it's an array of attributes to remove.
-        $attributes = is_string($attributes) ? [$attributes => []] : $attributes;
+        $attributes = $this->makeDeletableAttributes($attributes);
 
         $this->newQuery()->deleteAttributes($this->dn, $attributes);
 
         foreach ($attributes as $attribute => $value) {
-            // If the attribute value is empty, we will remove
-            // the attribute from the model and continue on.
+            // If the attribute value is empty, we can assume the
+            // attribute was completely deleted from the model.
+            // We will pull the attribute out and continue on.
             if (empty($value)) {
                 unset($this->attributes[$attribute]);
             }
             // Otherwise, only specific attribute values have been
             // removed. We will determine which ones have been
             // removed and update the attributes value.
-            else {
+            elseif (Arr::exists($this->attributes, $attribute)) {
                 $this->attributes[$attribute] = array_values(
                     array_diff($this->attributes[$attribute], (array) $value)
                 );
@@ -1202,6 +1211,26 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Make a deletable attribute array.
+     *
+     * @param string|array $attributes
+     *
+     * @return array
+     */
+    protected function makeDeletableAttributes($attributes)
+    {
+        $delete = [];
+
+        foreach (Arr::wrap($attributes) as $key => $value) {
+            is_int($key)
+                ? $delete[$value] = []
+                : $delete[$key] = Arr::wrap($value);
+        }
+
+        return $delete;
+    }
+
+    /**
      * Move the model into the given new parent.
      *
      * For example: $user->move($ou);
@@ -1209,11 +1238,11 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * @param static|string $newParentDn  The new parent of the current model.
      * @param bool          $deleteOldRdn Whether to delete the old models relative distinguished name once renamed / moved.
      *
-     * @return void
-     *
      * @throws UnexpectedValueException
      * @throws ModelDoesNotExistException
      * @throws \LdapRecord\LdapRecordException
+     *
+     * @return void
      */
     public function move($newParentDn, $deleteOldRdn = true)
     {
@@ -1233,10 +1262,10 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * @param static|string|null $newParentDn  The models new parent distinguished name (if moving). Leave this null if you are only renaming. Example: "ou=MovedUsers,dc=acme,dc=org"
      * @param bool|true          $deleteOldRdn Whether to delete the old models relative distinguished name once renamed / moved.
      *
-     * @return void
-     *
      * @throws ModelDoesNotExistException
      * @throws \LdapRecord\LdapRecordException
+     *
+     * @return void
      */
     public function rename($rdn, $newParentDn = null, $deleteOldRdn = true)
     {
@@ -1339,9 +1368,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     protected function isValidModification($mod)
     {
-        return is_array($mod) &&
-            array_key_exists(BatchModification::KEY_MODTYPE, $mod) &&
-            array_key_exists(BatchModification::KEY_ATTRIB, $mod);
+        return Arr::accessible($mod)
+            && Arr::exists($mod, BatchModification::KEY_MODTYPE)
+            && Arr::exists($mod, BatchModification::KEY_ATTRIB);
     }
 
     /**
@@ -1356,7 +1385,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
         foreach ($this->getDirty() as $attribute => $values) {
             $modification = $this->newBatchModification($attribute, null, (array) $values);
 
-            if (array_key_exists($attribute, $this->original)) {
+            if (Arr::exists($this->original, $attribute)) {
                 // If the attribute we're modifying has an original value, we will
                 // give the BatchModification object its values to automatically
                 // determine which type of LDAP operation we need to perform.
@@ -1376,9 +1405,9 @@ abstract class Model implements ArrayAccess, JsonSerializable
     /**
      * Validates that the current model exists.
      *
-     * @return void
-     *
      * @throws ModelDoesNotExistException
+     *
+     * @return void
      */
     protected function validateExistence()
     {

@@ -84,7 +84,7 @@ class Container
      */
     public static function getNewInstance()
     {
-        return static::setInstance(new static);
+        return static::setInstance(new static());
     }
 
     /**
@@ -117,9 +117,9 @@ class Container
      *
      * @param string|null $name
      *
-     * @return Connection
-     *
      * @throws ContainerException If the given connection does not exist.
+     *
+     * @return Connection
      */
     public static function getConnection($name = null)
     {
@@ -332,9 +332,9 @@ class Container
      *
      * @param string|null $name
      *
-     * @return Connection
-     *
      * @throws ContainerException If the given connection does not exist.
+     *
+     * @return Connection
      */
     public function get($name = null)
     {

@@ -3,6 +3,7 @@
 namespace LdapRecord\Models\Attributes;
 
 use LdapRecord\EscapesValues;
+use LdapRecord\Support\Arr;
 
 class DistinguishedNameBuilder
 {
@@ -107,7 +108,7 @@ class DistinguishedNameBuilder
         // RDN's have been given if the value is null, and
         // attempt to break them into their components.
         if (is_null($value)) {
-            $attributes = is_array($attribute) ? $attribute : [$attribute];
+            $attributes = Arr::wrap($attribute);
 
             $components = array_map([$this, 'makeComponentizedArray'], $attributes);
         } else {

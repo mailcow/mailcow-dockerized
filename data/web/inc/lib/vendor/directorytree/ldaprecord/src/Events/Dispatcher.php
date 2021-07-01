@@ -2,7 +2,7 @@
 
 namespace LdapRecord\Events;
 
-use Tightenco\Collect\Support\Arr;
+use LdapRecord\Support\Arr;
 
 /**
  * Class Dispatcher.
@@ -101,7 +101,7 @@ class Dispatcher implements DispatcherInterface
         // When the given "event" is actually an object we will assume it is an event
         // object and use the class as the event name and this event itself as the
         // payload to the handler, which makes object based events quite simple.
-        list($event, $payload) = $this->parseEventAndPayload(
+        [$event, $payload] = $this->parseEventAndPayload(
             $event,
             $payload
         );
@@ -142,7 +142,7 @@ class Dispatcher implements DispatcherInterface
     protected function parseEventAndPayload($event, $payload)
     {
         if (is_object($event)) {
-            list($payload, $event) = [[$event], get_class($event)];
+            [$payload, $event] = [[$event], get_class($event)];
         }
 
         return [$event, Arr::wrap($payload)];

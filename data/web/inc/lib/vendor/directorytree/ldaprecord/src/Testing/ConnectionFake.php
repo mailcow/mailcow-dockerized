@@ -32,7 +32,7 @@ class ConnectionFake extends Connection
      */
     public static function make(array $config = [], $ldap = LdapFake::class)
     {
-        return new static($config, new $ldap);
+        return new static($config, new $ldap());
     }
 
     /**

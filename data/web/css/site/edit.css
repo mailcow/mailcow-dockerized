@@ -37,10 +37,6 @@
   -webkit-transform:rotateX(180deg);
   transform:rotateX(180deg);
 }
-.input-group-addon-xmpp {
-  background-color: #fff;
-  border: 0px solid #fff;
-}
 #sender_acl_disabled {
   display:none;
   margin-top:10px;
