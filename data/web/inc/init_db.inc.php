@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "30062021_0910";
+    $db_version = "01072021_0630";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -508,9 +508,8 @@ function init_db_schema() {
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
-      "sasl_logs" => array(
+      "sasl_log" => array(
         "cols" => array(
-          "id" => "INT NOT NULL AUTO_INCREMENT",
           "service" => "VARCHAR(32) NOT NULL DEFAULT ''",
           "app_password" => "INT",
           "username" => "VARCHAR(255) NOT NULL",
@@ -519,7 +518,7 @@ function init_db_schema() {
         ),
         "keys" => array(
           "primary" => array(
-            "" => array("id")
+            "" => array("service", "real_rip", "username")
           ),
           "key" => array(
             "username" => array("username"),
@@ -1013,19 +1012,6 @@ function init_db_schema() {
             while ($row = array_shift($tls_options_rows)) {
               $tls_options[$row['username']] = array('tls_enforce_in' => $row['tls_enforce_in'], 'tls_enforce_out' => $row['tls_enforce_out']);
             }
-          }
-        }
-      }
-
-      // Remove deprecated success = 0 entries before migrating sasl_logs
-      if ($table == 'sasl_logs') {
-        $stmt = $pdo->query("SHOW TABLES LIKE 'sasl_logs'");
-        $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-        if ($num_results != 0) {
-          $stmt = $pdo->query("SHOW COLUMNS FROM `sasl_logs` LIKE '%success%'"); 
-          $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-          if ($num_results != 0) {
-            $stmt = $pdo->query("DELETE FROM `sasl_logs` WHERE `success` = 0");
           }
         }
       }

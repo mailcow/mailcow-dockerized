@@ -3547,7 +3547,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
 
           // Determine last logins
-          $stmt = $pdo->prepare("SELECT MAX(`datetime`) AS `datetime`, `service` FROM `sasl_logs`
+          $stmt = $pdo->prepare("SELECT MAX(`datetime`) AS `datetime`, `service` FROM `sasl_log`
             WHERE `username` = :mailbox
                 GROUP BY `service` DESC");
           $stmt->execute(array(':mailbox' => $_data));
