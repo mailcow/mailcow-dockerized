@@ -156,7 +156,7 @@ function auth_password_verify(req, pass)
   while row do
     if req.password_verify(req, row.password, pass) == 1 then
       cur:close()
-      con:execute(string.format([[INSERT INTO sasl_logs (service, app_password, username, real_rip)
+      con:execute(string.format([[REPLACE INTO sasl_log (service, app_password, username, real_rip)
         VALUES ("%s", 0, "%s", "%s")]], con:escape(req.service), con:escape(req.user), con:escape(req.real_rip)))
       return dovecot.auth.PASSDB_RESULT_OK, "password=" .. pass
     end
@@ -176,7 +176,7 @@ function auth_password_verify(req, pass)
   while row do
     if req.password_verify(req, row.password, pass) == 1 then
       cur:close()
-      con:execute(string.format([[INSERT INTO sasl_logs (service, app_password, username, real_rip)
+      con:execute(string.format([[REPLACE INTO sasl_log (service, app_password, username, real_rip)
         VALUES ("%s", %d, "%s", "%s")]], con:escape(req.service), row.id, con:escape(req.user), con:escape(req.real_rip)))
       return dovecot.auth.PASSDB_RESULT_OK, "password=" .. pass
     end
@@ -195,7 +195,7 @@ function auth_password_verify(req, pass)
   -- }]], con:escape(req.service), con:escape(req.user), con:escape(req.real_rip))
   -- http.request {
   --   method = "POST",
-  --   url = "http://nginx:8081/sasl_logs.php",
+  --   url = "http://nginx:8081/sasl_log.php",
   --   source = ltn12.source.string(reqbody),
   --   headers = {
   --     ["content-type"] = "application/json",

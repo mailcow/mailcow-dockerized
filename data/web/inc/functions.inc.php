@@ -258,8 +258,8 @@ function last_login($action, $username, $sasl_limit_days = 7) {
   switch ($action) {
     case 'get':
       if (filter_var($username, FILTER_VALIDATE_EMAIL) && hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
-        $stmt = $pdo->prepare('SELECT `real_rip`, MAX(`datetime`) as `datetime`, `service`, `app_password` FROM `sasl_logs`
-          LEFT OUTER JOIN `app_passwd` on `sasl_logs`.`app_password` = `app_passwd`.`id`
+        $stmt = $pdo->prepare('SELECT `real_rip`, MAX(`datetime`) as `datetime`, `service`, `app_password` FROM `sasl_log`
+          LEFT OUTER JOIN `app_passwd` on `sasl_log`.`app_password` = `app_passwd`.`id`
           WHERE `username` = :username
             AND HOUR(TIMEDIFF(NOW(), `datetime`)) < :sasl_limit_days
               GROUP BY `real_rip`, `service`, `app_password`
@@ -331,7 +331,7 @@ function last_login($action, $username, $sasl_limit_days = 7) {
     break;
     case 'reset':
       if (filter_var($username, FILTER_VALIDATE_EMAIL) && hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
-        $stmt = $pdo->prepare('DELETE FROM `sasl_logs`
+        $stmt = $pdo->prepare('DELETE FROM `sasl_log`
           WHERE `username` = :username');
         $stmt->execute(array(':username' => $username));
       }
@@ -1938,7 +1938,7 @@ function get_logs($application, $lines = false) {
   }
   if ($application == "sasl") {
     if (isset($from) && isset($to)) {
-      $stmt = $pdo->prepare("SELECT * FROM `sasl_logs` ORDER BY `id` DESC LIMIT :from, :to");
+      $stmt = $pdo->prepare("SELECT * FROM `sasl_log` ORDER BY `datetime` DESC LIMIT :from, :to");
       $stmt->execute(array(
         ':from' => $from - 1,
         ':to' => $to
@@ -1946,7 +1946,7 @@ function get_logs($application, $lines = false) {
       $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     else {
-      $stmt = $pdo->prepare("SELECT * FROM `sasl_logs` ORDER BY `id` DESC LIMIT :lines");
+      $stmt = $pdo->prepare("SELECT * FROM `sasl_log` ORDER BY `datetime` DESC LIMIT :lines");
       $stmt->execute(array(
         ':lines' => $lines + 1,
       ));
