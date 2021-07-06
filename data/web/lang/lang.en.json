@@ -651,6 +651,7 @@
         "hibp_nok": "Matched! This is a potentially dangerous password!",
         "hibp_ok": "No match found.",
         "loading": "Please wait...",
+        "nothing_selected": "Nothing selected",
         "restart_container": "Restart container",
         "restart_container_info": "<b>Important:</b> A graceful restart may take a while to complete, please wait for it to finish.",
         "restart_now": "Restart now",

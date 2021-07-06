@@ -562,6 +562,7 @@
         "hibp_nok": "Nalezeno! Toto je potenciálně nebezpečné heslo!",
         "hibp_ok": "Nebyla nalezena žádná shoda.",
         "loading": "Prosím čekejte...",
+        "nothing_selected": "Není nic vybráno",
         "restart_container": "Restartovat kontejner",
         "restart_container_info": "<b>Důležité:</b> Šetrný restart může chvíli trvat, prosím čekejte...",
         "restart_now": "Restartovat nyní",

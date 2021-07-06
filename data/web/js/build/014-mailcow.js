@@ -93,7 +93,9 @@ $(document).ready(function() {
   }).remove();
 
   // selectpicker
-  $('select').selectpicker();
+  $('select').selectpicker({
+    'noneSelectedText': lang_footer.nothing_selected
+  });
 
   // haveibeenpwned and passwd policy
   $.ajax({
