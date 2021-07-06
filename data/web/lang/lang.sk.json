@@ -647,6 +647,7 @@
         "confirm_delete": "Potvrďte vymazanie",
         "delete_now": "Vymazať teraz",
         "delete_these_items": "Prosím potvrďte svoje vykonané zmeny nasledujúcemu objektovému id",
+        "hibp_check": "Overiť heslo v databáze hacknutých hesiel haveibeenpwned.com",
         "hibp_nok": "Zhoda! Toto je potenciálne nebezpečné heslo!",
         "hibp_ok": "Nenašla sa zhoda.",
         "loading": "Prosím čakajte...",

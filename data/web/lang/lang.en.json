@@ -648,6 +648,7 @@
         "confirm_delete": "Confirm deletion",
         "delete_now": "Delete now",
         "delete_these_items": "Please confirm your changes to the following object id",
+        "hibp_check": "Check against haveibeenpwned.com",
         "hibp_nok": "Matched! This is a potentially dangerous password!",
         "hibp_ok": "No match found.",
         "loading": "Please wait...",

@@ -105,7 +105,7 @@ $(document).ready(function() {
       $(".hibp-out").after(res);
     }
   });
-  $('[data-hibp]').after('<p class="small haveibeenpwned"><i class="bi bi-shield-fill-exclamation"></i> Check against haveibeenpwned.com</p><span class="hibp-out"></span>');
+  $('[data-hibp]').after('<p class="small haveibeenpwned"><i class="bi bi-shield-fill-exclamation"></i> ' + lang_footer.hibp_check + '</p><span class="hibp-out"></span>');
   $('[data-hibp]').on('input', function() {
     out_field = $(this).next('.haveibeenpwned').next('.hibp-out').text('').attr('class', 'hibp-out');
   });

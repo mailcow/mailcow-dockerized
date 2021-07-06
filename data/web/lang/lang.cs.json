@@ -559,6 +559,7 @@
         "confirm_delete": "Potvdit smazání",
         "delete_now": "Smazat",
         "delete_these_items": "Prosím potvrďte změny objektu id:",
+        "hibp_check": "Ověřit heslo v databázi hacknutých hesel haveibeenpwned.com",
         "hibp_nok": "Nalezeno! Toto je potenciálně nebezpečné heslo!",
         "hibp_ok": "Nebyla nalezena žádná shoda.",
         "loading": "Prosím čekejte...",
