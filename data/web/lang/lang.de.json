@@ -653,6 +653,7 @@
         "hibp_nok": "Übereinstimmung gefunden! Dieses Passwort ist potenziell gefährlich!",
         "hibp_ok": "Keine Übereinstimmung gefunden.",
         "loading": "Einen Moment bitte...",
+        "nothing_selected": "nichts ausgewählt",
         "restart_container": "Container neustarten",
         "restart_container_info": "<b>Wichtig:</b> Der Neustart eines Containers kann eine Weile in Anspruch nehmen.",
         "restart_now": "Jetzt neustarten",
