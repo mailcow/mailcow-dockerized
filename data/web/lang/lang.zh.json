@@ -632,9 +632,9 @@
         "xmpp_prefix_info": "为 XMPP 申请证书，两个 CNAME DNS 记录应该从 <b>im</b>.example.org 和 <b>*.im</b>.example.org 指向 <b>%s</b>！启用 XMPP 后，还请为此域运行 DNS 检查。"
     },
     "fido2": {
-        "set_fn": "设置友好的名称",
-        "fn": "友好的名称",
-        "rename": "改名",
+        "set_fn": "设置 Friendly name",
+        "fn": "Friendly name",
+        "rename": "更改名称",
         "confirm": "确认",
         "register_status": "注册状态",
         "known_ids": "已知 ID",
@@ -650,6 +650,7 @@
         "confirm_delete": "确认删除",
         "delete_now": "立即删除",
         "delete_these_items": "请确认对以下对象id的更改",
+        "hibp_check": "检查密码是否在 haveibeenpwned.com 的泄露密码列表中",
         "hibp_nok": "匹配到密码！存在潜在的使用危险！",
         "hibp_ok": "未匹配到密码。",
         "loading": "请等待...",
