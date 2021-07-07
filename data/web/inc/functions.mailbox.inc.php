@@ -1049,13 +1049,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           if (password_check($password, $password2) !== true) {
             return false;
           }
-          // support pre hashed passwords
-          if (preg_match('/^{(ARGON2I|ARGON2ID|BLF-CRYPT|CLEAR|CLEARTEXT|CRYPT|DES-CRYPT|LDAP-MD5|MD5|MD5-CRYPT|PBKDF2|PLAIN|PLAIN-MD4|PLAIN-MD5|PLAIN-TRUNC|PLAIN-TRUNC|SHA|SHA1|SHA256|SHA256-CRYPT|SHA512|SHA512-CRYPT|SMD5|SSHA|SSHA256|SSHA512)}/i', $password)) {
-            $password_hashed = $password;
-          }
-          else {
-            $password_hashed = hash_password($password);
-          }
+          $password_hashed = hash_password($password);
           if ($MailboxData['count'] >= $DomainData['mailboxes']) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
@@ -2583,13 +2577,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               if (password_check($password, $password2) !== true) {
                 continue;
               }
-              // support pre hashed passwords
-              if (preg_match('/^{(ARGON2I|ARGON2ID|BLF-CRYPT|CLEAR|CLEARTEXT|CRYPT|DES-CRYPT|LDAP-MD5|MD5|MD5-CRYPT|PBKDF2|PLAIN|PLAIN-MD4|PLAIN-MD5|PLAIN-TRUNC|PLAIN-TRUNC|SHA|SHA1|SHA256|SHA256-CRYPT|SHA512|SHA512-CRYPT|SMD5|SSHA|SSHA256|SSHA512)}/i', $password)) {
-                $password_hashed = $password;
-              }
-              else {
-                $password_hashed = hash_password($password);
-              }
+              $password_hashed = hash_password($password);
               $stmt = $pdo->prepare("UPDATE `mailbox` SET
                   `password` = :password_hashed,
                   `attributes` = JSON_SET(`attributes`, '$.passwd_update', NOW())
