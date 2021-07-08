@@ -24,7 +24,12 @@ $(document).ready(function() {
         .appendTo($form_grp);
 
       $.each(domains, function(i, domain){
-        self.$domain.append($('<option/>').text(domain));
+        domainname = $($.parseHTML(domain)).data('domainname')
+        if (domainname !== undefined) {
+          self.$domain.append($('<option/>').text(domainname));
+        } else {
+          self.$domain.append($('<option/>').text(domain));
+        }
       });
     },
     _onDomainDropdownChanged: function(e){
@@ -256,7 +261,6 @@ jQuery(function($){
         {"name":"rl","title":"RL","breakpoints":"xs sm md lg","style":{"maxWidth":"100px","width":"100px"}},
         {"name":"backupmx","filterable": false,"style":{"maxWidth":"120px","width":"120px"},"title":lang.backup_mx,"breakpoints":"xs sm md lg","formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
         {"name":"domain_admins","title":lang.domain_admins,"style":{"word-break":"break-all","min-width":"200px"},"breakpoints":"xs sm md lg","filterable":(role == "admin"),"visible":(role == "admin")},
-        {"name":"xmpp","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":"XMPP","formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
         {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"240px","width":"240px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
       ],
@@ -829,7 +833,7 @@ jQuery(function($){
               item.goto = '<span class="label label-success">Learn as ham</span>';
             }
             if (item.in_primary_domain !== "") {
-              item.domain = '<i class="bi bi-info-circle-fill alias-domain-info text-info" data-toggle="tooltip" title="' + lang.target_domain + ': ' + item.in_primary_domain + '"></i> ' + item.domain;
+              item.domain = '<i data-domainname="' + item.domain + '" class="bi bi-info-circle-fill alias-domain-info text-info" data-toggle="tooltip" title="' + lang.target_domain + ': ' + item.in_primary_domain + '"></i> ' + item.domain;
             }
           });
         }
@@ -962,7 +966,7 @@ jQuery(function($){
         },
         success: function (data) {
           $.each(data, function (i, item) {
-            item.log = '<a href="#syncjobLogModal" data-toggle="modal" data-syncjob-id="' + encodeURIComponent(item.id) + '">Open logs</a>'
+            item.log = '<a href="#syncjobLogModal" data-toggle="modal" data-syncjob-id="' + encodeURIComponent(item.id) + '">' + lang.open_logs + '</a>'
             item.user2 = escapeHtml(item.user2);
             if (!item.exclude > 0) {
               item.exclude = '-';

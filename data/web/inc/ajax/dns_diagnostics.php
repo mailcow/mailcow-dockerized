@@ -69,7 +69,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
   }
 
   // Init records array
-  $spf_link = '<a href="https://en.wikipedia.org/wiki/Sender_Policy_Framework" target="_blank">SPF Record Syntax</a><br />';
+  $spf_link = '<a href="http://www.open-spf.org/SPF_Record_Syntax/" target="_blank">SPF Record Syntax</a><br />';
   $dmarc_link = '<a href="https://www.kitterman.com/dmarc/assistant.html" target="_blank">DMARC Assistant</a>';
 
   $records = array();
@@ -126,28 +126,6 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
       'CNAME',
       $mailcow_hostname
     );
-    if ($domain_details['xmpp'] === 1 && isset($domain_details['xmpp_prefix'])) {
-      $records[] = array(
-        $domain_details['xmpp_prefix'] . '.' . $domain,
-        'CNAME',
-        $mailcow_hostname
-      );
-      $records[] = array(
-        '*.' . $domain_details['xmpp_prefix'] . '.' . $domain,
-        'CNAME',
-        $mailcow_hostname
-      );
-      $records[] = array(
-        '_xmpp-client._tcp.' . $domain_details['xmpp_prefix'] . '.' . $domain,
-        'SRV',
-        $mailcow_hostname . ' ' . array_pop(explode(':', getenv('XMPP_C2S_PORT')))
-      );
-      $records[] = array(
-        '_xmpp-server._tcp.' . $domain_details['xmpp_prefix'] . '.' . $domain,
-        'SRV',
-        $mailcow_hostname . ' ' . array_pop(explode(':', getenv('XMPP_S2S_PORT')))
-      );
-    }
   }
 
   $records[] = array(

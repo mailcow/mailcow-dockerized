@@ -113,7 +113,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         <div class="form-group">
           <label class="control-label col-sm-2" for="domains"><?=$lang['edit']['domains'];?></label>
           <div class="col-sm-10">
-            <select data-live-search="true" data-container="body" class="full-width-select" name="domains" multiple required>
+            <select data-live-search="true" class="full-width-select" name="domains" multiple required>
             <?php
             foreach ($result['selected_domains'] as $domain):
             ?>
@@ -272,7 +272,6 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               <input type="hidden" value="0" name="active">
               <input type="hidden" value="0" name="backupmx">
               <input type="hidden" value="0" name="gal">
-              <input type="hidden" value="0" name="xmpp">
               <input type="hidden" value="0" name="relay_all_recipients">
               <input type="hidden" value="0" name="relay_unknown_only">
               <div class="form-group" data-acl="<?=$_SESSION['acl']['domain_desc'];?>">
@@ -352,26 +351,6 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                   <div class="checkbox">
                     <label><input type="checkbox" value="1" name="gal" <?=(isset($result['gal']) && $result['gal']=="1") ? "checked" : null;?>> <?=$lang['edit']['gal'];?></label>
                     <small class="help-block"><?=$lang['edit']['gal_info'];?></small>
-                  </div>
-                </div>
-              </div>
-              <hr>
-              <div class="form-group" data-acl="<?=$_SESSION['acl']['xmpp_prefix'];?>">
-                <label class="control-label col-sm-2" for="xmpp_prefix"><?=$lang['edit']['xmpp_prefix'];?></label>
-                <div class="col-md-10">
-                  <div class="input-group">
-                    <input type="text" class="form-control" id="xmpp-prefix" name="xmpp_prefix" value="<?=(!empty($result['xmpp_prefix'])) ? htmlspecialchars($result['xmpp_prefix'], ENT_QUOTES, 'UTF-8') : 'im';?>" required>
-                    <span class="input-group-addon">.<?=htmlspecialchars($domain, ENT_QUOTES, 'UTF-8');?></span>
-                  </div>
-                  <small class="help-block"><?=sprintf($lang['edit']['xmpp_prefix_info'], getenv('MAILCOW_HOSTNAME'));?></small>
-                  <p><?=$lang['edit']['xmpp_example_jid'];?>: <code>username@<span class="xmpp-prefix-preview"></span>.<?=htmlspecialchars($domain, ENT_QUOTES, 'UTF-8');?></code></p>
-                </div>
-              </div>
-              <div class="form-group" data-acl="<?=$_SESSION['acl']['xmpp_mailbox_access'];?>">
-                <div class="col-sm-offset-2 col-sm-10">
-                  <div class="checkbox">
-                    <label><input type="checkbox" value="1" name="xmpp" <?=(isset($result['xmpp']) && $result['xmpp']=="1") ? "checked" : null;?>> <?=$lang['edit']['xmpp'];?></label>
-                    <small class="help-block"><?=$lang['edit']['xmpp_info'];?></small>
                   </div>
                 </div>
               </div>
@@ -649,8 +628,6 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           <input type="hidden" value="0" name="force_pw_update">
           <input type="hidden" value="0" name="sogo_access">
           <input type="hidden" value="0" name="protocol_access">
-          <input type="hidden" value="0" name="xmpp_access">
-          <input type="hidden" value="0" name="xmpp_admin">
           <div class="form-group">
             <label class="control-label col-sm-2" for="name"><?=$lang['edit']['full_name'];?></label>
             <div class="col-sm-10">
@@ -856,23 +833,6 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="col-sm-10">
             <input type="text" class="form-control" name="allow_from_smtp" value="<?=empty($allow_from_smtp) ? '' : $allow_from_smtp; ?>" placeholder="1.1.1.1, 10.2.0.0/24, ...">
             <small class="help-block"><?=$lang['edit']['allow_from_smtp_info'];?></small>
-            </div>
-          </div>
-          <hr>
-          <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" data-acl="<?=$_SESSION['acl']['xmpp_mailbox_access'];?>" value="1" name="xmpp_access" <?=(isset($result['attributes']['xmpp_access']) && $result['attributes']['xmpp_access']=="1") ? "checked" : null;?>> <?=$lang['edit']['xmpp_access'];?></label>
-                <small class="help-block"><?=$lang['edit']['xmpp_access_info'];?></small>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-              <div class="checkbox">
-                <label><input data-acl="<?=$_SESSION['acl']['xmpp_admin'];?>" type="checkbox" value="1" name="xmpp_admin" <?=(isset($result['attributes']['xmpp_admin']) && $result['attributes']['xmpp_admin']=="1") ? "checked" : null;?>> <?=$lang['edit']['xmpp_admin'];?></label>
-                <small class="help-block"><?=$lang['edit']['xmpp_admin_info'];?></small>
-              </div>
             </div>
           </div>
           <hr>

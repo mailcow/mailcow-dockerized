@@ -280,9 +280,6 @@ CONFIG_ARRAY=(
   "DOVECOT_MASTER_USER"
   "DOVECOT_MASTER_PASS"
   "MAILCOW_PASS_SCHEME"
-  "XMPP_C2S_PORT"
-  "XMPP_S2S_PORT"
-  "XMPP_HTTPS_PORT"
   "ADDITIONAL_SERVER_NAMES"
   "ACME_CONTACT"
 )
@@ -472,14 +469,6 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# see https://mailcow.github.io/mailcow-dockerized-docs/model-passwd/' >> mailcow.conf
       echo "MAILCOW_PASS_SCHEME=BLF-CRYPT" >> mailcow.conf
     fi
-  elif [[ ${option} == "XMPP_C2S_PORT" ]]; then
-    if ! grep -q ${option} mailcow.conf; then
-      echo "XMPP_C2S_PORT=5222" >> mailcow.conf
-    fi
-  elif [[ ${option} == "XMPP_S2S_PORT" ]]; then
-    if ! grep -q ${option} mailcow.conf; then
-      echo "XMPP_S2S_PORT=5269" >> mailcow.conf
-    fi
   elif [[ ${option} == "ADDITIONAL_SERVER_NAMES" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo '# Additional server names for mailcow UI' >> mailcow.conf
@@ -490,10 +479,6 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# You can understand this as server_name directive in Nginx.' >> mailcow.conf
       echo '# Comma separated list without spaces! Example: ADDITIONAL_SERVER_NAMES=a.b.c,d.e.f' >> mailcow.conf
       echo 'ADDITIONAL_SERVER_NAMES=' >> mailcow.conf
-    fi
-  elif [[ ${option} == "XMPP_HTTPS_PORT" ]]; then
-    if ! grep -q ${option} mailcow.conf; then
-      echo "XMPP_HTTPS_PORT=5443" >> mailcow.conf
     fi
   elif [[ ${option} == "ACME_CONTACT" ]]; then
     if ! grep -q ${option} mailcow.conf; then
@@ -579,7 +564,7 @@ for container in "${MAILCOW_CONTAINERS[@]}"; do
   docker rm -f "$container" 2> /dev/null
 done
 
-[[ -f data/conf/nginx/ejabberd.conf ]] && mv data/conf/nginx/ejabberd.conf data/conf/nginx/ZZZ-ejabberd.conf
+[[ -f data/conf/nginx/ZZZ-ejabberd.conf ]] && rm data/conf/nginx/ZZZ-ejabberd.conf
 
 # Silently fixing remote url from andryyy to mailcow
 git remote set-url origin https://github.com/mailcow/mailcow-dockerized

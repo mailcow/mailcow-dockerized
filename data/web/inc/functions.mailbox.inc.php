@@ -450,7 +450,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
           $domain				= idn_to_ascii(strtolower(trim($_data['domain'])), 0, INTL_IDNA_VARIANT_UTS46);
           $description  = $_data['description'];
-          $xmpp_prefix = preg_replace('/[^\da-z-]/i', '', $_data['xmpp_prefix']);
           if (empty($description)) {
             $description = $domain;
           }
@@ -497,7 +496,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $relay_unknown_only = intval($_data['relay_unknown_only']);
           $backupmx = intval($_data['backupmx']);
           $gal = intval($_data['gal']);
-          $xmpp = intval($_data['xmpp']);
           if ($relay_all_recipients == 1) {
             $backupmx = '1';
           }
@@ -551,8 +549,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $stmt->execute(array(
             ':domain' => '%@' . $domain
           ));
-          $stmt = $pdo->prepare("INSERT INTO `domain` (`domain`, `description`, `aliases`, `mailboxes`, `defquota`, `maxquota`, `quota`, `backupmx`, `gal`, `xmpp`, `xmpp_prefix`, `active`, `relay_unknown_only`, `relay_all_recipients`)
-            VALUES (:domain, :description, :aliases, :mailboxes, :defquota, :maxquota, :quota, :backupmx, :gal, :xmpp, :xmpp_prefix, :active, :relay_unknown_only, :relay_all_recipients)");
+          $stmt = $pdo->prepare("INSERT INTO `domain` (`domain`, `description`, `aliases`, `mailboxes`, `defquota`, `maxquota`, `quota`, `backupmx`, `gal`, `active`, `relay_unknown_only`, `relay_all_recipients`)
+            VALUES (:domain, :description, :aliases, :mailboxes, :defquota, :maxquota, :quota, :backupmx, :gal, :active, :relay_unknown_only, :relay_all_recipients)");
           $stmt->execute(array(
             ':domain' => $domain,
             ':description' => $description,
@@ -563,8 +561,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ':quota' => $quota,
             ':backupmx' => $backupmx,
             ':gal' => $gal,
-            ':xmpp' => $xmpp,
-            ':xmpp_prefix' => $xmpp_prefix,
             ':active' => $active,
             ':relay_unknown_only' => $relay_unknown_only,
             ':relay_all_recipients' => $relay_all_recipients
@@ -960,8 +956,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $imap_access = (isset($_data['imap_access'])) ? intval($_data['imap_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['imap_access']);
           $pop3_access = (isset($_data['pop3_access'])) ? intval($_data['pop3_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['pop3_access']);
           $smtp_access = (isset($_data['smtp_access'])) ? intval($_data['smtp_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['smtp_access']);
-          $xmpp_access = (isset($_data['xmpp_access'])) ? intval($_data['xmpp_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['xmpp_access']);
-          $xmpp_admin = (isset($_data['xmpp_admin'])) ? intval($_data['xmpp_admin']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['xmpp_admin']);
           $quarantine_notification = (isset($_data['quarantine_notification'])) ? strval($_data['quarantine_notification']) : strval($MAILBOX_DEFAULT_ATTRIBUTES['quarantine_notification']);
           $quarantine_category = (isset($_data['quarantine_category'])) ? strval($_data['quarantine_category']) : strval($MAILBOX_DEFAULT_ATTRIBUTES['quarantine_category']);
           $quota_b		= ($quota_m * 1048576);
@@ -974,8 +968,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'imap_access' => strval($imap_access),
               'pop3_access' => strval($pop3_access),
               'smtp_access' => strval($smtp_access),
-              'xmpp_access' => strval($xmpp_access),
-              'xmpp_admin' => strval($xmpp_admin),
               'passwd_update' => time(),
               'mailbox_format' => strval($MAILBOX_DEFAULT_ATTRIBUTES['mailbox_format']),
               'quarantine_notification' => strval($quarantine_notification),
@@ -2145,8 +2137,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $is_now = mailbox('get', 'domain_details', $domain);
               if (!empty($is_now)) {
                 $gal                  = (isset($_data['gal'])) ? intval($_data['gal']) : $is_now['gal'];
-                $xmpp                 = (isset($_data['xmpp']) && !empty($_SESSION['acl']['xmpp_domain_access']) && $_SESSION['acl']['xmpp_domain_access'] == "1") ? intval($_data['xmpp']) : $is_now['xmpp'];
-                $xmpp_prefix          = (!empty($_data['xmpp_prefix']) && !empty($_SESSION['acl']['xmpp_prefix']) && $_SESSION['acl']['xmpp_prefix'] == "1") ? $_data['xmpp_prefix'] : $is_now['xmpp_prefix'];
                 $description          = (!empty($_data['description']) && isset($_SESSION['acl']['domain_desc']) && $_SESSION['acl']['domain_desc'] == "1") ? $_data['description'] : $is_now['description'];
                 (int)$relayhost       = (isset($_data['relayhost']) && isset($_SESSION['acl']['domain_relayhost']) && $_SESSION['acl']['domain_relayhost'] == "1") ? intval($_data['relayhost']) : intval($is_now['relayhost']);
               }
@@ -2158,18 +2148,13 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 );
                 continue;
               }
-              $xmpp_prefix = preg_replace('/[^\da-z-]/i', '', $xmpp_prefix);
               $stmt = $pdo->prepare("UPDATE `domain` SET
               `description` = :description,
-              `gal` = :gal,
-              `xmpp` = :xmpp,
-              `xmpp_prefix` = :xmpp_prefix
+              `gal` = :gal
                 WHERE `domain` = :domain");
               $stmt->execute(array(
                 ':description' => $description,
                 ':gal' => $gal,
-                ':xmpp' => $xmpp,
-                ':xmpp_prefix' => $xmpp_prefix,
                 ':domain' => $domain
               ));
               $_SESSION['return'][] = array(
@@ -2184,7 +2169,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $active               = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active'];
                 $backupmx             = (isset($_data['backupmx'])) ? intval($_data['backupmx']) : $is_now['backupmx'];
                 $gal                  = (isset($_data['gal'])) ? intval($_data['gal']) : $is_now['gal'];
-                $xmpp                 = (isset($_data['xmpp'])) ? intval($_data['xmpp']) : $is_now['xmpp'];
                 $relay_all_recipients = (isset($_data['relay_all_recipients'])) ? intval($_data['relay_all_recipients']) : $is_now['relay_all_recipients'];
                 $relay_unknown_only   = (isset($_data['relay_unknown_only'])) ? intval($_data['relay_unknown_only']) : $is_now['relay_unknown_only'];
                 $relayhost            = (isset($_data['relayhost'])) ? intval($_data['relayhost']) : $is_now['relayhost'];
@@ -2194,7 +2178,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $maxquota             = (!empty($_data['maxquota'])) ? $_data['maxquota'] : ($is_now['max_quota_for_mbox'] / 1048576);
                 $quota                = (!empty($_data['quota'])) ? $_data['quota'] : ($is_now['max_quota_for_domain'] / 1048576);
                 $description          = (!empty($_data['description'])) ? $_data['description'] : $is_now['description'];
-                $xmpp_prefix          = (!empty($_data['xmpp_prefix'])) ? $_data['xmpp_prefix'] : $is_now['xmpp_prefix'];
                 if ($relay_all_recipients == '1') {
                   $backupmx = '1';
                 }
@@ -2211,7 +2194,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 );
                 continue;
               }
-              $xmpp_prefix = preg_replace('/[^\da-z-]/i', '', $xmpp_prefix);
               // todo: should be using api here
               $stmt = $pdo->prepare("SELECT
                   COUNT(*) AS count,
@@ -2299,8 +2281,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               `relay_unknown_only` = :relay_unknown_only,
               `backupmx` = :backupmx,
               `gal` = :gal,
-              `xmpp` = :xmpp,
-              `xmpp_prefix` = :xmpp_prefix,
               `active` = :active,
               `quota` = :quota,
               `defquota` = :defquota,
@@ -2315,8 +2295,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':relay_unknown_only' => $relay_unknown_only,
                 ':backupmx' => $backupmx,
                 ':gal' => $gal,
-                ':xmpp' => $xmpp,
-                ':xmpp_prefix' => $xmpp_prefix,
                 ':active' => $active,
                 ':quota' => $quota,
                 ':defquota' => $defquota,
@@ -2365,8 +2343,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               (int)$imap_access = (isset($_data['imap_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") ? intval($_data['imap_access']) : intval($is_now['attributes']['imap_access']);
               (int)$pop3_access = (isset($_data['pop3_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") ? intval($_data['pop3_access']) : intval($is_now['attributes']['pop3_access']);
               (int)$smtp_access = (isset($_data['smtp_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") ? intval($_data['smtp_access']) : intval($is_now['attributes']['smtp_access']);
-              (int)$xmpp_admin = (isset($_data['xmpp_admin']) && isset($_SESSION['acl']['xmpp_admin']) && $_SESSION['acl']['xmpp_admin'] == "1") ? intval($_data['xmpp_admin']) : intval($is_now['attributes']['xmpp_admin']);
-              (int)$xmpp_access = (isset($_data['xmpp_access']) && isset($_SESSION['acl']['xmpp_mailbox_access']) && $_SESSION['acl']['xmpp_mailbox_access'] == "1") ? intval($_data['xmpp_access']) : intval($is_now['attributes']['xmpp_access']);
               (int)$relayhost = (isset($_data['relayhost']) && isset($_SESSION['acl']['mailbox_relayhost']) && $_SESSION['acl']['mailbox_relayhost'] == "1") ? intval($_data['relayhost']) : intval($is_now['attributes']['relayhost']);
               (int)$quota_m = (isset_has_content($_data['quota'])) ? intval($_data['quota']) : ($is_now['quota'] / 1048576);
               $name       = (!empty($_data['name'])) ? ltrim(rtrim($_data['name'], '>'), '<') : $is_now['name'];
@@ -2639,8 +2615,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 `attributes` = JSON_SET(`attributes`, '$.sogo_access', :sogo_access),
                 `attributes` = JSON_SET(`attributes`, '$.imap_access', :imap_access),
                 `attributes` = JSON_SET(`attributes`, '$.pop3_access', :pop3_access),
-                `attributes` = JSON_SET(`attributes`, '$.xmpp_admin', :xmpp_admin),
-                `attributes` = JSON_SET(`attributes`, '$.xmpp_access', :xmpp_access),
                 `attributes` = JSON_SET(`attributes`, '$.relayhost', :relayhost),
                 `attributes` = JSON_SET(`attributes`, '$.smtp_access', :smtp_access)
                   WHERE `username` = :username");
@@ -2653,8 +2627,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               ':imap_access' => $imap_access,
               ':pop3_access' => $pop3_access,
               ':smtp_access' => $smtp_access,
-              ':xmpp_admin' => $xmpp_admin,
-              ':xmpp_access' => $xmpp_access,
               ':relayhost' => $relayhost,
               ':username' => $username
             ));
@@ -3413,8 +3385,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               `relay_unknown_only`,
               `backupmx`,
               `gal`,
-              `xmpp`,
-              `xmpp_prefix`,
               `active`
                 FROM `domain` WHERE `domain`= :domain");
           $stmt->execute(array(
@@ -3473,8 +3443,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $domaindata['backupmx'] = $row['backupmx'];
           $domaindata['backupmx_int'] = $row['backupmx'];
           $domaindata['gal'] = $row['gal'];
-          $domaindata['xmpp'] = $row['xmpp'];
-          $domaindata['xmpp_prefix'] = $row['xmpp_prefix'];
           $domaindata['gal_int'] = $row['gal'];
           $domaindata['rl'] = $rl;
           $domaindata['active'] = $row['active'];
@@ -3520,8 +3488,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               `mailbox`.`domain`,
               `mailbox`.`local_part`,
               `mailbox`.`quota`,
-              `domain`.`xmpp` AS `domain_xmpp`,
-              `domain`.`xmpp_prefix` AS `domain_xmpp_prefix`,
               `quota2`.`bytes`,
               `attributes`,
               `quota2`.`messages`
@@ -3540,8 +3506,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               `mailbox`.`domain`,
               `mailbox`.`local_part`,
               `mailbox`.`quota`,
-              `domain`.`xmpp` AS `domain_xmpp`,
-              `domain`.`xmpp_prefix` AS `domain_xmpp_prefix`,
               `quota2replica`.`bytes`,
               `attributes`,
               `quota2replica`.`messages`
@@ -3560,10 +3524,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $mailboxdata['active'] = $row['active'];
           $mailboxdata['active_int'] = $row['active'];
           $mailboxdata['domain'] = $row['domain'];
-          $mailboxdata['domain_xmpp'] = $row['domain_xmpp'];
           $mailboxdata['relayhost'] = $row['relayhost'];
           $mailboxdata['name'] = $row['name'];
-          $mailboxdata['domain_xmpp_prefix'] = $row['domain_xmpp_prefix'];
           $mailboxdata['local_part'] = $row['local_part'];
           $mailboxdata['quota'] = $row['quota'];
           $mailboxdata['messages'] = $row['messages'];
@@ -3585,9 +3547,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
 
           // Determine last logins
-          $stmt = $pdo->prepare("SELECT MAX(`datetime`) AS `datetime`, `service` FROM `sasl_logs`
+          $stmt = $pdo->prepare("SELECT MAX(`datetime`) AS `datetime`, `service` FROM `sasl_log`
             WHERE `username` = :mailbox
-              AND `success` = 1
                 GROUP BY `service` DESC");
           $stmt->execute(array(':mailbox' => $_data));
           $SaslLogsData  = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -4376,6 +4337,5 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
   }
   if ($_action != 'get' && in_array($_type, array('domain', 'alias', 'alias_domain', 'mailbox', 'resource'))) {
     update_sogo_static_view();
-    xmpp_rebuild_configs();
   }
 }

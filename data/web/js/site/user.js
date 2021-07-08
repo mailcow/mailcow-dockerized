@@ -196,7 +196,7 @@ jQuery(function($){
         success: function (data) {
           $.each(data, function (i, item) {
             item.user1 = escapeHtml(item.user1);
-            item.log = '<a href="#syncjobLogModal" data-toggle="modal" data-syncjob-id="' + item.id + '">Open logs</a>'
+            item.log = '<a href="#syncjobLogModal" data-toggle="modal" data-syncjob-id="' + item.id + '">' + lang.open_logs + '</a>'
             if (!item.exclude > 0) {
               item.exclude = '-';
             } else {
