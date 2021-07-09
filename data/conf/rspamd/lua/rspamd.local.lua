@@ -331,6 +331,10 @@ rspamd_config:register_symbol({
     local from_table = {}
     local rcpt_table = {}
 
+    if task:has_symbol('ENCRYPTED_CHAT') then
+      return -- stop
+    end
+
     local send_mail = function(task, bcc_dest)
       local lua_smtp = require "lua_smtp"
       local function sendmail_cb(ret, err)
