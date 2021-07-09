@@ -1,5 +1,10 @@
 <?php
 
+$ALLOW_ADMIN_EMAIL_LOGIN = (preg_match(
+  "/^([yY][eE][sS]|[yY])+$/",
+  $_ENV["ALLOW_ADMIN_EMAIL_LOGIN"]
+));
+
 $session_var_user_allowed = 'sogo-sso-user-allowed';
 $session_var_pass = 'sogo-sso-pass';
 
@@ -29,6 +34,11 @@ elseif (isset($_GET['login'])) {
   $is_dual = (!empty($_SESSION["dual-login"]["username"])) ? true : false;
   // check permissions (if dual_login is active, deny sso when acl is not given)
   $login = html_entity_decode(rawurldecode($_GET["login"]));
+  if ($ALLOW_ADMIN_EMAIL_LOGIN === 0 && $is_dual === true) {
+    header('HTTP/1.0 403 Forbidden');
+    echo "Admin login is forbidden";
+    exit;
+  }
   if (isset($_SESSION['mailcow_cc_role']) &&
     ($_SESSION['acl']['login_as'] == "1" || ($is_dual === false && $login == $_SESSION['mailcow_cc_username']))) {
     if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
