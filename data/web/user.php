@@ -569,32 +569,36 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
 	</div>
 
 	<div role="tabpanel" class="tab-pane" id="Spamfilter">
-		<h4><?=$lang['user']['spamfilter_behavior'];?></h4>
-		<form class="form-horizontal" role="form" data-id="spam_score" method="post">
-			<div class="form-group">
-				<div class="col-lg-8 col-sm-12">
-          <div id="spam_score" data-provide="slider" data-acl="<?=$_SESSION['acl']['spam_score'];?>"></div>
-					<input id="spam_score_value" name="spam_score" type="hidden" value="<?=mailbox('get', 'spam_score', $username);?>">
-					<ul class="list-group list-group-flush">
-						<li class="list-group-item"><span class="label label-ham spam-ham-score"></span> <?=$lang['user']['spamfilter_green'];?></li>
-						<li class="list-group-item"><span class="label label-spam spam-spam-score"></span> <?=$lang['user']['spamfilter_yellow'];?></li>
-						<li class="list-group-item"><span class="label label-reject spam-reject-score"></span> <?=$lang['user']['spamfilter_red'];?></li>
-					</ul>
-				</div>
-			</div>
-      <div class="btn-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
-        <a type="button" class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected"
-          data-item="<?= htmlentities($username); ?>"
-          data-id="spam_score"
-          data-api-url='edit/spam-score'
-          data-api-attr='{}'><i class="bi bi-save"></i> <?=$lang['user']['save_changes'];?></a>
-        <a type="button" class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" data-action="edit_selected"
-          data-item="<?= htmlentities($username); ?>"
-          data-id="spam_score_reset"
-          data-api-url='edit/spam-score'
-          data-api-attr='{"spam_score":"default"}'><?=$lang['user']['spam_score_reset'];?></a>
+    <h4><?=$lang['user']['spamfilter_behavior'];?></h4>
+    <div class="row">
+      <div class="col-sm-12">
+        <form class="form-horizontal" role="form" data-id="spam_score" method="post">
+          <div class="form-group">
+            <div class="col-lg-8 col-sm-12">
+              <div id="spam_score" data-provide="slider" data-acl="<?=$_SESSION['acl']['spam_score'];?>"></div>
+              <input id="spam_score_value" name="spam_score" type="hidden" value="<?=mailbox('get', 'spam_score', $username);?>">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item"><span class="label label-ham spam-ham-score"></span> <?=$lang['user']['spamfilter_green'];?></li>
+                <li class="list-group-item"><span class="label label-spam spam-spam-score"></span> <?=$lang['user']['spamfilter_yellow'];?></li>
+                <li class="list-group-item"><span class="label label-reject spam-reject-score"></span> <?=$lang['user']['spamfilter_red'];?></li>
+              </ul>
+            </div>
+          </div>
+          <div class="btn-group" data-acl="<?=$_SESSION['acl']['spam_score'];?>">
+            <a type="button" class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected"
+            data-item="<?= htmlentities($username); ?>"
+            data-id="spam_score"
+            data-api-url='edit/spam-score'
+            data-api-attr='{}'><i class="bi bi-save"></i> <?=$lang['user']['save_changes'];?></a>
+            <a type="button" class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" data-action="edit_selected"
+            data-item="<?= htmlentities($username); ?>"
+            data-id="spam_score_reset"
+            data-api-url='edit/spam-score'
+            data-api-attr='{"spam_score":"default"}'><?=$lang['user']['spam_score_reset'];?></a>
+          </div>
+        </form>
       </div>
-		</form>
+    </div>
 		<hr>
 		<div class="row">
 			<div class="col-sm-6">
