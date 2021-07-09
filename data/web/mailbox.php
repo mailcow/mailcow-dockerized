@@ -7,7 +7,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 ?>
 <div class="container">
 
-  <ul class="nav nav-tabs" role="tablist">
+  <ul class="nav nav-tabs responsive-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#tab-domains" aria-controls="tab-domains" role="tab" data-toggle="tab"><?=$lang['mailbox']['domains'];?></a></li>
     <li role="presentation"><a href="#tab-mailboxes" aria-controls="tab-mailboxes" role="tab" data-toggle="tab"><?=$lang['mailbox']['mailboxes'];?></a></li>
     <?php /* <li class="dropdown">
@@ -62,8 +62,8 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             </div>
             <div class="mass-actions-mailbox">
               <div class="btn-group">
-                <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="domain" href="#"><i class="bi bi-check-all"></i> <?=$lang['mailbox']['toggle_all'];?></a>
-                <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+                <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="domain" href="#"><i class="bi bi-check-all"></i> <?=$lang['mailbox']['toggle_all'];?></a>
+                <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <? if($_SESSION['mailcow_cc_role'] == "admin"): ?>
                     <li><a data-action="edit_selected" data-id="domain" data-api-url='edit/domain' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
@@ -72,8 +72,9 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                     <li><a data-action="delete_selected" data-id="domain" data-api-url='delete/domain' href="#"><?=$lang['mailbox']['remove'];?></a></li>
                   <? endif; ?>
                 </ul>
+                <div class="clearfix visible-xs"></div>
                 <? if($_SESSION['mailcow_cc_role'] == "admin"): ?>
-                  <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addDomainModal"><i class="bi bi-plus-lg"></i> <?=$lang['mailbox']['add_domain'];?></a>
+                  <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-toggle="modal" data-target="#addDomainModal"><i class="bi bi-plus-lg"></i> <?=$lang['mailbox']['add_domain'];?></a>
                 <? endif; ?>
               </div>
             </div>
@@ -111,14 +112,14 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                 </ul>
               </div>
             </div>
-            <div class="mass-actions-mailbox" data-actions-header="true"></div>
+            <div class="mass-actions-mailbox hidden-xs" data-actions-header="true"></div>
             <div class="table-responsive">
               <table id="mailbox_table" class="table table-striped"></table>
             </div>
             <div class="mass-actions-mailbox">
               <div class="btn-group hidden-md hidden-lg hidden-xl">
-                <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="mailbox" href="#"><i class="bi bi-check-all"></i> <?=$lang['mailbox']['toggle_all'];?></a>
-                <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+                <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="mailbox" href="#"><i class="bi bi-check-all"></i> <?=$lang['mailbox']['toggle_all'];?></a>
+                <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li class="dropdown-header"><?=$lang['mailbox']['mailbox'];?></li>
                   <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
@@ -156,7 +157,8 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"smtp_access":1}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
                   <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"smtp_access":0}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
                 </ul>
-                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addMailboxModal"><i class="bi bi-plus-lg"></i> <?=$lang['mailbox']['add_mailbox'];?></a>
+                <div class="clearfix visible-xs"></div>
+                <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-toggle="modal" data-target="#addMailboxModal"><i class="bi bi-plus-lg"></i> <?=$lang['mailbox']['add_mailbox'];?></a>
               </div>
               <div class="btn-group hidden-xs hidden-sm">
                 <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="mailbox" href="#"><i class="bi bi-check-all"></i> <?=$lang['mailbox']['toggle_all'];?></a>
@@ -248,15 +250,16 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             </div>
             <div class="mass-actions-mailbox">
               <div class="btn-group">
-                <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="resource" href="#"><i class="bi bi-check-all"></i> <?=$lang['mailbox']['toggle_all'];?></a>
-                <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+                <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="resource" href="#"><i class="bi bi-check-all"></i> <?=$lang['mailbox']['toggle_all'];?></a>
+                <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li><a data-action="edit_selected" data-id="resource" data-api-url='edit/resource' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
                   <li><a data-action="edit_selected" data-id="resource" data-api-url='edit/resource' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
                   <li role="separator" class="divider"></li>
                   <li><a data-action="delete_selected" data-id="resource" data-api-url='delete/resource' href="#"><?=$lang['mailbox']['remove'];?></a></li>
                 </ul>
-                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addResourceModal"><i class="bi bi-plus-lg"></i> <?=$lang['mailbox']['add_resource'];?></a>
+                <div class="clearfix visible-xs"></div>
+                <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-toggle="modal" data-target="#addResourceModal"><i class="bi bi-plus-lg"></i> <?=$lang['mailbox']['add_resource'];?></a>
               </div>
             </div>
           </div>
@@ -288,15 +291,16 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             </div>
             <div class="mass-actions-mailbox">
               <div class="btn-group">
-                <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="alias-domain" href="#"><i class="bi bi-check-all"></i> <?=$lang['mailbox']['toggle_all'];?></a>
-                <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+                <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="alias-domain" href="#"><i class="bi bi-check-all"></i> <?=$lang['mailbox']['toggle_all'];?></a>
+                <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li><a data-action="edit_selected" data-id="alias-domain" data-api-url='edit/alias-domain' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
                   <li><a data-action="edit_selected" data-id="alias-domain" data-api-url='edit/alias-domain' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
                   <li role="separator" class="divider"></li>
                   <li><a data-action="delete_selected" data-id="alias-domain" data-api-url='delete/alias-domain' href="#"><?=$lang['mailbox']['remove'];?></a></li>
                 </ul>
-                <a class="btn btn-sm btn-success" href="#" data-acl="<?=$_SESSION['acl']['alias_domains'];?>" data-toggle="modal" data-target="#addAliasDomainModal"><i class="bi bi-plus-lg"></i> <?=$lang['mailbox']['add_domain_alias'];?></a>
+                <div class="clearfix visible-xs"></div>
+                <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-acl="<?=$_SESSION['acl']['alias_domains'];?>" data-toggle="modal" data-target="#addAliasDomainModal"><i class="bi bi-plus-lg"></i> <?=$lang['mailbox']['add_domain_alias'];?></a>
               </div>
             </div>
           </div>
@@ -331,9 +335,9 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             </div>
             <div class="mass-actions-mailbox">
               <div class="btn-group">
-                <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="alias" href="#"><i class="bi bi-check-all"></i> <?=$lang['mailbox']['toggle_all'];?></a>
-                <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
-                <ul class="dropdown-menu">
+                <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="alias" href="#"><i class="bi bi-check-all"></i> <?=$lang['mailbox']['toggle_all'];?></a>
+                <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+                <ul class="dropdown-menu top33">
                   <li><a data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
                   <li><a data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
                   <li role="separator" class="divider"></li>
@@ -344,8 +348,9 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <li><a data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"sogo_visible":"0"}' href="#"><?=$lang['mailbox']['sogo_visible_n'];?></a></li>
                   <?php } ?>
                 </ul>
-                <a class="btn btn-sm btn-default" data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"expand_alias":true}' ><i class="bi bi-arrows-angle-expand"></i> <?=$lang['mailbox']['add_alias_expand'];?></a>
-                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addAliasModal"><i class="bi bi-plus-lg"></i> <?=$lang['mailbox']['add_alias'];?></a>
+                <div class="clearfix visible-xs"></div>
+                <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"expand_alias":true}' ><i class="bi bi-arrows-angle-expand"></i> <?=$lang['mailbox']['add_alias_expand'];?></a>
+                <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-toggle="modal" data-target="#addAliasModal"><i class="bi bi-plus-lg"></i> <?=$lang['mailbox']['add_alias'];?></a>
               </div>
             </div>
           </div>
@@ -377,8 +382,8 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             </div>
             <div class="mass-actions-mailbox">
               <div class="btn-group" data-acl="<?=$_SESSION['acl']['syncjobs'];?>">
-                <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="syncjob" href="#"><i class="bi bi-check-all"></i> <?=$lang['mailbox']['toggle_all'];?></a>
-                <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+                <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="syncjob" href="#"><i class="bi bi-check-all"></i> <?=$lang['mailbox']['toggle_all'];?></a>
+                <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li><a data-action="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"last_run":""}' href="#"><?=$lang['mailbox']['last_run_reset'];?></a></li>
                   <li role="separator" class="divider"></li>
@@ -387,7 +392,8 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <li role="separator" class="divider"></li>
                   <li><a data-action="delete_selected" data-id="syncjob" data-api-url='delete/syncjob' href="#"><?=$lang['mailbox']['remove'];?></a></li>
                 </ul>
-                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addSyncJobModalAdmin"><i class="bi bi-plus-lg"></i> <?=$lang['user']['create_syncjob'];?></a>
+                <div class="clearfix visible-xs"></div>
+                <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-toggle="modal" data-target="#addSyncJobModalAdmin"><i class="bi bi-plus-lg"></i> <?=$lang['user']['create_syncjob'];?></a>
               </div>
             </div>
           </div>
@@ -422,8 +428,8 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             </div>
             <div class="mass-actions-mailbox">
               <div class="btn-group" data-acl="<?=$_SESSION['acl']['filters'];?>">
-                <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="filter_item" href="#"><i class="bi bi-check-all"></i> <?=$lang['mailbox']['toggle_all'];?></a>
-                <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+                <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="filter_item" href="#"><i class="bi bi-check-all"></i> <?=$lang['mailbox']['toggle_all'];?></a>
+                <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li><a data-action="edit_selected" data-id="filter_item" data-api-url='edit/filter' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
                   <li><a data-action="edit_selected" data-id="filter_item" data-api-url='edit/filter' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
@@ -433,7 +439,8 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <li role="separator" class="divider"></li>
                   <li><a data-action="delete_selected" data-text="<?=$lang['user']['eas_reset'];?>?" data-id="filter_item" data-api-url='delete/filter' href="#"><?=$lang['mailbox']['remove'];?></a></li>
                 </ul>
-                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addFilterModalAdmin"><i class="bi bi-plus-lg"></i> <?=$lang['mailbox']['add_filter'];?></a>
+                <div class="clearfix visible-xs"></div>
+                <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-toggle="modal" data-target="#addFilterModalAdmin"><i class="bi bi-plus-lg"></i> <?=$lang['mailbox']['add_filter'];?></a>
               </div>
             </div>
             <div class="panel-body <?=($_SESSION['mailcow_cc_role'] == "admin") ?: 'hidden';?>">
@@ -452,8 +459,9 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <div class="form-group">
                     <div class="col-sm-10 add_filter_btns">
                       <div class="btn-group">
-                        <button class="btn btn-sm btn-default validate_sieve" href="#"><?=$lang['add']['validate'];?></button>
-                        <button class="btn btn-sm btn-success add_sieve_script" data-action="add_item" data-id="add_prefilter" data-api-url='add/global-filter' data-api-attr='{"filter_type":"prefilter"}' href="#" disabled><i class="bi bi-check-lg"></i> <?=$lang['admin']['save'];?></button>
+                        <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default validate_sieve" href="#"><?=$lang['add']['validate'];?></button>
+                        <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success add_sieve_script" data-action="add_item" data-id="add_prefilter" data-api-url='add/global-filter' data-api-attr='{"filter_type":"prefilter"}' href="#" disabled><i class="bi bi-check-lg"></i> <?=$lang['admin']['save'];?></button>
+                        <div class="clearfix visible-xs"></div>
                       </div>
                     </div>
                   </div>
@@ -470,8 +478,9 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <div class="form-group">
                     <div class="col-sm-10 add_filter_btns">
                       <div class="btn-group">
-                        <button class="btn btn-sm btn-default validate_sieve" href="#"><?=$lang['add']['validate'];?></button>
-                        <button class="btn btn-sm btn-success add_sieve_script" data-action="add_item" data-id="add_postfilter" data-api-url='add/global-filter' data-api-attr='{"filter_type":"postfilter"}' href="#" disabled><i class="bi bi-check-lg"></i> <?=$lang['admin']['save'];?></button>
+                        <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default validate_sieve" href="#"><?=$lang['add']['validate'];?></button>
+                        <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success add_sieve_script" data-action="add_item" data-id="add_postfilter" data-api-url='add/global-filter' data-api-attr='{"filter_type":"postfilter"}' href="#" disabled><i class="bi bi-check-lg"></i> <?=$lang['admin']['save'];?></button>
+                        <div class="clearfix visible-xs"></div>
                       </div>
                     </div>
                   </div>
@@ -509,8 +518,8 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             </div>
             <div class="mass-actions-mailbox">
               <div class="btn-group" data-acl="<?=$_SESSION['acl']['bcc_maps'];?>">
-                <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="bcc" href="#"><i class="bi bi-check-all"></i> <?=$lang['mailbox']['toggle_all'];?></a>
-                <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+                <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="bcc" href="#"><i class="bi bi-check-all"></i> <?=$lang['mailbox']['toggle_all'];?></a>
+                <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li><a data-action="edit_selected" data-id="bcc" data-api-url='edit/bcc' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
                   <li><a data-action="edit_selected" data-id="bcc" data-api-url='edit/bcc' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
@@ -520,7 +529,8 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <li role="separator" class="divider"></li>
                   <li><a data-action="delete_selected" data-id="bcc" data-api-url='delete/bcc' href="#"><?=$lang['mailbox']['remove'];?></a></li>
                 </ul>
-                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addBCCModalAdmin"><i class="bi bi-plus-lg"></i> <?=$lang['mailbox']['add_bcc_entry'];?></a>
+                <div class="clearfix visible-xs"></div>
+                <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-toggle="modal" data-target="#addBCCModalAdmin"><i class="bi bi-plus-lg"></i> <?=$lang['mailbox']['add_bcc_entry'];?></a>
               </div>
             </div>
           </div>
@@ -550,15 +560,16 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             </div>
             <div class="mass-actions-mailbox">
               <div class="btn-group">
-                <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="recipient_map" href="#"><i class="bi bi-check-all"></i> <?=$lang['mailbox']['toggle_all'];?></a>
-                <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+                <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="recipient_map" href="#"><i class="bi bi-check-all"></i> <?=$lang['mailbox']['toggle_all'];?></a>
+                <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li><a data-action="edit_selected" data-id="recipient_map" data-api-url='edit/recipient_map' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
                   <li><a data-action="edit_selected" data-id="recipient_map" data-api-url='edit/recipient_map' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
                   <li role="separator" class="divider"></li>
                   <li><a data-action="delete_selected" data-id="recipient_map" data-api-url='delete/recipient_map' href="#"><?=$lang['mailbox']['remove'];?></a></li>
                 </ul>
-                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addRecipientMapModalAdmin"><i class="bi bi-plus-lg"></i> <?=$lang['mailbox']['add_recipient_map_entry'];?></a>
+                <div class="clearfix visible-xs"></div>
+                <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-toggle="modal" data-target="#addRecipientMapModalAdmin"><i class="bi bi-plus-lg"></i> <?=$lang['mailbox']['add_recipient_map_entry'];?></a>
               </div>
             </div>
           </div>
@@ -591,15 +602,16 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             </div>
             <div class="mass-actions-mailbox">
               <div class="btn-group">
-                <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="tls-policy-map" href="#"><i class="bi bi-check-all"></i> <?=$lang['mailbox']['toggle_all'];?></a>
-                <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+                <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="tls-policy-map" href="#"><i class="bi bi-check-all"></i> <?=$lang['mailbox']['toggle_all'];?></a>
+                <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li><a data-action="edit_selected" data-id="tls-policy-map" data-api-url='edit/tls-policy-map' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
                   <li><a data-action="edit_selected" data-id="tls-policy-map" data-api-url='edit/tls-policy-map' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
                   <li role="separator" class="divider"></li>
                   <li><a data-action="delete_selected" data-id="tls-policy-map" data-api-url='delete/tls-policy-map' href="#"><?=$lang['mailbox']['remove'];?></a></li>
                 </ul>
-                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addTLSPolicyMapAdmin"><i class="bi bi-plus-lg"></i> <?=$lang['mailbox']['add_tls_policy_map'];?></a>
+                <div class="clearfix visible-xs"></div>
+                <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-toggle="modal" data-target="#addTLSPolicyMapAdmin"><i class="bi bi-plus-lg"></i> <?=$lang['mailbox']['add_tls_policy_map'];?></a>
               </div>
             </div>
           </div>

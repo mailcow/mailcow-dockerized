@@ -35,7 +35,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
           </div>
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-              <button class="btn btn-default" data-action="add_item" data-id="rsetting" data-api-url='add/rsetting' data-api-attr='{}' href="#"><i class="bi bi-plus-lg"></i> <?=$lang['admin']['add'];?></button>
+              <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="add_item" data-id="rsetting" data-api-url='add/rsetting' data-api-attr='{}' href="#"><i class="bi bi-plus-lg"></i> <?=$lang['admin']['add'];?></button>
             </div>
           </div>
         </form>
@@ -96,7 +96,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             </div>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
-                <button class="btn btn-default" data-action="add_item" data-id="add_domain_admin" data-api-url='add/domain-admin' data-api-attr='{}' href="#"><i class="bi bi-plus-lg"></i> <?=$lang['admin']['add'];?></button>
+                <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="add_item" data-id="add_domain_admin" data-api-url='add/domain-admin' data-api-attr='{}' href="#"><i class="bi bi-plus-lg"></i> <?=$lang['admin']['add'];?></button>
               </div>
             </div>
           </form>
@@ -124,7 +124,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
           </div>
           <div class="form-group">
             <div class="col-sm-offset-4 col-sm-8">
-              <button class="btn btn-default" data-action="edit_selected" data-id="fido2ChangeFn" data-item="null" data-api-url='edit/fido2-fn' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
+              <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected" data-id="fido2ChangeFn" data-item="null" data-api-url='edit/fido2-fn' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
             </div>
           </div>
         </form>
@@ -150,7 +150,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             </div>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
-                <button class="btn btn-default" data-action="add_item" data-id="add_oauth2_client" data-api-url='add/oauth2-client' data-api-attr='{}' href="#"><i class="bi bi-plus-lg"></i> <?=$lang['admin']['add'];?></button>
+                <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="add_item" data-id="add_oauth2_client" data-api-url='add/oauth2-client' data-api-attr='{}' href="#"><i class="bi bi-plus-lg"></i> <?=$lang['admin']['add'];?></button>
               </div>
             </div>
           </form>
@@ -196,7 +196,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             </div>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
-                <button class="btn btn-default" data-action="add_item" data-id="add_admin" data-api-url='add/admin' data-api-attr='{}' href="#"><i class="bi bi-plus-lg"></i> <?=$lang['admin']['add'];?></button>
+                <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="add_item" data-id="add_admin" data-api-url='add/admin' data-api-attr='{}' href="#"><i class="bi bi-plus-lg"></i> <?=$lang['admin']['add'];?></button>
               </div>
             </div>
           </form>
@@ -231,7 +231,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             </div>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
-                <button class="btn btn-default" id="test_transport" href="#"><?=$lang['admin']['relay_run'];?></button>
+                <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="test_transport" href="#"><?=$lang['admin']['relay_run'];?></button>
               </div>
             </div>
           </form>

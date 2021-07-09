@@ -130,9 +130,10 @@ $clamd_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_CLAMD"])) ? 
                 $started = '?';
               }
               ?>
-              <small>(<?=$lang['debug']['started_on'];?> <span class="parse_date"><?=$started;?></span>),
-              <a href data-toggle="modal" data-container="<?=$container;?>" data-target="#RestartContainer"><?=$lang['debug']['restart_container'];?></a></small>
+              <br class="visible-xs" />
+              <small>(<?=$lang['debug']['started_on'];?> <span class="parse_date"><?=$started;?></span>)</small>
               <i class="pull-right bi <?=($container_info['State'] !== false && !empty($container_info['State'])) ? (($container_info['State']['Running'] == 1) ? 'bi-app-indicator text-success' : 'bi-app text-danger') : 'default'; ?>"></i>
+              <a href data-toggle="modal" data-container="<?=$container;?>" data-target="#RestartContainer" class="btn btn-sm btn-text pull-right"><?=$lang['debug']['restart_container'];?></a>
               </li>
               <?php
               }
@@ -143,12 +144,12 @@ $clamd_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_CLAMD"])) ? 
         </div>
 
         <div role="tabpanel" class="tab-pane" id="tab-postfix-logs">
-          <div class="panel panel-default">
+          <div class="panel panel-xs-lg panel-default">
             <div class="panel-heading">Postfix <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="postfix_log" data-log-url="postfix" data-nrows="100">+ 100</button>
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="postfix_log" data-log-url="postfix" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_postfix_logs" data-table="postfix_log"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="postfix_log" data-log-url="postfix" data-nrows="100">+ 100</button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="postfix_log" data-log-url="postfix" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_postfix_logs" data-table="postfix_log"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -160,12 +161,12 @@ $clamd_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_CLAMD"])) ? 
         </div>
 
         <div role="tabpanel" class="tab-pane" id="tab-ui">
-          <div class="panel panel-default">
+          <div class="panel panel-xs-lg panel-default">
             <div class="panel-heading">mailcow UI <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="mailcow_ui" data-table="ui_logs" data-log-url="ui" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="mailcow_ui" data-table="ui_logs" data-log-url="ui" data-nrows="10000">+ 10000</button>
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_ui_logs" data-table="ui_logs"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="mailcow_ui" data-table="ui_logs" data-log-url="ui" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="mailcow_ui" data-table="ui_logs" data-log-url="ui" data-nrows="10000">+ 10000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_ui_logs" data-table="ui_logs"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -177,12 +178,12 @@ $clamd_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_CLAMD"])) ? 
         </div>
 
         <div role="tabpanel" class="tab-pane" id="tab-sasl">
-          <div class="panel panel-default">
+          <div class="panel panel-xs-lg panel-default">
             <div class="panel-heading">SASL <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="sasl_log_table" data-table="sasl_logs" data-log-url="ui" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="sasl_log_table" data-table="sasl_logs" data-log-url="ui" data-nrows="10000">+ 10000</button>
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_sasl_logs" data-table="sasl_logs"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="sasl_log_table" data-table="sasl_logs" data-log-url="ui" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="sasl_log_table" data-table="sasl_logs" data-log-url="ui" data-nrows="10000">+ 10000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_sasl_logs" data-table="sasl_logs"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -194,12 +195,12 @@ $clamd_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_CLAMD"])) ? 
         </div>
 
         <div role="tabpanel" class="tab-pane" id="tab-dovecot-logs">
-          <div class="panel panel-default">
+          <div class="panel panel-xs-lg panel-default">
             <div class="panel-heading">Dovecot <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="dovecot_log" data-log-url="dovecot" data-nrows="100">+ 100</button>
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="dovecot_log" data-log-url="dovecot" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_dovecot_logs" data-table="dovecot_log"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="dovecot_log" data-log-url="dovecot" data-nrows="100">+ 100</button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="dovecot_log" data-log-url="dovecot" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_dovecot_logs" data-table="dovecot_log"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -211,12 +212,12 @@ $clamd_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_CLAMD"])) ? 
         </div>
 
         <div role="tabpanel" class="tab-pane" id="tab-sogo-logs">
-          <div class="panel panel-default">
+          <div class="panel panel-xs-lg panel-default">
             <div class="panel-heading">SOGo <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="sogo_log" data-log-url="sogo" data-nrows="100">+ 100</button>
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="sogo_log" data-log-url="sogo" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_sogo_logs" data-table="sogo_log"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="sogo_log" data-log-url="sogo" data-nrows="100">+ 100</button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="sogo_log" data-log-url="sogo" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_sogo_logs" data-table="sogo_log"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -228,12 +229,12 @@ $clamd_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_CLAMD"])) ? 
         </div>
 
         <div role="tabpanel" class="tab-pane" id="tab-netfilter-logs">
-          <div class="panel panel-default">
+          <div class="panel panel-xs-lg panel-default">
             <div class="panel-heading">Netfilter <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="netfilter_log" data-log-url="netfilter" data-nrows="100">+ 100</button>
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="netfilter_log" data-log-url="netfilter" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_netfilter_logs" data-table="netfilter_log"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="netfilter_log" data-log-url="netfilter" data-nrows="100">+ 100</button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="netfilter_log" data-log-url="netfilter" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_netfilter_logs" data-table="netfilter_log"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -245,12 +246,12 @@ $clamd_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_CLAMD"])) ? 
         </div>
 
         <div role="tabpanel" class="tab-pane" id="tab-rspamd-history">
-          <div class="panel panel-default">
+          <div class="panel panel-xs-lg panel-default">
             <div class="panel-heading">Rspamd history <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="rspamd_history" data-table="rspamd_history" data-log-url="rspamd-history" data-nrows="100">+ 100</button>
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="rspamd_history" data-table="rspamd_history" data-log-url="rspamd-history" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_rspamd_history" data-table="rspamd_history"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="rspamd_history" data-table="rspamd_history" data-log-url="rspamd-history" data-nrows="100">+ 100</button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="rspamd_history" data-table="rspamd_history" data-log-url="rspamd-history" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_rspamd_history" data-table="rspamd_history"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -267,12 +268,12 @@ $clamd_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_CLAMD"])) ? 
         </div>
 
         <div role="tabpanel" class="tab-pane" id="tab-autodiscover-logs">
-          <div class="panel panel-default">
+          <div class="panel panel-xs-lg panel-default">
             <div class="panel-heading">Autodiscover <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="autodiscover_log" data-table="autodiscover_log" data-log-url="autodiscover" data-nrows="100">+ 100</button>
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="autodiscover_log" data-table="autodiscover_log" data-log-url="autodiscover" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_autodiscover_logs" data-table="autodiscover_log"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="autodiscover_log" data-table="autodiscover_log" data-log-url="autodiscover" data-nrows="100">+ 100</button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="autodiscover_log" data-table="autodiscover_log" data-log-url="autodiscover" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_autodiscover_logs" data-table="autodiscover_log"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -284,12 +285,12 @@ $clamd_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_CLAMD"])) ? 
         </div>
 
         <div role="tabpanel" class="tab-pane" id="tab-watchdog-logs">
-          <div class="panel panel-default">
+          <div class="panel panel-xs-lg panel-default">
             <div class="panel-heading">Watchdog <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="watchdog" data-table="watchdog_log" data-log-url="watchdog" data-nrows="100">+ 100</button>
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="watchdog" data-table="watchdog_log" data-log-url="watchdog" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_watchdog_logs" data-table="watchdog_log"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="watchdog" data-table="watchdog_log" data-log-url="watchdog" data-nrows="100">+ 100</button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="watchdog" data-table="watchdog_log" data-log-url="watchdog" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_watchdog_logs" data-table="watchdog_log"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -301,12 +302,12 @@ $clamd_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_CLAMD"])) ? 
         </div>
 
         <div role="tabpanel" class="tab-pane" id="tab-acme-logs">
-          <div class="panel panel-default">
+          <div class="panel panel-xs-lg panel-default">
             <div class="panel-heading">ACME <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="acme_log" data-log-url="acme" data-nrows="100">+ 100</button>
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="acme_log" data-log-url="acme" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_acme_logs" data-table="acme_log"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="acme_log" data-log-url="acme" data-nrows="100">+ 100</button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="acme_log" data-log-url="acme" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_acme_logs" data-table="acme_log"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -318,12 +319,12 @@ $clamd_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_CLAMD"])) ? 
         </div>
 
         <div role="tabpanel" class="tab-pane" id="tab-api-logs">
-          <div class="panel panel-default">
+          <div class="panel panel-xs-lg panel-default">
             <div class="panel-heading">API <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="apilog" data-table="api_log" data-log-url="api" data-nrows="100">+ 100</button>
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="apilog" data-table="api_log" data-log-url="api" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_api_logs" data-table="api_log"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="apilog" data-table="api_log" data-log-url="api" data-nrows="100">+ 100</button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="apilog" data-table="api_log" data-log-url="api" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_api_logs" data-table="api_log"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -335,12 +336,12 @@ $clamd_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_CLAMD"])) ? 
         </div>
 
         <div role="tabpanel" class="tab-pane" id="tab-api-rl">
-          <div class="panel panel-default">
+          <div class="panel panel-xs-lg panel-default">
             <div class="panel-heading">Ratelimits <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="rllog" data-table="rl_log" data-log-url="ratelimited" data-nrows="100">+ 100</button>
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="rllog" data-table="rl_log" data-log-url="ratelimited" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_rl_logs" data-table="rl_log"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="rllog" data-table="rl_log" data-log-url="ratelimited" data-nrows="100">+ 100</button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="rllog" data-table="rl_log" data-log-url="ratelimited" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_rl_logs" data-table="rl_log"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">

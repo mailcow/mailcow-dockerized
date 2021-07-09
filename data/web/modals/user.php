@@ -24,7 +24,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
           </div>
           <div class="form-group">
             <div class="col-sm-offset-4 col-sm-8">
-              <button class="btn btn-default" data-action="edit_selected" data-id="fido2ChangeFn" data-item="null" data-api-url='edit/fido2-fn' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
+              <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected" data-id="fido2ChangeFn" data-item="null" data-api-url='edit/fido2-fn' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
             </div>
           </div>
         </form>
@@ -182,7 +182,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
-              <button class="btn btn-default" data-action="add_item" data-id="add_syncjob" data-api-url='add/syncjob' data-api-attr='{}' href="#"><?=$lang['admin']['add'];?></button>
+              <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="add_item" data-id="add_syncjob" data-api-url='add/syncjob' data-api-attr='{}' href="#"><?=$lang['admin']['add'];?></button>
 						</div>
 					</div>
 				</form>
@@ -228,7 +228,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
-              <button class="btn btn-default" data-action="add_item" data-id="add_apppasswd" data-api-url='add/app-passwd' data-api-attr='{}' href="#"><?=$lang['admin']['add'];?></button>
+              <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="add_item" data-id="add_apppasswd" data-api-url='add/app-passwd' data-api-attr='{}' href="#"><?=$lang['admin']['add'];?></button>
 						</div>
 					</div>
 				</form>
@@ -240,7 +240,10 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 <div class="modal fade" id="syncjobLogModal" tabindex="-1" role="dialog" aria-labelledby="syncjobLogModalLabel">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
-      <div class="modal-header"><h4 class="modal-title">Log</h4></div>
+      <div class="modal-header">
+	    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <h3 class="modal-title">Log</h3>
+      </div>
       <div class="modal-body">
         <textarea class="form-control textarea-code" rows="20" id="logText" spellcheck="false"></textarea>
       </div>
@@ -251,6 +254,10 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 <div class="modal fade" id="pwChangeModal" tabindex="-1" role="dialog" aria-labelledby="pwChangeModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
+	    <div class="modal-header">
+	    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <h3 class="modal-title"><?=$lang['user']['change_password'];?></h3>
+      </div>
       <div class="modal-body">
         <form class="form-horizontal" data-cached-form="false" data-id="pwchange" role="form" method="post" autocomplete="off">
           <div class="form-group">
@@ -275,7 +282,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
           </div>
           <div class="form-group">
             <div class="col-sm-offset-3 col-sm-9">
-              <button class="btn btn-default" data-action="edit_selected" data-id="pwchange" data-item="null" data-api-url='edit/self' data-api-attr='{}' href="#"><?=$lang['user']['change_password'];?></button>
+              <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected" data-id="pwchange" data-item="null" data-api-url='edit/self' data-api-attr='{}' href="#"><?=$lang['user']['change_password'];?></button>
             </div>
           </div>
         </form>
@@ -311,7 +318,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
           </div>
           <div class="form-group">
             <div class="col-sm-offset-3 col-sm-9">
-              <button class="btn btn-default" data-action="edit_selected" data-id="pwchange" data-item="null" data-api-url='edit/self' data-api-attr='{}' href="#"><?=$lang['user']['change_password'];?></button>
+              <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected" data-id="pwchange" data-item="null" data-api-url='edit/self' data-api-attr='{}' href="#"><?=$lang['user']['change_password'];?></button>
             </div>
           </div>
         </form>

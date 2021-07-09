@@ -58,11 +58,11 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
                 <input name="pass_user" type="password" id="pass_user" class="form-control" placeholder="<?= $lang['login']['password']; ?>" required="">
               </div>
             </div>
-            <div class="form-group">
+            <div class="form-group" style="position: relative">
               <div class="btn-group">
                 <div class="btn-group">
-                  <button type="submit" class="btn btn-success" value="Login"><?= $lang['login']['login']; ?></button>
-                  <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <button type="submit" class="btn btn-xs-lg btn-success" value="Login"><?= $lang['login']['login']; ?></button>
+                  <button type="button" class="btn btn-xs-lg btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <span class="caret"></span>
                   </button>
                   <ul class="dropdown-menu">
@@ -71,19 +71,18 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
                 </div>
               </div>
               <?php if(!isset($_SESSION['oauth2_request'])) { ?>
-              <div class="btn-group pull-right">
-                <button type="button" <?=(isset($_SESSION['mailcow_locale']) && count($AVAILABLE_LANGUAGES) === 1) ? 'disabled="true"' : '' ?> class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button type="button" <?=(isset($_SESSION['mailcow_locale']) && count($AVAILABLE_LANGUAGES) === 1) ? 'disabled="true"' : '' ?> class="btn btn-xs-lg btn-default pull-right dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <span class="flag-icon flag-icon-<?= $_SESSION['mailcow_locale']; ?>"></span> <span class="caret"></span>
                 </button>
-                <ul class="dropdown-menu">
+                <ul class="dropdown-menu pull-right login">
                   <?php
                   foreach ($AVAILABLE_LANGUAGES as $c => $v) {
                   ?>
                   <li<?= ($_SESSION['mailcow_locale'] == $c) ? ' class="active"' : ''; ?>><a href="?<?= http_build_query(array_merge($_GET, array('lang' => $c))) ?>"><span class="flag-icon flag-icon-<?=$c;?>"></span> <?=$v;?></a></li>
                   <?php } ?>
                 </ul>
-              </div>
-              <?php } ?>
+              <?php } ?>              
+              <div class="clearfix"></div>
             </div>
             </form>
             <?php
@@ -99,7 +98,7 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
               foreach ($MAILCOW_APPS as $app) {
                 if (getenv('SKIP_SOGO') == "y" && preg_match('/^\/SOGo/i', $app['link'])) { continue; }
               ?>
-                <a href="<?= htmlspecialchars($app['link']); ?>" role="button" style="margin-bottom:3pt" title="<?= htmlspecialchars($app['description']); ?>" class="btn btn-primary"><?= htmlspecialchars($app['name']); ?></a>&nbsp;
+                <a href="<?= htmlspecialchars($app['link']); ?>" role="button" style="margin-bottom:3pt" title="<?= htmlspecialchars($app['description']); ?>" class="btn btn-primary btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline"><?= htmlspecialchars($app['name']); ?></a>&nbsp;
               <?php
               }
             }
@@ -108,7 +107,7 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
               foreach ($app_links as $row) {
                 foreach ($row as $key => $val) {
               ?>
-                <a href="<?= htmlspecialchars($val); ?>" role="button" style="margin-bottom:3pt" class="btn btn-primary"><?= htmlspecialchars($key); ?></a>&nbsp;
+                <a href="<?= htmlspecialchars($val); ?>" role="button" style="margin-bottom:3pt" class="btn btn-primary btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline"><?= htmlspecialchars($key); ?></a>&nbsp;
               <?php
                 }
               }
