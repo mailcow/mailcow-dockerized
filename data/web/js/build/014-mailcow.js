@@ -94,6 +94,7 @@ $(document).ready(function() {
 
   // selectpicker
   $('select').selectpicker({
+    'styleBase': 'btn btn-xs-lg',
     'noneSelectedText': lang_footer.nothing_selected
   });
 
@@ -251,4 +252,27 @@ $(document).ready(function() {
       })
     });
   })
+  
+  // responsive tabs
+  $('.responsive-tabs').tabCollapse({
+    tabsClass: 'hidden-xs',
+    accordionClass: 'js-tabcollapse-panel-group visible-xs'
+  });
+  $(document).on("shown.bs.collapse shown.bs.tab", function (e) {
+	  var target = $(e.target);
+	  
+	  if($(window).width() <= 767) {
+		  var offset = target.offset().top - 112;
+		  $("html, body").stop().animate({
+		    scrollTop: offset
+		  }, 300);
+	  }
+	  
+	  if(target.hasClass('panel-collapse')){
+	    var id = e.target.id.replace(/-collapse$/g, '');
+	    if(id){
+          localStorage.setItem('lastTag', '#'+id);
+        }
+      }
+  });
 });
