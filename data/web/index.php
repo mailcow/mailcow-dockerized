@@ -28,7 +28,7 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
 <div class="container">
   <div class="row">
     <div class="col-md-offset-3 col-md-6">
-      <div class="panel panel-default">
+      <div class="panel panel-default panel-login">
         <div class="panel-heading"><i class="bi bi-person-fill"></i> <?= $lang['login']['login']; ?></div>
         <div class="panel-body">
           <div class="text-center mailcow-logo"><img src="<?=($main_logo = customize('get', 'main_logo')) ? $main_logo : '/img/cow_mailcow.svg';?>" alt="mailcow"></div>
@@ -93,12 +93,13 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
             <div id="fido2-alerts"></div>
           <?php if(!isset($_SESSION['oauth2_request'])) { ?>
             <legend><i class="bi bi-link-45deg"></i> <?=$UI_TEXTS['apps_name'];?></legend>
+            <div class="apps">
             <?php
             if (!empty($MAILCOW_APPS)) {
               foreach ($MAILCOW_APPS as $app) {
                 if (getenv('SKIP_SOGO') == "y" && preg_match('/^\/SOGo/i', $app['link'])) { continue; }
               ?>
-                <a href="<?= htmlspecialchars($app['link']); ?>" role="button" style="margin-bottom:3pt" title="<?= htmlspecialchars($app['description']); ?>" class="btn btn-primary btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline"><?= htmlspecialchars($app['name']); ?></a>&nbsp;
+                <a href="<?= htmlspecialchars($app['link']); ?>" role="button" title="<?= htmlspecialchars($app['description']); ?>" class="btn btn-primary btn-lg btn-block"><?= htmlspecialchars($app['name']); ?></a>
               <?php
               }
             }
@@ -107,12 +108,13 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
               foreach ($app_links as $row) {
                 foreach ($row as $key => $val) {
               ?>
-                <a href="<?= htmlspecialchars($val); ?>" role="button" style="margin-bottom:3pt" class="btn btn-primary btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline"><?= htmlspecialchars($key); ?></a>&nbsp;
+                <a href="<?= htmlspecialchars($val); ?>" role="button" class="btn btn-primary btn-lg btn-block"><?= htmlspecialchars($key); ?></a>
               <?php
                 }
               }
-            }
-          }
+            } ?>
+            </div>  
+          <?php }
           ?>
         </div>
       </div>
