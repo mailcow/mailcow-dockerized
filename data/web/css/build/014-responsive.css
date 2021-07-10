@@ -11,9 +11,9 @@
 }
 
 .panel-login .apps .btn {
-	width: auto;
-	float: left;
-	margin: 0 10px 0 0;
+  width: auto;
+  float: left;
+  margin-bottom: 10px;
 }
 
 
@@ -21,7 +21,7 @@
 	.panel-login .apps .btn {
 		width: 100%;
 		float: none;
-		margin: 0 0 10px;
+		margin-bottom: 10px;
 	}
 	
 	.xs-show {
