@@ -244,3 +244,7 @@ legend > [class^="bi-"]::before, legend > [class*=" bi-"]::before {
 code {
   font-size: inherit;
 }
+.btn:hover {
+  margin-top: 0;
+  border-bottom-width: 4px;
+}
