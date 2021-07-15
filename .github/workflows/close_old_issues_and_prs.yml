@@ -2,8 +2,9 @@ name: 'Close stale issues and PRs'
 on:
   schedule:
     # Once every day at midnight UTC
-    - cron: "0 0 * * *"
-  workflow_dispatch:
+    - cron: "0 0 * * *" 
+  workflow_dispatch: # Allow to run workflow manually
+  issue_comment: # Run workflow on comments  
 
 jobs:
   stale:
@@ -13,7 +14,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Mark/Close Stale Issues and Pull Requests 🗑️
-        uses: actions/stale@v3
+        uses: actions/stale@v4
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           days-before-stale: 60
