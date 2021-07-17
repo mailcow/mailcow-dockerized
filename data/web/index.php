@@ -48,14 +48,14 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
               <label class="sr-only" for="login_user"><?= $lang['login']['username']; ?></label>
               <div class="input-group">
                 <div class="input-group-addon"><i class="bi bi-person-fill"></i></div>
-                <input name="login_user" autocorrect="off" autocapitalize="none" type="<?=(strpos($_SESSION['index_query_string'], 'mobileconfig') !== false) ? 'email' : 'text';?>" id="login_user" class="form-control" placeholder="<?= $lang['login']['username']; ?>" required="" autofocus="">
+                <input name="login_user" autocorrect="off" autocapitalize="none" type="<?=(strpos($_SESSION['index_query_string'], 'mobileconfig') !== false) ? 'email' : 'text';?>" id="login_user" class="form-control" placeholder="<?= $lang['login']['username']; ?>" required="" autofocus="" autocomplete="username">
               </div>
             </div>
             <div class="form-group">
               <label class="sr-only" for="pass_user"><?= $lang['login']['password']; ?></label>
               <div class="input-group">
                 <div class="input-group-addon"><i class="bi bi-lock-fill"></i></div>
-                <input name="pass_user" type="password" id="pass_user" class="form-control" placeholder="<?= $lang['login']['password']; ?>" required="">
+                <input name="pass_user" type="password" id="pass_user" class="form-control" placeholder="<?= $lang['login']['password']; ?>" required="" autocomplete="current-password">
               </div>
             </div>
             <div class="form-group" style="position: relative">
