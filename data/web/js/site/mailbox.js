@@ -3,7 +3,7 @@ $(document).ready(function() {
   FooTable.domainFilter = FooTable.Filtering.extend({
     construct: function(instance){
       this._super(instance);
-      this.def = 'All Domains';
+      this.def = lang.all_domains;
       this.$domain = null;
     },
     $create: function(){
@@ -607,9 +607,9 @@ jQuery(function($){
             item.local_dest = escapeHtml(item.local_dest);
             item.bcc_dest = escapeHtml(item.bcc_dest);
             if (item.type == 'sender') {
-              item.type = '<span id="active-script" class="label label-success">Sender</span>';
+              item.type = '<span id="active-script" class="label label-success">' + lang.bcc_sender_map + '</span>';
             } else {
-              item.type = '<span id="inactive-script" class="label label-warning">Recipient</span>';
+              item.type = '<span id="inactive-script" class="label label-warning">' + lang.bcc_rcpt_map + '</span>';
             }
           });
         }
@@ -823,7 +823,7 @@ jQuery(function($){
               item.private_comment = '-';
             }
             if (item.is_catch_all == 1) {
-              item.address = '<div class="label label-default">Catch-All</div> ' + escapeHtml(item.address);
+              item.address = '<div class="label label-default">' + lang.catch_all + '</div> ' + escapeHtml(item.address);
             }
             else {
               item.address = escapeHtml(item.address);
@@ -832,10 +832,10 @@ jQuery(function($){
               item.goto = '⤷ <i class="bi bi-trash" style="font-size:12px"></i>';
             }
             else if (item.goto == "spam@localhost") {
-              item.goto = '<span class="label label-danger">Learn as spam</span>';
+              item.goto = '<span class="label label-danger">' + lang.goto_spam + '</span>';
             }
             else if (item.goto == "ham@localhost") {
-              item.goto = '<span class="label label-success">Learn as ham</span>';
+              item.goto = '<span class="label label-success">' + lang.goto_ham + '</span>';
             }
             if (item.in_primary_domain !== "") {
               item.domain = '<i data-domainname="' + item.domain + '" class="bi bi-info-circle-fill alias-domain-info text-info" data-toggle="tooltip" title="' + lang.target_domain + ': ' + item.in_primary_domain + '"></i> ' + item.domain;
