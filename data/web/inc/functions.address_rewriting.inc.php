@@ -1,5 +1,5 @@
 <?php
-function bcc($_action, $_data = null, $attr = null) {
+function bcc($_action, $_data = null, $_attr = null) {
 	global $pdo;
 	global $lang;
   if ($_SESSION['mailcow_cc_role'] != "admin" && $_SESSION['mailcow_cc_role'] != "domainadmin") {
@@ -135,7 +135,6 @@ function bcc($_action, $_data = null, $attr = null) {
           );
           continue;
         }
-        $active = intval($_data['active']);
         if (!filter_var($bcc_dest, FILTER_VALIDATE_EMAIL)) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
