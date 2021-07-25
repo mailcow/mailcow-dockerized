@@ -153,14 +153,14 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
           <div class="form-group">
             <label class="control-label col-sm-2" for="rl_frame"><?=$lang['acl']['ratelimit'];?></label>
             <div class="col-sm-7">
-            <input name="rl_value" type="number" value="<?=(!empty($rl['value'])) ? $rl['value'] : null;?>" class="form-control" placeholder="disabled">
+            <input name="rl_value" type="number" value="<?=(!empty($rl['value'])) ? $rl['value'] : null;?>" class="form-control" placeholder="<?=$lang['ratelimit']['disabled']?>">
             </div>
             <div class="col-sm-3">
             <select name="rl_frame" class="form-control">
-              <option value="s" <?=(isset($rl['frame']) && $rl['frame'] == 's') ? 'selected' : null;?>>msgs / second</option>
-              <option value="m" <?=(isset($rl['frame']) && $rl['frame'] == 'm') ? 'selected' : null;?>>msgs / minute</option>
-              <option value="h" <?=(isset($rl['frame']) && $rl['frame'] == 'h') ? 'selected' : null;?>>msgs / hour</option>
-              <option value="d" <?=(isset($rl['frame']) && $rl['frame'] == 'd') ? 'selected' : null;?>>msgs / day</option>
+              <option value="s" <?=(isset($rl['frame']) && $rl['frame'] == 's') ? 'selected' : null;?>><?=$lang['ratelimit']['second']?></option>
+              <option value="m" <?=(isset($rl['frame']) && $rl['frame'] == 'm') ? 'selected' : null;?>><?=$lang['ratelimit']['minute']?></option>
+              <option value="h" <?=(isset($rl['frame']) && $rl['frame'] == 'h') ? 'selected' : null;?>><?=$lang['ratelimit']['hour']?></option>
+              <option value="d" <?=(isset($rl['frame']) && $rl['frame'] == 'd') ? 'selected' : null;?>><?=$lang['ratelimit']['day']?></option>
             </select>
             </div>
           </div>
@@ -370,14 +370,14 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
           <div class="form-group">
             <label class="control-label col-sm-2" for="rl_frame"><?=$lang['acl']['ratelimit'];?></label>
             <div class="col-sm-7">
-            <input name="rl_value" type="number" value="<?=(!empty($rl['value'])) ? $rl['value'] : null;?>" class="form-control" placeholder="disabled">
+            <input name="rl_value" type="number" value="<?=(!empty($rl['value'])) ? $rl['value'] : null;?>" class="form-control" placeholder="<?=$lang['ratelimit']['disabled']?>">
             </div>
             <div class="col-sm-3">
             <select name="rl_frame" class="form-control">
-              <option value="s" <?=(isset($rl['frame']) && $rl['frame'] == 's') ? 'selected' : null;?>>msgs / second</option>
-              <option value="m" <?=(isset($rl['frame']) && $rl['frame'] == 'm') ? 'selected' : null;?>>msgs / minute</option>
-              <option value="h" <?=(isset($rl['frame']) && $rl['frame'] == 'h') ? 'selected' : null;?>>msgs / hour</option>
-              <option value="d" <?=(isset($rl['frame']) && $rl['frame'] == 'd') ? 'selected' : null;?>>msgs / day</option>
+              <option value="s" <?=(isset($rl['frame']) && $rl['frame'] == 's') ? 'selected' : null;?>><?=$lang['ratelimit']['second']?></option>
+              <option value="m" <?=(isset($rl['frame']) && $rl['frame'] == 'm') ? 'selected' : null;?>><?=$lang['ratelimit']['minute']?></option>
+              <option value="h" <?=(isset($rl['frame']) && $rl['frame'] == 'h') ? 'selected' : null;?>><?=$lang['ratelimit']['hour']?></option>
+              <option value="d" <?=(isset($rl['frame']) && $rl['frame'] == 'd') ? 'selected' : null;?>><?=$lang['ratelimit']['day']?></option>
             </select>
             </div>
           </div>
@@ -657,14 +657,14 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
               $domains = mailbox('get', 'domains');
               $alias_domains = mailbox('get', 'alias_domains');
               if (!empty($domains)) {
-                echo "<optgroup label=\"Domains\">";
+                echo '<optgroup label="',$lang['mailbox']['domains'],'">';
                 foreach ($domains as $domain) {
                   echo "<option>".htmlspecialchars($domain)."</option>";
                 }
                 echo "</optgroup>";
               }
               if (!empty($alias_domains)) {
-                echo "<optgroup label=\"Alias Domains\">";
+                echo '<optgroup label="',$lang['mailbox']['domain_aliases'],'">';
                 foreach ($alias_domains as $alias_domain) {
                   echo "<option>".htmlspecialchars($alias_domain)."</option>";
                 }
@@ -704,6 +704,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             <label class="control-label col-sm-2" for="bcc_dest"><?=$lang['mailbox']['bcc_destination'];?></label>
             <div class="col-sm-10">
               <input type="text" class="form-control" name="bcc_dest">
+              <small><?=$lang['add']['bcc_dest_format'];?></small>
             </div>
           </div>
           <div class="form-group">

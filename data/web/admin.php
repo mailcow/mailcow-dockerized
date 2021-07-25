@@ -18,7 +18,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
       <ul class="dropdown-menu">
         <li class="active" data-dont-remember="1" role="presentation"><a href="#tab-config-admins" aria-controls="tab-config-admins" role="tab" data-toggle="tab"><?=$lang['admin']['admins'];?></a></li>
         <!-- <li role="presentation"><a href="#tab-config-ldap-admins" aria-controls="tab-config-ldap-admins" role="tab" data-toggle="tab"><?=$lang['admin']['admins_ldap'];?></a></li> -->
-        <li role="presentation"><a href="#tab-config-oauth2" aria-controls="tab-config-oauth2" role="tab" data-toggle="tab">OAuth2 Apps</a></li>
+        <li role="presentation"><a href="#tab-config-oauth2" aria-controls="tab-config-oauth2" role="tab" data-toggle="tab"><?=$lang['admin']['oauth2_apps'];?></a></li>
         <li role="presentation"><a href="#tab-config-rspamd" aria-controls="tab-config-rspamd" role="tab" data-toggle="tab">Rspamd UI</a></li>
       </ul>
     </li>
@@ -215,7 +215,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
           <div class="col-lg-6">
             <div class="panel panel-default">
               <div class="panel-heading">
-                <h4 class="panel-title"><i class="bi bi-file-earmark-arrow-down"></i> Read-Only Access</h4>
+                <h4 class="panel-title"><i class="bi bi-file-earmark-arrow-down"></i> <?=$lang['admin']['api_read_only'];?></h4>
               </div>
                 <div class="panel-body">
                   <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
@@ -260,7 +260,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
           <div class="col-lg-6">
             <div class="panel panel-default">
               <div class="panel-heading">
-                <h4 class="panel-title"><i class="bi bi-file-earmark-diff"></i> Read-Write Access</h4>
+                <h4 class="panel-title"><i class="bi bi-file-earmark-diff"></i> <?=$lang['admin']['api_read_write'];?></h4>
               </div>
                 <div class="panel-body">
                   <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
@@ -343,7 +343,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
 
   <div role="tabpanel" class="tab-pane" id="tab-config-oauth2">
     <div class="panel panel-default">
-    <div class="panel-heading">OAuth2 Apps</div>
+    <div class="panel-heading"><?=$lang['admin']['oauth2_apps'];?></div>
         <div class="panel-body">
           <p><?=$lang['admin']['oauth2_info'];?></p>
           <div class="table-responsive">
@@ -361,7 +361,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
                 <li><a data-action="edit_selected" data-id="oauth2_clients" data-api-url='edit/oauth2-client' data-api-attr='{"renew_secret":"1"}' href="#"><?=$lang['admin']['oauth2_renew_secret'];?></a></li>
               </ul>
               <div class="clearfix visible-xs"></div>
-              <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-id="add_oauth2_client" data-toggle="modal" data-target="#addOAuth2ClientModal" href="#"><i class="bi bi-plus-lg"></i> Add OAuth2 client</a>
+              <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-id="add_oauth2_client" data-toggle="modal" data-target="#addOAuth2ClientModal" href="#"><i class="bi bi-plus-lg"></i> <?=$lang['admin']['oauth2_add_client'];?></a>
             </div>
           </div>
         </div>
@@ -1003,13 +1003,13 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
         <div class="row">
           <div class="col-sm-6">
             <div class="form-group">
-              <label for="quota_notification_sender"><?=$lang['admin']['quarantine_notification_sender'];?>:</label>
+              <label for="quota_notification_sender"><?=$lang['admin']['quota_notification_sender'];?>:</label>
               <input type="email" class="form-control" id="quota_notification_sender" name="sender" value="<?=htmlspecialchars($qw_data['sender']);?>" placeholder="quota-warning@localhost">
             </div>
           </div>
           <div class="col-sm-6">
             <div class="form-group">
-              <label for="quota_notification_subject"><?=$lang['admin']['quarantine_notification_subject'];?>:</label>
+              <label for="quota_notification_subject"><?=$lang['admin']['quota_notification_subject'];?>:</label>
               <input type="text" class="form-control" id="quota_notification_subject" name="subject" value="<?=htmlspecialchars($qw_data['subject']);?>" placeholder="Quota warning">
             </div>
           </div>
