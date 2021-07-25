@@ -277,6 +277,9 @@ USE_WATCHDOG=y
 # The webhook URL can be generated using the guide here: https://api.slack.com/messaging/webhooks
 # WATCHDOG_SLACK_URL=https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX
 
+# Add a "notification ping" in Slack for a user or group. Examples: @username, @channel, @here
+# WATCHDOG_SLACK_PING=@here
+
 # Notify about banned IP (includes whois lookup)
 WATCHDOG_NOTIFY_BAN=n
 

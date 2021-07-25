@@ -137,7 +137,7 @@ function mail_error() {
 
     # Send Slack Message
     if [ ! -z "$WATCHDOG_SLACK_URL" ]; then
-      content="\"text\": \"${SUBJECT}\",\"blocks\": [{\"type\": \"section\",\"text\":{\"type\": \"mrkdwn\",\"text\":\"*${SUBJECT}*\"}},{\"type\": \"section\",\"text\":{\"type\": \"mrkdwn\",\"text\":\"${BODY}\"}}]"
+      content="\"text\": \"${SUBJECT}\",\"blocks\": [{\"type\": \"section\",\"text\":{\"type\": \"mrkdwn\",\"text\":\"*${SUBJECT}*\"}},{\"type\": \"section\",\"text\":{\"type\": \"mrkdwn\",\"text\":\"${BODY}\n\n${WATCHDOG_SLACK_PING}\"}}]"
       curl -X POST --data-urlencode "payload={$content}" $WATCHDOG_SLACK_URL
       log_msg "Sent Slack notification"
     fi
