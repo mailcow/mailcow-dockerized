@@ -134,6 +134,13 @@ function mail_error() {
       --ipv4
       #--server="${RCPT_MX}"
     log_msg "Sent notification email to ${rcpt}"
+
+    # Send Slack Message
+    if [ ! -z "$WATCHDOG_SLACK_URL" ]; then
+      content="\"text\": \"${SUBJECT}\",\"blocks\": [{\"type\": \"section\",\"text\":{\"type\": \"mrkdwn\",\"text\":\"*${SUBJECT}*\"}},{\"type\": \"section\",\"text\":{\"type\": \"mrkdwn\",\"text\":\"${BODY}\"}}]"
+      curl -X POST --data-urlencode "payload={$content}" $WATCHDOG_SLACK_URL
+      log_msg "Sent Slack notification"
+    fi
   done
 }
 
