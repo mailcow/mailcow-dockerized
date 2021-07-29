@@ -570,6 +570,7 @@
         "mbox_rl_info": "This rate limit is applied on the SASL login name, it matches any \"from\" address used by the logged-in user. A mailbox rate limit overrides a domain-wide rate limit.",
         "mins_interval": "Interval (min)",
         "multiple_bookings": "Multiple bookings",
+        "none_inherit": "None / Inherit",
         "nexthop": "Next hop",
         "password": "Password",
         "password_repeat": "Confirmation password (repeat)",
