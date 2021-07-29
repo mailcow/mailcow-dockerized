@@ -572,6 +572,7 @@
         "mbox_rl_info": "此频率限制应用于SASL登录名，它会匹配邮件的\"来自\"地址。邮箱的频率限制设置会覆盖域名的频率限制值设置。",
         "mins_interval": "轮询间隔 (分钟)",
         "multiple_bookings": "登记限制",
+        "none_inherit": "None / Inherit",
         "nexthop": "下一跳",
         "password": "密码",
         "password_repeat": "确认密码 (重复输入)",
