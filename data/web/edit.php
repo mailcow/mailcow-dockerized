@@ -291,7 +291,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                     <?php
                     }
                     ?>
-                    <option value="" <?=($result['relayhost'] == "0") ? 'selected' : null;?>>None</option>
+                    <option value="" <?=($result['relayhost'] == "0") ? 'selected' : null;?>><?=$lang['edit']['none_inherit'];?></option>
                   </select>
                 </div>
               </div>
@@ -718,7 +718,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                 <?php
                 }
                 ?>
-                <option value="" <?=($result['attributes']['relayhost'] == "0") ? 'selected' : null;?>>None</option>
+                <option value="" <?=($result['attributes']['relayhost'] == "0" || empty($result['attributes']['relayhost'])) ? 'selected' : null;?>><?=$lang['edit']['none_inherit'];?></option>
               </select>
               <p class="visible-xs" style="margin: 0;padding: 0">&nbsp;</p>
               <small class="help-block"><?=$lang['edit']['mailbox_relayhost_info'];?></small>
