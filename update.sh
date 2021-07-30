@@ -250,6 +250,8 @@ CONFIG_ARRAY=(
   "SKIP_SOGO"
   "USE_WATCHDOG"
   "WATCHDOG_NOTIFY_EMAIL"
+  "WATCHDOG_SLACK_URL"
+  "WATCHDOG_SLACK_PING"
   "WATCHDOG_NOTIFY_BAN"
   "WATCHDOG_EXTERNAL_CHECKS"
   "WATCHDOG_SUBJECT"
@@ -305,6 +307,16 @@ for option in ${CONFIG_ARRAY[@]}; do
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo "WATCHDOG_NOTIFY_EMAIL=" >> mailcow.conf
+    fi
+  elif [[ ${option} == "WATCHDOG_SLACK_URL" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo "WATCHDOG_SLACK_URL=" >> mailcow.conf
+    fi
+  elif [[ ${option} == "WATCHDOG_SLACK_PING" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo "WATCHDOG_SLACK_PING=" >> mailcow.conf
     fi
   elif [[ ${option} == "LOG_LINES" ]]; then
     if ! grep -q ${option} mailcow.conf; then
