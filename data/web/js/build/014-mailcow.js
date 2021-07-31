@@ -93,7 +93,10 @@ $(document).ready(function() {
   }).remove();
 
   // selectpicker
-  $('select').selectpicker();
+  $('select').selectpicker({
+    'styleBase': 'btn btn-xs-lg',
+    'noneSelectedText': lang_footer.nothing_selected
+  });
 
   // haveibeenpwned and passwd policy
   $.ajax({
@@ -103,7 +106,7 @@ $(document).ready(function() {
       $(".hibp-out").after(res);
     }
   });
-  $('[data-hibp]').after('<p class="small haveibeenpwned"><i class="bi bi-shield-fill-exclamation"></i> Check against haveibeenpwned.com</p><span class="hibp-out"></span>');
+  $('[data-hibp]').after('<p class="small haveibeenpwned"><i class="bi bi-shield-fill-exclamation"></i> ' + lang_footer.hibp_check + '</p><span class="hibp-out"></span>');
   $('[data-hibp]').on('input', function() {
     out_field = $(this).next('.haveibeenpwned').next('.hibp-out').text('').attr('class', 'hibp-out');
   });
@@ -240,7 +243,7 @@ $(document).ready(function() {
         if ($(htmlResponse).find('span').hasClass('text-success')) {
           $('#triggerRestartContainer').html('<i class="bi bi-check-lg"></i> ');
           setTimeout(function(){
-            $('#RestartContainer').modal('toggle'); 
+            $('#RestartContainer').modal('toggle');
             window.location = window.location.href.split("#")[0];
           }, 1200);
         } else {
@@ -249,4 +252,25 @@ $(document).ready(function() {
       })
     });
   })
+
+  // responsive tabs
+  $('.responsive-tabs').tabCollapse({
+    tabsClass: 'hidden-xs',
+    accordionClass: 'js-tabcollapse-panel-group visible-xs'
+  });
+  $(document).on("shown.bs.collapse shown.bs.tab", function (e) {
+	  var target = $(e.target);
+	  if($(window).width() <= 767) {
+		  var offset = target.offset().top - 112;
+		  $("html, body").stop().animate({
+		    scrollTop: offset
+		  }, 100);
+	  }
+	  if(target.hasClass('panel-collapse')){
+	    var id = e.target.id.replace(/-collapse$/g, '');
+	    if(id){
+          localStorage.setItem('lastTag', '#'+id);
+        }
+      }
+  });
 });
