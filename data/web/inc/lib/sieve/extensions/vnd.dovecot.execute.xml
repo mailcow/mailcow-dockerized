@@ -1,0 +1,17 @@
+<?xml version='1.0' standalone='yes'?>
+
+<extension name="vnd.dovecot.execute">
+
+	<test name="execute">
+		<parameter type="tag" name="pipe" regex="pipe" occurrence="optional"/>
+		<parameter type="string" name="program-name"/>
+		<parameter type="stringlist" name="arguments" occurrence="optional"/>
+	</test>
+
+	<command name="execute">
+		<parameter type="tag" name="pipe" regex="pipe" occurrence="optional"/>
+		<parameter type="string" name="program-name"/>
+		<parameter type="stringlist" name="arguments" occurrence="optional"/>
+	</command>
+	
+</extension>
