@@ -1,0 +1,15 @@
+<?xml version='1.0' standalone='yes'?>
+
+<extension name="vnd.dovecot.filter">
+
+	<test name="filter">
+		<parameter type="string" name="program-name"/>
+		<parameter type="stringlist" name="arguments" occurrence="optional"/>
+	</test>
+
+	<command name="filter">
+		<parameter type="string" name="program-name"/>
+		<parameter type="stringlist" name="arguments" occurrence="optional"/>
+	</command>
+
+</extension>
