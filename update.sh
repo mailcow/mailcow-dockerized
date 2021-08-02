@@ -129,7 +129,8 @@ migrate_docker_nat() {
   DOCKERV_CUR=$(docker version -f '{{.Server.Version}}')
   if grep -qi "ipv6nat-mailcow" docker-compose.yml; then
     echo -e "\e[32mNative IPv6 implementation available.\e[0m"
-    echo "This will enable experimental features in the Docker daemon and configure Docker to do the IPv6 NATing instead of ipv6nat-mailcow. This step is recommended."
+    echo "This will enable experimental features in the Docker daemon and configure Docker to do the IPv6 NATing instead of ipv6nat-mailcow."
+    echo '!!! This step is recommended !!!'
     echo "mailcow will try to roll back the changes if starting Docker fails after modifying the daemon.json configuration file."
     read -r -p "Should we try to enable the native IPv6 implementation in Docker now (recommended)? [y/N] " dockernatresponse
     if [[ ! "${dockernatresponse}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
@@ -527,6 +528,7 @@ if [ ! $FORCE ]; then
     echo "OK, exiting."
     exit 0
   fi
+  migrate_docker_nat
 fi
 
 echo -e "\e[32mValidating docker-compose stack configuration...\e[0m"
