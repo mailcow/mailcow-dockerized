@@ -1,0 +1,11 @@
+<?xml version='1.0' standalone='yes'?>
+
+<extension name="vnd.dovecot.pipe">
+
+	<command name="pipe">
+		<parameter type="tag" name="try" regex="try" occurrence="optional"/>
+		<parameter type="string" name="program-name"/>
+		<parameter type="stringlist" name="arguments" occurrence="optional"/>
+	</command>
+	
+</extension>
