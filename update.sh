@@ -6,6 +6,13 @@ if [ "$(id -u)" -ne "0" ]; then
   exit 1
 fi
 
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Run pre-update-hook
+if [ -f "${SCRIPT_DIR}/pre_update_hook.sh" ]; then
+  bash "${SCRIPT_DIR}/pre_update_hook.sh"
+fi
+
 if [[ "$(uname -r)" =~ ^4\.15\.0-60 ]]; then
   echo "DO NOT RUN mailcow ON THIS UBUNTU KERNEL!";
   echo "Please update to 5.x or use another distribution."
@@ -106,11 +113,72 @@ docker_garbage() {
         echo "OK, skipped."
       fi
     else
-      echo "Skipped image removal because of force mode."
+      echo "Running image removal without extra confirmation due to force mode."
+      docker rmi ${IMGS_TO_DELETE[*]}
     fi
   fi
   echo -e "\e[32mFurther cleanup...\e[0m"
   echo "If you want to cleanup further garbage collected by Docker, please make sure all containers are up and running before cleaning your system by executing \"docker system prune\""
+}
+
+in_array() {
+  local e match="$1"
+  shift
+  for e; do [[ "$e" == "$match" ]] && return 0; done
+  return 1
+}
+
+migrate_docker_nat() {
+  NAT_CONFIG='{"ipv6":true,"fixed-cidr-v6":"fd00:dead:beef:c0::/80","experimental":true,"ip6tables":true}'
+  # Min Docker version
+  DOCKERV_REQ=20.10.2
+  # Current Docker version
+  DOCKERV_CUR=$(docker version -f '{{.Server.Version}}')
+  if grep -qi "ipv6nat-mailcow" docker-compose.yml; then
+    echo -e "\e[32mNative IPv6 implementation available.\e[0m"
+    echo "This will enable experimental features in the Docker daemon and configure Docker to do the IPv6 NATing instead of ipv6nat-mailcow."
+    echo '!!! This step is recommended !!!'
+    echo "mailcow will try to roll back the changes if starting Docker fails after modifying the daemon.json configuration file."
+    read -r -p "Should we try to enable the native IPv6 implementation in Docker now (recommended)? [y/N] " dockernatresponse
+    if [[ ! "${dockernatresponse}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+      echo "OK, skipping this step."
+      return 0
+    fi
+  fi
+  # Sort versions and check if we are running a newer or equal version to req
+  if [ $(printf "${DOCKERV_REQ}\n${DOCKERV_CUR}" | sort -V | tail -n1) == "${DOCKERV_CUR}" ]; then
+    # If Dockerd daemon json exists
+    if [ -s /etc/docker/daemon.json ]; then
+      IFS=',' read -r -a dockerconfig <<< $(cat /etc/docker/daemon.json | tr -cd '[:alnum:],')
+      if ! in_array ipv6true "${dockerconfig[@]}" || \
+        ! in_array experimentaltrue "${dockerconfig[@]}" || \
+        ! in_array ip6tablestrue "${dockerconfig[@]}" || \
+        ! grep -qi "fixed-cidr-v6" /etc/docker/daemon.json; then
+          echo -e "\e[33mWarning:\e[0m You seem to have modified the /etc/docker/daemon.json configuration by yourself and not fully/correctly activated the native IPv6 NAT implementation."
+          echo "You will need to merge your existing configuration manually or fix/delete the existing daemon.json configuration before trying the update process again."
+          echo -e "Please merge the following content and restart the Docker daemon:\n"
+          echo ${NAT_CONFIG}
+          return 1
+      fi
+    else
+      echo "Working on IPv6 NAT, please wait..."
+      echo ${NAT_CONFIG} > /etc/docker/daemon.json
+      ip6tables -F -t nat
+      if ! systemctl restart docker.service; then
+        echo -e "\e[31mError:\e[0m Failed to activate IPv6 NAT! Reverting and exiting."
+        rm /etc/docker/daemon.json
+        systemctl reset-failed docker.service
+        systemctl restart docker.service
+        return 1
+      fi
+    fi
+    # Removing legacy container
+    sed -i '/ipv6nat-mailcow:$/,/^$/d' docker-compose.yml
+    echo -e "\e[32mGreat! \e[0mNative IPv6 NAT is active.\e[0m"
+  else
+    echo -e "\e[31mPlease upgrade Docker to version ${DOCKERV_REQ} or above.\e[0m"
+    return 0
+  fi
 }
 
 while (($#)); do
@@ -123,7 +191,7 @@ while (($#)); do
         exit 99
       fi
       if [[ -z $(git log HEAD --pretty=format:"%H" | grep "${LATEST_REV}") ]]; then
-        echo "Updated code is available."
+        echo -e "Updated code is available.\nThe changes can be found here: https://github.com/mailcow/mailcow-dockerized/commits/master"
         git log --date=short --pretty=format:"%ad - %s" $(git rev-parse --short HEAD)..origin/master
         exit 0
       else
@@ -181,6 +249,7 @@ if [ ${#DOTS} -lt 2 ]; then
 fi
 
 if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\""; exit 1; fi
+# This will also cover sort
 if cp --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox cp detected, please install coreutils, \"apk add --no-cache --upgrade coreutils\""; exit 1; fi
 if sed --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox sed detected, please install gnu sed, \"apk add --no-cache --upgrade sed\""; exit 1; fi
 
@@ -191,6 +260,7 @@ CONFIG_ARRAY=(
   "WATCHDOG_NOTIFY_EMAIL"
   "WATCHDOG_NOTIFY_BAN"
   "WATCHDOG_EXTERNAL_CHECKS"
+  "WATCHDOG_SUBJECT"
   "SKIP_CLAMD"
   "SKIP_IP_CHECK"
   "ADDITIONAL_SAN"
@@ -218,10 +288,8 @@ CONFIG_ARRAY=(
   "DOVECOT_MASTER_USER"
   "DOVECOT_MASTER_PASS"
   "MAILCOW_PASS_SCHEME"
-  "XMPP_C2S_PORT"
-  "XMPP_S2S_PORT"
-  "XMPP_HTTPS_PORT"
   "ADDITIONAL_SERVER_NAMES"
+  "ACME_CONTACT"
 )
 
 sed -i --follow-symlinks '$a\' mailcow.conf
@@ -361,6 +429,12 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# Notify about banned IP. Includes whois lookup.' >> mailcow.conf
       echo "WATCHDOG_NOTIFY_BAN=y" >> mailcow.conf
     fi
+  elif [[ ${option} == "WATCHDOG_SUBJECT" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Subject for watchdog mails. Defaults to "Watchdog ALERT" followed by the error message.' >> mailcow.conf
+      echo "#WATCHDOG_SUBJECT=" >> mailcow.conf
+    fi
   elif [[ ${option} == "WATCHDOG_EXTERNAL_CHECKS" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
@@ -403,14 +477,6 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# see https://mailcow.github.io/mailcow-dockerized-docs/model-passwd/' >> mailcow.conf
       echo "MAILCOW_PASS_SCHEME=BLF-CRYPT" >> mailcow.conf
     fi
-  elif [[ ${option} == "XMPP_C2S_PORT" ]]; then
-    if ! grep -q ${option} mailcow.conf; then
-      echo "XMPP_C2S_PORT=5222" >> mailcow.conf
-    fi
-  elif [[ ${option} == "XMPP_S2S_PORT" ]]; then
-    if ! grep -q ${option} mailcow.conf; then
-      echo "XMPP_S2S_PORT=5269" >> mailcow.conf
-    fi
   elif [[ ${option} == "ADDITIONAL_SERVER_NAMES" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo '# Additional server names for mailcow UI' >> mailcow.conf
@@ -422,10 +488,15 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# Comma separated list without spaces! Example: ADDITIONAL_SERVER_NAMES=a.b.c,d.e.f' >> mailcow.conf
       echo 'ADDITIONAL_SERVER_NAMES=' >> mailcow.conf
     fi
-  elif [[ ${option} == "XMPP_HTTPS_PORT" ]]; then
+  elif [[ ${option} == "ACME_CONTACT" ]]; then
     if ! grep -q ${option} mailcow.conf; then
-      echo "XMPP_HTTPS_PORT=5443" >> mailcow.conf
-    fi
+      echo '# Lets Encrypt registration contact information' >> mailcow.conf
+      echo '# Optional: Leave empty for none' >> mailcow.conf
+      echo '# This value is only used on first order!' >> mailcow.conf
+      echo '# Setting it at a later point will require the following steps:' >> mailcow.conf
+      echo '# https://mailcow.github.io/mailcow-dockerized-docs/debug-reset-tls/' >> mailcow.conf
+      echo 'ACME_CONTACT=' >> mailcow.conf
+  fi
   elif ! grep -q ${option} mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"
     echo "${option}=n" >> mailcow.conf
@@ -460,10 +531,11 @@ fi
 
 if [ ! $FORCE ]; then
   read -r -p "Are you sure you want to update mailcow: dockerized? All containers will be stopped. [y/N] " response
-  if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  if [[ ! "${response}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
     echo "OK, exiting."
     exit 0
   fi
+  migrate_docker_nat
 fi
 
 echo -e "\e[32mValidating docker-compose stack configuration...\e[0m"
@@ -501,7 +573,7 @@ for container in "${MAILCOW_CONTAINERS[@]}"; do
   docker rm -f "$container" 2> /dev/null
 done
 
-[[ -f data/conf/nginx/ejabberd.conf ]] && mv data/conf/nginx/ejabberd.conf data/conf/nginx/ZZZ-ejabberd.conf
+[[ -f data/conf/nginx/ZZZ-ejabberd.conf ]] && rm data/conf/nginx/ZZZ-ejabberd.conf
 
 # Silently fixing remote url from andryyy to mailcow
 git remote set-url origin https://github.com/mailcow/mailcow-dockerized
@@ -627,6 +699,11 @@ fi
 
 echo -e "\e[32mCollecting garbage...\e[0m"
 docker_garbage
+
+# Run post-update-hook
+if [ -f "${SCRIPT_DIR}/post_update_hook.sh" ]; then
+  bash "${SCRIPT_DIR}/post_update_hook.sh"
+fi
 
 #echo "In case you encounter any problem, hard-reset to a state before updating mailcow:"
 #echo

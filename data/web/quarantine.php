@@ -9,12 +9,12 @@ $quarantine_settings = quarantine('settings');
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
-      <div class="panel panel-default">
+      <div class="panel panel-default panel-xs-lg">
         <div class="panel-heading">
           <?=$lang['quarantine']['quarantine'];?> <span class="badge badge-info table-lines"></span>
           <div class="btn-group pull-right">
-            <button class="btn btn-xs btn-default refresh_table" data-draw="draw_quarantine_table" data-table="quarantinetable"><?=$lang['quarantine']['refresh'];?></button>
-            <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['quarantine']['table_size'];?> 
+            <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_quarantine_table" data-table="quarantinetable"><?=$lang['quarantine']['refresh'];?></button>
+            <button type="button" class="btn btn-xs btn-xs-lg btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['quarantine']['table_size'];?>
               <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" data-table-id="quarantinetable" role="menu">
@@ -47,8 +47,8 @@ $quarantine_settings = quarantine('settings');
         </div>
         <div class="mass-actions-quarantine">
           <div class="btn-group" data-acl="<?=$_SESSION['acl']['quarantine'];?>">
-            <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="qitems" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['quarantine']['toggle_all'];?></a>
-            <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['quarantine']['quick_actions'];?> <span class="caret"></span></a>
+            <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="qitems" href="#"><i class="bi bi-check-all"></i> <?=$lang['quarantine']['toggle_all'];?></a>
+            <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['quarantine']['quick_actions'];?> <span class="caret"></span></a>
             <ul class="dropdown-menu">
               <li><a data-action="edit_selected" data-id="qitems" data-api-url='edit/qitem' data-api-attr='{"action":"release"}' href="#"><?=$lang['quarantine']['deliver_inbox'];?></a></li>
               <li role="separator" class="divider"></li>
@@ -56,6 +56,7 @@ $quarantine_settings = quarantine('settings');
               <li role="separator" class="divider"></li>
               <li><a data-action="delete_selected" data-id="qitems" data-api-url='delete/qitem' href="#"><?=$lang['quarantine']['remove'];?></a></li>
             </ul>
+            <div class="clearfix visible-xs"></div>
           </div>
         </div>
       </div>

@@ -30,7 +30,7 @@ for bin in openssl curl docker-compose docker git awk sha1sum; do
 done
 
 if [ -f mailcow.conf ]; then
-  read -r -p "A config file exists and will be overwritten, are you sure you want to contine? [y/N] " response
+  read -r -p "A config file exists and will be overwritten, are you sure you want to continue? [y/N] " response
   case $response in
     [yY][eE][sS]|[yY])
       mv mailcow.conf mailcow.conf_backup
@@ -144,6 +144,7 @@ DBROOT=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 | head -c 28)
 # Do _not_ use IP:PORT in HTTP(S)_BIND or HTTP(S)_PORT
 # IMPORTANT: Do not use port 8081, 9081 or 65510!
 # Example: HTTP_BIND=1.2.3.4
+# For IPv4 and IPv6 leave it empty: HTTP_BIND= & HTTPS_PORT=
 # For IPv6 see https://mailcow.github.io/mailcow-dockerized-docs/firststeps-ip_bindings/
 
 HTTP_PORT=80
@@ -170,9 +171,6 @@ DOVEADM_PORT=127.0.0.1:19991
 SQL_PORT=127.0.0.1:13306
 SOLR_PORT=127.0.0.1:18983
 REDIS_PORT=127.0.0.1:7654
-XMPP_C2S_PORT=5222
-XMPP_S2S_PORT=5269
-XMPP_HTTPS_PORT=5443
 
 # Your timezone
 # See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for a list of timezones
@@ -279,6 +277,9 @@ USE_WATCHDOG=y
 # Notify about banned IP (includes whois lookup)
 WATCHDOG_NOTIFY_BAN=n
 
+# Subject for watchdog mails. Defaults to "Watchdog ALERT" followed by the error message.
+#WATCHDOG_SUBJECT=
+
 # Checks if mailcow is an open relay. Requires a SAL. More checks will follow.
 # https://www.servercow.de/mailcow?lang=en
 # https://www.servercow.de/mailcow?lang=de
@@ -333,9 +334,16 @@ DOVECOT_MASTER_USER=
 # LEAVE EMPTY IF UNSURE
 DOVECOT_MASTER_PASS=
 
-
 # Enables the regex alias feature which allows the usage of regular expressions in mail address aliases
 ENABLE_REGEX_ALIAS=n
+
+# Let's Encrypt registration contact information
+# Optional: Leave empty for none
+# This value is only used on first order!
+# Setting it at a later point will require the following steps:
+# https://mailcow.github.io/mailcow-dockerized-docs/debug-reset-tls/
+ACME_CONTACT=
+
 EOF
 
 mkdir -p data/assets/ssl

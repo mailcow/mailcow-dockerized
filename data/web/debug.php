@@ -6,7 +6,6 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/header.inc.php';
 $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 $solr_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_SOLR"])) ? false : solr_status();
 $clamd_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_CLAMD"])) ? false : true;
-$xmpp_status = xmpp_control('status');
 ?>
 <div class="container">
 
@@ -29,6 +28,7 @@ $xmpp_status = xmpp_control('status');
         <li role="presentation"><a href="#tab-rspamd-history" aria-controls="tab-rspamd-history" role="tab" data-toggle="tab">Rspamd</a></li>
         <li role="presentation"><span class="dropdown-desc"><?=$lang['debug']['static_logs'];?></span></li>
         <li role="presentation"><a href="#tab-ui" aria-controls="tab-ui" role="tab" data-toggle="tab">mailcow UI</a></li>
+        <li role="presentation"><a href="#tab-sasl" aria-controls="tab-sasl" role="tab" data-toggle="tab">SASL</a></li>
       </ul>
     </li>
   </ul>
@@ -49,7 +49,7 @@ $xmpp_status = xmpp_control('status');
             <div class="panel-body">
               <div class="row">
                 <div class="col-sm-3">
-                  <p>Mail disk space via <?=$vmail_df[0];?></p>
+                  <p><i class="bi bi-hdd-fill"></i> <?=$vmail_df[0];?></p>
                   <p><?=$vmail_df[2];?> / <?=$vmail_df[1];?> (<?=$vmail_df[4];?>)</p>
                 </div>
                 <div class="col-sm-9">
@@ -79,58 +79,17 @@ $xmpp_status = xmpp_control('status');
                   <p><?=$lang['debug']['jvm_memory_solr'];?>: <?=$solr_status['jvm']['memory']['total'] - $solr_status['jvm']['memory']['free'];?> / <?=$solr_status['jvm']['memory']['total'];?>
                     (<?=round($solr_status['jvm']['memory']['raw']['used%']);?>%)</p>
                   <hr>
-                  <p><?=$lang['debug']['uptime'];?>: ~<?=round($solr_status['status']['dovecot-fts']['uptime'] / 1000 / 60 / 60);?>h</p>
+                  <p><?=$lang['debug']['uptime'];?>: <?=round($solr_status['status']['dovecot-fts']['uptime'] / 1000 / 60 / 60);?>h</p>
                   <p><?=$lang['debug']['started_at'];?>: <span class="parse_date"><?=$solr_status['status']['dovecot-fts']['startTime'];?></span></p>
                   <p><?=$lang['debug']['last_modified'];?>: <span class="parse_date"><?=$solr_status['status']['dovecot-fts']['index']['lastModified'];?></span></p>
                   <p><?=$lang['debug']['size'];?>: <?=$solr_status['status']['dovecot-fts']['index']['size'];?></p>
-                  <p><?=$lang['debug']['docs'];?>: <?=$solr_status['status']['dovecot-fts']['index']['numDocs'];?></p>
+                  <p><i class="bi bi-file-text"></i> <?=$lang['debug']['docs'];?>: <?=$solr_status['status']['dovecot-fts']['index']['numDocs'];?></p>
                   <?php
                   else:
                   ?>
                   <p><?=$lang['debug']['solr_dead'];?></p>
                   <?php
                   endif;
-                  ?>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 class="panel-title"><?=$lang['debug']['xmpp_status'];?></h3>
-            </div>
-            <div class="panel-body">
-              <div class="row">
-                <div class="col-sm-3">
-                  <p><img class="img-responsive" alt="XMPP Logo" width="128px" src="data:image/png;base64,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" /></p>
-                </div>
-                <div class="col-sm-9">
-                  <?php
-                  if ($xmpp_status !== false) {
-                  ?>
-                    <p><?=$lang['debug']['online_users'];?>: <?=(empty($xmpp_status['onlineusers'])) ? '-' : $xmpp_status['onlineusers'];?></p>
-                    <p><?=$lang['debug']['started_at'];?>: <span class="parse_s_ago"><?=$xmpp_status['uptimeseconds'];?></span></p>
-                    <?php
-                    if (!empty($xmpp_status['muc_online_rooms'])) {
-                    ?>
-                    <p>MUCs:</p>
-                    <ol>
-                    <?php
-                    foreach ($xmpp_status['muc_online_rooms'] as $room) {
-                    ?>
-                      <li><a href="xmpp:<?=$room;?>?message"><?=$room;?></a></li>
-                    <?php
-                    }
-                    ?>
-                    </ol>
-                  <?php
-                    }
-                  }
-                  else {
-                  ?>
-                    <p><?=$lang['debug']['xmpp_dead'];?></p>
-                  <?php
-                  }
                   ?>
                 </div>
               </div>
@@ -171,9 +130,10 @@ $xmpp_status = xmpp_control('status');
                 $started = '?';
               }
               ?>
-              <small>(<?=$lang['debug']['started_on'];?> <span class="parse_date"><?=$started;?></span>),
-              <a href data-toggle="modal" data-container="<?=$container;?>" data-target="#RestartContainer"><?=$lang['debug']['restart_container'];?></a></small>
-              <span class="pull-right status-indicator label label-<?=($container_info['State'] !== false && !empty($container_info['State'])) ? (($container_info['State']['Running'] == 1) ? 'success' : 'danger') : 'default'; ?>">&nbsp;</span>
+              <br class="visible-xs" />
+              <small>(<?=$lang['debug']['started_on'];?> <span class="parse_date"><?=$started;?></span>)</small>
+              <a href data-toggle="modal" data-container="<?=$container;?>" data-target="#RestartContainer" class="pull-right btn btn-xs btn-default"><?=$lang['debug']['restart_container'];?>
+              <i class="pull-right bi <?=($container_info['State'] !== false && !empty($container_info['State'])) ? (($container_info['State']['Running'] == 1) ? 'bi-record-fill text-success' : 'bi-record-fill text-danger') : 'default'; ?>"></i></a>
               </li>
               <?php
               }
@@ -184,12 +144,12 @@ $xmpp_status = xmpp_control('status');
         </div>
 
         <div role="tabpanel" class="tab-pane" id="tab-postfix-logs">
-          <div class="panel panel-default">
+          <div class="panel panel-xs-lg panel-default">
             <div class="panel-heading">Postfix <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="postfix_log" data-log-url="postfix" data-nrows="100">+ 100</button>
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="postfix_log" data-log-url="postfix" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_postfix_logs" data-table="postfix_log"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="postfix_log" data-log-url="postfix" data-nrows="100">+ 100</button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="postfix_log" data-log-url="postfix" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_postfix_logs" data-table="postfix_log"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -201,12 +161,12 @@ $xmpp_status = xmpp_control('status');
         </div>
 
         <div role="tabpanel" class="tab-pane" id="tab-ui">
-          <div class="panel panel-default">
+          <div class="panel panel-xs-lg panel-default">
             <div class="panel-heading">mailcow UI <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="mailcow_ui" data-table="ui_logs" data-log-url="ui" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="mailcow_ui" data-table="ui_logs" data-log-url="ui" data-nrows="10000">+ 10000</button>
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_ui_logs" data-table="ui_logs"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="mailcow_ui" data-table="ui_logs" data-log-url="ui" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="mailcow_ui" data-table="ui_logs" data-log-url="ui" data-nrows="10000">+ 10000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_ui_logs" data-table="ui_logs"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -217,13 +177,30 @@ $xmpp_status = xmpp_control('status');
           </div>
         </div>
 
+        <div role="tabpanel" class="tab-pane" id="tab-sasl">
+          <div class="panel panel-xs-lg panel-default">
+            <div class="panel-heading">SASL <span class="badge badge-info table-lines"></span>
+              <div class="btn-group pull-right">
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="sasl_log_table" data-table="sasl_logs" data-log-url="ui" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="sasl_log_table" data-table="sasl_logs" data-log-url="ui" data-nrows="10000">+ 10000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_sasl_logs" data-table="sasl_logs"><?=$lang['admin']['refresh'];?></button>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div class="table-responsive">
+                <table class="table table-striped table-condensed" id="sasl_logs"></table>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div role="tabpanel" class="tab-pane" id="tab-dovecot-logs">
-          <div class="panel panel-default">
+          <div class="panel panel-xs-lg panel-default">
             <div class="panel-heading">Dovecot <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="dovecot_log" data-log-url="dovecot" data-nrows="100">+ 100</button>
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="dovecot_log" data-log-url="dovecot" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_dovecot_logs" data-table="dovecot_log"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="dovecot_log" data-log-url="dovecot" data-nrows="100">+ 100</button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="dovecot_log" data-log-url="dovecot" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_dovecot_logs" data-table="dovecot_log"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -235,12 +212,12 @@ $xmpp_status = xmpp_control('status');
         </div>
 
         <div role="tabpanel" class="tab-pane" id="tab-sogo-logs">
-          <div class="panel panel-default">
+          <div class="panel panel-xs-lg panel-default">
             <div class="panel-heading">SOGo <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="sogo_log" data-log-url="sogo" data-nrows="100">+ 100</button>
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="sogo_log" data-log-url="sogo" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_sogo_logs" data-table="sogo_log"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="sogo_log" data-log-url="sogo" data-nrows="100">+ 100</button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="sogo_log" data-log-url="sogo" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_sogo_logs" data-table="sogo_log"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -252,12 +229,12 @@ $xmpp_status = xmpp_control('status');
         </div>
 
         <div role="tabpanel" class="tab-pane" id="tab-netfilter-logs">
-          <div class="panel panel-default">
+          <div class="panel panel-xs-lg panel-default">
             <div class="panel-heading">Netfilter <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="netfilter_log" data-log-url="netfilter" data-nrows="100">+ 100</button>
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="netfilter_log" data-log-url="netfilter" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_netfilter_logs" data-table="netfilter_log"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="netfilter_log" data-log-url="netfilter" data-nrows="100">+ 100</button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="netfilter_log" data-log-url="netfilter" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_netfilter_logs" data-table="netfilter_log"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -269,12 +246,12 @@ $xmpp_status = xmpp_control('status');
         </div>
 
         <div role="tabpanel" class="tab-pane" id="tab-rspamd-history">
-          <div class="panel panel-default">
+          <div class="panel panel-xs-lg panel-default">
             <div class="panel-heading">Rspamd history <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="rspamd_history" data-table="rspamd_history" data-log-url="rspamd-history" data-nrows="100">+ 100</button>
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="rspamd_history" data-table="rspamd_history" data-log-url="rspamd-history" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_rspamd_history" data-table="rspamd_history"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="rspamd_history" data-table="rspamd_history" data-log-url="rspamd-history" data-nrows="100">+ 100</button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="rspamd_history" data-table="rspamd_history" data-log-url="rspamd-history" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_rspamd_history" data-table="rspamd_history"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -291,12 +268,12 @@ $xmpp_status = xmpp_control('status');
         </div>
 
         <div role="tabpanel" class="tab-pane" id="tab-autodiscover-logs">
-          <div class="panel panel-default">
+          <div class="panel panel-xs-lg panel-default">
             <div class="panel-heading">Autodiscover <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="autodiscover_log" data-table="autodiscover_log" data-log-url="autodiscover" data-nrows="100">+ 100</button>
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="autodiscover_log" data-table="autodiscover_log" data-log-url="autodiscover" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_autodiscover_logs" data-table="autodiscover_log"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="autodiscover_log" data-table="autodiscover_log" data-log-url="autodiscover" data-nrows="100">+ 100</button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="autodiscover_log" data-table="autodiscover_log" data-log-url="autodiscover" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_autodiscover_logs" data-table="autodiscover_log"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -308,12 +285,12 @@ $xmpp_status = xmpp_control('status');
         </div>
 
         <div role="tabpanel" class="tab-pane" id="tab-watchdog-logs">
-          <div class="panel panel-default">
+          <div class="panel panel-xs-lg panel-default">
             <div class="panel-heading">Watchdog <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="watchdog" data-table="watchdog_log" data-log-url="watchdog" data-nrows="100">+ 100</button>
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="watchdog" data-table="watchdog_log" data-log-url="watchdog" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_watchdog_logs" data-table="watchdog_log"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="watchdog" data-table="watchdog_log" data-log-url="watchdog" data-nrows="100">+ 100</button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="watchdog" data-table="watchdog_log" data-log-url="watchdog" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_watchdog_logs" data-table="watchdog_log"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -325,12 +302,12 @@ $xmpp_status = xmpp_control('status');
         </div>
 
         <div role="tabpanel" class="tab-pane" id="tab-acme-logs">
-          <div class="panel panel-default">
+          <div class="panel panel-xs-lg panel-default">
             <div class="panel-heading">ACME <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="acme_log" data-log-url="acme" data-nrows="100">+ 100</button>
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="general_syslog" data-table="acme_log" data-log-url="acme" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_acme_logs" data-table="acme_log"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="acme_log" data-log-url="acme" data-nrows="100">+ 100</button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="acme_log" data-log-url="acme" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_acme_logs" data-table="acme_log"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -342,12 +319,12 @@ $xmpp_status = xmpp_control('status');
         </div>
 
         <div role="tabpanel" class="tab-pane" id="tab-api-logs">
-          <div class="panel panel-default">
+          <div class="panel panel-xs-lg panel-default">
             <div class="panel-heading">API <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="apilog" data-table="api_log" data-log-url="api" data-nrows="100">+ 100</button>
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="apilog" data-table="api_log" data-log-url="api" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_api_logs" data-table="api_log"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="apilog" data-table="api_log" data-log-url="api" data-nrows="100">+ 100</button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="apilog" data-table="api_log" data-log-url="api" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_api_logs" data-table="api_log"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">
@@ -359,12 +336,12 @@ $xmpp_status = xmpp_control('status');
         </div>
 
         <div role="tabpanel" class="tab-pane" id="tab-api-rl">
-          <div class="panel panel-default">
+          <div class="panel panel-xs-lg panel-default">
             <div class="panel-heading">Ratelimits <span class="badge badge-info table-lines"></span>
               <div class="btn-group pull-right">
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="rllog" data-table="rl_log" data-log-url="ratelimited" data-nrows="100">+ 100</button>
-                <button class="btn btn-xs btn-default add_log_lines" data-post-process="rllog" data-table="rl_log" data-log-url="ratelimited" data-nrows="1000">+ 1000</button>
-                <button class="btn btn-xs btn-default refresh_table" data-draw="draw_rl_logs" data-table="rl_log"><?=$lang['admin']['refresh'];?></button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="rllog" data-table="rl_log" data-log-url="ratelimited" data-nrows="100">+ 100</button>
+                <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="rllog" data-table="rl_log" data-log-url="ratelimited" data-nrows="1000">+ 1000</button>
+                <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_rl_logs" data-table="rl_log"><?=$lang['admin']['refresh'];?></button>
               </div>
             </div>
             <div class="panel-body">

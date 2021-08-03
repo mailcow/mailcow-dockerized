@@ -8,14 +8,8 @@ $ALLOW_ADMIN_EMAIL_LOGIN = (preg_match(
 $session_var_user_allowed = 'sogo-sso-user-allowed';
 $session_var_pass = 'sogo-sso-pass';
 
-// prevent if feature is disabled
-if (!$ALLOW_ADMIN_EMAIL_LOGIN) {
-  header('HTTP/1.0 403 Forbidden');
-  echo "this feature is disabled";
-  exit;
-}
 // validate credentials for basic auth requests
-elseif (isset($_SERVER['PHP_AUTH_USER'])) {
+if (isset($_SERVER['PHP_AUTH_USER'])) {
   // load prerequisites only when required
   require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
   $username = $_SERVER['PHP_AUTH_USER'];
@@ -36,11 +30,19 @@ elseif (isset($_SERVER['PHP_AUTH_USER'])) {
 elseif (isset($_GET['login'])) {
   // load prerequisites only when required
   require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
-  // check permissions
-  if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['acl']['login_as'] == "1") {
-    $login = html_entity_decode(rawurldecode($_GET["login"]));
+  // check if dual_login is active
+  $is_dual = (!empty($_SESSION["dual-login"]["username"])) ? true : false;
+  // check permissions (if dual_login is active, deny sso when acl is not given)
+  $login = html_entity_decode(rawurldecode($_GET["login"]));
+  if ($ALLOW_ADMIN_EMAIL_LOGIN === 0 && $is_dual === true) {
+    header('HTTP/1.0 403 Forbidden');
+    echo "Admin login is forbidden";
+    exit;
+  }
+  if (isset($_SESSION['mailcow_cc_role']) &&
+    ($_SESSION['acl']['login_as'] == "1" || ($is_dual === false && $login == $_SESSION['mailcow_cc_username']))) {
     if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
-      if (!empty(mailbox('get', 'mailbox_details', $login))) {
+      if (user_get_alias_details($login) !== false) {
         // load master password
         $sogo_sso_pass = file_get_contents("/etc/sogo-sso/sogo-sso.pass");
         // register username and password in session
@@ -53,6 +55,7 @@ elseif (isset($_GET['login'])) {
     }
   }
   header('HTTP/1.0 403 Forbidden');
+  echo "Access is forbidden";
   exit;
 }
 // only check for admin-login on sogo GUI requests

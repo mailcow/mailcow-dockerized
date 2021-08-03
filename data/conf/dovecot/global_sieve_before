@@ -1,14 +1,20 @@
 # global_sieve_before script
 # global_sieve_before -> user sieve_before (mailcow UI) -> user sieve_after (mailcow UI) -> global_sieve_after
 
-require "fileinto";
-require "mailbox";
+require ["imap4flags", "mailbox", "fileinto"];
 
-if header :contains ["Chat-Version"] [""] {
+if allof(header :contains ["Chat-Version"] [""],
+  header :contains ["Auto-Submitted"] ["auto-replied"]) {
   if mailboxexists "DeltaChat" {
     fileinto "DeltaChat";
   } else {
     fileinto :create "DeltaChat";
   }
+  stop;
+}
+
+if allof(header :contains ["Chat-Version"] [""],
+  header :contains ["Autocrypt"] [""]) {
+  setflag "\\seen";
   stop;
 }

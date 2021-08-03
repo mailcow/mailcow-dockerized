@@ -76,8 +76,8 @@ jQuery(function($){
         {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"sorted": true,"name":"username","title":lang.username,"style":{"width":"250px"}},
         {"name":"selected_domains","title":lang.admin_domains,"breakpoints":"xs sm"},
-        {"name":"tfa_active","title":"TFA", "filterable": false,"style":{"maxWidth":"80px","width":"80px"},"formatter": function(value){return 1==value?'&#10003;':0==value&&'&#10005;';}},
-        {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'&#10003;':0==value&&'&#10005;';}},
+        {"name":"tfa_active","title":"TFA", "filterable": false,"style":{"maxWidth":"80px","width":"80px"},"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
+        {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"250px","width":"250px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
       "rows": $.ajax({
@@ -131,8 +131,8 @@ jQuery(function($){
       "columns": [
         {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"sorted": true,"name":"usr","title":lang.username,"style":{"width":"250px"}},
-        {"name":"tfa_active","title":"TFA", "filterable": false,"style":{"maxWidth":"80px","width":"80px"},"formatter": function(value){return 1==value?'&#10003;':0==value&&'&#10005;';}},
-        {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'&#10003;':0==value&&'&#10005;';}},
+        {"name":"tfa_active","title":"TFA", "filterable": false,"style":{"maxWidth":"80px","width":"80px"},"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
+        {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"250px","width":"250px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
       "rows": $.ajax({
@@ -160,7 +160,7 @@ jQuery(function($){
         {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"name":"host","type":"text","title":lang.host,"style":{"width":"250px"}},
         {"name":"source","title":lang.source,"breakpoints":"xs sm"},
-        {"name":"keep_spam","title":lang.spamfilter, "type": "text","style":{"maxWidth":"80px","width":"80px"},"formatter": function(value){return 'yes'==value?'&#10005;':'no'==value&&'&#10003;';}},
+        {"name":"keep_spam","title":lang.spamfilter, "type": "text","style":{"maxWidth":"80px","width":"80px"},"formatter": function(value){return 'yes'==value?'<i class="bi bi-x-lg"></i>':'no'==value&&'<i class="bi bi-check-lg"></i>';}},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
       "rows": $.ajax({
@@ -187,9 +187,9 @@ jQuery(function($){
         {"name":"id","type":"text","title":"ID","style":{"width":"50px"}},
         {"name":"hostname","type":"text","title":lang.host,"style":{"width":"250px"}},
         {"name":"username","title":lang.username,"breakpoints":"xs sm"},
-        {"name":"used_by_domains","title":lang.in_use_by,"style":{"width":"110px"}, "type": "text","breakpoints":"xs sm"},
-        {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'&#10003;':0==value&&'&#10005;';}},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"220px","width":"220px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
+        {"name":"in_use_by","title":lang.in_use_by,"style":{"min-width":"200px","width":"200px"}, "type": "text","breakpoints":"xs sm"},
+        {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
+        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"250px","width":"250px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
       ],
       "rows": $.ajax({
         dataType: 'json',
@@ -209,15 +209,15 @@ jQuery(function($){
     });
   }
   function draw_transport_maps() {
-    ft_relayhoststable = FooTable.init('#transportstable', {
+    ft_transportstable = FooTable.init('#transportstable', {
       "columns": [
         {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"name":"id","type":"text","title":"ID","style":{"width":"50px"}},
-        {"name":"destination","type":"text","title":lang.destination,"style":{"width":"250px"}},
-        {"name":"nexthop","type":"text","title":lang.nexthop,"style":{"width":"250px"}},
+        {"name":"destination","type":"text","title":lang.destination,"style":{"min-width":"300px","width":"300px"}},
+        {"name":"nexthop","type":"text","title":lang.nexthop,"style":{"min-width":"200px","width":"200px"}},
         {"name":"username","title":lang.username,"breakpoints":"xs sm"},
-        {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'&#10003;':0==value&&'&#10005;';}},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"220px","width":"220px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
+        {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
+        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"250px","width":"250px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
       ],
       "rows": $.ajax({
         dataType: 'json',
@@ -233,7 +233,12 @@ jQuery(function($){
       "empty": lang.empty,
       "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
       "sorting": {"enabled": true},
-      "toggleSelector": "table tbody span.footable-toggle"
+      "toggleSelector": "table tbody span.footable-toggle",
+      "on": {
+        "ready.ft.table": function(e, ft){
+          $('.mx-info').tooltip();
+        }
+      }
     });
   }
   function draw_queue() {
@@ -276,22 +281,28 @@ jQuery(function($){
   function process_table_data(data, table) {
     if (table == 'relayhoststable') {
       $.each(data, function (i, item) {
-        item.action = '<div class="btn-group">' +
-          '<a href="#" data-toggle="modal" data-target="#testTransportModal" data-transport-id="' + encodeURI(item.id) + '" data-transport-type="sender-dependent" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-triangle-right"></span> Test</a>' +
-          '<a href="/edit/relayhost/' + encodeURI(item.id) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-          '<a href="#" data-action="delete_selected" data-id="single-rlyhost" data-api-url="delete/relayhost" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+        item.action = '<div class="btn-group footable-actions">' +
+          '<a href="#" data-toggle="modal" data-target="#testTransportModal" data-transport-id="' + encodeURI(item.id) + '" data-transport-type="sender-dependent" class="btn btn-xs btn-xs-third btn-default"><i class="bi bi-caret-right-fill"></i> Test</a>' +
+          '<a href="/edit/relayhost/' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-third btn-default"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+          '<a href="#" data-action="delete_selected" data-id="single-rlyhost" data-api-url="delete/relayhost" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-third btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
           '</div>';
+        if (item.used_by_mailboxes == '') { item.in_use_by = item.used_by_domains; }
+        else if (item.used_by_domains == '') { item.in_use_by = item.used_by_mailboxes; }
+        else { item.in_use_by = item.used_by_mailboxes + '<hr style="margin:5px 0px 5px 0px;">' + item.used_by_domains; }
         item.chkbox = '<input type="checkbox" data-id="rlyhosts" name="multi_select" value="' + item.id + '" />';
       });
     } else if (table == 'transportstable') {
       $.each(data, function (i, item) {
-        if (item.username) {
-          item.username = '<span style="border-left:3px solid #' + intToRGB(hashCode(item.nexthop)) + ';padding-left:5px;">' + item.username + '</span>';
+        if (item.is_mx_based) {
+          item.destination = '<i class="bi bi-info-circle-fill text-info mx-info" data-toggle="tooltip" title="' + lang.is_mx_based + '"></i> <code>' + item.destination + '</code>';
         }
-        item.action = '<div class="btn-group">' +
-          '<a href="#" data-toggle="modal" data-target="#testTransportModal" data-transport-id="' + encodeURI(item.id) + '" data-transport-type="transport-map" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-triangle-right"></span> Test</a>' +
-          '<a href="/edit/transport/' + encodeURI(item.id) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-          '<a href="#" data-action="delete_selected" data-id="single-transport" data-api-url="delete/transport" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+        if (item.username) {
+          item.username = '<i style="color:#' + intToRGB(hashCode(item.nexthop)) + ';" class="bi bi-square-fill"></i> ' + item.username;
+        }
+        item.action = '<div class="btn-group footable-actions">' +
+          '<a href="#" data-toggle="modal" data-target="#testTransportModal" data-transport-id="' + encodeURI(item.id) + '" data-transport-type="transport-map" class="btn btn-xs btn-xs-third btn-default"><i class="bi bi-caret-right-fill"></i> Test</a>' +
+          '<a href="/edit/transport/' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-third btn-default"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+          '<a href="#" data-action="delete_selected" data-id="single-transport" data-api-url="delete/transport" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-third btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
           '</div>';
         item.chkbox = '<input type="checkbox" data-id="transports" name="multi_select" value="' + item.id + '" />';
       });
@@ -302,22 +313,22 @@ jQuery(function($){
           return escapeHtml(i);
         });
         item.recipients = rcpts.join('<hr style="margin:1px!important">');
-        item.action = '<div class="btn-group">' +
+        item.action = '<div class="btn-group footable-actions">' +
           '<a href="#" data-toggle="modal" data-target="#showQueuedMsg" data-queue-id="' + encodeURI(item.queue_id) + '" class="btn btn-xs btn-default">' + lang.queue_show_message + '</a>' +
           '</div>';
       });
     } else if (table == 'forwardinghoststable') {
       $.each(data, function (i, item) {
-        item.action = '<div class="btn-group">' +
-          '<a href="#" data-action="delete_selected" data-id="single-fwdhost" data-api-url="delete/fwdhost" data-item="' + encodeURI(item.host) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+        item.action = '<div class="btn-group footable-actions">' +
+          '<a href="#" data-action="delete_selected" data-id="single-fwdhost" data-api-url="delete/fwdhost" data-item="' + encodeURI(item.host) + '" class="btn btn-xs btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
           '</div>';
         item.chkbox = '<input type="checkbox" data-id="fwdhosts" name="multi_select" value="' + item.host + '" />';
       });
     } else if (table == 'oauth2clientstable') {
       $.each(data, function (i, item) {
-        item.action = '<div class="btn-group">' +
-          '<a href="/edit.php?oauth2client=' + encodeURI(item.id) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-          '<a href="#" data-action="delete_selected" data-id="single-oauth2-client" data-api-url="delete/oauth2-client" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+        item.action = '<div class="btn-group footable-actions">' +
+          '<a href="/edit.php?oauth2client=' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-half btn-default"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+          '<a href="#" data-action="delete_selected" data-id="single-oauth2-client" data-api-url="delete/oauth2-client" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
           '</div>';
         item.scope = "profile";
         item.grant_types = 'refresh_token password authorization_code';
@@ -328,23 +339,23 @@ jQuery(function($){
         item.selected_domains = escapeHtml(item.selected_domains);
         item.selected_domains = item.selected_domains.toString().replace(/,/g, "<br>");
         item.chkbox = '<input type="checkbox" data-id="domain_admins" name="multi_select" value="' + item.username + '" />';
-        item.action = '<div class="btn-group">' +
-          '<a href="/edit/domainadmin/' + encodeURI(item.username) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-          '<a href="#" data-action="delete_selected" data-id="single-domain-admin" data-api-url="delete/domain-admin" data-item="' + encodeURI(item.username) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
-          '<a href="/index.php?duallogin=' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-success"><span class="glyphicon glyphicon-user"></span> Login</a>' +
+        item.action = '<div class="btn-group footable-actions">' +
+          '<a href="/edit/domainadmin/' + encodeURI(item.username) + '" class="btn btn-xs btn-xs-third btn-default"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+          '<a href="#" data-action="delete_selected" data-id="single-domain-admin" data-api-url="delete/domain-admin" data-item="' + encodeURI(item.username) + '" class="btn btn-xs btn-xs-third btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+          '<a href="/index.php?duallogin=' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-xs-third btn-success"><i class="bi bi-person-fill"></i> Login</a>' +
           '</div>';
       });
     } else if (table == 'adminstable') {
       $.each(data, function (i, item) {
         if (admin_username.toLowerCase() == item.username.toLowerCase()) {
-          item.usr = '→ ' + item.username;
+          item.usr = '<i class="bi bi-person-check"></i> ' + item.username;
         } else {
           item.usr = item.username;
         }
         item.chkbox = '<input type="checkbox" data-id="admins" name="multi_select" value="' + item.username + '" />';
-        item.action = '<div class="btn-group">' +
-          '<a href="/edit/admin/' + encodeURI(item.username) + '" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> ' + lang.edit + '</a>' +
-          '<a href="#" data-action="delete_selected" data-id="single-admin" data-api-url="delete/admin" data-item="' + encodeURI(item.username) + '" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> ' + lang.remove + '</a>' +
+        item.action = '<div class="btn-group footable-actions">' +
+          '<a href="/edit/admin/' + encodeURI(item.username) + '" class="btn btn-xs btn-xs-half btn-default"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+          '<a href="#" data-action="delete_selected" data-id="single-admin" data-api-url="delete/admin" data-item="' + encodeURI(item.username) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
           '</div>';
       });
     }
@@ -358,6 +369,11 @@ jQuery(function($){
   draw_oauth2_clients();
   draw_transport_maps();
   draw_queue();
+
+  $('body').on('click', 'span.footable-toggle', function () {
+    event.stopPropagation();
+  })
+
   // API IP check toggle
   $("#skip_ip_check_ro").click(function( event ) {
    $("#skip_ip_check_ro").not(this).prop('checked', false);
@@ -389,7 +405,7 @@ jQuery(function($){
     e.preventDefault();
     prev = $('#test_relayhost').text();
     $(this).prop("disabled",true);
-    $(this).html('<span class="glyphicon glyphicon-refresh glyphicon-spin"></span> ');
+    $(this).html('<i class="bi bi-arrow-repeat icon-spin"></i> ');
     $.ajax({
         type: 'GET',
         url: 'inc/ajax/relay_check.php',
@@ -431,7 +447,7 @@ jQuery(function($){
     e.preventDefault();
     prev = $('#test_transport').text();
     $(this).prop("disabled",true);
-    $(this).html('<span class="glyphicon glyphicon-refresh glyphicon-spin"></span> ');
+    $(this).html('<i class="bi bi-arrow-repeat icon-spin"></i> ');
     $.ajax({
         type: 'GET',
         url: 'inc/ajax/transport_check.php',
@@ -465,13 +481,13 @@ jQuery(function($){
   function add_table_row(table_id, type) {
     var row = $('<tr />');
     if (type == "app_link") {
-    cols = '<td><input class="input-sm form-control" data-id="app_links" type="text" name="app" required></td>';
-    cols += '<td><input class="input-sm form-control" data-id="app_links" type="text" name="href" required></td>';
-    cols += '<td><a href="#" role="button" class="btn btn-xs btn-default" type="button">' + lang.remove_row + '</a></td>';
+    cols = '<td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="app" required></td>';
+    cols += '<td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="href" required></td>';
+    cols += '<td><a href="#" role="button" class="btn btn-sm btn-xs-lg btn-default" type="button">' + lang.remove_row + '</a></td>';
     } else if (type == "f2b_regex") {
-    cols = '<td><input style="text-align:center" class="input-sm form-control" data-id="f2b_regex" type="text" value="+" disabled></td>';
-    cols += '<td><input class="input-sm form-control regex-input" data-id="f2b_regex" type="text" name="regex" required></td>';
-    cols += '<td><a href="#" role="button" class="btn btn-xs btn-default" type="button">' + lang.remove_row + '</a></td>';
+    cols = '<td><input style="text-align:center" class="input-sm input-xs-lg form-control" data-id="f2b_regex" type="text" value="+" disabled></td>';
+    cols += '<td><input class="input-sm input-xs-lg form-control regex-input" data-id="f2b_regex" type="text" name="regex" required></td>';
+    cols += '<td><a href="#" role="button" class="btn btn-sm btn-xs-lg btn-default" type="button">' + lang.remove_row + '</a></td>';
     }
     row.append(cols);
     table_id.append(row);

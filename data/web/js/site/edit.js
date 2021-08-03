@@ -28,11 +28,6 @@ $(document).ready(function() {
     $('#mailbox-passwd-hidden-info').addClass('hidden');
     $('#mailbox-passwd-form-groups').removeClass('hidden');
   });
-  // Preview XMPP JID
-  $('.xmpp-prefix-preview').text($("#xmpp-prefix").val());
-  $("#xmpp-prefix").bind("change keypress keyup blur", function() {
-    $('.xmpp-prefix-preview').text($(this).val());
-  });
   // Sender ACL
   if ($("#editSelectSenderACL option[value='\*']:selected").length > 0){
     $("#sender_acl_disabled").show();

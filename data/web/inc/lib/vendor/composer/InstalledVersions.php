@@ -20,6 +20,8 @@ use Composer\Semver\VersionParser;
 
 
 
+
+
 class InstalledVersions
 {
 private static $installed = array (
@@ -55,12 +57,21 @@ private static $installed = array (
     ),
     'ddeboer/imap' => 
     array (
-      'pretty_version' => '1.11.0',
-      'version' => '1.11.0.0',
+      'pretty_version' => '1.12.1',
+      'version' => '1.12.1.0',
       'aliases' => 
       array (
       ),
-      'reference' => 'a089dfcb9d177f921eb5dadc8d4144a44dff22ee',
+      'reference' => 'dbed05ca67b93509345a820b2859de10c48948fb',
+    ),
+    'directorytree/ldaprecord' => 
+    array (
+      'pretty_version' => 'v2.5.0',
+      'version' => '2.5.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'ff7a92615fdc3f8b7f3d347c2847ce7ce06db287',
     ),
     'exorus/php-mime-mail-parser' => 
     array (
@@ -68,6 +79,15 @@ private static $installed = array (
       array (
         0 => '*',
       ),
+    ),
+    'illuminate/contracts' => 
+    array (
+      'pretty_version' => 'v8.48.0',
+      'version' => '8.48.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '199fcedc161ba4a0b83feaddc4629f395dbf1641',
     ),
     'matthiasmullie/minify' => 
     array (
@@ -103,6 +123,15 @@ private static $installed = array (
       ),
       'reference' => '4627c838b16550b666d15aeae1e5289dd5b77da0',
     ),
+    'nesbot/carbon' => 
+    array (
+      'pretty_version' => '2.49.0',
+      'version' => '2.49.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '93d9db91c0235c486875d22f1e08b50bdf3e6eee',
+    ),
     'paragonie/random_compat' => 
     array (
       'pretty_version' => 'v9.99.100',
@@ -123,21 +152,48 @@ private static $installed = array (
     ),
     'phpmailer/phpmailer' => 
     array (
-      'pretty_version' => 'v6.3.0',
-      'version' => '6.3.0.0',
+      'pretty_version' => 'v6.5.0',
+      'version' => '6.5.0.0',
       'aliases' => 
       array (
       ),
-      'reference' => '4a08cf4cdd2c38d12ee2b9fa69e5d235f37a6dcb',
+      'reference' => 'a5b5c43e50b7fba655f793ad27303cd74c57363c',
+    ),
+    'psr/container' => 
+    array (
+      'pretty_version' => '1.1.1',
+      'version' => '1.1.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '8622567409010282b7aeebe4bb841fe98b58dcaf',
+    ),
+    'psr/log' => 
+    array (
+      'pretty_version' => '1.1.4',
+      'version' => '1.1.4.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'd49695b909c3b7628b6289db5479a1c204601f11',
+    ),
+    'psr/simple-cache' => 
+    array (
+      'pretty_version' => '1.0.1',
+      'version' => '1.0.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '408d5eafb83c57f6365a3ca330ff23aa4a5fa39b',
     ),
     'robthree/twofactorauth' => 
     array (
-      'pretty_version' => '1.7.0',
-      'version' => '1.7.0.0',
+      'pretty_version' => '1.8.0',
+      'version' => '1.8.0.0',
       'aliases' => 
       array (
       ),
-      'reference' => '37983bf675c5baca09d19d6705170489d0df0002',
+      'reference' => '30a38627ae1e7c9399dae67e265063cd6ec5276c',
     ),
     'soundasleep/html2text' => 
     array (
@@ -147,6 +203,76 @@ private static $installed = array (
       array (
       ),
       'reference' => 'cdb89f6ffa2c4cc78f8ed9ea6ee0594a9133ccad',
+    ),
+    'symfony/deprecation-contracts' => 
+    array (
+      'pretty_version' => 'v2.4.0',
+      'version' => '2.4.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '5f38c8804a9e97d23e0c8d63341088cd8a22d627',
+    ),
+    'symfony/polyfill-mbstring' => 
+    array (
+      'pretty_version' => 'v1.23.0',
+      'version' => '1.23.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '2df51500adbaebdc4c38dea4c89a2e131c45c8a1',
+    ),
+    'symfony/polyfill-php80' => 
+    array (
+      'pretty_version' => 'v1.23.0',
+      'version' => '1.23.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'eca0bf41ed421bed1b57c4958bab16aa86b757d0',
+    ),
+    'symfony/translation' => 
+    array (
+      'pretty_version' => 'v5.3.2',
+      'version' => '5.3.2.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '7e2603bcc598e14804c4d2359d8dc4ee3c40391b',
+    ),
+    'symfony/translation-contracts' => 
+    array (
+      'pretty_version' => 'v2.4.0',
+      'version' => '2.4.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '95c812666f3e91db75385749fe219c5e494c7f95',
+    ),
+    'symfony/translation-implementation' => 
+    array (
+      'provided' => 
+      array (
+        0 => '2.3',
+      ),
+    ),
+    'symfony/var-dumper' => 
+    array (
+      'pretty_version' => 'v5.3.2',
+      'version' => '5.3.2.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '905a22c68b292ffb6f20d7636c36b220d1fba5ae',
+    ),
+    'tightenco/collect' => 
+    array (
+      'pretty_version' => 'v8.34.0',
+      'version' => '8.34.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'b069783ab0c547bb894ebcf8e7f6024bb401f9d2',
     ),
     'yubico/u2flib-server' => 
     array (
@@ -174,7 +300,6 @@ $packages = array();
 foreach (self::getInstalled() as $installed) {
 $packages[] = array_keys($installed['versions']);
 }
-
 
 if (1 === \count($packages)) {
 return $packages[0];
@@ -339,9 +464,23 @@ return $installed[0]['root'];
 
 
 
+
 public static function getRawData()
 {
+@trigger_error('getRawData only returns the first dataset loaded, which may not be what you expect. Use getAllRawData() instead which returns all datasets for all autoloaders present in the process.', E_USER_DEPRECATED);
+
 return self::$installed;
+}
+
+
+
+
+
+
+
+public static function getAllRawData()
+{
+return self::getInstalled();
 }
 
 
@@ -371,6 +510,7 @@ self::$installedByVendor = array();
 
 
 
+
 private static function getInstalled()
 {
 if (null === self::$canGetVendors) {
@@ -380,7 +520,6 @@ self::$canGetVendors = method_exists('Composer\Autoload\ClassLoader', 'getRegist
 $installed = array();
 
 if (self::$canGetVendors) {
-
 foreach (ClassLoader::getRegisteredLoaders() as $vendorDir => $loader) {
 if (isset(self::$installedByVendor[$vendorDir])) {
 $installed[] = self::$installedByVendor[$vendorDir];

@@ -128,11 +128,6 @@ EOF
   done
 fi
 
-if [[ "${ALLOW_ADMIN_EMAIL_LOGIN}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-  TRUST_PROXY="YES"
-else
-  TRUST_PROXY="NO"
-fi
 # cat /dev/urandom seems to hang here occasionally and is not recommended anyway, better use openssl
 RAND_PASS=$(openssl rand -base64 16 | tr -dc _A-Z-a-z-0-9)
 
@@ -148,7 +143,7 @@ cat <<EOF > /var/lib/sogo/GNUstep/Defaults/sogod.plist
     <key>SOGoIMAPServer</key>
     <string>imap://${IPV4_NETWORK}.250:143/?TLS=YES&amp;tlsVerifyMode=none</string>
     <key>SOGoTrustProxyAuthentication</key>
-    <string>${TRUST_PROXY}</string>
+    <string>YES</string>
     <key>SOGoEncryptionKey</key>
     <string>${RAND_PASS}</string>
     <key>OCSCacheFolderURL</key>
@@ -248,15 +243,5 @@ rsync -a /usr/lib/GNUstep/SOGo/. /sogo_web/
 
 # Chown backup path
 chown -R sogo:sogo /sogo_backup
-
-# Creating cronjobs
-if [[ "${MASTER}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-  echo "* * * * *   sogo   /usr/sbin/sogo-ealarms-notify -p /etc/sogo/sieve.creds 2>/dev/null" > /etc/cron.d/sogo
-  echo "* * * * *   sogo   /usr/sbin/sogo-tool expire-sessions ${SOGO_EXPIRE_SESSION}" >> /etc/cron.d/sogo
-  echo "0 0 * * *   sogo   /usr/sbin/sogo-tool update-autoreply -p /etc/sogo/sieve.creds" >> /etc/cron.d/sogo
-  echo "0 2 * * *   sogo   /usr/sbin/sogo-tool backup /sogo_backup ALL" >> /etc/cron.d/sogo
-else
-  rm /etc/cron.d/sogo
-fi
 
 exec gosu sogo /usr/sbin/sogod

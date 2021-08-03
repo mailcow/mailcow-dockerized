@@ -2,8 +2,8 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/spf.inc.php';
 
-define('state_good', '<span class="glyphicon glyphicon-ok text-success"></span>');
-define('state_missing', '<span class="glyphicon glyphicon-remove text-danger"></span>');
+define('state_good', '<i class="bi bi-check-lg text-success"></i>');
+define('state_missing', '<i class="bi bi-x-lg text-danger"></i>');
 define('state_nomatch', "?");
 define('state_optional', " <sup>2</sup>");
 
@@ -69,7 +69,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
   }
 
   // Init records array
-  $spf_link = '<a href="https://en.wikipedia.org/wiki/Sender_Policy_Framework" target="_blank">SPF Record Syntax</a><br />';
+  $spf_link = '<a href="http://www.open-spf.org/SPF_Record_Syntax/" target="_blank">SPF Record Syntax</a><br />';
   $dmarc_link = '<a href="https://www.kitterman.com/dmarc/assistant.html" target="_blank">DMARC Assistant</a>';
 
   $records = array();
@@ -126,28 +126,6 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
       'CNAME',
       $mailcow_hostname
     );
-    if ($domain_details['xmpp'] === 1 && isset($domain_details['xmpp_prefix'])) {
-      $records[] = array(
-        $domain_details['xmpp_prefix'] . '.' . $domain,
-        'CNAME',
-        $mailcow_hostname
-      );
-      $records[] = array(
-        '*.' . $domain_details['xmpp_prefix'] . '.' . $domain,
-        'CNAME',
-        $mailcow_hostname
-      );
-      $records[] = array(
-        '_xmpp-client._tcp.' . $domain_details['xmpp_prefix'] . '.' . $domain,
-        'SRV',
-        $mailcow_hostname . ' ' . array_pop(explode(':', getenv('XMPP_C2S_PORT')))
-      );
-      $records[] = array(
-        '_xmpp-server._tcp.' . $domain_details['xmpp_prefix'] . '.' . $domain,
-        'SRV',
-        $mailcow_hostname . ' ' . array_pop(explode(':', getenv('XMPP_S2S_PORT')))
-      );
-    }
   }
 
   $records[] = array(
@@ -458,7 +436,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
       }
       ?>
     </table>
-    <a id='download-zonefile' data-zonefile="<?=base64_encode($dns_data);?>" download='<?=$_GET['domain'];?>.txt' type='text/csv'>Download</a>
+    <a id='download-zonefile' class="btn btn-sm btn-default visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline" style="margin-top:10px" data-zonefile="<?=base64_encode($dns_data);?>" download='<?=$_GET['domain'];?>.txt' type='text/csv'>Download</a>
     <script>
       var zonefile_dl_link = document.getElementById('download-zonefile');
       var zonefile = atob(zonefile_dl_link.getAttribute('data-zonefile'));

@@ -48,40 +48,17 @@ function admin($_action, $_data = null) {
           return false;
         }
       }
-      if (!empty($password) && !empty($password2)) {
-        if (!preg_match('/' . $GLOBALS['PASSWD_REGEP'] . '/', $password)) {
-          $_SESSION['return'][] = array(
-            'type' => 'danger',
-            'log' => array(__FUNCTION__, $_action, $_data_log),
-            'msg' => 'password_complexity'
-          );
-          return false;
-        }
-        if ($password != $password2) {
-          $_SESSION['return'][] = array(
-            'type' => 'danger',
-            'log' => array(__FUNCTION__, $_action, $_data_log),
-            'msg' => 'password_mismatch'
-          );
-          return false;
-        }
-        $password_hashed = hash_password($password);
-        $stmt = $pdo->prepare("INSERT INTO `admin` (`username`, `password`, `superadmin`, `active`)
-          VALUES (:username, :password_hashed, '1', :active)");
-        $stmt->execute(array(
-          ':username' => $username,
-          ':password_hashed' => $password_hashed,
-          ':active' => $active
-        ));
-      }
-      else {
-        $_SESSION['return'][] = array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => 'password_empty'
-        );
+      if (password_check($password, $password2) !== true) {
         return false;
       }
+      $password_hashed = hash_password($password_new);
+      $stmt = $pdo->prepare("INSERT INTO `admin` (`username`, `password`, `superadmin`, `active`)
+        VALUES (:username, :password_hashed, '1', :active)");
+      $stmt->execute(array(
+        ':username' => $username,
+        ':password_hashed' => $password_hashed,
+        ':active' => $active
+      ));
       $_SESSION['return'][] = array(
         'type' => 'success',
         'log' => array(__FUNCTION__, $_action, $_data_log),
@@ -144,22 +121,9 @@ function admin($_action, $_data = null) {
             continue;
           }
         }
-        if (!empty($password) && !empty($password2)) {
-          if (!preg_match('/' . $GLOBALS['PASSWD_REGEP'] . '/', $password)) {
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_data_log),
-              'msg' => 'password_complexity'
-            );
-            continue;
-          }
-          if ($password != $password2) {
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_data_log),
-              'msg' => 'password_mismatch'
-            );
-            continue;
+        if (!empty($password)) {
+          if (password_check($password, $password2) !== true) {
+            return false;
           }
           $password_hashed = hash_password($password);
           $stmt = $pdo->prepare("UPDATE `admin` SET `username` = :username_new, `active` = :active, `password` = :password_hashed WHERE `username` = :username");

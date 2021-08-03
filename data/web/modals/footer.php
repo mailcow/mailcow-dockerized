@@ -1,10 +1,13 @@
 <?php
-if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "admin" || $_SESSION['mailcow_cc_role'] == "domainadmin")):
+if (isset($_SESSION['mailcow_cc_role'])) {
 ?>
 <div class="modal fade" id="YubiOTPModal" tabindex="-1" role="dialog" aria-labelledby="YubiOTPModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header"><b><?=$lang['tfa']['yubi_otp'];?></b></div>
+      <div class="modal-header">
+	    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+	    <h3 class="modal-title"><?=$lang['tfa']['yubi_otp'];?></h3>
+	  </div>
       <div class="modal-body">
       <form role="form" method="post">
         <div class="form-group">
@@ -29,7 +32,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
             <input type="hidden" name="tfa_method" value="yubi_otp">
           </div>
         </div>
-        <button class="btn btn-sm btn-default" type="submit" name="set_tfa"><?=$lang['user']['save_changes'];?></button>
+        <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" type="submit" name="set_tfa"><?=$lang['user']['save_changes'];?></button>
       </form>
       </div>
     </div>
@@ -39,7 +42,10 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 <div class="modal fade" id="U2FModal" tabindex="-1" role="dialog" aria-labelledby="U2FModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header"><b><?=$lang['tfa']['u2f'];?></b></div>
+      <div class="modal-header">
+	    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+	    <h3 class="modal-title"><?=$lang['tfa']['u2f'];?></h3>
+	  </div>
       <div class="modal-body">
         <form role="form" method="post" id="u2f_reg_form">
           <div class="form-group">
@@ -72,7 +78,10 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 <div class="modal fade" id="TOTPModal" tabindex="-1" role="dialog" aria-labelledby="TOTPModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header"><b><?=$lang['tfa']['totp'];?></b></div>
+      <div class="modal-header">
+	    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+	    <h3 class="modal-title"><?=$lang['tfa']['totp'];?></h3>
+	  </div>
       <div class="modal-body">
         <form role="form" method="post">
           <div class="form-group">
@@ -98,7 +107,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
             <li>
               <p><?=$lang['tfa']['confirm_totp_token'];?>:</p>
               <p><input type="number" style="width:33%" class="form-control" name="totp_confirm_token" autocomplete="off" required></p>
-              <p><button class="btn btn-default" type="submit" name="set_tfa"><?=$lang['tfa']['confirm'];?></button></p>
+              <p><button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" type="submit" name="set_tfa"><?=$lang['tfa']['confirm'];?></button></p>
             </li>
           </ol>
         </form>
@@ -110,14 +119,17 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 <div class="modal fade" id="DisableTFAModal" tabindex="-1" role="dialog" aria-labelledby="DisableTFAModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header"><b><?=$lang['tfa']['delete_tfa'];?></b></div>
+      <div class="modal-header">
+	    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+	    <h3 class="modal-title"><?=$lang['tfa']['delete_tfa'];?></h3>
+	  </div>
       <div class="modal-body">
         <form role="form" method="post">
           <div class="input-group">
-            <input type="password" class="form-control" name="confirm_password" placeholder="<?=$lang['user']['password_now'];?>" autocomplete="off" required>
+            <input type="password" class="form-control input-xs-lg" name="confirm_password" placeholder="<?=$lang['user']['password_now'];?>" autocomplete="off" required>
             <span class="input-group-btn">
               <input type="hidden" name="tfa_method" value="none">
-              <button class="btn btn-danger" type="submit" name="set_tfa"><?=$lang['tfa']['delete_tfa'];?></button>
+              <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-danger" type="submit" name="set_tfa"><?=str_replace(' ', '&nbsp;', $lang['tfa']['delete_tfa']);?></button>
             </span>
           </div>
         </form>
@@ -127,14 +139,17 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 </div>
 
 <?php
-endif;
+}
 if (isset($_SESSION['pending_tfa_method'])):
   $tfa_method = $_SESSION['pending_tfa_method'];
 ?>
 <div class="modal fade" id="ConfirmTFAModal" tabindex="-1" role="dialog" aria-labelledby="ConfirmTFAModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header"><button type="button" class="close" data-dismiss="modal">&times;</button><b><?=$lang['tfa'][$tfa_method];?></b></div>
+      <div class="modal-header">
+	    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+	    <h3 class="modal-title"><?=$lang['tfa'][$tfa_method];?></h3>
+	  </div>
       <div class="modal-body">
       <?php
       switch ($tfa_method) {
@@ -148,7 +163,7 @@ if (isset($_SESSION['pending_tfa_method'])):
               <input type="hidden" name="tfa_method" value="yubi_otp">
             </div>
           </div>
-          <button class="btn btn-sm btn-default" type="submit" name="verify_tfa_login"><?=$lang['login']['login'];?></button>
+          <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-sm btn-default" type="submit" name="verify_tfa_login"><?=$lang['login']['login'];?></button>
         </form>
       <?php
         break;
@@ -177,12 +192,12 @@ if (isset($_SESSION['pending_tfa_method'])):
         <form role="form" method="post">
           <div class="form-group">
             <div class="input-group">
-              <span class="input-group-addon" id="tfa-addon"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span></span>
+              <span class="input-group-addon" id="tfa-addon"><i class="bi bi-shield-lock-fill"></i></span>
               <input type="number" min="000000" max="999999" name="token" class="form-control" placeholder="123456" autocomplete="one-time-code" aria-describedby="tfa-addon">
               <input type="hidden" name="tfa_method" value="totp">
             </div>
           </div>
-          <button class="btn btn-sm btn-default" type="submit" name="verify_tfa_login"><?=$lang['login']['login'];?></button>
+          <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" type="submit" name="verify_tfa_login"><?=$lang['login']['login'];?></button>
         </form>
         <?php
         break;
@@ -205,13 +220,13 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'admi
   <div class="modal-dialog">
     <div class="modal-content">
     <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal">&times;</button>
+      <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
       <h4 class="modal-title"><?= $lang['footer']['restart_container']; ?> (<code id="containerName"></code>)</h4>
     </div>
     <div class="modal-body">
       <p><?= $lang['footer']['restart_container_info']; ?></p>
       <hr>
-      <button class="btn btn-md btn-primary" id="triggerRestartContainer"><?= $lang['footer']['restart_now']; ?></button>
+      <button class="btn btn-md visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-primary" id="triggerRestartContainer"><?= $lang['footer']['restart_now']; ?></button>
       <br><br>
       <div id="statusTriggerRestartContainer"></div>
     </div>
@@ -225,15 +240,16 @@ endif;
   <div class="modal-dialog">
     <div class="modal-content">
     <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal">&times;</button>
-      <h4 class="modal-title"><?= $lang['footer']['confirm_delete']; ?></h4>
+      <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+      <h3 class="modal-title"><?= $lang['footer']['confirm_delete']; ?></h3>
     </div>
     <div class="modal-body">
       <p id="DeleteText"><?= $lang['footer']['delete_these_items']; ?></p>
       <ul id="ItemsToDelete"></ul>
       <hr>
-      <button class="btn btn-sm btn-danger" id="IsConfirmed"><?= $lang['footer']['delete_now']; ?></button>
-      <button class="btn btn-sm btn-default" id="isCanceled"><?= $lang['footer']['cancel']; ?></button>
+      <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-danger" id="IsConfirmed"><?= $lang['footer']['delete_now']; ?></button>
+      <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="isCanceled"><?= $lang['footer']['cancel']; ?></button>
+      <div class="clearfix visible-xs"></div>
     </div>
     </div>
   </div>

@@ -28,12 +28,12 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
 <div class="container">
   <div class="row">
     <div class="col-md-offset-3 col-md-6">
-      <div class="panel panel-default">
-        <div class="panel-heading"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <?= $lang['login']['login']; ?></div>
+      <div class="panel panel-default panel-login">
+        <div class="panel-heading"><i class="bi bi-person-fill"></i> <?= $lang['login']['login']; ?></div>
         <div class="panel-body">
           <div class="text-center mailcow-logo"><img src="<?=($main_logo = customize('get', 'main_logo')) ? $main_logo : '/img/cow_mailcow.svg';?>" alt="mailcow"></div>
           <?php if (!empty($UI_TEXTS['ui_announcement_text']) && in_array($UI_TEXTS['ui_announcement_type'], array('info', 'warning', 'danger')) && $UI_TEXTS['ui_announcement_active'] == 1) { ?>
-          <div class="alert alert-<?=$UI_TEXTS['ui_announcement_type'];?> rot-enc"><?=str_rot13($UI_TEXTS['ui_announcement_text']);?></div>
+          <div class="alert alert-<?=$UI_TEXTS['ui_announcement_type'];?> rot-enc ui-announcement-alert"><?=str_rot13($UI_TEXTS['ui_announcement_text']);?></div>
           <?php } ?>
           <legend><?= isset($_SESSION['oauth2_request']) ? $lang['oauth2']['authorize_app'] : $UI_TEXTS['main_name'];?></legend>
             <?php
@@ -47,42 +47,42 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
             <div class="form-group">
               <label class="sr-only" for="login_user"><?= $lang['login']['username']; ?></label>
               <div class="input-group">
-                <div class="input-group-addon"><i class="glyphicon glyphicon-user"></i></div>
-                <input name="login_user" autocorrect="off" autocapitalize="none" type="<?=(strpos($_SESSION['index_query_string'], 'mobileconfig') !== false) ? 'email' : 'text';?>" id="login_user" class="form-control" placeholder="<?= $lang['login']['username']; ?>" required="" autofocus="">
+                <div class="input-group-addon"><i class="bi bi-person-fill"></i></div>
+                <input name="login_user" autocorrect="off" autocapitalize="none" type="<?=(strpos($_SESSION['index_query_string'], 'mobileconfig') !== false) ? 'email' : 'text';?>" id="login_user" class="form-control" placeholder="<?= $lang['login']['username']; ?>" required="" autofocus="" autocomplete="username">
               </div>
             </div>
             <div class="form-group">
               <label class="sr-only" for="pass_user"><?= $lang['login']['password']; ?></label>
               <div class="input-group">
-                <div class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></div>
-                <input name="pass_user" type="password" id="pass_user" class="form-control" placeholder="<?= $lang['login']['password']; ?>" required="">
+                <div class="input-group-addon"><i class="bi bi-lock-fill"></i></div>
+                <input name="pass_user" type="password" id="pass_user" class="form-control" placeholder="<?= $lang['login']['password']; ?>" required="" autocomplete="current-password">
               </div>
             </div>
-            <div class="form-group">
+            <div class="form-group" style="position: relative">
               <div class="btn-group">
-                <button type="submit" class="btn btn-success" value="Login"><?= $lang['login']['login']; ?></button>
                 <div class="btn-group">
-                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                  <?= $lang['login']['other_logins']; ?> <span class="caret"></span></button>
-                  <ul class="dropdown-menu" role="menu">
-                    <li><a href="#" id="fido2-login"><?= $lang['login']['fido2_webauthn']; ?></a></li>
+                  <button type="submit" class="btn btn-xs-lg btn-success" value="Login"><?= $lang['login']['login']; ?></button>
+                  <button type="button" class="btn btn-xs-lg btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><a href="#" id="fido2-login" style="line-height:1.4;"><i class="bi bi-shield-fill-check"></i> <?= $lang['login']['fido2_webauthn']; ?></a></li>
                   </ul>
                 </div>
               </div>
               <?php if(!isset($_SESSION['oauth2_request'])) { ?>
-              <div class="btn-group pull-right">
-                <button type="button" <?=(isset($_SESSION['mailcow_locale']) && count($AVAILABLE_LANGUAGES) === 1) ? 'disabled="true"' : '' ?> class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <span class="lang-sm lang-lbl" lang="<?= $_SESSION['mailcow_locale']; ?>"></span> <span class="caret"></span>
+                <button type="button" <?=(isset($_SESSION['mailcow_locale']) && count($AVAILABLE_LANGUAGES) === 1) ? 'disabled="true"' : '' ?> class="btn btn-xs-lg btn-default pull-right dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <span class="flag-icon flag-icon-<?= $_SESSION['mailcow_locale']; ?>"></span> <span class="caret"></span>
                 </button>
-                <ul class="dropdown-menu">
+                <ul class="dropdown-menu pull-right login">
                   <?php
-                  foreach ($AVAILABLE_LANGUAGES as $language) {
+                  foreach ($AVAILABLE_LANGUAGES as $c => $v) {
                   ?>
-                  <li<?= ($_SESSION['mailcow_locale'] == $language) ? ' class="active"' : ''; ?>><a href="?<?= http_build_query(array_merge($_GET, array('lang' => $language))) ?>"><span class="lang-xs lang-lbl-full" lang="<?= $language; ?>"></span></a></li>
+                  <li<?= ($_SESSION['mailcow_locale'] == $c) ? ' class="active"' : ''; ?>><a href="?<?= http_build_query(array_merge($_GET, array('lang' => $c))) ?>"><span class="flag-icon flag-icon-<?=$c;?>"></span> <?=$v;?></a></li>
                   <?php } ?>
                 </ul>
-              </div>
-              <?php } ?>
+              <?php } ?>              
+              <div class="clearfix"></div>
             </div>
             </form>
             <?php
@@ -92,13 +92,14 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
             <?php } ?>
             <div id="fido2-alerts"></div>
           <?php if(!isset($_SESSION['oauth2_request'])) { ?>
-            <legend><span class="glyphicon glyphicon-link" aria-hidden="true"></span> <?=$UI_TEXTS['apps_name'];?></legend>
+            <legend><i class="bi bi-link-45deg"></i> <?=$UI_TEXTS['apps_name'];?></legend>
+            <div class="apps">
             <?php
             if (!empty($MAILCOW_APPS)) {
               foreach ($MAILCOW_APPS as $app) {
                 if (getenv('SKIP_SOGO') == "y" && preg_match('/^\/SOGo/i', $app['link'])) { continue; }
               ?>
-                <a href="<?= htmlspecialchars($app['link']); ?>" role="button" style="margin-bottom:3pt" title="<?= htmlspecialchars($app['description']); ?>" class="btn btn-primary"><?= htmlspecialchars($app['name']); ?></a>&nbsp;
+                <a href="<?= htmlspecialchars($app['link']); ?>" role="button" title="<?= htmlspecialchars($app['description']); ?>" class="btn btn-primary btn-lg btn-block"><?= htmlspecialchars($app['name']); ?></a>
               <?php
               }
             }
@@ -107,12 +108,13 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
               foreach ($app_links as $row) {
                 foreach ($row as $key => $val) {
               ?>
-                <a href="<?= htmlspecialchars($val); ?>" role="button" style="margin-bottom:3pt" class="btn btn-primary"><?= htmlspecialchars($key); ?></a>&nbsp;
+                <a href="<?= htmlspecialchars($val); ?>" role="button" class="btn btn-primary btn-lg btn-block"><?= htmlspecialchars($key); ?></a>
               <?php
                 }
               }
-            }
-          }
+            } ?>
+            </div>  
+          <?php }
           ?>
         </div>
       </div>
@@ -121,7 +123,7 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
     <div class="col-md-offset-3 col-md-6">
       <div class="panel panel-default">
         <div class="panel-heading">
-          <a data-toggle="collapse" href="#collapse1"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> <?= $lang['start']['help']; ?></a>
+          <a data-toggle="collapse" href="#collapse1"><i class="bi bi-patch-question-fill"></i> <?= $lang['start']['help']; ?></a>
         </div>
         <div id="collapse1" class="panel-collapse collapse">
           <div class="panel-body">
