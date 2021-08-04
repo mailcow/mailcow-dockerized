@@ -3,30 +3,32 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
 $(document).ready(function() {
   // Spam score slider
   var spam_slider = $('#spam_score')[0];
-  noUiSlider.create(spam_slider, {
-    start: user_spam_score,
-    connect: [true, true, true],
-    range: {
-      'min': [0], //stepsize is 50.000
-      '50%': [10],
-      '70%': [20, 5],
-      '80%': [50, 10],
-      '90%': [100, 100],
-      '95%': [1000, 1000],
-      'max': [5000]
-    },
-  });
-  var connect = spam_slider.querySelectorAll('.noUi-connect');
-  var classes = ['c-1-color', 'c-2-color', 'c-3-color'];
-  for (var i = 0; i < connect.length; i++) {
-    connect[i].classList.add(classes[i]);
+  if (typeof spam_slider !== 'undefined') {
+    noUiSlider.create(spam_slider, {
+      start: user_spam_score,
+      connect: [true, true, true],
+      range: {
+        'min': [0], //stepsize is 50.000
+        '50%': [10],
+        '70%': [20, 5],
+        '80%': [50, 10],
+        '90%': [100, 100],
+        '95%': [1000, 1000],
+        'max': [5000]
+      },
+    });
+    var connect = spam_slider.querySelectorAll('.noUi-connect');
+    var classes = ['c-1-color', 'c-2-color', 'c-3-color'];
+    for (var i = 0; i < connect.length; i++) {
+      connect[i].classList.add(classes[i]);
+    }
+    spam_slider.noUiSlider.on('update', function (values, handle) {
+      $('.spam-ham-score').text('< ' + Math.round(values[0] * 10) / 10);
+      $('.spam-spam-score').text(Math.round(values[0] * 10) / 10 + ' - ' + Math.round(values[1] * 10) / 10);
+      $('.spam-reject-score').text('> ' + Math.round(values[1] * 10) / 10);
+      $('#spam_score_value').val((Math.round(values[0] * 10) / 10) + ',' + (Math.round(values[1] * 10) / 10));
+    });
   }
-  spam_slider.noUiSlider.on('update', function (values, handle) {
-    $('.spam-ham-score').text('< ' + Math.round(values[0] * 10) / 10);
-    $('.spam-spam-score').text(Math.round(values[0] * 10) / 10 + ' - ' + Math.round(values[1] * 10) / 10);
-    $('.spam-reject-score').text('> ' + Math.round(values[1] * 10) / 10);
-    $('#spam_score_value').val((Math.round(values[0] * 10) / 10) + ',' + (Math.round(values[1] * 10) / 10));
-  });
   // syncjobLogModal
   $('#syncjobLogModal').on('show.bs.modal', function(e) {
     var syncjob_id = $(e.relatedTarget).data('syncjob-id');
