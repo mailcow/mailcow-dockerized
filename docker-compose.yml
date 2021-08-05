@@ -496,8 +496,8 @@ services:
         - OLEFY_THRESHOLD=${OLEFY_THRESHOLD:-5}
         - MAILQ_THRESHOLD=${MAILQ_THRESHOLD:-20}
         - MAILQ_CRIT=${MAILQ_CRIT:-30}
-        - WATCHDOG_SLACK_URL=${WATCHDOG_SLACK_URL}
-        - WATCHDOG_SLACK_PING=${WATCHDOG_SLACK_PING}
+        - WATCHDOG_SLACK_URL=${WATCHDOG_SLACK_URL:-}
+        - WATCHDOG_SLACK_PING=${WATCHDOG_SLACK_PING:-}
       networks:
         mailcow-network:
           aliases:
