@@ -55,7 +55,7 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
 	}
 }
 
-if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['acl']['login_as'] == "1") {
+if (isset($_SESSION['mailcow_cc_role']) && (isset($_SESSION['acl']['login_as']) && $_SESSION['acl']['login_as'] == "1")) {
 	if (isset($_GET["duallogin"])) {
     $duallogin = html_entity_decode(rawurldecode($_GET["duallogin"]));
     if (filter_var($duallogin, FILTER_VALIDATE_EMAIL)) {

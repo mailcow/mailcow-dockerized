@@ -81,7 +81,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
         <div class="row">
           <div class="col-sm-3 col-xs-5 text-right"><?=$lang['tfa']['tfa'];?>:</div>
           <div class="col-sm-9 col-xs-7">
-            <p id="tfa_pretty"><?=$tfa_data['pretty'];?></p>
+            <p id="tfa_pretty"><?=(isset($tfa_data['pretty'])) ? $tfa_data['pretty'] : '';?></p>
               <div id="tfa_keys">
                 <?php
                 if (!empty($tfa_data['additional'])) {
@@ -133,7 +133,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
                 ?>
                 <tr>
                   <td>
-                    <?=($_SESSION['fido2_cid'] == $key_info['cid']) ? '<i class="bi bi-unlock-fill"></i> ' : NULL; ?><?=(!empty($key_info['fn']))?$key_info['fn']:$key_info['subject'];?>
+                    <?=(isset($_SESSION['fido2_cid']) && $_SESSION['fido2_cid'] == $key_info['cid']) ? '<i class="bi bi-unlock-fill"></i> ' : NULL; ?><?=(!empty($key_info['fn']))?$key_info['fn']:$key_info['subject'];?>
                   </td>
                   <td style="min-width:240px;text-align: right">
                     <form style="display:inline;" method="post">
@@ -222,13 +222,13 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
                     <div class="form-group">
                       <label class="control-label col-sm-3" for="allow_from_ro"><?=$lang['admin']['api_allow_from'];?>:</label>
                       <div class="col-sm-9">
-                        <textarea class="form-control textarea-code" rows="7" name="allow_from" id="allow_from_ro" <?=($api_ro['skip_ip_check'] == 1) ? 'disabled' : null;?> required><?=htmlspecialchars($api_ro['allow_from']);?></textarea>
+                        <textarea class="form-control textarea-code" rows="7" name="allow_from" id="allow_from_ro" <?=(isset($api_ro['skip_ip_check']) && $api_ro['skip_ip_check'] == 1) ? 'disabled' : null;?> required><?=(isset($api_ro['allow_from'])) ? htmlspecialchars($api_ro['allow_from']) : '';?></textarea>
                       </div>
                     </div>
                     <div class="form-group">
                       <div class="col-sm-offset-3 col-sm-9">
                         <label>
-                          <input type="checkbox" name="skip_ip_check" id="skip_ip_check_ro" <?=($api_ro['skip_ip_check'] == 1) ? 'checked' : null;?>> <?=$lang['admin']['api_skip_ip_check'];?>
+                          <input type="checkbox" name="skip_ip_check" id="skip_ip_check_ro" <?=(isset($api_ro['skip_ip_check']) && $api_ro['skip_ip_check'] == 1) ? 'checked' : null;?>> <?=$lang['admin']['api_skip_ip_check'];?>
                         </label>
                       </div>
                     </div>
@@ -241,7 +241,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
                     <div class="form-group">
                       <div class="col-sm-offset-3 col-sm-9">
                         <label>
-                          <input type="checkbox" name="active" <?=($api_ro['active'] == 1) ? 'checked' : null;?>> <?=$lang['admin']['activate_api'];?>
+                          <input type="checkbox" name="active" <?=(isset($api_ro['active']) && $api_ro['active'] == 1) ? 'checked' : null;?>> <?=$lang['admin']['activate_api'];?>
                         </label>
                       </div>
                     </div>
@@ -1174,15 +1174,17 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             </tr>
             <?php
             $app_links = customize('get', 'app_links');
-            foreach ($app_links as $row) {
-              foreach ($row as $key => $val) {
-            ?>
+            if ($app_links) {
+              foreach ($app_links as $row) {
+                foreach ($row as $key => $val) {
+              ?>
             <tr>
               <td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="app" required value="<?=$key;?>"></td>
               <td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="href" required value="<?=$val;?>"></td>
               <td><a href="#" role="button" class="btn btn-sm btn-xs-lg btn-default" type="button"><?=$lang['admin']['remove_row'];?></a></td>
             </tr>
             <?php
+                }
               }
             }
             foreach ($MAILCOW_APPS as $app) {
@@ -1433,7 +1435,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
       </div>
       <div class="panel-body">
         <p><?=$lang['admin']['rspamd_global_filters_info'];?></p>
-        <div id="confirm_show_rspamd_global_filters" class="<?=($_SESSION['show_rspamd_global_filters'] === true) ? 'hidden' : '';?>">
+        <div id="confirm_show_rspamd_global_filters" class="<?=(isset($_SESSION['show_rspamd_global_filters']) && $_SESSION['show_rspamd_global_filters'] === true) ? 'hidden' : '';?>">
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
               <label>
@@ -1442,7 +1444,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             </div>
           </div>
         </div>
-        <div id="rspamd_global_filters" class="<?=($_SESSION['show_rspamd_global_filters'] !== true) ? 'hidden' : '';?>">
+        <div id="rspamd_global_filters" class="<?=(isset($_SESSION['show_rspamd_global_filters']) && $_SESSION['show_rspamd_global_filters'] === true) ? 'hidden' : '';?>">
         <hr>
         <span class="anchor" id="regexmaps"></span>
         <h4><?=$lang['admin']['regex_maps'];?></h4>
@@ -1506,7 +1508,7 @@ $js_minifier->add('/web/js/presets/rspamd.js');
 $js_minifier->add('/web/js/site/pwgen.js');
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
 } else {
-	header('Location: /');
-	exit();
+  header('Location: /');
+  exit();
 }
 ?>

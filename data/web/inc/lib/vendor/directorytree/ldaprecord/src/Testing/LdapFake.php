@@ -4,13 +4,17 @@ namespace LdapRecord\Testing;
 
 use Exception;
 use LdapRecord\DetailedError;
-use LdapRecord\LdapBase;
+use LdapRecord\DetectsErrors;
+use LdapRecord\HandlesConnection;
+use LdapRecord\LdapInterface;
 use LdapRecord\Support\Arr;
 use PHPUnit\Framework\Assert as PHPUnit;
 use PHPUnit\Framework\Constraint\Constraint;
 
-class LdapFake extends LdapBase
+class LdapFake implements LdapInterface
 {
+    use HandlesConnection, DetectsErrors;
+
     /**
      * The expectations of the LDAP fake.
      *
@@ -101,7 +105,7 @@ class LdapFake extends LdapBase
      *
      * @return bool
      */
-    protected function hasExpectations($method)
+    public function hasExpectations($method)
     {
         return count($this->getExpectations($method)) > 0;
     }
@@ -113,7 +117,7 @@ class LdapFake extends LdapBase
      *
      * @return LdapExpectation[]|mixed
      */
-    protected function getExpectations($method)
+    public function getExpectations($method)
     {
         return $this->expectations[$method] ?? [];
     }
@@ -126,7 +130,7 @@ class LdapFake extends LdapBase
      *
      * @return void
      */
-    protected function removeExpectation($method, $key)
+    public function removeExpectation($method, $key)
     {
         unset($this->expectations[$method][$key]);
     }
@@ -230,7 +234,7 @@ class LdapFake extends LdapBase
     {
         return $this->hasExpectations('isUsingSSL')
             ? $this->resolveExpectation('isUsingSSL')
-            : parent::isUsingSSL();
+            : $this->useSSL;
     }
 
     /**
@@ -240,7 +244,7 @@ class LdapFake extends LdapBase
     {
         return $this->hasExpectations('isUsingTLS')
             ? $this->resolveExpectation('isUsingTLS')
-            : parent::isUsingTLS();
+            : $this->useTLS;
     }
 
     /**
@@ -250,7 +254,7 @@ class LdapFake extends LdapBase
     {
         return $this->hasExpectations('isBound')
             ? $this->resolveExpectation('isBound')
-            : parent::isBound();
+            : $this->bound;
     }
 
     /**
@@ -453,7 +457,7 @@ class LdapFake extends LdapBase
      *
      * @return mixed
      */
-    protected function resolveExpectation($method, $args = [])
+    protected function resolveExpectation($method, array $args = [])
     {
         foreach ($this->getExpectations($method) as $key => $expectation) {
             $this->assertMethodArgumentsMatch($method, $expectation->getExpectedArgs(), $args);
@@ -501,7 +505,7 @@ class LdapFake extends LdapBase
      *
      * @return void
      */
-    protected function assertMethodArgumentsMatch($method, $expectedArgs = [], $methodArgs = [])
+    protected function assertMethodArgumentsMatch($method, array $expectedArgs = [], array $methodArgs = [])
     {
         foreach ($expectedArgs as $key => $constraint) {
             $argNumber = $key + 1;

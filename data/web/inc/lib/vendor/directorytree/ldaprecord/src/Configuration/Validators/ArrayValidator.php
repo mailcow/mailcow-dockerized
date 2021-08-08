@@ -2,19 +2,20 @@
 
 namespace LdapRecord\Configuration\Validators;
 
-use LdapRecord\Configuration\ConfigurationException;
-
 class ArrayValidator extends Validator
 {
     /**
+     * The validation exception message.
+     *
+     * @var string
+     */
+    protected $message = 'Option [:option] must be an array.';
+
+    /**
      * @inheritdoc
      */
-    public function validate()
+    public function passes()
     {
-        if (! is_array($this->value)) {
-            throw new ConfigurationException("Option {$this->key} must be an array.");
-        }
-
-        return true;
+        return is_array($this->value);
     }
 }

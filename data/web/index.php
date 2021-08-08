@@ -99,7 +99,7 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
               foreach ($MAILCOW_APPS as $app) {
                 if (getenv('SKIP_SOGO') == "y" && preg_match('/^\/SOGo/i', $app['link'])) { continue; }
               ?>
-                <a href="<?= htmlspecialchars($app['link']); ?>" role="button" title="<?= htmlspecialchars($app['description']); ?>" class="btn btn-primary btn-lg btn-block"><?= htmlspecialchars($app['name']); ?></a>
+                <a href="<?=(isset($app['link'])) ? htmlspecialchars($app['link']) : '';?>" role="button" title="<?=(isset($app['description'])) ? htmlspecialchars($app['description']) : '';?>" class="btn btn-primary btn-lg btn-block"><?= htmlspecialchars($app['name']); ?></a>
               <?php
               }
             }

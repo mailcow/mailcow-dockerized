@@ -136,9 +136,9 @@ interface LdapInterface
     /**
      * Retrieve the entries from a search result.
      *
-     * @link http://php.net/manual/en/function.ldap-get-entries.php
+     * @see http://php.net/manual/en/function.ldap-get-entries.php
      *
-     * @param resource $searchResult
+     * @param resource $searchResults
      *
      * @return array
      */
@@ -147,7 +147,7 @@ interface LdapInterface
     /**
      * Retrieve the last error on the current connection.
      *
-     * @link http://php.net/manual/en/function.ldap-error.php
+     * @see http://php.net/manual/en/function.ldap-error.php
      *
      * @return string|null
      */
@@ -167,7 +167,7 @@ interface LdapInterface
     /**
      * Set an option on the current connection.
      *
-     * @link http://php.net/manual/en/function.ldap-set-option.php
+     * @see http://php.net/manual/en/function.ldap-set-option.php
      *
      * @param int   $option
      * @param mixed $value
@@ -188,7 +188,7 @@ interface LdapInterface
     /**
      * Get the value for the LDAP option.
      *
-     * @link https://www.php.net/manual/en/function.ldap-get-option.php
+     * @see https://www.php.net/manual/en/function.ldap-get-option.php
      *
      * @param int   $option
      * @param mixed $value
@@ -200,7 +200,7 @@ interface LdapInterface
     /**
      * Starts a connection using TLS.
      *
-     * @link http://php.net/manual/en/function.ldap-start-tls.php
+     * @see http://php.net/manual/en/function.ldap-start-tls.php
      *
      * @throws LdapRecordException
      *
@@ -211,7 +211,7 @@ interface LdapInterface
     /**
      * Connects to the specified hostname using the specified port.
      *
-     * @link http://php.net/manual/en/function.ldap-start-tls.php
+     * @see http://php.net/manual/en/function.ldap-start-tls.php
      *
      * @param string|array $hosts
      * @param int          $port
@@ -225,7 +225,7 @@ interface LdapInterface
      *
      * Returns false if no connection is present.
      *
-     * @link http://php.net/manual/en/function.ldap-close.php
+     * @see http://php.net/manual/en/function.ldap-close.php
      *
      * @return bool
      */
@@ -234,7 +234,7 @@ interface LdapInterface
     /**
      * Performs a search on the current connection.
      *
-     * @link http://php.net/manual/en/function.ldap-search.php
+     * @see http://php.net/manual/en/function.ldap-search.php
      *
      * @param string $dn
      * @param string $filter
@@ -252,11 +252,11 @@ interface LdapInterface
     /**
      * Performs a single level search on the current connection.
      *
-     * @link http://php.net/manual/en/function.ldap-list.php
+     * @see http://php.net/manual/en/function.ldap-list.php
      *
      * @param string $dn
      * @param string $filter
-     * @param array  $attributes
+     * @param array  $fields
      * @param bool   $onlyAttributes
      * @param int    $size
      * @param int    $time
@@ -270,7 +270,7 @@ interface LdapInterface
     /**
      * Reads an entry on the current connection.
      *
-     * @link http://php.net/manual/en/function.ldap-read.php
+     * @see http://php.net/manual/en/function.ldap-read.php
      *
      * @param string $dn
      * @param string $filter
@@ -288,7 +288,7 @@ interface LdapInterface
     /**
      * Extract information from an LDAP result.
      *
-     * @link https://www.php.net/manual/en/function.ldap-parse-result.php
+     * @see https://www.php.net/manual/en/function.ldap-parse-result.php
      *
      * @param resource $result
      * @param int      $errorCode
@@ -305,7 +305,7 @@ interface LdapInterface
      * Binds to the current connection using the specified username and password.
      * If sasl is true, the current connection is bound using SASL.
      *
-     * @link http://php.net/manual/en/function.ldap-bind.php
+     * @see http://php.net/manual/en/function.ldap-bind.php
      *
      * @param string $username
      * @param string $password
@@ -319,7 +319,7 @@ interface LdapInterface
     /**
      * Adds an entry to the current connection.
      *
-     * @link http://php.net/manual/en/function.ldap-add.php
+     * @see http://php.net/manual/en/function.ldap-add.php
      *
      * @param string $dn
      * @param array  $entry
@@ -333,7 +333,7 @@ interface LdapInterface
     /**
      * Deletes an entry on the current connection.
      *
-     * @link http://php.net/manual/en/function.ldap-delete.php
+     * @see http://php.net/manual/en/function.ldap-delete.php
      *
      * @param string $dn
      *
@@ -346,7 +346,7 @@ interface LdapInterface
     /**
      * Modify the name of an entry on the current connection.
      *
-     * @link http://php.net/manual/en/function.ldap-rename.php
+     * @see http://php.net/manual/en/function.ldap-rename.php
      *
      * @param string $dn
      * @param string $newRdn
@@ -362,7 +362,7 @@ interface LdapInterface
     /**
      * Modifies an existing entry on the current connection.
      *
-     * @link http://php.net/manual/en/function.ldap-modify.php
+     * @see http://php.net/manual/en/function.ldap-modify.php
      *
      * @param string $dn
      * @param array  $entry
@@ -376,7 +376,7 @@ interface LdapInterface
     /**
      * Batch modifies an existing entry on the current connection.
      *
-     * @link http://php.net/manual/en/function.ldap-modify-batch.php
+     * @see http://php.net/manual/en/function.ldap-modify-batch.php
      *
      * @param string $dn
      * @param array  $values
@@ -390,7 +390,7 @@ interface LdapInterface
     /**
      * Add attribute values to current attributes.
      *
-     * @link http://php.net/manual/en/function.ldap-mod-add.php
+     * @see http://php.net/manual/en/function.ldap-mod-add.php
      *
      * @param string $dn
      * @param array  $entry
@@ -404,7 +404,7 @@ interface LdapInterface
     /**
      * Replaces attribute values with new ones.
      *
-     * @link http://php.net/manual/en/function.ldap-mod-replace.php
+     * @see http://php.net/manual/en/function.ldap-mod-replace.php
      *
      * @param string $dn
      * @param array  $entry
@@ -418,7 +418,7 @@ interface LdapInterface
     /**
      * Delete attribute values from current attributes.
      *
-     * @link http://php.net/manual/en/function.ldap-mod-del.php
+     * @see http://php.net/manual/en/function.ldap-mod-del.php
      *
      * @param string $dn
      * @param array  $entry
@@ -432,7 +432,7 @@ interface LdapInterface
     /**
      * Send LDAP pagination control.
      *
-     * @link http://php.net/manual/en/function.ldap-control-paged-result.php
+     * @see http://php.net/manual/en/function.ldap-control-paged-result.php
      *
      * @param int    $pageSize
      * @param bool   $isCritical
@@ -445,7 +445,7 @@ interface LdapInterface
     /**
      * Retrieve the LDAP pagination cookie.
      *
-     * @link http://php.net/manual/en/function.ldap-control-paged-result-response.php
+     * @see http://php.net/manual/en/function.ldap-control-paged-result-response.php
      *
      * @param resource $result
      * @param string   $cookie
@@ -457,7 +457,7 @@ interface LdapInterface
     /**
      * Frees up the memory allocated internally to store the result.
      *
-     * @link https://www.php.net/manual/en/function.ldap-free-result.php
+     * @see https://www.php.net/manual/en/function.ldap-free-result.php
      *
      * @param resource $result
      *
@@ -466,10 +466,9 @@ interface LdapInterface
     public function freeResult($result);
 
     /**
-     * Returns the error number of the last command
-     * executed on the current connection.
+     * Returns the error number of the last command executed.
      *
-     * @link http://php.net/manual/en/function.ldap-errno.php
+     * @see http://php.net/manual/en/function.ldap-errno.php
      *
      * @return int|null
      */
@@ -478,7 +477,7 @@ interface LdapInterface
     /**
      * Returns the error string of the specified error number.
      *
-     * @link http://php.net/manual/en/function.ldap-err2str.php
+     * @see http://php.net/manual/en/function.ldap-err2str.php
      *
      * @param int $number
      *
@@ -509,6 +508,8 @@ interface LdapInterface
 
     /**
      * Determine if the current PHP version supports server controls.
+     *
+     * @deprecated since v2.5.0
      *
      * @return bool
      */

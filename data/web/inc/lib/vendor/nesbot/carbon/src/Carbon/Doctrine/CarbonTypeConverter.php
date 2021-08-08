@@ -37,7 +37,7 @@ trait CarbonTypeConverter
             return $type;
         }
 
-        if (strpos($type, '(') !== false) {
+        if (str_contains($type, '(')) {
             return preg_replace('/\(\d+\)/', "($precision)", $type);
         }
 
@@ -95,7 +95,7 @@ trait CarbonTypeConverter
             return $value;
         }
 
-        if ($value instanceof DateTimeInterface || $value instanceof CarbonInterface) {
+        if ($value instanceof DateTimeInterface) {
             return $value->format('Y-m-d H:i:s.u');
         }
 

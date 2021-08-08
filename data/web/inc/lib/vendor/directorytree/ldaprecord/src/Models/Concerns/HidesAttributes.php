@@ -5,7 +5,7 @@ namespace LdapRecord\Models\Concerns;
 /**
  * @author Taylor Otwell
  *
- * @link https://laravel.com
+ * @see https://laravel.com
  */
 trait HidesAttributes
 {

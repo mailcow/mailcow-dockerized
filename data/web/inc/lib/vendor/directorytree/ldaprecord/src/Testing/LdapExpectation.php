@@ -207,7 +207,7 @@ class LdapExpectation
     public function getMethod()
     {
         if (is_null($this->method)) {
-            throw new UnexpectedValueException('The [$method] property cannot be null.');
+            throw new UnexpectedValueException('An expectation must have a method.');
         }
 
         return $this->method;
@@ -226,7 +226,7 @@ class LdapExpectation
     /**
      * Get the expected arguments.
      *
-     * @return array
+     * @return Constraint[]
      */
     public function getExpectedArgs()
     {

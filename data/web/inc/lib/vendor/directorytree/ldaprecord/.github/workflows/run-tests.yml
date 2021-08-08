@@ -8,13 +8,14 @@ on:
 
 jobs:
   run-tests:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-latest, windows-latest]
         php: [8.0, 7.4, 7.3]
 
-    name: P${{ matrix.php }}
+    name: ${{ matrix.os }} - P${{ matrix.php }}
 
     steps:
       - name: Checkout code
@@ -34,7 +35,7 @@ jobs:
           coverage: none
 
       - name: Install dependencies
-        run: composer update --prefer-dist --no-interaction --no-suggest
+        run: composer update --prefer-dist --no-interaction
 
       - name: Execute tests
         run: vendor/bin/phpunit

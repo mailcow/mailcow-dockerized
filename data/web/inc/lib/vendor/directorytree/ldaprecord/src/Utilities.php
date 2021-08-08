@@ -55,8 +55,8 @@ class Utilities
      *
      * @author Chad Sikorra
      *
-     * @link https://github.com/ChadSikorra
-     * @link https://stackoverflow.com/questions/39533560/php-ldap-get-user-sid
+     * @see https://github.com/ChadSikorra
+     * @see https://stackoverflow.com/questions/39533560/php-ldap-get-user-sid
      *
      * @param string $value The Binary SID
      *

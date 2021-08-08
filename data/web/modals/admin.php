@@ -23,7 +23,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
           <div class="form-group">
             <label class="control-label col-sm-2" for="content"><?=$lang['admin']['rsetting_content'];?>:</label>
             <div class="col-sm-10">
-              <textarea class="form-control" id="adminRspamdSettingsContent" name="content" rows="10"><?=$rsetting_details['content'];?></textarea>
+              <textarea class="form-control" id="adminRspamdSettingsContent" name="content" rows="10"><?=(isset($rsetting_details['content'])) ? $rsetting_details['content'] : '';?></textarea>
             </div>
           </div>
           <div class="form-group">

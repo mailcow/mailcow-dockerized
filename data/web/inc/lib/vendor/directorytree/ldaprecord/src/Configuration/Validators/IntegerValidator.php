@@ -2,19 +2,20 @@
 
 namespace LdapRecord\Configuration\Validators;
 
-use LdapRecord\Configuration\ConfigurationException;
-
 class IntegerValidator extends Validator
 {
     /**
+     * The validation exception message.
+     *
+     * @var string
+     */
+    protected $message = 'Option [:option] must be an integer.';
+
+    /**
      * @inheritdoc
      */
-    public function validate()
+    public function passes()
     {
-        if (! is_numeric($this->value)) {
-            throw new ConfigurationException("Option {$this->key} must be an integer.");
-        }
-
-        return true;
+        return is_numeric($this->value);
     }
 }

@@ -2,19 +2,20 @@
 
 namespace LdapRecord\Configuration\Validators;
 
-use LdapRecord\Configuration\ConfigurationException;
-
 class BooleanValidator extends Validator
 {
     /**
+     * The validation exception message.
+     *
+     * @var string
+     */
+    protected $message = 'Option [:option] must be a boolean.';
+
+    /**
      * @inheritdoc
      */
-    public function validate()
+    public function passes()
     {
-        if (! is_bool($this->value)) {
-            throw new ConfigurationException("Option {$this->key} must be a boolean.");
-        }
-
-        return true;
+        return is_bool($this->value);
     }
 }
