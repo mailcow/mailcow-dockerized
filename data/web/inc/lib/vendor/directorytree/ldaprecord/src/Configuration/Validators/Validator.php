@@ -2,6 +2,8 @@
 
 namespace LdapRecord\Configuration\Validators;
 
+use LdapRecord\Configuration\ConfigurationException;
+
 abstract class Validator
 {
     /**
@@ -19,6 +21,13 @@ abstract class Validator
     protected $value;
 
     /**
+     * The validation exception message.
+     *
+     * @var string
+     */
+    protected $message;
+
+    /**
      * Constructor.
      *
      * @param string $key
@@ -31,11 +40,39 @@ abstract class Validator
     }
 
     /**
-     * Validates the configuration value.
-     *
-     * @throws \LdapRecord\Configuration\ConfigurationException When the value given fails validation.
+     * Determine if the validation rule passes.
      *
      * @return bool
      */
-    abstract public function validate();
+    abstract public function passes();
+
+    /**
+     * Validate the configuration value.
+     *
+     * @throws ConfigurationException
+     *
+     * @return bool
+     */
+    public function validate()
+    {
+        if (! $this->passes()) {
+            $this->fail();
+        }
+
+        return true;
+    }
+
+    /**
+     * Throw a configuration exception.
+     *
+     * @throws ConfigurationException
+     *
+     * @return void
+     */
+    protected function fail()
+    {
+        throw new ConfigurationException(
+            str_replace(':option', $this->key, $this->message)
+        );
+    }
 }

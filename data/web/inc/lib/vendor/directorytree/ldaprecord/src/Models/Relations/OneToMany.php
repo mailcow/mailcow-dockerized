@@ -89,7 +89,7 @@ abstract class OneToMany extends Relation
     public function getResults()
     {
         $results = $this->recursive
-            ? $this->getRecursiveResults($this->getRelationResults())
+            ? $this->getRecursiveResults()
             : $this->getRelationResults();
 
         return $results->merge(
@@ -142,46 +142,45 @@ abstract class OneToMany extends Relation
     /**
      * Get the results for the models relation recursively.
      *
-     * @param Collection $models The models to retrieve nested relation results from
-     * @param string[]   $loaded The distinguished names of models already loaded
+     * @param string[] $loaded The distinguished names of models already loaded
      *
      * @return Collection
      */
-    protected function getRecursiveResults(Collection $models, array &$loaded = [])
+    protected function getRecursiveResults(array $loaded = [])
     {
-        return $models->unless(empty($loaded), function ($models) use ($loaded) {
+        $results = $this->getRelationResults()->reject(function (Model $model) use ($loaded) {
             // Here we will exclude the models that we have already
-            // gathered the recursive results for so we don't run
+            // loaded the recursive results for so we don't run
             // into issues with circular relations in LDAP.
-            return $models->reject(function (Model $model) use ($loaded) {
-                return in_array($model->getDn(), $loaded);
-            });
-        })->each(function (Model $model) use (&$loaded, $models) {
+            return in_array($model->getDn(), $loaded);
+        });
+
+        foreach ($results as $model) {
             $loaded[] = $model->getDn();
 
-            // Next, we will call the same relation method on each
-            // returned model to retrieve its related models and
-            // merge them into our final resulting collection.
-            $this->getRecursiveResults(
-                $this->getRecursiveRelationResults($model),
-                $loaded
-            )->each(function (Model $related) use ($models) {
-                $models->add($related);
-            });
-        });
+            // Finally, we will fetch the related models relations,
+            // passing along our loaded models, to ensure we do
+            // not attempt fetching already loaded relations.
+            $results = $results->merge(
+                $this->getRecursiveRelationResults($model, $loaded)
+            );
+        }
+
+        return $results;
     }
 
     /**
      * Get the recursive relation results for given model.
      *
      * @param Model $model
+     * @param array $loaded
      *
      * @return Collection
      */
-    protected function getRecursiveRelationResults(Model $model)
+    protected function getRecursiveRelationResults(Model $model, array $loaded)
     {
         return method_exists($model, $this->relationName)
-            ? $model->{$this->relationName}()->recursive()->get()
+            ? $model->{$this->relationName}()->getRecursiveResults($loaded)
             : $model->newCollection();
     }
 }

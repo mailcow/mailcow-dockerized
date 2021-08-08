@@ -76,7 +76,7 @@ $clamd_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_CLAMD"])) ? 
                   <div class="progress">
                     <div class="progress-bar progress-bar-info" role="progressbar" style="width:<?=round($solr_status['jvm']['memory']['raw']['used%']);?>%"></div>
                   </div>
-                  <p><?=$lang['debug']['jvm_memory_solr'];?>: <?=$solr_status['jvm']['memory']['total'] - $solr_status['jvm']['memory']['free'];?> / <?=$solr_status['jvm']['memory']['total'];?>
+                  <p><?=$lang['debug']['jvm_memory_solr'];?>: <?=(int)$solr_status['jvm']['memory']['total'] - (int)$solr_status['jvm']['memory']['free'];?> / <?=$solr_status['jvm']['memory']['total'];?>
                     (<?=round($solr_status['jvm']['memory']['raw']['used%']);?>%)</p>
                   <hr>
                   <p><?=$lang['debug']['uptime'];?>: <?=round($solr_status['status']['dovecot-fts']['uptime'] / 1000 / 60 / 60);?>h</p>

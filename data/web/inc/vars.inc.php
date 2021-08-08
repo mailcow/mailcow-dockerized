@@ -45,21 +45,21 @@ $autodiscover_config = array(
   // The autoconfig service will additionally announce the STARTTLS-enabled ports, specified in the "tlsport" variable.
   'imap' => array(
     'server' => $mailcow_hostname,
-    'port' => end(explode(':', getenv('IMAPS_PORT'))),
-    'tlsport' => end(explode(':', getenv('IMAP_PORT'))),
+    'port' => substr(getenv('IMAPS_PORT'), strrpos(getenv('IMAPS_PORT'), ':') + 1),
+    'tlsport' => substr(getenv('POP_PORT'), strrpos(getenv('IMAP_PORT'), ':') + 1)
   ),
   'pop3' => array(
     'server' => $mailcow_hostname,
-    'port' => end(explode(':', getenv('POPS_PORT'))),
-    'tlsport' => end(explode(':', getenv('POP_PORT'))),
+    'port' => substr(getenv('POPS_PORT'), strrpos(getenv('POPS_PORT'), ':') + 1),
+    'tlsport' => substr(getenv('POP_PORT'), strrpos(getenv('POP_PORT'), ':') + 1)
   ),
   'smtp' => array(
     'server' => $mailcow_hostname,
-    'port' => end(explode(':', getenv('SMTPS_PORT'))),
-    'tlsport' => end(explode(':', getenv('SUBMISSION_PORT'))),
+    'port' => substr(getenv('SMTPS_PORT'), strrpos(getenv('SMTPS_PORT'), ':') + 1),
+    'tlsport' => substr(getenv('SUBMISSION_PORT'), strrpos(getenv('SUBMISSION_PORT'), ':') + 1)
   ),
   'activesync' => array(
-    'url' => 'https://'.$mailcow_hostname.($https_port == 443 ? '' : ':'.$https_port).'/Microsoft-Server-ActiveSync',
+    'url' => 'https://' . $mailcow_hostname . ($https_port == 443 ? '' : ':' . $https_port) . '/Microsoft-Server-ActiveSync',
   ),
   'caldav' => array(
     'server' => $mailcow_hostname,

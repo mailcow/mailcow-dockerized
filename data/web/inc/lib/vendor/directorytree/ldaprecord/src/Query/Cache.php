@@ -51,7 +51,13 @@ class Cache
      */
     public function put($key, $value, $ttl = null)
     {
-        return $this->store->set($key, $value, $this->expiresAt($ttl));
+        $seconds = $this->secondsUntil($ttl);
+
+        if ($seconds <= 0) {
+            return $this->delete($key);
+        }
+
+        return $this->store->set($key, $value, $seconds);
     }
 
     /**

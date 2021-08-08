@@ -5,7 +5,7 @@ namespace LdapRecord\Query\Pagination;
 use LdapRecord\LdapInterface;
 
 /**
- * @deprecated
+ * @deprecated since v2.5.0
  */
 class DeprecatedPaginator extends AbstractPaginator
 {

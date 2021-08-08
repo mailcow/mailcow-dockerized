@@ -74,7 +74,7 @@ class Connection
     /**
      * The authentication guard resolver.
      *
-     * @var \Closure
+     * @var Closure
      */
     protected $authGuardResolver;
 

@@ -44,10 +44,34 @@ class ArrayCacheStore implements CacheInterface
     {
         $this->storage[$key] = [
             'value' => $value,
-            'expiresAt' => $this->parseDateInterval($ttl),
+            'expiresAt' => $this->calculateExpiration($ttl),
         ];
 
         return true;
+    }
+
+    /**
+     * Get the expiration time of the key.
+     *
+     * @param int $seconds
+     *
+     * @return int
+     */
+    protected function calculateExpiration($seconds)
+    {
+        return $this->toTimestamp($seconds);
+    }
+
+    /**
+     * Get the UNIX timestamp for the given number of seconds.
+     *
+     * @param int $seconds
+     *
+     * @return int
+     */
+    protected function toTimestamp($seconds)
+    {
+        return $seconds > 0 ? $this->availableAt($seconds) : 0;
     }
 
     /**

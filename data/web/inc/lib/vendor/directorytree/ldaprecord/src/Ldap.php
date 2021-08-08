@@ -2,8 +2,10 @@
 
 namespace LdapRecord;
 
-class Ldap extends LdapBase
+class Ldap implements LdapInterface
 {
+    use HandlesConnection, DetectsErrors;
+
     /**
      * @inheritdoc
      */
@@ -17,9 +19,9 @@ class Ldap extends LdapBase
     /**
      * Retrieves the first entry from a search result.
      *
-     * @link http://php.net/manual/en/function.ldap-first-entry.php
+     * @see http://php.net/manual/en/function.ldap-first-entry.php
      *
-     * @param resource $searchResult
+     * @param resource $searchResults
      *
      * @return resource
      */
@@ -33,7 +35,7 @@ class Ldap extends LdapBase
     /**
      * Retrieves the next entry from a search result.
      *
-     * @link http://php.net/manual/en/function.ldap-next-entry.php
+     * @see http://php.net/manual/en/function.ldap-next-entry.php
      *
      * @param resource $entry
      *
@@ -49,7 +51,7 @@ class Ldap extends LdapBase
     /**
      * Retrieves the ldap entry's attributes.
      *
-     * @link http://php.net/manual/en/function.ldap-get-attributes.php
+     * @see http://php.net/manual/en/function.ldap-get-attributes.php
      *
      * @param resource $entry
      *
@@ -65,9 +67,9 @@ class Ldap extends LdapBase
     /**
      * Returns the number of entries from a search result.
      *
-     * @link http://php.net/manual/en/function.ldap-count-entries.php
+     * @see http://php.net/manual/en/function.ldap-count-entries.php
      *
-     * @param resource $searchResult
+     * @param resource $searchResults
      *
      * @return int
      */
@@ -81,7 +83,7 @@ class Ldap extends LdapBase
     /**
      * Compare value of attribute found in entry specified with DN.
      *
-     * @link http://php.net/manual/en/function.ldap-compare.php
+     * @see http://php.net/manual/en/function.ldap-compare.php
      *
      * @param string $dn
      * @param string $attribute
@@ -125,7 +127,7 @@ class Ldap extends LdapBase
     /**
      * Get all binary values from the specified result entry.
      *
-     * @link http://php.net/manual/en/function.ldap-get-values-len.php
+     * @see http://php.net/manual/en/function.ldap-get-values-len.php
      *
      * @param $entry
      * @param $attribute
@@ -160,7 +162,7 @@ class Ldap extends LdapBase
     /**
      * Set a callback function to do re-binds on referral chasing.
      *
-     * @link http://php.net/manual/en/function.ldap-set-rebind-proc.php
+     * @see http://php.net/manual/en/function.ldap-set-rebind-proc.php
      *
      * @param callable $callback
      *
@@ -224,9 +226,9 @@ class Ldap extends LdapBase
             $deref,
             $serverControls
         ) {
-            return $this->supportsServerControlsInMethods() && ! empty($serverControls)
-                ? ldap_search($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls)
-                : ldap_search($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref);
+            return empty($serverControls)
+                ? ldap_search($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref)
+                : ldap_search($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls);
         });
     }
 
@@ -245,9 +247,9 @@ class Ldap extends LdapBase
             $deref,
             $serverControls
         ) {
-            return $this->supportsServerControlsInMethods() && ! empty($serverControls)
-                ? ldap_list($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls)
-                : ldap_list($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref);
+            return empty($serverControls)
+                ? ldap_list($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref)
+                : ldap_list($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls);
         });
     }
 
@@ -266,9 +268,9 @@ class Ldap extends LdapBase
             $deref,
             $serverControls
         ) {
-            return $this->supportsServerControlsInMethods() && ! empty($serverControls)
-                ? ldap_read($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls)
-                : ldap_read($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref);
+            return empty($serverControls)
+                ? ldap_read($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref)
+                : ldap_read($this->connection, $dn, $filter, $fields, $onlyAttributes, $size, $time, $deref, $serverControls);
         });
     }
 
@@ -285,9 +287,9 @@ class Ldap extends LdapBase
             &$referrals,
             &$serverControls
         ) {
-            return $this->supportsServerControlsInMethods() && ! empty($serverControls)
-                ? ldap_parse_result($this->connection, $result, $errorCode, $dn, $errorMessage, $referrals, $serverControls)
-                : ldap_parse_result($this->connection, $result, $errorCode, $dn, $errorMessage, $referrals);
+            return empty($serverControls)
+                ? ldap_parse_result($this->connection, $result, $errorCode, $dn, $errorMessage, $referrals)
+                : ldap_parse_result($this->connection, $result, $errorCode, $dn, $errorMessage, $referrals, $serverControls);
         });
     }
 
@@ -419,9 +421,7 @@ class Ldap extends LdapBase
      */
     public function errNo()
     {
-        return $this->connection
-            ? ldap_errno($this->connection)
-            : null;
+        return $this->connection ? ldap_errno($this->connection) : null;
     }
 
     /**
