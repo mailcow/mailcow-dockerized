@@ -971,11 +971,13 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             <div class="col-sm-8">
               <select data-width="100%" name="exclude_domains" class="selectpicker" title="<?=$lang['tfa']['select'];?>" multiple>
               <?php
-              foreach (array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains')) as $domain):
-              ?>
-                <option <?=(in_array($domain, $q_data['exclude_domains'])) ? 'selected' : null;?>><?=htmlspecialchars($domain);?></option>
-              <?php
-              endforeach;
+              if (is_array($q_data['exclude_domains'])) {
+                foreach (array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains')) as $domain) {
+                ?>
+                  <option <?=(in_array($domain, $q_data['exclude_domains'])) ? 'selected' : null;?>><?=htmlspecialchars($domain);?></option>
+                <?php
+                }
+              }
               ?>
               </select>
             </div>
