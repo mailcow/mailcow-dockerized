@@ -201,7 +201,7 @@ function password_complexity($_action, $_data = null) {
           $policy_text[] = sprintf($lang['admin']["password_policy_$name"], $value);
         }
       }
-      return '<p class="help-block small">- ' . implode('<br>- ', $policy_text) . '</p>';
+      return '<p class="help-block small">- ' . implode('<br>- ', (array)$policy_text) . '</p>';
     break;
   }
 }
@@ -982,8 +982,8 @@ function edit_user_account($_data) {
     return false;
   }
   if (!empty($_data['user_new_pass']) && !empty($_data['user_new_pass2'])) {
-    $password_new	= $_data['user_new_pass'];
-    $password_new2	= $_data['user_new_pass2'];
+    $password_new = $_data['user_new_pass'];
+    $password_new2  = $_data['user_new_pass2'];
     if (password_check($password_new, $password_new2) !== true) {
       return false;
     }
@@ -1010,7 +1010,7 @@ function user_get_alias_details($username) {
   $data['direct_aliases'] = array();
   $data['shared_aliases'] = array();
   if ($_SESSION['mailcow_cc_role'] == "user") {
-    $username	= $_SESSION['mailcow_cc_username'];
+    $username = $_SESSION['mailcow_cc_username'];
   }
   if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
     return false;

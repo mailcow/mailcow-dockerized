@@ -268,9 +268,9 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
           $currents = dns_get_record($record[0], 52, $_, $_, TRUE);
           foreach ($currents as &$current) {
             $current['type'] = 'TLSA';
-            $current['cert_usage'] = hexdec(bin2hex($current['data']{0}));
-            $current['selector'] = hexdec(bin2hex($current['data']{1}));
-            $current['match_type'] = hexdec(bin2hex($current['data']{2}));
+            $current['cert_usage'] = hexdec(bin2hex($current['data'][0]));
+            $current['selector'] = hexdec(bin2hex($current['data'][1]));
+            $current['match_type'] = hexdec(bin2hex($current['data'][2]));
             $current['cert_data'] = bin2hex(substr($current['data'], 3));
             $current['data'] = $current['cert_usage'] . ' ' . $current['selector'] . ' ' . $current['match_type'] . ' ' . $current['cert_data'];
           }

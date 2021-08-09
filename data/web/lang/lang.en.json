@@ -517,6 +517,7 @@
         "optional": "This record is optional."
     },
     "edit": {
+        "acl": "ACL (Permission)",
         "active": "Active",
         "admin": "Edit administrator",
         "advanced_settings": "Advanced settings",
@@ -577,6 +578,7 @@
         "previous": "Previous page",
         "private_comment": "Private comment",
         "public_comment": "Public comment",
+        "pushover": "Pushover",
         "pushover_evaluate_x_prio": "Escalate high priority mail [<code>X-Priority: 1</code>]",
         "pushover_info": "Push notification settings will apply to all clean (non-spam) mail delivered to <b>%s</b> including aliases (shared, non-shared, tagged).",
         "pushover_only_x_prio": "Only consider high priority mail [<code>X-Priority: 1</code>]",
@@ -901,11 +903,11 @@
         "type": "Type"
     },
     "ratelimit": {
-	    "disabled": "Disabled",
-	    "second": "msgs / second",
-	    "minute": "msgs / minute",
-	    "hour": "msgs / hour",
-	    "day": "msgs / day"
+      "disabled": "Disabled",
+      "second": "msgs / second",
+      "minute": "msgs / minute",
+      "hour": "msgs / hour",
+      "day": "msgs / day"
     },
     "start": {
         "help": "Show/Hide help panel",

@@ -1,9 +1,9 @@
 <?php
 function policy($_action, $_scope, $_data = null) {
-	global $pdo;
-	global $redis;
-	global $lang;
-	$_data_log = $_data;
+  global $pdo;
+  global $redis;
+  global $lang;
+  $_data_log = $_data;
   switch ($_action) {
     case 'add':
       if (!isset($_SESSION['acl']['spam_policy']) || $_SESSION['acl']['spam_policy'] != "1" ) {
@@ -261,7 +261,7 @@ function policy($_action, $_scope, $_data = null) {
             $_SESSION['return'][] = array(
               'type' => 'success',
               'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
-              'msg' => array('items_deleted', implode(', ', $prefids))
+              'msg' => array('items_deleted', implode(', ', (array)$prefids))
             );
           }
         break;
