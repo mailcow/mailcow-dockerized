@@ -1437,7 +1437,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
       </div>
       <div class="panel-body">
         <p><?=$lang['admin']['rspamd_global_filters_info'];?></p>
-        <div id="confirm_show_rspamd_global_filters" class="<?=(isset($_SESSION['show_rspamd_global_filters']) && $_SESSION['show_rspamd_global_filters'] === true) ? 'hidden' : '';?>">
+        <div id="confirm_show_rspamd_global_filters" class="<?=(!isset($_SESSION['show_rspamd_global_filters']) || $_SESSION['show_rspamd_global_filters'] !== true) ? '' : 'hidden';?>">
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
               <label>
@@ -1446,7 +1446,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             </div>
           </div>
         </div>
-        <div id="rspamd_global_filters" class="<?=(isset($_SESSION['show_rspamd_global_filters']) && $_SESSION['show_rspamd_global_filters'] === true) ? 'hidden' : '';?>">
+        <div id="rspamd_global_filters" class="<?=(isset($_SESSION['show_rspamd_global_filters']) && $_SESSION['show_rspamd_global_filters'] === true) ? '' : 'hidden';?>">
         <hr>
         <span class="anchor" id="regexmaps"></span>
         <h4><?=$lang['admin']['regex_maps'];?></h4>
