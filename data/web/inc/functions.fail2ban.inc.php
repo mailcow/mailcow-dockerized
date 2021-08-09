@@ -18,7 +18,7 @@ function fail2ban($_action, $_data = null) {
           }
           if (isset($tmp_wl_data)) {
             natsort($tmp_wl_data);
-            $f2b_options['whitelist'] = implode(PHP_EOL, $tmp_wl_data);
+            $f2b_options['whitelist'] = implode(PHP_EOL, (array)$tmp_wl_data);
           }
           else {
             $f2b_options['whitelist'] = "";
@@ -34,7 +34,7 @@ function fail2ban($_action, $_data = null) {
           }
           if (isset($tmp_bl_data)) {
             natsort($tmp_bl_data);
-            $f2b_options['blacklist'] = implode(PHP_EOL, $tmp_bl_data);
+            $f2b_options['blacklist'] = implode(PHP_EOL, (array)$tmp_bl_data);
           }
           else {
             $f2b_options['blacklist'] = "";

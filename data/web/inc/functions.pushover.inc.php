@@ -1,6 +1,6 @@
 <?php
 function pushover($_action, $_data = null) {
-	global $pdo;
+  global $pdo;
   switch ($_action) {
     case 'edit':
       if (!isset($_SESSION['acl']['pushover']) || $_SESSION['acl']['pushover'] != "1" ) {
@@ -81,7 +81,7 @@ function pushover($_action, $_data = null) {
         }
         $senders = array_filter($senders);
         if (empty($senders)) { $senders = ''; }
-        $senders = implode(",", $senders);
+        $senders = implode(",", (array)$senders);
         if (!ctype_alnum($key) || strlen($key) != 30) {
           $_SESSION['return'][] = array(
             'type' => 'danger',

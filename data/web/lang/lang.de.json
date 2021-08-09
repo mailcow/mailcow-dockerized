@@ -514,6 +514,7 @@
         "optional": "Dieser Eintrag ist optional."
     },
     "edit": {
+        "acl": "ACL (Berechtigungen)",
         "active": "Aktiv",
         "admin": "Administrator bearbeiten",
         "advanced_settings": "Erweiterte Einstellungen",
@@ -574,6 +575,7 @@
         "previous": "Vorherige Seite",
         "private_comment": "Privater Kommentar",
         "public_comment": "Öffentlicher Kommentar",
+        "pushover": "Pushover",
         "pushover_evaluate_x_prio": "Hohe Priorität eskalieren [<code>X-Priority: 1</code>]",
         "pushover_info": "Push-Benachrichtigungen werden angewendet auf alle nicht-Spam Nachrichten zugestellt an <b>%s</b>, einschließlich Alias-Adressen (shared, non-shared, tagged).",
         "pushover_only_x_prio": "Nur Mail mit hoher Priorität berücksichtigen [<code>X-Priority: 1</code>]",

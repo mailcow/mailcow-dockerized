@@ -1,16 +1,16 @@
 <?php
 function oauth2($_action, $_type, $_data = null) {
-	global $pdo;
-	global $redis;
-	global $lang;
-	if ($_SESSION['mailcow_cc_role'] != "admin") {
-		$_SESSION['return'][] = array(
-			'type' => 'danger',
+  global $pdo;
+  global $redis;
+  global $lang;
+  if ($_SESSION['mailcow_cc_role'] != "admin") {
+    $_SESSION['return'][] = array(
+      'type' => 'danger',
       'log' => array(__FUNCTION__, $_action, $_type, $_data),
-			'msg' => 'access_denied'
-		);
-		return false;
-	}
+      'msg' => 'access_denied'
+    );
+    return false;
+  }
   switch ($_action) {
     case 'add':
       switch ($_type) {
@@ -188,7 +188,7 @@ function oauth2($_action, $_type, $_data = null) {
           $_SESSION['return'][] = array(
             'type' => 'success',
             'log' => array(__FUNCTION__, $_action, $_type, $_data),
-            'msg' => sprintf($lang['success']['items_deleted'], implode(', ', $access_tokens))
+            'msg' => sprintf($lang['success']['items_deleted'], implode(', ', (array)$access_tokens))
           );
         break;
         case 'refresh_token':
@@ -210,7 +210,7 @@ function oauth2($_action, $_type, $_data = null) {
           $_SESSION['return'][] = array(
             'type' => 'success',
             'log' => array(__FUNCTION__, $_action, $_type, $_data),
-            'msg' => sprintf($lang['success']['items_deleted'], implode(', ', $refresh_tokens))
+            'msg' => sprintf($lang['success']['items_deleted'], implode(', ', (array)$refresh_tokens))
           );
         break;
       }
