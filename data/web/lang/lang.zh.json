@@ -519,6 +519,7 @@
         "optional": "此记录是可选的。"
     },
     "edit": {
+        "acl": "ACL (权限)",
         "active": "启用",
         "admin": "编辑管理员",
         "advanced_settings": "高级设置",
@@ -579,6 +580,7 @@
         "previous": "上一页",
         "private_comment": "私密评论",
         "public_comment": "公开评论",
+        "pushover": "Pushover",
         "pushover_evaluate_x_prio": "加速高优先级邮件 [<code>X-Priority: 1</code>]",
         "pushover_info": "推送通知设置会应用到所有递送到 <b>%s</b> (包括其别名) 的非垃圾邮件。",
         "pushover_only_x_prio": "只为高优先级邮件开启 [<code>X-Priority: 1</code>]",
