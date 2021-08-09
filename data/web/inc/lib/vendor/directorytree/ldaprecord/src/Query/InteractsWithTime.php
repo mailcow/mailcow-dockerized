@@ -9,18 +9,34 @@ use DateTimeInterface;
 /**
  * @author Taylor Otwell
  *
- * @link https://laravel.com
+ * @see https://laravel.com
  */
 trait InteractsWithTime
 {
     /**
-     * Get the "expires at" UNIX timestamp.
+     * Get the number of seconds until the given DateTime.
      *
      * @param DateTimeInterface|DateInterval|int $delay
      *
      * @return int
      */
-    protected function expiresAt($delay = 0)
+    protected function secondsUntil($delay)
+    {
+        $delay = $this->parseDateInterval($delay);
+
+        return $delay instanceof DateTimeInterface
+            ? max(0, $delay->getTimestamp() - $this->currentTime())
+            : (int) $delay;
+    }
+
+    /**
+     * Get the "available at" UNIX timestamp.
+     *
+     * @param DateTimeInterface|DateInterval|int $delay
+     *
+     * @return int
+     */
+    protected function availableAt($delay = 0)
     {
         $delay = $this->parseDateInterval($delay);
 

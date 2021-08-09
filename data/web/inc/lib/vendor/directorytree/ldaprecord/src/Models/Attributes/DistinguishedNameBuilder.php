@@ -45,7 +45,7 @@ class DistinguishedNameBuilder
      */
     public function __call($method, $args)
     {
-        return $this->get()->{$method}($args);
+        return $this->get()->{$method}(...$args);
     }
 
     /**

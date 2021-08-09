@@ -1,8 +1,8 @@
 <?php
 
 function dkim($_action, $_data = null, $privkey = false) {
-	global $redis;
-	global $lang;
+  global $redis;
+  global $lang;
   switch ($_action) {
     case 'add':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
@@ -13,7 +13,7 @@ function dkim($_action, $_data = null, $privkey = false) {
         );
         return false;
       }
-      $key_length	= intval($_data['key_size']);
+      $key_length = intval($_data['key_size']);
       $dkim_selector = (isset($_data['dkim_selector'])) ? $_data['dkim_selector'] : 'dkim';
       $domains = array_map('trim', preg_split( "/( |,|;|\n)/", $_data['domains']));
       $domains = array_filter($domains);
@@ -167,9 +167,9 @@ function dkim($_action, $_data = null, $privkey = false) {
       array_shift($pem_public_key_array);
       array_pop($pem_public_key_array);
       // Implode as single string
-      $pem_public_key = implode('', $pem_public_key_array);
+      $pem_public_key = implode('', (array)$pem_public_key_array);
       $dkim_selector = (isset($_data['dkim_selector'])) ? $_data['dkim_selector'] : 'dkim';
-      $domain	= $_data['domain'];
+      $domain = $_data['domain'];
       if (!is_valid_domain_name($domain)) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
@@ -251,7 +251,7 @@ function dkim($_action, $_data = null, $privkey = false) {
         }
         if ($GLOBALS['SPLIT_DKIM_255'] === true) {
           $dkim_txt_tmp = str_split('v=DKIM1;k=rsa;t=s;s=email;p=' . $redis_dkim_key_data, 255);
-          $dkimdata['dkim_txt'] = sprintf('"%s"', implode('" "', $dkim_txt_tmp ) );
+          $dkimdata['dkim_txt'] = sprintf('"%s"', implode('" "', (array)$dkim_txt_tmp ) );
         }
         else {
           $dkimdata['dkim_txt'] = 'v=DKIM1;k=rsa;t=s;s=email;p=' . $redis_dkim_key_data;

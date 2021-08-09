@@ -768,6 +768,18 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Get the head attribute of the model, or the given DN.
+     *
+     * @param string|null $dn
+     *
+     * @return string|null
+     */
+    public function getHead($dn = null)
+    {
+        return $this->newDn($dn ?? $this->dn)->head();
+    }
+
+    /**
      * Get the RDN of the model, of the given DN.
      *
      * @param string|null
@@ -804,9 +816,19 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Get the model's object GUID key.
+     *
+     * @return void
+     */
+    public function getObjectGuidKey()
+    {
+        return $this->guidKey;
+    }
+
+    /**
      * Get the model's binary object GUID.
      *
-     * @link https://msdn.microsoft.com/en-us/library/ms679021(v=vs.85).aspx
+     * @see https://msdn.microsoft.com/en-us/library/ms679021(v=vs.85).aspx
      *
      * @return string|null
      */
@@ -952,8 +974,8 @@ abstract class Model implements ArrayAccess, JsonSerializable
     protected function performInsert()
     {
         // Here we will populate the models object classes if it
-        // does not already have any. An LDAP object cannot
-        // be successfully created without them set.
+        // does not already have any set. An LDAP object cannot
+        // be successfully created in the server without them.
         if (! $this->hasAttribute('objectclass')) {
             $this->setAttribute('objectclass', static::$objectClasses);
         }
@@ -961,17 +983,18 @@ abstract class Model implements ArrayAccess, JsonSerializable
         $query = $this->newQuery();
 
         // If the model does not currently have a distinguished
-        // name, we will attempt to create one automatically
-        // using the current query builders DN as a base.
+        // name, we will attempt to generate one automatically
+        // using the current query builder's DN as the base.
         if (empty($this->getDn())) {
             $this->setDn($this->getCreatableDn());
         }
 
         $this->fireModelEvent(new Events\Creating($this));
 
-        // Here we perform the insert of the object in the directory.
-        // We will also filter out any empty attribute values here,
-        // otherwise the LDAP server will return an error message.
+        // Here we perform the insert of new object in the directory,
+        // but filter out any empty attributes before sending them
+        // to the server. LDAP servers will throw an exception if
+        // attributes have been given empty or null values.
         $query->insert($this->getDn(), array_filter($this->getAttributes()));
 
         $this->fireModelEvent(new Events\Created($this));

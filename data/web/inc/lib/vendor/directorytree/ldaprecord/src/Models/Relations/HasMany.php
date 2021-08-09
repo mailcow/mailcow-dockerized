@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Models\Relations;
 
+use Closure;
 use LdapRecord\DetectsErrors;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Model;
@@ -105,6 +106,21 @@ class HasMany extends OneToMany
         $this->pageSize = $size;
 
         return $result;
+    }
+
+    /**
+     * Chunk the relation results using the given callback.
+     *
+     * @param int     $pageSize
+     * @param Closure $callback
+     *
+     * @return void
+     */
+    public function chunk($pageSize, Closure $callback)
+    {
+        $this->getRelationQuery()->chunk($pageSize, function ($entries) use ($callback) {
+            $callback($this->transformResults($entries));
+        });
     }
 
     /**

@@ -185,7 +185,15 @@ trait HasPassword
      */
     protected function validateSecureConnection()
     {
-        if (! $this->getConnection()->getLdapConnection()->canChangePasswords()) {
+        $connection = $this->getConnection();
+
+        if ($connection->isConnected()) {
+            $secure = $connection->getLdapConnection()->canChangePasswords();
+        } else {
+            $secure = $connection->getConfiguration()->get('use_ssl') || $connection->getConfiguration()->get('use_tls');
+        }
+
+        if (! $secure) {
             throw new ConnectionException(
                 'You must be connected to your LDAP server with TLS or SSL to perform this operation.'
             );

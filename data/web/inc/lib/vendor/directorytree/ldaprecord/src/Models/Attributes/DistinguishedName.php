@@ -3,6 +3,7 @@
 namespace LdapRecord\Models\Attributes;
 
 use LdapRecord\EscapesValues;
+use LdapRecord\Support\Arr;
 
 class DistinguishedName
 {
@@ -60,7 +61,7 @@ class DistinguishedName
     }
 
     /**
-     * Make a new Distinguished Name instance.
+     * Make a new distinguished name instance.
      *
      * @param string|null $value
      *
@@ -158,19 +159,15 @@ class DistinguishedName
     }
 
     /**
-     * Get the Distinguished Name values without attributes.
+     * Get the distinguished name values without attributes.
      *
      * @return array
      */
     public function values()
     {
-        $components = $this->components();
-
         $values = [];
 
-        foreach ($components as $rdn) {
-            [,$value] = static::explodeRdn($rdn);
-
+        foreach ($this->multi() as [, $value]) {
             $values[] = static::unescape($value);
         }
 
@@ -178,35 +175,45 @@ class DistinguishedName
     }
 
     /**
-     * Get the Distinguished Name components with attributes.
+     * Get the distinguished name attributes without values.
+     *
+     * @return array
+     */
+    public function attributes()
+    {
+        $attributes = [];
+
+        foreach ($this->multi() as [$attribute]) {
+            $attributes[] = $attribute;
+        }
+
+        return $attributes;
+    }
+
+    /**
+     * Get the distinguished name components with attributes.
      *
      * @return array
      */
     public function components()
     {
-        $rdns = static::explode($this->value);
-
         $components = [];
 
-        foreach ($rdns as $rdn) {
-            [$attribute, $value] = static::explodeRdn($rdn);
-
-            // When a Distinguished Name is exploded, the values are automatically
+        foreach ($this->multi() as [$attribute, $value]) {
+            // When a distinguished name is exploded, the values are automatically
             // escaped. This cannot be opted out of. Here we will unescape
             // the attribute value, then re-escape it to its original
             // representation from the server using the "dn" flag.
             $value = $this->escape(static::unescape($value))->dn();
 
-            $components[] = static::makeRdn([
-                $attribute, $value,
-            ]);
+            $components[] = static::makeRdn([$attribute, $value]);
         }
 
         return $components;
     }
 
     /**
-     * Convert the DN into an associative array.
+     * Convert the distinguished name into an associative array.
      *
      * @return array
      */
@@ -214,9 +221,7 @@ class DistinguishedName
     {
         $map = [];
 
-        foreach ($this->components() as $rdn) {
-            [$attribute, $value] = static::explodeRdn($rdn);
-
+        foreach ($this->multi() as [$attribute, $value]) {
             $attribute = $this->normalize($attribute);
 
             array_key_exists($attribute, $map)
@@ -228,31 +233,71 @@ class DistinguishedName
     }
 
     /**
-     * Get the name value.
+     * Split the RDNs into a multi-dimensional array.
+     *
+     * @return array
+     */
+    public function multi()
+    {
+        return array_map(function ($rdn) {
+            return static::explodeRdn($rdn);
+        }, $this->rdns());
+    }
+
+    /**
+     * Split the distinguished name into an array of unescaped RDN's.
+     *
+     * @return array
+     */
+    public function rdns()
+    {
+        return static::explode($this->value);
+    }
+
+    /**
+     * Get the first RDNs value.
      *
      * @return string|null
      */
     public function name()
     {
-        $values = $this->values();
-
-        return reset($values) ?: null;
+        return Arr::first($this->values());
     }
 
     /**
-     * Get the relative Distinguished name.
+     * Get the first RDNs attribute.
+     *
+     * @return string|null
+     */
+    public function head()
+    {
+        return Arr::first($this->attributes());
+    }
+
+    /**
+     * Get the relative distinguished name.
      *
      * @return string|null
      */
     public function relative()
     {
-        $components = $this->components();
-
-        return reset($components) ?: null;
+        return Arr::first($this->components());
     }
 
     /**
-     * Get the parent Distinguished name.
+     * Alias of relative().
+     *
+     * Get the first RDN from the distinguished name.
+     *
+     * @return string|null
+     */
+    public function first()
+    {
+        return $this->relative();
+    }
+
+    /**
+     * Get the parent distinguished name.
      *
      * @return string|null
      */
@@ -266,7 +311,7 @@ class DistinguishedName
     }
 
     /**
-     * Determine if the current Distinguished Name is a parent of the given child.
+     * Determine if the current distinguished name is a parent of the given child.
      *
      * @param DistinguishedName $child
      *
@@ -278,7 +323,7 @@ class DistinguishedName
     }
 
     /**
-     * Determine if the current Distinguished Name is a child of the given parent.
+     * Determine if the current distinguished name is a child of the given parent.
      *
      * @param DistinguishedName $parent
      *
@@ -299,7 +344,7 @@ class DistinguishedName
     }
 
     /**
-     * Determine if the current Distinguished Name is an ancestor of the descendant.
+     * Determine if the current distinguished name is an ancestor of the descendant.
      *
      * @param DistinguishedName $descendant
      *
@@ -311,7 +356,7 @@ class DistinguishedName
     }
 
     /**
-     * Determine if the current Distinguished Name is a descendant of the ancestor.
+     * Determine if the current distinguished name is a descendant of the ancestor.
      *
      * @param DistinguishedName $ancestor
      *
@@ -336,7 +381,7 @@ class DistinguishedName
     }
 
     /**
-     * Compare whether the two Distinguished Name values are equal.
+     * Compare whether the two distinguished name values are equal.
      *
      * @param array $values
      * @param array $other

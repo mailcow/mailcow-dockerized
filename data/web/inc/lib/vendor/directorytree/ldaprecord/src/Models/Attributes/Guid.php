@@ -19,7 +19,7 @@ class Guid
      *
      * @author Chad Sikorra <Chad.Sikorra@gmail.com>
      *
-     * @link https://github.com/ldaptools/ldaptools
+     * @see https://github.com/ldaptools/ldaptools
      *
      * @var array
      */
@@ -36,7 +36,7 @@ class Guid
      *
      * @author Chad Sikorra <Chad.Sikorra@gmail.com>
      *
-     * @link https://github.com/ldaptools/ldaptools
+     * @see https://github.com/ldaptools/ldaptools
      *
      * @var array
      */
@@ -142,7 +142,7 @@ class Guid
      *
      * @author Chad Sikorra <Chad.Sikorra@gmail.com>
      *
-     * @link https://github.com/ldaptools/ldaptools
+     * @see https://github.com/ldaptools/ldaptools
      *
      * @param string $hex      The full hex string.
      * @param array  $sections An array of start and length (unless octet is true, then length is always 2).

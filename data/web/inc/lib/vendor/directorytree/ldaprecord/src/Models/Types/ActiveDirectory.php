@@ -14,7 +14,7 @@ interface ActiveDirectory extends TypeInterface
     /**
      * Returns the model's hex object SID.
      *
-     * @link https://msdn.microsoft.com/en-us/library/ms679024(v=vs.85).aspx
+     * @see https://msdn.microsoft.com/en-us/library/ms679024(v=vs.85).aspx
      *
      * @return string
      */

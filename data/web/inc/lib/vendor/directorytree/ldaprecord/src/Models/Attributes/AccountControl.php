@@ -326,7 +326,7 @@ class AccountControl
      *
      * For information about how to programmatically set this permission, visit the following link:
      *
-     * @link http://msdn2.microsoft.com/en-us/library/aa746398.aspx
+     * @see http://msdn2.microsoft.com/en-us/library/aa746398.aspx
      *
      * @return $this
      */

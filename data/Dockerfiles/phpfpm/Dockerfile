@@ -1,12 +1,12 @@
-FROM php:7.4-fpm-alpine3.13
+FROM php:8.0-fpm-alpine3.14
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
-ENV APCU_PECL 5.1.19
-ENV IMAGICK_PECL 3.4.4
+ENV APCU_PECL 5.1.20
+ENV IMAGICK_PECL 3.5.1
 # Mailparse is pulled from master branch
 #ENV MAILPARSE_PECL 3.0.2
 ENV MEMCACHED_PECL 3.1.5
-ENV REDIS_PECL 5.3.3
+ENV REDIS_PECL 5.3.4
 
 RUN apk add -U --no-cache autoconf \
   aspell-dev \
@@ -61,7 +61,7 @@ RUN apk add -U --no-cache autoconf \
   && docker-php-ext-configure exif \
   && docker-php-ext-configure gd --with-freetype=/usr/include/ \  
     --with-jpeg=/usr/include/ \
-  && docker-php-ext-install -j 4 exif gd gettext intl ldap opcache pcntl pdo pdo_mysql pspell soap sockets xmlrpc zip bcmath gmp \
+  && docker-php-ext-install -j 4 exif gd gettext intl ldap opcache pcntl pdo pdo_mysql pspell soap sockets zip bcmath gmp \
   && docker-php-ext-configure imap --with-imap --with-imap-ssl \
   && docker-php-ext-install -j 4 imap \
   && curl --silent --show-error https://getcomposer.org/installer | php \

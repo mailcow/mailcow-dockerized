@@ -48,7 +48,7 @@ trait Units
                 $seconds = (int) floor($diff / static::MICROSECONDS_PER_SECOND);
                 $time += $seconds;
                 $diff -= $seconds * static::MICROSECONDS_PER_SECOND;
-                $microtime = str_pad("$diff", 6, '0', STR_PAD_LEFT);
+                $microtime = str_pad((string) $diff, 6, '0', STR_PAD_LEFT);
                 $tz = $this->tz;
 
                 return $this->tz('UTC')->modify("@$time.$microtime")->tz($tz);
@@ -201,6 +201,21 @@ trait Units
             $unit = CarbonInterval::make($unit);
         }
 
+        // Can be removed if https://bugs.php.net/bug.php?id=81106
+        // is fixed
+        // @codeCoverageIgnoreStart
+        if (
+            $unit instanceof DateInterval &&
+            version_compare(PHP_VERSION, '8.1.0-dev', '>=') &&
+            ($unit->f < 0 || $unit->f >= 1)
+        ) {
+            $unit = clone $unit;
+            $seconds = floor($unit->f);
+            $unit->f -= $seconds;
+            $unit->s += (int) $seconds;
+        }
+        // @codeCoverageIgnoreEnd
+
         if ($unit instanceof CarbonConverterInterface) {
             return $this->resolveCarbon($unit->convertDate($this, false));
         }
@@ -233,8 +248,8 @@ trait Units
     {
         $date = $this;
 
-        if (!is_numeric($value) || !\floatval($value)) {
-            return $date->isMutable() ? $date : $date->copy();
+        if (!is_numeric($value) || !(float) $value) {
+            return $date->isMutable() ? $date : $date->avoidMutation();
         }
 
         $metaUnits = [
@@ -377,7 +392,7 @@ trait Units
             [$value, $unit] = [$unit, $value];
         }
 
-        return $this->addUnit($unit, -\floatval($value), $overflow);
+        return $this->addUnit($unit, -(float) $value, $overflow);
     }
 
     /**
