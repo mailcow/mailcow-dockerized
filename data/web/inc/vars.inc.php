@@ -46,7 +46,7 @@ $autodiscover_config = array(
   'imap' => array(
     'server' => $mailcow_hostname,
     'port' => (int)filter_var(substr(getenv('IMAPS_PORT'), strrpos(getenv('IMAPS_PORT'), ':')), FILTER_SANITIZE_NUMBER_INT),
-    'tlsport' => (int)filter_var(substr(getenv('POP_PORT'), strrpos(getenv('IMAP_PORT'), ':')), FILTER_SANITIZE_NUMBER_INT)
+    'tlsport' => (int)filter_var(substr(getenv('IMAP_PORT'), strrpos(getenv('IMAP_PORT'), ':')), FILTER_SANITIZE_NUMBER_INT)
   ),
   'pop3' => array(
     'server' => $mailcow_hostname,
