@@ -117,7 +117,7 @@
         "xmpp_admin": "XMPP 管理员",
         "xmpp_admin_info": "<b>危险:</b> 将用户提升为该域的 XMPP 管理员。",
         "xmpp_prefix": "域的 XMPP 前缀 (\"im\" 即使用 <b>im</b>.example.org)",
-        "xmpp_prefix_info": "为 XMPP 申请证书，两个 CNAME DNS 记录应该从 <b>im</b>.example.org 和 <b>*.im</b>.example.org 指向 <b>%s</b>！启用 XMPP 后，还请为此域运行 DNS 检查。"
+        "xmpp_prefix_info": "为 XMPP 申请证书，应该设置两个CNAME DNS记录，从 <b>im</b>.example.org 和 <b>*.im</b>.example.org 指向 <b>%s</b>！请在启用 XMPP 后，为此域运行DNS检查。"
     },
     "admin": {
         "access": "访问",
@@ -637,7 +637,7 @@
         "xmpp_example_jid": "<b>JID示例</b> (使用邮箱密码登录)",
         "xmpp_info": "此功能将为该域启用聊天功能。",
         "xmpp_prefix": "域的 XMPP 前缀 (\"im\" 即使用 <b>im</b>.example.org)",
-        "xmpp_prefix_info": "为 XMPP 申请证书，两个 CNAME DNS 记录应该从 <b>im</b>.example.org 和 <b>*.im</b>.example.org 指向 <b>%s</b>！启用 XMPP 后，还请为此域运行 DNS 检查。"
+        "xmpp_prefix_info": "为 XMPP 申请证书，应该设置两个CNAME DNS记录，从 <b>im</b>.example.org 和 <b>*.im</b>.example.org 指向 <b>%s</b>！请在启用 XMPP 后，为此域运行DNS检查。"
     },
     "fido2": {
         "set_fn": "设置 Friendly name",
