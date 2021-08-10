@@ -5,6 +5,8 @@
   header('Location: /SOGo', true, 307);
   exit;
 }*/
+// Load core functions first
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.inc.php';
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/vars.inc.php';
 $default_autodiscover_config = $autodiscover_config;
@@ -171,17 +173,7 @@ function exception_handler($e) {
 }
 set_exception_handler('exception_handler');
 
-// TODO: Move function
-function get_remote_ip() {
-  $remote = $_SERVER['REMOTE_ADDR'];
-  if (filter_var($remote, FILTER_VALIDATE_IP) === false) {
-    return '0.0.0.0';
-  }
-  return $remote;
-}
-
-// Load core functions first
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.inc.php';
+// Load session
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
 
 // IMAP lib
