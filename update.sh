@@ -62,6 +62,11 @@ prefetch_images() {
   [[ -z ${BRANCH} ]] && { echo -e "\e[33m\nUnknown branch...\e[0m"; exit 1; }
   git fetch origin #${BRANCH}
   while read image; do
+    if [[ "${image}" == "robbertkl/ipv6nat" ]]; then
+      if ! grep -qi "ipv6nat-mailcow" docker-compose.yml || grep -qi "enable_ipv6: false" docker-compose.yml; then
+        continue
+      fi
+    fi
     RET_C=0
     until docker pull ${image}; do
       RET_C=$((RET_C + 1))
@@ -134,7 +139,7 @@ migrate_docker_nat() {
   DOCKERV_REQ=20.10.2
   # Current Docker version
   DOCKERV_CUR=$(docker version -f '{{.Server.Version}}')
-  if grep -qi "ipv6nat-mailcow" docker-compose.yml; then
+  if grep -qi "ipv6nat-mailcow" docker-compose.yml && grep -qi "enable_ipv6: true" docker-compose.yml; then
     echo -e "\e[32mNative IPv6 implementation available.\e[0m"
     echo "This will enable experimental features in the Docker daemon and configure Docker to do the IPv6 NATing instead of ipv6nat-mailcow."
     echo '!!! This step is recommended !!!'
