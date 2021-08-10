@@ -81,7 +81,7 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
                   <li<?= ($_SESSION['mailcow_locale'] == $c) ? ' class="active"' : ''; ?>><a href="?<?= http_build_query(array_merge($_GET, array('lang' => $c))) ?>"><span class="flag-icon flag-icon-<?=$c;?>"></span> <?=$v;?></a></li>
                   <?php } ?>
                 </ul>
-              <?php } ?>              
+              <?php } ?>
               <div class="clearfix"></div>
             </div>
             </form>
@@ -99,7 +99,9 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
               foreach ($MAILCOW_APPS as $app) {
                 if (getenv('SKIP_SOGO') == "y" && preg_match('/^\/SOGo/i', $app['link'])) { continue; }
               ?>
+              <div class="media-clearfix">
                 <a href="<?=(isset($app['link'])) ? htmlspecialchars($app['link']) : '';?>" role="button" title="<?=(isset($app['description'])) ? htmlspecialchars($app['description']) : '';?>" class="btn btn-primary btn-lg btn-block"><?= htmlspecialchars($app['name']); ?></a>
+              </div>
               <?php
               }
             }
@@ -108,12 +110,14 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
               foreach ($app_links as $row) {
                 foreach ($row as $key => $val) {
               ?>
-                <a href="<?= htmlspecialchars($val); ?>" role="button" class="btn btn-primary btn-lg btn-block"><?= htmlspecialchars($key); ?></a>
+                <div class="media-clearfix">
+                  <a href="<?= htmlspecialchars($val); ?>" role="button" class="btn btn-primary btn-lg btn-block"><?= htmlspecialchars($key); ?></a>
+                </div>
               <?php
                 }
               }
             } ?>
-            </div>  
+            </div>
           <?php }
           ?>
         </div>

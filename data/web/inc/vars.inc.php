@@ -45,18 +45,18 @@ $autodiscover_config = array(
   // The autoconfig service will additionally announce the STARTTLS-enabled ports, specified in the "tlsport" variable.
   'imap' => array(
     'server' => $mailcow_hostname,
-    'port' => substr(getenv('IMAPS_PORT'), strrpos(getenv('IMAPS_PORT'), ':') + 1),
-    'tlsport' => substr(getenv('POP_PORT'), strrpos(getenv('IMAP_PORT'), ':') + 1)
+    'port' => (int)filter_var(substr(getenv('IMAPS_PORT'), strrpos(getenv('IMAPS_PORT'), ':')), FILTER_SANITIZE_NUMBER_INT),
+    'tlsport' => (int)filter_var(substr(getenv('IMAP_PORT'), strrpos(getenv('IMAP_PORT'), ':')), FILTER_SANITIZE_NUMBER_INT)
   ),
   'pop3' => array(
     'server' => $mailcow_hostname,
-    'port' => substr(getenv('POPS_PORT'), strrpos(getenv('POPS_PORT'), ':') + 1),
-    'tlsport' => substr(getenv('POP_PORT'), strrpos(getenv('POP_PORT'), ':') + 1)
+    'port' => (int)filter_var(substr(getenv('POPS_PORT'), strrpos(getenv('POPS_PORT'), ':')), FILTER_SANITIZE_NUMBER_INT),
+    'tlsport' => (int)filter_var(substr(getenv('POP_PORT'), strrpos(getenv('POP_PORT'), ':')), FILTER_SANITIZE_NUMBER_INT)
   ),
   'smtp' => array(
     'server' => $mailcow_hostname,
-    'port' => substr(getenv('SMTPS_PORT'), strrpos(getenv('SMTPS_PORT'), ':') + 1),
-    'tlsport' => substr(getenv('SUBMISSION_PORT'), strrpos(getenv('SUBMISSION_PORT'), ':') + 1)
+    'port' => (int)filter_var(substr(getenv('SMTPS_PORT'), strrpos(getenv('SMTPS_PORT'), ':')), FILTER_SANITIZE_NUMBER_INT),
+    'tlsport' => (int)filter_var(substr(getenv('SUBMISSION_PORT'), strrpos(getenv('SUBMISSION_PORT'), ':')), FILTER_SANITIZE_NUMBER_INT)
   ),
   'activesync' => array(
     'url' => 'https://' . $mailcow_hostname . ($https_port == 443 ? '' : ':' . $https_port) . '/Microsoft-Server-ActiveSync',
