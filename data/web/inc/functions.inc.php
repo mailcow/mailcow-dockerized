@@ -2219,14 +2219,4 @@ function cleanupCSS($ignore = '', $folder = '/tmp/*.css') {
   }
 }
 
-function get_remote_ip() {
-  $remote = $_SERVER['REMOTE_ADDR'];
-  if (filter_var($remote, FILTER_VALIDATE_IP) === false) {
-    return '0.0.0.0';
-  }
-  return $remote;
-}
-
-function getEnvPort(string $name): int {
-	return (int)filter_var(substr(getenv($name), strrpos(getenv($name), ':')), FILTER_SANITIZE_NUMBER_INT);
-}
+?>
