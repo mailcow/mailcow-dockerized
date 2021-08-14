@@ -37,6 +37,7 @@
     "add": {
         "activate_filter_warn": "All other filters will be deactivated, when active is checked.",
         "active": "Active",
+        "is_regex": "Aliases are regular expressions",
         "add": "Add",
         "add_domain_only": "Add domain only",
         "add_domain_restart": "Add domain and restart SOGo",
@@ -519,6 +520,7 @@
     "edit": {
         "acl": "ACL (Permission)",
         "active": "Active",
+        "is_regex": "Alias is regular expression",
         "admin": "Edit administrator",
         "advanced_settings": "Advanced settings",
         "alias": "Edit alias",
