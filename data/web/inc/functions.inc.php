@@ -695,6 +695,9 @@ function alertbox_log_parser($_data) {
         if (isset($lang[$return['type']][$return['msg']])) {
           $msg = $lang[$return['type']][$return['msg']];
         }
+        else {
+          $msg = $return['msg'];
+        }
       }
       // If msg is an array, use first element as language string and run printf on it with remaining array elements
       elseif (is_array($return['msg'])) {
@@ -704,9 +707,8 @@ function alertbox_log_parser($_data) {
           $return['msg']
         );
       }
-      // If none applies, use msg as returned message
       else {
-        $msg = $return['msg'];
+        $msg = '-';
       }
       $log_array[] = array('msg' => $msg, 'type' => json_encode($type));
     }
