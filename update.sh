@@ -26,7 +26,7 @@ if [[ "$(uname -r)" =~ ^4\.4\. ]]; then
     exit 1
   fi
   echo "mailcow on a 4.4.x kernel is not supported. It may or may not work, please upgrade your kernel or continue at your own risk."
-  read -p "Press any key to continue..." < /dev/tty
+  read -p "Press Enter key to continue..." < /dev/tty
 fi
 
 # Exit on error and pipefail
@@ -668,7 +668,7 @@ if grep -q 'SYSCTL_IPV6_DISABLED=1' mailcow.conf; then
   echo
   echo '!! IMPORTANT !!'
   echo
-  read -p "Press any key to continue..." < /dev/tty
+  read -p "Press Enter key to continue..." < /dev/tty
 fi
 
 # Checking for old project name bug
