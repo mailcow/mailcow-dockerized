@@ -178,7 +178,13 @@ migrate_docker_nat() {
       fi
     fi
     # Removing legacy container
-    sed -i '/ipv6nat-mailcow:$/,/^$/d' docker-compose.yml docker-compose.override.yml
+    sed -i '/ipv6nat-mailcow:$/,/^$/d' docker-compose.yml
+    if [ -s docker-compose.override.yml ]; then
+        sed -i '/ipv6nat-mailcow:$/,/^$/d' docker-compose.override.yml
+        if [[ "$(cat docker-compose.override.yml | sed '/^\s*$/d' | wc -l)" == "2" ]]; then
+            mv docker-compose.override.yml docker-compose.override.yml_backup
+        fi
+    fi
     echo -e "\e[32mGreat! \e[0mNative IPv6 NAT is active.\e[0m"
   else
     echo -e "\e[31mPlease upgrade Docker to version ${DOCKERV_REQ} or above.\e[0m"
