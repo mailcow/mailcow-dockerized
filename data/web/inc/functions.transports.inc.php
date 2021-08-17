@@ -262,7 +262,7 @@ function transport($_action, $_data = null) {
       $destinations = array_filter(array_values(array_unique($destinations)));
       if (empty($destinations)) { return false; }
       if (isset($next_hop_matches[1])) {
-        if (in_array($next_hop_clean, $existing_nh)) {
+        if ($existing_nh !== null && in_array($next_hop_clean, $existing_nh)) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data_log),
@@ -379,7 +379,7 @@ function transport($_action, $_data = null) {
           return false;
         }
         if (isset($next_hop_matches[1])) {
-          if (in_array($next_hop_clean, $existing_nh)) {
+          if ($existing_nh !== null && in_array($next_hop_clean, $existing_nh)) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_data_log),
