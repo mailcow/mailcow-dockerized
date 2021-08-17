@@ -658,7 +658,7 @@
         "confirm_delete": "确认删除",
         "delete_now": "立即删除",
         "delete_these_items": "请确认对以下对象id的更改",
-        "hibp_check": "检查密码是否在 haveibeenpwned.com 的泄露密码列表中",
+        "hibp_check": "检查密码是否在泄露列表(haveibeenpwned.com)中",
         "hibp_nok": "匹配到密码！存在潜在的使用危险！",
         "hibp_ok": "未匹配到密码。",
         "loading": "请等待...",
