@@ -956,6 +956,7 @@ jQuery(function($){
         {"name":"exclude","title":lang.excludes,"breakpoints":"all"},
         {"name":"mins_interval","title":lang.mins_interval,"breakpoints":"all"},
         {"name":"last_run","title":lang.last_run,"breakpoints":"xs sm md"},
+        {"name":"success","filterable": false,"title":lang.syncjob_success},
         {"name":"log","title":"Log"},
         {"name":"active","filterable": false,"style":{"min-width":"70px","width":"70px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
         {"name":"is_running","filterable": false,"style":{"min-width":"120px","width":"100px"},"title":lang.status},
@@ -991,6 +992,11 @@ jQuery(function($){
             }
             if (!item.last_run > 0) {
               item.last_run = lang.waiting;
+            }
+            if (item.success == null) {
+              item.success = '-';
+            } else {
+              item.success = '<i class="text-' + (item.success == 1 ? 'success' : 'danger') + ' bi bi-' + (item.success == 1 ? 'check-lg' : 'x-lg') + '"></i>';
             }
           });
         }
