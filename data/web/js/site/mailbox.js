@@ -98,6 +98,38 @@ $(document).ready(function() {
     auto_fill_quota($('#addSelectDomain').val());
   });
   auto_fill_quota($('#addSelectDomain').val());
+
+  // Read bcc local dests
+  // Using ajax to not be a blocking moo
+  $.get("/api/v1/get/bcc-destination-options", function(data){
+    // Domains
+    var optgroup = "<optgroup label='" + lang.domains + "'>";
+    $.each(data.domains, function(index, domain){
+      optgroup += "<option value='" + domain + "'>" + domain + "</option>"
+    });
+    optgroup += "</optgroup>"
+    $('#bcc-local-dest').append(optgroup);
+    // Alias domains
+    var optgroup = "<optgroup label='" + lang.domain_aliases + "'>";
+    $.each(data.alias_domains, function(index, alias_domain){
+      optgroup += "<option value='" + alias_domain + "'>" + alias_domain + "</option>"
+    });
+    optgroup += "</optgroup>"
+    $('#bcc-local-dest').append(optgroup);
+    // Mailboxes and aliases
+    $.each(data.mailboxes, function(mailbox, aliases){
+      var optgroup = "<optgroup label='" + mailbox + "'>";
+      $.each(aliases, function(index, alias){
+        optgroup += "<option value='" + alias + "'>" + alias + "</option>"
+      });
+      optgroup += "</optgroup>"
+      $('#bcc-local-dest').append(optgroup);
+    });
+    // Finish
+    $('#bcc-local-dest').find('option:selected').remove();
+    $('#bcc-local-dest').selectpicker('refresh');
+  });
+
   $(".goto_checkbox").click(function( event ) {
    $("form[data-id='add_alias'] .goto_checkbox").not(this).prop('checked', false);
     if ($("form[data-id='add_alias'] .goto_checkbox:checked").length > 0) {

@@ -48,6 +48,7 @@
         "app_password": "App-Passwort hinzufügen",
         "automap": "Ordner automatisch mappen (\"Sent items\", \"Sent\" => \"Sent\" etc.)",
         "backup_mx_options": "Relay-Optionen",
+        "bcc_dest_format": "BCC-Ziel muss eine gültige E-Mail-Adresse sein.",
         "comment_info": "Ein privater Kommentar ist für den Benutzer nicht einsehbar. Ein öffentlicher Kommentar wird als Tooltip im Interface des Benutzers angezeigt.",
         "custom_params": "Eigene Parameter",
         "custom_params_hint": "Richtig: --param=xy, falsch: --param xy",
