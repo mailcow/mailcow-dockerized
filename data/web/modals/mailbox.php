@@ -112,8 +112,8 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             <label class="control-label col-sm-2" for="mailboxes"><?=$lang['add']['max_mailboxes'];?></label>
             <div class="col-sm-10">
             <input type="number" class="form-control" name="mailboxes" value="10" required>
-						</div>
-					</div>
+            </div>
+          </div>
           <div class="form-group">
             <label class="control-label col-sm-2" for="defquota"><?=$lang['add']['mailbox_quota_def'];?></label>
             <div class="col-sm-10">
@@ -123,7 +123,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
           <div class="form-group">
             <label class="control-label col-sm-2" for="maxquota"><?=$lang['add']['mailbox_quota_m'];?></label>
             <div class="col-sm-10">
-						<input type="number" class="form-control" name="maxquota" value="10240" required>
+            <input type="number" class="form-control" name="maxquota" value="10240" required>
             </div>
           </div>
           <div class="form-group">
@@ -652,42 +652,8 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
           <div class="form-group">
             <label class="control-label col-sm-2" for="local_dest"><?=$lang['mailbox']['bcc_local_dest'];?></label>
             <div class="col-sm-10">
-              <select data-live-search="true" data-size="20" name="local_dest" required>
-              <?php
-              $domains = mailbox('get', 'domains');
-              $alias_domains = mailbox('get', 'alias_domains');
-              if (!empty($domains)) {
-                echo '<optgroup label="',$lang['mailbox']['domains'],'">';
-                foreach ($domains as $domain) {
-                  echo "<option>".htmlspecialchars($domain)."</option>";
-                }
-                echo "</optgroup>";
-              }
-              if (!empty($alias_domains)) {
-                echo '<optgroup label="',$lang['mailbox']['domain_aliases'],'">';
-                foreach ($alias_domains as $alias_domain) {
-                  echo "<option>".htmlspecialchars($alias_domain)."</option>";
-                }
-                echo "</optgroup>";
-              }
-              if (!empty($domains)) {
-                foreach ($domains as $domain) {
-                  $mailboxes = mailbox('get', 'mailboxes', $domain);
-                  foreach ($mailboxes as $mailbox) {
-                    echo "<optgroup label=\"" . htmlspecialchars($mailbox) . "\">";
-                    echo "<option> " . htmlspecialchars($mailbox) . "</option>";
-                    $user_alias_details = user_get_alias_details($mailbox);
-                    foreach ($user_alias_details['direct_aliases'] as $k => $v) {
-                      echo "<option>" . htmlspecialchars($k) . "</option>";
-                    }
-                    foreach ($user_alias_details['shared_aliases'] as $k => $v) {
-                      echo "<option>" . htmlspecialchars($k) . "</option>";
-                    }
-                    echo "</optgroup>";
-                  }
-                }
-              }
-              ?>
+              <select id="bcc-local-dest" data-live-search="true" data-size="20" name="local_dest" required>
+                <option selected><?=$lang['footer']['loading'];?></option>
               </select>
             </div>
           </div>
@@ -826,9 +792,9 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-	    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
-	    <h3 class="modal-title">Log</h3>
-	  </div>
+      <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+      <h3 class="modal-title">Log</h3>
+    </div>
       <div class="modal-body">
         <textarea class="form-control" rows="20" id="logText" spellcheck="false"></textarea>
       </div>
@@ -840,9 +806,9 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-	    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
-	    <h3 class="modal-title"><?=$lang['diagnostics']['dns_records'];?></h3>
-	  </div>
+      <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+      <h3 class="modal-title"><?=$lang['diagnostics']['dns_records'];?></h3>
+    </div>
       <div class="modal-body">
         <p><?=$lang['diagnostics']['dns_records_24hours'];?></p>
         <div class="dns-modal-body"></div>

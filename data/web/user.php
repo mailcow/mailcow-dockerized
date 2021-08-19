@@ -6,11 +6,12 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'doma
   / DOMAIN ADMIN
   */
 
-	require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/header.inc.php';
-	$_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
+  require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/header.inc.php';
+  $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
   $tfa_data = get_tfa();
   $fido2_data = fido2(array("action" => "get_friendly_names"));
-	$username = $_SESSION['mailcow_cc_username'];
+  $username = $_SESSION['mailcow_cc_username'];
+  print_r(mailbox('get', 'mailbox_count'));
 
 ?>
 <div class="container">
@@ -523,14 +524,14 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
     </div>
   </div>
 
-	<div role="tabpanel" class="tab-pane" id="SpamAliases">
+  <div role="tabpanel" class="tab-pane" id="SpamAliases">
     <div class="row">
       <div class="col-md-12 col-sm-12 col-xs-12">
         <div class="table-responsive">
           <table class="table table-striped" id="tla_table"></table>
         </div>
       </div>
-		</div>
+    </div>
     <div class="mass-actions-user">
       <div class="btn-group" data-acl="<?=$_SESSION['acl']['spam_alias'];?>">
         <div class="btn-group">
@@ -566,9 +567,9 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
         </div>
       </div>
     </div>
-	</div>
+  </div>
 
-	<div role="tabpanel" class="tab-pane" id="Spamfilter">
+  <div role="tabpanel" class="tab-pane" id="Spamfilter">
     <h4><?=$lang['user']['spamfilter_behavior'];?></h4>
     <div class="row">
       <div class="col-sm-12">
@@ -599,10 +600,10 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
         </form>
       </div>
     </div>
-		<hr>
-		<div class="row">
-			<div class="col-sm-6">
-				<h4><?=$lang['user']['spamfilter_wl'];?></h4>
+    <hr>
+    <div class="row">
+      <div class="col-sm-6">
+        <h4><?=$lang['user']['spamfilter_wl'];?></h4>
         <p><?=$lang['user']['spamfilter_wl_desc'];?></p>
         <form class="form-inline space20" data-id="add_wl_policy_mailbox">
           <div class="input-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
@@ -623,8 +624,8 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
           </div>
         </div>
       </div>
-			<div class="col-sm-6">
-				<h4><?=$lang['user']['spamfilter_bl'];?></h4>
+      <div class="col-sm-6">
+        <h4><?=$lang['user']['spamfilter_bl'];?></h4>
         <p><?=$lang['user']['spamfilter_bl_desc'];?></p>
         <form class="form-inline space20" data-id="add_bl_policy_mailbox">
           <div class="input-group" data-acl="<?=$_SESSION['acl']['spam_policy'];?>">
@@ -648,13 +649,13 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
     </div>
   </div>
 
-	<div role="tabpanel" class="tab-pane" id="Syncjobs">
-		<div class="table-responsive">
+  <div role="tabpanel" class="tab-pane" id="Syncjobs">
+    <div class="table-responsive">
       <table class="table table-striped" id="sync_job_table"></table>
-		</div>
+    </div>
     <div class="mass-actions-user">
       <div class="btn-group" data-acl="<?=$_SESSION['acl']['syncjobs'];?>">
-	    <div class="btn-group">
+      <div class="btn-group">
         <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="syncjob" href="#"><i class="bi bi-check-all"></i> <?=$lang['mailbox']['toggle_all'];?></a>
         <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
         <ul class="dropdown-menu">
@@ -664,40 +665,40 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
           <li><a data-action="delete_selected" data-id="syncjob" data-api-url='delete/syncjob' href="#"><?=$lang['mailbox']['remove'];?></a></li>
         </ul>
         <div class="clearfix visible-xs"></div>
-	    </div>
-	    <div class="btn-group">
+      </div>
+      <div class="btn-group">
         <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-toggle="modal" data-target="#addSyncJobModal"><i class="bi bi-plus-lg"></i> <?=$lang['user']['create_syncjob'];?></a>
-	    </div>
+      </div>
       </div>
     </div>
   </div>
 
-	<div role="tabpanel" class="tab-pane" id="AppPasswds">
-	    <p><?=$lang['user']['app_hint'];?></p>
-		<div class="table-responsive">
-	      <table class="table table-striped" id="app_passwd_table"></table>
-		</div>
-	    <div class="mass-actions-user">
-	      <div class="btn-group" data-acl="<?=$_SESSION['acl']['app_passwds'];?>">
-		    <div class="btn-group">
-	          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="apppasswd" href="#"><i class="bi bi-check-all"></i> <?=$lang['mailbox']['toggle_all'];?></a>
-	          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
-	          <ul class="dropdown-menu">
-	            <li><a data-action="edit_selected" data-id="apppasswd" data-api-url='edit/app-passwd' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
-	            <li><a data-action="edit_selected" data-id="apppasswd" data-api-url='edit/app-passwd' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
-	            <li role="separator" class="divider"></li>
-	            <li><a data-action="delete_selected" data-id="apppasswd" data-api-url='delete/app-passwd' href="#"><?=$lang['mailbox']['remove'];?></a></li>
-	          </ul>
-	          <div class="clearfix visible-xs"></div>
-		    </div>
-		    <div class="btn-group">
-	          <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-toggle="modal" data-target="#addAppPasswdModal"><i class="bi bi-plus-lg"></i> <?=$lang['user']['create_app_passwd'];?></a>
-		    </div>
-	      </div>
-	    </div>
-	</div>
+  <div role="tabpanel" class="tab-pane" id="AppPasswds">
+      <p><?=$lang['user']['app_hint'];?></p>
+    <div class="table-responsive">
+        <table class="table table-striped" id="app_passwd_table"></table>
+    </div>
+      <div class="mass-actions-user">
+        <div class="btn-group" data-acl="<?=$_SESSION['acl']['app_passwds'];?>">
+        <div class="btn-group">
+            <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="apppasswd" href="#"><i class="bi bi-check-all"></i> <?=$lang['mailbox']['toggle_all'];?></a>
+            <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a data-action="edit_selected" data-id="apppasswd" data-api-url='edit/app-passwd' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
+              <li><a data-action="edit_selected" data-id="apppasswd" data-api-url='edit/app-passwd' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
+              <li role="separator" class="divider"></li>
+              <li><a data-action="delete_selected" data-id="apppasswd" data-api-url='delete/app-passwd' href="#"><?=$lang['mailbox']['remove'];?></a></li>
+            </ul>
+            <div class="clearfix visible-xs"></div>
+        </div>
+        <div class="btn-group">
+            <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-toggle="modal" data-target="#addAppPasswdModal"><i class="bi bi-plus-lg"></i> <?=$lang['user']['create_app_passwd'];?></a>
+        </div>
+        </div>
+      </div>
+  </div>
 
-	<div role="tabpanel" class="tab-pane" id="Pushover">
+  <div role="tabpanel" class="tab-pane" id="Pushover">
     <form data-id="pushover" class="form well" method="post">
       <input type="hidden" value="0" name="evaluate_x_prio">
       <input type="hidden" value="0" name="only_x_prio">
@@ -803,7 +804,7 @@ $js_minifier->add('/web/js/site/pwgen.js');
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
 }
 else {
-	header('Location: /');
-	exit();
+  header('Location: /');
+  exit();
 }
 ?>
