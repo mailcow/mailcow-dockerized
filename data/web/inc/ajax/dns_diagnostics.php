@@ -151,7 +151,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
   }
 
   if (!in_array($domain, $alias_domains)) {
-    $current_records = dns_get_record('_pop3._tcp.' . $domain, DNS_SRV);
+    $current_records = (array)dns_get_record('_pop3._tcp.' . $domain, DNS_SRV);
     if (count($current_records) == 0 || $current_records[0]['target'] != '') {
       if ($autodiscover_config['pop3']['tlsport'] != '110') {
         $records[] = array(
@@ -169,7 +169,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
       );
     }
 
-    $current_records = dns_get_record('_pop3s._tcp.' . $domain, DNS_SRV);
+    $current_records = (array)dns_get_record('_pop3s._tcp.' . $domain, DNS_SRV);
 
     if (count($current_records) == 0 || $current_records[0]['target'] != '') {
       if ($autodiscover_config['pop3']['port'] != '995') {
@@ -265,7 +265,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
         $state = state_optional;
 
         if ($record[1] == 'TLSA') {
-          $currents = dns_get_record($record[0], 52, $_, $_, TRUE);
+          $currents = (array)dns_get_record($record[0], 52, $_, $_, TRUE);
           foreach ($currents as &$current) {
             $current['type'] = 'TLSA';
             $current['cert_usage'] = hexdec(bin2hex($current['data'][0]));
@@ -277,9 +277,9 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
           unset($current);
         }
         else {
-          $currents = dns_get_record($record[0], $record_types[$record[1]]);
+          $currents = (array)dns_get_record($record[0], $record_types[$record[1]]);
           if ($record[0] == $mailcow_hostname && ($record[1] == "A" || $record[1] == "AAAA")) {
-            if (!empty(dns_get_record($record[0], DNS_CNAME))) {
+            if (!empty((array)dns_get_record($record[0], DNS_CNAME))) {
               $currents[0]['ip'] = state_missing . ' <b>(CNAME)</b>';
               $currents[0]['ipv6'] = state_missing . ' <b>(CNAME)</b>';
             }
@@ -309,8 +309,8 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 
         if ($record[1] == 'CNAME' && count($currents) == 0) {
           // A and AAAA are also valid instead of CNAME
-          $a = dns_get_record($record[0], DNS_A);
-          $cname = dns_get_record($record[2], DNS_A);
+          $a = (array)dns_get_record($record[0], DNS_A);
+          $cname = (array)dns_get_record($record[2], DNS_A);
           if (count($a) > 0 && count($cname) > 0) {
             if ($a[0]['ip'] == $cname[0]['ip']) {
               $currents = array(
@@ -321,8 +321,8 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
                   'target' => $record[2]
                 )
               );
-              $aaaa = dns_get_record($record[0], DNS_AAAA);
-              $cname = dns_get_record($record[2], DNS_AAAA);
+              $aaaa = (array)dns_get_record($record[0], DNS_AAAA);
+              $cname = (array)dns_get_record($record[2], DNS_AAAA);
               if (count($aaaa) == 0 || count($cname) == 0 || expand_ipv6($aaaa[0]['ipv6']) != expand_ipv6($cname[0]['ipv6'])) {
                 $currents[0]['target'] = expand_ipv6($aaaa[0]['ipv6']) . ' <sup>1</sup>';
               }
