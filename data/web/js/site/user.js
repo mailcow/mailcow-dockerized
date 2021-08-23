@@ -182,7 +182,7 @@ jQuery(function($){
         {"name":"exclude","title":lang.excludes,"breakpoints":"all"},
         {"name":"mins_interval","title":lang.interval + " (min)","breakpoints":"all"},
         {"name":"last_run","title":lang.last_run,"breakpoints":"xs sm md"},
-        {"name":"success","filterable": false,"title":lang.syncjob_success},
+        {"name":"exit_status","filterable": false,"title":lang.syncjob_last_run_result},
         {"name":"log","title":"Log"},
         {"name":"active","filterable": false,"style":{"maxWidth":"70px","width":"70px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
         {"name":"is_running","filterable": false,"style":{"maxWidth":"120px","width":"100px"},"title":lang.status},
@@ -227,9 +227,16 @@ jQuery(function($){
             }
             if (item.success == null) {
               item.success = '-';
+              item.exit_status = '';
             } else {
               item.success = '<i class="text-' + (item.success == 1 ? 'success' : 'danger') + ' bi bi-' + (item.success == 1 ? 'check-lg' : 'x-lg') + '"></i>';
             }
+            if (lang['syncjob_'+item.exit_status]) {
+	            item.exit_status = lang['syncjob_'+item.exit_status];
+            } else if (item.success != '-') {
+	            item.exit_status = lang.syncjob_check_log;
+            }
+            item.exit_status = item.success + ' ' + item.exit_status;
           });
         }
       }),
