@@ -66,6 +66,12 @@ function normalize_email($email) {
     $email[1] = str_replace('@', '', $gm);
     $email = implode('@', $email);
   }
+  if (str_contains($email, "+")) {
+    $email = explode('@', $email);
+    $user = explode('+', $email[0]);
+    $email[0] = $user[0];
+    $email = implode('@', $email);
+  }
   return $email;
 }
 
