@@ -52,6 +52,7 @@ function parse_email($email) {
 }
 
 function normalize_email($email) {
+  $email = strtolower(str_replace('/', '\/', $email));
   $gm = "@gmail.com";
   if (substr_compare($email, $gm, -strlen($gm)) == 0) {
     $email = explode('@', $email);
@@ -65,7 +66,6 @@ function normalize_email($email) {
     $email[1] = str_replace('@', '', $gm);
     $email = implode('@', $email);
   }
-  $email = strtolower(str_replace('/', '\/', $email));
   return $email;
 }
 
