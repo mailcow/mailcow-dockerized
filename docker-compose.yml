@@ -566,6 +566,8 @@ services:
         - dovecot-mailcow
       labels:
         ofelia.enabled: "true"
+      security_opt:
+        - label=disable
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
       networks:
