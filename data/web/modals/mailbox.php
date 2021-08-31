@@ -166,6 +166,22 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
           </div>
           <hr>
           <div class="form-group">
+            <label class="control-label col-sm-2" for="dkim_selector"><?=$lang['admin']['dkim_domains_selector'];?></label>
+            <div class="col-sm-10">
+              <input class="form-control" id="dkim_selector" name="dkim_selector" value="dkim">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="key_size"><?=$lang['admin']['dkim_key_length'];?></label>
+            <div class="col-sm-10">
+              <select data-style="btn btn-default btn-sm" class="form-control" id="key_size" name="key_size">
+                <option data-subtext="bits">1024</option>
+                <option data-subtext="bits">2048</option>
+              </select>
+            </div>
+          </div>
+          <hr>
+          <div class="form-group">
             <label class="control-label col-sm-2"><?=$lang['add']['backup_mx_options'];?></label>
             <div class="col-sm-10">
               <div class="checkbox">
@@ -381,6 +397,23 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             </select>
             </div>
           </div>
+          <hr>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="dkim_selector"><?=$lang['admin']['dkim_domains_selector'];?></label>
+            <div class="col-sm-10">
+              <input class="form-control" id="dkim_selector" name="dkim_selector" value="dkim">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="key_size"><?=$lang['admin']['dkim_key_length'];?></label>
+            <div class="col-sm-10">
+              <select data-style="btn btn-default btn-sm" class="form-control" id="key_size" name="key_size">
+                <option data-subtext="bits">1024</option>
+                <option data-subtext="bits">2048</option>
+              </select>
+            </div>
+          </div>
+          <hr>
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
               <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="add_item" data-id="add_alias_domain" data-api-url='add/alias-domain' data-api-attr='{}' href="#"><?=$lang['admin']['add'];?></button>
