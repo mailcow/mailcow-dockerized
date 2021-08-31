@@ -5,14 +5,6 @@ function dkim($_action, $_data = null, $privkey = false) {
   global $lang;
   switch ($_action) {
     case 'add':
-      if ($_SESSION['mailcow_cc_role'] != "admin") {
-        $_SESSION['return'][] = array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__, $_action, $_data, ),
-          'msg' => 'access_denied'
-        );
-        return false;
-      }
       $key_length = intval($_data['key_size']);
       $dkim_selector = (isset($_data['dkim_selector'])) ? $_data['dkim_selector'] : 'dkim';
       $domains = array_map('trim', preg_split( "/( |,|;|\n)/", $_data['domains']));
@@ -39,6 +31,14 @@ function dkim($_action, $_data = null, $privkey = false) {
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data),
             'msg' => array('dkim_domain_or_sel_invalid', $domain)
+          );
+          continue;
+        }
+        if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
+          $_SESSION['return'][] = array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $_action, $_data),
+            'msg' => array('access_denied', $domain)
           );
           continue;
         }

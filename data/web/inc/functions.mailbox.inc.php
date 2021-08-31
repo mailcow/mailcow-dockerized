@@ -579,6 +579,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           if (!empty(intval($_data['rl_value']))) {
             ratelimit('edit', 'domain', array('rl_value' => $_data['rl_value'], 'rl_frame' => $_data['rl_frame'], 'object' => $domain));
           }
+          if (!empty($_data['key_size']) && !empty($_data['dkim_selector'])) {
+            dkim('add', array('key_size' => $_data['key_size'], 'dkim_selector' => $_data['dkim_selector'], 'domains' => $domain));
+          }
           if (!empty($restart_sogo)) {
             $restart_response = json_decode(docker('post', 'sogo-mailcow', 'restart'), true);
             if ($restart_response['type'] == "success") {
@@ -905,6 +908,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             }
             if (!empty(intval($_data['rl_value']))) {
               ratelimit('edit', 'domain', array('rl_value' => $_data['rl_value'], 'rl_frame' => $_data['rl_frame'], 'object' => $alias_domain));
+            }
+            if (!empty($_data['key_size']) && !empty($_data['dkim_selector'])) {
+              dkim('add', array('key_size' => $_data['key_size'], 'dkim_selector' => $_data['dkim_selector'], 'domains' => $alias_domain));
             }
             $_SESSION['return'][] = array(
               'type' => 'success',
