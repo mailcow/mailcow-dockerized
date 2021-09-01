@@ -176,12 +176,15 @@ $(document).ready(function() {
     });
   });
   // Set TFA/FIDO2
-  $("#register-fido2").click(function(){
+  $("#register-fido2, #register-fido2-touchid").click(function(){
+	let t = $(this);
+	  
     $("option:selected").prop("selected", false);
     if (!window.fetch || !navigator.credentials || !navigator.credentials.create) {
         window.alert('Browser not supported.');
         return;
     }
+    
     window.fetch("/api/v1/get/fido2-registration/<?= (isset($_SESSION['mailcow_cc_username'])) ? rawurlencode($_SESSION['mailcow_cc_username']) : null; ?>", {method:'GET',cache:'no-cache'}).then(function(response) {
       return response.json();
     }).then(function(json) {
@@ -189,6 +192,13 @@ $(document).ready(function() {
         throw new Error(json.msg);
       }
       recursiveBase64StrToArrayBuffer(json);
+      
+      // set attestation to node if we are registering apple touch id
+      if(t.attr('id') === 'register-fido2-touchid') {
+        json.publicKey.attestation = 'none';
+        json.publicKey.authenticatorSelection.authenticatorAttachment = "platform";
+      }
+      
       return json;
     }).then(function(createCredentialArgs) {
       console.log(createCredentialArgs);
