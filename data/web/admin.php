@@ -156,7 +156,15 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
         </div>
         <div class="row">
           <div class="col-sm-offset-3 col-sm-9">
-            <button class="btn btn-sm btn-primary visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline" id="register-fido2"><?=$lang['fido2']['set_fido2'];?></button>
+	        <div class="btn-group">
+              <button class="btn btn-sm btn-xs-lg btn-primary" id="register-fido2"><?=$lang['fido2']['set_fido2'];?></button>
+              <button type="button" class="btn btn-sm btn-xs-lg btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a href="#" id="register-fido2-touchid" style="line-height:1.4;"><i class="bi bi-shield-fill-check"></i> <?=$lang['fido2']['set_fido2_touchid'];?></a></li>
+              </ul>
+	        </div>
           </div>
         </div>
         <br>

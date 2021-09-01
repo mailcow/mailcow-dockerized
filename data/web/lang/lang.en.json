@@ -648,6 +648,7 @@
         "register_status": "Registration status",
         "rename": "Rename",
         "set_fido2": "Register FIDO2 device",
+        "set_fido2_touchid": "Register Touch ID on Apple M1",
         "set_fn": "Set friendly name",
         "start_fido2_validation": "Start FIDO2 validation"
     },

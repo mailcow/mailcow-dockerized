@@ -622,6 +622,7 @@
         "register_status": "Stav registrace",
         "rename": "Přejmenovat",
         "set_fido2": "Registrovat FIDO2 zařízení",
+        "set_fido2_touchid": "Registrovat Touch ID na Apple M1",
         "set_fn": "Nastavi uživatelsky přívětivý název",
         "start_fido2_validation": "Spustit FIDO2 ověření"
     },
