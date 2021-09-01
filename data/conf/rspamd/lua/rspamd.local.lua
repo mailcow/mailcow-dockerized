@@ -1,10 +1,3 @@
--- Load sendgrid ID validator, thanks to https://github.com/fatalbanana
-local rspamd_util = require 'rspamd_util'
-local f = '/etc/rspamd/lua/ivm-sg.lua'
-if rspamd_util.file_exists(f) then
-  dofile(f)
-end
-
 rspamd_config.MAILCOW_AUTH = {
 	callback = function(task)
 		local uname = task:get_user()
