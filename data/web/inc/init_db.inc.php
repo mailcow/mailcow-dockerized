@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "01072021_0630";
+    $db_version = "23082021_2224";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -632,6 +632,8 @@ function init_db_schema() {
           "is_running" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "returned_text" => "LONGTEXT",
           "last_run" => "TIMESTAMP NULL DEFAULT NULL",
+          "success" => "TINYINT(1) UNSIGNED DEFAULT NULL",
+          "exit_status" => "VARCHAR(50) DEFAULT NULL",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
           "active" => "TINYINT(1) NOT NULL DEFAULT '0'"
