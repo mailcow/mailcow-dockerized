@@ -133,7 +133,7 @@ jQuery(function($){
         {"name":"address","title":lang.alias},
         {"name":"validity","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});},"title":lang.alias_valid_until,"style":{"width":"170px"}},
         {"sorted": true,"sortValue": function(value){res = new Date(value);return res.getTime();},"direction":"DESC","name":"created","formatter":function date_format(datetime) { var date = new Date(datetime.replace(/-/g, "/")); return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});},"title":lang.created_on,"style":{"width":"170px"}},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
+        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"220px","width":"220px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
       "empty": lang.empty,
       "rows": $.ajax({
@@ -259,7 +259,7 @@ jQuery(function($){
         {"sorted": true,"name":"id","title":"ID","style":{"maxWidth":"60px","width":"60px","text-align":"center"}},
         {"name":"name","title":lang.app_name},
         {"name":"active","filterable": false,"style":{"maxWidth":"70px","width":"70px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
+        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"220px","width":"220px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
       "empty": lang.empty,
       "rows": $.ajax({
