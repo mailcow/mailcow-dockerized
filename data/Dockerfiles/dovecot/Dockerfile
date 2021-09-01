@@ -2,7 +2,7 @@ FROM debian:buster-slim
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG DOVECOT=2.3.14.1
+ARG DOVECOT=2.3.16
 ENV LC_ALL C
 ENV GOSU_VERSION 1.12
 
