@@ -442,7 +442,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.93
+      image: mailcow/watchdog:1.94
       # Debug
       #command: /watchdog.sh
       dns:
