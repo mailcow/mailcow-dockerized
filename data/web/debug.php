@@ -102,7 +102,7 @@ $clamd_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_CLAMD"])) ? 
             <div class="panel-body">
             <ul class="list-group">
             <?php
-            $containers = (docker('info'));
+            $containers = (array) docker('info');
             ksort($containers);
             foreach ($containers as $container => $container_info) {
               if ($container == 'clamd-mailcow' && $clamd_status === false) { continue; }
