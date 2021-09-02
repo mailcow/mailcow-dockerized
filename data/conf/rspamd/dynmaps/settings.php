@@ -27,7 +27,7 @@ catch (PDOException $e) {
 
 // Check if db changed and return header
 $stmt = $pdo->prepare("SELECT GREATEST(COALESCE(MAX(UNIX_TIMESTAMP(UPDATE_TIME)), 1), COALESCE(MAX(UNIX_TIMESTAMP(CREATE_TIME)), 1)) AS `db_update_time` FROM `information_schema`.`tables`
-  WHERE (`TABLE_NAME` = 'filterconf' OR `TABLE_NAME` = 'settingsmap' OR `TABLE_NAME` = 'sogo_quick_contact' AND `TABLE_NAME` = 'alias')
+  WHERE (`TABLE_NAME` = 'filterconf' OR `TABLE_NAME` = 'settingsmap' OR `TABLE_NAME` = 'sogo_quick_contact' OR `TABLE_NAME` = 'alias')
     AND TABLE_SCHEMA = :dbname;");
 $stmt->execute(array(
   ':dbname' => $database_name
