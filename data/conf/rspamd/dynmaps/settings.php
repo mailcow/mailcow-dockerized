@@ -26,9 +26,8 @@ catch (PDOException $e) {
 }
 
 // Check if db changed and return header
-/*
-$stmt = $pdo->prepare("SELECT MAX(UNIX_TIMESTAMP(UPDATE_TIME)) AS `db_update_time` FROM information_schema.tables
-  WHERE (`TABLE_NAME` = 'filterconf' OR `TABLE_NAME` = 'settingsmap')
+$stmt = $pdo->prepare("SELECT GREATEST(COALESCE(MAX(UNIX_TIMESTAMP(UPDATE_TIME)), 1), COALESCE(MAX(UNIX_TIMESTAMP(CREATE_TIME)), 1)) AS `db_update_time` FROM `information_schema`.`tables`
+  WHERE (`TABLE_NAME` = 'filterconf' OR `TABLE_NAME` = 'settingsmap' OR `TABLE_NAME` = 'sogo_quick_contact' AND `TABLE_NAME` = 'alias')
     AND TABLE_SCHEMA = :dbname;");
 $stmt->execute(array(
   ':dbname' => $database_name
@@ -43,7 +42,6 @@ if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && (strtotime($_SERVER['HTTP_IF_MO
 } else {
   header('Last-Modified: '.gmdate('D, d M Y H:i:s', $db_update_time).' GMT', true, 200);
 }
-*/
 
 function parse_email($email) {
   if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return false;
