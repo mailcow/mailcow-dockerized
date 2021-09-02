@@ -77,7 +77,7 @@ function rsettings($_action, $_data = null) {
         $_SESSION['return'][] = array(
           'type' => 'success',
           'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => array('object_modified', htmlspecialchars($ids))
+          'msg' => array('object_modified', htmlspecialchars(implode(',', $ids)))
         );
       }
     break;
