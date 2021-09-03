@@ -2,7 +2,7 @@ version: '2.1'
 services:
 
     unbound-mailcow:
-      image: mailcow/unbound:1.13
+      image: mailcow/unbound:1.14
       environment:
         - TZ=${TZ}
       volumes:
@@ -73,7 +73,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.77
+      image: mailcow/rspamd:1.79
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -210,7 +210,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.155
+      image: mailcow/dovecot:1.156
       depends_on:
         - mysql-mailcow
       dns:
@@ -383,7 +383,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.79
+      image: mailcow/acme:1.80
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -419,7 +419,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.43
+      image: mailcow/netfilter:1.44
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -442,7 +442,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.92
+      image: mailcow/watchdog:1.94
       # Debug
       #command: /watchdog.sh
       dns:
@@ -505,7 +505,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:1.38
+      image: mailcow/dockerapi:1.39
       security_opt:
         - label=disable
       restart: always
@@ -539,7 +539,7 @@ services:
             - solr
 
     olefy-mailcow:
-      image: mailcow/olefy:1.7
+      image: mailcow/olefy:1.8
       restart: always
       environment:
         - TZ=${TZ}
@@ -566,6 +566,8 @@ services:
         - dovecot-mailcow
       labels:
         ofelia.enabled: "true"
+      security_opt:
+        - label=disable
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
       networks:

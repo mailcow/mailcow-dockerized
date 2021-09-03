@@ -136,7 +136,7 @@ function app_passwd($_action, $_data = null) {
         $_SESSION['return'][] = array(
           'type' => 'success',
           'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => array('object_modified', htmlspecialchars($ids))
+          'msg' => array('object_modified', htmlspecialchars(implode(', ', $ids)))
         );
       }
     break;
@@ -189,7 +189,7 @@ function app_passwd($_action, $_data = null) {
         `active`
           FROM `app_passwd`
             WHERE `id` = :id");
-      $stmt->execute(array(':id' => $_data['id']));
+      $stmt->execute(array(':id' => $_data));
       $app_passwd_data = $stmt->fetch(PDO::FETCH_ASSOC);
       if (empty($app_passwd_data)) {
         return false;

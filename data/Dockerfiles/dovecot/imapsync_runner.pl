@@ -152,18 +152,28 @@ while ($row = $sth->fetchrow_arrayref()) {
   '--noreleasecheck'];
 
   try {
-    $is_running = $dbh->prepare("UPDATE imapsync SET is_running = 1 WHERE id = ?");
+    $is_running = $dbh->prepare("UPDATE imapsync SET is_running = 1, success = NULL, exit_status = NULL WHERE id = ?");
     $is_running->bind_param( 1, ${id} );
     $is_running->execute();
-    
+
     run [@$generated_cmds, @$custom_params_ref], '&>', \my $stdout;
-    
-    $update = $dbh->prepare("UPDATE imapsync SET returned_text = ? WHERE id = ?");
+
+    # check exit code and status
+    ($exit_code, $exit_status) = ($stdout =~ m/Exiting\swith\sreturn\svalue\s(\d+)\s\(([^:)]+)/);
+
+    $success = 0;
+    if (defined $exit_code && $exit_code == 0) {
+      $success = 1;
+    }
+
+    $update = $dbh->prepare("UPDATE imapsync SET returned_text = ?, success = ?, exit_status = ? WHERE id = ?");
     $update->bind_param( 1, ${stdout} );
-    $update->bind_param( 2, ${id} );
+    $update->bind_param( 2, ${success} );
+    $update->bind_param( 3, ${exit_status} );
+    $update->bind_param( 4, ${id} );
     $update->execute();
   } catch {
-    $update = $dbh->prepare("UPDATE imapsync SET returned_text = 'Could not start or finish imapsync' WHERE id = ?");
+    $update = $dbh->prepare("UPDATE imapsync SET returned_text = 'Could not start or finish imapsync', success = 0 WHERE id = ?");
     $update->bind_param( 1, ${id} );
     $update->execute();
   } finally {

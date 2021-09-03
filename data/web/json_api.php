@@ -485,7 +485,7 @@ if (isset($_GET['query'])) {
                 }
                 if (!empty($app_passwds)) {
                   foreach ($app_passwds as $app_passwd) {
-                    $details = app_passwd('details', array('id' => $app_passwd['id']));
+                    $details = app_passwd('details', $app_passwd['id']);
                     if ($details !== false) {
                       $data[] = $details;
                     }

@@ -579,6 +579,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           if (!empty(intval($_data['rl_value']))) {
             ratelimit('edit', 'domain', array('rl_value' => $_data['rl_value'], 'rl_frame' => $_data['rl_frame'], 'object' => $domain));
           }
+          if (!empty($_data['key_size']) && !empty($_data['dkim_selector'])) {
+            dkim('add', array('key_size' => $_data['key_size'], 'dkim_selector' => $_data['dkim_selector'], 'domains' => $domain));
+          }
           if (!empty($restart_sogo)) {
             $restart_response = json_decode(docker('post', 'sogo-mailcow', 'restart'), true);
             if ($restart_response['type'] == "success") {
@@ -905,6 +908,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             }
             if (!empty(intval($_data['rl_value']))) {
               ratelimit('edit', 'domain', array('rl_value' => $_data['rl_value'], 'rl_frame' => $_data['rl_frame'], 'object' => $alias_domain));
+            }
+            if (!empty($_data['key_size']) && !empty($_data['dkim_selector'])) {
+              dkim('add', array('key_size' => $_data['key_size'], 'dkim_selector' => $_data['dkim_selector'], 'domains' => $alias_domain));
             }
             $_SESSION['return'][] = array(
               'type' => 'success',
@@ -1673,6 +1679,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $user1 = (!empty($_data['user1'])) ? $_data['user1'] : $is_now['user1'];
               $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active'];
               $last_run = (isset($_data['last_run'])) ? NULL : $is_now['last_run'];
+              $success = (isset($_data['success'])) ? NULL : $is_now['success'];
               $delete2duplicates = (isset($_data['delete2duplicates'])) ? intval($_data['delete2duplicates']) : $is_now['delete2duplicates'];
               $subscribeall = (isset($_data['subscribeall'])) ? intval($_data['subscribeall']) : $is_now['subscribeall'];
               $delete1 = (isset($_data['delete1'])) ? intval($_data['delete1']) : $is_now['delete1'];
@@ -1768,6 +1775,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               `exclude` = :exclude,
               `host1` = :host1,
               `last_run` = :last_run,
+              `success` = :success,
               `user1` = :user1,
               `password1` = :password1,
               `mins_interval` = :mins_interval,
@@ -1794,6 +1802,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               ':user1' => $user1,
               ':password1' => $password1,
               ':last_run' => $last_run,
+              ':success' => $success,
               ':mins_interval' => $mins_interval,
               ':port1' => $port1,
               ':enc1' => $enc1,

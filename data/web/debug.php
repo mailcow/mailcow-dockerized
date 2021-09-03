@@ -39,7 +39,7 @@ $clamd_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_CLAMD"])) ? 
         <div class="debug-log-info"><?=sprintf($lang['debug']['log_info'], getenv('LOG_LINES') + 1);?></div>
         <?php
           $exec_fields = array('cmd' => 'system', 'task' => 'df', 'dir' => '/var/vmail');
-          $vmail_df = explode(',', json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields), true));
+          $vmail_df = explode(',', (string)json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields), true));
         ?>
         <div role="tabpanel" class="tab-pane active" id="tab-containers">
           <div class="panel panel-default">
@@ -102,7 +102,7 @@ $clamd_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_CLAMD"])) ? 
             <div class="panel-body">
             <ul class="list-group">
             <?php
-            $containers = (docker('info'));
+            $containers = (array) docker('info');
             ksort($containers);
             foreach ($containers as $container => $container_info) {
               if ($container == 'clamd-mailcow' && $clamd_status === false) { continue; }

@@ -1,8 +1,8 @@
-FROM debian:buster-slim
-LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
+FROM debian:bullseye-slim
+LABEL maintainer "Andre Peters <andre.peters@tinc.gmbh>"
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG CODENAME=buster
+ARG CODENAME=bullseye
 ENV LC_ALL C
 
 RUN apt-get update && apt-get install -y \
@@ -15,12 +15,13 @@ RUN apt-get update && apt-get install -y \
   && apt-key adv --fetch-keys https://rspamd.com/apt-stable/gpg.key \
   && echo "deb [arch=amd64] https://rspamd.com/apt-stable/ $CODENAME main" > /etc/apt/sources.list.d/rspamd.list \
   && apt-get update \
-  && apt-get --no-install-recommends -y install rspamd redis-tools \
+  && apt-get --no-install-recommends -y install rspamd redis-tools procps nano \
   && rm -rf /var/lib/apt/lists/* \
   && apt-get autoremove --purge \
   && apt-get clean \
   && mkdir -p /run/rspamd \
-  && chown _rspamd:_rspamd /run/rspamd
+  && chown _rspamd:_rspamd /run/rspamd \
+  && echo 'alias ll="ls -la --color"' >> ~/.bashrc
 
 COPY settings.conf /etc/rspamd/settings.conf
 COPY metadata_exporter.lua /usr/share/rspamd/plugins/metadata_exporter.lua
