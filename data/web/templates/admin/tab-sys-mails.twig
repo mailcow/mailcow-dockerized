@@ -1,0 +1,70 @@
+<div role="tabpanel" class="tab-pane" id="tab-sys-mails">
+  <div class="panel panel-default">
+    <div class="panel-heading">{{ lang.admin.sys_mails }}</div>
+    <div class="panel-body">
+      <form class="form-horizontal" autocapitalize="none" data-id="admin" autocorrect="off" role="form" method="post">
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="admin_mass_from">{{ lang.admin.from }}:</label>
+          <div class="col-sm-10">
+            <input type="email" class="form-control" id="admin_mass_from" name="mass_from" value="noreply@{{ mailcow_hostname }}" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="admin_mass_subject">{{ lang.admin.subject }}:</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="admin_mass_subject" name="mass_subject" required>
+          </div>
+        </div>
+        {% for domain in all_domains %}
+
+        {% endfor %}
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="mass_subject">{{ lang.admin.include_exclude }}:
+            <p class="help-block">{{ lang.admin.include_exclude_info|raw }}</p>
+          </label>
+          <div class="col-sm-5">
+            <label class="control-label" for="mass_exclude">{{ lang.admin.excludes }}:</label>
+            <select id="mass_exclude" name="mass_exclude[]" data-live-search="true" data-width="100%"  size="30" multiple>
+              {% for mailbox in mailboxes %}
+                <option>{{ mailbox }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-sm-5">
+            <label class="control-label" for="mass_include">{{ lang.admin.includes }}:</label>
+            <select id="mass_include" name="mass_include[]" data-live-search="true" data-width="100%"  size="30" multiple>
+              {% for mailbox in mailboxes %}
+                <option>{{ mailbox }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="mass_text">{{ lang.admin.text }}:</label>
+          <div class="col-sm-10">
+            <textarea class="form-control" rows="10" name="mass_text" id="mass_text" required></textarea>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="mass_html">{{ lang.admin.html }} ({{ lang.admin.optional }}):</label>
+          <div class="col-sm-10">
+            <textarea class="form-control" rows="10" name="mass_html" id="mass_html"></textarea>
+            <p class="small"><i class="bi bi-arrow-return-right"></i> <a target="_blank" href="https://templates.mailchimp.com/resources/html-to-text/">{{ lang.admin.convert_html_to_text }}</a></p>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <label>
+              <input type="checkbox" id="mass_disarm"> {{ lang.admin.activate_send }}
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" type="submit" id="mass_send" name="mass_send" disabled><i class="bi bi-envelope-fill"></i> {{ lang.admin.send }}</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

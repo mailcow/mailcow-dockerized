@@ -1,0 +1,10 @@
+{% include 'modals/user.twig' %}
+
+<script type='text/javascript'>
+  var acl = '{{ acl_json|raw }}';
+  var lang = {{ lang_user|raw }};
+  var csrf_token = '{{ csrf_token }}';
+  var pagination_size = '{{ pagination_size }}';
+  var mailcow_cc_username = '{{ mailcow_cc_username }}';
+  var user_spam_score = [{{ user_spam_score }}];
+</script>

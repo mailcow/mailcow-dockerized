@@ -1,0 +1,49 @@
+{% extends 'edit.twig' %}
+
+{% block inner_content %}
+{% if result %}
+<h4>{{ lang.mailbox.tls_policy_maps }}: {{ result.dest }}</h4>
+<br>
+<form class="form-horizontal" data-id="edit_tls_policy_maps" role="form" method="post">
+  <input type="hidden" value="0" name="active">
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="dest">{{ lang.mailbox.tls_map_dest }}</label>
+    <div class="col-sm-10">
+      <input value="{{ result.dest }}" type="text" class="form-control" name="dest" id="dest">
+      <small>{{ lang.mailbox.tls_map_dest_info }}</small>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="policy">{{ lang.mailbox.tls_map_policy }}</label>
+    <div class="col-sm-10">
+      <select class="full-width-select" name="policy" required>
+        {% for policy in policy_options %}
+          <option value="{{ policy }}"{% if result.policy == policy %} selected{% endif %}>{{ policy }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="parameters">{{ lang.mailbox.tls_map_parameters }}</label>
+    <div class="col-sm-10">
+      <input value="{{ result.parameters }}" type="text" class="form-control" name="parameters" id="parameters">
+      <small>{{ lang.mailbox.tls_map_parameters_info }}</small>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <div class="checkbox">
+        <label><input type="checkbox" value="1" name="active"{% if result.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected" data-id="edit_tls_policy_maps" data-item="{{ map }}" data-api-url='edit/tls-policy-map' data-api-attr='{}' href="#">{{ lang.edit.save }}</button>
+    </div>
+  </div>
+</form>
+{% else %}
+  {{ parent() }}
+{% endif %}
+{% endblock %}

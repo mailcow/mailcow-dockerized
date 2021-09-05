@@ -1,0 +1,39 @@
+<div role="tabpanel" class="tab-pane" id="tab-config-fwdhosts">
+  <div class="panel panel-default">
+    <div class="panel-heading">{{ lang.admin.forwarding_hosts }}</div>
+    <div class="panel-body">
+      <p style="margin-bottom:40px">{{ lang.admin.forwarding_hosts_hint }}</p>
+      <div class="table-responsive">
+        <table class="table table-striped table-condensed" id="forwardinghoststable"></table>
+      </div>
+      <div class="mass-actions-admin">
+        <div class="btn-group btn-group-sm">
+          <button type="button" id="toggle_multi_select_all" data-id="fwdhosts" class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default">{{ lang.mailbox.toggle_all }}</button>
+          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }} <span class="caret"></span></a>
+          <ul class="dropdown-menu top100">
+            <li><a data-action="edit_selected" data-id="fwdhosts" data-api-url='edit/fwdhost' data-api-attr='{"keep_spam":"0"}' href="#">Enable spam filter</a></li>
+            <li><a data-action="edit_selected" data-id="fwdhosts" data-api-url='edit/fwdhost' data-api-attr='{"keep_spam":"1"}' href="#">Disable spam filter</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a data-action="delete_selected" data-id="fwdhosts" data-api-url='delete/fwdhost' href="#">{{ lang.admin.remove }}</a></li>
+          </ul>
+          <div class="clearfix visible-xs"></div>
+        </div>
+      </div>
+      <legend>{{ lang.admin.add_forwarding_host }}</legend>
+      <p class="help-block">{{ lang.admin.forwarding_hosts_add_hint }}</p>
+      <form class="form" data-id="fwdhost" role="form" method="post">
+        <div class="form-group">
+          <label for="fwdhost_hostname">{{ lang.admin.host }}</label>
+          <input class="form-control" id="fwdhost_hostname" name="hostname" placeholder="example.org" required>
+        </div>
+        <div class="form-group">
+          <select data-width="200px" class="form-control" id="filter_spam" name="filter_spam" title="{{ lang.user.spamfilter }}" required>
+            <option value="1">{{ lang.admin.active }}</option>
+            <option value="0">{{ lang.admin.inactive }}</option>
+          </select>
+        </div>
+        <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="add_item" data-id="fwdhost" data-api-url='add/fwdhost' data-api-attr='{}' href="#"><i class="bi bi-plus-lg"></i> {{ lang.admin.add }}</button>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="{{ mailcow_locale|default('en') }}">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+  <meta name="theme-color" content="#F5D76E"/>
+  <meta http-equiv="Referrer-Policy" content="same-origin">
+  <title>{{ ui_texts.title_name }}</title>
+
+  <link rel="stylesheet" href="{{ css_path }}">
+  {% if theme != 'lumen' %}
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/{{ theme }}/bootstrap.min.css">
+  {% endif %}
+  <link rel="shortcut icon" href="/favicon.png" type="image/png">
+  <link rel="icon" href="/favicon.png" type="image/png">
+</head>
+<body id="top">
+<div class="overlay"></div>
+{% block navbar %}
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/"><img alt="mailcow-logo" src="{{ logo|default('/img/cow_mailcow.svg') }}"></a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav navbar-right">
+        {% if mailcow_locale %}
+        <li class="dropdown{% if available_languages|length == 1 %}lang-link-disabled{% endif %}">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="flag-icon flag-icon-{{ mailcow_locale }}"></span><span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            {% for key, val in available_languages %}
+            <li{% if mailcow_locale == key %} class="active"{% endif %}>
+              <a href="?{{ query_string({'lang': key}) }}">
+                <span class="flag-icon flag-icon-{{ key }}"></span>{{ val }}
+              </a>
+            </li>
+            {% endfor %}
+          </ul>
+        </li>
+        {% endif %}
+        {% if mailcow_cc_role %}
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ lang.header.mailcow_settings }} <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            {% if mailcow_cc_role == 'admin' %}
+            <li {% if is_uri('admin') %}class="active"{% endif %}><a href="/admin">{{ lang.header.administration }}</a></li>
+            <li {% if is_uri('debug') %}class="active"{% endif %}><a href="/debug">{{ lang.header.debug }}</a></li>
+            {% endif %}
+            {% if mailcow_cc_role == 'admin' or mailcow_cc_role == 'domainadmin' %}
+            <li {% if is_uri('mailbox') %}class="active"{% endif %}><a href="/mailbox">{{ lang.header.mailboxes }}</a></li>
+            {% endif %}
+            {% if mailcow_cc_role != 'admin' %}
+            <li {% if is_uri('user') %}class="active"{% endif %}><a href="/user">{{ lang.header.user_settings }}</a></li>
+            {% endif %}
+          </ul>
+        </li>
+        <li {% if is_uri('quarantine') %}class="active"{% endif %}><a href="/quarantine"><i class="bi bi-inbox-fill"></i> {{ lang.header.quarantine }}</a></li>
+        {% endif %}
+        {% if mailcow_cc_role == 'admin' and not skip_sogo %}
+        <li><a href data-toggle="modal" data-container="sogo-mailcow" data-target="#RestartContainer"><i class="bi bi-arrow-repeat"></i> {{ lang.header.restart_sogo }}</a></li>
+        {% endif %}
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="bi bi-link-45deg"></i> {{ ui_texts.apps_name }} <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            {% for app in mailcow_apps %}
+              {% if not skip_sogo or not is_uri('SOGo', app.link) %}
+              <li {% if app.description %}title="{{ app.description }}"{% endif %}>
+                <a href="{{ app.link }}">{{ app.name }}</a>
+              </li>
+              {% endif %}
+            {% endfor %}
+            {% for row in app_links %}
+              {% for key, val in row %}
+              <li><a href="{{ val }}">{{ key }}</a></li>
+              {% endfor %}
+            {% endfor %}
+          </ul>
+        </li>
+        {% if not dual_login and mailcow_cc_username %}
+        <li class="logged-in-as"><a href="#" onclick="logout.submit()"><b class="username-lia">{{ mailcow_cc_username }}</b> <i class="bi bi-power"></i></a></li>
+        {% elseif dual_login %}
+        <li class="logged-in-as"><a href="#" onclick="logout.submit()"><b class="username-lia">{{ mailcow_cc_username }} <span class="text-info">({{ dual_login.username }})</span> </b><i class="bi bi-power"></i></a></li>
+        {% endif %}
+        {% if not is_master %}
+        <li class="text-warning slave-info">[ slave ]</li>
+        {% endif %}
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container-fluid -->
+</nav>
+{% endblock navbar %}
+
+<form action="/" method="post" id="logout"><input type="hidden" name="logout"></form>
+
+{% if ui_texts.ui_announcement_text and ui_texts.ui_announcement_active and not is_root_uri %}
+<div class="container">
+  <div class="alert alert-{{ ui_texts.ui_announcement_type }}">{{ ui_texts.ui_announcement_text|rot13 }}</div>
+</div>
+{% endif %}
+
+<div class="container">
+{% block content %}{% endblock %}
+</div>
+
+{% include 'modals/footer.twig' %}
+
+<script src="{{ js_path }}"></script>
+<script>
+  var lang_footer = {{ lang_footer|raw }};
+  var lang_acl = {{ lang_acl|raw }};
+  var lang_tfa = {{ lang_tfa|raw }};
+  var lang_fido2 = {{ lang_fido2|raw }};
+  var docker_timeout = {{ docker_timeout|raw }} * 1000;
+
+$(window).scroll(function() {
+  sessionStorage.scrollTop = $(this).scrollTop();
+});
+// Select language and reopen active URL without POST
+function setLang(sel) {
+  $.post( '{{ uri }}', {lang: sel} );
+  window.location.href = window.location.pathname + window.location.search;
+}
+// FIDO2 functions
+function arrayBufferToBase64(buffer) {
+  let binary = '';
+  let bytes = new Uint8Array(buffer);
+  let len = bytes.byteLength;
+  for (let i = 0; i < len; i++) {
+    binary += String.fromCharCode( bytes[ i ] );
+  }
+  return window.btoa(binary);
+}
+function recursiveBase64StrToArrayBuffer(obj) {
+  let prefix = '=?BINARY?B?';
+  let suffix = '?=';
+  if (typeof obj === 'object') {
+    for (let key in obj) {
+      if (typeof obj[key] === 'string') {
+        let str = obj[key];
+        if (str.substring(0, prefix.length) === prefix && str.substring(str.length - suffix.length) === suffix) {
+          str = str.substring(prefix.length, str.length - suffix.length);
+          let binary_string = window.atob(str);
+          let len = binary_string.length;
+          let bytes = new Uint8Array(len);
+          for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+          }
+          obj[key] = bytes.buffer;
+        }
+      } else {
+        recursiveBase64StrToArrayBuffer(obj[key]);
+      }
+    }
+  }
+  }
+  $(window).load(function() {
+    $(".overlay").hide();
+  });
+  $(document).ready(function() {
+    $(document).on('shown.bs.modal', function(e) {
+      modal_id = $(e.relatedTarget).data('target');
+      $(modal_id).attr("aria-hidden","false");
+    });
+    // TFA, CSRF, Alerts in footer.inc.php
+    // Other general functions in mailcow.js
+    {% for alert_type, alert_msg in aletrs %}
+    mailcow_alert_box(alert_msg, alert_type);
+    {% endfor %}
+
+    // Confirm TFA modal
+  {% if pending_tfa_method %}
+    $('#ConfirmTFAModal').modal({
+      backdrop: 'static',
+      keyboard: false
+    });
+    $('#u2f_status_auth').html('<p><i class="bi bi-arrow-repeat icon-spin"></i> ' + lang_tfa.init_u2f + '</p>');
+    $('#ConfirmTFAModal').on('shown.bs.modal', function(){
+      $(this).find('input[name=token]').focus();
+      // If U2F
+      if(document.getElementById("u2f_auth_data") !== null) {
+        $.ajax({
+          type: "GET",
+          cache: false,
+          dataType: 'script',
+          url: "/api/v1/get/u2f-authentication/{{ pending_mailcow_cc_username|url_encode(true)|default('null') }}",
+          complete: function(data){
+            $('#u2f_status_auth').html(lang_tfa.waiting_usb_auth);
+            data;
+            setTimeout(function() {
+              console.log("Ready to authenticate");
+              u2f.sign(appId, challenge, registeredKeys, function(data) {
+                var form = document.getElementById('u2f_auth_form');
+                var auth = document.getElementById('u2f_auth_data');
+                console.log("Authenticate callback", data);
+                auth.value = JSON.stringify(data);
+                form.submit();
+              });
+            }, 1000);
+          }
+        });
+      }
+    });
+    $('#ConfirmTFAModal').on('hidden.bs.modal', function(){
+      $.ajax({
+        type: "GET",
+        cache: false,
+        dataType: 'script',
+        url: '/inc/ajax/destroy_tfa_auth.php',
+        complete: function(data){
+          window.location = window.location.href.split("#")[0];
+        }
+      });
+    });
+    {% endif %}
+    // Validate FIDO2
+  $("#fido2-login").click(function(){
+    $('#fido2-alerts').html();
+    if (!window.fetch || !navigator.credentials || !navigator.credentials.create) {
+      window.alert('Browser not supported.');
+      return;
+    }
+    window.fetch("/api/v1/get/fido2-get-args", {method:'GET',cache:'no-cache'}).then(function(response) {
+      return response.json();
+    }).then(function(json) {
+    if (json.success === false) {
+      throw new Error();
+    }
+    recursiveBase64StrToArrayBuffer(json);
+    return json;
+    }).then(function(getCredentialArgs) {
+      return navigator.credentials.get(getCredentialArgs);
+    }).then(function(cred) {
+      return {
+        id: cred.rawId ? arrayBufferToBase64(cred.rawId) : null,
+        clientDataJSON: cred.response.clientDataJSON  ? arrayBufferToBase64(cred.response.clientDataJSON) : null,
+        authenticatorData: cred.response.authenticatorData ? arrayBufferToBase64(cred.response.authenticatorData) : null,
+        signature : cred.response.signature ? arrayBufferToBase64(cred.response.signature) : null
+      };
+    }).then(JSON.stringify).then(function(AuthenticatorAttestationResponse) {
+      return window.fetch("/api/v1/process/fido2-args", {method:'POST', body: AuthenticatorAttestationResponse, cache:'no-cache'});
+    }).then(function(response) {
+      return response.json();
+    }).then(function(json) {
+      if (json.success) {
+        window.location = window.location.href.split("#")[0];
+  } else {
+    throw new Error();
+  }
+  }).catch(function(err) {
+    if (typeof err.message === 'undefined') {
+      mailcow_alert_box(lang_fido2.fido2_validation_failed, "danger");
+    } else {
+      mailcow_alert_box(lang_fido2.fido2_validation_failed + ":<br><i>" + err.message + "</i>", "danger");
+    }
+  });
+  });
+  // Set TFA/FIDO2
+  $("#register-fido2, #register-fido2-touchid").click(function(){
+    let t = $(this);
+
+    $("option:selected").prop("selected", false);
+    if (!window.fetch || !navigator.credentials || !navigator.credentials.create) {
+      window.alert('Browser not supported.');
+      return;
+    }
+
+    window.fetch("/api/v1/get/fido2-registration/{{ mailcow_cc_username|url_encode(true)|default('null') }}", {method:'GET',cache:'no-cache'}).then(function(response) {
+      return response.json();
+    }).then(function(json) {
+      if (json.success === false) {
+        throw new Error(json.msg);
+      }
+      recursiveBase64StrToArrayBuffer(json);
+
+      // set attestation to node if we are registering apple touch id
+      if(t.attr('id') === 'register-fido2-touchid') {
+        json.publicKey.attestation = 'none';
+        json.publicKey.authenticatorSelection.authenticatorAttachment = "platform";
+      }
+
+      return json;
+    }).then(function(createCredentialArgs) {
+      console.log(createCredentialArgs);
+      return navigator.credentials.create(createCredentialArgs);
+    }).then(function(cred) {
+      return {
+        clientDataJSON: cred.response.clientDataJSON  ? arrayBufferToBase64(cred.response.clientDataJSON) : null,
+        attestationObject: cred.response.attestationObject ? arrayBufferToBase64(cred.response.attestationObject) : null
+      };
+    }).then(JSON.stringify).then(function(AuthenticatorAttestationResponse) {
+      return window.fetch("/api/v1/add/fido2-registration", {method:'POST', body: AuthenticatorAttestationResponse, cache:'no-cache'});
+    }).then(function(response) {
+      return response.json();
+    }).then(function(json) {
+      if (json.success) {
+        window.location = window.location.href.split("#")[0];
+      } else {
+        throw new Error(json.msg);
+      }
+    }).catch(function(err) {
+      $('#fido2-alerts').html('<span class="text-danger"><b>' + err.message + '</b></span>');
+    });
+  });
+  $('#selectTFA').change(function () {
+    if ($(this).val() == "yubi_otp") {
+      $('#YubiOTPModal').modal('show');
+      $("option:selected").prop("selected", false);
+    }
+    if ($(this).val() == "totp") {
+      $('#TOTPModal').modal('show');
+      request_token = $('#tfa-qr-img').data('totp-secret');
+      $.ajax({
+        url: '/inc/ajax/qr_gen.php',
+        data: {
+          token: request_token,
+        },
+      }).done(function (result) {
+        $("#tfa-qr-img").attr("src", result);
+      });
+      $("option:selected").prop("selected", false);
+    }
+    if ($(this).val() == "u2f") {
+      $('#U2FModal').modal('show');
+      $("option:selected").prop("selected", false);
+      $("#start_u2f_register").click(function(){
+        $('#u2f_return_code').html('');
+        $('#u2f_return_code').hide();
+        $('#u2f_status_reg').html('<p><i class="bi bi-arrow-repeat icon-spin"></i> ' + lang_tfa.init_u2f + '</p>');
+        $.ajax({
+          type: "GET",
+          cache: false,
+          dataType: 'script',
+          url: "/api/v1/get/u2f-registration/{{ mailcow_cc_username|url_encode(true)|default('null') }}",
+          complete: function(data){
+            data;
+            setTimeout(function() {
+              console.log("Ready to register");
+              $('#u2f_status_reg').html(lang_tfa.waiting_usb_register);
+              u2f.register(appId, registerRequests, registeredKeys, function(deviceResponse) {
+                var form  = document.getElementById('u2f_reg_form');
+                var reg   = document.getElementById('u2f_register_data');
+                console.log("Register callback: ", data);
+                if (deviceResponse.errorCode && deviceResponse.errorCode != 0) {
+                  var u2f_return_code = document.getElementById('u2f_return_code');
+                  u2f_return_code.style.display = u2f_return_code.style.display === 'none' ? '' : null;
+                  if (deviceResponse.errorCode == "4") {
+                    deviceResponse.errorCode = "4 - The presented device is not eligible for this request. For a registration request this may mean that the token is already registered, and for a sign request it may mean that the token does not know the presented key handle";
+                  }
+                  else if (deviceResponse.errorCode == "5") {
+                    deviceResponse.errorCode = "5 - Timeout reached before request could be satisfied.";
+                  }
+                  u2f_return_code.innerHTML = lang_tfa.error_code + ': ' + deviceResponse.errorCode + ' ' + lang_tfa.reload_retry;
+                  return;
+                }
+                reg.value = JSON.stringify(deviceResponse);
+                form.submit();
+              });
+            }, 1000);
+          }
+        });
+      });
+    }
+    if ($(this).val() == "none") {
+      $('#DisableTFAModal').modal('show');
+      $("option:selected").prop("selected", false);
+    }
+  });
+
+  {% if mailcow_cc_username %}
+  // Reload after session timeout
+  var session_lifetime = {{ (session_lifetime * 1000) + 15000 }};
+  setTimeout(function() {
+    location.reload();
+  }, session_lifetime);
+  {% endif %}
+
+  // CSRF
+  $('<input type="hidden" value="{{ csrf_token }}">').attr('name', 'csrf_token').appendTo('form');
+  if (sessionStorage.scrollTop != "undefined") {
+    $(window).scrollTop(sessionStorage.scrollTop);
+  }
+  });
+</script>
+
+<div class="container footer">
+  {% if ui_texts.ui_footer %}
+  <hr><span class="rot-enc">{{ ui_texts.ui_footer|rot13|raw }}</span>
+  {% endif %}
+</div>
+</body>
+</html>

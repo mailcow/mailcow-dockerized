@@ -1,0 +1,71 @@
+<div role="tabpanel" class="tab-pane" id="tab-config-rsettings">
+  <div class="panel panel-default">
+    <div class="panel-heading">{{ lang.admin.rspamd_settings_map }}</div>
+    <div class="panel-body">
+      <legend data-target="#active_settings_map" style="cursor:pointer" unselectable="on" data-toggle="collapse">
+        <i style="font-size:10pt;" class="bi bi-plus-square"></i> {{ lang.admin.active_rspamd_settings_map }}
+      </legend>
+      <div id="active_settings_map" class="collapse" >
+        <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code" rows="20" name="settings_map" readonly>{{ rsettings_map }}</textarea>
+      </div>
+      <br>
+      <form class="form" data-id="rsettings" role="form" method="post">
+        <div class="row">
+          <div class="col-sm-3">
+            <div class="list-group">
+              {% if not rsettings %}
+
+              {% endif %}
+              {% for rsetting in rsettings %}
+                <a href="#{{ rsetting.details.id }}" class="list-group-item list-group-item-{% if rsetting.details.active %}success{% endif %}" data-dont-remember="1" data-toggle="tab">{{ rsetting.details.desc }} (ID #{{ rsetting.id }})</a>
+              {% else %}
+                <span class="list-group-item"><em>{{ lang.admin.rsetting_none }}</em></span>
+              {% endfor %}
+              <a href="#" class="list-group-item list-group-item-default"
+                 data-id="add_domain_admin"
+                 data-toggle="modal"
+                 data-dont-remember="1"
+                 data-target="#addRsettingModal"
+                 data-toggle="tab">{{ lang.admin.rsetting_add_rule }}</a>
+            </div>
+          </div>
+          <div class="col-sm-9">
+            <div class="tab-content">
+              {% if not rsettings %}
+                <div id="none" class="tab-pane active">
+                  <p class="help-block">{{ lang.admin.rsetting_none }}</p>
+                </div>
+              {% else %}
+                <div id="none" class="tab-pane active">
+                  <p class="help-block">{{ lang.admin.rsetting_no_selection }}</p>
+                </div>
+                {% for rsetting in rsettings %}
+                  <div id="{{ rsetting.details.id }}" class="tab-pane">
+                    <form class="form" data-id="rsettings" role="form" method="post">
+                      <input type="hidden" name="active" value="0">
+                      <div class="form-group">
+                        <label for="rsettings_desc">{{ lang.admin.rsetting_desc }}:</label>
+                        <input type="text" class="form-control" id="rsettings_desc" name="desc" value="{{ rsetting.details.desc }}">
+                      </div>
+                      <div class="form-group">
+                        <label for="rsettings_content">{{ lang.admin.rsetting_content }}:</label>
+                        <textarea class="form-control" id="rsettings_content" name="content" rows="10">{{ rsetting.details.content }}</textarea>
+                      </div>
+                      <div class="form-group">
+                        <label>
+                          <input type="checkbox" name="active" value="1" {% if rsetting.details.active %}checked{% endif %}> {{ lang.admin.active }}
+                        </label>
+                      </div>
+                      <button class="btn btn-sm btn-success" data-action="edit_selected" data-item="{{ rsetting.details.id }}" data-id="rsettings" data-api-url='edit/rsetting' data-api-attr='{}' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+                      <button class="btn btn-sm btn-danger" data-action="delete_selected" data-item="{{ rsetting.details.id }}" data-id="rsettings" data-api-url="delete/rsetting" data-api-attr='{}' href="#">{{ lang.admin.remove }}</button>
+                    </form>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

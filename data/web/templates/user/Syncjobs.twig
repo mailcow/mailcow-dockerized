@@ -1,0 +1,23 @@
+<div role="tabpanel" class="tab-pane" id="Syncjobs">
+  <div class="table-responsive">
+    <table class="table table-striped" id="sync_job_table"></table>
+  </div>
+  <div class="mass-actions-user">
+    <div class="btn-group" data-acl="{{ acl.syncjobs }}">
+      <div class="btn-group">
+        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="syncjob" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }} <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          <li><a data-action="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+          <li><a data-action="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+          <li role="separator" class="divider"></li>
+          <li><a data-action="delete_selected" data-id="syncjob" data-api-url='delete/syncjob' href="#">{{ lang.mailbox.remove }}</a></li>
+        </ul>
+        <div class="clearfix visible-xs"></div>
+      </div>
+      <div class="btn-group">
+        <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-toggle="modal" data-target="#addSyncJobModal"><i class="bi bi-plus-lg"></i> {{ lang.user.create_syncjob }}</a>
+      </div>
+    </div>
+  </div>
+</div>
