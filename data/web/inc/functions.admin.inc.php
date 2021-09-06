@@ -15,8 +15,8 @@ function admin($_action, $_data = null) {
   !isset($_data_log['password2']) ?: $_data_log['password2'] = '*';
   switch ($_action) {
     case 'add':
-      $username		= strtolower(trim($_data['username']));
-      $password		= $_data['password'];
+      $username   = strtolower(trim($_data['username']));
+      $password   = $_data['password'];
       $password2  = $_data['password2'];
       $active     = intval($_data['active']);
       if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $username)) || empty ($username) || $username == 'API') {
@@ -51,7 +51,7 @@ function admin($_action, $_data = null) {
       if (password_check($password, $password2) !== true) {
         return false;
       }
-      $password_hashed = hash_password($password_new);
+      $password_hashed = hash_password($password);
       $stmt = $pdo->prepare("INSERT INTO `admin` (`username`, `password`, `superadmin`, `active`)
         VALUES (:username, :password_hashed, '1', :active)");
       $stmt->execute(array(
