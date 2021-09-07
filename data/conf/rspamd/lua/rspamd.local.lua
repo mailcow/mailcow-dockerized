@@ -493,7 +493,7 @@ rspamd_config:register_symbol({
   type = 'postfilter',
   callback = function(task)
     local from = task:get_header('From')
-    if from and monitoring_hosts:get_key(from) then
+    if from and (monitoring_hosts:get_key(from) or from == "watchdog@localhost") then
       task:set_flag('no_log')
       task:set_flag('no_stat')
     end
