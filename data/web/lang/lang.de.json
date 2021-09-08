@@ -646,7 +646,7 @@
         "register_status": "Registrierungsstatus",
         "rename": "Umbenennen",
         "set_fido2": "Registriere FIDO2-Gerät",
-        "set_fido2_touchid": "Registriere Touch ID auf Apple M1",
+        "set_fido2_touchid": "Registriere Touch ID oder Face ID auf Apple-Geräten",
         "set_fn": "Benutzerfreundlichen Namen konfigurieren",
         "start_fido2_validation": "Starte FIDO2-Validierung"
     },
