@@ -103,7 +103,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.76
+      image: mailcow/phpfpm:1.77
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -156,6 +156,7 @@ services:
         - SKIP_SOGO=${SKIP_SOGO:-n}
         - ALLOW_ADMIN_EMAIL_LOGIN=${ALLOW_ADMIN_EMAIL_LOGIN:-n}
         - MASTER=${MASTER:-y}
+        - DEV_MODE=${DEV_MODE:-n}
       restart: always
       networks:
         mailcow-network:

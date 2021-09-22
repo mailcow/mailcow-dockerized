@@ -1,0 +1,70 @@
+{% extends 'edit.twig' %}
+
+{% block inner_content %}
+{% if result %}
+<h4>{{ lang.edit.alias }}</h4>
+<br>
+<form class="form-horizontal" data-id="editalias" role="form" method="post">
+  <input type="hidden" value="0" name="active">
+  {% if not skip_sogo %}
+  <input type="hidden" value="0" name="sogo_visible">
+  {% endif %}
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="address">{{ lang.edit.alias }}</label>
+    <div class="col-sm-10">
+      <input class="form-control" type="text" name="address" value="{{ result.address }}" />
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="goto">{{ lang.edit.target_address|raw }}</label>
+    <div class="col-sm-10">
+      <textarea id="textarea_alias_goto" class="form-control" autocapitalize="none" autocorrect="off" rows="10" id="goto" name="goto" required>{{ goto|replace({',': ', '}) }}</textarea>
+      <div class="checkbox">
+        <label><input class="goto_checkbox" type="checkbox" value="1" name="goto_null"{% if result.goto == 'null@localhost' %} checked{% endif %}> {{ lang.add.goto_null }}</label>
+      </div>
+      <div class="checkbox">
+        <label><input class="goto_checkbox" type="checkbox" value="1" name="goto_spam"{% if result.goto == 'spam@localhost' %} checked{% endif %}> {{ lang.add.goto_spam|raw }}</label>
+      </div>
+      <div class="checkbox">
+        <label><input class="goto_checkbox" type="checkbox" value="1" name="goto_ham"{% if result.goto == 'ham@localhost' %} checked{% endif %}> {{ lang.add.goto_ham|raw }}</label>
+      </div>
+      {% if not skip_sogo %}
+      <hr>
+      <div class="checkbox">
+        <label><input type="checkbox" value="1" name="sogo_visible"{% if result.sogo_visible == '1' %} checked{% endif %}> {{ lang.edit.sogo_visible }}</label>
+      </div>
+      <p class="help-block">{{ lang.edit.sogo_visible_info }}</p>
+      {% endif %}
+    </div>
+  </div>
+  <hr>
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="private_">{{ lang.edit.private_comment }}</label>
+    <div class="col-sm-10">
+      <input maxlength="160" class="form-control" type="text" name="private_comment" value="{{ result.private_comment }}" />
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="public_comment">{{ lang.edit.public_comment }}</label>
+    <div class="col-sm-10">
+      <input maxlength="160" class="form-control" type="text" name="public_comment" value="{{ result.public_comment }}" />
+    </div>
+  </div>
+  <hr>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <div class="checkbox">
+        <label><input type="checkbox" value="1" name="active"{% if result.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected" data-id="editalias" data-item="{{ alias }}" data-api-url='edit/alias' data-api-attr='{}' href="#">{{ lang.edit.save }}</button>
+    </div>
+  </div>
+</form>
+{% else %}
+  {{ parent() }}
+{% endif %}
+{% endblock %}

@@ -1,22 +1,22 @@
 <?php return array(
     'root' => array(
-        'pretty_version' => '1.0.0+no-version-set',
-        'version' => '1.0.0.0',
+        'pretty_version' => 'dev-master',
+        'version' => 'dev-master',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => NULL,
+        'reference' => '1c2923a4ddd7f89b3cf38c9594db289b7dd756d3',
         'name' => '__root__',
         'dev' => true,
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => '1.0.0+no-version-set',
-            'version' => '1.0.0.0',
+            'pretty_version' => 'dev-master',
+            'version' => 'dev-master',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => NULL,
+            'reference' => '1c2923a4ddd7f89b3cf38c9594db289b7dd756d3',
             'dev_requirement' => false,
         ),
         'bshaffer/oauth2-server-php' => array(
@@ -184,6 +184,15 @@
             'reference' => '5f38c8804a9e97d23e0c8d63341088cd8a22d627',
             'dev_requirement' => false,
         ),
+        'symfony/polyfill-ctype' => array(
+            'pretty_version' => 'v1.23.0',
+            'version' => '1.23.0.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../symfony/polyfill-ctype',
+            'aliases' => array(),
+            'reference' => '46cd95797e9df938fdd2b03693b5fca5e64b01ce',
+            'dev_requirement' => false,
+        ),
         'symfony/polyfill-mbstring' => array(
             'pretty_version' => 'v1.23.1',
             'version' => '1.23.1.0',
@@ -242,6 +251,15 @@
             'install_path' => __DIR__ . '/../tightenco/collect',
             'aliases' => array(),
             'reference' => 'b069783ab0c547bb894ebcf8e7f6024bb401f9d2',
+            'dev_requirement' => false,
+        ),
+        'twig/twig' => array(
+            'pretty_version' => 'v3.3.2',
+            'version' => '3.3.2.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../twig/twig',
+            'aliases' => array(),
+            'reference' => '21578f00e83d4a82ecfa3d50752b609f13de6790',
             'dev_requirement' => false,
         ),
         'yubico/u2flib-server' => array(

@@ -159,8 +159,8 @@ $(document).ready(function() {
     }
     if ($(this).is("select")) {
       $(this).selectpicker('destroy');
-      $(this).replaceWith(function() { 
-        return '<label class="control-label"><b>' + this.innerText + '</b></label>'; 
+      $(this).replaceWith(function() {
+        return '<label class="control-label"><b>' + this.innerText + '</b></label>';
       });
     }
     if ($(this).hasClass('btn-group')) {

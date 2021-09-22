@@ -1,0 +1,83 @@
+{% extends 'edit.twig' %}
+
+{% block inner_content %}
+{% if result %}
+<h4>{{ lang.edit.domain_admin }}</h4>
+<br>
+<form class="form-horizontal" data-id="editdomainadmin" role="form" method="post" autocomplete="off">
+  <input type="hidden" value="0" name="active">
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="username_new">{{ lang.edit.username }}</label>
+    <div class="col-sm-10">
+      <input class="form-control" type="text" name="username_new" value="{{ domain_admin }}" required onkeyup="this.value = this.value.toLowerCase();" />
+      &rdsh; <kbd>a-z - _ .</kbd>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="domains">{{ lang.edit.domains }}</label>
+    <div class="col-sm-10">
+      <select data-live-search="true" class="full-width-select" name="domains" multiple required>
+        {% for domain in result.selected_domains %}
+          <option selected>{{ domain }}</option>
+        {% endfor %}
+        {% for domain in result.unselected_domains %}
+          <option>{{ domain }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="password">{{ lang.edit.password }} (<a href="#" class="generate_password">{{ lang.edit.generate }}</a>)</label>
+    <div class="col-sm-10">
+      <input type="password" data-pwgen-field="true" data-hibp="true" class="form-control" name="password" placeholder="" autocomplete="new-password">
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="password2">{{ lang.edit.password_repeat }}</label>
+    <div class="col-sm-10">
+      <input type="password" data-pwgen-field="true" class="form-control" name="password2" autocomplete="new-password">
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <div class="checkbox">
+        <label><input type="checkbox" value="1" name="active"{% if result.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <div class="checkbox">
+        <label><input type="checkbox" value="1" name="disable_tfa"> {{ lang.tfa.disable_tfa }}</label>
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected" data-api-reload-location="/admin" data-id="editdomainadmin" data-item="{{ domain_admin }}" data-api-url='edit/domain-admin' data-api-attr='{}' href="#">{{ lang.edit.save }}</button>
+    </div>
+  </div>
+</form>
+<form data-id="daacl" class="form-inline well" method="post">
+  <div class="row">
+    <div class="col-sm-1">
+      <p class="help-block">ACL</p>
+    </div>
+    <div class="col-sm-10">
+      <div class="form-group">
+        <select id="da_acl" name="da_acl" size="10" data-container="body" multiple>
+          {% for acl, val in da_acls %}
+          <option value="{{ acl }}"{% if val == 1 %} selected{% endif %}>{{ lang.acl[acl] }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" data-action="edit_selected" data-id="daacl" data-item="{{ domain_admin }}" data-api-url='edit/da-acl' data-api-attr='{}' href="#">{{ lang.admin.save }}</button>
+      </div>
+    </div>
+  </div>
+</form>
+{% else %}
+  {{ parent() }}
+{% endif %}
+{% endblock %}

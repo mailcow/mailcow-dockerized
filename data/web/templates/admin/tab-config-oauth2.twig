@@ -1,0 +1,26 @@
+<div role="tabpanel" class="tab-pane" id="tab-config-oauth2">
+  <div class="panel panel-default">
+    <div class="panel-heading">{{ lang.admin.oauth2_apps }}</div>
+    <div class="panel-body">
+      <p>{{ lang.admin.oauth2_info|raw }}</p>
+      <div class="table-responsive">
+        <table class="table table-striped" id="oauth2clientstable"></table>
+      </div>
+      <div class="mass-actions-admin">
+        <div class="btn-group">
+          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="oauth2_clients" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }} <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a data-action="delete_selected" data-id="oauth2_clients" data-api-url='delete/oauth2-client' href="#">{{ lang.mailbox.remove }}</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a data-action="edit_selected" data-id="oauth2_clients" data-api-url='edit/oauth2-client' data-api-attr='{"revoke_tokens":"1"}' href="#">{{ lang.admin.oauth2_revoke_tokens }}</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a data-action="edit_selected" data-id="oauth2_clients" data-api-url='edit/oauth2-client' data-api-attr='{"renew_secret":"1"}' href="#">{{ lang.admin.oauth2_renew_secret }}</a></li>
+          </ul>
+          <div class="clearfix visible-xs"></div>
+          <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-id="add_oauth2_client" data-toggle="modal" data-target="#addOAuth2ClientModal" href="#"><i class="bi bi-plus-lg"></i> {{ lang.admin.oauth2_add_client }}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
