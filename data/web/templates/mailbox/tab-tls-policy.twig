@@ -1,0 +1,36 @@
+<div role="tabpanel" class="tab-pane{% if mailcow_cc_role != 'admin' %} hidden{% endif %}" id="tab-tls-policy">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      {{ lang.mailbox.tls_policy_maps_long }} <span class="badge badge-info table-lines"></span>
+      <div class="btn-group pull-right hidden-xs">
+        <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addTLSPolicyMapAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_tls_policy_map }}</button>
+        <button class="btn btn-xs btn-default refresh_table" data-draw="draw_tls_policy_table" data-table="tls_policy_table">{{ lang.admin.refresh }}</button>
+        <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown">{{ lang.mailbox.table_size }}
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" data-table-id="tls_policy_table" role="menu">
+          {% include 'mailbox/page-size.twig' %}
+        </ul>
+      </div>
+    </div>
+    <p style="margin:10px" class="help-block">{{ lang.mailbox.tls_policy_maps_info|raw }}</p>
+{#    <div class="mass-actions-mailbox" data-actions-header="true"></div>#}
+    <div class="table-responsive">
+      <table class="table table-striped" id="tls_policy_table"></table>
+    </div>
+    <div class="mass-actions-mailbox">
+      <div class="btn-group">
+        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="tls-policy-map" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }} <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          <li><a data-action="edit_selected" data-id="tls-policy-map" data-api-url='edit/tls-policy-map' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+          <li><a data-action="edit_selected" data-id="tls-policy-map" data-api-url='edit/tls-policy-map' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+          <li role="separator" class="divider"></li>
+          <li><a data-action="delete_selected" data-id="tls-policy-map" data-api-url='delete/tls-policy-map' href="#">{{ lang.mailbox.remove }}</a></li>
+        </ul>
+        <div class="clearfix visible-xs"></div>
+        <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-toggle="modal" data-target="#addTLSPolicyMapAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_tls_policy_map }}</a>
+      </div>
+    </div>
+  </div>
+</div>

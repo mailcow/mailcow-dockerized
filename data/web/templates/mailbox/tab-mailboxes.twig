@@ -1,0 +1,121 @@
+<div role="tabpanel" class="tab-pane" id="tab-mailboxes">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      {{ lang.mailbox.mailboxes }} <span class="badge badge-info table-lines"></span>
+      <div class="btn-group pull-right hidden-xs">
+        <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addMailboxModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_mailbox }}</button>
+        <button class="btn btn-xs btn-default refresh_table" data-draw="draw_mailbox_table" data-table="mailbox_table">{{ lang.admin.refresh }}</button>
+        <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown">{{ lang.mailbox.table_size }}
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" data-table-id="mailbox_table" role="menu">
+          {% include 'mailbox/page-size.twig' %}
+        </ul>
+      </div>
+    </div>
+    <div class="mass-actions-mailbox hidden-xs" data-actions-header="true"></div>
+    <div class="table-responsive">
+      <table id="mailbox_table" class="table table-striped"></table>
+    </div>
+    <div class="mass-actions-mailbox">
+      <div class="btn-group hidden-md hidden-lg hidden-xl">
+        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="mailbox" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }} <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          <li class="dropdown-header">{{ lang.mailbox.mailbox }}</li>
+          <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+          <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+          <li><a data-action="delete_selected" data-id="mailbox" data-api-url='delete/mailbox' href="#">{{ lang.mailbox.remove }}</a></li>
+          <li role="separator" class="divider"></li>
+          <li class="dropdown-header">{{ lang.mailbox.tls_enforce_in }}</li>
+          <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/tls_policy' data-api-attr='{"tls_enforce_in":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+          <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/tls_policy' data-api-attr='{"tls_enforce_in":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+          <li role="separator" class="divider"></li>
+          <li class="dropdown-header">{{ lang.mailbox.tls_enforce_out }}</li>
+          <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/tls_policy' data-api-attr='{"tls_enforce_out":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+          <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/tls_policy' data-api-attr='{"tls_enforce_out":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+          <li role="separator" class="divider"></li>
+          <li class="dropdown-header">{{ lang.mailbox.quarantine_notification }}</li>
+          <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_notification' data-api-attr='{"quarantine_notification":"hourly"}' href="#">{{ lang.user.hourly }}</a></li>
+          <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_notification' data-api-attr='{"quarantine_notification":"daily"}' href="#">{{ lang.user.daily }}</a></li>
+          <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_notification' data-api-attr='{"quarantine_notification":"weekly"}' href="#">{{ lang.user.weekly }}</a></li>
+          <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_notification' data-api-attr='{"quarantine_notification":"never"}' href="#">{{ lang.user.never }}</a></li>
+          <li role="separator" class="divider"></li>
+          <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_category' data-api-attr='{"quarantine_category":"reject"}' href="#">{{ lang.user.q_reject }}</a></li>
+          <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_category' data-api-attr='{"quarantine_category":"add_header"}' href="#">{{ lang.user.q_add_header }}</a></li>
+          <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_category' data-api-attr='{"quarantine_category":"all"}' href="#">{{ lang.user.q_all }}</a></li>
+          <li role="separator" class="divider"></li>
+          <li class="dropdown-header">{{ lang.mailbox.allowed_protocols }}</li>
+          <li class="dropdown-header">IMAP</li>
+          <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"imap_access":1}' href="#">{{ lang.mailbox.activate }}</a></li>
+          <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"imap_access":0}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+          <li role="separator" class="divider"></li>
+          <li class="dropdown-header">POP3</li>
+          <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"pop3_access":1}' href="#">{{ lang.mailbox.activate }}</a></li>
+          <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"pop3_access":0}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+          <li role="separator" class="divider"></li>
+          <li class="dropdown-header">SMTP</li>
+          <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"smtp_access":1}' href="#">{{ lang.mailbox.activate }}</a></li>
+          <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"smtp_access":0}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+        </ul>
+        <div class="clearfix visible-xs"></div>
+        <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-toggle="modal" data-target="#addMailboxModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_mailbox }}</a>
+      </div>
+      <div class="btn-group hidden-xs hidden-sm">
+        <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="mailbox" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+        <div class="btn-group">
+          <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#">{{ lang.mailbox.mailbox }} <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+            <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"active":"2"}' href="#">{{ lang.mailbox.disable_login }}</a></li>
+            <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a data-action="delete_selected" data-id="mailbox" data-api-url='delete/mailbox' href="#">{{ lang.mailbox.remove }}</a></li>
+          </ul>
+        </div>
+        <div class="btn-group">
+          <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#">TLS <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">{{ lang.mailbox.tls_enforce_in }}</li>
+            <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/tls_policy' data-api-attr='{"tls_enforce_in":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+            <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/tls_policy' data-api-attr='{"tls_enforce_in":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+            <li role="separator" class="divider"></li>
+            <li class="dropdown-header">{{ lang.mailbox.tls_enforce_out }}</li>
+            <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/tls_policy' data-api-attr='{"tls_enforce_out":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+            <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/tls_policy' data-api-attr='{"tls_enforce_out":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+          </ul>
+        </div>
+        <div class="btn-group">
+          <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#">{{ lang.mailbox.allowed_protocols }} <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">IMAP</li>
+            <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"imap_access":1}' href="#">{{ lang.mailbox.activate }}</a></li>
+            <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"imap_access":0}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+            <li role="separator" class="divider"></li>
+            <li class="dropdown-header">POP3</li>
+            <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"pop3_access":1}' href="#">{{ lang.mailbox.activate }}</a></li>
+            <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"pop3_access":0}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+            <li role="separator" class="divider"></li>
+            <li class="dropdown-header">SMTP</li>
+            <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"smtp_access":1}' href="#">{{ lang.mailbox.activate }}</a></li>
+            <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"smtp_access":0}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+          </ul>
+        </div>
+        <div class="btn-group">
+          <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#">{{ lang.mailbox.quarantine_notification }} <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_notification' data-api-attr='{"quarantine_notification":"hourly"}' href="#">{{ lang.user.hourly }}</a></li>
+            <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_notification' data-api-attr='{"quarantine_notification":"daily"}' href="#">{{ lang.user.daily }}</a></li>
+            <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_notification' data-api-attr='{"quarantine_notification":"weekly"}' href="#">{{ lang.user.weekly }}</a></li>
+            <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_notification' data-api-attr='{"quarantine_notification":"never"}' href="#">{{ lang.user.never }}</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_category' data-api-attr='{"quarantine_category":"reject"}' href="#">{{ lang.user.q_reject }}</a></li>
+            <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_category' data-api-attr='{"quarantine_category":"add_header"}' href="#">{{ lang.user.q_add_header }}</a></li>
+            <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_category' data-api-attr='{"quarantine_category":"all"}' href="#">{{ lang.user.q_all }}</a></li>
+          </ul>
+        </div>
+        <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addMailboxModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_mailbox }}</a>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,40 @@
+<div role="tabpanel" class="tab-pane" id="SpamAliases">
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <div class="table-responsive">
+        <table class="table table-striped" id="tla_table"></table>
+      </div>
+    </div>
+  </div>
+  <div class="mass-actions-user">
+    <div class="btn-group" data-acl="{{ acl.spam_alias }}">
+      <div class="btn-group">
+        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="tla" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }} <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          <li><a data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"validity":"1"}' href="#">{{ lang.user.expire_in }} 1 {{ lang.user.hour }}</a></li>
+          <li><a data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"validity":"24"}' href="#">{{ lang.user.expire_in }} 1 {{ lang.user.day }}</a></li>
+          <li><a data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"validity":"168"}' href="#">{{ lang.user.expire_in }} 1 {{ lang.user.week }}</a></li>
+          <li><a data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"validity":"744"}' href="#">{{ lang.user.expire_in }} 1 {{ lang.user.month }}</a></li>
+          <li><a data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"validity":"8760"}' href="#">{{ lang.user.expire_in }} 1 {{ lang.user.year }}</a></li>
+          <li><a data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"validity":"87600"}' href="#">{{ lang.user.expire_in }} 10 {{ lang.user.years }}</a></li>
+          <li role="separator" class="divider"></li>
+          <li><a data-action="delete_selected" data-id="tla" data-api-url='delete/time_limited_alias' href="#">{{ lang.mailbox.remove }}</a></li>
+        </ul>
+        <div class="clearfix visible-xs-block"></div>
+      </div>
+      <div class="btn-group">
+        <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success dropdown-toggle" data-toggle="dropdown" href="#"><i class="bi bi-plus-lg"></i> {{ lang.user.alias_create_random }}, 1 {{ lang.user.year }} <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          {% for domain in user_domains %}
+            <li>
+              <a data-action="add_item" data-api-url='add/time_limited_alias' data-api-attr='{"domain":"{{ domain }}"}' href="#">
+                @ {{ domain }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

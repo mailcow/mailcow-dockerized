@@ -1,5 +1,8 @@
 <?php
 
+// check for development mode
+$DEV_MODE = (getenv('DEV_MODE') == 'y');
+
 // Slave does not serve UI
 /* if (!preg_match('/y|yes/i', getenv('MASTER'))) {
   header('Location: /SOGo', true, 307);
@@ -169,7 +172,9 @@ function exception_handler($e) {
       return false;
     }
 }
-set_exception_handler('exception_handler');
+if(!$DEV_MODE) {
+  set_exception_handler('exception_handler');
+}
 
 // TODO: Move function
 function get_remote_ip() {
@@ -242,6 +247,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.tls_policy_maps.inc.php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.transports.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/init_db.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/triggers.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/twig.inc.php';
 init_db_schema();
 if (isset($_SESSION['mailcow_cc_role'])) {
   // if ($_SESSION['mailcow_cc_role'] == 'user') {

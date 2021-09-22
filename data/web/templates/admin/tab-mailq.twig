@@ -1,0 +1,44 @@
+<div role="tabpanel" class="tab-pane" id="tab-mailq">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      {{ lang.admin.queue_manager }} <span class="badge badge-info table-lines"></span>
+      <div class="btn-group pull-right">
+        <button class="btn btn-xs btn-default refresh_table" data-draw="draw_queue" data-table="queuetable">{{ lang.admin.refresh }}</button>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div class="table-responsive">
+        <table class="table table-striped table-condensed" id="queuetable"></table>
+      </div>
+      <div class="mass-actions-admin">
+        <div class="btn-group">
+          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="mailqitems" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }} <span class="caret"></span></a>
+          <ul class="dropdown-menu top33">
+            <li><a data-toggle="tooltip" title="postqueue -i" data-action="edit_selected" data-id="mailqitems" data-api-url='edit/mailq' data-api-attr='{"action":"deliver"}' href="#">{{ lang.admin.queue_deliver_mail }}</a></li>
+            <li><a data-toggle="tooltip" title="postsuper -H" data-action="edit_selected" data-id="mailqitems" data-api-url='edit/mailq' data-api-attr='{"action":"unhold"}' href="#">{{ lang.admin.queue_unhold_mail }}</a></li>
+            <li><a data-toggle="tooltip" title="postsuper -h" data-action="edit_selected" data-id="mailqitems" data-api-url='edit/mailq' data-api-attr='{"action":"hold"}' href="#">{{ lang.admin.queue_hold_mail }}</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a data-toggle="tooltip" title="postsuper -d" data-action="delete_selected" data-id="mailqitems" data-api-url='delete/mailq' href="#">{{ lang.mailbox.remove }}</a></li>
+          </ul>
+          <div class="clearfix visible-xs"></div>
+          <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-primary"
+             data-action="edit_selected"
+             data-item="mailqitems-all"
+             data-api-url='edit/mailq'
+             data-api-attr='{"action":"flush"}'
+             data-toggle="tooltip" title="postqueue -f"
+             href="#"><i class="bi bi-check-all"></i> {{ lang.admin.flush_queue }}</a>
+          <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-danger"
+             id="super_delete"
+             data-action="edit_selected"
+             data-item="mailqitems-all"
+             data-api-url='edit/mailq'
+             data-api-attr='{"action":"super_delete"}'
+             data-toggle="tooltip" title="postsuper -d ALL"
+             href="#"><i class="bi bi-trash"></i> {{ lang.admin.delete_queue }}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
