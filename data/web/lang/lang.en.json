@@ -29,10 +29,6 @@
         "syncjobs": "Sync jobs",
         "tls_policy": "TLS policy",
         "unlimited_quota": "Unlimited quota for mailboxes",
-        "xmpp_admin": "Promote XMPP user to administrator",
-        "xmpp_domain_access": "Configure XMPP domain access",
-        "xmpp_mailbox_access": "Configure XMPP user access",
-        "xmpp_prefix": "Change XMPP subdomain (prefix)"
     },
     "add": {
         "activate_filter_warn": "All other filters will be deactivated, when active is checked.",
@@ -110,12 +106,6 @@
         "username": "Username",
         "validate": "Validate",
         "validation_success": "Validated successfully",
-        "xmpp": "Activate XMPP for this domain",
-        "xmpp_access": "XMPP access",
-        "xmpp_access_info": "XMPP must be enabled for this domain.",
-        "xmpp_admin": "XMPP administrator",
-        "xmpp_admin_info": "<b>Danger:</b> Promotes a user to an XMPP administrator of this domain.",
-        "xmpp_info": "This function will enable chat functionality for this domain."
     },
     "admin": {
         "access": "Access",
@@ -471,9 +461,6 @@
         "username_invalid": "Username %s cannot be used",
         "validity_missing": "Please assign a period of validity",
         "value_missing": "Please provide all values",
-        "xmpp_map_write_error": "Could not write XMPP map: %s",
-        "xmpp_reload_failed": "XMPP could not be reloaded",
-        "xmpp_restart_failed": "XMPP could not be restarted",
         "yotp_verification_failed": "Yubico OTP verification failed: %s"
     },
     "debug": {

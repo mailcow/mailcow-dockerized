@@ -26,10 +26,6 @@
         "tls_policy": "TLS politik",
         "unlimited_quota": "Ubegrænset quote for mailbokse",
         "domain_desc": "Skift domæne beskrivelse",
-        "xmpp_admin": "Promover XMPP-bruger til administrator",
-        "xmpp_domain_access": "Konfigurer XMPP-domæneadgang",
-        "xmpp_mailbox_access": "Konfigurer XMPP-brugeradgang",
-        "xmpp_prefix": "Skift XMPP-underdomæne (præfiks)"
     },
     "add": {
         "activate_filter_warn": "Alle andre filtre deaktiveres, når aktiv er markeret.",

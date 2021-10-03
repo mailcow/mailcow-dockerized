@@ -27,10 +27,6 @@
 		"tls_policy": "Police TLS",
 		"unlimited_quota": "Quota illimité pour les boites de courriel",
 		"domain_desc": "Modifier la description du domaine",
-		"xmpp_admin": "Promouvoir l'utilisateur XMPP en administrateur",
-		"xmpp_domain_access": "Configurer l'accès au domaine XMPP",
-		"xmpp_mailbox_access": "Configurer l'accès à l'utilisateur XMPP",
-		"xmpp_prefix": "Changer le sous-domaine XMPP (préfixe)"
 	},
 	"add": {
 		"activate_filter_warn": "Tous les autres filtres seront désactivés, quand activé est coché.",
@@ -63,12 +59,6 @@
 		"full_name": "Nom complet",
 		"gal": "Carnet d'Adresses Global (GAL)",
 		"gal_info": "La liste d'adresse globale (GAL) contient tous les objets d'un domaine et ne peut être modifié par aucun utilisateur. Si elles sont désactivées,les informations libres/occupées dans SOGo sont cachées, ! <b>Redémarrez SOGo pour appliquer les changements.</b>",
-		"xmpp": "Activer XMPP pour ce domaine",
-		"xmpp_info": "Cette fonction activera la fonctionnalité de chat pour ce domaine.",
-		"xmpp_access": "Accès XMPP",
-		"xmpp_access_info": "XMPP doit être activé pour ce domaine.",
-		"xmpp_admin": "Administrateur XMPP",
-		"xmpp_admin_info": "<b>Attention</b>: promeut un utilisateur au rang d'administrateur XMPP pour ce domaine.",
 		"generate": "Générer",
 		"goto_ham": "Apprendre en tant que <span class=\"text-success\"><b>Courrier légitime (ham)</b></span>",
 		"goto_null": "Ignorer silencieusement le courriel",
@@ -363,7 +353,6 @@
 		"global_filter_write_error": "Impossible d’écrire le fichier de filtre: %s",
 		"global_map_invalid": "ID de carte globale %s non valide",
 		"global_map_write_error": "Impossible d’écrire l’ID de la carte globale %s: %s",
-		"xmpp_map_write_error": "Impossible d'écrire la carte XMPP: %s",
 		"goto_empty": "Une adresse alias doit contenir au moins une adresse 'goto'valide",
 		"goto_invalid": "Adresse Goto %s non valide",
 		"ham_learn_error": "Erreur d'apprentissage Ham: %s",
@@ -450,8 +439,6 @@
 		"validity_missing": "Veuillez attribuer une période de validité",
 		"value_missing": "Veuillez fournir toutes les valeurs",
 		"yotp_verification_failed": "La vérification Yubico OTP a échoué: %s",
-		"xmpp_restart_failed": "XMPP n'a pas pu être redémarré",
-		"xmpp_reload_failed": "XMPP n'a pas pu être rechargé"
 	},
 	"debug": {
 		"chart_this_server": "Graphique (ce serveur)",
@@ -465,7 +452,6 @@
 		"logs": "Logs",
 		"restart_container": "Redémarrer",
 		"solr_dead": "Solr est en cours de démarrage, désactivé ou mort.",
-		"xmpp_dead": "XMPP est en cours de démarrage, désactivé ou mort.",
 		"docs": "Docs",
 		"last_modified": "Dernière modification",
 		"online_users": "Utilisateurs en ligne",
@@ -476,7 +462,6 @@
 		"started_on": "Démarré à",
 		"static_logs": "Logs statiques",
 		"system_containers": "Système & Conteneurs",
-		"xmpp_status": "Status de XMPP"
 	},
 	"diagnostics": {
 		"cname_from_a": "Valeur dérivée de l’enregistrement A/AAAA. Ceci est supporté tant que l’enregistrement indique la bonne ressource.",
@@ -525,15 +510,6 @@
 		"full_name": "Nom complet",
 		"gal": "Liste d'adresses globale (GAL)",
 		"gal_info": "La liste d'adresses globale (GAL) contient tous les objets d’un domaine et ne peut pas être édité par un utilisateur. Les informations libres/occupées dans SOGo sont manquantes si elles sont désactivées! <b>Redémarrer SOGo pour appliquer les modifications.</b>",
-		"xmpp": "Activer XMPP pour ce domaine",
-		"xmpp_prefix": "Préfixe XMPP pour le domaine (\"im\" pour utiliser <b>im</b>.exemple.org)",
-		"xmpp_prefix_info": "Pour demander des certificats XMPP, deux enregistrements DNS CNAME doivent pointer de <b> im </b> .exemple.org ainsi que de <b> * .im </b> .exemple.org vers <b>% s </ b>. Veuillez également exécuter la vérification DNS pour ce domaine après avoir activé XMPP.",
-		"xmpp_info": "Cette fonction activera la fonctionnalité de chat pour ce domaine.",
-		"xmpp_access": "Accès XMPP",
-		"xmpp_access_info": "XMPP doit être activé pour ce domaine.",
-		"xmpp_admin": "Administrateur XMPP",
-		"xmpp_admin_info": "<b>Attention:</b> Promeut un utilisateur au rang d'administrateur XMPP de ce domaine.",
-		"xmpp_example_jid": "<b>Exemple JID</b> (se connecter avec le mot de passe de la boîte aux lettres)",		
 		"generate": "générer",
 		"grant_types": "Types 'autorisation",
 		"hostname": "Nom d'hôte",
@@ -924,9 +900,6 @@
 		"verified_u2f_login": "Authentification U2F vérifiée",
 		"verified_fido2_login": "Authentification FIDO2 vérifiée",
 		"verified_yotp_login": "Authentification Yubico OTP vérifiée",
-		"xmpp_restarted": "Le service XMPP a été redémarré",
-		"xmpp_reloaded": "Le service XMPP a été rechargé",
-		"xmpp_maps_updated": "Les cartes XMPP ont été mises à jour"
 	},
 	"tfa": {
 		"api_register": "%s utilise l'API Yubico Cloud. Veuillez obtenir une clé API pour votre clé <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">here</a>",
