@@ -959,6 +959,12 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             </div>
           </div>
           <div class="form-group">
+            <label class="col-sm-4 control-label" for="quarantine_sender_name"><?=$lang['admin']['quarantine_notification_sender_name'];?>:</label>
+            <div class="col-sm-8">
+              <input type="email" class="form-control" id="quarantine_sender_name" name="sender_name" value="<?=htmlspecialchars($q_data['sender_name']);?>">
+            </div>
+          </div>
+          <div class="form-group">
             <label class="col-sm-4 control-label" for="quarantine_subject"><?=$lang['admin']['quarantine_notification_subject'];?>:</label>
             <div class="col-sm-8">
               <input type="text" class="form-control" id="quarantine_subject" name="subject" value="<?=htmlspecialchars($q_data['subject']);?>" placeholder="Spam Quarantine Notification">
@@ -1018,6 +1024,12 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             </div>
           </div>
           <div class="col-sm-6">
+            <div class="form-group">
+              <label for="quota_notification_sender_name"><?=$lang['admin']['quota_notification_sender_name'];?>:</label>
+              <input type="text" class="form-control" id="quota_notification_sender_name" name="sender_name" value="<?=htmlspecialchars($qw_data['sender_name']);?>">
+            </div>
+          </div>
+          <div class="col-sm-12">
             <div class="form-group">
               <label for="quota_notification_subject"><?=$lang['admin']['quota_notification_subject'];?>:</label>
               <input type="text" class="form-control" id="quota_notification_subject" name="subject" value="<?=htmlspecialchars($qw_data['subject']);?>" placeholder="Quota warning">

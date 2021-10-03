@@ -47,7 +47,14 @@ text = html2text.html2text(html)
 
 try:
   msg = MIMEMultipart('alternative')
-  msg['From'] = r.get('QW_SENDER') or "quota-warning@localhost"
+
+  msg_from = r.get('QW_SENDER') or "quota-warning@localhost"
+  msg_from_name = r.get('QW_SENDER_NAME') or ""
+  if len(msg_from_name)>0:
+    msg['From'] = '"'+msg_from_name+'" <'+msg_from+'>'
+  else:
+    msg['From'] = msg_from
+
   msg['Subject'] = r.get('QW_SUBJ') or "Quota warning"
   msg['Date'] = formatdate(localtime = True)
   text_part = MIMEText(text, 'plain', 'utf-8')

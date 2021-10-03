@@ -20,13 +20,18 @@ function quota_notification($_action, $_data = null) {
         $release_format = 'raw';
       }
       $subject = $_data['subject'];
-      $sender = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $_data['sender']);
+	  // Remove non-ascii chars, < and > from field
+      $sender = preg_replace('/[\x00-\x1F\x80-\xFF\x3C\x3E]]/', '', $_data['sender']);
       if (filter_var($sender, FILTER_VALIDATE_EMAIL) === false) {
         $sender = '';
       }
+	  // Remove non-ascii chars, quotation marks and backslashes from field
+	  $sender_name = preg_replace('/[\x00-\x1F\x80-\xFF\x22\x5c]/', '', $_data['sender_name']);
+
       $html = $_data['html_tmpl'];
       try {
         $redis->Set('QW_SENDER', $sender);
+        $redis->Set('QW_SENDER_NAME', $sender_name);
         $redis->Set('QW_SUBJ', $subject);
         $redis->Set('QW_HTML', $html);
       }
@@ -48,6 +53,7 @@ function quota_notification($_action, $_data = null) {
       try {
         $settings['subject'] = $redis->Get('QW_SUBJ');
         $settings['sender'] = $redis->Get('QW_SENDER');
+        $settings['sender_name'] = $redis->Get('QW_SENDER_NAME');
         $settings['html_tmpl'] = htmlspecialchars($redis->Get('QW_HTML'));
         if (empty($settings['html_tmpl'])) {
           $settings['html_tmpl'] = htmlspecialchars(file_get_contents("/tpls/quota.tpl"));
@@ -105,7 +111,7 @@ function quota_notification_bcc($_action, $_data = null) {
       $bcc_rcpts = array_filter($bcc_rcpts);
       if (empty($bcc_rcpts)) {
         $active = 0;
-        
+
       }
       try {
         $redis->hSet('QW_BCC', $domain, json_encode(array('bcc_rcpts' => $bcc_rcpts, 'active' => $active)));

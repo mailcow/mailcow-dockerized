@@ -180,7 +180,7 @@ function quarantine($_action, $_data = null) {
             array('221', '')
           );
           // Thanks to https://stackoverflow.com/questions/6632399/given-an-email-as-raw-text-how-can-i-send-it-using-php
-          $smtp_connection = fsockopen($postfix, 590, $errno, $errstr, 1); 
+          $smtp_connection = fsockopen($postfix, 590, $errno, $errstr, 1);
           if (!$smtp_connection) {
             logger(array('return' => array(
               array(
@@ -192,7 +192,7 @@ function quarantine($_action, $_data = null) {
             return false;
           }
           for ($i=0; $i < count($postfix_talk); $i++) {
-            $smtp_resource = fgets($smtp_connection, 256); 
+            $smtp_resource = fgets($smtp_connection, 256);
             if (substr($smtp_resource, 0, 3) !== $postfix_talk[$i][0]) {
               $ret = substr($smtp_resource, 0, 3);
               $ret = (empty($ret)) ? '-' : $ret;
@@ -320,12 +320,14 @@ function quarantine($_action, $_data = null) {
         else {
           $redirect = $_data['redirect'];
         }
-        if (!filter_var($_data['sender'], FILTER_VALIDATE_EMAIL)) {
+		// Remove non-ascii chars, < and > from field
+		$sender = preg_replace('/[\x00-\x1F\x80-\xFF\x3C\x3E]]/', '', $_data['sender']);
+        if (!filter_var($sender, FILTER_VALIDATE_EMAIL)) {
           $sender = '';
         }
-        else {
-          $sender = $_data['sender'];
-        }
+		// Remove non-ascii chars, quotation marks and backslashes from field
+  	    $sender_name = preg_replace('/[\x00-\x1F\x80-\xFF\x22\x5c]/', '', $_data['sender_name']);
+
         $html = $_data['html_tmpl'];
         if ($max_age <= 0) {
           $max_age = 365;
@@ -339,6 +341,7 @@ function quarantine($_action, $_data = null) {
           $redis->Set('Q_EXCLUDE_DOMAINS', json_encode($exclude_domains));
           $redis->Set('Q_RELEASE_FORMAT', $release_format);
           $redis->Set('Q_SENDER', $sender);
+          $redis->Set('Q_SENDER_NAME', $sender_name);
           $redis->Set('Q_BCC', $bcc);
           $redis->Set('Q_REDIRECT', $redirect);
           $redis->Set('Q_SUBJ', $subject);
@@ -475,7 +478,7 @@ function quarantine($_action, $_data = null) {
               array('221', '')
             );
             // Thanks to https://stackoverflow.com/questions/6632399/given-an-email-as-raw-text-how-can-i-send-it-using-php
-            $smtp_connection = fsockopen($postfix, 590, $errno, $errstr, 1); 
+            $smtp_connection = fsockopen($postfix, 590, $errno, $errstr, 1);
             if (!$smtp_connection) {
               $_SESSION['return'][] = array(
                 'type' => 'warning',
@@ -485,7 +488,7 @@ function quarantine($_action, $_data = null) {
               return false;
             }
             for ($i=0; $i < count($postfix_talk); $i++) {
-              $smtp_resource = fgets($smtp_connection, 256); 
+              $smtp_resource = fgets($smtp_connection, 256);
               if (substr($smtp_resource, 0, 3) !== $postfix_talk[$i][0]) {
                 $ret = substr($smtp_resource, 0, 3);
                 $ret = (empty($ret)) ? '-' : $ret;
