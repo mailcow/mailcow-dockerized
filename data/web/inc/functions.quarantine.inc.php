@@ -788,6 +788,7 @@ function quarantine($_action, $_data = null) {
         $settings['release_format'] = $redis->Get('Q_RELEASE_FORMAT');
         $settings['subject'] = $redis->Get('Q_SUBJ');
         $settings['sender'] = $redis->Get('Q_SENDER');
+        $settings['sender_name'] = $redis->Get('Q_SENDER_NAME');
         $settings['bcc'] = $redis->Get('Q_BCC');
         $settings['redirect'] = $redis->Get('Q_REDIRECT');
         $settings['html_tmpl'] = htmlspecialchars($redis->Get('Q_HTML'));
