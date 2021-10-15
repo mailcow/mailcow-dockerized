@@ -1,9 +1,10 @@
 @font-face {
   font-family: "bootstrap-icons";
-  src: url("/fonts/bootstrap-icons.woff2?856008caa5eb66df68595e734e59580d") format("woff2"),
-url("/fonts/bootstrap-icons.woff?856008caa5eb66df68595e734e59580d") format("woff");
+  src: url("/fonts/bootstrap-icons.woff2?45695e8b569b2b0178db2713ca47065c") format("woff2"),
+url("/fonts/bootstrap-icons.woff?45695e8b569b2b0178db2713ca47065c") format("woff");
 }
 
+.bi::before,
 [class^="bi-"]::before,
 [class*=" bi-"]::before {
   display: inline-block;
@@ -1388,3 +1389,39 @@ url("/fonts/bootstrap-icons.woff?856008caa5eb66df68595e734e59580d") format("woff
 .bi-translate::before { content: "\f658"; }
 .bi-x-lg::before { content: "\f659"; }
 .bi-safe::before { content: "\f65a"; }
+.bi-apple::before { content: "\f65b"; }
+.bi-microsoft::before { content: "\f65d"; }
+.bi-windows::before { content: "\f65e"; }
+.bi-behance::before { content: "\f65c"; }
+.bi-dribbble::before { content: "\f65f"; }
+.bi-line::before { content: "\f660"; }
+.bi-medium::before { content: "\f661"; }
+.bi-paypal::before { content: "\f662"; }
+.bi-pinterest::before { content: "\f663"; }
+.bi-signal::before { content: "\f664"; }
+.bi-snapchat::before { content: "\f665"; }
+.bi-spotify::before { content: "\f666"; }
+.bi-stack-overflow::before { content: "\f667"; }
+.bi-strava::before { content: "\f668"; }
+.bi-wordpress::before { content: "\f669"; }
+.bi-vimeo::before { content: "\f66a"; }
+.bi-activity::before { content: "\f66b"; }
+.bi-easel2-fill::before { content: "\f66c"; }
+.bi-easel2::before { content: "\f66d"; }
+.bi-easel3-fill::before { content: "\f66e"; }
+.bi-easel3::before { content: "\f66f"; }
+.bi-fan::before { content: "\f670"; }
+.bi-fingerprint::before { content: "\f671"; }
+.bi-graph-down-arrow::before { content: "\f672"; }
+.bi-graph-up-arrow::before { content: "\f673"; }
+.bi-hypnotize::before { content: "\f674"; }
+.bi-magic::before { content: "\f675"; }
+.bi-person-rolodex::before { content: "\f676"; }
+.bi-person-video::before { content: "\f677"; }
+.bi-person-video2::before { content: "\f678"; }
+.bi-person-video3::before { content: "\f679"; }
+.bi-person-workspace::before { content: "\f67a"; }
+.bi-radioactive::before { content: "\f67b"; }
+.bi-webcam-fill::before { content: "\f67c"; }
+.bi-webcam::before { content: "\f67d"; }
+.bi-yin-yang::before { content: "\f67e"; }
