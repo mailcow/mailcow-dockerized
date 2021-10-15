@@ -12,7 +12,7 @@ $alertbox_log_parser = alertbox_log_parser($_SESSION);
 $alerts = [];
 if (is_array($alertbox_log_parser)) {
   foreach ($alertbox_log_parser as $log) {
-    $alert[$log['type']][] = $log['msg'];
+    $alerts[trim($log['type'], '"')][] = trim($log['msg'], '"');
   }
   $alert = array_filter(array_unique($alerts));
   foreach($alert as $alert_type => $alert_msg) {
