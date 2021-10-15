@@ -244,3 +244,6 @@ legend > [class^="bi-"]::before, legend > [class*=" bi-"]::before {
 code {
   font-size: inherit;
 }
+.bootstrap-select.btn-group.show-tick .dropdown-menu li.selected a span.check-mark {
+  margin-top: 0px;
+}
