@@ -26,7 +26,7 @@
         "syncjobs": "synkroniseringsjobb",
         "tls_policy": "Krypteringspolicy",
         "unlimited_quota": "Obegränsad kvot för postlådor",
-        "domain_desc": "Ändra domänbeskrivningen",
+        "domain_desc": "Ändra domänbeskrivningen"
     },
     "add": {
         "activate_filter_warn": "Alla andra filter av den här typen kommer inaktiveras om det här skriptet markeras som aktivt.",

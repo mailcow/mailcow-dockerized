@@ -25,7 +25,7 @@
         "syncjobs": "Synkroniser job",
         "tls_policy": "TLS politik",
         "unlimited_quota": "Ubegrænset quote for mailbokse",
-        "domain_desc": "Skift domæne beskrivelse",
+        "domain_desc": "Skift domæne beskrivelse"
     },
     "add": {
         "activate_filter_warn": "Alle andre filtre deaktiveres, når aktiv er markeret.",

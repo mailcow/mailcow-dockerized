@@ -28,7 +28,7 @@
         "spam_score": "Punteggio SPAM",
         "syncjobs": "Processi di sync",
         "tls_policy": "TLS policy",
-        "unlimited_quota": "Spazio illimitato per le caselle di posta",
+        "unlimited_quota": "Spazio illimitato per le caselle di posta"
     },
     "add": {
         "activate_filter_warn": "Tutti gli altri filtri saranno disattivati, quando è attivo.",
@@ -104,7 +104,7 @@
         "timeout2": "Timeout per la connessione all'host locale",
         "username": "Username",
         "validate": "Convalida",
-        "validation_success": "Convalidato con successo",
+        "validation_success": "Convalidato con successo"
     },
     "admin": {
         "access": "Accedi",

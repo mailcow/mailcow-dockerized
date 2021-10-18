@@ -26,7 +26,7 @@
         "syncjobs": "Sync jobs",
         "tls_policy": "Versleutelingsbeleid",
         "unlimited_quota": "Onbeperkte quota voor mailboxen",
-        "domain_desc": "Wijzig domeinbeschrijving",
+        "domain_desc": "Wijzig domeinbeschrijving"
     },
     "add": {
         "activate_filter_warn": "Alle andere filters worden gedeactiveerd zolang deze geactiveerd is.",

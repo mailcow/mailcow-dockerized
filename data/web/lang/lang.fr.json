@@ -26,7 +26,7 @@
 		"syncjobs": "Tâches de synchronisation",
 		"tls_policy": "Police TLS",
 		"unlimited_quota": "Quota illimité pour les boites de courriel",
-		"domain_desc": "Modifier la description du domaine",
+		"domain_desc": "Modifier la description du domaine"
 	},
 	"add": {
 		"activate_filter_warn": "Tous les autres filtres seront désactivés, quand activé est coché.",
@@ -438,7 +438,7 @@
 		"username_invalid": "Le nom d'utilisateur %s ne peut pas être utilisé",
 		"validity_missing": "Veuillez attribuer une période de validité",
 		"value_missing": "Veuillez fournir toutes les valeurs",
-		"yotp_verification_failed": "La vérification Yubico OTP a échoué: %s",
+		"yotp_verification_failed": "La vérification Yubico OTP a échoué: %s"
 	},
 	"debug": {
 		"chart_this_server": "Graphique (ce serveur)",
@@ -461,7 +461,7 @@
 		"uptime": "Disponibilité",
 		"started_on": "Démarré à",
 		"static_logs": "Logs statiques",
-		"system_containers": "Système & Conteneurs",
+		"system_containers": "Système & Conteneurs"
 	},
 	"diagnostics": {
 		"cname_from_a": "Valeur dérivée de l’enregistrement A/AAAA. Ceci est supporté tant que l’enregistrement indique la bonne ressource.",
@@ -899,7 +899,7 @@
 		"verified_totp_login": "Authentification TOTP vérifiée",
 		"verified_u2f_login": "Authentification U2F vérifiée",
 		"verified_fido2_login": "Authentification FIDO2 vérifiée",
-		"verified_yotp_login": "Authentification Yubico OTP vérifiée",
+		"verified_yotp_login": "Authentification Yubico OTP vérifiée"
 	},
 	"tfa": {
 		"api_register": "%s utilise l'API Yubico Cloud. Veuillez obtenir une clé API pour votre clé <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">here</a>",
