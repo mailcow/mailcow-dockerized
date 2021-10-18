@@ -27,10 +27,6 @@
         "tls_policy": "Versleutelingsbeleid",
         "unlimited_quota": "Onbeperkte quota voor mailboxen",
         "domain_desc": "Wijzig domeinbeschrijving",
-        "xmpp_admin": "Promoveer XMPP-gebruiker tot administrator",
-        "xmpp_domain_access": "Configureer XMPP-domeintoegang",
-        "xmpp_mailbox_access": "Configureer XMPP-gebruikerstoegang",
-        "xmpp_prefix": "Wijzig XMPP subdomein (prefix)"
     },
     "add": {
         "activate_filter_warn": "Alle andere filters worden gedeactiveerd zolang deze geactiveerd is.",
@@ -63,12 +59,6 @@
         "full_name": "Volledige naam",
         "gal": "Globale adreslijst",
         "gal_info": "De globale adreslijst bevat alle objecten van een domein. Deze kunnen door geen enkele gebruiker worden bewerkt. <b>Herstart SOGo om wijzigingen door te voeren.</b>",
-        "xmpp": "Activeer XMPP voor dit domein",
-        "xmpp_info": "Deze optie activeert de chatfunctionaliteit voor dit domein.",
-        "xmpp_access": "XMPP-toegang",
-        "xmpp_access_info": "XMPP dient ingeschakeld te zijn voor dit domein.",
-        "xmpp_admin": "XMPP-administrator",
-        "xmpp_admin_info": "<b>Waarschuwing:</b> Promoveert een gebruiker tot XMPP-administrator van dit domein.",
         "generate": "genereer",
         "goto_ham": "Train als <span class=\"text-success\"><b>ham</b></span>",
         "goto_null": "Verwijder mail onmiddelijk",
