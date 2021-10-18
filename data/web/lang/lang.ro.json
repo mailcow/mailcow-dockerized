@@ -29,10 +29,6 @@
         "syncjobs": "Lucrări de sincronizare",
         "tls_policy": "Politică TLS",
         "unlimited_quota": "Cota nelimitată pentru cutiile poștale",
-        "xmpp_admin": "Promovează utilizatorul XMPP ca administrator",
-        "xmpp_domain_access": "Configurează accesul domeniului la XMPP",
-        "xmpp_mailbox_access": "Configurează accesul utilizatorului la XMPP",
-        "xmpp_prefix": "Schimbă subdomeniul (prefixul) pentru XMPP"
     },
     "add": {
         "activate_filter_warn": "Toate celelalte filtre vor fi dezactivate, când este bifată opțiunea activă.",
@@ -65,12 +61,6 @@
         "full_name": "Nume complet",
         "gal": "Lista adreselor globale",
         "gal_info": "GAL conține toate obiectele unui domeniu și nu poate fi editat de niciun utilizator. Informația liber/ocupat din SOGo lipsește dacă este dezactivat! <b>Reporniți SOGo pentru a aplica modificările.</b>",
-        "xmpp": "Activează XMPP pentru acest domeniu",
-        "xmpp_info": "Această funcție va activa mesageria pentru acest domeniu.",
-        "xmpp_access": "Acces XMPP",
-        "xmpp_access_info": "XMPP trebuie să fie activ pentru acest domeniu.",
-        "xmpp_admin": "Administrator XMPP",
-        "xmpp_admin_info": "<b>Atenție:</b> Promovează un utilizator ca administrator XMPP pentru acest domeniu.",
         "generate": "generează",
         "goto_ham": "Învață ca <span class=\"text-success\"><b>ham</b></span>",
         "goto_null": "Aruncă emailul în mod silențios",

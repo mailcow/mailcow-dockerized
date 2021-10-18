@@ -29,10 +29,6 @@
         "syncjobs": "Sync Jobs",
         "tls_policy": "Verschlüsselungsrichtlinie",
         "unlimited_quota": "Unendliche Quota für Mailboxen",
-        "xmpp_admin": "Benutzer zum XMPP-Administrator ernennen",
-        "xmpp_domain_access": "XMPP-Zugang einer Domain konfigurieren",
-        "xmpp_mailbox_access": "XMPP-Zugang eines Benutzers einstellen",
-        "xmpp_prefix": "XMPP-Subdomain/Präfix ändern"
     },
     "add": {
         "activate_filter_warn": "Alle anderen Filter dieses Typs werden deaktiviert, falls dieses Script aktiv markiert wird.",
@@ -110,14 +106,6 @@
         "username": "Benutzername",
         "validate": "Validieren",
         "validation_success": "Erfolgreich validiert",
-        "xmpp": "XMPP für diese Domain aktivieren",
-        "xmpp_access": "XMPP-Zugang",
-        "xmpp_access_info": "XMPP muss für diese Domain aktiviert sein.",
-        "xmpp_admin": "XMPP-Administrator",
-        "xmpp_admin_info": "<b>Vorsicht:</b> Ernennt den Benutzer zum Administrator der jeweiligen XMPP-Domain.",
-        "xmpp_info": "Diese Funktion stellt eine Chat-Funktionalität für die Domain bereit.",
-        "xmpp_prefix": "XMPP-Präfix für Domain (\"im\" für <b>im</b>.example.org)",
-        "xmpp_prefix_info": "Für die Bereitstellung eines Zertifikates sollte vorab ein DNS-Eintrag, etwa in Form eines CNAMEs, für <b>im</b>.example.org sowie <b>*.im</b>.example.org auf <b>%s</b> zeigend angelegt werden. Im Anschluss an die Aktivierung sollte der DNS-Check für diese Domain ausgeführt werden."
     },
     "admin": {
         "access": "Zugang",
@@ -469,9 +457,6 @@
         "username_invalid": "Benutzername %s kann nicht verwendet werden",
         "validity_missing": "Bitte geben Sie eine Gültigkeitsdauer an",
         "value_missing": "Bitte alle Felder ausfüllen",
-        "xmpp_map_write_error": "Kann XMPP-Map nicht schreiben: %s",
-        "xmpp_reload_failed": "XMPP konnte nicht neu geladen werden",
-        "xmpp_restart_failed": "XMPP konnte nicht neu gestartet werden",
         "yotp_verification_failed": "Yubico OTP-Verifizierung fehlgeschlagen: %s"
     },
     "debug": {
@@ -500,8 +485,6 @@
         "system_containers": "System & Container",
         "uptime": "Uptime",
         "username": "Benutzername",
-        "xmpp_dead": "XMPP startet, ist deaktiviert oder temporär nicht erreichbar.",
-        "xmpp_status": "XMPP Status"
     },
     "diagnostics": {
         "cname_from_a": "Wert abgeleitet von A/AAAA-Eintrag. Wird unterstützt, sofern der Eintrag auf die korrekte Ressource zeigt.",
@@ -625,15 +608,6 @@
         "unchanged_if_empty": "Unverändert, wenn leer",
         "username": "Benutzername",
         "validate_save": "Validieren und speichern",
-        "xmpp": "XMPP für diese Domain aktivieren",
-        "xmpp_access": "XMPP-Zugang",
-        "xmpp_access_info": "XMPP muss für diese Domain aktiviert sein.",
-        "xmpp_admin": "XMPP-Administrator",
-        "xmpp_admin_info": "<b>Vorsicht:</b> Ernennt den Benutzer zum Administrator der jeweiligen XMPP Domain.",
-        "xmpp_example_jid": "<b>Beispiel JID</b> (Passwort entspricht Mailbox-Passwort)",
-        "xmpp_info": "Diese Funktion stellt eine Chat-Funktionalität für die Domain bereit.",
-        "xmpp_prefix": "XMPP-Präfix für Domain (\"im\" für <b>im</b>.example.org)",
-        "xmpp_prefix_info": "Für die Bereitstellung eines Zertifikates sollte vorab ein DNS-Eintrag, etwa in Form eines CNAMEs, für <b>im</b>.example.org sowie <b>*.im</b>.example.org auf <b>%s</b> zeigend angelegt werden. Im Anschluss an die Aktivierung sollte der DNS-Check für diese Domain ausgeführt werden."
     },
     "fido2": {
         "confirm": "Bestätigen",
@@ -976,9 +950,6 @@
         "verified_totp_login": "TOTP-Anmeldung verifiziert",
         "verified_u2f_login": "U2F-Anmeldung verifiziert",
         "verified_yotp_login": "Yubico-OTP-Anmeldung verifiziert",
-        "xmpp_maps_updated": "XMPP-Maps wurden aktualisiert",
-        "xmpp_reloaded": "XMPP-Dienst wurde neu geladen",
-        "xmpp_restarted": "XMPP-Dienst wurde neu gestartet"
     },
     "tfa": {
         "api_register": "%s verwendet die Yubico-Cloud-API. Ein API-Key für den Yubico-Stick kann <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">hier</a> bezogen werden.",

@@ -29,10 +29,6 @@
         "syncjobs": "Synchronizačné úlohy",
         "tls_policy": "TLS pravidlá",
         "unlimited_quota": "Neobmedzená kvóta pre poštové schránky",
-        "xmpp_admin": "Povýšiť XMPP používateľa na správcu",
-        "xmpp_domain_access": "Nakonfigurovať prístup k XMPP doméne.",
-        "xmpp_mailbox_access": "Nakonfigurovať používateľovi XMPP prístup.",
-        "xmpp_prefix": "Zmeniť XMPP subdoménu (prefix)"
     },
     "add": {
         "activate_filter_warn": "Všetky ostatné filtre budú deaktivované, ak bude zaškrtnuté pole \"Aktívny\".",
@@ -110,12 +106,6 @@
         "username": "Používateľské meno",
         "validate": "Overiť",
         "validation_success": "Úspešne overené",
-        "xmpp": "Aktivovať XMPP pre túto doménu",
-        "xmpp_access": "XMPP prístup",
-        "xmpp_access_info": "XMPP musí byť aktivované pre túto doménu.",
-        "xmpp_admin": "XMPP administrátor",
-        "xmpp_admin_info": "<b>Upozornenie:</b> Povýši užívateľa na XMPP administrátora pre túto doménu.",
-        "xmpp_info": "Aktivovanie tejto funkcie umožní četovanie v tejto doméne."
     },
     "admin": {
         "access": "Prístup",

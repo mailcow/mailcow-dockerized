@@ -42,7 +42,3 @@ services:
     dockerapi-mailcow:
       dns:
         - my.resolvers.ip.addr
-
-    ejabberd-mailcow:
-      dns:
-        - my.resolvers.ip.addr
