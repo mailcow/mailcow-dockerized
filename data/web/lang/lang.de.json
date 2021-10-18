@@ -28,7 +28,7 @@
         "spam_score": "Spam-Bewertung",
         "syncjobs": "Sync Jobs",
         "tls_policy": "Verschlüsselungsrichtlinie",
-        "unlimited_quota": "Unendliche Quota für Mailboxen",
+        "unlimited_quota": "Unendliche Quota für Mailboxen"
     },
     "add": {
         "activate_filter_warn": "Alle anderen Filter dieses Typs werden deaktiviert, falls dieses Script aktiv markiert wird.",
@@ -105,7 +105,7 @@
         "timeout2": "Timeout für Verbindung zum lokalen Host",
         "username": "Benutzername",
         "validate": "Validieren",
-        "validation_success": "Erfolgreich validiert",
+        "validation_success": "Erfolgreich validiert"
     },
     "admin": {
         "access": "Zugang",
@@ -484,7 +484,7 @@
         "success": "Erfolg",
         "system_containers": "System & Container",
         "uptime": "Uptime",
-        "username": "Benutzername",
+        "username": "Benutzername"
     },
     "diagnostics": {
         "cname_from_a": "Wert abgeleitet von A/AAAA-Eintrag. Wird unterstützt, sofern der Eintrag auf die korrekte Ressource zeigt.",
@@ -607,7 +607,7 @@
         "title": "Objekt bearbeiten",
         "unchanged_if_empty": "Unverändert, wenn leer",
         "username": "Benutzername",
-        "validate_save": "Validieren und speichern",
+        "validate_save": "Validieren und speichern"
     },
     "fido2": {
         "confirm": "Bestätigen",
@@ -949,7 +949,7 @@
         "verified_fido2_login": "FIDO2-Anmeldung verifiziert",
         "verified_totp_login": "TOTP-Anmeldung verifiziert",
         "verified_u2f_login": "U2F-Anmeldung verifiziert",
-        "verified_yotp_login": "Yubico-OTP-Anmeldung verifiziert",
+        "verified_yotp_login": "Yubico-OTP-Anmeldung verifiziert"
     },
     "tfa": {
         "api_register": "%s verwendet die Yubico-Cloud-API. Ein API-Key für den Yubico-Stick kann <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">hier</a> bezogen werden.",

@@ -28,7 +28,7 @@
         "spam_score": "Spam hodnota",
         "syncjobs": "Synchronizačné úlohy",
         "tls_policy": "TLS pravidlá",
-        "unlimited_quota": "Neobmedzená kvóta pre poštové schránky",
+        "unlimited_quota": "Neobmedzená kvóta pre poštové schránky"
     },
     "add": {
         "activate_filter_warn": "Všetky ostatné filtre budú deaktivované, ak bude zaškrtnuté pole \"Aktívny\".",
@@ -105,7 +105,7 @@
         "timeout2": "Časový limit pre spojenie s lokálnym serverom",
         "username": "Používateľské meno",
         "validate": "Overiť",
-        "validation_success": "Úspešne overené",
+        "validation_success": "Úspešne overené"
     },
     "admin": {
         "access": "Prístup",

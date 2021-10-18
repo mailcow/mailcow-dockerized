@@ -28,7 +28,7 @@
         "spam_score": "Spam score",
         "syncjobs": "Sync jobs",
         "tls_policy": "TLS policy",
-        "unlimited_quota": "Unlimited quota for mailboxes",
+        "unlimited_quota": "Unlimited quota for mailboxes"
     },
     "add": {
         "activate_filter_warn": "All other filters will be deactivated, when active is checked.",
@@ -105,7 +105,7 @@
         "timeout2": "Timeout for connection to local host",
         "username": "Username",
         "validate": "Validate",
-        "validation_success": "Validated successfully",
+        "validation_success": "Validated successfully"
     },
     "admin": {
         "access": "Access",

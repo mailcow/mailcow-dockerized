@@ -28,7 +28,7 @@
         "spam_score": "Scor spam",
         "syncjobs": "Lucrări de sincronizare",
         "tls_policy": "Politică TLS",
-        "unlimited_quota": "Cota nelimitată pentru cutiile poștale",
+        "unlimited_quota": "Cota nelimitată pentru cutiile poștale"
     },
     "add": {
         "activate_filter_warn": "Toate celelalte filtre vor fi dezactivate, când este bifată opțiunea activă.",
