@@ -247,3 +247,6 @@ code {
 .bootstrap-select.btn-group.show-tick .dropdown-menu li.selected a span.check-mark {
   margin-top: 0px;
 }
+.flag-icon {
+  margin-right: 5px;
+}
