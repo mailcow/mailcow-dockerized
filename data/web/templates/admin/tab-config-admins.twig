@@ -103,9 +103,9 @@
                 <input type="text" id="guid" class="form-control" value="{{ license_guid }}" readonly>
               </div>
               <p class="help-block">
-                {{ lang.admin.customer_id }}: {{ gal.c|raw|default('?') }} -
-                {{ lang.admin.service_id }}: {{ gal.s|raw|default('?') }} -
-                {{ lang.admin.sal_level }}: {{ gal.m|raw|default('?') }}
+                {{ lang.admin.customer_id }}: {{ gal.c|default('?')|raw }} -
+                {{ lang.admin.service_id }}: {{ gal.s|default('?')|raw }} -
+                {{ lang.admin.sal_level }}: {{ gal.m|default('?')|raw }}
               </p>
             </div>
           </div>
