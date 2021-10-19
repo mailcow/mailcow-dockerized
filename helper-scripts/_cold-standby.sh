@@ -96,7 +96,7 @@ function preflight_remote_checks() {
     -i "${REMOTE_SSH_KEY}" \
     ${REMOTE_SSH_HOST} \
     -p ${REMOTE_SSH_PORT} \
-    rsync -V > /dev/null
+    rsync --version > /dev/null
 
   if [ $? -ne 0 ]; then
     >&2 echo -e "\e[31mCould not verify connection to ${REMOTE_SSH_HOST}\e[0m"
