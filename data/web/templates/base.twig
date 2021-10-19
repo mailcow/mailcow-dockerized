@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
   <meta name="theme-color" content="#F5D76E"/>
   <meta http-equiv="Referrer-Policy" content="same-origin">
-  <title>{{ ui_texts.title_name }}</title>
+  <title>{{ ui_texts.title_name|raw }}</title>
 
   <link rel="stylesheet" href="{{ css_path }}">
   {% if theme != 'lumen' %}
@@ -66,7 +66,7 @@
         <li><a href data-toggle="modal" data-container="sogo-mailcow" data-target="#RestartContainer"><i class="bi bi-arrow-repeat"></i> {{ lang.header.restart_sogo }}</a></li>
         {% endif %}
         <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="bi bi-link-45deg"></i> {{ ui_texts.apps_name }} <span class="caret"></span></a>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="bi bi-link-45deg"></i> {{ ui_texts.apps_name|raw }} <span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
             {% for app in mailcow_apps %}
               {% if not skip_sogo or not is_uri('SOGo', app.link) %}
