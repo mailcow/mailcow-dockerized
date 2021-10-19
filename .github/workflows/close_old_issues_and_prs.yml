@@ -25,8 +25,8 @@ jobs:
           stale-pr-message: >
             This pull request has been automatically marked as stale because it has not had
             recent activity. It will be closed if no further activity occurs.
-          exempt-issue-labels: "pinned,security,enhancement"
-          exempt-pr-labels: "pinned,security,enhancement"
+          exempt-issue-labels: "pinned,security,enhancement,investigating"
+          exempt-pr-labels: "pinned,security,enhancement,investigating"
           stale-issue-label: "stale"
           stale-pr-label: "stale"
           operations-per-run: "250"
