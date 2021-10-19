@@ -65,19 +65,19 @@
         <form class="form" data-id="uitexts" role="form" method="post">
           <div class="form-group">
             <label for="uitests_title_name">{{ lang.admin.title_name }}:</label>
-            <input type="text" class="form-control" id="uitests_title_name" name="title_name" placeholder="mailcow UI" value="{{ ui_texts.title_name }}">
+            <input type="text" class="form-control" id="uitests_title_name" name="title_name" placeholder="mailcow UI" value="{{ ui_texts.title_name|raw }}">
           </div>
           <div class="form-group">
             <label for="uitests_main_name">{{ lang.admin.main_name }}:</label>
-            <input type="text" class="form-control" id="uitests_main_name" name="main_name" placeholder="mailcow UI" value="{{ ui_texts.main_name }}">
+            <input type="text" class="form-control" id="uitests_main_name" name="main_name" placeholder="mailcow UI" value="{{ ui_texts.main_name|raw }}">
           </div>
           <div class="form-group">
             <label for="uitests_apps_name">{{ lang.admin.apps_name }}:</label>
-            <input type="text" class="form-control" id="uitests_apps_name" name="apps_name" placeholder="{{ lang.header.apps }}" value="{{ ui_texts.apps_name }}">
+            <input type="text" class="form-control" id="uitests_apps_name" name="apps_name" placeholder="{{ lang.header.apps }}" value="{{ ui_texts.apps_name|raw }}">
           </div>
           <div class="form-group">
             <label for="help_text">{{ lang.admin.help_text }}:</label>
-            <textarea class="form-control" id="help_text" name="help_text" rows="7">{{ ui_texts.help_text }}</textarea>
+            <textarea class="form-control" id="help_text" name="help_text" rows="7">{{ ui_texts.help_text|raw }}</textarea>
           </div>
           <hr>
           <div class="form-group">
