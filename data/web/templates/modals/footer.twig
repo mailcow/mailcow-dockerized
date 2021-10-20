@@ -89,17 +89,14 @@
             <input type="password" class="form-control" name="confirm_password" placeholder="{{ lang.user.password_now }}" autocomplete="off" required>
           </div>
           <hr>
-          <?php
-          $totp_secret = $tfa->createSecret();
-          ?>
-          <input type="hidden" value="<?=$totp_secret;?>" name="totp_secret">
+          <input type="hidden" value="{{ totp_secret }}" name="totp_secret">
           <input type="hidden" name="tfa_method" value="totp">
           <ol>
             <li>
               <p>{{ lang.tfa.scan_qr_code }}</p>
-              <img id="tfa-qr-img" data-totp-secret="<?=$totp_secret;?>" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=">
+              <img id="tfa-qr-img" data-totp-secret="{{ totp_secret }}" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=">
               <p class="help-block">{{ lang.tfa.enter_qr_code }}:<br />
-                <code><?=$totp_secret;?></code>
+                <code>{{ totp_secret }}</code>
               </p>
             </li>
             <li>
