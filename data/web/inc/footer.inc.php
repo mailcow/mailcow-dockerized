@@ -35,6 +35,7 @@ $globalVariables = [
   'pagination_size' => $PAGINATION_SIZE,
   'log_pagination_size' => $LOG_PAGINATION_SIZE,
   'alerts' => $alerts,
+  'totp_secret' => $tfa->createSecret(),
 ];
 
 foreach ($globalVariables as $globalVariableName => $globalVariableValue) {
