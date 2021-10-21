@@ -28,11 +28,7 @@
         "spam_score": "垃圾邮件分数",
         "syncjobs": "同步任务",
         "tls_policy": "TLS策略",
-        "unlimited_quota": "无限邮箱容量配额",
-        "xmpp_admin": "将 XMPP 用户提升为管理员",
-        "xmpp_domain_access": "配置 XMPP 域访问",
-        "xmpp_mailbox_access": "配置 XMPP 用户访问",
-        "xmpp_prefix": "更改 XMPP 子域（前缀）"
+        "unlimited_quota": "无限邮箱容量配额"
     },
     "add": {
         "activate_filter_warn": "当\"启用\"被勾选，所有其他过滤器都会被禁用",
@@ -109,15 +105,7 @@
         "timeout2": "本地主机连接超时时间",
         "username": "用户名",
         "validate": "验证",
-        "validation_success": "验证成功",
-        "xmpp": "为这个域激活 XMPP",
-        "xmpp_info": "此功能将为该域启用聊天功能。",
-        "xmpp_access": "XMPP 访问",
-        "xmpp_access_info": "必须为此域启用 XMPP。",
-        "xmpp_admin": "XMPP 管理员",
-        "xmpp_admin_info": "<b>危险:</b> 将用户提升为该域的 XMPP 管理员。",
-        "xmpp_prefix": "域的 XMPP 前缀 (\"im\" 即使用 <b>im</b>.example.org)",
-        "xmpp_prefix_info": "为 XMPP 申请证书，应该设置两个CNAME DNS记录，从 <b>im</b>.example.org 和 <b>*.im</b>.example.org 指向 <b>%s</b>！请在启用 XMPP 后，为此域运行DNS检查。"
+        "validation_success": "验证成功"
     },
     "admin": {
         "access": "访问",
