@@ -58,6 +58,7 @@ if (empty($_SERVER['PHP_AUTH_USER']) || empty($_SERVER['PHP_AUTH_PW'])) {
       "time" => time(),
       "ua" => $_SERVER['HTTP_USER_AGENT'],
       "user" => "none",
+      "ip" => $_SERVER['REMOTE_ADDR'],
       "service" => "Error: must be authenticated"
     )
   );
@@ -82,6 +83,7 @@ if ($login_role === "user") {
           "time" => time(),
           "ua" => $_SERVER['HTTP_USER_AGENT'],
           "user" => $_SERVER['PHP_AUTH_USER'],
+          "ip" => $_SERVER['REMOTE_ADDR'],
           "service" => "Error: invalid or missing request data"
         )
       );
@@ -136,6 +138,7 @@ if ($login_role === "user") {
         "time" => time(),
         "ua" => $_SERVER['HTTP_USER_AGENT'],
         "user" => $_SERVER['PHP_AUTH_USER'],
+        "ip" => $_SERVER['REMOTE_ADDR'],
         "service" => $autodiscover_config['autodiscoverType']
       )
     );
