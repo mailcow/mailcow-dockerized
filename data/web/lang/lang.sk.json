@@ -507,6 +507,7 @@
         "optional": "Tento záznam je voliteľný."
     },
     "edit": {
+        "acl": "ACL (Oprávnenia)",
         "active": "Aktívny",
         "admin": "Upraviť administrátora",
         "advanced_settings": "Pokročilé nastavenia",
@@ -567,6 +568,7 @@
         "previous": "Predchádzajúca strana",
         "private_comment": "Súkromný komentár",
         "public_comment": "Verejný komentár",
+        "pushover": "Pushover",
         "pushover_evaluate_x_prio": "Eskalovať správy s vysokou prioritou [<code>X-Priority: 1</code>]",
         "pushover_info": "Push notifikácie budú aplikované na všetky správy (s výnimkou spamu) doručené pre <b>%s</b> vrátane aliasov (zdieľané, nezdieľané, označené).",
         "pushover_only_x_prio": "Vyberať len správy s vysokou prioritou [<code>X-Priority: 1</code>]",
