@@ -461,9 +461,6 @@
         "username_invalid": "不能使用用户名 %s",
         "validity_missing": "请设置有效期",
         "value_missing": "请填入所有值",
-        "xmpp_map_write_error": "无法写入 XMPP 规则: %s",
-        "xmpp_reload_failed": "无法重新加载 XMPP",
-        "xmpp_restart_failed": "XMPP 无法重新启动",
         "yotp_verification_failed": "Yubico OTP认证失败: %s"
     },
     "debug": {
