@@ -506,7 +506,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:1.39
+      image: mailcow/dockerapi:1.40
       security_opt:
         - label=disable
       restart: always
