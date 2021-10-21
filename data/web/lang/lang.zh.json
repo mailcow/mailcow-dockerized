@@ -1085,7 +1085,6 @@
         "months": "月",
         "never": "从不",
         "new_password": "新密码",
-        "new_password_description": "要求: 至少6字符长的字母或数字",
         "new_password_repeat": "确认密码 (重复)",
         "no_active_filter": "没有启用的过滤器",
         "no_last_login": "没有最后UI登录信息",
