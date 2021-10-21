@@ -78,6 +78,7 @@ jQuery(function($){
         {"name":"time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});},"title":lang.time,"style":{"width":"170px"}},
         {"name":"ua","title":"User-Agent","style":{"min-width":"200px"}},
         {"name":"user","title":"Username","style":{"min-width":"200px"}},
+        {"name":"ip","title":"IP","style":{"min-width":"200px"}},
         {"name":"service","title":"Service"},
       ],
       "rows": $.ajax({
