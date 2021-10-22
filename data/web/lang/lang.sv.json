@@ -587,8 +587,6 @@
         "sieve_desc": "Kort beskrivning",
         "sieve_type": "Filtertyp",
         "skipcrossduplicates": "Hoppa över duplicerade meddelanden i katalogerna (först till kvarn)",
-        "sogo_access": "Ge åtkomst till SOGo",
-        "sogo_access_info": "Ge eller tillåt åtkomst till SOGo. Denna inställning påverkar varken åtkomsten till alla andra tjänster eller raderar eller ändrar inte en befintlig SOGo-profil.",
         "sogo_visible": "Alias visas i SOGo",
         "sogo_visible_info": "Det här alternativet påverkar endast objekt som kan visas i SOGo (delade eller icke-delade aliasadresser med destination för minst en lokal postlåda).",
         "spam_alias": "Skapa eller ändra tillfälliga e-postalias",

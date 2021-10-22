@@ -559,8 +559,6 @@
 		"sieve_desc": "Description courte",
 		"sieve_type": "Type de filtre",
 		"skipcrossduplicates": "Ignorer les messages en double dans les dossiers (premier arrivé, premier servi)",
-		"sogo_access": "Accorder l'accès à",
-		"sogo_access_info": "Accorder ou permettre l’accès à SOGo. Ce paramètre n’affecte pas l’accès à tous les autres services ni ne supprime ou ne modifie un profil SOGo existant.",
 		"sogo_visible": "Alias visible dans SOGo",
 		"sogo_visible_info": "Cette option affecte uniquement les objets qui peuvent être affichés dans SOGo (adresses alias partagées ou non partagées pointant vers au moins une boîte mail locale). Si caché, un alias n’apparaîtra pas comme expéditeur sélectionnable dans SOGo.",
 		"spam_alias": "Créer ou modifier des adresses alias limitées dans le temps",

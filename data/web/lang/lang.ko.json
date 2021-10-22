@@ -539,8 +539,6 @@
         "sieve_desc": "Short description",
         "sieve_type": "Filter type",
         "skipcrossduplicates": "Skip duplicate messages across folders (first come, first serve)",
-        "sogo_access": "Grant access to SOGo",
-        "sogo_access_info": "Grant or permit access to SOGo. This setting does neither affect access to all other services nor does it delete or change a users existing SOGo profile.",
         "sogo_visible": "Alias is visible in SOGo",
         "sogo_visible_info": "This option only affects objects, that can be displayed in SOGo (shared or non-shared alias addresses pointing to at least one local mailbox). If hidden, an alias will not appear as selectable sender in SOGo.",
         "spam_alias": "Create or change time limited alias addresses",

@@ -592,8 +592,6 @@
         "sieve_desc": "Krátký popis",
         "sieve_type": "Typ filtru",
         "skipcrossduplicates": "Přeskočit duplicitní zprávy (\"první přijde, první mele\")",
-        "sogo_access": "Udělit přístup k SOGo",
-        "sogo_access_info": "Toto nastavení neovlivňuje přístup k ostatním službám, ani nezmění existující profil uživatele SOGo.",
         "sogo_visible": "Alias dostupný v SOGo",
         "sogo_visible_info": "Tato volba určuje objekty, jež lze zobrazit v SOGo (sdílené nebo nesdílené aliasy, jež ukazuje alespoň na jednu schránku).",
         "spam_alias": "Vytvořit nebo změnit dočasné aliasy",
