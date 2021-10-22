@@ -161,6 +161,12 @@
     display: flex;
     flex-wrap: wrap;
   }
+  .btn-group.nowrap {
+    flex-wrap: nowrap;
+  }
+  .btn-group.nowrap .dropdown-menu {
+    width: 100%;
+  }
   .panel-login .btn-group {
     display: block;
   }
