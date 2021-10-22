@@ -600,8 +600,6 @@
         "sieve_desc": "Descriere scurtă",
         "sieve_type": "Tip filtru",
         "skipcrossduplicates": "Sari peste mesajele duplicate din toate folderele (primul venit, primul servit)",
-        "sogo_access": "Acordă acces la SOGo",
-        "sogo_access_info": "Acordă sau permite accesul la SOGo. Această setare nu afectează accesul la toate celelalte servicii și nici nu șterge sau modifică profilul SOGo existent al utilizatorului.",
         "sogo_visible": "Aliasul este vizibil în SOGo",
         "sogo_visible_info": "Această opțiune afectează doar obiecte, care pot fi afișate în SOGo (adrese alias partajate sau ne-partajate cu cel puțin o căsuță poștală locală). Dacă este ascuns, un alias nu va apărea ca expeditor selectabil în SOGo.",
         "spam_alias": "Crează sau modifică adrese alias limitate în funcție de timp",

@@ -549,8 +549,6 @@
         "sieve_desc": "简短描述",
         "sieve_type": "过滤器类型",
         "skipcrossduplicates": "跳过其他文件夹中已存在的邮件(保留先存在的邮件)",
-        "sogo_access": "授权访问SOGo",
-        "sogo_access_info": "授权访问SOGo，此设置既不会影响其他所有服务的访问也不会删除或更改用户在SOGo的上的个人资料。",
         "sogo_visible": "SOGo别名显示",
         "sogo_visible_info": "此设置只影响SOGo上的可显示对象(指向本地邮箱的共享或非共享别名地址)。如果设为隐藏，别名地址不会作为下拉可选发件人项显示。",
         "spam_alias": "添加或更改临时别名地址",

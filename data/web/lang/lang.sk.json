@@ -599,8 +599,6 @@
         "sieve_desc": "Krátky popis",
         "sieve_type": "Typ filtru",
         "skipcrossduplicates": "Preskočiť duplikované správy naprieč priečinkami (akceptuje sa prvý nález)",
-        "sogo_access": "Povoliť prístup do SOGo",
-        "sogo_access_info": "Povoliť alebo umožniť prístup do SOGo. Toto nastavenie neovplyvňuje prístup všetkým službám alebo nemaže/nemení existujúci SOGo profil používateľa.",
         "sogo_visible": "Alias je viditeľný v SOGo",
         "sogo_visible_info": "Táto voľba ovplyvňuje len objekty, ktoré dokážu byť zobrazené v SOGo (zdieľané alebo nezdieľané alias adresy ukazujúc na minimálne jednu lokálnu poštovú schránku). Ak je skrytý, alias nebude prezentovaný ako voliteľný odosielateľ v SOGo.",
         "spam_alias": "Vytvoriť alebo zmeniť časovo limitované alias adresy",

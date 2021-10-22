@@ -473,8 +473,6 @@
         "sieve_desc": "Lyhyt kuvaus",
         "sieve_type": "Suodattimen tyyppi",
         "skipcrossduplicates": "Ohita päällekkäiset viestit kansioiden välillä (ensimmäinen tulee, ensimmäinen palvella)",
-        "sogo_access": "Myönnä pääsy SOGo-kohteeseen",
-        "sogo_access_info": "Myönnä tai salli pääsy SOGo-palveluun. Tämä asetus ei vaikuta pääsyä muihin palveluihin eikä se poista tai muuta käyttäjiä jo olemassa SOGo profiilissa",
         "sogo_visible": "Alias näkyy SOGo-kohteessa",
         "sogo_visible_info": "Tämä asetus vaikuttaa vain objekteihin, jotka voidaan näyttää SOGo (jaetut tai ei-jaetut alias-osoitteet, jotka viittaavat vähintään yhteen paikalliseen posti laatikkoon).",
         "spam_alias": "Luo tai muuta aika rajoitettuja aliaksen osoitteita",

@@ -419,8 +419,6 @@
         "sieve_desc": "Descripción",
         "sieve_type": "Tipo de filtro",
         "skipcrossduplicates": "Omitir mensajes duplicados en carpetas (orden de llegada)",
-        "sogo_access": "Permitir acceso a SOGo",
-        "sogo_access_info": "Permitir acceso a SOGo. Este ajuste no afecta el acceso a todos los demás servicios ni elimina o cambia el perfil de SOGo existente de un usuario.",
         "subfolder2": "Sincronizar en subcarpeta en destino<br><small>(vacío = no usar subcarpeta)</small>",
         "syncjob": "Editar trabajo de sincronización",
         "target_address": "Dirección/es destino <small>(separadas por coma)</small>:",

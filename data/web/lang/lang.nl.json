@@ -573,8 +573,6 @@
         "sieve_desc": "Korte beschrijving",
         "sieve_type": "Filtertype",
         "skipcrossduplicates": "Sla duplicaten verspreid over mappen over (wie het eerst komt, het eerst maalt)",
-        "sogo_access": "Geef toegang to SOGo",
-        "sogo_access_info": "Deze gebruiker kan, wanneer ingeschakeld, gebruikmaken van SOGo. Deze instelling heeft geen invloed op de overige services. Het SOGo-profiel van deze gebruiker zal bewaard blijven.",
         "sogo_visible": "Alias tonen in SOGo",
         "sogo_visible_info": "Wanneer verborgen zal een alias niet worden weergegeven als een selecteerbaar verzendadres. Deze optie beïnvloedt uitsluitend objecten die kunnen worden weergegeven in SOGo (gedeelde of niet-gedeelde aliasadressen die naar minstens één mailbox verwijzen).",
         "spam_alias": "Maak een nieuw tijdelijk alias aan, of pas deze aan",

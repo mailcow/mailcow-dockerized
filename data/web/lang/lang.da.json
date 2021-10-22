@@ -553,8 +553,6 @@
         "sieve_desc": "Kort beskrivelse",
         "sieve_type": "Filtertype",
         "skipcrossduplicates": "Spring duplikatbeskeder over mapper (først til mølle)",
-        "sogo_access": "Giv adgang til SOGo",
-        "sogo_access_info": "Giv eller tillad adgang til SOGo. Denne indstilling påvirker hverken adgang til alle andre tjenester eller sletter eller ændrer en eksisterende SOGo-profil for brugere.",
         "sogo_visible": "Alias er synligt i SOGo",
         "sogo_visible_info": "Denne indstilling påvirker kun objekter, der kan vises i SOGo (delte eller ikke-delte aliasadresser, der peger på mindst en lokal postkasse). Hvis skjult, vises et alias ikke som valgbar afsender i SOGo.",
         "spam_alias": "Opret eller skift tidsbegrænsede aliasadresser",
