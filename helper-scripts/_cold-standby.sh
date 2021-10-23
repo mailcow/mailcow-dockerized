@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PATH=$PATH:/opt/bin
+PATH=${PATH}:/opt/bin
 DATE=$(date +%Y-%m-%d_%H_%M_%S)
 export LC_ALL=C
 
@@ -26,18 +26,18 @@ function docker_garbage() {
       V_SUB_EXISTING=${existing_tag/*.}
 
       # Not an integer
-      [[ ! $V_MAIN_EXISTING =~ ^[0-9]+$ ]] && continue
-      [[ ! $V_SUB_EXISTING =~ ^[0-9]+$ ]] && continue
+      [[ ! ${V_MAIN_EXISTING} =~ ^[0-9]+$ ]] && continue
+      [[ ! ${V_SUB_EXISTING} =~ ^[0-9]+$ ]] && continue
 
-      if [[ $V_MAIN_EXISTING == "latest" ]]; then
-        echo "Found deprecated label \"latest\" for repository $REPOSITORY, it should be deleted."
-        IMGS_TO_DELETE+=($REPOSITORY:$existing_tag)
-      elif [[ $V_MAIN_EXISTING -lt $V_MAIN ]]; then
-        echo "Found tag $existing_tag for $REPOSITORY, which is older than the current tag $TAG and should be deleted."
-        IMGS_TO_DELETE+=($REPOSITORY:$existing_tag)
-      elif [[ $V_SUB_EXISTING -lt $V_SUB ]]; then
-        echo "Found tag $existing_tag for $REPOSITORY, which is older than the current tag $TAG and should be deleted."
-        IMGS_TO_DELETE+=($REPOSITORY:$existing_tag)
+      if [[ ${V_MAIN_EXISTING} == "latest" ]]; then
+        echo "Found deprecated label \"latest\" for repository ${REPOSITORY}, it should be deleted."
+        IMGS_TO_DELETE+=(${REPOSITORY}:${existing_tag})
+      elif [[ ${V_MAIN_EXISTING} -lt ${V_MAIN} ]]; then
+        echo "Found tag ${existing_tag} for ${REPOSITORY}, which is older than the current tag ${TAG} and should be deleted."
+        IMGS_TO_DELETE+=(${REPOSITORY}:${existing_tag})
+      elif [[ ${V_SUB_EXISTING} -lt ${V_SUB} ]]; then
+        echo "Found tag ${existing_tag} for ${REPOSITORY}, which is older than the current tag ${TAG} and should be deleted."
+        IMGS_TO_DELETE+=(${REPOSITORY}:${existing_tag})
       fi
 
     done
@@ -92,16 +92,14 @@ function preflight_local_checks() {
 
 function preflight_remote_checks() {
 
-  ssh -o StrictHostKeyChecking=no \
+  if ! ssh -o StrictHostKeyChecking=no \
     -i "${REMOTE_SSH_KEY}" \
     ${REMOTE_SSH_HOST} \
     -p ${REMOTE_SSH_PORT} \
-    rsync --version > /dev/null
-
-  if [ $? -ne 0 ]; then
-    >&2 echo -e "\e[31mCould not verify connection to ${REMOTE_SSH_HOST}\e[0m"
-    >&2 echo -e "\e[31mPlease check the output above (is rsync >= 3.1.0 installed on the remote system?)\e[0m"
-    exit 1
+    rsync --version > /dev/null ; then
+      >&2 echo -e "\e[31mCould not verify connection to ${REMOTE_SSH_HOST}\e[0m"
+      >&2 echo -e "\e[31mPlease check the output above (is rsync >= 3.1.0 installed on the remote system?)\e[0m"
+      exit 1
   fi
 
   if ssh -o StrictHostKeyChecking=no \
@@ -132,7 +130,7 @@ preflight_remote_checks
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 COMPOSE_FILE="${SCRIPT_DIR}/../docker-compose.yml"
 source "${SCRIPT_DIR}/../mailcow.conf"
-CMPS_PRJ=$(echo $COMPOSE_PROJECT_NAME | tr -cd "[A-Za-z-_]")
+CMPS_PRJ=$(echo ${COMPOSE_PROJECT_NAME} | tr -cd 'A-Za-z-_')
 SQLIMAGE=$(grep -iEo '(mysql|mariadb)\:.+' "${COMPOSE_FILE}")
 
 echo
@@ -158,7 +156,7 @@ rsync --delete -aH -e "ssh -o StrictHostKeyChecking=no \
   -p ${REMOTE_SSH_PORT}" \
   "${SCRIPT_DIR}/../" root@${REMOTE_SSH_HOST}:"${SCRIPT_DIR}/../"
 ec=$?
-if [ $ec -ne 0 ] && [ $ec -ne 24 ]; then
+if [ ${ec} -ne 0 ] && [ ${ec} -ne 24 ]; then
   >&2 echo -e "\e[31m[ERR]\e[0m - Could not transfer mailcow base directory to remote"
   exit 1
 fi
@@ -171,7 +169,7 @@ docker exec $(docker ps -qf name=redis-mailcow) redis-cli save
 # Same here: make sure destination exists
 for vol in $(docker volume ls -qf name="${CMPS_PRJ}"); do
 
-  mountpoint="$(docker inspect $vol | grep Mountpoint | cut -d '"' -f4)"
+  mountpoint="$(docker inspect ${vol} | grep Mountpoint | cut -d '"' -f4)"
 
   echo -e "\033[1mCreating remote mountpoint ${mountpoint} for ${vol}...\033[0m"
 
@@ -216,7 +214,7 @@ for vol in $(docker volume ls -qf name="${CMPS_PRJ}"); do
       -p ${REMOTE_SSH_PORT}" \
       "${SCRIPT_DIR}/../_tmp_mariabackup/" root@${REMOTE_SSH_HOST}:"${mountpoint}"
     ec=$?
-    if [ $ec -ne 0 ] && [ $ec -ne 24 ]; then
+    if [ ${ec} -ne 0 ] && [ ${ec} -ne 24 ]; then
       >&2 echo -e "\e[31m[ERR]\e[0m - Could not transfer MariaDB backup to remote"
       exit 1
     fi
@@ -232,7 +230,7 @@ for vol in $(docker volume ls -qf name="${CMPS_PRJ}"); do
       -p ${REMOTE_SSH_PORT}" \
       "${mountpoint}/" root@${REMOTE_SSH_HOST}:"${mountpoint}"
     ec=$?
-    if [ $ec -ne 0 ] && [ $ec -ne 24 ]; then
+    if [ ${ec} -ne 0 ] && [ ${ec} -ne 24 ]; then
       >&2 echo -e "\e[31m[ERR]\e[0m - Could not transfer ${vol} from local ${mountpoint} to remote"
       exit 1
     fi
