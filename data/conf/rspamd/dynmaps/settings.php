@@ -49,6 +49,30 @@ function parse_email($email) {
   return array('local' => substr($email, 0, $a), 'domain' => substr($email, $a));
 }
 
+function normalize_email($email) {
+  $email = strtolower(str_replace('/', '\/', $email));
+  $gm = "@gmail.com";
+  if (substr_compare($email, $gm, -strlen($gm)) == 0) {
+    $email = explode('@', $email);
+    $email[0] = str_replace('.', '', $email[0]);
+    $email = implode('@', $email);
+  } 
+  $gm_alt = "@googlemail.com";
+  if (substr_compare($email, $gm_alt, -strlen($gm_alt)) == 0) {
+    $email = explode('@', $email);
+    $email[0] = str_replace('.', '', $email[0]);
+    $email[1] = str_replace('@', '', $gm);
+    $email = implode('@', $email);
+  }
+  if (str_contains($email, "+")) {
+    $email = explode('@', $email);
+    $user = explode('+', $email[0]);
+    $email[0] = $user[0];
+    $email = implode('@', $email);
+  }
+  return $email;
+}
+
 function wl_by_sogo() {
   global $pdo;
   $rcpt = array();
@@ -63,7 +87,7 @@ function wl_by_sogo() {
       }
       // Explicit from, no mime_from, no regex - envelope must match
       // mailcow white and blacklists also cover mime_from
-      $rcpt[$row['user']][] = str_replace('/', '\/', $contact);
+      $rcpt[$row['user']][] = normalize_email($contact);
     }
   }
   return $rcpt;
