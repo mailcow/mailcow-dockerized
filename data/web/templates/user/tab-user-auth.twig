@@ -87,7 +87,7 @@
       <div class="row">
         <div class="col-sm-offset-3 col-sm-9">
           {% if mailboxdata.attributes.force_pw_update == '1' %}
-          <div class="alert alert-danger">{{ lang.user.force_pw_update }}</div>
+          <div class="alert alert-danger">{{ lang.user.force_pw_update|raw }}</div>
           {% endif %}
           <p><a target="_blank" href="https://mailcow.github.io/mailcow-dockerized-docs/client/#{{ clientconfigstr }}">[{{ lang.user.client_configuration }}]</a></p>
           <p><a href="#userFilterModal" data-toggle="modal">[{{ lang.user.show_sieve_filters }}]</a></p>
