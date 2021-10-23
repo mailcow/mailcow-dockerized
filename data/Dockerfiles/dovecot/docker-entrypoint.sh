@@ -164,11 +164,11 @@ function auth_password_verify(req, pass)
   end
 
   -- check against app passwds
+  -- removed on 22nd Oct 2021: AND IFNULL(JSON_UNQUOTE(JSON_VALUE(mailbox.attributes, '$.force_pw_update')), 0) != '1'
   local cur,errorString = con:execute(string.format([[SELECT app_passwd.id, app_passwd.password FROM app_passwd
     INNER JOIN mailbox ON mailbox.username = app_passwd.mailbox
     WHERE mailbox = '%s'
       AND IFNULL(JSON_UNQUOTE(JSON_VALUE(mailbox.attributes, '$.%s_access')), 1) = '1'
-      AND IFNULL(JSON_UNQUOTE(JSON_VALUE(mailbox.attributes, '$.force_pw_update')), 0) != '1'
       AND app_passwd.active = '1'
       AND mailbox.active = '1'
       AND app_passwd.domain IN (SELECT domain FROM domain WHERE domain='%s' AND active='1')]], con:escape(req.user), con:escape(req.service), con:escape(req.domain)))
