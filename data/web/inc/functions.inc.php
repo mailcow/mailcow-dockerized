@@ -1222,8 +1222,8 @@ function set_tfa($_data) {
     case "totp":
       $key_id = (!isset($_data["key_id"])) ? 'unidentified' : $_data["key_id"];
       if ($tfa->verifyCode($_POST['totp_secret'], $_POST['totp_confirm_token']) === true) {
-        $stmt = $pdo->prepare("DELETE FROM `tfa` WHERE `username` = :username");
-        $stmt->execute(array(':username' => $username));
+        //$stmt = $pdo->prepare("DELETE FROM `tfa` WHERE `username` = :username");
+        //$stmt->execute(array(':username' => $username));
         $stmt = $pdo->prepare("INSERT INTO `tfa` (`username`, `key_id`, `authmech`, `secret`, `active`) VALUES (?, ?, 'totp', ?, '1')");
         $stmt->execute(array($username, $key_id, $_POST['totp_secret']));
         $_SESSION['return'][] =  array(
@@ -1610,15 +1610,17 @@ function verify_tfa_login($username, $token) {
           AND `authmech` = 'totp'
           AND `active`='1'");
       $stmt->execute(array(':username' => $username));
-      $row = $stmt->fetch(PDO::FETCH_ASSOC);
-      if ($tfa->verifyCode($row['secret'], $_POST['token']) === true) {
-        $_SESSION['tfa_id'] = $row['id'];
-        $_SESSION['return'][] =  array(
-          'type' => 'success',
-          'log' => array(__FUNCTION__, $username, '*'),
-          'msg' => 'verified_totp_login'
-        );
-        return true;
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      foreach ($rows as $row) {
+        if ($tfa->verifyCode($row['secret'], $_POST['token']) === true) {
+          $_SESSION['tfa_id'] = $row['id'];
+          $_SESSION['return'][] =  array(
+            'type' => 'success',
+            'log' => array(__FUNCTION__, $username, '*'),
+            'msg' => 'verified_totp_login'
+          );
+          return true;
+        }
       }
       $_SESSION['return'][] =  array(
         'type' => 'danger',
