@@ -97,12 +97,14 @@
       {% endfor %}
       <hr>
       {% for perm_ban in f2b_data.perm_bans %}
-        <span class="label label-danger" style="padding: 0.1em 0.4em 0.1em;">
-          <i class="bi bi-funnel-fill"></i>
-          <a href="https://bgp.he.net/ip/{{ perm_ban.ip }}" target="_blank" style="color:white">
-            {{ perm_ban.network }}
-          </a>
-        </span>
+        <p>
+          <span class="label label-danger" style="padding: 0.1em 0.4em 0.1em;">
+            <i class="bi bi-funnel-fill"></i>
+            <a href="https://bgp.he.net/ip/{{ perm_ban.ip }}" target="_blank" style="color:white">
+              {{ perm_ban.network }}
+            </a>
+          </span>
+        </p>
       {% endfor %}
     </div>
   </div>
