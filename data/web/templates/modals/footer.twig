@@ -12,7 +12,7 @@
             <input type="text" class="form-control" name="key_id" placeholder="{{ lang.tfa.key_id }}" autocomplete="off" required>
           </div>
           <hr>
-          <p class="help-block">{{ lang.tfa.api_register|format(ui_texts.main_name) }}</p>
+          <p class="help-block">{{ lang.tfa.api_register|format(ui_texts.main_name)|raw }}</p>
           <div class="form-group">
             <input type="text" class="form-control" name="yubico_id" placeholder="Yubico API ID" autocomplete="off" required>
           </div>
