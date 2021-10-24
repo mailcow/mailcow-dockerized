@@ -1015,7 +1015,7 @@
         "alias_valid_until": "Platný do",
         "aliases_also_send_as": "Smí odesílat také jako uživatel",
         "aliases_send_as_all": "Nekontrolovat přístup odesílatele pro následující doménu(y) a jejich aliasy domény:",
-        "app_hint": "Hesla aplikací jsou alternativní heslo pro přihlášení k <b>IMAP a SMTP</b>. Uživatelské jméno zůstává stejné.<br>SOGo (včetně ActiveSync) však nelze s heslem aplikace použít.",
+        "app_hint": "Hesla aplikací jsou alternativní heslo pro přihlášení k IMAP, SMTP, CalDAV, CardDAV a EAS. Uživatelské jméno zůstává stejné.<br>SOGo však nelze s heslem aplikace použít.",
         "app_name": "Název aplikace",
         "app_passwds": "Hesla aplikací",
         "apple_connection_profile": "Profil připojení Apple",

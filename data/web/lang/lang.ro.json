@@ -1003,7 +1003,7 @@
         "alias_valid_until": "Valabil până la",
         "aliases_also_send_as": "De asemenea, este permis să trimită ca utilizator",
         "aliases_send_as_all": "Nu se verifică accesul expeditorului pentru următorul(arele) domeniu(i) și domeniile sale alias",
-        "app_hint": "Parolele aplicației sunt parole alternative pentru autentificarea <b>IMAP și SMTP</b>. Numele de utilizator rămâne neschimbat.<br>SOGo (inclusiv ActiveSync) nu este disponibil prin parolele aplicației.",
+        "app_hint": "Parolele aplicației sunt parole alternative pentru autentificarea IMAP, SMTP, CalDAV, CardDAV și EAS. Numele de utilizator rămâne neschimbat.<br>SOGo nu este disponibil prin parolele aplicației.",
         "app_name": "Nume aplicație",
         "app_passwds": "Parole aplicație",
         "apple_connection_profile": "Profil de conexiune Apple",

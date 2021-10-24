@@ -1034,7 +1034,7 @@
         "alias_valid_until": "Platné do",
         "aliases_also_send_as": "Môže odosielať ako používateľ",
         "aliases_send_as_all": "Nekontrolovať prístup odosielateľa pre nasledujúcu doménu/y a jej alias domény",
-        "app_hint": "Heslá aplikácií sú alternatívne heslá pre vaše <b>IMAP a SMTP</b> prihlásenie. Používateľské meno zostáva nezmenené.<br>SOGo (zahŕňajúc ActiveSync) nie je momentálne podporovaný.",
+        "app_hint": "Heslá aplikácií sú alternatívne heslá pre vaše IMAP, SMTP, CalDAV, CardDAV a EAS prihlásenie. Používateľské meno zostáva nezmenené.<br>SOGo nie je momentálne podporovaný.",
         "app_name": "Meno aplikácie",
         "app_passwds": "Heslá aplikácií",
         "apple_connection_profile": "Apple konfiguračný profil",

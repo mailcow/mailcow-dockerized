@@ -944,7 +944,7 @@
         "alias_valid_until": "Gyldig indtil",
         "aliases_also_send_as": "Også tilladt at sende som bruger",
         "aliases_send_as_all": "Do not check sender access for the following domain(s) and its alias domains",
-        "app_hint": "App adgangskoder er alternative adgangskoder til din <b>IMAP og SMTP</b> login. Brugernavnet forbliver uændret.<br>SOGo (inklusive AktivSync) er ikke tilgængelig via app-adgangskoder.",
+        "app_hint": "App adgangskoder er alternative adgangskoder til din IMAP, SMTP, CalDAV, CardDAV og EAS login. Brugernavnet forbliver uændret.<br>SOGo er ikke tilgængelig via app-adgangskoder.",
         "app_name": "App navn",
         "app_passwds": "App kodeord",
         "apple_connection_profile": "Apple forbindelses profil",
