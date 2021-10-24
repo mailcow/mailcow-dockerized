@@ -6,7 +6,7 @@
         <p>
           <span style="padding:4px;margin:4px" class="label label-keys label-{% if tfa_id == key_info.id %}success{% else %}default{% endif %}">
             {{ key_info.key_id }}
-            <a href="#" style="font-weight:bold;color:white" onClick="$(this).closest('form').submit()">[{{ lang.admin.remove }}]</a>
+            <a href="#" style="font-weight:bold;color:white" onClick='return confirm("{{ lang.admin.ays }}")?$(this).closest("form").submit():"";'>[{{ lang.admin.remove }}]</a>
           </span>
         </p>
       </form>
