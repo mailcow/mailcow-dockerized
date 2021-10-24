@@ -124,7 +124,7 @@
             <input type="password" class="form-control input-xs-lg" name="confirm_password" placeholder="{{ lang.user.password_now }}" autocomplete="off" required>
             <span class="input-group-btn">
               <input type="hidden" name="tfa_method" value="none">
-              <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-danger" type="submit" name="set_tfa">{{ lang.tfa.delete_tfa|replace({" ": "&nbsp;"}) }}</button>
+              <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-danger" type="submit" name="set_tfa">{{ lang.tfa.delete_tfa|replace({" ": "&nbsp;"})|raw }}</button>
             </span>
           </div>
         </form>
