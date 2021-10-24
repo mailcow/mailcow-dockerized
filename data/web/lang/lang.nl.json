@@ -968,7 +968,7 @@
         "alias_valid_until": "Geldig tot",
         "aliases_also_send_as": "Toegestaan om te verzenden als",
         "aliases_send_as_all": "Controleer verzendtoegang voor de volgende domeinen, inclusief aliassen, niet",
-        "app_hint": "Appwachtwoorden zijn alternatieve wachtwoorden voor <b>IMAP en SMTP</b>. De gebruikersnaam blijft ongewijzigd.<br>SOGo (inclusief ActiveSync) is niet toegankelijk met een appwachtwoord.",
+        "app_hint": "Appwachtwoorden zijn alternatieve wachtwoorden voor IMAP, SMTP, CalDAV, CardDAV en EAS. De gebruikersnaam blijft ongewijzigd.<br>SOGo is niet toegankelijk met een appwachtwoord.",
         "app_name": "Naam van app",
         "app_passwds": "Appwachtwoorden",
         "apple_connection_profile": "Apple-verbindingsprofiel",
