@@ -65,6 +65,7 @@
         {% if mailcow_cc_role == 'admin' and not skip_sogo %}
         <li><a href data-toggle="modal" data-container="sogo-mailcow" data-target="#RestartContainer"><i class="bi bi-arrow-repeat"></i> {{ lang.header.restart_sogo }}</a></li>
         {% endif %}
+        {% if mailcow_apps or app_links %}
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="bi bi-link-45deg"></i> {{ ui_texts.apps_name|raw }} <span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
@@ -82,6 +83,7 @@
             {% endfor %}
           </ul>
         </li>
+        {% endif %}
         {% if not dual_login and mailcow_cc_username %}
         <li class="logged-in-as"><a href="#" onclick="logout.submit()"><b class="username-lia">{{ mailcow_cc_username }}</b> <i class="bi bi-power"></i></a></li>
         {% elseif dual_login %}

@@ -64,7 +64,7 @@
         <p><div class="alert alert-info">{{ lang.login.delayed|format(login_delay) }}</b></div></p>
         {% endif %}
         <div id="fido2-alerts"></div>
-        {% if not oauth2_request %}
+        {% if not oauth2_request and (mailcow_apps or app_links) %}
         <legend><i class="bi bi-link-45deg"></i> {{ ui_texts.apps_name|raw }}</legend>
         <div class="apps">
           {% for app in mailcow_apps %}
