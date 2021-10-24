@@ -1033,7 +1033,7 @@
         "alias_valid_until": "Valid until",
         "aliases_also_send_as": "Also allowed to send as user",
         "aliases_send_as_all": "Do not check sender access for the following domain(s) and its alias domains",
-        "app_hint": "App passwords are alternative passwords for your <b>IMAP and SMTP</b> login. The username remains unchanged.<br>SOGo (including ActiveSync) is not available through app passwords.",
+        "app_hint": "App passwords are alternative passwords for your IMAP, SMTP, CalDAV, CardDAV and EAS login. The username remains unchanged. SOGo webmail is not available through app passwords.",
         "app_name": "App name",
         "app_passwds": "App passwords",
         "apple_connection_profile": "Apple connection profile",
