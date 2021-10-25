@@ -807,7 +807,7 @@ function verify_hash($hash, $password) {
   }
   return false;
 }
-function check_login($user, $pass) {
+function check_login($user, $pass, $allow_app_passwords = false) {
   global $pdo;
   global $redis;
   global $imap_server;
@@ -896,6 +896,18 @@ function check_login($user, $pass) {
         AND `username` = :user");
   $stmt->execute(array(':user' => $user));
   $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  if ($allow_app_passwords === true) {
+    $stmt = $pdo->prepare("SELECT `app_passwd`.`password` as `password`, `app_passwd`.`id` as `app_passwd_id` FROM `app_passwd`
+        INNER JOIN `mailbox` ON `mailbox`.`username` = `app_passwd`.`mailbox`
+        INNER JOIN `domain` ON `mailbox`.`domain` = `domain`.`domain`
+        WHERE `mailbox`.`kind` NOT REGEXP 'location|thing|group'
+          AND `mailbox`.`active` = '1'
+          AND `domain`.`active` = '1'
+          AND `app_passwd`.`active` = '1'
+          AND `app_passwd`.`mailbox` = :user");
+    $stmt->execute(array(':user' => $user));
+    $rows = array_merge($rows, $stmt->fetchAll(PDO::FETCH_ASSOC));
+  }
   foreach ($rows as $row) {
     if (verify_hash($row['password'], $pass) !== false) {
       unset($_SESSION['ldelay']);

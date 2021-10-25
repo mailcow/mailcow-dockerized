@@ -991,7 +991,7 @@
         "alias_valid_until": "Gültig bis",
         "aliases_also_send_as": "Darf außerdem versenden als Benutzer",
         "aliases_send_as_all": "Absender für folgende Domains und zugehörige Alias-Domains nicht prüfen",
-        "app_hint": "App-Passwörter sind alternative Passwörter für den <b>IMAP- und SMTP</b>-Login am Mailserver. Der Benutzername bleibt unverändert.<br>SOGo (und damit ActiveSync) ist mit diesem Kennwort nicht verwendbar.",
+        "app_hint": "App-Passwörter sind alternative Passwörter für den IMAP-, SMTP-, CalDAV-, CardDAV- und EAS-Login am Mailserver. Der Benutzername bleibt unverändert.<br>SOGo Webmail ist mit diesem Kennwort nicht verwendbar.",
         "app_name": "App-Name",
         "app_passwds": "App-Passwörter",
         "apple_connection_profile": "Apple-Verbindungsprofil",
