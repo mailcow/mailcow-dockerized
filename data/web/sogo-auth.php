@@ -34,13 +34,8 @@ elseif (isset($_GET['login'])) {
   $is_dual = (!empty($_SESSION["dual-login"]["username"])) ? true : false;
   // check permissions (if dual_login is active, deny sso when acl is not given)
   $login = html_entity_decode(rawurldecode($_GET["login"]));
-  if ($ALLOW_ADMIN_EMAIL_LOGIN === 0 && $is_dual === true) {
-    header('HTTP/1.0 403 Forbidden');
-    echo "Admin login is forbidden";
-    exit;
-  }
   if (isset($_SESSION['mailcow_cc_role']) &&
-    ($_SESSION['acl']['login_as'] == "1" || ($is_dual === false && $login == $_SESSION['mailcow_cc_username']))) {
+    (($_SESSION['acl']['login_as'] == "1" && $ALLOW_ADMIN_EMAIL_LOGIN !== 0) || ($is_dual === false && $login == $_SESSION['mailcow_cc_username']))) {
     if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
       if (user_get_alias_details($login) !== false) {
         // load master password
@@ -55,7 +50,7 @@ elseif (isset($_GET['login'])) {
     }
   }
   header('HTTP/1.0 403 Forbidden');
-  echo "Access is forbidden";
+  echo "Forbidden";
   exit;
 }
 // only check for admin-login on sogo GUI requests
