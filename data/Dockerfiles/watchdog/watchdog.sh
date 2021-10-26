@@ -14,6 +14,12 @@ if [[ "${USE_WATCHDOG}" =~ ^([nN][oO]|[nN])+$ ]]; then
   exec $(readlink -f "$0")
 fi
 
+if [[ "${WATCHDOG_VERBOSE}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  SMTP_VERBOSE="--verbose"
+else
+  SMTP_VERBOSE=""
+fi
+
 # Checks pipe their corresponding container name in this pipe
 if [[ ! -p /tmp/com_pipe ]]; then
   mkfifo /tmp/com_pipe
@@ -124,6 +130,7 @@ function mail_error() {
     #fi
     [ -f "/tmp/${1}" ] && BODY="/tmp/${1}"
     timeout 10s ./smtp-cli --missing-modules-ok \
+      "${SMTP_VERBOSE}" \
       --charset=UTF-8 \
       --subject="${SUBJECT}" \
       --body-plain="${BODY}" \
@@ -133,7 +140,11 @@ function mail_error() {
       --hello-host=${MAILCOW_HOSTNAME} \
       --ipv4
       #--server="${RCPT_MX}"
-    log_msg "Sent notification email to ${rcpt}"
+    if [[ $? -eq 1 ]]; then # exit code 1 is fine
+      log_msg "Sent notification email to ${rcpt}"
+    else
+      log_msg "Error while sending notification email to ${rcpt}. You can enable verbose logging by setting 'WATCHDOG_VERBOSE=y' in mailcow.conf."
+    fi
   done
 }
 
