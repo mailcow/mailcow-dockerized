@@ -6,7 +6,10 @@ trap "kill 0" EXIT
 # Prepare
 BACKGROUND_TASKS=()
 echo "Waiting for containers to settle..."
-sleep 30
+for i in {30..1}; do
+  echo "${i}"
+  sleep 1
+done
 
 if [[ "${USE_WATCHDOG}" =~ ^([nN][oO]|[nN])+$ ]]; then
   echo -e "$(date) - USE_WATCHDOG=n, skipping watchdog..."
@@ -16,8 +19,10 @@ fi
 
 if [[ "${WATCHDOG_VERBOSE}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   SMTP_VERBOSE="--verbose"
+  set -xv
 else
   SMTP_VERBOSE=""
+  exec 2>/dev/null
 fi
 
 # Checks pipe their corresponding container name in this pipe
@@ -143,7 +148,11 @@ function mail_error() {
     if [[ $? -eq 1 ]]; then # exit code 1 is fine
       log_msg "Sent notification email to ${rcpt}"
     else
-      log_msg "Error while sending notification email to ${rcpt}. You can enable verbose logging by setting 'WATCHDOG_VERBOSE=y' in mailcow.conf."
+      if [[ "${SMTP_VERBOSE}" == "" ]]; then
+        log_msg "Error while sending notification email to ${rcpt}. You can enable verbose logging by setting 'WATCHDOG_VERBOSE=y' in mailcow.conf."
+      else
+        log_msg "Error while sending notification email to ${rcpt}."
+      fi
     fi
   done
 }
