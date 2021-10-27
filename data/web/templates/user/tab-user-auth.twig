@@ -6,9 +6,15 @@
       <div class="row">
         <div class="hidden-xs col-md-3 col-xs-5 text-right"></div>
         <div class="col-md-3 col-xs-12">
-          <a target="_blank" href="/sogo-auth.php?login={{ mailcow_cc_username }}" role="button" class="btn btn-default btn-block btn-xs-lg">
-            <i class="bi bi-inbox-fill"></i> {{ lang.user.open_webmail_sso }}
-          </a>
+          {% if dual_login and allow_admin_email_login == 'n' %}
+            <button disabled class="btn btn-default btn-block btn-xs-lg">
+              <i class="bi bi-inbox-fill"></i> {{ lang.user.open_webmail_sso }}
+            </button>
+          {% else %}
+            <a target="_blank" href="#" disabled role="button" class="btn btn-default btn-block btn-xs-lg">
+              <i class="bi bi-inbox-fill"></i> {{ lang.user.open_webmail_sso }}
+            </a>
+          {% endif %}
         </div>
       </div>
       <hr>
