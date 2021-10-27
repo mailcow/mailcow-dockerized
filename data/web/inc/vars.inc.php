@@ -188,9 +188,6 @@ $MAILBOX_DEFAULT_ATTRIBUTES['mailbox_format'] = 'maildir:';
 // Show last IMAP and POP3 logins
 $SHOW_LAST_LOGIN = true;
 
-// Allow app passwords in CardDav, CalDav and ActiveSync
-$ALLOW_APP_PASSWORDS_IN_EAS = true;
-
 // UV flag handling in FIDO2/WebAuthn - defaults to false to allow iOS logins
 // true = required
 // false = preferred

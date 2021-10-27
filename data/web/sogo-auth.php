@@ -15,7 +15,7 @@ if (isset($_SERVER['PHP_AUTH_USER'])) {
   $username = $_SERVER['PHP_AUTH_USER'];
   $password = $_SERVER['PHP_AUTH_PW'];
   $is_eas = preg_match('/^(\/SOGo|)\/(dav|Microsoft-Server-ActiveSync).*/', $_SERVER['HTTP_X_ORIGINAL_URI']);
-  $login_check = check_login($username, $password, $is_eas && $ALLOW_APP_PASSWORDS_IN_EAS);
+  $login_check = check_login($username, $password, $is_eas);
   if ($login_check === 'user') {
     header("X-User: $username");
     header("X-Auth: Basic ".base64_encode("$username:$password"));

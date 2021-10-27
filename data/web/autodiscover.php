@@ -68,8 +68,7 @@ if (empty($_SERVER['PHP_AUTH_USER']) || empty($_SERVER['PHP_AUTH_PW'])) {
   exit(0);
 }
 
-$allow_app_passwords = $ALLOW_APP_PASSWORDS_IN_EAS === true || $autodiscover_config['autodiscoverType'] == 'imap';
-$login_role = check_login($login_user, $login_pass, $allow_app_passwords);
+$login_role = check_login($login_user, $login_pass, true);
 
 if ($login_role === "user") {
   header("Content-Type: application/xml");
