@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "23082021_2224";
+    $db_version = "28102021_1600";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -364,6 +364,10 @@ function init_db_schema() {
           "password" => "VARCHAR(255) NOT NULL",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
+          "imap_access" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "smtp_access" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "dav_access" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "eas_access" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
         ),
         "keys" => array(

@@ -11,7 +11,7 @@
               <i class="bi bi-inbox-fill"></i> {{ lang.user.open_webmail_sso }}
             </button>
           {% else %}
-            <a target="_blank" href="#" disabled role="button" class="btn btn-default btn-block btn-xs-lg">
+            <a target="_blank" href="/sogo-auth.php?login={{ mailcow_cc_username }}" role="button" class="btn btn-default btn-block btn-xs-lg">
               <i class="bi bi-inbox-fill"></i> {{ lang.user.open_webmail_sso }}
             </a>
           {% endif %}

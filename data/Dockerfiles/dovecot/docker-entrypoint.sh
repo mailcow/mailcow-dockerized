@@ -163,24 +163,26 @@ function auth_password_verify(req, pass)
     row = cur:fetch (row, "a")
   end
 
-  -- check against app passwds
-  -- removed on 22nd Oct 2021: AND IFNULL(JSON_UNQUOTE(JSON_VALUE(mailbox.attributes, '$.force_pw_update')), 0) != '1'
-  local cur,errorString = con:execute(string.format([[SELECT app_passwd.id, app_passwd.password FROM app_passwd
-    INNER JOIN mailbox ON mailbox.username = app_passwd.mailbox
-    WHERE mailbox = '%s'
-      AND IFNULL(JSON_UNQUOTE(JSON_VALUE(mailbox.attributes, '$.%s_access')), 1) = '1'
-      AND app_passwd.active = '1'
-      AND mailbox.active = '1'
-      AND app_passwd.domain IN (SELECT domain FROM domain WHERE domain='%s' AND active='1')]], con:escape(req.user), con:escape(req.service), con:escape(req.domain)))
-  local row = cur:fetch ({}, "a")
-  while row do
-    if req.password_verify(req, row.password, pass) == 1 then
-      cur:close()
-      con:execute(string.format([[REPLACE INTO sasl_log (service, app_password, username, real_rip)
-        VALUES ("%s", %d, "%s", "%s")]], con:escape(req.service), row.id, con:escape(req.user), con:escape(req.real_rip)))
-      return dovecot.auth.PASSDB_RESULT_OK, "password=" .. pass
+  -- check against app passwds for imap and smtp
+  -- app passwords are only available for imap and smtp in dovecot
+  if req.service == "smtp" or req.service == "imap" then
+    local cur,errorString = con:execute(string.format([[SELECT app_passwd.id, app_passwd.imap_access, app_passwd.smtp_access, app_passwd.password FROM app_passwd
+      INNER JOIN mailbox ON mailbox.username = app_passwd.mailbox
+      WHERE mailbox = '%s'
+        AND app_passwd.%s_access = '1'
+        AND app_passwd.active = '1'
+        AND mailbox.active = '1'
+        AND app_passwd.domain IN (SELECT domain FROM domain WHERE domain='%s' AND active='1')]], con:escape(req.user), con:escape(req.service), con:escape(req.domain)))
+    local row = cur:fetch ({}, "a")
+    while row do
+      if req.password_verify(req, row.password, pass) == 1 then
+        cur:close()
+        con:execute(string.format([[REPLACE INTO sasl_log (service, app_password, username, real_rip)
+          VALUES ("%s", %d, "%s", "%s")]], con:escape(req.service), row.id, con:escape(req.user), con:escape(req.real_rip)))
+        return dovecot.auth.PASSDB_RESULT_OK, "password=" .. pass
+      end
+      row = cur:fetch (row, "a")
     end
-    row = cur:fetch (row, "a")
   end
 
   return dovecot.auth.PASSDB_RESULT_PASSWORD_MISMATCH, "Failed to authenticate"
