@@ -23,7 +23,7 @@ if (isset($_SERVER['PHP_AUTH_USER'])) {
   elseif (preg_match('/^(\/SOGo|)\/Microsoft-Server-ActiveSync.*/', $original_uri) === 1) {
     $is_eas = true;
   }
-  $login_check = check_login($username, $password, array('dav' => $is_dav, 'eas' => $is_eas, 'proxyauth' => true));
+  $login_check = check_login($username, $password, array('dav' => $is_dav, 'eas' => $is_eas));
   if ($login_check === 'user') {
     header("X-User: $username");
     header("X-Auth: Basic ".base64_encode("$username:$password"));

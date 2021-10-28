@@ -812,12 +812,6 @@ function check_login($user, $pass, $app_passwd_data = false) {
   global $redis;
   global $imap_server;
 
-  if ($app_passwd_data === false) {
-    $app_passwd_data['eas'] = false;
-    $app_passwd_data['dav'] = false;
-    $app_passwd_data['proxyauth'] = false;
-  }
-
   if (!filter_var($user, FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $user))) {
     $_SESSION['return'][] =  array(
       'type' => 'danger',
@@ -943,8 +937,8 @@ function check_login($user, $pass, $app_passwd_data = false) {
         'log' => array(__FUNCTION__, $user, '*'),
         'msg' => array('logged_in_as', $user)
       );
-      if ($app_passwd_data['proxyauth'] === true) {
-        $service = ($app_passwd_data['eas'] === true) ? 'EAS' : (($app_passwd_data['dav'] === true) ? 'DAV' : 'SSO');
+      if ($app_passwd_data['eas'] === true || $app_passwd_data['dav'] === true) {
+        $service = ($app_passwd_data['eas'] === true) ? 'EAS' : 'DAV';
         $stmt = $pdo->prepare("REPLACE INTO sasl_log (`service`, `app_password`, `username`, `real_rip`) VALUES (:service, :app_id, :username, :remote_addr)");
         $stmt->execute(array(
           ':service' => $service,
