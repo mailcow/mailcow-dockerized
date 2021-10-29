@@ -2337,6 +2337,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             }
             $is_now = mailbox('get', 'mailbox_details', $username);
             if (isset($_data['protocol_access'])) {
+              $_data['protocol_access'] = (array)$_data['protocol_access'];
               $_data['imap_access'] = (in_array('imap', $_data['protocol_access'])) ? 1 : 0;
               $_data['pop3_access'] = (in_array('pop3', $_data['protocol_access'])) ? 1 : 0;
               $_data['smtp_access'] = (in_array('smtp', $_data['protocol_access'])) ? 1 : 0;
