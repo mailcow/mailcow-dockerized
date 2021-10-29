@@ -125,14 +125,13 @@ function mail_error() {
   IFS=',' read -r -a MAIL_RCPTS <<< "${WATCHDOG_NOTIFY_EMAIL}"
   for rcpt in "${MAIL_RCPTS[@]}"; do
     RCPT_DOMAIN=
-    #RCPT_MX=
+    RCPT_MX=
     RCPT_DOMAIN=$(echo ${rcpt} | awk -F @ {'print $NF'})
-    # Latest smtp-cli looks up mx via dns
-    #RCPT_MX=$(dig +short ${RCPT_DOMAIN} mx | sort -n | awk '{print $2; exit}')
-    #if [[ -z ${RCPT_MX} ]]; then
-    #  log_msg "Cannot determine MX for ${rcpt}, skipping email notification..."
-    #  return 1
-    #fi
+    CHECK_FOR_VALID_MX=$(dig +short ${RCPT_DOMAIN} mx)
+    if [[ -z ${CHECK_FOR_VALID_MX} ]]; then
+      log_msg "Cannot determine MX for ${rcpt}, skipping email notification..."
+      return 1
+    fi
     [ -f "/tmp/${1}" ] && BODY="/tmp/${1}"
     timeout 10s ./smtp-cli --missing-modules-ok \
       "${SMTP_VERBOSE}" \
@@ -144,7 +143,6 @@ function mail_error() {
       --from="watchdog@${MAILCOW_HOSTNAME}" \
       --hello-host=${MAILCOW_HOSTNAME} \
       --ipv4
-      #--server="${RCPT_MX}"
     if [[ $? -eq 1 ]]; then # exit code 1 is fine
       log_msg "Sent notification email to ${rcpt}"
     else
@@ -174,7 +172,7 @@ get_container_ip() {
       CONTAINER_ID=($(printf "%s\n" "${CONTAINER_ID[@]}" | shuf))
       if [[ ! -z ${CONTAINER_ID} ]]; then
         for matched_container in "${CONTAINER_ID[@]}"; do
-          CONTAINER_IPS=($(curl --silent --insecure https://dockerapi/containers/${matched_container}/json | jq -r '.NetworkSettings.Networks[].IPAddress')) 
+          CONTAINER_IPS=($(curl --silent --insecure https://dockerapi/containers/${matched_container}/json | jq -r '.NetworkSettings.Networks[].IPAddress'))
           for ip_match in "${CONTAINER_IPS[@]}"; do
             # grep will do nothing if one of these vars is empty
             [[ -z ${ip_match} ]] && continue
