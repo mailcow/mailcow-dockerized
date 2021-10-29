@@ -36,4 +36,4 @@ RUN apk add --update \
 COPY watchdog.sh /watchdog.sh
 COPY check_mysql_slavestatus.sh /usr/lib/nagios/plugins/check_mysql_slavestatus.sh
 
-CMD /watchdog.sh 2> /dev/null
+CMD /watchdog.sh

@@ -287,6 +287,9 @@ WATCHDOG_NOTIFY_BAN=n
 # Will only work with unmodified mailcow setups.
 WATCHDOG_EXTERNAL_CHECKS=n
 
+# Enable watchdog verbose logging
+WATCHDOG_VERBOSE=n
+
 # Max log lines per service to keep in Redis logs
 
 LOG_LINES=9999

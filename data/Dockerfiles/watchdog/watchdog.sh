@@ -6,12 +6,23 @@ trap "kill 0" EXIT
 # Prepare
 BACKGROUND_TASKS=()
 echo "Waiting for containers to settle..."
-sleep 30
+for i in {30..1}; do
+  echo "${i}"
+  sleep 1
+done
 
 if [[ "${USE_WATCHDOG}" =~ ^([nN][oO]|[nN])+$ ]]; then
   echo -e "$(date) - USE_WATCHDOG=n, skipping watchdog..."
   sleep 365d
   exec $(readlink -f "$0")
+fi
+
+if [[ "${WATCHDOG_VERBOSE}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  SMTP_VERBOSE="--verbose"
+  set -xv
+else
+  SMTP_VERBOSE=""
+  exec 2>/dev/null
 fi
 
 # Checks pipe their corresponding container name in this pipe
@@ -114,16 +125,16 @@ function mail_error() {
   IFS=',' read -r -a MAIL_RCPTS <<< "${WATCHDOG_NOTIFY_EMAIL}"
   for rcpt in "${MAIL_RCPTS[@]}"; do
     RCPT_DOMAIN=
-    #RCPT_MX=
+    RCPT_MX=
     RCPT_DOMAIN=$(echo ${rcpt} | awk -F @ {'print $NF'})
-    # Latest smtp-cli looks up mx via dns
-    #RCPT_MX=$(dig +short ${RCPT_DOMAIN} mx | sort -n | awk '{print $2; exit}')
-    #if [[ -z ${RCPT_MX} ]]; then
-    #  log_msg "Cannot determine MX for ${rcpt}, skipping email notification..."
-    #  return 1
-    #fi
+    CHECK_FOR_VALID_MX=$(dig +short ${RCPT_DOMAIN} mx)
+    if [[ -z ${CHECK_FOR_VALID_MX} ]]; then
+      log_msg "Cannot determine MX for ${rcpt}, skipping email notification..."
+      return 1
+    fi
     [ -f "/tmp/${1}" ] && BODY="/tmp/${1}"
     timeout 10s ./smtp-cli --missing-modules-ok \
+      "${SMTP_VERBOSE}" \
       --charset=UTF-8 \
       --subject="${SUBJECT}" \
       --body-plain="${BODY}" \
@@ -132,8 +143,15 @@ function mail_error() {
       --from="watchdog@${MAILCOW_HOSTNAME}" \
       --hello-host=${MAILCOW_HOSTNAME} \
       --ipv4
-      #--server="${RCPT_MX}"
-    log_msg "Sent notification email to ${rcpt}"
+    if [[ $? -eq 1 ]]; then # exit code 1 is fine
+      log_msg "Sent notification email to ${rcpt}"
+    else
+      if [[ "${SMTP_VERBOSE}" == "" ]]; then
+        log_msg "Error while sending notification email to ${rcpt}. You can enable verbose logging by setting 'WATCHDOG_VERBOSE=y' in mailcow.conf."
+      else
+        log_msg "Error while sending notification email to ${rcpt}."
+      fi
+    fi
   done
 }
 
@@ -154,7 +172,7 @@ get_container_ip() {
       CONTAINER_ID=($(printf "%s\n" "${CONTAINER_ID[@]}" | shuf))
       if [[ ! -z ${CONTAINER_ID} ]]; then
         for matched_container in "${CONTAINER_ID[@]}"; do
-          CONTAINER_IPS=($(curl --silent --insecure https://dockerapi/containers/${matched_container}/json | jq -r '.NetworkSettings.Networks[].IPAddress')) 
+          CONTAINER_IPS=($(curl --silent --insecure https://dockerapi/containers/${matched_container}/json | jq -r '.NetworkSettings.Networks[].IPAddress'))
           for ip_match in "${CONTAINER_IPS[@]}"; do
             # grep will do nothing if one of these vars is empty
             [[ -z ${ip_match} ]] && continue

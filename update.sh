@@ -513,6 +513,11 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# https://mailcow.github.io/mailcow-dockerized-docs/debug-reset-tls/' >> mailcow.conf
       echo 'ACME_CONTACT=' >> mailcow.conf
   fi
+elif [[ ${option} == "WATCHDOG_VERBOSE" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo '# Enable watchdog verbose logging' >> mailcow.conf
+      echo 'WATCHDOG_VERBOSE=n' >> mailcow.conf
+  fi
   elif ! grep -q ${option} mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"
     echo "${option}=n" >> mailcow.conf
