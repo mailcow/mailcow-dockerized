@@ -277,7 +277,9 @@ jQuery(function($){
             if (item.imap_access == 1) { item.protocols.push("<code>IMAP</code>"); }
             if (item.smtp_access == 1) { item.protocols.push("<code>SMTP</code>"); }
             if (item.eas_access == 1) { item.protocols.push("<code>EAS/ActiveSync</code>"); }
-            if (item.dav_access == 1) { item.protocols.push("<code>DAV</kbd>"); }
+            if (item.dav_access == 1) { item.protocols.push("<code>DAV</code>"); }
+            if (item.pop3_access == 1) { item.protocols.push("<code>POP3</code>"); }
+            if (item.sieve_access == 1) { item.protocols.push("<code>Sieve</code>"); }
             item.protocols = item.protocols.join(" ")
             if (acl_data.app_passwds === 1) {
               item.action = '<div class="btn-group footable-actions">' +

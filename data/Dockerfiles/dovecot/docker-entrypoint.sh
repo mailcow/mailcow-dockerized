@@ -164,9 +164,9 @@ function auth_password_verify(req, pass)
   end
 
   -- check against app passwds for imap and smtp
-  -- app passwords are only available for imap and smtp in dovecot
-  if req.service == "smtp" or req.service == "imap" then
-    local cur,errorString = con:execute(string.format([[SELECT app_passwd.id, app_passwd.imap_access, app_passwd.smtp_access, app_passwd.password FROM app_passwd
+  -- app passwords are only available for imap, smtp, sieve and pop3 when using sasl
+  if req.service == "smtp" or req.service == "imap" or req.service == "sieve" or req.service == "pop3" then
+    local cur,errorString = con:execute(string.format([[SELECT app_passwd.id, app_passwd.imap_access, app_passwd.smtp_access, app_passwd.sieve_access, app_passwd.pop3_access, app_passwd.password FROM app_passwd
       INNER JOIN mailbox ON mailbox.username = app_passwd.mailbox
       WHERE mailbox = '%s'
         AND app_passwd.%s_access = '1'
