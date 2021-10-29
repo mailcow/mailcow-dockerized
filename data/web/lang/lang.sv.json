@@ -986,7 +986,7 @@
         "alias_valid_until": "Giltig till",
         "aliases_also_send_as": "Som också har tillåtelse att skicka som användare",
         "aliases_send_as_all": "Kontrollera inte avsändaråtkomsten för följande domän/domäner och aliasdomäner",
-        "app_hint": "Applikationslösenord är ett alternativt lösenord för <b>IMAP och SMTP</b> inloggning på e-postservern. Användarnamnet förblir oförändrat.<br>SOGo (och därmed ActiveSync) kan inte användas med det här lösenordet.",
+        "app_hint": "Applikationslösenord är ett alternativt lösenord för IMAP, SMTP, CalDAV, CardDAV och EAS inloggning på e-postservern. Användarnamnet förblir oförändrat.<br>SOGo kan inte användas med det här lösenordet.",
         "app_name": "Applikationsnamn",
         "app_passwds": "Applikationslösenord",
         "apple_connection_profile": "Apple-anslutningsprofil",

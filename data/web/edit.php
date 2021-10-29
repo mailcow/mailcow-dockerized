@@ -11,7 +11,7 @@ $template = 'edit.twig';
 $template_data = [];
 $result = null;
 if (isset($_SESSION['mailcow_cc_role'])) {
-  if ($_SESSION['mailcow_cc_role'] == "admin"  || $_SESSION['mailcow_cc_role'] == "domainadmin") {
+  if ($_SESSION['mailcow_cc_role'] == "admin" || $_SESSION['mailcow_cc_role'] == "domainadmin") {
     if (isset($_GET["alias"]) &&
       !empty($_GET["alias"])) {
         $alias = html_entity_decode(rawurldecode($_GET["alias"]));

@@ -14,7 +14,16 @@ if (isset($_SERVER['PHP_AUTH_USER'])) {
   require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
   $username = $_SERVER['PHP_AUTH_USER'];
   $password = $_SERVER['PHP_AUTH_PW'];
-  $login_check = check_login($username, $password);
+  $is_eas = false;
+  $is_dav = false;
+  $original_uri = isset($_SERVER['HTTP_X_ORIGINAL_URI']) ? $_SERVER['HTTP_X_ORIGINAL_URI'] : '';
+  if (preg_match('/^(\/SOGo|)\/dav.*/', $original_uri) === 1) {
+    $is_dav = true;
+  }
+  elseif (preg_match('/^(\/SOGo|)\/Microsoft-Server-ActiveSync.*/', $original_uri) === 1) {
+    $is_eas = true;
+  }
+  $login_check = check_login($username, $password, array('dav' => $is_dav, 'eas' => $is_eas));
   if ($login_check === 'user') {
     header("X-User: $username");
     header("X-Auth: Basic ".base64_encode("$username:$password"));
@@ -43,6 +52,13 @@ elseif (isset($_GET['login'])) {
         // register username and password in session
         $_SESSION[$session_var_user_allowed][] = $login;
         $_SESSION[$session_var_pass] = $sogo_sso_pass;
+        // update sasl logs
+        $service = ($app_passwd_data['eas'] === true) ? 'EAS' : 'DAV';
+        $stmt = $pdo->prepare("REPLACE INTO sasl_log (`service`, `app_password`, `username`, `real_rip`) VALUES ('SSO', 0, :username, :remote_addr)");
+        $stmt->execute(array(
+          ':username' => $login,
+          ':remote_addr' => $_SERVER['REMOTE_ADDR']
+        ));
         // redirect to sogo (sogo will get the correct credentials via nginx auth_request
         header("Location: /SOGo/so/${login}");
         exit;
@@ -54,9 +70,7 @@ elseif (isset($_GET['login'])) {
   exit;
 }
 // only check for admin-login on sogo GUI requests
-elseif (
-  strcasecmp(substr($_SERVER['HTTP_X_ORIGINAL_URI'], 0, 9), "/SOGo/so/") === 0
-) {
+elseif (isset($_SERVER['HTTP_X_ORIGINAL_URI']) && strcasecmp(substr($_SERVER['HTTP_X_ORIGINAL_URI'], 0, 9), "/SOGo/so/") === 0) {
   // this is an nginx auth_request call, we check for existing sogo-sso session variables
   session_start();
   // extract email address from "/SOGo/so/user@domain/xy"

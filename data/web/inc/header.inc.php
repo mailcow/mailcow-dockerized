@@ -44,6 +44,7 @@ $globalVariables = [
   'available_languages' => $AVAILABLE_LANGUAGES,
   'lang' => $lang,
   'skip_sogo' => (getenv('SKIP_SOGO') == 'y'),
+  'allow_admin_email_login' => (getenv('ALLOW_ADMIN_EMAIL_LOGIN') == 'n'),
   'mailcow_apps' => $MAILCOW_APPS,
   'app_links' => customize('get', 'app_links'),
   'is_root_uri' => (parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) == '/'),
