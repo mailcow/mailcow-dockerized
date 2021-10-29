@@ -953,7 +953,7 @@
 		"alias_valid_until": "Valide jusque",
 		"aliases_also_send_as": "Aussi autorisé à envoyer en tant qu’utilisateur",
 		"aliases_send_as_all": "Ne pas vérifier l’accès de l’expéditeur pour les domaines suivants et leurs alias",
-		"app_hint": "Les mots de passe d’application sont des mots de passe alternatifs pour votre connexion <b>IMAP et SMTP</b>. Le nom d’utilisateur reste inchangé.<br>SOGo (incluant ActiveSync) n'est pas disponible au travers de mots de passe.",
+		"app_hint": "Les mots de passe d’application sont des mots de passe alternatifs pour votre connexion IMAP, SMTP, Caldav, Carddav et EAS. Le nom d’utilisateur reste inchangé.<br>SOGo n'est pas disponible au travers de mots de passe.",
 		"app_name": "Nom d'application",
 		"app_passwds": "Mots de passe de l'application",
 		"apple_connection_profile": "Profil de connexion Apple",

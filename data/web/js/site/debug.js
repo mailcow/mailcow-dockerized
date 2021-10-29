@@ -707,9 +707,7 @@ jQuery(function($){
       $.each(data, function (i, item) {
         if (item === null) { return true; }
         item.username = escapeHtml(item.username);
-        if (item.service == "smtp") { item.service = '<div class="label label-default">' + item.service.toUpperCase() + '<i class="bi bi-chevron-compact-right"></i></div>'; }
-        else if (item.service == "imap") { item.service = '<div class="label label-default"><i class="bi bi-chevron-compact-left"></i> ' + item.service.toUpperCase() + '</div>'; }
-        else { item.service = '<div class="label label-default">' + item.service.toUpperCase() + '</div>'; }
+        item.service = '<div class="label label-default">' + item.service.toUpperCase() + '</div>';
     });
     } else if (table == 'general_syslog') {
       $.each(data, function (i, item) {

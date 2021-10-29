@@ -807,10 +807,11 @@ function verify_hash($hash, $password) {
   }
   return false;
 }
-function check_login($user, $pass) {
+function check_login($user, $pass, $app_passwd_data = false) {
   global $pdo;
   global $redis;
   global $imap_server;
+
   if (!filter_var($user, FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $user))) {
     $_SESSION['return'][] =  array(
       'type' => 'danger',
@@ -819,6 +820,8 @@ function check_login($user, $pass) {
     );
     return false;
   }
+
+  // Validate admin
   $user = strtolower(trim($user));
   $stmt = $pdo->prepare("SELECT `password` FROM `admin`
       WHERE `superadmin` = '1'
@@ -854,6 +857,8 @@ function check_login($user, $pass) {
       }
     }
   }
+
+  // Validate domain admin
   $stmt = $pdo->prepare("SELECT `password` FROM `admin`
       WHERE `superadmin` = '0'
       AND `active`='1'
@@ -888,6 +893,8 @@ function check_login($user, $pass) {
       }
     }
   }
+
+  // Validate mailbox user
   $stmt = $pdo->prepare("SELECT `password` FROM `mailbox`
       INNER JOIN domain on mailbox.domain = domain.domain
       WHERE `kind` NOT REGEXP 'location|thing|group'
@@ -896,6 +903,32 @@ function check_login($user, $pass) {
         AND `username` = :user");
   $stmt->execute(array(':user' => $user));
   $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  if ($app_passwd_data['eas'] === true) {
+    $stmt = $pdo->prepare("SELECT `app_passwd`.`password` as `password`, `app_passwd`.`id` as `app_passwd_id` FROM `app_passwd`
+        INNER JOIN `mailbox` ON `mailbox`.`username` = `app_passwd`.`mailbox`
+        INNER JOIN `domain` ON `mailbox`.`domain` = `domain`.`domain`
+        WHERE `mailbox`.`kind` NOT REGEXP 'location|thing|group'
+          AND `mailbox`.`active` = '1'
+          AND `domain`.`active` = '1'
+          AND `app_passwd`.`active` = '1'
+          AND `app_passwd`.`eas_access` = '1'
+          AND `app_passwd`.`mailbox` = :user");
+    $stmt->execute(array(':user' => $user));
+    $rows = array_merge($rows, $stmt->fetchAll(PDO::FETCH_ASSOC));
+  }
+  elseif ($app_passwd_data['dav'] === true) {
+    $stmt = $pdo->prepare("SELECT `app_passwd`.`password` as `password`, `app_passwd`.`id` as `app_passwd_id` FROM `app_passwd`
+        INNER JOIN `mailbox` ON `mailbox`.`username` = `app_passwd`.`mailbox`
+        INNER JOIN `domain` ON `mailbox`.`domain` = `domain`.`domain`
+        WHERE `mailbox`.`kind` NOT REGEXP 'location|thing|group'
+          AND `mailbox`.`active` = '1'
+          AND `domain`.`active` = '1'
+          AND `app_passwd`.`active` = '1'
+          AND `app_passwd`.`dav_access` = '1'
+          AND `app_passwd`.`mailbox` = :user");
+    $stmt->execute(array(':user' => $user));
+    $rows = array_merge($rows, $stmt->fetchAll(PDO::FETCH_ASSOC));
+  }
   foreach ($rows as $row) {
     if (verify_hash($row['password'], $pass) !== false) {
       unset($_SESSION['ldelay']);
@@ -904,9 +937,20 @@ function check_login($user, $pass) {
         'log' => array(__FUNCTION__, $user, '*'),
         'msg' => array('logged_in_as', $user)
       );
+      if ($app_passwd_data['eas'] === true || $app_passwd_data['dav'] === true) {
+        $service = ($app_passwd_data['eas'] === true) ? 'EAS' : 'DAV';
+        $stmt = $pdo->prepare("REPLACE INTO sasl_log (`service`, `app_password`, `username`, `real_rip`) VALUES (:service, :app_id, :username, :remote_addr)");
+        $stmt->execute(array(
+          ':service' => $service,
+          ':app_id' => $row['app_passwd_id'],
+          ':username' => $user,
+          ':remote_addr' => $_SERVER['REMOTE_ADDR']
+        ));
+      }
       return "user";
     }
   }
+
   if (!isset($_SESSION['ldelay'])) {
     $_SESSION['ldelay'] = "0";
     $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
@@ -917,11 +961,13 @@ function check_login($user, $pass) {
     $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
     error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
   }
+
   $_SESSION['return'][] =  array(
     'type' => 'danger',
     'log' => array(__FUNCTION__, $user, '*'),
     'msg' => 'login_failed'
   );
+
   sleep($_SESSION['ldelay']);
   return false;
 }

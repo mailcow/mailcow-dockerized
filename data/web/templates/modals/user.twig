@@ -214,6 +214,19 @@
             </div>
           </div>
           <div class="form-group">
+            <label class="control-label col-sm-2" for="protocols">{{ lang.add.app_passwd_protocols }}</label>
+            <div class="col-sm-10">
+              <select class="full-width-select" data-live-search="true" id="protocols" name="protocols" multiple>
+                <option value="imap_access" selected>IMAP</option>
+                <option value="smtp_access" selected>SMTP</option>
+                <option value="eas_access" selected>EAS/ActiveSync</option>
+                <option value="dav_access" selected>CardDAV/CalDAV</option>
+                <option value="pop3_access" selected>POP3</option>
+                <option value="sieve_access" selected>Sieve</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
               <div class="checkbox">
                 <label><input type="checkbox" value="1" name="active" checked> {{ lang.add.active }}</label>

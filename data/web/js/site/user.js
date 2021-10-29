@@ -101,8 +101,8 @@ jQuery(function($){
             $.each(data.sasl, function (i, item) {
               var datetime = new Date(item.datetime.replace(/-/g, "/"));
               var local_datetime = datetime.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
-              item.app_password ? app_password = ' <a href="/edit/app-passwd/' + item.app_password + '">(App)</a>' : app_password = "", item.location ? ip_location = ' <span class="flag-icon flag-icon-' + item.location.toLowerCase() + '"></span>' : ip_location = "";
-              "smtp" == item.service ? service = '<div class="label label-default">' + item.service.toUpperCase() + '<i class="bi bi-chevron-compact-right"></i></div>' : "imap" == item.service ? service = '<div class="label label-default"><i class="bi bi-chevron-compact-left"></i> ' + item.service.toUpperCase() + "</div>" : service = '<div class="label label-default">' + item.service.toUpperCase() + "</div>";
+              item.app_password ? app_password = ' <a href="/edit/app-passwd/' + item.app_password + '"><i class="bi bi-pen"></i> App</a>' : app_password = "", item.location ? ip_location = ' <span class="flag-icon flag-icon-' + item.location.toLowerCase() + '"></span>' : ip_location = "";
+              service = '<div class="label label-default">' + item.service.toUpperCase() + '</div>';
               item.real_rip.startsWith("Web") ? real_rip = item.real_rip : real_rip = '<a href="https://bgp.he.net/ip/' + item.real_rip + '" target="_blank">' + item.real_rip + "</a>";
               ip_data = real_rip + ip_location + app_password;
               $(".last-login").append('<li class="list-group-item">' + local_datetime + " " + service + " " + lang.from + " " + ip_data + "</li>");
@@ -258,6 +258,7 @@ jQuery(function($){
         {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px","text-align":"center"},"filterable": false,"sortable": false,"type":"html"},
         {"sorted": true,"name":"id","title":"ID","style":{"maxWidth":"60px","width":"60px","text-align":"center"}},
         {"name":"name","title":lang.app_name},
+        {"name":"protocols","title":lang.allowed_protocols},
         {"name":"active","filterable": false,"style":{"maxWidth":"70px","width":"70px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"220px","width":"220px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
@@ -271,7 +272,15 @@ jQuery(function($){
         },
         success: function (data) {
           $.each(data, function (i, item) {
-            item.name = escapeHtml(item.name);
+            item.name = escapeHtml(item.name)
+            item.protocols = []
+            if (item.imap_access == 1) { item.protocols.push("<code>IMAP</code>"); }
+            if (item.smtp_access == 1) { item.protocols.push("<code>SMTP</code>"); }
+            if (item.eas_access == 1) { item.protocols.push("<code>EAS/ActiveSync</code>"); }
+            if (item.dav_access == 1) { item.protocols.push("<code>DAV</code>"); }
+            if (item.pop3_access == 1) { item.protocols.push("<code>POP3</code>"); }
+            if (item.sieve_access == 1) { item.protocols.push("<code>Sieve</code>"); }
+            item.protocols = item.protocols.join(" ")
             if (acl_data.app_passwds === 1) {
               item.action = '<div class="btn-group footable-actions">' +
                 '<a href="/edit/app-passwd/' + item.id + '" class="btn btn-xs btn-xs-half btn-default"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
