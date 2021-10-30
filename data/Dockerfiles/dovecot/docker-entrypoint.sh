@@ -177,7 +177,11 @@ function auth_password_verify(req, pass)
     while row do
       if req.password_verify(req, row.password, pass) == 1 then
         -- if password is valid and protocol access is 1 OR real_rip matches SOGo, proceed
-        if tostring(req.real_ip) == "__IPV4_SOGO__" or row.has_prot_access == "1" then
+        if tostring(req.real_rip) == "__IPV4_SOGO__" then
+          cur:close()
+          con:close()
+          return dovecot.auth.PASSDB_RESULT_OK, "password=" .. pass
+        if row.has_prot_access == "1" then
           con:execute(string.format([[REPLACE INTO sasl_log (service, app_password, username, real_rip)
             VALUES ("%s", %d, "%s", "%s")]], con:escape(req.service), row.id, con:escape(req.user), con:escape(req.real_rip)))
           cur:close()
