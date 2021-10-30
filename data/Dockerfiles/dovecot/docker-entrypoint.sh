@@ -181,7 +181,7 @@ function auth_password_verify(req, pass)
           cur:close()
           con:close()
           return dovecot.auth.PASSDB_RESULT_OK, "password=" .. pass
-        if row.has_prot_access == "1" then
+        elseif row.has_prot_access == "1" then
           con:execute(string.format([[REPLACE INTO sasl_log (service, app_password, username, real_rip)
             VALUES ("%s", %d, "%s", "%s")]], con:escape(req.service), row.id, con:escape(req.user), con:escape(req.real_rip)))
           cur:close()
