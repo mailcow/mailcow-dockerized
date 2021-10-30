@@ -1053,6 +1053,7 @@
         "delete_ays": "Please confirm the deletion process.",
         "direct_aliases": "Direct alias addresses",
         "direct_aliases_desc": "Direct alias addresses are affected by spam filter and TLS policy settings.",
+        "direct_protocol_access": "This mailbox user has <b>direct, external access</b> to the following protocols and applications. This setting is controlled by your administrator. App passwords can be created to grant access to individual protocols and applications.<br>The \"Login to webmail\" button provides single-sign-on to SOGo and is always available.",
         "eas_reset": "Reset ActiveSync device cache",
         "eas_reset_help": "In many cases a device cache reset will help to recover a broken ActiveSync profile.<br><b>Attention:</b> All elements will be redownloaded!",
         "eas_reset_now": "Reset now",
