@@ -506,7 +506,7 @@
         "alias": "Alias bearbeiten",
         "allow_from_smtp": "Nur folgende IPs für <b>SMTP</b> erlauben",
         "allow_from_smtp_info": "Leer lassen, um keine Prüfung durchzuführen.<br>IPv4- sowie IPv6-Adressen und Subnetzwerke.",
-        "allowed_protocols": "Erlaubte Protokolle",
+        "allowed_protocols": "Erlaubte Protokolle für direkten Zugriff (hat keinen Einfluss auf App-Passwort Protokolle)",
         "app_name": "App-Name",
         "app_passwd": "App-Passwörter",
         "app_passwd_protocols": "Zugelassene Protokolle für App-Passwort",

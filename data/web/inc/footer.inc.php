@@ -42,7 +42,9 @@ foreach ($globalVariables as $globalVariableName => $globalVariableValue) {
   $twig->addGlobal($globalVariableName, $globalVariableValue);
 }
 
-echo $twig->render($template, $template_data);
+if (is_array($template_data)) {
+  echo $twig->render($template, $template_data);
+}
 
 if (isset($_SESSION['mailcow_cc_api'])) {
   session_regenerate_id(true);

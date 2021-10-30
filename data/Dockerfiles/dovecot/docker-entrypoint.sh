@@ -155,9 +155,10 @@ function auth_password_verify(req, pass)
   local row = cur:fetch ({}, "a")
   while row do
     if req.password_verify(req, row.password, pass) == 1 then
-      cur:close()
       con:execute(string.format([[REPLACE INTO sasl_log (service, app_password, username, real_rip)
         VALUES ("%s", 0, "%s", "%s")]], con:escape(req.service), con:escape(req.user), con:escape(req.real_rip)))
+      cur:close()
+      con:close()
       return dovecot.auth.PASSDB_RESULT_OK, "password=" .. pass
     end
     row = cur:fetch (row, "a")
@@ -166,24 +167,30 @@ function auth_password_verify(req, pass)
   -- check against app passwds for imap and smtp
   -- app passwords are only available for imap, smtp, sieve and pop3 when using sasl
   if req.service == "smtp" or req.service == "imap" or req.service == "sieve" or req.service == "pop3" then
-    local cur,errorString = con:execute(string.format([[SELECT app_passwd.id, app_passwd.imap_access, app_passwd.smtp_access, app_passwd.sieve_access, app_passwd.pop3_access, app_passwd.password FROM app_passwd
+    local cur,errorString = con:execute(string.format([[SELECT app_passwd.id, %s_access AS has_prot_access, app_passwd.password FROM app_passwd
       INNER JOIN mailbox ON mailbox.username = app_passwd.mailbox
       WHERE mailbox = '%s'
-        AND app_passwd.%s_access = '1'
         AND app_passwd.active = '1'
         AND mailbox.active = '1'
-        AND app_passwd.domain IN (SELECT domain FROM domain WHERE domain='%s' AND active='1')]], con:escape(req.user), con:escape(req.service), con:escape(req.domain)))
+        AND app_passwd.domain IN (SELECT domain FROM domain WHERE domain='%s' AND active='1')]], con:escape(req.service), con:escape(req.user), con:escape(req.domain)))
     local row = cur:fetch ({}, "a")
     while row do
       if req.password_verify(req, row.password, pass) == 1 then
-        cur:close()
-        con:execute(string.format([[REPLACE INTO sasl_log (service, app_password, username, real_rip)
-          VALUES ("%s", %d, "%s", "%s")]], con:escape(req.service), row.id, con:escape(req.user), con:escape(req.real_rip)))
-        return dovecot.auth.PASSDB_RESULT_OK, "password=" .. pass
+        -- if password is valid and protocol access is 1 OR real_rip matches SOGo, proceed
+        if tostring(req.real_ip) == "__IPV4_SOGO__" or row.has_prot_access == "1" then
+          con:execute(string.format([[REPLACE INTO sasl_log (service, app_password, username, real_rip)
+            VALUES ("%s", %d, "%s", "%s")]], con:escape(req.service), row.id, con:escape(req.user), con:escape(req.real_rip)))
+          cur:close()
+          con:close()
+          return dovecot.auth.PASSDB_RESULT_OK, "password=" .. pass
+        end
       end
       row = cur:fetch (row, "a")
     end
   end
+
+  cur:close()
+  con:close()
 
   return dovecot.auth.PASSDB_RESULT_PASSWORD_MISMATCH, "Failed to authenticate"
 
@@ -232,6 +239,7 @@ EOF
 sed -i "s/__DBUSER__/${DBUSER}/g" /etc/dovecot/lua/passwd-verify.lua
 sed -i "s/__DBPASS__/${DBPASS}/g" /etc/dovecot/lua/passwd-verify.lua
 sed -i "s/__DBNAME__/${DBNAME}/g" /etc/dovecot/lua/passwd-verify.lua
+sed -i "s/__IPV4_SOGO__/${IPV4_NETWORK}.248/g" /etc/dovecot/lua/passwd-verify.lua
 
 
 # Migrate old sieve_after file
