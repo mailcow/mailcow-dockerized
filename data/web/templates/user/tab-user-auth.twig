@@ -18,6 +18,18 @@
         </div>
       </div>
       <hr>
+      <div class="row">
+        <div class="hidden-xs col-md-3 col-xs-5 text-right"></div>
+        <div class="col-md-9 col-xs-12">
+          <p class="help-block help-block-mt-0">{{ lang.user.direct_protocol_access|raw }}</p>
+          {% if mailboxdata.attributes.imap_access == 1 %}<div class="label label-success label-protocol-access">IMAP <i class="bi bi-check-lg"></i></div>{% else %}<div class="label label-danger label-protocol-access">IMAP <i class="bi bi-x-lg"></i></div>{% endif %}
+          {% if mailboxdata.attributes.smtp_access == 1 %}<div class="label label-success label-protocol-access">SMTP <i class="bi bi-check-lg"></i></div>{% else %}<div class="label label-danger label-protocol-access">SMTP <i class="bi bi-x-lg"></i></div>{% endif %}
+          {% if mailboxdata.attributes.sieve_access == 1 %}<div class="label label-success label-protocol-access">Sieve <i class="bi bi-check-lg"></i></div>{% else %}<div class="label label-danger label-protocol-access">Sieve <i class="bi bi-x-lg"></i></div>{% endif %}
+          {% if mailboxdata.attributes.pop3_access == 1 %}<div class="label label-success label-protocol-access">POP3 <i class="bi bi-check-lg"></i></div>{% else %}<div class="label label-danger label-protocol-access">POP3 <i class="bi bi-x-lg"></i></div>{% endif %}
+          {% if mailboxdata.attributes.sogo_access == 1 %}<div class="label label-success label-protocol-access">SOGo <i class="bi bi-check-lg"></i></div>{% else %}<div class="label label-danger label-protocol-access">SOGo <i class="bi bi-x-lg"></i></div>{% endif %}
+        </div>
+      </div>
+      <hr>
       {% endif %}
       <div class="row">
         <div class="col-md-3 col-xs-12 text-right text-xs-left space20">{{ lang.user.in_use }}:</div>
