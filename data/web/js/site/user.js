@@ -101,10 +101,11 @@ jQuery(function($){
             $.each(data.sasl, function (i, item) {
               var datetime = new Date(item.datetime.replace(/-/g, "/"));
               var local_datetime = datetime.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
-              item.app_password ? app_password = ' <a href="/edit/app-passwd/' + item.app_password + '"><i class="bi bi-pen"></i> App</a>' : app_password = "", item.location ? ip_location = ' <span class="flag-icon flag-icon-' + item.location.toLowerCase() + '"></span>' : ip_location = "";
-              service = '<div class="label label-default">' + item.service.toUpperCase() + '</div>';
-              item.real_rip.startsWith("Web") ? real_rip = item.real_rip : real_rip = '<a href="https://bgp.he.net/ip/' + item.real_rip + '" target="_blank">' + item.real_rip + "</a>";
-              ip_data = real_rip + ip_location + app_password;
+              var service = '<div class="label label-default">' + item.service.toUpperCase() + '</div>';
+              var app_password = item.app_password ? ' <a href="/edit/app-passwd/' + item.app_password + '"><i class="bi bi-pen"></i> ' + escapeHtml(item.app_password_name || "App") + '</a>' : '';
+              var real_rip = item.real_rip.startsWith("Web") ? item.real_rip : '<a href="https://bgp.he.net/ip/' + item.real_rip + '" target="_blank">' + item.real_rip + "</a>";
+              var ip_location = item.location ? ' <span class="flag-icon flag-icon-' + item.location.toLowerCase() + '"></span>' : '';
+              var ip_data = real_rip + ip_location + app_password;
               $(".last-login").append('<li class="list-group-item">' + local_datetime + " " + service + " " + lang.from + " " + ip_data + "</li>");
             })
             $('.last-login').append('</ul>');
