@@ -57,7 +57,7 @@ elseif (isset($_GET['login'])) {
         $stmt = $pdo->prepare("REPLACE INTO sasl_log (`service`, `app_password`, `username`, `real_rip`) VALUES ('SSO', 0, :username, :remote_addr)");
         $stmt->execute(array(
           ':username' => $login,
-          ':remote_addr' => $_SERVER['REMOTE_ADDR']
+          ':remote_addr' => ($_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR'])
         ));
         // redirect to sogo (sogo will get the correct credentials via nginx auth_request
         header("Location: /SOGo/so/${login}");

@@ -944,7 +944,7 @@ function check_login($user, $pass, $app_passwd_data = false) {
           ':service' => $service,
           ':app_id' => $row['app_passwd_id'],
           ':username' => $user,
-          ':remote_addr' => $_SERVER['REMOTE_ADDR']
+          ':remote_addr' => ($_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR'])
         ));
       }
       return "user";
