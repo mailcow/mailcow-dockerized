@@ -443,7 +443,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.95
+      image: mailcow/watchdog:1.94
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
