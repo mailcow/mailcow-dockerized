@@ -258,7 +258,7 @@ function last_login($action, $username, $sasl_limit_days = 7) {
   switch ($action) {
     case 'get':
       if (filter_var($username, FILTER_VALIDATE_EMAIL) && hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
-        $stmt = $pdo->prepare('SELECT `real_rip`, MAX(`datetime`) as `datetime`, `service`, `app_password` FROM `sasl_log`
+        $stmt = $pdo->prepare('SELECT `real_rip`, MAX(`datetime`) as `datetime`, `service`, `app_password`, MAX(`app_passwd`.`name`) as `app_password_name` FROM `sasl_log`
           LEFT OUTER JOIN `app_passwd` on `sasl_log`.`app_password` = `app_passwd`.`id`
           WHERE `username` = :username
             AND HOUR(TIMEDIFF(NOW(), `datetime`)) < :sasl_limit_days
