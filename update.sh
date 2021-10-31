@@ -306,6 +306,7 @@ CONFIG_ARRAY=(
   "MAILCOW_PASS_SCHEME"
   "ADDITIONAL_SERVER_NAMES"
   "ACME_CONTACT"
+  "WATCHDOG_VERBOSE"
 )
 
 sed -i --follow-symlinks '$a\' mailcow.conf
