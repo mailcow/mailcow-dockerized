@@ -264,6 +264,9 @@
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title">{{ lang.user.change_password }}</h3>
+        {% if number_of_app_passwords > 0 %}
+        <p>{{ lang.user.change_password_hint_app_passwords | replace({'{{number_of_app_passwords}}': number_of_app_passwords}) }}</p>
+        {% endif %}
       </div>
       <div class="modal-body">
         <form class="form-horizontal" data-cached-form="false" data-id="pwchange" role="form" method="post" autocomplete="off">

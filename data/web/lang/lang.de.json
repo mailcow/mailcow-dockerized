@@ -1002,6 +1002,7 @@
         "apple_connection_profile_mailonly": "Dieses Verbindungsprofil beinhaltet IMAP- und SMTP-Konfigurationen für ein Apple-Gerät.",
         "apple_connection_profile_with_app_password": "Es wird ein neues App-Passwort erzeugt und in das Profil eingefügt, damit bei der Einrichtung kein Passwort eingegeben werden muss. Geben Sie das Profil nicht weiter, da es einen vollständigen Zugriff auf Ihr Postfach ermöglicht.",
         "change_password": "Passwort ändern",
+        "change_password_hint_app_passwords": "Ihre Mailbox hat {{number_of_app_passwords}} App-Passwörter, die nicht geändert werden. Um diese zu verwalten, gehen Sie bitte zum App-Passwörter-Tab.",
         "clear_recent_successful_connections": "Alle erfolgreichen Verbindungen bereinigen",
         "client_configuration": "Konfigurationsanleitungen für E-Mail-Programme und Smartphones anzeigen",
         "create_app_passwd": "Erstelle App-Passwort",
