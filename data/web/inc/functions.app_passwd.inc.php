@@ -216,17 +216,10 @@ function app_passwd($_action, $_data = null) {
     break;
     case 'get':
       $app_passwds = array();
-      if ($_data['username'] != null) {
-        $stmt = $pdo->prepare("SELECT `id`, `name` FROM `app_passwd` WHERE `mailbox` = :username");
-        $stmt->execute(array(':username' => $username));
-        $app_passwds = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $app_passwds;
-      } else {
-        $stmt = $pdo->prepare("SELECT `id`, `name` FROM `app_passwd`");
-        $stmt->execute();
-        $app_passwds = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $app_passwds;
-      }
+      $stmt = $pdo->prepare("SELECT `id`, `name` FROM `app_passwd` WHERE `mailbox` = :username");
+      $stmt->execute(array(':username' => $username));
+      $app_passwds = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      return $app_passwds;
     break;
     case 'details':
       $app_passwd_data = array();
