@@ -2,8 +2,7 @@ FROM debian:buster-slim
 
 LABEL maintainer "André Peters <andre.peters@servercow.de>"
 
-ARG CLAMAV=0.103.3
-
+ARG CLAMAV=0.103.4
 RUN apt-get update && apt-get install -y --no-install-recommends \
   ca-certificates \
   zlib1g-dev \
