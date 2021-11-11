@@ -3520,39 +3520,6 @@ paths:
       description: You can list mailbox aliases existing in system.
       operationId: Get aliases
       summary: Get aliases
-  "/api/v1/get/app-passwd/all":
-    get:
-        - description: e.g. api-key-string
-          example: api-key-string
-          in: header
-          name: X-API-Key
-          required: false
-          schema:
-            type: string
-      responses:
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "200":
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    - active: "1"
-                      created: "2019-12-21 16:04:55"
-                      domain: mailcow.email
-                      id: 2
-                      mailbox: hello@mailcow.email
-                      modified: null
-                      name: emclient
-          description: OK
-          headers: {}
-      tags:
-        - App Passwords
-      description: >-
-        Using this endpoint you can get all app passwords from all mailboxes.
-      operationId: Get App Passwords
-      summary: Get App Passwords
   "/api/v1/get/app-passwd/all/{mailbox}":
     get:
       parameters:
