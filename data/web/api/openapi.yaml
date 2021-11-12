@@ -3583,6 +3583,44 @@ paths:
       description: You can list mailbox aliases existing in system.
       operationId: Get aliases
       summary: Get aliases
+  "/api/v1/get/time_limited_aliases/{mailbox}":
+    get:
+      parameters:
+        - description: mailbox you want to get aliasses from
+          example: domain.tld
+          in: path
+          schema:
+            type: string
+          name: mailbox
+          required: true
+        - description: e.g. api-key-string
+          example: api-key-string
+          in: header
+          name: X-API-Key
+          required: false
+          schema:
+            type: string
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - address: alias@domain.tld
+                      goto: destination@domain.tld
+                      validity: 1668251246
+                      created: "2021-11-12 12:07:26"
+                      modified: null
+          description: OK
+          headers: {}
+      tags:
+        - Aliases
+      description: You can list time limited mailbox aliases existing in system.
+      operationId: Get time limited aliases
+      summary: Get time limited aliases
   "/api/v1/get/app-passwd/all/{mailbox}":
     get:
       parameters:
