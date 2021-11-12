@@ -131,6 +131,69 @@ paths:
                   type: boolean
               type: object
       summary: Create alias
+  /api/v1/add/time_limited_alias:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - mailbox
+                        - add
+                        - time_limited_alias
+                        - address: info@domain.tld
+                          domain: domain.tld
+                        - null
+                      msg:
+                        - mailbox_modified
+                        - info@domain.tld
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Aliases
+      description: >-
+        You may create a time limited alias using this action. It takes a JSON
+        object containing a domain and mailbox informations.
+        Mailcow will generate a random alias.
+      operationId: Create time limited alias
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                username: info@domain.tld
+                domain: domain.tld
+              properties:
+                username:
+                  description: 'the mailbox an alias should be created for'
+                  type: string
+                domain:
+                  description: "the domain"
+                  type: string
+              type: object
+      summary: Create time limited alias
   /api/v1/add/app-passwd:
     post:
       responses:
@@ -618,31 +681,31 @@ paths:
                   value:
                     - type: success
                       log:
-                      - acl
-                      - edit
-                      - testadmin
-                      - username:
+                        - acl
+                        - edit
                         - testadmin
-                        da_acl:
-                        - syncjobs
-                        - quarantine
-                        - login_as
-                        - sogo_access
-                        - app_passwds
-                        - bcc_maps
-                        - pushover
-                        - filters
-                        - ratelimit
-                        - spam_policy
-                        - extend_sender_acl
-                        - unlimited_quota
-                        - protocol_access
-                        - smtp_ip_access
-                        - alias_domains
-                        - domain_desc
+                        - username:
+                            - testadmin
+                          da_acl:
+                            - syncjobs
+                            - quarantine
+                            - login_as
+                            - sogo_access
+                            - app_passwds
+                            - bcc_maps
+                            - pushover
+                            - filters
+                            - ratelimit
+                            - spam_policy
+                            - extend_sender_acl
+                            - unlimited_quota
+                            - protocol_access
+                            - smtp_ip_access
+                            - alias_domains
+                            - domain_desc
                       msg:
-                      - acl_saved
-                      - testadmin
+                        - acl_saved
+                        - testadmin
               schema:
                 properties:
                   log:
@@ -674,25 +737,25 @@ paths:
             schema:
               example:
                 items:
-                - testadmin
+                  - testadmin
                 attr:
                   da_acl:
-                  - syncjobs
-                  - quarantine
-                  - login_as
-                  - sogo_access
-                  - app_passwds
-                  - bcc_maps
-                  - pushover
-                  - filters
-                  - ratelimit
-                  - spam_policy
-                  - extend_sender_acl
-                  - unlimited_quota
-                  - protocol_access
-                  - smtp_ip_access
-                  - alias_domains
-                  - domain_desc
+                    - syncjobs
+                    - quarantine
+                    - login_as
+                    - sogo_access
+                    - app_passwds
+                    - bcc_maps
+                    - pushover
+                    - filters
+                    - ratelimit
+                    - spam_policy
+                    - extend_sender_acl
+                    - unlimited_quota
+                    - protocol_access
+                    - smtp_ip_access
+                    - alias_domains
+                    - domain_desc
               properties:
                 items:
                   description: contains the domain admin username you want to edit
@@ -759,11 +822,11 @@ paths:
             schema:
               example:
                 items:
-                - testadmin
+                  - testadmin
                 attr:
                   active:
-                  - '0'
-                  - '1'
+                    - '0'
+                    - '1'
                   username_new: testadmin
                   domains: ["domain.tld"]
                   password: supersecurepassword
@@ -3520,6 +3583,44 @@ paths:
       description: You can list mailbox aliases existing in system.
       operationId: Get aliases
       summary: Get aliases
+  "/api/v1/get/time_limited_aliases/{mailbox}":
+    get:
+      parameters:
+        - description: mailbox you want to get aliasses from
+          example: domain.tld
+          in: path
+          schema:
+            type: string
+          name: mailbox
+          required: true
+        - description: e.g. api-key-string
+          example: api-key-string
+          in: header
+          name: X-API-Key
+          required: false
+          schema:
+            type: string
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - address: alias@domain.tld
+                      goto: destination@domain.tld
+                      validity: 1668251246
+                      created: "2021-11-12 12:07:26"
+                      modified: null
+          description: OK
+          headers: {}
+      tags:
+        - Aliases
+      description: You can list time limited mailbox aliases existing in system.
+      operationId: Get time limited aliases
+      summary: Get time limited aliases
   "/api/v1/get/app-passwd/all/{mailbox}":
     get:
       parameters:
