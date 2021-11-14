@@ -1042,7 +1042,9 @@
         "apple_connection_profile": "Apple connection profile",
         "apple_connection_profile_complete": "This connection profile includes IMAP and SMTP parameters as well as CalDAV (calendars) and CardDAV (contacts) paths for an Apple device.",
         "apple_connection_profile_mailonly": "This connection profile includes IMAP and SMTP configuration parameters for an Apple device.",
+        "apple_connection_profile_with_app_password": "A new app password is generated and added to the profile so that no password needs to be entered when setting up your device. Please do not share the file as it grants full access to your mailbox.",
         "change_password": "Change password",
+        "change_password_hint_app_passwords": "Your account has {{number_of_app_passwords}} app passwords that will not be changed. To manage these, go to the App passwords tab.",
         "clear_recent_successful_connections": "Clear seen successful connections",
         "client_configuration": "Show configuration guides for email clients and smartphones",
         "create_app_passwd": "Create app password",
@@ -1175,6 +1177,7 @@
         "week": "week",
         "weekly": "Weekly",
         "weeks": "weeks",
+        "with_app_password": "with app password",
         "year": "year",
         "years": "years"
     },

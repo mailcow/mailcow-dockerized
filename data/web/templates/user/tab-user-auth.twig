@@ -101,6 +101,17 @@
           {% endif %}
         </div>
       </div>
+      <div class="row">
+        <div class="col-md-3 col-xs-12 text-right text-xs-left space20"><i class="bi bi-file-earmark-text"></i> {{ lang.user.apple_connection_profile }}<br />{{ lang.user.with_app_password }}:</div>
+        <div class="col-md-9 col-xs-12">
+          <p><i class="bi bi-file-earmark-post"></i> <a href="/mobileconfig.php?only_email&amp;app_password">{{ lang.user.email }}</a> <small>IMAP, SMTP</small></p>
+          <p class="help-block">{{ lang.user.apple_connection_profile_mailonly }} {{ lang.user.apple_connection_profile_with_app_password }}</p>
+          {% if not skip_sogo %}
+          <p><i class="bi bi-file-earmark-post"></i> <a href="/mobileconfig.php?app_password">{{ lang.user.email_and_dav }}</a> <small>IMAP, SMTP, Cal/CardDAV</small></p>
+          <p class="help-block">{{ lang.user.apple_connection_profile_complete }} {{ lang.user.apple_connection_profile_with_app_password }}</p>
+          {% endif %}
+        </div>
+      </div>
       <hr>
       <div class="row">
         <div class="col-sm-offset-3 col-sm-9">
