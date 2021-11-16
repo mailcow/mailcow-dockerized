@@ -18,7 +18,7 @@ function fail2ban($_action, $_data = null) {
           }
           if (isset($tmp_wl_data)) {
             natsort($tmp_wl_data);
-            $f2b_options['whitelist'] = implode(PHP_EOL, $tmp_wl_data);
+            $f2b_options['whitelist'] = implode(PHP_EOL, (array)$tmp_wl_data);
           }
           else {
             $f2b_options['whitelist'] = "";
@@ -34,7 +34,7 @@ function fail2ban($_action, $_data = null) {
           }
           if (isset($tmp_bl_data)) {
             natsort($tmp_bl_data);
-            $f2b_options['blacklist'] = implode(PHP_EOL, $tmp_bl_data);
+            $f2b_options['blacklist'] = implode(PHP_EOL, (array)$tmp_bl_data);
           }
           else {
             $f2b_options['blacklist'] = "";
@@ -46,7 +46,11 @@ function fail2ban($_action, $_data = null) {
         $pb = $redis->hGetAll('F2B_PERM_BANS');
         if (is_array($pb)) {
           foreach ($pb as $key => $value) {
-            $f2b_options['perm_bans'][] = $key;
+            $f2b_options['perm_bans'][] = array(
+                'network'=>$key,
+                'ip' => strtok($key,'/')
+            );
+
           }
         }
         else {
@@ -61,6 +65,7 @@ function fail2ban($_action, $_data = null) {
             $f2b_options['active_bans'][] = array(
               'queued_for_unban' => $queued_for_unban,
               'network' => $network,
+              'ip' => strtok($network,'/'),
               'banned_until' => sprintf('%02dh %02dm %02ds', ($difference/3600), ($difference/60%60), $difference%60)
             );
           }
@@ -132,14 +137,6 @@ function fail2ban($_action, $_data = null) {
             if (!empty($regex_array)) {
               $redis->Set('F2B_REGEX', json_encode($regex_array, JSON_UNESCAPED_SLASHES));
             }
-          }
-          else {
-            $_SESSION['return'][] = array(
-              'type' => 'success',
-              'log' => array(__FUNCTION__, $_action, $_data_log),
-              'msg' => print_r($_data, true)
-            );
-            return false;
           }
           $_SESSION['return'][] = array(
             'type' => 'success',

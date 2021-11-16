@@ -1,0 +1,27 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+<div class="panel panel-default">
+  <div class="panel-heading">{{ lang.oauth2.authorize_app }}</div>
+  <div class="panel-body">
+    {% if mailcow_cc_role == 'user' %}
+    <p>{{ lang.oauth2.scope_ask_permission }}:</p>
+    <dl class="dl-horizontal">
+      <dt>{{ lang.oauth2.profile }}</dt>
+      <dd>{{ lang.oauth2.profile_desc }}</dd>
+    </dl>
+    <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
+      <div class="form-group">
+        <div class="col-sm-10 text-center">
+          <button class="btn btn-success" name="authorized" type="submit" value="1">{{ lang.oauth2.permit }}</button>
+          <a href="#" class="btn btn-default" onclick="window.history.back()" role="button">{{ lang.oauth2.deny }}</a>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        </div>
+      </div>
+    </form>
+    {% else %}
+    <p>{{ lang.oauth2.access_denied }}</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

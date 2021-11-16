@@ -1,0 +1,45 @@
+{% extends 'edit.twig' %}
+
+{% block inner_content %}
+{% if result %}
+<h4>Filter</h4>
+<form class="form-horizontal" data-id="editfilter" role="form" method="post">
+  <input type="hidden" value="0" name="active">
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="script_desc">{{ lang.edit.sieve_desc }}</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" name="script_desc" id="script_desc" value="{{ result.script_desc }}" required maxlength="255">
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="filter_type">{{ lang.edit.sieve_type }}</label>
+    <div class="col-sm-10">
+      <select id="addFilterType" name="filter_type" id="filter_type" required>
+        <option value="prefilter"{% if result.filter_type == 'prefilter' %} selected{% endif %}>Prefilter</option>
+        <option value="postfilter"{% if result.filter_type == 'postfilter' %} selected{% endif %}>Postfilter</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="script_data">Script:</label>
+    <div class="col-sm-10">
+      <textarea spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control textarea-code" rows="20" id="script_data" name="script_data" required>{{ result.script_data|raw }}</textarea>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <div class="checkbox">
+        <label><input type="checkbox" value="1" name="active"{% if result.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected" data-id="editfilter" data-item="{{ result.id }}" data-api-url='edit/filter' data-api-attr='{}' href="#">{{ lang.edit.validate_save }}</button>
+    </div>
+  </div>
+</form>
+{% else %}
+  {{ parent() }}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+<ul class="nav nav-tabs responsive-tabs" role="tablist">
+  <li role="presentation" class="active"><a href="#tab-domains" aria-controls="tab-domains" role="tab" data-toggle="tab">{{ lang.mailbox.domains }}</a></li>
+  <li role="presentation"><a href="#tab-mailboxes" aria-controls="tab-mailboxes" role="tab" data-toggle="tab">{{ lang.mailbox.mailboxes }}</a></li>
+  {#  <li class="dropdown">
+  <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{ lang.mailbox.mailboxes }}
+    <span class="caret"></span></a>
+  <ul class="dropdown-menu">
+    <li role="presentation"><a href="#tab-mailboxes" aria-controls="tab-mailboxes" role="tab" data-toggle="tab">{{ lang.mailbox.mailboxes }}</a></li>
+    <li role="presentation"><a href="#tab-mailbox-defaults" aria-controls="tab-mailbox-defaults" role="tab" data-toggle="tab">{{ lang.mailbox.mailbox_defaults }}</a></li>
+  </ul>
+  </li> #}
+  <li role="presentation"><a href="#tab-resources" aria-controls="tab-resources" role="tab" data-toggle="tab">{{ lang.mailbox.resources }}</a></li>
+  <li class="dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{ lang.mailbox.aliases }}
+      <span class="caret"></span></a>
+    <ul class="dropdown-menu">
+      <li role="presentation"><a href="#tab-mbox-aliases" aria-controls="tab-mbox-aliases" role="tab" data-toggle="tab">{{ lang.mailbox.aliases }}</a></li>
+      <li role="presentation"><a href="#tab-domain-aliases" aria-controls="tab-domain-aliases" role="tab" data-toggle="tab">{{ lang.mailbox.domain_aliases }}</a></li>
+    </ul>
+  </li>
+  <li role="presentation"><a href="#tab-syncjobs" aria-controls="tab-syncjobs" role="tab" data-toggle="tab">{{ lang.mailbox.sync_jobs }}</a></li>
+  <li role="presentation"><a href="#tab-filters" aria-controls="tab-filters" role="tab" data-toggle="tab">{{ lang.mailbox.filters }}</a></li>
+  <li role="presentation"><a href="#tab-bcc" aria-controls="tab-bcc" role="tab" data-toggle="tab">{{ lang.mailbox.address_rewriting }}</a></li>
+  <li role="presentation"{% if mailcow_cc_role != 'admin' %} class="hidden"{% endif %}><a href="#tab-tls-policy" aria-controls="tab-tls-policy" role="tab" data-toggle="tab">{{ lang.mailbox.tls_policy_maps }}</a></li>
+</ul>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="tab-content" style="padding-top:20px">
+      {% include 'mailbox/tab-domains.twig' %}
+      {% include 'mailbox/tab-mailbox-defaults.twig' %}
+      {% include 'mailbox/tab-mailboxes.twig' %}
+      {% include 'mailbox/tab-resources.twig' %}
+      {% include 'mailbox/tab-domain-aliases.twig' %}
+      {% include 'mailbox/tab-mbox-aliases.twig' %}
+      {% include 'mailbox/tab-syncjobs.twig' %}
+      {% include 'mailbox/tab-filters.twig' %}
+      {% include 'mailbox/tab-bcc.twig' %}
+      {% include 'mailbox/tab-tls-policy.twig' %}
+    </div> <!-- /tab-content -->
+  </div> <!-- /col-md-12 -->
+</div> <!-- /row -->
+
+{% include 'modals/mailbox.twig' %}
+
+<script type='text/javascript'>
+  var acl = '{{ acl_json|raw }}';
+  var lang = {{ lang_mailbox|raw }};
+  var csrf_token = '{{ csrf_token }}';
+  var pagination_size = '{{ pagination_size }}';
+  var role = '{{ role }}';
+  var is_dual = {{ is_dual }};
+  var ALLOW_ADMIN_EMAIL_LOGIN = {{ allow_admin_email_login }};
+</script>
+{% endblock %}

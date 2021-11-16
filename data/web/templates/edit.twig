@@ -1,0 +1,30 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">{{ lang.edit.title }}</h3>
+      </div>
+      <div class="panel-body">
+        {% block inner_content %}
+          {% if access_denied %}
+          <div class="alert alert-danger" role="alert">{{ lang.danger.access_denied }}</div>
+          {% else %}
+          <div class="alert alert-info" role="alert">{{ lang.info.no_action }}</div>
+          {% endif %}
+        {% endblock %}
+      </div>
+    </div>
+  </div>
+</div>
+<a href="{{ return_to }}">&#8592; {{ lang.edit.previous }}</a>
+
+<script type='text/javascript'>
+  var lang_user = {{ lang_user|raw }};
+  var csrf_token = '{{ csrf_token }}';
+  var pagination_size = '{{ pagination_size }}';
+  var table_for_domain = '{{ domain }}';
+</script>
+{% endblock %}

@@ -1,7 +1,7 @@
 <?php
 function relayhost($_action, $_data = null) {
-	global $pdo;
-	global $lang;
+  global $pdo;
+  global $lang;
   $_data_log = $_data;
   switch ($_action) {
     case 'add':
@@ -45,7 +45,7 @@ function relayhost($_action, $_data = null) {
       $_SESSION['return'][] = array(
         'type' => 'success',
         'log' => array(__FUNCTION__, $_action, $_data_log),
-        'msg' => array('relayhost_added', htmlspecialchars(implode(', ', $hosts)))
+        'msg' => array('relayhost_added', htmlspecialchars(implode(', ', (array)$hosts)))
       );
     break;
     case 'edit':
@@ -100,7 +100,7 @@ function relayhost($_action, $_data = null) {
         $_SESSION['return'][] = array(
           'type' => 'success',
           'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => array('object_modified', htmlspecialchars(implode(', ', $hostnames)))
+          'msg' => array('object_modified', htmlspecialchars(implode(', ', (array)$hostnames)))
         );
       }
     break;
@@ -137,11 +137,11 @@ function relayhost($_action, $_data = null) {
       }
     break;
     case 'get':
-      if ($_SESSION['mailcow_cc_role'] != "admin") {
+      if ($_SESSION['mailcow_cc_role'] != "admin" && $_SESSION['mailcow_cc_role'] != "domainadmin") {
         return false;
       }
       $relayhosts = array();
-      $stmt = $pdo->query("SELECT `id`, `hostname`, `username` FROM `relayhosts`");
+      $stmt = $pdo->query("SELECT `id`, `hostname`, `username`, `active` FROM `relayhosts`");
       $relayhosts = $stmt->fetchAll(PDO::FETCH_ASSOC);
       return $relayhosts;
     break;
@@ -166,14 +166,19 @@ function relayhost($_action, $_data = null) {
         $used_by_domains = $stmt->fetch(PDO::FETCH_ASSOC)['used_by_domains'];
         $used_by_domains = (empty($used_by_domains)) ? '' : $used_by_domains;
         $relayhostdata['used_by_domains'] = $used_by_domains;
+        $stmt = $pdo->prepare("SELECT GROUP_CONCAT(`username` SEPARATOR ', ') AS `used_by_mailboxes` FROM `mailbox` WHERE JSON_VALUE(`attributes`, '$.relayhost') = :id");
+        $stmt->execute(array(':id' => $_data));
+        $used_by_mailboxes = $stmt->fetch(PDO::FETCH_ASSOC)['used_by_mailboxes'];
+        $used_by_mailboxes = (empty($used_by_mailboxes)) ? '' : $used_by_mailboxes;
+        $relayhostdata['used_by_mailboxes'] = $used_by_mailboxes;
       }
       return $relayhostdata;
     break;
   }
 }
 function transport($_action, $_data = null) {
-	global $pdo;
-	global $lang;
+  global $pdo;
+  global $lang;
   $_data_log = $_data;
   switch ($_action) {
     case 'add':
@@ -187,7 +192,7 @@ function transport($_action, $_data = null) {
       }
       $destinations  = array_map('trim', preg_split( "/( |,|;|\n)/", $_data['destination']));
       $active = intval($_data['active']);
-      $lookup_mx = intval($_data['lookup_mx']);
+      $is_mx_based = intval($_data['is_mx_based']);
       $nexthop = trim($_data['nexthop']);
       if (filter_var($nexthop, FILTER_VALIDATE_IP)) {
         $nexthop = '[' . $nexthop . ']';
@@ -233,7 +238,16 @@ function transport($_action, $_data = null) {
               continue;
             }
             // ".domain" is a valid destination, "..domain" is not
-            if (empty($dest) || (is_valid_domain_name(preg_replace('/^' . preg_quote('.', '/') . '/', '', $dest)) === false && $dest != '*' && filter_var($dest, FILTER_VALIDATE_EMAIL) === false)) {
+            if ($is_mx_based == 0 && (empty($dest) || (is_valid_domain_name(preg_replace('/^' . preg_quote('.', '/') . '/', '', $dest)) === false && $dest != '*' && filter_var($dest, FILTER_VALIDATE_EMAIL) === false))) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_data_log),
+                'msg' => array('invalid_destination', $dest)
+              );
+              unset($destinations[$d_ix]);
+              continue;
+            }
+            if ($is_mx_based == 1 && (empty($dest) || @preg_match('/' . $dest . '/', null) === false)) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_data_log),
@@ -248,7 +262,7 @@ function transport($_action, $_data = null) {
       $destinations = array_filter(array_values(array_unique($destinations)));
       if (empty($destinations)) { return false; }
       if (isset($next_hop_matches[1])) {
-        if (in_array($next_hop_clean, $existing_nh)) {
+        if ($existing_nh !== null && in_array($next_hop_clean, $existing_nh)) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data_log),
@@ -270,14 +284,14 @@ function transport($_action, $_data = null) {
         }
       }
       foreach ($destinations as $insert_dest) {
-        $stmt = $pdo->prepare("INSERT INTO `transports` (`nexthop`, `destination`, `username` , `password`,  `lookup_mx`, `active`)
-          VALUES (:nexthop, :destination, :username, :password, :lookup_mx, :active)");
+        $stmt = $pdo->prepare("INSERT INTO `transports` (`nexthop`, `destination`, `is_mx_based`, `username` , `password`,  `active`)
+          VALUES (:nexthop, :destination, :is_mx_based, :username, :password, :active)");
         $stmt->execute(array(
           ':nexthop' => $nexthop,
           ':destination' => $insert_dest,
+          ':is_mx_based' => $is_mx_based,
           ':username' => $username,
           ':password' => str_replace(':', '\:', $password),
-          ':lookup_mx' => $lookup_mx,
           ':active' => $active
         ));
       }
@@ -293,7 +307,7 @@ function transport($_action, $_data = null) {
       $_SESSION['return'][] = array(
         'type' => 'success',
         'log' => array(__FUNCTION__, $_action, $_data_log),
-        'msg' => array('relayhost_added', htmlspecialchars(implode(', ', $hosts)))
+        'msg' => array('relayhost_added', htmlspecialchars(implode(', ', (array)$hosts)))
       );
     break;
     case 'edit':
@@ -313,7 +327,7 @@ function transport($_action, $_data = null) {
           $nexthop = (!empty($_data['nexthop'])) ? trim($_data['nexthop']) : $is_now['nexthop'];
           $username = (isset($_data['username'])) ? trim($_data['username']) : $is_now['username'];
           $password = (isset($_data['password'])) ? trim($_data['password']) : $is_now['password'];
-          $lookup_mx   = (isset($_data['lookup_mx']) && $_data['lookup_mx'] != '') ? intval($_data['lookup_mx']) : $is_now['lookup_mx'];
+          $is_mx_based = (isset($_data['is_mx_based']) && $_data['is_mx_based'] != '') ? intval($_data['is_mx_based']) : $is_now['is_mx_based'];
           $active   = (isset($_data['active']) && $_data['active'] != '') ? intval($_data['active']) : $is_now['active'];
         }
         else {
@@ -348,8 +362,24 @@ function transport($_action, $_data = null) {
             }
           }
         }
+        if ($is_mx_based == 0 && (empty($destination) || (is_valid_domain_name(preg_replace('/^' . preg_quote('.', '/') . '/', '', $destination)) === false && $destination != '*' && filter_var($destination, FILTER_VALIDATE_EMAIL) === false))) {
+          $_SESSION['return'][] = array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => array('invalid_destination', $destination)
+          );
+          return false;
+        }
+        if ($is_mx_based == 1 && (empty($destination) || @preg_match('/' . $destination . '/', null) === false)) {
+          $_SESSION['return'][] = array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => array('invalid_destination', $destination)
+          );
+          return false;
+        }
         if (isset($next_hop_matches[1])) {
-          if (in_array($next_hop_clean, $existing_nh)) {
+          if ($existing_nh !== null && in_array($next_hop_clean, $existing_nh)) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_data_log),
@@ -376,19 +406,19 @@ function transport($_action, $_data = null) {
         try {
           $stmt = $pdo->prepare("UPDATE `transports` SET
             `destination` = :destination,
+            `is_mx_based` = :is_mx_based,
             `nexthop` = :nexthop,
             `username` = :username,
             `password` = :password,
-            `lookup_mx` = :lookup_mx,
             `active` = :active
               WHERE `id` = :id");
           $stmt->execute(array(
             ':id' => $id,
             ':destination' => $destination,
+            ':is_mx_based' => $is_mx_based,
             ':nexthop' => $nexthop,
             ':username' => $username,
             ':password' => $password,
-            ':lookup_mx' => $lookup_mx,
             ':active' => $active
           ));
           $stmt = $pdo->prepare("UPDATE `transports` SET
@@ -412,7 +442,7 @@ function transport($_action, $_data = null) {
         $_SESSION['return'][] = array(
           'type' => 'success',
           'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => array('object_modified', htmlspecialchars(implode(', ', $hostnames)))
+          'msg' => array('object_modified', htmlspecialchars(implode(', ', (array)$hostnames)))
         );
       }
     break;
@@ -451,7 +481,7 @@ function transport($_action, $_data = null) {
         return false;
       }
       $transports = array();
-      $stmt = $pdo->query("SELECT `id`, `destination`, `nexthop`, `username` FROM `transports`");
+      $stmt = $pdo->query("SELECT `id`, `is_mx_based`, `destination`, `nexthop`, `username` FROM `transports`");
       $transports = $stmt->fetchAll(PDO::FETCH_ASSOC);
       return $transports;
     break;
@@ -461,12 +491,12 @@ function transport($_action, $_data = null) {
       }
       $transportdata = array();
       $stmt = $pdo->prepare("SELECT `id`,
+        `is_mx_based`,
         `destination`,
         `nexthop`,
         `username`,
         `password`,
         `active`,
-        `lookup_mx`,
         CONCAT(LEFT(`password`, 3), '...') AS `password_short`
           FROM `transports`
             WHERE `id` = :id");

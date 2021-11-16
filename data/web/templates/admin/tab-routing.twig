@@ -1,0 +1,104 @@
+<div role="tabpanel" class="tab-pane" id="tab-routing">
+  <div class="panel panel-default">
+    <div class="panel-heading">{{ lang.admin.relayhosts }}</div>
+    <div class="panel-body">
+      <p style="margin-bottom:40px">{{ lang.admin.relayhosts_hint|raw }}</p>
+      <div class="table-responsive">
+        <table class="table table-striped table-condensed" id="relayhoststable"></table>
+      </div>
+      <div class="mass-actions-admin">
+        <div class="btn-group btn-group-sm">
+          <button type="button" id="toggle_multi_select_all" data-id="rlyhosts" class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default">{{ lang.mailbox.toggle_all }}</button>
+          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }} <span class="caret"></span></a>
+          <ul class="dropdown-menu top100">
+            <li><a data-action="edit_selected" data-id="rlyhosts" data-api-url='edit/relayhost' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+            <li><a data-action="edit_selected" data-id="rlyhosts" data-api-url='edit/relayhost' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a data-action="delete_selected" data-id="rlyhosts" data-api-url='delete/relayhost' href="#">{{ lang.admin.remove }}</a></li>
+          </ul>
+          <div class="clearfix visible-xs"></div>
+        </div>
+      </div>
+      <legend>{{ lang.admin.add_relayhost }}</legend>
+      <p class="help-block">{{ lang.admin.add_relayhost_hint }}</p>
+      <div class="row">
+        <div class="col-md-8">
+          <form class="form" data-id="rlyhost" role="form" method="post">
+            <div class="form-group">
+              <label for="rlyhost_hostname">{{ lang.admin.host }}</label>
+              <input class="form-control" id="rlyhost_hostname" name="hostname" placeholder='[0.0.0.0], [0.0.0.0]:25, host:25, host, [host]:25' required>
+            </div>
+            <div class="form-group">
+              <label for="rlyhost_username">{{ lang.admin.username }}</label>
+              <input class="form-control" id="rlyhost_username" name="username">
+            </div>
+            <div class="form-group">
+              <label for="rlyhost_password">{{ lang.admin.password }}</label>
+              <input class="form-control" id="rlyhost_password" name="password">
+            </div>
+            <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="add_item" data-id="rlyhost" data-api-url='add/relayhost' data-api-attr='{}' href="#"><i class="bi bi-plus-lg"></i> {{ lang.admin.add }}</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">{{ lang.admin.transport_maps }}</div>
+    <div class="panel-body">
+      <p style="margin-bottom:40px">{{ lang.admin.transports_hint|raw }}</p>
+      <div class="table-responsive">
+        <table class="table table-striped table-condensed" id="transportstable"></table>
+      </div>
+      <div class="mass-actions-admin">
+        <div class="btn-group btn-group-sm">
+          <button type="button" id="toggle_multi_select_all" data-id="transports" class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default">{{ lang.mailbox.toggle_all }}</button>
+          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }} <span class="caret"></span></a>
+          <ul class="dropdown-menu top100">
+            <li><a data-action="edit_selected" data-id="transports" data-api-url='edit/transport' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+            <li><a data-action="edit_selected" data-id="transports" data-api-url='edit/transport' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a data-action="delete_selected" data-id="transports" data-api-url='delete/transport' href="#">{{ lang.admin.remove }}</a></li>
+          </ul>
+          <div class="clearfix visible-xs"></div>
+        </div>
+      </div>
+      <legend>{{ lang.admin.add_transport }}</legend>
+      <p class="help-block">{{ lang.admin.add_transports_hint|raw }}</p>
+      <div class="row">
+        <div class="col-md-8">
+          <form class="form" data-id="transport" role="form" method="post">
+            <div class="form-group">
+              <label for="transport_destination">{{ lang.admin.destination }}</label>
+              <input class="form-control" id="transport_destination" name="destination" placeholder='{{ lang.admin.transport_dest_format }}' required>
+            </div>
+            <div class="form-group">
+              <label for="transport_nexthop">{{ lang.admin.nexthop }}</label>
+              <input class="form-control" id="transport_nexthop" name="nexthop" placeholder='host:25, host, [host]:25, [0.0.0.0]:25' required>
+            </div>
+            <div class="form-group">
+              <label for="transport_username">{{ lang.admin.username }}</label>
+              <input class="form-control" id="transport_username" name="username">
+            </div>
+            <div class="form-group">
+              <label for="transport_password">{{ lang.admin.password }}</label>
+              <input class="form-control" id="transport_password" name="password">
+            </div>
+            <div class="form-group">
+              <label>
+                <input type="checkbox" name="is_mx_based" value="1"> {{ lang.admin.lookup_mx|raw }}
+              </label>
+            </div>
+            <div class="form-group">
+              <label>
+                <input type="checkbox" name="active" value="1"> {{ lang.admin.active }}
+              </label>
+            </div>
+            <p class="help-block">{{ lang.admin.credentials_transport_warning|raw }}</p>
+            <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="add_item" data-id="transport" data-api-url='add/transport' data-api-attr='{}' href="#"><i class="bi bi-plus-lg"></i> {{ lang.admin.add }}</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -12,8 +12,8 @@ if [[ "$(uname -r)" =~ ^4\.4\. ]]; then
   if grep -q Ubuntu <<< $(uname -a); then
     echo "DO NOT RUN mailcow ON THIS UBUNTU KERNEL!";
     echo "Please update to linux-generic-hwe-16.04 by running \"apt-get install --install-recommends linux-generic-hwe-16.04\""
+    exit 1
   fi
-  exit 1
 fi
 
 if grep --help 2>&1 | grep -q -i "busybox"; then
@@ -144,6 +144,7 @@ DBROOT=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 | head -c 28)
 # Do _not_ use IP:PORT in HTTP(S)_BIND or HTTP(S)_PORT
 # IMPORTANT: Do not use port 8081, 9081 or 65510!
 # Example: HTTP_BIND=1.2.3.4
+# For IPv4 and IPv6 leave it empty: HTTP_BIND= & HTTPS_PORT=
 # For IPv6 see https://mailcow.github.io/mailcow-dockerized-docs/firststeps-ip_bindings/
 
 HTTP_PORT=80
@@ -170,9 +171,6 @@ DOVEADM_PORT=127.0.0.1:19991
 SQL_PORT=127.0.0.1:13306
 SOLR_PORT=127.0.0.1:18983
 REDIS_PORT=127.0.0.1:7654
-XMPP_C2S_PORT=5222
-XMPP_S2S_PORT=5269
-XMPP_HTTPS_PORT=5443
 
 # Your timezone
 # See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for a list of timezones
@@ -289,6 +287,9 @@ WATCHDOG_NOTIFY_BAN=n
 # Will only work with unmodified mailcow setups.
 WATCHDOG_EXTERNAL_CHECKS=n
 
+# Enable watchdog verbose logging
+WATCHDOG_VERBOSE=n
+
 # Max log lines per service to keep in Redis logs
 
 LOG_LINES=9999
@@ -335,6 +336,13 @@ SOGO_EXPIRE_SESSION=480
 DOVECOT_MASTER_USER=
 # LEAVE EMPTY IF UNSURE
 DOVECOT_MASTER_PASS=
+
+# Let's Encrypt registration contact information
+# Optional: Leave empty for none
+# This value is only used on first order!
+# Setting it at a later point will require the following steps:
+# https://mailcow.github.io/mailcow-dockerized-docs/debug-reset-tls/
+ACME_CONTACT=
 
 EOF
 

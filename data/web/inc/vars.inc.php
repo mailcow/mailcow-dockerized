@@ -45,21 +45,21 @@ $autodiscover_config = array(
   // The autoconfig service will additionally announce the STARTTLS-enabled ports, specified in the "tlsport" variable.
   'imap' => array(
     'server' => $mailcow_hostname,
-    'port' => end(explode(':', getenv('IMAPS_PORT'))),
-    'tlsport' => end(explode(':', getenv('IMAP_PORT'))),
+    'port' => (int)filter_var(substr(getenv('IMAPS_PORT'), strrpos(getenv('IMAPS_PORT'), ':')), FILTER_SANITIZE_NUMBER_INT),
+    'tlsport' => (int)filter_var(substr(getenv('IMAP_PORT'), strrpos(getenv('IMAP_PORT'), ':')), FILTER_SANITIZE_NUMBER_INT)
   ),
   'pop3' => array(
     'server' => $mailcow_hostname,
-    'port' => end(explode(':', getenv('POPS_PORT'))),
-    'tlsport' => end(explode(':', getenv('POP_PORT'))),
+    'port' => (int)filter_var(substr(getenv('POPS_PORT'), strrpos(getenv('POPS_PORT'), ':')), FILTER_SANITIZE_NUMBER_INT),
+    'tlsport' => (int)filter_var(substr(getenv('POP_PORT'), strrpos(getenv('POP_PORT'), ':')), FILTER_SANITIZE_NUMBER_INT)
   ),
   'smtp' => array(
     'server' => $mailcow_hostname,
-    'port' => end(explode(':', getenv('SMTPS_PORT'))),
-    'tlsport' => end(explode(':', getenv('SUBMISSION_PORT'))),
+    'port' => (int)filter_var(substr(getenv('SMTPS_PORT'), strrpos(getenv('SMTPS_PORT'), ':')), FILTER_SANITIZE_NUMBER_INT),
+    'tlsport' => (int)filter_var(substr(getenv('SUBMISSION_PORT'), strrpos(getenv('SUBMISSION_PORT'), ':')), FILTER_SANITIZE_NUMBER_INT)
   ),
   'activesync' => array(
-    'url' => 'https://'.$mailcow_hostname.($https_port == 443 ? '' : ':'.$https_port).'/Microsoft-Server-ActiveSync',
+    'url' => 'https://' . $mailcow_hostname . ($https_port == 443 ? '' : ':' . $https_port) . '/Microsoft-Server-ActiveSync',
   ),
   'caldav' => array(
     'server' => $mailcow_hostname,
@@ -79,9 +79,29 @@ $DETECT_LANGUAGE = true;
 $DEFAULT_LANG = 'en';
 
 // Available languages
-// Use (ISO 639-1) Code standard 
-// See https://www.loc.gov/standards/iso639-2/php/code_list.php
-$AVAILABLE_LANGUAGES = array('ca', 'cs', 'da', 'de', 'en', 'es', 'fi', 'fr', 'hu', 'it', 'ko', 'lv', 'nl', 'pl', 'pt', 'ro', 'ru', 'sk', 'sv', 'zh');
+// https://www.iso.org/obp/ui/#search
+// https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+$AVAILABLE_LANGUAGES = array(
+  'cs' => 'Čeština (Czech)',
+  'da' => 'Danish (Dansk)',
+  'de' => 'Deutsch (German)',
+  'en' => 'English',
+  'es' => 'Español (Spanish)',
+  'fi' => 'Suomi (Finish)',
+  'fr' => 'Français (French)',
+  'hu' => 'Magyar (Hungarian)',
+  'it' => 'Italiano (Italian)',
+  'ko' => '한국어 (Korean)',
+  'lv' => 'latviešu (Latvian)',
+  'nl' => 'Nederlands (Dutch)',
+  'pl' => 'Język Polski (Polish)',
+  'pt' => 'Português (Portuguese)',
+  'ro' => 'Română (Romanian)',
+  'ru' => 'Pусский (Russian)',
+  'sk' => 'Slovenčina (Slovak)',
+  'sv' => 'Svenska (Swedish)',
+  'zh' => '中文 (Chinese)'
+);
 
 // Change theme (default: lumen)
 // Needs to be one of those: cerulean, cosmo, cyborg, darkly, flatly, journal, lumen, paper, readable, sandstone,
@@ -89,14 +109,6 @@ $AVAILABLE_LANGUAGES = array('ca', 'cs', 'da', 'de', 'en', 'es', 'fi', 'fr', 'hu
 // See https://bootswatch.com/
 // WARNING: Only lumen is loaded locally. Enabling any other theme, will download external sources.
 $DEFAULT_THEME = 'lumen';
-
-// Password complexity as regular expression
-// Min. 6 characters
-$PASSWD_REGEP = '.{6,}';
-// Min. 6 characters, which must include at least one uppercase letter, one lowercase letter and one number
-// $PASSWD_REGEP = '^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z]).{6,}$';
-// Min. 6 characters, which must include at least one letter and one number
-// $PASSWD_REGEP = '^(?=.*[0-9])(?=.*[A-Za-z]).{6,}$';
 
 // Show DKIM private keys - false by default
 $SHOW_DKIM_PRIV_KEYS = false;
@@ -124,14 +136,8 @@ $SESSION_LIFETIME = 10800;
 // Label for OTP devices
 $OTP_LABEL = "mailcow UI";
 
-// Default "to" address in relay test tool
-$RELAY_TO = "null@hosted.mailcow.de";
-
 // How long to wait (in s) for cURL Docker requests
 $DOCKER_TIMEOUT = 60;
-
-// Anonymize IPs logged via UI
-$ANONYMIZE_IPS = true;
 
 // Split DKIM key notation (bind format)
 $SPLIT_DKIM_255 = false;
@@ -169,12 +175,6 @@ $MAILBOX_DEFAULT_ATTRIBUTES['pop3_access'] = true;
 // Mailbox has SMTP access by default
 $MAILBOX_DEFAULT_ATTRIBUTES['smtp_access'] = true;
 
-// Mailbox has XMPP access by default (if domain has XMPP enabled)
-$MAILBOX_DEFAULT_ATTRIBUTES['xmpp_access'] = true;
-
-// Mailbox is XMPP admin by default (bad)
-$MAILBOX_DEFAULT_ATTRIBUTES['xmpp_admin'] = false;
-
 // Mailbox receives notifications about...
 // "add_header" - mail that was put into the Junk folder
 // "reject" - mail that was rejected
@@ -211,6 +211,7 @@ $RSPAMD_MAPS = array(
     'Bad Words DE (only fired in combination with fishy TLDs)' => 'bad_words_de.map',
     'Bad Languages' => 'bad_languages.map',
     'Bulk Mail Headers' => 'bulk_header.map',
+    'Bad (Junk) Mail Headers' => 'bad_header.map',
     'Monitoring Hosts' => 'monitoring_nolog.map'
   )
 );

@@ -1,0 +1,60 @@
+name: "Documentation"
+
+on:
+    pull_request:
+    push:
+        branches:
+            - '3.x'
+
+jobs:
+    build:
+        name: "Build"
+
+        runs-on: ubuntu-latest
+
+        steps:
+            -   name: "Checkout code"
+                uses: actions/checkout@v2
+
+            -   name: "Set up Python 3.7"
+                uses: actions/setup-python@v1
+                with:
+                    python-version: '3.7' # Semantic version range syntax or exact version of a Python version
+
+            -   name: "Display Python version"
+                run: python -c "import sys; print(sys.version)"
+
+            -   name: "Install Sphinx dependencies"
+                run: sudo apt-get install python-dev build-essential
+
+            -   name: "Cache pip"
+                uses: actions/cache@v2
+                with:
+                    path: ~/.cache/pip
+                    key: ${{ runner.os }}-pip-${{ hashFiles('_build/.requirements.txt') }}
+                    restore-keys: |
+                        ${{ runner.os }}-pip-
+
+            -   name: "Install Sphinx + requirements via pip"
+                working-directory: "doc"
+                run: pip install -r _build/.requirements.txt
+
+            -   name: "Build documentation"
+                working-directory: "doc"
+                run: make -C _build SPHINXOPTS="-nqW -j auto" html
+
+    doctor-rst:
+        name: "DOCtor-RST"
+
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: "Checkout code"
+              uses: actions/checkout@v2
+
+            - name: "Run DOCtor-RST"
+              uses: docker://oskarstark/doctor-rst
+              with:
+                  args: --short
+              env:
+                  DOCS_DIR: 'doc/'

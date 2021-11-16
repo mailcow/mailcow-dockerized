@@ -1,0 +1,47 @@
+<div role="tabpanel" class="tab-pane" id="tab-config-quota">
+  <div class="panel panel-default">
+    <div class="panel-heading">{{ lang.admin.quota_notifications }}</div>
+    <div class="panel-body">
+      <p>{{ lang.admin.quota_notifications_info }}</p>
+      <form class="form" role="form" data-id="quota_notification" method="post">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label for="quota_notification_sender">{{ lang.admin.quota_notification_sender }}:</label>
+              <input type="email" class="form-control" id="quota_notification_sender" name="sender" value="{{ qn_data.sender }}" placeholder="quota-warning@localhost">
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label for="quota_notification_subject">{{ lang.admin.quota_notification_subject }}:</label>
+              <input type="text" class="form-control" id="quota_notification_subject" name="subject" value="{{ qn_data.subject }}" placeholder="Quota warning">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <legend data-target="#quota_template" style="cursor:pointer" unselectable="on" data-toggle="collapse">
+              <i style="font-size:10pt;" class="bi bi-plus-square"></i> {{ lang.admin.quarantine_notification_html|raw }}
+            </legend>
+            <div id="quota_template" class="collapse">
+              <!-- <small>{{ lang.admin.quota_notifications_vars }}</small><br><br>-->
+              <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code collapse in" rows="20" name="html_tmpl">{{ qn_data.html_tmpl|raw }}</textarea>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-10">
+            <div class="form-group">
+              <br>
+              <a type="button" class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected"
+                 data-item="quota_notification"
+                 data-id="quota_notification"
+                 data-api-url='edit/quota_notification'
+                 data-api-attr='{}'><i class="bi bi-check-lg"></i> {{ lang.user.save_changes }}</a>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

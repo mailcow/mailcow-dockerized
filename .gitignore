@@ -1,12 +1,13 @@
 !data/conf/nginx/dynmaps.conf
 !data/conf/nginx/meta_exporter.conf
 !data/conf/nginx/site.conf
+!/**/.gitkeep
 *.iml
 .idea
 .vscode/*
-data/assets/ejabberd/sqlite/sqlite.db
 data/assets/ssl-example/*
 data/assets/ssl/*
+data/conf/borgmatic/
 data/conf/clamav/whitelist.ign2
 data/conf/dovecot/acl_anyone
 data/conf/dovecot/dovecot-master.passwd
@@ -21,7 +22,6 @@ data/conf/dovecot/sni.conf
 data/conf/dovecot/sogo-sso.conf
 data/conf/dovecot/sogo_trusted_ip.conf
 data/conf/dovecot/sql
-data/conf/ejabberd/autogen/*
 data/conf/nextcloud-*.bak
 data/conf/nginx/*.active
 data/conf/nginx/*.bak
@@ -45,7 +45,14 @@ data/conf/sogo/sieve.creds
 data/conf/sogo/sogo-full.svg
 data/gitea/
 data/gogs/
-data/hooks/
+data/hooks/dovecot/*
+data/hooks/phpfpm/*
+data/hooks/postfix/*
+data/hooks/rspamd/*
+data/hooks/sogo/*
+data/hooks/unbound/*
+data/web/templates/cache/*
+!data/web/templates/cache/.gitkeep
 data/web/.well-known/acme-challenge
 data/web/css/build/0081-custom-mailcow.css
 data/web/inc/vars.local.inc.php
@@ -57,3 +64,4 @@ mailcow.conf_backup
 rebuild-images.sh
 refresh_images.sh
 update_diffs/
+create_cold_standby.sh

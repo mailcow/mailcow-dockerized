@@ -1,0 +1,111 @@
+{% extends 'base.twig' %}
+
+{% block navbar %}{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-offset-3 col-md-6">
+    <div class="panel panel-default panel-login">
+      <div class="panel-heading"><i class="bi bi-person-fill"></i> {{ lang.login.login }}</div>
+      <div class="panel-body">
+        <div class="text-center mailcow-logo"><img src="{{ logo|default('/img/cow_mailcow.svg') }}" alt="mailcow"></div>
+        {% if ui_texts.ui_announcement_text and ui_texts.ui_announcement_active %}
+        <div class="alert alert-{{ ui_texts.ui_announcement_type }} rot-enc ui-announcement-alert">{{ ui_texts.ui_announcement_text|rot13 }}</div>
+        {% endif %}
+        <legend>{% if oauth2_request %}{{ lang.oauth2.authorize_app }}{% else %}{{ ui_texts.main_name|raw }}{% endif %}</legend>
+        {% if is_mobileconfig %}
+        <div class="alert alert-info">{{ lang.login.mobileconfig_info }}</div>
+        {% endif %}
+        <form method="post" autofill="off">
+          <div class="form-group">
+            <label class="sr-only" for="login_user">{{ lang.login.username }}</label>
+            <div class="input-group">
+              <div class="input-group-addon"><i class="bi bi-person-fill"></i></div>
+              <input name="login_user" autocorrect="off" autocapitalize="none" type="{% if is_mobileconfig %}email{% else %}text{% endif %}" id="login_user" class="form-control" placeholder="{{ lang.login.username }}" required="" autofocus="" autocomplete="username">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="sr-only" for="pass_user">{{ lang.login.password }}</label>
+            <div class="input-group">
+              <div class="input-group-addon"><i class="bi bi-lock-fill"></i></div>
+              <input name="pass_user" type="password" id="pass_user" class="form-control" placeholder="{{ lang.login.password }}" required="" autocomplete="current-password">
+            </div>
+          </div>
+          <div class="form-group" style="position: relative">
+            <div class="btn-group">
+              <div class="btn-group">
+                <button type="submit" class="btn btn-xs-lg btn-success" value="Login">{{ lang.login.login }}</button>
+                <button type="button" class="btn btn-xs-lg btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a href="#" id="fido2-login" style="line-height:1.4;"><i class="bi bi-shield-fill-check"></i> {{ lang.login.fido2_webauthn }}</a></li>
+                </ul>
+              </div>
+            </div>
+            {% if not oauth2_request %}
+            <button type="button" {% if available_languages|length == 1 %}disabled="true"{% endif %} class="btn btn-xs-lg btn-default pull-right dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="flag-icon flag-icon-{{ mailcow_locale }}"></span> <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu pull-right login">
+              {% for key, val in available_languages %}
+                <li{% if mailcow_locale == key %} class="active"{% endif %}>
+                  <a href="?{{ query_string({'lang': key}) }}">
+                    <span class="flag-icon flag-icon-{{ key }}"></span>{{ val }}
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+            <div class="clearfix"></div>
+          </div>
+        </form>
+        {% if login_delay %}
+        <p><div class="alert alert-info">{{ lang.login.delayed|format(login_delay) }}</b></div></p>
+        {% endif %}
+        <div id="fido2-alerts"></div>
+        {% if not oauth2_request and (mailcow_apps or app_links) %}
+        <legend><i class="bi bi-link-45deg"></i> {{ ui_texts.apps_name|raw }}</legend>
+        <div class="apps">
+          {% for app in mailcow_apps %}
+            {% if not skip_sogo or not is_uri('SOGo', app.link) %}
+            <div class="media-clearfix">
+              <a href="{{ app.link }}" role="button" {% if app.description %}title="{{ app.description }}"{% endif %} class="btn btn-primary btn-lg btn-block">{{ app.name }}</a>
+            </div>
+          {% endif %}
+          {% endfor %}
+          {% for row in app_links %}
+            {% for key, val in row %}
+              <div class="media-clearfix">
+                <a href="{{ val }}" role="button" class="btn btn-primary btn-lg btn-block">{{ key }}</a>
+              </div>
+            {% endfor %}
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% if not oauth2_request %}
+  <div class="col-md-offset-3 col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <a data-toggle="collapse" href="#collapse1"><i class="bi bi-patch-question-fill"></i> {{ lang.start.help }}</a>
+      </div>
+      <div id="collapse1" class="panel-collapse collapse">
+        <div class="panel-body">
+          {% if ui_texts.help_text %}
+          <p>{{ ui_texts.help_text|raw }}</p>
+          {% else %}
+          <p><span style="border-bottom: 1px dotted #999;">{{ ui_texts.main_name|raw }}</span></p>
+          <p>{{ lang.start.mailcow_panel_detail|raw }}</p>
+          <p><span style="border-bottom: 1px dotted #999;">{{ ui_texts.apps_name|raw }}</span></p>
+          <p>{{ lang.start.mailcow_apps_detail|raw }}</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

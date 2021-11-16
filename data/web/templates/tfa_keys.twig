@@ -1,0 +1,15 @@
+<div id="tfa_keys">
+  {% if tfa_data.additional %}
+    {% for key_info in tfa_data.additional %}
+      <form style="display:inline;" method="post">
+        <input type="hidden" name="unset_tfa_key" value="{{ key_info.id }}">
+        <p>
+          <span style="padding:4px;margin:4px" class="label label-keys label-{% if tfa_id == key_info.id %}success{% else %}default{% endif %}">
+            {{ key_info.key_id }}
+            <a href="#" style="font-weight:bold;color:white" onClick='return confirm("{{ lang.admin.ays }}")?$(this).closest("form").submit():"";'>[{{ lang.admin.remove }}]</a>
+          </span>
+        </p>
+      </form>
+    {% endfor %}
+  {% endif %}
+</div>

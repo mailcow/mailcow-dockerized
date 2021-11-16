@@ -16,6 +16,15 @@ log_f() {
   fi
 }
 
+verify_email(){
+  regex="^(([A-Za-z0-9]+((\.|\-|\_|\+)?[A-Za-z0-9]?)*[A-Za-z0-9]+)|[A-Za-z0-9]+)@(([A-Za-z0-9]+)+((\.|\-|\_)?([A-Za-z0-9]+)+)*)+\.([A-Za-z]{2,})+$"
+  if [[ $1 =~ ${regex} ]]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
 verify_hash_match(){
   CERT_HASH=$(openssl x509 -in "${1}" -noout -pubkey | openssl md5)
   KEY_HASH=$(openssl pkey -in "${2}" -pubout | openssl md5)
@@ -60,6 +69,17 @@ check_domain(){
     DOMAIN=$1
     A_DOMAIN=$(dig A ${DOMAIN} +short | tail -n 1)
     AAAA_DOMAIN=$(dig AAAA ${DOMAIN} +short | tail -n 1)
+    # Hard-fail on CAA errors for MAILCOW_HOSTNAME
+    PARENT_DOMAIN=$(echo ${DOMAIN} | cut -d. -f2-)
+    CAAS=( $(dig CAA ${PARENT_DOMAIN} +short | sed -n 's/\d issue "\(.*\)"/\1/p') )
+    if [[ ! -z ${CAAS} ]]; then
+      if [[ ${CAAS[@]} =~ "letsencrypt.org" ]]; then
+        log_f "Validated CAA for parent domain ${PARENT_DOMAIN}"
+      else
+        log_f "Lets Encrypt disallowed for ${PARENT_DOMAIN} by CAA record"
+        return 1
+      fi
+    fi
     # Check if CNAME without v6 enabled target
     if [[ ! -z ${AAAA_DOMAIN} ]] && [[ -z $(echo ${AAAA_DOMAIN} | grep "^\([0-9a-fA-F]\{0,4\}:\)\{1,7\}[0-9a-fA-F]\{0,4\}$") ]]; then
       AAAA_DOMAIN=

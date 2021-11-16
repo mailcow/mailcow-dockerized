@@ -1,0 +1,45 @@
+<div role="tabpanel" class="tab-pane" id="tab-config-rspamd">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Rspamd UI</h3>
+    </div>
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-xs-12 visible-xs">
+          <img class="img-responsive" src="/img/rspamd_logo.png" alt="Rspamd UI">
+        </div>
+        <div class="col-sm-9 col-xs-12">
+          <form class="form-horizontal" autocapitalize="none" data-id="admin" autocorrect="off" role="form" method="post">
+            <div class="form-group">
+              <div class="col-sm-offset-3 col-sm-9">
+                <label>
+                  <a href="/rspamd/" target="_blank"><i class="bi bi-window"></i> Rspamd UI</a>
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-3" for="rspamd_ui_pass">{{ lang.admin.password }}:</label>
+              <div class="col-sm-9">
+                <input type="password" class="form-control" id="rspamd_ui_pass" name="rspamd_ui_pass" autocomplete="new-password" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-3" for="rspamd_ui_pass2">{{ lang.admin.password_repeat }}:</label>
+              <div class="col-sm-9">
+                <input type="password" class="form-control" id="rspamd_ui_pass2" name="rspamd_ui_pass2" autocomplete="new-password" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-3 col-sm-9">
+                <button type="submit" class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" id="rspamd_ui" name="rspamd_ui" href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="col-sm-3 hidden-xs">
+          <img class="img-responsive" src="/img/rspamd_logo.png" alt="Rspamd UI">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -2,6 +2,7 @@
 
 import re
 import os
+import sys
 import time
 import atexit
 import signal
@@ -39,6 +40,7 @@ BLACKLIST= []
 bans = {}
 
 quit_now = False
+exit_code = 0
 lock = Lock()
 
 def log(priority, message):
@@ -61,6 +63,7 @@ def logInfo(message):
 def refreshF2boptions():
   global f2boptions
   global quit_now
+  global exit_code
   if not r.get('F2B_OPTIONS'):
     f2boptions = {}
     f2boptions['ban_time'] = int
@@ -81,20 +84,24 @@ def refreshF2boptions():
     except ValueError:
       print('Error loading F2B options: F2B_OPTIONS is not json')
       quit_now = True
+      exit_code = 2
 
 def refreshF2bregex():
   global f2bregex
   global quit_now
+  global exit_code
   if not r.get('F2B_REGEX'):
     f2bregex = {}
-    f2bregex[1] = 'warning: .*\[([0-9a-f\.:]+)\]: SASL .+ authentication failed'
-    f2bregex[2] = '-login: Disconnected \(auth failed, .+\): user=.*, method=.+, rip=([0-9a-f\.:]+),'
-    f2bregex[3] = '-login: Aborted login \(tried to use disallowed .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
-    f2bregex[4] = 'SOGo.+ Login from \'([0-9a-f\.:]+)\' for user .+ might not have worked'
-    f2bregex[5] = 'mailcow UI: Invalid password for .+ by ([0-9a-f\.:]+)'
-    f2bregex[6] = '([0-9a-f\.:]+) \"GET \/SOGo\/.* HTTP.+\" 403 .+'
-    f2bregex[7] = 'Rspamd UI: Invalid password by ([0-9a-f\.:]+)'
-    f2bregex[8] = '-login: Aborted login \(auth failed .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
+    f2bregex[1] = 'mailcow UI: Invalid password for .+ by ([0-9a-f\.:]+)'
+    f2bregex[2] = 'Rspamd UI: Invalid password by ([0-9a-f\.:]+)'
+    f2bregex[3] = 'warning: .*\[([0-9a-f\.:]+)\]: SASL .+ authentication failed'
+    f2bregex[4] = 'warning: non-SMTP command from .*\[([0-9a-f\.:]+)]:.+'
+    f2bregex[5] = 'NOQUEUE: reject: RCPT from \[([0-9a-f\.:]+)].+Protocol error.+'
+    f2bregex[6] = '-login: Disconnected \(auth failed, .+\): user=.*, method=.+, rip=([0-9a-f\.:]+),'
+    f2bregex[7] = '-login: Aborted login \(auth failed .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
+    f2bregex[8] = '-login: Aborted login \(tried to use disallowed .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
+    f2bregex[9] = 'SOGo.+ Login from \'([0-9a-f\.:]+)\' for user .+ might not have worked'
+    f2bregex[10] = '([0-9a-f\.:]+) \"GET \/SOGo\/.* HTTP.+\" 403 .+'
     r.set('F2B_REGEX', json.dumps(f2bregex, ensure_ascii=False))
   else:
     try:
@@ -103,6 +110,7 @@ def refreshF2bregex():
     except ValueError:
       print('Error loading F2B options: F2B_REGEX is not json')
       quit_now = True
+      exit_code = 2
 
 if r.exists('F2B_LOG'):
   r.rename('F2B_LOG', 'NETFILTER_LOG')
@@ -110,6 +118,7 @@ if r.exists('F2B_LOG'):
 def mailcowChainOrder():
   global lock
   global quit_now
+  global exit_code
   while not quit_now:
     time.sleep(10)
     with lock:
@@ -128,9 +137,11 @@ def mailcowChainOrder():
               if position > 2:
                 logCrit('Error in %s chain order: MAILCOW on position %d, restarting container' % (chain.name, position))
                 quit_now = True
+                exit_code = 2
           if not target_found:
             logCrit('Error in %s chain: MAILCOW target not found, restarting container' % (chain.name))
             quit_now = True
+            exit_code = 2
 
 def ban(address):
   global lock
@@ -300,22 +311,30 @@ def watch():
   logInfo('Watching Redis channel F2B_CHANNEL')
   pubsub.subscribe('F2B_CHANNEL')
 
+  global quit_now
+  global exit_code
+
   while not quit_now:
-    for item in pubsub.listen():
-      refreshF2bregex()
-      for rule_id, rule_regex in f2bregex.items():
-        if item['data'] and item['type'] == 'message':
-          try:
-            result = re.search(rule_regex, item['data'])
-          except re.error:
-            result = False
-          if result:
-            addr = result.group(1)
-            ip = ipaddress.ip_address(addr)
-            if ip.is_private or ip.is_loopback:
-              continue
-            logWarn('%s matched rule id %s (%s)' % (addr, rule_id, item['data']))
-            ban(addr)
+    try:
+      for item in pubsub.listen():
+        refreshF2bregex()
+        for rule_id, rule_regex in f2bregex.items():
+          if item['data'] and item['type'] == 'message':
+            try:
+              result = re.search(rule_regex, item['data'])
+            except re.error:
+              result = False
+            if result:
+              addr = result.group(1)
+              ip = ipaddress.ip_address(addr)
+              if ip.is_private or ip.is_loopback:
+                continue
+              logWarn('%s matched rule id %s (%s)' % (addr, rule_id, item['data']))
+              ban(addr)
+    except Exception as ex:
+      logWarn('Error reading log line from pubsub')
+      quit_now = True
+      exit_code = 2
 
 def snat4(snat_target):
   global lock
@@ -555,3 +574,5 @@ if __name__ == '__main__':
 
   while not quit_now:
     time.sleep(0.5)
+
+  sys.exit(exit_code)

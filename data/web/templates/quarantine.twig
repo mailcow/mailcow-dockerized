@@ -1,0 +1,64 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default panel-xs-lg">
+      <div class="panel-heading">
+        {{ lang.quarantine.quarantine }} <span class="badge badge-info table-lines"></span>
+        <div class="btn-group pull-right">
+          <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_quarantine_table" data-table="quarantinetable">{{ lang.quarantine.refresh }}</button>
+          <button type="button" class="btn btn-xs btn-xs-lg btn-default dropdown-toggle" data-toggle="dropdown">{{ lang.quarantine.table_size }}
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" data-table-id="quarantinetable" role="menu">
+            <li><a href="#" data-page-size="10">{{ lang.quarantine.table_size_show_n|format(10) }}</a></li>
+            <li><a href="#" data-page-size="20">{{ lang.quarantine.table_size_show_n|format(20) }}</a></li>
+            <li><a href="#" data-page-size="50">{{ lang.quarantine.table_size_show_n|format(50) }}</a></li>
+            <li><a href="#" data-page-size="100">{{ lang.quarantine.table_size_show_n|format(100) }}</a></li>
+            <li><a href="#" data-page-size="200">{{ lang.quarantine.table_size_show_n|format(200) }}</a></li>
+            <li><a href="#" data-page-size="500">{{ lang.quarantine.table_size_show_n|format(500) }}</a></li>
+          </ul>
+        </div>
+      </div>
+      <p style="margin:10px" class="help-block">{{ lang.quarantine.qinfo|raw }}</p>
+      <p style="margin:10px">
+        {% if not quarantine_settings.retention_size or not quarantine_settings.max_size %}
+        <div class="panel-body"><div class="alert alert-info">{{ lang.quarantine.disabled_by_config }}</div></div>
+        {% else %}
+        <p style="margin:10px" class="help-block">
+          {{ lang.quarantine.settings_info|format(quarantine_settings.retention_size, quarantine_settings.max_size)|raw }}
+        </p>
+        {% endif %}
+      </p>
+      <div class="table-responsive">
+        <table id="quarantinetable" class="table table-striped"></table>
+      </div>
+      <div class="mass-actions-quarantine">
+        <div class="btn-group" data-acl="{{ acl.quarantine }}">
+          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="qitems" href="#"><i class="bi bi-check-all"></i> {{ lang.quarantine.toggle_all }}</a>
+          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#">{{ lang.quarantine.quick_actions }} <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a data-action="edit_selected" data-id="qitems" data-api-url='edit/qitem' data-api-attr='{"action":"release"}' href="#">{{ lang.quarantine.deliver_inbox }}</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a data-action="edit_selected" data-id="qitems" data-api-url='edit/qitem' data-api-attr='{"action":"learnspam"}' href="#">{{ lang.quarantine.learn_spam_delete }}</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a data-action="delete_selected" data-id="qitems" data-api-url='delete/qitem' href="#">{{ lang.quarantine.remove }}</a></li>
+          </ul>
+          <div class="clearfix visible-xs"></div>
+        </div>
+      </div>
+    </div>
+  </div> <!-- /col-md-12 -->
+</div> <!-- /row -->
+
+{% include 'modals/quarantine.twig' %}
+
+<script type='text/javascript'>
+var acl = '{{ acl_json|raw }}';
+var lang = {{ lang_quarantine|raw }};
+var csrf_token = '{{ csrf_token }}';
+var pagination_size = '{{ pagination_size }}';
+var role = '{{ role }}';
+</script>
+{% endblock %}

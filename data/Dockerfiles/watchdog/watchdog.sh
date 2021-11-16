@@ -6,12 +6,23 @@ trap "kill 0" EXIT
 # Prepare
 BACKGROUND_TASKS=()
 echo "Waiting for containers to settle..."
-sleep 30
+for i in {30..1}; do
+  echo "${i}"
+  sleep 1
+done
 
 if [[ "${USE_WATCHDOG}" =~ ^([nN][oO]|[nN])+$ ]]; then
   echo -e "$(date) - USE_WATCHDOG=n, skipping watchdog..."
   sleep 365d
   exec $(readlink -f "$0")
+fi
+
+if [[ "${WATCHDOG_VERBOSE}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  SMTP_VERBOSE="--verbose"
+  set -xv
+else
+  SMTP_VERBOSE=""
+  exec 2>/dev/null
 fi
 
 # Checks pipe their corresponding container name in this pipe
@@ -114,16 +125,16 @@ function mail_error() {
   IFS=',' read -r -a MAIL_RCPTS <<< "${WATCHDOG_NOTIFY_EMAIL}"
   for rcpt in "${MAIL_RCPTS[@]}"; do
     RCPT_DOMAIN=
-    #RCPT_MX=
+    RCPT_MX=
     RCPT_DOMAIN=$(echo ${rcpt} | awk -F @ {'print $NF'})
-    # Latest smtp-cli looks up mx via dns
-    #RCPT_MX=$(dig +short ${RCPT_DOMAIN} mx | sort -n | awk '{print $2; exit}')
-    #if [[ -z ${RCPT_MX} ]]; then
-    #  log_msg "Cannot determine MX for ${rcpt}, skipping email notification..."
-    #  return 1
-    #fi
+    CHECK_FOR_VALID_MX=$(dig +short ${RCPT_DOMAIN} mx)
+    if [[ -z ${CHECK_FOR_VALID_MX} ]]; then
+      log_msg "Cannot determine MX for ${rcpt}, skipping email notification..."
+      return 1
+    fi
     [ -f "/tmp/${1}" ] && BODY="/tmp/${1}"
     timeout 10s ./smtp-cli --missing-modules-ok \
+      "${SMTP_VERBOSE}" \
       --charset=UTF-8 \
       --subject="${SUBJECT}" \
       --body-plain="${BODY}" \
@@ -132,8 +143,15 @@ function mail_error() {
       --from="watchdog@${MAILCOW_HOSTNAME}" \
       --hello-host=${MAILCOW_HOSTNAME} \
       --ipv4
-      #--server="${RCPT_MX}"
-    log_msg "Sent notification email to ${rcpt}"
+    if [[ $? -eq 1 ]]; then # exit code 1 is fine
+      log_msg "Sent notification email to ${rcpt}"
+    else
+      if [[ "${SMTP_VERBOSE}" == "" ]]; then
+        log_msg "Error while sending notification email to ${rcpt}. You can enable verbose logging by setting 'WATCHDOG_VERBOSE=y' in mailcow.conf."
+      else
+        log_msg "Error while sending notification email to ${rcpt}."
+      fi
+    fi
   done
 }
 
@@ -154,7 +172,7 @@ get_container_ip() {
       CONTAINER_ID=($(printf "%s\n" "${CONTAINER_ID[@]}" | shuf))
       if [[ ! -z ${CONTAINER_ID} ]]; then
         for matched_container in "${CONTAINER_ID[@]}"; do
-          CONTAINER_IPS=($(curl --silent --insecure https://dockerapi/containers/${matched_container}/json | jq -r '.NetworkSettings.Networks[].IPAddress')) 
+          CONTAINER_IPS=($(curl --silent --insecure https://dockerapi/containers/${matched_container}/json | jq -r '.NetworkSettings.Networks[].IPAddress'))
           for ip_match in "${CONTAINER_IPS[@]}"; do
             # grep will do nothing if one of these vars is empty
             [[ -z ${ip_match} ]] && continue
@@ -210,7 +228,7 @@ external_checks() {
       sleep 60
     else
       diff_c=0
-      sleep $(( ( RANDOM % 20 ) + 120 ))
+      sleep $(( ( RANDOM % 20 ) + 1800 ))
     fi
   done
   return 1
@@ -358,7 +376,7 @@ sogo_checks() {
     touch /tmp/sogo-mailcow; echo "$(tail -50 /tmp/sogo-mailcow)" > /tmp/sogo-mailcow
     host_ip=$(get_container_ip sogo-mailcow)
     err_c_cur=${err_count}
-    /usr/lib/nagios/plugins/check_http -4 -H ${host_ip} -u /SOGo.index/ -p 20000 -R "SOGo\.MainUI" 2>> /tmp/sogo-mailcow 1>&2; err_count=$(( ${err_count} + $? ))
+    /usr/lib/nagios/plugins/check_http -4 -H ${host_ip} -u /SOGo.index/ -p 20000 2>> /tmp/sogo-mailcow 1>&2; err_count=$(( ${err_count} + $? ))
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
     [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
     progress "SOGo" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
@@ -659,39 +677,6 @@ acme_checks() {
   done
   return 1
 }
-
-ipv6nat_checks() {
-  err_count=0
-  diff_c=0
-  THRESHOLD=${IPV6NAT_THRESHOLD}
-  # Reduce error count by 2 after restarting an unhealthy container
-  trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
-  while [ ${err_count} -lt ${THRESHOLD} ]; do
-    err_c_cur=${err_count}
-    CONTAINERS=$(curl --silent --insecure https://dockerapi/containers/json)
-    IPV6NAT_CONTAINER_ID=$(echo ${CONTAINERS} | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], project: .Config.Labels[\"com.docker.compose.project\"], id: .Id}" | jq -rc "select( .name | tostring | contains(\"ipv6nat-mailcow\")) | select( .project | tostring | contains(\"${COMPOSE_PROJECT_NAME,,}\")) | .id")
-    if [[ ! -z ${IPV6NAT_CONTAINER_ID} ]]; then
-      LATEST_STARTED="$(echo ${CONTAINERS} | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], project: .Config.Labels[\"com.docker.compose.project\"], StartedAt: .State.StartedAt}" | jq -rc "select( .project | tostring | contains(\"${COMPOSE_PROJECT_NAME,,}\")) | select( .name | tostring | contains(\"ipv6nat-mailcow\") | not)" | jq -rc .StartedAt | xargs -n1 date +%s -d | sort | tail -n1)"
-      LATEST_IPV6NAT="$(echo ${CONTAINERS} | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], project: .Config.Labels[\"com.docker.compose.project\"], StartedAt: .State.StartedAt}" | jq -rc "select( .project | tostring | contains(\"${COMPOSE_PROJECT_NAME,,}\")) | select( .name | tostring | contains(\"ipv6nat-mailcow\"))" | jq -rc .StartedAt | xargs -n1 date +%s -d | sort | tail -n1)"
-      DIFFERENCE_START_TIME=$(expr ${LATEST_IPV6NAT} - ${LATEST_STARTED} 2>/dev/null)
-      if [[ "${DIFFERENCE_START_TIME}" -lt 30 ]]; then
-        err_count=$(( ${err_count} + 1 ))
-      fi
-    fi
-    [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
-    [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
-    progress "IPv6 NAT" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
-    if [[ $? == 10 ]]; then
-      diff_c=0
-      sleep 30
-    else
-      diff_c=0
-      sleep 300
-    fi
-  done
-  return 1
-}
-
 
 rspamd_checks() {
   err_count=0
@@ -1005,18 +990,6 @@ PID=$!
 echo "Spawned acme_checks with PID ${PID}"
 BACKGROUND_TASKS+=(${PID})
 
-(
-while true; do
-  if ! ipv6nat_checks; then
-    log_msg "IPv6 NAT warning: ipv6nat-mailcow container was not started at least 30s after siblings (not an error)"
-    echo ipv6nat-mailcow > /tmp/com_pipe
-  fi
-done
-) &
-PID=$!
-echo "Spawned ipv6nat_checks with PID ${PID}"
-BACKGROUND_TASKS+=(${PID})
-
 # Monitor watchdog agents, stop script when agents fails and wait for respawn by Docker (restart:always:n)
 (
 while true; do
@@ -1112,9 +1085,7 @@ while true; do
       else
         log_msg "Sending restart command to ${CONTAINER_ID}..."
         curl --silent --insecure -XPOST https://dockerapi/containers/${CONTAINER_ID}/restart
-        if [[ ${com_pipe_answer} != "ipv6nat-mailcow" ]]; then
-          [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}"
-        fi
+        [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}"
         log_msg "Wait for restarted container to settle and continue watching..."
         sleep 35
       fi

@@ -1,0 +1,308 @@
+.space20 {
+  margin-bottom: 20px;
+}
+
+.btn-xs-lg>.lang-sm:after {
+  margin-left: 4px;
+}
+
+.bootstrap-select {
+  max-width: 350px;
+}
+
+.panel-login .apps .btn {
+  width: auto;
+  float: left;
+  margin-right: 10px;
+  margin-top: auto;
+}
+.panel-login .apps .btn:hover {
+  margin-top: 1px !important;
+  border-bottom-width: 3px;
+}
+
+@media (max-width: 767px) {
+  .panel-login .apps .btn {
+    width: 100%;
+    float: none;
+    margin-bottom: 10px;
+  }
+
+  .panel-login .apps .btn {
+    border-bottom-width: 4px;
+  }
+
+  .media-clearfix::after {
+    clear: both;
+    box-sizing: border-box;
+  }
+
+  .media-clearfix::before {
+    display: table;
+    content: " ";
+    box-sizing: border-box;
+  }
+
+  .xs-show {
+    display: block !important;
+  }
+
+  .js-tabcollapse-panel-group .panel{
+    border: none;
+    box-shadow: none;
+  }
+
+  .js-tabcollapse-panel-group .panel-body {
+    padding: 10px 0;
+  }
+
+  .js-tabcollapse-panel-group .js-tabcollapse-panel-body .panel-body {
+    padding: 0;
+  }
+
+  .js-tabcollapse-panel-body .panel-heading {
+    display: none;
+  }
+
+  .js-tabcollapse-panel-body .well,
+  .panel-body .form-inline.well {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+    background-color: #fff;
+  }
+
+  .js-tabcollapse-panel-heading {
+    display: block;
+    height: 37px;
+    line-height: 37px;
+    text-indent: 15px;
+  }
+  .js-tabcollapse-panel-heading:hover {
+    text-decoration: none;
+  }
+  .js-tabcollapse-panel-heading {
+    position: relative;
+  }
+  .js-tabcollapse-panel-heading:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 17px;
+    right: 17px;
+    width: 0;
+    height: 0;
+    margin-left: 2px;
+    vertical-align: middle;
+    border-bottom: 4px dashed;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+  }
+  .js-tabcollapse-panel-heading.collapsed:after {
+    border-bottom: none;
+    border-top: 4px dashed;
+  }
+
+  .recent-login-success {
+  font-size: 14px;
+  margin-top: 10px !important;
+  }
+  .pull-xs-right {
+  float: right !important;
+  }
+  .pull-xs-right .dropdown-menu {
+  right: 0;
+  left: auto;
+  }
+  .text-xs-left {
+    text-align: left;
+  }
+  .text-xs-bold {
+    font-weight: bold;
+  }
+  .text-xs-bold .small {
+    font-weight: normal;
+    text-align: justify;
+  }
+  .help-block {
+    text-align: justify;
+  }
+  .btn.visible-xs-block {
+    width: 100%;
+    float: none;
+    white-space: normal;
+  }
+  .btn-group.footable-actions .btn.btn-xs-half,
+  .btn.visible-xs-block.btn-xs-half {
+    width: 50%;
+    float: left;
+  }
+  .btn-group.footable-actions .btn.btn-xs-third,
+  .btn.visible-xs-block.btn-xs-third {
+    width: 33.33%;
+    float: left;
+  }
+  .btn-group.footable-actions .btn.btn-xs-quart,
+  .btn.visible-xs-block.btn-xs-quart {
+    width: 25%;
+    float: left;
+  }
+  .btn.visible-xs-block.btn-sm,
+  .btn-xs-lg {
+    padding: 15px 16px 13px;
+    line-height: 15px;
+  }
+  .input-xs-lg {
+  height: 47px;
+    padding: 13px 16px;
+  }
+  .btn-group:not(.input-group-btn) {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .btn-group.nowrap {
+    flex-wrap: nowrap;
+  }
+  .btn-group.nowrap .dropdown-menu {
+    width: 100%;
+  }
+  .panel-login .btn-group {
+    display: block;
+  }
+  .mass-actions-user .btn-group {
+    float: none;
+  }
+  div[class^='mass-actions'] .dropdown-menu,
+  .panel-xs-lg .dropdown-menu,
+  .dropdown-menu.login {
+    width: 100%;
+  }
+  div[class^='mass-actions'] .btn-group .dropdown-menu {
+  top: 50%;
+  }
+  div[class^='mass-actions'] .btn-group .btn-group .dropdown-menu,
+  div.mass-actions-quarantine .btn-group .dropdown-menu,
+  .panel-xs-lg .dropdown-menu {
+    top: 100%;
+  }
+  div[class^='mass-actions'] .dropdown-menu>li>a,
+  .panel-xs-lg .dropdown-menu>li>a,
+  .dropdown-menu.login>li>a {
+    padding: 8px 20px;
+  }
+  div[class^='mass-actions'] .dropdown-header {
+    font-size: 14px;
+    font-weight: bold;
+  }
+  .space20 {
+    margin-bottom: 10px;
+  }
+  .top100 {
+    top: 100% !important;
+  }
+  .top33 {
+    top: 33% !important;
+  }
+  .footable-filtering .form {
+    width: 65%;
+  }
+  .btn-xs-lg>.lang-sm:after {
+    top: 1px;
+  }
+  table.footable>tfoot>tr.footable-paging>td {
+    text-align: left;
+  }
+  .footable-first-visible {
+    min-width: 55px;
+  }
+  table>tbody>tr>td>span.footable-toggle {
+    font-size: 24px;
+    margin-right: 14px !important;
+  }
+  table>tbody>tr>td>span.footable-toggle + input {
+    position: absolute;
+    left: 38px;
+  }
+  .pagination {
+    margin-bottom: 5px;
+  }
+  tr.footable-filtering>th>form {
+    width: 270px;
+  }
+  .mass-actions-mailbox {
+    padding: 0;
+  }
+  .panel-xs-lg .panel-heading {
+    height: 66px;
+    line-height: 47px;
+  }
+  .panel-xs-lg .btn-group .btn {
+    padding-right: 5px;
+    padding-left: 5px;
+  }
+  .bootstrap-select:not([class*=col-]):not([class*=form-control]):not(.input-group-btn) {
+    width: 100%;
+  }
+  .btn-group:not(.bootstrap-select) {
+    width: auto !important;
+  }
+  .bootstrap-select {
+    max-width: 100%;
+  }
+  .img-responsive {
+    margin: 0 auto;
+  }
+  .btn-group.footable-actions {
+  position: absolute;
+    width: 90vw !important;
+    left: 0;
+    height: 36px;
+    margin-top: -8px;
+  }
+  .btn-group.footable-actions .btn {
+  padding: 10px 16px 7px;
+    line-height: 15px;
+    display: block;
+    width: 100%;
+  }
+  .btn-group.footable-actions:after {
+    content: "";
+    display: block;
+    clear: both;
+  }
+  .bootstrap-select.btn-group.show-tick .dropdown-menu li a span.text {
+    margin-right: 14px;
+    white-space: normal;
+  }
+  .clearfix {
+    flex-basis: 100%;
+    height: 0;
+  }
+  .btn-group > .btn-group {
+    flex-basis: 100%;
+  }
+  .btn-group .btn {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  }
+  .btn-group .btn i {
+    margin-right: 5px;
+  }
+  .btn-group .btn .caret {
+  margin-left: 5px;
+  }
+  .panel-login .btn-group .btn {
+    display: block !important;
+  }
+  .panel-login .clearfix {
+    height: auto;
+  }
+}
+
+@media (max-width: 350px) {
+  .mailcow-logo img {
+    max-width: 250px;
+  }
+}

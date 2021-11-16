@@ -1,0 +1,108 @@
+<div role="tabpanel" class="tab-pane" id="tab-config-customize">
+  <div class="panel panel-default">
+    <div class="panel-heading">{{ lang.admin.customize }}</div>
+    <div class="panel-body">
+      <legend><i class="bi bi-file-image"></i> {{ lang.admin.change_logo }}</legend>
+      <p class="help-block">{{ lang.admin.logo_info }}</p>
+      <form class="form-inline" role="form" method="post" enctype="multipart/form-data">
+        <p>
+          <input type="file" name="main_logo" accept="image/gif, image/jpeg, image/pjpeg, image/x-png, image/png, image/svg+xml"><br>
+          <button name="submit_main_logo" type="submit" class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default"><i class="bi bi-upload"></i> {{ lang.admin.upload }}</button>
+        </p>
+      </form>
+      {% if logo %}
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="thumbnail">
+              <img class="img-thumbnail" src="{{ logo }}" alt="mailcow logo">
+              <div class="caption">
+                <span class="label label-info">{{ logo_specs.geometry.width }}x{{ logo_specs.geometry.height }} px</span>
+                <span class="label label-info">{{ logo_specs.mimetype }}</span>
+                <span class="label label-info">{{ logo_specs.fileSize }}</span>
+              </div>
+            </div>
+            <hr>
+            <form class="form-inline" role="form" method="post">
+              <p><button name="reset_main_logo" type="submit" class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default">{{ lang.admin.reset_default }}</button></p>
+            </form>
+          </div>
+        </div>
+      {% endif %}
+      <legend>{{ lang.admin.app_links }}</legend>
+      <p class="help-block">{{ lang.admin.merged_vars_hint }}</p>
+      <form class="form-inline" data-id="app_links" role="form" method="post">
+        <table class="table table-condensed" style="white-space: nowrap;" id="app_link_table">
+          <tr>
+            <th>{{ lang.admin.app_name }}</th>
+            <th>{{ lang.admin.link }}</th>
+            <th>&nbsp;</th>
+          </tr>
+          {% for row in app_links %}
+            {% for key, val in row %}
+              <tr>
+                <td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="app" required value="{{ key }}"></td>
+                <td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="href" required value="{{ val }}"></td>
+                <td><a href="#" role="button" class="btn btn-sm btn-xs-lg btn-default" type="button">{{ lang.admin.remove_row }}</a></td>
+              </tr>
+            {% endfor %}
+          {% endfor %}
+          {% for app in mailcow_apps %}
+            <tr>
+              <td><input class="input-sm input-xs-lg form-control" value="{{ app.name }}" disabled></td>
+              <td><input class="input-sm input-xs-lg form-control" value="{{ app.link }}" disabled></td>
+              <td>&nbsp;</td>
+            </tr>
+          {% endfor %}
+        </table>
+        <p><div class="btn-group">
+          <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected" data-item="admin" data-id="app_links" data-reload="no" data-api-url='edit/app_links' data-api-attr='{}' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+          <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" type="button" id="add_app_link_row">{{ lang.admin.add_row }}</button>
+          <div class="clearfix visible-xs"></div>
+        </div></p>
+      </form>
+      <legend data-target="#ui_texts" style="padding-top:20px" unselectable="on">{{ lang.admin.ui_texts }}</legend>
+      <div id="ui_texts">
+        <form class="form" data-id="uitexts" role="form" method="post">
+          <div class="form-group">
+            <label for="uitests_title_name">{{ lang.admin.title_name }}:</label>
+            <input type="text" class="form-control" id="uitests_title_name" name="title_name" placeholder="mailcow UI" value="{{ ui_texts.title_name|raw }}">
+          </div>
+          <div class="form-group">
+            <label for="uitests_main_name">{{ lang.admin.main_name }}:</label>
+            <input type="text" class="form-control" id="uitests_main_name" name="main_name" placeholder="mailcow UI" value="{{ ui_texts.main_name|raw }}">
+          </div>
+          <div class="form-group">
+            <label for="uitests_apps_name">{{ lang.admin.apps_name }}:</label>
+            <input type="text" class="form-control" id="uitests_apps_name" name="apps_name" placeholder="{{ lang.header.apps }}" value="{{ ui_texts.apps_name|raw }}">
+          </div>
+          <div class="form-group">
+            <label for="help_text">{{ lang.admin.help_text }}:</label>
+            <textarea class="form-control" id="help_text" name="help_text" rows="7">{{ ui_texts.help_text|raw }}</textarea>
+          </div>
+          <hr>
+          <div class="form-group">
+            <p class="help-block">{{ lang.admin.ui_header_announcement_help }}</p>
+            <label for="ui_announcement_type">{{ lang.admin.ui_header_announcement }}:</label>
+            <p><select multiple data-width="100%" id="ui_announcement_type" name="ui_announcement_type" class="selectpicker show-tick" data-max-options="1" title="{{ lang.admin.ui_header_announcement_select }}">
+                <option {% if ui_texts.ui_announcement_type == 'info' %}selected{% endif %} value="info">{{ lang.admin.ui_header_announcement_type_info }}</option>
+                <option {% if ui_texts.ui_announcement_type == 'warning' %}selected{% endif %} value="warning">{{ lang.admin.ui_header_announcement_type_warning }}</option>
+                <option {% if ui_texts.ui_announcement_type == 'danger' %}selected{% endif %} value="danger">{{ lang.admin.ui_header_announcement_type_danger }}</option>
+              </select></p>
+            <p><textarea class="form-control" id="ui_announcement_text" name="ui_announcement_text" rows="7">{{ ui_texts.ui_announcement_text }}</textarea></p>
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" name="ui_announcement_active" class="form-check-input" {% if ui_texts.ui_announcement_active == 1 %}checked{% endif %}> {{ lang.admin.ui_header_announcement_active }}
+              </label>
+            </div>
+          </div>
+          <hr>
+          <div class="form-group">
+            <label for="ui_footer">{{ lang.admin.ui_footer }}:</label>
+            <textarea class="form-control" id="ui_footer" name="ui_footer" rows="7">{{ ui_texts.ui_footer }}</textarea>
+          </div>
+          <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected" data-item="ui" data-id="uitexts" data-api-url='edit/ui_texts' data-api-attr='{}' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

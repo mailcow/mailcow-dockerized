@@ -2,8 +2,8 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/spf.inc.php';
 
-define('state_good', '<span class="glyphicon glyphicon-ok text-success"></span>');
-define('state_missing', '<span class="glyphicon glyphicon-remove text-danger"></span>');
+define('state_good', '<i class="bi bi-check-lg text-success"></i>');
+define('state_missing', '<i class="bi bi-x-lg text-danger"></i>');
 define('state_nomatch', "?");
 define('state_optional', " <sup>2</sup>");
 
@@ -69,7 +69,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
   }
 
   // Init records array
-  $spf_link = '<a href="https://en.wikipedia.org/wiki/Sender_Policy_Framework" target="_blank">SPF Record Syntax</a><br />';
+  $spf_link = '<a href="http://www.open-spf.org/SPF_Record_Syntax/" target="_blank">SPF Record Syntax</a><br />';
   $dmarc_link = '<a href="https://www.kitterman.com/dmarc/assistant.html" target="_blank">DMARC Assistant</a>';
 
   $records = array();
@@ -126,28 +126,6 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
       'CNAME',
       $mailcow_hostname
     );
-    if ($domain_details['xmpp'] === 1 && isset($domain_details['xmpp_prefix'])) {
-      $records[] = array(
-        $domain_details['xmpp_prefix'] . '.' . $domain,
-        'CNAME',
-        $mailcow_hostname
-      );
-      $records[] = array(
-        '*.' . $domain_details['xmpp_prefix'] . '.' . $domain,
-        'CNAME',
-        $mailcow_hostname
-      );
-      $records[] = array(
-        '_xmpp-client._tcp.' . $domain_details['xmpp_prefix'] . '.' . $domain,
-        'SRV',
-        $mailcow_hostname . ' ' . array_pop(explode(':', getenv('XMPP_C2S_PORT')))
-      );
-      $records[] = array(
-        '_xmpp-server._tcp.' . $domain_details['xmpp_prefix'] . '.' . $domain,
-        'SRV',
-        $mailcow_hostname . ' ' . array_pop(explode(':', getenv('XMPP_S2S_PORT')))
-      );
-    }
   }
 
   $records[] = array(
@@ -173,7 +151,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
   }
 
   if (!in_array($domain, $alias_domains)) {
-    $current_records = dns_get_record('_pop3._tcp.' . $domain, DNS_SRV);
+    $current_records = (array)dns_get_record('_pop3._tcp.' . $domain, DNS_SRV);
     if (count($current_records) == 0 || $current_records[0]['target'] != '') {
       if ($autodiscover_config['pop3']['tlsport'] != '110') {
         $records[] = array(
@@ -191,7 +169,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
       );
     }
 
-    $current_records = dns_get_record('_pop3s._tcp.' . $domain, DNS_SRV);
+    $current_records = (array)dns_get_record('_pop3s._tcp.' . $domain, DNS_SRV);
 
     if (count($current_records) == 0 || $current_records[0]['target'] != '') {
       if ($autodiscover_config['pop3']['port'] != '995') {
@@ -287,21 +265,21 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
         $state = state_optional;
 
         if ($record[1] == 'TLSA') {
-          $currents = dns_get_record($record[0], 52, $_, $_, TRUE);
+          $currents = (array)dns_get_record($record[0], 52, $_, $_, TRUE);
           foreach ($currents as &$current) {
             $current['type'] = 'TLSA';
-            $current['cert_usage'] = hexdec(bin2hex($current['data']{0}));
-            $current['selector'] = hexdec(bin2hex($current['data']{1}));
-            $current['match_type'] = hexdec(bin2hex($current['data']{2}));
+            $current['cert_usage'] = hexdec(bin2hex($current['data'][0]));
+            $current['selector'] = hexdec(bin2hex($current['data'][1]));
+            $current['match_type'] = hexdec(bin2hex($current['data'][2]));
             $current['cert_data'] = bin2hex(substr($current['data'], 3));
             $current['data'] = $current['cert_usage'] . ' ' . $current['selector'] . ' ' . $current['match_type'] . ' ' . $current['cert_data'];
           }
           unset($current);
         }
         else {
-          $currents = dns_get_record($record[0], $record_types[$record[1]]);
+          $currents = (array)dns_get_record($record[0], $record_types[$record[1]]);
           if ($record[0] == $mailcow_hostname && ($record[1] == "A" || $record[1] == "AAAA")) {
-            if (!empty(dns_get_record($record[0], DNS_CNAME))) {
+            if (!empty((array)dns_get_record($record[0], DNS_CNAME))) {
               $currents[0]['ip'] = state_missing . ' <b>(CNAME)</b>';
               $currents[0]['ipv6'] = state_missing . ' <b>(CNAME)</b>';
             }
@@ -331,8 +309,8 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 
         if ($record[1] == 'CNAME' && count($currents) == 0) {
           // A and AAAA are also valid instead of CNAME
-          $a = dns_get_record($record[0], DNS_A);
-          $cname = dns_get_record($record[2], DNS_A);
+          $a = (array)dns_get_record($record[0], DNS_A);
+          $cname = (array)dns_get_record($record[2], DNS_A);
           if (count($a) > 0 && count($cname) > 0) {
             if ($a[0]['ip'] == $cname[0]['ip']) {
               $currents = array(
@@ -343,8 +321,8 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
                   'target' => $record[2]
                 )
               );
-              $aaaa = dns_get_record($record[0], DNS_AAAA);
-              $cname = dns_get_record($record[2], DNS_AAAA);
+              $aaaa = (array)dns_get_record($record[0], DNS_AAAA);
+              $cname = (array)dns_get_record($record[2], DNS_AAAA);
               if (count($aaaa) == 0 || count($cname) == 0 || expand_ipv6($aaaa[0]['ipv6']) != expand_ipv6($cname[0]['ipv6'])) {
                 $currents[0]['target'] = expand_ipv6($aaaa[0]['ipv6']) . ' <sup>1</sup>';
               }
@@ -458,7 +436,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
       }
       ?>
     </table>
-    <a id='download-zonefile' data-zonefile="<?=base64_encode($dns_data);?>" download='<?=$_GET['domain'];?>.txt' type='text/csv'>Download</a>
+    <a id='download-zonefile' class="btn btn-sm btn-default visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline" style="margin-top:10px" data-zonefile="<?=base64_encode($dns_data);?>" download='<?=$_GET['domain'];?>.txt' type='text/csv'>Download</a>
     <script>
       var zonefile_dl_link = document.getElementById('download-zonefile');
       var zonefile = atob(zonefile_dl_link.getAttribute('data-zonefile'));

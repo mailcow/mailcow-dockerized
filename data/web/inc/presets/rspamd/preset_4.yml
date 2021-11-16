@@ -1,0 +1,11 @@
+headline: lang.rsettings_preset_4
+content: |
+  priority = 10;
+  rcpt = "/.*@develcow.de$/";
+  from = "/.*/";
+  apply "default" {
+    MAILCOW_WHITE = -9999.0;
+  }
+  symbols [
+    "MAILCOW_WHITE"
+  ]

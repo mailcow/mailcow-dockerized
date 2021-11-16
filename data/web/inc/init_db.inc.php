@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "08022021_1000";
+    $db_version = "31102021_0620";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -152,9 +152,9 @@ function init_db_schema() {
           "id" => "INT NOT NULL AUTO_INCREMENT",
           "destination" => "VARCHAR(255) NOT NULL",
           "nexthop" => "VARCHAR(255) NOT NULL",
-          "username" => "VARCHAR(255) NOT NULL",
-          "password" => "VARCHAR(255) NOT NULL",
-          "lookup_mx" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "username" => "VARCHAR(255) NOT NULL DEFAULT ''",
+          "password" => "VARCHAR(255) NOT NULL DEFAULT ''",
+          "is_mx_based" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
         ),
         "keys" => array(
@@ -240,8 +240,6 @@ function init_db_schema() {
           "gal" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "relay_all_recipients" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "relay_unknown_only" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "xmpp" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "xmpp_prefix" => "VARCHAR(255) DEFAULT 'im'",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
           "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
@@ -321,7 +319,8 @@ function init_db_schema() {
             "" => array("username")
           ),
           "key" => array(
-            "domain" => array("domain")
+            "domain" => array("domain"),
+            "kind" => array("kind")
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
@@ -365,6 +364,12 @@ function init_db_schema() {
           "password" => "VARCHAR(255) NOT NULL",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
+          "imap_access" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "smtp_access" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "dav_access" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "eas_access" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "pop3_access" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "sieve_access" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
         ),
         "keys" => array(
@@ -444,7 +449,9 @@ function init_db_schema() {
         "cols" => array(
           "address" => "VARCHAR(255) NOT NULL",
           "goto" => "TEXT NOT NULL",
-          "validity" => "INT(11) NOT NULL"
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
+          "validity" => "INT(11)"
         ),
         "keys" => array(
           "primary" => array(
@@ -503,6 +510,27 @@ function init_db_schema() {
         "keys" => array(
           "primary" => array(
             "" => array("id")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "sasl_log" => array(
+        "cols" => array(
+          "service" => "VARCHAR(32) NOT NULL DEFAULT ''",
+          "app_password" => "INT",
+          "username" => "VARCHAR(255) NOT NULL",
+          "real_rip" => "VARCHAR(64) NOT NULL",
+          "datetime" => "DATETIME(0) NOT NULL DEFAULT NOW(0)"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("service", "real_rip", "username")
+          ),
+          "key" => array(
+            "username" => array("username"),
+            "service" => array("service"),
+            "datetime" => array("datetime"),
+            "real_rip" => array("real_rip")
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
@@ -569,10 +597,8 @@ function init_db_schema() {
           "protocol_access" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "smtp_ip_access" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "alias_domains" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "xmpp_prefix" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "xmpp_domain_access" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "xmpp_mailbox_access" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "xmpp_admin" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "mailbox_relayhost" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "domain_relayhost" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "domain_desc" => "TINYINT(1) NOT NULL DEFAULT '0'"
           ),
         "keys" => array(
@@ -612,6 +638,8 @@ function init_db_schema() {
           "is_running" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "returned_text" => "LONGTEXT",
           "last_run" => "TIMESTAMP NULL DEFAULT NULL",
+          "success" => "TINYINT(1) UNSIGNED DEFAULT NULL",
+          "exit_status" => "VARCHAR(50) DEFAULT NULL",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
           "active" => "TINYINT(1) NOT NULL DEFAULT '0'"
@@ -978,6 +1006,7 @@ function init_db_schema() {
           }
         }
       }
+
       // Migrate tls_enforce_* options
       if ($table == 'mailbox') {
         $stmt = $pdo->query("SHOW TABLES LIKE 'mailbox'");
@@ -994,6 +1023,7 @@ function init_db_schema() {
           }
         }
       }
+
       $stmt = $pdo->query("SHOW TABLES LIKE '" . $table . "'"); 
       $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
       if ($num_results != 0) {
@@ -1185,9 +1215,10 @@ function init_db_schema() {
     $pdo->query("UPDATE `pushover` SET `attributes` =  JSON_SET(`attributes`, '$.only_x_prio', \"0\") WHERE JSON_VALUE(`attributes`, '$.only_x_prio') IS NULL;");
     // mailbox
     $pdo->query("UPDATE `mailbox` SET `attributes` = '{}' WHERE `attributes` = '' OR `attributes` IS NULL;");
-    $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.xmpp_access', \"1\") WHERE JSON_VALUE(`attributes`, '$.xmpp_access') IS NULL;");
-    $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.xmpp_admin', \"0\") WHERE JSON_VALUE(`attributes`, '$.xmpp_admin') IS NULL;");
+    $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.passwd_update', \"0\") WHERE JSON_VALUE(`attributes`, '$.passwd_update') IS NULL;");
+    $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.relayhost', \"0\") WHERE JSON_VALUE(`attributes`, '$.relayhost') IS NULL;");
     $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.force_pw_update', \"0\") WHERE JSON_VALUE(`attributes`, '$.force_pw_update') IS NULL;");
+    $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.sieve_access', \"1\") WHERE JSON_VALUE(`attributes`, '$.sieve_access') IS NULL;");
     $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.sogo_access', \"1\") WHERE JSON_VALUE(`attributes`, '$.sogo_access') IS NULL;");
     $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.imap_access', \"1\") WHERE JSON_VALUE(`attributes`, '$.imap_access') IS NULL;");
     $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.pop3_access', \"1\") WHERE JSON_VALUE(`attributes`, '$.pop3_access') IS NULL;");
@@ -1235,7 +1266,6 @@ function init_db_schema() {
 if (php_sapi_name() == "cli") {
   include '/web/inc/vars.inc.php';
   include '/web/inc/functions.docker.inc.php';
-  include '/web/inc/functions.xmpp.inc.php';
   // $now = new DateTime();
   // $mins = $now->getOffset() / 60;
   // $sgn = ($mins < 0 ? -1 : 1);
@@ -1274,7 +1304,5 @@ if (php_sapi_name() == "cli") {
   catch ( Exception $e ) {
     // Dunno
   }
-  xmpp_rebuild_configs();
-  echo "Rebuilt XMPP configuration". PHP_EOL;
   init_db_schema();
 }

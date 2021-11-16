@@ -207,7 +207,7 @@ function customize($_action, $_item, $_data = null) {
           try {
             $data['title_name'] = ($title_name = $redis->get('TITLE_NAME')) ? $title_name : 'mailcow UI';
             $data['main_name'] = ($main_name = $redis->get('MAIN_NAME')) ? $main_name : 'mailcow UI';
-            $data['apps_name'] = ($apps_name = $redis->get('APPS_NAME')) ? $apps_name : 'mailcow Apps';
+            $data['apps_name'] = ($apps_name = $redis->get('APPS_NAME')) ? $apps_name : $lang['header']['apps'];
             $data['help_text'] = ($help_text = $redis->get('HELP_TEXT')) ? $help_text : false;
             if (!empty($redis->get('UI_IMPRESS'))) {
               $redis->set('UI_FOOTER', $redis->get('UI_IMPRESS'));
@@ -234,8 +234,9 @@ function customize($_action, $_item, $_data = null) {
             $img_data = explode('base64,', customize('get', 'main_logo'));
             if ($img_data[1]) {
               $image->readImageBlob(base64_decode($img_data[1]));
+              return $image->identifyImage();
             }
-            return $image->identifyImage();
+            return false;
           }
           catch (ImagickException $e) {
             $_SESSION['return'][] = array(

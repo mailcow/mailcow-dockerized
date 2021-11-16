@@ -1,0 +1,173 @@
+name: "CI"
+
+on:
+    pull_request:
+    push:
+        branches:
+            - '3.x'
+
+env:
+    SYMFONY_PHPUNIT_DISABLE_RESULT_CACHE: 1
+
+jobs:
+    tests:
+        name: "PHP ${{ matrix.php-version }}"
+
+        runs-on: 'ubuntu-latest'
+
+        continue-on-error: ${{ matrix.experimental }}
+
+        strategy:
+            matrix:
+                php-version:
+                    - '7.2.5'
+                    - '7.3'
+                    - '7.4'
+                    - '8.0'
+                composer-options: ['']
+                experimental: [false]
+                include:
+                  - { php-version: '8.1', experimental: true, composer-options: '--ignore-platform-req=php' }
+
+        steps:
+            - name: "Checkout code"
+              uses: actions/checkout@v2.3.3
+
+            - name: "Install PHP with extensions"
+              uses: shivammathur/setup-php@2.7.0
+              with:
+                  coverage: "none"
+                  php-version: ${{ matrix.php-version }}
+                  ini-values: memory_limit=-1
+                  tools: composer:v2
+
+            - name: "Add PHPUnit matcher"
+              run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
+            - name: "Set composer cache directory"
+              id: composer-cache
+              run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+            - name: "Cache composer"
+              uses: actions/cache@v2.1.2
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: ${{ runner.os }}-${{ matrix.php-version }}-composer-${{ hashFiles('composer.json') }}
+                  restore-keys: ${{ runner.os }}-${{ matrix.php-version }}-composer-
+
+            - run: composer install ${{ matrix.composer-options }}
+
+            - name: "Install PHPUnit"
+              run: vendor/bin/simple-phpunit install
+
+            - name: "PHPUnit version"
+              run: vendor/bin/simple-phpunit --version
+
+            - name: "Run tests"
+              run: vendor/bin/simple-phpunit
+
+    extension-tests:
+        needs:
+            - 'tests'
+
+        name: "${{ matrix.extension }} with PHP ${{ matrix.php-version }}"
+
+        runs-on: 'ubuntu-latest'
+
+        continue-on-error: true
+
+        strategy:
+            matrix:
+                php-version:
+                    - '7.2.5'
+                    - '7.3'
+                    - '7.4'
+                    - '8.0'
+                extension:
+                    - 'extra/cache-extra'
+                    - 'extra/cssinliner-extra'
+                    - 'extra/html-extra'
+                    - 'extra/inky-extra'
+                    - 'extra/intl-extra'
+                    - 'extra/markdown-extra'
+                    - 'extra/string-extra'
+                    - 'extra/twig-extra-bundle'
+
+        steps:
+            - name: "Checkout code"
+              uses: actions/checkout@v2.3.3
+
+            - name: "Install PHP with extensions"
+              uses: shivammathur/setup-php@2.7.0
+              with:
+                  coverage: "none"
+                  php-version: ${{ matrix.php-version }}
+                  ini-values: memory_limit=-1
+                  tools: composer:v2
+
+            - name: "Add PHPUnit matcher"
+              run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
+            - name: "Set composer cache directory"
+              id: composer-cache
+              run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+            - name: "Cache composer"
+              uses: actions/cache@v2.1.2
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: ${{ runner.os }}-${{ matrix.php-version }}-${{ matrix.extension }}-${{ hashFiles('composer.json') }}
+                  restore-keys: ${{ runner.os }}-${{ matrix.php-version }}-${{ matrix.extension }}-
+
+            - run: composer install
+
+            - name: "Install PHPUnit"
+              run: vendor/bin/simple-phpunit install
+
+            - name: "PHPUnit version"
+              run: vendor/bin/simple-phpunit --version
+
+            - if: matrix.extension == 'extra/markdown-extra' && matrix.php-version == '8.0'
+              working-directory: ${{ matrix.extension}}
+              run: composer config platform.php 7.4.99
+
+            - name: "Composer install"
+              working-directory: ${{ matrix.extension}}
+              run: composer install
+
+            - name: "Run tests"
+              working-directory: ${{ matrix.extension}}
+              run: ../../vendor/bin/simple-phpunit
+#
+#    Drupal does not support Twig 3 now!
+#
+#    integration-tests:
+#        needs:
+#            - 'tests'
+#
+#        name: "Integration tests with PHP ${{ matrix.php-version }}"
+#
+#        runs-on: 'ubuntu-20.04'
+#
+#        continue-on-error: true
+#
+#        strategy:
+#            matrix:
+#                php-version:
+#                    - '7.3'
+#
+#        steps:
+#            - name: "Checkout code"
+#              uses: actions/checkout@v2.3.3
+#
+#            - name: "Install PHP with extensions"
+#              uses: shivammathur/setup-php@2.7.0
+#              with:
+#                  coverage: "none"
+#                  extensions: "gd, pdo_sqlite"
+#                  php-version: ${{ matrix.php-version }}
+#                  ini-values: memory_limit=-1
+#                  tools: composer:v2
+#
+#            - run: ./drupal_test.sh
+#              shell: "bash"

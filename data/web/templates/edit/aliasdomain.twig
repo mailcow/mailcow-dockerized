@@ -1,0 +1,60 @@
+{% extends 'edit.twig' %}
+
+{% block inner_content %}
+{% if result %}
+<h4>{{ lang.edit.edit_alias_domain }}</h4>
+<form class="form-horizontal" data-id="editaliasdomain" role="form" method="post">
+  <input type="hidden" value="0" name="active">
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="target_domain">{{ lang.edit.target_domain }}</label>
+    <div class="col-sm-10">
+      <select class="full-width-select" data-live-search="true" id="addSelectDomain" name="target_domain" required>
+        {% for domain in domains %}
+          <option{% if result.target_domain == domain %} selected{% endif %}>{{ domain }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <div class="checkbox">
+        <label><input type="checkbox" value="1" name="active"{% if result.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected" data-id="editaliasdomain" data-item="{{ alias_domain }}" data-api-url='edit/alias-domain' data-api-attr='{}' href="#">{{ lang.edit.save }}</button>
+    </div>
+  </div>
+</form>
+<hr>
+<form data-id="domratelimit" class="form-inline well" method="post">
+  <div class="form-group">
+    <label class="control-label">{{ lang.acl.ratelimit }}</label>
+    <input name="rl_value" type="number" value="{{ rl.value }}" autocomplete="off" class="form-control" placeholder="{{ lang.ratelimit.disabled }}">
+  </div>
+  <div class="form-group">
+    <select name="rl_frame" class="form-control">
+      {% include 'mailbox/rl-frame.twig' %}
+    </select>
+  </div>
+  <div class="form-group">
+    <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" data-action="edit_selected" data-id="domratelimit" data-item="{{ alias_domain }}" data-api-url='edit/rl-domain' data-api-attr='{}' href="#">{{ lang.admin.save }}</button>
+  </div>
+</form>
+{% if dkim %}
+<hr>
+<div class="row">
+  <div class="col-xs-12 col-sm-2">
+    <p>Domain: <strong>{{ result.alias_domain }}</strong> ({{ dkim.dkim_selector }}._domainkey)</p>
+  </div>
+  <div class="col-xs-12 col-sm-10">
+    <pre>{{ dkim.dkim_txt }}</pre>
+  </div>
+</div>
+{% endif %}
+{% else %}
+  {{ parent() }}
+{% endif %}
+{% endblock %}

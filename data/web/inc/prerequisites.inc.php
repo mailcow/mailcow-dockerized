@@ -1,5 +1,8 @@
 <?php
 
+// check for development mode
+$DEV_MODE = (getenv('DEV_MODE') == 'y');
+
 // Slave does not serve UI
 /* if (!preg_match('/y|yes/i', getenv('MASTER'))) {
   header('Location: /SOGo', true, 307);
@@ -68,6 +71,7 @@ $WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/ro
 $WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/microsoftTpmCollection.pem');
 $WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/huawei.pem');
 $WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/trustkey.pem');
+$WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/bsi.pem');
 
 // Redis
 $redis = new Redis();
@@ -168,32 +172,17 @@ function exception_handler($e) {
       return false;
     }
 }
-set_exception_handler('exception_handler');
+if(!$DEV_MODE) {
+  set_exception_handler('exception_handler');
+}
 
 // TODO: Move function
-function get_remote_ip($anonymize = null) {
-  global $ANONYMIZE_IPS;
-  if ($anonymize === null) {
-    $anonymize = $ANONYMIZE_IPS;
-  }
-  elseif ($anonymize !== true && $anonymize !== false)  {
-    $anonymize = true;
-  }
+function get_remote_ip() {
   $remote = $_SERVER['REMOTE_ADDR'];
   if (filter_var($remote, FILTER_VALIDATE_IP) === false) {
     return '0.0.0.0';
   }
-  if ($anonymize) {
-    if (strlen(inet_pton($remote)) == 4) {
-      return inet_ntop(inet_pton($remote) & inet_pton("255.255.255.0"));
-    }
-    elseif (strlen(inet_pton($remote)) == 16) {
-      return inet_ntop(inet_pton($remote) & inet_pton('ffff:ffff:ffff:ffff:0000:0000:0000:0000'));
-    }
-  }
-  else {
-    return $remote;
-  }
+  return $remote;
 }
 
 // Load core functions first
@@ -208,7 +197,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
 if (!isset($_SESSION['mailcow_locale']) && !isset($_COOKIE['mailcow_locale'])) {
   if ($DETECT_LANGUAGE && isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
     $header_lang = strtolower(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2));
-    if (in_array($header_lang, $AVAILABLE_LANGUAGES)) {
+    if (array_key_exists($header_lang, $AVAILABLE_LANGUAGES)) {
       $_SESSION['mailcow_locale'] = $header_lang;
     }
   }
@@ -219,7 +208,7 @@ if (!isset($_SESSION['mailcow_locale']) && !isset($_COOKIE['mailcow_locale'])) {
 if (isset($_COOKIE['mailcow_locale'])) {
   (preg_match('/^[a-z]{2}$/', $_COOKIE['mailcow_locale'])) ? $_SESSION['mailcow_locale'] = $_COOKIE['mailcow_locale'] : setcookie("mailcow_locale", "", time() - 300);
 }
-if (isset($_GET['lang']) && in_array($_GET['lang'], $AVAILABLE_LANGUAGES)) {
+if (isset($_GET['lang']) && array_key_exists($_GET['lang'], $AVAILABLE_LANGUAGES)) {
   $_SESSION['mailcow_locale'] = $_GET['lang'];
   setcookie("mailcow_locale", $_GET['lang'], time()+30758400); // one year
 }
@@ -256,9 +245,9 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.ratelimit.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.rspamd.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.tls_policy_maps.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.transports.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.xmpp.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/init_db.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/triggers.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/twig.inc.php';
 init_db_schema();
 if (isset($_SESSION['mailcow_cc_role'])) {
   // if ($_SESSION['mailcow_cc_role'] == 'user') {

@@ -1,0 +1,24 @@
+<div role="tabpanel" class="tab-pane" id="AppPasswds">
+  <p>{{ lang.user.app_hint|raw }}</p>
+  <div class="table-responsive">
+    <table class="table table-striped" id="app_passwd_table"></table>
+  </div>
+  <div class="mass-actions-user">
+    <div class="btn-group" data-acl="{{ acl.app_passwds }}">
+      <div class="btn-group">
+        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="apppasswd" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }} <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          <li><a data-action="edit_selected" data-id="apppasswd" data-api-url='edit/app-passwd' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+          <li><a data-action="edit_selected" data-id="apppasswd" data-api-url='edit/app-passwd' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+          <li role="separator" class="divider"></li>
+          <li><a data-action="delete_selected" data-id="apppasswd" data-api-url='delete/app-passwd' href="#">{{ lang.mailbox.remove }}</a></li>
+        </ul>
+        <div class="clearfix visible-xs"></div>
+      </div>
+      <div class="btn-group">
+        <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-toggle="modal" data-target="#addAppPasswdModal"><i class="bi bi-plus-lg"></i> {{ lang.user.create_app_passwd }}</a>
+      </div>
+    </div>
+  </div>
+</div>

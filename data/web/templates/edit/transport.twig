@@ -1,0 +1,56 @@
+{% extends 'edit.twig' %}
+
+{% block inner_content %}
+{% if result %}
+<h4>{{ lang.edit.resource }}</h4>
+<form class="form-horizontal" role="form" method="post" data-id="edittransport">
+  <input type="hidden" value="0" name="active">
+  <input type="hidden" value="0" name="is_mx_based">
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="destination">{{ lang.add.destination }}</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" name="destination" value="{{ result.destination }}" required>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="nexthop">{{ lang.edit.nexthop }}</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" name="nexthop" placeholder='[0.0.0.0], [0.0.0.0]:25, host:25, host, [host]:25' value="{{ result.nexthop }}" required>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="username">{{ lang.add.username }}</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" name="username" value="{{ result.username }}">
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="password">{{ lang.add.password }}</label>
+    <div class="col-sm-10">
+      <input type="text" data-hibp="true" class="form-control" name="password" value="{{ result.password }}">
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <div class="checkbox">
+        <label><input type="checkbox" value="1" name="is_mx_based"{% if result.is_mx_based == '1' %} checked{% endif %}> {{ lang.edit.lookup_mx|raw }}</label>
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <div class="checkbox">
+        <label><input type="checkbox" value="1" name="active"{% if result.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected" data-id="edittransport" data-item="{{ result.id }}" data-api-url='edit/transport' data-api-attr='{}' href="#">{{ lang.edit.save }}</button>
+    </div>
+  </div>
+</form>
+{% else %}
+  {{ parent() }}
+{% endif %}
+{% endblock %}

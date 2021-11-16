@@ -1,0 +1,160 @@
+{% extends 'edit.twig' %}
+
+{% block inner_content %}
+{% if result %}
+  <h4>{{ lang.edit.syncjob }}</h4>
+  <form class="form-horizontal" data-id="editsyncjob" role="form" method="post">
+    <input type="hidden" value="0" name="delete2duplicates">
+    <input type="hidden" value="0" name="delete1">
+    <input type="hidden" value="0" name="delete2">
+    <input type="hidden" value="0" name="automap">
+    <input type="hidden" value="0" name="skipcrossduplicates">
+    <input type="hidden" value="0" name="active">
+    <input type="hidden" value="0" name="subscribeall">
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="host1">{{ lang.edit.hostname }}</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" name="host1" id="host1" value="{{ result.host1 }}">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="port1">Port</label>
+      <div class="col-sm-10">
+        <input type="number" class="form-control" name="port1" id="port1" min="1" max="65535" value="{{ result.port1 }}">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="user1">{{ lang.edit.username }}</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" name="user1" id="user1" value="{{ result.user1 }}">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="password1">{{ lang.edit.password }}</label>
+      <div class="col-sm-10">
+        <input type="password" class="form-control" name="password1" id="password1" value="{{ result.password1 }}">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="enc1">{{ lang.edit.encryption }}</label>
+      <div class="col-sm-10">
+        <select id="enc1" name="enc1">
+          <option value="SSL"{% if result.enc1 == 'SSL' %} selected{% endif %}>SSL</option>
+          <option value="TLS"{% if result.enc1 == 'TLS' %} selected{% endif %}>STARTTLS</option>
+          <option value="PLAIN"{% if result.enc1 == 'PLAIN' %} selected{% endif %}>PLAIN</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="mins_interval">{{ lang.edit.mins_interval }}</label>
+      <div class="col-sm-10">
+        <input type="number" class="form-control" name="mins_interval" min="1" max="43800" value="{{ result.mins_interval }}" required>
+        <small class="help-block">1-43800</small>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="subfolder2">{{ lang.edit.subfolder2|raw }}</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" name="subfolder2" id="subfolder2" value="{{ result.subfolder2 }}">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="maxage">{{ lang.edit.maxage|raw }}</label>
+      <div class="col-sm-10">
+        <input type="number" class="form-control" name="maxage" id="maxage" min="0" max="32000" value="{{ result.maxage }}">
+        <small class="help-block">0-32000</small>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="maxbytespersecond">{{ lang.edit.maxbytespersecond|raw }}</label>
+      <div class="col-sm-10">
+        <input type="number" class="form-control" name="maxbytespersecond" id="maxbytespersecond" min="0" max="125000000" value="{{ result.maxbytespersecond }}">
+        <small class="help-block">0-125000000</small>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="timeout1">{{ lang.add.timeout1 }}</label>
+      <div class="col-sm-10">
+        <input type="number" class="form-control" name="timeout1" id="timeout1" min="1" max="32000" value="{{ result.timeout1 }}">
+        <small class="help-block">1-32000</small>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="timeout2">{{ lang.add.timeout2 }}</label>
+      <div class="col-sm-10">
+        <input type="number" class="form-control" name="timeout2" id="timeout2" min="1" max="32000" value="{{ result.timeout2 }}">
+        <small class="help-block">1-32000</small>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="exclude">{{ lang.edit.exclude }}</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" name="exclude" id="exclude" value="{{ result.exclude }}">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="custom_params">{{ lang.add.custom_params }}</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" name="custom_params" id="custom_params" value="{{ result.custom_params }}" placeholder="--dry --some-param=xy --other-param=yx">
+        <small class="help-block">{{ lang.add.custom_params_hint }}</small>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <div class="checkbox">
+          <label><input type="checkbox" value="1" name="delete2duplicates"{% if result.delete2duplicates == '1' %} checked{% endif %}> {{ lang.edit.delete2duplicates }} (--delete2duplicates)</label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <div class="checkbox">
+          <label><input type="checkbox" value="1" name="delete1"{% if result.delete1 == '1' %} checked{% endif %}> {{ lang.edit.delete1 }} (--delete1)</label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <div class="checkbox">
+          <label><input type="checkbox" value="1" name="delete2"{% if result.delete2 == '1' %} checked{% endif %}> {{ lang.edit.delete2 }} (--delete2)</label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <div class="checkbox">
+          <label><input type="checkbox" value="1" name="automap"{% if result.automap == '1' %} checked{% endif %}> {{ lang.edit.automap }} (--automap)</label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <div class="checkbox">
+          <label><input type="checkbox" value="1" name="skipcrossduplicates"{% if result.skipcrossduplicates == '1' %} checked{% endif %}> {{ lang.edit.skipcrossduplicates }} (--skipcrossduplicates)</label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <div class="checkbox">
+          <label><input type="checkbox" value="1" name="subscribeall"{% if result.subscribeall == '1' %} checked{% endif %}> {{ lang.add.subscribeall }} (--subscribeall)</label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <div class="checkbox">
+          <label><input type="checkbox" value="1" name="active"{% if result.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected" data-id="editsyncjob" data-item="{{ result.id }}" data-api-url='edit/syncjob' data-api-attr='{}' href="#">{{ lang.edit.save }}</button>
+      </div>
+    </div>
+  </form>
+{% else %}
+    {{ parent() }}
+{% endif %}
+{% endblock %}

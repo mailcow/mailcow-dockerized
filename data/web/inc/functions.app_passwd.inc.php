@@ -23,10 +23,17 @@ function app_passwd($_action, $_data = null) {
   }
   switch ($_action) {
     case 'add':
-      $app_name = trim($_data['app_name']);
-      $password     = $_data['app_passwd'];
-      $password2    = $_data['app_passwd2'];
+      $app_name = htmlspecialchars(trim($_data['app_name']));
+      $password = $_data['app_passwd'];
+      $password2 = $_data['app_passwd2'];
       $active = intval($_data['active']);
+      $protocols = (array)$_data['protocols'];
+      $imap_access = (in_array('imap_access', $protocols)) ? 1 : 0;
+      $dav_access = (in_array('dav_access', $protocols)) ? 1 : 0;
+      $smtp_access = (in_array('smtp_access', $protocols)) ? 1 : 0;
+      $eas_access = (in_array('eas_access', $protocols)) ? 1 : 0;
+      $pop3_access = (in_array('pop3_access', $protocols)) ? 1 : 0;
+      $sieve_access = (in_array('sieve_access', $protocols)) ? 1 : 0;
       $domain = mailbox('get', 'mailbox_details', $username)['domain'];
       if (empty($domain)) {
         $_SESSION['return'][] = array(
@@ -61,13 +68,19 @@ function app_passwd($_action, $_data = null) {
         );
         return false;
       }
-      $stmt = $pdo->prepare("INSERT INTO `app_passwd` (`name`, `mailbox`, `domain`, `password`, `active`)
-        VALUES (:app_name, :mailbox, :domain, :password, :active)");
+      $stmt = $pdo->prepare("INSERT INTO `app_passwd` (`name`, `mailbox`, `domain`, `password`, `imap_access`, `smtp_access`, `eas_access`, `dav_access`, `pop3_access`, `sieve_access`, `active`)
+        VALUES (:app_name, :mailbox, :domain, :password, :imap_access, :smtp_access, :eas_access, :dav_access, :pop3_access, :sieve_access, :active)");
       $stmt->execute(array(
         ':app_name' => $app_name,
         ':mailbox' => $username,
         ':domain' => $domain,
         ':password' => $password_hashed,
+        ':imap_access' => $imap_access,
+        ':smtp_access' => $smtp_access,
+        ':eas_access' => $eas_access,
+        ':dav_access' => $dav_access,
+        ':pop3_access' => $pop3_access,
+        ':sieve_access' => $sieve_access,
         ':active' => $active
       ));
       $_SESSION['return'][] = array(
@@ -84,6 +97,23 @@ function app_passwd($_action, $_data = null) {
           $app_name = (!empty($_data['app_name'])) ? $_data['app_name'] : $is_now['name'];
           $password = (!empty($_data['password'])) ? $_data['password'] : null;
           $password2 = (!empty($_data['password2'])) ? $_data['password2'] : null;
+          if (isset($_data['protocols'])) {
+            $protocols = (array)$_data['protocols'];
+            $imap_access = (in_array('imap_access', $protocols)) ? 1 : 0;
+            $dav_access = (in_array('dav_access', $protocols)) ? 1 : 0;
+            $smtp_access = (in_array('smtp_access', $protocols)) ? 1 : 0;
+            $eas_access = (in_array('eas_access', $protocols)) ? 1 : 0;
+            $pop3_access = (in_array('pop3_access', $protocols)) ? 1 : 0;
+            $sieve_access = (in_array('sieve_access', $protocols)) ? 1 : 0;
+          }
+          else {
+            $imap_access = $is_now['imap_access'];
+            $smtp_access = $is_now['smtp_access'];
+            $dav_access = $is_now['dav_access'];
+            $eas_access = $is_now['eas_access'];
+            $pop3_access = $is_now['pop3_access'];
+            $sieve_access = $is_now['sieve_access'];
+          }
           $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active'];
         }
         else {
@@ -94,7 +124,7 @@ function app_passwd($_action, $_data = null) {
           );
           continue;
         }
-        $app_name = trim($app_name);
+        $app_name = htmlspecialchars(trim($app_name));
         if (!empty($password) && !empty($password2)) {
           if (!preg_match('/' . $GLOBALS['PASSWD_REGEP'] . '/', $password)) {
             $_SESSION['return'][] = array(
@@ -122,21 +152,34 @@ function app_passwd($_action, $_data = null) {
             ':id' => $id
           ));
         }
+
         $stmt = $pdo->prepare("UPDATE `app_passwd` SET
           `name` = :app_name,
           `mailbox` = :username,
+          `imap_access` = :imap_access,
+          `smtp_access` = :smtp_access,
+          `eas_access` = :eas_access,
+          `dav_access` = :dav_access,
+          `pop3_access` = :pop3_access,
+          `sieve_access` = :sieve_access,
           `active` = :active
             WHERE `id` = :id");
         $stmt->execute(array(
           ':app_name' => $app_name,
           ':username' => $username,
+          ':imap_access' => $imap_access,
+          ':smtp_access' => $smtp_access,
+          ':eas_access' => $eas_access,
+          ':dav_access' => $dav_access,
+          ':pop3_access' => $pop3_access,
+          ':sieve_access' => $sieve_access,
           ':active' => $active,
           ':id' => $id
         ));
         $_SESSION['return'][] = array(
           'type' => 'success',
           'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => array('object_modified', htmlspecialchars($ids))
+          'msg' => array('object_modified', htmlspecialchars(implode(', ', $ids)))
         );
       }
     break;
@@ -180,16 +223,10 @@ function app_passwd($_action, $_data = null) {
     break;
     case 'details':
       $app_passwd_data = array();
-      $stmt = $pdo->prepare("SELECT `id`,
-        `name`,
-        `mailbox`,
-        `domain`,
-        `created`,
-        `modified`,
-        `active`
+      $stmt = $pdo->prepare("SELECT *
           FROM `app_passwd`
             WHERE `id` = :id");
-      $stmt->execute(array(':id' => $_data['id']));
+      $stmt->execute(array(':id' => $_data));
       $app_passwd_data = $stmt->fetch(PDO::FETCH_ASSOC);
       if (empty($app_passwd_data)) {
         return false;
@@ -198,6 +235,7 @@ function app_passwd($_action, $_data = null) {
         $app_passwd_data = array();
         return false;
       }
+      $app_passwd_data['name'] = htmlspecialchars(trim($app_passwd_data['name']));
       return $app_passwd_data;
     break;
   }

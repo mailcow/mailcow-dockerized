@@ -1,0 +1,56 @@
+{% extends 'edit.twig' %}
+
+{% block inner_content %}
+{% if result %}
+<h4>{{ lang.edit.app_passwd }}</h4>
+<form class="form-horizontal" data-pwgen-length="32" data-id="editapp" role="form" method="post">
+  <input type="hidden" value="0" name="active">
+  <input type="hidden" value="0" name="protocols">
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="app_name">{{ lang.edit.app_name }}</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" name="app_name" id="app_name" value="{{ result.name }}" required maxlength="255">
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="password">{{ lang.edit.password }} (<a href="#" class="generate_password">{{ lang.edit.generate }}</a>)</label>
+    <div class="col-sm-10">
+      <input type="password" data-pwgen-field="true" data-hibp="true" class="form-control" name="password" placeholder="" autocomplete="new-password">
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="password2">{{ lang.edit.password_repeat }}</label>
+    <div class="col-sm-10">
+      <input type="password" data-pwgen-field="true" class="form-control" name="password2" autocomplete="new-password">
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <div class="checkbox">
+        <label><input type="checkbox" value="1" name="active"{% if result.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="protocols">{{ lang.edit.app_passwd_protocols }}</label>
+    <div class="col-sm-10">
+      <select class="full-width-select" data-live-search="true" id="protocols" name="protocols" multiple>
+        <option value="imap_access" {% if result.imap_access == 1 %} selected{% endif %}>IMAP</option>
+        <option value="smtp_access" {% if result.smtp_access == 1 %} selected{% endif %}>SMTP</option>
+        <option value="eas_access" {% if result.eas_access == 1 %} selected{% endif %}>EAS/ActiveSync</option>
+        <option value="dav_access" {% if result.dav_access == 1 %} selected{% endif %}>CardDAV/CalDAV</option>
+        <option value="pop3_access" {% if result.pop3_access == 1 %} selected{% endif %}>POP3</option>
+        <option value="sieve_access" {% if result.sieve_access == 1 %} selected{% endif %}>Sieve</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected" data-id="editapp" data-item="{{ result.id }}" data-api-url='edit/app-passwd' data-api-attr='{}' href="#">{{ lang.edit.save }}</button>
+    </div>
+  </div>
+</form>
+{% else %}
+  {{ parent() }}
+{% endif %}
+{% endblock %}

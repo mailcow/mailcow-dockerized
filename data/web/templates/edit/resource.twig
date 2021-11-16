@@ -1,0 +1,55 @@
+{% extends 'edit.twig' %}
+
+{% block inner_content %}
+{% if result %}
+<h4>{{ lang.edit.resource }}</h4>
+<form class="form-horizontal" role="form" method="post" data-id="editresource">
+  <input type="hidden" value="0" name="active">
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="description">{{ lang.add.description }}</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" name="description" value="{{ result.description }}" required>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="domain">{{ lang.edit.kind }}</label>
+    <div class="col-sm-10">
+      <select name="kind" title="{{ lang.edit.select }}" required>
+        <option value="location"{% if result.kind == 'location' %} selected{% endif %}>Location</option>
+        <option value="group"{% if result.kind == 'group' %} selected{% endif %}>Group</option>
+        <option value="thing"{% if result.kind == 'thing' %} selected{% endif %}>Thing</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="multiple_bookings_select">{{ lang.add.multiple_bookings }}</label>
+    <div class="col-sm-10">
+      <select name="multiple_bookings_select" id="editSelectMultipleBookings" title="{{ lang.add.select }}" required>
+        <option value="0"{% if result.multiple_bookings == 0 %} selected{% endif %}>{{ lang.mailbox.booking_0 }}</option>
+        <option value="-1"{% if result.multiple_bookings == -1 %} selected{% endif %}>{{ lang.mailbox.booking_lt0 }}</option>
+        <option value="custom"{% if result.multiple_bookings >= 1 %} selected{% endif %}>{{ lang.mailbox.booking_custom }}</option>
+      </select>
+      <div style="display:none" id="multiple_bookings_custom_div">
+        <hr>
+        <input type="number" class="form-control" name="multiple_bookings_custom" id="multiple_bookings_custom"{% if result.multiple_bookings >= 1 %} value="{{ result.multiple_bookings }}"{% endif %}>
+      </div>
+      <input type="hidden" name="multiple_bookings" id="multiple_bookings">
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <div class="checkbox">
+        <label><input type="checkbox" value="1" name="active"{% if result.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected" data-id="editresource" data-item="{{ result.name }}" data-api-url='edit/resource' data-api-attr='{}' href="#">{{ lang.edit.save }}</button>
+    </div>
+  </div>
+</form>
+{% else %}
+  {{ parent() }}
+{% endif %}
+{% endblock %}
