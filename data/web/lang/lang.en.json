@@ -620,7 +620,6 @@
         "xmpp_access": "XMPP access",
         "xmpp_access_info": "XMPP must be enabled for this domain.",
         "xmpp_admin": "XMPP administrator",
-        "xmpp_admin_info": "<b>Danger:</b> Promotes a user to an XMPP administrator of this domain.",
         "xmpp_example_jid": "<b>Example JID</b> (login with mailbox password)",
         "xmpp_info": "This function will enable chat functionality for this domain.",
         "xmpp_prefix": "XMPP prefix for domain (\"im\" to use <b>im</b>.example.org)",
@@ -902,11 +901,11 @@
         "type": "Type"
     },
     "ratelimit": {
-      "disabled": "Disabled",
-      "second": "msgs / second",
-      "minute": "msgs / minute",
-      "hour": "msgs / hour",
-      "day": "msgs / day"
+        "disabled": "Disabled",
+        "second": "msgs / second",
+        "minute": "msgs / minute",
+        "hour": "msgs / hour",
+        "day": "msgs / day"
     },
     "start": {
         "help": "Show/Hide help panel",
