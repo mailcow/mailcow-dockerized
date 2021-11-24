@@ -489,8 +489,7 @@
         "success": "Success",
         "system_containers": "System & Containers",
         "uptime": "Uptime",
-        "username": "Username",
-        "xmpp_status": "XMPP status"
+        "username": "Username"
     },
     "diagnostics": {
         "cname_from_a": "Value derived from A/AAAA record. This is supported as long as the record points to the correct resource.",
