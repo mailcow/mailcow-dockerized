@@ -490,7 +490,6 @@
         "system_containers": "System & Containers",
         "uptime": "Uptime",
         "username": "Username",
-        "xmpp_dead": "XMPP is starting, disabled or died.",
         "xmpp_status": "XMPP status"
     },
     "diagnostics": {
@@ -902,11 +901,11 @@
         "type": "Type"
     },
     "ratelimit": {
-      "disabled": "Disabled",
-      "second": "msgs / second",
-      "minute": "msgs / minute",
-      "hour": "msgs / hour",
-      "day": "msgs / day"
+        "disabled": "Disabled",
+        "second": "msgs / second",
+        "minute": "msgs / minute",
+        "hour": "msgs / hour",
+        "day": "msgs / day"
     },
     "start": {
         "help": "Show/Hide help panel",
