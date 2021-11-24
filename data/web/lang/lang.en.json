@@ -614,7 +614,6 @@
         "unchanged_if_empty": "If unchanged leave blank",
         "username": "Username",
         "validate_save": "Validate and save",
-        "xmpp_access_info": "XMPP must be enabled for this domain.",
         "xmpp_admin": "XMPP administrator",
         "xmpp_admin_info": "<b>Danger:</b> Promotes a user to an XMPP administrator of this domain.",
         "xmpp_example_jid": "<b>Example JID</b> (login with mailbox password)",
