@@ -339,7 +339,11 @@
         "username": "Benutzername",
         "validate_license_now": "GUID erneut verifizieren",
         "verify": "Verifizieren",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "api_read_write": "Lese-Schreib-Zugriff",
+        "oauth2_apps": "OAuth2 Apps",
+        "api_read_only": "Schreibgeschützter Zugriff",
+        "oauth2_add_client": "Füge OAuth2 Client hinzu"
     },
     "danger": {
         "access_denied": "Zugriff verweigert oder unvollständige/ungültige Daten",
@@ -485,7 +489,8 @@
         "success": "Erfolg",
         "system_containers": "System & Container",
         "uptime": "Uptime",
-        "username": "Benutzername"
+        "username": "Benutzername",
+        "xmpp_dead": "Solr startet, ist deaktiviert oder temporär nicht erreichbar."
     },
     "diagnostics": {
         "cname_from_a": "Wert abgeleitet von A/AAAA-Eintrag. Wird unterstützt, sofern der Eintrag auf die korrekte Ressource zeigt.",
@@ -579,7 +584,7 @@
         "relay_all": "Alle Empfänger-Adressen relayen",
         "relay_all_info": "↪ Wenn <b>nicht</b> alle Empfänger-Adressen relayt werden sollen, müssen \"blinde\" Mailboxen für jede Adresse, die relayt werden soll, erstellen werden.",
         "relay_domain": "Diese Domain relayen",
-        "relay_transport_info": "<div class=\"label label-info\">Info</div> Transport Maps können erstellt werden, um  individuelle Ziele für eine Relay Domain zu definieren.",
+        "relay_transport_info": "<div class=\"label label-info\">Info</div> Transport Maps können erstellt werden, um individuelle Ziele für eine Relay Domain zu definieren.",
         "relay_unknown_only": "Nur nicht-lokale Mailboxen relayen. Existente Mailboxen werden weiterhin lokal zugestellt.",
         "relayhost": "Senderabhängige Transport Maps",
         "remove": "Entfernen",
@@ -805,7 +810,10 @@
         "username": "Benutzername",
         "waiting": "Wartend",
         "weekly": "Wöchentlich",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "sender": "Sender",
+        "recipient": "Empfänger",
+        "syncjob_EX_OK": "Erfolg"
     },
     "oauth2": {
         "access_denied": "Bitte als Mailbox-Nutzer einloggen, um den Zugriff via OAuth2 zu erlauben.",
@@ -1127,7 +1135,8 @@
         "weeks": "Wochen",
         "with_app_password": "mit App-Passwort",
         "year": "Jahr",
-        "years": "Jahren"
+        "years": "Jahren",
+        "syncjob_EX_OK": "Erfolg"
     },
     "warning": {
         "cannot_delete_self": "Kann derzeit eingeloggten Benutzer nicht entfernen",
@@ -1141,5 +1150,8 @@
         "quota_exceeded_scope": "Domain-Quota erschöpft: Es können nur noch unlimitierte Mailboxen in dieser Domain erstellt werden.",
         "session_token": "Formular-Token ungültig: Token stimmt nicht überein",
         "session_ua": "Formular-Token ungültig: User-Agent-Validierungsfehler"
+    },
+    "ratelimit": {
+        "disabled": "Deaktiviert"
     }
 }
