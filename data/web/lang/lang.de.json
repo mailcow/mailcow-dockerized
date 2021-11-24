@@ -708,7 +708,7 @@
         "bcc_to_rcpt": "Map empfängerabhängig verwenden",
         "bcc_to_sender": "Map senderabhängig verwenden",
         "bcc_type": "BCC-Typ",
-        "booking_0": "Immer als verfügbar anzeigen",
+        "booking": "Immer als verfügbar anzeigen",
         "booking_0_short": "Immer verfügbar",
         "booking_custom": "Benutzerdefiniertes Limit",
         "booking_custom_short": "Hartes Limit",
