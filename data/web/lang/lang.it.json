@@ -454,11 +454,7 @@
         "unlimited_quota_acl": "Unlimited quota prohibited by ACL",
         "username_invalid": "Username %s non può essere utilizzato",
         "validity_missing": "Assegnare un periodo di validità",
-        "value_missing": "Please provide all values",
-        "xmpp_map_write_error": "Could not write XMPP map: %s",
-        "xmpp_reload_failed": "XMPP could not be reloaded",
-        "xmpp_restart_failed": "XMPP could not be restarted",
-        "yotp_verification_failed": "Yubico OTP verification failed: %s"
+        "value_missing": "Please provide all values"
     },
     "debug": {
         "chart_this_server": "Grafico (questo server)",
@@ -485,9 +481,7 @@
         "success": "Successo",
         "system_containers": "System & Containers",
         "uptime": "Tempo di attività",
-        "username": "Username",
-        "xmpp_dead": "XMPP is starting, disabled or died.",
-        "xmpp_status": "Stato XMPP"
+        "username": "Username"
     },
     "diagnostics": {
         "cname_from_a": "Valore letto dal record A/AAAA. Questo è supportato finché il record punta alla risorsa corretta.",
@@ -605,16 +599,7 @@
         "title": "Modifica oggetto",
         "unchanged_if_empty": "Se immutato lasciare vuoto",
         "username": "Username",
-        "validate_save": "Convalida e salva",
-        "xmpp": "Activate XMPP for this domain",
-        "xmpp_access": "XMPP access",
-        "xmpp_access_info": "XMPP must be enabled for this domain.",
-        "xmpp_admin": "XMPP administrator",
-        "xmpp_admin_info": "<b>Danger:</b> Promotes a user to an XMPP administrator of this domain.",
-        "xmpp_example_jid": "<b>Example JID</b> (login with mailbox password)",
-        "xmpp_info": "This function will enable chat functionality for this domain.",
-        "xmpp_prefix": "XMPP prefix for domain (\"im\" to use <b>im</b>.example.org)",
-        "xmpp_prefix_info": "To request certificates for XMPP, two CNAME DNS records should point from <b>im</b>.example.org as well as <b>*.im</b>.example.org to <b>%s</b>. Please also run the DNS check for this domain after enabling XMPP."
+        "validate_save": "Convalida e salva"
     },
     "fido2": {
         "confirm": "Confirm",
