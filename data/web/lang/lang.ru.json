@@ -460,11 +460,7 @@
         "unlimited_quota_acl": "Неограниченная квота запрещена политикой доступа",
         "username_invalid": "Имя пользователя %s нельзя использовать",
         "validity_missing": "Пожалуйста, назначьте срок действия",
-        "value_missing": "Пожалуйста заполните все поля",
-        "xmpp_map_write_error": "Ошибка записи настроек XMPP: %s",
-        "xmpp_reload_failed": "Обновление конфигурации Dovecot не удалось",
-        "xmpp_restart_failed": "Перезагрузка XMPP не удалась",
-        "yotp_verification_failed": "Ошибка валидации Yubico OTP: %s"
+        "value_missing": "Пожалуйста заполните все поля"
     },
     "debug": {
         "chart_this_server": "Диаграмма (текущий сервер)",
@@ -491,9 +487,7 @@
         "success": "Успех",
         "system_containers": "Система и контейнеры",
         "uptime": "Время работы",
-        "username": "Имя пользователя",
-        "xmpp_dead": "XMPP не запущен. Если вы включили XMPP в настройках домена и это сообщение отображается более получаса, скорее всего XMPP сломан.",
-        "xmpp_status": "Статус XMPP"
+        "username": "Имя пользователя"
     },
     "diagnostics": {
         "cname_from_a": "Значение, полученное из записи A/AAAA. Это поддерживается до тех пор, пока запись указывает на правильный ресурс.",
@@ -614,16 +608,7 @@
         "title": "Изменение объекта",
         "unchanged_if_empty": "Если без изменений - оставьте пустым",
         "username": "Имя пользователя",
-        "validate_save": "Подтвердить и сохранить",
-        "xmpp": "Включить поддержку XMPP для этого домена",
-        "xmpp_access": "Пользователь XMPP",
-        "xmpp_access_info": "XMPP должен быть включен для этого домена.",
-        "xmpp_admin": "Администратор XMPP",
-        "xmpp_admin_info": "Повысить пользователя XMPP до <span class=\"text-danger\">администратора домена</span>.",
-        "xmpp_example_jid": "<b>Пример JID</b> (используя пароль почтового аккаунта)",
-        "xmpp_info": "Эта опция добавит функциональность чата для этого домена.",
-        "xmpp_prefix": "Префикс домена XMPP",
-        "xmpp_prefix_info": "Для получения SSL сертификатов для XMPP сервера необходимо настроить дополнительные CNAME DNS записи <b>im</b>.example.org и <b>*.im</b>.example.org, указывающие на <b>%s</b>. Пожалуйста, посетите страницу проверки DNS записей домена после включения XMPP сервера в mailcow UI."
+        "validate_save": "Подтвердить и сохранить"
     },
     "fido2": {
         "confirm": "Подтвердить",
@@ -989,10 +974,7 @@
         "verified_fido2_login": "Авторизация FIDO2 пройдена",
         "verified_totp_login": "Авторизация TOTP пройдена",
         "verified_u2f_login": "Авторизация U2F пройдена",
-        "verified_yotp_login": "Авторизация Yubico OTP пройдена",
-        "xmpp_maps_updated": "Настройки XMPP обновлены",
-        "xmpp_reloaded": "Обновление конфигурация XMPP закончено",
-        "xmpp_restarted": "Сервис XMPP перезагружен"
+        "verified_yotp_login": "Авторизация Yubico OTP пройдена"
     },
     "tfa": {
         "api_register": "%s использует Yubico Cloud API. Пожалуйста, получите ключ API для вашего ключа <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">здесь</a>",
