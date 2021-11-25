@@ -364,7 +364,6 @@
         "global_filter_write_error": "Kan inte skriva till filterfilen: %s",
         "global_map_invalid": "Rspamd kartan med ID %s är felaktig",
         "global_map_write_error": "Kunde inte skapa en global-koppling med ID %s: %s",
-        "xmpp_map_write_error": "Kunde inte skapa en XMPP-koppling: %s",
         "goto_empty": "En aliasadress måste peka mot minst en giltig destinationsadress",
         "goto_invalid": "Destinationsadressen %s är ogiltig",
         "ham_learn_error": "Felaktigt-Spam inlärningsfel: %s",
@@ -450,9 +449,7 @@
         "username_invalid": "Användarnamnet %s kan inte användas",
         "validity_missing": "Ange en giltighetsperiod",
         "value_missing": "Ange alla värden",
-        "yotp_verification_failed": "Yubico OTP-verifiering misslyckades: %s",
-        "xmpp_restart_failed": "Misslyckades att starta om XMPP",
-        "xmpp_reload_failed": "Misslyckades att ladda om XMPP"
+        "yotp_verification_failed": "Yubico OTP-verifiering misslyckades: %s"
     },
     "debug": {
         "chart_this_server": "Tabell (denna server)",
@@ -466,7 +463,6 @@
         "logs": "Loggar",
         "restart_container": "Omstart",
         "solr_dead": "Solr är i uppstart, har inaktiveras eller är tillfälligt avstängd.",
-        "xmpp_dead": "XMPP startet, ist deaktiviert oder temporär nicht erreichbar.",
         "online_users": "Användare online",
         "docs": "Dokumentation",
         "last_modified": "Senast ändrad",
@@ -476,8 +472,7 @@
         "uptime": "Upptid",
         "started_on": "Startades",
         "static_logs": "Statiska loggar",
-        "system_containers": "System & behållare",
-        "xmpp_status": "XMPP Status"
+        "system_containers": "System & behållare"
     },
     "diagnostics": {
         "cname_from_a": "Värde härstammar från A/AAAA-uppslaget. Detta stöds så länge som uppslaget pekar mot rätt resurs.",
@@ -527,15 +522,6 @@
         "full_name": "Fullständigt namn",
         "gal": "Global adressbok",
         "gal_info": "Den global adressboken innehåller alla objekt i en domän och kan inte redigeras av någon användare. Informationen om tillgänglighet i SOGo är endast synlig när den globala adressboken är påslagen.  <b>Starta om SOGo för att tillämpa ändringar.</b>",
-        "xmpp": "Aktivera XMPP funktion på denna domän",
-        "xmpp_prefix": "XMPP-prefix för domänen (Exempelvis \"im\" för <b>im</b>.example.org)",
-        "xmpp_prefix_info": "För att tillhandahålla ett säkerhetscertifikat måste vissa DNS-uppslag skapas, exempelvis två CNAME uppslag, ett för <b>im</b>.example.org och ett för <b>*.im</b>.example.org, som pekar mot <b>%s</b>. Efter att denna funktion har aktiverats, utför en DNS-kontroll för att testa att uppslagen är korrekt uppsatta.",
-        "xmpp_info": "Denna funktion aktiverar chatt-funktionalitet på denna domän.",
-        "xmpp_access": "XMPP-åtkomst",
-        "xmpp_access_info": "XMPP måste aktiveras på den här domänen.",
-        "xmpp_admin": "XMPP Administratör",
-        "xmpp_admin_info": "<b>Varning:</b> Befodrar en användare till XMPP-administratör på den här domänen.",
-        "xmpp_example_jid": "<b>Exempel JID</b> (Använd samma lösenord som på postlådan)",
         "generate": "generera",
         "grant_types": "Grant-typer",
         "hostname": "Värdnamn",
@@ -927,10 +913,7 @@
         "verified_totp_login": "Verifierad TOTP inloggning",
         "verified_u2f_login": "Verifierad U2F inloggning",
         "verified_fido2_login": "Verifierad FIDO2 inloggning",
-        "verified_yotp_login": "Verifierad Yubico OTP inloggning",
-        "xmpp_restarted": "XMPP-tjänsten har startat om",
-        "xmpp_reloaded": "XMPP-tjänsten har laddats om",
-        "xmpp_maps_updated": "XMPP-kopplingen har aktiverats"
+        "verified_yotp_login": "Verifierad Yubico OTP inloggning"
     },
     "tfa": {
         "api_register": "%s använder Yubico Moln-API. Vänligen skaffa en API-nyckel för din nyckel <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">här</a>",
