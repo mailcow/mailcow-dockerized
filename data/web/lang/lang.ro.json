@@ -371,7 +371,6 @@
         "global_filter_write_error": "Nu se poate scrie fișier filtru: %s",
         "global_map_invalid": "ID hartă globală %s invalid",
         "global_map_write_error": "Nu se poate scrie ID hartă globală %s: %s",
-        "xmpp_map_write_error": "Harta XMPP nu poate fi scrisă: %s",
         "goto_empty": "Adresa goto nu trebuie să fie goală",
         "goto_invalid": "Adresa goto %s este invalidă",
         "ham_learn_error": "Eroare de învățare Ham: %s",
@@ -457,9 +456,7 @@
         "username_invalid": "Numele de utilizator %s nu poate fi utilizat",
         "validity_missing": "Atribuie o perioadă de valabilitate",
         "value_missing": "Furnizează toate valorile",
-        "yotp_verification_failed": "Verificarea Yubico OTP a eșuat: %s",
-        "xmpp_restart_failed": "XMPP nu a putut fi repornit",
-        "xmpp_reload_failed": "XMPP nu a putut fi reîncărcat"
+        "yotp_verification_failed": "Verificarea Yubico OTP a eșuat: %s"
     },
     "debug": {
         "chart_this_server": "Grafic (acest server)",
@@ -486,9 +483,7 @@
         "success": "Succes",
         "system_containers": "Sistem și Containere",
         "uptime": "Timp de funcționare",
-        "username": "Utilizator",
-        "xmpp_dead": "XMPP pornește, este dezactivat sau nefuncțional.",
-        "xmpp_status": "Stare XMPP"
+        "username": "Utilizator"
     },
     "diagnostics": {
         "cname_from_a": "Valoare derivată din înregistrarea A/AAAA. Acest lucru este acceptat atâta timp cât înregistrarea indică resursele corecte.",
@@ -538,15 +533,6 @@
         "full_name": "Nume complet",
         "gal": "Listă globală de adrese",
         "gal_info": "GAL-ul conține toate obiectele dintr-un domeniu și nu poate fi editată de nici un utilizator. <b>Repornește SOGo pentru a aplica modificările.</b>",
-        "xmpp": "Activează XMPP pentru acest domeniu",
-        "xmpp_prefix": "Prefixul XMPP pentru domeniu (\"im\" pentru <b>im</b>.example.org)",
-        "xmpp_prefix_info": "Pentru a solicita certificate pentru XMPP, două înregistrări DNS CNAME ar trebui să trimită de la <b>im</b>.example.org precum și <b>*.im</b>.example.org la <b>%s</b>. De asemenea, rulați verificarea DNS pentru acest domeniu după activarea XMPP.",
-        "xmpp_info": "Această funcție va activa mesageria pentru acest domeniu.",
-        "xmpp_access": "Acces XMPP",
-        "xmpp_access_info": "XMPP trebuie să fie activ pentru acest domeniu.",
-        "xmpp_admin": "Administrator XMPP",
-        "xmpp_admin_info": "<b>Atenție:</b> Promovează un utilizator ca administrator XMPP pentru acest domeniu.",
-        "xmpp_example_jid": "<b>Exemplu JID</b> (autentificare cu parolă email)",
         "generate": "Generează",
         "grant_types": "Tipuri de subvenții",
         "hostname": "Nume gazdă",
@@ -944,10 +930,7 @@
         "verified_totp_login": "Autentificarea TOTP verificată",
         "verified_u2f_login": "Autentificarea U2F verificată",
         "verified_fido2_login": "Conectare FIDO2 verificată",
-        "verified_yotp_login": "Autentificarea Yubico OTP verificată",
-        "xmpp_restarted": "Serviciul XMPP a fost repornit",
-        "xmpp_reloaded": "Serviciul XMPP a fost reîncărcat",
-        "xmpp_maps_updated": "Hărțile serviciului XMPP au fost actualizate"
+        "verified_yotp_login": "Autentificarea Yubico OTP verificată"
     },
     "tfa": {
         "api_register": "%s utilizează API-ul Yubico Cloud. Obțineți o cheie API pentru cheia dvs. de <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">aici</a>",
