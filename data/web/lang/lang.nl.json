@@ -351,7 +351,6 @@
         "global_filter_write_error": "Filter kon niet opgeslagen worden: %s",
         "global_map_invalid": "Globaal filter %s is ongeldig",
         "global_map_write_error": "Globaal filter %s kon niet opgeslagen worden: %s",
-        "xmpp_map_write_error": "XMPP-map kon niet opgeslagen worden: %s",
         "goto_empty": "Een aliasadres dient ten minste één doeladres te hebben",
         "goto_invalid": "Doeladres %s is ongeldig",
         "ham_learn_error": "Ham training-error: %s",
@@ -437,9 +436,7 @@
         "username_invalid": "Gebruikersnaam %s kan niet worden gebruikt",
         "validity_missing": "Wijs een geldigheidstermijn toe",
         "value_missing": "Niet alle waarden zijn ingevuld",
-        "yotp_verification_failed": "Yubico OTP-verificatie mislukt: %s",
-        "xmpp_restart_failed": "XMPP herstart mislukt",
-        "xmpp_reload_failed": "XMPP reload mislukt"
+        "yotp_verification_failed": "Yubico OTP-verificatie mislukt: %s"
     },
     "debug": {
         "chart_this_server": "Grafiek (deze server)",
@@ -453,7 +450,6 @@
         "logs": "Logs",
         "restart_container": "Herstart",
         "solr_dead": "Solr is uitgeschakeld, uitgevallen of nog bezig met opstarten.",
-        "xmpp_dead": "XMPP is uitgeschakeld, uitgevallen of nog bezig met opstarten.",
         "docs": "Documenten",
         "last_modified": "Voor het laatst bijgewerkt op",
         "online_users": "Gebruikers online",
@@ -463,8 +459,7 @@
         "uptime": "Uptime",
         "started_on": "Gestart op",
         "static_logs": "Statische logs",
-        "system_containers": "Systeem & containers",
-        "xmpp_status": "XMPP-status"
+        "system_containers": "Systeem & containers"
     },
     "diagnostics": {
         "cname_from_a": "Waarde afgeleid van een A- of AAAA-vermelding.",
@@ -513,17 +508,6 @@
         "full_name": "Volledige naam",
         "gal": "Globale adreslijst",
         "gal_info": "De globale adreslijst bevat alle objecten van een domein. Deze kunnen door geen enkele gebruiker worden bewerkt. <b>Herstart SOGo om wijzigingen door te voeren.</b>",
-
-        "xmpp": "Activeer XMPP voor dit domein",
-        "xmpp_prefix": "XMPP-prefix (\"im\" om <b>im</b>.example.org te gebruiken)",
-        "xmpp_prefix_info": "Om certificaten voor XMPP aan te vragen, dienen twee CNAME records te verwijzen van <b>im</b>.example.org en <b>*.im</b>.example.org naar <b>%s</b>. Controleer na het inschakelen van XMPP de DNS-configuratie in het Domeinen-overzicht.",
-        "xmpp_info": "Deze optie activeert de chatfunctionaliteit voor dit domein.",
-        "xmpp_access": "XMPP-toegang",
-        "xmpp_access_info": "XMPP dient ingeschakeld te zijn voor dit domein.",
-        "xmpp_admin": "XMPP-administrator",
-        "xmpp_admin_info": "<b>Waarschuwing:</b> Promoveert een gebruiker tot XMPP-administrator van dit domein.",
-        "xmpp_example_jid": "<b>Voorbeeld JID</b> (log in met mailboxwachtwoord)",
-
         "generate": "genereer",
         "grant_types": "Grant types",
         "hostname": "Hostname",
@@ -909,10 +893,7 @@
         "verified_totp_login": "TOTP succesvol geverifieerd",
         "verified_u2f_login": "U2F succesvol geverifieerd",
         "verified_fido2_login": "FIDO2 succesvol geverifieerd",
-        "verified_yotp_login": "Yubico OTP succesvol geverifieerd",
-        "xmpp_restarted": "XMPP-service is hestart",
-        "xmpp_reloaded": "XMPP-service is herladen",
-        "xmpp_maps_updated": "XMPP-maps zijn bijgewerkt"
+        "verified_yotp_login": "Yubico OTP succesvol geverifieerd"
     },
     "tfa": {
         "api_register": "%s maakt gebruik van de Yubico Cloud API. Om dit te benutten is er een API-key van Yubico vereist, deze kan <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">hier</a> opgevraagd worden",
