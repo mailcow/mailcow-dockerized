@@ -653,7 +653,7 @@
         "booking_0_short": "Altijd vrij",
         "booking_custom": "Zet vast op een specifiek aantal boekingen",
         "booking_custom_short": "Hard limit",
-        "booking_ltnulL": "Onbeperkt, maar toon als bezet wanneer geboekt",
+        "booking_ltnull": "Onbeperkt, maar toon als bezet wanneer geboekt",
         "booking_lt0_short": "Soft limit",
         "daily": "Dagelijks",
         "deactivate": "Deactiveer",

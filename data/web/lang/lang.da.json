@@ -648,7 +648,7 @@
         "booking_0_short": "Altid gratis",
         "booking_custom": "Hard-limit til et brugerdefineret antal bookinger",
         "booking_custom_short": "Hård grænse",
-        "booking_ltnulL": "Ubegrænset, men vis som optaget, når booket",
+        "booking_ltnull": "Ubegrænset, men vis som optaget, når booket",
         "booking_lt0_short": "Blød grænse",
         "daily": "Daglige",
         "deactivate": "Deaktiver",

@@ -499,7 +499,7 @@
         "booking_0_short": "Siempre disponible",
         "booking_custom": "Límite pre-establecido de reservas",
         "booking_custom_short": "Límite estricto",
-        "booking_ltnulL": "Sín limite, pero mostrar ocupado cuando esté reservado",
+        "booking_ltnull": "Sín limite, pero mostrar ocupado cuando esté reservado",
         "booking_lt0_short": "Ocupado cuando en uso",
         "daily": "Cada día",
         "deactivate": "Desactivar",

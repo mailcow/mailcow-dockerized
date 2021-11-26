@@ -707,7 +707,7 @@
         "booking_0_short": "Immer verfügbar",
         "booking_custom": "Benutzerdefiniertes Limit",
         "booking_custom_short": "Hartes Limit",
-        "booking_ltnulL": "Unbegrenzt, jedoch anzeigen, wenn gebucht",
+        "booking_ltnull": "Unbegrenzt, jedoch anzeigen, wenn gebucht",
         "booking_lt0_short": "Weiches Limit",
         "daily": "Täglich",
         "deactivate": "Deaktivieren",

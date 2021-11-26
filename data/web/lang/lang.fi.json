@@ -561,7 +561,7 @@
         "booking_0_short": "Aina ilmainen",
         "booking_custom": "Rajoitettu määrä varauksia mukautettuun määrään",
         "booking_custom_short": "Kova raja",
-        "booking_ltnulL": "Rajoittamaton, mutta näytä varattu, kun varattu",
+        "booking_ltnull": "Rajoittamaton, mutta näytä varattu, kun varattu",
         "booking_lt0_short": "Pehmeä rajoitus",
         "daily": "Päivittäin",
         "deactivate": "Deaktivoi",

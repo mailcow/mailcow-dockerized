@@ -685,7 +685,7 @@
         "booking_0_short": "Întotdeauna liber",
         "booking_custom": "Limita maximă la o sumă personalizată de rezervări",
         "booking_custom_short": "Limită maximă",
-        "booking_ltnulL": "Nelimitat, dar arată ca ocupat atunci când este rezervat",
+        "booking_ltnull": "Nelimitat, dar arată ca ocupat atunci când este rezervat",
         "booking_lt0_short": "Limită redusă",
         "daily": "Zilnic",
         "deactivate": "Deactivează",
