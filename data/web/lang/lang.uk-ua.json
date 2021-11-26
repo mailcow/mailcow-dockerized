@@ -1037,7 +1037,7 @@
         "apple_connection_profile_complete": "Цей профіль включає налаштування IMAP та SMTP, а також CalDAV (календарів) та CardDAV (контактів) для пристрою Apple.",
         "apple_connection_profile_mailonly": "Цей профіль включає лише налаштування IMAP та SMTP для пристрою Apple.",
         "change_password": "Змінити пароль",
-        "change_password_hint_app_passwords": "Ваш обліковий запис містить {{number_of_app_passwords}} паролів додатків, які не змінюватимуться. Щоб керувати ними, перейдіть на вкладку \"Паролі додатків\".",
+        "change_password_hint_app_passwords": "Ваш обліковий запис містить %d паролів додатків, які не змінюватимуться. Щоб керувати ними, перейдіть на вкладку \"Паролі додатків\".",
         "clear_recent_successful_connections": "Очистити історію успішних підключень",
         "create_app_passwd": "Створити новий пароль",
         "create_syncjob": "Створити нове завдання синхронізації",
