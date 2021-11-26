@@ -1192,7 +1192,7 @@
         "weeks": "settimane",
         "year": "anno",
         "years": "anni",
-        "change_password_hint_app_passwords": "Il tuo account ha {{number_of_app_passwords}} password delle app che non verranno modificate. Per gestirle, vai alla scheda App passwords.",
+        "change_password_hint_app_passwords": "Il tuo account ha %d password delle app che non verranno modificate. Per gestirle, vai alla scheda App passwords.",
         "syncjob_check_log": "Controlla i log",
         "syncjob_last_run_result": "Risultato dell'ultima esecuzione",
         "open_logs": "Apri i log",

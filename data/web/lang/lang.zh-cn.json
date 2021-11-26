@@ -1042,7 +1042,7 @@
         "apple_connection_profile_mailonly": "此连接描述文件包括提供给 Apple 设备的 IMAP 和 SMTP 配置参数。",
         "apple_connection_profile_with_app_password": "一个新的应用程序密码将会被生成并添加到该配置文件中，因此在设备设置时不需要输入密码。请不要随意分享该文件，因为它包含你的邮箱的完全访问权限。",
         "change_password": "更改密码",
-        "change_password_hint_app_passwords": "你的账户有 {{number_of_app_passwords}} 个应用密码，这些密码将不会被更改。如果需要管理这些密码，请访问应用密码标签。",
+        "change_password_hint_app_passwords": "你的账户有 %d 个应用密码，这些密码将不会被更改。如果需要管理这些密码，请访问应用密码标签。",
         "clear_recent_successful_connections": "清除成功匹配的连接",
         "client_configuration": "显示邮箱客户端和智能手机的配置指南",
         "create_app_passwd": "添加应用密码",
