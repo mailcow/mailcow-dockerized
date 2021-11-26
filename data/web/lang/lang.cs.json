@@ -707,7 +707,7 @@
         "booking_0_short": "Vždy volno",
         "booking_custom": "Omezeno na pevný počet rezervací",
         "booking_custom_short": "Pevný limit",
-        "booking_ltnulL": "Neomezeno, ale po rezervaci se ukazuje jako obsazené",
+        "booking_ltnull": "Neomezeno, ale po rezervaci se ukazuje jako obsazené",
         "booking_lt0_short": "Volný limit",
         "catch_all": "Doménový koš",
         "daily": "Každý den",

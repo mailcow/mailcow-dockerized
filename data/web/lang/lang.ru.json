@@ -708,7 +708,7 @@
         "booking_0_short": "Всегда свободнен",
         "booking_custom": "Лимит на количество бронирований",
         "booking_custom_short": "Жесткий лимит",
-        "booking_ltnulL": "Неограниченный, занят при бронировании",
+        "booking_ltnull": "Неограниченный, занят при бронировании",
         "booking_lt0_short": "Неограниченный лимит",
         "catch_all": "Catch-all",
         "daily": "Раз в день",

@@ -629,7 +629,7 @@
         "booking_0_short": "Always free",
         "booking_custom": "Hard-limit to a custom amount of bookings",
         "booking_custom_short": "Hard limit",
-        "booking_ltnulL": "Unlimited, but show as busy when booked",
+        "booking_ltnull": "Unlimited, but show as busy when booked",
         "booking_lt0_short": "Soft limit",
         "daily": "매일",
         "deactivate": "비활성화",

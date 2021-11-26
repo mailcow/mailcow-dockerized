@@ -655,7 +655,7 @@
 		"booking_0_short": "Toujours libre",
 		"booking_custom": "Limite rigide à un nombre de réservations personnalisé",
 		"booking_custom_short": "Limite rigide",
-		"booking_ltnulL": "Illimité, mais afficher aussi occupé lorsque réservé",
+		"booking_ltnull": "Illimité, mais afficher aussi occupé lorsque réservé",
 		"booking_lt0_short": "Limite souple",
 		"daily": "Quotidiennement",
 		"deactivate": "Désactiver",

@@ -670,7 +670,7 @@
         "booking_0_short": "Alltid tillgängligt",
         "booking_custom": "Sätt en fast gräns för antalet möjliga bokningar",
         "booking_custom_short": "Hård gräns",
-        "booking_ltnulL": "Obegränsad antal, men visa resursen som upptagen när den är bokad",
+        "booking_ltnull": "Obegränsad antal, men visa resursen som upptagen när den är bokad",
         "booking_lt0_short": "Mjuk gräns",
         "daily": "Dagligen",
         "deactivate": "Inaktivera",
