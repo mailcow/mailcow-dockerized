@@ -1134,7 +1134,7 @@
         "apple_connection_profile_mailonly": "This connection profile includes IMAP and SMTP configuration parameters for an Apple device.",
         "apple_connection_profile_with_app_password": "A new app password is generated and added to the profile so that no password needs to be entered when setting up your device. Please do not share the file as it grants full access to your mailbox.",
         "change_password": "Change password",
-        "change_password_hint_app_passwords": "Your account has {{number_of_app_passwords}} app passwords that will not be changed. To manage these, go to the App passwords tab.",
+        "change_password_hint_app_passwords": "Your account has %d app passwords that will not be changed. To manage these, go to the App passwords tab.",
         "clear_recent_successful_connections": "Clear seen successful connections",
         "client_configuration": "Show configuration guides for email clients and smartphones",
         "create_app_passwd": "Create app password",

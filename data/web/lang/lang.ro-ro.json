@@ -1056,7 +1056,7 @@
         "apple_connection_profile_mailonly": "Acest profil de conexiune include parametrii de configurare IMAP și SMTP pentru dispozitivele Apple.",
         "apple_connection_profile_with_app_password": "O nouă parolă pentru aplicație este generată și adăugată la profil, astfel încât să nu fie necesară introducerea unei parole la configurarea dispozitivului. Vă rugăm să nu partajați fișierul, deoarece oferă acces deplin la căsuța dvs. poștală.",
         "change_password": "Schimbă parola",
-        "change_password_hint_app_passwords": "Contul dvs. are {{number_of_app_passwords}} parole de aplicație care nu vor fi modificate. Pentru a le gestiona, accesați secțiunea Parole aplicație.",
+        "change_password_hint_app_passwords": "Contul dvs. are %d parole de aplicație care nu vor fi modificate. Pentru a le gestiona, accesați secțiunea Parole aplicație.",
         "clear_recent_successful_connections": "Ștergeți conexiunile reușite văzute",
         "client_configuration": "Afișează ghidurile de configurare pentru clienții de email și smartphone-uri",
         "create_app_passwd": "Crează parola aplicației",

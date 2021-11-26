@@ -285,15 +285,13 @@
             <label class="control-label col-sm-3" for="user_old_pass">{{ lang.user.password_now }}</label>
             <div class="col-sm-9">
               <input type="password" class="form-control" name="user_old_pass" autocomplete="off" required>
+              {% if number_of_app_passwords > 0 %}
+                <div class="invalid-feedback d-block">
+                  {{ lang.user.change_password_hint_app_passwords|format(number_of_app_passwords) }}
+                </div>
+              {% endif %}
             </div>
           </div>
-          {% if number_of_app_passwords > 0 %}
-            <div class="row mb-2">
-              <div class="offset-sm-3 col-sm-9">
-                <small>{{ lang.user.change_password_hint_app_passwords | replace({'{{number_of_app_passwords}}': number_of_app_passwords}) }}</small>
-              </div>
-            </div>
-          {% endif %}
           <div class="row">
             <div class="offset-sm-3 col-sm-9">
               <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="pwchange" data-item="null" data-api-url='edit/self' data-api-attr='{}' href="#">{{ lang.user.change_password }}</button>
