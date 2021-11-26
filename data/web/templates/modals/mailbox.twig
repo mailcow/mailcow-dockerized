@@ -245,8 +245,8 @@
             <label class="control-label col-sm-2" for="multiple_bookings_select">{{ lang.add.multiple_bookings }}</label>
             <div class="col-sm-10">
               <select name="multiple_bookings_select" id="multiple_bookings_select" title="{{ lang.add.select }}" required>
-                <option value="0">{{ lang.mailbox.booking_0 }}</option>
-                <option value="-1" selected>{{ lang.mailbox.booking_lt0 }}</option>
+                <option value="0">{{ lang.mailbox.booking_null }}</option>
+                <option value="-1" selected>{{ lang.mailbox.booking_ltnull }}</option>
                 <option value="custom">{{ lang.mailbox.booking_custom }}</option>
               </select>
               <div style="display:none" id="multiple_bookings_custom_div">
