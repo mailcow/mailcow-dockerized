@@ -460,11 +460,7 @@
         "unlimited_quota_acl": "Neobmedzené kvóta je zakázaná cez ACL",
         "username_invalid": "Používateľské meno %s nemôže byť použité",
         "validity_missing": "Zadajte periódu platnosti",
-        "value_missing": "Prosím poskytnite všetky hodnoty",
-        "xmpp_map_write_error": "Nemožno zapísať XMPP mapu: %s",
-        "xmpp_reload_failed": "Reloadnutie XMPP zlyhalo",
-        "xmpp_restart_failed": "Reštartovanie XMPP zlyhalo",
-        "yotp_verification_failed": "Yubico OTP overenie zlyhalo: %s"
+        "value_missing": "Prosím poskytnite všetky hodnoty"
     },
     "debug": {
         "chart_this_server": "Graf (tento server)",
@@ -491,9 +487,7 @@
         "success": "Úspech",
         "system_containers": "Systém & Kontajnery",
         "uptime": "Doba behu",
-        "username": "Používateľské meno",
-        "xmpp_dead": "XMPP štartuje, je vypnutý alebo nebeží.",
-        "xmpp_status": "XMPP status"
+        "username": "Používateľské meno"
     },
     "diagnostics": {
         "cname_from_a": "Hodnota odvodená od A/AAAA záznamu. Toto je podporené len v prípade ak záznam poukazuje na správny zdroj.",
@@ -614,16 +608,7 @@
         "title": "Upraviť objekt",
         "unchanged_if_empty": "Ak nemeníte, nechajte prázdne",
         "username": "Používateľské meno",
-        "validate_save": "Validovať a uložiť",
-        "xmpp": "Aktivovať XMPP pre túto doménu",
-        "xmpp_access": "XMPP prístup",
-        "xmpp_access_info": "XMPP musí byť aktivované pre túto doménu.",
-        "xmpp_admin": "XMPP administrátor",
-        "xmpp_admin_info": "<b>Upozornenie:</b> Povýši užívateľa na XMPP administrátora pre túto doménu.",
-        "xmpp_example_jid": "<b>Príklad JID</b> (prihlásenie s mail heslom)",
-        "xmpp_info": "Aktivovanie tejto funkcie umožní četovanie v tejto doméne.",
-        "xmpp_prefix": "XMPP prefix pre doménu (\"im\" bude použitý ako <b>im</b>.example.org)",
-        "xmpp_prefix_info": "Pre vyžiadanie certifikátov pre XMPP by mali smerovať dva CNAME DNS záznamy z <b>im</b>.example.org ako aj <b>*.im</b>.example.org na <b>%s</b>. Prosím spustie DNS kontrolu po zapnutí XMPP."
+        "validate_save": "Validovať a uložiť"
     },
     "fido2": {
         "confirm": "Potvrdiť",
@@ -989,10 +974,7 @@
         "verified_fido2_login": "Overené FIDO2 prihlásenie",
         "verified_totp_login": "Overené TOTP prihlásenie",
         "verified_u2f_login": "Overené U2F prihlásenie",
-        "verified_yotp_login": "Overené Yubico OTP prihlásenie",
-        "xmpp_maps_updated": "XMPP mapy boli aktualizované",
-        "xmpp_reloaded": "XMPP služba sa reloadla",
-        "xmpp_restarted": "XMPP služba sa reštartovala"
+        "verified_yotp_login": "Overené Yubico OTP prihlásenie"
     },
     "tfa": {
         "api_register": "%s využíva Yubico Cloud API. Prosím, zaobstarajte si API kľúč pre váš kľúč <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">tu</a>",
