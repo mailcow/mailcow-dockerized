@@ -68,7 +68,6 @@
         "alias_invalid": "O endereço digitado como Apelido é inválido",
         "aliasd_targetd_identical": "o Encaminhamento de Domínio não pode ser igual ao Domínio Destino",
         "aliases_in_use": "O máximo de Apelidos deve ser maior ou igual a %d",
-        "blacklist_exists": "O registro já existe na BlackList",
         "blacklist_from_invalid": "O registro Blacklist possui formato inválido",
         "dkim_domain_or_sel_invalid": " Registro DKIM inválido",
         "domain_exists": "Domínio %s já existe",
@@ -76,9 +75,7 @@
         "domain_not_empty": "Não é possível remover um domínio com Contas/Apelidos/Direcionamentos",
         "domain_not_found": "Domínio não encontrado.",
         "domain_quota_m_in_use": "Espaço do Domínio deve ser maior ou igual a %s MiB",
-        "fetchmail_active": "O processo esta em andamento, aguarde o seu término.",
         "fetchmail_dest_empty": "Definir a pasta de destino",
-        "fetchmail_source_empty": "Definir a pasta de origem",
         "goto_empty": "Você deve preencher o campo Encaminhar para",
         "goto_invalid": "O endereço digitado como Encaminhar para é inválido",
         "is_alias": "o endereço %s já é um Apelido",
@@ -139,9 +136,6 @@
     "footer": {
         "loading": "Aguarde..."
     },
-    "getmail": {
-        "no_status": "Nenhum registro anterior encontrado"
-    },
     "header": {
         "administration": "Administração",
         "mailboxes": "Contas",
@@ -149,18 +143,13 @@
         "user_settings": "Configurações do usuário"
     },
     "info": {
-        "fetchmail_planned": "Procedimento de retirada de emails foi agendado. Verifique o processo mais tarde.",
         "no_action": "Nenhuma ação foi definida"
     },
     "login": {
-        "confirm": "Confirmar",
         "delayed": "Sua entrada será atrasada por %s segundos.",
         "login": "Entrar",
-        "otp": "Senha única",
         "password": "Senha",
-        "tfa": "Autenticação em duas etapas",
         "tfa_details": "Confirme sua senha no campo abaixo",
-        "trash_login": "Tentativas de entrada",
         "username": "Usuário"
     },
     "mailbox": {
@@ -246,7 +235,6 @@
         "hours": "Horas",
         "mailbox_details": "Detalhes da conta",
         "new_password": "Nova senha",
-        "new_password_description": "Requerido: mínimo de 6 characteres com letras e números.",
         "new_password_repeat": "Confirmar senha (repetir)",
         "no_record": "Nenhum registro",
         "password_now": "Senha atual (confirme a alteração)",

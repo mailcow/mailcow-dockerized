@@ -263,9 +263,7 @@
         "domain_not_empty": "No se puede eliminar un dominio que no esté vacío",
         "domain_not_found": "Dominio no encontrado",
         "domain_quota_m_in_use": "Cuota del dominio debe ser mayor o igual a %d MiB",
-        "fetchmail_active": "Un proceso ya se está ejecutando, por favor espera a que termine.",
         "fetchmail_dest_empty": "Por favor define una carpeta destino",
-        "fetchmail_source_empty": "Por favor define una carpeta fuente",
         "filter_type": "Tipo de filtro incorrecto",
         "from_invalid": "Remitente no puede estar vacío",
         "goto_empty": "Dirección \"goto\" no debe estar vacía",
@@ -435,7 +433,6 @@
         "hibp_ok": "No se encontraron coincidencias",
         "loading": "Espera por favor...",
         "restart_now": "Reiniciar ahora",
-        "restart_sogo": "Reiniciar SOGo",
         "restart_sogo_info": "Algunas tareas, por ejemplo agregar un dominio, requieren que se reinicie SOGo para detectar cambios hechos en la UI de mailcow.<br><br><b>Importante:</b> Un reinicio sencillo puede tardar un poco en completarse, por favor espera a que termine."
     },
     "header": {
@@ -449,18 +446,13 @@
     },
     "info": {
         "awaiting_tfa_confirmation": "En espera de confirmación de TFA",
-        "fetchmail_planned": "La tarea para buscar correos se ha planeado. Por favor verifica el proceso más tarde.",
         "no_action": "No hay acción aplicable"
     },
     "login": {
-        "confirm": "Confirmar",
         "delayed": "El inicio de sesión ha sido retrasado %s segundos.",
         "login": "Inicio de sesión",
-        "otp": "Contraseña de un solo uso",
         "password": "Contraseña",
-        "tfa": "Autenticación de dos factores",
         "tfa_details": "Por favor confirma tu contraseña de un solo uso en el campo de abajo",
-        "trash_login": "Inicio de sesión basura",
         "username": "Nombre de usuario"
     },
     "mailbox": {
@@ -717,7 +709,6 @@
         "mailbox_details": "Detalles del buzón",
         "never": "Nunca",
         "new_password": "Nueva contraseña:",
-        "new_password_description": "Requisitos: longitud de 6 caracteres, letras y números.",
         "new_password_repeat": "Confirmación de contraseña (repetir):",
         "no_record": "Sin registro",
         "password_now": "Contraseña actual (confirmar cambios):",

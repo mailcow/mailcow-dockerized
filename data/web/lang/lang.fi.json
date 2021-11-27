@@ -822,7 +822,6 @@
         "messages": "Kpl viestejä yhteensä",
         "never": "Ei koskaan",
         "new_password": "Uusi salasana",
-        "new_password_description": "Vaatimus: 6 merkkiä pitkä, kirjaimia ja numeroita.",
         "new_password_repeat": "Vahvista salasana (anna uudelleen)",
         "no_active_filter": "Aktiivisia suodattimia ei ole käytettävissä",
         "no_record": "Ei tietuetta",

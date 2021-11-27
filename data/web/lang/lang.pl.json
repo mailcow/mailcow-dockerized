@@ -198,7 +198,6 @@
         "delete_these_items": "Czy jesteś pewien, że chcesz usunąć następujące elementy?",
         "loading": "Proszę czekać...",
         "restart_now": "Uruchom ponownie teraz",
-        "restart_sogo": "Uruchom ponownie SOGo",
         "restart_sogo_info": "Niektóre zadania, np. dodanie domeny, wymagają ponownego uruchomienia SOGo, aby zastosować zmiany wprowadzone do Mailcow UI.<br><br><b>Important:</b> Bezpieczne, ponowne uruchomienie może chwilę potrwać, proszę czekać do zakończenia procesu."
     },
     "header": {
@@ -375,7 +374,6 @@
         "messages": "wiadomości",
         "never": "Nigdy",
         "new_password": "Nowe hasło",
-        "new_password_description": "Wymagania: 6 znaków, litery i liczby.",
         "new_password_repeat": "Potwierdź hasło(powtórz)",
         "no_active_filter": "Brak aktywnego filtra",
         "no_record": "Brak rekordu",
