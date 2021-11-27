@@ -315,7 +315,6 @@
         "messages": "üzenetek",
         "never": "Soha",
         "new_password": "Új jelszó",
-        "new_password_description": "Minimum követelmény: 6 karakter, betűk és számok.",
         "new_password_repeat": "Jelszó megerősítése",
         "no_active_filter": "Nincs aktív szűrő",
         "no_last_login": "Nincs információ az utolsó belépésről a felhasználói felületen",
