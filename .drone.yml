@@ -28,6 +28,7 @@ steps:
   when:
     branch:
     - master
+    - staging
     event:
     - push
 
@@ -39,6 +40,7 @@ steps:
   when:
     branch:
     - master
+    - staging
     event:
     - push
 
@@ -55,6 +57,7 @@ steps:
   when:
     branch:
     - master
+    - staging
     event:
     - push
 
@@ -71,6 +74,7 @@ steps:
   when:
     branch:
     - master
+    - staging
     event:
     - push
 
@@ -86,6 +90,7 @@ steps:
   when:
     branch:
     - master
+    - staging
     event:
     - push
 
@@ -101,6 +106,7 @@ steps:
   when:
     branch:
     - master
+    - staging
     event:
     - push
     status:
@@ -109,6 +115,6 @@ steps:
 
 ---
 kind: signature
-hmac: 78793b0d115828cf74f6dbac3341205c6d48ef2e59661529f3412f2fac3831a9
+hmac: f6619243fe2a27563291c9f2a46d93ffbc3b6dced9a05f23e64b555ce03a31e5
 
 ...
