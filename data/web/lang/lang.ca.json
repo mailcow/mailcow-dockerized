@@ -66,7 +66,6 @@
         "add_domain_admin": "Afegir Administrador del dominio",
         "add_forwarding_host": "Afegir Forwarding Host",
         "add_relayhost": "Afegir Relayhost",
-        "add_relayhost_add_hint": "Tingues en compte que les dades d'autenticació al relayhost es desaran sense xifrar.",
         "add_row": "Afegir fila",
         "additional_rows": " files addicionals afegides",
         "admin": "Administrador",
@@ -118,9 +117,7 @@
         "password": "Contrasenya",
         "password_repeat": "Confirmació de la contrasenya (repetir)",
         "private_key": "Clau privada",
-        "quarantaine": "Quarantena",
         "quarantaine_exclude_domains": "Excloure els dominis i àlies de domini:",
-        "quarantaine_max_size": "Mida màxima en MiB (més grans es descarten):",
         "quarantaine_retention_size": "Retentions per mailbox:",
         "quarantine": "Quarantena",
         "recipients": "Recipients",
@@ -269,8 +266,7 @@
         "delete_these_items": "Si et plau confirma els canvis al objecte amb id:",
         "loading": "Si et plau espera ...",
         "restart_container_info": "<b>Important:</b> Un reinici pot trigar una estona, si et plau espera a que acabi.",
-        "restart_now": "Reiniciar ara",
-        "restart_sogo": "Reiniciar SOGo"
+        "restart_now": "Reiniciar ara"
     },
     "header": {
         "administration": "Administració",
@@ -304,7 +300,6 @@
         "add_mailbox": "Afegir bústia",
         "add_recipient_map_entry": "Afegir 'Recipient map'",
         "add_resource": "Afegir recurs",
-        "add_sender_map_entry": "Afegir 'Sender map'",
         "address_rewriting": "Re-escriptura d'adreces",
         "alias": "Àlies",
         "aliases": "Àlies",
@@ -492,7 +487,6 @@
         "mailbox_details": "Detalls de la bústia",
         "messages": "missatges",
         "new_password": "Contrasenya nova:",
-        "new_password_description": "Requisits: 6 caracters, lletres i números.",
         "new_password_repeat": "Confirmació de la contrasenya nova:",
         "no_active_filter": "Actualment no hi ha cap filtre",
         "no_record": "Sense registre",
