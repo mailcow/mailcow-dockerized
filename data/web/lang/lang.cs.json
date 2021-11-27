@@ -885,11 +885,11 @@
         "type": "Typ"
     },
     "ratelimit": {
-	    "disabled": "Vypnuto",
-	    "second": "zpráv za sekundu",
-	    "minute": "zpráv za minutu",
-	    "hour": "zpráv za hodinu",
-	    "day": "zpráv za den"
+        "disabled": "Vypnuto",
+        "second": "zpráv za sekundu",
+        "minute": "zpráv za minutu",
+        "hour": "zpráv za hodinu",
+        "day": "zpráv za den"
     },
     "start": {
         "help": "Zobrazit/skrýt panel nápovědy",
@@ -1067,7 +1067,6 @@
         "months": "měsíce",
         "never": "Nikdy",
         "new_password": "Nové heslo",
-        "new_password_description": "Požadavek: min. délka 6 znaků, písmena a čísla.",
         "new_password_repeat": "Potvrzení nového hesla (opakujte)",
         "no_active_filter": "Není k dispozici žádný aktivní filtr",
         "no_last_login": "Žádný záznam o přihlášení",
