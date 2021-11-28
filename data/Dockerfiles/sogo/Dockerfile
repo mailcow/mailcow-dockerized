@@ -1,10 +1,10 @@
-FROM debian:buster-slim
+FROM debian:bullseye-slim
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG SOGO_DEBIAN_REPOSITORY=http://packages.inverse.ca/SOGo/nightly/5/debian/
 ENV LC_ALL C
-ENV GOSU_VERSION 1.12
+ENV GOSU_VERSION 1.14
 
 # Prerequisites
 RUN echo "Building from repository $SOGO_DEBIAN_REPOSITORY" \
@@ -31,7 +31,7 @@ RUN echo "Building from repository $SOGO_DEBIAN_REPOSITORY" \
   && mkdir /usr/share/doc/sogo \
   && touch /usr/share/doc/sogo/empty.sh \
   && apt-key adv --keyserver keyserver.ubuntu.com --recv-key 0x810273C4 \
-  && echo "deb ${SOGO_DEBIAN_REPOSITORY} buster buster" > /etc/apt/sources.list.d/sogo.list \
+  && echo "deb ${SOGO_DEBIAN_REPOSITORY} bullseye bullseye" > /etc/apt/sources.list.d/sogo.list \
   && apt-get update && apt-get install -y --no-install-recommends \
     sogo \
     sogo-activesync \

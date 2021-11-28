@@ -341,7 +341,7 @@ DOVECOT_MASTER_PASS=
 # Optional: Leave empty for none
 # This value is only used on first order!
 # Setting it at a later point will require the following steps:
-# https://mailcow.github.io/mailcow-dockerized-docs/debug-reset-tls/
+# https://mailcow.github.io/mailcow-dockerized-docs/debug-reset_tls/
 ACME_CONTACT=
 
 EOF
