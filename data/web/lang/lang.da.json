@@ -448,7 +448,6 @@
         "logs": "Logs",
         "restart_container": "Genstart",
         "solr_dead": "Solr starter, deaktiveres eller døde.",
-        "solr_started_at": "Startede kl",
         "solr_status": "Solr-status",
         "started_on": "Startede den",
         "static_logs": "Statiske logfiler",
