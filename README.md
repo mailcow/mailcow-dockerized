@@ -1,5 +1,5 @@
 # mailcow: dockerized - 🐮 + 🐋 = 💕
-[![Build status](https://drone.mailcow.email/api/badges/mailcow/mailcow-dockerized/status.svg?ref=refs/heads/master)](https://drone.mailcow.email/mailcow/mailcow-dockerized) [![Translation status](https://translate.mailcow.email/widgets/mailcow-dockerized/-/translation/svg-badge.svg)](https://translate.mailcow.email/engage/mailcow-dockerized/)
+[![master build status](https://img.shields.io/drone/build/mailcow/mailcow-dockerized/master?label=master%20build&server=https%3A%2F%2Fdrone.mailcow.email)](https://drone.mailcow.email/mailcow/mailcow-dockerized) [![staging build status](https://img.shields.io/drone/build/mailcow/mailcow-dockerized/staging?label=staging%20build&server=https%3A%2F%2Fdrone.mailcow.email)](https://drone.mailcow.email/mailcow/mailcow-dockerized) [![Translation status](https://translate.mailcow.email/widgets/mailcow-dockerized/-/translation/svg-badge.svg)](https://translate.mailcow.email/engage/mailcow-dockerized/)
 
 ## Want to support mailcow?
 
