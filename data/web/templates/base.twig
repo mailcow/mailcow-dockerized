@@ -172,7 +172,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
     // TFA, CSRF, Alerts in footer.inc.php
     // Other general functions in mailcow.js
     {% for alert_type, alert_msg in alerts %}
-    mailcow_alert_box('{{ alert_msg|raw|replace({"\n": "", "\r": "", "\t": "<br>"}) }}', '{{ alert_type }}');
+    mailcow_alert_box('{{ alert_msg|raw }}', '{{ alert_type }}');
     {% endfor %}
 
     // Confirm TFA modal
