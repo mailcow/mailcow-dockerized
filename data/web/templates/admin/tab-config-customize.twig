@@ -29,7 +29,7 @@
         </div>
       {% endif %}
       <legend>{{ lang.admin.app_links }}</legend>
-      <p class="help-block">{{ lang.admin.merged_vars_hint }}</p>
+      <p class="help-block">{{ lang.admin.merged_vars_hint|raw }}</p>
       <form class="form-inline" data-id="app_links" role="form" method="post">
         <table class="table table-condensed" style="white-space: nowrap;" id="app_link_table">
           <tr>
