@@ -65,7 +65,7 @@
               <option>{{ address }}</option>
             {% endfor %}
           </select>
-          <div id="sender_acl_disabled"><i class="bi bi-shield-exclamation"></i> {{ lang.edit.sender_acl_disabled }}</div>
+          <div id="sender_acl_disabled"><i class="bi bi-shield-exclamation"></i> {{ lang.edit.sender_acl_disabled|raw }}</div>
           <small class="help-block">{{ lang.edit.sender_acl_info|raw }}</small>
         </div>
       </div>
