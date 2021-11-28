@@ -939,8 +939,7 @@
         "verified_fido2_login": "Verified FIDO2 login",
         "verified_totp_login": "Verified TOTP login",
         "verified_u2f_login": "Verified U2F login",
-        "verified_yotp_login": "Verified Yubico OTP login",
-        "xmpp_reloaded": "Il servizio XMPP è stato ricaricato"
+        "verified_yotp_login": "Verified Yubico OTP login"
     },
     "tfa": {
         "api_register": "%s usa le API Yubico Cloud. Richiedi una chiave API <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">qui</a>",

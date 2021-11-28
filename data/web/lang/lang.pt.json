@@ -68,14 +68,12 @@
         "alias_invalid": "O endereço digitado como Apelido é inválido",
         "aliasd_targetd_identical": "o Encaminhamento de Domínio não pode ser igual ao Domínio Destino",
         "aliases_in_use": "O máximo de Apelidos deve ser maior ou igual a %d",
-        "blacklist_from_invalid": "O registro Blacklist possui formato inválido",
         "dkim_domain_or_sel_invalid": " Registro DKIM inválido",
         "domain_exists": "Domínio %s já existe",
         "domain_invalid": "Domínio inválido",
         "domain_not_empty": "Não é possível remover um domínio com Contas/Apelidos/Direcionamentos",
         "domain_not_found": "Domínio não encontrado.",
         "domain_quota_m_in_use": "Espaço do Domínio deve ser maior ou igual a %s MiB",
-        "fetchmail_dest_empty": "Definir a pasta de destino",
         "goto_empty": "Você deve preencher o campo Encaminhar para",
         "goto_invalid": "O endereço digitado como Encaminhar para é inválido",
         "is_alias": "o endereço %s já é um Apelido",
@@ -149,7 +147,6 @@
         "delayed": "Sua entrada será atrasada por %s segundos.",
         "login": "Entrar",
         "password": "Senha",
-        "tfa_details": "Confirme sua senha no campo abaixo",
         "username": "Usuário"
     },
     "mailbox": {

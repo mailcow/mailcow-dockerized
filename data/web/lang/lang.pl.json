@@ -197,8 +197,7 @@
         "delete_now": "Usuń teraz",
         "delete_these_items": "Czy jesteś pewien, że chcesz usunąć następujące elementy?",
         "loading": "Proszę czekać...",
-        "restart_now": "Uruchom ponownie teraz",
-        "restart_sogo_info": "Niektóre zadania, np. dodanie domeny, wymagają ponownego uruchomienia SOGo, aby zastosować zmiany wprowadzone do Mailcow UI.<br><br><b>Important:</b> Bezpieczne, ponowne uruchomienie może chwilę potrwać, proszę czekać do zakończenia procesu."
+        "restart_now": "Uruchom ponownie teraz"
     },
     "header": {
         "administration": "Administrowanie",

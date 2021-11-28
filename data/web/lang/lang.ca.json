@@ -117,7 +117,6 @@
         "password": "Contrasenya",
         "password_repeat": "Confirmació de la contrasenya (repetir)",
         "private_key": "Clau privada",
-        "quarantaine_exclude_domains": "Excloure els dominis i àlies de domini:",
         "quarantaine_retention_size": "Retentions per mailbox:",
         "quarantine": "Quarantena",
         "recipients": "Recipients",

@@ -263,7 +263,6 @@
         "domain_not_empty": "No se puede eliminar un dominio que no esté vacío",
         "domain_not_found": "Dominio no encontrado",
         "domain_quota_m_in_use": "Cuota del dominio debe ser mayor o igual a %d MiB",
-        "fetchmail_dest_empty": "Por favor define una carpeta destino",
         "filter_type": "Tipo de filtro incorrecto",
         "from_invalid": "Remitente no puede estar vacío",
         "goto_empty": "Dirección \"goto\" no debe estar vacía",
@@ -432,8 +431,7 @@
         "hibp_nok": "¡Se encontró coincidencia - esta es una contraseña <b>no segura</b>, selecciona otra!",
         "hibp_ok": "No se encontraron coincidencias",
         "loading": "Espera por favor...",
-        "restart_now": "Reiniciar ahora",
-        "restart_sogo_info": "Algunas tareas, por ejemplo agregar un dominio, requieren que se reinicie SOGo para detectar cambios hechos en la UI de mailcow.<br><br><b>Importante:</b> Un reinicio sencillo puede tardar un poco en completarse, por favor espera a que termine."
+        "restart_now": "Reiniciar ahora"
     },
     "header": {
         "administration": "Administración",
@@ -452,7 +450,6 @@
         "delayed": "El inicio de sesión ha sido retrasado %s segundos.",
         "login": "Inicio de sesión",
         "password": "Contraseña",
-        "tfa_details": "Por favor confirma tu contraseña de un solo uso en el campo de abajo",
         "username": "Nombre de usuario"
     },
     "mailbox": {
