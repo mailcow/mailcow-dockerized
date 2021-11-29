@@ -82,9 +82,9 @@
         "post_domain_add": "Il container di SOGo, \"sogo-mailcow\", deve essere riavviato dopo aver aggiunto un nuovo dominio!<br><br>Inoltre la configurazione dei DNS del dominio verrà riesaminata. Quando la configurazione dei DNS sarà attiva, riavvia \"acme-mailcow\" per generare automaticamente i certificati per il nuovo dominio (autoconfig.&lt;domain&gt;, autodiscover.&lt;domain&gt;).<br>Quest'ultimo passaggio è facoltativo, in quanto il sistema si aggiorna ogni 24 ore.",
         "private_comment": "Commento privato",
         "public_comment": "Commento pubblico",
-        "quota_mb": "Spazio (MiB):",
+        "quota_mb": "Spazio (MiB)",
         "relay_all": "Trasmettere a tutti i destinatari",
-        "relay_all_info": "<small>Se si sceglie di <b>non</b> inviare a tutti i destinatari, è necessario aggiungere una casella di posta (\"blind\") per ogni singolo destinatario a cui deve essere inoltrato.</small>",
+        "relay_all_info": "↪ Se si sceglie di <b>non</b> inviare a tutti i destinatari, è necessario aggiungere una casella di posta (\"blind\") per ogni singolo destinatario a cui deve essere inoltrato.",
         "relay_domain": "Trasmetti questo dominio",
         "relay_transport_info": "<div class=\"label label-info\">Info</div> Puoi definire mappe di trasporto verso una destinazione a tua scelta per questo dominio. Se non viene impostata, si guarderà il record MX.",
         "relay_unknown_only": "Inoltra solo caselle di posta inesistenti. I messaggi per gli indirizzi esistenti verranno consegnati localmente.",
@@ -104,7 +104,8 @@
         "timeout2": "Timeout per la connessione all'host locale",
         "username": "Username",
         "validate": "Convalida",
-        "validation_success": "Convalidato con successo"
+        "validation_success": "Convalidato con successo",
+        "bcc_dest_format": "Il destinatario in copia nascosta, dev'essere un solo indirizzo email.<br>Se devi spedire una copia del messaggio a più destinatari, crea un alias ed utilizzalo per questa opzione."
     },
     "admin": {
         "access": "Accedi",
@@ -360,7 +361,7 @@
         "domain_exists": "Dominio %s esiste già",
         "domain_invalid": "Il nome di dominio non è valido",
         "domain_not_empty": "Non posso rimuovere domini in non vuoti",
-        "domain_not_found": "Dominio non trovato.",
+        "domain_not_found": "Dominio %s non trovato",
         "domain_quota_m_in_use": "Lo spazio del dominio deve essere maggiore o uguale a %s MiB",
         "extra_acl_invalid": "External sender address \"%s\" is invalid",
         "extra_acl_invalid_domain": "External sender \"%s\" uses an invalid domain",
@@ -388,9 +389,9 @@
         "invalid_recipient_map_old": "Invalid original recipient specified: %s",
         "ip_list_empty": "L'elenco degli IP consentiti non può essere vuoto",
         "is_alias": "%s è già presente come alias",
-        "is_alias_or_mailbox": "%s è già presente come alias, casella di posta oppure come alias di dominio",
+        "is_alias_or_mailbox": "%s è già presente come alias, casella di posta oppure come alias di dominio.",
         "is_spam_alias": "%s è già presente come indirizzo spam alias",
-        "last_key": "L'ultima chiave non può essere rimossa",
+        "last_key": "L'ultima chiave non può essere rimossa, si raccomanda la disattivazione del TFA.",
         "login_failed": "Login fallito",
         "mailbox_defquota_exceeds_mailbox_maxquota": "Default quota exceeds max quota limit",
         "mailbox_invalid": "Il nome della casella non è valido",
@@ -454,7 +455,8 @@
         "unlimited_quota_acl": "Unlimited quota prohibited by ACL",
         "username_invalid": "Username %s non può essere utilizzato",
         "validity_missing": "Assegnare un periodo di validità",
-        "value_missing": "Please provide all values"
+        "value_missing": "Si prega di fornire tutti i valori",
+        "yotp_verification_failed": "Verifica Yubico OTP fallita: %s"
     },
     "debug": {
         "chart_this_server": "Grafico (questo server)",
@@ -569,7 +571,7 @@
         "ratelimit": "Rate limit",
         "redirect_uri": "Redirect/Callback URL",
         "relay_all": "Relay tutti i destinatari",
-        "relay_all_info": "<small>Se si sceglie di <b>non</b> inviare a tutti i destinatari, è necessario aggiungere una casella di posta (\"blind\") per ogni singolo destinatario a cui deve essere inoltrato.</small>",
+        "relay_all_info": "↪ Se si sceglie di <b>non</b> inviare a tutti i destinatari, è necessario aggiungere una casella di posta (\"blind\") per ogni singolo destinatario a cui deve essere inoltrato.",
         "relay_domain": "Relay dominio",
         "relay_transport_info": "<div class=\"label label-info\">Info</div> You can define transport maps for a custom destination for this domain. If not set, a MX lookup will be made.",
         "relay_unknown_only": "Relay non-existing mailboxes only. Existing mailboxes will be delivered locally.",
@@ -619,14 +621,15 @@
         "cancel": "Annulla",
         "confirm_delete": "Conferma eliminazione",
         "delete_now": "Elimina ora",
-        "delete_these_items": "Sicuro di voler eliminare gli oggetti selezionati?",
+        "delete_these_items": "Conferma di voler eliminare gli oggetti selezionati",
         "hibp_nok": "Matched! This is a potentially dangerous password!",
         "hibp_ok": "Nessuna corrispondenza trovata.",
         "loading": "Caricamento in corso...",
         "restart_container": "Riavvia il container",
         "restart_container_info": "<b>Importante:</b> Il completamento di un normale riavvio potrebbe richiedere diversi minuti, ti consigliamo di attendere.",
         "restart_now": "Riavvia adesso",
-        "restarting_container": "Riavvia il container, potrebbe richiedere diversi minuti"
+        "restarting_container": "Riavvia il container, potrebbe richiedere diversi minuti",
+        "hibp_check": "Verifica con haveibeenpwned.com"
     },
     "header": {
         "administration": "Amministrazione",
@@ -661,7 +664,7 @@
         "add_alias": "Aggiungi alias",
         "add_alias_expand": "Expand alias over alias domains",
         "add_bcc_entry": "Add BCC map",
-        "add_domain": "Aggiungi Ddminio",
+        "add_domain": "Aggiungi dominio",
         "add_domain_alias": "Aggiungi alias di dominio",
         "add_domain_record_first": "Per favore aggiungi il dominio prima",
         "add_filter": "Aggiungi filtro",
@@ -675,14 +678,14 @@
         "alias_domain_backupmx": "Alias domain inactive for relay domain",
         "aliases": "Alias",
         "allow_from_smtp": "Consenti solo l'uso di questi IP per l'<b>SMTP</b>",
-        "allow_from_smtp_info": "Leave empty to allow all senders.<br>IPv4/IPv6 addresses and networks.",
+        "allow_from_smtp_info": "Da lasciare vuoto per consentire tutti i mittenti.<br>Indirizzi e reti IPv4/IPv6.",
         "allowed_protocols": "Protocolli consentiti",
         "backup_mx": "Backup MX",
         "bcc": "CCN",
         "bcc_destination": "Destinatario CCN",
         "bcc_destinations": "Destinatari CCN",
         "bcc_info": "BCC maps are used to silently forward copies of all messages to another address. A recipient map type entry is used, when the local destination acts as recipient of a mail. Sender maps conform to the same principle.<br/>\r\n  The local destination will not be informed about a failed delivery.",
-        "bcc_local_dest": "Local destination",
+        "bcc_local_dest": "Destinatario locale",
         "bcc_map": "BCC map",
         "bcc_map_type": "BCC type",
         "bcc_maps": "BCC maps",
@@ -793,7 +796,13 @@
         "username": "Nome utente",
         "waiting": "In attesa",
         "weekly": "Settimanale",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "syncjob_EXIT_AUTHENTICATION_FAILURE_USER1": "Nome utente o password errati",
+        "goto_ham": "Apprendi come <b>ham</b>",
+        "goto_spam": "Apprendi come <b>spam</b>",
+        "open_logs": "Apri i log",
+        "syncjob_check_log": "Controlla il log",
+        "syncjob_last_run_result": "Risultato dell'ultima esecuzione"
     },
     "oauth2": {
         "access_denied": "Effettua il login alla casella di posta per garantire l'accesso tramite OAuth2.",
@@ -963,7 +972,8 @@
         "u2f": "Autenticazione U2F",
         "waiting_usb_auth": "<i>In attesa del device USB...</i><br /><br />Tocca ora il pulsante sul dispositivo U2F USB.",
         "waiting_usb_register": "<i>In attesa del device USB...</i><br /><br />Inserisci la tua password qui sopra e conferma la tua registrazione U2F toccando il pulsante del dispositivo U2F USB.",
-        "yubi_otp": "Autenticazione Yubico OTP"
+        "yubi_otp": "Autenticazione Yubico OTP",
+        "tfa_token_invalid": "Token TFA non valido"
     },
     "user": {
         "action": "Azione",
@@ -1073,7 +1083,7 @@
         "spamfilter": "Filtri spam",
         "spamfilter_behavior": "Punteggio",
         "spamfilter_bl": "Blacklist",
-        "spamfilter_bl_desc": "Email inserita nella blacklisted per <b>essere sempre</b> riconosciuta come spam e rifiutata. Si possono usare le wildcards.",
+        "spamfilter_bl_desc": "Email inserita nella blacklist per <b>essere sempre</b> riconosciuta come spam e rifiutata. Le mail rifiutate <b>non</b> verranno copiate nella quarantena. Si consiglia l'utilizzo delle wildcards. Un filtro viene applicato solo agli alias diretti (alias con una singola cassetta postale di destinazione) esclusi gli alias catch-all e la cassetta postale stessa.",
         "spamfilter_default_score": "Valori di default",
         "spamfilter_green": "Verde: Questo messaggio non è spam",
         "spamfilter_hint": "Il primo valore rappresenta un \"basso punteggio di spam\", il secondo rappresenta un \"alto punteggio di spam\".",
@@ -1109,12 +1119,16 @@
         "weekly": "Settimanale",
         "weeks": "settimane",
         "year": "anno",
-        "years": "anni"
+        "years": "anni",
+        "change_password_hint_app_passwords": "Il tuo account ha {{number_of_app_passwords}} password delle app che non verranno modificate. Per gestirle, vai alla scheda App passwords.",
+        "syncjob_check_log": "Controlla i log",
+        "syncjob_last_run_result": "Risultato dell'ultima esecuzione",
+        "open_logs": "Apri i log"
     },
     "warning": {
         "cannot_delete_self": "Cannot delete logged in user",
         "domain_added_sogo_failed": "Il dominio è stato aggiunto ma non è stato possibile riavviare SOGo, controlla i log del tuo server.",
-        "dovecot_restart_failed": "Non è stato possibile riavviare Dovecot, controlla i log del tuo server.",
+        "dovecot_restart_failed": "Non è stato possibile riavviare Dovecot, controlla i log del tuo server",
         "fuzzy_learn_error": "Fuzzy hash learn error: %s",
         "hash_not_found": "Hash not found or already deleted",
         "ip_invalid": "Skipped invalid IP: %s",
@@ -1123,5 +1137,10 @@
         "quota_exceeded_scope": "Domain quota exceeded: Only unlimited mailboxes can be created in this domain scope.",
         "session_token": "Form token invalid: Token mismatch",
         "session_ua": "Form token invalid: User-Agent validation error"
+    },
+    "ratelimit": {
+        "minute": "messaggi / minuto",
+        "disabled": "Disabilitato",
+        "second": "messaggi / secondo"
     }
 }
