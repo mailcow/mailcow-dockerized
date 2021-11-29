@@ -377,5 +377,13 @@
         "quota_exceeded_scope": "Domain kvóta átlépve: csak korlátok nélküli postafiókok hozhatók létre ebben a domain-ben.",
         "session_token": "Űrlap-token érvénytelen: Tokenek nem egyeznek",
         "session_ua": "Űrlap-token érvénytelen: User-Agent hitelesítési probléma"
+    },
+    "acl": {
+        "delimiter_action": "Elhatárolás",
+        "alias_domains": "Alias domainek hozzáadása",
+        "app_passwds": "Alkalmazás jelszavak kezelése"
+    },
+    "diagnostics": {
+        "dns_records": "DNS bejegyzések"
     }
 }
