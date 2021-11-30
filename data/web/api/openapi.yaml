@@ -1,12 +1,12 @@
 openapi: 3.0.0
 info:
   description: >-
-    mailcow is complete e-mailing solution with advanced antispam, antivirus,
-    nice UI and API.
+    Mailcow is a complete e-mailing solution with advanced antispam, antivirus,
+    featuring a nice user interface and a JSON API.
 
 
     In order to use this API you have to create a API key and add your IP
-    address to the whitelist of allowed IPs this can be done by logging into the
+    address to the whitelist of allowed IPs. This can be done by logging in into the
     Mailcow UI using your admin account, then go to Configuration > Access >
     Edit administrator details > API. There you will find a collapsed API menu.
 
