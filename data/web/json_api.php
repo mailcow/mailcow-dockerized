@@ -447,14 +447,14 @@ if (isset($_GET['query'])) {
                     }
                   }
                   process_get_return($data);
-                }
-                else {
-                  echo '{}';
+                } else {
+                  throw_not_configured("domain");
                 }
               break;
 
               default:
                 $data = mailbox('get', 'domain_details', $object);
+                check_empty_result($data, "Domain");
                 process_get_return($data);
               break;
             }
@@ -920,17 +920,19 @@ if (isset($_GET['query'])) {
                           continue;
                         }
                       }
+                    } else {
+                      throw_not_configured("mailbox");
                     }
                   }
                   process_get_return($data);
-                }
-                else {
-                  echo '{}';
+                } else {
+                  throw_not_configured("domain");
                 }
               break;
 
               default:
                 $data = mailbox('get', 'mailbox_details', $object);
+                check_empty_result($data, "Mailbox");
                 process_get_return($data);
               break;
             }
@@ -1048,14 +1050,17 @@ if (isset($_GET['query'])) {
                               continue;
                             }
                           }
+                        } else {
+                          throw_not_configured("filter");
                         }
                       }
+                    } else {
+                      throw_not_configured("mailbox");
                     }
                   }
                   process_get_return($data);
-                }
-                else {
-                  echo '{}';
+                } else {
+                  throw_not_configured("domains");
                 }
               break;
 
@@ -1071,6 +1076,7 @@ if (isset($_GET['query'])) {
                     }
                   }
                 }
+                check_empty_result($data, "Filter");
                 process_get_return($data);
               break;
             }
@@ -1088,6 +1094,8 @@ if (isset($_GET['query'])) {
                       continue;
                     }
                   }
+                } else {
+                  throw_not_configured("bcc");
                 }
                 process_get_return($data);
               break;
@@ -1096,6 +1104,7 @@ if (isset($_GET['query'])) {
                 if (!empty($data)) {
                   $data[] = $details;
                 }
+                check_empty_result($data, "Bcc");
                 process_get_return($data);
               break;
             }
@@ -1113,6 +1122,8 @@ if (isset($_GET['query'])) {
                       continue;
                     }
                   }
+                } else {
+                  throw_not_configured("recipient map");
                 }
                 process_get_return($data);
               break;
@@ -1121,6 +1132,7 @@ if (isset($_GET['query'])) {
                 if (!empty($data)) {
                   $data[] = $details;
                 }
+                check_empty_result($data, "Recipient map");
                 process_get_return($data);
               break;
             }
@@ -1769,4 +1781,25 @@ if ($_SESSION['mailcow_cc_api'] === true) {
   if (isset($_SESSION['mailcow_cc_api']) && $_SESSION['mailcow_cc_api'] === true) {
     unset($_SESSION['return']);
   }
+}
+
+// Custom Code
+function check_empty_result($data, $object) {
+  if(empty($data)) {
+    http_response_code(404);
+    echo json_encode(array(
+        'type' => 'error',
+        'msg' =>  $object.' could not be found'
+    ));
+    exit();
+  }
+}
+
+function throw_not_configured($object) {
+  http_response_code(404);
+  echo json_encode(array(
+      'type' => 'error',
+      'msg' =>  'No '.$object.' configured'
+  ));
+  exit();
 }
