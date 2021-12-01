@@ -247,12 +247,7 @@ if (isset($_GET['query'])) {
         break;
         // return no route found if no case is matched
         default:
-          http_response_code(404);
-          echo json_encode(array(
-            'type' => 'error',
-            'msg' => 'route not found'
-          ));
-          exit();
+          throw_not_found('error', "Route");
       }
     break;
     case "process":
@@ -890,12 +885,7 @@ if (isset($_GET['query'])) {
               break;
               // return no route found if no case is matched
               default:
-                http_response_code(404);
-                echo json_encode(array(
-                  'type' => 'error',
-                  'msg' => 'route not found'
-                ));
-                exit();
+                throw_not_found('error', "Route");
             }
           break;
           case "mailbox":
@@ -1440,12 +1430,7 @@ if (isset($_GET['query'])) {
         break;
         // return no route found if no case is matched
         default:
-          http_response_code(404);
-          echo json_encode(array(
-            'type' => 'error',
-            'msg' => 'route not found'
-          ));
-          exit();
+          throw_not_found('error', "Route");
         }
       }
     break;
@@ -1574,12 +1559,7 @@ if (isset($_GET['query'])) {
         break;
         // return no route found if no case is matched
         default:
-          http_response_code(404);
-          echo json_encode(array(
-            'type' => 'error',
-            'msg' => 'route not found'
-          ));
-          exit();
+          throw_not_found('error', "Route");
       }
     break;
     case "edit":
