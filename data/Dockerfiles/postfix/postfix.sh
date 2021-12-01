@@ -384,8 +384,6 @@ EOF
 sed -i '/User overrides/q' /opt/postfix/conf/main.cf
 echo >> /opt/postfix/conf/main.cf
 touch /opt/postfix/conf/extra.cf
-sed -i '/myhostname/d' /opt/postfix/conf/extra.cf
-echo -e "myhostname = ${MAILCOW_HOSTNAME}\n$(cat /opt/postfix/conf/extra.cf)" > /opt/postfix/conf/extra.cf
 
 cat /opt/postfix/conf/extra.cf >> /opt/postfix/conf/main.cf
 

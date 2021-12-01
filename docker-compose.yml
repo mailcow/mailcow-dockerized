@@ -302,6 +302,7 @@ services:
         - crypt-vol-1:/var/lib/zeyple:z
         - rspamd-vol-1:/var/lib/rspamd:z
         - mysql-socket-vol-1:/var/run/mysqld/:z
+      hostname: ${HOSTNAME}
       environment:
         - LOG_LINES=${LOG_LINES:-9999}
         - TZ=${TZ}
