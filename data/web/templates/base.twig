@@ -263,7 +263,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
   });
   });
   // Set TFA/FIDO2
-  $("#register-fido2, #register-fido2-touchid", "#register-fido2-windowshello").click(function(){
+  $("#register-fido2, #register-fido2-touchid", "register-fido2-windowshello").click(function(){
     let t = $(this);
 
     $("option:selected").prop("selected", false);

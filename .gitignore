@@ -65,4 +65,3 @@ rebuild-images.sh
 refresh_images.sh
 update_diffs/
 create_cold_standby.sh
-data/conf/postfix/main.cf
