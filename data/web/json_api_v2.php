@@ -1786,20 +1786,24 @@ if ($_SESSION['mailcow_cc_api'] === true) {
 // Custom Code
 function check_empty_result($data, $object) {
   if(empty($data)) {
-    http_response_code(404);
-    echo json_encode(array(
-        'type' => error_switch('error'),
-        'msg' =>  $object.' could not be found'
-    ));
-    exit();
+    throw_not_found('warning');
   }
 }
 
-function throw_not_configured($object) {
+function throw_not_configured(string $level, object $object, int $error_code = 404) {
+  http_response_code($error_code);
+  echo json_encode(array(
+      'type' => error_switch($level),
+      'msg' =>  'No '.$object.' configured'
+  ));
+  exit();
+}
+
+function throw_not_found(string $level) {
   http_response_code(404);
   echo json_encode(array(
-      'type' => error_switch('warning'),
-      'msg' =>  'No '.$object.' configured'
+      'type' => error_switch($level),
+      'msg' =>  'Not found'
   ));
   exit();
 }
@@ -1827,5 +1831,6 @@ function error_switch(string $level) {
       $lvlint = 0;
       break;
   }
+  
   return $lvlint;
 }
