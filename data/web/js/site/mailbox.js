@@ -76,7 +76,7 @@ $(document).ready(function() {
   });
   // Auto-fill domain quota when adding new domain
   auto_fill_quota = function(domain) {
-    $.get("/api/v1/get/domain/" + domain, function(data){
+    $.get("/api/v2/get/domain/" + domain, function(data){
       var result = $.parseJSON(JSON.stringify(data));
       def_new_mailbox_quota = ( result.def_new_mailbox_quota / 1048576);
       max_new_mailbox_quota = ( result.max_new_mailbox_quota / 1048576);
@@ -101,7 +101,7 @@ $(document).ready(function() {
 
   // Read bcc local dests
   // Using ajax to not be a blocking moo
-  $.get("/api/v1/get/bcc-destination-options", function(data){
+  $.get("/api/v2/get/bcc-destination-options", function(data){
     // Domains
     var optgroup = "<optgroup label='" + lang.domains + "'>";
     $.each(data.domains, function(index, domain){
@@ -298,7 +298,7 @@ jQuery(function($){
       ],
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/domain/all',
+        url: '/api/v2/get/domain/all',
         jsonp: false,
         error: function (data) {
           console.log('Cannot draw domain table');
@@ -424,7 +424,7 @@ jQuery(function($){
       "empty": lang.empty,
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/mailbox/reduced',
+        url: '/api/v2/get/mailbox/reduced',
         jsonp: false,
         error: function () {
           console.log('Cannot draw mailbox table');
@@ -551,7 +551,7 @@ jQuery(function($){
       "empty": lang.empty,
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/resource/all',
+        url: '/api/v2/get/resource/all',
         jsonp: false,
         error: function () {
           console.log('Cannot draw resource table');
@@ -624,7 +624,7 @@ jQuery(function($){
       "empty": lang.empty,
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/bcc/all',
+        url: '/api/v2/get/bcc/all',
         jsonp: false,
         error: function () {
           console.log('Cannot draw bcc table');
@@ -691,7 +691,7 @@ jQuery(function($){
       "empty": lang.empty,
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/recipient_map/all',
+        url: '/api/v2/get/recipient_map/all',
         jsonp: false,
         error: function () {
           console.log('Cannot draw recipient map table');
@@ -756,7 +756,7 @@ jQuery(function($){
       "empty": lang.empty,
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/tls-policy-map/all',
+        url: '/api/v2/get/tls-policy-map/all',
         jsonp: false,
         error: function () {
           console.log('Cannot draw tls policy map table');
@@ -829,7 +829,7 @@ jQuery(function($){
       "empty": lang.empty,
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/alias/all',
+        url: '/api/v2/get/alias/all',
         jsonp: false,
         error: function () {
           console.log('Cannot draw alias table');
@@ -924,7 +924,7 @@ jQuery(function($){
       "empty": lang.empty,
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/alias-domain/all',
+        url: '/api/v2/get/alias-domain/all',
         jsonp: false,
         error: function () {
           console.log('Cannot draw alias domain table');
@@ -997,7 +997,7 @@ jQuery(function($){
       "empty": lang.empty,
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/syncjobs/all/no_log',
+        url: '/api/v2/get/syncjobs/all/no_log',
         jsonp: false,
         error: function () {
           console.log('Cannot draw sync job table');
@@ -1088,7 +1088,7 @@ jQuery(function($){
       "empty": lang.empty,
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/filters/all',
+        url: '/api/v2/get/filters/all',
         jsonp: false,
         error: function () {
           console.log('Cannot draw filter table');

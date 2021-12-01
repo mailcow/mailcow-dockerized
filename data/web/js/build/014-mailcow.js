@@ -100,7 +100,7 @@ $(document).ready(function() {
 
   // haveibeenpwned and passwd policy
   $.ajax({
-    url: '/api/v1/get/passwordpolicy/html',
+    url: '/api/v2/get/passwordpolicy/html',
     type: 'GET',
     success: function(res) {
       $(".hibp-out").after(res);

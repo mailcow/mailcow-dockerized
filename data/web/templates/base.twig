@@ -190,7 +190,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
           type: "GET",
           cache: false,
           dataType: 'script',
-          url: "/api/v1/get/u2f-authentication/{{ pending_mailcow_cc_username|url_encode(true)|default('null') }}",
+          url: "/api/v2/get/u2f-authentication/{{ pending_mailcow_cc_username|url_encode(true)|default('null') }}",
           complete: function(data){
             $('#u2f_status_auth').html(lang_tfa.waiting_usb_auth);
             data;
@@ -227,7 +227,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
       window.alert('Browser not supported.');
       return;
     }
-    window.fetch("/api/v1/get/fido2-get-args", {method:'GET',cache:'no-cache'}).then(function(response) {
+    window.fetch("/api/v2/get/fido2-get-args", {method:'GET',cache:'no-cache'}).then(function(response) {
       return response.json();
     }).then(function(json) {
     if (json.success === false) {
@@ -245,7 +245,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
         signature : cred.response.signature ? arrayBufferToBase64(cred.response.signature) : null
       };
     }).then(JSON.stringify).then(function(AuthenticatorAttestationResponse) {
-      return window.fetch("/api/v1/process/fido2-args", {method:'POST', body: AuthenticatorAttestationResponse, cache:'no-cache'});
+      return window.fetch("/api/v2/process/fido2-args", {method:'POST', body: AuthenticatorAttestationResponse, cache:'no-cache'});
     }).then(function(response) {
       return response.json();
     }).then(function(json) {
@@ -272,7 +272,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
       return;
     }
 
-    window.fetch("/api/v1/get/fido2-registration/{{ mailcow_cc_username|url_encode(true)|default('null') }}", {method:'GET',cache:'no-cache'}).then(function(response) {
+    window.fetch("/api/v2/get/fido2-registration/{{ mailcow_cc_username|url_encode(true)|default('null') }}", {method:'GET',cache:'no-cache'}).then(function(response) {
       return response.json();
     }).then(function(json) {
       if (json.success === false) {
@@ -296,7 +296,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
         attestationObject: cred.response.attestationObject ? arrayBufferToBase64(cred.response.attestationObject) : null
       };
     }).then(JSON.stringify).then(function(AuthenticatorAttestationResponse) {
-      return window.fetch("/api/v1/add/fido2-registration", {method:'POST', body: AuthenticatorAttestationResponse, cache:'no-cache'});
+      return window.fetch("/api/v2/add/fido2-registration", {method:'POST', body: AuthenticatorAttestationResponse, cache:'no-cache'});
     }).then(function(response) {
       return response.json();
     }).then(function(json) {
@@ -338,7 +338,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
           type: "GET",
           cache: false,
           dataType: 'script',
-          url: "/api/v1/get/u2f-registration/{{ mailcow_cc_username|url_encode(true)|default('null') }}",
+          url: "/api/v2/get/u2f-registration/{{ mailcow_cc_username|url_encode(true)|default('null') }}",
           complete: function(data){
             data;
             setTimeout(function() {

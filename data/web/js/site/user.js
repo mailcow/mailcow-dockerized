@@ -84,7 +84,7 @@ jQuery(function($){
       $('.last-login').html('<i class="bi bi-hourglass"></i>' +  lang.waiting);
       $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/last-login/' + encodeURIComponent(mailcow_cc_username) + '/' + days,
+        url: '/api/v2/get/last-login/' + encodeURIComponent(mailcow_cc_username) + '/' + days,
         jsonp: false,
         error: function () {
           console.log('error reading last logins');
@@ -115,7 +115,7 @@ jQuery(function($){
     } else if (action == 'reset') {
       $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/reset-last-login/' + encodeURIComponent(mailcow_cc_username),
+        url: '/api/v2/get/reset-last-login/' + encodeURIComponent(mailcow_cc_username),
         jsonp: false,
         error: function () {
           console.log('cannot reset last logins');
@@ -139,7 +139,7 @@ jQuery(function($){
       "empty": lang.empty,
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/time_limited_aliases',
+        url: '/api/v2/get/time_limited_aliases',
         jsonp: false,
         error: function () {
           console.log('Cannot draw tla table');
@@ -192,7 +192,7 @@ jQuery(function($){
       "empty": lang.empty,
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/syncjobs/' + encodeURIComponent(mailcow_cc_username) + '/no_log',
+        url: '/api/v2/get/syncjobs/' + encodeURIComponent(mailcow_cc_username) + '/no_log',
         jsonp: false,
         error: function () {
           console.log('Cannot draw sync job table');
@@ -266,7 +266,7 @@ jQuery(function($){
       "empty": lang.empty,
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/app-passwd/all',
+        url: '/api/v2/get/app-passwd/all',
         jsonp: false,
         error: function () {
           console.log('Cannot draw app passwd table');
@@ -319,7 +319,7 @@ jQuery(function($){
       "empty": lang.empty,
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/policy_wl_mailbox',
+        url: '/api/v2/get/policy_wl_mailbox',
         jsonp: false,
         error: function () {
           console.log('Cannot draw mailbox policy wl table');
@@ -360,7 +360,7 @@ jQuery(function($){
       "empty": lang.empty,
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/policy_bl_mailbox',
+        url: '/api/v2/get/policy_bl_mailbox',
         jsonp: false,
         error: function () {
           console.log('Cannot draw mailbox policy bl table');
@@ -416,7 +416,7 @@ jQuery(function($){
     $('#user_sieve_filter').text(lang.loading);
     $.ajax({
       dataType: 'json',
-      url: '/api/v1/get/active-user-sieve/' + encodeURIComponent(mailcow_cc_username),
+      url: '/api/v2/get/active-user-sieve/' + encodeURIComponent(mailcow_cc_username),
       jsonp: false,
       error: function () {
         console.log('Cannot get active sieve script');

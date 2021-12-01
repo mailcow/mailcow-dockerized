@@ -3,7 +3,7 @@ var sieve_presetsElem = document.getElementById("sieve_presets");
 if (sieve_presetsElem) {
   $.ajax({
     dataType: 'json',
-    url: '/api/v1/get/presets/sieve',
+    url: '/api/v2/get/presets/sieve',
     jsonp: false,
     complete: function (data) {
       if (data.responseText !== '{}') {

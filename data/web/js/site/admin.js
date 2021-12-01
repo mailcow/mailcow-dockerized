@@ -82,7 +82,7 @@ jQuery(function($){
       ],
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/domain-admin/all',
+        url: '/api/v2/get/domain-admin/all',
         jsonp: false,
         error: function () {
           console.log('Cannot draw domain admin table');
@@ -111,7 +111,7 @@ jQuery(function($){
       ],
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/oauth2-client/all',
+        url: '/api/v2/get/oauth2-client/all',
         jsonp: false,
         error: function () {
           console.log('Cannot draw oauth2 clients table');
@@ -137,7 +137,7 @@ jQuery(function($){
       ],
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/admin/all',
+        url: '/api/v2/get/admin/all',
         jsonp: false,
         error: function () {
           console.log('Cannot draw admin table');
@@ -165,7 +165,7 @@ jQuery(function($){
       ],
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/fwdhost/all',
+        url: '/api/v2/get/fwdhost/all',
         jsonp: false,
         error: function () {
           console.log('Cannot draw forwarding hosts table');
@@ -193,7 +193,7 @@ jQuery(function($){
       ],
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/relayhost/all',
+        url: '/api/v2/get/relayhost/all',
         jsonp: false,
         error: function () {
           console.log('Cannot draw forwarding hosts table');
@@ -221,7 +221,7 @@ jQuery(function($){
       ],
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/transport/all',
+        url: '/api/v2/get/transport/all',
         jsonp: false,
         error: function () {
           console.log('Cannot draw transports table');
@@ -257,7 +257,7 @@ jQuery(function($){
       ],
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/mailq/all',
+        url: '/api/v2/get/mailq/all',
         jsonp: false,
         error: function () {
           console.log('Cannot draw forwarding hosts table');
@@ -436,7 +436,7 @@ jQuery(function($){
     }
     $.ajax({
         type: 'GET',
-        url: '/api/v1/get/postcat/' + button.data('queue-id'),
+        url: '/api/v2/get/postcat/' + button.data('queue-id'),
         dataType: 'text',
         complete: function (data) {
           $('#queue_msg_content').text(data.responseText);

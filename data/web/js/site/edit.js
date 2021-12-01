@@ -76,7 +76,7 @@ jQuery(function($){
       "empty": lang_user.empty,
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/policy_wl_domain/' + table_for_domain,
+        url: '/api/v2/get/policy_wl_domain/' + table_for_domain,
         jsonp: false,
         error: function () {
           console.log('Cannot draw mailbox policy wl table');
@@ -113,7 +113,7 @@ jQuery(function($){
       "empty": lang_user.empty,
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/policy_bl_domain/' + table_for_domain,
+        url: '/api/v2/get/policy_bl_domain/' + table_for_domain,
         jsonp: false,
         error: function () {
           console.log('Cannot draw mailbox policy bl table');

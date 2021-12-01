@@ -62,7 +62,7 @@ jQuery(function($){
       ],
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/quarantine/all',
+        url: '/api/v2/get/quarantine/all',
         jsonp: false,
         error: function () {
           console.log('Cannot draw quarantine table');

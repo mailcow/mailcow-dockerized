@@ -187,7 +187,7 @@ $(document).ready(function() {
           "attr": JSON.stringify(api_attr),
           "csrf_token": csrf_token
         },
-        url: '/api/v1/' + api_url,
+        url: '/api/v2/' + api_url,
         jsonp: false,
         complete: function(data) {
           var response = (data.responseText);
@@ -277,7 +277,7 @@ $(document).ready(function() {
         "attr": JSON.stringify(api_attr),
         "csrf_token": csrf_token
       },
-      url: '/api/v1/' + api_url,
+      url: '/api/v2/' + api_url,
       jsonp: false,
       complete: function(data) {
         var response = (data.responseText);
@@ -357,7 +357,7 @@ $(document).ready(function() {
             "items": JSON.stringify(data_array),
             "csrf_token": csrf_token
           },
-          url: '/api/v1/' + api_url,
+          url: '/api/v2/' + api_url,
           jsonp: false,
           complete: function(data) {
             window.location = window.location.href.split("#")[0];

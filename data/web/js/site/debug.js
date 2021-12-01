@@ -83,7 +83,7 @@ jQuery(function($){
       ],
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/logs/autodiscover/100',
+        url: '/api/v2/get/logs/autodiscover/100',
         jsonp: false,
         error: function () {
           console.log('Cannot draw autodiscover log table');
@@ -118,7 +118,7 @@ jQuery(function($){
       ],
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/logs/postfix',
+        url: '/api/v2/get/logs/postfix',
         jsonp: false,
         error: function () {
           console.log('Cannot draw postfix log table');
@@ -154,7 +154,7 @@ jQuery(function($){
       ],
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/logs/watchdog',
+        url: '/api/v2/get/logs/watchdog',
         jsonp: false,
         error: function () {
           console.log('Cannot draw watchdog log table');
@@ -191,7 +191,7 @@ jQuery(function($){
       ],
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/logs/api',
+        url: '/api/v2/get/logs/api',
         jsonp: false,
         error: function () {
           console.log('Cannot draw api log table');
@@ -236,7 +236,7 @@ jQuery(function($){
       ],
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/logs/ratelimited',
+        url: '/api/v2/get/logs/ratelimited',
         jsonp: false,
         error: function () {
           console.log('Cannot draw rl log table');
@@ -276,7 +276,7 @@ jQuery(function($){
       ],
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/logs/ui',
+        url: '/api/v2/get/logs/ui',
         jsonp: false,
         error: function () {
           console.log('Cannot draw ui log table');
@@ -312,7 +312,7 @@ jQuery(function($){
       ],
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/logs/sasl',
+        url: '/api/v2/get/logs/sasl',
         jsonp: false,
         error: function () {
           console.log('Cannot draw sasl log table');
@@ -346,7 +346,7 @@ jQuery(function($){
       ],
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/logs/acme',
+        url: '/api/v2/get/logs/acme',
         jsonp: false,
         error: function () {
           console.log('Cannot draw acme log table');
@@ -381,7 +381,7 @@ jQuery(function($){
       ],
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/logs/netfilter',
+        url: '/api/v2/get/logs/netfilter',
         jsonp: false,
         error: function () {
           console.log('Cannot draw netfilter log table');
@@ -416,7 +416,7 @@ jQuery(function($){
       ],
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/logs/sogo',
+        url: '/api/v2/get/logs/sogo',
         jsonp: false,
         error: function () {
           console.log('Cannot draw sogo log table');
@@ -451,7 +451,7 @@ jQuery(function($){
       ],
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/logs/dovecot',
+        url: '/api/v2/get/logs/dovecot',
         jsonp: false,
         error: function () {
           console.log('Cannot draw dovecot log table');
@@ -479,7 +479,7 @@ jQuery(function($){
   }
   function rspamd_pie_graph() {
     $.ajax({
-      url: '/api/v1/get/rspamd/actions',
+      url: '/api/v2/get/rspamd/actions',
       async: true,
       success: function(data){
 
@@ -554,7 +554,7 @@ jQuery(function($){
       ],
       "rows": $.ajax({
         dataType: 'json',
-        url: '/api/v1/get/logs/rspamd-history',
+        url: '/api/v2/get/logs/rspamd-history',
         jsonp: false,
         error: function () {
           console.log('Cannot draw rspamd history table');
@@ -773,7 +773,7 @@ jQuery(function($){
       var heading = ft.$el.parents('.panel').find('.panel-heading')
       var ft_paging = ft.use(FooTable.Paging)
       var load_rows = (ft_paging.totalRows + 1) + '-' + (ft_paging.totalRows + new_nrows)
-      $.get('/api/v1/get/logs/' + log_url + '/' + load_rows).then(function(data){
+      $.get('/api/v2/get/logs/' + log_url + '/' + load_rows).then(function(data){
         if (data.length === undefined) { mailcow_alert_box(lang.no_new_rows, "info"); return; }
         var rows = process_table_data(data, post_process);
         var rows_now = (ft_paging.totalRows + data.length);
