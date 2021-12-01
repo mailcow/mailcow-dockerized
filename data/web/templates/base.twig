@@ -281,7 +281,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
       recursiveBase64StrToArrayBuffer(json);
 
       // set attestation to node if we are registering apple touch id
-      if(t.attr('id') === 'register-fido2-touchid' || t.attr('id) === 'register-fido2-windowshello') {
+      if(t.attr('id') === 'register-fido2-touchid' || t.attr('id') === 'register-fido2-windowshello') {
         json.publicKey.attestation = 'none';
         json.publicKey.authenticatorSelection.authenticatorAttachment = "platform";
       }
