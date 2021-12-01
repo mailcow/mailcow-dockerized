@@ -3449,7 +3449,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $domaindata['relayhost_int'] = intval($row['relayhost']);
           $domaindata['backupmx'] = boolval($row['backupmx']);
           $domaindata['backupmx_int'] = $row['backupmx'];
-          $domaindata['gal'] = $row['gal'];
+          $domaindata['gal'] = boolval($row['gal']);
           $domaindata['gal_int'] = $row['gal'];
           $domaindata['rl'] = $rl;
           $domaindata['active'] = boolval($row['active']);
