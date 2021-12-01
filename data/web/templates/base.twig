@@ -263,7 +263,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
   });
   });
   // Set TFA/FIDO2
-  $("#register-fido2, #register-fido2-touchid", "register-fido2-windowshello").click(function(){
+  $("#register-fido2, #register-fido2-touchid").click(function(){
     let t = $(this);
 
     $("option:selected").prop("selected", false);
@@ -281,7 +281,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
       recursiveBase64StrToArrayBuffer(json);
 
       // set attestation to node if we are registering apple touch id
-      if(t.attr('id') === 'register-fido2-touchid' || t.attr('id) === 'register-fido2-windowshello') {
+      if(t.attr('id') === 'register-fido2-touchid') {
         json.publicKey.attestation = 'none';
         json.publicKey.authenticatorSelection.authenticatorAttachment = "platform";
       }
