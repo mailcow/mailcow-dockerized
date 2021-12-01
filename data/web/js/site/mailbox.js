@@ -456,7 +456,7 @@ jQuery(function($){
             item.tls_enforce_in = '<i class="text-' + (item.attributes.tls_enforce_in ? 'success bi bi-lock-fill' : 'danger bi bi-unlock-fill') + '"></i>';
             item.tls_enforce_out = '<i class="text-' + (item.attributes.tls_enforce_out ? 'success bi bi-lock-fill' : 'danger bi bi-unlock-fill') + '"></i>';
             item.pop3_access = '<i class="text-' + (item.attributes.pop3_access ? 'success' : 'danger') + ' bi bi-' + (item.attributes.pop3_access ? 'check-lg' : 'x-lg') + '"></i>';
-            item.imap_access = '<i class="text-' + (item.attributes.imap_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.imap_access ? 'check-lg' : 'x-lg') + '"></i>';
+            item.imap_access = '<i class="text-' + (item.attributes.imap_access ? 'success' : 'danger') + ' bi bi-' + (item.attributes.imap_access ? 'check-lg' : 'x-lg') + '"></i>';
             item.smtp_access = '<i class="text-' + (item.attributes.smtp_access ? 'success' : 'danger') + ' bi bi-' + (item.attributes.smtp_access ? 'check-lg' : 'x-lg') + '"></i>';
             if (item.attributes.quarantine_notification === 'never') {
               item.quarantine_notification = lang.never;

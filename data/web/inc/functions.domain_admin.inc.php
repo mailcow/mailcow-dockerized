@@ -17,7 +17,7 @@ function domain_admin($_action, $_data = null) {
       $active     = intval($_data['active']);
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
         );
@@ -25,7 +25,7 @@ function domain_admin($_action, $_data = null) {
       }
       if (empty($domains)) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'domain_invalid'
         );
@@ -33,7 +33,7 @@ function domain_admin($_action, $_data = null) {
       }
       if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $username)) || empty ($username) || $username == 'API') {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('username_invalid', $username)
         );
@@ -58,7 +58,7 @@ function domain_admin($_action, $_data = null) {
       foreach ($num_results as $num_results_each) {
         if ($num_results_each != 0) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('object_exists', htmlspecialchars($username))
           );
@@ -73,7 +73,7 @@ function domain_admin($_action, $_data = null) {
       foreach ($domains as $domain) {
         if (!is_valid_domain_name($domain) || mailbox('get', 'domain_details', $domain) === false) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('domain_invalid', htmlspecialchars($domain))
           );
@@ -103,7 +103,7 @@ function domain_admin($_action, $_data = null) {
         ':username' => $username
       ));
       $_SESSION['return'][] = array(
-        'type' => 'success',
+        'type' => 1,
         'log' => array(__FUNCTION__, $_action, $_data_log),
         'msg' => array('domain_admin_added', htmlspecialchars($username))
       );
@@ -111,7 +111,7 @@ function domain_admin($_action, $_data = null) {
     case 'edit':
       if ($_SESSION['mailcow_cc_role'] != "admin" && $_SESSION['mailcow_cc_role'] != "domainadmin") {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
         );
@@ -136,7 +136,7 @@ function domain_admin($_action, $_data = null) {
           }
           else {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_data_log),
               'msg' => 'access_denied'
             );
@@ -148,7 +148,7 @@ function domain_admin($_action, $_data = null) {
             foreach ($domains as $domain) {
               if (!is_valid_domain_name($domain) || mailbox('get', 'domain_details', $domain) === false) {
                 $_SESSION['return'][] = array(
-                  'type' => 'danger',
+                  'type' => 3,
                   'log' => array(__FUNCTION__, $_action, $_data_log),
                   'msg' => array('domain_invalid', htmlspecialchars($domain))
                 );
@@ -158,7 +158,7 @@ function domain_admin($_action, $_data = null) {
           }
           if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $username_new))) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_data_log),
               'msg' => array('username_invalid', $username_new)
             );
@@ -167,7 +167,7 @@ function domain_admin($_action, $_data = null) {
           if ($username_new != $username) {
             if (!empty(domain_admin('details', $username_new)['username'])) {
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_data_log),
                 'msg' => array('username_invalid', $username_new)
               );
@@ -233,7 +233,7 @@ function domain_admin($_action, $_data = null) {
             }
           }
           $_SESSION['return'][] = array(
-            'type' => 'success',
+            'type' => 1,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('domain_admin_modified', htmlspecialchars($username))
           );
@@ -254,7 +254,7 @@ function domain_admin($_action, $_data = null) {
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!verify_hash($row['password'], $password_old)) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => 'access_denied'
           );
@@ -270,7 +270,7 @@ function domain_admin($_action, $_data = null) {
           ':username' => $username
         ));
         $_SESSION['return'][] = array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('domain_admin_modified', htmlspecialchars($username))
         );
@@ -279,7 +279,7 @@ function domain_admin($_action, $_data = null) {
     case 'delete':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
         );
@@ -289,7 +289,7 @@ function domain_admin($_action, $_data = null) {
       foreach ($usernames as $username) {
         if (empty(domain_admin('details', $username))) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('username_invalid', $username)
           );
@@ -316,7 +316,7 @@ function domain_admin($_action, $_data = null) {
           ':username' => $username,
         ));
         $_SESSION['return'][] = array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('domain_admin_removed', htmlspecialchars($username))
         );
@@ -326,7 +326,7 @@ function domain_admin($_action, $_data = null) {
       $domainadmins = array();
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
         );
@@ -372,9 +372,9 @@ function domain_admin($_action, $_data = null) {
         return false;
       }
       $domainadmindata['username'] = $row['username'];
-      $domainadmindata['tfa_active'] = (is_null($row['tfa_active'])) ? 0 : $row['tfa_active'];
+      $domainadmindata['tfa_active'] = (is_null($row['tfa_active'])) ? false : boolval($row['tfa_active']);
       $domainadmindata['tfa_active_int'] = (is_null($row['tfa_active'])) ? 0 : $row['tfa_active'];
-      $domainadmindata['active'] = $row['active'];
+      $domainadmindata['active'] = boolval($row['active']);
       $domainadmindata['active_int'] = $row['active'];
       $domainadmindata['created'] = $row['created'];
       // GET SELECTED

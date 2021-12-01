@@ -76,8 +76,8 @@ jQuery(function($){
         {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"sorted": true,"name":"username","title":lang.username,"style":{"width":"250px"}},
         {"name":"selected_domains","title":lang.admin_domains,"breakpoints":"xs sm"},
-        {"name":"tfa_active","title":"TFA", "filterable": false,"style":{"maxWidth":"80px","width":"80px"},"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
-        {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
+        {"name":"tfa_active_int","title":"TFA", "filterable": false,"style":{"maxWidth":"80px","width":"80px"},"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
+        {"name":"active_int","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"250px","width":"250px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
       "rows": $.ajax({
@@ -131,8 +131,8 @@ jQuery(function($){
       "columns": [
         {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"sorted": true,"name":"usr","title":lang.username,"style":{"width":"250px"}},
-        {"name":"tfa_active","title":"TFA", "filterable": false,"style":{"maxWidth":"80px","width":"80px"},"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
-        {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
+        {"name":"tfa_active_int","title":"TFA", "filterable": false,"style":{"maxWidth":"80px","width":"80px"},"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
+        {"name":"active_int","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"250px","width":"250px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
       "rows": $.ajax({
@@ -188,7 +188,7 @@ jQuery(function($){
         {"name":"hostname","type":"text","title":lang.host,"style":{"width":"250px"}},
         {"name":"username","title":lang.username,"breakpoints":"xs sm"},
         {"name":"in_use_by","title":lang.in_use_by,"style":{"min-width":"200px","width":"200px"}, "type": "text","breakpoints":"xs sm"},
-        {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
+        {"name":"active_int","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"250px","width":"250px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
       ],
       "rows": $.ajax({
@@ -216,7 +216,7 @@ jQuery(function($){
         {"name":"destination","type":"text","title":lang.destination,"style":{"min-width":"300px","width":"300px"}},
         {"name":"nexthop","type":"text","title":lang.nexthop,"style":{"min-width":"200px","width":"200px"}},
         {"name":"username","title":lang.username,"breakpoints":"xs sm"},
-        {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
+        {"name":"active_int","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"250px","width":"250px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
       ],
       "rows": $.ajax({
