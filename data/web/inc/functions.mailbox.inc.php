@@ -3299,9 +3299,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $aliasdata['goto'] = $row['goto'];
           $aliasdata['address'] = $row['address'];
           (!filter_var($aliasdata['address'], FILTER_VALIDATE_EMAIL)) ? $aliasdata['is_catch_all'] = 1 : $aliasdata['is_catch_all'] = 0;
-          $aliasdata['active'] = $row['active'];
+          $aliasdata['active'] = boolval($row['active']);
           $aliasdata['active_int'] = $row['active'];
-          $aliasdata['sogo_visible'] = $row['sogo_visible'];
+          $aliasdata['sogo_visible'] = boolval($row['sogo_visible']);
           $aliasdata['sogo_visible_int'] = $row['sogo_visible'];
           $aliasdata['created'] = $row['created'];
           $aliasdata['modified'] = $row['modified'];
@@ -3333,7 +3333,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $aliasdomaindata['alias_domain'] = $row['alias_domain'];
           $aliasdomaindata['parent_is_backupmx'] = $row_parent['backupmx'];
           $aliasdomaindata['target_domain'] = $row['target_domain'];
-          $aliasdomaindata['active'] = $row['active'];
+          $aliasdomaindata['active'] = boolval($row['active']);
           $aliasdomaindata['active_int'] = $row['active'];
           $aliasdomaindata['rl'] = $rl;
           $aliasdomaindata['created'] = $row['created'];
@@ -3528,7 +3528,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
           $mailboxdata['username'] = $row['username'];
-          $mailboxdata['active'] = $row['active'];
+          $mailboxdata['active'] = $row['active'] == 2 ? false : boolval($row['active']);
+          $mailboxdata['active_limited'] = $row['active'] == 2 ? true : false;
           $mailboxdata['active_int'] = $row['active'];
           $mailboxdata['domain'] = $row['domain'];
           $mailboxdata['relayhost'] = $row['relayhost'];
@@ -3537,6 +3538,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $mailboxdata['quota'] = $row['quota'];
           $mailboxdata['messages'] = $row['messages'];
           $mailboxdata['attributes'] = json_decode($row['attributes'], true);
+          $mailboxdata['attributes']['force_pw_update'] = boolval($mailboxdata['attributes']['force_pw_update']);
+          $mailboxdata['attributes']['tls_enforce_in'] = boolval($mailboxdata['attributes']['tls_enforce_in']);
+          $mailboxdata['attributes']['tls_enforce_out'] = boolval($mailboxdata['attributes']['tls_enforce_out']);
+          $mailboxdata['attributes']['sogo_access'] = boolval($mailboxdata['attributes']['sogo_access']);
+          $mailboxdata['attributes']['imap_access'] = boolval($mailboxdata['attributes']['imap_access']);
+          $mailboxdata['attributes']['pop3_access'] = boolval($mailboxdata['attributes']['pop3_access']);
+          $mailboxdata['attributes']['smtp_access'] = boolval($mailboxdata['attributes']['smtp_access']);
+          $mailboxdata['attributes']['relayhost'] = boolval($mailboxdata['attributes']['relayhost']);
+          $mailboxdata['attributes']['sieve_access'] = boolval($mailboxdata['attributes']['sieve_access']);
           $mailboxdata['quota_used'] = intval($row['bytes']);
           $mailboxdata['percent_in_use'] = ($row['quota'] == 0) ? '- ' : round((intval($row['bytes']) / intval($row['quota'])) * 100);
 
@@ -3600,7 +3610,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $SpamaliasUsage = $stmt->fetch(PDO::FETCH_ASSOC);
             $mailboxdata['max_new_quota'] = ($DomainQuota['quota'] * 1048576) - $MailboxUsage['in_use'];
             $mailboxdata['spam_aliases'] = $SpamaliasUsage['sa_count'];
-            $mailboxdata['pushover_active'] = ($PushoverActive['pushover_active'] == 1) ? 1 : 0;
+            $mailboxdata['pushover_active'] = ($PushoverActive['pushover_active'] == 1) ? true : false;
             if ($mailboxdata['max_new_quota'] > ($DomainQuota['maxquota'] * 1048576)) {
               $mailboxdata['max_new_quota'] = ($DomainQuota['maxquota'] * 1048576);
             }
@@ -3612,7 +3622,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $mailboxdata['rl'] = ratelimit('get', 'domain', $row['domain']);
               $mailboxdata['rl_scope'] = 'domain';
             }
-            $mailboxdata['is_relayed'] = $row['backupmx'];
+            $mailboxdata['is_relayed'] = boolval($row['backupmx']);
           }
 
           return $mailboxdata;
@@ -3639,7 +3649,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $resourcedata['kind'] = $row['kind'];
           $resourcedata['multiple_bookings'] = $row['multiple_bookings'];
           $resourcedata['description'] = $row['name'];
-          $resourcedata['active'] = $row['active'];
+          $resourcedata['active'] = boolval($row['active']);
           $resourcedata['active_int'] = $row['active'];
           $resourcedata['domain'] = $row['domain'];
           $resourcedata['local_part'] = $row['local_part'];

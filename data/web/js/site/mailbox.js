@@ -291,9 +291,9 @@ jQuery(function($){
         {"name":"def_quota_for_mbox","title":lang.mailbox_defquota,"breakpoints":"xs sm md","style":{"width":"125px"}},
         {"name":"max_quota_for_mbox","title":lang.mailbox_quota,"breakpoints":"xs sm","style":{"width":"125px"}},
         {"name":"rl","title":"RL","breakpoints":"xs sm md lg","style":{"min-width":"100px","width":"100px"}},
-        {"name":"backupmx","filterable": false,"style":{"min-width":"120px","width":"120px"},"title":lang.backup_mx,"breakpoints":"xs sm md lg","formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
+        {"name":"backupmx_int","filterable": false,"style":{"min-width":"120px","width":"120px"},"title":lang.backup_mx,"breakpoints":"xs sm md lg","formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
         {"name":"domain_admins","title":lang.domain_admins,"style":{"word-break":"break-all","min-width":"200px"},"breakpoints":"xs sm md lg","filterable":(role == "admin"),"visible":(role == "admin")},
-        {"name":"active","filterable": false,"style":{"min-width":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
+        {"name":"active_int","filterable": false,"style":{"min-width":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"240px","width":"240px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
       ],
       "rows": $.ajax({
@@ -418,7 +418,7 @@ jQuery(function($){
         },
         {"name":"messages","filterable": false,"title":lang.msg_num,"breakpoints":"xs sm md"},
         /* {"name":"rl","title":"RL","breakpoints":"all","style":{"width":"125px"}}, */
-        {"name":"active","filterable": false,"style":{"min-width":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':(0==value?'<i class="bi bi-x-lg"></i>':2==value&&'&#8212;');}},
+        {"name":"active_int","filterable": false,"style":{"min-width":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':(0==value?'<i class="bi bi-x-lg"></i>':2==value&&'&#8212;');}},
         {"name":"action","filterable": false,"sortable": false,"style":{"min-width":"290px","text-align":"right"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
       ],
       "empty": lang.empty,
@@ -453,11 +453,11 @@ jQuery(function($){
             } else {
               item.last_pw_change = '-';
             }
-            item.tls_enforce_in = '<i class="text-' + (item.attributes.tls_enforce_in == 1 ? 'success bi bi-lock-fill' : 'danger bi bi-unlock-fill') + '"></i>';
-            item.tls_enforce_out = '<i class="text-' + (item.attributes.tls_enforce_out == 1 ? 'success bi bi-lock-fill' : 'danger bi bi-unlock-fill') + '"></i>';
-            item.pop3_access = '<i class="text-' + (item.attributes.pop3_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.pop3_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
-            item.imap_access = '<i class="text-' + (item.attributes.imap_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.imap_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
-            item.smtp_access = '<i class="text-' + (item.attributes.smtp_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.smtp_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
+            item.tls_enforce_in = '<i class="text-' + (item.attributes.tls_enforce_in ? 'success bi bi-lock-fill' : 'danger bi bi-unlock-fill') + '"></i>';
+            item.tls_enforce_out = '<i class="text-' + (item.attributes.tls_enforce_out ? 'success bi bi-lock-fill' : 'danger bi bi-unlock-fill') + '"></i>';
+            item.pop3_access = '<i class="text-' + (item.attributes.pop3_access ? 'success' : 'danger') + ' bi bi-' + (item.attributes.pop3_access ? 'check-lg' : 'x-lg') + '"></i>';
+            item.imap_access = '<i class="text-' + (item.attributes.imap_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.imap_access ? 'check-lg' : 'x-lg') + '"></i>';
+            item.smtp_access = '<i class="text-' + (item.attributes.smtp_access ? 'success' : 'danger') + ' bi bi-' + (item.attributes.smtp_access ? 'check-lg' : 'x-lg') + '"></i>';
             if (item.attributes.quarantine_notification === 'never') {
               item.quarantine_notification = lang.never;
             } else if (item.attributes.quarantine_notification === 'hourly') {
@@ -545,7 +545,7 @@ jQuery(function($){
         {"name":"kind","title":lang.kind},
         {"name":"domain","title":lang.domain,"breakpoints":"xs sm"},
         {"name":"multiple_bookings","filterable": false,"style":{"min-width":"150px","width":"140px"},"title":lang.multiple_bookings,"breakpoints":"xs sm"},
-        {"name":"active","filterable": false,"style":{"min-width":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
+        {"name":"active_int","filterable": false,"style":{"min-width":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
       "empty": lang.empty,
@@ -618,7 +618,7 @@ jQuery(function($){
         {"name":"local_dest","title":lang.bcc_local_dest},
         {"name":"bcc_dest","title":lang.bcc_destinations},
         {"name":"domain","title":lang.domain,"breakpoints":"xs sm"},
-        {"name":"active","filterable": false,"style":{"min-width":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
+        {"name":"active_int","filterable": false,"style":{"min-width":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
       "empty": lang.empty,
@@ -685,7 +685,7 @@ jQuery(function($){
         {"sorted": true,"name":"id","title":"ID","style":{"min-width":"60px","width":"60px","text-align":"center"}},
         {"name":"recipient_map_old","title":lang.recipient_map_old},
         {"name":"recipient_map_new","title":lang.recipient_map_new},
-        {"name":"active","filterable": false,"style":{"min-width":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
+        {"name":"active_int","filterable": false,"style":{"min-width":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"180px","width":"180px"},"type":"html","title":(role == "admin" ? lang.action : ""),"breakpoints":"xs sm"}
       ],
       "empty": lang.empty,
@@ -750,7 +750,7 @@ jQuery(function($){
         {"name":"dest","title":lang.tls_map_dest},
         {"name":"policy","title":lang.tls_map_policy},
         {"name":"parameters","title":lang.tls_map_parameters},
-        {"name":"active","filterable": false,"style":{"min-width":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
+        {"name":"active_int","filterable": false,"style":{"min-width":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"180px","width":"180px"},"type":"html","title":(role == "admin" ? lang.action : ""),"breakpoints":"xs sm"}
       ],
       "empty": lang.empty,
@@ -822,8 +822,8 @@ jQuery(function($){
         {"name":"domain","title":lang.domain,"breakpoints":"xs sm"},
         {"name":"public_comment","title":lang.public_comment,"breakpoints":"all"},
         {"name":"private_comment","title":lang.private_comment,"breakpoints":"all"},
-        {"name":"sogo_visible","title":lang.sogo_visible,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';},"breakpoints":"all"},
-        {"name":"active","filterable": false,"style":{"min-width":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
+        {"name":"sogo_visible","title":lang.sogo_visible,"formatter": function(value){return value?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';},"breakpoints":"all"},
+        {"name":"active_int","filterable": false,"style":{"min-width":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
       "empty": lang.empty,
@@ -918,7 +918,7 @@ jQuery(function($){
         {"name":"chkbox","title":"","style":{"min-width":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
         {"sorted": true,"name":"alias_domain","title":lang.alias,"style":{"width":"250px"}},
         {"name":"target_domain","title":lang.target_domain,"type":"html"},
-        {"name":"active","filterable": false,"style":{"min-width":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
+        {"name":"active_int","filterable": false,"style":{"min-width":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"250px","width":"250px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
       "empty": lang.empty,
@@ -1095,7 +1095,7 @@ jQuery(function($){
         },
         success: function (data) {
           $.each(data, function (i, item) {
-            if (item.active == 1) {
+            if (item.active) {
               item.active = '<span id="active-script" class="label label-success">' + lang.active + '</span>';
             } else {
               item.active = '<span id="inactive-script" class="label label-warning">' + lang.inactive + '</span>';
