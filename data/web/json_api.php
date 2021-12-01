@@ -1788,7 +1788,7 @@ function check_empty_result($data, $object) {
   if(empty($data)) {
     http_response_code(404);
     echo json_encode(array(
-        'type' => 'error',
+        'type' => error_switch('error'),
         'msg' =>  $object.' could not be found'
     ));
     exit();
@@ -1798,8 +1798,34 @@ function check_empty_result($data, $object) {
 function throw_not_configured($object) {
   http_response_code(404);
   echo json_encode(array(
-      'type' => 'error',
+      'type' => error_switch('warning'),
       'msg' =>  'No '.$object.' configured'
   ));
   exit();
+}
+
+function error_switch(string $level) {
+  $lvlint = 0;
+
+  switch($level) {
+    case 'info':
+      $lvlint = 0;
+      break;
+    case 'success':
+      $lvlint = 1;
+      break;
+    case 'warning':
+      $lvlint = 2;
+      break;
+    case 'danger':
+      $lvlint = 3;
+      break;
+    case 'error':
+      $lvlint = 4;
+      break;
+    default:
+      $lvlint = 0;
+      break;
+  }
+  return $lvlint;
 }
