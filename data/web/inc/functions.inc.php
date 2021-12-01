@@ -1325,8 +1325,7 @@ function fido2($_data) {
         $_data['registration']->certificateSubject,
         $_data['registration']->signatureCounter,
         $_data['registration']->AAGUID,
-        $_data['registration
-        ']->credentialId)
+        $_data['registration']->credentialId)
       );
       $_SESSION['return'][] =  array(
         'type' => 1,
