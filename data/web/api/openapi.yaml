@@ -16,10 +16,13 @@ info:
       - The read write key can be used for all endpoints
 
   title: mailcow API
-  version: "1.0.0"
+  version: "2.0.0"
 
 servers:
-  - url: /
+  - url: /api/v1
+    description: API v1
+  - url: /api/v2
+    description: API v2
 
 components:
   securitySchemes:
@@ -49,7 +52,7 @@ security:
   - ApiKeyAuth: []
 
 paths:
-  /api/v1/add/alias:
+  /add/alias:
     post:
       responses:
         "401":
@@ -131,7 +134,7 @@ paths:
                   type: boolean
               type: object
       summary: Create alias
-  /api/v1/add/time_limited_alias:
+  /add/time_limited_alias:
     post:
       responses:
         "401":
@@ -194,7 +197,7 @@ paths:
                   type: string
               type: object
       summary: Create time limited alias
-  /api/v1/add/app-passwd:
+  /add/app-passwd:
     post:
       responses:
         "401":
@@ -267,7 +270,7 @@ paths:
                   type: string
               type: object
       summary: Create App Password
-  /api/v1/add/bcc:
+  /add/bcc:
     post:
       responses:
         "401":
@@ -336,7 +339,7 @@ paths:
                   type: string
               type: object
       summary: Create BCC Map
-  /api/v1/add/dkim:
+  /add/dkim:
     post:
       responses:
         "401":
@@ -399,7 +402,7 @@ paths:
                   type: number
               type: object
       summary: Generate DKIM Key
-  /api/v1/add/dkim_duplicate:
+  /add/dkim_duplicate:
     post:
       responses:
         "401":
@@ -458,7 +461,7 @@ paths:
                   type: string
               type: object
       summary: Duplicate DKIM Key
-  /api/v1/add/domain:
+  /add/domain:
     post:
       responses:
         "401":
@@ -592,7 +595,7 @@ paths:
                   type: number
               type: object
       summary: Create domain
-  /api/v1/add/domain-admin:
+  /add/domain-admin:
     post:
       responses:
         "401":
@@ -668,7 +671,7 @@ paths:
                   type: string
               type: object
       summary: Create Domain Admin user
-  /api/v1/edit/da-acl:
+  /edit/da-acl:
     post:
       responses:
         "401":
@@ -767,7 +770,7 @@ paths:
                       type: object
                   type: object
       summary: Edit Domain Admin ACL
-  /api/v1/edit/domain-admin:
+  /edit/domain-admin:
     post:
       responses:
         "401":
@@ -856,7 +859,7 @@ paths:
                   description: contains the domain admin username you want to edit
                   type: object
       summary: Edit Domain Admin user
-  /api/v1/add/domain-policy:
+  /add/domain-policy:
     post:
       responses:
         "401":
@@ -924,7 +927,7 @@ paths:
                   type: string
               type: object
       summary: Create domain policy
-  /api/v1/add/fwdhost:
+  /add/fwdhost:
     post:
       responses:
         "401":
@@ -985,7 +988,7 @@ paths:
                   type: string
               type: object
       summary: Add Forward Host
-  /api/v1/add/mailbox:
+  /add/mailbox:
     post:
       responses:
         "401":
@@ -1088,7 +1091,7 @@ paths:
               type: object
       summary: Create mailbox
 
-  /api/v1/add/oauth2-client:
+  /add/oauth2-client:
     post:
       responses:
         "401":
@@ -1140,7 +1143,7 @@ paths:
                   type: string
               type: object
       summary: Create oAuth Client
-  /api/v1/add/recipient_map:
+  /add/recipient_map:
     post:
       responses:
         "401":
@@ -1206,7 +1209,7 @@ paths:
                   type: string
               type: object
       summary: Create Recipient Map
-  /api/v1/add/relayhost:
+  /add/relayhost:
     post:
       responses:
         "401":
@@ -1269,7 +1272,7 @@ paths:
                   type: string
               type: object
       summary: Create Sender-Dependent Transports
-  /api/v1/add/resource:
+  /add/resource:
     post:
       responses:
         "401":
@@ -1364,7 +1367,7 @@ paths:
                   type: string
               type: object
       summary: Create Resources
-  /api/v1/add/syncjob:
+  /add/syncjob:
     post:
       responses:
         "401":
@@ -1518,7 +1521,7 @@ paths:
                   description: enables or disables the sync job
                   type: boolean
               type: object
-  /api/v1/add/tls-policy-map:
+  /add/tls-policy-map:
     post:
       responses:
         "401":
@@ -1598,7 +1601,7 @@ paths:
                   type: string
               type: object
       summary: Create TLS Policy Map
-  /api/v1/add/transport:
+  /add/transport:
     post:
       responses:
         "401":
@@ -1669,7 +1672,7 @@ paths:
                   type: string
               type: object
       summary: Create Transport Maps
-  /api/v1/delete/alias:
+  /delete/alias:
     post:
       responses:
         "401":
@@ -1735,7 +1738,7 @@ paths:
                 type: string
               type: array
       summary: Delete alias
-  /api/v1/delete/app-passwd:
+  /delete/app-passwd:
     post:
       responses:
         "401":
@@ -1789,7 +1792,7 @@ paths:
                   type: object
               type: object
       summary: Delete App Password
-  /api/v1/delete/bcc:
+  /delete/bcc:
     post:
       responses:
         "401":
@@ -1846,7 +1849,7 @@ paths:
                   type: object
               type: object
       summary: Delete BCC Map
-  /api/v1/delete/dkim:
+  /delete/dkim:
     post:
       responses:
         "401":
@@ -1898,7 +1901,7 @@ paths:
                 type: string
               type: array
       summary: Delete DKIM Key
-  /api/v1/delete/domain:
+  /delete/domain:
     post:
       responses:
         "401":
@@ -1968,7 +1971,7 @@ paths:
                   type: object
               type: object
       summary: Delete domain
-  /api/v1/delete/domain-admin:
+  /delete/domain-admin:
     post:
       responses:
         "401":
@@ -2022,7 +2025,7 @@ paths:
                   type: object
               type: object
       summary: Delete Domain Admin
-  /api/v1/delete/domain-policy:
+  /delete/domain-policy:
     post:
       responses:
         "401":
@@ -2090,7 +2093,7 @@ paths:
                   type: object
               type: object
       summary: Delete domain policy
-  /api/v1/delete/fwdhost:
+  /delete/fwdhost:
     post:
       responses:
         "401":
@@ -2158,7 +2161,7 @@ paths:
                   type: string
               type: object
       summary: Delete Forward Host
-  /api/v1/delete/mailbox:
+  /delete/mailbox:
     post:
       responses:
         "401":
@@ -2228,7 +2231,7 @@ paths:
                   type: object
               type: object
       summary: Delete mailbox
-  /api/v1/delete/mailq:
+  /delete/mailq:
     post:
       responses:
         "401":
@@ -2263,7 +2266,7 @@ paths:
                   type: string
               type: object
       summary: Delete Queue
-  /api/v1/delete/oauth2-client:
+  /delete/oauth2-client:
     post:
       responses:
         "401":
@@ -2320,7 +2323,7 @@ paths:
                   type: object
               type: object
       summary: Delete oAuth Client
-  /api/v1/delete/qitem:
+  /delete/qitem:
     post:
       responses:
         "401":
@@ -2376,7 +2379,7 @@ paths:
                   type: object
               type: object
       summary: Delete mails in Quarantine
-  /api/v1/delete/recipient_map:
+  /delete/recipient_map:
     post:
       responses:
         "401":
@@ -2433,7 +2436,7 @@ paths:
                   type: object
               type: object
       summary: Delete Recipient Map
-  /api/v1/delete/relayhost:
+  /delete/relayhost:
     post:
       responses:
         "401":
@@ -2491,7 +2494,7 @@ paths:
                   type: object
               type: object
       summary: Delete Sender-Dependent Transports
-  /api/v1/delete/resource:
+  /delete/resource:
     post:
       responses:
         "401":
@@ -2549,7 +2552,7 @@ paths:
                   type: object
               type: object
       summary: Delete Resources
-  /api/v1/delete/syncjob:
+  /delete/syncjob:
     post:
       responses:
         "401":
@@ -2603,7 +2606,7 @@ paths:
                   type: object
               type: object
       summary: Delete sync job
-  /api/v1/delete/tls-policy-map:
+  /delete/tls-policy-map:
     post:
       responses:
         "401":
@@ -2660,7 +2663,7 @@ paths:
                   type: object
               type: object
       summary: Delete TLS Policy Map
-  /api/v1/delete/transport:
+  /delete/transport:
     post:
       responses:
         "401":
@@ -2716,7 +2719,7 @@ paths:
                   type: object
               type: object
       summary: Delete Transport Maps
-  /api/v1/edit/alias:
+  /edit/alias:
     post:
       responses:
         "401":
@@ -2813,7 +2816,7 @@ paths:
                   type: object
               type: object
       summary: Update alias
-  /api/v1/edit/domain:
+  /edit/domain:
     post:
       responses:
         "401":
@@ -2912,7 +2915,7 @@ paths:
                   type: object
               type: object
       summary: Update domain
-  /api/v1/edit/fail2ban:
+  /edit/fail2ban:
     post:
       responses:
         "401":
@@ -2990,7 +2993,7 @@ paths:
                   description: has to be none
               type: object
       summary: Edit Fail2Ban
-  /api/v1/edit/mailbox:
+  /edit/mailbox:
     post:
       responses:
         "401":
@@ -3101,7 +3104,7 @@ paths:
                   type: object
               type: object
       summary: Update mailbox
-  /api/v1/edit/mailq:
+  /edit/mailq:
     post:
       responses:
         "401":
@@ -3136,7 +3139,7 @@ paths:
                   type: string
               type: object
       summary: Flush Queue
-  /api/v1/edit/pushover:
+  /edit/pushover:
     post:
       responses:
         "401":
@@ -3239,7 +3242,7 @@ paths:
                   type: object
               type: object
       summary: Update Pushover settings
-  /api/v1/edit/quarantine_notification:
+  /edit/quarantine_notification:
     post:
       responses:
         "401":
@@ -3281,7 +3284,7 @@ paths:
                   type: object
               type: object
       summary: Quarantine Notifications
-  /api/v1/edit/syncjob:
+  /edit/syncjob:
     post:
       responses:
         "401":
@@ -3432,7 +3435,7 @@ paths:
                   type: object
               type: object
       summary: Update sync job
-  /api/v1/edit/user-acl:
+  /edit/user-acl:
     post:
       responses:
         "401":
@@ -3522,7 +3525,7 @@ paths:
                   type: object
               type: object
       summary: Update mailbox ACL
-  "/api/v1/get/alias/{id}":
+  "/get/alias/{id}":
     get:
       parameters:
         - description: id of entry you want to get
@@ -3583,7 +3586,7 @@ paths:
       description: You can list mailbox aliases existing in system.
       operationId: Get aliases
       summary: Get aliases
-  "/api/v1/get/time_limited_aliases/{mailbox}":
+  "/get/time_limited_aliases/{mailbox}":
     get:
       parameters:
         - description: mailbox you want to get aliasses from
@@ -3621,7 +3624,7 @@ paths:
       description: You can list time limited mailbox aliases existing in system.
       operationId: Get time limited aliases
       summary: Get time limited aliases
-  "/api/v1/get/app-passwd/all/{mailbox}":
+  "/get/app-passwd/all/{mailbox}":
     get:
       parameters:
         - description: mailbox of entry you want to get
@@ -3665,7 +3668,7 @@ paths:
         mailbox.
       operationId: Get App Password
       summary: Get App Password
-  "/api/v1/get/bcc/{id}":
+  "/get/bcc/{id}":
     get:
       parameters:
         - description: id of entry you want to get
@@ -3712,7 +3715,7 @@ paths:
       description: Using this endpoint you can get all BCC maps.
       operationId: Get BCC Map
       summary: Get BCC Map
-  "/api/v1/get/dkim/{domain}":
+  "/get/dkim/{domain}":
     get:
       parameters:
         - description: name of domain
@@ -3753,7 +3756,7 @@ paths:
         domain.
       operationId: Get DKIM Key
       summary: Get DKIM Key
-  /api/v1/get/domain-admin/all:
+  /get/domain-admin/all:
     get:
       responses:
         "401":
@@ -3780,7 +3783,7 @@ paths:
       description: ""
       operationId: Get Domain Admins
       summary: Get Domain Admins
-  "/api/v1/get/domain/{id}":
+  "/get/domain/{id}":
     get:
       parameters:
         - description: id of entry you want to get
@@ -3860,7 +3863,7 @@ paths:
       description: You can list all domains existing in system.
       operationId: Get domains
       summary: Get domains
-  /api/v1/get/fail2ban:
+  /get/fail2ban:
     get:
       responses:
         "401":
@@ -3890,7 +3893,7 @@ paths:
       description: Gets the current Fail2Ban configuration.
       operationId: Get Fail2Ban Config
       summary: Get Fail2Ban Config
-  /api/v1/get/fwdhost/all:
+  /get/fwdhost/all:
     get:
       responses:
         "401":
@@ -3914,7 +3917,7 @@ paths:
       description: You can list all Forwarding Hosts in your mailcow.
       operationId: Get Forwarding Hosts
       summary: Get Forwarding Hosts
-  "/api/v1/get/logs/acme/{count}":
+  "/get/logs/acme/{count}":
     get:
       parameters:
         - description: Number of logs to return
@@ -3955,7 +3958,7 @@ paths:
         the end of the api url.
       operationId: Get ACME logs
       summary: Get ACME logs
-  "/api/v1/get/logs/api/{count}":
+  "/get/logs/api/{count}":
     get:
       parameters:
         - description: Number of logs to return
@@ -3984,7 +3987,7 @@ paths:
                       method: GET
                       remote: 1.1.1.1
                       time: 1569939001
-                      uri: /api/v1/get/logs/api/2
+                      uri: /get/logs/api/2
           description: OK
           headers: {}
       tags:
@@ -3996,7 +3999,7 @@ paths:
         the end of the api url.
       operationId: Get Api logs
       summary: Get Api logs
-  "/api/v1/get/logs/autodiscover/{count}":
+  "/get/logs/autodiscover/{count}":
     get:
       parameters:
         - description: Number of logs to return
@@ -4038,7 +4041,7 @@ paths:
         the end of the api url.
       operationId: Get Autodiscover logs
       summary: Get Autodiscover logs
-  "/api/v1/get/logs/dovecot/{count}":
+  "/get/logs/dovecot/{count}":
     get:
       parameters:
         - description: Number of logs to return
@@ -4080,7 +4083,7 @@ paths:
         the end of the api url.
       operationId: Get Dovecot logs
       summary: Get Dovecot logs
-  "/api/v1/get/logs/netfilter/{count}":
+  "/get/logs/netfilter/{count}":
     get:
       parameters:
         - description: Number of logs to return
@@ -4122,7 +4125,7 @@ paths:
         the end of the api url.
       operationId: Get Netfilter logs
       summary: Get Netfilter logs
-  "/api/v1/get/logs/postfix/{count}":
+  "/get/logs/postfix/{count}":
     get:
       parameters:
         - description: Number of logs to return
@@ -4162,7 +4165,7 @@ paths:
         the end of the api url.
       operationId: Get Postfix logs
       summary: Get Postfix logs
-  "/api/v1/get/logs/ratelimited/{count}":
+  "/get/logs/ratelimited/{count}":
     get:
       parameters:
         - description: Number of logs to return
@@ -4210,7 +4213,7 @@ paths:
         the end of the api url.
       operationId: Get Ratelimit logs
       summary: Get Ratelimit logs
-  "/api/v1/get/logs/rspamd-history/{count}":
+  "/get/logs/rspamd-history/{count}":
     get:
       parameters:
         - description: Number of logs to return
@@ -4241,7 +4244,7 @@ paths:
         the end of the api url.
       operationId: Get Rspamd logs
       summary: Get Rspamd logs
-  "/api/v1/get/logs/sogo/{count}":
+  "/get/logs/sogo/{count}":
     get:
       parameters:
         - description: Number of logs to return
@@ -4284,7 +4287,7 @@ paths:
         the end of the api url.
       operationId: Get SOGo logs
       summary: Get SOGo logs
-  "/api/v1/get/logs/watchdog/{count}":
+  "/get/logs/watchdog/{count}":
     get:
       parameters:
         - description: Number of logs to return
@@ -4332,7 +4335,7 @@ paths:
         the end of the api url.
       operationId: Get Watchdog logs
       summary: Get Watchdog logs
-  "/api/v1/get/mailbox/{id}":
+  "/get/mailbox/{id}":
     get:
       parameters:
         - description: id of entry you want to get
@@ -4389,7 +4392,7 @@ paths:
       description: You can list all mailboxes existing in system.
       operationId: Get mailboxes
       summary: Get mailboxes
-  /api/v1/get/mailq/all:
+  /get/mailq/all:
     get:
       responses:
         "401":
@@ -4414,7 +4417,7 @@ paths:
       description: Get the current mail queue and everything it contains.
       operationId: Get Queue
       summary: Get Queue
-  "/api/v1/get/oauth2-client/{id}":
+  "/get/oauth2-client/{id}":
     get:
       parameters:
         - description: id of entry you want to get
@@ -4460,7 +4463,7 @@ paths:
       description: Using this endpoint you can get all oAuth clients.
       operationId: Get oAuth Clients
       summary: Get oAuth Clients
-  "/api/v1/get/policy_bl_domain/{domain}":
+  "/get/policy_bl_domain/{domain}":
     get:
       parameters:
         - description: name of domain
@@ -4495,7 +4498,7 @@ paths:
       description: You can list all blacklist policies per domain.
       operationId: List blacklist domain policy
       summary: List blacklist domain policy
-  "/api/v1/get/policy_wl_domain/{domain}":
+  "/get/policy_wl_domain/{domain}":
     get:
       parameters:
         - description: name of domain
@@ -4530,7 +4533,7 @@ paths:
       description: You can list all whitelist policies per domain.
       operationId: List whitelist domain policy
       summary: List whitelist domain policy
-  /api/v1/get/quarantine/all:
+  /get/quarantine/all:
     get:
       responses:
         "401":
@@ -4557,7 +4560,7 @@ paths:
       description: Get all mails that are currently in Quarantine.
       operationId: Get mails in Quarantine
       summary: Get mails in Quarantine
-  "/api/v1/get/recipient_map/{id}":
+  "/get/recipient_map/{id}":
     get:
       parameters:
         - description: id of entry you want to get
@@ -4602,7 +4605,7 @@ paths:
       description: Using this endpoint you can get all recipient maps.
       operationId: Get Recipient Map
       summary: Get Recipient Map
-  "/api/v1/get/relayhost/{id}":
+  "/get/relayhost/{id}":
     get:
       parameters:
         - description: id of entry you want to get
@@ -4648,7 +4651,7 @@ paths:
       description: Using this endpoint you can get all Sender-Dependent Transports.
       operationId: Get Sender-Dependent Transports
       summary: Get Sender-Dependent Transports
-  /api/v1/get/resource/all:
+  /get/resource/all:
     get:
       responses:
         "401":
@@ -4673,7 +4676,7 @@ paths:
       description: Using this endpoint you can get all Resources.
       operationId: Get Resources
       summary: Get Resources
-  "/api/v1/get/rl-mbox/{mailbox}":
+  "/get/rl-mbox/{mailbox}":
     get:
       parameters:
         - description: name of mailbox or all
@@ -4713,7 +4716,7 @@ paths:
         You can use all for all mailboxes.
       operationId: Get mailbox ratelimits
       summary: Get mailbox ratelimits
-  "/api/v1/get/rl-domain/{domain}":
+  "/get/rl-domain/{domain}":
     get:
       parameters:
         - description: name of domain or all
@@ -4753,7 +4756,7 @@ paths:
         You can use all for all domain.
       operationId: Get domain ratelimits
       summary: Get domain ratelimits
-  /api/v1/edit/rl-mbox/:
+  /edit/rl-mbox/:
     post:
       responses:
         "401":
@@ -4824,7 +4827,7 @@ paths:
                   type: object
               type: object
       summary: Edit mailbox ratelimits
-  /api/v1/edit/rl-domain/:
+  /edit/rl-domain/:
     post:
       responses:
         "401":
@@ -4895,7 +4898,7 @@ paths:
                   type: object
               type: object
       summary: Edit domain ratelimits
-  /api/v1/get/status/containers:
+  /get/status/containers:
     get:
       responses:
         "401":
@@ -5023,7 +5026,7 @@ paths:
         hey where started and a few other details.
       operationId: Get container status
       summary: Get container status
-  /api/v1/get/status/solr:
+  /get/status/solr:
     get:
       responses:
         "401":
@@ -5047,7 +5050,7 @@ paths:
         hey where started and a few other details.
       operationId: Get solr status
       summary: Get solr status
-  /api/v1/get/status/vmail:
+  /get/status/vmail:
     get:
       responses:
         "401":
@@ -5072,7 +5075,7 @@ paths:
         of used storage.
       operationId: Get vmail status
       summary: Get vmail status
-  /api/v1/get/syncjobs/all/no_log:
+  /get/syncjobs/all/no_log:
     get:
       responses:
         "401":
@@ -5120,7 +5123,7 @@ paths:
       description: You can list all syn jobs existing in system.
       operationId: Get sync jobs
       summary: Get sync jobs
-  "/api/v1/get/tls-policy-map/{id}":
+  "/get/tls-policy-map/{id}":
     get:
       parameters:
         - description: id of entry you want to get
@@ -5166,7 +5169,7 @@ paths:
       description: Using this endpoint you can get all TLS policy map override maps.
       operationId: Get TLS Policy Map
       summary: Get TLS Policy Map
-  "/api/v1/get/transport/{id}":
+  "/get/transport/{id}":
     get:
       parameters:
         - description: id of entry you want to get
@@ -5213,7 +5216,7 @@ paths:
       description: Using this endpoint you can get all Transport Maps.
       operationId: Get Transport Maps
       summary: Get Transport Maps
-  /api/v1/edit/spam-score/:
+  /edit/spam-score/:
     post:
       responses:
         "401":
