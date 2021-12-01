@@ -235,9 +235,9 @@ function admin($_action, $_data = null) {
         return false;
       }
       $admindata['username'] = $row['username'];
-      $admindata['tfa_active'] = (is_null($row['tfa_active'])) ? 0 : $row['tfa_active'];
+      $admindata['tfa_active'] = (is_null($row['tfa_active'])) ? false : boolval($row['tfa_active']);
       $admindata['tfa_active_int'] = (is_null($row['tfa_active'])) ? 0 : $row['tfa_active'];
-      $admindata['active'] = $row['active'];
+      $admindata['active'] = boolval($row['active']);
       $admindata['active_int'] = $row['active'];
       $admindata['created'] = $row['created'];
       return $admindata;

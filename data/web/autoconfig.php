@@ -48,7 +48,7 @@ header('Content-Type: application/xml');
       </incomingServer>
 
 <?php
-$records = dns_get_record('_pop3s._tcp.' . $domain, DNS_SRV); // check if POP3 is announced as "not provided" via SRV record
+$records = dns_get_record('_pop3s._tcp.' . $domain, DNS_SRV); // check if POP3s is announced as "not provided" via SRV record
 if (count($records) == 0 || $records[0]['target'] != '') { ?>
       <incomingServer type="pop3">
          <hostname><?=$autodiscover_config['pop3']['server']; ?></hostname>

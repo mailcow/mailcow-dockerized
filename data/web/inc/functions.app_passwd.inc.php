@@ -28,12 +28,12 @@ function app_passwd($_action, $_data = null) {
       $password2 = $_data['app_passwd2'];
       $active = intval($_data['active']);
       $protocols = (array)$_data['protocols'];
-      $imap_access = (in_array('imap_access', $protocols)) ? 1 : 0;
-      $dav_access = (in_array('dav_access', $protocols)) ? 1 : 0;
-      $smtp_access = (in_array('smtp_access', $protocols)) ? 1 : 0;
-      $eas_access = (in_array('eas_access', $protocols)) ? 1 : 0;
-      $pop3_access = (in_array('pop3_access', $protocols)) ? 1 : 0;
-      $sieve_access = (in_array('sieve_access', $protocols)) ? 1 : 0;
+      $imap_access = (in_array('imap_access', $protocols)) ? true : false;
+      $dav_access = (in_array('dav_access', $protocols)) ? true : false;
+      $smtp_access = (in_array('smtp_access', $protocols)) ? true : false;
+      $eas_access = (in_array('eas_access', $protocols)) ? true : false;
+      $pop3_access = (in_array('pop3_access', $protocols)) ? true : false;
+      $sieve_access = (in_array('sieve_access', $protocols)) ? true : false;
       $domain = mailbox('get', 'mailbox_details', $username)['domain'];
       if (empty($domain)) {
         $_SESSION['return'][] = array(
@@ -99,12 +99,12 @@ function app_passwd($_action, $_data = null) {
           $password2 = (!empty($_data['password2'])) ? $_data['password2'] : null;
           if (isset($_data['protocols'])) {
             $protocols = (array)$_data['protocols'];
-            $imap_access = (in_array('imap_access', $protocols)) ? 1 : 0;
-            $dav_access = (in_array('dav_access', $protocols)) ? 1 : 0;
-            $smtp_access = (in_array('smtp_access', $protocols)) ? 1 : 0;
-            $eas_access = (in_array('eas_access', $protocols)) ? 1 : 0;
-            $pop3_access = (in_array('pop3_access', $protocols)) ? 1 : 0;
-            $sieve_access = (in_array('sieve_access', $protocols)) ? 1 : 0;
+            $imap_access = (in_array('imap_access', $protocols)) ? true : false;
+            $dav_access = (in_array('dav_access', $protocols)) ? true : false;
+            $smtp_access = (in_array('smtp_access', $protocols)) ? true : false;
+            $eas_access = (in_array('eas_access', $protocols)) ? true : false;
+            $pop3_access = (in_array('pop3_access', $protocols)) ? true : false;
+            $sieve_access = (in_array('sieve_access', $protocols)) ? true : false;
           }
           else {
             $imap_access = $is_now['imap_access'];
