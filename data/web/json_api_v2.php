@@ -1759,22 +1759,12 @@ if (isset($_GET['query'])) {
         break;
         // return no route found if no case is matched
         default:
-          http_response_code(404);
-          echo json_encode(array(
-            'type' => 'error',
-            'msg' => 'route not found'
-          ));
-          exit();
+            throw_not_found('error', "Route");
       }
     break;
     // return no route found if no case is matched
     default:
-      http_response_code(404);
-      echo json_encode(array(
-        'type' => 'error',
-        'msg' => 'route not found'
-      ));
-      exit();
+      throw_not_found('error', "Route");
   }
 }
 if ($_SESSION['mailcow_cc_api'] === true) {
@@ -1786,11 +1776,11 @@ if ($_SESSION['mailcow_cc_api'] === true) {
 // Custom Code
 function check_empty_result($data, $object) {
   if(empty($data)) {
-    throw_not_found('warning');
+    throw_not_found('warning', $object);
   }
 }
 
-function throw_not_configured(string $level, object $object, int $error_code = 404) {
+function throw_not_configured(string $level, string $object, int $error_code = 404) {
   http_response_code($error_code);
   echo json_encode(array(
       'type' => error_switch($level),
@@ -1799,11 +1789,11 @@ function throw_not_configured(string $level, object $object, int $error_code = 4
   exit();
 }
 
-function throw_not_found(string $level) {
+function throw_not_found(string $level, string $object) {
   http_response_code(404);
   echo json_encode(array(
       'type' => error_switch($level),
-      'msg' =>  'Not found'
+      'msg' =>  $object.' not found'
   ));
   exit();
 }
@@ -1831,6 +1821,6 @@ function error_switch(string $level) {
       $lvlint = 0;
       break;
   }
-  
+
   return $lvlint;
 }
