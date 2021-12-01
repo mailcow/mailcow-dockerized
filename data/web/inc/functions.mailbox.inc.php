@@ -3446,7 +3446,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $domaindata['max_quota_for_mbox'] = $row['maxquota'] * 1048576;
           $domaindata['max_quota_for_domain'] = $row['quota'] * 1048576;
           $domaindata['relayhost'] = boolval($row['relayhost']);
-          $domaindata['relayhost_int'] = $row['relayhost'];
+          $domaindata['relayhost_int'] = intval($row['relayhost']);
           $domaindata['backupmx'] = boolval($row['backupmx']);
           $domaindata['backupmx_int'] = $row['backupmx'];
           $domaindata['gal'] = $row['gal'];
