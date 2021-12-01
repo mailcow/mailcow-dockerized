@@ -185,7 +185,7 @@ jQuery(function($){
         {"name":"last_run","title":lang.last_run,"breakpoints":"xs sm md"},
         {"name":"exit_status","filterable": false,"title":lang.syncjob_last_run_result},
         {"name":"log","title":"Log"},
-        {"name":"active","filterable": false,"style":{"maxWidth":"70px","width":"70px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
+        {"name":"active_int","filterable": false,"style":{"maxWidth":"70px","width":"70px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
         {"name":"is_running","filterable": false,"style":{"maxWidth":"120px","width":"100px"},"title":lang.status},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"260px","width":"260px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
@@ -218,7 +218,7 @@ jQuery(function($){
               item.action = '<span>-</span>';
               item.chkbox = '<input type="checkbox" disabled />';
             }
-            if (item.is_running == 1) {
+            if (item.is_running) {
               item.is_running = '<span id="active-script" class="label label-success">' + lang.running + '</span>';
             } else {
               item.is_running = '<span id="inactive-script" class="label label-warning">' + lang.waiting + '</span>';
@@ -260,7 +260,7 @@ jQuery(function($){
         {"sorted": true,"name":"id","title":"ID","style":{"maxWidth":"60px","width":"60px","text-align":"center"}},
         {"name":"name","title":lang.app_name},
         {"name":"protocols","title":lang.allowed_protocols},
-        {"name":"active","filterable": false,"style":{"maxWidth":"70px","width":"70px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
+        {"name":"active_int","filterable": false,"style":{"maxWidth":"70px","width":"70px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"220px","width":"220px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
       "empty": lang.empty,
@@ -275,12 +275,12 @@ jQuery(function($){
           $.each(data, function (i, item) {
             item.name = escapeHtml(item.name)
             item.protocols = []
-            if (item.imap_access == 1) { item.protocols.push("<code>IMAP</code>"); }
-            if (item.smtp_access == 1) { item.protocols.push("<code>SMTP</code>"); }
-            if (item.eas_access == 1) { item.protocols.push("<code>EAS/ActiveSync</code>"); }
-            if (item.dav_access == 1) { item.protocols.push("<code>DAV</code>"); }
-            if (item.pop3_access == 1) { item.protocols.push("<code>POP3</code>"); }
-            if (item.sieve_access == 1) { item.protocols.push("<code>Sieve</code>"); }
+            if (item.imap_access) { item.protocols.push("<code>IMAP</code>"); }
+            if (item.smtp_access) { item.protocols.push("<code>SMTP</code>"); }
+            if (item.eas_access) { item.protocols.push("<code>EAS/ActiveSync</code>"); }
+            if (item.dav_access) { item.protocols.push("<code>DAV</code>"); }
+            if (item.pop3_access) { item.protocols.push("<code>POP3</code>"); }
+            if (item.sieve_access) { item.protocols.push("<code>Sieve</code>"); }
             item.protocols = item.protocols.join(" ")
             if (acl_data.app_passwds === 1) {
               item.action = '<div class="btn-group footable-actions">' +
