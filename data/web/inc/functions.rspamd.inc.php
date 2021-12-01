@@ -7,7 +7,7 @@ function rsettings($_action, $_data = null) {
     case 'add':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
         );
@@ -18,7 +18,7 @@ function rsettings($_action, $_data = null) {
       $active = intval($_data['active']);
       if (empty($content)) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'map_content_empty'
         );
@@ -32,7 +32,7 @@ function rsettings($_action, $_data = null) {
         ':active' => $active
       ));
       $_SESSION['return'][] = array(
-        'type' => 'success',
+        'type' => 1,
         'log' => array(__FUNCTION__, $_action, $_data_log),
         'msg' => 'settings_map_added'
       );
@@ -40,7 +40,7 @@ function rsettings($_action, $_data = null) {
     case 'edit':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
         );
@@ -56,7 +56,7 @@ function rsettings($_action, $_data = null) {
         }
         else {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('settings_map_invalid', $id)
           );
@@ -75,7 +75,7 @@ function rsettings($_action, $_data = null) {
           ':id' => $id
         ));
         $_SESSION['return'][] = array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('object_modified', htmlspecialchars(implode(',', $ids)))
         );
@@ -84,7 +84,7 @@ function rsettings($_action, $_data = null) {
     case 'delete':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
         );
@@ -95,7 +95,7 @@ function rsettings($_action, $_data = null) {
         $stmt = $pdo->prepare("DELETE FROM `settingsmap` WHERE `id`= :id");
         $stmt->execute(array(':id' => $id));
         $_SESSION['return'][] = array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('settings_map_removed', htmlspecialchars($id))
         );
@@ -136,7 +136,7 @@ function rspamd_maps($_action, $_data = null) {
     case 'edit':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, '-'),
           'msg' => 'access_denied'
         );
@@ -147,7 +147,7 @@ function rspamd_maps($_action, $_data = null) {
         foreach ($RSPAMD_MAPS as $rspamd_map_type) {
           if (!in_array($map, $rspamd_map_type)) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, '-'),
               'msg' => array('global_map_invalid', $map)
             );
@@ -169,14 +169,14 @@ function rspamd_maps($_action, $_data = null) {
         }
         catch (Exception $e) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, '-'),
             'msg' => array('global_map_write_error', htmlspecialchars($map), htmlspecialchars($e->getMessage()))
           );
           continue;
         }
         $_SESSION['return'][] = array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $_action, '-'),
           'msg' => array('object_modified', htmlspecialchars($map))
         );

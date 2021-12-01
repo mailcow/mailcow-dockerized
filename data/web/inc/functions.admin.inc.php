@@ -2,7 +2,7 @@
 function admin($_action, $_data = null) {
   if ($_SESSION['mailcow_cc_role'] != "admin") {
     $_SESSION['return'][] = array(
-      'type' => 'danger',
+      'type' => 3,
       'log' => array(__FUNCTION__, $_action, $_data_log),
       'msg' => 'access_denied'
     );
@@ -21,7 +21,7 @@ function admin($_action, $_data = null) {
       $active     = intval($_data['active']);
       if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $username)) || empty ($username) || $username == 'API') {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('username_invalid', $username)
         );
@@ -41,7 +41,7 @@ function admin($_action, $_data = null) {
       foreach ($num_results as $num_results_each) {
         if ($num_results_each != 0) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('object_exists', htmlspecialchars($username))
           );
@@ -60,7 +60,7 @@ function admin($_action, $_data = null) {
         ':active' => $active
       ));
       $_SESSION['return'][] = array(
-        'type' => 'success',
+        'type' => 1,
         'log' => array(__FUNCTION__, $_action, $_data_log),
         'msg' => array('admin_added', htmlspecialchars($username))
       );
@@ -81,7 +81,7 @@ function admin($_action, $_data = null) {
         }
         else {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => 'access_denied'
           );
@@ -96,7 +96,7 @@ function admin($_action, $_data = null) {
           }
           if ($left_active == 1) {
             $_SESSION['return'][] = array(
-              'type' => 'warning',
+              'type' => 2,
               'log' => array(__FUNCTION__, $_action, $_data_log),
               'msg' => 'no_active_admin'
             );
@@ -105,7 +105,7 @@ function admin($_action, $_data = null) {
         }
         if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $username_new))) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('username_invalid', $username_new)
           );
@@ -114,7 +114,7 @@ function admin($_action, $_data = null) {
         if ($username_new != $username) {
           if (!empty(admin('details', $username_new)['username'])) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_data_log),
               'msg' => array('username_invalid', $username_new)
             );
@@ -159,7 +159,7 @@ function admin($_action, $_data = null) {
           }
         }
         $_SESSION['return'][] = array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('admin_modified', htmlspecialchars($username))
         );
@@ -171,7 +171,7 @@ function admin($_action, $_data = null) {
       foreach ($usernames as $username) {
         if ($_SESSION['mailcow_cc_username'] == $username) {
           $_SESSION['return'][] = array(
-            'type' => 'warning',
+            'type' => 2,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => 'cannot_delete_self'
           );
@@ -179,7 +179,7 @@ function admin($_action, $_data = null) {
         }
         if (empty(admin('details', $username))) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('username_invalid', $username)
           );
@@ -202,7 +202,7 @@ function admin($_action, $_data = null) {
           ':username' => $username,
         ));
         $_SESSION['return'][] = array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('admin_removed', htmlspecialchars($username))
         );

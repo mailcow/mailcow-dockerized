@@ -5,7 +5,7 @@ function pushover($_action, $_data = null) {
     case 'edit':
       if (!isset($_SESSION['acl']['pushover']) || $_SESSION['acl']['pushover'] != "1" ) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data),
           'msg' => 'access_denied'
         );
@@ -21,7 +21,7 @@ function pushover($_action, $_data = null) {
       foreach ($usernames as $username) {
         if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data),
             'msg' => 'access_denied'
           );
@@ -34,7 +34,7 @@ function pushover($_action, $_data = null) {
             ':username' => $username
           ));
           $_SESSION['return'][] = array(
-            'type' => 'success',
+            'type' => 1,
             'log' => array(__FUNCTION__, $_action, $_data),
             'msg' => 'pushover_settings_edited'
           );
@@ -54,7 +54,7 @@ function pushover($_action, $_data = null) {
         }
         else {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data),
             'msg' => 'access_denied'
           );
@@ -62,7 +62,7 @@ function pushover($_action, $_data = null) {
         }
         if (!empty($senders_regex) && !is_valid_regex($senders_regex)) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data),
             'msg' => 'Invalid regex'
           );
@@ -84,7 +84,7 @@ function pushover($_action, $_data = null) {
         $senders = implode(",", (array)$senders);
         if (!ctype_alnum($key) || strlen($key) != 30) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data, $_data),
             'msg' => 'pushover_key'
           );
@@ -92,7 +92,7 @@ function pushover($_action, $_data = null) {
         }
         if (!ctype_alnum($token) || strlen($token) != 30) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data, $_data),
             'msg' => 'pushover_token'
           );
@@ -118,7 +118,7 @@ function pushover($_action, $_data = null) {
           ':active' => $active
         ));
         $_SESSION['return'][] = array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $_action, $_data),
           'msg' => 'pushover_settings_edited'
         );
@@ -127,7 +127,7 @@ function pushover($_action, $_data = null) {
     case 'get':
       if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data),
           'msg' => 'access_denied'
         );
@@ -149,7 +149,7 @@ function pushover($_action, $_data = null) {
     case 'test':
       if (!isset($_SESSION['acl']['pushover']) || $_SESSION['acl']['pushover'] != "1" ) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data),
           'msg' => 'access_denied'
         );
@@ -165,7 +165,7 @@ function pushover($_action, $_data = null) {
       foreach ($usernames as $username) {
         if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data),
             'msg' => 'access_denied'
           );
@@ -194,14 +194,14 @@ function pushover($_action, $_data = null) {
           curl_close($ch);
           if ($httpcode == 200) {
             $_SESSION['return'][] = array(
-              'type' => 'success',
+              'type' => 1,
               'log' => array(__FUNCTION__, $_action, $_data),
               'msg' => sprintf('Pushover API OK (%d): %s', $httpcode, $result)
             );
           }
           else {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_data),
               'msg' => sprintf('Pushover API ERR (%d): %s', $httpcode, $result)
             );
@@ -209,7 +209,7 @@ function pushover($_action, $_data = null) {
         }
         else {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data),
             'msg' => 'pushover_credentials_missing'
           );

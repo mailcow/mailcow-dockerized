@@ -9,7 +9,7 @@ function fwdhost($_action, $_data = null) {
       global $lang;
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
         );
@@ -29,7 +29,7 @@ function fwdhost($_action, $_data = null) {
       }
       if (empty($hosts)) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('invalid_host', htmlspecialchars($host))
         );
@@ -47,7 +47,7 @@ function fwdhost($_action, $_data = null) {
         }
         catch (RedisException $e) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('redis_error', $e)
           );
@@ -55,7 +55,7 @@ function fwdhost($_action, $_data = null) {
         }
       }
       $_SESSION['return'][] = array(
-        'type' => 'success',
+        'type' => 1,
         'log' => array(__FUNCTION__, $_action, $_data_log),
         'msg' => array('forwarding_host_added', htmlspecialchars(implode(', ', (array)$hosts)))
       );
@@ -64,7 +64,7 @@ function fwdhost($_action, $_data = null) {
       global $lang;
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
         );
@@ -78,7 +78,7 @@ function fwdhost($_action, $_data = null) {
         }
         else {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => 'access_denied'
           );
@@ -94,14 +94,14 @@ function fwdhost($_action, $_data = null) {
         }
         catch (RedisException $e) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('redis_error', $e)
           );
           continue;
         }
         $_SESSION['return'][] = array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('object_modified', htmlspecialchars($fwdhost))
         );
@@ -116,14 +116,14 @@ function fwdhost($_action, $_data = null) {
         }
         catch (RedisException $e) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('redis_error', $e)
           );
           continue;
         }
         $_SESSION['return'][] = array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('forwarding_host_removed', htmlspecialchars($host))
         );
@@ -149,7 +149,7 @@ function fwdhost($_action, $_data = null) {
       }
       catch (RedisException $e) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('redis_error', $e)
         );
@@ -171,7 +171,7 @@ function fwdhost($_action, $_data = null) {
       }
       catch (RedisException $e) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('redis_error', $e)
         );

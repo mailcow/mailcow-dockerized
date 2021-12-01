@@ -4,7 +4,7 @@ function quota_notification($_action, $_data = null) {
 	$_data_log = $_data;
   if ($_SESSION['mailcow_cc_role'] != "admin") {
     $_SESSION['return'][] = array(
-      'type' => 'danger',
+      'type' => 3,
       'log' => array(__FUNCTION__, $_action, $_data_log),
       'msg' => 'access_denied'
     );
@@ -32,14 +32,14 @@ function quota_notification($_action, $_data = null) {
       }
       catch (RedisException $e) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('redis_error', $e)
         );
         return false;
       }
       $_SESSION['return'][] = array(
-        'type' => 'success',
+        'type' => 1,
         'log' => array(__FUNCTION__, $_action, $_data_log),
         'msg' => 'saved_settings'
       );
@@ -55,7 +55,7 @@ function quota_notification($_action, $_data = null) {
       }
       catch (RedisException $e) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('redis_error', $e)
         );
@@ -70,7 +70,7 @@ function quota_notification_bcc($_action, $_data = null) {
 	$_data_log = $_data;
   if ($_SESSION['mailcow_cc_role'] != "admin" && $_SESSION['mailcow_cc_role'] != "domainadmin") {
     $_SESSION['return'][] = array(
-      'type' => 'danger',
+      'type' => 3,
       'log' => array(__FUNCTION__, $_action, $_data_log),
       'msg' => 'access_denied'
     );
@@ -81,7 +81,7 @@ function quota_notification_bcc($_action, $_data = null) {
       $domain = $_data['domain'];
       if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
         );
@@ -93,7 +93,7 @@ function quota_notification_bcc($_action, $_data = null) {
         $rcpt = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $rcpt);
           if (!empty($rcpt) && filter_var($rcpt, FILTER_VALIDATE_EMAIL) === false) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_data_log),
               'msg' => array('goto_invalid', htmlspecialchars($rcpt))
             );
@@ -112,14 +112,14 @@ function quota_notification_bcc($_action, $_data = null) {
       }
       catch (RedisException $e) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('redis_error', $e)
         );
         return false;
       }
       $_SESSION['return'][] = array(
-        'type' => 'success',
+        'type' => 1,
         'log' => array(__FUNCTION__, $_action, $_data_log),
         'msg' => 'saved_settings'
       );
@@ -128,7 +128,7 @@ function quota_notification_bcc($_action, $_data = null) {
       $domain = $_data;
       if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
         );
@@ -139,7 +139,7 @@ function quota_notification_bcc($_action, $_data = null) {
       }
       catch (RedisException $e) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('redis_error', $e)
         );

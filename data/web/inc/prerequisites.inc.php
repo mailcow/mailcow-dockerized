@@ -157,7 +157,7 @@ $oauth2_server->addGrantType(new OAuth2\GrantType\RefreshToken($oauth2_storage, 
 function exception_handler($e) {
     if ($e instanceof PDOException) {
       $_SESSION['return'][] = array(
-        'type' => 'danger',
+        'type' => 3,
         'log' => array(__FUNCTION__),
         'msg' => array('mysql_error', $e)
       );
@@ -165,7 +165,7 @@ function exception_handler($e) {
     }
     else {
       $_SESSION['return'][] = array(
-        'type' => 'danger',
+        'type' => 3,
         'log' => array(__FUNCTION__),
         'msg' => 'An unknown error occured: ' . print_r($e, true)
       );

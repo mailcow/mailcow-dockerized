@@ -69,7 +69,7 @@ if (!empty($_SERVER['HTTP_X_API_KEY'])) {
       error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
       http_response_code(401);
       echo json_encode(array(
-        'type' => 'error',
+        'type' => 4,
         'msg' => 'api access denied for ip ' . $_SERVER['REMOTE_ADDR']
       ));
       unset($_POST);
@@ -81,7 +81,7 @@ if (!empty($_SERVER['HTTP_X_API_KEY'])) {
     error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
     http_response_code(401);
     echo json_encode(array(
-      'type' => 'error',
+      'type' => 4,
       'msg' => 'authentication failed'
     ));
     unset($_POST);
@@ -114,7 +114,7 @@ function session_check() {
   }
   if (!isset($_SESSION['SESS_REMOTE_UA']) || ($_SESSION['SESS_REMOTE_UA'] != $_SERVER['HTTP_USER_AGENT'])) {
     $_SESSION['return'][] = array(
-      'type' => 'warning',
+      'type' => 2,
       'msg' => 'session_ua'
     );
     return false;
@@ -122,7 +122,7 @@ function session_check() {
   if (!empty($_POST)) {
     if ($_SESSION['CSRF']['TOKEN'] != $_POST['csrf_token']) {
       $_SESSION['return'][] = array(
-        'type' => 'warning',
+        'type' => 2,
         'msg' => 'session_token'
       );
       return false;

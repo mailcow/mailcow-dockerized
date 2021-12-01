@@ -9,7 +9,7 @@ function bcc($_action, $_data = null, $_attr = null) {
     case 'add':
       if (!isset($_SESSION['acl']['bcc_maps']) || $_SESSION['acl']['bcc_maps'] != "1" ) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data, $_attr),
           'msg' => 'access_denied'
         );
@@ -21,7 +21,7 @@ function bcc($_action, $_data = null, $_attr = null) {
       $type = $_data['type'];
       if ($type != 'sender' && $type != 'rcpt') {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data, $_attr),
           'msg' => 'invalid_bcc_map_type'
         );
@@ -29,7 +29,7 @@ function bcc($_action, $_data = null, $_attr = null) {
       }
       if (empty($bcc_dest)) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data, $_attr),
           'msg' => 'bcc_empty'
         );
@@ -38,7 +38,7 @@ function bcc($_action, $_data = null, $_attr = null) {
       if (is_valid_domain_name($local_dest)) {
         if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $local_dest)) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data, $_attr),
             'msg' => 'access_denied'
           );
@@ -51,7 +51,7 @@ function bcc($_action, $_data = null, $_attr = null) {
         $mailbox = mailbox('get', 'mailbox_details', $local_dest);
         if ($mailbox === false && array_key_exists($local_dest, array_merge($direct_aliases, $shared_aliases)) === false) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data, $_attr),
             'msg' => 'access_denied'
           );
@@ -60,7 +60,7 @@ function bcc($_action, $_data = null, $_attr = null) {
         if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $local_dest) &&
           !hasAliasObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $local_dest)) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_data, $_attr),
               'msg' => 'access_denied'
             );
@@ -74,7 +74,7 @@ function bcc($_action, $_data = null, $_attr = null) {
       }
       if (!filter_var($bcc_dest, FILTER_VALIDATE_EMAIL)) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data, $_attr),
           'msg' => array('bcc_must_be_email', htmlspecialchars($bcc_dest))
         );
@@ -88,7 +88,7 @@ function bcc($_action, $_data = null, $_attr = null) {
 
       if ($num_results != 0) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data, $_attr),
           'msg' => array('bcc_exists', htmlspecialchars($local_dest_sane), $type)
         );
@@ -104,7 +104,7 @@ function bcc($_action, $_data = null, $_attr = null) {
         ':type' => $type
       ));
       $_SESSION['return'][] = array(
-        'type' => 'success',
+        'type' => 1,
         'log' => array(__FUNCTION__, $_action, $_data, $_attr),
         'msg' => 'bcc_saved'
       );
@@ -112,7 +112,7 @@ function bcc($_action, $_data = null, $_attr = null) {
     case 'edit':
       if (!isset($_SESSION['acl']['bcc_maps']) || $_SESSION['acl']['bcc_maps'] != "1" ) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data, $_attr),
           'msg' => 'access_denied'
         );
@@ -129,7 +129,7 @@ function bcc($_action, $_data = null, $_attr = null) {
         }
         else {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data, $_attr),
             'msg' => 'access_denied'
           );
@@ -137,7 +137,7 @@ function bcc($_action, $_data = null, $_attr = null) {
         }
         if (!filter_var($bcc_dest, FILTER_VALIDATE_EMAIL)) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data, $_attr),
             'msg' => array('bcc_must_be_email', $bcc_dest)
           );
@@ -145,7 +145,7 @@ function bcc($_action, $_data = null, $_attr = null) {
         }
         if (empty($bcc_dest)) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data, $_attr),
             'msg' => array('bcc_must_be_email', $bcc_dest)
           );
@@ -158,7 +158,7 @@ function bcc($_action, $_data = null, $_attr = null) {
 
         if (isset($id_now) && $id_now != $id) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data, $_attr),
             'msg' => array('bcc_exists', htmlspecialchars($local_dest), $type)
           );
@@ -173,7 +173,7 @@ function bcc($_action, $_data = null, $_attr = null) {
           ':id' => $id
         ));
         $_SESSION['return'][] = array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $_action, $_data, $_attr),
           'msg' => array('bcc_edited', $bcc_dest)
         );
@@ -220,7 +220,7 @@ function bcc($_action, $_data = null, $_attr = null) {
     case 'delete':
       if (!isset($_SESSION['acl']['bcc_maps']) || $_SESSION['acl']['bcc_maps'] != "1" ) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data, $_attr),
           'msg' => 'access_denied'
         );
@@ -236,7 +236,7 @@ function bcc($_action, $_data = null, $_attr = null) {
         $domain = $stmt->fetch(PDO::FETCH_ASSOC)['domain'];
         if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data, $_attr),
             'msg' => 'access_denied'
           );
@@ -246,7 +246,7 @@ function bcc($_action, $_data = null, $_attr = null) {
         $stmt->execute(array(':id' => $id));
 
         $_SESSION['return'][] = array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $_action, $_data, $_attr),
           'msg' => array('bcc_deleted', $id)
         );
@@ -277,7 +277,7 @@ function recipient_map($_action, $_data = null, $attr = null) {
       }
       else {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data, $_attr),
           'msg' => array('invalid_recipient_map_old', htmlspecialchars($old_dest))
         );
@@ -285,7 +285,7 @@ function recipient_map($_action, $_data = null, $attr = null) {
       }
       if (!filter_var($new_dest, FILTER_VALIDATE_EMAIL)) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data, $_attr),
           'msg' => array('invalid_recipient_map_new', htmlspecialchars($new_dest))
         );
@@ -295,7 +295,7 @@ function recipient_map($_action, $_data = null, $attr = null) {
       foreach ($rmaps as $rmap) {
         if (recipient_map('details', $rmap)['recipient_map_old'] == $old_dest_sane) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data, $_attr),
             'msg' => array('recipient_map_entry_exists', htmlspecialchars($old_dest_sane))
           );
@@ -310,7 +310,7 @@ function recipient_map($_action, $_data = null, $attr = null) {
         ':active' => $active
       ));
       $_SESSION['return'][] = array(
-        'type' => 'success',
+        'type' => 1,
         'log' => array(__FUNCTION__, $_action, $_data, $_attr),
         'msg' => array('recipient_map_entry_saved', htmlspecialchars($old_dest_sane))
       );
@@ -329,7 +329,7 @@ function recipient_map($_action, $_data = null, $attr = null) {
         }
         else {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data, $_attr),
             'msg' => 'access_denied'
           );
@@ -343,7 +343,7 @@ function recipient_map($_action, $_data = null, $attr = null) {
         }
         else {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data, $_attr),
             'msg' => array('invalid_recipient_map_old', htmlspecialchars($old_dest))
           );
@@ -351,7 +351,7 @@ function recipient_map($_action, $_data = null, $attr = null) {
         }
         if (!filter_var($new_dest, FILTER_VALIDATE_EMAIL)) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data, $_attr),
             'msg' => array('invalid_recipient_map_new', htmlspecialchars($new_dest))
           );
@@ -362,7 +362,7 @@ function recipient_map($_action, $_data = null, $attr = null) {
           if ($rmap == $id) { continue; }
           if (recipient_map('details', $rmap)['recipient_map_old'] == $old_dest_sane) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_data, $_attr),
               'msg' => array('recipient_map_entry_exists', htmlspecialchars($old_dest_sane))
             );
@@ -381,7 +381,7 @@ function recipient_map($_action, $_data = null, $attr = null) {
           ':id' => $id
         ));
         $_SESSION['return'][] = array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $_action, $_data, $_attr),
           'msg' => array('recipient_map_entry_saved', htmlspecialchars($old_dest_sane))
         );
@@ -426,7 +426,7 @@ function recipient_map($_action, $_data = null, $attr = null) {
         $stmt = $pdo->prepare("DELETE FROM `recipient_maps` WHERE `id`= :id");
         $stmt->execute(array(':id' => $id));
         $_SESSION['return'][] = array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $_action, $_data, $_attr),
           'msg' => array('recipient_map_entry_deleted', htmlspecialchars($id))
         );

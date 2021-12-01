@@ -76,7 +76,7 @@ function fail2ban($_action, $_data = null) {
       }
       catch (RedisException $e) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('redis_error', $e)
         );
@@ -87,7 +87,7 @@ function fail2ban($_action, $_data = null) {
     case 'edit':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
         );
@@ -102,7 +102,7 @@ function fail2ban($_action, $_data = null) {
           }
           catch (RedisException $e) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_data_log),
               'msg' => array('redis_error', $e)
             );
@@ -119,7 +119,7 @@ function fail2ban($_action, $_data = null) {
           }
           if ($fail_count >= 10) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_data_log),
               'msg' => array('reset_f2b_regex')
             );
@@ -139,7 +139,7 @@ function fail2ban($_action, $_data = null) {
             }
           }
           $_SESSION['return'][] = array(
-            'type' => 'success',
+            'type' => 1,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('object_modified', htmlspecialchars($network))
           );
@@ -158,7 +158,7 @@ function fail2ban($_action, $_data = null) {
                 }
                 catch (RedisException $e) {
                   $_SESSION['return'][] = array(
-                    'type' => 'danger',
+                    'type' => 3,
                     'log' => array(__FUNCTION__, $_action, $_data_log),
                     'msg' => array('redis_error', $e)
                   );
@@ -177,7 +177,7 @@ function fail2ban($_action, $_data = null) {
                 }
                 catch (RedisException $e) {
                   $_SESSION['return'][] = array(
-                    'type' => 'danger',
+                    'type' => 3,
                     'log' => array(__FUNCTION__, $_action, $_data_log),
                     'msg' => array('redis_error', $e)
                   );
@@ -186,7 +186,7 @@ function fail2ban($_action, $_data = null) {
               }
               else  {
                 $_SESSION['return'][] = array(
-                  'type' => 'danger',
+                  'type' => 3,
                   'log' => array(__FUNCTION__, $_action, $_data_log),
                   'msg' => array('network_host_invalid', $network)
                 );
@@ -210,7 +210,7 @@ function fail2ban($_action, $_data = null) {
                 }
                 catch (RedisException $e) {
                   $_SESSION['return'][] = array(
-                    'type' => 'danger',
+                    'type' => 3,
                     'log' => array(__FUNCTION__, $_action, $_data_log),
                     'msg' => array('redis_error', $e)
                   );
@@ -219,7 +219,7 @@ function fail2ban($_action, $_data = null) {
               }
               else  {
                 $_SESSION['return'][] = array(
-                  'type' => 'danger',
+                  'type' => 3,
                   'log' => array(__FUNCTION__, $_action, $_data_log),
                   'msg' => array('network_host_invalid', $network)
                 );
@@ -227,7 +227,7 @@ function fail2ban($_action, $_data = null) {
               }
             }
             $_SESSION['return'][] = array(
-              'type' => 'success',
+              'type' => 1,
               'log' => array(__FUNCTION__, $_action, $_data_log),
               'msg' => array('object_modified', htmlspecialchars($network))
             );
@@ -248,7 +248,7 @@ function fail2ban($_action, $_data = null) {
       }
       else {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
         );
@@ -276,7 +276,7 @@ function fail2ban($_action, $_data = null) {
               }
               else {
                 $_SESSION['return'][] = array(
-                  'type' => 'danger',
+                  'type' => 3,
                   'log' => array(__FUNCTION__, $_action, $_data_log),
                   'msg' => array('network_host_invalid', $wl_item)
                 );
@@ -301,7 +301,7 @@ function fail2ban($_action, $_data = null) {
               }
               else {
                 $_SESSION['return'][] = array(
-                  'type' => 'danger',
+                  'type' => 3,
                   'log' => array(__FUNCTION__, $_action, $_data_log),
                   'msg' => array('network_host_invalid', $bl_item)
                 );
@@ -313,14 +313,14 @@ function fail2ban($_action, $_data = null) {
       }
       catch (RedisException $e) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('redis_error', $e)
         );
         return false;
       }
       $_SESSION['return'][] = array(
-        'type' => 'success',
+        'type' => 1,
         'log' => array(__FUNCTION__, $_action, $_data_log),
         'msg' => 'f2b_modified'
       );

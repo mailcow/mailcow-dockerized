@@ -12,7 +12,7 @@ function tls_policy_maps($_action, $_data = null, $attr = null) {
       $parameters = (isset($_data['parameters']) && !empty($_data['parameters'])) ? $_data['parameters'] : '';
       if (empty($dest) || in_array($dest, array('.', '*', '@'))) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data, $_attr),
           'msg' => 'tls_policy_map_dest_invalid'
         );
@@ -22,7 +22,7 @@ function tls_policy_maps($_action, $_data = null, $attr = null) {
         foreach (explode(' ', $parameters) as $parameter) {
           if (!preg_match('/(.+)\=(.+)/i', $parameter)) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_data, $_attr),
               'msg' => 'tls_policy_map_parameter_invalid'
             );
@@ -35,7 +35,7 @@ function tls_policy_maps($_action, $_data = null, $attr = null) {
       foreach ($tls_policy_maps as $tls_policy_map) {
         if (tls_policy_maps('details', $tls_policy_map)['dest'] == $dest) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data, $_attr),
             'msg' => array('tls_policy_map_entry_exists', htmlspecialchars($dest))
           );
@@ -51,7 +51,7 @@ function tls_policy_maps($_action, $_data = null, $attr = null) {
         ':active' => $active
       ));
       $_SESSION['return'][] = array(
-        'type' => 'success',
+        'type' => 1,
         'log' => array(__FUNCTION__, $_action, $_data, $_attr),
         'msg' => array('tls_policy_map_entry_saved', htmlspecialchars($dest))
       );
@@ -68,7 +68,7 @@ function tls_policy_maps($_action, $_data = null, $attr = null) {
         }
         else {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data, $_attr),
             'msg' => 'access_denied'
           );
@@ -76,7 +76,7 @@ function tls_policy_maps($_action, $_data = null, $attr = null) {
         }
         if (empty($dest) || in_array($dest, array('.', '*', '@'))) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data, $_attr),
             'msg' => 'tls_policy_map_dest_invalid'
           );
@@ -86,7 +86,7 @@ function tls_policy_maps($_action, $_data = null, $attr = null) {
           foreach (explode(' ', $parameters) as $parameter) {
             if (!preg_match('/(.+)\=(.+)/i', $parameter)) {
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_data, $_attr),
                 'msg' => 'tls_policy_map_parameter_invalid'
               );
@@ -99,7 +99,7 @@ function tls_policy_maps($_action, $_data = null, $attr = null) {
           if ($tls_policy_map == $id) { continue; }
           if (tls_policy_maps('details', $tls_policy_map)['dest'] == $dest) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_data, $_attr),
               'msg' => array('recipient_map_entry_exists', htmlspecialchars($dest))
             );
@@ -120,7 +120,7 @@ function tls_policy_maps($_action, $_data = null, $attr = null) {
           ':id' => $id
         ));
         $_SESSION['return'][] = array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $_action, $_data, $_attr),
           'msg' => array('tls_policy_map_entry_saved', htmlspecialchars($dest))
         );
@@ -162,7 +162,7 @@ function tls_policy_maps($_action, $_data = null, $attr = null) {
         $stmt = $pdo->prepare("DELETE FROM `tls_policy_override` WHERE `id`= :id");
         $stmt->execute(array(':id' => $id));
         $_SESSION['return'][] = array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $_action, $_data, $_attr),
           'msg' => array('tls_policy_map_entry_deleted', htmlspecialchars($id))
         );

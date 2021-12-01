@@ -7,7 +7,7 @@ function relayhost($_action, $_data = null) {
     case 'add':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
         );
@@ -18,7 +18,7 @@ function relayhost($_action, $_data = null) {
       $password = str_replace(':', '\:', trim($_data['password']));
       if (empty($hostname)) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('invalid_host', htmlspecialchars($host))
         );
@@ -36,14 +36,14 @@ function relayhost($_action, $_data = null) {
       }
       catch (PDOException $e) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('mysql_error', $e)
         );
         return false;
       }
       $_SESSION['return'][] = array(
-        'type' => 'success',
+        'type' => 1,
         'log' => array(__FUNCTION__, $_action, $_data_log),
         'msg' => array('relayhost_added', htmlspecialchars(implode(', ', (array)$hosts)))
       );
@@ -51,7 +51,7 @@ function relayhost($_action, $_data = null) {
     case 'edit':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
         );
@@ -68,7 +68,7 @@ function relayhost($_action, $_data = null) {
         }
         else {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('relayhost_invalid', $id)
           );
@@ -91,14 +91,14 @@ function relayhost($_action, $_data = null) {
         }
         catch (PDOException $e) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('mysql_error', $e)
           );
           continue;
         }
         $_SESSION['return'][] = array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('object_modified', htmlspecialchars(implode(', ', (array)$hostnames)))
         );
@@ -107,7 +107,7 @@ function relayhost($_action, $_data = null) {
     case 'delete':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
         );
@@ -123,14 +123,14 @@ function relayhost($_action, $_data = null) {
         }
         catch (PDOException $e) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('mysql_error', $e)
           );
           continue;
         }
         $_SESSION['return'][] = array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('relayhost_removed', htmlspecialchars($id))
         );
@@ -184,7 +184,7 @@ function transport($_action, $_data = null) {
     case 'add':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
         );
@@ -203,7 +203,7 @@ function transport($_action, $_data = null) {
       $password = str_replace(':', '\:', trim($_data['password']));
       if (empty($nexthop)) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('invalid_nexthop')
         );
@@ -217,7 +217,7 @@ function transport($_action, $_data = null) {
           preg_match('/\[(.+)\].*/', $transport_data['nexthop'], $existing_clean_nh[]);
           if (($transport_data['nexthop'] == $nexthop || $transport_data['nexthop'] == $next_hop_clean) && $transport_data['username'] != $username) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_data_log),
               'msg' => 'invalid_nexthop_authenticated'
             );
@@ -230,7 +230,7 @@ function transport($_action, $_data = null) {
             }
             if ($transport_data['destination'] == $dest) {
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_data_log),
                 'msg' => array('transport_dest_exists', $dest)
               );
@@ -240,7 +240,7 @@ function transport($_action, $_data = null) {
             // ".domain" is a valid destination, "..domain" is not
             if ($is_mx_based == 0 && (empty($dest) || (is_valid_domain_name(preg_replace('/^' . preg_quote('.', '/') . '/', '', $dest)) === false && $dest != '*' && filter_var($dest, FILTER_VALIDATE_EMAIL) === false))) {
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_data_log),
                 'msg' => array('invalid_destination', $dest)
               );
@@ -249,7 +249,7 @@ function transport($_action, $_data = null) {
             }
             if ($is_mx_based == 1 && (empty($dest) || @preg_match('/' . $dest . '/', null) === false)) {
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_data_log),
                 'msg' => array('invalid_destination', $dest)
               );
@@ -264,7 +264,7 @@ function transport($_action, $_data = null) {
       if (isset($next_hop_matches[1])) {
         if ($existing_nh !== null && in_array($next_hop_clean, $existing_nh)) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('next_hop_interferes', $next_hop_clean, $nexthop)
           );
@@ -275,7 +275,7 @@ function transport($_action, $_data = null) {
         foreach ($existing_clean_nh as $existing_clean_nh_each) {
           if ($existing_clean_nh_each[1] == $nexthop) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_data_log),
               'msg' => array('next_hop_interferes_any', $nexthop)
             );
@@ -305,7 +305,7 @@ function transport($_action, $_data = null) {
         ':password' => $password
       ));
       $_SESSION['return'][] = array(
-        'type' => 'success',
+        'type' => 1,
         'log' => array(__FUNCTION__, $_action, $_data_log),
         'msg' => array('relayhost_added', htmlspecialchars(implode(', ', (array)$hosts)))
       );
@@ -313,7 +313,7 @@ function transport($_action, $_data = null) {
     case 'edit':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
         );
@@ -332,7 +332,7 @@ function transport($_action, $_data = null) {
         }
         else {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('relayhost_invalid', $id)
           );
@@ -354,7 +354,7 @@ function transport($_action, $_data = null) {
             preg_match('/\[(.+)\].*/', $transport_data['nexthop'], $existing_clean_nh[]);
             if ($transport_data['destination'] == $destination) {
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_data_log),
                 'msg' => 'transport_dest_exists'
               );
@@ -364,7 +364,7 @@ function transport($_action, $_data = null) {
         }
         if ($is_mx_based == 0 && (empty($destination) || (is_valid_domain_name(preg_replace('/^' . preg_quote('.', '/') . '/', '', $destination)) === false && $destination != '*' && filter_var($destination, FILTER_VALIDATE_EMAIL) === false))) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('invalid_destination', $destination)
           );
@@ -372,7 +372,7 @@ function transport($_action, $_data = null) {
         }
         if ($is_mx_based == 1 && (empty($destination) || @preg_match('/' . $destination . '/', null) === false)) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('invalid_destination', $destination)
           );
@@ -381,7 +381,7 @@ function transport($_action, $_data = null) {
         if (isset($next_hop_matches[1])) {
           if ($existing_nh !== null && in_array($next_hop_clean, $existing_nh)) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_data_log),
               'msg' => array('next_hop_interferes', $next_hop_clean, $nexthop)
             );
@@ -392,7 +392,7 @@ function transport($_action, $_data = null) {
           foreach ($existing_clean_nh as $existing_clean_nh_each) {
             if ($existing_clean_nh_each[1] == $nexthop) {
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_data_log),
                 'msg' => array('next_hop_interferes_any', $nexthop)
               );
@@ -433,14 +433,14 @@ function transport($_action, $_data = null) {
         }
         catch (PDOException $e) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('mysql_error', $e)
           );
           continue;
         }
         $_SESSION['return'][] = array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('object_modified', htmlspecialchars(implode(', ', (array)$hostnames)))
         );
@@ -449,7 +449,7 @@ function transport($_action, $_data = null) {
     case 'delete':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
         );
@@ -463,14 +463,14 @@ function transport($_action, $_data = null) {
         }
         catch (PDOException $e) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('mysql_error', $e)
           );
           continue;
         }
         $_SESSION['return'][] = array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('relayhost_removed', htmlspecialchars($id))
         );

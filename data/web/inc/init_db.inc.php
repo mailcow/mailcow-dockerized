@@ -14,7 +14,7 @@ function init_db_schema() {
       }
       if (!preg_match('/y|yes/i', getenv('MASTER'))) {
         $_SESSION['return'][] = array(
-          'type' => 'warning',
+          'type' => 2,
           'log' => array(__FUNCTION__),
           'msg' => 'Database not initialized: not running db_init on slave.'
         );
@@ -1245,7 +1245,7 @@ function init_db_schema() {
       echo "DB initialization completed" . PHP_EOL;
     } else {
       $_SESSION['return'][] = array(
-        'type' => 'success',
+        'type' => 1,
         'log' => array(__FUNCTION__),
         'msg' => 'db_init_complete'
       );
@@ -1256,7 +1256,7 @@ function init_db_schema() {
       echo "DB initialization failed: " . print_r($e, true) . PHP_EOL;
     } else {
       $_SESSION['return'][] = array(
-        'type' => 'danger',
+        'type' => 3,
         'log' => array(__FUNCTION__),
         'msg' => array('mysql_error', $e)
       );

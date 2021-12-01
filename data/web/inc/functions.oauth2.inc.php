@@ -5,7 +5,7 @@ function oauth2($_action, $_type, $_data = null) {
   global $lang;
   if ($_SESSION['mailcow_cc_role'] != "admin") {
     $_SESSION['return'][] = array(
-      'type' => 'danger',
+      'type' => 3,
       'log' => array(__FUNCTION__, $_action, $_type, $_data),
       'msg' => 'access_denied'
     );
@@ -24,7 +24,7 @@ function oauth2($_action, $_type, $_data = null) {
           // $scope = isset($_data['scope']) ? $_data['scope'] : 'profile';
           // if ($grant_type != "authorization_code" && $grant_type != "password") {
             // $_SESSION['return'][] = array(
-              // 'type' => 'danger',
+              // 'type' => 3,
               // 'log' => array(__FUNCTION__, $_action, $_type, $_data),
               // 'msg' => 'access_denied'
             // );
@@ -32,7 +32,7 @@ function oauth2($_action, $_type, $_data = null) {
           // }
           if ($scope != "profile") {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_type, $_data),
               'msg' => 'Invalid scope'
             );
@@ -44,7 +44,7 @@ function oauth2($_action, $_type, $_data = null) {
           $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
           if ($num_results != 0) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_type, $_data),
               'msg' => 'Client ID exists'
             );
@@ -59,7 +59,7 @@ function oauth2($_action, $_type, $_data = null) {
             ':scope' => $scope
           ));
           $_SESSION['return'][] = array(
-            'type' => 'success',
+            'type' => 1,
             'log' => array(__FUNCTION__, $_action, $_type, $_data),
             'msg' => 'Added client access'
           );
@@ -77,7 +77,7 @@ function oauth2($_action, $_type, $_data = null) {
             }
             else {
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_type, $_data),
                 'msg' => 'access_denied'
               );
@@ -99,7 +99,7 @@ function oauth2($_action, $_type, $_data = null) {
                 ':id' => $id
               ));
               $_SESSION['return'][] = array(
-                'type' => 'success',
+                'type' => 1,
                 'log' => array(__FUNCTION__, $_action, $_type, $_data),
                 'msg' => array('object_modified', htmlspecialchars($id))
               );
@@ -113,7 +113,7 @@ function oauth2($_action, $_type, $_data = null) {
                 ':id' => $id
               ));
               $_SESSION['return'][] = array(
-                'type' => 'success',
+                'type' => 1,
                 'log' => array(__FUNCTION__, $_action, $_type, $_data),
                 'msg' => array('object_modified', htmlspecialchars($id))
               );
@@ -121,7 +121,7 @@ function oauth2($_action, $_type, $_data = null) {
             }
             if (empty($redirect_uri)) {
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_type, $_data),
                 'msg' => 'Redirect/Callback URL cannot be empty'
               );
@@ -135,7 +135,7 @@ function oauth2($_action, $_type, $_data = null) {
               ':redirect_uri' => $redirect_uri
             ));
             $_SESSION['return'][] = array(
-              'type' => 'success',
+              'type' => 1,
               'log' => array(__FUNCTION__, $_action, $_type, $_data),
               'msg' => array('object_modified', htmlspecialchars($id))
             );
@@ -150,7 +150,7 @@ function oauth2($_action, $_type, $_data = null) {
           foreach ($ids as $id) {
             if (!is_numeric($id)) {
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_type, $_data),
                 'msg' => 'access_denied'
               );
@@ -163,7 +163,7 @@ function oauth2($_action, $_type, $_data = null) {
             ));
           }
           $_SESSION['return'][] = array(
-            'type' => 'success',
+            'type' => 1,
             'log' => array(__FUNCTION__, $_action, $_type, $_data),
             'msg' => array('items_deleted', htmlspecialchars($id))
           );
@@ -173,7 +173,7 @@ function oauth2($_action, $_type, $_data = null) {
           foreach ($access_tokens as $access_token) {
             if (!ctype_alnum($access_token)) {
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_type, $_data),
                 'msg' => 'access_denied'
               );
@@ -186,7 +186,7 @@ function oauth2($_action, $_type, $_data = null) {
             ));
           }
           $_SESSION['return'][] = array(
-            'type' => 'success',
+            'type' => 1,
             'log' => array(__FUNCTION__, $_action, $_type, $_data),
             'msg' => sprintf($lang['success']['items_deleted'], implode(', ', (array)$access_tokens))
           );
@@ -196,7 +196,7 @@ function oauth2($_action, $_type, $_data = null) {
           foreach ($refresh_tokens as $refresh_token) {
             if (!ctype_alnum($refresh_token)) {
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_type, $_data),
                 'msg' => 'access_denied'
               );
@@ -208,7 +208,7 @@ function oauth2($_action, $_type, $_data = null) {
             ));
           }
           $_SESSION['return'][] = array(
-            'type' => 'success',
+            'type' => 1,
             'log' => array(__FUNCTION__, $_action, $_type, $_data),
             'msg' => sprintf($lang['success']['items_deleted'], implode(', ', (array)$refresh_tokens))
           );

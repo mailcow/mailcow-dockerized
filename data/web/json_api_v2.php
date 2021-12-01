@@ -37,7 +37,7 @@ function api_log($_data) {
   }
   catch (RedisException $e) {
     $_SESSION['return'][] = array(
-      'type' => 'danger',
+      'type' => 3,
       'msg' => 'Redis: '.$e
     );
     return false;
@@ -61,7 +61,7 @@ if (isset($_GET['query'])) {
     if ($action != 'get' && $requestDecoded === null) {
       http_response_code(400);
       echo json_encode(array(
-          'type' => 'error',
+          'type' => 4,
           'msg' => 'Request body doesn\'t contain valid json!'
       ));
       exit;
@@ -87,7 +87,7 @@ if (isset($_GET['query'])) {
   api_log($_POST);
 
   $request_incomplete = json_encode(array(
-    'type' => 'error',
+    'type' => 4,
     'msg' => 'Cannot find attributes in post data'
   ));
 
@@ -96,18 +96,18 @@ if (isset($_GET['query'])) {
       if ($_SESSION['mailcow_cc_api_access'] == 'ro' || isset($_SESSION['pending_mailcow_cc_username'])) {
         http_response_code(403);
         echo json_encode(array(
-            'type' => 'error',
+            'type' => 4,
             'msg' => 'API read/write access denied'
         ));
         exit();
       }
       function process_add_return($return) {
         $generic_failure = json_encode(array(
-          'type' => 'error',
+          'type' => 4,
           'msg' => 'Cannot add item'
         ));
         $generic_success = json_encode(array(
-          'type' => 'success',
+          'type' => 1,
           'msg' => 'Task completed'
         ));
         if ($return === false) {
@@ -131,7 +131,7 @@ if (isset($_GET['query'])) {
       if ($_SERVER['REQUEST_METHOD'] != 'POST') {
         http_response_code(405);
         echo json_encode(array(
-            'type' => 'error',
+            'type' => 4,
             'msg' => 'only POST method is allowed'
         ));
         exit();
@@ -255,7 +255,7 @@ if (isset($_GET['query'])) {
       if ($_SERVER['REQUEST_METHOD'] != 'POST') {
         http_response_code(405);
         echo json_encode(array(
-            'type' => 'error',
+            'type' => 4,
             'msg' => 'only POST method is allowed'
         ));
         exit();
@@ -317,7 +317,7 @@ if (isset($_GET['query'])) {
           $_SESSION["fido2_cid"] = $process_fido2['cid'];
           unset($_SESSION["challenge"]);
           $_SESSION['return'][] =  array(
-            'type' => 'success',
+            'type' => 1,
             'log' => array("fido2_login"),
             'msg' => array('logged_in_as', $process_fido2['username'])
           );
@@ -339,7 +339,7 @@ if (isset($_GET['query'])) {
       if ($_SERVER['REQUEST_METHOD'] != 'GET') {
         http_response_code(405);
         echo json_encode(array(
-            'type' => 'error',
+            'type' => 4,
             'msg' => 'only GET method is allowed'
         ));
         exit();
@@ -1386,7 +1386,7 @@ if (isset($_GET['query'])) {
                     $containerstate = ($container_info['State']['Status']);
                     $containerimage = ($container_info['Config']['Image']);
                     $temp[$container] = array(
-                      'type' => 'info',
+                      'type' => 0,
                       'container' => $container,
                       'state' => $containerstate,
                       'started_at' => $containerstarttime,
@@ -1399,7 +1399,7 @@ if (isset($_GET['query'])) {
                   $exec_fields_vmail = array('cmd' => 'system', 'task' => 'df', 'dir' => '/var/vmail');
                   $vmail_df = explode(',', json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields_vmail), true));
                   $temp = array(
-                    'type' => 'info',
+                    'type' => 0,
                     'disk' => $vmail_df[0],
                     'used' => $vmail_df[2],
                     'total'=> $vmail_df[1],
@@ -1418,7 +1418,7 @@ if (isset($_GET['query'])) {
                   $solr_enabled = true;
                 }
                 echo json_encode(array(
-                  'type' => 'info',
+                  'type' => 0,
                   'solr_enabled' => $solr_enabled,
                   'solr_size' => $solr_size,
                   'solr_documents' => $solr_documents
@@ -1438,18 +1438,18 @@ if (isset($_GET['query'])) {
       if ($_SESSION['mailcow_cc_api_access'] == 'ro' || isset($_SESSION['pending_mailcow_cc_username']) || !isset($_SESSION["mailcow_cc_username"])) {
         http_response_code(403);
         echo json_encode(array(
-            'type' => 'error',
+            'type' => 4,
             'msg' => 'API read/write access denied'
         ));
         exit();
       }
       function process_delete_return($return) {
         $generic_failure = json_encode(array(
-          'type' => 'error',
+          'type' => 4,
           'msg' => 'Cannot delete item'
         ));
         $generic_success = json_encode(array(
-          'type' => 'success',
+          'type' => 1,
           'msg' => 'Task completed'
         ));
         if ($return === false) {
@@ -1470,7 +1470,7 @@ if (isset($_GET['query'])) {
       if ($_SERVER['REQUEST_METHOD'] != 'POST') {
         http_response_code(405);
         echo json_encode(array(
-            'type' => 'error',
+            'type' => 4,
             'msg' => 'only POST method is allowed'
         ));
         exit();
@@ -1566,18 +1566,18 @@ if (isset($_GET['query'])) {
       if ($_SESSION['mailcow_cc_api_access'] == 'ro' || isset($_SESSION['pending_mailcow_cc_username']) || !isset($_SESSION["mailcow_cc_username"])) {
         http_response_code(403);
         echo json_encode(array(
-            'type' => 'error',
+            'type' => 4,
             'msg' => 'API read/write access denied'
         ));
         exit();
       }
       function process_edit_return($return) {
         $generic_failure = json_encode(array(
-          'type' => 'error',
+          'type' => 4,
           'msg' => 'Cannot edit item'
         ));
         $generic_success = json_encode(array(
-          'type' => 'success',
+          'type' => 1,
           'msg' => 'Task completed'
         ));
         if ($return === false) {
@@ -1600,7 +1600,7 @@ if (isset($_GET['query'])) {
       if ($_SERVER['REQUEST_METHOD'] != 'POST') {
         http_response_code(405);
         echo json_encode(array(
-            'type' => 'error',
+            'type' => 4,
             'msg' => 'only POST method is allowed'
         ));
         exit();

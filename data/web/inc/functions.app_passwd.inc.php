@@ -8,7 +8,7 @@ function app_passwd($_action, $_data = null) {
   if (isset($_data['username']) && filter_var($_data['username'], FILTER_VALIDATE_EMAIL)) {
     if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data['username'])) {
       $_SESSION['return'][] = array(
-        'type' => 'danger',
+        'type' => 3,
         'log' => array(__FUNCTION__, $_action, $_data_log),
         'msg' => 'access_denied'
       );
@@ -37,7 +37,7 @@ function app_passwd($_action, $_data = null) {
       $domain = mailbox('get', 'mailbox_details', $username)['domain'];
       if (empty($domain)) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
         );
@@ -45,7 +45,7 @@ function app_passwd($_action, $_data = null) {
       }
       if (!preg_match('/' . $GLOBALS['PASSWD_REGEP'] . '/', $password)) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'password_complexity'
         );
@@ -53,7 +53,7 @@ function app_passwd($_action, $_data = null) {
       }
       if ($password != $password2) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'password_mismatch'
         );
@@ -62,7 +62,7 @@ function app_passwd($_action, $_data = null) {
       $password_hashed = hash_password($password);
       if (empty($app_name)) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'app_name_empty'
         );
@@ -84,7 +84,7 @@ function app_passwd($_action, $_data = null) {
         ':active' => $active
       ));
       $_SESSION['return'][] = array(
-        'type' => 'success',
+        'type' => 1,
         'log' => array(__FUNCTION__, $_action, $_data_log),
         'msg' => 'app_passwd_added'
       );
@@ -118,7 +118,7 @@ function app_passwd($_action, $_data = null) {
         }
         else {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('app_passwd_id_invalid', $id)
           );
@@ -128,7 +128,7 @@ function app_passwd($_action, $_data = null) {
         if (!empty($password) && !empty($password2)) {
           if (!preg_match('/' . $GLOBALS['PASSWD_REGEP'] . '/', $password)) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
               'msg' => 'password_complexity'
             );
@@ -136,7 +136,7 @@ function app_passwd($_action, $_data = null) {
           }
           if ($password != $password2) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
               'msg' => 'password_mismatch'
             );
@@ -177,7 +177,7 @@ function app_passwd($_action, $_data = null) {
           ':id' => $id
         ));
         $_SESSION['return'][] = array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('object_modified', htmlspecialchars(implode(', ', $ids)))
         );
@@ -191,7 +191,7 @@ function app_passwd($_action, $_data = null) {
         $mailbox = $stmt->fetch(PDO::FETCH_ASSOC)['mailbox'];
         if (empty($mailbox)) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => 'app_passwd_id_invalid'
           );
@@ -199,7 +199,7 @@ function app_passwd($_action, $_data = null) {
         }
         if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $mailbox)) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => 'access_denied'
           );
@@ -208,7 +208,7 @@ function app_passwd($_action, $_data = null) {
         $stmt = $pdo->prepare("DELETE FROM `app_passwd` WHERE `id`= :id");
         $stmt->execute(array(':id' => $id));
         $_SESSION['return'][] = array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('app_passwd_removed', htmlspecialchars($id))
         );

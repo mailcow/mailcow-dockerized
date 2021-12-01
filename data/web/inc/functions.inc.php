@@ -132,7 +132,7 @@ function password_complexity($_action, $_data = null) {
     case 'edit':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data),
           'msg' => 'access_denied'
         );
@@ -157,14 +157,14 @@ function password_complexity($_action, $_data = null) {
       }
       catch (RedisException $e) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data),
           'msg' => array('redis_error', $e)
         );
         return false;
       }
       $_SESSION['return'][] = array(
-        'type' => 'success',
+        'type' => 1,
         'log' => array(__FUNCTION__, $_action, $_data),
         'msg' => 'password_policy_saved'
       );
@@ -186,7 +186,7 @@ function password_complexity($_action, $_data = null) {
       }
       catch (RedisException $e) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data),
           'msg' => array('redis_error', $e)
         );
@@ -210,7 +210,7 @@ function password_check($password1, $password2) {
 
   if (empty($password1) || empty($password2)) {
     $_SESSION['return'][] = array(
-      'type' => 'danger',
+      'type' => 3,
       'log' => array(__FUNCTION__, $_action, $_type),
       'msg' => 'password_complexity'
     );
@@ -219,7 +219,7 @@ function password_check($password1, $password2) {
 
   if ($password1 != $password2) {
     $_SESSION['return'][] = array(
-      'type' => 'danger',
+      'type' => 3,
       'log' => array(__FUNCTION__, $_action, $_type),
       'msg' => 'password_mismatch'
     );
@@ -242,7 +242,7 @@ function password_check($password1, $password2) {
     ($password_complexity['lowerupper'] == 1 && (intval($given_password['lowerupper']) != $password_complexity['lowerupper']))
   ) {
     $_SESSION['return'][] = array(
-      'type' => 'danger',
+      'type' => 3,
       'log' => array(__FUNCTION__, $_action, $_type),
       'msg' => 'password_complexity'
     );
@@ -276,7 +276,7 @@ function last_login($action, $username, $sasl_limit_days = 7) {
             }
             catch (RedisException $e) {
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_data_log),
                 'msg' => array('redis_error', $e)
               );
@@ -298,7 +298,7 @@ function last_login($action, $username, $sasl_limit_days = 7) {
                     }
                     catch (RedisException $e) {
                       $_SESSION['return'][] = array(
-                        'type' => 'danger',
+                        'type' => 3,
                         'log' => array(__FUNCTION__, $_action, $_data_log),
                         'msg' => array('redis_error', $e)
                       );
@@ -360,7 +360,7 @@ function flush_memcached() {
 function sys_mail($_data) {
   if ($_SESSION['mailcow_cc_role'] != "admin") {
     $_SESSION['return'][] =  array(
-      'type' => 'danger',
+      'type' => 3,
       'log' => array(__FUNCTION__),
       'msg' => 'access_denied'
     );
@@ -375,7 +375,7 @@ function sys_mail($_data) {
   $mass_subject = $_data['mass_subject'];
   if (!filter_var($mass_from, FILTER_VALIDATE_EMAIL)) {
     $_SESSION['return'][] =  array(
-      'type' => 'danger',
+      'type' => 3,
       'log' => array(__FUNCTION__),
       'msg' => 'from_invalid'
     );
@@ -383,7 +383,7 @@ function sys_mail($_data) {
   }
   if (empty($mass_subject)) {
     $_SESSION['return'][] =  array(
-      'type' => 'danger',
+      'type' => 3,
       'log' => array(__FUNCTION__),
       'msg' => 'subject_empty'
     );
@@ -391,7 +391,7 @@ function sys_mail($_data) {
   }
   if (empty($mass_text)) {
     $_SESSION['return'][] =  array(
-      'type' => 'danger',
+      'type' => 3,
       'log' => array(__FUNCTION__),
       'msg' => 'text_empty'
     );
@@ -443,7 +443,7 @@ function sys_mail($_data) {
       $mail->AddAddress($rcpt);
       if (!$mail->send()) {
         $_SESSION['return'][] =  array(
-          'type' => 'warning',
+          'type' => 2,
           'log' => array(__FUNCTION__),
           'msg' => 'Mailer error (RCPT "' . htmlspecialchars($rcpt) . '"): ' . str_replace('https://github.com/PHPMailer/PHPMailer/wiki/Troubleshooting', '', $mail->ErrorInfo)
         );
@@ -452,7 +452,7 @@ function sys_mail($_data) {
     }
   }
   $_SESSION['return'][] =  array(
-    'type' => 'success',
+    'type' => 1,
     'log' => array(__FUNCTION__),
     'msg' => 'Mass mail job completed, sent ' . count($rcpts) . ' mails'
   );
@@ -465,7 +465,7 @@ function logger($_data = false) {
   logger(array(
     'return' => array(
       array(
-        'type' => 'danger',
+        'type' => 3,
         'log' => array(__FUNCTION__),
         'msg' => $err
       )
@@ -476,7 +476,7 @@ function logger($_data = false) {
   To do so, push them to $_SESSION['return'] and do not call logger as they will be included automatically:
 
   $_SESSION['return'][] =  array(
-    'type' => 'danger',
+    'type' => 3,
     'log' => array(__FUNCTION__, $user, '*'),
     'msg' => $err
   );
@@ -814,7 +814,7 @@ function check_login($user, $pass, $app_passwd_data = false) {
 
   if (!filter_var($user, FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $user))) {
     $_SESSION['return'][] =  array(
-      'type' => 'danger',
+      'type' => 3,
       'log' => array(__FUNCTION__, $user, '*'),
       'msg' => 'malformed_username'
     );
@@ -837,7 +837,7 @@ function check_login($user, $pass, $app_passwd_data = false) {
         $_SESSION['pending_tfa_method'] = get_tfa($user)['name'];
         unset($_SESSION['ldelay']);
         $_SESSION['return'][] =  array(
-          'type' => 'info',
+          'type' => 0,
           'log' => array(__FUNCTION__, $user, '*'),
           'msg' => 'awaiting_tfa_confirmation'
         );
@@ -849,7 +849,7 @@ function check_login($user, $pass, $app_passwd_data = false) {
         $stmt = $pdo->prepare("UPDATE `tfa` SET `active`='1' WHERE `username` = :user");
         $stmt->execute(array(':user' => $user));
         $_SESSION['return'][] =  array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $user, '*'),
           'msg' => array('logged_in_as', $user)
         );
@@ -873,7 +873,7 @@ function check_login($user, $pass, $app_passwd_data = false) {
         $_SESSION['pending_tfa_method'] = get_tfa($user)['name'];
         unset($_SESSION['ldelay']);
         $_SESSION['return'][] =  array(
-          'type' => 'info',
+          'type' => 0,
           'log' => array(__FUNCTION__, $user, '*'),
           'msg' => 'awaiting_tfa_confirmation'
         );
@@ -885,7 +885,7 @@ function check_login($user, $pass, $app_passwd_data = false) {
         $stmt = $pdo->prepare("UPDATE `tfa` SET `active`='1' WHERE `username` = :user");
         $stmt->execute(array(':user' => $user));
         $_SESSION['return'][] =  array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $user, '*'),
           'msg' => array('logged_in_as', $user)
         );
@@ -933,7 +933,7 @@ function check_login($user, $pass, $app_passwd_data = false) {
     if (verify_hash($row['password'], $pass) !== false) {
       unset($_SESSION['ldelay']);
       $_SESSION['return'][] =  array(
-        'type' => 'success',
+        'type' => 1,
         'log' => array(__FUNCTION__, $user, '*'),
         'msg' => array('logged_in_as', $user)
       );
@@ -963,7 +963,7 @@ function check_login($user, $pass, $app_passwd_data = false) {
   }
 
   $_SESSION['return'][] =  array(
-    'type' => 'danger',
+    'type' => 3,
     'log' => array(__FUNCTION__, $user, '*'),
     'msg' => 'login_failed'
   );
@@ -1010,7 +1010,7 @@ function edit_user_account($_data) {
   $password_old = $_data['user_old_pass'];
   if (filter_var($username, FILTER_VALIDATE_EMAIL === false) || $role != 'user') {
     $_SESSION['return'][] =  array(
-      'type' => 'danger',
+      'type' => 3,
       'log' => array(__FUNCTION__, $_data_log),
       'msg' => 'access_denied'
     );
@@ -1023,7 +1023,7 @@ function edit_user_account($_data) {
   $row = $stmt->fetch(PDO::FETCH_ASSOC);
   if (!verify_hash($row['password'], $password_old)) {
     $_SESSION['return'][] =  array(
-      'type' => 'danger',
+      'type' => 3,
       'log' => array(__FUNCTION__, $_data_log),
       'msg' => 'access_denied'
     );
@@ -1047,7 +1047,7 @@ function edit_user_account($_data) {
   }
   update_sogo_static_view();
   $_SESSION['return'][] =  array(
-    'type' => 'success',
+    'type' => 1,
     'log' => array(__FUNCTION__, $_data_log),
     'msg' => array('mailbox_modified', htmlspecialchars($username))
   );
@@ -1147,7 +1147,7 @@ function set_tfa($_data) {
   $username = $_SESSION['mailcow_cc_username'];
   if (!isset($_SESSION['mailcow_cc_role']) || empty($username)) {
       $_SESSION['return'][] =  array(
-        'type' => 'danger',
+        'type' => 3,
         'log' => array(__FUNCTION__, $_data_log),
         'msg' => 'access_denied'
       );
@@ -1161,7 +1161,7 @@ function set_tfa($_data) {
   if (!empty($num_results)) {
     if (!verify_hash($row['password'], $_data["confirm_password"])) {
       $_SESSION['return'][] =  array(
-        'type' => 'danger',
+        'type' => 3,
         'log' => array(__FUNCTION__, $_data_log),
         'msg' => 'access_denied'
       );
@@ -1176,7 +1176,7 @@ function set_tfa($_data) {
   if (!empty($num_results)) {
     if (!verify_hash($row['password'], $_data["confirm_password"])) {
       $_SESSION['return'][] =  array(
-        'type' => 'danger',
+        'type' => 3,
         'log' => array(__FUNCTION__, $_data_log),
         'msg' => 'access_denied'
       );
@@ -1191,7 +1191,7 @@ function set_tfa($_data) {
       $yubi = new Auth_Yubico($yubico_id, $yubico_key);
       if (!$yubi) {
         $_SESSION['return'][] =  array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_data_log),
           'msg' => 'access_denied'
         );
@@ -1199,7 +1199,7 @@ function set_tfa($_data) {
       }
       if (!ctype_alnum($_data["otp_token"]) || strlen($_data["otp_token"]) != 44) {
         $_SESSION['return'][] =  array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_data_log),
           'msg' => 'tfa_token_invalid'
         );
@@ -1208,7 +1208,7 @@ function set_tfa($_data) {
       $yauth = $yubi->verify($_data["otp_token"]);
       if (PEAR::isError($yauth)) {
         $_SESSION['return'][] =  array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_data_log),
           'msg' => array('yotp_verification_failed', $yauth->getMessage())
         );
@@ -1228,14 +1228,14 @@ function set_tfa($_data) {
       }
       catch (PDOException $e) {
         $_SESSION['return'][] =  array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_data_log),
           'msg' => array('mysql_error', $e)
         );
         return false;
       }
       $_SESSION['return'][] =  array(
-        'type' => 'success',
+        'type' => 1,
         'log' => array(__FUNCTION__, $_data_log),
         'msg' => array('object_modified', htmlspecialchars($username))
       );
@@ -1249,7 +1249,7 @@ function set_tfa($_data) {
         $stmt = $pdo->prepare("INSERT INTO `tfa` (`username`, `key_id`, `authmech`, `keyHandle`, `publicKey`, `certificate`, `counter`, `active`) VALUES (?, ?, 'u2f', ?, ?, ?, ?, '1')");
         $stmt->execute(array($username, $key_id, $reg->keyHandle, $reg->publicKey, $reg->certificate, $reg->counter));
         $_SESSION['return'][] =  array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $_data_log),
           'msg' => array('object_modified', $username)
         );
@@ -1257,7 +1257,7 @@ function set_tfa($_data) {
       }
       catch (Exception $e) {
         $_SESSION['return'][] =  array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_data_log),
           'msg' => array('u2f_verification_failed', $e->getMessage())
         );
@@ -1273,14 +1273,14 @@ function set_tfa($_data) {
         $stmt = $pdo->prepare("INSERT INTO `tfa` (`username`, `key_id`, `authmech`, `secret`, `active`) VALUES (?, ?, 'totp', ?, '1')");
         $stmt->execute(array($username, $key_id, $_POST['totp_secret']));
         $_SESSION['return'][] =  array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $_data_log),
           'msg' => array('object_modified', $username)
         );
       }
       else {
         $_SESSION['return'][] =  array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_data_log),
           'msg' => 'totp_verification_failed'
         );
@@ -1290,7 +1290,7 @@ function set_tfa($_data) {
       $stmt = $pdo->prepare("DELETE FROM `tfa` WHERE `username` = :username");
       $stmt->execute(array(':username' => $username));
       $_SESSION['return'][] =  array(
-        'type' => 'success',
+        'type' => 1,
         'log' => array(__FUNCTION__, $_data_log),
         'msg' => array('object_modified', htmlspecialchars($username))
       );
@@ -1307,7 +1307,7 @@ function fido2($_data) {
       $username = $_SESSION['mailcow_cc_username'];
       if (!isset($_SESSION['mailcow_cc_role']) || empty($username)) {
           $_SESSION['return'][] =  array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_data["action"]),
             'msg' => 'access_denied'
           );
@@ -1328,7 +1328,7 @@ function fido2($_data) {
         $_data['registration']->credentialId)
       );
       $_SESSION['return'][] =  array(
-        'type' => 'success',
+        'type' => 1,
         'log' => array(__FUNCTION__, $_data["action"]),
         'msg' => array('object_modified', $username)
       );
@@ -1393,7 +1393,7 @@ function fido2($_data) {
       $username = $_SESSION['mailcow_cc_username'];
       if (!isset($_SESSION['mailcow_cc_role']) || empty($username)) {
         $_SESSION['return'][] =  array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_data["action"]),
           'msg' => 'access_denied'
         );
@@ -1405,7 +1405,7 @@ function fido2($_data) {
         ':cid' => $_data['post_data']['unset_fido2_key']
       ));
       $_SESSION['return'][] =  array(
-        'type' => 'success',
+        'type' => 1,
         'log' => array(__FUNCTION__, $_data_log),
         'msg' => array('object_modified', htmlspecialchars($username))
       );
@@ -1414,7 +1414,7 @@ function fido2($_data) {
       $username = $_SESSION['mailcow_cc_username'];
       if (!isset($_SESSION['mailcow_cc_role']) || empty($username)) {
         $_SESSION['return'][] =  array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_data["action"]),
           'msg' => 'access_denied'
         );
@@ -1427,7 +1427,7 @@ function fido2($_data) {
         ':cid' => $_data['fido2_attrs']['fido2_cid']
       ));
       $_SESSION['return'][] =  array(
-        'type' => 'success',
+        'type' => 1,
         'log' => array(__FUNCTION__, $_data_log),
         'msg' => array('object_modified', htmlspecialchars($username))
       );
@@ -1444,7 +1444,7 @@ function unset_tfa_key($_data) {
   $username = $_SESSION['mailcow_cc_username'];
   if (!isset($_SESSION['mailcow_cc_role']) || empty($username)) {
     $_SESSION['return'][] =  array(
-      'type' => 'danger',
+      'type' => 3,
       'log' => array(__FUNCTION__, $_data_log),
       'msg' => 'access_denied'
     );
@@ -1453,7 +1453,7 @@ function unset_tfa_key($_data) {
   try {
     if (!is_numeric($id)) {
       $_SESSION['return'][] =  array(
-        'type' => 'danger',
+        'type' => 3,
         'log' => array(__FUNCTION__, $_data_log),
         'msg' => 'access_denied'
       );
@@ -1465,7 +1465,7 @@ function unset_tfa_key($_data) {
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($row['keys'] == "1") {
       $_SESSION['return'][] =  array(
-        'type' => 'danger',
+        'type' => 3,
         'log' => array(__FUNCTION__, $_data_log),
         'msg' => 'last_key'
       );
@@ -1474,14 +1474,14 @@ function unset_tfa_key($_data) {
     $stmt = $pdo->prepare("DELETE FROM `tfa` WHERE `username` = :username AND `id` = :id");
     $stmt->execute(array(':username' => $username, ':id' => $id));
     $_SESSION['return'][] =  array(
-      'type' => 'success',
+      'type' => 1,
       'log' => array(__FUNCTION__, $_data_log),
       'msg' => array('object_modified', $username)
     );
   }
   catch (PDOException $e) {
     $_SESSION['return'][] =  array(
-      'type' => 'danger',
+      'type' => 3,
       'log' => array(__FUNCTION__, $_data_log),
       'msg' => array('mysql_error', $e)
     );
@@ -1574,7 +1574,7 @@ function verify_tfa_login($username, $token) {
     case "yubi_otp":
       if (!ctype_alnum($token) || strlen($token) != 44) {
         $_SESSION['return'][] =  array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $username, '*'),
           'msg' => array('yotp_verification_failed', 'token length error')
         );
@@ -1593,7 +1593,7 @@ function verify_tfa_login($username, $token) {
       $yauth = $yubi->verify($token);
       if (PEAR::isError($yauth)) {
         $_SESSION['return'][] =  array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $username, '*'),
           'msg' => array('yotp_verification_failed', $yauth->getMessage())
         );
@@ -1602,14 +1602,14 @@ function verify_tfa_login($username, $token) {
       else {
         $_SESSION['tfa_id'] = $row['id'];
         $_SESSION['return'][] =  array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $username, '*'),
           'msg' => 'verified_yotp_login'
         );
         return true;
       }
       $_SESSION['return'][] =  array(
-        'type' => 'danger',
+        'type' => 3,
         'log' => array(__FUNCTION__, $username, '*'),
         'msg' => array('yotp_verification_failed', 'unknown')
       );
@@ -1624,7 +1624,7 @@ function verify_tfa_login($username, $token) {
       $_SESSION['tfa_id'] = $row_key_id['id'];
       $_SESSION['authReq'] = null;
       $_SESSION['return'][] =  array(
-        'type' => 'success',
+        'type' => 1,
         'log' => array(__FUNCTION__, $username, '*'),
         'msg' => 'verified_u2f_login'
       );
@@ -1632,7 +1632,7 @@ function verify_tfa_login($username, $token) {
     }
     catch (Exception $e) {
       $_SESSION['return'][] =  array(
-        'type' => 'danger',
+        'type' => 3,
         'log' => array(__FUNCTION__, $username, '*'),
         'msg' => array('u2f_verification_failed', $e->getMessage())
       );
@@ -1640,7 +1640,7 @@ function verify_tfa_login($username, $token) {
       return false;
     }
     $_SESSION['return'][] =  array(
-      'type' => 'danger',
+      'type' => 3,
       'log' => array(__FUNCTION__, $username, '*'),
       'msg' => array('u2f_verification_failed', 'unknown')
     );
@@ -1661,7 +1661,7 @@ function verify_tfa_login($username, $token) {
         if ($tfa->verifyCode($row['secret'], $_POST['token']) === true) {
           $_SESSION['tfa_id'] = $row['id'];
           $_SESSION['return'][] =  array(
-            'type' => 'success',
+            'type' => 1,
             'log' => array(__FUNCTION__, $username, '*'),
             'msg' => 'verified_totp_login'
           );
@@ -1669,7 +1669,7 @@ function verify_tfa_login($username, $token) {
         }
       }
       $_SESSION['return'][] =  array(
-        'type' => 'danger',
+        'type' => 3,
         'log' => array(__FUNCTION__, $username, '*'),
         'msg' => 'totp_verification_failed'
       );
@@ -1677,7 +1677,7 @@ function verify_tfa_login($username, $token) {
     }
     catch (PDOException $e) {
       $_SESSION['return'][] =  array(
-        'type' => 'danger',
+        'type' => 3,
         'log' => array(__FUNCTION__, $username, '*'),
         'msg' => array('mysql_error', $e)
       );
@@ -1686,7 +1686,7 @@ function verify_tfa_login($username, $token) {
   break;
   default:
     $_SESSION['return'][] =  array(
-      'type' => 'danger',
+      'type' => 3,
       'log' => array(__FUNCTION__, $username, '*'),
       'msg' => 'unknown_tfa_method'
     );
@@ -1699,7 +1699,7 @@ function admin_api($access, $action, $data = null) {
   global $pdo;
   if ($_SESSION['mailcow_cc_role'] != "admin") {
     $_SESSION['return'][] =  array(
-      'type' => 'danger',
+      'type' => 3,
       'log' => array(__FUNCTION__),
       'msg' => 'access_denied'
     );
@@ -1707,7 +1707,7 @@ function admin_api($access, $action, $data = null) {
   }
   if ($access !== "ro" && $access !== "rw") {
     $_SESSION['return'][] =  array(
-      'type' => 'danger',
+      'type' => 3,
       'log' => array(__FUNCTION__),
       'msg' => 'invalid access type'
     );
@@ -1727,7 +1727,7 @@ function admin_api($access, $action, $data = null) {
       }
       if (valid_network($val) !== true) {
         $_SESSION['return'][] =  array(
-          'type' => 'warning',
+          'type' => 2,
           'log' => array(__FUNCTION__, $data),
           'msg' => array('ip_invalid', htmlspecialchars($allow_from[$key]))
         );
@@ -1738,7 +1738,7 @@ function admin_api($access, $action, $data = null) {
     $allow_from = implode(',', array_unique(array_filter($allow_from)));
     if (empty($allow_from) && $skip_ip_check == 0) {
       $_SESSION['return'][] =  array(
-        'type' => 'danger',
+        'type' => 3,
         'log' => array(__FUNCTION__, $data),
         'msg' => 'ip_list_empty'
       );
@@ -1812,7 +1812,7 @@ function admin_api($access, $action, $data = null) {
     return $apidata;
   }
   $_SESSION['return'][] =  array(
-    'type' => 'success',
+    'type' => 1,
     'log' => array(__FUNCTION__, $data),
     'msg' => 'admin_api_modified'
   );
@@ -1823,7 +1823,7 @@ function license($action, $data = null) {
   global $lang;
   if ($_SESSION['mailcow_cc_role'] != "admin") {
     $_SESSION['return'][] =  array(
-      'type' => 'danger',
+      'type' => 3,
       'log' => array(__FUNCTION__),
       'msg' => 'access_denied'
     );
@@ -1873,7 +1873,7 @@ function license($action, $data = null) {
       }
       catch (RedisException $e) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('redis_error', $e)
         );
@@ -1891,7 +1891,7 @@ function license($action, $data = null) {
 function rspamd_ui($action, $data = null) {
   if ($_SESSION['mailcow_cc_role'] != "admin") {
     $_SESSION['return'][] =  array(
-      'type' => 'danger',
+      'type' => 3,
       'log' => array(__FUNCTION__),
       'msg' => 'access_denied'
     );
@@ -1903,7 +1903,7 @@ function rspamd_ui($action, $data = null) {
       $rspamd_ui_pass2 = $data['rspamd_ui_pass2'];
       if (empty($rspamd_ui_pass) || empty($rspamd_ui_pass2)) {
         $_SESSION['return'][] =  array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, '*', '*'),
           'msg' => 'password_empty'
         );
@@ -1911,7 +1911,7 @@ function rspamd_ui($action, $data = null) {
       }
       if ($rspamd_ui_pass != $rspamd_ui_pass2) {
         $_SESSION['return'][] =  array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, '*', '*'),
           'msg' => 'password_mismatch'
         );
@@ -1919,7 +1919,7 @@ function rspamd_ui($action, $data = null) {
       }
       if (strlen($rspamd_ui_pass) < 6) {
         $_SESSION['return'][] =  array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, '*', '*'),
           'msg' => 'rspamd_ui_pw_length'
         );
@@ -1929,7 +1929,7 @@ function rspamd_ui($action, $data = null) {
       if ($docker_return_array = json_decode($docker_return, true)) {
         if ($docker_return_array['type'] == 'success') {
           $_SESSION['return'][] =  array(
-            'type' => 'success',
+            'type' => 1,
             'log' => array(__FUNCTION__, '*', '*'),
             'msg' => 'rspamd_ui_pw_set'
           );
@@ -1946,7 +1946,7 @@ function rspamd_ui($action, $data = null) {
       }
       else {
         $_SESSION['return'][] =  array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, '*', '*'),
           'msg' => 'unknown'
         );

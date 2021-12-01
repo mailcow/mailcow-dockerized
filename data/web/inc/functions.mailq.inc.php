@@ -2,7 +2,7 @@
 function mailq($_action, $_data = null) {
   if ($_SESSION['mailcow_cc_role'] != "admin") {
     $_SESSION['return'][] = array(
-      'type' => 'danger',
+      'type' => 3,
       'log' => array(__FUNCTION__, $_action, $_data),
       'msg' => 'access_denied'
     );
@@ -13,7 +13,7 @@ function mailq($_action, $_data = null) {
       if ($_action == 'cat') {
         logger(array('return' => array(
           array(
-            'type' => 'success',
+            'type' => 1,
             'log' => array(__FUNCTION__, $_action, $_data),
             'msg' => 'queue_cat_success'
           )
@@ -23,14 +23,14 @@ function mailq($_action, $_data = null) {
       else {
         if (isset($returned_output['type']) && $returned_output['type'] == 'danger') {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data),
             'msg' => 'Error: ' . $returned_output['msg']
           );
         }
         if (isset($returned_output['type']) && $returned_output['type'] == 'success') {
           $_SESSION['return'][] = array(
-            'type' => 'success',
+            'type' => 1,
             'log' => array(__FUNCTION__, $_action, $_data),
             'msg' => 'queue_command_success'
           );
@@ -39,7 +39,7 @@ function mailq($_action, $_data = null) {
     }
     else {
       $_SESSION['return'][] = array(
-        'type' => 'danger',
+        'type' => 3,
         'log' => array(__FUNCTION__, $_action, $_data),
         'msg' => 'unknown'
       );

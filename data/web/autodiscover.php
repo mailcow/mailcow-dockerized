@@ -92,7 +92,7 @@ if ($login_role === "user") {
     }
     catch (RedisException $e) {
       $_SESSION['return'][] = array(
-        'type' => 'danger',
+        'type' => 3,
         'msg' => 'Redis: '.$e
       );
       return false;
@@ -147,7 +147,7 @@ if ($login_role === "user") {
   }
   catch (RedisException $e) {
     $_SESSION['return'][] = array(
-      'type' => 'danger',
+      'type' => 3,
       'msg' => 'Redis: '.$e
     );
     return false;

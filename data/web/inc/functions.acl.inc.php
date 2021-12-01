@@ -26,7 +26,7 @@ function acl($_action, $_scope = null, $_data = null) {
             if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)
               || ($_SESSION['mailcow_cc_role'] != 'admin' && $_SESSION['mailcow_cc_role'] != 'domainadmin')) {
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
                 'msg' => 'access_denied'
               );
@@ -42,7 +42,7 @@ function acl($_action, $_scope = null, $_data = null) {
             }
             else {
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
                 'msg' => 'Cannot determine current ACL'
               );
@@ -56,7 +56,7 @@ function acl($_action, $_scope = null, $_data = null) {
               ));
             }
             $_SESSION['return'][] = array(
-              'type' => 'success',
+              'type' => 1,
               'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
               'msg' => array('acl_saved', $username)
             );
@@ -65,7 +65,7 @@ function acl($_action, $_scope = null, $_data = null) {
         case 'domainadmin':
           if ($_SESSION['mailcow_cc_role'] != 'admin') {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
               'msg' => 'access_denied'
             );
@@ -89,7 +89,7 @@ function acl($_action, $_scope = null, $_data = null) {
             // Users cannot change their own ACL
             if ($_SESSION['mailcow_cc_role'] != 'admin') {
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
                 'msg' => 'access_denied'
               );
@@ -105,7 +105,7 @@ function acl($_action, $_scope = null, $_data = null) {
             }
             else {
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
                 'msg' => 'Cannot determine current ACL'
               );
@@ -119,7 +119,7 @@ function acl($_action, $_scope = null, $_data = null) {
               ));
             }
             $_SESSION['return'][] = array(
-              'type' => 'success',
+              'type' => 1,
               'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
               'msg' => array('acl_saved', $username)
             );

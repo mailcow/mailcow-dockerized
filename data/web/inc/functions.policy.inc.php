@@ -8,7 +8,7 @@ function policy($_action, $_scope, $_data = null) {
     case 'add':
       if (!isset($_SESSION['acl']['spam_policy']) || $_SESSION['acl']['spam_policy'] != "1" ) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
           'msg' => 'access_denied'
         );
@@ -20,7 +20,7 @@ function policy($_action, $_scope, $_data = null) {
           if (is_valid_domain_name($object)) {
             if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $object)) {
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
                 'msg' => 'access_denied'
               );
@@ -30,7 +30,7 @@ function policy($_action, $_scope, $_data = null) {
           }
           else {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
               'msg' => 'access_denied'
             );
@@ -45,7 +45,7 @@ function policy($_action, $_scope, $_data = null) {
           $object_from = trim(strtolower($_data['object_from']));
           if (!ctype_alnum(str_replace(array('@', '_', '.', '-', '*'), '', $object_from))) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
               'msg' => 'policy_list_from_invalid'
             );
@@ -53,7 +53,7 @@ function policy($_action, $_scope, $_data = null) {
           }
           if ($object_list != "blacklist_from" && $object_list != "whitelist_from") {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
               'msg' => 'access_denied'
             );
@@ -67,7 +67,7 @@ function policy($_action, $_scope, $_data = null) {
           $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
           if ($num_results != 0) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
               'msg' => 'policy_list_from_exists'
             );
@@ -83,7 +83,7 @@ function policy($_action, $_scope, $_data = null) {
           ));
 
           $_SESSION['return'][] = array(
-            'type' => 'success',
+            'type' => 1,
             'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
             'msg' => array('domain_modified', $object)
           );
@@ -92,7 +92,7 @@ function policy($_action, $_scope, $_data = null) {
           $object = $_data['username'];
           if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $object)) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
               'msg' => 'access_denied'
             );
@@ -107,7 +107,7 @@ function policy($_action, $_scope, $_data = null) {
           $object_from = trim(strtolower($_data['object_from']));
           if (!ctype_alnum(str_replace(array('@', '_', '.', '-', '*'), '', $object_from))) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
               'msg' => 'policy_list_from_invalid'
             );
@@ -115,7 +115,7 @@ function policy($_action, $_scope, $_data = null) {
           }
           if ($object_list != "blacklist_from" && $object_list != "whitelist_from") {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
               'msg' => 'access_denied'
             );
@@ -129,7 +129,7 @@ function policy($_action, $_scope, $_data = null) {
           $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
           if ($num_results != 0) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
               'msg' => 'policy_list_from_exists'
             );
@@ -143,7 +143,7 @@ function policy($_action, $_scope, $_data = null) {
             ':object_from' => $object_from
           ));
           $_SESSION['return'][] = array(
-            'type' => 'success',
+            'type' => 1,
             'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
             'msg' => array('mailbox_modified', $object)
           );
@@ -153,7 +153,7 @@ function policy($_action, $_scope, $_data = null) {
     case 'delete':
       if (!isset($_SESSION['acl']['spam_policy']) || $_SESSION['acl']['spam_policy'] != "1" ) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
           'msg' => 'access_denied'
         );
@@ -165,7 +165,7 @@ function policy($_action, $_scope, $_data = null) {
           foreach ($prefids as $prefid) {
             if (!is_numeric($prefid)) {
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
                 'msg' => 'access_denied'
               );
@@ -177,7 +177,7 @@ function policy($_action, $_scope, $_data = null) {
             if (is_valid_domain_name($object)) {
               if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $object)) {
                 $_SESSION['return'][] = array(
-                  'type' => 'danger',
+                  'type' => 3,
                   'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
                   'msg' => 'access_denied'
                 );
@@ -187,7 +187,7 @@ function policy($_action, $_scope, $_data = null) {
             }
             else {
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
                 'msg' => 'access_denied'
               );
@@ -202,14 +202,14 @@ function policy($_action, $_scope, $_data = null) {
             }
             catch (PDOException $e) {
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
                 'msg' => array('mysql_error', $e)
               );
               continue;
             }
             $_SESSION['return'][] = array(
-              'type' => 'success',
+              'type' => 1,
               'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
               'msg' => array('item_deleted',$prefid)
             );
@@ -226,7 +226,7 @@ function policy($_action, $_scope, $_data = null) {
           foreach ($prefids as $prefid) {
             if (!is_numeric($prefid)) {
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
                 'msg' => 'access_denied'
               );
@@ -237,7 +237,7 @@ function policy($_action, $_scope, $_data = null) {
             $object = $stmt->fetch(PDO::FETCH_ASSOC)['object'];
             if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $object)) {
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
                 'msg' => 'access_denied'
               );
@@ -252,14 +252,14 @@ function policy($_action, $_scope, $_data = null) {
             }
             catch (PDOException $e) {
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
                 'msg' => array('mysql_error', $e)
               );
               continue;
             }
             $_SESSION['return'][] = array(
-              'type' => 'success',
+              'type' => 1,
               'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
               'msg' => array('items_deleted', implode(', ', (array)$prefids))
             );

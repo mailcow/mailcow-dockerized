@@ -6,7 +6,7 @@ function customize($_action, $_item, $_data = null) {
     case 'add':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_item, $_data),
           'msg' => 'access_denied'
         );
@@ -18,7 +18,7 @@ function customize($_action, $_item, $_data = null) {
             try {
               if (file_exists($_data['main_logo']['tmp_name']) !== true) {
                 $_SESSION['return'][] = array(
-                  'type' => 'danger',
+                  'type' => 3,
                   'log' => array(__FUNCTION__, $_action, $_item, $_data),
                   'msg' => 'img_tmp_missing'
                 );
@@ -27,7 +27,7 @@ function customize($_action, $_item, $_data = null) {
               $image = new Imagick($_data['main_logo']['tmp_name']);
               if ($image->valid() !== true) {
                 $_SESSION['return'][] = array(
-                  'type' => 'danger',
+                  'type' => 3,
                   'log' => array(__FUNCTION__, $_action, $_item, $_data),
                   'msg' => 'img_invalid'
                 );
@@ -37,7 +37,7 @@ function customize($_action, $_item, $_data = null) {
             }
             catch (ImagickException $e) {
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_item, $_data),
                 'msg' => 'img_invalid'
               );
@@ -46,7 +46,7 @@ function customize($_action, $_item, $_data = null) {
           }
           else {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_item, $_data),
               'msg' => 'invalid_mime_type'
             );
@@ -57,14 +57,14 @@ function customize($_action, $_item, $_data = null) {
           }
           catch (RedisException $e) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_item, $_data),
               'msg' => array('redis_error', $e)
             );
             return false;
           }
           $_SESSION['return'][] = array(
-            'type' => 'success',
+            'type' => 1,
             'log' => array(__FUNCTION__, $_action, $_item, $_data),
             'msg' => 'upload_success'
           );
@@ -74,7 +74,7 @@ function customize($_action, $_item, $_data = null) {
     case 'edit':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_item, $_data),
           'msg' => 'access_denied'
         );
@@ -94,7 +94,7 @@ function customize($_action, $_item, $_data = null) {
             }
             catch (RedisException $e) {
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_item, $_data),
                 'msg' => array('redis_error', $e)
               );
@@ -102,7 +102,7 @@ function customize($_action, $_item, $_data = null) {
             }
           }
           $_SESSION['return'][] = array(
-            'type' => 'success',
+            'type' => 1,
             'log' => array(__FUNCTION__, $_action, $_item, $_data),
             'msg' => 'app_links'
           );
@@ -128,14 +128,14 @@ function customize($_action, $_item, $_data = null) {
           }
           catch (RedisException $e) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_item, $_data),
               'msg' => array('redis_error', $e)
             );
             return false;
           }
           $_SESSION['return'][] = array(
-            'type' => 'success',
+            'type' => 1,
             'log' => array(__FUNCTION__, $_action, $_item, $_data),
             'msg' => 'ui_texts'
           );
@@ -145,7 +145,7 @@ function customize($_action, $_item, $_data = null) {
     case 'delete':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_item, $_data),
           'msg' => 'access_denied'
         );
@@ -156,7 +156,7 @@ function customize($_action, $_item, $_data = null) {
           try {
             if ($redis->del('MAIN_LOGO')) {
               $_SESSION['return'][] = array(
-                'type' => 'success',
+                'type' => 1,
                 'log' => array(__FUNCTION__, $_action, $_item, $_data),
                 'msg' => 'reset_main_logo'
               );
@@ -165,7 +165,7 @@ function customize($_action, $_item, $_data = null) {
           }
           catch (RedisException $e) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_item, $_data),
               'msg' => array('redis_error', $e)
             );
@@ -182,7 +182,7 @@ function customize($_action, $_item, $_data = null) {
           }
           catch (RedisException $e) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_item, $_data),
               'msg' => array('redis_error', $e)
             );
@@ -196,7 +196,7 @@ function customize($_action, $_item, $_data = null) {
           }
           catch (RedisException $e) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_item, $_data),
               'msg' => array('redis_error', $e)
             );
@@ -221,7 +221,7 @@ function customize($_action, $_item, $_data = null) {
           }
           catch (RedisException $e) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_item, $_data),
               'msg' => array('redis_error', $e)
             );
@@ -240,7 +240,7 @@ function customize($_action, $_item, $_data = null) {
           }
           catch (ImagickException $e) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_item, $_data),
               'msg' => 'imagick_exception'
             );

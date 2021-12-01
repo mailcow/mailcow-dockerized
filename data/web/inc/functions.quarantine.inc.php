@@ -14,7 +14,7 @@ function quarantine($_action, $_data = null) {
       if (preg_match("/^([a-f0-9]{64})$/", $hash) === false) {
         logger(array('return' => array(
           array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => 'access_denied'
           )
@@ -30,7 +30,7 @@ function quarantine($_action, $_data = null) {
       if (empty($row['id']) || !is_numeric($row['id'])) {
         logger(array('return' => array(
           array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => 'access_denied'
           )
@@ -45,7 +45,7 @@ function quarantine($_action, $_data = null) {
       }
       logger(array('return' => array(
         array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('item_deleted', $row['id'])
         )
@@ -57,7 +57,7 @@ function quarantine($_action, $_data = null) {
       if (preg_match("/^([a-f0-9]{64})$/", $hash) === false) {
         logger(array('return' => array(
           array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => 'access_denied'
           )
@@ -73,7 +73,7 @@ function quarantine($_action, $_data = null) {
       if (empty($row['id']) || !is_numeric($row['id'])) {
         logger(array('return' => array(
           array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => 'access_denied'
           )
@@ -94,7 +94,7 @@ function quarantine($_action, $_data = null) {
         else {
           logger(array('return' => array(
             array(
-              'type' => 'warning',
+              'type' => 2,
               'log' => array(__FUNCTION__, $_action, $_data_log),
               'msg' => array('release_send_failed', 'Cannot determine Postfix host')
             )
@@ -107,7 +107,7 @@ function quarantine($_action, $_data = null) {
         catch (RedisException $e) {
           logger(array('return' => array(
             array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_data_log),
               'msg' => array('redis_error', $e)
             )
@@ -135,7 +135,7 @@ function quarantine($_action, $_data = null) {
             else {
               logger(array('return' => array(
                 array(
-                  'type' => 'warning',
+                  'type' => 2,
                   'log' => array(__FUNCTION__, $_action, $_data_log),
                   'msg' => array('release_send_failed', 'Cannot determine Postfix host')
                 )
@@ -160,7 +160,7 @@ function quarantine($_action, $_data = null) {
             unlink($msg_tmpf);
             logger(array('return' => array(
               array(
-                'type' => 'warning',
+                'type' => 2,
                 'log' => array(__FUNCTION__, $_action, $_data_log),
                 'msg' => array('release_send_failed', $e->errorMessage())
               )
@@ -184,7 +184,7 @@ function quarantine($_action, $_data = null) {
           if (!$smtp_connection) {
             logger(array('return' => array(
               array(
-                'type' => 'warning',
+                'type' => 2,
                 'log' => array(__FUNCTION__, $_action, $_data_log),
                 'msg' => 'Cannot connect to Postfix'
               )
@@ -198,7 +198,7 @@ function quarantine($_action, $_data = null) {
               $ret = (empty($ret)) ? '-' : $ret;
               logger(array('return' => array(
                 array(
-                  'type' => 'warning',
+                  'type' => 2,
                   'log' => array(__FUNCTION__, $_action, $_data_log),
                   'msg' => 'Postfix returned SMTP code ' . $smtp_resource . ', expected ' . $postfix_talk[$i][0]
                 )
@@ -218,7 +218,7 @@ function quarantine($_action, $_data = null) {
       }
     logger(array('return' => array(
       array(
-        'type' => 'success',
+        'type' => 1,
         'log' => array(__FUNCTION__, $_action, $_data_log),
         'msg' => array('item_released', $hash)
       )
@@ -234,7 +234,7 @@ function quarantine($_action, $_data = null) {
       }
       if (!isset($_SESSION['acl']['quarantine']) || $_SESSION['acl']['quarantine'] != "1" ) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
         );
@@ -243,7 +243,7 @@ function quarantine($_action, $_data = null) {
       foreach ($ids as $id) {
         if (!is_numeric($id)) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => 'access_denied'
           );
@@ -254,7 +254,7 @@ function quarantine($_action, $_data = null) {
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $row['rcpt']) && $_SESSION['mailcow_cc_role'] != 'admin') {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => 'access_denied'
           );
@@ -267,7 +267,7 @@ function quarantine($_action, $_data = null) {
           ));
         }
         $_SESSION['return'][] = array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('item_deleted', $id)
         );
@@ -276,7 +276,7 @@ function quarantine($_action, $_data = null) {
     case 'edit':
       if (!isset($_SESSION['acl']['quarantine']) || $_SESSION['acl']['quarantine'] != "1" ) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
         );
@@ -286,7 +286,7 @@ function quarantine($_action, $_data = null) {
       if ($_data['action'] == 'settings') {
         if ($_SESSION['mailcow_cc_role'] != "admin") {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => 'access_denied'
           );
@@ -346,14 +346,14 @@ function quarantine($_action, $_data = null) {
         }
         catch (RedisException $e) {
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('redis_error', $e)
           );
           return false;
         }
         $_SESSION['return'][] = array(
-          'type' => 'success',
+          'type' => 1,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'saved_settings'
         );
@@ -370,7 +370,7 @@ function quarantine($_action, $_data = null) {
         foreach ($ids as $id) {
           if (!is_numeric($id)) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_data_log),
               'msg' => 'access_denied'
             );
@@ -381,7 +381,7 @@ function quarantine($_action, $_data = null) {
           $row = $stmt->fetch(PDO::FETCH_ASSOC);
           if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $row['rcpt']) && $_SESSION['mailcow_cc_role'] != 'admin' || empty($row['rcpt'])) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_data_log),
               'msg' => 'access_denied'
             );
@@ -396,7 +396,7 @@ function quarantine($_action, $_data = null) {
           }
           else {
             $_SESSION['return'][] = array(
-              'type' => 'warning',
+              'type' => 2,
               'log' => array(__FUNCTION__, $_action, $_data_log),
               'msg' => array('release_send_failed', 'Cannot determine Postfix host')
             );
@@ -407,7 +407,7 @@ function quarantine($_action, $_data = null) {
           }
           catch (RedisException $e) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_data_log),
               'msg' => array('redis_error', $e)
             );
@@ -433,7 +433,7 @@ function quarantine($_action, $_data = null) {
               }
               else {
                 $_SESSION['return'][] = array(
-                  'type' => 'warning',
+                  'type' => 2,
                   'log' => array(__FUNCTION__, $_action, $_data_log),
                   'msg' => array('release_send_failed', 'Cannot determine Postfix host')
                 );
@@ -456,7 +456,7 @@ function quarantine($_action, $_data = null) {
             catch (phpmailerException $e) {
               unlink($msg_tmpf);
               $_SESSION['return'][] = array(
-                'type' => 'warning',
+                'type' => 2,
                 'log' => array(__FUNCTION__, $_action, $_data_log),
                 'msg' => array('release_send_failed', $e->errorMessage())
               );
@@ -478,7 +478,7 @@ function quarantine($_action, $_data = null) {
             $smtp_connection = fsockopen($postfix, 590, $errno, $errstr, 1); 
             if (!$smtp_connection) {
               $_SESSION['return'][] = array(
-                'type' => 'warning',
+                'type' => 2,
                 'log' => array(__FUNCTION__, $_action, $_data_log),
                 'msg' => 'Cannot connect to Postfix'
               );
@@ -490,7 +490,7 @@ function quarantine($_action, $_data = null) {
                 $ret = substr($smtp_resource, 0, 3);
                 $ret = (empty($ret)) ? '-' : $ret;
                 $_SESSION['return'][] = array(
-                  'type' => 'warning',
+                  'type' => 2,
                   'log' => array(__FUNCTION__, $_action, $_data_log),
                   'msg' => 'Postfix returned SMTP code ' . $smtp_resource . ', expected ' . $postfix_talk[$i][0]
                 );
@@ -507,7 +507,7 @@ function quarantine($_action, $_data = null) {
             ':id' => $id
           ));
           $_SESSION['return'][] = array(
-            'type' => 'success',
+            'type' => 1,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('item_released', $id)
           );
@@ -526,7 +526,7 @@ function quarantine($_action, $_data = null) {
             if (isset($response['error'])) {
               if (stripos($response['error'], 'already learned') === false) {
                 $_SESSION['return'][] = array(
-                  'type' => 'danger',
+                  'type' => 3,
                   'log' => array(__FUNCTION__, $_action, $_data_log),
                   'msg' => array('ham_learn_error', $response['error'])
                 );
@@ -561,7 +561,7 @@ function quarantine($_action, $_data = null) {
                 if (isset($response['error'])) {
                   if (stripos($response['error'], 'No content to generate fuzzy') === false) {
                     $_SESSION['return'][] = array(
-                      'type' => 'warning',
+                      'type' => 2,
                       'log' => array(__FUNCTION__, $_action, $_data_log),
                       'msg' => array('fuzzy_learn_error', $response['error'])
                     );
@@ -570,7 +570,7 @@ function quarantine($_action, $_data = null) {
               }
               curl_close($curl);
               $_SESSION['return'][] = array(
-                'type' => 'success',
+                'type' => 1,
                 'log' => array(__FUNCTION__, $_action, $_data_log),
                 'msg' => array('learned_ham', $id)
               );
@@ -579,7 +579,7 @@ function quarantine($_action, $_data = null) {
             else {
               curl_close($curl);
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_data_log),
                 'msg' => array('ham_learn_error', 'Curl: ' . curl_strerror(curl_errno($curl)))
               );
@@ -587,7 +587,7 @@ function quarantine($_action, $_data = null) {
             }
             curl_close($curl);
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_data_log),
               'msg' => array('ham_learn_error', 'unknown')
             );
@@ -595,7 +595,7 @@ function quarantine($_action, $_data = null) {
           }
           else {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_data_log),
               'msg' => array('ham_learn_error', 'Curl: ' . curl_strerror(curl_errno($curl)))
             );
@@ -604,7 +604,7 @@ function quarantine($_action, $_data = null) {
           }
           curl_close($curl);
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('ham_learn_error', 'unknown')
           );
@@ -622,7 +622,7 @@ function quarantine($_action, $_data = null) {
         foreach ($ids as $id) {
           if (!is_numeric($id)) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_data_log),
               'msg' => 'access_denied'
             );
@@ -633,7 +633,7 @@ function quarantine($_action, $_data = null) {
           $row = $stmt->fetch(PDO::FETCH_ASSOC);
           if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $row['rcpt']) && $_SESSION['mailcow_cc_role'] != 'admin' || empty($row['rcpt'])) {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_data_log),
               'msg' => 'access_denied'
             );
@@ -657,7 +657,7 @@ function quarantine($_action, $_data = null) {
             if (isset($response['error'])) {
               if (stripos($response['error'], 'already learned') === false) {
                 $_SESSION['return'][] = array(
-                  'type' => 'danger',
+                  'type' => 3,
                   'log' => array(__FUNCTION__, $_action, $_data_log),
                   'msg' => array('spam_learn_error', $response['error'])
                 );
@@ -692,7 +692,7 @@ function quarantine($_action, $_data = null) {
                 if (isset($response['error'])) {
                   if (stripos($response['error'], 'No content to generate fuzzy') === false) {
                     $_SESSION['return'][] = array(
-                      'type' => 'warning',
+                      'type' => 2,
                       'log' => array(__FUNCTION__, $_action, $_data_log),
                       'msg' => array('fuzzy_learn_error', $response['error'])
                     );
@@ -701,7 +701,7 @@ function quarantine($_action, $_data = null) {
               }
               curl_close($curl);
               $_SESSION['return'][] = array(
-                'type' => 'success',
+                'type' => 1,
                 'log' => array(__FUNCTION__, $_action, $_data_log),
                 'msg' => array('qlearn_spam', $id)
               );
@@ -710,7 +710,7 @@ function quarantine($_action, $_data = null) {
             else {
               curl_close($curl);
               $_SESSION['return'][] = array(
-                'type' => 'danger',
+                'type' => 3,
                 'log' => array(__FUNCTION__, $_action, $_data_log),
                 'msg' => array('spam_learn_error', 'Curl: ' . curl_strerror(curl_errno($curl)))
               );
@@ -718,7 +718,7 @@ function quarantine($_action, $_data = null) {
             }
             curl_close($curl);
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_data_log),
               'msg' => array('spam_learn_error', 'unknown')
             );
@@ -726,7 +726,7 @@ function quarantine($_action, $_data = null) {
           }
           else {
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 3,
               'log' => array(__FUNCTION__, $_action, $_data_log),
               'msg' => array('spam_learn_error', 'Curl: ' . curl_strerror(curl_errno($curl)))
             );
@@ -735,7 +735,7 @@ function quarantine($_action, $_data = null) {
           }
           curl_close($curl);
           $_SESSION['return'][] = array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => array('spam_learn_error', 'unknown')
           );
@@ -794,7 +794,7 @@ function quarantine($_action, $_data = null) {
       }
       catch (RedisException $e) {
         $_SESSION['return'][] = array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => array('redis_error', $e)
         );
@@ -814,7 +814,7 @@ function quarantine($_action, $_data = null) {
       }
       logger(array('return' => array(
         array(
-          'type' => 'danger',
+          'type' => 3,
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'access_denied'
         )
@@ -826,7 +826,7 @@ function quarantine($_action, $_data = null) {
       if (preg_match("/^([a-f0-9]{64})$/", $hash) === false) {
         logger(array('return' => array(
           array(
-            'type' => 'danger',
+            'type' => 3,
             'log' => array(__FUNCTION__, $_action, $_data_log),
             'msg' => 'access_denied'
           )
