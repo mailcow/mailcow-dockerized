@@ -37,7 +37,7 @@ function api_log($_data) {
   }
   catch (RedisException $e) {
     $_SESSION['return'][] = array(
-      'type' => 3,
+      'type' => 'danger',
       'msg' => 'Redis: '.$e
     );
     return false;
@@ -61,7 +61,7 @@ if (isset($_GET['query'])) {
     if ($action != 'get' && $requestDecoded === null) {
       http_response_code(400);
       echo json_encode(array(
-          'type' => 4,
+          'type' => 'error',
           'msg' => 'Request body doesn\'t contain valid json!'
       ));
       exit;
@@ -87,7 +87,7 @@ if (isset($_GET['query'])) {
   api_log($_POST);
 
   $request_incomplete = json_encode(array(
-    'type' => 4,
+    'type' => 'error',
     'msg' => 'Cannot find attributes in post data'
   ));
 
@@ -96,18 +96,18 @@ if (isset($_GET['query'])) {
       if ($_SESSION['mailcow_cc_api_access'] == 'ro' || isset($_SESSION['pending_mailcow_cc_username'])) {
         http_response_code(403);
         echo json_encode(array(
-            'type' => 4,
+            'type' => 'error',
             'msg' => 'API read/write access denied'
         ));
         exit();
       }
       function process_add_return($return) {
         $generic_failure = json_encode(array(
-          'type' => 4,
+          'type' => 'error',
           'msg' => 'Cannot add item'
         ));
         $generic_success = json_encode(array(
-          'type' => 1,
+          'type' => 'success',
           'msg' => 'Task completed'
         ));
         if ($return === false) {
@@ -131,7 +131,7 @@ if (isset($_GET['query'])) {
       if ($_SERVER['REQUEST_METHOD'] != 'POST') {
         http_response_code(405);
         echo json_encode(array(
-            'type' => 4,
+            'type' => 'error',
             'msg' => 'only POST method is allowed'
         ));
         exit();
@@ -249,7 +249,7 @@ if (isset($_GET['query'])) {
         default:
           http_response_code(404);
           echo json_encode(array(
-            'type' => 4,
+            'type' => 'error',
             'msg' => 'route not found'
           ));
           exit();
@@ -260,7 +260,7 @@ if (isset($_GET['query'])) {
       if ($_SERVER['REQUEST_METHOD'] != 'POST') {
         http_response_code(405);
         echo json_encode(array(
-            'type' => 4,
+            'type' => 'error',
             'msg' => 'only POST method is allowed'
         ));
         exit();
@@ -322,7 +322,7 @@ if (isset($_GET['query'])) {
           $_SESSION["fido2_cid"] = $process_fido2['cid'];
           unset($_SESSION["challenge"]);
           $_SESSION['return'][] =  array(
-            'type' => 1,
+            'type' => 'success',
             'log' => array("fido2_login"),
             'msg' => array('logged_in_as', $process_fido2['username'])
           );
@@ -344,7 +344,7 @@ if (isset($_GET['query'])) {
       if ($_SERVER['REQUEST_METHOD'] != 'GET') {
         http_response_code(405);
         echo json_encode(array(
-            'type' => 4,
+            'type' => 'error',
             'msg' => 'only GET method is allowed'
         ));
         exit();
@@ -892,7 +892,7 @@ if (isset($_GET['query'])) {
               default:
                 http_response_code(404);
                 echo json_encode(array(
-                  'type' => 4,
+                  'type' => 'error',
                   'msg' => 'route not found'
                 ));
                 exit();
@@ -1384,7 +1384,7 @@ if (isset($_GET['query'])) {
                     $containerstate = ($container_info['State']['Status']);
                     $containerimage = ($container_info['Config']['Image']);
                     $temp[$container] = array(
-                      'type' => 0,
+                      'type' => 'info',
                       'container' => $container,
                       'state' => $containerstate,
                       'started_at' => $containerstarttime,
@@ -1397,7 +1397,7 @@ if (isset($_GET['query'])) {
                   $exec_fields_vmail = array('cmd' => 'system', 'task' => 'df', 'dir' => '/var/vmail');
                   $vmail_df = explode(',', json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields_vmail), true));
                   $temp = array(
-                    'type' => 0,
+                    'type' => 'info',
                     'disk' => $vmail_df[0],
                     'used' => $vmail_df[2],
                     'total'=> $vmail_df[1],
@@ -1416,7 +1416,7 @@ if (isset($_GET['query'])) {
                   $solr_enabled = true;
                 }
                 echo json_encode(array(
-                  'type' => 0,
+                  'type' => 'info',
                   'solr_enabled' => $solr_enabled,
                   'solr_size' => $solr_size,
                   'solr_documents' => $solr_documents
@@ -1430,7 +1430,7 @@ if (isset($_GET['query'])) {
         default:
           http_response_code(404);
           echo json_encode(array(
-            'type' => 4,
+            'type' => 'error',
             'msg' => 'route not found'
           ));
           exit();
@@ -1441,18 +1441,18 @@ if (isset($_GET['query'])) {
       if ($_SESSION['mailcow_cc_api_access'] == 'ro' || isset($_SESSION['pending_mailcow_cc_username']) || !isset($_SESSION["mailcow_cc_username"])) {
         http_response_code(403);
         echo json_encode(array(
-            'type' => 4,
+            'type' => 'error',
             'msg' => 'API read/write access denied'
         ));
         exit();
       }
       function process_delete_return($return) {
         $generic_failure = json_encode(array(
-          'type' => 4,
+          'type' => 'error',
           'msg' => 'Cannot delete item'
         ));
         $generic_success = json_encode(array(
-          'type' => 1,
+          'type' => 'success',
           'msg' => 'Task completed'
         ));
         if ($return === false) {
@@ -1473,7 +1473,7 @@ if (isset($_GET['query'])) {
       if ($_SERVER['REQUEST_METHOD'] != 'POST') {
         http_response_code(405);
         echo json_encode(array(
-            'type' => 4,
+            'type' => 'error',
             'msg' => 'only POST method is allowed'
         ));
         exit();
@@ -1564,7 +1564,7 @@ if (isset($_GET['query'])) {
         default:
           http_response_code(404);
           echo json_encode(array(
-            'type' => 4,
+            'type' => 'error',
             'msg' => 'route not found'
           ));
           exit();
@@ -1574,18 +1574,18 @@ if (isset($_GET['query'])) {
       if ($_SESSION['mailcow_cc_api_access'] == 'ro' || isset($_SESSION['pending_mailcow_cc_username']) || !isset($_SESSION["mailcow_cc_username"])) {
         http_response_code(403);
         echo json_encode(array(
-            'type' => 4,
+            'type' => 'error',
             'msg' => 'API read/write access denied'
         ));
         exit();
       }
       function process_edit_return($return) {
         $generic_failure = json_encode(array(
-          'type' => 4,
+          'type' => 'error',
           'msg' => 'Cannot edit item'
         ));
         $generic_success = json_encode(array(
-          'type' => 1,
+          'type' => 'success',
           'msg' => 'Task completed'
         ));
         if ($return === false) {
@@ -1608,7 +1608,7 @@ if (isset($_GET['query'])) {
       if ($_SERVER['REQUEST_METHOD'] != 'POST') {
         http_response_code(405);
         echo json_encode(array(
-            'type' => 4,
+            'type' => 'error',
             'msg' => 'only POST method is allowed'
         ));
         exit();
@@ -1749,7 +1749,7 @@ if (isset($_GET['query'])) {
         default:
           http_response_code(404);
           echo json_encode(array(
-            'type' => 4,
+            'type' => 'error',
             'msg' => 'route not found'
           ));
           exit();
@@ -1759,7 +1759,7 @@ if (isset($_GET['query'])) {
     default:
       http_response_code(404);
       echo json_encode(array(
-        'type' => 4,
+        'type' => 'error',
         'msg' => 'route not found'
       ));
       exit();
