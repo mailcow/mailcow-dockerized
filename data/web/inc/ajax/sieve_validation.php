@@ -8,15 +8,15 @@ if (isset($_GET['script'])) {
   $sieve = new Sieve\SieveParser();
   try {
     if (empty($_GET['script'])) {
-      echo json_encode(array('type' => 3, 'msg' => $lang['danger']['script_empty']));
+      echo json_encode(array('type' => 'danger', 'msg' => $lang['danger']['script_empty']));
       exit();
     }
     $sieve->parse($_GET['script']);
   }
   catch (Exception $e) {
-    echo json_encode(array('type' => 3, 'msg' => $e->getMessage()));
+    echo json_encode(array('type' => 'danger', 'msg' => $e->getMessage()));
     exit();
   }
-  echo json_encode(array('type' => 1, 'msg' => $lang['add']['validation_success']));
+  echo json_encode(array('type' => 'success', 'msg' => $lang['add']['validation_success']));
 }
 ?>
