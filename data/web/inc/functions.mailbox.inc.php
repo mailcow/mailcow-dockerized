@@ -2892,8 +2892,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $attrs = $stmt->fetch(PDO::FETCH_ASSOC);
           $attrs = json_decode($attrs['attributes'], true);
           return array(
-            'tls_enforce_in' => $attrs['tls_enforce_in'],
-            'tls_enforce_out' => $attrs['tls_enforce_out']
+            'tls_enforce_in' => boolval($attrs['tls_enforce_in']),
+            'tls_enforce_out' => boolval($attrs['tls_enforce_out'])
           );
         break;
         case 'quarantine_notification':
