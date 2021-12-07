@@ -443,7 +443,7 @@ if (isset($_GET['query'])) {
                   }
                   process_get_return($data);
                 } else {
-                  throw_not_configured("domain");
+                  throw_not_configured("warning", "domain");
                 }
               break;
 
@@ -911,12 +911,12 @@ if (isset($_GET['query'])) {
                         }
                       }
                     } else {
-                      throw_not_configured("mailbox");
+                      throw_not_configured("warning", "mailbox");
                     }
                   }
                   process_get_return($data);
                 } else {
-                  throw_not_configured("domain");
+                  throw_not_configured("warning", "domain");
                 }
               break;
 
@@ -1041,16 +1041,16 @@ if (isset($_GET['query'])) {
                             }
                           }
                         } else {
-                          throw_not_configured("filter");
+                          throw_not_configured("warning", "filter");
                         }
                       }
                     } else {
-                      throw_not_configured("mailbox");
+                      throw_not_configured("warning", "mailbox");
                     }
                   }
                   process_get_return($data);
                 } else {
-                  throw_not_configured("domains");
+                  throw_not_configured("warning", "domains");
                 }
               break;
 
@@ -1085,7 +1085,7 @@ if (isset($_GET['query'])) {
                     }
                   }
                 } else {
-                  throw_not_configured("bcc");
+                  throw_not_configured("warning", "bcc");
                 }
                 process_get_return($data);
               break;
@@ -1113,7 +1113,7 @@ if (isset($_GET['query'])) {
                     }
                   }
                 } else {
-                  throw_not_configured("recipient map");
+                  throw_not_configured("warning", "recipient map");
                 }
                 process_get_return($data);
               break;
