@@ -910,9 +910,9 @@ if (isset($_GET['query'])) {
                           continue;
                         }
                       }
-                    } else {
+                    }/* else {
                       throw_not_configured("warning", "mailbox");
-                    }
+                    }*/
                   }
                   process_get_return($data);
                 } else {
