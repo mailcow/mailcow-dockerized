@@ -3298,7 +3298,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $aliasdata['domain'] = $row['domain'];
           $aliasdata['goto'] = $row['goto'];
           $aliasdata['address'] = $row['address'];
-          (!filter_var($aliasdata['address'], FILTER_VALIDATE_EMAIL)) ? $aliasdata['is_catch_all'] = 1 : $aliasdata['is_catch_all'] = 0;
+          (!filter_var($aliasdata['address'], FILTER_VALIDATE_EMAIL)) ? $aliasdata['is_catch_all_int'] = 1 : $aliasdata['is_catch_all_int'] = 0;
+          $aliasdata['is_catch_all'] = boolval($aliasdata['is_catch_all_int']);
           $aliasdata['active'] = boolval($row['active']);
           $aliasdata['active_int'] = $row['active'];
           $aliasdata['sogo_visible'] = boolval($row['sogo_visible']);
