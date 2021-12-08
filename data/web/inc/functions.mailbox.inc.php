@@ -2861,11 +2861,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ));
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
             while($row = array_shift($rows)) {
-              $mdata = $row['username'];
-              $mdata["last_imap_login"] = $row['username']['last_imap_login'] == 0 ? null : $row['username']['last_imap_login'];
-              $mdata["last_smtp_login"] = $row['username']['last_smtp_login'] == 0 ? null : $row['username']['last_smtp_login'];
-              $mdata["last_pop3_login"] = $row['username']['last_pop3_login'] == 0 ? null : $row['username']['last_pop3_login'];
-              $mailboxes[] = $mdata;
+              $mailboxes[] = $row['username'];
             }
           }
           else {
@@ -3585,13 +3581,13 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             }
           }
           if (!isset($last_imap_login) || $GLOBALS['SHOW_LAST_LOGIN'] === false) {
-            $last_imap_login = 0;
+            $last_imap_login = null;
           }
           if (!isset($last_smtp_login) || $GLOBALS['SHOW_LAST_LOGIN'] === false) {
-            $last_smtp_login = 0;
+            $last_smtp_login = null;
           }
           if (!isset($last_pop3_login) || $GLOBALS['SHOW_LAST_LOGIN'] === false) {
-            $last_pop3_login = 0;
+            $last_pop3_login = null;
           }
           $mailboxdata['last_imap_login'] = $last_imap_login;
           $mailboxdata['last_smtp_login'] = $last_smtp_login;
