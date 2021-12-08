@@ -2861,7 +2861,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ));
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
             while($row = array_shift($rows)) {
-              $mailboxes[] = $row['username'];
+              $mdata = $row['username'];
+              $mdata["last_imap_login"] = $row['username']['last_imap_login'] == 0 ? null : $row['username']['last_imap_login'];
+              $mdata["last_smtp_login"] = $row['username']['last_smtp_login'] == 0 ? null : $row['username']['last_smtp_login'];
+              $mdata["last_pop3_login"] = $row['username']['last_pop3_login'] == 0 ? null : $row['username']['last_pop3_login'];
+              $mailboxes[] = $mdata;
             }
           }
           else {
