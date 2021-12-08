@@ -105,7 +105,8 @@
         "username": "Username",
         "validate": "Convalida",
         "validation_success": "Convalidato con successo",
-        "bcc_dest_format": "Il destinatario in copia nascosta, dev'essere un solo indirizzo email.<br>Se devi spedire una copia del messaggio a più destinatari, crea un alias ed utilizzalo per questa opzione."
+        "bcc_dest_format": "Il destinatario in copia nascosta deve essere un singolo indirizzo email.<br>Se si vuole spedire una copia del messaggio a più destinatari, bisogna creare un alias ed utilizzarlo per questa opzione.",
+        "app_passwd_protocols": "Protocolli consentiti per la password dell'app"
     },
     "admin": {
         "access": "Accedi",
@@ -337,7 +338,12 @@
         "username": "Username",
         "validate_license_now": "Validate GUID against license server",
         "verify": "Verifica",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "api_read_only": "Accesso in sola lettura",
+        "api_read_write": "Accesso in lettura-scrittura",
+        "oauth2_apps": "App OAuth2",
+        "oauth2_add_client": "Aggiungere il client OAuth2",
+        "rsettings_preset_4": "Disattivare Rspamd per un dominio"
     },
     "danger": {
         "access_denied": "Accesso negato o form di login non corretto",
@@ -456,7 +462,7 @@
         "username_invalid": "Username %s non può essere utilizzato",
         "validity_missing": "Assegnare un periodo di validità",
         "value_missing": "Si prega di fornire tutti i valori",
-        "yotp_verification_failed": "Verifica Yubico OTP fallita: %s"
+        "yotp_verification_failed": "Verifica OTP Yubico fallita: %s"
     },
     "debug": {
         "chart_this_server": "Grafico (questo server)",
@@ -601,7 +607,13 @@
         "title": "Modifica oggetto",
         "unchanged_if_empty": "Se immutato lasciare vuoto",
         "username": "Username",
-        "validate_save": "Convalida e salva"
+        "validate_save": "Convalida e salva",
+        "pushover": "Pushover",
+        "sogo_access_info": "Il single-sign-on dall'interno dell'interfaccia di posta rimane funzionante. Questa impostazione non influisce sull'accesso a tutti gli altri servizi né cancella o modifica il profilo SOGo esistente dell'utente.",
+        "none_inherit": "Nessuno / Eredita",
+        "sogo_access": "Concedere l'accesso diretto a SOGo",
+        "acl": "ACL (autorizzazione)",
+        "app_passwd_protocols": "Protocolli consentiti per la password dell'app"
     },
     "fido2": {
         "confirm": "Confirm",
@@ -615,7 +627,8 @@
         "rename": "Rename",
         "set_fido2": "Register FIDO2 device",
         "set_fn": "Set friendly name",
-        "start_fido2_validation": "Start FIDO2 validation"
+        "start_fido2_validation": "Start FIDO2 validation",
+        "set_fido2_touchid": "Registrare il Touch ID su Apple M1"
     },
     "footer": {
         "cancel": "Annulla",
@@ -629,7 +642,8 @@
         "restart_container_info": "<b>Importante:</b> Il completamento di un normale riavvio potrebbe richiedere diversi minuti, ti consigliamo di attendere.",
         "restart_now": "Riavvia adesso",
         "restarting_container": "Riavvia il container, potrebbe richiedere diversi minuti",
-        "hibp_check": "Verifica con haveibeenpwned.com"
+        "hibp_check": "Verifica con haveibeenpwned.com",
+        "nothing_selected": "Niente di selezionato"
     },
     "header": {
         "administration": "Amministrazione",
@@ -694,7 +708,7 @@
         "bcc_to_rcpt": "Switch to recipient map type",
         "bcc_to_sender": "Switch to sender map type",
         "bcc_type": "BCC type",
-        "booking_null": "Always show as free",
+        "booking_null": "Mostra sempre come libero",
         "booking_0_short": "Always free",
         "booking_custom": "Hard-limit to a custom amount of bookings",
         "booking_custom_short": "Hard limit",
@@ -802,7 +816,17 @@
         "goto_spam": "Apprendi come <b>spam</b>",
         "open_logs": "Apri i log",
         "syncjob_check_log": "Controlla il log",
-        "syncjob_last_run_result": "Risultato dell'ultima esecuzione"
+        "syncjob_last_run_result": "Risultato dell'ultima esecuzione",
+        "syncjob_EXIT_TLS_FAILURE": "Problema con la connessione criptata",
+        "syncjob_EXIT_AUTHENTICATION_FAILURE": "Problema di autenticazione",
+        "syncjob_EXIT_OVERQUOTA": "La casella di posta del destinatario ha superato la quota",
+        "syncjob_EXIT_CONNECTION_FAILURE_HOST1": "Impossibile connettersi al server remoto",
+        "syncjob_EXIT_CONNECTION_FAILURE": "Problema di connessione",
+        "catch_all": "Catch-All",
+        "sender": "Mittente",
+        "all_domains": "Tutti i domini",
+        "recipient": "Destinatario",
+        "syncjob_EX_OK": "Successo"
     },
     "oauth2": {
         "access_denied": "Effettua il login alla casella di posta per garantire l'accesso tramite OAuth2.",
@@ -1123,7 +1147,17 @@
         "change_password_hint_app_passwords": "Il tuo account ha {{number_of_app_passwords}} password delle app che non verranno modificate. Per gestirle, vai alla scheda App passwords.",
         "syncjob_check_log": "Controlla i log",
         "syncjob_last_run_result": "Risultato dell'ultima esecuzione",
-        "open_logs": "Apri i log"
+        "open_logs": "Apri i log",
+        "apple_connection_profile_with_app_password": "Una nuova password dell'app è stata generata ed aggiunta al profilo così che non sia più necessario inserire alcuna password quando si imposta il dispositivo. Si prega di non condividere il file in quanto concede l'accesso completo alla tua casella di posta elettronica.",
+        "allowed_protocols": "Protocolli consentiti",
+        "syncjob_EX_OK": "Successo",
+        "syncjob_EXIT_CONNECTION_FAILURE": "Problema di connessione",
+        "syncjob_EXIT_TLS_FAILURE": "Problema con la connessione criptata",
+        "syncjob_EXIT_AUTHENTICATION_FAILURE": "Problema di autenticazione",
+        "syncjob_EXIT_OVERQUOTA": "La casella di posta del destinatario ha superato la quota",
+        "syncjob_EXIT_CONNECTION_FAILURE_HOST1": "Impossibile connettersi al server remoto",
+        "syncjob_EXIT_AUTHENTICATION_FAILURE_USER1": "Nome utente o password errati",
+        "with_app_password": "con password dell'app"
     },
     "warning": {
         "cannot_delete_self": "Cannot delete logged in user",
@@ -1141,6 +1175,8 @@
     "ratelimit": {
         "minute": "messaggi / minuto",
         "disabled": "Disabilitato",
-        "second": "messaggi / secondo"
+        "second": "messaggi / secondo",
+        "hour": "messaggi / ora",
+        "day": "messaggi / giorno"
     }
 }
