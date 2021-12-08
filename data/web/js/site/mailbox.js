@@ -618,7 +618,7 @@ jQuery(function($){
         {"name":"local_dest","title":lang.bcc_local_dest},
         {"name":"bcc_dest","title":lang.bcc_destinations},
         {"name":"domain","title":lang.domain,"breakpoints":"xs sm"},
-        {"name":"active_int","filterable": false,"style":{"min-width":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
+        {"name":"active","filterable": false,"style":{"min-width":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
       "empty": lang.empty,

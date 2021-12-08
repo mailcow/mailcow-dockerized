@@ -2346,7 +2346,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $_data['sieve_access'] = (in_array('sieve', $_data['protocol_access'])) ? 1 : 0;
             }
             if (!empty($is_now)) {
-              $active     = (isset($_data['active_int'])) ? intval($_data['active_int']) : $is_now['active_int'];
+              $active     = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active'];
               (int)$force_pw_update = (isset($_data['force_pw_update'])) ? intval($_data['force_pw_update']) : intval($is_now['attributes']['force_pw_update']);
               (int)$sogo_access = (isset($_data['sogo_access']) && isset($_SESSION['acl']['sogo_access']) && $_SESSION['acl']['sogo_access'] == "1") ? intval($_data['sogo_access']) : intval($is_now['attributes']['sogo_access']);
               (int)$imap_access = (isset($_data['imap_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") ? intval($_data['imap_access']) : intval($is_now['attributes']['imap_access']);
@@ -3528,9 +3528,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
           $mailboxdata['username'] = $row['username'];
-          $mailboxdata['active'] = $row['active'] == 2 ? false : boolval($row['active']);
+          $mailboxdata['active'] = intval($row['active']);
           $mailboxdata['active_limited'] = $row['active'] == 2 ? true : false;
-          $mailboxdata['active_int'] = $row['active'];
+          $mailboxdata['active_full'] = $row['active'] == 1 ? true : false;
           $mailboxdata['domain'] = $row['domain'];
           $mailboxdata['relayhost'] = $row['relayhost'];
           $mailboxdata['name'] = $row['name'];
