@@ -16,8 +16,9 @@
     <pre>docker-compose logs --tail=200 php-fpm-mailcow nginx-mailcow</pre>
     <p>Make sure your SQL credentials in mailcow.conf (a link to .env) do fit your initialized SQL volume. If you see an access denied, you might have the wrong mailcow.conf:</p>
     <pre>source mailcow.conf ; docker-compose exec mysql-mailcow mysql -u${DBUSER} -p${DBPASS} ${DBNAME}</pre>
-    <p>In case of a previous failed installation, remove all volumes and start over (<b>NEVER</b> do this with a production system, it will remove <b>ALL</b> data):</p>
-    <pre>docker-compose down -v ; docker-compose up -d</pre>
+    <p>In case of a previous failed installation, create a backup of your existing data, followed by removing all volumes and starting over (<b>NEVER</b> do this with a production system, it will remove <b>ALL</b> data):</p>
+    <pre>BACKUP_LOCATION=/tmp/ ./helper-scripts/backup_and_restore.sh backup all</pre>
+    <pre>docker-compose down --volumes ; docker-compose up -d</pre>
     <p>Make sure your timezone is correct. Use "America/New_York" for example, do not use spaces. Check <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones">here</a> for a list.</p>
     <br>Click to learn more about <a style="color:red;text-decoration:none;" href="https://mailcow.github.io/mailcow-dockerized-docs/#get-support" target="_blank">getting support.</a>
   </body>
