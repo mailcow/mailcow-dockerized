@@ -560,6 +560,7 @@ services:
       image: mcuadros/ofelia:latest
       restart: always
       command: daemon --docker
+      environment:
         - TZ=${TZ}
       depends_on:
         - sogo-mailcow
