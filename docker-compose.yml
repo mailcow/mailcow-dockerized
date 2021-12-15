@@ -2,7 +2,7 @@ version: '2.1'
 services:
 
     unbound-mailcow:
-      image: mailcow/unbound:1.15
+      image: mailcow/unbound:1.14
       environment:
         - TZ=${TZ}
       volumes:
@@ -384,7 +384,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.81
+      image: mailcow/acme:1.80
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -505,7 +505,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:1.41
+      image: mailcow/dockerapi:1.40
       security_opt:
         - label=disable
       restart: always
