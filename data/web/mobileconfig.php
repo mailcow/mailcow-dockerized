@@ -153,6 +153,10 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         <true/>
         <key>CalDAVUsername</key>
         <string><?=$email?></string>
+        <?php if($app_password === true): ?>
+        <key>CalDAVPassword</key>
+        <string><?=$password?></string>
+        <?php endif; ?>
         <key>PayloadDescription</key>
         <string>Configures CalDAV account.</string>
         <key>PayloadDisplayName</key>
@@ -181,6 +185,10 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         <true/>
         <key>CardDAVUsername</key>
         <string><?=$email?></string>
+        <?php if($app_password === true): ?>
+        <key>CardDAVPassword</key>
+        <string><?=$password?></string>
+        <?php endif; ?>
         <key>PayloadDescription</key>
         <string>Configures CardDAV accounts</string>
         <key>PayloadDisplayName</key>
