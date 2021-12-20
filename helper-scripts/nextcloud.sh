@@ -40,7 +40,7 @@ if [[ ${NC_PURGE} == "y" ]]; then
   fi
 
   docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e \
-    "$(docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e "SELECT IFNULL(GROUP_CONCAT('DROP TABLE ', TABLE_SCHEMA, '.', TABLE_NAME SEPARATOR ';'),'SELECT NULL;') FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE 'nc_%' AND TABLE_SCHEMA = '${DBNAME}';" -BN)"
+    "$(docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e "SELECT IFNULL(GROUP_CONCAT('DROP TABLE ', TABLE_SCHEMA, '.', TABLE_NAME SEPARATOR ';'),'SELECT NULL;') FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE 'oc_%' AND TABLE_SCHEMA = '${DBNAME}';" -BN)"
   docker exec -it $(docker ps -f name=redis-mailcow -q) /bin/sh -c ' cat <<EOF | redis-cli
 SELECT 10
 FLUSHDB
