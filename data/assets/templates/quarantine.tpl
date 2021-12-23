@@ -96,7 +96,7 @@
     On the page accessible through the links you can see the estimation of the withheld messages.
     {% endif %}
     </p>
-    <p><div class="label label-danger">Score: 9.91 - Junk folder</div> for example would mean that the mail is already in your spam folder. By "Release to inbox" you can then still have a copy of the mail be delivered to your inbox.</p>
-    <p><div class="label label-warning">Score: 99.9 - Reject</div> for example would mean that the sender has been notified that the mail has not been delivered. But you can still have it delivered to your inbox.</p>
+    <p><div class="label label-warning">Score: 9.91 - Junk folder</div> for example would mean that the mail is already in your spam folder. By "Release to inbox" you can then still have a copy of the mail be delivered to your inbox.</p>
+    <p><div class="label label-danger">Score: 99.9 - Reject</div> for example would mean that the sender has been notified that the mail has not been delivered. But you can still have it delivered to your inbox.</p>
   </body>
 </html>
