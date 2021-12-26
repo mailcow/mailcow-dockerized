@@ -515,6 +515,7 @@ services:
       environment:
         - DBROOT=${DBROOT}
         - TZ=${TZ}
+        - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-mailcow-dockerized}
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
       networks:
