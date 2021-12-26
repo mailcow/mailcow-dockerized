@@ -60,7 +60,7 @@ $tfa = new RobThree\Auth\TwoFactorAuth($OTP_LABEL, 6, 30, 'sha1', $qrprovider);
 
 // FIDO2
 $formats = $GLOBALS['FIDO2_FORMATS'];
-$WebAuthn = new \WebAuthn\WebAuthn('WebAuthn Library', $_SERVER['HTTP_HOST'], $formats);
+$WebAuthn = new \WebAuthn\WebAuthn('WebAuthn Library', $_SERVER['SERVER_NAME'], $formats);
 $WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/solo.pem');
 $WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/apple.pem');
 $WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/nitro.pem');
