@@ -24,29 +24,56 @@ api = Api(app)
 
 class containers_get(Resource):
   def get(self):
-    containers = {}
     try:
+      containers = {}  
       for container in docker_client.containers.list(all=True):
-        containers.update({container.attrs['Id']: container.attrs})
+        if container.attrs["Config"]["Labels"].get("com.docker.compose.project") == os.environ.get('COMPOSE_PROJECT_NAME'):
+          containers.update({container.attrs['Id']: container.attrs})
+
+      print("api call: %s" % ("containers_get"))
       return containers
     except Exception as e:
       return jsonify(type='danger', msg=str(e))
 
 class container_get(Resource):
   def get(self, container_id):
-    if container_id and container_id.isalnum():
-      try:
+    
+    try:
+      # determine container_id if the api was called with the container_name
+      if container_id and not container_id.isalnum() and container_id.endswith("-mailcow"): 
+        for container in docker_client.containers.list(all=True):
+          if container.attrs["Config"]["Labels"].get("com.docker.compose.service")  == container_id:
+            container_id = container.attrs['Id']
+
+      if container_id and container_id.isalnum():
         for container in docker_client.containers.list(all=True, filters={"id": container_id}):
-          return container.attrs
-      except Exception as e:
-          return jsonify(type='danger', msg=str(e))
-    else:
-      return jsonify(type='danger', msg='no or invalid id defined')
+          # check if the container_id belongs to the mailcow project 
+          if container.attrs["Config"]["Labels"].get("com.docker.compose.project") == os.environ.get('COMPOSE_PROJECT_NAME'):  
+            print("api call: %s, container_name: %s, container_id: %s" % ("container_get", container.attrs["Config"]["Labels"].get("com.docker.compose.service"), container_id))  
+            return container.attrs
+      else:
+        return jsonify(type='danger', msg="invalid container_id")
+
+    except Exception as e:
+      return jsonify(type='danger', msg=str(e))
 
 class container_post(Resource):
   def post(self, container_id, post_action):
-    if container_id and container_id.isalnum() and post_action:
-      try:
+
+    try:  
+      # determine container_id if the api was called with the container_name
+      if container_id and not container_id.isalnum() and container_id.endswith("-mailcow"):  
+        for container in docker_client.containers.list(all=True):
+          if container.attrs["Config"]["Labels"].get("com.docker.compose.service")  == container_id:       
+            container_id = container.attrs['Id']
+ 
+      # check if the container_id belongs to the mailcow project 
+      containerid_belongsto_mailcow = False
+      for container in docker_client.containers.list(all=True, filters={"id": container_id}):
+        if container.attrs["Config"]["Labels"].get("com.docker.compose.project") == os.environ.get('COMPOSE_PROJECT_NAME'):
+          containerid_belongsto_mailcow = True
+
+      if container_id and container_id.isalnum() and post_action and containerid_belongsto_mailcow:
         """Dispatch container_post api call"""
         if post_action == 'exec':
           if not request.json or not 'cmd' in request.json:
@@ -60,16 +87,24 @@ class container_post(Resource):
 
         api_call_method = getattr(self, api_call_method_name, lambda container_id: jsonify(type='danger', msg='container_post - unknown api call'))
 
-
-        print("api call: %s, container_id: %s" % (api_call_method_name, container_id))
+        print("api call: %s, container_name: %s, container_id: %s" % (api_call_method_name, container.attrs["Config"]["Labels"].get("com.docker.compose.service"), container_id))
         return api_call_method(container_id)
-      except Exception as e:
-        print("error - container_post: %s" % str(e))
-        return jsonify(type='danger', msg=str(e))
 
-    else:
-      return jsonify(type='danger', msg='invalid container id or missing action')
+      else:
+        return jsonify(type='danger', msg='invalid container_id or missing action')
 
+    except Exception as e:
+      print("error - container_post: %s" % str(e))
+      return jsonify(type='danger', msg=str(e))
+
+  def _check_applicability(self, container_id, container_name_list):
+      method_can_be_applied_to_containers = False
+      for container in docker_client.containers.list(all=True, filters={"id": container_id}):
+       if container.attrs["Config"]["Labels"].get("com.docker.compose.service") in container_name_list:
+         method_can_be_applied_to_containers = True
+
+      if not method_can_be_applied_to_containers:
+        raise Exception('The called method cannot be used for the container_id!')
 
   # api call: container_post - post_action: stop
   def container_post__stop(self, container_id):
@@ -107,6 +142,7 @@ class container_post(Resource):
 
   # api call: container_post - post_action: exec - cmd: mailq - task: delete
   def container_post__exec__mailq__delete(self, container_id):
+    self._check_applicability(container_id, ["postfix-mailcow"])  
     if 'items' in request.json:
       r = re.compile("^[0-9a-fA-F]+$")
       filtered_qids = filter(r.match, request.json['items'])
@@ -120,6 +156,7 @@ class container_post(Resource):
 
   # api call: container_post - post_action: exec - cmd: mailq - task: hold
   def container_post__exec__mailq__hold(self, container_id):
+    self._check_applicability(container_id, ["postfix-mailcow"])  
     if 'items' in request.json:
       r = re.compile("^[0-9a-fA-F]+$")
       filtered_qids = filter(r.match, request.json['items'])
@@ -133,6 +170,7 @@ class container_post(Resource):
 
   # api call: container_post - post_action: exec - cmd: mailq - task: cat
   def container_post__exec__mailq__cat(self, container_id):
+    self._check_applicability(container_id, ["postfix-mailcow"])  
     if 'items' in request.json:
       r = re.compile("^[0-9a-fA-F]+$")
       filtered_qids = filter(r.match, request.json['items'])
@@ -147,6 +185,7 @@ class container_post(Resource):
 
    # api call: container_post - post_action: exec - cmd: mailq - task: unhold
   def container_post__exec__mailq__unhold(self, container_id):
+    self._check_applicability(container_id, ["postfix-mailcow"])  
     if 'items' in request.json:
       r = re.compile("^[0-9a-fA-F]+$")
       filtered_qids = filter(r.match, request.json['items'])
@@ -161,6 +200,7 @@ class container_post(Resource):
 
   # api call: container_post - post_action: exec - cmd: mailq - task: deliver
   def container_post__exec__mailq__deliver(self, container_id):
+    self._check_applicability(container_id, ["postfix-mailcow"])  
     if 'items' in request.json:
       r = re.compile("^[0-9a-fA-F]+$")
       filtered_qids = filter(r.match, request.json['items'])
@@ -176,6 +216,7 @@ class container_post(Resource):
 
   # api call: container_post - post_action: exec - cmd: mailq - task: list
   def container_post__exec__mailq__list(self, container_id):
+    self._check_applicability(container_id, ["postfix-mailcow"])  
     for container in docker_client.containers.list(filters={"id": container_id}):
       mailq_return = container.exec_run(["/usr/sbin/postqueue", "-j"], user='postfix')
       return exec_run_handler('utf8_text_only', mailq_return)
@@ -183,6 +224,7 @@ class container_post(Resource):
 
   # api call: container_post - post_action: exec - cmd: mailq - task: flush
   def container_post__exec__mailq__flush(self, container_id):
+    self._check_applicability(container_id, ["postfix-mailcow"])  
     for container in docker_client.containers.list(filters={"id": container_id}):
       postqueue_r = container.exec_run(["/usr/sbin/postqueue", "-f"], user='postfix')
       return exec_run_handler('generic', postqueue_r)
@@ -190,6 +232,7 @@ class container_post(Resource):
 
   # api call: container_post - post_action: exec - cmd: mailq - task: super_delete
   def container_post__exec__mailq__super_delete(self, container_id):
+    self._check_applicability(container_id, ["postfix-mailcow"])  
     for container in docker_client.containers.list(filters={"id": container_id}):
       postsuper_r = container.exec_run(["/usr/sbin/postsuper", "-d", "ALL"])
       return exec_run_handler('generic', postsuper_r)
@@ -197,6 +240,7 @@ class container_post(Resource):
 
   # api call: container_post - post_action: exec - cmd: system - task: fts_rescan
   def container_post__exec__system__fts_rescan(self, container_id):
+    self._check_applicability(container_id, ["dovecot-mailcow"])  
     if 'username' in request.json:
       for container in docker_client.containers.list(filters={"id": container_id}):
         rescan_return = container.exec_run(["/bin/bash", "-c", "/usr/bin/doveadm fts rescan -u '" + request.json['username'].replace("'", "'\\''") + "'"], user='vmail')
@@ -216,6 +260,7 @@ class container_post(Resource):
 
   # api call: container_post - post_action: exec - cmd: system - task: df
   def container_post__exec__system__df(self, container_id):
+    self._check_applicability(container_id, ["dovecot-mailcow"])  
     if 'dir' in request.json:
       for container in docker_client.containers.list(filters={"id": container_id}):
         df_return = container.exec_run(["/bin/bash", "-c", "/bin/df -H '" + request.json['dir'].replace("'", "'\\''") + "' | /usr/bin/tail -n1 | /usr/bin/tr -s [:blank:] | /usr/bin/tr ' ' ','"], user='nobody')
@@ -227,6 +272,7 @@ class container_post(Resource):
 
   # api call: container_post - post_action: exec - cmd: system - task: mysql_upgrade
   def container_post__exec__system__mysql_upgrade(self, container_id):
+    self._check_applicability(container_id, ["mysql-mailcow"])  
     for container in docker_client.containers.list(filters={"id": container_id}):
       sql_return = container.exec_run(["/bin/bash", "-c", "/usr/bin/mysql_upgrade -uroot -p'" + os.environ['DBROOT'].replace("'", "'\\''") + "'\n"], user='mysql')
       if sql_return.exit_code == 0:
@@ -244,6 +290,7 @@ class container_post(Resource):
 
   # api call: container_post - post_action: exec - cmd: system - task: mysql_tzinfo_to_sql
   def container_post__exec__system__mysql_tzinfo_to_sql(self, container_id):
+    self._check_applicability(container_id, ["mysql-mailcow"])  
     for container in docker_client.containers.list(filters={"id": container_id}):
       sql_return = container.exec_run(["/bin/bash", "-c", "/usr/bin/mysql_tzinfo_to_sql /usr/share/zoneinfo | /bin/sed 's/Local time zone must be set--see zic manual page/FCTY/' | /usr/bin/mysql -uroot -p'" + os.environ['DBROOT'].replace("'", "'\\''") + "' mysql \n"], user='mysql')
       if sql_return.exit_code == 0:
@@ -253,6 +300,7 @@ class container_post(Resource):
 
   # api call: container_post - post_action: exec - cmd: reload - task: dovecot
   def container_post__exec__reload__dovecot(self, container_id):
+    self._check_applicability(["dovecot-mailcow"])  
     for container in docker_client.containers.list(filters={"id": container_id}):
       reload_return = container.exec_run(["/bin/bash", "-c", "/usr/sbin/dovecot reload"])
       return exec_run_handler('generic', reload_return)
@@ -260,6 +308,7 @@ class container_post(Resource):
 
   # api call: container_post - post_action: exec - cmd: reload - task: postfix
   def container_post__exec__reload__postfix(self, container_id):
+    self._check_applicability(container_id, ["postfix-mailcow"])  
     for container in docker_client.containers.list(filters={"id": container_id}):
       reload_return = container.exec_run(["/bin/bash", "-c", "/usr/sbin/postfix reload"])
       return exec_run_handler('generic', reload_return)
@@ -267,6 +316,7 @@ class container_post(Resource):
 
   # api call: container_post - post_action: exec - cmd: reload - task: nginx
   def container_post__exec__reload__nginx(self, container_id):
+    self._check_applicability(container_id, ["nginx-mailcow"])  
     for container in docker_client.containers.list(filters={"id": container_id}):
       reload_return = container.exec_run(["/bin/sh", "-c", "/usr/sbin/nginx -s reload"])
       return exec_run_handler('generic', reload_return)
@@ -274,6 +324,7 @@ class container_post(Resource):
 
   # api call: container_post - post_action: exec - cmd: sieve - task: list
   def container_post__exec__sieve__list(self, container_id):
+    self._check_applicability(container_id, ["dovecot-mailcow"])  
     if 'username' in request.json:
       for container in docker_client.containers.list(filters={"id": container_id}):
         sieve_return = container.exec_run(["/bin/bash", "-c", "/usr/bin/doveadm sieve list -u '" + request.json['username'].replace("'", "'\\''") + "'"])
@@ -282,6 +333,7 @@ class container_post(Resource):
 
   # api call: container_post - post_action: exec - cmd: sieve - task: print
   def container_post__exec__sieve__print(self, container_id):
+    self._check_applicability(container_id, ["dovecot-mailcow"])  
     if 'username' in request.json and 'script_name' in request.json:
       for container in docker_client.containers.list(filters={"id": container_id}):
         cmd = ["/bin/bash", "-c", "/usr/bin/doveadm sieve get -u '" + request.json['username'].replace("'", "'\\''") + "' '" + request.json['script_name'].replace("'", "'\\''") + "'"]  
@@ -291,6 +343,7 @@ class container_post(Resource):
 
   # api call: container_post - post_action: exec - cmd: maildir - task: cleanup
   def container_post__exec__maildir__cleanup(self, container_id):
+    self._check_applicability(container_id, ["dovecot-mailcow"])  
     if 'maildir' in request.json:
       for container in docker_client.containers.list(filters={"id": container_id}):
         sane_name = re.sub(r'\W+', '', request.json['maildir'])
@@ -302,6 +355,7 @@ class container_post(Resource):
 
   # api call: container_post - post_action: exec - cmd: rspamd - task: worker_password
   def container_post__exec__rspamd__worker_password(self, container_id):
+    self._check_applicability(container_id, ["rspamd-mailcow"])  
     if 'raw' in request.json:
       for container in docker_client.containers.list(filters={"id": container_id}):
         cmd = "/usr/bin/rspamadm pw -e -p '" + request.json['raw'].replace("'", "'\\''") + "' 2> /dev/null"
