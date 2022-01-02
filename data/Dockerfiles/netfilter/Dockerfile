@@ -16,7 +16,7 @@ RUN apk add --virtual .build-deps \
   tzdata \
   py3-pip \
   musl-dev \
-&& pip3 install --upgrade pip \
+&& pip3 install --ignore-installed --upgrade pip \
   python-iptables \
   redis \
   ipaddress \
