@@ -181,7 +181,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
       backdrop: 'static',
       keyboard: false
     });
-    $('#webauthn_status_auth').html('<p><i class="bi bi-arrow-repeat icon-spin"></i> ' + lang_tfa.init_u2f + '</p>');
+    $('#webauthn_status_auth').html('<p><i class="bi bi-arrow-repeat icon-spin"></i> ' + lang_tfa.init_webauthn + '</p>');
     $('#ConfirmTFAModal').on('shown.bs.modal', function(){
       $(this).find('input[name=token]').focus();
       // If WebAuthn
