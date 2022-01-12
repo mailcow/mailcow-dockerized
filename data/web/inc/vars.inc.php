@@ -193,7 +193,7 @@ $SHOW_LAST_LOGIN = true;
 // false = preferred
 // string 'required' 'preferred' 'discouraged'
 $WEBAUTHN_UV_FLAG_REGISTER = false;
-$WEBAUTHN_UV_FLAG_LOGIN = false:
+$WEBAUTHN_UV_FLAG_LOGIN = false;
 $WEBAUTHN_USER_PRESENT_FLAG = true;
 
 $FIDO2_UV_FLAG_REGISTER = 'preferred';
