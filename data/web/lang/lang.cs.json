@@ -454,7 +454,7 @@
         "tls_policy_map_parameter_invalid": "Parametr pravidel TLS je neplatný",
         "totp_verification_failed": "TOTP ověření selhalo",
         "transport_dest_exists": "Transportní cíl \"%s\" již existuje",
-        "webauthn": "WebAuthn ověření selhalo: %s",
+        "webauthn_verification_failed": "WebAuthn ověření selhalo: %s",
         "unknown": "Došlo k neznámé chybě",
         "unknown_tfa_method": "Neznámá 2FA metoda",
         "unlimited_quota_acl": "Neomeznou kvótu nepovoluje seznam oprávnění ACL",
@@ -972,7 +972,7 @@
         "upload_success": "Soubor úspěšně nahrán",
         "verified_fido2_login": "Ověřené FIDO2 přihlášení",
         "verified_totp_login": "TOTP přihlášení ověřeno",
-        "webauthn": "WebAuthn přihlášení ověřeno",
+        "verified_webauthn_login": "WebAuthn přihlášení ověřeno",
         "verified_yotp_login": "Yubico OTP přihlášení ověřeno"
     },
     "tfa": {
