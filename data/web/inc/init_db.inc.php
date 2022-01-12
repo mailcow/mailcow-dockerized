@@ -696,7 +696,7 @@ function init_db_schema() {
           "id" => "INT NOT NULL AUTO_INCREMENT",
           "key_id" => "VARCHAR(255) NOT NULL",
           "username" => "VARCHAR(255) NOT NULL",
-          "authmech" => "ENUM('yubi_otp', 'u2f', 'hotp', 'totp')",
+          "authmech" => "ENUM('yubi_otp', 'u2f', 'hotp', 'totp', 'webauthn')",
           "secret" => "VARCHAR(255) DEFAULT NULL",
           "keyHandle" => "VARCHAR(255) DEFAULT NULL",
           "publicKey" => "VARCHAR(255) DEFAULT NULL",

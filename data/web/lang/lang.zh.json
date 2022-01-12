@@ -424,7 +424,7 @@
         "tls_policy_map_parameter_invalid": "策略参数非法",
         "totp_verification_failed": "TOTP认证失败",
         "transport_dest_exists": "传输目标 \"%s\" 已存在",
-        "u2f_verification_failed": "U2F认证失败: %s",
+        "webauthn_verification_failed": "WebAuthn认证失败: %s",
         "unknown": "发生未知错误",
         "unknown_tfa_method": "未知TFA方法",
         "unlimited_quota_acl": "ACL设置禁止了无限配额",
@@ -875,7 +875,7 @@
         "ui_texts": "已保存UI文本更改",
         "upload_success": "成功上传文件",
         "verified_totp_login": "TOTP登录验证成功",
-        "verified_u2f_login": "U2F登录验证成功",
+        "verified_webauthn_login": "WebAuthn登录验证成功",
         "verified_yotp_login": "Yubico OTP登录验证成功"
     },
     "tfa": {
@@ -886,7 +886,7 @@
         "disable_tfa": "在下一次成功登录前关闭两步验证",
         "enter_qr_code": "如果你的设备不能扫描QR码，输入此TOTP码",
         "error_code": "错误码",
-        "init_u2f": "初始化中，请等待...",
+        "init_webauthn": "初始化中，请等待...",
         "key_id": "你的YubiKey的标识",
         "key_id_totp": "你的密钥的标识",
         "none": "禁用",
@@ -894,12 +894,12 @@
         "scan_qr_code": "请用你认证应用扫描或手动输入此码。",
         "select": "请选择",
         "set_tfa": "设置两步验证方法",
-        "start_u2f_validation": "开始认证",
+        "start_webauthn_validation": "开始认证",
         "tfa": "两步验证(2FA)",
         "totp": "TOTP认证 (Google Authenticator、Authy等)",
-        "u2f": "U2F认证",
-        "waiting_usb_auth": "<i>等待USB设备...</i><br><br>现在请触碰你的U2F USB设备上的按钮。",
-        "waiting_usb_register": "<i>等待USB设备...</i><br><br>请在上方输入你的密码并请触碰你的U2F USB设备上的按钮以确认注册U2F设备。",
+        "webauthn": "WebAuthn认证",
+        "waiting_usb_auth": "<i>等待USB设备...</i><br><br>现在请触碰你的WebAuthn USB设备上的按钮。",
+        "waiting_usb_register": "<i>等待USB设备...</i><br><br>请在上方输入你的密码并请触碰你的WebAuthn USB设备上的按钮以确认注册WebAuthn设备。",
         "yubi_otp": "Yubico OTP认证"
     },
     "user": {

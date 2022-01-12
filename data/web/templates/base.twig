@@ -160,7 +160,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
       }
     }
   }
-  }
+}
   $(window).load(function() {
     $(".overlay").hide();
   });
@@ -181,32 +181,52 @@ function recursiveBase64StrToArrayBuffer(obj) {
       backdrop: 'static',
       keyboard: false
     });
-    $('#u2f_status_auth').html('<p><i class="bi bi-arrow-repeat icon-spin"></i> ' + lang_tfa.init_u2f + '</p>');
+    $('#webauthn_status_auth').html('<p><i class="bi bi-arrow-repeat icon-spin"></i> ' + lang_tfa.init_u2f + '</p>');
     $('#ConfirmTFAModal').on('shown.bs.modal', function(){
       $(this).find('input[name=token]').focus();
-      // If U2F
-      if(document.getElementById("u2f_auth_data") !== null) {
-        $.ajax({
-          type: "GET",
-          cache: false,
-          dataType: 'script',
-          url: "/api/v1/get/u2f-authentication/{{ pending_mailcow_cc_username|url_encode(true)|default('null') }}",
-          complete: function(data){
-            $('#u2f_status_auth').html(lang_tfa.waiting_usb_auth);
-            data;
-            setTimeout(function() {
-              console.log("Ready to authenticate");
-              u2f.sign(appId, challenge, registeredKeys, function(data) {
-                var form = document.getElementById('u2f_auth_form');
-                var auth = document.getElementById('u2f_auth_data');
-                console.log("Authenticate callback", data);
-                auth.value = JSON.stringify(data);
-                form.submit();
-              });
-            }, 1000);
-          }
+      // If WebAuthn
+      if(document.getElementById("webauthn_auth_data") !== null) {
+        // Check Browser support
+        if (!window.fetch || !navigator.credentials || !navigator.credentials.create) {
+            window.alert('Browser not supported for WebAuthn.');
+            return;
+        }
+
+        window.fetch("/api/v1/get/webauthn-tfa-get-args", {method:'GET',cache:'no-cache'}).then(response => {
+            return response.json();
+        }).then(json => {
+            console.log(json);
+            if (json.success === false) throw new Error();
+      
+            recursiveBase64StrToArrayBuffer(json);
+            return json;
+        }).then(getCredentialArgs => {
+            console.log(getCredentialArgs);
+            return navigator.credentials.get(getCredentialArgs);
+        }).then(cred => {
+            console.log(cred);
+            return {
+                id: cred.rawId ? arrayBufferToBase64(cred.rawId) : null,
+                clientDataJSON: cred.response.clientDataJSON  ? arrayBufferToBase64(cred.response.clientDataJSON) : null,
+                authenticatorData: cred.response.authenticatorData ? arrayBufferToBase64(cred.response.authenticatorData) : null,
+                signature : cred.response.signature ? arrayBufferToBase64(cred.response.signature) : null
+            };
+        }).then(JSON.stringify).then(function(AuthenticatorAttestationResponse) {
+            console.log(AuthenticatorAttestationResponse);
+
+            var form = document.getElementById('webauthn_auth_form');
+            var auth = document.getElementById('webauthn_auth_data');
+            console.log("Authenticate callback", AuthenticatorAttestationResponse);
+            auth.value = AuthenticatorAttestationResponse;
+            form.submit();
+        }).catch(function(err) {
+            if (typeof err.message === 'undefined') {
+                mailcow_alert_box(lang_fido2.fido2_validation_failed, "danger");
+            } else {
+                mailcow_alert_box(lang_fido2.fido2_validation_failed + ":<br><i>" + err.message + "</i>", "danger");
+            }
         });
-      }
+      } 
     });
     $('#ConfirmTFAModal').on('hidden.bs.modal', function(){
       $.ajax({
@@ -327,46 +347,62 @@ function recursiveBase64StrToArrayBuffer(obj) {
       });
       $("option:selected").prop("selected", false);
     }
-    if ($(this).val() == "u2f") {
-      $('#U2FModal').modal('show');
-      $("option:selected").prop("selected", false);
-      $("#start_u2f_register").click(function(){
-        $('#u2f_return_code').html('');
-        $('#u2f_return_code').hide();
-        $('#u2f_status_reg').html('<p><i class="bi bi-arrow-repeat icon-spin"></i> ' + lang_tfa.init_u2f + '</p>');
-        $.ajax({
-          type: "GET",
-          cache: false,
-          dataType: 'script',
-          url: "/api/v1/get/u2f-registration/{{ mailcow_cc_username|url_encode(true)|default('null') }}",
-          complete: function(data){
-            data;
-            setTimeout(function() {
-              console.log("Ready to register");
-              $('#u2f_status_reg').html(lang_tfa.waiting_usb_register);
-              u2f.register(appId, registerRequests, registeredKeys, function(deviceResponse) {
-                var form  = document.getElementById('u2f_reg_form');
-                var reg   = document.getElementById('u2f_register_data');
-                console.log("Register callback: ", data);
-                if (deviceResponse.errorCode && deviceResponse.errorCode != 0) {
-                  var u2f_return_code = document.getElementById('u2f_return_code');
-                  u2f_return_code.style.display = u2f_return_code.style.display === 'none' ? '' : null;
-                  if (deviceResponse.errorCode == "4") {
-                    deviceResponse.errorCode = "4 - The presented device is not eligible for this request. For a registration request this may mean that the token is already registered, and for a sign request it may mean that the token does not know the presented key handle";
-                  }
-                  else if (deviceResponse.errorCode == "5") {
-                    deviceResponse.errorCode = "5 - Timeout reached before request could be satisfied.";
-                  }
-                  u2f_return_code.innerHTML = lang_tfa.error_code + ': ' + deviceResponse.errorCode + ' ' + lang_tfa.reload_retry;
-                  return;
+    if ($(this).val() == "webauthn") {
+        // check if Browser is supported
+        if (!window.fetch || !navigator.credentials || !navigator.credentials.create) {
+            window.alert('Browser not supported.');
+            return;
+        }
+
+        // show modal
+        $('#WebAuthnModal').modal('show');
+        $("option:selected").prop("selected", false);
+
+        $("#start_webauthn_register").click(() => {
+            var key_id = document.getElementsByName('key_id')[1].value;
+
+            // fetch WebAuthn CreateArgs
+            window.fetch("/api/v1/get/webauthn-tfa-registration/{{ mailcow_cc_username|url_encode(true)|default('null') }}", {method:'GET',cache:'no-cache'}).then(response => {
+                return response.json();
+            }).then(json => {
+                console.log(json);
+
+                if (json.success === false) throw new Error(json.msg);
+
+                recursiveBase64StrToArrayBuffer(json);
+
+                return json;
+            }).then(createCredentialArgs => {
+                return navigator.credentials.create(createCredentialArgs);
+            }).then(cred => {
+                return {
+                    clientDataJSON: cred.response.clientDataJSON  ? arrayBufferToBase64(cred.response.clientDataJSON) : null,
+                    attestationObject: cred.response.attestationObject ? arrayBufferToBase64(cred.response.attestationObject) : null,
+                    key_id: key_id,
+                    tfa_method: "webauthn"
+                };
+            }).then(JSON.stringify).then(AuthenticatorAttestationResponse => {
+                console.log(AuthenticatorAttestationResponse);
+
+                return window.fetch("/api/v1/add/webauthn-tfa-registration", {method:'POST', body: AuthenticatorAttestationResponse, cache:'no-cache'});
+            }).then(response => {
+                return response.json();
+            }).then(json => {
+                console.log(json);
+
+                if (json.success) {
+                    console.log("success");
+                    window.location.reload();
+                } else {
+                    throw new Error(json.msg);
                 }
-                reg.value = JSON.stringify(deviceResponse);
-                form.submit();
-              });
-            }, 1000);
-          }
+            }).catch(function(err) {
+                console.log(err);
+                var webauthn_return_code = document.getElementById('webauthn_return_code');
+                webauthn_return_code.style.display = webauthn_return_code.style.display === 'none' ? '' : null;
+                webauthn_return_code.innerHTML = lang_tfa.error_code + ': ' + err + ' ' + lang_tfa.reload_retry;
+            });
         });
-      });
     }
     if ($(this).val() == "none") {
       $('#DisableTFAModal').modal('show');
