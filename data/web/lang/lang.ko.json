@@ -417,7 +417,7 @@
         "tls_policy_map_parameter_invalid": "유효하지 않은 정책 매개변수",
         "totp_verification_failed": "TOTP 확인 실패",
         "transport_dest_exists": "전송 목적지 \"%s\"가 존재합니다.",
-        "u2f_verification_failed": "U2F 검증 실패: %s",
+        "webauthn_verification_failed": "WebAuthn 검증 실패: %s",
         "unknown": "알 수 없는 오류 발생",
         "unknown_tfa_method": "알 수 없는 TFA 방식",
         "unlimited_quota_acl": "ACL에 따라 할당량을 무제한으로 둘 수 없습니다.",
@@ -852,7 +852,7 @@
         "ui_texts": "Saved changes to UI texts",
         "upload_success": "File uploaded successfully",
         "verified_totp_login": "Verified TOTP login",
-        "verified_u2f_login": "Verified U2F login",
+        "verified_webauthn_login": "Verified WebAuthn login",
         "verified_yotp_login": "Verified Yubico OTP login"
     },
     "tfa": {
@@ -863,7 +863,7 @@
         "disable_tfa": "Disable TFA until next successful login",
         "enter_qr_code": "Your TOTP code if your device cannot scan QR codes",
         "error_code": "Error code",
-        "init_u2f": "Initializing, please wait...",
+        "init_webauthn": "Initializing, please wait...",
         "key_id": "An identifier for your YubiKey",
         "key_id_totp": "An identifier for your key",
         "none": "Deactivate",
@@ -871,12 +871,12 @@
         "scan_qr_code": "Please scan the following code with your authenticator app or enter the code manually.",
         "select": "Please select",
         "set_tfa": "Set two-factor authentication method",
-        "start_u2f_validation": "Start validation",
+        "start_webauthn_validation": "Start validation",
         "tfa": "Two-factor authentication",
         "totp": "Time-based OTP (Google Authenticator, Authy, etc.)",
-        "u2f": "U2F authentication",
-        "waiting_usb_auth": "<i>Waiting for USB device...</i><br><br>Please tap the button on your U2F USB device now.",
-        "waiting_usb_register": "<i>Waiting for USB device...</i><br><br>Please enter your password above and confirm your U2F registration by tapping the button on your U2F USB device.",
+        "webauthn": "WebAuthn authentication",
+        "waiting_usb_auth": "<i>Waiting for USB device...</i><br><br>Please tap the button on your WebAuthn USB device now.",
+        "waiting_usb_register": "<i>Waiting for USB device...</i><br><br>Please enter your password above and confirm your WebAuthn registration by tapping the button on your WebAuthn USB device.",
         "yubi_otp": "Yubico OTP authentication"
     },
     "user": {

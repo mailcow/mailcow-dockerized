@@ -1142,7 +1142,7 @@ function set_tfa($_data) {
   global $yubi;
   global $u2f;
   global $tfa;
-  $_data_log = $_data;
+  $_data_log = $_data["tfa_method"];
   !isset($_data_log['confirm_password']) ?: $_data_log['confirm_password'] = '*';
   $username = $_SESSION['mailcow_cc_username'];
   if (!isset($_SESSION['mailcow_cc_role']) || empty($username)) {
@@ -1183,6 +1183,8 @@ function set_tfa($_data) {
       return false;
     }
   }
+
+
   switch ($_data["tfa_method"]) {
     case "yubi_otp":
       $key_id = (!isset($_data["key_id"])) ? 'unidentified' : $_data["key_id"];
@@ -1240,14 +1242,18 @@ function set_tfa($_data) {
         'msg' => array('object_modified', htmlspecialchars($username))
       );
     break;
+    // u2f - deprecated, should be removed
     case "u2f":
       $key_id = (!isset($_data["key_id"])) ? 'unidentified' : $_data["key_id"];
       try {
         $reg = $u2f->doRegister(json_decode($_SESSION['regReq']), json_decode($_data['token']));
+
         $stmt = $pdo->prepare("DELETE FROM `tfa` WHERE `username` = :username AND `authmech` != 'u2f'");
         $stmt->execute(array(':username' => $username));
+
         $stmt = $pdo->prepare("INSERT INTO `tfa` (`username`, `key_id`, `authmech`, `keyHandle`, `publicKey`, `certificate`, `counter`, `active`) VALUES (?, ?, 'u2f', ?, ?, ?, ?, '1')");
         $stmt->execute(array($username, $key_id, $reg->keyHandle, $reg->publicKey, $reg->certificate, $reg->counter));
+
         $_SESSION['return'][] =  array(
           'type' => 'success',
           'log' => array(__FUNCTION__, $_data_log),
@@ -1285,6 +1291,29 @@ function set_tfa($_data) {
           'msg' => 'totp_verification_failed'
         );
       }
+    break;
+    case "webauthn":
+        $key_id = (!isset($_data["key_id"])) ? 'unidentified' : $_data["key_id"];
+
+        $stmt = $pdo->prepare("DELETE FROM `tfa` WHERE `username` = :username AND `authmech` != 'webauthn'");
+        $stmt->execute(array(':username' => $username));
+
+        $stmt = $pdo->prepare("INSERT INTO `tfa` (`username`, `key_id`, `authmech`, `keyHandle`, `publicKey`, `certificate`, `counter`, `active`)
+        VALUES (?, ?, 'webauthn', ?, ?, ?, ?, '1')");
+        $stmt->execute(array(
+            $username,
+            $key_id,
+            base64_encode($_data['registration']->credentialId),
+            $_data['registration']->credentialPublicKey,
+            $_data['registration']->certificate,
+            0
+        ));
+    
+        $_SESSION['return'][] =  array(
+            'type' => 'success',
+            'log' => array(__FUNCTION__, $_data_log),
+            'msg' => array('object_modified', $username)
+        );
     break;
     case "none":
       $stmt = $pdo->prepare("DELETE FROM `tfa` WHERE `username` = :username");
@@ -1516,6 +1545,7 @@ function get_tfa($username = null) {
         }
         return $data;
       break;
+      // u2f - deprecated, should be removed
       case "u2f":
         $data['name'] = "u2f";
         $data['pretty'] = "Fido U2F";
@@ -1534,7 +1564,7 @@ function get_tfa($username = null) {
         $data['pretty'] = "HMAC-based OTP";
         return $data;
       break;
-       case "totp":
+      case "totp":
         $data['name'] = "totp";
         $data['pretty'] = "Time-based OTP";
         $stmt = $pdo->prepare("SELECT `id`, `key_id`, `secret` FROM `tfa` WHERE `authmech` = 'totp' AND `username` = :username");
@@ -1546,7 +1576,20 @@ function get_tfa($username = null) {
           $data['additional'][] = $row;
         }
         return $data;
-        break;
+      break;
+      case "webauthn":
+        $data['name'] = "webauthn";
+        $data['pretty'] = "WebAuthn";
+        $stmt = $pdo->prepare("SELECT `id`, `key_id` FROM `tfa` WHERE `authmech` = 'webauthn' AND `username` = :username");
+        $stmt->execute(array(
+          ':username' => $username,
+        ));
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        while($row = array_shift($rows)) {
+          $data['additional'][] = $row;
+        }
+        return $data;
+      break;
       default:
         $data['name'] = 'none';
         $data['pretty'] = "-";
@@ -1560,140 +1603,261 @@ function get_tfa($username = null) {
     return $data;
   }
 }
-function verify_tfa_login($username, $token) {
-  global $pdo;
-  global $yubi;
-  global $u2f;
-  global $tfa;
-  $stmt = $pdo->prepare("SELECT `authmech` FROM `tfa`
-      WHERE `username` = :username AND `active` = '1'");
-  $stmt->execute(array(':username' => $username));
-  $row = $stmt->fetch(PDO::FETCH_ASSOC);
+function verify_tfa_login($username, $_data, $WebAuthn) {
+    global $pdo;
+    global $yubi;
+    global $u2f;
+    global $tfa;
+    $stmt = $pdo->prepare("SELECT `authmech` FROM `tfa`
+        WHERE `username` = :username AND `active` = '1'");
+    $stmt->execute(array(':username' => $username));
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-  switch ($row["authmech"]) {
-    case "yubi_otp":
-      if (!ctype_alnum($token) || strlen($token) != 44) {
-        $_SESSION['return'][] =  array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__, $username, '*'),
-          'msg' => array('yotp_verification_failed', 'token length error')
-        );
-        return false;
-      }
-      $yubico_modhex_id = substr($token, 0, 12);
-      $stmt = $pdo->prepare("SELECT `id`, `secret` FROM `tfa`
-          WHERE `username` = :username
-          AND `authmech` = 'yubi_otp'
-          AND `active`='1'
-          AND `secret` LIKE :modhex");
-      $stmt->execute(array(':username' => $username, ':modhex' => '%' . $yubico_modhex_id));
-      $row = $stmt->fetch(PDO::FETCH_ASSOC);
-      $yubico_auth = explode(':', $row['secret']);
-      $yubi = new Auth_Yubico($yubico_auth[0], $yubico_auth[1]);
-      $yauth = $yubi->verify($token);
-      if (PEAR::isError($yauth)) {
-        $_SESSION['return'][] =  array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__, $username, '*'),
-          'msg' => array('yotp_verification_failed', $yauth->getMessage())
-        );
-        return false;
-      }
-      else {
-        $_SESSION['tfa_id'] = $row['id'];
-        $_SESSION['return'][] =  array(
-          'type' => 'success',
-          'log' => array(__FUNCTION__, $username, '*'),
-          'msg' => 'verified_yotp_login'
-        );
-        return true;
-      }
-      $_SESSION['return'][] =  array(
-        'type' => 'danger',
-        'log' => array(__FUNCTION__, $username, '*'),
-        'msg' => array('yotp_verification_failed', 'unknown')
-      );
-    return false;
-  break;
-  case "u2f":
-    try {
-      $reg = $u2f->doAuthenticate(json_decode($_SESSION['authReq']), get_u2f_registrations($username), json_decode($token));
-      $stmt = $pdo->prepare("SELECT `id` FROM `tfa` WHERE `keyHandle` = ?");
-      $stmt->execute(array($reg->keyHandle));
-      $row_key_id = $stmt->fetch(PDO::FETCH_ASSOC);
-      $_SESSION['tfa_id'] = $row_key_id['id'];
-      $_SESSION['authReq'] = null;
-      $_SESSION['return'][] =  array(
-        'type' => 'success',
-        'log' => array(__FUNCTION__, $username, '*'),
-        'msg' => 'verified_u2f_login'
-      );
-      return true;
-    }
-    catch (Exception $e) {
-      $_SESSION['return'][] =  array(
-        'type' => 'danger',
-        'log' => array(__FUNCTION__, $username, '*'),
-        'msg' => array('u2f_verification_failed', $e->getMessage())
-      );
-      $_SESSION['regReq'] = null;
-      return false;
-    }
-    $_SESSION['return'][] =  array(
-      'type' => 'danger',
-      'log' => array(__FUNCTION__, $username, '*'),
-      'msg' => array('u2f_verification_failed', 'unknown')
-    );
-    return false;
-  break;
-  case "hotp":
-      return false;
-  break;
-  case "totp":
-    try {
-      $stmt = $pdo->prepare("SELECT `id`, `secret` FROM `tfa`
-          WHERE `username` = :username
-          AND `authmech` = 'totp'
-          AND `active`='1'");
-      $stmt->execute(array(':username' => $username));
-      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-      foreach ($rows as $row) {
-        if ($tfa->verifyCode($row['secret'], $_POST['token']) === true) {
-          $_SESSION['tfa_id'] = $row['id'];
-          $_SESSION['return'][] =  array(
-            'type' => 'success',
+    switch ($row["authmech"]) {
+        case "yubi_otp":
+            if (!ctype_alnum($_data['token']) || strlen($_data['token']) != 44) {
+                $_SESSION['return'][] =  array(
+                    'type' => 'danger',
+                    'log' => array(__FUNCTION__, $username, '*'),
+                    'msg' => array('yotp_verification_failed', 'token length error')
+                );
+                return false;
+            }
+            $yubico_modhex_id = substr($_data['token'], 0, 12);
+            $stmt = $pdo->prepare("SELECT `id`, `secret` FROM `tfa`
+                WHERE `username` = :username
+                AND `authmech` = 'yubi_otp'
+                AND `active`='1'
+                AND `secret` LIKE :modhex");
+            $stmt->execute(array(':username' => $username, ':modhex' => '%' . $yubico_modhex_id));
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $yubico_auth = explode(':', $row['secret']);
+            $yubi = new Auth_Yubico($yubico_auth[0], $yubico_auth[1]);
+            $yauth = $yubi->verify($_data['token']);
+            if (PEAR::isError($yauth)) {
+                $_SESSION['return'][] =  array(
+                    'type' => 'danger',
+                    'log' => array(__FUNCTION__, $username, '*'),
+                    'msg' => array('yotp_verification_failed', $yauth->getMessage())
+                );
+                return false;
+            }
+            else {
+                $_SESSION['tfa_id'] = $row['id'];
+                $_SESSION['return'][] =  array(
+                    'type' => 'success',
+                    'log' => array(__FUNCTION__, $username, '*'),
+                    'msg' => 'verified_yotp_login'
+                );
+                return true;
+            }
+            $_SESSION['return'][] =  array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $username, '*'),
+                'msg' => array('yotp_verification_failed', 'unknown')
+            );
+            return false;
+        break;
+        case "hotp":
+            return false;
+        break;
+        case "totp":
+            try {
+            $stmt = $pdo->prepare("SELECT `id`, `secret` FROM `tfa`
+                WHERE `username` = :username
+                AND `authmech` = 'totp'
+                AND `active`='1'");
+            $stmt->execute(array(':username' => $username));
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($rows as $row) {
+                if ($tfa->verifyCode($row['secret'], $_data['token']) === true) {
+                $_SESSION['tfa_id'] = $row['id'];
+                $_SESSION['return'][] =  array(
+                    'type' => 'success',
+                    'log' => array(__FUNCTION__, $username, '*'),
+                    'msg' => 'verified_totp_login'
+                );
+                return true;
+                }
+            }
+            $_SESSION['return'][] =  array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $username, '*'),
+                'msg' => 'totp_verification_failed'
+            );
+            return false;
+            }
+            catch (PDOException $e) {
+            $_SESSION['return'][] =  array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $username, '*'),
+                'msg' => array('mysql_error', $e)
+            );
+            return false;
+            }
+        break;
+        // u2f - deprecated, should be removed
+        case "u2f":
+            $tokenData = json_decode($_data['token']);
+            $clientDataJSON = base64_decode($tokenData->clientDataJSON);
+            $authenticatorData = base64_decode($tokenData->authenticatorData);
+            $signature = base64_decode($tokenData->signature);
+            $id = base64_decode($tokenData->id);
+            $challenge = $_SESSION['challenge'];
+
+            $stmt = $pdo->prepare("SELECT `key_id`, `keyHandle`, `username`, `publicKey` FROM `tfa` WHERE `keyHandle` = :tokenId");
+            $stmt->execute(array(':tokenId' => $tokenData->id));
+            $process_webauthn = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (empty($process_webauthn) || empty($process_webauthn['publicKey']) || empty($process_webauthn['username'])) return false;
+            
+            if ($process_webauthn['publicKey'] === false) {
+                $_SESSION['return'][] =  array(
+                    'type' => 'danger',
+                    'log' => array(__FUNCTION__, $username, '*'),
+                    'msg' => array('webauthn_verification_failed', 'publicKey not found')
+                );
+                return false;
+            }
+            try {
+                $WebAuthn->processGet($clientDataJSON, $authenticatorData, $signature, $process_webauthn['publicKey'], $challenge, null, $GLOBALS['WEBAUTHN_UV_FLAG_LOGIN'], $GLOBALS['WEBAUTHN_USER_PRESENT_FLAG']);
+            }
+            catch (Throwable $ex) {
+                $_SESSION['return'][] =  array(
+                    'type' => 'danger',
+                    'log' => array(__FUNCTION__, $username, '*'),
+                    'msg' => array('webauthn_verification_failed', $ex->getMessage())
+                );
+                return false;
+            }
+
+            
+            $stmt = $pdo->prepare("SELECT `superadmin` FROM `admin` WHERE `username` = :username");
+            $stmt->execute(array(':username' => $process_webauthn['username']));
+            $obj_props = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($obj_props['superadmin'] === 1) {
+                $_SESSION["mailcow_cc_role"] = "admin";
+            }
+            elseif ($obj_props['superadmin'] === 0) {
+                $_SESSION["mailcow_cc_role"] = "domainadmin";
+            }
+            else {
+                $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `username` = :username");
+                $stmt->execute(array(':username' => $process_webauthn['username']));
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                if ($row['username'] == $process_webauthn['username']) {
+                $_SESSION["mailcow_cc_role"] = "user";
+                }
+            }
+
+        
+            if ($process_webauthn['username'] != $_SESSION['pending_mailcow_cc_username']){
+                $_SESSION['return'][] =  array(
+                    'type' => 'danger',
+                    'log' => array(__FUNCTION__, $username, '*'),
+                    'msg' => array('webauthn_verification_failed', 'user who requests does not match with sql entry')
+                );
+                return false;
+            }
+
+
+            $_SESSION["mailcow_cc_username"] = $process_webauthn['username'];
+            $_SESSION['tfa_id'] = $process_webauthn['key_id'];
+            $_SESSION['authReq'] = null;
+            unset($_SESSION["challenge"]);
+            $_SESSION['return'][] =  array(
+                'type' => 'success',
+                'log' => array("webauthn_login"),
+                'msg' => array('logged_in_as', $process_webauthn['username'])
+            );
+            return true;
+        break;
+        case "webauthn":
+            $tokenData = json_decode($_data['token']);
+            $clientDataJSON = base64_decode($tokenData->clientDataJSON);
+            $authenticatorData = base64_decode($tokenData->authenticatorData);
+            $signature = base64_decode($tokenData->signature);
+            $id = base64_decode($tokenData->id);
+            $challenge = $_SESSION['challenge'];
+
+            $stmt = $pdo->prepare("SELECT `key_id`, `keyHandle`, `username`, `publicKey` FROM `tfa` WHERE `keyHandle` = :tokenId");
+            $stmt->execute(array(':tokenId' => $tokenData->id));
+            $process_webauthn = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (empty($process_webauthn) || empty($process_webauthn['publicKey']) || empty($process_webauthn['username'])) return false;
+            
+            if ($process_webauthn['publicKey'] === false) {
+                $_SESSION['return'][] =  array(
+                    'type' => 'danger',
+                    'log' => array(__FUNCTION__, $username, '*'),
+                    'msg' => array('webauthn_verification_failed', 'publicKey not found')
+                );
+                return false;
+            }
+            try {
+                $WebAuthn->processGet($clientDataJSON, $authenticatorData, $signature, $process_webauthn['publicKey'], $challenge, null, $GLOBALS['WEBAUTHN_UV_FLAG_LOGIN'], $GLOBALS['WEBAUTHN_USER_PRESENT_FLAG']);
+            }
+            catch (Throwable $ex) {
+                $_SESSION['return'][] =  array(
+                    'type' => 'danger',
+                    'log' => array(__FUNCTION__, $username, '*'),
+                    'msg' => array('webauthn_verification_failed', $ex->getMessage())
+                );
+                return false;
+            }
+
+            
+            $stmt = $pdo->prepare("SELECT `superadmin` FROM `admin` WHERE `username` = :username");
+            $stmt->execute(array(':username' => $process_webauthn['username']));
+            $obj_props = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($obj_props['superadmin'] === 1) {
+                $_SESSION["mailcow_cc_role"] = "admin";
+            }
+            elseif ($obj_props['superadmin'] === 0) {
+                $_SESSION["mailcow_cc_role"] = "domainadmin";
+            }
+            else {
+                $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `username` = :username");
+                $stmt->execute(array(':username' => $process_webauthn['username']));
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                if ($row['username'] == $process_webauthn['username']) {
+                $_SESSION["mailcow_cc_role"] = "user";
+                }
+            }
+
+        
+            if ($process_webauthn['username'] != $_SESSION['pending_mailcow_cc_username']){
+                $_SESSION['return'][] =  array(
+                    'type' => 'danger',
+                    'log' => array(__FUNCTION__, $username, '*'),
+                    'msg' => array('webauthn_verification_failed', 'user who requests does not match with sql entry')
+                );
+                return false;
+            }
+
+
+            $_SESSION["mailcow_cc_username"] = $process_webauthn['username'];
+            $_SESSION['tfa_id'] = $process_webauthn['key_id'];
+            $_SESSION['authReq'] = null;
+            unset($_SESSION["challenge"]);
+            $_SESSION['return'][] =  array(
+                'type' => 'success',
+                'log' => array("webauthn_login"),
+                'msg' => array('logged_in_as', $process_webauthn['username'])
+            );
+            return true;
+        break;
+        default:
+            $_SESSION['return'][] =  array(
+            'type' => 'danger',
             'log' => array(__FUNCTION__, $username, '*'),
-            'msg' => 'verified_totp_login'
-          );
-          return true;
-        }
-      }
-      $_SESSION['return'][] =  array(
-        'type' => 'danger',
-        'log' => array(__FUNCTION__, $username, '*'),
-        'msg' => 'totp_verification_failed'
-      );
-      return false;
+            'msg' => 'unknown_tfa_method'
+            );
+            return false;
+        break;
     }
-    catch (PDOException $e) {
-      $_SESSION['return'][] =  array(
-        'type' => 'danger',
-        'log' => array(__FUNCTION__, $username, '*'),
-        'msg' => array('mysql_error', $e)
-      );
-      return false;
-    }
-  break;
-  default:
-    $_SESSION['return'][] =  array(
-      'type' => 'danger',
-      'log' => array(__FUNCTION__, $username, '*'),
-      'msg' => 'unknown_tfa_method'
-    );
+
     return false;
-  break;
-  }
-  return false;
 }
 function admin_api($access, $action, $data = null) {
   global $pdo;
@@ -1955,6 +2119,7 @@ function rspamd_ui($action, $data = null) {
     break;
   }
 }
+// u2f - deprecated, should be removed
 function get_u2f_registrations($username) {
   global $pdo;
   $sel = $pdo->prepare("SELECT * FROM `tfa` WHERE `authmech` = 'u2f' AND `username` = ? AND `active` = '1'");

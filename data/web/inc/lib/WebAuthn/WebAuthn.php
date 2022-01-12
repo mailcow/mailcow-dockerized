@@ -1,7 +1,7 @@
 <?php
 
-namespace WebAuthn;
-use WebAuthn\Binary\ByteBuffer;
+namespace lbuchs\WebAuthn;
+use lbuchs\WebAuthn\Binary\ByteBuffer;
 require_once 'WebAuthnException.php';
 require_once 'Binary/ByteBuffer.php';
 require_once 'Attestation/AttestationObject.php';
@@ -69,16 +69,20 @@ class WebAuthn {
     /**
      * add a root certificate to verify new registrations
      * @param string $path file path of / directory with root certificates
+     * @param array|null $certFileExtensions if adding a direction, all files with provided extension are added. default: pem, crt, cer, der
      */
-    public function addRootCertificates($path) {
+    public function addRootCertificates($path, $certFileExtensions=null) {
         if (!\is_array($this->_caFiles)) {
             $this->_caFiles = array();
+        }
+        if ($certFileExtensions === null) {
+            $certFileExtensions = array('pem', 'crt', 'cer', 'der');
         }
         $path = \rtrim(\trim($path), '\\/');
         if (\is_dir($path)) {
             foreach (\scandir($path) as $ca) {
-                if (\is_file($path . '/' . $ca)) {
-                    $this->addRootCertificates($path . '/' . $ca);
+                if (\is_file($path . DIRECTORY_SEPARATOR . $ca) && \in_array(\strtolower(\pathinfo($ca, PATHINFO_EXTENSION)), $certFileExtensions)) {
+                    $this->addRootCertificates($path . DIRECTORY_SEPARATOR . $ca);
                 }
             }
         } else if (\is_file($path) && !\in_array(\realpath($path), $this->_caFiles)) {
@@ -273,10 +277,11 @@ class WebAuthn {
      * @param string|ByteBuffer $challenge binary used challange
      * @param bool $requireUserVerification true, if the device must verify user (e.g. by biometric data or pin)
      * @param bool $requireUserPresent false, if the device must NOT check user presence (e.g. by pressing a button)
+     * @param bool $failIfRootMismatch false, if there should be no error thrown if root certificate doesn't match
      * @return \stdClass
      * @throws WebAuthnException
      */
-    public function processCreate($clientDataJSON, $attestationObject, $challenge, $requireUserVerification=false, $requireUserPresent=true) {
+    public function processCreate($clientDataJSON, $attestationObject, $challenge, $requireUserVerification=false, $requireUserPresent=true, $failIfRootMismatch=true) {
         $clientDataHash = \hash('sha256', $clientDataJSON, true);
         $clientData = \json_decode($clientDataJSON);
         $challenge = $challenge instanceof ByteBuffer ? $challenge : new ByteBuffer($challenge);
@@ -318,18 +323,21 @@ class WebAuthn {
         }
 
         // 15. If validation is successful, obtain a list of acceptable trust anchors
-        if (is_array($this->_caFiles) && !$attestationObject->validateRootCertificate($this->_caFiles)) {
+        $rootValid = is_array($this->_caFiles) ? $attestationObject->validateRootCertificate($this->_caFiles) : null;
+        if ($failIfRootMismatch && is_array($this->_caFiles) && !$rootValid) {
             throw new WebAuthnException('invalid root certificate', WebAuthnException::CERTIFICATE_NOT_TRUSTED);
         }
 
         // 10. Verify that the User Present bit of the flags in authData is set.
-        if ($requireUserPresent && !$attestationObject->getAuthenticatorData()->getUserPresent()) {
+        $userPresent = $attestationObject->getAuthenticatorData()->getUserPresent();
+        if ($requireUserPresent && !$userPresent) {
             throw new WebAuthnException('user not present during authentication', WebAuthnException::USER_PRESENT);
         }
 
         // 11. If user verification is required for this registration, verify that the User Verified bit of the flags in authData is set.
-        if ($requireUserVerification && !$attestationObject->getAuthenticatorData()->getUserVerified()) {
-            throw new WebAuthnException('user not verificated during authentication', WebAuthnException::USER_VERIFICATED);
+        $userVerified = $attestationObject->getAuthenticatorData()->getUserVerified();
+        if ($requireUserVerification && !$userVerified) {
+            throw new WebAuthnException('user not verified during authentication', WebAuthnException::USER_VERIFICATED);
         }
 
         $signCount = $attestationObject->getAuthenticatorData()->getSignCount();
@@ -340,6 +348,7 @@ class WebAuthn {
         // prepare data to store for future logins
         $data = new \stdClass();
         $data->rpId = $this->_rpId;
+        $data->attestationFormat = $attestationObject->getAttestationFormatName();
         $data->credentialId = $attestationObject->getAuthenticatorData()->getCredentialId();
         $data->credentialPublicKey = $attestationObject->getAuthenticatorData()->getPublicKeyPem();
         $data->certificateChain = $attestationObject->getCertificateChain();
@@ -348,6 +357,9 @@ class WebAuthn {
         $data->certificateSubject = $attestationObject->getCertificateSubject();
         $data->signatureCounter = $this->_signatureCounter;
         $data->AAGUID = $attestationObject->getAuthenticatorData()->getAAGUID();
+        $data->rootValid = $rootValid;
+        $data->userPresent = $userPresent;
+        $data->userVerified = $userVerified;
         return $data;
     }
 
@@ -451,6 +463,92 @@ class WebAuthn {
         }
 
         return true;
+    }
+
+    /**
+     * Downloads root certificates from FIDO Alliance Metadata Service (MDS) to a specific folder
+     * https://fidoalliance.org/metadata/
+     * @param string $certFolder Folder path to save the certificates in PEM format.
+     * @param bool $deleteCerts=true
+     * @return int number of cetificates
+     * @throws WebAuthnException
+     */
+    public function queryFidoMetaDataService($certFolder, $deleteCerts=true) {
+        $url = 'https://mds.fidoalliance.org/';
+        $raw = null;
+        if (\function_exists('curl_init')) {
+            $ch = \curl_init($url);
+            \curl_setopt($ch, CURLOPT_HEADER, false);
+            \curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            \curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            \curl_setopt($ch, CURLOPT_USERAGENT, 'github.com/lbuchs/WebAuthn - A simple PHP WebAuthn server library');
+            $raw = \curl_exec($ch);
+            \curl_close($ch);
+        } else {
+            $raw = \file_get_contents($url);
+        }
+
+        $certFolder = \rtrim(\realpath($certFolder), '\\/');
+        if (!is_dir($certFolder)) {
+            throw new WebAuthnException('Invalid folder path for query FIDO Alliance Metadata Service');
+        }
+
+        if (!\is_string($raw)) {
+            throw new WebAuthnException('Unable to query FIDO Alliance Metadata Service');
+        }
+
+        $jwt = \explode('.', $raw);
+        if (\count($jwt) !== 3) {
+            throw new WebAuthnException('Invalid JWT from FIDO Alliance Metadata Service');
+        }
+
+        if ($deleteCerts) {
+            foreach (\scandir($certFolder) as $ca) {
+                if (\substr($ca, -4) === '.pem') {
+                    if (\unlink($certFolder . DIRECTORY_SEPARATOR . $ca) === false) {
+                        throw new WebAuthnException('Cannot delete certs in folder for FIDO Alliance Metadata Service');
+                    }
+                }
+            }
+        }
+
+        list($header, $payload, $hash) = $jwt;
+        $payload = Binary\ByteBuffer::fromBase64Url($payload)->getJson();
+
+        $count = 0;
+        if (\is_object($payload) && \property_exists($payload, 'entries') && \is_array($payload->entries)) {
+            foreach ($payload->entries as $entry) {
+                if (\is_object($entry) && \property_exists($entry, 'metadataStatement') && \is_object($entry->metadataStatement)) {
+                    $description = $entry->metadataStatement->description ?? null;
+                    $attestationRootCertificates = $entry->metadataStatement->attestationRootCertificates ?? null;
+
+                    if ($description && $attestationRootCertificates) {
+
+                        // create filename
+                        $certFilename = \preg_replace('/[^a-z0-9]/i', '_', $description);
+                        $certFilename = \trim(\preg_replace('/\_{2,}/i', '_', $certFilename),'_') . '.pem';
+                        $certFilename = \strtolower($certFilename);
+
+                        // add certificate
+                        $certContent = $description . "\n";
+                        $certContent .= \str_repeat('-', \mb_strlen($description)) . "\n";
+
+                        foreach ($attestationRootCertificates as $attestationRootCertificate) {
+                            $count++;
+                            $certContent .= "\n-----BEGIN CERTIFICATE-----\n";
+                            $certContent .= \chunk_split(\trim($attestationRootCertificate), 64, "\n");
+                            $certContent .= "-----END CERTIFICATE-----\n";
+                        }
+
+                        if (\file_put_contents($certFolder . DIRECTORY_SEPARATOR . $certFilename, $certContent) === false) {
+                            throw new WebAuthnException('unable to save certificate from FIDO Alliance Metadata Service');
+                        }
+                    }
+                }
+            }
+        }
+
+        return $count;
     }
 
     // -----------------------------------------------

@@ -443,9 +443,9 @@
         "set_tfa": "Definir el mètode d'autenticació de dos factors",
         "tfa": "Autenticació de dos factors",
         "totp": "OTP basat en temps (Google Authenticator etc.)",
-        "u2f": "Autenticació U2F",
-        "waiting_usb_auth": "<i>Esperant el dispositiu USB...</i><br><br>Apreta el botó del teu dispositiu USB U2F ara.",
-        "waiting_usb_register": "<i>Esperant el dispositiu USB...</i><br><br>Posa el teu password i confirma el registre del teu U2F apretant el botó del teu dispositiiu USB U2F.",
+        "webauthn": "Autenticació WebAuthn",
+        "waiting_usb_auth": "<i>Esperant el dispositiu USB...</i><br><br>Apreta el botó del teu dispositiu USB WebAuthn ara.",
+        "waiting_usb_register": "<i>Esperant el dispositiu USB...</i><br><br>Posa el teu password i confirma el registre del teu WebAuthn apretant el botó del teu dispositiiu USB WebAuthn.",
         "yubi_otp": "Autenticació OTP de Yubico"
     },
     "user": {

@@ -1,9 +1,10 @@
 <?php
 
 
-namespace WebAuthn\Attestation\Format;
-use WebAuthn\WebAuthnException;
-use WebAuthn\Binary\ByteBuffer;
+namespace lbuchs\WebAuthn\Attestation\Format;
+use lbuchs\WebAuthn\Attestation\AuthenticatorData;
+use lbuchs\WebAuthn\WebAuthnException;
+use lbuchs\WebAuthn\Binary\ByteBuffer;
 
 class U2f extends FormatBase {
     private $_alg = -7;
