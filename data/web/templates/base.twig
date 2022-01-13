@@ -181,8 +181,11 @@ function recursiveBase64StrToArrayBuffer(obj) {
       backdrop: 'static',
       keyboard: false
     });
-    $('#webauthn_status_auth').html('<p><i class="bi bi-arrow-repeat icon-spin"></i> ' + lang_tfa.init_webauthn + '</p>');
-    $('#ConfirmTFAModal').on('shown.bs.modal', function(){
+
+    $('#webauthn_status_auth').html('<p>Press to start authentication</p>');
+    $('#start_webauthn_confirmation').click(function(){
+      $('#webauthn_status_auth').html('<p><i class="bi bi-arrow-repeat icon-spin"></i> ' + lang_tfa.init_webauthn + '</p>');
+
       $(this).find('input[name=token]').focus();
       // If WebAuthn
       if(document.getElementById("webauthn_auth_data") !== null) {
