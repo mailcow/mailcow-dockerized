@@ -464,7 +464,11 @@ if (isset($_GET['query'])) {
           if (isset($_SESSION["mailcow_cc_role"])) {
               $excludeCredentialIds = null;
 
-              $createArgs = $WebAuthn->getCreateArgs($_SESSION["mailcow_cc_username"], $_SESSION["mailcow_cc_username"], $_SESSION["mailcow_cc_username"], 30, false, $GLOBALS['WEBAUTHN_UV_FLAG_REGISTER'], true);
+              // getCreateArgs($userId, $userName, $userDisplayName, $timeout=20, $requireResidentKey=false, $requireUserVerification=false, $crossPlatformAttachment=null, $excludeCredentialIds=array())
+              // cross-platform: true, if type internal is not allowed
+        //    //        false, if only internal is allowed
+        //    //        null, if internal and cross-platform is allowed
+              $createArgs = $WebAuthn->getCreateArgs($_SESSION["mailcow_cc_username"], $_SESSION["mailcow_cc_username"], $_SESSION["mailcow_cc_username"], 30, false, $GLOBALS['WEBAUTHN_UV_FLAG_REGISTER'], null);
               
               print(json_encode($createArgs));
               $_SESSION['challenge'] = $WebAuthn->getChallenge();
