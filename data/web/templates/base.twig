@@ -392,7 +392,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
 
                 if (json.success) {
                     console.log("success");
-                    window.location.reload();
+                    window.location.href = window.location.href;
                 } else {
                     throw new Error(json.msg);
                 }
