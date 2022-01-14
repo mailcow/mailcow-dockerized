@@ -182,12 +182,11 @@ function recursiveBase64StrToArrayBuffer(obj) {
       keyboard: false
     });
 
-    $('#webauthn_status_auth').html('<p>Press to start authentication</p>');
+    // validate WebAuthn tfa
     $('#start_webauthn_confirmation').click(function(){
       $('#webauthn_status_auth').html('<p><i class="bi bi-arrow-repeat icon-spin"></i> ' + lang_tfa.init_webauthn + '</p>');
 
       $(this).find('input[name=token]').focus();
-      // If WebAuthn
       if(document.getElementById("webauthn_auth_data") !== null) {
         // Check Browser support
         if (!window.fetch || !navigator.credentials || !navigator.credentials.create) {
@@ -195,19 +194,18 @@ function recursiveBase64StrToArrayBuffer(obj) {
             return;
         }
 
+        // fetch webauthn auth args
         window.fetch("/api/v1/get/webauthn-tfa-get-args", {method:'GET',cache:'no-cache'}).then(response => {
             return response.json();
         }).then(json => {
-            console.log(json);
             if (json.success === false) throw new Error();
       
             recursiveBase64StrToArrayBuffer(json);
             return json;
         }).then(getCredentialArgs => {
-            console.log(getCredentialArgs);
+            // get credentials
             return navigator.credentials.get(getCredentialArgs);
         }).then(cred => {
-            console.log(cred);
             return {
                 id: cred.rawId ? arrayBufferToBase64(cred.rawId) : null,
                 clientDataJSON: cred.response.clientDataJSON  ? arrayBufferToBase64(cred.response.clientDataJSON) : null,
@@ -215,23 +213,20 @@ function recursiveBase64StrToArrayBuffer(obj) {
                 signature : cred.response.signature ? arrayBufferToBase64(cred.response.signature) : null
             };
         }).then(JSON.stringify).then(function(AuthenticatorAttestationResponse) {
-            console.log(AuthenticatorAttestationResponse);
-
+            // send request by submit
             var form = document.getElementById('webauthn_auth_form');
             var auth = document.getElementById('webauthn_auth_data');
-            console.log("Authenticate callback", AuthenticatorAttestationResponse);
             auth.value = AuthenticatorAttestationResponse;
             form.submit();
         }).catch(function(err) {
-            if (typeof err.message === 'undefined') {
-                mailcow_alert_box(lang_fido2.fido2_validation_failed, "danger");
-            } else {
-                mailcow_alert_box(lang_fido2.fido2_validation_failed + ":<br><i>" + err.message + "</i>", "danger");
-            }
+            var webauthn_return_code = document.getElementById('webauthn_return_code');
+            webauthn_return_code.style.display = webauthn_return_code.style.display === 'none' ? '' : null;
+            webauthn_return_code.innerHTML = lang_tfa.error_code + ': ' + err + ' ' + lang_tfa.reload_retry;
         });
       } 
     });
     $('#ConfirmTFAModal').on('hidden.bs.modal', function(){
+      // cancel pending login
       $.ajax({
         type: "GET",
         cache: false,
@@ -364,18 +359,16 @@ function recursiveBase64StrToArrayBuffer(obj) {
         $("#start_webauthn_register").click(() => {
             var key_id = document.getElementsByName('key_id')[1].value;
 
-            // fetch WebAuthn CreateArgs
+            // fetch WebAuthn create args
             window.fetch("/api/v1/get/webauthn-tfa-registration/{{ mailcow_cc_username|url_encode(true)|default('null') }}", {method:'GET',cache:'no-cache'}).then(response => {
                 return response.json();
             }).then(json => {
-                console.log(json);
-
                 if (json.success === false) throw new Error(json.msg);
-
                 recursiveBase64StrToArrayBuffer(json);
 
                 return json;
             }).then(createCredentialArgs => {
+                // create credentials
                 return navigator.credentials.create(createCredentialArgs);
             }).then(cred => {
                 return {
@@ -385,16 +378,13 @@ function recursiveBase64StrToArrayBuffer(obj) {
                     tfa_method: "webauthn"
                 };
             }).then(JSON.stringify).then(AuthenticatorAttestationResponse => {
-                console.log(AuthenticatorAttestationResponse);
-
+                // send request
                 return window.fetch("/api/v1/add/webauthn-tfa-registration", {method:'POST', body: AuthenticatorAttestationResponse, cache:'no-cache'});
             }).then(response => {
                 return response.json();
             }).then(json => {
-                console.log(json);
-
                 if (json.success) {
-                    console.log("success");
+                    // reload on success
                     window.location.href = window.location.href;
                 } else {
                     throw new Error(json.msg);
