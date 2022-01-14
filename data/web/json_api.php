@@ -448,13 +448,16 @@ if (isset($_GET['query'])) {
         break;
         case "fido2-get-args":
           header('Content-Type: application/json');
-          // Login without username, no ids!
-          // $ids = fido2(array("action" => "get_all_cids"));
-          // if (count($ids) == 0) {
-            // return;
-          // }
-          $ids = NULL;
-          $getArgs = $WebAuthn->getGetArgs($ids, 30, true, true, true, true, $GLOBALS['FIDO2_UV_FLAG_LOGIN']);
+          // fetch allowed credentialIds
+          $cids = fido2(array("action" => "get_all_cids"));
+          if (count($cids) == 0) {  
+            print(json_encode(array(
+                'type' => 'error',
+                'msg' => 'Cannot find matching credentialIds'
+            )));
+          }
+
+          $getArgs = $WebAuthn->getGetArgs($cids, 30, true, true, true, true, $GLOBALS['FIDO2_UV_FLAG_LOGIN']);
           print(json_encode($getArgs));
           $_SESSION['challenge'] = $WebAuthn->getChallenge();
           return;
@@ -485,6 +488,12 @@ if (isset($_GET['query'])) {
           $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
           while($row = array_shift($rows)) {
             $cids[] = base64_decode($row['keyHandle']);
+          }
+          if (count($cids) == 0) {
+            print(json_encode(array(
+                'type' => 'error',
+                'msg' => 'Cannot find matching credentialIds'
+            )));
           }
 
           $getArgs = $WebAuthn->getGetArgs($cids, 30, true, true, true, true, $GLOBALS['WEBAUTHN_UV_FLAG_LOGIN']);
