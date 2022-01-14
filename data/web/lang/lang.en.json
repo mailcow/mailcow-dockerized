@@ -990,7 +990,7 @@
         "enter_qr_code": "Your TOTP code if your device cannot scan QR codes",
         "error_code": "Error code",
         "init_webauthn": "Initializing, please wait...",
-        "key_id": "An identifier for your YubiKey",
+        "key_id": "An identifier for your Device",
         "key_id_totp": "An identifier for your key",
         "none": "Deactivate",
         "reload_retry": "- (reload browser if the error persists)",

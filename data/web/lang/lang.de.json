@@ -983,7 +983,7 @@
         "enter_qr_code": "Falls Sie den angezeigten QR-Code nicht scannen können, verwenden Sie bitte nachstehenden Sicherheitsschlüssel",
         "error_code": "Fehlercode",
         "init_webauthn": "Initialisiere, bitte warten...",
-        "key_id": "Ein Namen für diesen YubiKey",
+        "key_id": "Ein Namen für dieses Gerät",
         "key_id_totp": "Ein eindeutiger Name",
         "none": "Deaktiviert",
         "reload_retry": "- (bei persistierendem Fehler, bitte Browserfenster neu laden)",
