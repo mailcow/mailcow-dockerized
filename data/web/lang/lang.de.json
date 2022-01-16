@@ -994,6 +994,8 @@
         "tfa": "Zwei-Faktor-Authentifizierung",
         "tfa_token_invalid": "TFA-Token ungültig!",
         "totp": "Time-based-OTP (Google Authenticator etc.)",
+        "u2f_deprecated": "Es sieht so aus als wurde der Schlüssel mit der alten U2F Methode registriert. Wir werden die Zwei-Faktor-Authentifizierung deaktivieren und deinen Schlüssel löschen.",
+        "u2f_deprecated_important": "Bitte registriere den Schlüssel im Adminbereich mit der neuen WebAuthn Methode.",
         "webauthn": "WebAuthn-Authentifizierung",
         "waiting_usb_auth": "<i>Warte auf USB-Gerät...</i><br><br>Bitte jetzt den vorgesehenen Taster des USB-Gerätes berühren.",
         "waiting_usb_register": "<i>Warte auf USB-Gerät...</i><br><br>Bitte zuerst das obere Passwortfeld ausfüllen und erst dann den vorgesehenen Taster des USB-Gerätes berühren.",
