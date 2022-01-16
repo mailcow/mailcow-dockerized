@@ -1698,80 +1698,11 @@ function verify_tfa_login($username, $_data, $WebAuthn) {
         break;
         // u2f - deprecated, should be removed
         case "u2f":
-            $tokenData = json_decode($_data['token']);
-            $clientDataJSON = base64_decode($tokenData->clientDataJSON);
-            $authenticatorData = base64_decode($tokenData->authenticatorData);
-            $signature = base64_decode($tokenData->signature);
-            $id = base64_decode($tokenData->id);
-            $challenge = $_SESSION['challenge'];
+            // delete old keys that used u2f
+            $stmt = $pdo->prepare("DELETE FROM `tfa` WHERE `authmech` = :authmech AND `username` = :username");
+            $stmt->execute(array(':authmech' => 'u2f', ':username' => $username));
 
-            $stmt = $pdo->prepare("SELECT `key_id`, `keyHandle`, `username`, `publicKey` FROM `tfa` WHERE `keyHandle` = :tokenId");
-            $stmt->execute(array(':tokenId' => $tokenData->id));
-            $process_webauthn = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if (empty($process_webauthn) || empty($process_webauthn['publicKey']) || empty($process_webauthn['username'])) return false;
-            
-            if ($process_webauthn['publicKey'] === false) {
-                $_SESSION['return'][] =  array(
-                    'type' => 'danger',
-                    'log' => array(__FUNCTION__, $username, '*'),
-                    'msg' => array('webauthn_verification_failed', 'publicKey not found')
-                );
-                return false;
-            }
-            try {
-                $WebAuthn->processGet($clientDataJSON, $authenticatorData, $signature, $process_webauthn['publicKey'], $challenge, null, $GLOBALS['WEBAUTHN_UV_FLAG_LOGIN'], $GLOBALS['WEBAUTHN_USER_PRESENT_FLAG']);
-            }
-            catch (Throwable $ex) {
-                $_SESSION['return'][] =  array(
-                    'type' => 'danger',
-                    'log' => array(__FUNCTION__, $username, '*'),
-                    'msg' => array('webauthn_verification_failed', $ex->getMessage())
-                );
-                return false;
-            }
-
-            
-            $stmt = $pdo->prepare("SELECT `superadmin` FROM `admin` WHERE `username` = :username");
-            $stmt->execute(array(':username' => $process_webauthn['username']));
-            $obj_props = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($obj_props['superadmin'] === 1) {
-                $_SESSION["mailcow_cc_role"] = "admin";
-            }
-            elseif ($obj_props['superadmin'] === 0) {
-                $_SESSION["mailcow_cc_role"] = "domainadmin";
-            }
-            else {
-                $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `username` = :username");
-                $stmt->execute(array(':username' => $process_webauthn['username']));
-                $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                if ($row['username'] == $process_webauthn['username']) {
-                $_SESSION["mailcow_cc_role"] = "user";
-                }
-            }
-
-        
-            if ($process_webauthn['username'] != $_SESSION['pending_mailcow_cc_username']){
-                $_SESSION['return'][] =  array(
-                    'type' => 'danger',
-                    'log' => array(__FUNCTION__, $username, '*'),
-                    'msg' => array('webauthn_verification_failed', 'user who requests does not match with sql entry')
-                );
-                return false;
-            }
-
-
-            $_SESSION["mailcow_cc_username"] = $process_webauthn['username'];
-            $_SESSION['tfa_id'] = $process_webauthn['key_id'];
-            $_SESSION['authReq'] = null;
-            unset($_SESSION["challenge"]);
-            $_SESSION['return'][] =  array(
-                'type' => 'success',
-                'log' => array("webauthn_login"),
-                'msg' => array('logged_in_as', $process_webauthn['username'])
-            );
             return true;
-        break;
         case "webauthn":
             $tokenData = json_decode($_data['token']);
             $clientDataJSON = base64_decode($tokenData->clientDataJSON);
