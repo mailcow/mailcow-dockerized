@@ -392,45 +392,6 @@ if (isset($_GET['query'])) {
         exit();
       }
       switch ($category) {
-        // u2f - deprecated, should be removed
-        case "u2f-registration":
-          header('Content-Type: application/javascript');
-          if (isset($_SESSION["mailcow_cc_role"]) && $_SESSION["mailcow_cc_username"] == $object) {
-            list($req, $sigs) = $u2f->getRegisterData(get_u2f_registrations($object));
-            $_SESSION['regReq'] = json_encode($req);
-            $_SESSION['regSigs'] = json_encode($sigs);
-            echo 'var req = ' . json_encode($req) . ';';
-            echo 'var registeredKeys = ' . json_encode($sigs) . ';';
-            echo 'var appId = req.appId;';
-            echo 'var registerRequests = [{version: req.version, challenge: req.challenge}];';
-            return;
-          }
-          else {
-            return;
-          }
-        break;
-        case "u2f-authentication":
-          header('Content-Type: application/javascript');
-          if (isset($_SESSION['pending_mailcow_cc_username']) && $_SESSION['pending_mailcow_cc_username'] == $object) {
-            $auth_data = $u2f->getAuthenticateData(get_u2f_registrations($object));
-            $challenge = $auth_data[0]->challenge;
-            $appId = $auth_data[0]->appId;
-            foreach ($auth_data as $each) {
-              $key = array(); // Empty array
-              $key['version']   = $each->version;
-              $key['keyHandle'] = $each->keyHandle;
-              $registeredKey[]  = $key;
-            }
-            $_SESSION['authReq']  = json_encode($auth_data);
-            echo 'var appId = "' . $appId . '";';
-            echo 'var challenge = ' . json_encode($challenge) . ';';
-            echo 'var registeredKeys = ' . json_encode($registeredKey) . ';';
-            return;
-          }
-          else {
-            return;
-          }
-        break;
         // fido2
         case "fido2-registration":
           header('Content-Type: application/json');

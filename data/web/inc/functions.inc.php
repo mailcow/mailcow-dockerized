@@ -1140,7 +1140,6 @@ function is_valid_domain_name($domain_name) {
 function set_tfa($_data) {
   global $pdo;
   global $yubi;
-  global $u2f;
   global $tfa;
   $_data_log = $_data["tfa_method"];
   !isset($_data_log['confirm_password']) ?: $_data_log['confirm_password'] = '*';
@@ -1241,35 +1240,6 @@ function set_tfa($_data) {
         'log' => array(__FUNCTION__, $_data_log),
         'msg' => array('object_modified', htmlspecialchars($username))
       );
-    break;
-    // u2f - deprecated, should be removed
-    case "u2f":
-      $key_id = (!isset($_data["key_id"])) ? 'unidentified' : $_data["key_id"];
-      try {
-        $reg = $u2f->doRegister(json_decode($_SESSION['regReq']), json_decode($_data['token']));
-
-        $stmt = $pdo->prepare("DELETE FROM `tfa` WHERE `username` = :username AND `authmech` != 'u2f'");
-        $stmt->execute(array(':username' => $username));
-
-        $stmt = $pdo->prepare("INSERT INTO `tfa` (`username`, `key_id`, `authmech`, `keyHandle`, `publicKey`, `certificate`, `counter`, `active`) VALUES (?, ?, 'u2f', ?, ?, ?, ?, '1')");
-        $stmt->execute(array($username, $key_id, $reg->keyHandle, $reg->publicKey, $reg->certificate, $reg->counter));
-
-        $_SESSION['return'][] =  array(
-          'type' => 'success',
-          'log' => array(__FUNCTION__, $_data_log),
-          'msg' => array('object_modified', $username)
-        );
-        $_SESSION['regReq'] = null;
-      }
-      catch (Exception $e) {
-        $_SESSION['return'][] =  array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__, $_data_log),
-          'msg' => array('u2f_verification_failed', $e->getMessage())
-        );
-        $_SESSION['regReq'] = null;
-        return false;
-      }
     break;
     case "totp":
       $key_id = (!isset($_data["key_id"])) ? 'unidentified' : $_data["key_id"];
@@ -2050,13 +2020,7 @@ function rspamd_ui($action, $data = null) {
     break;
   }
 }
-// u2f - deprecated, should be removed
-function get_u2f_registrations($username) {
-  global $pdo;
-  $sel = $pdo->prepare("SELECT * FROM `tfa` WHERE `authmech` = 'u2f' AND `username` = ? AND `active` = '1'");
-  $sel->execute(array($username));
-  return $sel->fetchAll(PDO::FETCH_OBJ);
-}
+
 function get_logs($application, $lines = false) {
   if ($lines === false) {
     $lines = $GLOBALS['LOG_LINES'] - 1;

@@ -1001,6 +1001,8 @@
         "tfa": "Two-factor authentication",
         "tfa_token_invalid": "TFA token invalid",
         "totp": "Time-based OTP (Google Authenticator, Authy, etc.)",
+        "u2f_deprecated": "It seems that your Key was registered using the deprecated U2F method. We will deactivate Two-Factor-Authenticaiton for you and delete your Key.",
+        "u2f_deprecated_important": "Please register your Key in the admin panel with the new WebAuthn method.",
         "webauthn": "WebAuthn authentication",
         "waiting_usb_auth": "<i>Waiting for USB device...</i><br><br>Please tap the button on your USB device now.",
         "waiting_usb_register": "<i>Waiting for USB device...</i><br><br>Please enter your password above and confirm your registration by tapping the button on your USB device.",
