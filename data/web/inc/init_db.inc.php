@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "31102021_0620";
+    $db_version = "31102021_0621";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -1189,6 +1189,9 @@ function init_db_schema() {
     
     // Mitigate imapsync pipemess issue
     $pdo->query("UPDATE `imapsync` SET `custom_params` = '' WHERE `custom_params` LIKE '%pipemess%';");
+    
+    // Migrate webauthn tfa
+    $stmt = $pdo->query("ALTER TABLE `tfa` MODIFY COLUMN `authmech` ENUM('yubi_otp', 'u2f', 'hotp', 'totp', 'webauthn')");
 
     // Inject admin if not exists
     $stmt = $pdo->query("SELECT NULL FROM `admin`"); 
