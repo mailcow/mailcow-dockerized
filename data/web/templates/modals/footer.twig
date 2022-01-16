@@ -191,8 +191,8 @@
         {# leave this here to inform users that u2f is deprecated #}
         {% if pending_tfa_method == 'u2f' %}
         <form role="form" method="post" id="u2f_auth_form">
-          <p>lang.tfa.u2f_deprecated</p>
-          <p><b>lang.tfa.u2f_deprecated_important</b></p>
+          <p>{{ lang.tfa.u2f_deprecated }}</p>
+          <p><b>{{ lang.tfa.u2f_deprecated_important }}</b></p>
           <input type="hidden" name="token" value="destroy" />
           <input type="hidden" name="tfa_method" value="u2f">
           <input type="hidden" name="verify_tfa_login"/><br/>
