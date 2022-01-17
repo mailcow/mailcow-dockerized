@@ -385,7 +385,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
             }).then(json => {
                 if (json.success) {
                     // reload on success
-                    window.location.href = window.location.href;
+                    window.location = window.location.href.split("#")[0];
                 } else {
                     throw new Error(json.msg);
                 }
