@@ -13,6 +13,7 @@ RUN apk add --virtual .build-deps \
 && apk add -U python3 \
   iptables \
   ip6tables \
+  xtables-addons \
   tzdata \
   py3-pip \
   musl-dev \
