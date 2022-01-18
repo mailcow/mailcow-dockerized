@@ -1359,8 +1359,8 @@ function fido2($_data) {
       if (!isset($_data['cid']) || empty($_data['cid'])) {
         return false;
       }
-      $stmt = $pdo->prepare("SELECT `certificateSubject`, `username`, `credentialPublicKey`, SHA2(`credentialId`, 256) AS `cid` FROM `fido2` WHERE TO_BASE64(`credentialId`) = :cid");
-      $stmt->execute(array(':cid' => $_data['cid']));
+      $stmt = $pdo->prepare("SELECT `certificateSubject`, `username`, `credentialPublicKey`, SHA2(`credentialId`, 256) AS `cid` FROM `fido2` WHERE `credentialId` = :cid");
+      $stmt->execute(array(':cid' => base64_decode($_data['cid'])));
       $row = $stmt->fetch(PDO::FETCH_ASSOC);
       if (empty($row) || empty($row['credentialPublicKey']) || empty($row['username'])) {
         return false;
