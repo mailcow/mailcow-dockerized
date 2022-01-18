@@ -1141,7 +1141,7 @@ function set_tfa($_data) {
   global $pdo;
   global $yubi;
   global $tfa;
-  $_data_log = $_data["tfa_method"];
+  $_data_log = $_data;
   !isset($_data_log['confirm_password']) ?: $_data_log['confirm_password'] = '*';
   $username = $_SESSION['mailcow_cc_username'];
   if (!isset($_SESSION['mailcow_cc_role']) || empty($username)) {
