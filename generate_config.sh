@@ -359,7 +359,7 @@ ACME_CONTACT=
 #   huawei certified
 #   trustkey certified
 #   bsi certified
-WEBAUTHN_DISABLE_ROOTCA=
+WEBAUTHN_DISABLE_ROOTCA=n
 
 EOF
 
