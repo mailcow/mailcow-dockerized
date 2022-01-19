@@ -307,7 +307,7 @@ CONFIG_ARRAY=(
   "ADDITIONAL_SERVER_NAMES"
   "ACME_CONTACT"
   "WATCHDOG_VERBOSE"
-  "WEBAUTHN_DISABLE_ROOTCA"
+  "WEBAUTHN_RESPECT_ROOTCA"
 )
 
 sed -i --follow-symlinks '$a\' mailcow.conf
@@ -515,24 +515,12 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# https://mailcow.github.io/mailcow-dockerized-docs/debug-reset-tls/' >> mailcow.conf
       echo 'ACME_CONTACT=' >> mailcow.conf
   fi
-  elif [[ ${option} == "WEBAUTHN_DISABLE_ROOTCA" ]]; then
+  elif [[ ${option} == "WEBAUTHN_RESPECT_ROOTCA" ]]; then
     if ! grep -q ${option} mailcow.conf; then
-      echo "# Disable including device root ca's for WebAuthn" >> mailcow.conf
-      echo '# setting WEBAUTHN_DISABLE_ROOTCA=y will allow you to use Fido2 devices from untrusted Manufacturers' >> mailcow.conf
-      echo '# It will solve "Error: invalid root certificate" at TFA device registration' >> mailcow.conf
-      echo '# Suported devices are' >> mailcow.conf
-      echo '#   solo certified' >> mailcow.conf
-      echo '#   apple certified' >> mailcow.conf
-      echo '#   nitro certified' >> mailcow.conf
-      echo '#   yubico certified' >> mailcow.conf
-      echo '#   hypersecu certified' >> mailcow.conf
-      echo '#   globalSign certified' >> mailcow.conf
-      echo '#   googleHardware certified' >> mailcow.conf
-      echo '#   microsoftTpmCollection certified' >> mailcow.conf
-      echo '#   huawei certified' >> mailcow.conf
-      echo '#   trustkey certified' >> mailcow.conf
-      echo '#   bsi certified' >> mailcow.conf
-      echo 'WEBAUTHN_DISABLE_ROOTCA=n' >> mailcow.conf
+      echo "# Enable webauthn device manufacturer verification" >> mailcow.conf
+      echo '# After setting WEBAUTHN_RESPECT_ROOTCA=y only devices from trusted manufacturers are allowed' >> mailcow.conf
+      echo '# root certificates can be placed for validation under mailcow-dockerized/data/web/inc/lib/WebAuthn/rootCertificates' >> mailcow.conf
+      echo 'WEBAUTHN_RESPECT_ROOTCA=n' >> mailcow.conf
     fi
 elif [[ ${option} == "WATCHDOG_VERBOSE" ]]; then
     if ! grep -q ${option} mailcow.conf; then
