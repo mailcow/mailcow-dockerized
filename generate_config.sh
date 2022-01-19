@@ -344,6 +344,23 @@ DOVECOT_MASTER_PASS=
 # https://mailcow.github.io/mailcow-dockerized-docs/debug-reset_tls/
 ACME_CONTACT=
 
+# Disable including device root ca's for WebAuthn
+# setting WEBAUTHN_DISABLE_ROOTCA=y will allow you to use Fido2 devices from untrusted Manufacturers
+# It will solve "Error: invalid root certificate" at TFA device registration
+# Suported devices are 
+#   solo certified
+#   apple certified
+#   nitro certified
+#   yubico certified
+#   hypersecu certified
+#   globalSign certified
+#   googleHardware certified
+#   microsoftTpmCollection certified
+#   huawei certified
+#   trustkey certified
+#   bsi certified
+WEBAUTHN_DISABLE_ROOTCA=
+
 EOF
 
 mkdir -p data/assets/ssl
