@@ -157,7 +157,7 @@ services:
         - ALLOW_ADMIN_EMAIL_LOGIN=${ALLOW_ADMIN_EMAIL_LOGIN:-n}
         - MASTER=${MASTER:-y}
         - DEV_MODE=${DEV_MODE:-n}
-        - WEBAUTHN_DISABLE_ROOTCA=${WEBAUTHN_DISABLE_ROOTCA:-n}
+        - WEBAUTHN_RESPECT_ROOTCA=${WEBAUTHN_RESPECT_ROOTCA:-n}
       restart: always
       networks:
         mailcow-network:
