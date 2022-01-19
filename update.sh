@@ -532,7 +532,7 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '#   huawei certified' >> mailcow.conf
       echo '#   trustkey certified' >> mailcow.conf
       echo '#   bsi certified' >> mailcow.conf
-      echo 'WEBAUTHN_DISABLE_ROOTCA=' >> mailcow.conf
+      echo 'WEBAUTHN_DISABLE_ROOTCA=n' >> mailcow.conf
     fi
 elif [[ ${option} == "WATCHDOG_VERBOSE" ]]; then
     if ! grep -q ${option} mailcow.conf; then
