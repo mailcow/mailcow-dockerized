@@ -307,7 +307,7 @@ CONFIG_ARRAY=(
   "ADDITIONAL_SERVER_NAMES"
   "ACME_CONTACT"
   "WATCHDOG_VERBOSE"
-  "WEBAUTHN_RESPECT_ROOTCA"
+  "WEBAUTHN_ONLY_TRUSTED_VENDORS"
 )
 
 sed -i --follow-symlinks '$a\' mailcow.conf
@@ -515,12 +515,12 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# https://mailcow.github.io/mailcow-dockerized-docs/debug-reset-tls/' >> mailcow.conf
       echo 'ACME_CONTACT=' >> mailcow.conf
   fi
-  elif [[ ${option} == "WEBAUTHN_RESPECT_ROOTCA" ]]; then
+  elif [[ ${option} == "WEBAUTHN_ONLY_TRUSTED_VENDORS" ]]; then
     if ! grep -q ${option} mailcow.conf; then
-      echo "# Enable webauthn device manufacturer verification" >> mailcow.conf
-      echo '# After setting WEBAUTHN_RESPECT_ROOTCA=y only devices from trusted manufacturers are allowed' >> mailcow.conf
+      echo "# WebAuthn device manufacturer verification" >> mailcow.conf
+      echo '# After setting WEBAUTHN_ONLY_TRUSTED_VENDORS=y only devices from trusted manufacturers are allowed' >> mailcow.conf
       echo '# root certificates can be placed for validation under mailcow-dockerized/data/web/inc/lib/WebAuthn/rootCertificates' >> mailcow.conf
-      echo 'WEBAUTHN_RESPECT_ROOTCA=n' >> mailcow.conf
+      echo 'WEBAUTHN_ONLY_TRUSTED_VENDORS=n' >> mailcow.conf
     fi
 elif [[ ${option} == "WATCHDOG_VERBOSE" ]]; then
     if ! grep -q ${option} mailcow.conf; then
