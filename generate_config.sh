@@ -344,10 +344,10 @@ DOVECOT_MASTER_PASS=
 # https://mailcow.github.io/mailcow-dockerized-docs/debug-reset_tls/
 ACME_CONTACT=
 
-# Enable webauthn device manufacturer verification
-# After setting WEBAUTHN_RESPECT_ROOTCA=y only devices from trusted manufacturers are allowed
+# WebAuthn device manufacturer verification
+# After setting WEBAUTHN_ONLY_TRUSTED_VENDORS=y only devices from trusted manufacturers are allowed
 # root certificates can be placed for validation under mailcow-dockerized/data/web/inc/lib/WebAuthn/rootCertificates
-WEBAUTHN_RESPECT_ROOTCA=n
+WEBAUTHN_ONLY_TRUSTED_VENDORS=n
 
 EOF
 
