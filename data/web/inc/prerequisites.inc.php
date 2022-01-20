@@ -63,7 +63,7 @@ $tfa = new RobThree\Auth\TwoFactorAuth($OTP_LABEL, 6, 30, 'sha1', $qrprovider);
 $formats = $GLOBALS['FIDO2_FORMATS'];
 $WebAuthn = new lbuchs\WebAuthn\WebAuthn('WebAuthn Library', $_SERVER['HTTP_HOST'], $formats);
 // only include root ca's when needed
-if (getenv('WEBAUTHN_RESPECT_ROOTCA') == 'y') $WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates');
+if (getenv('WEBAUTHN_ONLY_TRUSTED_VENDORS') == 'y') $WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates');
 
 // Redis
 $redis = new Redis();
