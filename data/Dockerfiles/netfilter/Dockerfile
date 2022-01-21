@@ -1,4 +1,4 @@
-FROM alpine:3.14
+FROM alpine:3.15
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 ENV XTABLES_LIBDIR /usr/lib/xtables
@@ -13,10 +13,11 @@ RUN apk add --virtual .build-deps \
 && apk add -U python3 \
   iptables \
   ip6tables \
+  xtables-addons \
   tzdata \
   py3-pip \
   musl-dev \
-&& pip3 install --upgrade pip \
+&& pip3 install --ignore-installed --upgrade pip \
   python-iptables \
   redis \
   ipaddress \

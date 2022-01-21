@@ -175,6 +175,9 @@ $MAILBOX_DEFAULT_ATTRIBUTES['pop3_access'] = true;
 // Mailbox has SMTP access by default
 $MAILBOX_DEFAULT_ATTRIBUTES['smtp_access'] = true;
 
+// Mailbox has sieve access by default
+$MAILBOX_DEFAULT_ATTRIBUTES['sieve_access'] = true;
+
 // Mailbox receives notifications about...
 // "add_header" - mail that was put into the Junk folder
 // "reject" - mail that was rejected
@@ -192,10 +195,16 @@ $SHOW_LAST_LOGIN = true;
 // true = required
 // false = preferred
 // string 'required' 'preferred' 'discouraged'
+$WEBAUTHN_UV_FLAG_REGISTER = false;
+$WEBAUTHN_UV_FLAG_LOGIN = false;
+$WEBAUTHN_USER_PRESENT_FLAG = true;
+
 $FIDO2_UV_FLAG_REGISTER = 'preferred';
 $FIDO2_UV_FLAG_LOGIN = 'preferred'; // iOS ignores the key via NFC if required - known issue
 $FIDO2_USER_PRESENT_FLAG = true;
+
 $FIDO2_FORMATS = array('apple', 'android-key', 'android-safetynet', 'fido-u2f', 'none', 'packed', 'tpm');
+
 
 // Set visible Rspamd maps in mailcow UI, do not change unless you know what you are doing
 $RSPAMD_MAPS = array(

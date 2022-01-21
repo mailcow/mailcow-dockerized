@@ -1,8 +1,8 @@
-FROM debian:buster-slim
+FROM debian:bullseye-slim
 
 LABEL maintainer "André Peters <andre.peters@servercow.de>"
 
-ARG CLAMAV=0.103.4
+ARG CLAMAV=0.103.5
 RUN apt-get update && apt-get install -y --no-install-recommends \
   ca-certificates \
   zlib1g-dev \
@@ -23,7 +23,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   dos2unix \
   netcat \
   && rm -rf /var/lib/apt/lists/* \
-  && wget -O - https://fossies.org/linux/misc/clamav-${CLAMAV}.tar.gz | tar xfvz - \
+  && wget -O - https://www.clamav.net/downloads/production/clamav-${CLAMAV}.tar.gz | tar xfvz - \
   && cd clamav-${CLAMAV} \
   && ./configure \
   --prefix=/usr \

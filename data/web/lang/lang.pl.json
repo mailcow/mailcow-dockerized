@@ -329,9 +329,9 @@
         "set_tfa": "Ustaw metodę uwierzytelniania dwuetapowego",
         "tfa": "Uwierzytelnianie dwuetapowe",
         "totp": "Time-based OTP (Google Authenticator itd.)",
-        "u2f": "Uwierzytelnianie U2F",
-        "waiting_usb_auth": "<i>Czekam na urządzenie USB...</i><br><br>Wciśnij teraz przycisk na urządzeniu U2F USB.",
-        "waiting_usb_register": "<i> Czekam na urządzenie USB...</i><br><br>Wprowadź swoje  hasło powyżej i potwierdź rejestrację U2F przez naciśnięcie przycisku na urządzeniu U2F USB.",
+        "webauthn": "Uwierzytelnianie WebAuthn",
+        "waiting_usb_auth": "<i>Czekam na urządzenie USB...</i><br><br>Wciśnij teraz przycisk na urządzeniu WebAuthn USB.",
+        "waiting_usb_register": "<i> Czekam na urządzenie USB...</i><br><br>Wprowadź swoje  hasło powyżej i potwierdź rejestrację WebAuthn przez naciśnięcie przycisku na urządzeniu WebAuthn USB.",
         "yubi_otp": "Uwierzytelnianie Yubico OTP"
     },
     "user": {
