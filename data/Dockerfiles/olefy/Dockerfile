@@ -1,4 +1,4 @@
-FROM alpine:3.14
+FROM alpine:3.15
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 WORKDIR /app
@@ -12,7 +12,7 @@ RUN apk add --virtual .build-deps gcc musl-dev python3-dev libffi-dev openssl-de
   && apk del .build-deps
 #  && sed -i 's/decompress_stream(bytearray(compressed_code))/bytes2str(decompress_stream(bytearray(compressed_code)))/g' /usr/lib/python3.8/site-packages/oletools/olevba.py
 
-ADD https://raw.githubusercontent.com/HeinleinSupport/olefy/master/olefy.py /app/
+ADD olefy.py /app/
 
 RUN chown -R nobody:nobody /app /tmp
 

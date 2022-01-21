@@ -1,8 +1,9 @@
 <?php
 
 
-namespace WebAuthn\Attestation\Format;
-use WebAuthn\WebAuthnException;
+namespace lbuchs\WebAuthn\Attestation\Format;
+use lbuchs\WebAuthn\WebAuthnException;
+use lbuchs\WebAuthn\Attestation\AuthenticatorData;
 
 
 abstract class FormatBase {
@@ -14,9 +15,9 @@ abstract class FormatBase {
     /**
      *
      * @param Array $AttestionObject
-     * @param \WebAuthn\Attestation\AuthenticatorData $authenticatorData
+     * @param AuthenticatorData $authenticatorData
      */
-    public function __construct($AttestionObject, \WebAuthn\Attestation\AuthenticatorData $authenticatorData) {
+    public function __construct($AttestionObject, AuthenticatorData $authenticatorData) {
         $this->_attestationObject = $AttestionObject;
         $this->_authenticatorData = $authenticatorData;
     }
@@ -26,7 +27,7 @@ abstract class FormatBase {
      */
     public function __destruct() {
         // delete X.509 chain certificate file after use
-        if (\is_file($this->_x5c_tempFile)) {
+        if ($this->_x5c_tempFile && \is_file($this->_x5c_tempFile)) {
             \unlink($this->_x5c_tempFile);
         }
     }
@@ -36,7 +37,7 @@ abstract class FormatBase {
      * @return string|null
      */
     public function getCertificateChain() {
-        if (\is_file($this->_x5c_tempFile)) {
+        if ($this->_x5c_tempFile && \is_file($this->_x5c_tempFile)) {
             return \file_get_contents($this->_x5c_tempFile);
         }
         return null;
