@@ -195,10 +195,16 @@ $SHOW_LAST_LOGIN = true;
 // true = required
 // false = preferred
 // string 'required' 'preferred' 'discouraged'
+$WEBAUTHN_UV_FLAG_REGISTER = false;
+$WEBAUTHN_UV_FLAG_LOGIN = false;
+$WEBAUTHN_USER_PRESENT_FLAG = true;
+
 $FIDO2_UV_FLAG_REGISTER = 'preferred';
 $FIDO2_UV_FLAG_LOGIN = 'preferred'; // iOS ignores the key via NFC if required - known issue
 $FIDO2_USER_PRESENT_FLAG = true;
+
 $FIDO2_FORMATS = array('apple', 'android-key', 'android-safetynet', 'fido-u2f', 'none', 'packed', 'tpm');
+
 
 // Set visible Rspamd maps in mailcow UI, do not change unless you know what you are doing
 $RSPAMD_MAPS = array(

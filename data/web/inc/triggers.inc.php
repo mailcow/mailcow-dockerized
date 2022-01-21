@@ -1,13 +1,26 @@
 <?php
 if (isset($_POST["verify_tfa_login"])) {
-  if (verify_tfa_login($_SESSION['pending_mailcow_cc_username'], $_POST["token"])) {
+  if (verify_tfa_login($_SESSION['pending_mailcow_cc_username'], $_POST, $WebAuthn)) {
     $_SESSION['mailcow_cc_username'] = $_SESSION['pending_mailcow_cc_username'];
     $_SESSION['mailcow_cc_role'] = $_SESSION['pending_mailcow_cc_role'];
     unset($_SESSION['pending_mailcow_cc_username']);
     unset($_SESSION['pending_mailcow_cc_role']);
     unset($_SESSION['pending_tfa_method']);
-		header("Location: /user");
+	
+    header("Location: /user");
+  } else {
+    unset($_SESSION['pending_mailcow_cc_username']);
+    unset($_SESSION['pending_mailcow_cc_role']);
+    unset($_SESSION['pending_tfa_method']);
   }
+}
+
+if (isset($_GET["cancel_tfa_login"])) {
+    unset($_SESSION['pending_mailcow_cc_username']);
+    unset($_SESSION['pending_mailcow_cc_role']);
+    unset($_SESSION['pending_tfa_method']);
+
+    header("Location: /");
 }
 
 if (isset($_POST["quick_release"])) {
