@@ -1,14 +1,15 @@
 <?php
 
 
-namespace WebAuthn\Attestation\Format;
-use WebAuthn\WebAuthnException;
-use WebAuthn\Binary\ByteBuffer;
+namespace lbuchs\WebAuthn\Attestation\Format;
+use lbuchs\WebAuthn\Attestation\AuthenticatorData;
+use lbuchs\WebAuthn\WebAuthnException;
+use lbuchs\WebAuthn\Binary\ByteBuffer;
 
 class Apple extends FormatBase {
     private $_x5c;
 
-    public function __construct($AttestionObject, \WebAuthn\Attestation\AuthenticatorData $authenticatorData) {
+    public function __construct($AttestionObject, AuthenticatorData $authenticatorData) {
         parent::__construct($AttestionObject, $authenticatorData);
 
         // check packed data

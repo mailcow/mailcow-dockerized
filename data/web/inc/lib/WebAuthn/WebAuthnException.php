@@ -1,5 +1,5 @@
 <?php
-namespace WebAuthn;
+namespace lbuchs\WebAuthn;
 
 /**
  * @author Lukas Buchs

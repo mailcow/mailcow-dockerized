@@ -1,8 +1,8 @@
 <?php
 
 
-namespace WebAuthn\Binary;
-use WebAuthn\WebAuthnException;
+namespace lbuchs\WebAuthn\Binary;
+use lbuchs\WebAuthn\WebAuthnException;
 
 /**
  * Modified version of https://github.com/madwizard-thomas/webauthn-server/blob/master/src/Format/ByteBuffer.php
@@ -39,7 +39,7 @@ class ByteBuffer implements \JsonSerializable, \Serializable {
     /**
      * create a ByteBuffer from a base64 url encoded string
      * @param string $base64url
-     * @return \WebAuthn\Binary\ByteBuffer
+     * @return ByteBuffer
      */
     public static function fromBase64Url($base64url) {
         $bin = self::_base64url_decode($base64url);
@@ -52,7 +52,7 @@ class ByteBuffer implements \JsonSerializable, \Serializable {
     /**
      * create a ByteBuffer from a base64 url encoded string
      * @param string $hex
-     * @return \WebAuthn\Binary\ByteBuffer
+     * @return ByteBuffer
      */
     public static function fromHex($hex) {
         $bin = \hex2bin($hex);
@@ -65,7 +65,7 @@ class ByteBuffer implements \JsonSerializable, \Serializable {
     /**
      * create a random ByteBuffer
      * @param string $length
-     * @return \WebAuthn\Binary\ByteBuffer
+     * @return ByteBuffer
      */
     public static function randomBuffer($length) {
         if (\function_exists('random_bytes')) { // >PHP 7.0
@@ -95,6 +95,14 @@ class ByteBuffer implements \JsonSerializable, \Serializable {
             throw new WebAuthnException('ByteBuffer: Invalid offset', WebAuthnException::BYTEBUFFER);
         }
         return \ord(\substr($this->_data, $offset, 1));
+    }
+
+    public function getJson($jsonFlags=0) {
+        $data = \json_decode($this->getBinaryString(), null, 512, $jsonFlags);
+        if (\json_last_error() !== JSON_ERROR_NONE) {
+            throw new WebAuthnException(\json_last_error_msg(), WebAuthnException::BYTEBUFFER);
+        }
+        return $data;
     }
 
     public function getLength() {
@@ -203,7 +211,7 @@ class ByteBuffer implements \JsonSerializable, \Serializable {
     /**
      * jsonSerialize interface
      * return binary data in RFC 1342-Like serialized string
-     * @return \stdClass
+     * @return string
      */
     public function jsonSerialize() {
         if (ByteBuffer::$useBase64UrlEncoding) {
@@ -229,6 +237,36 @@ class ByteBuffer implements \JsonSerializable, \Serializable {
     public function unserialize($serialized) {
         $this->_data = \unserialize($serialized);
         $this->_length = \strlen($this->_data);
+    }
+
+    /**
+     * (PHP 8 deprecates Serializable-Interface)
+     * @return array
+     */
+    public function __serialize() {
+        return [
+            'data' => \serialize($this->_data)
+        ];
+    }
+
+    /**
+     * object to string
+     * @return string
+     */
+    public function __toString() {
+        return $this->getHex();
+    }
+
+    /**
+     * (PHP 8 deprecates Serializable-Interface)
+     * @param array $data
+     * @return void
+     */
+    public function __unserialize($data) {
+        if ($data && isset($data['data'])) {
+            $this->_data = \unserialize($data['data']);
+            $this->_length = \strlen($this->_data);
+        }
     }
 
     // -----------------------
