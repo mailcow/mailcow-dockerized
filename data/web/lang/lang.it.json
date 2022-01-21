@@ -18,8 +18,8 @@
         "quarantine_attachments": "Allegati in quarantena",
         "quarantine_category": "Modifica la categoria delle notifiche di quarantena",
         "quarantine_notification": "Modifica notifiche quarantena",
-        "ratelimit": "Rate limit",
-        "recipient_maps": "Recipient maps",
+        "ratelimit": "Limite di invio",
+        "recipient_maps": "Mappe dei destinatari",
         "smtp_ip_access": "Modifica gli host consentiti per SMTP",
         "sogo_access": "Consenti la gestione dell'accesso SOGo",
         "sogo_profile_reset": "Ripristina profilo SOGo",
@@ -27,7 +27,7 @@
         "spam_policy": "Blacklist/Whitelist",
         "spam_score": "Punteggio SPAM",
         "syncjobs": "Processi di sync",
-        "tls_policy": "TLS policy",
+        "tls_policy": "Politica TLS",
         "unlimited_quota": "Spazio illimitato per le caselle di posta"
     },
     "add": {
@@ -102,10 +102,11 @@
         "target_domain": "Dominio di destinazione",
         "timeout1": "Timeout per la connessione all'host remoto",
         "timeout2": "Timeout per la connessione all'host locale",
-        "username": "Username",
+        "username": "Nome utente",
         "validate": "Convalida",
         "validation_success": "Convalidato con successo",
-        "bcc_dest_format": "Il destinatario in copia nascosta, dev'essere un solo indirizzo email.<br>Se devi spedire una copia del messaggio a più destinatari, crea un alias ed utilizzalo per questa opzione."
+        "bcc_dest_format": "Il destinatario in copia nascosta deve essere un singolo indirizzo email.<br>Se si vuole spedire una copia del messaggio a più destinatari, bisogna creare un alias ed utilizzarlo per questa opzione.",
+        "app_passwd_protocols": "Protocolli consentiti per la password dell'app"
     },
     "admin": {
         "access": "Accedi",
@@ -133,18 +134,18 @@
         "advanced_settings": "Impostazioni avanzate",
         "api_allow_from": "Allow API access from these IPs/CIDR network notations",
         "api_info": "The API is a work in progress. The documentation can be found at <a href=\"/api\">/api</a>",
-        "api_key": "API key",
-        "api_skip_ip_check": "Skip IP check for API",
+        "api_key": "Chiave API",
+        "api_skip_ip_check": "Salta il controllo dell'IP per l'API",
         "app_links": "App links",
-        "app_name": "App name",
-        "apps_name": "\"mailcow Apps\" name",
-        "arrival_time": "Arrival time (server time)",
+        "app_name": "Nome dell'app",
+        "apps_name": "Nome \"mailcow Apps\"",
+        "arrival_time": "Ora di arrivo (ora del server)",
         "authed_user": "Auth. user",
         "ays": "Sei sicuro di voler procedere?",
         "ban_list_info": "See a list of banned IPs below: <b>network (remaining ban time) - [actions]</b>.<br />IPs queued to be unbanned will be removed from the active ban list within a few seconds.<br />Red labels indicate active permanent bans by blacklisting.",
         "change_logo": "Cambia logo",
         "configuration": "Configurazione",
-        "convert_html_to_text": "Convert HTML to plain text",
+        "convert_html_to_text": "Converti HTML in testo semplice",
         "credentials_transport_warning": "<b>Warning</b>: Adding a new transport map entry will update the credentials for all entries with a matching next hop column.",
         "customer_id": "ID cliente",
         "customize": "Personalizzare",
@@ -190,7 +191,7 @@
         "forwarding_hosts_add_hint": "È possibile specificare indirizzi IPv4 / IPv6, reti nella notazione CIDR, nomi host (che verranno risolti in indirizzi IP) o nomi di dominio (che verranno risolti agli indirizzi IP richiamando i record SPF o, in assenza, i record MX) .",
         "forwarding_hosts_hint": "I messaggi in entrata sono accettati in maniera incondizionata da tutti gli host qui elencati. Questi host sono quindi non controllati tramite DNSBL o sottoposti a greylisting. Lo spam ricevuto da questi host non viene mai rifiutato, ma potrebbe essere archiviato nella cartella Posta indesiderata. L'utilizzo più comune è quello di specificare i server di posta elettronica su cui è stata impostata una regola che inoltra le email in arrivo al server mailcow.",
         "from": "Da",
-        "generate": "generate",
+        "generate": "generare",
         "guid": "GUID - ID istanza univoco",
         "guid_and_license": "GUID & Licenza",
         "hash_remove_info": "Removing a ratelimit hash (if still existing) will reset its counter completely.<br>\r\n  Each hash is indicated by an individual color.",
@@ -205,7 +206,7 @@
         "include_exclude_info": "Di default - se nessuna voce viene selezionata - <b>tutte le caselle di posta</b> risultano attivate",
         "includes": "Includi questi destinatari",
         "is_mx_based": "Basato sul record MX",
-        "last_applied": "Last applied",
+        "last_applied": "Ultima applicazione",
         "license_info": "Non è necessario essere in possesso di una licenza ma aiuta gli sviluppatori a far crescere il prodotto.<br><a href=\"https://www.servercow.de/mailcow?lang=en#sal\" target=\"_blank\" alt=\"SAL order\">Registra qui il tuo GUID </a> oppure <a href=\"https://www.servercow.de/mailcow?lang=en#support\" target=\"_blank\" alt=\"Support order\">acquista il supporto per la tua installazione di mailcow.</a>",
         "link": "Link",
         "loading": "Caricamento in corso...",
@@ -230,7 +231,7 @@
         "optional": "facoltativo",
         "password": "Password",
         "password_length": "Lunghezza password",
-        "password_policy": "Password policy",
+        "password_policy": "Criteri della password",
         "password_policy_chars": "Deve contenere almeno un carattere alfabetico",
         "password_policy_length": "La lunghezza minima della password è %d caratteri",
         "password_policy_lowerupper": "Deve contenere caratteri minuscoli e maiuscoli",
@@ -282,7 +283,7 @@
         "remove": "Rimuovi",
         "remove_row": "Elimina riga",
         "reset_default": "Riporta alle condizioni di default",
-        "reset_limit": "Remove hash",
+        "reset_limit": "Rimuovi hash",
         "routing": "Routing",
         "rsetting_add_rule": "Aggiungi regola",
         "rsetting_content": "Contenuto della regola",
@@ -334,10 +335,15 @@
         "unban_pending": "unban pending",
         "unchanged_if_empty": "Se immutato lasciare vuoto",
         "upload": "Upload",
-        "username": "Username",
+        "username": "Nome utente",
         "validate_license_now": "Validate GUID against license server",
         "verify": "Verifica",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "api_read_only": "Accesso in sola lettura",
+        "api_read_write": "Accesso in lettura-scrittura",
+        "oauth2_apps": "App OAuth2",
+        "oauth2_add_client": "Aggiungere il client OAuth2",
+        "rsettings_preset_4": "Disattivare Rspamd per un dominio"
     },
     "danger": {
         "access_denied": "Accesso negato o form di login non corretto",
@@ -449,14 +455,14 @@
         "tls_policy_map_parameter_invalid": "Policy parameter is invalid",
         "totp_verification_failed": "TOTP verification failed",
         "transport_dest_exists": "Transport destination \"%s\" exists",
-        "u2f_verification_failed": "U2F verification failed: %s",
+        "webauthn_verification_failed": "WebAuthn verification failed: %s",
         "unknown": "An unknown error occurred",
         "unknown_tfa_method": "Unknown TFA method",
         "unlimited_quota_acl": "Unlimited quota prohibited by ACL",
         "username_invalid": "Username %s non può essere utilizzato",
         "validity_missing": "Assegnare un periodo di validità",
         "value_missing": "Si prega di fornire tutti i valori",
-        "yotp_verification_failed": "Verifica Yubico OTP fallita: %s"
+        "yotp_verification_failed": "Verifica OTP Yubico fallita: %s"
     },
     "debug": {
         "chart_this_server": "Grafico (questo server)",
@@ -601,7 +607,13 @@
         "title": "Modifica oggetto",
         "unchanged_if_empty": "Se immutato lasciare vuoto",
         "username": "Username",
-        "validate_save": "Convalida e salva"
+        "validate_save": "Convalida e salva",
+        "pushover": "Pushover",
+        "sogo_access_info": "Il single-sign-on dall'interno dell'interfaccia di posta rimane funzionante. Questa impostazione non influisce sull'accesso a tutti gli altri servizi né cancella o modifica il profilo SOGo esistente dell'utente.",
+        "none_inherit": "Nessuno / Eredita",
+        "sogo_access": "Concedere l'accesso diretto a SOGo",
+        "acl": "ACL (autorizzazione)",
+        "app_passwd_protocols": "Protocolli consentiti per la password dell'app"
     },
     "fido2": {
         "confirm": "Confirm",
@@ -615,7 +627,8 @@
         "rename": "Rename",
         "set_fido2": "Register FIDO2 device",
         "set_fn": "Set friendly name",
-        "start_fido2_validation": "Start FIDO2 validation"
+        "start_fido2_validation": "Start FIDO2 validation",
+        "set_fido2_touchid": "Registrare il Touch ID su Apple M1"
     },
     "footer": {
         "cancel": "Annulla",
@@ -629,7 +642,8 @@
         "restart_container_info": "<b>Importante:</b> Il completamento di un normale riavvio potrebbe richiedere diversi minuti, ti consigliamo di attendere.",
         "restart_now": "Riavvia adesso",
         "restarting_container": "Riavvia il container, potrebbe richiedere diversi minuti",
-        "hibp_check": "Verifica con haveibeenpwned.com"
+        "hibp_check": "Verifica con haveibeenpwned.com",
+        "nothing_selected": "Niente di selezionato"
     },
     "header": {
         "administration": "Amministrazione",
@@ -694,7 +708,7 @@
         "bcc_to_rcpt": "Switch to recipient map type",
         "bcc_to_sender": "Switch to sender map type",
         "bcc_type": "BCC type",
-        "booking_null": "Always show as free",
+        "booking_null": "Mostra sempre come libero",
         "booking_0_short": "Always free",
         "booking_custom": "Hard-limit to a custom amount of bookings",
         "booking_custom_short": "Hard limit",
@@ -802,7 +816,17 @@
         "goto_spam": "Apprendi come <b>spam</b>",
         "open_logs": "Apri i log",
         "syncjob_check_log": "Controlla il log",
-        "syncjob_last_run_result": "Risultato dell'ultima esecuzione"
+        "syncjob_last_run_result": "Risultato dell'ultima esecuzione",
+        "syncjob_EXIT_TLS_FAILURE": "Problema con la connessione criptata",
+        "syncjob_EXIT_AUTHENTICATION_FAILURE": "Problema di autenticazione",
+        "syncjob_EXIT_OVERQUOTA": "La casella di posta del destinatario ha superato la quota",
+        "syncjob_EXIT_CONNECTION_FAILURE_HOST1": "Impossibile connettersi al server remoto",
+        "syncjob_EXIT_CONNECTION_FAILURE": "Problema di connessione",
+        "catch_all": "Catch-All",
+        "sender": "Mittente",
+        "all_domains": "Tutti i domini",
+        "recipient": "Destinatario",
+        "syncjob_EX_OK": "Successo"
     },
     "oauth2": {
         "access_denied": "Effettua il login alla casella di posta per garantire l'accesso tramite OAuth2.",
@@ -947,7 +971,7 @@
         "upload_success": "File caricato con successo",
         "verified_fido2_login": "Verified FIDO2 login",
         "verified_totp_login": "Verified TOTP login",
-        "verified_u2f_login": "Verified U2F login",
+        "verified_webauthn_login": "Verified WebAuthn login",
         "verified_yotp_login": "Verified Yubico OTP login"
     },
     "tfa": {
@@ -958,7 +982,7 @@
         "disable_tfa": "Disabilita TFA fino al prossimo accesso",
         "enter_qr_code": "Il codice TOTP se il tuo dispositivo non è in grado di acquisire i codici QR",
         "error_code": "Codice di errore",
-        "init_u2f": "Inizializzazione, attendere prego...",
+        "init_webauthn": "Inizializzazione, attendere prego...",
         "key_id": "Identificatore per il tuo YubiKey",
         "key_id_totp": "Identificatore per la tua chiave",
         "none": "Disattivato",
@@ -966,12 +990,12 @@
         "scan_qr_code": "Esegui la scansione del seguente codice con l'applicazione di autenticazione o inserisci manualmente il codice.",
         "select": "Seleziona",
         "set_tfa": "Imposta il metodo di autenticazione a due fattori",
-        "start_u2f_validation": "Avvia convalida",
+        "start_webauthn_validation": "Avvia convalida",
         "tfa": "Autenticazione a due fattori",
         "totp": "Time-based OTP (Google Authenticator etc.)",
-        "u2f": "Autenticazione U2F",
-        "waiting_usb_auth": "<i>In attesa del device USB...</i><br /><br />Tocca ora il pulsante sul dispositivo U2F USB.",
-        "waiting_usb_register": "<i>In attesa del device USB...</i><br /><br />Inserisci la tua password qui sopra e conferma la tua registrazione U2F toccando il pulsante del dispositivo U2F USB.",
+        "webauthn": "Autenticazione WebAuthn",
+        "waiting_usb_auth": "<i>In attesa del device USB...</i><br /><br />Tocca ora il pulsante sul dispositivo WebAuthn USB.",
+        "waiting_usb_register": "<i>In attesa del device USB...</i><br /><br />Inserisci la tua password qui sopra e conferma la tua registrazione WebAuthn toccando il pulsante del dispositivo WebAuthn USB.",
         "yubi_otp": "Autenticazione Yubico OTP",
         "tfa_token_invalid": "Token TFA non valido"
     },
@@ -1123,7 +1147,18 @@
         "change_password_hint_app_passwords": "Il tuo account ha {{number_of_app_passwords}} password delle app che non verranno modificate. Per gestirle, vai alla scheda App passwords.",
         "syncjob_check_log": "Controlla i log",
         "syncjob_last_run_result": "Risultato dell'ultima esecuzione",
-        "open_logs": "Apri i log"
+        "open_logs": "Apri i log",
+        "apple_connection_profile_with_app_password": "Una nuova password dell'app è stata generata ed aggiunta al profilo così che non sia più necessario inserire alcuna password quando si imposta il dispositivo. Si prega di non condividere il file in quanto concede l'accesso completo alla tua casella di posta elettronica.",
+        "allowed_protocols": "Protocolli consentiti",
+        "syncjob_EX_OK": "Successo",
+        "syncjob_EXIT_CONNECTION_FAILURE": "Problema di connessione",
+        "syncjob_EXIT_TLS_FAILURE": "Problema con la connessione criptata",
+        "syncjob_EXIT_AUTHENTICATION_FAILURE": "Problema di autenticazione",
+        "syncjob_EXIT_OVERQUOTA": "La casella di posta del destinatario ha superato la quota",
+        "syncjob_EXIT_CONNECTION_FAILURE_HOST1": "Impossibile connettersi al server remoto",
+        "syncjob_EXIT_AUTHENTICATION_FAILURE_USER1": "Nome utente o password errati",
+        "with_app_password": "con password dell'app",
+        "direct_protocol_access": "Questo utente della mailbox ha <b>accesso diretto ed esterno</b> ai seguenti protocolli e applicazioni. Questa impostazione è controllata dal tuo amministratore. Le password delle applicazioni possono essere create per garantire l'accesso ai singoli protocolli e applicazioni.<br>Il pulsante \"Accedi alla webmail\" fornisce un singolo accesso a SOGo ed è sempre disponibile."
     },
     "warning": {
         "cannot_delete_self": "Cannot delete logged in user",
@@ -1141,6 +1176,8 @@
     "ratelimit": {
         "minute": "messaggi / minuto",
         "disabled": "Disabilitato",
-        "second": "messaggi / secondo"
+        "second": "messaggi / secondo",
+        "hour": "messaggi / ora",
+        "day": "messaggi / giorno"
     }
 }

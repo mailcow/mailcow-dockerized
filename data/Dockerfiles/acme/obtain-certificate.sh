@@ -80,7 +80,7 @@ fi
 printf "[SAN]\nsubjectAltName=" > /tmp/_SAN
 printf "DNS:%s," "${CERT_DOMAINS[@]}" >> /tmp/_SAN
 sed -i '$s/,$//' /tmp/_SAN
-openssl req -new -sha256 -key ${KEY} -subj "/" -reqexts SAN -config <(cat /etc/ssl/openssl.cnf /tmp/_SAN) > ${CSR}
+openssl req -new -sha256 -key ${KEY} -subj "/" -reqexts SAN -config <(cat "$(openssl version -d | sed 's/.*"\(.*\)"/\1/g')/openssl.cnf" /tmp/_SAN) > ${CSR}
 
 # acme-tiny writes info to stderr and ceritifcate to stdout
 # The redirects will do the following:

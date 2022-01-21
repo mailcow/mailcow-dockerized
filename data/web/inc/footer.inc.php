@@ -17,7 +17,8 @@ if (is_array($alertbox_log_parser)) {
   }
   $alert = array_filter(array_unique($alerts));
   foreach($alert as $alert_type => $alert_msg) {
-    $alerts[$alert_type] = implode('<hr class="alert-hr">', $alert_msg);
+    // html breaks from mysql alerts, replace ` with '
+    $alerts[$alert_type] = implode('<hr class="alert-hr">', str_replace("`", "'", $alert_msg));
   }
   unset($_SESSION['return']);
 }
