@@ -54,24 +54,16 @@ foreach ($css_dir as $css_file) {
 }
 
 // U2F API + T/HOTP API
+// u2f - deprecated, should be removed
 $u2f = new u2flib_server\U2F('https://' . $_SERVER['HTTP_HOST']);
 $qrprovider = new RobThree\Auth\Providers\Qr\QRServerProvider();
 $tfa = new RobThree\Auth\TwoFactorAuth($OTP_LABEL, 6, 30, 'sha1', $qrprovider);
 
 // FIDO2
 $formats = $GLOBALS['FIDO2_FORMATS'];
-$WebAuthn = new \WebAuthn\WebAuthn('WebAuthn Library', $_SERVER['HTTP_HOST'], $formats);
-$WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/solo.pem');
-$WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/apple.pem');
-$WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/nitro.pem');
-$WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/yubico.pem');
-$WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/hypersecu.pem');
-$WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/globalSign.pem');
-$WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/googleHardware.pem');
-$WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/microsoftTpmCollection.pem');
-$WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/huawei.pem');
-$WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/trustkey.pem');
-$WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/bsi.pem');
+$WebAuthn = new lbuchs\WebAuthn\WebAuthn('WebAuthn Library', $_SERVER['HTTP_HOST'], $formats);
+// only include root ca's when needed
+if (getenv('WEBAUTHN_ONLY_TRUSTED_VENDORS') == 'y') $WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates');
 
 // Redis
 $redis = new Redis();
