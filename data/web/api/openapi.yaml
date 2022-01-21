@@ -4805,7 +4805,7 @@ paths:
             schema:
               example:
                 attr:
-                  rl_vlaue: "10"
+                  rl_value: "10"
                   rl_frame: "h"
                 items:
                   - info@domain.tld
@@ -4815,7 +4815,7 @@ paths:
                     rl_frame:
                       description: contains the frame for the ratelimit h,s,m
                       type: string
-                    rl_vlaue:
+                    rl_value:
                       description: contains the rate for the ratelimit 10,20,50,1
                       type: number
                   type: object
@@ -4876,7 +4876,7 @@ paths:
             schema:
               example:
                 attr:
-                  rl_vlaue: "10"
+                  rl_value: "10"
                   rl_frame: "h"
                 items:
                   - domain.tld
@@ -4886,7 +4886,7 @@ paths:
                     rl_frame:
                       description: contains the frame for the ratelimit h,s,m
                       type: string
-                    rl_vlaue:
+                    rl_value:
                       description: contains the rate for the ratelimit 10,20,50,1
                       type: number
                   type: object
