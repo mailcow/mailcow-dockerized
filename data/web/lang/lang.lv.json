@@ -450,9 +450,9 @@
         "set_tfa": "Uzstādīt difi faktoru autentifik;acijas metodi",
         "tfa": "Divu faktoru autentifikācija",
         "totp": "Uz laiku bāzēta vienreizēja parole (Google Autentifikātors utt.)",
-        "u2f": "U2F autentifikācija",
-        "waiting_usb_auth": "<i>Gaida USB ierīci...</i><br><br>Lūdzu, tagad nospiežiet pogu uz Jūsu U2F USB ierīces.",
-        "waiting_usb_register": "<i>Gaida USB ierīci...</i><br><br>Lūdzu augšā ievadiet Jūsu paroli un apstipriniet U2F reģistrāciju nospiežot pogu uz Jūsu U2F USB ierīces.",
+        "webauthn": "WebAuthn autentifikācija",
+        "waiting_usb_auth": "<i>Gaida USB ierīci...</i><br><br>Lūdzu, tagad nospiežiet pogu uz Jūsu WebAuthn USB ierīces.",
+        "waiting_usb_register": "<i>Gaida USB ierīci...</i><br><br>Lūdzu augšā ievadiet Jūsu paroli un apstipriniet WebAuthn reģistrāciju nospiežot pogu uz Jūsu WebAuthn USB ierīces.",
         "yubi_otp": "Yubico OTP autentifikators"
     },
     "user": {

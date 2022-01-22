@@ -2,7 +2,7 @@ version: '2.1'
 services:
 
     unbound-mailcow:
-      image: mailcow/unbound:1.14
+      image: mailcow/unbound:1.15
       environment:
         - TZ=${TZ}
       volumes:
@@ -58,7 +58,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.42
+      image: mailcow/clamd:1.43
       restart: always
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -157,6 +157,7 @@ services:
         - ALLOW_ADMIN_EMAIL_LOGIN=${ALLOW_ADMIN_EMAIL_LOGIN:-n}
         - MASTER=${MASTER:-y}
         - DEV_MODE=${DEV_MODE:-n}
+        - WEBAUTHN_ONLY_TRUSTED_VENDORS=${WEBAUTHN_ONLY_TRUSTED_VENDORS:-n}
       restart: always
       networks:
         mailcow-network:
@@ -164,7 +165,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.104
+      image: mailcow/sogo:1.106
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -211,7 +212,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.158
+      image: mailcow/dovecot:1.159
       depends_on:
         - mysql-mailcow
       dns:
@@ -384,7 +385,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.80
+      image: mailcow/acme:1.81
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -420,7 +421,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.45
+      image: mailcow/netfilter:1.46
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -443,7 +444,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.95
+      image: mailcow/watchdog:1.96
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
@@ -505,7 +506,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:1.40
+      image: mailcow/dockerapi:1.41
       security_opt:
         - label=disable
       restart: always
@@ -523,7 +524,7 @@ services:
             - dockerapi
 
     solr-mailcow:
-      image: mailcow/solr:1.7
+      image: mailcow/solr:1.8.1
       restart: always
       volumes:
         - solr-vol-1:/opt/solr/server/solr/dovecot-fts/data:Z
@@ -539,7 +540,7 @@ services:
             - solr
 
     olefy-mailcow:
-      image: mailcow/olefy:1.8
+      image: mailcow/olefy:1.8.1
       restart: always
       environment:
         - TZ=${TZ}
@@ -560,6 +561,7 @@ services:
       image: mcuadros/ofelia:latest
       restart: always
       command: daemon --docker
+      environment:
         - TZ=${TZ}
       depends_on:
         - sogo-mailcow

@@ -370,7 +370,7 @@
         "tls_policy_map_parameter_invalid": "Käytäntö parametri ei kelpaa",
         "totp_verification_failed": "TOTP-vahvistus epäonnistui",
         "transport_dest_exists": "Kuljetuksen määränpää \"%s\" olemassa",
-        "u2f_verification_failed": "U2F vahvistaminen epäonnistui: %s",
+        "webauthn_verification_failed": "WebAuthn vahvistaminen epäonnistui: %s",
         "unknown": "Ilmeni tuntematon virhe",
         "unknown_tfa_method": "Tuntematon TFA-menetelmä",
         "unlimited_quota_acl": "Rajoittamaton kiintiö kielletty ACL",
@@ -754,7 +754,7 @@
         "ui_texts": "Tallennettu käyttöliittymätekstien muutokset",
         "upload_success": "Tiedosto ladattu onnistuneesti",
         "verified_totp_login": "Vahvistettu TOTP-kirjautuminen",
-        "verified_u2f_login": "Vahvistettu U2F kirjautuminen",
+        "verified_webauthn_login": "Vahvistettu WebAuthn kirjautuminen",
         "verified_yotp_login": "Vahvistettu Yubico OTP kirjautuminen"
     },
     "tfa": {
@@ -765,7 +765,7 @@
         "disable_tfa": "Poista TFA käytöstä seuraavaan onnistuneen kirjautumisen jälkeen",
         "enter_qr_code": "TOTP-koodisi, jos laitteesi ei pysty tarkistamaan QR-koodeja",
         "error_code": "Virhekoodi",
-        "init_u2f": "Alustetaan, odota...",
+        "init_webauthn": "Alustetaan, odota...",
         "key_id": "Tunniste YubiKey",
         "key_id_totp": "Avaimen tunnus",
         "none": "Poista",
@@ -773,12 +773,12 @@
         "scan_qr_code": "Tarkista seuraava koodi Authenticator-sovelluksella tai Syötä koodi manuaalisesti.",
         "select": "Valitse",
         "set_tfa": "Määritä kaksiosainen todennus menetelmä",
-        "start_u2f_validation": "Aloita oikeellisuus tarkistus",
+        "start_webauthn_validation": "Aloita oikeellisuus tarkistus",
         "tfa": "Kaksiosainen todennus",
         "totp": "Aikapohjainen OTP (Google Authenticator, Authy jne.)",
-        "u2f": "U2F todennus",
-        "waiting_usb_auth": "<i>Odotetaan USB-laitetta...</i><br><br>Napauta painiketta U2F USB-laitteessa nyt",
-        "waiting_usb_register": "<i>Odotetaan USB-laitetta...</i><br><br>Anna salasanasi yltä ja vahvista U2F-rekisteröinti napauttamalla painiketta U2F USB-laitteessa.",
+        "webauthn": "WebAuthn todennus",
+        "waiting_usb_auth": "<i>Odotetaan USB-laitetta...</i><br><br>Napauta painiketta WebAuthn USB-laitteessa nyt",
+        "waiting_usb_register": "<i>Odotetaan USB-laitetta...</i><br><br>Anna salasanasi yltä ja vahvista WebAuthn-rekisteröinti napauttamalla painiketta WebAuthn USB-laitteessa.",
         "yubi_otp": "Yubico OTP-todennus"
     },
     "user": {

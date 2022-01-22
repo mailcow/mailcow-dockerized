@@ -1,9 +1,9 @@
 <?php
 
-namespace WebAuthn\Attestation;
-use WebAuthn\WebAuthnException;
-use WebAuthn\CBOR\CborDecoder;
-use WebAuthn\Binary\ByteBuffer;
+namespace lbuchs\WebAuthn\Attestation;
+use lbuchs\WebAuthn\WebAuthnException;
+use lbuchs\WebAuthn\CBOR\CborDecoder;
+use lbuchs\WebAuthn\Binary\ByteBuffer;
 
 /**
  * @author Lukas Buchs
@@ -12,6 +12,7 @@ use WebAuthn\Binary\ByteBuffer;
 class AttestationObject {
     private $_authenticatorData;
     private $_attestationFormat;
+    private $_attestationFormatName;
 
     public function __construct($binary , $allowedFormats) {
         $enc = CborDecoder::decode($binary);
@@ -29,13 +30,15 @@ class AttestationObject {
         }
 
         $this->_authenticatorData = new AuthenticatorData($enc['authData']->getBinaryString());
+        $this->_attestationFormatName = $enc['fmt'];
 
         // Format ok?
-        if (!in_array($enc['fmt'], $allowedFormats)) {
-            throw new WebAuthnException('invalid atttestation format: ' . $enc['fmt'], WebAuthnException::INVALID_DATA);
+        if (!in_array($this->_attestationFormatName, $allowedFormats)) {
+            throw new WebAuthnException('invalid atttestation format: ' . $this->_attestationFormatName, WebAuthnException::INVALID_DATA);
         }
 
-        switch ($enc['fmt']) {
+
+        switch ($this->_attestationFormatName) {
             case 'android-key': $this->_attestationFormat = new Format\AndroidKey($enc, $this->_authenticatorData); break;
             case 'android-safetynet': $this->_attestationFormat = new Format\AndroidSafetyNet($enc, $this->_authenticatorData); break;
             case 'apple': $this->_attestationFormat = new Format\Apple($enc, $this->_authenticatorData); break;
@@ -45,6 +48,14 @@ class AttestationObject {
             case 'tpm': $this->_attestationFormat = new Format\Tpm($enc, $this->_authenticatorData); break;
             default: throw new WebAuthnException('invalid attestation format: ' . $enc['fmt'], WebAuthnException::INVALID_DATA);
         }
+    }
+
+    /**
+     * returns the attestation format name
+     * @return string
+     */
+    public function getAttestationFormatName() {
+        return $this->_attestationFormatName;
     }
 
     /**
@@ -72,16 +83,19 @@ class AttestationObject {
         $issuer = '';
         if ($pem) {
             $certInfo = \openssl_x509_parse($pem);
-            if (\is_array($certInfo) && \is_array($certInfo['issuer'])) {
-                if ($certInfo['issuer']['CN']) {
-                    $issuer .= \trim($certInfo['issuer']['CN']);
+            if (\is_array($certInfo) && \array_key_exists('issuer', $certInfo) && \is_array($certInfo['issuer'])) {
+
+                $cn = $certInfo['issuer']['CN'] ?? '';
+                $o = $certInfo['issuer']['O'] ?? '';
+                $ou = $certInfo['issuer']['OU'] ?? '';
+
+                if ($cn) {
+                    $issuer .= $cn;
                 }
-                if ($certInfo['issuer']['O'] || $certInfo['issuer']['OU']) {
-                    if ($issuer) {
-                        $issuer .= ' (' . \trim($certInfo['issuer']['O'] . ' ' . $certInfo['issuer']['OU']) . ')';
-                    } else {
-                        $issuer .= \trim($certInfo['issuer']['O'] . ' ' . $certInfo['issuer']['OU']);
-                    }
+                if ($issuer && ($o || $ou)) {
+                    $issuer .= ' (' . trim($o . ' ' . $ou) . ')';
+                } else {
+                    $issuer .= trim($o . ' ' . $ou);
                 }
             }
         }
@@ -98,16 +112,19 @@ class AttestationObject {
         $subject = '';
         if ($pem) {
             $certInfo = \openssl_x509_parse($pem);
-            if (\is_array($certInfo) && \is_array($certInfo['subject'])) {
-                if ($certInfo['subject']['CN']) {
-                    $subject .= \trim($certInfo['subject']['CN']);
+            if (\is_array($certInfo) && \array_key_exists('subject', $certInfo) && \is_array($certInfo['subject'])) {
+
+                $cn = $certInfo['subject']['CN'] ?? '';
+                $o = $certInfo['subject']['O'] ?? '';
+                $ou = $certInfo['subject']['OU'] ?? '';
+
+                if ($cn) {
+                    $subject .= $cn;
                 }
-                if ($certInfo['subject']['O'] || $certInfo['subject']['OU']) {
-                    if ($subject) {
-                        $subject .= ' (' . \trim($certInfo['subject']['O'] . ' ' . $certInfo['subject']['OU']) . ')';
-                    } else {
-                        $subject .= \trim($certInfo['subject']['O'] . ' ' . $certInfo['subject']['OU']);
-                    }
+                if ($subject && ($o || $ou)) {
+                    $subject .= ' (' . trim($o . ' ' . $ou) . ')';
+                } else {
+                    $subject .= trim($o . ' ' . $ou);
                 }
             }
         }
