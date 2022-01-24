@@ -203,6 +203,7 @@ legend {
   margin-bottom: 20px;
   color: #959595;
   display: flex;
+  flex-direction: column;
 }
 .footer .version {
     margin-left: auto;
