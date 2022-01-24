@@ -25,3 +25,9 @@ $twig->addFunction(new TwigFunction('is_uri', function (string $uri, string $whe
 $twig->addFilter(new TwigFilter('rot13', 'str_rot13'));
 $twig->addFilter(new TwigFilter('base64_encode', 'base64_encode'));
 $twig->addFilter(new TwigFilter('formatBytes', 'formatBytes'));
+
+// globals
+$twig->addGlobal('mailcow_info', array(
+    'version_tag' => $GLOBALS['MAILCOW_GIT_VERSION'],
+    'git_project_url' => $GLOBALS['MAILCOW_GIT_URL']
+));

@@ -361,3 +361,11 @@ echo "Generating snake-oil certificate..."
 openssl req -x509 -newkey rsa:4096 -keyout data/assets/ssl-example/key.pem -out data/assets/ssl-example/cert.pem -days 365 -subj "/C=DE/ST=NRW/L=Willich/O=mailcow/OU=mailcow/CN=${MAILCOW_HOSTNAME}" -sha256 -nodes
 echo "Copying snake-oil certificate..."
 cp -n -d data/assets/ssl-example/*.pem data/assets/ssl/
+
+# Set app_info.inc.php
+mailcow_git_version=$(git describe --tags `git rev-list --tags --max-count=1`)
+mailcow_git_url=$(git config --get remote.origin.url)
+echo '<?php' > data/web/inc/app_info.inc.php
+echo '  $MAILCOW_GIT_VERSION="'$mailcow_git_version'";' >> data/web/inc/app_info.inc.php
+echo '  $MAILCOW_GIT_URL="'$mailcow_git_url'";' >> data/web/inc/app_info.inc.php
+echo '?>' >> data/web/inc/app_info.inc.php
