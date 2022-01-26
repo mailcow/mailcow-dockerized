@@ -728,6 +728,10 @@ if [ $? -eq 0 ]; then
   echo '  $MAILCOW_GIT_URL="'$mailcow_git_url'";' >> data/web/inc/app_info.inc.php
   echo '?>' >> data/web/inc/app_info.inc.php
 else
+  echo '<?php' > data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_VERSION="";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_URL="";' >> data/web/inc/app_info.inc.php
+  echo '?>' >> data/web/inc/app_info.inc.php
   echo -e "\e[33mCannot determine current git repository version...\e[0m"
 fi
 
