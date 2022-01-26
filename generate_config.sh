@@ -1,0 +1,379 @@
+#!/usr/bin/env bash
+
+set -o pipefail
+
+if [[ "$(uname -r)" =~ ^4\.15\.0-60 ]]; then
+  echo "DO NOT RUN mailcow ON THIS UBUNTU KERNEL!";
+  echo "Please update to 5.x or use another distribution."
+  exit 1
+fi
+
+if [[ "$(uname -r)" =~ ^4\.4\. ]]; then
+  if grep -q Ubuntu <<< $(uname -a); then
+    echo "DO NOT RUN mailcow ON THIS UBUNTU KERNEL!";
+    echo "Please update to linux-generic-hwe-16.04 by running \"apt-get install --install-recommends linux-generic-hwe-16.04\""
+    exit 1
+  fi
+fi
+
+if grep --help 2>&1 | grep -q -i "busybox"; then
+  echo "BusyBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\""
+  exit 1
+fi
+if cp --help 2>&1 | grep -q -i "busybox"; then
+  echo "BusyBox cp detected, please install coreutils, \"apk add --no-cache --upgrade coreutils\""
+  exit 1
+fi
+
+for bin in openssl curl docker-compose docker git awk sha1sum; do
+  if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
+done
+
+if [ -f mailcow.conf ]; then
+  read -r -p "A config file exists and will be overwritten, are you sure you want to continue? [y/N] " response
+  case $response in
+    [yY][eE][sS]|[yY])
+      mv mailcow.conf mailcow.conf_backup
+      chmod 600 mailcow.conf_backup
+      ;;
+    *)
+      exit 1
+    ;;
+  esac
+fi
+
+echo "Press enter to confirm the detected value '[value]' where applicable or enter a custom value."
+while [ -z "${MAILCOW_HOSTNAME}" ]; do
+  read -p "Mail server hostname (FQDN) - this is not your mail domain, but your mail servers hostname: " -e MAILCOW_HOSTNAME
+  DOTS=${MAILCOW_HOSTNAME//[^.]};
+  if [ ${#DOTS} -lt 2 ] && [ ! -z ${MAILCOW_HOSTNAME} ]; then
+    echo "${MAILCOW_HOSTNAME} is not a FQDN"
+    MAILCOW_HOSTNAME=
+  fi
+done
+
+if [ -a /etc/timezone ]; then
+  DETECTED_TZ=$(cat /etc/timezone)
+elif [ -a /etc/localtime ]; then
+  DETECTED_TZ=$(readlink /etc/localtime|sed -n 's|^.*zoneinfo/||p')
+fi
+
+while [ -z "${MAILCOW_TZ}" ]; do
+  if [ -z "${DETECTED_TZ}" ]; then
+    read -p "Timezone: " -e MAILCOW_TZ
+  else
+    read -p "Timezone [${DETECTED_TZ}]: " -e MAILCOW_TZ
+    [ -z "${MAILCOW_TZ}" ] && MAILCOW_TZ=${DETECTED_TZ}
+  fi
+done
+
+MEM_TOTAL=$(awk '/MemTotal/ {print $2}' /proc/meminfo)
+
+if [ ${MEM_TOTAL} -le "2621440" ]; then
+  echo "Installed memory is <= 2.5 GiB. It is recommended to disable ClamAV to prevent out-of-memory situations."
+  echo "ClamAV can be re-enabled by setting SKIP_CLAMD=n in mailcow.conf."
+  read -r -p  "Do you want to disable ClamAV now? [Y/n] " response
+  case $response in
+    [nN][oO]|[nN])
+      SKIP_CLAMD=n
+      ;;
+    *)
+      SKIP_CLAMD=y
+    ;;
+  esac
+else
+  SKIP_CLAMD=n
+fi
+
+if [ ${MEM_TOTAL} -le "2097152" ]; then
+  echo "Disabling Solr on low-memory system."
+  SKIP_SOLR=y
+elif [ ${MEM_TOTAL} -le "3670016" ]; then
+  echo "Installed memory is <= 3.5 GiB. It is recommended to disable Solr to prevent out-of-memory situations."
+  echo "Solr is a prone to run OOM and should be monitored. The default Solr heap size is 1024 MiB and should be set in mailcow.conf according to your expected load."
+  echo "Solr can be re-enabled by setting SKIP_SOLR=n in mailcow.conf but will refuse to start with less than 2 GB total memory."
+  read -r -p  "Do you want to disable Solr now? [Y/n] " response
+  case $response in
+    [nN][oO]|[nN])
+      SKIP_SOLR=n
+      ;;
+    *)
+      SKIP_SOLR=y
+    ;;
+  esac
+else
+  SKIP_SOLR=n
+fi
+
+[ ! -f ./data/conf/rspamd/override.d/worker-controller-password.inc ] && echo '# Placeholder' > ./data/conf/rspamd/override.d/worker-controller-password.inc
+
+cat << EOF > mailcow.conf
+# ------------------------------
+# mailcow web ui configuration
+# ------------------------------
+# example.org is _not_ a valid hostname, use a fqdn here.
+# Default admin user is "admin"
+# Default password is "moohoo"
+
+MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
+
+# Password hash algorithm
+# Only certain password hash algorithm are supported. For a fully list of supported schemes,
+# see https://mailcow.github.io/mailcow-dockerized-docs/models/model-passwd/
+MAILCOW_PASS_SCHEME=BLF-CRYPT
+
+# ------------------------------
+# SQL database configuration
+# ------------------------------
+
+DBNAME=mailcow
+DBUSER=mailcow
+
+# Please use long, random alphanumeric strings (A-Za-z0-9)
+
+DBPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 | head -c 28)
+DBROOT=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 | head -c 28)
+
+# ------------------------------
+# HTTP/S Bindings
+# ------------------------------
+
+# You should use HTTPS, but in case of SSL offloaded reverse proxies:
+# Might be important: This will also change the binding within the container.
+# If you use a proxy within Docker, point it to the ports you set below.
+# Do _not_ use IP:PORT in HTTP(S)_BIND or HTTP(S)_PORT
+# IMPORTANT: Do not use port 8081, 9081 or 65510!
+# Example: HTTP_BIND=1.2.3.4
+# For IPv4 and IPv6 leave it empty: HTTP_BIND= & HTTPS_PORT=
+# For IPv6 see https://mailcow.github.io/mailcow-dockerized-docs/post_installation/firststeps-ip_bindings/
+
+HTTP_PORT=80
+HTTP_BIND=
+
+HTTPS_PORT=443
+HTTPS_BIND=
+
+# ------------------------------
+# Other bindings
+# ------------------------------
+# You should leave that alone
+# Format: 11.22.33.44:25 or 12.34.56.78:465 etc.
+
+SMTP_PORT=25
+SMTPS_PORT=465
+SUBMISSION_PORT=587
+IMAP_PORT=143
+IMAPS_PORT=993
+POP_PORT=110
+POPS_PORT=995
+SIEVE_PORT=4190
+DOVEADM_PORT=127.0.0.1:19991
+SQL_PORT=127.0.0.1:13306
+SOLR_PORT=127.0.0.1:18983
+REDIS_PORT=127.0.0.1:7654
+
+# Your timezone
+# See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for a list of timezones
+# Use the row named 'TZ database name' + pay attention for 'Notes' row
+
+TZ=${MAILCOW_TZ}
+
+# Fixed project name
+# Please use lowercase letters only
+
+COMPOSE_PROJECT_NAME=mailcowdockerized
+
+# Set this to "allow" to enable the anyone pseudo user. Disabled by default.
+# When enabled, ACL can be created, that apply to "All authenticated users"
+# This should probably only be activated on mail hosts, that are used exclusivly by one organisation.
+# Otherwise a user might share data with too many other users.
+ACL_ANYONE=disallow
+
+# Garbage collector cleanup
+# Deleted domains and mailboxes are moved to /var/vmail/_garbage/timestamp_sanitizedstring
+# How long should objects remain in the garbage until they are being deleted? (value in minutes)
+# Check interval is hourly
+
+MAILDIR_GC_TIME=7200
+
+# Additional SAN for the certificate
+#
+# You can use wildcard records to create specific names for every domain you add to mailcow.
+# Example: Add domains "example.com" and "example.net" to mailcow, change ADDITIONAL_SAN to a value like:
+#ADDITIONAL_SAN=imap.*,smtp.*
+# This will expand the certificate to "imap.example.com", "smtp.example.com", "imap.example.net", "smtp.example.net"
+# plus every domain you add in the future.
+#
+# You can also just add static names...
+#ADDITIONAL_SAN=srv1.example.net
+# ...or combine wildcard and static names:
+#ADDITIONAL_SAN=imap.*,srv1.example.com
+#
+
+ADDITIONAL_SAN=
+
+# Additional server names for mailcow UI
+#
+# Specify alternative addresses for the mailcow UI to respond to
+# This is useful when you set mail.* as ADDITIONAL_SAN and want to make sure mail.maildomain.com will always point to the mailcow UI.
+# If the server name does not match a known site, Nginx decides by best-guess and may redirect users to the wrong web root.
+# You can understand this as server_name directive in Nginx.
+# Comma separated list without spaces! Example: ADDITIONAL_SERVER_NAMES=a.b.c,d.e.f
+
+ADDITIONAL_SERVER_NAMES=
+
+# Skip running ACME (acme-mailcow, Let's Encrypt certs) - y/n
+
+SKIP_LETS_ENCRYPT=n
+
+# Create seperate certificates for all domains - y/n
+# this will allow adding more than 100 domains, but some email clients will not be able to connect with alternative hostnames
+# see https://wiki.dovecot.org/SSL/SNIClientSupport
+ENABLE_SSL_SNI=n
+
+# Skip IPv4 check in ACME container - y/n
+
+SKIP_IP_CHECK=n
+
+# Skip HTTP verification in ACME container - y/n
+
+SKIP_HTTP_VERIFICATION=n
+
+# Skip ClamAV (clamd-mailcow) anti-virus (Rspamd will auto-detect a missing ClamAV container) - y/n
+
+SKIP_CLAMD=${SKIP_CLAMD}
+
+# Skip SOGo: Will disable SOGo integration and therefore webmail, DAV protocols and ActiveSync support (experimental, unsupported, not fully implemented) - y/n
+
+SKIP_SOGO=n
+
+# Skip Solr on low-memory systems or if you do not want to store a readable index of your mails in solr-vol-1.
+
+SKIP_SOLR=${SKIP_SOLR}
+
+# Solr heap size in MB, there is no recommendation, please see Solr docs.
+# Solr is a prone to run OOM and should be monitored. Unmonitored Solr setups are not recommended.
+
+SOLR_HEAP=1024
+
+# Allow admins to log into SOGo as email user (without any password)
+
+ALLOW_ADMIN_EMAIL_LOGIN=n
+
+# Enable watchdog (watchdog-mailcow) to restart unhealthy containers
+
+USE_WATCHDOG=y
+
+# Send watchdog notifications by mail (sent from watchdog@MAILCOW_HOSTNAME)
+# CAUTION:
+# 1. You should use external recipients
+# 2. Mails are sent unsigned (no DKIM)
+# 3. If you use DMARC, create a separate DMARC policy ("v=DMARC1; p=none;" in _dmarc.MAILCOW_HOSTNAME)
+# Multiple rcpts allowed, NO quotation marks, NO spaces
+
+#WATCHDOG_NOTIFY_EMAIL=a@example.com,b@example.com,c@example.com
+#WATCHDOG_NOTIFY_EMAIL=
+
+# Notify about banned IP (includes whois lookup)
+WATCHDOG_NOTIFY_BAN=n
+
+# Subject for watchdog mails. Defaults to "Watchdog ALERT" followed by the error message.
+#WATCHDOG_SUBJECT=
+
+# Checks if mailcow is an open relay. Requires a SAL. More checks will follow.
+# https://www.servercow.de/mailcow?lang=en
+# https://www.servercow.de/mailcow?lang=de
+# No data is collected. Opt-in and anonymous.
+# Will only work with unmodified mailcow setups.
+WATCHDOG_EXTERNAL_CHECKS=n
+
+# Enable watchdog verbose logging
+WATCHDOG_VERBOSE=n
+
+# Max log lines per service to keep in Redis logs
+
+LOG_LINES=9999
+
+# Internal IPv4 /24 subnet, format n.n.n (expands to n.n.n.0/24)
+# Use private IPv4 addresses only, see https://en.wikipedia.org/wiki/Private_network#Private_IPv4_addresses
+
+IPV4_NETWORK=172.22.1
+
+# Internal IPv6 subnet in fc00::/7
+# Use private IPv6 addresses only, see https://en.wikipedia.org/wiki/Private_network#Private_IPv6_addresses
+
+IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
+
+# Use this IPv4 for outgoing connections (SNAT)
+
+#SNAT_TO_SOURCE=
+
+# Use this IPv6 for outgoing connections (SNAT)
+
+#SNAT6_TO_SOURCE=
+
+# Create or override an API key for the web UI
+# You _must_ define API_ALLOW_FROM, which is a comma separated list of IPs
+# An API key defined as API_KEY has read-write access
+# An API key defined as API_KEY_READ_ONLY has read-only access
+# Allowed chars for API_KEY and API_KEY_READ_ONLY: a-z, A-Z, 0-9, -
+# You can define API_KEY and/or API_KEY_READ_ONLY
+
+#API_KEY=
+#API_KEY_READ_ONLY=
+#API_ALLOW_FROM=172.22.1.1,127.0.0.1
+
+# mail_home is ~/Maildir
+MAILDIR_SUB=Maildir
+
+# SOGo session timeout in minutes
+SOGO_EXPIRE_SESSION=480
+
+# DOVECOT_MASTER_USER and DOVECOT_MASTER_PASS must both be provided. No special chars.
+# Empty by default to auto-generate master user and password on start.
+# User expands to DOVECOT_MASTER_USER@mailcow.local
+# LEAVE EMPTY IF UNSURE
+DOVECOT_MASTER_USER=
+# LEAVE EMPTY IF UNSURE
+DOVECOT_MASTER_PASS=
+
+# Let's Encrypt registration contact information
+# Optional: Leave empty for none
+# This value is only used on first order!
+# Setting it at a later point will require the following steps:
+# https://mailcow.github.io/mailcow-dockerized-docs/troubleshooting/debug-reset_tls/
+ACME_CONTACT=
+
+# WebAuthn device manufacturer verification
+# After setting WEBAUTHN_ONLY_TRUSTED_VENDORS=y only devices from trusted manufacturers are allowed
+# root certificates can be placed for validation under mailcow-dockerized/data/web/inc/lib/WebAuthn/rootCertificates
+WEBAUTHN_ONLY_TRUSTED_VENDORS=n
+
+EOF
+
+mkdir -p data/assets/ssl
+
+chmod 600 mailcow.conf
+
+# copy but don't overwrite existing certificate
+echo "Generating snake-oil certificate..."
+# Making Willich more popular
+openssl req -x509 -newkey rsa:4096 -keyout data/assets/ssl-example/key.pem -out data/assets/ssl-example/cert.pem -days 365 -subj "/C=DE/ST=NRW/L=Willich/O=mailcow/OU=mailcow/CN=${MAILCOW_HOSTNAME}" -sha256 -nodes
+echo "Copying snake-oil certificate..."
+cp -n -d data/assets/ssl-example/*.pem data/assets/ssl/
+
+# Set app_info.inc.php
+mailcow_git_version=$(git describe --tags `git rev-list --tags --max-count=1`)
+if [ $? -eq 0 ]; then
+  mailcow_git_url=$(git config --get remote.origin.url)
+  echo '<?php' > data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_VERSION="'$mailcow_git_version'";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_URL="'$mailcow_git_url'";' >> data/web/inc/app_info.inc.php
+  echo '?>' >> data/web/inc/app_info.inc.php
+else
+  echo '<?php' > data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_VERSION="";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_URL="";' >> data/web/inc/app_info.inc.php
+  echo '?>' >> data/web/inc/app_info.inc.php
+  echo -e "\e[33mCannot determine current git repository version...\e[0m"
+fi
