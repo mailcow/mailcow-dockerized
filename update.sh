@@ -721,11 +721,15 @@ fi
 
 # Set app_info.inc.php
 mailcow_git_version=$(git describe --tags `git rev-list --tags --max-count=1`)
-mailcow_git_url=$(git config --get remote.origin.url)
-echo '<?php' > data/web/inc/app_info.inc.php
-echo '  $MAILCOW_GIT_VERSION="'$mailcow_git_version'";' >> data/web/inc/app_info.inc.php
-echo '  $MAILCOW_GIT_URL="'$mailcow_git_url'";' >> data/web/inc/app_info.inc.php
-echo '?>' >> data/web/inc/app_info.inc.php
+if [ $? -eq 0 ]; then
+  mailcow_git_url=$(git config --get remote.origin.url)
+  echo '<?php' > data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_VERSION="'$mailcow_git_version'";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_URL="'$mailcow_git_url'";' >> data/web/inc/app_info.inc.php
+  echo '?>' >> data/web/inc/app_info.inc.php
+else
+  echo -e "\e[33mCannot determine current git repository version...\e[0m"
+fi
 
 if [[ ${SKIP_START} == "y" ]]; then
   echo -e "\e[33mNot starting mailcow, please run \"docker-compose up -d --remove-orphans\" to start mailcow.\e[0m"
