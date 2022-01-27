@@ -89,6 +89,13 @@ elseif (isset($_SERVER['HTTP_X_ORIGINAL_URI']) && strcasecmp(substr($_SERVER['HT
     header("X-Auth: Basic ".base64_encode("$username:$password"));
     header("X-Auth-Type: Basic");
     exit;
+  } elseif(isset($_SESSION['mailcow_cc_username'])) {
+    $username = $_SESSION['mailcow_cc_username'];
+    $password = $_SESSION[$session_var_pass];
+    header("X-User: $username");
+    header("X-Auth: Basic ".base64_encode("$username:$password"));
+    header("X-Auth-Type: Basic");
+    exit;
   }
 }
 
