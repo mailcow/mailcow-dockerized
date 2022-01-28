@@ -294,8 +294,8 @@ CONFIG_ARRAY=(
   "MAILDIR_GC_TIME"
   "MAILDIR_SUB"
   "ACL_ANYONE"
-  "SOLR_HEAP"
-  "SKIP_SOLR"
+  "XAPIAN_HEAP"
+  "SKIP_XAPIAN"
   "ENABLE_SSL_SNI"
   "ALLOW_ADMIN_EMAIL_LOGIN"
   "SKIP_HTTP_VERIFICATION"
@@ -405,20 +405,20 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# Otherwise a user might share data with too many other users.' >> mailcow.conf
       echo 'ACL_ANYONE=disallow' >> mailcow.conf
     fi
-  elif [[ ${option} == "SOLR_HEAP" ]]; then
+  elif [[ ${option} == "XAPIAN_HEAP" ]]; then
     if ! grep -q ${option} mailcow.conf; then
-      echo "Adding new option \"${option}\" to mailcow.conf"
-      echo '# Solr heap size, there is no recommendation, please see Solr docs.' >> mailcow.conf
-      echo '# Solr is a prone to run OOM on large systems and should be monitored. Unmonitored Solr setups are not recommended.' >> mailcow.conf
-      echo '# Solr will refuse to start with total system memory below or equal to 2 GB.' >> mailcow.conf
-      echo "SOLR_HEAP=1024" >> mailcow.conf
+      echo "Replacing SOLR_HEAP with \"${option}\" in mailcow.conf"
+      sed -i '/# Solr heap size in MB, there is no recommendation, please see Solr docs./c\# Xapian heap size in MB, there is no recommendation, please see Xapians docs.' mailcow.conf
+      sed -i '/# Solr is a prone to run OOM on large systems and should be monitored. Unmonitored Solr setups are not recommended./c\# Xapian is replacing solr completely. It is supposed to be much more efficient in CPU and RAM consumption.'  mailcow.conf
+      sed -i '/SOLR_HEAP=/c\XAPIAN_HEAP=' mailcow.conf
     fi
-  elif [[ ${option} == "SKIP_SOLR" ]]; then
+  elif [[ ${option} == "SKIP_XAPIAN" ]]; then
     if ! grep -q ${option} mailcow.conf; then
-      echo "Adding new option \"${option}\" to mailcow.conf"
-      echo '# Solr is disabled by default after upgrading from non-Solr to Solr-enabled mailcows.' >> mailcow.conf
-      echo '# Disable Solr or if you do not want to store a readable index of your mails in solr-vol-1.' >> mailcow.conf
-      echo "SKIP_SOLR=y" >> mailcow.conf
+      echo "Replacing SKIP_SOLR with \"${option}\" in mailcow.conf"
+      sed -i '/# Skip Solr on low-memory systems or if you do not want to store a readable index of your mails in solr-vol-1./c\# Skip Xapian (FTS) on low-memory systems or if you do not want to store a readable index of your mails in vmail-index-vol-1.' mailcow.conf
+      sed -i '/SKIP_SOLR=/c\SKIP_XAPIAN=' mailcow.conf
+      echo "Removing Solr-Port Binding from mailcow.conf"
+      sed -i '/SOLR_PORT=/d' mailcow.conf
     fi
   elif [[ ${option} == "ENABLE_SSL_SNI" ]]; then
     if ! grep -q ${option} mailcow.conf; then
@@ -717,6 +717,22 @@ if [ -f "data/conf/rspamd/local.d/metrics.conf" ]; then
     echo "The deprecated configuration file metrics.conf will be moved to metrics.conf_deprecated after updating mailcow."
   fi
   mv data/conf/rspamd/local.d/metrics.conf data/conf/rspamd/local.d/metrics.conf_deprecated
+fi
+
+# Set app_info.inc.php
+mailcow_git_version=$(git describe --tags `git rev-list --tags --max-count=1`)
+if [ $? -eq 0 ]; then
+  mailcow_git_url=$(git config --get remote.origin.url)
+  echo '<?php' > data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_VERSION="'$mailcow_git_version'";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_URL="'$mailcow_git_url'";' >> data/web/inc/app_info.inc.php
+  echo '?>' >> data/web/inc/app_info.inc.php
+else
+  echo '<?php' > data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_VERSION="";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_URL="";' >> data/web/inc/app_info.inc.php
+  echo '?>' >> data/web/inc/app_info.inc.php
+  echo -e "\e[33mCannot determine current git repository version...\e[0m"
 fi
 
 if [[ ${SKIP_START} == "y" ]]; then
