@@ -579,7 +579,6 @@ services:
         - netfilter-mailcow
         - watchdog-mailcow
         - dockerapi-mailcow
-        - solr-mailcow
       environment:
         - TZ=${TZ}
       image: robbertkl/ipv6nat
