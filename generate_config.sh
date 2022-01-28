@@ -253,7 +253,7 @@ SKIP_XAPIAN=${SKIP_XAPIAN}
 # Xapian heap size in MB, there is no recommendation, please see Xapians docs.
 # Xapian is replacing solr completely. It is supposed to be much more efficient in CPU and RAM consumption.
 
-XAPIAN_HEAP=${XAPIAN_HEAP}
+XAPIAN_HEAP=1024
 
 # Allow admins to log into SOGo as email user (without any password)
 
