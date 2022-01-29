@@ -38,22 +38,24 @@
 
 <div class="row">
   <div class="col-md-12">
-    {% include 'admin/tab-config-admins.twig' %}
-    {% include 'admin/tab-ldap.twig' %}
-    {% include 'admin/tab-config-oauth2.twig' %}
-    {% include 'admin/tab-config-rspamd.twig' %}
-    {% include 'admin/tab-routing.twig' %}
-    {% include 'admin/tab-config-dkim.twig' %}
-    {% include 'admin/tab-config-fwdhosts.twig' %}
-    {% include 'admin/tab-config-f2b.twig' %}
-    {% include 'admin/tab-config-quarantine.twig' %}
-    {% include 'admin/tab-config-quota.twig' %}
-    {% include 'admin/tab-config-rsettings.twig' %}
-    {% include 'admin/tab-config-customize.twig' %}
-    {% include 'admin/tab-config-password-policy.twig' %}
-    {% include 'admin/tab-sys-mails.twig' %}
-    {% include 'admin/tab-mailq.twig' %}
-    {% include 'admin/tab-globalfilter-regex.twig' %}
+    <div class="tab-content" style="padding-top:20px">
+      {% include 'admin/tab-config-admins.twig' %}
+      {% include 'admin/tab-ldap.twig' %}
+      {% include 'admin/tab-config-oauth2.twig' %}
+      {% include 'admin/tab-config-rspamd.twig' %}
+      {% include 'admin/tab-routing.twig' %}
+      {% include 'admin/tab-config-dkim.twig' %}
+      {% include 'admin/tab-config-fwdhosts.twig' %}
+      {% include 'admin/tab-config-f2b.twig' %}
+      {% include 'admin/tab-config-quarantine.twig' %}
+      {% include 'admin/tab-config-quota.twig' %}
+      {% include 'admin/tab-config-rsettings.twig' %}
+      {% include 'admin/tab-config-customize.twig' %}
+      {% include 'admin/tab-config-password-policy.twig' %}
+      {% include 'admin/tab-sys-mails.twig' %}
+      {% include 'admin/tab-mailq.twig' %}
+      {% include 'admin/tab-globalfilter-regex.twig' %}
+    </div>
   </div> <!-- /col-md-12 -->
 </div> <!-- /row -->
   
