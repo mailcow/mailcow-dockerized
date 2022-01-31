@@ -56,6 +56,7 @@ data/web/templates/cache/*
 data/web/.well-known/acme-challenge
 data/web/css/build/0081-custom-mailcow.css
 data/web/inc/vars.local.inc.php
+data/web/inc/app_info.inc.php
 data/web/nextcloud*/
 data/web/rc*/
 docker-compose.override.yml
