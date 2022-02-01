@@ -75,20 +75,26 @@ elseif (isset($_SERVER['HTTP_X_ORIGINAL_URI']) && strcasecmp(substr($_SERVER['HT
   session_start();
   // extract email address from "/SOGo/so/user@domain/xy"
   $url_parts = explode("/", $_SERVER['HTTP_X_ORIGINAL_URI']);
-  $email = $url_parts[3];
-  // check if this email is in session allowed list
-  if (
-      !empty($email) &&
-      filter_var($email, FILTER_VALIDATE_EMAIL) &&
-      is_array($_SESSION[$session_var_user_allowed]) &&
-      in_array($email, $_SESSION[$session_var_user_allowed])
-  ) {
-    $username = $email;
-    $password = $_SESSION[$session_var_pass];
-    header("X-User: $username");
-    header("X-Auth: Basic ".base64_encode("$username:$password"));
-    header("X-Auth-Type: Basic");
-    exit;
+  $email_list = array(
+      $url_parts[3],                                // Requested mailbox
+      ($_SESSION['mailcow_cc_username'] ?? ''),     // Current user
+      ($_SESSION["dual-login"]["username"] ?? ''),  // Dual login user
+  );
+  foreach($email_list as $email) {
+    // check if this email is in session allowed list
+    if (
+        !empty($email) &&
+        filter_var($email, FILTER_VALIDATE_EMAIL) &&
+        is_array($_SESSION[$session_var_user_allowed]) &&
+        in_array($email, $_SESSION[$session_var_user_allowed])
+    ) {
+      $username = $email;
+      $password = $_SESSION[$session_var_pass];
+      header("X-User: $username");
+      header("X-Auth: Basic ".base64_encode("$username:$password"));
+      header("X-Auth-Type: Basic");
+      exit;
+    }
   }
 }
 

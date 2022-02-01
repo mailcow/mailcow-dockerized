@@ -202,6 +202,11 @@ legend {
   margin-top: 27px;
   margin-bottom: 20px;
   color: #959595;
+  display: flex;
+  flex-direction: column;
+}
+.footer .version {
+    margin-left: auto;
 }
 .slave-info {
   padding: 15px 0px 15px 15px;
