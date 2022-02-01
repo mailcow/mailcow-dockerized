@@ -278,7 +278,7 @@ services:
         ofelia.job-exec.dovecot_sarules.schedule: "@every 24h"
         ofelia.job-exec.dovecot_sarules.command: "/bin/bash -c \"/usr/local/bin/sa-rules.sh\""
         ofelia.job-exec.dovecot_fts.schedule: "@every 24h"
-        ofelia.job-exec.dovecot_fts.command: "/usr/bin/curl http://solr:8983/solr/dovecot-fts/update?optimize=true"
+        ofelia.job-exec.dovecot_fts.command: "doveadm fts optimize -A"
         ofelia.job-exec.dovecot_repl_health.schedule: "@every 5m"
         ofelia.job-exec.dovecot_repl_health.command: "/bin/bash -c \"/usr/local/bin/gosu vmail /usr/local/bin/repl_health.sh\""
       ulimits:
