@@ -409,16 +409,14 @@ if (isset($_GET['query'])) {
         break;
         case "fido2-get-args":
           header('Content-Type: application/json');
-          // fetch allowed credentialIds
-          $cids = fido2(array("action" => "get_all_cids"));
-          if (count($cids) == 0) {  
-            print(json_encode(array(
-                'type' => 'error',
-                'msg' => 'Cannot find matching credentialIds'
-            )));
-          }
+          // Login without username, no ids!
+          // $ids = fido2(array("action" => "get_all_cids"));
+          // if (count($ids) == 0) {
+            // return;
+          // }
+          $ids = NULL;
 
-          $getArgs = $WebAuthn->getGetArgs($cids, 30, true, true, true, true, $GLOBALS['FIDO2_UV_FLAG_LOGIN']);
+          $getArgs = $WebAuthn->getGetArgs($ids, 30, true, true, true, true, $GLOBALS['FIDO2_UV_FLAG_LOGIN']);
           print(json_encode($getArgs));
           $_SESSION['challenge'] = $WebAuthn->getChallenge();
           return;
