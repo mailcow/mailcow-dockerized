@@ -11,7 +11,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   pkg-config \
   python3 \
   python3-pip \
-  python3-pytest \
   valgrind \
   check \
   libbz2-dev \
@@ -44,11 +43,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       -D CLAMAV_USER=clamav \
       -D CLAMAV_GROUP=clamav \
       -D DATABASE_DIRECTORY=/var/lib/clamav \
+      -D ENABLE_APP=ON \
+      -D ENABLE_JSON_SHARED=OFF \
+      -D CMAKE_BUILD_TYPE=MinSizeRel \
   && cmake --build . -j4 \
   && cmake --build . --target install \
   && cd .. && rm -rf clamav-${CLAMAV} \
   && apt-get -y --auto-remove purge build-essential \
-  && apt-get -y purge libbz2-dev \
+  && apt-get -y purge pkg-config \
+  python3 \
+  python3-pip \
+  valgrind \
+  check \
+  libbz2-dev \
   libcurl4-openssl-dev \
   libjson-c-dev \
   libmilter-dev \
