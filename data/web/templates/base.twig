@@ -423,6 +423,14 @@ function recursiveBase64StrToArrayBuffer(obj) {
   {% if ui_texts.ui_footer %}
   <hr><span class="rot-enc">{{ ui_texts.ui_footer|rot13|raw }}</span>
   {% endif %}
+  {% if mailcow_cc_username and mailcow_info.version_tag|default %}
+  <span class="version">
+    🐮 + 🐋 = 💕
+    <a href="{{ mailcow_info.git_project_url }}/releases/tag/{{ mailcow_info.version_tag }}" target="_blank">
+        Version: {{ mailcow_info.version_tag }}
+    </a>
+  </span>
+  {% endif %}
 </div>
 </body>
 </html>
