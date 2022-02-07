@@ -86,23 +86,23 @@ else
 fi
 
 if [ ${MEM_TOTAL} -le "2097152" ]; then
-  echo "Disabling Solr on low-memory system."
-  SKIP_SOLR=y
+  echo "Disabling Xapian (full text search, build in Dovecot) on low-memory system."
+  SKIP_XAPIAN=y
 elif [ ${MEM_TOTAL} -le "3670016" ]; then
-  echo "Installed memory is <= 3.5 GiB. It is recommended to disable Solr to prevent out-of-memory situations."
-  echo "Solr is a prone to run OOM and should be monitored. The default Solr heap size is 1024 MiB and should be set in mailcow.conf according to your expected load."
-  echo "Solr can be re-enabled by setting SKIP_SOLR=n in mailcow.conf but will refuse to start with less than 2 GB total memory."
-  read -r -p  "Do you want to disable Solr now? [Y/n] " response
+  echo "Installed memory is <= 3.5 GiB. We suggest you to disable Xapian (full text search, build in Dovecot) to prevent out-of-memory situations."
+  echo "The default Xapian heap size is 1024 MiB and should be set in mailcow.conf according to your expected load."
+  echo "Xapian can be re-enabled by setting SKIP_XAPIAN=n in mailcow.conf but will refuse to start with less than 2 GB total memory."
+  read -r -p  "Do you want to disable the FTS Xapian now? [Y/n] " response
   case $response in
     [nN][oO]|[nN])
-      SKIP_SOLR=n
+      SKIP_XAPIAN=n
       ;;
     *)
-      SKIP_SOLR=y
+      SKIP_XAPIAN=y
     ;;
   esac
 else
-  SKIP_SOLR=n
+  SKIP_XAPIAN=n
 fi
 
 [ ! -f ./data/conf/rspamd/override.d/worker-controller-password.inc ] && echo '# Placeholder' > ./data/conf/rspamd/override.d/worker-controller-password.inc
@@ -169,7 +169,6 @@ POPS_PORT=995
 SIEVE_PORT=4190
 DOVEADM_PORT=127.0.0.1:19991
 SQL_PORT=127.0.0.1:13306
-SOLR_PORT=127.0.0.1:18983
 REDIS_PORT=127.0.0.1:7654
 
 # Your timezone
@@ -247,14 +246,14 @@ SKIP_CLAMD=${SKIP_CLAMD}
 
 SKIP_SOGO=n
 
-# Skip Solr on low-memory systems or if you do not want to store a readable index of your mails in solr-vol-1.
+# Skip Xapian (FTS) on low-memory systems or if you do not want to store a readable index of your mails in vmail-index-vol-1.
 
-SKIP_SOLR=${SKIP_SOLR}
+SKIP_XAPIAN=${SKIP_XAPIAN}
 
-# Solr heap size in MB, there is no recommendation, please see Solr docs.
-# Solr is a prone to run OOM and should be monitored. Unmonitored Solr setups are not recommended.
+# Xapian heap size in MB, there is no recommendation, please see Xapians docs.
+# Xapian is replacing solr completely. It is supposed to be much more efficient in CPU and RAM consumption.
 
-SOLR_HEAP=1024
+XAPIAN_HEAP=1024
 
 # Allow admins to log into SOGo as email user (without any password)
 

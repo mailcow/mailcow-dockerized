@@ -1,10 +1,10 @@
-FROM debian:buster-slim
+FROM debian:bullseye-slim
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG DOVECOT=2.3.17.1
+ARG DOVECOT=2.3.18
 ENV LC_ALL C
-ENV GOSU_VERSION 1.12
+ENV GOSU_VERSION 1.14
 
 # Add groups and users before installing Dovecot to not break compatibility
 RUN groupadd -g 5000 vmail \
@@ -84,12 +84,23 @@ RUN groupadd -g 5000 vmail \
   syslog-ng-core \
   syslog-ng-mod-redis \
   wget \
+  git \
+  build-essential \
+  autoconf \
+  automake \
+  libtool \
+  make \
+  libxapian-dev \
+  libicu-dev \
+  zlib1g-dev \
+  pkg-config \
+  sudo \
   && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
   && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
   && chmod +x /usr/local/bin/gosu \
   && gosu nobody true \
   && apt-key adv --fetch-keys https://repo.dovecot.org/DOVECOT-REPO-GPG \
-  && echo "deb https://repo.dovecot.org/ce-${DOVECOT}/debian/buster buster main" > /etc/apt/sources.list.d/dovecot.list \
+  && echo "deb https://repo.dovecot.org/ce-${DOVECOT}/debian/bullseye bullseye main" > /etc/apt/sources.list.d/dovecot.list \
   && apt-get update \
   && apt-get -y --no-install-recommends install \
   dovecot-lua \
@@ -101,13 +112,32 @@ RUN groupadd -g 5000 vmail \
   dovecot-core \
   dovecot-pop3d \
   dovecot-imapd \
-  dovecot-solr \
-  && pip3 install mysql-connector-python html2text jinja2 redis \
+  dovecot-dev
+  #dovecot-solr \
+RUN  cd /tmp && wget https://oligarchy.co.uk/xapian/1.4.19/xapian-core-1.4.19.tar.xz && tar xf xapian-core-1.4.19.tar.xz && cd xapian-core-1.4.19 \
+  && ./configure --prefix=/opt \
+  && make && sudo make install 
+
+RUN cd /tmp && git clone https://github.com/grosjo/fts-xapian && cd fts-xapian \
+  && autoupdate \
+  && autoreconf -vi \
+  && ./configure --with-dovecot=/usr/lib/dovecot \
+  && make && sudo make install
+
+RUN pip3 install mysql-connector-python html2text jinja2 redis \
   && apt-get autoremove --purge -y \
+  && apt-get purge -y \   
+     make \
+     libxapian-dev \
+     libicu-dev \
+     zlib1g-dev \
+     pkg-config \
+     build-essential \
   && apt-get autoclean \
   && rm -rf /var/lib/apt/lists/* \
-  && rm -rf /tmp/* /var/tmp/* /root/.cache/
+  && rm -rf /tmp/* /var/tmp/* /root/.cache/ 
 
+COPY decode2text.sh /usr/local/bin/decode2text.sh
 COPY trim_logs.sh /usr/local/bin/trim_logs.sh
 COPY clean_q_aged.sh /usr/local/bin/clean_q_aged.sh
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
@@ -126,6 +156,7 @@ COPY stop-supervisor.sh /usr/local/sbin/stop-supervisor.sh
 COPY quarantine_notify.py /usr/local/bin/quarantine_notify.py
 COPY quota_notify.py /usr/local/bin/quota_notify.py
 COPY repl_health.sh /usr/local/bin/repl_health.sh
+RUN chmod +x /usr/local/bin/decode2text.sh
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
