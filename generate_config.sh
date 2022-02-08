@@ -119,7 +119,7 @@ MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
 
 # Password hash algorithm
 # Only certain password hash algorithm are supported. For a fully list of supported schemes,
-# see https://mailcow.github.io/mailcow-dockerized-docs/model-passwd/
+# see https://mailcow.github.io/mailcow-dockerized-docs/models/model-passwd/
 MAILCOW_PASS_SCHEME=BLF-CRYPT
 
 # ------------------------------
@@ -145,7 +145,7 @@ DBROOT=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 | head -c 28)
 # IMPORTANT: Do not use port 8081, 9081 or 65510!
 # Example: HTTP_BIND=1.2.3.4
 # For IPv4 and IPv6 leave it empty: HTTP_BIND= & HTTPS_PORT=
-# For IPv6 see https://mailcow.github.io/mailcow-dockerized-docs/firststeps-ip_bindings/
+# For IPv6 see https://mailcow.github.io/mailcow-dockerized-docs/post_installation/firststeps-ip_bindings/
 
 HTTP_PORT=80
 HTTP_BIND=
@@ -341,7 +341,7 @@ DOVECOT_MASTER_PASS=
 # Optional: Leave empty for none
 # This value is only used on first order!
 # Setting it at a later point will require the following steps:
-# https://mailcow.github.io/mailcow-dockerized-docs/debug-reset_tls/
+# https://mailcow.github.io/mailcow-dockerized-docs/troubleshooting/debug-reset_tls/
 ACME_CONTACT=
 
 # WebAuthn device manufacturer verification
