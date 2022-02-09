@@ -460,7 +460,8 @@
         "unlimited_quota_acl": "Neobmedzené kvóta je zakázaná cez ACL",
         "username_invalid": "Používateľské meno %s nemôže byť použité",
         "validity_missing": "Zadajte periódu platnosti",
-        "value_missing": "Prosím poskytnite všetky hodnoty"
+        "value_missing": "Prosím poskytnite všetky hodnoty",
+        "yotp_verification_failed": "Overenie cez OTP Yubico zlyhalo: %s"
     },
     "debug": {
         "chart_this_server": "Graf (tento server)",
@@ -608,7 +609,9 @@
         "title": "Upraviť objekt",
         "unchanged_if_empty": "Ak nemeníte, nechajte prázdne",
         "username": "Používateľské meno",
-        "validate_save": "Validovať a uložiť"
+        "validate_save": "Validovať a uložiť",
+        "sogo_access": "Prideliť priame prihlásenie do SOGo",
+        "sogo_access_info": "Jednotné prihlásenie z používateľského mail rozhrania zostáva funkčné. Toto nastavenie nemá vplyv na prístup k ostatným službám, ani neodstraňuje alebo nemení existujúci profil používateľa SOGo."
     },
     "fido2": {
         "confirm": "Potvrdiť",
@@ -985,7 +988,7 @@
         "enter_qr_code": "Zadajte váš TOTP kód, ak vaše zariadenie nedokáže skenovať QR kódy",
         "error_code": "Chyba kódu",
         "init_webauthn": "Inicializácia, prosím čakajte...",
-        "key_id": "Identifikátor pre váš YubiKey",
+        "key_id": "Identifikátor zariadenia",
         "key_id_totp": "Identifikátor pre váš kľúč",
         "none": "Deaktivovať",
         "reload_retry": "- (obnovte stránku, ak chyba pretrváva)",
@@ -999,7 +1002,9 @@
         "webauthn": "WebAuthn autentifikácia",
         "waiting_usb_auth": "<i>Čakanie na USB zariadenie...</i><br><br>Prosím stlačte tlačidlo na vašom USB zariadení.",
         "waiting_usb_register": "<i>Čakanie na USB zariadenie...</i><br><br>Prosím zadajte vaše heslo a potvrďte registráciu stlačením tlačidla na vašom USB zariadení.",
-        "yubi_otp": "Yubico OTP autentifikácia"
+        "yubi_otp": "Yubico OTP autentifikácia",
+        "u2f_deprecated_important": "Zaregistrujte si svoj Kľúč v paneli správcu pomocou novej metódy WebAuthn.",
+        "u2f_deprecated": "Zdá sa, že váš kľúč bol zaregistrovaný pomocou zastaranej metódy U2F. Deaktivujeme vám dvojfaktorovú autentifikáciu a odstránime váš Kľúč."
     },
     "user": {
         "action": "Akcia",
@@ -1155,7 +1160,9 @@
         "weekly": "Týždenne",
         "weeks": "týždne",
         "year": "rok",
-        "years": "rokov"
+        "years": "rokov",
+        "apple_connection_profile_with_app_password": "Nové heslo aplikácie sa vygeneruje a pridá do profilu, takže pri nastavovaní zariadenia nie je potrebné zadávať žiadne heslo. Súbor nezdieľajte, pretože poskytuje úplný prístup k vašej mail schránke.",
+        "change_password_hint_app_passwords": "Vaše konto má {{number_of_app_passwords}} hesiel aplikácií, ktoré nebudú zmenené. Ak ich chcete spravovať, prejdite na kartu Heslá aplikácií."
     },
     "warning": {
         "cannot_delete_self": "Nemožno vymazať prihláseného používateľa",
