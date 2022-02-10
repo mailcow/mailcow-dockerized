@@ -74,6 +74,11 @@ if ($fuzzy == 'unknown') {
 
 try {
   $max_size = (int)$redis->Get('Q_MAX_SIZE');
+  if ($max_size === 0) {
+    error_log(sprintf("QUARANTINE: Not quarantining %d b message, because Quarantine is not enabled (maximum quarantine size is 0 MiB)", $raw_size) . PHP_EOL);
+    http_response_code(505);
+    exit;
+  }
   if (($max_size * 1048576) < $raw_size) {
     error_log(sprintf("QUARANTINE: Message too large: %d b exceeds %d b", $raw_size, ($max_size * 1048576)) . PHP_EOL);
     http_response_code(505);
