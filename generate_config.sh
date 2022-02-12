@@ -201,7 +201,7 @@ MAILDIR_GC_TIME=7200
 # You can use wildcard records to create specific names for every domain you add to mailcow.
 # Example: Add domains "example.com" and "example.net" to mailcow, change ADDITIONAL_SAN to a value like:
 #ADDITIONAL_SAN=imap.*,smtp.*
-# This will expand the certificate to "imap.example.com", "smtp.example.com", "imap.example.net", "imap.example.net"
+# This will expand the certificate to "imap.example.com", "smtp.example.com", "imap.example.net", "smtp.example.net"
 # plus every domain you add in the future.
 #
 # You can also just add static names...
