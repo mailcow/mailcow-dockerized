@@ -21,7 +21,8 @@ RUN apt-get update && apt-get install -y \
   && apt-get clean \
   && mkdir -p /run/rspamd \
   && chown _rspamd:_rspamd /run/rspamd \
-  && echo 'alias ll="ls -la --color"' >> ~/.bashrc
+  && echo 'alias ll="ls -la --color"' >> ~/.bashrc \
+  && sed -i 's/#analysis_keyword_table > 0/analysis_cat_table.macro_exist == "M"/g' /usr/share/rspamd/lualib/lua_scanners/oletools.lua
 
 COPY settings.conf /etc/rspamd/settings.conf
 COPY metadata_exporter.lua /usr/share/rspamd/plugins/metadata_exporter.lua
