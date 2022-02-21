@@ -139,7 +139,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
-        <h3 class="modal-title">2-Factor-Authentication</h3>
+        <h3 class="modal-title">{{ lang.tfa.tfa }}</h3>
       </div>
       
         <ul class="nav nav-tabs" id="tabContent">
@@ -173,7 +173,7 @@
                     <form role="form" method="post" id="webauthn_auth_form">
                       <legend>
                           <i class="bi bi-shield-fill-check"></i>
-                          Available Authenticators
+                          Authenticators
                       </legend>
                       <div class="list-group">
                         {% for authenticator in pending_tfa_methods %}
@@ -181,6 +181,7 @@
                             <a href="#" class="list-group-item webauthn-authenticator-selection">
                               <i class="bi bi-key-fill" style="margin-right: 5px"></i>
                               <span>{{ authenticator["key_id"] }}</span>
+                              <input type="hidden" value="{{ authenticator["id"] }}" /><br/>
                             </a>
                           {% endif %}
                         {% endfor %}
@@ -192,7 +193,7 @@
                       <input type="hidden" name="token" id="webauthn_auth_data"/>
                       <input type="hidden" name="tfa_method" value="webauthn">
                       <input type="hidden" name="verify_tfa_login"/><br/>
-                      <input type="hidden" name="key_id" id="webauthn_selected_key_id" /><br/>
+                      <input type="hidden" name="id" id="webauthn_selected_id" /><br/>
                     </form>
                   </div>
               </div>
@@ -205,7 +206,7 @@
                     <form role="form" method="post">
                       <legend>
                           <i class="bi bi-shield-fill-check"></i>
-                          Available Authenticators
+                          Authenticators
                       </legend>
                       <div class="list-group">
                         {% for authenticator in pending_tfa_methods %}
@@ -213,6 +214,7 @@
                             <a href="#" class="list-group-item yubi-authenticator-selection">
                               <i class="bi bi-key-fill" style="margin-right: 5px"></i>
                               <span>{{ authenticator["key_id"] }}</span>
+                              <input type="hidden" value="{{ authenticator["id"] }}" />
                             </a>
                           {% endif %}
                         {% endfor %}
@@ -223,7 +225,7 @@
                             <span class="input-group-addon" id="yubi-addon"><img alt="Yubicon Icon" src="/img/yubi.ico"></span>
                             <input type="text" name="token" class="form-control" autocomplete="off" placeholder="Touch Yubikey" aria-describedby="yubi-addon">
                             <input type="hidden" name="tfa_method" value="yubi_otp">
-                            <input type="hidden" name="key_id" id="yubi_selected_key_id" />
+                            <input type="hidden" name="id" id="yubi_selected_id" />
                           </div>
                         </div>
                         <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-sm btn-default" type="submit" name="verify_tfa_login">{{ lang.login.login }}</button>
@@ -240,7 +242,7 @@
                     <form role="form" method="post">        
                       <legend>
                           <i class="bi bi-shield-fill-check"></i>
-                          Available Authenticators
+                          Authenticators
                       </legend>
                       <div class="list-group">
                         {% for authenticator in pending_tfa_methods %}
@@ -248,6 +250,7 @@
                             <a href="#" class="list-group-item totp-authenticator-selection">
                               <i class="bi bi-key-fill" style="margin-right: 5px"></i>
                               <span>{{ authenticator["key_id"] }}</span>
+                              <input type="hidden" value="{{ authenticator["id"] }}" />
                             </a>
                           {% endif %}
                         {% endfor %}
@@ -258,7 +261,7 @@
                             <span class="input-group-addon" id="tfa-addon"><i class="bi bi-shield-lock-fill"></i></span>
                             <input type="number" min="000000" max="999999" name="token" class="form-control" placeholder="123456" autocomplete="one-time-code" aria-describedby="tfa-addon">
                             <input type="hidden" name="tfa_method" value="totp">
-                            <input type="hidden" name="key_id" id="totp_selected_key_id" /><br/>
+                            <input type="hidden" name="id" id="totp_selected_id" /><br/>
                           </div>
                         </div>
                         <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" type="submit" name="verify_tfa_login">{{ lang.login.login }}</button>
