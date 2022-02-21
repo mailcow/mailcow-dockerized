@@ -194,8 +194,8 @@ function recursiveBase64StrToArrayBuffer(obj) {
       $(".yubi-authenticator-selection").removeClass("active");
       $(this).addClass("active");
 
-      var key_id = $(this).children('span').first().text();
-      $("#yubi_selected_key_id").val(key_id);
+      var id = $(this).children('input').first().val();
+      $("#yubi_selected_id").val(id);
 
       $("#collapseYubiTFA").collapse('show');
     });
@@ -211,8 +211,8 @@ function recursiveBase64StrToArrayBuffer(obj) {
       $(".totp-authenticator-selection").removeClass("active");
       $(this).addClass("active");
       
-      var key_id = $(this).children('span').first().text();
-      $("#totp_selected_key_id").val(key_id);
+      var id = $(this).children('input').first().val();
+      $("#totp_selected_id").val(id);
 
       $("#collapseTotpTFA").collapse('show');
     });
@@ -228,8 +228,8 @@ function recursiveBase64StrToArrayBuffer(obj) {
       $(".webauthn-authenticator-selection").removeClass("active");
       $(this).addClass("active");
       
-      var key_id = $(this).children('span').first().text();
-      $("#webauthn_selected_key_id").val(key_id);
+      var id = $(this).children('input').first().val();
+      $("#webauthn_selected_id").val(id);
       
       $("#collapseWebAuthnTFA").collapse('show');
 
