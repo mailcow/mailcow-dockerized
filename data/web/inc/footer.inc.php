@@ -23,6 +23,27 @@ if (is_array($alertbox_log_parser)) {
   unset($_SESSION['return']);
 }
 
+// map tfa details for twig
+$pending_tfa_authmechs = [];
+foreach($_SESSION['pending_tfa_methods'] as $authdata){
+  $pending_tfa_authmechs[$authdata['authmech']] = false;
+}
+if (isset($pending_tfa_authmechs['webauthn'])) {
+  $pending_tfa_authmechs['webauthn'] = true;
+}
+if (!isset($pending_tfa_authmechs['webauthn']) 
+    && isset($pending_tfa_authmechs['yubi_otp'])) {
+  $pending_tfa_authmechs['yubi_otp'] = true;
+}
+if (!isset($pending_tfa_authmechs['webauthn']) 
+    && !isset($pending_tfa_authmechs['yubi_otp'])
+    && isset($pending_tfa_authmechs['totp'])) {
+  $pending_tfa_authmechs['totp'] = true;
+}
+if (isset($pending_tfa_authmechs['u2f'])) {
+  $pending_tfa_authmechs['u2f'] = true;
+}
+
 // globals
 $globalVariables = [
   'mailcow_info' => array(
@@ -30,7 +51,8 @@ $globalVariables = [
     'git_project_url' => $GLOBALS['MAILCOW_GIT_URL']
   ),
   'js_path' => '/cache/'.basename($JSPath),
-  'pending_tfa_method' => @$_SESSION['pending_tfa_method'],
+  'pending_tfa_methods' => @$_SESSION['pending_tfa_methods'],
+  'pending_tfa_authmechs' => $pending_tfa_authmechs,
   'pending_mailcow_cc_username' => @$_SESSION['pending_mailcow_cc_username'],
   'lang_footer' => json_encode($lang['footer']),
   'lang_acl' => json_encode($lang['acl']),
