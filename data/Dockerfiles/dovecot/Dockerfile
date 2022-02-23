@@ -3,6 +3,7 @@ LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG DOVECOT=2.3.18
+ARG XAPIAN=1.4.19
 ENV LC_ALL C
 ENV GOSU_VERSION 1.14
 
@@ -94,7 +95,7 @@ RUN groupadd -g 5000 vmail \
   libicu-dev \
   zlib1g-dev \
   pkg-config \
-  sudo \
+  libsqlite3-dev \
   && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
   && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
   && chmod +x /usr/local/bin/gosu \
@@ -113,16 +114,15 @@ RUN groupadd -g 5000 vmail \
   dovecot-pop3d \
   dovecot-imapd \
   dovecot-dev
-  #dovecot-solr \
-RUN  cd /tmp && wget https://oligarchy.co.uk/xapian/1.4.19/xapian-core-1.4.19.tar.xz && tar xf xapian-core-1.4.19.tar.xz && cd xapian-core-1.4.19 \
+RUN  cd /tmp && wget https://oligarchy.co.uk/xapian/${XAPIAN}/xapian-core-${XAPIAN}.tar.xz && tar xf xapian-core-${XAPIAN}.tar.xz && cd xapian-core-${XAPIAN} \
   && ./configure --prefix=/opt \
-  && make && sudo make install 
+  && make && make install 
 
 RUN cd /tmp && git clone https://github.com/grosjo/fts-xapian && cd fts-xapian \
   && autoupdate \
   && autoreconf -vi \
   && ./configure --with-dovecot=/usr/lib/dovecot \
-  && make && sudo make install
+  && make && make install
 
 RUN pip3 install mysql-connector-python html2text jinja2 redis \
   && apt-get autoremove --purge -y \
@@ -133,11 +133,12 @@ RUN pip3 install mysql-connector-python html2text jinja2 redis \
      zlib1g-dev \
      pkg-config \
      build-essential \
+     libsqlite3-dev \
   && apt-get autoclean \
-  && rm -rf /var/lib/apt/lists/* \
-  && rm -rf /tmp/* /var/tmp/* /root/.cache/ 
+  && rm -rf /var/lib/apt/lists/*
+  
+RUN rm -rf /tmp/* /var/tmp/* /root/.cache/ 
 
-COPY decode2text.sh /usr/local/bin/decode2text.sh
 COPY trim_logs.sh /usr/local/bin/trim_logs.sh
 COPY clean_q_aged.sh /usr/local/bin/clean_q_aged.sh
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
@@ -156,7 +157,6 @@ COPY stop-supervisor.sh /usr/local/sbin/stop-supervisor.sh
 COPY quarantine_notify.py /usr/local/bin/quarantine_notify.py
 COPY quota_notify.py /usr/local/bin/quota_notify.py
 COPY repl_health.sh /usr/local/bin/repl_health.sh
-RUN chmod +x /usr/local/bin/decode2text.sh
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
