@@ -161,7 +161,7 @@ try:
       attrs = json.loads(attrs.decode('utf-8'))
     if attrs['quarantine_notification'] not in ('hourly', 'daily', 'weekly'):
       continue
-    if last_notification == 0 or (last_notification + time_trans[attrs['quarantine_notification']]) < time_now:
+    if last_notification == 0 or (last_notification + time_trans[attrs['quarantine_notification']]) <= time_now:
       print("Notifying %s: Considering %d new items in quarantine (policy: %s)" % (record['rcpt'], record['counter'], attrs['quarantine_notification']))
       notify_rcpt(record['rcpt'], record['counter'], record['quarantine_acl'], attrs['quarantine_category'])
 
