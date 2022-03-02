@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Carbon\Traits;
 
 use Closure;
@@ -65,8 +66,8 @@ trait Mixin
     public static function mixin($mixin)
     {
         \is_string($mixin) && trait_exists($mixin)
-            ? static::loadMixinTrait($mixin)
-            : static::loadMixinClass($mixin);
+            ? self::loadMixinTrait($mixin)
+            : self::loadMixinClass($mixin);
     }
 
     /**
@@ -114,7 +115,7 @@ trait Mixin
                 }
 
                 // in case of errors not converted into exceptions
-                $closure = $closure ?? $closureBase;
+                $closure = $closure ?: $closureBase;
 
                 return $closure(...\func_get_args());
             });

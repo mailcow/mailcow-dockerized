@@ -236,7 +236,7 @@ class DistinguishedNameBuilder
     /**
      * Build the distinguished name from the components.
      *
-     * @return $this
+     * @return string
      */
     protected function build()
     {

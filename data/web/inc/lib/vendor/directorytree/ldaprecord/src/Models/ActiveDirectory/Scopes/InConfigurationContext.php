@@ -15,9 +15,9 @@ class InConfigurationContext implements Scope
      * @param Builder $query
      * @param Model   $model
      *
-     * @throws \LdapRecord\Models\ModelNotFoundException
-     *
      * @return void
+     *
+     * @throws \LdapRecord\Models\ModelNotFoundException
      */
     public function apply(Builder $query, Model $model)
     {
@@ -29,9 +29,9 @@ class InConfigurationContext implements Scope
      *
      * @param Model $model
      *
-     * @throws \LdapRecord\Models\ModelNotFoundException
-     *
      * @return mixed
+     *
+     * @throws \LdapRecord\Models\ModelNotFoundException
      */
     protected function getConfigurationNamingContext(Model $model)
     {

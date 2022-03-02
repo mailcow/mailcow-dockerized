@@ -150,19 +150,21 @@ trait HandlesConnection
      *
      * @param Closure $operation
      *
-     * @throws LdapRecordException
-     *
      * @return mixed
+     *
+     * @throws LdapRecordException
      */
     protected function executeFailableOperation(Closure $operation)
     {
         // If some older versions of PHP, errors are reported instead of throwing
-        // exceptions, which could be a signifcant detriment to our application.
+        // exceptions, which could be a significant detriment to our application.
         // Here, we will enforce these operations to throw exceptions instead.
-        set_error_handler(function ($severity, $message, $file, $line) {
+        set_error_handler(function (int $severity, string $message, string $file, int $line): bool {
             if (! $this->shouldBypassError($message)) {
                 throw new ErrorException($message, $severity, $severity, $file, $line);
             }
+
+            return true;
         });
 
         try {

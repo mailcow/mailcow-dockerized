@@ -28,10 +28,12 @@ use Twig\Profiler\Profile;
 final class ProfilerNodeVisitor implements NodeVisitorInterface
 {
     private $extensionName;
+    private $varName;
 
     public function __construct(string $extensionName)
     {
         $this->extensionName = $extensionName;
+        $this->varName = sprintf('__internal_%s', hash(\PHP_VERSION_ID < 80100 ? 'sha256' : 'xxh128', $extensionName));
     }
 
     public function enterNode(Node $node, Environment $env): Node
@@ -42,31 +44,23 @@ final class ProfilerNodeVisitor implements NodeVisitorInterface
     public function leaveNode(Node $node, Environment $env): ?Node
     {
         if ($node instanceof ModuleNode) {
-            $varName = $this->getVarName();
-            $node->setNode('display_start', new Node([new EnterProfileNode($this->extensionName, Profile::TEMPLATE, $node->getTemplateName(), $varName), $node->getNode('display_start')]));
-            $node->setNode('display_end', new Node([new LeaveProfileNode($varName), $node->getNode('display_end')]));
+            $node->setNode('display_start', new Node([new EnterProfileNode($this->extensionName, Profile::TEMPLATE, $node->getTemplateName(), $this->varName), $node->getNode('display_start')]));
+            $node->setNode('display_end', new Node([new LeaveProfileNode($this->varName), $node->getNode('display_end')]));
         } elseif ($node instanceof BlockNode) {
-            $varName = $this->getVarName();
             $node->setNode('body', new BodyNode([
-                new EnterProfileNode($this->extensionName, Profile::BLOCK, $node->getAttribute('name'), $varName),
+                new EnterProfileNode($this->extensionName, Profile::BLOCK, $node->getAttribute('name'), $this->varName),
                 $node->getNode('body'),
-                new LeaveProfileNode($varName),
+                new LeaveProfileNode($this->varName),
             ]));
         } elseif ($node instanceof MacroNode) {
-            $varName = $this->getVarName();
             $node->setNode('body', new BodyNode([
-                new EnterProfileNode($this->extensionName, Profile::MACRO, $node->getAttribute('name'), $varName),
+                new EnterProfileNode($this->extensionName, Profile::MACRO, $node->getAttribute('name'), $this->varName),
                 $node->getNode('body'),
-                new LeaveProfileNode($varName),
+                new LeaveProfileNode($this->varName),
             ]));
         }
 
         return $node;
-    }
-
-    private function getVarName(): string
-    {
-        return sprintf('__internal_%s', hash('sha256', $this->extensionName));
     }
 
     public function getPriority(): int

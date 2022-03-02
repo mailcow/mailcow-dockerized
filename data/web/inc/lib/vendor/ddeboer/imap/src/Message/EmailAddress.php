@@ -19,6 +19,7 @@ final class EmailAddress
         $this->mailbox  = $mailbox;
         $this->hostname = $hostname;
         $this->name     = $name;
+        $this->address  = null;
 
         if (null !== $hostname) {
             $this->address = $mailbox . '@' . $hostname;

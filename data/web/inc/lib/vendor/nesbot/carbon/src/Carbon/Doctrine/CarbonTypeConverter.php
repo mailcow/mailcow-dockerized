@@ -1,9 +1,14 @@
 <?php
 
 /**
- * Thanks to https://github.com/flaushi for his suggestion:
- * https://github.com/doctrine/dbal/issues/2873#issuecomment-534956358
+ * This file is part of the Carbon package.
+ *
+ * (c) Brian Nesbitt <brian@nesbot.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
 namespace Carbon\Doctrine;
 
 use Carbon\Carbon;
@@ -26,11 +31,21 @@ trait CarbonTypeConverter
         return Carbon::class;
     }
 
+    /**
+     * @return string
+     */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
-        $precision = ($fieldDeclaration['precision'] ?: 10) === 10
-            ? DateTimeDefaultPrecision::get()
-            : $fieldDeclaration['precision'];
+        $precision = $fieldDeclaration['precision'] ?: 10;
+
+        if ($fieldDeclaration['secondPrecision'] ?? false) {
+            $precision = 0;
+        }
+
+        if ($precision === 10) {
+            $precision = DateTimeDefaultPrecision::get();
+        }
+
         $type = parent::getSQLDeclaration($fieldDeclaration, $platform);
 
         if (!$precision) {

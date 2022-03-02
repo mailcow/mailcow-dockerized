@@ -60,7 +60,7 @@ class TwoFactorAuthTest extends TestCase
             new \RobThree\Auth\Providers\Time\NTPTimeProvider(),                         // Uses pool.ntp.org by default
             //new \RobThree\Auth\Providers\Time\NTPTimeProvider('time.google.com'),      // Somehow time.google.com and time.windows.com make travis timeout??
             new \RobThree\Auth\Providers\Time\HttpTimeProvider(),                        // Uses google.com by default
-            new \RobThree\Auth\Providers\Time\HttpTimeProvider('https://github.com'),
+            //new \RobThree\Auth\Providers\Time\HttpTimeProvider('https://github.com'),  // github.com will periodically report times that are off by more than 5 sec
             new \RobThree\Auth\Providers\Time\HttpTimeProvider('https://yahoo.com'),
         ));
         $this->noAssertionsMade();

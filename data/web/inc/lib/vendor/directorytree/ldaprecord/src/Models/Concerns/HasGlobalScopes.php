@@ -14,9 +14,9 @@ trait HasGlobalScopes
      * @param Scope|Closure|string $scope
      * @param Closure|null         $implementation
      *
-     * @throws InvalidArgumentException
-     *
      * @return mixed
+     *
+     * @throws InvalidArgumentException
      */
     public static function addGlobalScope($scope, Closure $implementation = null)
     {
