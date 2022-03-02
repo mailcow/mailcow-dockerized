@@ -1,4 +1,7 @@
 # mailcow: dockerized - 🐮 + 🐋 = 💕
+
+## We stand with 🇺🇦
+
 [![master build status](https://img.shields.io/drone/build/mailcow/mailcow-dockerized/master?label=master%20build&server=https%3A%2F%2Fdrone.mailcow.email)](https://drone.mailcow.email/mailcow/mailcow-dockerized) [![staging build status](https://img.shields.io/drone/build/mailcow/mailcow-dockerized/staging?label=staging%20build&server=https%3A%2F%2Fdrone.mailcow.email)](https://drone.mailcow.email/mailcow/mailcow-dockerized) [![Translation status](https://translate.mailcow.email/widgets/mailcow-dockerized/-/translation/svg-badge.svg)](https://translate.mailcow.email/engage/mailcow-dockerized/)
 [![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/mailcow_email.svg?style=social&label=Follow%20%40mailcow_email)](https://twitter.com/mailcow_email)
 

@@ -71,7 +71,7 @@
           <div class="col-sm-8">
             <select data-width="100%" name="exclude_domains" class="selectpicker" title="{{ lang.tfa.select }}" multiple>
               {% for domain in all_domains %}
-                <option {% if domain in q_data.exclude_domains|keys %}selected{% endif %}>{{ domain }}</option>
+                <option {% if domain in q_data.exclude_domains %}selected{% endif %}>{{ domain }}</option>
               {% endfor %}
             </select>
           </div>
