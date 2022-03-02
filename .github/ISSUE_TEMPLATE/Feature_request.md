@@ -1,29 +1,20 @@
----
 name: 💡 Feature Request
-about: Suggest an idea for mailcow.
-labels: enhancement
----
-
-<!--
-  Please note that the mailcow team and its contributors do have finite
-  resources and that we can not work on all filed feature requests.
-
-  However making us aware about certain ideas can help us improving
-  mailcow together.
-  
-  We're also happy to help you getting a specific  feature implemented.
--->
-
-## Summary
-
-A clear and concise description of what the problem is.
-For example: I'm always frustrated when [...]
-
-## Motivation
-
-What are you about to solve or improve with this idea?
-What would be the benefit for most users?
-
-## Additional context
-
-Add any other context or screenshots about the feature request.
+description: Suggest an idea for mailcow.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    attributes:
+      label: Summary
+      description: Please describe your idea in a reasonable amount of detail.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Motivation
+      description: Please describe how your idea would benefit you and other users.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Additional context
+      description: Add any other context or screenshots about the feature request.

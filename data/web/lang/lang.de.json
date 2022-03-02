@@ -496,7 +496,7 @@
         "dns_records": "DNS-Einträge",
         "dns_records_24hours": "Bitte beachten Sie, dass es bis zu 24 Stunden dauern kann, bis Änderungen an Ihren DNS-Einträgen als aktueller Status auf dieser Seite dargestellt werden. Diese Seite ist nur als Hilfsmittel gedacht, um die korrekten Werte für DNS-Einträge anzuzeigen und zu überprüfen, ob die Daten im DNS hinterlegt sind.",
         "dns_records_data": "Korrekte Daten",
-        "dns_records_docs": "Die <a target=\"_blank\" href=\"https://mailcow.github.io/mailcow-dockerized-docs/prerequisite-dns/\">Online-Dokumentation</a> enthält weitere Informationen zur DNS-Konfiguration.",
+        "dns_records_docs": "Die <a target=\"_blank\" href=\"https://mailcow.github.io/mailcow-dockerized-docs/prerequisite/prerequisite-dns/\">Online-Dokumentation</a> enthält weitere Informationen zur DNS-Konfiguration.",
         "dns_records_name": "Name",
         "dns_records_status": "Aktueller Status",
         "dns_records_type": "Typ",
