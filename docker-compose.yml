@@ -73,7 +73,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.79
+      image: mailcow/rspamd:1.80
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -540,7 +540,7 @@ services:
             - solr
 
     olefy-mailcow:
-      image: mailcow/olefy:1.8.1
+      image: mailcow/olefy:1.9
       restart: always
       environment:
         - TZ=${TZ}
@@ -548,7 +548,7 @@ services:
         - OLEFY_BINDPORT=10055
         - OLEFY_TMPDIR=/tmp
         - OLEFY_PYTHON_PATH=/usr/bin/python3
-        - OLEFY_OLEVBA_PATH=/usr/bin/olevba3
+        - OLEFY_OLEVBA_PATH=/usr/bin/olevba
         - OLEFY_LOGLVL=20
         - OLEFY_MINLENGTH=500
         - OLEFY_DEL_TMP=1
