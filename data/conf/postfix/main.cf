@@ -198,3 +198,6 @@ parent_domain_matches_subdomains = debug_peer_list,fast_flush_domains,mynetworks
 
 # DO NOT EDIT ANYTHING BELOW #
 # User overrides #
+
+myhostname = mx.mailcow.email
+
