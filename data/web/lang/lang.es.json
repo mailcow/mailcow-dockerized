@@ -18,7 +18,8 @@
         "spam_score": "Puntuación de spam",
         "syncjobs": "Trabajos de sincronización",
         "tls_policy": "Póliza de TLS",
-        "unlimited_quota": "Cuota ilimitada para buzones"
+        "unlimited_quota": "Cuota ilimitada para buzones",
+        "app_passwds": "Gestionar las contraseñas de aplicaciones"
     },
     "add": {
         "activate_filter_warn": "Todos los demás filtros se desactivarán cuando este filtro se active.",
