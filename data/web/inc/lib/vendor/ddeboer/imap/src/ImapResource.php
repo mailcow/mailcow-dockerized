@@ -6,6 +6,7 @@ namespace Ddeboer\Imap;
 
 use Ddeboer\Imap\Exception\InvalidResourceException;
 use Ddeboer\Imap\Exception\ReopenMailboxException;
+use IMAP\Connection;
 
 /**
  * An imap resource stream.
@@ -22,7 +23,7 @@ final class ImapResource implements ImapResourceInterface
     /**
      * Constructor.
      *
-     * @param resource $resource
+     * @param Connection|resource $resource
      */
     public function __construct($resource, MailboxInterface $mailbox = null)
     {
@@ -32,7 +33,10 @@ final class ImapResource implements ImapResourceInterface
 
     public function getStream()
     {
-        if (false === \is_resource($this->resource) || 'imap' !== \get_resource_type($this->resource)) {
+        if (
+            !$this->resource instanceof Connection
+            && (false === \is_resource($this->resource) || 'imap' !== \get_resource_type($this->resource))
+        ) {
             throw new InvalidResourceException('Supplied resource is not a valid imap resource');
         }
 
@@ -55,7 +59,13 @@ final class ImapResource implements ImapResourceInterface
             return;
         }
 
+        \set_error_handler(static function (): bool {
+            return true;
+        });
+
         \imap_reopen($this->resource, $this->mailbox->getFullEncodedName());
+
+        \restore_error_handler();
 
         if (self::isMailboxOpen($this->mailbox, $this->resource)) {
             return;

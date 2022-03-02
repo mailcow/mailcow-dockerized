@@ -6,6 +6,7 @@ use BadMethodCallException;
 use Closure;
 use DateTimeInterface;
 use InvalidArgumentException;
+use LDAP\Result;
 use LdapRecord\Connection;
 use LdapRecord\Container;
 use LdapRecord\EscapesValues;
@@ -19,6 +20,7 @@ use LdapRecord\Query\Pagination\Paginator;
 use LdapRecord\Support\Arr;
 use LdapRecord\Utilities;
 
+/** @psalm-suppress UndefinedClass */
 class Builder
 {
     use EscapesValues;
@@ -47,6 +49,13 @@ class Builder
      * @var array
      */
     public $controls = [];
+
+    /**
+     * The LDAP server controls that were processed.
+     *
+     * @var array
+     */
+    public $controlsResponse = [];
 
     /**
      * The size limit of the query.
@@ -238,12 +247,12 @@ class Builder
      *
      * After running the callback, the columns are reset to the original value.
      *
-     * @param array    $columns
-     * @param callable $callback
+     * @param array   $columns
+     * @param Closure $callback
      *
      * @return mixed
      */
-    protected function onceWithColumns($columns, $callback)
+    protected function onceWithColumns($columns, Closure $callback)
     {
         $original = $this->columns;
 
@@ -383,8 +392,8 @@ class Builder
     {
         return str_replace(
             '{base}',
-            $this->baseDn,
-            $dn instanceof Model ? $dn->getDn() : $dn
+            $this->baseDn ?: '',
+            (string) ($dn instanceof Model ? $dn->getDn() : $dn)
         );
     }
 
@@ -501,13 +510,32 @@ class Builder
     }
 
     /**
+     * Execute a callback over each item while chunking.
+     *
+     * @param Closure $callback
+     * @param int     $count
+     *
+     * @return bool
+     */
+    public function each(Closure $callback, $count = 1000)
+    {
+        return $this->chunk($count, function ($results) use ($callback) {
+            foreach ($results as $key => $value) {
+                if ($callback($value, $key) === false) {
+                    return false;
+                }
+            }
+        });
+    }
+
+    /**
      * Chunk the results of a paginated LDAP query.
      *
      * @param int     $pageSize
      * @param Closure $callback
      * @param bool    $isCritical
      *
-     * @return void
+     * @return bool
      */
     public function chunk($pageSize, Closure $callback, $isCritical = false)
     {
@@ -515,11 +543,19 @@ class Builder
 
         $query = $this->getQuery();
 
+        $page = 1;
+
         foreach ($this->runChunk($query, $pageSize, $isCritical) as $chunk) {
-            $callback($this->process($chunk));
+            if ($callback($this->process($chunk), $page) === false) {
+                return false;
+            }
+
+            $page++;
         }
 
         $this->logQuery($this, 'chunk', $this->getElapsedTime($start));
+
+        return true;
     }
 
     /**
@@ -549,7 +585,11 @@ class Builder
     {
         unset($results['count']);
 
-        return $this->paginated ? $this->flattenPages($results) : $results;
+        if ($this->paginated) {
+            return $this->flattenPages($results);
+        }
+
+        return $results;
     }
 
     /**
@@ -582,9 +622,7 @@ class Builder
      */
     protected function getCachedResponse($query, Closure $callback)
     {
-        // If caching is enabled and we have a cache instance available,
-        // we will try to retrieve the cached results instead.
-        if ($this->caching && $this->cache) {
+        if ($this->cache && $this->caching) {
             $key = $this->getCacheKey($query);
 
             if ($this->flushCache) {
@@ -594,7 +632,6 @@ class Builder
             return $this->cache->remember($key, $this->cacheUntil, $callback);
         }
 
-        // Otherwise, we will simply execute the callback.
         return $callback();
     }
 
@@ -642,10 +679,25 @@ class Builder
         }
 
         return $this->connection->run(function (LdapInterface $ldap) use ($resource) {
+            $this->controlsResponse = $this->controls;
+
+            $errorCode = 0;
+            $dn = $errorMessage = $refs = null;
+
+            // Process the server controls response.
+            $ldap->parseResult(
+                $resource,
+                $errorCode,
+                $dn,
+                $errorMessage,
+                $refs,
+                $this->controlsResponse
+            );
+
             $entries = $ldap->getEntries($resource);
 
             // Free up memory.
-            if (is_resource($resource)) {
+            if (is_resource($resource) || $resource instanceof Result) {
                 $ldap->freeResult($resource);
             }
 
@@ -684,7 +736,9 @@ class Builder
      */
     public function first($columns = ['*'])
     {
-        return Arr::get($this->limit(1)->get($columns), 0);
+        return Arr::first(
+            $this->limit(1)->get($columns)
+        );
     }
 
     /**
@@ -694,9 +748,9 @@ class Builder
      *
      * @param array|string $columns
      *
-     * @throws ObjectNotFoundException
+     * @return Model|array
      *
-     * @return Model|static
+     * @throws ObjectNotFoundException
      */
     public function firstOrFail($columns = ['*'])
     {
@@ -705,6 +759,75 @@ class Builder
         }
 
         return $record;
+    }
+
+    /**
+     * Return the first entry in a result, or execute the callback.
+     *
+     * @param Closure $callback
+     *
+     * @return Model|mixed
+     */
+    public function firstOr(Closure $callback)
+    {
+        return $this->first() ?: $callback();
+    }
+
+    /**
+     * Execute the query and get the first result if it's the sole matching record.
+     *
+     * @param array|string $columns
+     *
+     * @return Model|array
+     *
+     * @throws ObjectsNotFoundException
+     * @throws MultipleObjectsFoundException
+     */
+    public function sole($columns = ['*'])
+    {
+        $result = $this->limit(2)->get($columns);
+
+        if (empty($result)) {
+            throw new ObjectsNotFoundException;
+        }
+
+        if (count($result) > 1) {
+            throw new MultipleObjectsFoundException;
+        }
+
+        return reset($result);
+    }
+
+    /**
+     * Determine if any results exist for the current query.
+     *
+     * @return bool
+     */
+    public function exists()
+    {
+        return ! is_null($this->first());
+    }
+
+    /**
+     * Determine if no results exist for the current query.
+     *
+     * @return bool
+     */
+    public function doesntExist()
+    {
+        return ! $this->exists();
+    }
+
+    /**
+     * Execute the given callback if no rows exist for the current query.
+     *
+     * @param Closure $callback
+     *
+     * @return bool|mixed
+     */
+    public function existsOr(Closure $callback)
+    {
+        return $this->exists() ? true : $callback();
     }
 
     /**
@@ -747,9 +870,9 @@ class Builder
      * @param string       $value
      * @param array|string $columns
      *
-     * @throws ObjectNotFoundException
-     *
      * @return Model
+     *
+     * @throws ObjectNotFoundException
      */
     public function findByOrFail($attribute, $value, $columns = ['*'])
     {
@@ -830,9 +953,9 @@ class Builder
      * @param string       $dn
      * @param array|string $columns
      *
-     * @throws ObjectNotFoundException
-     *
      * @return Model|static
+     *
+     * @throws ObjectNotFoundException
      */
     public function findOrFail($dn, $columns = ['*'])
     {
@@ -874,6 +997,33 @@ class Builder
         $this->columns = array_merge((array) $this->columns, $column);
 
         return $this;
+    }
+
+    /**
+     * Add an order by control to the query.
+     *
+     * @param string $attribute
+     * @param string $direction
+     *
+     * @return $this
+     */
+    public function orderBy($attribute, $direction = 'asc')
+    {
+        return $this->addControl(LDAP_CONTROL_SORTREQUEST, true, [
+            ['attr' => $attribute, 'reverse' => $direction === 'desc'],
+        ]);
+    }
+
+    /**
+     * Add an order by descending control to the query.
+     *
+     * @param string $attribute
+     *
+     * @return $this
+     */
+    public function orderByDesc($attribute)
+    {
+        return $this->orderBy($attribute, 'desc');
     }
 
     /**
@@ -951,9 +1101,9 @@ class Builder
      * @param string       $boolean
      * @param bool         $raw
      *
-     * @throws InvalidArgumentException
-     *
      * @return $this
+     *
+     * @throws InvalidArgumentException
      */
     public function where($field, $operator = null, $value = null, $boolean = 'and', $raw = false)
     {
@@ -1414,9 +1564,9 @@ class Builder
      * @param string $type     The type of filter to add.
      * @param array  $bindings The bindings of the filter.
      *
-     * @throws InvalidArgumentException
-     *
      * @return $this
+     *
+     * @throws InvalidArgumentException
      */
     public function addFilter($type, array $bindings)
     {
@@ -1610,9 +1760,9 @@ class Builder
      * @param string $dn
      * @param array  $attributes
      *
-     * @throws LdapRecordException
-     *
      * @return bool
+     *
+     * @throws LdapRecordException
      */
     public function insert($dn, array $attributes)
     {
@@ -1728,9 +1878,9 @@ class Builder
      * @param string $method
      * @param array  $parameters
      *
-     * @throws BadMethodCallException
-     *
      * @return mixed
+     *
+     * @throws BadMethodCallException
      */
     public function __call($method, $parameters)
     {

@@ -78,7 +78,7 @@ class Entry extends BaseEntry implements ActiveDirectory
      */
     public function isDeleted()
     {
-        return strtoupper($this->getFirstAttribute('isDeleted')) === 'TRUE';
+        return strtoupper((string) $this->getFirstAttribute('isDeleted')) === 'TRUE';
     }
 
     /**
@@ -86,9 +86,9 @@ class Entry extends BaseEntry implements ActiveDirectory
      *
      * @param string|null $newParentDn
      *
-     * @throws \LdapRecord\LdapRecordException
-     *
      * @return bool
+     *
+     * @throws \LdapRecord\LdapRecordException
      */
     public function restore($newParentDn = null)
     {
@@ -109,10 +109,9 @@ class Entry extends BaseEntry implements ActiveDirectory
             }
         });
 
-        $this->save([
-            'isDeleted' => null,
-            'distinguishedName' => $newDn,
-        ]);
+        $this->setRawAttribute('distinguishedname', $newDn);
+
+        $this->save(['isDeleted' => null]);
     }
 
     /**
@@ -120,9 +119,9 @@ class Entry extends BaseEntry implements ActiveDirectory
      *
      * @param string|null $connection
      *
-     * @throws \LdapRecord\Models\ModelNotFoundException
-     *
      * @return static
+     *
+     * @throws \LdapRecord\Models\ModelNotFoundException
      */
     public static function getRootDse($connection = null)
     {

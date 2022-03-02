@@ -1,0 +1,54 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+// undo some of the theme to allow code samples to be wider
+header {
+	padding-right: 0;
+}
+@media print, screen and (min-width: 961px) {
+	header {
+		border: 1px solid #e5e5e5;
+		border-radius: 5px;
+		margin-bottom: 30px;
+		margin-right: 30px;
+		padding-top: 20px;
+		position: static;
+		text-align: center;
+	}
+	section {
+		float: none;
+		width: auto;
+	}
+	footer {
+		float: none;
+		position: static;
+	}
+}
+
+// ensure code samples can be really wide
+.language-php.highlighter-rouge {
+	clear: both;
+}
+
+// add missing consistency
+header img {
+	margin-bottom: 20px;
+}
+
+// quick navigation hack needs some spacing
+section > a:first-child {
+	display: block;
+	margin-bottom:45px;
+}
+
+// 100% width is treated like clear which makes it look bad
+table {
+	width: auto;
+}
+
+// reset document block whatever so the bullets aren't disturbed by the float
+ul {
+	overflow: hidden;
+}

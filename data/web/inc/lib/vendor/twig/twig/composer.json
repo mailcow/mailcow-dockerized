@@ -29,7 +29,7 @@
         "symfony/polyfill-ctype": "^1.8"
     },
     "require-dev": {
-        "symfony/phpunit-bridge": "^4.4.9|^5.0.9",
+        "symfony/phpunit-bridge": "^4.4.9|^5.0.9|^6.0",
         "psr/container": "^1.0"
     },
     "autoload": {

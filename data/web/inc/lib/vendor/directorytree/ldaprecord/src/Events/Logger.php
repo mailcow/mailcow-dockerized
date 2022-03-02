@@ -39,11 +39,14 @@ class Logger
     {
         switch (true) {
             case $event instanceof AuthEvent:
-                return $this->auth($event);
+                $this->auth($event);
+                break;
             case $event instanceof ModelEvent:
-                return $this->model($event);
+                $this->model($event);
+                break;
             case $event instanceof QueryEvent:
-                return $this->query($event);
+                $this->query($event);
+                break;
         }
     }
 

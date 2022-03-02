@@ -181,9 +181,9 @@ class Builder extends BaseBuilder
      * @param string       $value
      * @param array|string $columns
      *
-     * @throws ModelNotFoundException
-     *
      * @return Model
+     *
+     * @throws ModelNotFoundException
      */
     public function findByAnrOrFail($value, $columns = ['*'])
     {
@@ -271,9 +271,9 @@ class Builder extends BaseBuilder
      * @param string       $guid
      * @param array|string $columns
      *
-     * @throws ModelNotFoundException
-     *
      * @return Model|static
+     *
+     * @throws ModelNotFoundException
      */
     public function findByGuidOrFail($guid, $columns = ['*'])
     {
@@ -434,7 +434,7 @@ class Builder extends BaseBuilder
             if (! $this->model->isDateAttribute($field)) {
                 throw new \UnexpectedValueException(
                     "Cannot convert field [$field] to an LDAP timestamp. You must add this field as a model date."
-                    .' Refer to https://ldaprecord.com/docs/model-mutators/#date-mutators'
+                    .' Refer to https://ldaprecord.com/docs/core/v2/model-mutators/#date-mutators'
                 );
             }
 

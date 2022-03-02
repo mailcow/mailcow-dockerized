@@ -34,9 +34,9 @@ class ActiveDirectoryBuilder extends Builder
      * @param string       $sid
      * @param array|string $columns
      *
-     * @throws ModelNotFoundException
-     *
      * @return \LdapRecord\Models\ActiveDirectory\Entry|static
+     *
+     * @throws ModelNotFoundException
      */
     public function findBySidOrFail($sid, $columns = [])
     {
