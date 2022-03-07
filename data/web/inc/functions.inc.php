@@ -936,24 +936,39 @@ function check_login($user, $pass, $app_passwd_data = false) {
     $rows = array_merge($rows, $stmt->fetchAll(PDO::FETCH_ASSOC));
   }
   foreach ($rows as $row) {
+    // verify password
     if (verify_hash($row['password'], $pass) !== false) {
-      unset($_SESSION['ldelay']);
-      $_SESSION['return'][] =  array(
-        'type' => 'success',
-        'log' => array(__FUNCTION__, $user, '*'),
-        'msg' => array('logged_in_as', $user)
-      );
-      if ($app_passwd_data['eas'] === true || $app_passwd_data['dav'] === true) {
-        $service = ($app_passwd_data['eas'] === true) ? 'EAS' : 'DAV';
-        $stmt = $pdo->prepare("REPLACE INTO sasl_log (`service`, `app_password`, `username`, `real_rip`) VALUES (:service, :app_id, :username, :remote_addr)");
-        $stmt->execute(array(
-          ':service' => $service,
-          ':app_id' => $row['app_passwd_id'],
-          ':username' => $user,
-          ':remote_addr' => ($_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR'])
-        ));
+      // check for tfa authenticators
+      $authenticators = get_tfa($user);
+      if (isset($authenticators['additional']) && is_array($authenticators['additional']) && count($authenticators['additional']) > 0) {
+        $_SESSION['pending_mailcow_cc_username'] = $user;
+        $_SESSION['pending_mailcow_cc_role'] = "user";
+        $_SESSION['pending_tfa_methods'] = $authenticators['additional'];
+        unset($_SESSION['ldelay']);
+        $_SESSION['return'][] =  array(
+          'type' => 'success',
+          'log' => array(__FUNCTION__, $user, '*'),
+          'msg' => array('logged_in_as', $user)
+        );
+        return "pending";
+      } else {
+        if ($app_passwd_data['eas'] === true || $app_passwd_data['dav'] === true) {
+          $service = ($app_passwd_data['eas'] === true) ? 'EAS' : 'DAV';
+          $stmt = $pdo->prepare("REPLACE INTO sasl_log (`service`, `app_password`, `username`, `real_rip`) VALUES (:service, :app_id, :username, :remote_addr)");
+          $stmt->execute(array(
+            ':service' => $service,
+            ':app_id' => $row['app_passwd_id'],
+            ':username' => $user,
+            ':remote_addr' => ($_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR'])
+          ));
+        }
+
+        unset($_SESSION['ldelay']);
+        // Reactivate TFA if it was set to "deactivate TFA for next login"
+        $stmt = $pdo->prepare("UPDATE `tfa` SET `active`='1' WHERE `username` = :user");
+        $stmt->execute(array(':user' => $user));
+        return "user";
       }
-      return "user";
     }
   }
 

@@ -61,9 +61,9 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
 		header("Location: /user");
 	}
 	elseif ($as != "pending") {
-        unset($_SESSION['pending_mailcow_cc_username']);
-        unset($_SESSION['pending_mailcow_cc_role']);
-        unset($_SESSION['pending_tfa_methods']);
+    unset($_SESSION['pending_mailcow_cc_username']);
+    unset($_SESSION['pending_mailcow_cc_role']);
+    unset($_SESSION['pending_tfa_methods']);
 		unset($_SESSION['mailcow_cc_username']);
 		unset($_SESSION['mailcow_cc_role']);
 	}
