@@ -864,7 +864,7 @@ function init_db_schema() {
       "sogo_sessions_folder" => array(
         "cols" => array(
           "c_id" => "VARCHAR(255) NOT NULL",
-          "c_value" => "VARCHAR(255) NOT NULL",
+          "c_value" => "VARCHAR(4096) NOT NULL", 
           "c_creationdate" => "INT(11) NOT NULL",
           "c_lastseen" => "INT(11) NOT NULL"
         ),
