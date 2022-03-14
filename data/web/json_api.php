@@ -175,15 +175,22 @@ if (isset($_GET['query'])) {
               // parse post data
               $post = trim(file_get_contents('php://input'));
               if ($post) $post = json_decode($post);
-
-              // decode base64 strings
-              $clientDataJSON = base64_decode($post->clientDataJSON);
-              $attestationObject = base64_decode($post->attestationObject);             
               
               // process registration data from authenticator
               try {
+                // decode base64 strings
+                $clientDataJSON = base64_decode($post->clientDataJSON);
+                $attestationObject = base64_decode($post->attestationObject);   
+
                 // processCreate($clientDataJSON, $attestationObject, $challenge, $requireUserVerification=false, $requireUserPresent=true, $failIfRootMismatch=true)
                 $data = $WebAuthn->processCreate($clientDataJSON, $attestationObject, $_SESSION['challenge'], false, true);
+
+                // safe authenticator in mysql `tfa` table
+                $_data['tfa_method'] = $post->tfa_method;
+                $_data['key_id'] = $post->key_id;
+                $_data['confirm_password'] = $post->confirm_password;
+                $_data['registration'] = $data;
+                set_tfa($_data);
               }
               catch (Throwable $ex) {
                 // err
@@ -194,12 +201,6 @@ if (isset($_GET['query'])) {
                 exit;
               }
 
-              // safe authenticator in mysql `tfa` table
-              $_data['tfa_method'] = $post->tfa_method;
-              $_data['key_id'] = $post->key_id;
-              $_data['confirm_password'] = $post->confirm_password;
-              $_data['registration'] = $data;
-              set_tfa($_data);
 
               // send response
               $return = new stdClass();
