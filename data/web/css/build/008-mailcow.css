@@ -207,6 +207,7 @@ legend {
 }
 .footer .version {
     margin-left: auto;
+	margin-top: 20px;
 }
 .slave-info {
   padding: 15px 0px 15px 15px;
