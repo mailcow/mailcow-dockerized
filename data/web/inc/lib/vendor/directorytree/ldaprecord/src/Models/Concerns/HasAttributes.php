@@ -238,26 +238,28 @@ trait HasAttributes
      * Returns the models attribute by its key.
      *
      * @param int|string $key
+     * @param mixed      $default
      *
      * @return mixed
      */
-    public function getAttribute($key)
+    public function getAttribute($key, $default = null)
     {
         if (! $key) {
             return;
         }
 
-        return $this->getAttributeValue($key);
+        return $this->getAttributeValue($key, $default);
     }
 
     /**
      * Get an attributes value.
      *
      * @param string $key
+     * @param mixed  $default
      *
      * @return mixed
      */
-    public function getAttributeValue($key)
+    public function getAttributeValue($key, $default = null)
     {
         $key = $this->normalizeAttributeKey($key);
         $value = $this->getAttributeFromArray($key);
@@ -274,7 +276,7 @@ trait HasAttributes
             return $this->castAttribute($key, $value);
         }
 
-        return $value;
+        return is_null($value) ? $default : $value;
     }
 
     /**
@@ -311,9 +313,9 @@ trait HasAttributes
      * @param string $type
      * @param mixed  $value
      *
-     * @throws LdapRecordException
-     *
      * @return float|string
+     *
+     * @throws LdapRecordException
      */
     public function fromDateTime($type, $value)
     {
@@ -326,9 +328,9 @@ trait HasAttributes
      * @param mixed  $value
      * @param string $type
      *
-     * @throws LdapRecordException
-     *
      * @return Carbon|false
+     *
+     * @throws LdapRecordException
      */
     public function asDateTime($value, $type)
     {
@@ -686,13 +688,14 @@ trait HasAttributes
      * Returns the first attribute by the specified key.
      *
      * @param string $key
+     * @param mixed  $default
      *
      * @return mixed
      */
-    public function getFirstAttribute($key)
+    public function getFirstAttribute($key, $default = null)
     {
         return Arr::first(
-            Arr::wrap($this->getAttribute($key))
+            Arr::wrap($this->getAttribute($key, $default)),
         );
     }
 
@@ -707,10 +710,10 @@ trait HasAttributes
     }
 
     /**
-     * Set an attribute value by the specified key and sub-key.
+     * Set an attribute value by the specified key.
      *
-     * @param mixed $key
-     * @param mixed $value
+     * @param string $key
+     * @param mixed  $value
      *
      * @return $this
      */
@@ -731,6 +734,23 @@ trait HasAttributes
         if ($this->isJsonCastable($key) && ! is_null($value)) {
             $value = $this->castAttributeAsJson($key, $value);
         }
+
+        $this->attributes[$key] = Arr::wrap($value);
+
+        return $this;
+    }
+
+    /**
+     * Set an attribute on the model. No checking is done.
+     *
+     * @param string $key
+     * @param mixed  $value
+     *
+     * @return $this
+     */
+    public function setRawAttribute($key, $value)
+    {
+        $key = $this->normalizeAttributeKey($key);
 
         $this->attributes[$key] = Arr::wrap($value);
 

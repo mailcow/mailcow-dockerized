@@ -1,4 +1,8 @@
 preset: laravel
 enabled:
   - phpdoc_align
+  - phpdoc_separation
   - unalign_double_arrow
+disabled:
+  - laravel_phpdoc_alignment
+  - laravel_phpdoc_separation

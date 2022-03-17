@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-DEBIAN_DOCKER_IMAGE="debian:buster-slim"
+DEBIAN_DOCKER_IMAGE="debian:bullseye-slim"
 
 if [[ ! -z ${MAILCOW_BACKUP_LOCATION} ]]; then
   BACKUP_LOCATION="${MAILCOW_BACKUP_LOCATION}"

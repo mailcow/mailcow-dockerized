@@ -11,7 +11,7 @@ class LazyPaginator extends Paginator
      *
      * @param LdapInterface $ldap
      *
-     * @return Generator
+     * @return \Generator
      */
     public function execute(LdapInterface $ldap)
     {
@@ -27,7 +27,7 @@ class LazyPaginator extends Paginator
             $this->updateServerControls($ldap, $resource);
 
             yield $this->query->parse($resource);
-        } while (! empty($this->fetchCookie()));
+        } while ($this->shouldContinue());
 
         $this->resetServerControls($ldap);
     }

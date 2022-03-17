@@ -124,9 +124,9 @@ class DomainConfiguration
      *
      * @param string $key
      *
-     * @throws ConfigurationException When the option specified does not exist.
-     *
      * @return mixed
+     *
+     * @throws ConfigurationException When the option specified does not exist.
      */
     public function get($key)
     {
@@ -155,9 +155,9 @@ class DomainConfiguration
      * @param string $key
      * @param mixed  $value
      *
-     * @throws ConfigurationException When an option value given is an invalid type.
-     *
      * @return bool
+     *
+     * @throws ConfigurationException When an option value given is an invalid type.
      */
     protected function validate($key, $value)
     {

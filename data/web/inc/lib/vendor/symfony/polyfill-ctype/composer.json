@@ -18,6 +18,9 @@
     "require": {
         "php": ">=7.1"
     },
+    "provide": {
+        "ext-ctype": "*"
+    },
     "autoload": {
         "psr-4": { "Symfony\\Polyfill\\Ctype\\": "" },
         "files": [ "bootstrap.php" ]

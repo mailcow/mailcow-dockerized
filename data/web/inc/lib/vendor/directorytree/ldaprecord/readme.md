@@ -92,3 +92,13 @@ We've all been there -- accidentally deleting a user or group in Active Director
 <p align="center">If you discover a security vulnerability within LdapRecord, please send an e-mail to Steve Bauman via <a href="mailto:steven_bauman@outlook.com">steven_bauman@outlook.com</a>.</p>
 
 <p align="center">All security vulnerabilities will be promptly addressed.</p>
+
+---
+
+<h3 align="center">Credits</h3>
+
+<p align="center">This package is directly inspired from <a href="https://laravel.com/docs/eloquent">Laravel's Eloquent</a>, and most features are direct ports to an LDAP equivalent.</p>
+
+<p align="center">I am forever grateful for the work <a href="https://github.com/taylorotwell">Taylor Otwell</a> has produced.</p>
+
+<p align="center">If you can, support his work by purchasing a <a href="https://github.com/sponsors/taylorotwell">sponsorship</a>, or one of his many Laravel based services.</p>
