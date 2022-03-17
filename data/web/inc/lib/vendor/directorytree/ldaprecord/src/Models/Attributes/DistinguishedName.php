@@ -12,7 +12,7 @@ class DistinguishedName
     /**
      * The underlying raw value.
      *
-     * @var string|null
+     * @var string
      */
     protected $value;
 
@@ -23,7 +23,7 @@ class DistinguishedName
      */
     public function __construct($value = null)
     {
-        $this->value = trim($value);
+        $this->value = trim((string) $value);
     }
 
     /**
@@ -73,6 +73,18 @@ class DistinguishedName
     }
 
     /**
+     * Determine if the given value is a valid distinguished name.
+     *
+     * @param string $value
+     *
+     * @return bool
+     */
+    public static function isValid($value)
+    {
+        return ! static::make($value)->isEmpty();
+    }
+
+    /**
      * Explode a distinguished name into relative distinguished names.
      *
      * @param string $dn
@@ -81,19 +93,19 @@ class DistinguishedName
      */
     public static function explode($dn)
     {
-        $dn = ldap_explode_dn($dn, $withoutAttributes = false);
+        $components = ldap_explode_dn($dn, (int) $withoutAttributes = false);
 
-        if (! is_array($dn)) {
+        if (! is_array($components)) {
             return [];
         }
 
-        if (! array_key_exists('count', $dn)) {
+        if (! array_key_exists('count', $components)) {
             return [];
         }
 
-        unset($dn['count']);
+        unset($components['count']);
 
-        return $dn;
+        return $components;
     }
 
     /**
@@ -308,6 +320,18 @@ class DistinguishedName
         array_shift($components);
 
         return implode(',', $components) ?: null;
+    }
+
+    /**
+     * Determine if the distinguished name is empty.
+     *
+     * @return bool
+     */
+    public function isEmpty()
+    {
+        return empty(
+            array_filter($this->values())
+        );
     }
 
     /**

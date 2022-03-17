@@ -4054,6 +4054,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt->execute(array(
               ':alias_domain' => $alias_domain,
             ));
+            $stmt = $pdo->prepare("DELETE FROM `spamalias` WHERE `address` LIKE :domain");
+            $stmt->execute(array(
+              ':domain' => '%@'.$alias_domain,
+            ));
             $stmt = $pdo->prepare("DELETE FROM `bcc_maps` WHERE `local_dest` = :alias_domain");
             $stmt->execute(array(
               ':alias_domain' => $alias_domain,

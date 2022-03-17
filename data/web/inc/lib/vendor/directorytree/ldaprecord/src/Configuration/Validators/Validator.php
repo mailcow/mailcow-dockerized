@@ -49,9 +49,9 @@ abstract class Validator
     /**
      * Validate the configuration value.
      *
-     * @throws ConfigurationException
-     *
      * @return bool
+     *
+     * @throws ConfigurationException
      */
     public function validate()
     {
@@ -65,9 +65,9 @@ abstract class Validator
     /**
      * Throw a configuration exception.
      *
-     * @throws ConfigurationException
-     *
      * @return void
+     *
+     * @throws ConfigurationException
      */
     protected function fail()
     {

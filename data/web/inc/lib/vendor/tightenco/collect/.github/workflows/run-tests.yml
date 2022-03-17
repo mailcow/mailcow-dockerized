@@ -1,13 +1,16 @@
 name: Run tests
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [laravel-9-ongoing, laravel-8-ongoing]
+  pull_request:
 
 jobs:
   tests:
     strategy:
       matrix:
         os: [Ubuntu, macOS]
-        php: [7.2, 7.3, 7.4, 8.0]
+        php: [7.3, 7.4, 8.0, 8.1]
 
         include:
           - os: Ubuntu

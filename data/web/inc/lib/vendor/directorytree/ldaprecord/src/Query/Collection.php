@@ -13,6 +13,7 @@ class Collection extends BaseCollection
     protected function valueRetriever($value)
     {
         if ($this->useAsCallable($value)) {
+            /** @var callable $value */
             return $value;
         }
 

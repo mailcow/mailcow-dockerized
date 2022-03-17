@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Carbon\Traits;
 
 use Carbon\CarbonInterface;
@@ -383,6 +384,10 @@ trait Options
             }
 
             $this->locale(...$locales);
+        }
+
+        if (isset($settings['innerTimezone'])) {
+            return $this->setTimezone($settings['innerTimezone']);
         }
 
         if (isset($settings['timezone'])) {

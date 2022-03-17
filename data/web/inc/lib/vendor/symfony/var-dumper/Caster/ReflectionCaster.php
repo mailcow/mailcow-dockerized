@@ -96,7 +96,7 @@ class ReflectionCaster
     {
         $prefix = Caster::PREFIX_VIRTUAL;
 
-        if ($c instanceof \ReflectionNamedType || \PHP_VERSION_ID < 80000) {
+        if ($c instanceof \ReflectionNamedType) {
             $a += [
                 $prefix.'name' => $c instanceof \ReflectionNamedType ? $c->getName() : (string) $c,
                 $prefix.'allowsNull' => $c->allowsNull(),
@@ -144,7 +144,7 @@ class ReflectionCaster
             array_unshift($trace, [
                 'function' => 'yield',
                 'file' => $function->getExecutingFile(),
-                'line' => $function->getExecutingLine() - 1,
+                'line' => $function->getExecutingLine() - (int) (\PHP_VERSION_ID < 80100),
             ]);
             $trace[] = $frame;
             $a[$prefix.'trace'] = new TraceStub($trace, false, 0, -1, -1);
@@ -289,15 +289,17 @@ class ReflectionCaster
             unset($a[$prefix.'allowsNull']);
         }
 
-        try {
-            $a[$prefix.'default'] = $v = $c->getDefaultValue();
-            if ($c->isDefaultValueConstant()) {
-                $a[$prefix.'default'] = new ConstStub($c->getDefaultValueConstantName(), $v);
+        if ($c->isOptional()) {
+            try {
+                $a[$prefix.'default'] = $v = $c->getDefaultValue();
+                if ($c->isDefaultValueConstant()) {
+                    $a[$prefix.'default'] = new ConstStub($c->getDefaultValueConstantName(), $v);
+                }
+                if (null === $v) {
+                    unset($a[$prefix.'allowsNull']);
+                }
+            } catch (\ReflectionException $e) {
             }
-            if (null === $v) {
-                unset($a[$prefix.'allowsNull']);
-            }
-        } catch (\ReflectionException $e) {
         }
 
         return $a;
@@ -384,6 +386,8 @@ class ReflectionCaster
                     $signature .= 10 > \strlen($v) && !str_contains($v, '\\') ? "'{$v}'" : "'…".\strlen($v)."'";
                 } elseif (\is_bool($v)) {
                     $signature .= $v ? 'true' : 'false';
+                } elseif (\is_object($v)) {
+                    $signature .= 'new '.substr(strrchr('\\'.get_debug_type($v), '\\'), 1);
                 } else {
                     $signature .= $v;
                 }
@@ -417,7 +421,7 @@ class ReflectionCaster
     private static function addMap(array &$a, object $c, array $map, string $prefix = Caster::PREFIX_VIRTUAL)
     {
         foreach ($map as $k => $m) {
-            if (\PHP_VERSION_ID >= 80000 && 'isDisabled' === $k) {
+            if ('isDisabled' === $k) {
                 continue;
             }
 
@@ -429,10 +433,8 @@ class ReflectionCaster
 
     private static function addAttributes(array &$a, \Reflector $c, string $prefix = Caster::PREFIX_VIRTUAL): void
     {
-        if (\PHP_VERSION_ID >= 80000) {
-            foreach ($c->getAttributes() as $n) {
-                $a[$prefix.'attributes'][] = $n;
-            }
+        foreach ($c->getAttributes() as $n) {
+            $a[$prefix.'attributes'][] = $n;
         }
     }
 }

@@ -2,6 +2,9 @@
 
 namespace LdapRecord;
 
+use LDAP\Connection as RawLdapConnection;
+
+/** @psalm-suppress UndefinedClass */
 class Ldap implements LdapInterface
 {
     use HandlesConnection, DetectsErrors;
@@ -104,7 +107,7 @@ class Ldap implements LdapInterface
     public function getLastError()
     {
         if (! $this->connection) {
-            return;
+            return null;
         }
 
         return ldap_error($this->connection);
@@ -116,7 +119,7 @@ class Ldap implements LdapInterface
     public function getDetailedError()
     {
         if (! $number = $this->errNo()) {
-            return;
+            return null;
         }
 
         $this->getOption(LDAP_OPT_DIAGNOSTIC_MESSAGE, $message);
@@ -202,7 +205,9 @@ class Ldap implements LdapInterface
      */
     public function close()
     {
-        $result = is_resource($this->connection) ? @ldap_close($this->connection) : false;
+        $result = (is_resource($this->connection) || $this->connection instanceof RawLdapConnection)
+            ? @ldap_close($this->connection)
+            : false;
 
         $this->connection = null;
         $this->bound = false;
@@ -214,7 +219,7 @@ class Ldap implements LdapInterface
     /**
      * @inheritdoc
      */
-    public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = [])
+    public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, $serverControls = [])
     {
         return $this->executeFailableOperation(function () use (
             $dn,
@@ -235,7 +240,7 @@ class Ldap implements LdapInterface
     /**
      * @inheritdoc
      */
-    public function listing($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = [])
+    public function listing($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, $serverControls = [])
     {
         return $this->executeFailableOperation(function () use (
             $dn,
@@ -256,7 +261,7 @@ class Ldap implements LdapInterface
     /**
      * @inheritdoc
      */
-    public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = [])
+    public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, $serverControls = [])
     {
         return $this->executeFailableOperation(function () use (
             $dn,

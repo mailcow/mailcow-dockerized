@@ -722,10 +722,9 @@ fi
 # Set app_info.inc.php
 mailcow_git_version=$(git describe --tags `git rev-list --tags --max-count=1`)
 if [ $? -eq 0 ]; then
-  mailcow_git_url=$(git config --get remote.origin.url)
   echo '<?php' > data/web/inc/app_info.inc.php
   echo '  $MAILCOW_GIT_VERSION="'$mailcow_git_version'";' >> data/web/inc/app_info.inc.php
-  echo '  $MAILCOW_GIT_URL="'$mailcow_git_url'";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_URL="https://github.com/mailcow/mailcow-dockerized";' >> data/web/inc/app_info.inc.php
   echo '?>' >> data/web/inc/app_info.inc.php
 else
   echo '<?php' > data/web/inc/app_info.inc.php
