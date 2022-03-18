@@ -1829,7 +1829,7 @@ function verify_tfa_login($username, $_data) {
               $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `username` = :username");
               $stmt->execute(array(':username' => $process_webauthn['username']));
               $row = $stmt->fetch(PDO::FETCH_ASSOC);
-              if (!empty($row['username']) {
+              if (!empty($row['username'])) {
                 // is user
                 $_SESSION["mailcow_cc_role"] = "user";
               } else {
