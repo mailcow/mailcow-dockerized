@@ -1626,11 +1626,27 @@ function verify_tfa_login($username, $_data) {
   global $tfa;
   global $WebAuthn;
 
+  // just for debugging
+  // remove later
+  $_SESSION['return'][] =  array(
+    'type' => 'info',
+    'log' => array(__FUNCTION__, 'tfa_post_data_log'),
+    'msg' => $_data
+  );
+
   if ($_data['tfa_method'] != 'u2f'){
     $stmt = $pdo->prepare("SELECT `authmech` FROM `tfa`
         WHERE `username` = :username AND `id` = :id AND `active` = '1'");
     $stmt->execute(array(':username' => $username, ':id' => $_data['id']));
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // just for debugging
+    // remove later
+    $_SESSION['return'][] =  array(
+      'type' => 'info',
+      'log' => array(__FUNCTION__, 'tfa_verify_authmech'),
+      'msg' => $row
+    );
 
     switch ($row["authmech"]) {
         case "yubi_otp":
@@ -1718,6 +1734,7 @@ function verify_tfa_login($username, $_data) {
           }
         break;
         case "webauthn":
+            // prepare authenticator data
             $tokenData = json_decode($_data['token']);
             $clientDataJSON = base64_decode($tokenData->clientDataJSON);
             $authenticatorData = base64_decode($tokenData->authenticatorData);
@@ -1725,10 +1742,28 @@ function verify_tfa_login($username, $_data) {
             $id = base64_decode($tokenData->id);
             $challenge = $_SESSION['challenge'];
 
-            $stmt = $pdo->prepare("SELECT `id`, `key_id`, `keyHandle`, `username`, `publicKey` FROM `tfa` WHERE `id` = :id");
+            // just for debugging
+            // remove later
+            $_SESSION['return'][] =  array(
+              'type' => 'info',
+              'log' => array(__FUNCTION__, 'tfa_try_verify'),
+              'msg' => 'try grab authenticator'
+            );
+
+            // fetch authenticator
+            $stmt = $pdo->prepare("SELECT `id`, `key_id`, `keyHandle`, `username`, `publicKey` FROM `tfa` WHERE `id` = :id AND `active`='1'");
             $stmt->execute(array(':id' => $_data['id']));
             $process_webauthn = $stmt->fetch(PDO::FETCH_ASSOC);
 
+            // just for debugging
+            // remove later
+            $_SESSION['return'][] =  array(
+              'type' => 'info',
+              'log' => array(__FUNCTION__, 'tfa_authenticator_grabbed'),
+              'msg' => 'grabbed authenticator from db'
+            );
+
+            // return err if no authenticator was found
             if (empty($process_webauthn)){
               $_SESSION['return'][] =  array(
                   'type' => 'danger',
@@ -1738,6 +1773,7 @@ function verify_tfa_login($username, $_data) {
               return false;
             } 
             
+            // return err if authenticator has no publicKey
             if (empty($process_webauthn['publicKey']) || $process_webauthn['publicKey'] === false) {
                 $_SESSION['return'][] =  array(
                     'type' => 'danger',
@@ -1746,6 +1782,8 @@ function verify_tfa_login($username, $_data) {
                 );
                 return false;
             }
+
+            // try verify authenticator
             try {
                 $WebAuthn->processGet($clientDataJSON, $authenticatorData, $signature, $process_webauthn['publicKey'], $challenge, null, $GLOBALS['WEBAUTHN_UV_FLAG_LOGIN'], $GLOBALS['WEBAUTHN_USER_PRESENT_FLAG']);
             }
@@ -1758,26 +1796,54 @@ function verify_tfa_login($username, $_data) {
                 return false;
             }
 
-            
+            // just for debugging
+            // remove later
+            $_SESSION['return'][] =  array(
+              'type' => 'info',
+              'log' => array(__FUNCTION__, 'tfa_progress'),
+              'msg' => 'authenticator verified, check user role'
+            );
+
+            // if verified, check user role
             $stmt = $pdo->prepare("SELECT `superadmin` FROM `admin` WHERE `username` = :username");
             $stmt->execute(array(':username' => $process_webauthn['username']));
             $obj_props = $stmt->fetch(PDO::FETCH_ASSOC);
             if ($obj_props['superadmin'] === 1) {
-                $_SESSION["mailcow_cc_role"] = "admin";
+              // is admin
+              $_SESSION["mailcow_cc_role"] = "admin";
             }
             elseif ($obj_props['superadmin'] === 0) {
-                $_SESSION["mailcow_cc_role"] = "domainadmin";
+              // is domainadmin
+              $_SESSION["mailcow_cc_role"] = "domainadmin";
             }
             else {
-                $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `username` = :username");
-                $stmt->execute(array(':username' => $process_webauthn['username']));
-                $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                if ($row['username'] == $process_webauthn['username']) {
+              // just for debugging
+              // remove later
+              $_SESSION['return'][] =  array(
+                'type' => 'info',
+                'log' => array(__FUNCTION__, 'tfa_progress'),
+                'msg' => 'no admin or domainadmin role, check if normal user'
+              );
+
+              // no admin, check if normal user
+              $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `username` = :username");
+              $stmt->execute(array(':username' => $process_webauthn['username']));
+              $row = $stmt->fetch(PDO::FETCH_ASSOC);
+              if (!empty($row['username']) {
+                // is user
                 $_SESSION["mailcow_cc_role"] = "user";
-                }
+              } else {
+                // err, no specific role found
+                $_SESSION['return'][] =  array(
+                  'type' => 'danger',
+                  'log' => array(__FUNCTION__, $username, '*'),
+                  'msg' => array('webauthn_verification_failed', 'could not determine user role')
+                );
+                return false;
+              }
             }
 
-        
+            // check if fetched user and pendig_user matches
             if ($process_webauthn['username'] != $_SESSION['pending_mailcow_cc_username']){
                 $_SESSION['return'][] =  array(
                     'type' => 'danger',
@@ -1787,7 +1853,15 @@ function verify_tfa_login($username, $_data) {
                 return false;
             }
 
+            // just for debugging
+            // remove later
+            $_SESSION['return'][] =  array(
+              'type' => 'info',
+              'log' => array(__FUNCTION__, 'tfa_success'),
+              'msg' => 'tfa flow success'
+            );
 
+            // set user session data and delete WebAuthn challenge session
             $_SESSION["mailcow_cc_username"] = $process_webauthn['username'];
             $_SESSION['tfa_id'] = $process_webauthn['id'];
             $_SESSION['authReq'] = null;
