@@ -1133,7 +1133,7 @@
         "spamfilter_table_remove": "remove",
         "spamfilter_table_rule": "Rule",
         "spamfilter_wl": "Whitelist",
-        "spamfilter_wl_desc": "Whitelisted email addresses to are programmed to <b>never</b> classify as spam. Wildcards may be used. A filter is only applied to direct aliases (aliases with a single target mailbox) excluding catch-all aliases and a mailbox itself.",
+        "spamfilter_wl_desc": "Whitelisted email addresses are programmed to <b>never</b> classify as spam. Wildcards may be used. A filter is only applied to direct aliases (aliases with a single target mailbox) excluding catch-all aliases and a mailbox itself.",
         "spamfilter_yellow": "Yellow: this message may be spam, will be tagged as spam and moved to your junk folder",
         "status": "Status",
         "sync_jobs": "Sync jobs",
