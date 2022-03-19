@@ -299,7 +299,7 @@
         "rsettings_preset_2": "Postmasterii doresc spam",
         "rsettings_preset_3": "Permiteți numai expeditori specifici pentru o căsuță poștală (ex: utilizare numai ca adresa de email internă)",
         "rsettings_preset_4": "Dezactivați Rspamd pentru domeniu",
-        "rspamd-com_settings": "<a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Documente Rspamd</a>\n  - Un nume de setare va fi generat automat, te rog să consulți presetările exemplu de mai jos.",
+        "rspamd_com_settings": "<a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Documente Rspamd</a>\n  - Un nume de setare va fi generat automat, te rog să consulți presetările exemplu de mai jos.",
         "rspamd_global_filters": "Hărți cu filtru global",
         "rspamd_global_filters_agree": "Voi fi atent!",
         "rspamd_global_filters_info": "Hărțile cu filtre globale conțin diferite tipuri de liste negre și albe.",

@@ -298,7 +298,7 @@
         "rsettings_preset_2": "Не проверять письма на спам Postmaster",
         "rsettings_preset_3": "Разрешить только определённых отправителей для почтового ящика (использование только в качестве внутреннего почтового ящика)",
         "rsettings_preset_4": "Отключить Rspamd для домена",
-        "rspamd-com_settings": "Имена правил будут сгенерированы на основе их ID.<br> Инструкция доступна на сайте <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">документация Rspamd user settings</a>, заготовленные шаблоны:",
+        "rspamd_com_settings": "Имена правил будут сгенерированы на основе их ID.<br> Инструкция доступна на сайте <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">документация Rspamd user settings</a>, заготовленные шаблоны:",
         "rspamd_global_filters": "Глобальные правила фильтрации",
         "rspamd_global_filters_agree": "Я понимаю, что я делаю, и буду осторожен!",
         "rspamd_global_filters_info": "Глобальные правила фильтрации содержат различные виды глобальных черных и белых списков.",

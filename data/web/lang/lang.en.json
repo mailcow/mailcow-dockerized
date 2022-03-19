@@ -299,7 +299,7 @@
         "rsettings_preset_2": "Postmasters want spam",
         "rsettings_preset_3": "Only allow specific senders for a mailbox (i.e. usage as internal mailbox only)",
         "rsettings_preset_4": "Disable Rspamd for a domain",
-        "rspamd-com_settings": "A setting name will be auto-generated, please see the example presets below. For more details see <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd docs</a>",
+        "rspamd_com_settings": "A setting name will be auto-generated, please see the example presets below. For more details see <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd docs</a>",
         "rspamd_global_filters": "Global filter maps",
         "rspamd_global_filters_agree": "I will be careful!",
         "rspamd_global_filters_info": "Global filter maps contain different kind of global black and whitelists.",

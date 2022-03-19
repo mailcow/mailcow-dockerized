@@ -277,7 +277,7 @@
         "rsettings_preset_1": "Schakel alles uit voor geauthenticeerde gebruikers, behalve ARC/DKIM en ratelimiting",
         "rsettings_preset_2": "Laat postmasters spam ontvangen",
         "rsettings_preset_3": "Sta uitsluitend specifieke afzenders toe voor een mailbox (bijvoorbeeld als interne mailbox)",
-        "rspamd-com_settings": "Een beschrijving voor deze instelling zal automatisch worden gegenereerd, gebruik de onderstaande presets als voorbeeld. Raadpleeg de <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd-documentatie</a> voor meer informatie.",
+        "rspamd_com_settings": "Een beschrijving voor deze instelling zal automatisch worden gegenereerd, gebruik de onderstaande presets als voorbeeld. Raadpleeg de <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd-documentatie</a> voor meer informatie.",
         "rspamd_global_filters": "Globale filters",
         "rspamd_global_filters_agree": "Ik ben me ervan bewust dat aanpassingen desastreuze gevolgen kunnen hebben",
         "rspamd_global_filters_info": "Ieder globaal filter heeft zijn eigen functie, zie de namen.",
