@@ -298,7 +298,7 @@
         "rsettings_preset_2": "Postmasteři chtějí dostávat spam",
         "rsettings_preset_3": "Povolit jen určité odesílatele pro schránku (např. jen interní schránka)",
         "rsettings_preset_4": "Deaktivujte Rspamd pro doménu",
-        "rspamd-com_settings": "<a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd dokumentace</a>\r\n  - Název nastavení bude automaticky vygenerován, viz níže uvedené předvolby.",
+        "rspamd_com_settings": "<a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd dokumentace</a>\r\n  - Název nastavení bude automaticky vygenerován, viz níže uvedené předvolby.",
         "rspamd_global_filters": "Mapa globálních filtrů",
         "rspamd_global_filters_agree": "Budu opatrný!",
         "rspamd_global_filters_info": "Mapa globálních filtrů obsahuje jiné globální black- a whitelisty.",

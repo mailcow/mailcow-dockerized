@@ -250,7 +250,7 @@
         "rsettings_insert_preset": "Lisää esimerkki esimääritetty \"%s\"",
         "rsettings_preset_1": "Poista käytöstä kaikki paitsi DKIM-ja Rate Limit-oikeudet todennetuille käyttäjille",
         "rsettings_preset_2": "Postimaisteri haluaa roska postia",
-        "rspamd-com_settings": "<a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd docs</a>\r\n  - Asetus nimi luodaan automaattisesti, Katso esimerkki esiasetukset alla.",
+        "rspamd_com_settings": "<a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd docs</a>\r\n  - Asetus nimi luodaan automaattisesti, Katso esimerkki esiasetukset alla.",
         "rspamd_settings_map": "Rspamd-asetukset",
         "save": "Tallenna muutokset",
         "search_domain_da": "Etsi verkko tunnuksia",

@@ -295,7 +295,7 @@
         "rsettings_preset_2": "Spam an Postmaster-Adressen nicht blockieren",
         "rsettings_preset_3": "Nur einem oder vielen Absendern erlauben, eine Mailbox anzuschreiben (etwa interne Mailboxen)",
         "rsettings_preset_4": "Rspamd für eine Domain deaktivieren",
-        "rspamd-com_settings": "Ein Name wird automatisch generiert. Beispielinhalte zur Einsicht stehen nachstehend bereit. Siehe auch <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd docs</a>",
+        "rspamd_com_settings": "Ein Name wird automatisch generiert. Beispielinhalte zur Einsicht stehen nachstehend bereit. Siehe auch <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd docs</a>",
         "rspamd_global_filters": "Globale Filter-Maps",
         "rspamd_global_filters_agree": "Ich werde vorsichtig sein!",
         "rspamd_global_filters_info": "Globale Filter-Maps steuern globales White- und Blacklisting dieses Servers.",

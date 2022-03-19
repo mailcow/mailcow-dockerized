@@ -299,7 +299,7 @@
         "rsettings_preset_2": "Prijať každý spam",
         "rsettings_preset_3": "Povoliť len špecifických odosielateľov (využitie ako interná schránka pre lokálne doručovanie)",
         "rsettings_preset_4": "Deaktivujte Rspamd pre doménu",
-        "rspamd-com_settings": "Názov nastavenia bude automaticky vygenerovaný, pozrite sa prosím na ukážky uvedené nižšie. Pre viac informácií navštívte <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd dokumentáciu</a>",
+        "rspamd_com_settings": "Názov nastavenia bude automaticky vygenerovaný, pozrite sa prosím na ukážky uvedené nižšie. Pre viac informácií navštívte <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd dokumentáciu</a>",
         "rspamd_global_filters": "Mapy globálnych filtrov",
         "rspamd_global_filters_agree": "Budem opatrný!",
         "rspamd_global_filters_info": "Mapy globálnych filtrov obsahujú rozličné druhy globálnych blacklistov a whitelistov.",
