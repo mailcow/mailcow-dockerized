@@ -288,7 +288,7 @@
         "rsettings_preset_1": "Inaktivera allt förutom DKIM och hastighetsbegränsningar för inloggade användare",
         "rsettings_preset_2": "Avvisa inte skräppost till postmasteradresser",
         "rsettings_preset_3": "Tillåt bara en eller flera avsändare att skriva till en brevlåda (t.ex. interna brevlådor)",
-        "rspamd-com_settings": "Ett inställningsnamn kommer att genereras automatiskt, se exemplet nedan. För mer detaljer se <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd dokumentationen</a>",
+        "rspamd_com_settings": "Ett inställningsnamn kommer att genereras automatiskt, se exemplet nedan. För mer detaljer se <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd dokumentationen</a>",
         "rspamd_global_filters": "Globala filterregler",
         "rspamd_global_filters_agree": "Jag ska vara försiktig!",
         "rspamd_global_filters_info": "En global filterregel kan styra den globala vita- och svartlistan på denna server.",

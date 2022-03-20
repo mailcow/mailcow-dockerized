@@ -278,7 +278,7 @@
         "rsettings_preset_1": "Désactiver tout sauf DKIM et la limite tarifaire pour les utilisateurs authentifiés",
         "rsettings_preset_2": "Les postmasters veulent du spam",
         "rsettings_preset_3": "Autoriser uniquement des expéditeurs particuliers pour une boîte (c.-à-d. utilisation comme boîte interne seulement)",
-        "rspamd-com_settings": "Un nom de paramètre sera généré automatiquement, voir l’exemple de préréglages ci-dessous. Pour plus de détails voir : <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Docs Rspamd</a>",
+        "rspamd_com_settings": "Un nom de paramètre sera généré automatiquement, voir l’exemple de préréglages ci-dessous. Pour plus de détails voir : <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Docs Rspamd</a>",
         "rspamd_global_filters": "Cartes des filtres globaux",
         "rspamd_global_filters_agree": "Je serai prudent !",
         "rspamd_global_filters_info": "Les cartes de filtres globales contiennent différents types de listes noires et blanches globales.",
