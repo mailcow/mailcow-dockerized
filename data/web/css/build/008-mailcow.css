@@ -204,8 +204,6 @@ legend {
   color: #959595;
   display: flex;
   flex-direction: column;
-  width: 100% !important;
-  padding: 0 !important;
 }
 .footer .version {
     margin-left: auto;
