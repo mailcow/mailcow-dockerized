@@ -58,7 +58,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.44
+      image: mailcow/clamd:dev-offcontainers
       restart: always
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -67,6 +67,7 @@ services:
         - SKIP_CLAMD=${SKIP_CLAMD:-n}
       volumes:
         - ./data/conf/clamav/:/etc/clamav/:Z
+        - clamd-db-vol-1:/var/lib/clamav:z
       networks:
         mailcow-network:
           aliases:
@@ -631,3 +632,4 @@ volumes:
   crypt-vol-1:
   sogo-web-vol-1:
   sogo-userdata-backup-vol-1:
+  clamd-db-vol-1:
