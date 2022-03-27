@@ -5,8 +5,6 @@ LABEL maintainer "André Peters <andre.peters@servercow.de>"
 RUN apk upgrade --no-cache \
   && apk add --update --no-cache \
   rsync \
-  vim \
-  nano \
   bind-tools \
   bash 
 
