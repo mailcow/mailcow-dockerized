@@ -58,7 +58,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:dev-offcontainers
+      image: mailcow/clamd:1.50
       restart: always
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
