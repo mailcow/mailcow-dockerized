@@ -2,15 +2,15 @@
 
 {% block inner_content %}
 {% if result %}
-<ul class="nav nav-tabs responsive-tabs" role="tablist">
-  <li class="active"><a data-toggle="tab" href="#dedit">{{ lang.edit.domain }}</a></li>
-  <li><a data-toggle="tab" href="#dratelimit">{{ lang.edit.ratelimit }}</a></li>
-  <li><a data-toggle="tab" href="#dspamfilter">{{ lang.edit.spam_filter }}</a></li>
-  <li><a data-toggle="tab" href="#dqwbcc">{{ lang.edit.quota_warning_bcc }}</a></li>
+<ul class="nav nav-tabs" role="tablist">
+  <li role="presentation" class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dedit">{{ lang.edit.domain }}</button></li>
+  <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dratelimit">{{ lang.edit.ratelimit }}</button></li>
+  <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dspamfilter">{{ lang.edit.spam_filter }}</button></li>
+  <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dqwbcc">{{ lang.edit.quota_warning_bcc }}</button></li>
 </ul>
 <hr>
 <div class="tab-content">
-  <div id="dedit" class="tab-pane in active">
+  <div id="dedit" class="tab-pane fade show active" role="tabpanel" aria-labelledby="domain-edit">
     <form data-id="editdomain" class="form-horizontal" role="form" method="post">
       <input type="hidden" value="0" name="active">
       <input type="hidden" value="0" name="backupmx">
@@ -122,7 +122,7 @@
     </div>
     {% endif %}
   </div>
-  <div id="dratelimit" class="tab-pane">
+  <div id="dratelimit" class="tab-pane fade" role="tabpanel" aria-labelledby="domain-ratelimit">
     <form data-id="domratelimit" class="form-inline well" method="post">
       <div class="form-group">
         <label class="control-label">{{ lang.edit.ratelimit }}</label>
@@ -138,7 +138,7 @@
       </div>
     </form>
   </div>
-  <div id="dspamfilter" class="tab-pane">
+  <div id="dspamfilter" class="tab-pane fade" role="tabpanel" aria-labelledby="domain-spamfilter">
     <div class="row">
       <div class="col-sm-6">
         <h4>{{ lang.user.spamfilter_wl }}</h4>
@@ -185,7 +185,7 @@
       </div>
     </div>
   </div>
-  <div id="dqwbcc" class="tab-pane">
+  <div id="dqwbcc" class="tab-pane fade" role="tabpanel" aria-labelledby="domain-qwbcc">
     <div class="row">
       <div class="col-sm-12">
         <h4>{{ lang.edit.quota_warning_bcc }}</h4>
