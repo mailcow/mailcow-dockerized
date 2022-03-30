@@ -41,7 +41,7 @@
           </div>
           <p>{{ mailboxdata.quota_used|formatBytes(2) }} / {% if mailboxdata.quota == 0 %}∞{% else %}{{ mailboxdata.quota|formatBytes(2) }}{% endif %}<br>{{ mailboxdata.messages }} {{ lang.user.messages }}</p>
           <hr>
-          <p><a href="#pwChangeModal" data-toggle="modal"><i class="bi bi-pencil-fill"></i> {{ lang.user.change_password }}</a></p>
+          <p><a href="#pwChangeModal" data-bs-toggle="modal"><i class="bi bi-pencil-fill"></i> {{ lang.user.change_password }}</a></p>
         </div>
       </div>
       <hr>
@@ -72,7 +72,7 @@
         <div class="col-sm-offset-3 col-sm-9">
           <div class="btn-group nowrap">
             <button class="btn btn-sm btn-primary visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline" id="register-fido2">{{ lang.fido2.set_fido2 }}</button>
-            <button type="button" class="btn btn-sm btn-xs-lg btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button type="button" class="btn btn-sm btn-xs-lg btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
@@ -119,11 +119,11 @@
           <div class="alert alert-danger">{{ lang.user.force_pw_update|raw }}</div>
           {% endif %}
           <p><a target="_blank" href="https://mailcow.github.io/mailcow-dockerized-docs/client/client/#{{ clientconfigstr }}">[{{ lang.user.client_configuration }}]</a></p>
-          <p><a href="#userFilterModal" data-toggle="modal">[{{ lang.user.show_sieve_filters }}]</a></p>
+          <p><a href="#userFilterModal" data-bs-toggle="modal">[{{ lang.user.show_sieve_filters }}]</a></p>
           <hr>
           <h4 class="recent-login-success pull-left">{{ lang.user.recent_successful_connections }}</h4>
           <div class="dropdown pull-left pull-xs-right">
-            <button class="btn btn-default btn-xs btn-xs-lg dropdown-toggle" type="button" id="history_sasl_days" data-toggle="dropdown">{{ lang.user.login_history }} <span class="caret"></span></button>
+            <button class="btn btn-default btn-xs btn-xs-lg dropdown-toggle" type="button" id="history_sasl_days" data-bs-toggle="dropdown">{{ lang.user.login_history }} <span class="caret"></span></button>
             <ul class="dropdown-menu">
               <li class="login-history" data-days="1"><a href="#">1 {{ lang.user.day }}</a></li>
               <li class="login-history active" data-days="7"><a href="#">1 {{ lang.user.week }}</a></li>

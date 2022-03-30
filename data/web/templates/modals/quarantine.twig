@@ -2,7 +2,7 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title"><i class="bi bi-info-circle-fill"></i> {{ lang.quarantine.qitem }}</h3>
       </div>
       <div class="modal-body">
@@ -48,7 +48,7 @@
         </div>
         {% endif %}
         <div class="btn-group dropup" data-acl="{{ acl.quarantine }}">
-          <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#">{{ lang.quarantine.quick_actions }} <span class="caret"></span></a>
+          <a class="btn btn-sm btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.quarantine.quick_actions }} <span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li><a data-action="edit_selected" data-id="qitems_single" data-item="" data-api-url='edit/qitem' data-api-attr='{"action":"release"}' href="#">{{ lang.quarantine.deliver_inbox }}</a></li>
             <li role="separator" class="divider"></li>
