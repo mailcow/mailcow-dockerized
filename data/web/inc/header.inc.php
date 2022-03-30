@@ -39,7 +39,6 @@ $globalVariables = [
   'dual_login' => @$_SESSION['dual-login'],
   'ui_texts' => $UI_TEXTS,
   'css_path' => '/cache/'.basename($CSSPath),
-  'theme' => strtolower(trim($DEFAULT_THEME)),
   'logo' => customize('get', 'main_logo'),
   'available_languages' => $AVAILABLE_LANGUAGES,
   'lang' => $lang,

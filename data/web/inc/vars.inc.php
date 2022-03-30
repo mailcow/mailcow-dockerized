@@ -103,13 +103,6 @@ $AVAILABLE_LANGUAGES = array(
   'zh' => '中文 (Chinese)'
 );
 
-// Change theme (default: lumen)
-// Needs to be one of those: cerulean, cosmo, cyborg, darkly, flatly, journal, lumen, paper, readable, sandstone,
-// simplex, slate, spacelab, superhero, united, yeti
-// See https://bootswatch.com/
-// WARNING: Only lumen is loaded locally. Enabling any other theme, will download external sources.
-$DEFAULT_THEME = 'lumen';
-
 // Show DKIM private keys - false by default
 $SHOW_DKIM_PRIV_KEYS = false;
 
