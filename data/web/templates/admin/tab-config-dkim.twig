@@ -2,10 +2,10 @@
   <div class="panel panel-default">
     <div class="panel-heading">{{ lang.admin.dkim_keys }}</div>
     <div class="panel-body">
-      <div class="btn-group" data-toggle="button" style="margin-bottom: 20px;">
-        <a class="btn btn-sm btn-xs-third visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default active" href="#" data-toggle="collapse" data-target=".dkim_key_valid">{{ lang.admin.dkim_key_valid }}</a>
-        <a class="btn btn-sm btn-xs-third visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default active" href="#" data-toggle="collapse" data-target=".dkim_key_unused">{{ lang.admin.dkim_key_unused }}</a>
-        <a class="btn btn-sm btn-xs-third visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default active" href="#" data-toggle="collapse" data-target=".dkim_key_missing">{{ lang.admin.dkim_key_missing }}</a>
+      <div class="btn-group" data-bs-toggle="button" style="margin-bottom: 20px;">
+        <a class="btn btn-sm btn-xs-third visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default active" href="#" data-bs-toggle="collapse" data-bs-target=".dkim_key_valid">{{ lang.admin.dkim_key_valid }}</a>
+        <a class="btn btn-sm btn-xs-third visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default active" href="#" data-bs-toggle="collapse" data-bs-target=".dkim_key_unused">{{ lang.admin.dkim_key_unused }}</a>
+        <a class="btn btn-sm btn-xs-third visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default active" href="#" data-bs-toggle="collapse" data-bs-target=".dkim_key_missing">{{ lang.admin.dkim_key_missing }}</a>
         <div class="clearfix visible-xs"></div>
       </div>
       {% for domain, domain_data in dkim_domains %}
@@ -21,7 +21,7 @@
             </div>
             <div class="col-md-8">
               <pre>{{ domain_data.dkim.dkim_txt }}</pre>
-              <p data-toggle="modal" data-target="#showDKIMprivKey" id="dkim_priv" style="cursor:pointer;margin-top:-8pt" data-priv-key="{{ domain_data.dkim.privkey }}"><small><i class="bi bi-arrow-return-right"></i> {{ lang.admin.dkim_private_key }}</small></p>
+              <p data-bs-toggle="modal" data-bs-target="#showDKIMprivKey" id="dkim_priv" style="cursor:pointer;margin-top:-8pt" data-priv-key="{{ domain_data.dkim.privkey }}"><small><i class="bi bi-arrow-return-right"></i> {{ lang.admin.dkim_private_key }}</small></p>
             </div>
             <hr class="visible-xs visible-sm">
           </div>
@@ -48,7 +48,7 @@
               </div>
               <div class="col-md-8">
                 <pre>{{ alias_domain_data.dkim.dkim_txt }}</pre>
-                <p data-toggle="modal" data-target="#showDKIMprivKey" id="dkim_priv" style="cursor:pointer;margin-top:-8pt" data-priv-key="{{ alias_domain_data.dkim.privkey }}"><small><i class="bi bi-arrow-return-right"></i> Private key</small></p>
+                <p data-bs-toggle="modal" data-bs-target="#showDKIMprivKey" id="dkim_priv" style="cursor:pointer;margin-top:-8pt" data-priv-key="{{ alias_domain_data.dkim.privkey }}"><small><i class="bi bi-arrow-return-right"></i> Private key</small></p>
               </div>
               <hr class="visible-xs visible-sm">
             </div>
@@ -76,7 +76,7 @@
           </div>
           <div class="col-md-8">
             <pre>{{ data.dkim.dkim_txt }}</pre>
-            <p data-toggle="modal" data-target="#showDKIMprivKey" id="dkim_priv" style="cursor:pointer;margin-top:-8pt" data-priv-key="{{ data.dkim.privkey }}"><small><i class="bi bi-arrow-return-right"></i> Private key</small></p>
+            <p data-bs-toggle="modal" data-bs-target="#showDKIMprivKey" id="dkim_priv" style="cursor:pointer;margin-top:-8pt" data-priv-key="{{ data.dkim.privkey }}"><small><i class="bi bi-arrow-return-right"></i> Private key</small></p>
           </div>
           <hr class="visible-xs visible-sm">
         </div>
@@ -110,7 +110,7 @@
         <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="add_item" data-id="dkim" data-api-url='add/dkim' data-api-attr='{}' href="#"><i class="bi bi-plus-lg"></i> {{ lang.admin.add }}</button>
       </form>
 
-      <legend data-target="#import_dkim" style="margin-top:40px;cursor:pointer" unselectable="on" data-toggle="collapse">
+      <legend data-bs-target="#import_dkim" style="margin-top:40px;cursor:pointer" unselectable="on" data-bs-toggle="collapse">
         <i style="font-size:10pt;" class="bi bi-plus-square"></i> {{ lang.admin.import_private_key }}
       </legend>
       <div id="import_dkim" class="collapse">
@@ -136,7 +136,7 @@
         </form>
       </div>
 
-      <legend data-target="#duplicate_dkim" style="margin-top:40px;cursor:pointer" unselectable="on" data-toggle="collapse">
+      <legend data-bs-target="#duplicate_dkim" style="margin-top:40px;cursor:pointer" unselectable="on" data-bs-toggle="collapse">
         <i style="font-size:10pt;" class="bi bi-plus-square"></i> {{ lang.admin.duplicate_dkim }}
       </legend>
       <div id="duplicate_dkim" class="collapse">

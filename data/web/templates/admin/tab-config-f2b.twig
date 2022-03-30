@@ -41,11 +41,11 @@
         </div>
         <div class="btn-group">
           <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected" data-item="self" data-id="f2b" data-api-url='edit/fail2ban' data-api-attr='{}' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
-          <a href="#" role="button" class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" data-toggle="modal" data-container="netfilter-mailcow" data-target="#RestartContainer"><i class="bi bi-arrow-repeat"></i> {{ lang.header.restart_netfilter }}</a>
+          <a href="#" role="button" class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" data-bs-toggle="modal" data-container="netfilter-mailcow" data-bs-target="#RestartContainer"><i class="bi bi-arrow-repeat"></i> {{ lang.header.restart_netfilter }}</a>
           <div class="clearfix visible-xs"></div>
         </div>
       </form>
-      <legend data-target="#f2b_regex_filters" style="margin-top:40px;cursor:pointer" unselectable="on" data-toggle="collapse">
+      <legend data-bs-target="#f2b_regex_filters" style="margin-top:40px;cursor:pointer" unselectable="on" data-bs-toggle="collapse">
         <i style="font-size:10pt;" class="bi bi-plus-square"></i> {{ lang.admin.f2b_filter }}
       </legend>
       <div id="f2b_regex_filters" class="collapse">

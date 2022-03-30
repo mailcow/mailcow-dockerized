@@ -2,7 +2,7 @@
   <div class="panel panel-default">
     <div class="panel-heading">{{ lang.admin.rspamd_settings_map }}</div>
     <div class="panel-body">
-      <legend data-target="#active_settings_map" style="cursor:pointer" unselectable="on" data-toggle="collapse">
+      <legend data-bs-target="#active_settings_map" style="cursor:pointer" unselectable="on" data-bs-toggle="collapse">
         <i style="font-size:10pt;" class="bi bi-plus-square"></i> {{ lang.admin.active_rspamd_settings_map }}
       </legend>
       <div id="active_settings_map" class="collapse" >
@@ -17,16 +17,16 @@
 
               {% endif %}
               {% for rsetting in rsettings %}
-                <a href="#{{ rsetting.details.id }}" class="list-group-item list-group-item-{% if rsetting.details.active %}success{% endif %}" data-dont-remember="1" data-toggle="tab">{{ rsetting.details.desc }} (ID #{{ rsetting.id }})</a>
+                <a href="#{{ rsetting.details.id }}" class="list-group-item list-group-item-{% if rsetting.details.active %}success{% endif %}" data-dont-remember="1" data-bs-toggle="tab">{{ rsetting.details.desc }} (ID #{{ rsetting.id }})</a>
               {% else %}
                 <span class="list-group-item"><em>{{ lang.admin.rsetting_none }}</em></span>
               {% endfor %}
               <a href="#" class="list-group-item list-group-item-default"
                  data-id="add_domain_admin"
-                 data-toggle="modal"
+                 data-bs-toggle="modal"
                  data-dont-remember="1"
-                 data-target="#addRsettingModal"
-                 data-toggle="tab">{{ lang.admin.rsetting_add_rule }}</a>
+                 data-bs-target="#addRsettingModal"
+                 data-bs-toggle="tab">{{ lang.admin.rsetting_add_rule }}</a>
             </div>
           </div>
           <div class="col-sm-9">

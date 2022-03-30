@@ -4,10 +4,10 @@
       {{ lang.mailbox.domains }} <span class="badge badge-info table-lines"></span>
       <div class="btn-group pull-right hidden-xs">
         {% if mailcow_cc_role == 'admin' %}
-          <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addDomainModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_domain }}</button>
+          <button class="btn btn-xs btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addDomainModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_domain }}</button>
         {% endif %}
         <button class="btn btn-xs btn-default refresh_table" data-draw="draw_domain_table" data-table="domain_table">{{ lang.admin.refresh }}</button>
-        <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown">{{ lang.mailbox.table_size }}
+        <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-bs-toggle="dropdown">{{ lang.mailbox.table_size }}
           <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" data-table-id="domain_table" role="menu">
@@ -22,7 +22,7 @@
     <div class="mass-actions-mailbox">
       <div class="btn-group">
         <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="domain" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }} <span class="caret"></span></a>
+        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }} <span class="caret"></span></a>
         <ul class="dropdown-menu">
           {% if mailcow_cc_role == 'admin' %}
           <li><a data-action="edit_selected" data-id="domain" data-api-url='edit/domain' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
@@ -33,7 +33,7 @@
         </ul>
         <div class="clearfix visible-xs"></div>
         {% if mailcow_cc_role == 'admin' %}
-        <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-toggle="modal" data-target="#addDomainModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_domain }}</a>
+        <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addDomainModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_domain }}</a>
         {% endif %}
       </div>
     </div>

@@ -8,7 +8,7 @@
         <div class="mass-actions-admin">
           <div class="btn-group">
             <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="admins" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-            <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }} <span class="caret"></span></a>
+            <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }} <span class="caret"></span></a>
             <div class="clearfix visible-xs"></div>
             <ul class="dropdown-menu">
               <li><a data-action="edit_selected" data-id="admins" data-api-url='edit/admin' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
@@ -18,7 +18,7 @@
               <li role="separator" class="divider"></li>
               <li><a data-action="delete_selected" data-id="admins" data-api-url='delete/admin' href="#">{{ lang.mailbox.remove }}</a></li>
             </ul>
-            <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-id="add_admin" data-toggle="modal" data-target="#addAdminModal" href="#"><i class="bi bi-person-plus-fill"></i> {{ lang.admin.add_admin }}</a>
+            <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-id="add_admin" data-bs-toggle="modal" data-bs-target="#addAdminModal" href="#"><i class="bi bi-person-plus-fill"></i> {{ lang.admin.add_admin }}</a>
           </div>
         </div>
 
@@ -70,7 +70,7 @@
           <div class="col-sm-offset-3 col-sm-9">
             <div class="btn-group nowrap mass-actions-admin">
               <button class="btn btn-sm btn-primary visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline" id="register-fido2">{{ lang.fido2.set_fido2 }}</button>
-              <button type="button" class="btn btn-sm btn-xs-lg btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <button type="button" class="btn btn-sm btn-xs-lg btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="caret"></span>
               </button>
               <ul class="dropdown-menu">
@@ -88,7 +88,7 @@
           <br>
         </div>
 
-        <legend style="cursor:pointer;margin-top:40px" data-target="#license" unselectable="on" data-toggle="collapse">
+        <legend style="cursor:pointer;margin-top:40px" data-bs-target="#license" unselectable="on" data-bs-toggle="collapse">
           <i style="font-size:10pt;" class="bi bi-plus-square"></i> {{ lang.admin.guid_and_license }}
         </legend>
         <div id="license" class="collapse">
@@ -120,7 +120,7 @@
           </form>
         </div>
 
-        <legend style="cursor:pointer;" data-target="#admin_api" unselectable="on" data-toggle="collapse">
+        <legend style="cursor:pointer;" data-bs-target="#admin_api" unselectable="on" data-bs-toggle="collapse">
           <i style="font-size:10pt;" class="bi bi-plus-square"></i> API
         </legend>
         <div id="admin_api" class="collapse">
@@ -232,7 +232,7 @@
       <div class="mass-actions-admin">
         <div class="btn-group">
           <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="domain_admins" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }} <span class="caret"></span></a>
+          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }} <span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li><a data-action="edit_selected" data-id="domain_admins" data-api-url='edit/domain-admin' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
             <li><a data-action="edit_selected" data-id="domain_admins" data-api-url='edit/domain-admin' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
@@ -242,7 +242,7 @@
             <li><a data-action="delete_selected" data-id="domain_admins" data-api-url='delete/domain-admin' href="#">{{ lang.mailbox.remove }}</a></li>
           </ul>
           <div class="clearfix visible-xs"></div>
-          <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-id="add_domain_admin" data-toggle="modal" data-target="#addDomainAdminModal" href="#"><i class="bi bi-person-plus-fill"></i> {{ lang.admin.add_domain_admin }}</a>
+          <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-id="add_domain_admin" data-bs-toggle="modal" data-bs-target="#addDomainAdminModal" href="#"><i class="bi bi-person-plus-fill"></i> {{ lang.admin.add_domain_admin }}</a>
         </div>
       </div>
     </div>
