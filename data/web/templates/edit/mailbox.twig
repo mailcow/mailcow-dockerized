@@ -2,15 +2,15 @@
 
 {% block inner_content %}
 {% if result %}
-<ul class="nav nav-tabs responsive-tabs" role="tablist">
-  <li class="active"><a data-toggle="tab" href="#medit">{{ lang.edit.mailbox }}</a></li>
-  <li><a data-toggle="tab" href="#mpushover">{{ lang.edit.pushover }}</a></li>
-  <li><a data-toggle="tab" href="#macl">{{ lang.edit.acl }}</a></li>
-  <li><a data-toggle="tab" href="#mrl">{{ lang.edit.ratelimit }}</a></li>
+<ul class="nav nav-tabs" role="tablist">
+  <li role="presentation" class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#medit">{{ lang.edit.mailbox }}</button></li>
+  <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#mpushover">{{ lang.edit.pushover }}</button></li>
+  <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#macl">{{ lang.edit.acl }}</button></li>
+  <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#mrl">{{ lang.edit.ratelimit }}</button></li>
 </ul>
 <hr>
 <div class="tab-content">
-  <div id="medit" class="tab-pane in active">
+  <div id="medit" class="tab-pane fade show active" role="tabpanel" aria-labelledby="mailbox-edit">
     <form class="form-horizontal" data-id="editmailbox" role="form" method="post">
       <input type="hidden" value="default" name="sender_acl">
       <input type="hidden" value="0" name="force_pw_update">
@@ -244,7 +244,7 @@
       </div>
     </form>
   </div>
-  <div id="mpushover" class="tab-pane">
+  <div id="mpushover" class="tab-pane fade" role="tabpanel" aria-labelledby="mailbox-pushover">
     <form data-id="pushover" class="form well" method="post">
       <input type="hidden" value="0" name="evaluate_x_prio">
       <input type="hidden" value="0" name="only_x_prio">
@@ -324,7 +324,7 @@
       </div>
     </form>
   </div>
-  <div id="macl" class="tab-pane">
+  <div id="macl" class="tab-pane fade" role="tabpanel" aria-labelledby="mailbox-acl">
     <form data-id="useracl" class="form-inline well" method="post">
       <div class="row">
         <div class="col-sm-1">
@@ -345,7 +345,7 @@
       </div>
     </form>
   </div>
-  <div id="mrl" class="tab-pane">
+  <div id="mrl" class="tab-pane fade" role="tabpanel" aria-labelledby="mailbox-rl">
     <form data-id="mboxratelimit" class="form-inline well" method="post">
       <div class="row">
         <div class="col-sm-1">
