@@ -207,32 +207,6 @@ if(file_exists($langFile)) {
 }
 
 
-// init frontend
-// Minify JS
-use MatthiasMullie\Minify;
-$js_minifier = new JSminifierExtended();
-$js_dir = array_diff(scandir('/web/js/build'), array('..', '.'));
-// Minify CSS
-$css_minifier = new CSSminifierExtended();
-$css_dir = array_diff(scandir('/web/css/build'), array('..', '.'));
-// get customized ui data
-$UI_TEXTS = customize('get', 'ui_texts');
-$UI_THEME = "lumen"; // TODO: customize('get', 'ui_theme');
-// minify bootstrap theme
-if (file_exists('../css/themes'.$UI_THEME.'-bootstrap.css'))
-  $css_minifier->add('../css/themes/'.$UI_THEME.'-bootstrap.css');
-else
-  $css_minifier->add('../css/themes/lumen-bootstrap.css'); 
-// minify css build files
-foreach ($css_dir as $css_file) {
-  $css_minifier->add('/web/css/build/' . $css_file);
-}
-// minify js build files
-foreach ($js_dir as $js_file) {
-  $js_minifier->add('/web/js/build/' . $js_file);
-}
-
-
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.acl.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.address_rewriting.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.admin.inc.php';
@@ -266,4 +240,29 @@ if (isset($_SESSION['mailcow_cc_role'])) {
     // $master_user = $master_passwd = null;
   // }
   acl('to_session');
+}
+
+// init frontend
+// Minify JS
+use MatthiasMullie\Minify;
+$js_minifier = new JSminifierExtended();
+$js_dir = array_diff(scandir('/web/js/build'), array('..', '.'));
+// Minify CSS
+$css_minifier = new CSSminifierExtended();
+$css_dir = array_diff(scandir('/web/css/build'), array('..', '.'));
+// get customized ui data
+$UI_TEXTS = customize('get', 'ui_texts');
+$UI_THEME = "lumen"; // TODO: customize('get', 'ui_theme');
+// minify bootstrap theme
+if (file_exists('../css/themes'.$UI_THEME.'-bootstrap.css'))
+  $css_minifier->add('../css/themes/'.$UI_THEME.'-bootstrap.css');
+else
+  $css_minifier->add('../css/themes/lumen-bootstrap.css'); 
+// minify css build files
+foreach ($css_dir as $css_file) {
+  $css_minifier->add('/web/css/build/' . $css_file);
+}
+// minify js build files
+foreach ($js_dir as $js_file) {
+  $js_minifier->add('/web/js/build/' . $js_file);
 }
