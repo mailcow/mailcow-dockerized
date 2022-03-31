@@ -24,7 +24,7 @@
       </button>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
-      <ul class="navbar-nav d-flex">
+      <ul class="navbar-nav ms-auto">
         {% if mailcow_locale %}
         <li class="nav-item dropdown{% if available_languages|length == 1 %}lang-link-disabled{% endif %}">
           <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false"><span class="flag-icon flag-icon-{{ mailcow_locale }}"></span></a>

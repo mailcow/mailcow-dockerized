@@ -75,6 +75,12 @@
   display: inline-block;
   font-size: inherit;
 }
+.btn-group-xs > .btn, .btn-xs {
+  padding: .25rem .4rem;
+  font-size: .875rem;
+  line-height: .5;
+  border-radius: .2rem;
+}
 .icon-spin {
   animation-name: spin;
   animation-duration: 2000ms;
@@ -172,14 +178,6 @@ legend {
 .bootstrap-select.btn-group .no-results {
   display: none;
 }
-.dropdown-desc {
-  display: block;
-  padding: 3px 10px;
-  clear: both;
-  font-weight: bold;
-  color: #5a5a5a;
-  white-space: nowrap;
-}
 .haveibeenpwned {
   cursor: pointer;
   -webkit-user-select: none;  
@@ -206,7 +204,7 @@ legend {
   flex-direction: column;
 }
 .footer .version {
-    margin-left: auto;
+  margin-left: auto;
 	margin-top: 20px;
 }
 .slave-info {
@@ -255,4 +253,7 @@ code {
 }
 .flag-icon {
   margin-right: 5px;
+}
+.dropdown-header {
+  font-weight: 600;
 }
