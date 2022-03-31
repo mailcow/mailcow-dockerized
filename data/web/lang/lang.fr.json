@@ -301,7 +301,7 @@
         "to_top": "Retour en haut",
         "transport_dest_format": "Syntaxe : example.org, .example.org, *, box@example.org (les valeurs multiples peuvent être séparées par des virgules)",
         "transport_maps": "Plans de transport",
-        "transports_hint": "→ Une entrée de carte de transport <b>annule</b> une carte de transport dépendante de l’expéditeur</b>.<br>\r\n→ Les paramètres de politique TLS sortants par utilisateur sont ignorés et ne peuvent être appliqués que par les entrées de carte de politique TLS.<br>\r\n→ Le service de transport pour des transports définis est toujours \"smtp:\" et va donc essayer TLS lorsqu’il est offert. Wrapped TLS (SMTPS) n’est pas pris en charge.<br>\r\n→ Les adresses correspondantes \"/localhost$/\" seront toujours transportées via \"local:\", donc une destination \"*\" ne s'applique pas à ces adresses.<br>\r\n→ Pour déterminer les compétences dans l'exemple suivant \"[host]:25\", Postfix demande <b>toujours</b> pour \"host\" avant de chercher \"[host]:25\". Ce comportement rend impossible l’utilisation \"host\" et \"[host]:25\" en même temps.",
+        "transports_hint": "→ Une entrée de carte de transport <b>annule</b> une carte de transport dépendante de l’expéditeur</b>.<br>\n→ Les transports basés sur le MX sont préférables.<br>\n→ Les paramètres de politique TLS sortants par utilisateur sont ignorés et ne peuvent être appliqués que par les entrées de carte de politique TLS.<br>\n→ Pour chaque transports défini, le servie de transports sera \"smtp:\", TLS sera essayé lorsque disponible. Le Wrapped TLS (SMTPS) n’est pas pris en charge.<br>\n→ Les adresses qui correspondent à\"/localhost$/\" seront toujours transportées via \"local:\", donc une destination \"*\" ne s'applique pas à ces adresses.<br>\n→ Pour déterminer les informations d'identification dans l'exemple suivant \"[host]:25\", Postfix va <b>toujours</b> faire une requête pour \"host\" avant de chercher \"[host]:25\". Ce comportement rend impossible l’utilisation \"host\" et \"[host]:25\" en même temps.",
         "ui_footer": "Pied de page (HTML autorisé)",
         "ui_header_announcement": "Annonces",
         "ui_header_announcement_active": "Définir l’annonce active",
@@ -319,7 +319,10 @@
         "username": "Nom d'utilisateur",
         "validate_license_now": "Valider le GUID par rapport au serveur de licence",
         "verify": "Verifier",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "api_read_write": "Accès Lecture-Écriture",
+        "oauth2_add_client": "Ajouter un client OAuth2",
+        "password_policy": "Politique de mots de passe"
     },
     "danger": {
         "access_denied": "Accès refusé ou données de formulaire non valides",
@@ -574,7 +577,9 @@
         "title": "Editer l'objet",
         "unchanged_if_empty": "Si non modifié, laisser en blanc",
         "username": "Nom d'utilisateur",
-        "validate_save": "Valider et sauver"
+        "validate_save": "Valider et sauver",
+        "lookup_mx": "La destination est une expression régulière qui doit correspondre avec le nom du MX (<code>.*google\\.com</code> pour acheminer tout le courrier destiné à un MX se terminant par google.com via ce saut).",
+        "mailbox_relayhost_info": "S'applique uniquement à la boîte aux lettres et aux alias directs, remplace le relayhost du domaine."
     },
     "footer": {
         "cancel": "Annuler",
@@ -742,7 +747,7 @@
         "tls_map_dest": "Destination",
         "tls_map_dest_info": "Exemples : example.org, .example.org, [mail.example.org]:25",
         "tls_map_parameters": "Paramètres",
-        "tls_map_parameters_info": "Vide ou paramètres, par exemple: protocols=!SSLv2 ciphers=medium exclude=3DES",
+        "tls_map_parameters_info": "Vide ou paramètres, par exemple : protocols=!SSLv2 ciphers=medium exclude=3DES",
         "tls_map_policy": "Politique",
         "tls_policy_maps": "Cartes des politiques des TLS",
         "tls_policy_maps_info": "Cette carte de politique remplace les règles de transport TLS sortantes indépendamment des paramètres de politique TLS des utilisateurs.<br>\r\n  Veuillez vérifier <a href=\"http://www.postfix.org/postconf.5.html#smtp_tls_policy_maps\" target=\"_blank\">la doc \"smtp_tls_policy_maps\" </a> pour plus d'informations.",
@@ -756,8 +761,8 @@
     },
     "oauth2": {
         "access_denied": "Veuillez vous connecter en tant que propriétaire de la boîte pour accorder l’accès via Oauth2.",
-        "authorize_app": "Authorize application",
-        "deny": "Deny",
+        "authorize_app": "Autoriser l'application",
+        "deny": "Refuser",
         "permit": "Autorise l'application",
         "profile": "Profil",
         "profile_desc": "Afficher les informations personnelles : nom d’utilisateur, nom complet, créé, modifié, actif",
@@ -969,7 +974,7 @@
         "direct_aliases": "Adresses alias directes",
         "direct_aliases_desc": "Les adresses d’alias directes sont affectées par le filtre anti-spam et les paramètres de politique TLS.",
         "eas_reset": "Réinitialiser le cache de l’appareil Activesync",
-        "eas_reset_help": "Dans de nombreux cas, une réinitialisation du cache de l’appareil aidera à récupérer un profil Activesync cassé.<br><b>Attention:</b> Tous les éléments seront à nouveau chargés!",
+        "eas_reset_help": "Dans de nombreux cas, une réinitialisation du cache de l’appareil aidera à récupérer un profil Activesync cassé.<br><b>Attention :</b> Tous les éléments seront à nouveau téléchargés !",
         "eas_reset_now": "Réinitialiser maintenant",
         "edit": "Editer",
         "email": "Email",
@@ -1033,9 +1038,9 @@
         "spamfilter_bl": "Liste noire (BlackList)",
         "spamfilter_bl_desc": "Les adresses de courriel sur la liste noire de <b>always (toujours)</b> peuvent être classées comme des pourriels et rejetées. Des caractères génériques peuvent être utilisés. Un filtre n’est appliqué qu’aux alias directs (alias avec une seule boîte cible), à l’exclusion des alias tous azimuts et d’une boîte elle-même.",
         "spamfilter_default_score": "Valeurs par défaut",
-        "spamfilter_green": "Vert: ce message n'est pas un spam",
+        "spamfilter_green": "Vert : ce message n'est pas un spam",
         "spamfilter_hint": "La première valeur indique un \"faible score de spam\", la seconde représente un \"haut score de spam\".",
-        "spamfilter_red": "Rouge: Ce message est un spam et sera rejeté par le serveur",
+        "spamfilter_red": "Rouge : Ce message est un spam et sera rejeté par le serveur",
         "spamfilter_table_action": "Action",
         "spamfilter_table_add": "Ajouter un élément",
         "spamfilter_table_domain_policy": "n/a (politique de domaine)",
@@ -1044,12 +1049,12 @@
         "spamfilter_table_rule": "Règle",
         "spamfilter_wl": "Liste blanche (WhiteList)",
         "spamfilter_wl_desc": "La liste blanche est programmé pour <b> ne jamais</b> classer comme spam les adresses e-mail qu'elle contient. Des caractères génériques peuvent être utilisés. Un filtre n’est appliqué qu’aux alias directs (alias avec une seule boîte cible), à l’exclusion des alias catch-all et d’une boîte mail.",
-        "spamfilter_yellow": "Jaune: ce message est peut être un spam, il sera étiqueté comme spam et déplacé vers votre dossier Junk",
+        "spamfilter_yellow": "Jaune : ce message est peut être un spam, il sera étiqueté comme spam et déplacé vers votre dossier Pourriel",
         "status": "Statut",
         "sync_jobs": "Jobs de synchronisation",
         "tag_handling": "Régler la manipulation du courrier étiqueté",
-        "tag_help_example": "Exemple pour une adresse e-mail étiquetée: me<b>+Facebook</b>@example.org",
-        "tag_help_explain": "Dans sous-dossier: un nouveau sous-dossier nommé d’après la balise sera créé sous INBOX (\"INBOX/Facebook\").<br>\r\nDans le sujet : le nom des balises sera ajouté au début du sujet du mail, exemple : \"[Facebook] My News\".",
+        "tag_help_example": "Exemple pour une adresse e-mail étiquetée : me<b>+Facebook</b>@example.org",
+        "tag_help_explain": "Dans un sous-dossier : un nouveau sous-dossier nommé selon l'étiquette sera créé sous INBOX (\"INBOX/Facebook\").<br>\nDans le sujet : le nom des balises sera ajouté au début du sujet du mail, exemple : \"[Facebook] My News\".",
         "tag_in_none": "Ne rien faire",
         "tag_in_subfolder": "Dans un sous dossier",
         "tag_in_subject": "Dans le sujet",
@@ -1073,10 +1078,10 @@
         "dovecot_restart_failed": "Dovecot n’a pas pu redémarrer, veuillez vérifier les journaux",
         "fuzzy_learn_error": "Erreur d’apprentissage du hachage flou: %s",
         "hash_not_found": "Hachage non trouvé ou déjà supprimé",
-        "ip_invalid": "IP non valide ignorée: %s",
+        "ip_invalid": "IP non valide ignorée : %s",
         "no_active_admin": "Impossible de désactiver le dernier administrateur active",
-        "quota_exceeded_scope": "Dépassement du quota de domaine: Seules des boîtes illimitées peuvent être créées dans ce domaine.",
-        "session_token": "Jeton de formulaire invalide: Décalage des jetons",
-        "session_ua": "Jeton de formulaire invalide: erreur de validation User-Agent"
+        "quota_exceeded_scope": "Dépassement du quota de domaine : Seules des boîtes illimitées peuvent être créées dans ce domaine.",
+        "session_token": "Jeton de formulaire invalide : Jeton différent",
+        "session_ua": "Jeton de formulaire invalide : erreur de validation User-Agent"
     }
 }
