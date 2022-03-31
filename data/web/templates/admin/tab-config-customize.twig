@@ -7,7 +7,7 @@
       <form class="form-inline" role="form" method="post" enctype="multipart/form-data">
         <p>
           <input type="file" name="main_logo" accept="image/gif, image/jpeg, image/pjpeg, image/x-png, image/png, image/svg+xml"><br>
-          <button name="submit_main_logo" type="submit" class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default"><i class="bi bi-upload"></i> {{ lang.admin.upload }}</button>
+          <button name="submit_main_logo" type="submit" class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary"><i class="bi bi-upload"></i> {{ lang.admin.upload }}</button>
         </p>
       </form>
       {% if logo %}
@@ -16,14 +16,14 @@
             <div class="thumbnail">
               <img class="img-thumbnail" src="{{ logo }}" alt="mailcow logo">
               <div class="caption">
-                <span class="label label-info">{{ logo_specs.geometry.width }}x{{ logo_specs.geometry.height }} px</span>
-                <span class="label label-info">{{ logo_specs.mimetype }}</span>
-                <span class="label label-info">{{ logo_specs.fileSize }}</span>
+                <span class="badge fs-5 bg-info">{{ logo_specs.geometry.width }}x{{ logo_specs.geometry.height }} px</span>
+                <span class="badge fs-5 bg-info">{{ logo_specs.mimetype }}</span>
+                <span class="badge fs-5 bg-info">{{ logo_specs.fileSize }}</span>
               </div>
             </div>
             <hr>
             <form class="form-inline" role="form" method="post">
-              <p><button name="reset_main_logo" type="submit" class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default">{{ lang.admin.reset_default }}</button></p>
+              <p><button name="reset_main_logo" type="submit" class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary">{{ lang.admin.reset_default }}</button></p>
             </form>
           </div>
         </div>
@@ -42,7 +42,7 @@
               <tr>
                 <td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="app" required value="{{ key }}"></td>
                 <td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="href" required value="{{ val }}"></td>
-                <td><a href="#" role="button" class="btn btn-sm btn-xs-lg btn-default" type="button">{{ lang.admin.remove_row }}</a></td>
+                <td><a href="#" role="button" class="btn btn-sm btn-xs-lg btn-secondary" type="button">{{ lang.admin.remove_row }}</a></td>
               </tr>
             {% endfor %}
           {% endfor %}
@@ -56,7 +56,7 @@
         </table>
         <p><div class="btn-group">
           <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected" data-item="admin" data-id="app_links" data-reload="no" data-api-url='edit/app_links' data-api-attr='{}' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
-          <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" type="button" id="add_app_link_row">{{ lang.admin.add_row }}</button>
+          <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" type="button" id="add_app_link_row">{{ lang.admin.add_row }}</button>
           <div class="clearfix visible-xs"></div>
         </div></p>
       </form>

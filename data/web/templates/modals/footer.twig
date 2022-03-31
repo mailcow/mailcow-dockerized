@@ -25,7 +25,7 @@
           </div>
           <div class="form-group">
             <div class="input-group">
-              <span class="input-group-addon" id="yubi-addon"><img alt="Yubicon Icon" src="/img/yubi.ico"></span>
+              <span class="input-group-text" id="yubi-addon"><img alt="Yubicon Icon" src="/img/yubi.ico"></span>
               <input type="text" name="otp_token" class="form-control" placeholder="Touch Yubikey" aria-describedby="yubi-addon">
               <input type="hidden" name="tfa_method" value="yubi_otp">
             </div>
@@ -146,24 +146,24 @@
         <form role="form" method="post">
           <div class="form-group">
             <div class="input-group">
-              <span class="input-group-addon" id="yubi-addon"><img alt="Yubicon Icon" src="/img/yubi.ico"></span>
+              <span class="input-group-text" id="yubi-addon"><img alt="Yubicon Icon" src="/img/yubi.ico"></span>
               <input type="text" name="token" class="form-control" autocomplete="off" placeholder="Touch Yubikey" aria-describedby="yubi-addon">
               <input type="hidden" name="tfa_method" value="yubi_otp">
             </div>
           </div>
-          <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-sm btn-default" type="submit" name="verify_tfa_login">{{ lang.login.login }}</button>
+          <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-sm btn-secondary" type="submit" name="verify_tfa_login">{{ lang.login.login }}</button>
         </form>
         {% endif %}
         {% if pending_tfa_method == 'totp' %}
         <form role="form" method="post">
           <div class="form-group">
             <div class="input-group">
-              <span class="input-group-addon" id="tfa-addon"><i class="bi bi-shield-lock-fill"></i></span>
+              <span class="input-group-text" id="tfa-addon"><i class="bi bi-shield-lock-fill"></i></span>
               <input type="number" min="000000" max="999999" name="token" class="form-control" placeholder="123456" autocomplete="one-time-code" aria-describedby="tfa-addon">
               <input type="hidden" name="tfa_method" value="totp">
             </div>
           </div>
-          <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" type="submit" name="verify_tfa_login">{{ lang.login.login }}</button>
+          <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" type="submit" name="verify_tfa_login">{{ lang.login.login }}</button>
         </form>
         {% endif %}
         {% if pending_tfa_method == 'hotp' %}
@@ -235,7 +235,7 @@
         <ul id="ItemsToDelete"></ul>
         <hr>
         <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-danger" id="IsConfirmed">{{ lang.footer.delete_now }}</button>
-        <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="isCanceled">{{ lang.footer.cancel }}</button>
+        <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" id="isCanceled">{{ lang.footer.cancel }}</button>
         <div class="clearfix visible-xs"></div>
       </div>
     </div>

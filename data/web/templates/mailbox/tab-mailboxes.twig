@@ -4,8 +4,8 @@
       {{ lang.mailbox.mailboxes }} <span class="badge badge-info table-lines"></span>
       <div class="btn-group pull-right hidden-xs">
         <button class="btn btn-xs btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addMailboxModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_mailbox }}</button>
-        <button class="btn btn-xs btn-default refresh_table" data-draw="draw_mailbox_table" data-table="mailbox_table">{{ lang.admin.refresh }}</button>
-        <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-bs-toggle="dropdown">{{ lang.mailbox.table_size }}</button>
+        <button class="btn btn-xs btn-secondary refresh_table" data-draw="draw_mailbox_table" data-table="mailbox_table">{{ lang.admin.refresh }}</button>
+        <button type="button" class="btn btn-xs btn-secondary dropdown-toggle" data-bs-toggle="dropdown">{{ lang.mailbox.table_size }}</button>
         <ul class="dropdown-menu" data-table-id="mailbox_table" role="menu">
           {% include 'mailbox/page-size.twig' %}
         </ul>
@@ -17,8 +17,8 @@
     </div>
     <div class="mass-actions-mailbox">
       <div class="btn-group hidden-md hidden-lg hidden-xl">
-        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="mailbox" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" id="toggle_multi_select_all" data-id="mailbox" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
         <ul class="dropdown-menu">
           <li class="dropdown-header">{{ lang.mailbox.mailbox }}</li>
           <li><a class="dropdown-item" data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
@@ -60,9 +60,9 @@
         <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addMailboxModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_mailbox }}</a>
       </div>
       <div class="btn-group hidden-xs hidden-sm">
-        <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="mailbox" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+        <a class="btn btn-sm btn-secondary" id="toggle_multi_select_all" data-id="mailbox" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
         <div class="btn-group">
-          <a class="btn btn-sm btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.mailbox }}</a>
+          <a class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.mailbox }}</a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
             <li><a class="dropdown-item" data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"active":"2"}' href="#">{{ lang.mailbox.disable_login }}</a></li>
@@ -72,7 +72,7 @@
           </ul>
         </div>
         <div class="btn-group">
-          <a class="btn btn-sm btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">TLS</a>
+          <a class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">TLS</a>
           <ul class="dropdown-menu">
             <li class="dropdown-header">{{ lang.mailbox.tls_enforce_in }}</li>
             <li><a class="dropdown-item" data-action="edit_selected" data-id="mailbox" data-api-url='edit/tls_policy' data-api-attr='{"tls_enforce_in":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
@@ -84,7 +84,7 @@
           </ul>
         </div>
         <div class="btn-group">
-          <a class="btn btn-sm btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.allowed_protocols }}</a>
+          <a class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.allowed_protocols }}</a>
           <ul class="dropdown-menu">
             <li class="dropdown-header">IMAP</li>
             <li><a class="dropdown-item" data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"imap_access":1}' href="#">{{ lang.mailbox.activate }}</a></li>
@@ -100,7 +100,7 @@
           </ul>
         </div>
         <div class="btn-group">
-          <a class="btn btn-sm btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quarantine_notification }}</a>
+          <a class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quarantine_notification }}</a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_notification' data-api-attr='{"quarantine_notification":"hourly"}' href="#">{{ lang.user.hourly }}</a></li>
             <li><a class="dropdown-item" data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_notification' data-api-attr='{"quarantine_notification":"daily"}' href="#">{{ lang.user.daily }}</a></li>

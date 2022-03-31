@@ -7,11 +7,11 @@
         <div class="hidden-xs col-md-3 col-xs-5 text-right"></div>
         <div class="col-md-3 col-xs-12">
           {% if dual_login and allow_admin_email_login == 'n' %}
-            <button disabled class="btn btn-default btn-block btn-xs-lg">
+            <button disabled class="btn btn-secondary btn-block btn-xs-lg">
               <i class="bi bi-inbox-fill"></i> {{ lang.user.open_webmail_sso }}
             </button>
           {% else %}
-            <a target="_blank" href="/sogo-auth.php?login={{ mailcow_cc_username }}" role="button" class="btn btn-default btn-block btn-xs-lg">
+            <a target="_blank" href="/sogo-auth.php?login={{ mailcow_cc_username }}" role="button" class="btn btn-secondary btn-block btn-xs-lg">
               <i class="bi bi-inbox-fill"></i> {{ lang.user.open_webmail_sso }}
             </a>
           {% endif %}
@@ -22,11 +22,11 @@
         <div class="hidden-xs col-md-3 col-xs-5 text-right"></div>
         <div class="col-md-9 col-xs-12">
           <p class="help-block help-block-mt-0">{{ lang.user.direct_protocol_access|raw }}</p>
-          {% if mailboxdata.attributes.imap_access == 1 %}<div class="label label-success label-protocol-access">IMAP <i class="bi bi-check-lg"></i></div>{% else %}<div class="label label-danger label-protocol-access">IMAP <i class="bi bi-x-lg"></i></div>{% endif %}
-          {% if mailboxdata.attributes.smtp_access == 1 %}<div class="label label-success label-protocol-access">SMTP <i class="bi bi-check-lg"></i></div>{% else %}<div class="label label-danger label-protocol-access">SMTP <i class="bi bi-x-lg"></i></div>{% endif %}
-          {% if mailboxdata.attributes.sieve_access == 1 %}<div class="label label-success label-protocol-access">Sieve <i class="bi bi-check-lg"></i></div>{% else %}<div class="label label-danger label-protocol-access">Sieve <i class="bi bi-x-lg"></i></div>{% endif %}
-          {% if mailboxdata.attributes.pop3_access == 1 %}<div class="label label-success label-protocol-access">POP3 <i class="bi bi-check-lg"></i></div>{% else %}<div class="label label-danger label-protocol-access">POP3 <i class="bi bi-x-lg"></i></div>{% endif %}
-          {% if mailboxdata.attributes.sogo_access == 1 %}<div class="label label-success label-protocol-access">SOGo <i class="bi bi-check-lg"></i></div>{% else %}<div class="label label-danger label-protocol-access">SOGo <i class="bi bi-x-lg"></i></div>{% endif %}
+          {% if mailboxdata.attributes.imap_access == 1 %}<div class="badge fs-5 bg-success label-protocol-access">IMAP <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-5 bg-danger label-protocol-access">IMAP <i class="bi bi-x-lg"></i></div>{% endif %}
+          {% if mailboxdata.attributes.smtp_access == 1 %}<div class="badge fs-5 bg-success label-protocol-access">SMTP <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-5 bg-danger label-protocol-access">SMTP <i class="bi bi-x-lg"></i></div>{% endif %}
+          {% if mailboxdata.attributes.sieve_access == 1 %}<div class="badge fs-5 bg-success label-protocol-access">Sieve <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-5 bg-danger label-protocol-access">Sieve <i class="bi bi-x-lg"></i></div>{% endif %}
+          {% if mailboxdata.attributes.pop3_access == 1 %}<div class="badge fs-5 bg-success label-protocol-access">POP3 <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-5 bg-danger label-protocol-access">POP3 <i class="bi bi-x-lg"></i></div>{% endif %}
+          {% if mailboxdata.attributes.sogo_access == 1 %}<div class="badge fs-5 bg-success label-protocol-access">SOGo <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-5 bg-danger label-protocol-access">SOGo <i class="bi bi-x-lg"></i></div>{% endif %}
         </div>
       </div>
       <hr>
@@ -121,7 +121,7 @@
           <hr>
           <h4 class="recent-login-success pull-left">{{ lang.user.recent_successful_connections }}</h4>
           <div class="dropdown pull-left pull-xs-right">
-            <button class="btn btn-default btn-xs btn-xs-lg dropdown-toggle" type="button" id="history_sasl_days" data-bs-toggle="dropdown">{{ lang.user.login_history }}</button>
+            <button class="btn btn-secondary btn-xs btn-xs-lg dropdown-toggle" type="button" id="history_sasl_days" data-bs-toggle="dropdown">{{ lang.user.login_history }}</button>
             <ul class="dropdown-menu">
               <li class="login-history" data-days="1"><a class="dropdown-item" href="#">1 {{ lang.user.day }}</a></li>
               <li class="login-history" data-days="7"><a class="dropdown-item active" href="#">1 {{ lang.user.week }}</a></li>

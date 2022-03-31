@@ -37,7 +37,7 @@
             <div class="col-sm-10">
               <input type="text" class="form-control" name="quota" min="0" max="" id="addInputQuota" disabled value="{{ lang.add.select_domain }}" required>
               <small class="help-block">0 = ∞</small>
-              <div class="label label-warning addInputQuotaExhausted" style="display:none;">{{ lang.warning.quota_exceeded_scope }}</div>
+              <div class="badge fs-5 bg-warning addInputQuotaExhausted" style="display:none;">{{ lang.warning.quota_exceeded_scope }}</div>
             </div>
           </div>
           <div class="form-group">
@@ -163,7 +163,7 @@
           <div class="form-group">
             <label class="control-label col-sm-2" for="key_size">{{ lang.admin.dkim_key_length }}</label>
             <div class="col-sm-10">
-              <select data-style="btn btn-default btn-sm" class="form-control" id="key_size" name="key_size">
+              <select data-style="btn btn-secondary btn-sm" class="form-control" id="key_size" name="key_size">
                 <option data-subtext="bits">1024</option>
                 <option data-subtext="bits" selected>2048</option>
               </select>
@@ -188,8 +188,8 @@
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10 btn-group">
               {% if not skip_sogo %}
-              <button class="btn btn-xs-lg btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" data-action="add_item" data-id="add_domain" data-api-url='add/domain' data-api-attr='{}' href="#">{{ lang.add.add_domain_only }}</button>
-              <button class="btn btn-xs-lg btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" data-action="add_item" data-id="add_domain" data-api-url='add/domain' data-api-attr='{"restart_sogo":"1"}' href="#">{{ lang.add.add_domain_restart }}</button>
+              <button class="btn btn-xs-lg btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" data-action="add_item" data-id="add_domain" data-api-url='add/domain' data-api-attr='{}' href="#">{{ lang.add.add_domain_only }}</button>
+              <button class="btn btn-xs-lg btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" data-action="add_item" data-id="add_domain" data-api-url='add/domain' data-api-attr='{"restart_sogo":"1"}' href="#">{{ lang.add.add_domain_restart }}</button>
               <div class="clearfix visible-xs"></div>
               {% else %}
               <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="add_item" data-id="add_domain" data-api-url='add/domain' data-api-attr='{}' href="#">{{ lang.add.add }}</button>
@@ -388,7 +388,7 @@
           <div class="form-group">
             <label class="control-label col-sm-2" for="key_size2">{{ lang.admin.dkim_key_length }}</label>
             <div class="col-sm-10">
-              <select data-style="btn btn-default btn-sm" class="form-control" id="key_size2" name="key_size">
+              <select data-style="btn btn-secondary btn-sm" class="form-control" id="key_size2" name="key_size">
                 <option data-subtext="bits">1024</option>
                 <option data-subtext="bits" selected>2048</option>
               </select>
@@ -625,7 +625,7 @@
           </div>
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10 add_filter_btns btn-group">
-              <button class="btn btn-xs-lg btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default validate_sieve" href="#">{{ lang.add.validate }}</button>
+              <button class="btn btn-xs-lg btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary validate_sieve" href="#">{{ lang.add.validate }}</button>
               <button class="btn btn-xs-lg btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success add_sieve_script" data-action="add_item" data-id="add_filter" data-api-url='add/filter' data-api-attr='{}' href="#" disabled>{{ lang.admin.add }}</button>
               <div class="clearfix visible-xs"></div>
             </div>

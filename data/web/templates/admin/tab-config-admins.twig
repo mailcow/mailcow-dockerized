@@ -7,8 +7,8 @@
         </div>
         <div class="mass-actions-admin">
           <div class="btn-group">
-            <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="admins" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-            <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+            <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" id="toggle_multi_select_all" data-id="admins" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+            <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
             <div class="clearfix visible-xs"></div>
             <ul class="dropdown-menu">
               <li><a class="dropdown-item" data-action="edit_selected" data-id="admins" data-api-url='edit/admin' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
@@ -37,7 +37,7 @@
         <div class="row">
           <div class="col-sm-3 col-xs-5 text-right">{{ lang.tfa.set_tfa }}:</div>
           <div class="col-sm-9 col-xs-7">
-            <select data-style="btn btn-sm dropdown-toggle bs-placeholder btn-default" data-width="fit" id="selectTFA" class="selectpicker" title="{{ lang.tfa.select }}">
+            <select data-style="btn btn-sm dropdown-toggle bs-placeholder btn-secondary" data-width="fit" id="selectTFA" class="selectpicker" title="{{ lang.tfa.select }}">
               <option value="yubi_otp">{{ lang.tfa.yubi_otp }}</option>
               <option value="webauthn">{{ lang.tfa.webauthn }}</option>
               <option value="totp">{{ lang.tfa.totp }}</option>
@@ -95,7 +95,7 @@
               <label class="control-label col-sm-3" for="guid">{{ lang.admin.guid }}:</label>
               <div class="col-sm-9">
                 <div class="input-group">
-                  <span class="input-group-addon">
+                  <span class="input-group-text">
                     <i class="bi bi-suit-heart{% if gal.valid == true %}-fill text-danger{% endif %}"></i>
                   </span>
                   <input type="text" id="guid" class="form-control" value="{{ license_guid }}" readonly>
@@ -163,7 +163,7 @@
                       <div class="col-sm-offset-3 col-sm-9">
                         <div class="btn-group">
                           <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" name="admin_api[ro]" type="submit" href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
-                          <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default admin-ays-dialog" name="admin_api_regen_key[ro]" type="submit" href="#" {% if not api.ro.api_key %}disabled{% endif %}>{{ lang.admin.regen_api_key }}</button>
+                          <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary admin-ays-dialog" name="admin_api_regen_key[ro]" type="submit" href="#" {% if not api.ro.api_key %}disabled{% endif %}>{{ lang.admin.regen_api_key }}</button>
                         </div>
                       </div>
                     </div>
@@ -208,7 +208,7 @@
                       <div class="col-sm-offset-3 col-sm-9">
                         <div class="btn-group">
                           <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" name="admin_api[rw]" type="submit" href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
-                          <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default admin-ays-dialog" name="admin_api_regen_key[rw]" type="submit" {% if not api.rw.api_key %}disabled{% endif %} href="#">{{ lang.admin.regen_api_key }}</button>
+                          <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary admin-ays-dialog" name="admin_api_regen_key[rw]" type="submit" {% if not api.rw.api_key %}disabled{% endif %} href="#">{{ lang.admin.regen_api_key }}</button>
                         </div>
                       </div>
                     </div>
@@ -229,8 +229,8 @@
       </div>
       <div class="mass-actions-admin">
         <div class="btn-group">
-          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="domain_admins" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" id="toggle_multi_select_all" data-id="domain_admins" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" data-action="edit_selected" data-id="domain_admins" data-api-url='edit/domain-admin' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
             <li><a class="dropdown-item" data-action="edit_selected" data-id="domain_admins" data-api-url='edit/domain-admin' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>

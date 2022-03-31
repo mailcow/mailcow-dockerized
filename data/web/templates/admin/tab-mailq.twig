@@ -3,7 +3,7 @@
     <div class="card-header">
       {{ lang.admin.queue_manager }} <span class="badge badge-info table-lines"></span>
       <div class="btn-group pull-right">
-        <button class="btn btn-xs btn-default refresh_table" data-draw="draw_queue" data-table="queuetable">{{ lang.admin.refresh }}</button>
+        <button class="btn btn-xs btn-secondary refresh_table" data-draw="draw_queue" data-table="queuetable">{{ lang.admin.refresh }}</button>
       </div>
     </div>
     <div class="card-body">
@@ -12,8 +12,8 @@
       </div>
       <div class="mass-actions-admin">
         <div class="btn-group">
-          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="mailqitems" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" id="toggle_multi_select_all" data-id="mailqitems" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
           <ul class="dropdown-menu top33">
             <li><a class="dropdown-item" data-bs-toggle="tooltip" title="postqueue -i" data-action="edit_selected" data-id="mailqitems" data-api-url='edit/mailq' data-api-attr='{"action":"deliver"}' href="#">{{ lang.admin.queue_deliver_mail }}</a></li>
             <li><a class="dropdown-item" data-bs-toggle="tooltip" title="postsuper -H" data-action="edit_selected" data-id="mailqitems" data-api-url='edit/mailq' data-api-attr='{"action":"unhold"}' href="#">{{ lang.admin.queue_unhold_mail }}</a></li>
