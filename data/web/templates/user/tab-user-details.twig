@@ -3,7 +3,7 @@
     <div class="card-header">{{ lang.user.mailbox_details }}</div>
     <div class="card-body">
       <div class="row">
-        <div class="col-sm-4 col-md-3 col-xs-12 text-right text-xs-left"><i class="bi bi-pin-angle"></i> {{ lang.user.direct_aliases }}:
+        <div class="col-sm-4 col-md-3 col-xs-12 text-sm-end text-start"><i class="bi bi-pin-angle"></i> {{ lang.user.direct_aliases }}:
           <p class="small">{{ lang.user.direct_aliases_desc }}</p>
         </div>
         <div class="col-sm-8 col-md-9 col-xs-12">
@@ -20,7 +20,7 @@
       </div>
       <br>
       <div class="row">
-        <div class="col-sm-4 col-md-3 col-xs-12 text-right text-xs-left"><i class="bi bi-share"></i> {{ lang.user.shared_aliases }}:
+        <div class="col-sm-4 col-md-3 col-xs-12 text-sm-end text-start"><i class="bi bi-share"></i> {{ lang.user.shared_aliases }}:
           <p class="small">{{ lang.user.shared_aliases_desc }}</p>
         </div>
         <div class="col-sm-8 col-md-9 col-xs-12">
@@ -37,7 +37,7 @@
       </div>
       <hr>
       <div class="row">
-        <div class="col-sm-4 col-md-3 col-xs-12 text-right text-xs-left space20">{{ lang.user.aliases_also_send_as }}:</div>
+        <div class="col-sm-4 col-md-3 col-xs-12 text-sm-end text-start space20">{{ lang.user.aliases_also_send_as }}:</div>
         <div class="col-sm-8 col-md-9 col-xs-12">
           <p>
             {% if user_get_alias_details.aliases_also_send_as == '*' %}
@@ -51,13 +51,13 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-sm-4 col-md-3 col-xs-12 text-right text-xs-left space20">{{ lang.user.aliases_send_as_all }}:</div>
+        <div class="col-sm-4 col-md-3 col-xs-12 text-sm-end text-start space20">{{ lang.user.aliases_send_as_all }}:</div>
         <div class="col-sm-8 col-md-9 col-xs-12">
           <p>{% if not user_get_alias_details.aliases_send_as_all %}<i class="bi bi-x-lg"></i>{% endif %}</p>
         </div>
       </div>
       <div class="row">
-        <div class="col-sm-4 col-md-3 col-xs-12 text-right text-xs-left space20">{{ lang.user.is_catch_all }}:</div>
+        <div class="col-sm-4 col-md-3 col-xs-12 text-sm-end text-start space20">{{ lang.user.is_catch_all }}:</div>
         <div class="col-sm-8 col-md-9 col-xs-12">
           <p>{% if not user_get_alias_details.is_catch_all %}<i class="bi bi-x-lg"></i>{% endif %}</p>
         </div>
