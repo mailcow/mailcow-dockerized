@@ -1,6 +1,6 @@
 <div role="tabpanel" class="tab-pane fade" id="tab-resources" role="tabpanel" aria-labelledby="tab-resources">
-  <div class="panel panel-default">
-    <div class="panel-heading">
+  <div class="card">
+    <div class="card-header">
       {{ lang.mailbox.resources }} <span class="badge badge-info table-lines"></span>
       <div class="btn-group pull-right hidden-xs">
         <button class="btn btn-xs btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addResourceModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_resource }}</button>
@@ -11,7 +11,7 @@
         </ul>
       </div>
     </div>
-    <div class="panel-body help-block">
+    <div class="card-body help-block">
       <p><span class="label label-success">{{ lang.mailbox.booking_0_short }}</span> - {{ lang.mailbox.booking_null }}</p>
       <p><span class="label label-warning">{{ lang.mailbox.booking_lt0_short }}</span> - {{ lang.mailbox.booking_ltnull }}</p>
       <p><span class="label label-danger">{{ lang.mailbox.booking_custom_short }}</span> - {{ lang.mailbox.booking_custom }}</p>

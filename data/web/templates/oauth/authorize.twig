@@ -1,9 +1,9 @@
 {% extends 'base.twig' %}
 
 {% block content %}
-<div class="panel panel-default">
-  <div class="panel-heading">{{ lang.oauth2.authorize_app }}</div>
-  <div class="panel-body">
+<div class="card">
+  <div class="card-header">{{ lang.oauth2.authorize_app }}</div>
+  <div class="card-body">
     {% if mailcow_cc_role == 'user' %}
     <p>{{ lang.oauth2.scope_ask_permission }}:</p>
     <dl class="dl-horizontal">

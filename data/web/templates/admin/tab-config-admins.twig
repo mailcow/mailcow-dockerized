@@ -1,7 +1,7 @@
 <div role="tabpanel" class="tab-pane fade show active" id="tab-config-admins" role="tabpanel" aria-labelledby="tab-config-admins">
-    <div class="panel panel-danger">
-      <div class="panel-heading xs-show">{{ lang.admin.admin_details }}</div>
-      <div class="panel-body">
+    <div class="card bg-danger text-white">
+      <div class="card-header">{{ lang.admin.admin_details }}</div>
+      <div class="card-body">
         <div class="table-responsive">
           <table class="table table-striped table-condensed" id="adminstable"></table>
         </div>
@@ -127,11 +127,11 @@
               <p class="help-block">{{ lang.admin.api_info|raw }}</p>
             </div>
             <div class="col-lg-6">
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  <h4 class="panel-title"><i class="bi bi-file-earmark-arrow-down"></i> {{ lang.admin.api_read_only }}</h4>
+              <div class="card">
+                <div class="card-header">
+                  <h4 class="card-title"><i class="bi bi-file-earmark-arrow-down"></i> {{ lang.admin.api_read_only }}</h4>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                   <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
                     <div class="form-group">
                       <label class="control-label col-sm-3" for="allow_from_ro">{{ lang.admin.api_allow_from }}:</label>
@@ -172,11 +172,11 @@
               </div>
             </div>
             <div class="col-lg-6">
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  <h4 class="panel-title"><i class="bi bi-file-earmark-diff"></i> {{ lang.admin.api_read_write }}</h4>
+              <div class="card">
+                <div class="card-header">
+                  <h4 class="card-title"><i class="bi bi-file-earmark-diff"></i> {{ lang.admin.api_read_write }}</h4>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                   <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
                     <div class="form-group">
                       <label class="control-label col-sm-3" for="allow_from_rw">{{ lang.admin.api_allow_from }}:</label>
@@ -221,9 +221,9 @@
       </div>
     </div>
 
-  <div class="panel panel-default">
-    <div class="panel-heading xs-show">{{ lang.admin.domain_admins }}</div>
-    <div class="panel-body">
+  <div class="card">
+    <div class="card-header">{{ lang.admin.domain_admins }}</div>
+    <div class="card-body">
       <div class="table-responsive">
         <table class="table table-striped table-condensed" id="domainadminstable"></table>
       </div>
