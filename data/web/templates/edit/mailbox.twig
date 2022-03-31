@@ -28,7 +28,7 @@
         </label>
         <div class="col-sm-10">
           <input type="number" name="quota" style="width:100%" min="0" max="{{ (result.max_new_quota / 1048576) }}" value="{{ (result.quota / 1048576) }}" class="form-control">
-          <small class="help-block">0 = ∞</small>
+          <small class="text-muted">0 = ∞</small>
         </div>
       </div>
       <div class="form-group">
@@ -66,7 +66,7 @@
             {% endfor %}
           </select>
           <div id="sender_acl_disabled"><i class="bi bi-shield-exclamation"></i> {{ lang.edit.sender_acl_disabled|raw }}</div>
-          <small class="help-block">{{ lang.edit.sender_acl_info|raw }}</small>
+          <small class="text-muted">{{ lang.edit.sender_acl_info|raw }}</small>
         </div>
       </div>
       <div class="form-group">
@@ -86,7 +86,7 @@
             </option>
           </select>
           <p class="visible-xs" style="margin: 0;padding: 0">&nbsp;</p>
-          <small class="help-block">{{ lang.edit.mailbox_relayhost_info }}</small>
+          <small class="text-muted">{{ lang.edit.mailbox_relayhost_info }}</small>
         </div>
       </div>
       <div class="form-group">
@@ -119,7 +119,7 @@
             data-api-attr='{"quarantine_notification":"weekly"}'>{{ lang.user.weekly }}</button>
             <div class="clearfix visible-xs"></div>
           </div>
-          <p class="help-block"><small>{{ lang.user.quarantine_notification_info }}</small></p>
+          <p class="text-muted"><small>{{ lang.user.quarantine_notification_info }}</small></p>
         </div>
       </div>
       <div class="form-group">
@@ -146,7 +146,7 @@
             data-api-attr='{"quarantine_category":"all"}'>{{ lang.user.q_all }}</button>
             <div class="clearfix visible-xs"></div>
           </div>
-          <p class="help-block"><small>{{ lang.user.quarantine_category_info }}</small></p>
+          <p class="text-muted"><small>{{ lang.user.quarantine_category_info }}</small></p>
         </div>
       </div>
       <div class="form-group">
@@ -188,7 +188,7 @@
             {% set ext_sender_acl = sender_acl_handles.external_sender_aliases|join(', ') %}
           {% endif %}
           <input type="text" class="form-control" name="extended_sender_acl" value="{{ ext_sender_acl }}" placeholder="user1@example.com, user2@example.org, @example.com, ...">
-          <small class="help-block">{{ lang.edit.extended_sender_acl_info|raw }}</small>
+          <small class="text-muted">{{ lang.edit.extended_sender_acl_info|raw }}</small>
         </div>
       </div>
       <div class="form-group">
@@ -206,7 +206,7 @@
         <label class="control-label col-sm-2" for="allow_from_smtp">{{ lang.edit.allow_from_smtp }}</label>
         <div class="col-sm-10">
           <input type="text" class="form-control" name="allow_from_smtp" value="{{ allow_from_smtp }}" placeholder="1.1.1.1, 10.2.0.0/24, ...">
-          <small class="help-block">{{ lang.edit.allow_from_smtp_info }}</small>
+          <small class="text-muted">{{ lang.edit.allow_from_smtp_info }}</small>
         </div>
       </div>
       <hr>
@@ -223,7 +223,7 @@
         <div class="col-sm-offset-2 col-sm-10">
           <div class="checkbox">
             <label><input type="checkbox" value="1" name="force_pw_update"{% if result.attributes.force_pw_update == '1' %} checked{% endif %}> {{ lang.edit.force_pw_update }}</label>
-            <small class="help-block">{{ lang.edit.force_pw_update_info|format(ui_texts.main_name) }}</small>
+            <small class="text-muted">{{ lang.edit.force_pw_update_info|format(ui_texts.main_name) }}</small>
           </div>
         </div>
       </div>
@@ -232,7 +232,7 @@
         <div class="col-sm-offset-2 col-sm-10">
           <div class="checkbox">
             <label><input type="checkbox" value="1" name="sogo_access"{% if result.attributes.sogo_access == '1' %} checked{% endif %}> {{ lang.edit.sogo_access }}</label>
-            <small class="help-block">{{ lang.edit.sogo_access_info }}</small>
+            <small class="text-muted">{{ lang.edit.sogo_access_info }}</small>
           </div>
         </div>
       </div>
@@ -251,11 +251,11 @@
       <input type="hidden" value="0" name="active">
       <div class="row">
         <div class="col-sm-1">
-          <p class="help-block"><a href="https://pushover.net" target="_blank"><img src="data:image/png;base64,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" class="img img-fluid"></a></p>
+          <p class="text-muted"><a href="https://pushover.net" target="_blank"><img src="data:image/png;base64,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" class="img img-fluid"></a></p>
         </div>
         <div class="col-sm-10">
-          <p class="help-block">{{ lang.user.pushover_info|format(mailbox)|raw }}</p>
-          <p class="help-block">{{ lang.edit.pushover_vars|raw }}: <code>{SUBJECT}</code>, <code>{SENDER}</code></p>
+          <p class="text-muted">{{ lang.user.pushover_info|format(mailbox)|raw }}</p>
+          <p class="text-muted">{{ lang.edit.pushover_vars|raw }}: <code>{SUBJECT}</code>, <code>{SENDER}</code></p>
           <div class="form-group">
             <div class="row">
               <div class="col-sm-6">
@@ -297,6 +297,7 @@
                 <legend style="cursor:pointer;margin-top:10px" data-bs-target="#po_advanced" unselectable="on" data-bs-toggle="collapse">
                   <i class="bi bi-plus"></i> {{ lang.edit.advanced_settings }}
                 </legend>
+                <hr />
               </div>
               <div class="col-sm-12">
                 <div id="po_advanced" class="collapse">
@@ -328,7 +329,7 @@
     <form data-id="useracl" class="form-inline well" method="post">
       <div class="row">
         <div class="col-sm-1">
-          <p class="help-block">ACL</p>
+          <p class="text-muted">ACL</p>
         </div>
         <div class="col-sm-10">
           <div class="form-group">
@@ -349,7 +350,7 @@
     <form data-id="mboxratelimit" class="form-inline well" method="post">
       <div class="row">
         <div class="col-sm-1">
-          <p class="help-block">{{ lang.acl.ratelimit }}</p>
+          <p class="text-muted">{{ lang.acl.ratelimit }}</p>
         </div>
         <div class="col-sm-10">
           <div class="form-group">
@@ -363,7 +364,7 @@
           <div class="form-group">
             <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" data-action="edit_selected" data-id="mboxratelimit" data-item="{{ mailbox }}" data-api-url='edit/rl-mbox' data-api-attr='{}' href="#">{{ lang.edit.save }}</button>
           </div>
-          <p class="help-block">{{ lang.edit.mbox_rl_info }}</p>
+          <p class="text-muted">{{ lang.edit.mbox_rl_info }}</p>
         </div>
       </div>
     </form>

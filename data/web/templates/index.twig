@@ -12,7 +12,7 @@
         {% if ui_texts.ui_announcement_text and ui_texts.ui_announcement_active %}
         <div class="alert alert-{{ ui_texts.ui_announcement_type }} rot-enc ui-announcement-alert">{{ ui_texts.ui_announcement_text|rot13 }}</div>
         {% endif %}
-        <legend>{% if oauth2_request %}{{ lang.oauth2.authorize_app }}{% else %}{{ ui_texts.main_name|raw }}{% endif %}</legend>
+        <legend>{% if oauth2_request %}{{ lang.oauth2.authorize_app }}{% else %}{{ ui_texts.main_name|raw }}{% endif %}</legend><hr />
         {% if is_mobileconfig %}
         <div class="alert alert-info">{{ lang.login.mobileconfig_info }}</div>
         {% endif %}
@@ -63,7 +63,7 @@
         {% endif %}
         <div id="fido2-alerts"></div>
         {% if not oauth2_request and (mailcow_apps or app_links) %}
-        <legend><i class="bi bi-link-45deg"></i> {{ ui_texts.apps_name|raw }}</legend>
+        <legend><i class="bi bi-link-45deg"></i> {{ ui_texts.apps_name|raw }}</legend><hr />
         <div class="apps">
           {% for app in mailcow_apps %}
             {% if not skip_sogo or not is_uri('SOGo', app.link) %}

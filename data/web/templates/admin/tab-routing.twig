@@ -19,8 +19,8 @@
           <div class="clearfix visible-xs"></div>
         </div>
       </div>
-      <legend>{{ lang.admin.add_relayhost }}</legend>
-      <p class="help-block">{{ lang.admin.add_relayhost_hint|raw }}</p>
+      <legend>{{ lang.admin.add_relayhost }}</legend><hr />
+      <p class="text-muted">{{ lang.admin.add_relayhost_hint|raw }}</p>
       <div class="row">
         <div class="col-md-8">
           <form class="form" data-id="rlyhost" role="form" method="post">
@@ -63,8 +63,8 @@
           <div class="clearfix visible-xs"></div>
         </div>
       </div>
-      <legend>{{ lang.admin.add_transport }}</legend>
-      <p class="help-block">{{ lang.admin.add_transports_hint|raw }}</p>
+      <legend>{{ lang.admin.add_transport }}</legend><hr />
+      <p class="text-muted">{{ lang.admin.add_transports_hint|raw }}</p>
       <div class="row">
         <div class="col-md-8">
           <form class="form" data-id="transport" role="form" method="post">
@@ -94,7 +94,7 @@
                 <input type="checkbox" name="active" value="1"> {{ lang.admin.active }}
               </label>
             </div>
-            <p class="help-block">{{ lang.admin.credentials_transport_warning|raw }}</p>
+            <p class="text-muted">{{ lang.admin.credentials_transport_warning|raw }}</p>
             <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="add_item" data-id="transport" data-api-url='add/transport' data-api-attr='{}' href="#"><i class="bi bi-plus-lg"></i> {{ lang.admin.add }}</button>
           </form>
         </div>

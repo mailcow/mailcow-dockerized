@@ -49,7 +49,7 @@
       <label class="control-label col-sm-2" for="mins_interval">{{ lang.edit.mins_interval }}</label>
       <div class="col-sm-10">
         <input type="number" class="form-control" name="mins_interval" min="1" max="43800" value="{{ result.mins_interval }}" required>
-        <small class="help-block">1-43800</small>
+        <small class="text-muted">1-43800</small>
       </div>
     </div>
     <div class="form-group">
@@ -62,28 +62,28 @@
       <label class="control-label col-sm-2" for="maxage">{{ lang.edit.maxage|raw }}</label>
       <div class="col-sm-10">
         <input type="number" class="form-control" name="maxage" id="maxage" min="0" max="32000" value="{{ result.maxage }}">
-        <small class="help-block">0-32000</small>
+        <small class="text-muted">0-32000</small>
       </div>
     </div>
     <div class="form-group">
       <label class="control-label col-sm-2" for="maxbytespersecond">{{ lang.edit.maxbytespersecond|raw }}</label>
       <div class="col-sm-10">
         <input type="number" class="form-control" name="maxbytespersecond" id="maxbytespersecond" min="0" max="125000000" value="{{ result.maxbytespersecond }}">
-        <small class="help-block">0-125000000</small>
+        <small class="text-muted">0-125000000</small>
       </div>
     </div>
     <div class="form-group">
       <label class="control-label col-sm-2" for="timeout1">{{ lang.add.timeout1 }}</label>
       <div class="col-sm-10">
         <input type="number" class="form-control" name="timeout1" id="timeout1" min="1" max="32000" value="{{ result.timeout1 }}">
-        <small class="help-block">1-32000</small>
+        <small class="text-muted">1-32000</small>
       </div>
     </div>
     <div class="form-group">
       <label class="control-label col-sm-2" for="timeout2">{{ lang.add.timeout2 }}</label>
       <div class="col-sm-10">
         <input type="number" class="form-control" name="timeout2" id="timeout2" min="1" max="32000" value="{{ result.timeout2 }}">
-        <small class="help-block">1-32000</small>
+        <small class="text-muted">1-32000</small>
       </div>
     </div>
     <div class="form-group">
@@ -96,7 +96,7 @@
       <label class="control-label col-sm-2" for="custom_params">{{ lang.add.custom_params }}</label>
       <div class="col-sm-10">
         <input type="text" class="form-control" name="custom_params" id="custom_params" value="{{ result.custom_params }}" placeholder="--dry --some-param=xy --other-param=yx">
-        <small class="help-block">{{ lang.add.custom_params_hint }}</small>
+        <small class="text-muted">{{ lang.add.custom_params_hint }}</small>
       </div>
     </div>
     <div class="form-group">
