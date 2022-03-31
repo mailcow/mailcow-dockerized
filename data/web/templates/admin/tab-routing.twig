@@ -8,15 +8,14 @@
       </div>
       <div class="mass-actions-admin">
         <div class="btn-group btn-group-sm">
-          <button type="button" id="toggle_multi_select_all" data-id="rlyhosts" class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary">{{ lang.mailbox.toggle_all }}</button>
-          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+          <button type="button" id="toggle_multi_select_all" data-id="rlyhosts" class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary">{{ lang.mailbox.toggle_all }}</button>
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
           <ul class="dropdown-menu top100">
             <li><a class="dropdown-item" data-action="edit_selected" data-id="rlyhosts" data-api-url='edit/relayhost' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
             <li><a class="dropdown-item" data-action="edit_selected" data-id="rlyhosts" data-api-url='edit/relayhost' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" data-action="delete_selected" data-id="rlyhosts" data-api-url='delete/relayhost' href="#">{{ lang.admin.remove }}</a></li>
           </ul>
-          <div class="clearfix visible-xs"></div>
         </div>
       </div>
       <legend>{{ lang.admin.add_relayhost }}</legend><hr />
@@ -36,7 +35,7 @@
               <label for="rlyhost_password">{{ lang.admin.password }}</label>
               <input class="form-control" id="rlyhost_password" name="password">
             </div>
-            <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="add_item" data-id="rlyhost" data-api-url='add/relayhost' data-api-attr='{}' href="#"><i class="bi bi-plus-lg"></i> {{ lang.admin.add }}</button>
+            <button class="btn btn-sm d-block d-sm-inline btn-success" data-action="add_item" data-id="rlyhost" data-api-url='add/relayhost' data-api-attr='{}' href="#"><i class="bi bi-plus-lg"></i> {{ lang.admin.add }}</button>
           </form>
         </div>
       </div>
@@ -52,15 +51,14 @@
       </div>
       <div class="mass-actions-admin">
         <div class="btn-group btn-group-sm">
-          <button type="button" id="toggle_multi_select_all" data-id="transports" class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary">{{ lang.mailbox.toggle_all }}</button>
-          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+          <button type="button" id="toggle_multi_select_all" data-id="transports" class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary">{{ lang.mailbox.toggle_all }}</button>
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
           <ul class="dropdown-menu top100">
             <li><a class="dropdown-item" data-action="edit_selected" data-id="transports" data-api-url='edit/transport' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
             <li><a class="dropdown-item" data-action="edit_selected" data-id="transports" data-api-url='edit/transport' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" data-action="delete_selected" data-id="transports" data-api-url='delete/transport' href="#">{{ lang.admin.remove }}</a></li>
           </ul>
-          <div class="clearfix visible-xs"></div>
         </div>
       </div>
       <legend>{{ lang.admin.add_transport }}</legend><hr />
@@ -95,7 +93,7 @@
               </label>
             </div>
             <p class="text-muted">{{ lang.admin.credentials_transport_warning|raw }}</p>
-            <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="add_item" data-id="transport" data-api-url='add/transport' data-api-attr='{}' href="#"><i class="bi bi-plus-lg"></i> {{ lang.admin.add }}</button>
+            <button class="btn btn-sm d-block d-sm-inline btn-success" data-action="add_item" data-id="transport" data-api-url='add/transport' data-api-attr='{}' href="#"><i class="bi bi-plus-lg"></i> {{ lang.admin.add }}</button>
           </form>
         </div>
       </div>

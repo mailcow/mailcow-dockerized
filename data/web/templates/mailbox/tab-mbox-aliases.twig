@@ -20,8 +20,8 @@
     </div>
     <div class="mass-actions-mailbox">
       <div class="btn-group">
-        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" id="toggle_multi_select_all" data-id="alias" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+        <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="alias" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+        <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
         <ul class="dropdown-menu top33">
           <li><a class="dropdown-item" data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
           <li><a class="dropdown-item" data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
@@ -33,9 +33,8 @@
           <li><a class="dropdown-item" data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"sogo_visible":"0"}' href="#">{{ lang.mailbox.sogo_visible_n }}</a></li>
           {% endif %}
         </ul>
-        <div class="clearfix visible-xs"></div>
-        <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"expand_alias":true}' ><i class="bi bi-arrows-angle-expand"></i> {{ lang.mailbox.add_alias_expand }}</a>
-        <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addAliasModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_alias }}</a>
+        <a class="btn btn-sm d-block d-sm-inline btn-secondary" data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"expand_alias":true}' ><i class="bi bi-arrows-angle-expand"></i> {{ lang.mailbox.add_alias_expand }}</a>
+        <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addAliasModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_alias }}</a>
       </div>
     </div>
   </div>

@@ -106,7 +106,7 @@
       </div>
       <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
-          <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected" data-id="editdomain" data-item="{{ domain }}" data-api-url='edit/domain' data-api-attr='{}' href="#">{{ lang.admin.save }}</button>
+          <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="editdomain" data-item="{{ domain }}" data-api-url='edit/domain' data-api-attr='{}' href="#">{{ lang.admin.save }}</button>
         </div>
       </div>
     </form>
@@ -134,7 +134,7 @@
         </select>
       </div>
       <div class="form-group">
-        <button data-acl="{{ acl.ratelimit }}" class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" data-action="edit_selected" data-id="domratelimit" data-item="{{ domain }}" data-api-url='edit/rl-domain' data-api-attr='{}' href="#">{{ lang.admin.save }}</button>
+        <button data-acl="{{ acl.ratelimit }}" class="btn btn-xs-lg d-block d-sm-inline btn-secondary" data-action="edit_selected" data-id="domratelimit" data-item="{{ domain }}" data-api-url='edit/rl-domain' data-api-attr='{}' href="#">{{ lang.admin.save }}</button>
       </div>
     </form>
   </div>
@@ -156,9 +156,8 @@
         </div>
         <div class="mass-actions-user">
           <div class="btn-group" data-acl="{{ acl.spam_policy }}">
-            <a class="btn btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-sm btn-secondary" id="toggle_multi_select_all" data-id="policy_wl_domain" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-            <a class="btn btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-sm btn-danger" data-action="delete_selected" data-id="policy_wl_domain" data-api-url='delete/domain-policy' href="#">{{ lang.mailbox.remove }}</a>
-            <div class="clearfix visible-xs"></div>
+            <a class="btn btn-xs-half d-block d-sm-inline btn-sm btn-secondary" id="toggle_multi_select_all" data-id="policy_wl_domain" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+            <a class="btn btn-xs-half d-block d-sm-inline btn-sm btn-danger" data-action="delete_selected" data-id="policy_wl_domain" data-api-url='delete/domain-policy' href="#">{{ lang.mailbox.remove }}</a>
           </div>
         </div>
       </div>
@@ -178,8 +177,8 @@
         </div>
         <div class="mass-actions-user">
           <div class="btn-group" data-acl="{{ acl.spam_policy }}">
-            <a class="btn btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-sm btn-secondary" id="toggle_multi_select_all" data-id="policy_bl_domain" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-            <a class="btn btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-sm btn-danger" data-action="delete_selected" data-id="policy_bl_domain" data-api-url='delete/domain-policy' href="#">{{ lang.mailbox.remove }}</a></li>
+            <a class="btn btn-xs-half d-block d-sm-inline btn-sm btn-secondary" id="toggle_multi_select_all" data-id="policy_bl_domain" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+            <a class="btn btn-xs-half d-block d-sm-inline btn-sm btn-danger" data-action="delete_selected" data-id="policy_bl_domain" data-api-url='delete/domain-policy' href="#">{{ lang.mailbox.remove }}</a></li>
           </div>
         </div>
       </div>
@@ -207,7 +206,7 @@
           </div>
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-              <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected" data-id="quota_bcc" data-item="quota_bcc" data-api-url='edit/quota_notification_bcc' data-api-attr='{"domain":"{{ domain }}"}' href="#">{{ lang.edit.save }}</button>
+              <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="quota_bcc" data-item="quota_bcc" data-api-url='edit/quota_notification_bcc' data-api-attr='{"domain":"{{ domain }}"}' href="#">{{ lang.edit.save }}</button>
             </div>
           </div>
         </form>

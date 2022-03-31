@@ -9,8 +9,8 @@
   <div class="mass-actions-user">
     <div class="btn-group" data-acl="{{ acl.spam_alias }}">
       <div class="btn-group">
-        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" id="toggle_multi_select_all" data-id="tla" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+        <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="tla" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+        <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
         <ul class="dropdown-menu">
           <li><a class="dropdown-item" data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"validity":"1"}' href="#">{{ lang.user.expire_in }} 1 {{ lang.user.hour }}</a></li>
           <li><a class="dropdown-item" data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"validity":"24"}' href="#">{{ lang.user.expire_in }} 1 {{ lang.user.day }}</a></li>
@@ -21,10 +21,9 @@
           <li><hr class="dropdown-divider"></li>
           <li><a class="dropdown-item" data-action="delete_selected" data-id="tla" data-api-url='delete/time_limited_alias' href="#">{{ lang.mailbox.remove }}</a></li>
         </ul>
-        <div class="clearfix visible-xs-block"></div>
       </div>
       <div class="btn-group">
-        <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success dropdown-toggle" data-bs-toggle="dropdown" href="#"><i class="bi bi-plus-lg"></i> {{ lang.user.alias_create_random }}, 1 {{ lang.user.year }}</a>
+        <a class="btn btn-sm d-block d-sm-inline btn-success dropdown-toggle" data-bs-toggle="dropdown" href="#"><i class="bi bi-plus-lg"></i> {{ lang.user.alias_create_random }}, 1 {{ lang.user.year }}</a>
         <ul class="dropdown-menu">
           {% for domain in user_domains %}
             <li>

@@ -7,7 +7,7 @@
       <form class="form-inline" role="form" method="post" enctype="multipart/form-data">
         <p>
           <input type="file" name="main_logo" accept="image/gif, image/jpeg, image/pjpeg, image/x-png, image/png, image/svg+xml"><br>
-          <button name="submit_main_logo" type="submit" class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary"><i class="bi bi-upload"></i> {{ lang.admin.upload }}</button>
+          <button name="submit_main_logo" type="submit" class="btn btn-sm d-block d-sm-inline btn-secondary"><i class="bi bi-upload"></i> {{ lang.admin.upload }}</button>
         </p>
       </form>
       {% if logo %}
@@ -23,7 +23,7 @@
             </div>
             <hr>
             <form class="form-inline" role="form" method="post">
-              <p><button name="reset_main_logo" type="submit" class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary">{{ lang.admin.reset_default }}</button></p>
+              <p><button name="reset_main_logo" type="submit" class="btn btn-sm d-block d-sm-inline btn-secondary">{{ lang.admin.reset_default }}</button></p>
             </form>
           </div>
         </div>
@@ -55,9 +55,8 @@
           {% endfor %}
         </table>
         <p><div class="btn-group">
-          <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected" data-item="admin" data-id="app_links" data-reload="no" data-api-url='edit/app_links' data-api-attr='{}' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
-          <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" type="button" id="add_app_link_row">{{ lang.admin.add_row }}</button>
-          <div class="clearfix visible-xs"></div>
+          <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success" data-action="edit_selected" data-item="admin" data-id="app_links" data-reload="no" data-api-url='edit/app_links' data-api-attr='{}' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+          <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" type="button" id="add_app_link_row">{{ lang.admin.add_row }}</button>
         </div></p>
       </form>
       <legend data-bs-target="#ui_texts" style="padding-top:20px" unselectable="on">{{ lang.admin.ui_texts }}</legend><hr />
@@ -100,7 +99,7 @@
             <label for="ui_footer">{{ lang.admin.ui_footer }}:</label>
             <textarea class="form-control" id="ui_footer" name="ui_footer" rows="7">{{ ui_texts.ui_footer }}</textarea>
           </div>
-          <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected" data-item="ui" data-id="uitexts" data-api-url='edit/ui_texts' data-api-attr='{}' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+          <button class="btn btn-sm d-block d-sm-inline btn-success" data-action="edit_selected" data-item="ui" data-id="uitexts" data-api-url='edit/ui_texts' data-api-attr='{}' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
         </form>
       </div>
     </div>
