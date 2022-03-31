@@ -18,14 +18,14 @@
         <div class="form-group">
           <label for="f2b_netban_ipv4">{{ lang.admin.f2b_netban_ipv4 }}:</label>
           <div class="input-group">
-            <span class="input-group-addon">/</span>
+            <span class="input-group-text">/</span>
             <input type="number" class="form-control" id="f2b_netban_ipv4" name="netban_ipv4" value="{{ f2b_data.netban_ipv4 }}" required>
           </div>
         </div>
         <div class="form-group">
           <label for="f2b_netban_ipv6">{{ lang.admin.f2b_netban_ipv6 }}:</label>
           <div class="input-group">
-            <span class="input-group-addon">/</span>
+            <span class="input-group-text">/</span>
             <input type="number" class="form-control" id="f2b_netban_ipv6" name="netban_ipv6" value="{{ f2b_data.netban_ipv6 }}" required>
           </div>
         </div>
@@ -41,7 +41,7 @@
         </div>
         <div class="btn-group">
           <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected" data-item="self" data-id="f2b" data-api-url='edit/fail2ban' data-api-attr='{}' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
-          <a href="#" role="button" class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" data-bs-toggle="modal" data-container="netfilter-mailcow" data-bs-target="#RestartContainer"><i class="bi bi-arrow-repeat"></i> {{ lang.header.restart_netfilter }}</a>
+          <a href="#" role="button" class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" data-bs-toggle="modal" data-container="netfilter-mailcow" data-bs-target="#RestartContainer"><i class="bi bi-arrow-repeat"></i> {{ lang.header.restart_netfilter }}</a>
           <div class="clearfix visible-xs"></div>
         </div>
       </form>
@@ -61,14 +61,14 @@
               <tr>
                 <td><input disabled class="input-sm input-xs-lg form-control" style="text-align:center" data-id="f2b_regex" type="text" name="app" required value="{{ regex_id }}"></td>
                 <td><input class="input-sm input-xs-lg form-control regex-input" data-id="f2b_regex" type="text" name="regex" required value="{{ regex_val }}"></td>
-                <td><a href="#" role="button" class="btn btn-xs btn-xs-lg btn-default" type="button">{{ lang.admin.remove_row }}</a></td>
+                <td><a href="#" role="button" class="btn btn-xs btn-xs-lg btn-secondary" type="button">{{ lang.admin.remove_row }}</a></td>
               </tr>
             {% endfor %}
           </table>
           <p><div class="btn-group">
             <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected" data-item="admin" data-id="f2b_regex" data-reload="no" data-api-url='edit/fail2ban' data-api-attr='{"action":"edit-regex"}' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
-            <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default admin-ays-dialog" data-action="edit_selected" data-item="self" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"reset-regex"}' href="#">{{ lang.admin.reset_default }}</button>
-            <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" type="button" id="add_f2b_regex_row"><i class="bi bi-plus-lg"></i> {{ lang.admin.add_row }}</button>
+            <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary admin-ays-dialog" data-action="edit_selected" data-item="self" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"reset-regex"}' href="#">{{ lang.admin.reset_default }}</button>
+            <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" type="button" id="add_f2b_regex_row"><i class="bi bi-plus-lg"></i> {{ lang.admin.add_row }}</button>
           </div></p>
         </form>
       </div>
@@ -79,7 +79,7 @@
       {% endif %}
       {% for active_ban in f2b_data.active_bans %}
         <p>
-          <span class="label label-info" style="padding:4px;font-size:85%;">
+          <span class="badge fs-5 bg-info" style="padding:4px;font-size:85%;">
             <i class="bi bi-funnel-fill"></i>
             <a href="https://bgp.he.net/ip/{{ active_ban.ip }}" target="_blank" style="color:white">
               {{ active_ban.network }}
@@ -98,7 +98,7 @@
       <hr>
       {% for perm_ban in f2b_data.perm_bans %}
         <p>
-          <span class="label label-danger" style="padding: 0.1em 0.4em 0.1em;">
+          <span class="badge fs-5 bg-danger" style="padding: 0.1em 0.4em 0.1em;">
             <i class="bi bi-funnel-fill"></i>
             <a href="https://bgp.he.net/ip/{{ perm_ban.ip }}" target="_blank" style="color:white">
               {{ perm_ban.network }}

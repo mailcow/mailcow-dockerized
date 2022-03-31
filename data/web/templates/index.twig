@@ -20,14 +20,14 @@
           <div class="form-group">
             <label class="sr-only" for="login_user">{{ lang.login.username }}</label>
             <div class="input-group">
-              <div class="input-group-addon"><i class="bi bi-person-fill"></i></div>
+              <div class="input-group-text"><i class="bi bi-person-fill"></i></div>
               <input name="login_user" autocorrect="off" autocapitalize="none" type="{% if is_mobileconfig %}email{% else %}text{% endif %}" id="login_user" class="form-control" placeholder="{{ lang.login.username }}" required="" autofocus="" autocomplete="username">
             </div>
           </div>
           <div class="form-group">
             <label class="sr-only" for="pass_user">{{ lang.login.password }}</label>
             <div class="input-group">
-              <div class="input-group-addon"><i class="bi bi-lock-fill"></i></div>
+              <div class="input-group-text"><i class="bi bi-lock-fill"></i></div>
               <input name="pass_user" type="password" id="pass_user" class="form-control" placeholder="{{ lang.login.password }}" required="" autocomplete="current-password">
             </div>
           </div>
@@ -42,7 +42,7 @@
               </div>
             </div>
             {% if not oauth2_request %}
-            <button type="button" {% if available_languages|length == 1 %}disabled="true"{% endif %} class="btn btn-xs-lg btn-default pull-right dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button type="button" {% if available_languages|length == 1 %}disabled="true"{% endif %} class="btn btn-xs-lg btn-secondary pull-right dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <span class="flag-icon flag-icon-{{ mailcow_locale }}"></span>
             </button>
             <ul class="dropdown-menu pull-right login">

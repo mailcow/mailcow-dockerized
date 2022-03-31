@@ -88,7 +88,7 @@
                   {{ container }} ({{ container_info.Config.Image }})
                   <br class="visible-xs" />
                   <small>({{ lang.debug.started_on }} <span class="parse_date">{{ container_info.State.StartedAtHR }}</span>)</small>
-                  <a href data-bs-toggle="modal" data-container="{{ container }}" data-bs-target="#RestartContainer" class="pull-right btn btn-xs btn-default">{{ lang.debug.restart_container }}
+                  <a href data-bs-toggle="modal" data-container="{{ container }}" data-bs-target="#RestartContainer" class="pull-right btn btn-xs btn-secondary">{{ lang.debug.restart_container }}
                     <i class="pull-right bi
                     {% if container_info.State.Running == 1 %}
                     bi-record-fill text-success
@@ -110,9 +110,9 @@
         <div class="card panel-xs-lg">
           <div class="card-header">Postfix <span class="badge badge-info table-lines"></span>
             <div class="btn-group pull-right">
-              <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="postfix_log" data-log-url="postfix" data-nrows="100">+ 100</button>
-              <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="postfix_log" data-log-url="postfix" data-nrows="1000">+ 1000</button>
-              <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_postfix_logs" data-table="postfix_log">{{ lang.admin.refresh }}</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="general_syslog" data-table="postfix_log" data-log-url="postfix" data-nrows="100">+ 100</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="general_syslog" data-table="postfix_log" data-log-url="postfix" data-nrows="1000">+ 1000</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary refresh_table" data-draw="draw_postfix_logs" data-table="postfix_log">{{ lang.admin.refresh }}</button>
             </div>
           </div>
           <div class="card-body">
@@ -127,9 +127,9 @@
         <div class="card panel-xs-lg">
           <div class="card-header"> Mailcow UI <span class="badge badge-info table-lines"></span>
             <div class="btn-group pull-right">
-              <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="mailcow_ui" data-table="ui_logs" data-log-url="ui" data-nrows="1000">+ 1000</button>
-              <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="mailcow_ui" data-table="ui_logs" data-log-url="ui" data-nrows="10000">+ 10000</button>
-              <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_ui_logs" data-table="ui_logs">{{ lang.admin.refresh }}</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="mailcow_ui" data-table="ui_logs" data-log-url="ui" data-nrows="1000">+ 1000</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="mailcow_ui" data-table="ui_logs" data-log-url="ui" data-nrows="10000">+ 10000</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary refresh_table" data-draw="draw_ui_logs" data-table="ui_logs">{{ lang.admin.refresh }}</button>
             </div>
           </div>
           <div class="card-body">
@@ -144,9 +144,9 @@
         <div class="card panel-xs-lg">
           <div class="card-header">SASL <span class="badge badge-info table-lines"></span>
             <div class="btn-group pull-right">
-              <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="sasl_log_table" data-table="sasl_logs" data-log-url="ui" data-nrows="1000">+ 1000</button>
-              <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="sasl_log_table" data-table="sasl_logs" data-log-url="ui" data-nrows="10000">+ 10000</button>
-              <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_sasl_logs" data-table="sasl_logs">{{ lang.admin.refresh }}</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="sasl_log_table" data-table="sasl_logs" data-log-url="ui" data-nrows="1000">+ 1000</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="sasl_log_table" data-table="sasl_logs" data-log-url="ui" data-nrows="10000">+ 10000</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary refresh_table" data-draw="draw_sasl_logs" data-table="sasl_logs">{{ lang.admin.refresh }}</button>
             </div>
           </div>
           <div class="card-body">
@@ -161,9 +161,9 @@
         <div class="card panel-xs-lg">
           <div class="card-header">Dovecot <span class="badge badge-info table-lines"></span>
             <div class="btn-group pull-right">
-              <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="dovecot_log" data-log-url="dovecot" data-nrows="100">+ 100</button>
-              <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="dovecot_log" data-log-url="dovecot" data-nrows="1000">+ 1000</button>
-              <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_dovecot_logs" data-table="dovecot_log">{{ lang.admin.refresh }}</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="general_syslog" data-table="dovecot_log" data-log-url="dovecot" data-nrows="100">+ 100</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="general_syslog" data-table="dovecot_log" data-log-url="dovecot" data-nrows="1000">+ 1000</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary refresh_table" data-draw="draw_dovecot_logs" data-table="dovecot_log">{{ lang.admin.refresh }}</button>
             </div>
           </div>
           <div class="card-body">
@@ -178,9 +178,9 @@
         <div class="card panel-xs-lg">
           <div class="card-header">SOGo <span class="badge badge-info table-lines"></span>
             <div class="btn-group pull-right">
-              <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="sogo_log" data-log-url="sogo" data-nrows="100">+ 100</button>
-              <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="sogo_log" data-log-url="sogo" data-nrows="1000">+ 1000</button>
-              <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_sogo_logs" data-table="sogo_log">{{ lang.admin.refresh }}</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="general_syslog" data-table="sogo_log" data-log-url="sogo" data-nrows="100">+ 100</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="general_syslog" data-table="sogo_log" data-log-url="sogo" data-nrows="1000">+ 1000</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary refresh_table" data-draw="draw_sogo_logs" data-table="sogo_log">{{ lang.admin.refresh }}</button>
             </div>
           </div>
           <div class="card-body">
@@ -195,9 +195,9 @@
         <div class="card panel-xs-lg">
           <div class="card-header">Netfilter <span class="badge badge-info table-lines"></span>
             <div class="btn-group pull-right">
-              <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="netfilter_log" data-log-url="netfilter" data-nrows="100">+ 100</button>
-              <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="netfilter_log" data-log-url="netfilter" data-nrows="1000">+ 1000</button>
-              <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_netfilter_logs" data-table="netfilter_log">{{ lang.admin.refresh }}</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="general_syslog" data-table="netfilter_log" data-log-url="netfilter" data-nrows="100">+ 100</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="general_syslog" data-table="netfilter_log" data-log-url="netfilter" data-nrows="1000">+ 1000</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary refresh_table" data-draw="draw_netfilter_logs" data-table="netfilter_log">{{ lang.admin.refresh }}</button>
             </div>
           </div>
           <div class="card-body">
@@ -212,9 +212,9 @@
         <div class="card panel-xs-lg">
           <div class="card-header">Rspamd history <span class="badge badge-info table-lines"></span>
             <div class="btn-group pull-right">
-              <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="rspamd_history" data-table="rspamd_history" data-log-url="rspamd-history" data-nrows="100">+ 100</button>
-              <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="rspamd_history" data-table="rspamd_history" data-log-url="rspamd-history" data-nrows="1000">+ 1000</button>
-              <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_rspamd_history" data-table="rspamd_history">{{ lang.admin.refresh }}</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="rspamd_history" data-table="rspamd_history" data-log-url="rspamd-history" data-nrows="100">+ 100</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="rspamd_history" data-table="rspamd_history" data-log-url="rspamd-history" data-nrows="1000">+ 1000</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary refresh_table" data-draw="draw_rspamd_history" data-table="rspamd_history">{{ lang.admin.refresh }}</button>
             </div>
           </div>
           <div class="card-body">
@@ -234,9 +234,9 @@
         <div class="card panel-xs-lg">
           <div class="card-header">Autodiscover <span class="badge badge-info table-lines"></span>
             <div class="btn-group pull-right">
-              <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="autodiscover_log" data-table="autodiscover_log" data-log-url="autodiscover" data-nrows="100">+ 100</button>
-              <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="autodiscover_log" data-table="autodiscover_log" data-log-url="autodiscover" data-nrows="1000">+ 1000</button>
-              <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_autodiscover_logs" data-table="autodiscover_log">{{ lang.admin.refresh }}</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="autodiscover_log" data-table="autodiscover_log" data-log-url="autodiscover" data-nrows="100">+ 100</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="autodiscover_log" data-table="autodiscover_log" data-log-url="autodiscover" data-nrows="1000">+ 1000</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary refresh_table" data-draw="draw_autodiscover_logs" data-table="autodiscover_log">{{ lang.admin.refresh }}</button>
             </div>
           </div>
           <div class="card-body">
@@ -251,9 +251,9 @@
         <div class="card panel-xs-lg">
           <div class="card-header">Watchdog <span class="badge badge-info table-lines"></span>
             <div class="btn-group pull-right">
-              <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="watchdog" data-table="watchdog_log" data-log-url="watchdog" data-nrows="100">+ 100</button>
-              <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="watchdog" data-table="watchdog_log" data-log-url="watchdog" data-nrows="1000">+ 1000</button>
-              <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_watchdog_logs" data-table="watchdog_log">{{ lang.admin.refresh }}</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="watchdog" data-table="watchdog_log" data-log-url="watchdog" data-nrows="100">+ 100</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="watchdog" data-table="watchdog_log" data-log-url="watchdog" data-nrows="1000">+ 1000</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary refresh_table" data-draw="draw_watchdog_logs" data-table="watchdog_log">{{ lang.admin.refresh }}</button>
             </div>
           </div>
           <div class="card-body">
@@ -268,9 +268,9 @@
         <div class="card panel-xs-lg">
           <div class="card-header">ACME <span class="badge badge-info table-lines"></span>
             <div class="btn-group pull-right">
-              <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="acme_log" data-log-url="acme" data-nrows="100">+ 100</button>
-              <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="general_syslog" data-table="acme_log" data-log-url="acme" data-nrows="1000">+ 1000</button>
-              <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_acme_logs" data-table="acme_log">{{ lang.admin.refresh }}</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="general_syslog" data-table="acme_log" data-log-url="acme" data-nrows="100">+ 100</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="general_syslog" data-table="acme_log" data-log-url="acme" data-nrows="1000">+ 1000</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary refresh_table" data-draw="draw_acme_logs" data-table="acme_log">{{ lang.admin.refresh }}</button>
             </div>
           </div>
           <div class="card-body">
@@ -285,9 +285,9 @@
         <div class="card panel-xs-lg">
           <div class="card-header">API <span class="badge badge-info table-lines"></span>
             <div class="btn-group pull-right">
-              <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="apilog" data-table="api_log" data-log-url="api" data-nrows="100">+ 100</button>
-              <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="apilog" data-table="api_log" data-log-url="api" data-nrows="1000">+ 1000</button>
-              <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_api_logs" data-table="api_log">{{ lang.admin.refresh }}</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="apilog" data-table="api_log" data-log-url="api" data-nrows="100">+ 100</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="apilog" data-table="api_log" data-log-url="api" data-nrows="1000">+ 1000</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary refresh_table" data-draw="draw_api_logs" data-table="api_log">{{ lang.admin.refresh }}</button>
             </div>
           </div>
           <div class="card-body">
@@ -302,9 +302,9 @@
         <div class="card panel-xs-lg">
           <div class="card-header">Ratelimits <span class="badge badge-info table-lines"></span>
             <div class="btn-group pull-right">
-              <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="rllog" data-table="rl_log" data-log-url="ratelimited" data-nrows="100">+ 100</button>
-              <button class="btn btn-xs btn-xs-lg btn-default add_log_lines" data-post-process="rllog" data-table="rl_log" data-log-url="ratelimited" data-nrows="1000">+ 1000</button>
-              <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_rl_logs" data-table="rl_log">{{ lang.admin.refresh }}</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="rllog" data-table="rl_log" data-log-url="ratelimited" data-nrows="100">+ 100</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="rllog" data-table="rl_log" data-log-url="ratelimited" data-nrows="1000">+ 1000</button>
+              <button class="btn btn-xs btn-xs-lg btn-secondary refresh_table" data-draw="draw_rl_logs" data-table="rl_log">{{ lang.admin.refresh }}</button>
             </div>
           </div>
           <div class="card-body">
