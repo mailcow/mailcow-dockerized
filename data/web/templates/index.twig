@@ -5,9 +5,9 @@
 {% block content %}
 <div class="row">
   <div class="col-md-offset-3 col-md-6">
-    <div class="panel panel-default panel-login">
-      <div class="panel-heading"><i class="bi bi-person-fill"></i> {{ lang.login.login }}</div>
-      <div class="panel-body">
+    <div class="card card-default card-login">
+      <div class="card-header"><i class="bi bi-person-fill"></i> {{ lang.login.login }}</div>
+      <div class="card-body">
         <div class="text-center mailcow-logo"><img src="{{ logo|default('/img/cow_mailcow.svg') }}" alt="mailcow"></div>
         {% if ui_texts.ui_announcement_text and ui_texts.ui_announcement_active %}
         <div class="alert alert-{{ ui_texts.ui_announcement_type }} rot-enc ui-announcement-alert">{{ ui_texts.ui_announcement_text|rot13 }}</div>
@@ -86,12 +86,12 @@
   </div>
   {% if not oauth2_request %}
   <div class="col-md-offset-3 col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
+    <div class="card card-default">
+      <div class="card-header">
         <a data-bs-toggle="collapse" href="#collapse1"><i class="bi bi-patch-question-fill"></i> {{ lang.start.help }}</a>
       </div>
-      <div id="collapse1" class="panel-collapse collapse">
-        <div class="panel-body">
+      <div id="collapse1" class="card-collapse collapse">
+        <div class="card-body">
           {% if ui_texts.help_text %}
           <p>{{ ui_texts.help_text|raw }}</p>
           {% else %}

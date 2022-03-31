@@ -4,9 +4,9 @@
 <div class="row">
 {% if quick_release or quick_delete %}
   <div class="col-md-offset-2 col-md-8">
-    <div class="panel panel-default">
-      <div class="panel-heading"><i class="bi bi-patch-exclamation-fill"></i> {{ lang.header.quarantine }}</div>
-      <div class="panel-body">
+    <div class="card">
+      <div class="card-header"><i class="bi bi-patch-exclamation-fill"></i> {{ lang.header.quarantine }}</div>
+      <div class="card-body">
         <legend>
           {% if quick_release %}
             {{ lang.quarantine.release }}
@@ -21,9 +21,9 @@
 {% else %}
 {% if is_action_release_delete and is_hash_present %}
   <div class="col-md-offset-2 col-md-8">
-    <div class="panel panel-default">
-      <div class="panel-heading"><i class="bi bi-patch-exclamation-fill"></i> {{ lang.header.quarantine }}</div>
-      <div class="panel-body">
+    <div class="card">
+      <div class="card-header"><i class="bi bi-patch-exclamation-fill"></i> {{ lang.header.quarantine }}</div>
+      <div class="card-body">
         {% if action == 'release' %}
         <legend id="qtitle" data-hash="{{ hash }}">{{ lang.quarantine.release }}</legend>
         {% endif %}
