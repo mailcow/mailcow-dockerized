@@ -28,7 +28,7 @@
         </legend>
         <hr />
         <div class="row">
-          <div class="col-sm-3 col-xs-5 text-right">{{ lang.tfa.tfa }}:</div>
+          <div class="col-sm-3 col-xs-5 text-end">{{ lang.tfa.tfa }}:</div>
           <div class="col-sm-9 col-xs-7">
             <p id="tfa_pretty">{{ tfa_data.pretty }}</p>
             {% include 'tfa_keys.twig' %}
@@ -36,7 +36,7 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-sm-3 col-xs-5 text-right">{{ lang.tfa.set_tfa }}:</div>
+          <div class="col-sm-3 col-xs-5 text-end">{{ lang.tfa.set_tfa }}:</div>
           <div class="col-sm-9 col-xs-7">
             <select data-style="btn btn-sm dropdown-toggle bs-placeholder btn-secondary" data-width="fit" id="selectTFA" class="selectpicker" title="{{ lang.tfa.select }}">
               <option value="yubi_otp">{{ lang.tfa.yubi_otp }}</option>
@@ -52,7 +52,7 @@
           <i class="bi bi-shield-fill-check"></i>
           {{ lang.fido2.fido2_auth }}</legend><hr />
         <div class="row">
-          <div class="col-sm-3 col-xs-12 text-right text-xs-left space20">{{ lang.fido2.known_ids }}:</div>
+          <div class="col-sm-3 col-xs-12 text-sm-end text-start space20">{{ lang.fido2.known_ids }}:</div>
           <div class="col-sm-9 col-xs-12">
             <div class="table-responsive">
               <table class="table table-striped table-hover table-condensed" id="fido2_keys">
@@ -80,7 +80,7 @@
         </div>
         <br>
         <div class="row" id="status-fido2">
-          <div class="col-sm-3 col-xs-5 text-right">{{ lang.fido2.register_status }}:</div>
+          <div class="col-sm-3 col-xs-5 text-end">{{ lang.fido2.register_status }}:</div>
           <div class="col-sm-9 col-xs-7">
             <div id="fido2-alerts">-</div>
           </div>
