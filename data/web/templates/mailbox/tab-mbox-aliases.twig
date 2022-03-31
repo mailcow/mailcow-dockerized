@@ -5,9 +5,7 @@
       <div class="btn-group pull-right hidden-xs">
         <button class="btn btn-xs btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addAliasModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_alias }}</button>
         <button class="btn btn-xs btn-default refresh_table" data-draw="draw_alias_table" data-table="alias_table">{{ lang.admin.refresh }}</button>
-        <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-bs-toggle="dropdown">{{ lang.mailbox.table_size }}
-          <span class="caret"></span>
-        </button>
+        <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-bs-toggle="dropdown">{{ lang.mailbox.table_size }}</button>
         <ul class="dropdown-menu" data-table-id="alias_table" role="menu">
           {% include 'mailbox/page-size.twig' %}
         </ul>
@@ -23,16 +21,16 @@
     <div class="mass-actions-mailbox">
       <div class="btn-group">
         <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="alias" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }} <span class="caret"></span></a>
+        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
         <ul class="dropdown-menu top33">
-          <li><a data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
-          <li><a data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
-          <li role="separator" class="divider"></li>
-          <li><a data-action="delete_selected" data-id="alias" data-api-url='delete/alias' href="#">{{ lang.mailbox.remove }}</a></li>
+          <li><a class="dropdown-item" data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+          <li><a class="dropdown-item" data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" data-action="delete_selected" data-id="alias" data-api-url='delete/alias' href="#">{{ lang.mailbox.remove }}</a></li>
           {% if not skip_sogo %}
-          <li role="separator" class="divider"></li>
-          <li><a data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"sogo_visible":"1"}' href="#">{{ lang.mailbox.sogo_visible_y }}</a></li>
-          <li><a data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"sogo_visible":"0"}' href="#">{{ lang.mailbox.sogo_visible_n }}</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"sogo_visible":"1"}' href="#">{{ lang.mailbox.sogo_visible_y }}</a></li>
+          <li><a class="dropdown-item" data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"sogo_visible":"0"}' href="#">{{ lang.mailbox.sogo_visible_n }}</a></li>
           {% endif %}
         </ul>
         <div class="clearfix visible-xs"></div>

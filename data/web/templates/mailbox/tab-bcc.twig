@@ -6,7 +6,7 @@
         <button class="btn btn-xs btn-success" href="#" data-acl="{{ acl.bcc_maps }}" data-bs-toggle="modal" data-bs-target="#addBCCModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_bcc_entry }}</button>
         <button class="btn btn-xs btn-default refresh_table" data-draw="draw_bcc_table" data-table="bcc_table">{{ lang.admin.refresh }}</button>
         <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-bs-toggle="dropdown">{{ lang.mailbox.table_size }}
-          <span class="caret"></span>
+         
         </button>
         <ul class="dropdown-menu" data-table-id="bcc_table" role="menu">
           {% include 'mailbox/page-size.twig' %}
@@ -21,15 +21,15 @@
     <div class="mass-actions-mailbox">
       <div class="btn-group" data-acl="{{ acl.bcc_maps }}">
         <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="bcc" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }} <span class="caret"></span></a>
+        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
         <ul class="dropdown-menu">
-          <li><a data-action="edit_selected" data-id="bcc" data-api-url='edit/bcc' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
-          <li><a data-action="edit_selected" data-id="bcc" data-api-url='edit/bcc' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
-          <li role="separator" class="divider"></li>
-          <li><a data-action="edit_selected" data-id="bcc" data-api-url='edit/bcc' data-api-attr='{"type":"sender"}' href="#">{{ lang.mailbox.bcc_to_sender }}</a></li>
-          <li><a data-action="edit_selected" data-id="bcc" data-api-url='edit/bcc' data-api-attr='{"type":"rcpt"}' href="#">{{ lang.mailbox.bcc_to_rcpt }}</a></li>
-          <li role="separator" class="divider"></li>
-          <li><a data-action="delete_selected" data-id="bcc" data-api-url='delete/bcc' href="#">{{ lang.mailbox.remove }}</a></li>
+          <li><a class="dropdown-item" data-action="edit_selected" data-id="bcc" data-api-url='edit/bcc' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+          <li><a class="dropdown-item" data-action="edit_selected" data-id="bcc" data-api-url='edit/bcc' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" data-action="edit_selected" data-id="bcc" data-api-url='edit/bcc' data-api-attr='{"type":"sender"}' href="#">{{ lang.mailbox.bcc_to_sender }}</a></li>
+          <li><a class="dropdown-item" data-action="edit_selected" data-id="bcc" data-api-url='edit/bcc' data-api-attr='{"type":"rcpt"}' href="#">{{ lang.mailbox.bcc_to_rcpt }}</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" data-action="delete_selected" data-id="bcc" data-api-url='delete/bcc' href="#">{{ lang.mailbox.remove }}</a></li>
         </ul>
         <div class="clearfix visible-xs"></div>
         <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addBCCModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_bcc_entry }}</a>
@@ -43,7 +43,7 @@
         <button class="btn btn-xs btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addRecipientMapModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_recipient_map_entry }}</button>
         <button class="btn btn-xs btn-default refresh_table" data-draw="draw_recipient_map_table" data-table="recipient_map_table">{{ lang.admin.refresh }}</button>
         <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-bs-toggle="dropdown">{{ lang.mailbox.table_size }}
-          <span class="caret"></span>
+         
         </button>
         <ul class="dropdown-menu" data-table-id="recipient_map_table" role="menu">
           {% include 'mailbox/page-size.twig' %}
@@ -58,12 +58,12 @@
     <div class="mass-actions-mailbox">
       <div class="btn-group">
         <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="recipient_map" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }} <span class="caret"></span></a>
+        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
         <ul class="dropdown-menu">
-          <li><a data-action="edit_selected" data-id="recipient_map" data-api-url='edit/recipient_map' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
-          <li><a data-action="edit_selected" data-id="recipient_map" data-api-url='edit/recipient_map' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
-          <li role="separator" class="divider"></li>
-          <li><a data-action="delete_selected" data-id="recipient_map" data-api-url='delete/recipient_map' href="#">{{ lang.mailbox.remove }}</a></li>
+          <li><a class="dropdown-item" data-action="edit_selected" data-id="recipient_map" data-api-url='edit/recipient_map' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+          <li><a class="dropdown-item" data-action="edit_selected" data-id="recipient_map" data-api-url='edit/recipient_map' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" data-action="delete_selected" data-id="recipient_map" data-api-url='delete/recipient_map' href="#">{{ lang.mailbox.remove }}</a></li>
         </ul>
         <div class="clearfix visible-xs"></div>
         <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addRecipientMapModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_recipient_map_entry }}</a>

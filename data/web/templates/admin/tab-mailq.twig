@@ -13,13 +13,13 @@
       <div class="mass-actions-admin">
         <div class="btn-group">
           <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="mailqitems" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }} <span class="caret"></span></a>
+          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
           <ul class="dropdown-menu top33">
-            <li><a data-bs-toggle="tooltip" title="postqueue -i" data-action="edit_selected" data-id="mailqitems" data-api-url='edit/mailq' data-api-attr='{"action":"deliver"}' href="#">{{ lang.admin.queue_deliver_mail }}</a></li>
-            <li><a data-bs-toggle="tooltip" title="postsuper -H" data-action="edit_selected" data-id="mailqitems" data-api-url='edit/mailq' data-api-attr='{"action":"unhold"}' href="#">{{ lang.admin.queue_unhold_mail }}</a></li>
-            <li><a data-bs-toggle="tooltip" title="postsuper -h" data-action="edit_selected" data-id="mailqitems" data-api-url='edit/mailq' data-api-attr='{"action":"hold"}' href="#">{{ lang.admin.queue_hold_mail }}</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a data-bs-toggle="tooltip" title="postsuper -d" data-action="delete_selected" data-id="mailqitems" data-api-url='delete/mailq' href="#">{{ lang.mailbox.remove }}</a></li>
+            <li><a class="dropdown-item" data-bs-toggle="tooltip" title="postqueue -i" data-action="edit_selected" data-id="mailqitems" data-api-url='edit/mailq' data-api-attr='{"action":"deliver"}' href="#">{{ lang.admin.queue_deliver_mail }}</a></li>
+            <li><a class="dropdown-item" data-bs-toggle="tooltip" title="postsuper -H" data-action="edit_selected" data-id="mailqitems" data-api-url='edit/mailq' data-api-attr='{"action":"unhold"}' href="#">{{ lang.admin.queue_unhold_mail }}</a></li>
+            <li><a class="dropdown-item" data-bs-toggle="tooltip" title="postsuper -h" data-action="edit_selected" data-id="mailqitems" data-api-url='edit/mailq' data-api-attr='{"action":"hold"}' href="#">{{ lang.admin.queue_hold_mail }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-bs-toggle="tooltip" title="postsuper -d" data-action="delete_selected" data-id="mailqitems" data-api-url='delete/mailq' href="#">{{ lang.mailbox.remove }}</a></li>
           </ul>
           <div class="clearfix visible-xs"></div>
           <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-primary"

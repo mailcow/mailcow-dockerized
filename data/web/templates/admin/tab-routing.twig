@@ -9,12 +9,12 @@
       <div class="mass-actions-admin">
         <div class="btn-group btn-group-sm">
           <button type="button" id="toggle_multi_select_all" data-id="rlyhosts" class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default">{{ lang.mailbox.toggle_all }}</button>
-          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }} <span class="caret"></span></a>
+          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
           <ul class="dropdown-menu top100">
-            <li><a data-action="edit_selected" data-id="rlyhosts" data-api-url='edit/relayhost' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
-            <li><a data-action="edit_selected" data-id="rlyhosts" data-api-url='edit/relayhost' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a data-action="delete_selected" data-id="rlyhosts" data-api-url='delete/relayhost' href="#">{{ lang.admin.remove }}</a></li>
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="rlyhosts" data-api-url='edit/relayhost' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="rlyhosts" data-api-url='edit/relayhost' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-action="delete_selected" data-id="rlyhosts" data-api-url='delete/relayhost' href="#">{{ lang.admin.remove }}</a></li>
           </ul>
           <div class="clearfix visible-xs"></div>
         </div>
@@ -53,12 +53,12 @@
       <div class="mass-actions-admin">
         <div class="btn-group btn-group-sm">
           <button type="button" id="toggle_multi_select_all" data-id="transports" class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default">{{ lang.mailbox.toggle_all }}</button>
-          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }} <span class="caret"></span></a>
+          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
           <ul class="dropdown-menu top100">
-            <li><a data-action="edit_selected" data-id="transports" data-api-url='edit/transport' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
-            <li><a data-action="edit_selected" data-id="transports" data-api-url='edit/transport' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a data-action="delete_selected" data-id="transports" data-api-url='delete/transport' href="#">{{ lang.admin.remove }}</a></li>
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="transports" data-api-url='edit/transport' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="transports" data-api-url='edit/transport' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-action="delete_selected" data-id="transports" data-api-url='delete/transport' href="#">{{ lang.admin.remove }}</a></li>
           </ul>
           <div class="clearfix visible-xs"></div>
         </div>
