@@ -15,12 +15,12 @@
           </div>
         </div>
         <div class="btn-group" data-acl="{{ acl.spam_score }}">
-          <a type="button" class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected"
+          <a type="button" class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success" data-action="edit_selected"
              data-item="{{ mailcow_cc_username }}"
              data-id="spam_score"
              data-api-url='edit/spam-score'
              data-api-attr='{}'><i class="bi bi-save"></i> {{ lang.user.save_changes }}</a>
-          <a type="button" class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" data-action="edit_selected"
+          <a type="button" class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" data-action="edit_selected"
              data-item="{{ mailcow_cc_username }}"
              data-id="spam_score_reset"
              data-api-url='edit/spam-score'
@@ -47,9 +47,8 @@
       </div>
       <div class="mass-actions-user">
         <div class="btn-group" data-acl="{{ acl.spam_policy }}">
-          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" id="toggle_multi_select_all" data-id="policy_wl_mailbox" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-danger" data-action="delete_selected" data-id="policy_wl_mailbox" data-api-url='delete/mailbox-policy' href="#">{{ lang.mailbox.remove }}</a>
-          <div class="clearfix visible-xs-block"></div>
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="policy_wl_mailbox" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-danger" data-action="delete_selected" data-id="policy_wl_mailbox" data-api-url='delete/mailbox-policy' href="#">{{ lang.mailbox.remove }}</a>
         </div>
       </div>
     </div>
@@ -69,9 +68,8 @@
       </div>
       <div class="mass-actions-user">
         <div class="btn-group" data-acl="{{ acl.spam_policy }}">
-          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" id="toggle_multi_select_all" data-id="policy_bl_mailbox" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-danger" data-action="delete_selected" data-id="policy_bl_mailbox" data-api-url='delete/mailbox-policy' href="#">{{ lang.mailbox.remove }}</a>
-          <div class="clearfix visible-xs-block"></div>
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="policy_bl_mailbox" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-danger" data-action="delete_selected" data-id="policy_bl_mailbox" data-api-url='delete/mailbox-policy' href="#">{{ lang.mailbox.remove }}</a>
         </div>
       </div>
     </div>

@@ -17,8 +17,8 @@
     </div>
     <div class="mass-actions-mailbox">
       <div class="btn-group" data-acl="{{ acl.syncjobs }}">
-        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" id="toggle_multi_select_all" data-id="syncjob" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+        <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="syncjob" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+        <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
         <ul class="dropdown-menu">
           <li><a class="dropdown-item" data-action="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"last_run":"","success":""}' href="#">{{ lang.mailbox.last_run_reset }}</a></li>
           <li><hr class="dropdown-divider"></li>
@@ -27,8 +27,7 @@
           <li><hr class="dropdown-divider"></li>
           <li><a class="dropdown-item" data-action="delete_selected" data-id="syncjob" data-api-url='delete/syncjob' href="#">{{ lang.mailbox.remove }}</a></li>
         </ul>
-        <div class="clearfix visible-xs"></div>
-        <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addSyncJobModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.user.create_syncjob }}</a>
+        <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addSyncJobModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.user.create_syncjob }}</a>
       </div>
     </div>
   </div>

@@ -34,8 +34,8 @@
       </div>
       <div class="mass-actions-quarantine">
         <div class="btn-group" data-acl="{{ acl.quarantine }}">
-          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" id="toggle_multi_select_all" data-id="qitems" href="#"><i class="bi bi-check-all"></i> {{ lang.quarantine.toggle_all }}</a>
-          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.quarantine.quick_actions }}</a>
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="qitems" href="#"><i class="bi bi-check-all"></i> {{ lang.quarantine.toggle_all }}</a>
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.quarantine.quick_actions }}</a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" data-action="edit_selected" data-id="qitems" data-api-url='edit/qitem' data-api-attr='{"action":"release"}' href="#">{{ lang.quarantine.deliver_inbox }}</a></li>
             <li><hr class="dropdown-divider"></li>
@@ -43,7 +43,6 @@
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" data-action="delete_selected" data-id="qitems" data-api-url='delete/qitem' href="#">{{ lang.quarantine.remove }}</a></li>
           </ul>
-          <div class="clearfix visible-xs"></div>
         </div>
       </div>
     </div>

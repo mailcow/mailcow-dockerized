@@ -7,9 +7,8 @@
         </div>
         <div class="mass-actions-admin">
           <div class="btn-group">
-            <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" id="toggle_multi_select_all" data-id="admins" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-            <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
-            <div class="clearfix visible-xs"></div>
+            <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="admins" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+            <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
             <ul class="dropdown-menu">
               <li><a class="dropdown-item" data-action="edit_selected" data-id="admins" data-api-url='edit/admin' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
               <li><a class="dropdown-item" data-action="edit_selected" data-id="admins" data-api-url='edit/admin' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
@@ -18,7 +17,7 @@
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item" data-action="delete_selected" data-id="admins" data-api-url='delete/admin' href="#">{{ lang.mailbox.remove }}</a></li>
             </ul>
-            <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-id="add_admin" data-bs-toggle="modal" data-bs-target="#addAdminModal" href="#"><i class="bi bi-person-plus-fill"></i> {{ lang.admin.add_admin }}</a>
+            <a class="btn btn-sm d-block d-sm-inline btn-success" data-id="add_admin" data-bs-toggle="modal" data-bs-target="#addAdminModal" href="#"><i class="bi bi-person-plus-fill"></i> {{ lang.admin.add_admin }}</a>
           </div>
         </div>
 
@@ -70,7 +69,7 @@
         <div class="row">
           <div class="col-sm-offset-3 col-sm-9">
             <div class="btn-group nowrap mass-actions-admin">
-              <button class="btn btn-sm btn-primary visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline" id="register-fido2">{{ lang.fido2.set_fido2 }}</button>
+              <button class="btn btn-sm btn-primary d-block d-sm-inline" id="register-fido2">{{ lang.fido2.set_fido2 }}</button>
               <button type="button" class="btn btn-sm btn-xs-lg btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="#" id="register-fido2-touchid"><i class="bi bi-apple"></i> {{ lang.fido2.set_fido2_touchid }}</a></li>
@@ -113,7 +112,7 @@
               <div class="col-sm-offset-3 col-sm-9">
                 <p class="text-muted">{{ lang.admin.license_info|raw }}</p>
                 <div class="btn-group">
-                  <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" name="license_validate_now" type="submit" href="#">{{ lang.admin.validate_license_now }}</button>
+                  <button class="btn btn-sm d-block d-sm-inline btn-success" name="license_validate_now" type="submit" href="#">{{ lang.admin.validate_license_now }}</button>
                 </div>
               </div>
             </div>
@@ -165,8 +164,8 @@
                     <div class="form-group">
                       <div class="col-sm-offset-3 col-sm-9">
                         <div class="btn-group">
-                          <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" name="admin_api[ro]" type="submit" href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
-                          <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary admin-ays-dialog" name="admin_api_regen_key[ro]" type="submit" href="#" {% if not api.ro.api_key %}disabled{% endif %}>{{ lang.admin.regen_api_key }}</button>
+                          <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success" name="admin_api[ro]" type="submit" href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+                          <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary admin-ays-dialog" name="admin_api_regen_key[ro]" type="submit" href="#" {% if not api.ro.api_key %}disabled{% endif %}>{{ lang.admin.regen_api_key }}</button>
                         </div>
                       </div>
                     </div>
@@ -210,8 +209,8 @@
                     <div class="form-group">
                       <div class="col-sm-offset-3 col-sm-9">
                         <div class="btn-group">
-                          <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" name="admin_api[rw]" type="submit" href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
-                          <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary admin-ays-dialog" name="admin_api_regen_key[rw]" type="submit" {% if not api.rw.api_key %}disabled{% endif %} href="#">{{ lang.admin.regen_api_key }}</button>
+                          <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success" name="admin_api[rw]" type="submit" href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+                          <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary admin-ays-dialog" name="admin_api_regen_key[rw]" type="submit" {% if not api.rw.api_key %}disabled{% endif %} href="#">{{ lang.admin.regen_api_key }}</button>
                         </div>
                       </div>
                     </div>
@@ -232,8 +231,8 @@
       </div>
       <div class="mass-actions-admin">
         <div class="btn-group">
-          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" id="toggle_multi_select_all" data-id="domain_admins" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="domain_admins" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" data-action="edit_selected" data-id="domain_admins" data-api-url='edit/domain-admin' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
             <li><a class="dropdown-item" data-action="edit_selected" data-id="domain_admins" data-api-url='edit/domain-admin' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
@@ -242,8 +241,7 @@
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" data-action="delete_selected" data-id="domain_admins" data-api-url='delete/domain-admin' href="#">{{ lang.mailbox.remove }}</a></li>
           </ul>
-          <div class="clearfix visible-xs"></div>
-          <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-id="add_domain_admin" data-bs-toggle="modal" data-bs-target="#addDomainAdminModal" href="#"><i class="bi bi-person-plus-fill"></i> {{ lang.admin.add_domain_admin }}</a>
+          <a class="btn btn-sm d-block d-sm-inline btn-success" data-id="add_domain_admin" data-bs-toggle="modal" data-bs-target="#addDomainAdminModal" href="#"><i class="bi bi-person-plus-fill"></i> {{ lang.admin.add_domain_admin }}</a>
         </div>
       </div>
     </div>

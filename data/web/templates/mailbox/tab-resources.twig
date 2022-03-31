@@ -22,16 +22,15 @@
     </div>
     <div class="mass-actions-mailbox">
       <div class="btn-group">
-        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" id="toggle_multi_select_all" data-id="resource" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+        <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="resource" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+        <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
         <ul class="dropdown-menu">
           <li><a class="dropdown-item" data-action="edit_selected" data-id="resource" data-api-url='edit/resource' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
           <li><a class="dropdown-item" data-action="edit_selected" data-id="resource" data-api-url='edit/resource' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
           <li><hr class="dropdown-divider"></li>
           <li><a class="dropdown-item" data-action="delete_selected" data-id="resource" data-api-url='delete/resource' href="#">{{ lang.mailbox.remove }}</a></li>
         </ul>
-        <div class="clearfix visible-xs"></div>
-        <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addResourceModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_resource }}</a>
+        <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addResourceModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_resource }}</a>
       </div>
     </div>
   </div>

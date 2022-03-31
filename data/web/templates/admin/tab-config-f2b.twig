@@ -40,9 +40,8 @@
           <textarea class="form-control" id="f2b_blacklist" name="blacklist" rows="5">{{ f2b_data.blacklist }}</textarea>
         </div>
         <div class="btn-group">
-          <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected" data-item="self" data-id="f2b" data-api-url='edit/fail2ban' data-api-attr='{}' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
-          <a href="#" role="button" class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" data-bs-toggle="modal" data-container="netfilter-mailcow" data-bs-target="#RestartContainer"><i class="bi bi-arrow-repeat"></i> {{ lang.header.restart_netfilter }}</a>
-          <div class="clearfix visible-xs"></div>
+          <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success" data-action="edit_selected" data-item="self" data-id="f2b" data-api-url='edit/fail2ban' data-api-attr='{}' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+          <a href="#" role="button" class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" data-bs-toggle="modal" data-container="netfilter-mailcow" data-bs-target="#RestartContainer"><i class="bi bi-arrow-repeat"></i> {{ lang.header.restart_netfilter }}</a>
         </div>
       </form>
       <legend data-bs-target="#f2b_regex_filters" style="margin-top:40px;cursor:pointer" unselectable="on" data-bs-toggle="collapse">
@@ -67,9 +66,9 @@
             {% endfor %}
           </table>
           <p><div class="btn-group">
-            <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected" data-item="admin" data-id="f2b_regex" data-reload="no" data-api-url='edit/fail2ban' data-api-attr='{"action":"edit-regex"}' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
-            <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary admin-ays-dialog" data-action="edit_selected" data-item="self" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"reset-regex"}' href="#">{{ lang.admin.reset_default }}</button>
-            <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" type="button" id="add_f2b_regex_row"><i class="bi bi-plus-lg"></i> {{ lang.admin.add_row }}</button>
+            <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success" data-action="edit_selected" data-item="admin" data-id="f2b_regex" data-reload="no" data-api-url='edit/fail2ban' data-api-attr='{"action":"edit-regex"}' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+            <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary admin-ays-dialog" data-action="edit_selected" data-item="self" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"reset-regex"}' href="#">{{ lang.admin.reset_default }}</button>
+            <button class="btn btn-sm d-block d-sm-inline btn-secondary" type="button" id="add_f2b_regex_row"><i class="bi bi-plus-lg"></i> {{ lang.admin.add_row }}</button>
           </div></p>
         </form>
       </div>

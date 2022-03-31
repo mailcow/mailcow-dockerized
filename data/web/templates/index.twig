@@ -55,7 +55,6 @@
               {% endfor %}
             </ul>
             {% endif %}
-            <div class="clearfix"></div>
           </div>
         </form>
         {% if login_delay %}
@@ -67,14 +66,14 @@
         <div class="apps">
           {% for app in mailcow_apps %}
             {% if not skip_sogo or not is_uri('SOGo', app.link) %}
-            <div class="media-clearfix">
+            <div>
               <a href="{{ app.link }}" role="button" {% if app.description %}title="{{ app.description }}"{% endif %} class="btn btn-primary btn-lg btn-block">{{ app.name }}</a>
             </div>
           {% endif %}
           {% endfor %}
           {% for row in app_links %}
             {% for key, val in row %}
-              <div class="media-clearfix">
+              <div>
                 <a href="{{ val }}" role="button" class="btn btn-primary btn-lg btn-block">{{ key }}</a>
               </div>
             {% endfor %}

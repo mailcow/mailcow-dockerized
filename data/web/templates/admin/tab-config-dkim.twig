@@ -3,10 +3,9 @@
     <div class="card-header">{{ lang.admin.dkim_keys }}</div>
     <div class="card-body">
       <div class="btn-group" data-bs-toggle="button" style="margin-bottom: 20px;">
-        <a class="btn btn-sm btn-xs-third visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary active" href="#" data-bs-toggle="collapse" data-bs-target=".dkim_key_valid">{{ lang.admin.dkim_key_valid }}</a>
-        <a class="btn btn-sm btn-xs-third visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary active" href="#" data-bs-toggle="collapse" data-bs-target=".dkim_key_unused">{{ lang.admin.dkim_key_unused }}</a>
-        <a class="btn btn-sm btn-xs-third visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary active" href="#" data-bs-toggle="collapse" data-bs-target=".dkim_key_missing">{{ lang.admin.dkim_key_missing }}</a>
-        <div class="clearfix visible-xs"></div>
+        <a class="btn btn-sm btn-xs-third d-block d-sm-inline btn-secondary active" href="#" data-bs-toggle="collapse" data-bs-target=".dkim_key_valid">{{ lang.admin.dkim_key_valid }}</a>
+        <a class="btn btn-sm btn-xs-third d-block d-sm-inline btn-secondary active" href="#" data-bs-toggle="collapse" data-bs-target=".dkim_key_unused">{{ lang.admin.dkim_key_unused }}</a>
+        <a class="btn btn-sm btn-xs-third d-block d-sm-inline btn-secondary active" href="#" data-bs-toggle="collapse" data-bs-target=".dkim_key_missing">{{ lang.admin.dkim_key_missing }}</a>
       </div>
       {% for domain, domain_data in dkim_domains %}
         {% if domain_data.dkim %}
@@ -84,9 +83,8 @@
 
       <div class="mass-actions-admin">
         <div class="btn-group btn-group-sm">
-          <button type="button" id="toggle_multi_select_all" data-id="dkim" class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</button>
-          <button type="button" data-action="delete_selected" name="delete_selected" data-id="dkim" data-api-url="delete/dkim" class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-danger"><i class="bi bi-trash"></i> {{ lang.admin.remove }}</button>
-          <div class="clearfix visible-xs"></div>
+          <button type="button" id="toggle_multi_select_all" data-id="dkim" class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</button>
+          <button type="button" data-action="delete_selected" name="delete_selected" data-id="dkim" data-api-url="delete/dkim" class="btn btn-sm btn-xs-half d-block d-sm-inline btn-danger"><i class="bi bi-trash"></i> {{ lang.admin.remove }}</button>
         </div>
       </div>
 
@@ -107,7 +105,7 @@
             <option data-subtext="bits">2048</option>
           </select>
         </div>
-        <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="add_item" data-id="dkim" data-api-url='add/dkim' data-api-attr='{}' href="#"><i class="bi bi-plus-lg"></i> {{ lang.admin.add }}</button>
+        <button class="btn btn-sm d-block d-sm-inline btn-success" data-action="add_item" data-id="dkim" data-api-url='add/dkim' data-api-attr='{}' href="#"><i class="bi bi-plus-lg"></i> {{ lang.admin.add }}</button>
       </form>
 
       <legend data-bs-target="#import_dkim" style="margin-top:40px;cursor:pointer" unselectable="on" data-bs-toggle="collapse">
@@ -133,7 +131,7 @@
               <input type="checkbox" name="overwrite_existing" value="1"> {{ lang.admin.dkim_overwrite_key }}
             </label>
           </div>
-          <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" data-action="add_item" data-id="dkim_import" data-api-url='add/dkim_import' data-api-attr='{}' href="#"><i class="bi bi-plus-lg"></i> {{ lang.admin.import }}</button>
+          <button class="btn btn-sm d-block d-sm-inline btn-secondary" data-action="add_item" data-id="dkim_import" data-api-url='add/dkim_import' data-api-attr='{}' href="#"><i class="bi bi-plus-lg"></i> {{ lang.admin.import }}</button>
         </form>
       </div>
 
@@ -172,7 +170,7 @@
               </select>
             </div>
           </div>
-          <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" data-action="add_item" data-id="dkim_duplicate" data-api-url='add/dkim_duplicate' data-api-attr='{}' href="#"><i class="bi bi-clipboard-plus"></i> {{ lang.admin.duplicate }}</button>
+          <button class="btn btn-sm d-block d-sm-inline btn-secondary" data-action="add_item" data-id="dkim_duplicate" data-api-url='add/dkim_duplicate' data-api-attr='{}' href="#"><i class="bi bi-clipboard-plus"></i> {{ lang.admin.duplicate }}</button>
         </form>
       </div>
     </div>

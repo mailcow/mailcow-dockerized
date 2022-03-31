@@ -19,8 +19,8 @@
     </div>
     <div class="mass-actions-mailbox">
       <div class="btn-group">
-        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" id="toggle_multi_select_all" data-id="domain" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+        <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="domain" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+        <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
         <ul class="dropdown-menu">
           {% if mailcow_cc_role == 'admin' %}
           <li><a class="dropdown-item" data-action="edit_selected" data-id="domain" data-api-url='edit/domain' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
@@ -29,9 +29,8 @@
           <li><a class="dropdown-item" data-action="delete_selected" data-id="domain" data-api-url='delete/domain' href="#">{{ lang.mailbox.remove }}</a></li>
           {% endif %}
         </ul>
-        <div class="clearfix visible-xs"></div>
         {% if mailcow_cc_role == 'admin' %}
-        <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addDomainModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_domain }}</a>
+        <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addDomainModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_domain }}</a>
         {% endif %}
       </div>
     </div>
