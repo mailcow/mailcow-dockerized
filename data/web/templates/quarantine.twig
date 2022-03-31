@@ -8,16 +8,14 @@
         {{ lang.quarantine.quarantine }} <span class="badge badge-info table-lines"></span>
         <div class="btn-group pull-right">
           <button class="btn btn-xs btn-xs-lg btn-default refresh_table" data-draw="draw_quarantine_table" data-table="quarantinetable">{{ lang.quarantine.refresh }}</button>
-          <button type="button" class="btn btn-xs btn-xs-lg btn-default dropdown-toggle" data-bs-toggle="dropdown">{{ lang.quarantine.table_size }}
-            <span class="caret"></span>
-          </button>
+          <button type="button" class="btn btn-xs btn-xs-lg btn-default dropdown-toggle" data-bs-toggle="dropdown">{{ lang.quarantine.table_size }}</button>
           <ul class="dropdown-menu" data-table-id="quarantinetable" role="menu">
-            <li><a href="#" data-page-size="10">{{ lang.quarantine.table_size_show_n|format(10) }}</a></li>
-            <li><a href="#" data-page-size="20">{{ lang.quarantine.table_size_show_n|format(20) }}</a></li>
-            <li><a href="#" data-page-size="50">{{ lang.quarantine.table_size_show_n|format(50) }}</a></li>
-            <li><a href="#" data-page-size="100">{{ lang.quarantine.table_size_show_n|format(100) }}</a></li>
-            <li><a href="#" data-page-size="200">{{ lang.quarantine.table_size_show_n|format(200) }}</a></li>
-            <li><a href="#" data-page-size="500">{{ lang.quarantine.table_size_show_n|format(500) }}</a></li>
+            <li><a class="dropdown-item" href="#" data-page-size="10">{{ lang.quarantine.table_size_show_n|format(10) }}</a></li>
+            <li><a class="dropdown-item" href="#" data-page-size="20">{{ lang.quarantine.table_size_show_n|format(20) }}</a></li>
+            <li><a class="dropdown-item" href="#" data-page-size="50">{{ lang.quarantine.table_size_show_n|format(50) }}</a></li>
+            <li><a class="dropdown-item" href="#" data-page-size="100">{{ lang.quarantine.table_size_show_n|format(100) }}</a></li>
+            <li><a class="dropdown-item" href="#" data-page-size="200">{{ lang.quarantine.table_size_show_n|format(200) }}</a></li>
+            <li><a class="dropdown-item" href="#" data-page-size="500">{{ lang.quarantine.table_size_show_n|format(500) }}</a></li>
           </ul>
         </div>
       </div>
@@ -37,13 +35,13 @@
       <div class="mass-actions-quarantine">
         <div class="btn-group" data-acl="{{ acl.quarantine }}">
           <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="qitems" href="#"><i class="bi bi-check-all"></i> {{ lang.quarantine.toggle_all }}</a>
-          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.quarantine.quick_actions }} <span class="caret"></span></a>
+          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.quarantine.quick_actions }}</a>
           <ul class="dropdown-menu">
-            <li><a data-action="edit_selected" data-id="qitems" data-api-url='edit/qitem' data-api-attr='{"action":"release"}' href="#">{{ lang.quarantine.deliver_inbox }}</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a data-action="edit_selected" data-id="qitems" data-api-url='edit/qitem' data-api-attr='{"action":"learnspam"}' href="#">{{ lang.quarantine.learn_spam_delete }}</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a data-action="delete_selected" data-id="qitems" data-api-url='delete/qitem' href="#">{{ lang.quarantine.remove }}</a></li>
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="qitems" data-api-url='edit/qitem' data-api-attr='{"action":"release"}' href="#">{{ lang.quarantine.deliver_inbox }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="qitems" data-api-url='edit/qitem' data-api-attr='{"action":"learnspam"}' href="#">{{ lang.quarantine.learn_spam_delete }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-action="delete_selected" data-id="qitems" data-api-url='delete/qitem' href="#">{{ lang.quarantine.remove }}</a></li>
           </ul>
           <div class="clearfix visible-xs"></div>
         </div>

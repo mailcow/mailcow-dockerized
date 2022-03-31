@@ -48,18 +48,18 @@
         </div>
         {% endif %}
         <div class="btn-group dropup" data-acl="{{ acl.quarantine }}">
-          <a class="btn btn-sm btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.quarantine.quick_actions }} <span class="caret"></span></a>
+          <a class="btn btn-sm btn-default dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.quarantine.quick_actions }}</a>
           <ul class="dropdown-menu">
-            <li><a data-action="edit_selected" data-id="qitems_single" data-item="" data-api-url='edit/qitem' data-api-attr='{"action":"release"}' href="#">{{ lang.quarantine.deliver_inbox }}</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a data-action="edit_selected" data-id="qitems_single" data-item="" data-api-url='edit/qitem' data-api-attr='{"action":"learnspam"}' href="#">{{ lang.quarantine.learn_spam_delete }}</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a data-id="qitems_single" data-item="" id="quick_download_link" href="#">{{ lang.quarantine.download_eml }}</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a data-id="qitems_single" data-item="" id="quick_release_link" href="#">{{ lang.quarantine.quick_release_link }}</a></li>
-            <li><a data-id="qitems_single" data-item="" id="quick_delete_link" href="#">{{ lang.quarantine.quick_delete_link }}</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a data-action="delete_selected" data-id="qitems_single" data-item="" data-api-url='delete/qitem' href="#">{{ lang.quarantine.remove }}</a></li>
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="qitems_single" data-item="" data-api-url='edit/qitem' data-api-attr='{"action":"release"}' href="#">{{ lang.quarantine.deliver_inbox }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="qitems_single" data-item="" data-api-url='edit/qitem' data-api-attr='{"action":"learnspam"}' href="#">{{ lang.quarantine.learn_spam_delete }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-id="qitems_single" data-item="" id="quick_download_link" href="#">{{ lang.quarantine.download_eml }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-id="qitems_single" data-item="" id="quick_release_link" href="#">{{ lang.quarantine.quick_release_link }}</a></li>
+            <li><a class="dropdown-item" data-id="qitems_single" data-item="" id="quick_delete_link" href="#">{{ lang.quarantine.quick_delete_link }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-action="delete_selected" data-id="qitems_single" data-item="" data-api-url='delete/qitem' href="#">{{ lang.quarantine.remove }}</a></li>
           </ul>
         </div>
       </div>
