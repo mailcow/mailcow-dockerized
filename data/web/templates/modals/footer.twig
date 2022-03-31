@@ -3,8 +3,8 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title">{{ lang.tfa.yubi_otp }}</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <form role="form" method="post">
@@ -12,7 +12,7 @@
             <input type="text" class="form-control" name="key_id" placeholder="{{ lang.tfa.key_id }}" autocomplete="off" required>
           </div>
           <hr>
-          <p class="help-block">{{ lang.tfa.api_register|format(ui_texts.main_name)|raw }}</p>
+          <p class="text-muted">{{ lang.tfa.api_register|format(ui_texts.main_name)|raw }}</p>
           <div class="form-group">
             <input type="text" class="form-control" name="yubico_id" placeholder="Yubico API ID" autocomplete="off" required>
           </div>
@@ -41,8 +41,8 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title">{{ lang.tfa.webauthn }}</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <form role="form" method="post" id="webauthn_reg_form">
@@ -77,8 +77,8 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title">{{ lang.tfa.totp }}</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <form role="form" method="post">
@@ -95,7 +95,7 @@
             <li>
               <p>{{ lang.tfa.scan_qr_code }}</p>
               <img id="tfa-qr-img" data-totp-secret="{{ totp_secret }}" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=">
-              <p class="help-block">{{ lang.tfa.enter_qr_code }}:<br />
+              <p class="text-muted">{{ lang.tfa.enter_qr_code }}:<br />
                 <code>{{ totp_secret }}</code>
               </p>
             </li>
@@ -115,8 +115,8 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title">{{ lang.tfa.delete_tfa }}</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <form role="form" method="post">
@@ -138,8 +138,8 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title">{{ lang.tfa[pending_tfa_method] }}</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         {% if pending_tfa_method == 'yubi_otp' %}
@@ -209,8 +209,8 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h4 class="modal-title">{{ lang.footer.restart_container }} (<code id="containerName"></code>)</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <p>{{ lang.footer.restart_container_info|raw }}</p>
@@ -227,8 +227,8 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title">{{ lang.footer.confirm_delete }}</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <p id="DeleteText">{{ lang.footer.delete_these_items }}</p>

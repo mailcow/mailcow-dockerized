@@ -90,7 +90,7 @@
         </div>
       </div>
 
-      <legend style="margin-top:40px">{{ lang.admin.dkim_add_key }}</legend>
+      <legend style="margin-top:40px">{{ lang.admin.dkim_add_key }}</legend><hr />
       <form class="form" data-id="dkim" role="form" method="post">
         <div class="form-group">
           <label for="dkim_add_domains">{{ lang.admin.domain_s }}</label>
@@ -113,6 +113,7 @@
       <legend data-bs-target="#import_dkim" style="margin-top:40px;cursor:pointer" unselectable="on" data-bs-toggle="collapse">
         <i style="font-size:10pt;" class="bi bi-plus-square"></i> {{ lang.admin.import_private_key }}
       </legend>
+      <hr />
       <div id="import_dkim" class="collapse">
         <form class="form" data-id="dkim_import" role="form" method="post">
           <div class="form-group">
@@ -139,6 +140,7 @@
       <legend data-bs-target="#duplicate_dkim" style="margin-top:40px;cursor:pointer" unselectable="on" data-bs-toggle="collapse">
         <i style="font-size:10pt;" class="bi bi-plus-square"></i> {{ lang.admin.duplicate_dkim }}
       </legend>
+      <hr />
       <div id="duplicate_dkim" class="collapse">
         <form class="form-horizontal" data-id="dkim_duplicate" role="form" method="post">
           <div class="form-group">

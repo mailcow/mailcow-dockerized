@@ -2,8 +2,8 @@
   <div class="card">
     <div class="card-header">{{ lang.admin.customize }}</div>
     <div class="card-body">
-      <legend><i class="bi bi-file-image"></i> {{ lang.admin.change_logo }}</legend>
-      <p class="help-block">{{ lang.admin.logo_info }}</p>
+      <legend><i class="bi bi-file-image"></i> {{ lang.admin.change_logo }}</legend><hr />
+      <p class="text-muted">{{ lang.admin.logo_info }}</p>
       <form class="form-inline" role="form" method="post" enctype="multipart/form-data">
         <p>
           <input type="file" name="main_logo" accept="image/gif, image/jpeg, image/pjpeg, image/x-png, image/png, image/svg+xml"><br>
@@ -28,8 +28,8 @@
           </div>
         </div>
       {% endif %}
-      <legend>{{ lang.admin.app_links }}</legend>
-      <p class="help-block">{{ lang.admin.merged_vars_hint|raw }}</p>
+      <legend>{{ lang.admin.app_links }}</legend><hr />
+      <p class="text-muted">{{ lang.admin.merged_vars_hint|raw }}</p>
       <form class="form-inline" data-id="app_links" role="form" method="post">
         <table class="table table-condensed" style="white-space: nowrap;" id="app_link_table">
           <tr>
@@ -60,7 +60,7 @@
           <div class="clearfix visible-xs"></div>
         </div></p>
       </form>
-      <legend data-bs-target="#ui_texts" style="padding-top:20px" unselectable="on">{{ lang.admin.ui_texts }}</legend>
+      <legend data-bs-target="#ui_texts" style="padding-top:20px" unselectable="on">{{ lang.admin.ui_texts }}</legend><hr />
       <div id="ui_texts">
         <form class="form" data-id="uitexts" role="form" method="post">
           <div class="form-group">
@@ -81,7 +81,7 @@
           </div>
           <hr>
           <div class="form-group">
-            <p class="help-block">{{ lang.admin.ui_header_announcement_help }}</p>
+            <p class="text-muted">{{ lang.admin.ui_header_announcement_help }}</p>
             <label for="ui_announcement_type">{{ lang.admin.ui_header_announcement }}:</label>
             <p><select multiple data-width="100%" id="ui_announcement_type" name="ui_announcement_type" class="selectpicker show-tick" data-max-options="1" title="{{ lang.admin.ui_header_announcement_select }}">
                 <option {% if ui_texts.ui_announcement_type == 'info' %}selected{% endif %} value="info">{{ lang.admin.ui_header_announcement_type_info }}</option>

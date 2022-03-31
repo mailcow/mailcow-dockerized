@@ -27,8 +27,8 @@
             data-api-attr='{"tagged_mail_handler":"none"}'>{{ lang.user.tag_in_none }}</button>
             <div class="clearfix visible-xs"></div>
           </div>
-          <p class="help-block">{{ lang.user.tag_help_explain|raw }}</p>
-          <p class="help-block">{{ lang.user.tag_help_example|raw }}</p>
+          <p class="text-muted">{{ lang.user.tag_help_explain|raw }}</p>
+          <p class="text-muted">{{ lang.user.tag_help_example|raw }}</p>
         </div>
       </div>
       {# Show TLS policy options #}
@@ -50,7 +50,7 @@
             data-api-attr='{"tls_enforce_out": {% if get_tls_policy.tls_enforce_out == '1' %}0{% else %}1{% endif %} }'>{{ lang.user.tls_enforce_out }}</button>
             <div class="clearfix visible-xs"></div>
           </div>
-          <p class="help-block">{{ lang.user.tls_policy_warning|raw }}</p>
+          <p class="text-muted">{{ lang.user.tls_policy_warning|raw }}</p>
         </div>
       </div>
       {# Show quarantine_notification options #}
@@ -84,7 +84,7 @@
             data-api-attr='{"quarantine_notification":"weekly"}'>{{ lang.user.weekly }}</button>
             <div class="clearfix visible-xs"></div>
           </div>
-          <p class="help-block">{{ lang.user.quarantine_notification_info }}</p>
+          <p class="text-muted">{{ lang.user.quarantine_notification_info }}</p>
         </div>
       </div>
       <div class="row">
@@ -111,7 +111,7 @@
             data-api-attr='{"quarantine_category":"all"}'>{{ lang.user.q_all }}</button>
             <div class="clearfix visible-xs"></div>
           </div>
-          <p class="help-block">{{ lang.user.quarantine_category_info }}</p>
+          <p class="text-muted">{{ lang.user.quarantine_category_info }}</p>
         </div>
       </div>
       {% if not skip_sogo %}
@@ -120,14 +120,14 @@
         <div class="col-sm-3 col-xs-12 text-right text-xs-left text-xs-bold space20">{{ lang.user.eas_reset }}:</div>
         <div class="col-sm-9 col-xs-12">
           <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" data-acl="{{ acl.eas_reset }}" data-action="delete_selected" data-text="{{ lang.user.eas_reset }}?" data-item="{{ mailcow_cc_username }}" data-id="eas_cache" data-api-url='delete/eas_cache' href="#">{{ lang.user.eas_reset_now }}</button>
-          <p class="help-block">{{ lang.user.eas_reset_help|raw }}</p>
+          <p class="text-muted">{{ lang.user.eas_reset_help|raw }}</p>
         </div>
       </div>
       <div class="row">
         <div class="col-sm-3 col-xs-12 text-right text-xs-left text-xs-bold space20">{{ lang.user.sogo_profile_reset }}:</div>
         <div class="col-sm-9 col-xs-12">
           <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-secondary" data-acl="{{ acl.sogo_profile_reset }}" data-action="delete_selected" data-text="{{ lang.user.sogo_profile_reset }}?" data-item="{{ mailcow_cc_username }}" data-id="sogo_profile" data-api-url='delete/sogo_profile' href="#">{{ lang.user.sogo_profile_reset_now }}</button>
-          <p class="help-block">{{ lang.user.sogo_profile_reset_help|raw }}</p>
+          <p class="text-muted">{{ lang.user.sogo_profile_reset_help|raw }}</p>
         </div>
       </div>
       {% endif %}

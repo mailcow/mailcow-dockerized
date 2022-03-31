@@ -3,8 +3,8 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title">{{ lang.admin.add_settings_rule }}</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <form class="form-horizontal" data-cached-form="true" data-id="rsetting" role="form" method="post">
@@ -45,8 +45,8 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title">{{ lang.admin.add_domain_admin }}</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <form class="form-horizontal" data-cached-form="true" data-id="add_domain_admin" role="form" method="post" autocomplete="off">
@@ -101,9 +101,9 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title">{{ lang.fido2.set_fn }}</h3>
-        <p class="help-block" style="word-break:break-all" id="fido2_subject_desc" data-fido2-subject=""></p>
+        <p class="text-muted" style="word-break:break-all" id="fido2_subject_desc" data-fido2-subject=""></p>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <form class="form-horizontal" data-cached-form="false" data-id="fido2ChangeFn" role="form" method="post" autocomplete="off">
@@ -129,8 +129,8 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title">OAuth2</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <form class="form-horizontal" data-cached-form="true" data-id="add_oauth2_client" role="form" method="post">
@@ -155,8 +155,8 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title">{{ lang.admin.add_admin }}</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <form class="form-horizontal" data-cached-form="true" data-id="add_admin" role="form" method="post" autocomplete="off">
@@ -201,8 +201,8 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title"><i class="bi bi-info-circle-fill"></i> Transport</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <form class="form-horizontal" data-cached-form="true" id="test_transport_form" role="form" method="post">
@@ -218,7 +218,7 @@
             <label class="control-label col-sm-2" for="mail_rcpt">{{ lang.admin.relay_rcpt }}</label>
             <div class="col-sm-10">
               <input type="text" class="form-control" name="mail_rcpt" placeholder="null@hosted.mailcow.de" value="null@hosted.mailcow.de">
-              <p class="help-block">{{ lang.admin.transport_test_rcpt_info|raw }}</p>
+              <p class="text-muted">{{ lang.admin.transport_test_rcpt_info|raw }}</p>
             </div>
           </div>
           <div class="form-group">
@@ -238,8 +238,8 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title"><i class="bi bi-card-checklist" style="font-size:18px"></i> ID <span id="queue_id"></span></h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <textarea class="form-control" id="queue_msg_content" name="content" rows="40"></textarea>
@@ -252,8 +252,8 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title"><i class="bi bi-key-fill"></i> Private key</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <pre id="priv_key_pre"></pre>

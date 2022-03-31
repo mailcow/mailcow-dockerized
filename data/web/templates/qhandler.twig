@@ -14,6 +14,7 @@
             {{ lang.quarantine.remove }}
           {% endif %}
         </legend>
+        <hr />
         <p>{{ lang.quarantine.qhandler_success }}</p>
       </div>
     </div>
@@ -25,10 +26,10 @@
       <div class="card-header"><i class="bi bi-patch-exclamation-fill"></i> {{ lang.header.quarantine }}</div>
       <div class="card-body">
         {% if action == 'release' %}
-        <legend id="qtitle" data-hash="{{ hash }}">{{ lang.quarantine.release }}</legend>
+        <legend id="qtitle" data-hash="{{ hash }}">{{ lang.quarantine.release }}</legend><hr />
         {% endif %}
         {% if action == 'delete' %}
-        <legend id="qtitle" data-hash="{{ hash }}">{{ lang.quarantine.remove }}</legend>
+        <legend id="qtitle" data-hash="{{ hash }}">{{ lang.quarantine.remove }}</legend><hr />
         {% endif %}
         <div id="qid_error" style="display:none" class="alert alert-danger"></div>
         <div class="form-group">

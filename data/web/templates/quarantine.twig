@@ -19,12 +19,12 @@
           </ul>
         </div>
       </div>
-      <p style="margin:10px" class="help-block">{{ lang.quarantine.qinfo|raw }}</p>
+      <p style="margin:10px" class="text-muted">{{ lang.quarantine.qinfo|raw }}</p>
       <p style="margin:10px">
         {% if not quarantine_settings.retention_size or not quarantine_settings.max_size %}
         <div class="card-body"><div class="alert alert-info">{{ lang.quarantine.disabled_by_config }}</div></div>
         {% else %}
-        <p style="margin:10px" class="help-block">
+        <p style="margin:10px" class="text-muted">
           {{ lang.quarantine.settings_info|format(quarantine_settings.retention_size, quarantine_settings.max_size)|raw }}
         </p>
         {% endif %}

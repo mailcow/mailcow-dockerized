@@ -3,8 +3,8 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title">{{ lang.mailbox.add_mailbox }}</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <form class="form-horizontal" data-cached-form="true" data-id="add_mailbox" role="form" autocomplete="off">
@@ -36,7 +36,7 @@
             </label>
             <div class="col-sm-10">
               <input type="text" class="form-control" name="quota" min="0" max="" id="addInputQuota" disabled value="{{ lang.add.select_domain }}" required>
-              <small class="help-block">0 = ∞</small>
+              <small class="text-muted">0 = ∞</small>
               <div class="badge fs-5 bg-warning addInputQuotaExhausted" style="display:none;">{{ lang.warning.quota_exceeded_scope }}</div>
             </div>
           </div>
@@ -77,8 +77,8 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title">{{ lang.mailbox.add_domain }}</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <form class="form-horizontal" data-cached-form="true" data-id="add_domain" role="form">
@@ -129,7 +129,7 @@
             <div class="col-sm-offset-2 col-sm-10">
               <div class="checkbox">
                 <label><input type="checkbox" value="1" name="gal" checked> {{ lang.edit.gal }}</label>
-                <small class="help-block">{{ lang.edit.gal_info|raw }}</small>
+                <small class="text-muted">{{ lang.edit.gal_info|raw }}</small>
               </div>
             </div>
           </div>
@@ -210,8 +210,8 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title">{{ lang.mailbox.add_resource }}</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <form class="form-horizontal" data-cached-form="true" role="form" data-id="add_resource">
@@ -278,8 +278,8 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title">{{ lang.mailbox.add_alias }}</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <form class="form-horizontal" data-cached-form="true" role="form" data-id="add_alias">
@@ -310,7 +310,7 @@
               <div class="checkbox">
                 <label><input type="checkbox" value="1" name="sogo_visible" checked> {{ lang.edit.sogo_visible }}</label>
               </div>
-              <p class="help-block">{{ lang.edit.sogo_visible_info }}</p>
+              <p class="text-muted">{{ lang.edit.sogo_visible_info }}</p>
               {% endif %}
             </div>
           </div>
@@ -336,8 +336,8 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title">{{ lang.mailbox.add_domain_alias }}</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <form class="form-horizontal" data-cached-form="true" role="form" data-id="add_alias_domain">
@@ -410,11 +410,11 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title">{{ lang.add.syncjob }}</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <p class="help-block">{{ lang.add.syncjob_hint }}</p>
+        <p class="text-muted">{{ lang.add.syncjob_hint }}</p>
         <form class="form-horizontal" data-cached-form="true" role="form" data-id="add_syncjob">
           <div class="form-group">
             <label class="control-label col-sm-2" for="username">{{ lang.add.username }}</label>
@@ -436,7 +436,7 @@
             <label class="control-label col-sm-2" for="port1">{{ lang.add.port }}</label>
             <div class="col-sm-10">
               <input type="number" class="form-control" name="port1" min="1" max="65535" value="143" required>
-              <small class="help-block">1-65535</small>
+              <small class="text-muted">1-65535</small>
             </div>
           </div>
           <div class="form-group">
@@ -465,7 +465,7 @@
             <label class="control-label col-sm-2" for="mins_interval">{{ lang.add.mins_interval }}</label>
             <div class="col-sm-10">
               <input type="number" class="form-control" name="mins_interval" min="1" max="43800" value="20" required>
-              <small class="help-block">1-43800</small>
+              <small class="text-muted">1-43800</small>
             </div>
           </div>
           <div class="form-group">
@@ -478,28 +478,28 @@
             <label class="control-label col-sm-2" for="maxage">{{ lang.edit.maxage|raw }}</label>
             <div class="col-sm-10">
               <input type="number" class="form-control" name="maxage" min="0" max="32000" value="0">
-              <small class="help-block">0-32000</small>
+              <small class="text-muted">0-32000</small>
             </div>
           </div>
           <div class="form-group">
             <label class="control-label col-sm-2" for="maxbytespersecond">{{ lang.edit.maxbytespersecond|raw }}</label>
             <div class="col-sm-10">
               <input type="number" class="form-control" name="maxbytespersecond" min="0" max="125000000" value="0">
-              <small class="help-block">0-125000000</small>
+              <small class="text-muted">0-125000000</small>
             </div>
           </div>
           <div class="form-group">
             <label class="control-label col-sm-2" for="timeout1">{{ lang.edit.timeout1 }}</label>
             <div class="col-sm-10">
               <input type="number" class="form-control" name="timeout1" min="1" max="32000" value="600">
-              <small class="help-block">1-32000</small>
+              <small class="text-muted">1-32000</small>
             </div>
           </div>
           <div class="form-group">
             <label class="control-label col-sm-2" for="timeout2">{{ lang.edit.timeout2 }}</label>
             <div class="col-sm-10">
               <input type="number" class="form-control" name="timeout2" min="1" max="32000" value="600">
-              <small class="help-block">1-32000</small>
+              <small class="text-muted">1-32000</small>
             </div>
           </div>
           <div class="form-group">
@@ -512,7 +512,7 @@
             <label class="control-label col-sm-2" for="custom_params">{{ lang.add.custom_params }}</label>
             <div class="col-sm-10">
               <input type="text" class="form-control" name="custom_params" placeholder="--dry --some-param=xy --other-param=yx">
-              <small class="help-block">{{ lang.add.custom_params_hint }}</small>
+              <small class="text-muted">{{ lang.add.custom_params_hint }}</small>
             </div>
           </div>
           <div class="form-group">
@@ -579,8 +579,8 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title">Filter</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <form class="form-horizontal" data-cached-form="true" role="form" data-id="add_filter">
@@ -617,7 +617,7 @@
           </div>
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-              <p class="help-block">{{ lang.add.activate_filter_warn }}</p>
+              <p class="text-muted">{{ lang.add.activate_filter_warn }}</p>
               <div class="checkbox">
                 <label><input type="checkbox" value="1" name="active" checked> {{ lang.add.active }}</label>
               </div>
@@ -642,8 +642,8 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title">{{ lang.mailbox.bcc_maps }}</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <form class="form-horizontal" data-cached-form="true" role="form" data-id="add_bcc">
@@ -693,8 +693,8 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title">{{ lang.mailbox.recipient_maps }}</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <form class="form-horizontal" data-cached-form="true" role="form" data-id="add_recipient_map">
@@ -734,8 +734,8 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title">{{ lang.mailbox.tls_policy_maps }}</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <form class="form-horizontal" data-cached-form="true" role="form" data-id="add_tls_policy_map">
@@ -790,8 +790,8 @@
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title">Log</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <textarea class="form-control" rows="20" id="logText" spellcheck="false"></textarea>
@@ -804,8 +804,8 @@
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title">{{ lang.diagnostics.dns_records }}</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <p>{{ lang.diagnostics.dns_records_24hours }}</p>
