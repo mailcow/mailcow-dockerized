@@ -15,7 +15,7 @@ jQuery(function($){
     var table_id = $(parent_ul).data('table-id');
     FooTable.get('#' + table_id).pageSize(new_size);
     //$(this).parent().addClass('active').siblings().removeClass('active')
-    heading = $(this).parents('.panel').find('.panel-heading')
+    heading = $(this).parents('.card').find('.card-header')
     var n_results = $(heading).children('.table-lines').text().split(' / ')[1];
     $(heading).children('.table-lines').text(function(){
       if (new_size > n_results) {
@@ -33,7 +33,7 @@ jQuery(function($){
   });
   function table_quarantine_ready(ft, name) {
     $('.refresh_table').prop("disabled", false);
-    heading = ft.$el.parents('.panel').find('.panel-heading')
+    heading = ft.$el.parents('.card').find('.card-header')
     var ft_paging = ft.use(FooTable.Paging)
     $(heading).children('.table-lines').text(function(){
       var total_rows = ft_paging.totalRows;
@@ -78,16 +78,16 @@ jQuery(function($){
               item.score = '-';
             }
             if (item.virus_flag > 0) {
-              item.virus = '<span class="label label-danger">' + lang.high_danger + '</span>';
+              item.virus = '<span class="badge fs-5 bg-danger">' + lang.high_danger + '</span>';
             } else {
-              item.virus = '<span class="label label-default">' + lang.neutral_danger + '</span>';
+              item.virus = '<span class="badge fs-5 bg-secondary">' + lang.neutral_danger + '</span>';
             }
             if (item.action === "reject") {
-              item.rspamdaction = '<span class="label label-danger">' + lang.rejected + '</span>';
+              item.rspamdaction = '<span class="badge fs-5 bg-danger">' + lang.rejected + '</span>';
             } else if (item.action === "add header") {
-              item.rspamdaction = '<span class="label label-warning">' + lang.junk_folder + '</span>';
+              item.rspamdaction = '<span class="badge fs-5 bg-warning">' + lang.junk_folder + '</span>';
             } else if (item.action === "rewrite subject") {
-              item.rspamdaction = '<span class="label label-warning">' + lang.rewrite_subject + '</span>';
+              item.rspamdaction = '<span class="badge fs-5 bg-warning">' + lang.rewrite_subject + '</span>';
             }
             if(item.notified > 0) {
               item.notified = '&#10004;';
@@ -175,9 +175,9 @@ jQuery(function($){
             if (value.score > 0) highlightClass = 'negative'
             else if (value.score < 0) highlightClass = 'positive'
             else highlightClass = 'neutral'
-            $('#qid_detail_symbols').append('<span data-toggle="tooltip" class="rspamd-symbol ' + highlightClass + '" title="' + (value.options ? value.options.join(', ') : '') + '">' + value.name + ' (<span class="score">' + value.score + '</span>)</span>');
+            $('#qid_detail_symbols').append('<span data-bs-toggle="tooltip" class="rspamd-symbol ' + highlightClass + '" title="' + (value.options ? value.options.join(', ') : '') + '">' + value.name + ' (<span class="score">' + value.score + '</span>)</span>');
           });
-          $('[data-toggle="tooltip"]').tooltip()
+          $('[data-bs-toggle="tooltip"]').tooltip()
         }
         if (typeof data.fuzzy_hashes === 'object' && data.fuzzy_hashes !== null && data.fuzzy_hashes.length !== 0) {
           $.each(data.fuzzy_hashes, function (index, value) {
@@ -188,11 +188,11 @@ jQuery(function($){
         }
         if (typeof data.score !== 'undefined' && typeof data.action !== 'undefined') {
           if (data.action == "add header") {
-            $('#qid_detail_score').append('<span class="label-rspamd-action label label-warning"><b>' + data.score + '</b> - ' + lang.junk_folder + '</span>');
+            $('#qid_detail_score').append('<span class="label-rspamd-action badge fs-5 bg-warning"><b>' + data.score + '</b> - ' + lang.junk_folder + '</span>');
           } else if (data.action == "reject") {
-            $('#qid_detail_score').append('<span class="label-rspamd-action label label-danger"><b>' + data.score + '</b> - ' + lang.rejected + '</span>');
+            $('#qid_detail_score').append('<span class="label-rspamd-action badge fs-5 bg-danger"><b>' + data.score + '</b> - ' + lang.rejected + '</span>');
           } else if (data.action == "rewrite subject") {
-            $('#qid_detail_score').append('<span class="label-rspamd-action label label-warning"><b>' + data.score + '</b> - ' + lang.rewrite_subject + '</span>');
+            $('#qid_detail_score').append('<span class="label-rspamd-action badge fs-5 bg-warning"><b>' + data.score + '</b> - ' + lang.rewrite_subject + '</span>');
           }
         }
         if (typeof data.recipients !== 'undefined') {

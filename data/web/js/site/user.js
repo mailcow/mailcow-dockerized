@@ -101,7 +101,7 @@ jQuery(function($){
             $.each(data.sasl, function (i, item) {
               var datetime = new Date(item.datetime.replace(/-/g, "/"));
               var local_datetime = datetime.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
-              var service = '<div class="label label-default">' + item.service.toUpperCase() + '</div>';
+              var service = '<div class="badge fs-5 bg-secondary">' + item.service.toUpperCase() + '</div>';
               var app_password = item.app_password ? ' <a href="/edit/app-passwd/' + item.app_password + '"><i class="bi bi-app-indicator"></i> ' + escapeHtml(item.app_password_name || "App") + '</a>' : '';
               var real_rip = item.real_rip.startsWith("Web") ? item.real_rip : '<a href="https://bgp.he.net/ip/' + item.real_rip + '" target="_blank">' + item.real_rip + "</a>";
               var ip_location = item.location ? ' <span class="flag-icon flag-icon-' + item.location.toLowerCase() + '"></span>' : '';
@@ -200,7 +200,7 @@ jQuery(function($){
         success: function (data) {
           $.each(data, function (i, item) {
             item.user1 = escapeHtml(item.user1);
-            item.log = '<a href="#syncjobLogModal" data-toggle="modal" data-syncjob-id="' + item.id + '">' + lang.open_logs + '</a>'
+            item.log = '<a href="#syncjobLogModal" data-bs-toggle="modal" data-syncjob-id="' + item.id + '">' + lang.open_logs + '</a>'
             if (!item.exclude > 0) {
               item.exclude = '-';
             } else {
@@ -209,7 +209,7 @@ jQuery(function($){
             item.server_w_port = escapeHtml(item.user1 + '@' + item.host1 + ':' + item.port1);
             if (acl_data.syncjobs === 1) {
               item.action = '<div class="btn-group footable-actions">' +
-                '<a href="/edit/syncjob/' + item.id + '" class="btn btn-xs btn-xs-half btn-default"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+                '<a href="/edit/syncjob/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
                 '<a href="#" data-action="delete_selected" data-id="single-syncjob" data-api-url="delete/syncjob" data-item="' + item.id + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
                 '</div>';
               item.chkbox = '<input type="checkbox" data-id="syncjob" name="multi_select" value="' + item.id + '" />';
@@ -219,9 +219,9 @@ jQuery(function($){
               item.chkbox = '<input type="checkbox" disabled />';
             }
             if (item.is_running == 1) {
-              item.is_running = '<span id="active-script" class="label label-success">' + lang.running + '</span>';
+              item.is_running = '<span id="active-script" class="badge fs-5 bg-success">' + lang.running + '</span>';
             } else {
-              item.is_running = '<span id="inactive-script" class="label label-warning">' + lang.waiting + '</span>';
+              item.is_running = '<span id="inactive-script" class="badge fs-5 bg-warning">' + lang.waiting + '</span>';
             }
             if (!item.last_run > 0) {
               item.last_run = lang.waiting;
@@ -284,7 +284,7 @@ jQuery(function($){
             item.protocols = item.protocols.join(" ")
             if (acl_data.app_passwds === 1) {
               item.action = '<div class="btn-group footable-actions">' +
-                '<a href="/edit/app-passwd/' + item.id + '" class="btn btn-xs btn-xs-half btn-default"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+                '<a href="/edit/app-passwd/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
                 '<a href="#" data-action="delete_selected" data-id="single-apppasswd" data-api-url="delete/app-passwd" data-item="' + item.id + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
                 '</div>';
               item.chkbox = '<input type="checkbox" data-id="apppasswd" name="multi_select" value="' + item.id + '" />';

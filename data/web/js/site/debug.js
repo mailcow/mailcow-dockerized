@@ -57,7 +57,7 @@ jQuery(function($){
     eval(draw_table + '()');
   });
   function table_log_ready(ft, name) {
-    heading = ft.$el.parents('.panel').find('.panel-heading')
+    heading = ft.$el.parents('.card').find('.card-header')
     var ft_paging = ft.use(FooTable.Paging)
     $('.refresh_table').prop("disabled", false);
     $(heading).children('.table-lines').text(function(){
@@ -573,7 +573,7 @@ jQuery(function($){
         },
         "ready.ft.table": function(e, ft){
           table_log_ready(ft, 'rspamd_history');
-          heading = ft.$el.parents('.panel').find('.panel-heading')
+          heading = ft.$el.parents('.card').find('.card-header')
           $(heading).children('.table-lines').text(function(){
             var ft_paging = ft.use(FooTable.Paging)
             return ft_paging.totalRows;
@@ -634,13 +634,13 @@ jQuery(function($){
         "value": scan_time
       };
       if (item.action === 'clean' || item.action === 'no action') {
-        item.action = "<div class='label label-success'>" + item.action + "</div>";
+        item.action = "<div class='badge fs-5 bg-success'>" + item.action + "</div>";
       } else if (item.action === 'rewrite subject' || item.action === 'add header' || item.action === 'probable spam') {
-        item.action = "<div class='label label-warning'>" + item.action + "</div>";
+        item.action = "<div class='badge fs-5 bg-warning'>" + item.action + "</div>";
       } else if (item.action === 'spam' || item.action === 'reject') {
-        item.action = "<div class='label label-danger'>" + item.action + "</div>";
+        item.action = "<div class='badge fs-5 bg-danger'>" + item.action + "</div>";
       } else {
-        item.action = "<div class='label label-info'>" + item.action + "</div>";
+        item.action = "<div class='badge fs-5 bg-info'>" + item.action + "</div>";
       }
       var score_content;
       if (item.score < item.required_score) {
@@ -667,13 +667,13 @@ jQuery(function($){
         }
         item.ua = '<span style="font-size:small">' + item.ua + '</span>';
         if (item.service == "activesync") {
-          item.service = '<span class="label label-info">ActiveSync</span>';
+          item.service = '<span class="badge fs-5 bg-info">ActiveSync</span>';
         }
         else if (item.service == "imap") {
-          item.service = '<span class="label label-success">IMAP, SMTP, Cal-/CardDAV</span>';
+          item.service = '<span class="badge fs-5 bg-success">IMAP, SMTP, Cal-/CardDAV</span>';
         }
         else {
-          item.service = '<span class="label label-danger">' + escapeHtml(item.service) + '</span>';
+          item.service = '<span class="badge fs-5 bg-danger">' + escapeHtml(item.service) + '</span>';
         }
       });
     } else if (table == 'watchdog') {
@@ -681,13 +681,13 @@ jQuery(function($){
         if (item.message == null) {
           item.message = 'Health level: ' + item.lvl + '% (' + item.hpnow + '/' + item.hptotal + ')';
           if (item.hpdiff < 0) {
-            item.trend = '<span class="label label-danger"><i class="bi bi-caret-down-fill"></i> ' + item.hpdiff + '</span>';
+            item.trend = '<span class="badge fs-5 bg-danger"><i class="bi bi-caret-down-fill"></i> ' + item.hpdiff + '</span>';
           }
           else if (item.hpdiff == 0) {
-            item.trend = '<span class="label label-info"><i class="bi bi-caret-right-fill"></i> ' + item.hpdiff + '</span>';
+            item.trend = '<span class="badge fs-5 bg-info"><i class="bi bi-caret-right-fill"></i> ' + item.hpdiff + '</span>';
           }
           else {
-            item.trend = '<span class="label label-success"><i class="bi bi-caret-up-fill"></i> ' + item.hpdiff + '</span>';
+            item.trend = '<span class="badge fs-5 bg-success"><i class="bi bi-caret-up-fill"></i> ' + item.hpdiff + '</span>';
           }
         }
         else {
@@ -701,13 +701,13 @@ jQuery(function($){
         item.user = escapeHtml(item.user);
         item.call = escapeHtml(item.call);
         item.task = '<code>' + item.task + '</code>';
-        item.type = '<span class="label label-' + item.type + '">' + item.type + '</span>';
+        item.type = '<span class="badge fs-5 bg-' + item.type + '">' + item.type + '</span>';
       });
     } else if (table == 'sasl_log_table') {
       $.each(data, function (i, item) {
         if (item === null) { return true; }
         item.username = escapeHtml(item.username);
-        item.service = '<div class="label label-default">' + item.service.toUpperCase() + '</div>';
+        item.service = '<div class="badge fs-5 bg-secondary">' + item.service.toUpperCase() + '</div>';
     });
     } else if (table == 'general_syslog') {
       $.each(data, function (i, item) {
@@ -726,20 +726,20 @@ jQuery(function($){
         var warning_class = ["warning", "warn"];
         var info_class = ["notice", "info", "debug"];
         if (jQuery.inArray(item.priority, danger_class) !== -1) {
-          item.priority = '<span class="label label-danger">' + item.priority + '</span>';
+          item.priority = '<span class="badge fs-5 bg-danger">' + item.priority + '</span>';
         } else if (jQuery.inArray(item.priority, warning_class) !== -1) {
-          item.priority = '<span class="label label-warning">' + item.priority + '</span>';
+          item.priority = '<span class="badge fs-5 bg-warning">' + item.priority + '</span>';
         } else if (jQuery.inArray(item.priority, info_class) !== -1) {
-          item.priority = '<span class="label label-info">' + item.priority + '</span>';
+          item.priority = '<span class="badge fs-5 bg-info">' + item.priority + '</span>';
         }
       });
     } else if (table == 'apilog') {
       $.each(data, function (i, item) {
         if (item === null) { return true; }
         if (item.method == 'GET') {
-          item.method = '<span class="label label-success">' + item.method + '</span>';
+          item.method = '<span class="badge fs-5 bg-success">' + item.method + '</span>';
         } else if (item.method == 'POST') {
-          item.method = '<span class="label label-warning">' + item.method + '</span>';
+          item.method = '<span class="badge fs-5 bg-warning">' + item.method + '</span>';
         }
         item.data = escapeHtml(item.data);
       });
@@ -770,7 +770,7 @@ jQuery(function($){
       return;
     }
     if (ft = FooTable.get($('#' + log_table))) {
-      var heading = ft.$el.parents('.panel').find('.panel-heading')
+      var heading = ft.$el.parents('.card').find('.card-header')
       var ft_paging = ft.use(FooTable.Paging)
       var load_rows = (ft_paging.totalRows + 1) + '-' + (ft_paging.totalRows + new_nrows)
       $.get('/api/v1/get/logs/' + log_url + '/' + load_rows).then(function(data){
@@ -796,7 +796,7 @@ jQuery(function($){
   draw_sasl_logs();
   draw_netfilter_logs();
   draw_rspamd_history();
-  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+  $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
     var target = $(e.target).attr("href");
     if (target == '#tab-rspamd-history') {
       rspamd_pie_graph();
