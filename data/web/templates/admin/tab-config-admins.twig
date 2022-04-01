@@ -67,7 +67,7 @@
         </div>
 
         <div class="row">
-          <div class="col-sm-offset-3 col-sm-9">
+          <div class="offset-sm-3 col-sm-9">
             <div class="btn-group nowrap mass-actions-admin">
               <button class="btn btn-sm btn-primary d-block d-sm-inline" id="register-fido2">{{ lang.fido2.set_fido2 }}</button>
               <button type="button" class="btn btn-sm btn-xs-lg btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
@@ -109,7 +109,7 @@
               </div>
             </div>
             <div class="form-group">
-              <div class="col-sm-offset-3 col-sm-9">
+              <div class="offset-sm-3 col-sm-9">
                 <p class="text-muted">{{ lang.admin.license_info|raw }}</p>
                 <div class="btn-group">
                   <button class="btn btn-sm d-block d-sm-inline btn-success" name="license_validate_now" type="submit" href="#">{{ lang.admin.validate_license_now }}</button>
@@ -142,7 +142,7 @@
                       </div>
                     </div>
                     <div class="form-group">
-                      <div class="col-sm-offset-3 col-sm-9">
+                      <div class="offset-sm-3 col-sm-9">
                         <label>
                           <input type="checkbox" name="skip_ip_check" id="skip_ip_check_ro" {% if api.ro.skip_ip_check %}checked{% endif %}> {{ lang.admin.api_skip_ip_check }}
                         </label>
@@ -155,14 +155,14 @@
                       </div>
                     </div>
                     <div class="form-group">
-                      <div class="col-sm-offset-3 col-sm-9">
+                      <div class="offset-sm-3 col-sm-9">
                         <label>
                           <input type="checkbox" name="active" {% if api.ro.active %}checked{% endif %}> {{ lang.admin.activate_api }}
                         </label>
                       </div>
                     </div>
                     <div class="form-group">
-                      <div class="col-sm-offset-3 col-sm-9">
+                      <div class="offset-sm-3 col-sm-9">
                         <div class="btn-group">
                           <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success" name="admin_api[ro]" type="submit" href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
                           <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary admin-ays-dialog" name="admin_api_regen_key[ro]" type="submit" href="#" {% if not api.ro.api_key %}disabled{% endif %}>{{ lang.admin.regen_api_key }}</button>
@@ -187,7 +187,7 @@
                       </div>
                     </div>
                     <div class="form-group">
-                      <div class="col-sm-offset-3 col-sm-9">
+                      <div class="offset-sm-3 col-sm-9">
                         <label>
                           <input type="checkbox" name="skip_ip_check" id="skip_ip_check_rw" {% if api.rw.skip_ip_check %}checked{% endif %}> {{ lang.admin.api_skip_ip_check }}
                         </label>
@@ -200,14 +200,14 @@
                       </div>
                     </div>
                     <div class="form-group">
-                      <div class="col-sm-offset-3 col-sm-9">
+                      <div class="offset-sm-3 col-sm-9">
                         <label>
                           <input type="checkbox" name="active" {% if api.rw.active %}checked{% endif %}> {{ lang.admin.activate_api }}
                         </label>
                       </div>
                     </div>
                     <div class="form-group">
-                      <div class="col-sm-offset-3 col-sm-9">
+                      <div class="offset-sm-3 col-sm-9">
                         <div class="btn-group">
                           <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success" name="admin_api[rw]" type="submit" href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
                           <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary admin-ays-dialog" name="admin_api_regen_key[rw]" type="submit" {% if not api.rw.api_key %}disabled{% endif %} href="#">{{ lang.admin.regen_api_key }}</button>

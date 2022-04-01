@@ -53,7 +53,7 @@
             </div>
           </div>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
               <select name="active" class="form-control">
                 <option value="1" selected>{{ lang.add.active }}</option>
                 <option value="2">{{ lang.add.disable_login }}</option>
@@ -63,7 +63,7 @@
           </div>
           <hr>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
               <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="add_item" data-id="add_mailbox" data-api-url='add/mailbox' data-api-attr='{}' href="#">{{ lang.admin.add }}</button>
             </div>
           </div>
@@ -126,7 +126,7 @@
           </div>
           {% if not skip_sogo %}
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
               <div class="checkbox">
                 <label><input type="checkbox" value="1" name="gal" checked> {{ lang.edit.gal }}</label>
                 <small class="text-muted">{{ lang.edit.gal_info|raw }}</small>
@@ -135,7 +135,7 @@
           </div>
           {% endif %}
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
               <div class="checkbox">
                 <label><input type="checkbox" value="1" name="active" checked> {{ lang.add.active }}</label>
               </div>
@@ -186,7 +186,7 @@
           </div>
           <hr>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10 btn-group">
+            <div class="offset-sm-2 col-sm-10 btn-group">
               {% if not skip_sogo %}
               <button class="btn btn-xs-lg btn-xs-half d-block d-sm-inline btn-secondary" data-action="add_item" data-id="add_domain" data-api-url='add/domain' data-api-attr='{}' href="#">{{ lang.add.add_domain_only }}</button>
               <button class="btn btn-xs-lg btn-xs-half d-block d-sm-inline btn-secondary" data-action="add_item" data-id="add_domain" data-api-url='add/domain' data-api-attr='{"restart_sogo":"1"}' href="#">{{ lang.add.add_domain_restart }}</button>
@@ -256,14 +256,14 @@
             </div>
           </div>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
               <div class="checkbox">
                 <label><input type="checkbox" value="1" name="active" checked> {{ lang.add.active }}</label>
               </div>
             </div>
           </div>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
               <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="add_item" data-id="add_resource" data-api-url='add/resource' data-api-attr='{}' href="#">{{ lang.admin.add }}</button>
             </div>
           </div>
@@ -314,14 +314,14 @@
             </div>
           </div>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
               <div class="checkbox">
                 <label><input type="checkbox" value="1" name="active" checked> {{ lang.add.active }}</label>
               </div>
             </div>
           </div>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
               <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="add_item" data-id="add_alias" data-api-url='add/alias' data-api-attr='{}' href="#">{{ lang.admin.add }}</button>
             </div>
           </div>
@@ -359,7 +359,7 @@
             </div>
           </div>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
               <div class="checkbox">
                 <label><input type="checkbox" value="1" name="active" checked> {{ lang.add.active }}</label>
               </div>
@@ -395,7 +395,7 @@
           </div>
           <hr>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
               <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="add_item" data-id="add_alias_domain" data-api-url='add/alias-domain' data-api-attr='{}' href="#">{{ lang.admin.add }}</button>
             </div>
           </div>
@@ -515,56 +515,56 @@
             </div>
           </div>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
               <div class="checkbox">
                 <label><input type="checkbox" value="1" name="delete2duplicates" checked> {{ lang.add.delete2duplicates }} (--delete2duplicates)</label>
               </div>
             </div>
           </div>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
               <div class="checkbox">
                 <label><input type="checkbox" value="1" name="delete1"> {{ lang.add.delete1 }} (--delete1)</label>
               </div>
             </div>
           </div>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
               <div class="checkbox">
                 <label><input type="checkbox" value="1" name="delete2"> {{ lang.add.delete2 }} (--delete2)</label>
               </div>
             </div>
           </div>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
               <div class="checkbox">
                 <label><input type="checkbox" value="1" name="automap" checked> {{ lang.add.automap }} (--automap)</label>
               </div>
             </div>
           </div>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
               <div class="checkbox">
                 <label><input type="checkbox" value="1" name="skipcrossduplicates"> {{ lang.add.skipcrossduplicates }} (--skipcrossduplicates)</label>
               </div>
             </div>
           </div>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
               <div class="checkbox">
                 <label><input type="checkbox" value="1" name="subscribeall" checked> {{ lang.add.subscribeall }} (--subscribeall)</label>
               </div>
             </div>
           </div>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
               <div class="checkbox">
                 <label><input type="checkbox" value="1" name="active" checked> {{ lang.add.active }}</label>
               </div>
             </div>
           </div>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
               <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="add_item" data-id="add_syncjob" data-api-url='add/syncjob' data-api-attr='{}' href="#">{{ lang.admin.add }}</button>
             </div>
           </div>
@@ -615,7 +615,7 @@
             </div>
           </div>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
               <p class="text-muted">{{ lang.add.activate_filter_warn }}</p>
               <div class="checkbox">
                 <label><input type="checkbox" value="1" name="active" checked> {{ lang.add.active }}</label>
@@ -623,7 +623,7 @@
             </div>
           </div>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10 add_filter_btns btn-group">
+            <div class="offset-sm-2 col-sm-10 add_filter_btns btn-group">
               <button class="btn btn-xs-lg btn-xs-half d-block d-sm-inline btn-secondary validate_sieve" href="#">{{ lang.add.validate }}</button>
               <button class="btn btn-xs-lg btn-xs-half d-block d-sm-inline btn-success add_sieve_script" data-action="add_item" data-id="add_filter" data-api-url='add/filter' data-api-attr='{}' href="#" disabled>{{ lang.admin.add }}</button>
             </div>
@@ -670,14 +670,14 @@
             </div>
           </div>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
               <div class="checkbox">
                 <label><input type="checkbox" value="1" name="active" checked> {{ lang.add.active }}</label>
               </div>
             </div>
           </div>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
               <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="add_item" data-id="add_bcc" data-api-url='add/bcc' data-api-attr='{}' href="#">{{ lang.admin.add }}</button>
             </div>
           </div>
@@ -711,14 +711,14 @@
             </div>
           </div>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
               <div class="checkbox">
                 <label><input type="checkbox" value="1" name="active" checked> {{ lang.add.active }}</label>
               </div>
             </div>
           </div>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
               <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="add_item" data-id="add_recipient_map" data-api-url='add/recipient_map' data-api-attr='{}' href="#">{{ lang.admin.add }}</button>
             </div>
           </div>
@@ -767,14 +767,14 @@
             </div>
           </div>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
               <div class="checkbox">
                 <label><input type="checkbox" value="1" name="active" checked> {{ lang.add.active }}</label>
               </div>
             </div>
           </div>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
               <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="add_item" data-id="add_tls_policy_map" data-api-url='add/tls-policy-map' data-api-attr='{}' href="#">{{ lang.admin.add }}</button>
             </div>
           </div>
