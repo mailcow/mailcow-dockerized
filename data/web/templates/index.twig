@@ -5,7 +5,7 @@
 {% block content %}
 <div class="row">
   <div class="col-12 col-md-7 col-lg-6 col-xl-5 ms-auto me-auto">
-    <div class="card card-default card-login">
+    <div class="card">
       <div class="card-header"><i class="bi bi-person-fill"></i> {{ lang.login.login }}</div>
       <div class="card-body">
         <div class="text-center mailcow-logo"><img src="{{ logo|default('/img/cow_mailcow.svg') }}" alt="mailcow"></div>
@@ -87,7 +87,7 @@
 {% if not oauth2_request %}
 <div class="row">
   <div class="col-12 col-md-7 col-lg-6 col-xl-5 ms-auto me-auto">
-    <div class="card card-default">
+    <div class="card">
       <div class="card-header">
         <a class="btn btn-link" data-bs-toggle="collapse" href="#collapse1"><i class="bi bi-patch-question-fill"></i> {{ lang.start.help }}</a>
       </div>
