@@ -113,10 +113,10 @@
     {% if dkim %}
     <hr>
     <div class="row">
-      <div class="col-xs-12 col-sm-2">
+      <div class="col-12 col-sm-2">
         <p>Domain: <strong>{{ result.domain_name }}</strong> ({{ dkim.dkim_selector }}._domainkey)</p>
       </div>
-      <div class="col-xs-12 col-sm-10">
+      <div class="col-12 col-sm-10">
         <pre>{{ dkim.dkim_txt }}</pre>
       </div>
     </div>
@@ -143,7 +143,7 @@
       <div class="col-sm-6">
         <h4>{{ lang.user.spamfilter_wl }}</h4>
         <p>{{ lang.user.spamfilter_wl_desc|raw }}</p>
-        <form class="form-inline space20" data-id="add_wl_policy_domain">
+        <form class="form-inline mb-4" data-id="add_wl_policy_domain">
           <div class="input-group" data-acl="{{ acl.spam_policy }}">
             <input type="text" class="form-control" name="object_from" placeholder="*@example.org" required>
             <span class="input-group-btn">
@@ -164,7 +164,7 @@
       <div class="col-sm-6">
         <h4>{{ lang.user.spamfilter_bl }}</h4>
         <p>{{ lang.user.spamfilter_bl_desc|raw }}</p>
-        <form class="form-inline space20" data-id="add_bl_policy_domain">
+        <form class="form-inline mb-4" data-id="add_bl_policy_domain">
           <div class="input-group" data-acl="{{ acl.spam_policy }}">
             <input type="text" class="form-control" name="object_from" placeholder="*@example.org" required>
             <span class="input-group-btn">

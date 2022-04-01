@@ -22,7 +22,7 @@
               <pre>{{ domain_data.dkim.dkim_txt }}</pre>
               <p data-bs-toggle="modal" data-bs-target="#showDKIMprivKey" id="dkim_priv" style="cursor:pointer;margin-top:-8pt" data-priv-key="{{ domain_data.dkim.privkey }}"><small><i class="bi bi-arrow-return-right"></i> {{ lang.admin.dkim_private_key }}</small></p>
             </div>
-            <hr class="visible-xs visible-sm">
+            <hr class="d-block d-md-none">
           </div>
         {% else %}
           <div class="row collapse in dkim_key_missing">
@@ -31,7 +31,7 @@
               <p>{{ lang.admin.domain }}: <strong>{{ domain }}</strong><br><span class="badge fs-5 bg-danger">{{ lang.admin.dkim_key_missing }}</span></p>
             </div>
             <div class="col-md-8"><pre>-</pre></div>
-            <hr class="visible-xs visible-sm">
+            <hr class="d-block d-md-none">
           </div>
         {% endif %}
         {% for alias_domain, alias_domain_data in domain_data.alias_domains %}
@@ -49,7 +49,7 @@
                 <pre>{{ alias_domain_data.dkim.dkim_txt }}</pre>
                 <p data-bs-toggle="modal" data-bs-target="#showDKIMprivKey" id="dkim_priv" style="cursor:pointer;margin-top:-8pt" data-priv-key="{{ alias_domain_data.dkim.privkey }}"><small><i class="bi bi-arrow-return-right"></i> Private key</small></p>
               </div>
-              <hr class="visible-xs visible-sm">
+              <hr class="d-block d-md-none">
             </div>
           {% else %}
             <div class="row collapse in dkim_key_missing">
@@ -58,7 +58,7 @@
                 <p><small>↳ Alias-Domain: <strong>{{ alias_domain }}</strong><br></small><span class="badge fs-5 bg-danger">{{ lang.admin.dkim_key_missing }}</span></p>
               </div>
               <div class="col-md-8"><pre>-</pre></div>
-              <hr class="visible-xs visible-sm">
+              <hr class="d-block d-md-none">
             </div>
           {% endif %}
         {% endfor %}
@@ -77,7 +77,7 @@
             <pre>{{ data.dkim.dkim_txt }}</pre>
             <p data-bs-toggle="modal" data-bs-target="#showDKIMprivKey" id="dkim_priv" style="cursor:pointer;margin-top:-8pt" data-priv-key="{{ data.dkim.privkey }}"><small><i class="bi bi-arrow-return-right"></i> Private key</small></p>
           </div>
-          <hr class="visible-xs visible-sm">
+          <hr class="d-block d-md-none">
         </div>
       {% endfor %}
 

@@ -46,10 +46,10 @@
 {% if dkim %}
 <hr>
 <div class="row">
-  <div class="col-xs-12 col-sm-2">
+  <div class="col-12 col-sm-2">
     <p>Domain: <strong>{{ result.alias_domain }}</strong> ({{ dkim.dkim_selector }}._domainkey)</p>
   </div>
-  <div class="col-xs-12 col-sm-10">
+  <div class="col-12 col-sm-10">
     <pre>{{ dkim.dkim_txt }}</pre>
   </div>
 </div>

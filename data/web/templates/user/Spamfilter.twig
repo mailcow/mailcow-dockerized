@@ -34,7 +34,7 @@
     <div class="col-sm-6">
       <h4>{{ lang.user.spamfilter_wl }}</h4>
       <p>{{ lang.user.spamfilter_wl_desc|raw }}</p>
-      <form class="form-inline space20" data-id="add_wl_policy_mailbox">
+      <form class="form-inline mb-4" data-id="add_wl_policy_mailbox">
         <div class="input-group" data-acl="{{ acl.spam_policy }}">
           <input type="text" class="form-control" name="object_from" placeholder="*@example.org" required>
           <span class="input-group-btn">
@@ -55,7 +55,7 @@
     <div class="col-sm-6">
       <h4>{{ lang.user.spamfilter_bl }}</h4>
       <p>{{ lang.user.spamfilter_bl_desc|raw }}</p>
-      <form class="form-inline space20" data-id="add_bl_policy_mailbox">
+      <form class="form-inline mb-4" data-id="add_bl_policy_mailbox">
         <div class="input-group" data-acl="{{ acl.spam_policy }}">
           <input type="text" class="form-control" name="object_from" placeholder="*@example.org" required>
           <span class="input-group-btn">

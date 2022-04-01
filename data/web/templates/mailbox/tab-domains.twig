@@ -2,7 +2,7 @@
   <div class="card">
     <div class="card-header">
       {{ lang.mailbox.domains }} <span class="badge bg-info table-lines"></span>
-      <div class="btn-group ms-auto hidden-xs">
+      <div class="btn-group ms-auto d-none d-sm-flex">
         {% if mailcow_cc_role == 'admin' %}
           <button class="btn btn-xs btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addDomainModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_domain }}</button>
         {% endif %}

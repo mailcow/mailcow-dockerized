@@ -86,7 +86,7 @@
               {% for container, container_info in containers %}
                 <li class="list-group-item">
                   {{ container }} ({{ container_info.Config.Image }})
-                  <br class="visible-xs" />
+                  <br class="d-block d-sm-none" />
                   <small>({{ lang.debug.started_on }} <span class="parse_date">{{ container_info.State.StartedAtHR }}</span>)</small>
                   <a href data-bs-toggle="modal" data-container="{{ container }}" data-bs-target="#RestartContainer" class="ms-auto btn btn-xs btn-secondary">{{ lang.debug.restart_container }}
                     <i class="ms-auto bi
