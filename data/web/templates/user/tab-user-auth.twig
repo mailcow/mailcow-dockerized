@@ -4,8 +4,8 @@
     <div class="card-body">
       {% if not skip_sogo %}
       <div class="row">
-        <div class="hidden-xs col-md-3 col-xs-5 text-end"></div>
-        <div class="col-md-3 col-xs-12">
+        <div class="d-none d-sm-flex col-md-3 col-5 text-end"></div>
+        <div class="col-md-3 col-12">
           {% if dual_login and allow_admin_email_login == 'n' %}
             <button disabled class="btn btn-secondary btn-block btn-xs-lg">
               <i class="bi bi-inbox-fill"></i> {{ lang.user.open_webmail_sso }}
@@ -19,8 +19,8 @@
       </div>
       <hr>
       <div class="row">
-        <div class="hidden-xs col-md-3 col-xs-5 text-end"></div>
-        <div class="col-md-9 col-xs-12">
+        <div class="d-none d-sm-flex col-md-3 col-5 text-end"></div>
+        <div class="col-md-9 col-12">
           <p class="text-muted text-muted-mt-0">{{ lang.user.direct_protocol_access|raw }}</p>
           {% if mailboxdata.attributes.imap_access == 1 %}<div class="badge fs-5 bg-success label-protocol-access">IMAP <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-5 bg-danger label-protocol-access">IMAP <i class="bi bi-x-lg"></i></div>{% endif %}
           {% if mailboxdata.attributes.smtp_access == 1 %}<div class="badge fs-5 bg-success label-protocol-access">SMTP <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-5 bg-danger label-protocol-access">SMTP <i class="bi bi-x-lg"></i></div>{% endif %}
@@ -32,8 +32,8 @@
       <hr>
       {% endif %}
       <div class="row">
-        <div class="col-md-3 col-xs-12 text-sm-end text-start space20">{{ lang.user.in_use }}:</div>
-        <div class="col-md-5 col-xs-12">
+        <div class="col-md-3 col-12 text-sm-end text-start mb-4">{{ lang.user.in_use }}:</div>
+        <div class="col-md-5 col-12">
           <div class="progress">
             <div class="progress-bar bg-{{ mailboxdata.percent_class }}" role="progressbar" aria-valuenow="{{ mailboxdata.percent_in_use }}" aria-valuemin="0" aria-valuemax="100" style="min-width:2em;width: {{ mailboxdata.percent_in_use }}%;">
               {{ mailboxdata.percent_in_use }}%
@@ -47,15 +47,15 @@
       <hr>
       {# FIDO2 #}
       <div class="row">
-        <div class="col-sm-3 col-xs-12 text-sm-end text-start">
+        <div class="col-sm-3 col-12 text-sm-end text-start">
           <p><i class="bi bi-shield-fill-check"></i> {{ lang.fido2.fido2_auth }}</p>
         </div>
       </div>
       <div class="row">
-        <div class="col-sm-3 col-xs-12 text-sm-end text-start space20">
+        <div class="col-sm-3 col-12 text-sm-end text-start mb-4">
           {{ lang.fido2.known_ids }}:
         </div>
-        <div class="col-sm-9 col-xs-12">
+        <div class="col-sm-9 col-12">
           <div class="table-responsive">
             <table class="table table-striped table-hover table-condensed" id="fido2_keys">
               <tr>
@@ -81,16 +81,16 @@
       </div>
       <br>
       <div class="row" id="status-fido2">
-        <div class="col-sm-3 col-xs-5 text-end">{{ lang.fido2.register_status }}:</div>
-        <div class="col-sm-9 col-xs-7">
+        <div class="col-sm-3 col-5 text-end">{{ lang.fido2.register_status }}:</div>
+        <div class="col-sm-9 col-7">
           <div id="fido2-alerts">-</div>
         </div>
         <br>
       </div>
       <hr>
       <div class="row">
-        <div class="col-md-3 col-xs-12 text-sm-end text-start space20"><i class="bi bi-file-earmark-text"></i> {{ lang.user.apple_connection_profile }}:</div>
-        <div class="col-md-9 col-xs-12">
+        <div class="col-md-3 col-12 text-sm-end text-start mb-4"><i class="bi bi-file-earmark-text"></i> {{ lang.user.apple_connection_profile }}:</div>
+        <div class="col-md-9 col-12">
           <p><i class="bi bi-file-earmark-post"></i> <a href="/mobileconfig.php?only_email">{{ lang.user.email }}</a> <small>IMAP, SMTP</small></p>
           <p class="text-muted">{{ lang.user.apple_connection_profile_mailonly }}</p>
           {% if not skip_sogo %}
@@ -100,8 +100,8 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-md-3 col-xs-12 text-sm-end text-start space20"><i class="bi bi-file-earmark-text"></i> {{ lang.user.apple_connection_profile }}<br />{{ lang.user.with_app_password }}:</div>
-        <div class="col-md-9 col-xs-12">
+        <div class="col-md-3 col-12 text-sm-end text-start mb-4"><i class="bi bi-file-earmark-text"></i> {{ lang.user.apple_connection_profile }}<br />{{ lang.user.with_app_password }}:</div>
+        <div class="col-md-9 col-12">
           <p><i class="bi bi-file-earmark-post"></i> <a href="/mobileconfig.php?only_email&amp;app_password">{{ lang.user.email }}</a> <small>IMAP, SMTP</small></p>
           <p class="text-muted">{{ lang.user.apple_connection_profile_mailonly }} {{ lang.user.apple_connection_profile_with_app_password }}</p>
           {% if not skip_sogo %}

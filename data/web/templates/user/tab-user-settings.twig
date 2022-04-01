@@ -4,8 +4,8 @@
     <div class="card-body">
       {# Show tagging options #}
       <div class="row">
-        <div class="col-sm-3 col-xs-12 text-sm-end text-start text-xs-bold space20">{{ lang.user.tag_handling }}:</div>
-        <div class="col-sm-9 col-xs-12">
+        <div class="col-sm-3 col-12 text-sm-end text-start text-xs-bold mb-4">{{ lang.user.tag_handling }}:</div>
+        <div class="col-sm-9 col-12">
           <div class="btn-group" data-acl="{{ acl.delimiter_action }}">
             <button type="button" class="btn btn-sm btn-xs-third d-block d-sm-inline btn-secondary{% if get_tagging_options == 'subfolder' %} active{% endif %}"
             data-action="edit_selected"
@@ -32,8 +32,8 @@
       </div>
       {# Show TLS policy options #}
       <div class="row">
-        <div class="col-sm-3 col-xs-12 text-sm-end text-start text-xs-bold space20">{{ lang.user.tls_policy }}:</div>
-        <div class="col-sm-9 col-xs-12">
+        <div class="col-sm-3 col-12 text-sm-end text-start text-xs-bold mb-4">{{ lang.user.tls_policy }}:</div>
+        <div class="col-sm-9 col-12">
           <div class="btn-group" data-acl="{{ acl.tls_policy }}">
             <button type="button" class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary{% if get_tls_policy.tls_enforce_in == '1' %} active"{% endif %}"
             data-action="edit_selected"
@@ -53,8 +53,8 @@
       </div>
       {# Show quarantine_notification options #}
       <div class="row">
-        <div class="col-sm-3 col-xs-12 text-sm-end text-start text-xs-bold space20">{{ lang.user.quarantine_notification }}:</div>
-        <div class="col-sm-9 col-xs-12">
+        <div class="col-sm-3 col-12 text-sm-end text-start text-xs-bold mb-4">{{ lang.user.quarantine_notification }}:</div>
+        <div class="col-sm-9 col-12">
           <div class="btn-group" data-acl="{{ acl.quarantine_notification }}">
             <button type="button" class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary{% if quarantine_notification == 'never' %} active{% endif %}"
             data-action="edit_selected"
@@ -85,8 +85,8 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-sm-3 col-xs-12 text-sm-end text-start text-xs-bold space20">{{ lang.user.quarantine_category }}:</div>
-        <div class="col-sm-9 col-xs-12">
+        <div class="col-sm-3 col-12 text-sm-end text-start text-xs-bold mb-4">{{ lang.user.quarantine_category }}:</div>
+        <div class="col-sm-9 col-12">
           <div class="btn-group" data-acl="{{ acl.quarantine_category }}">
             <button type="button" class="btn btn-sm btn-xs-third d-block d-sm-inline btn-secondary{% if quarantine_category == 'reject' %} active{% endif %}"
             data-action="edit_selected"
@@ -113,15 +113,15 @@
       {% if not skip_sogo %}
       <hr>
       <div class="row">
-        <div class="col-sm-3 col-xs-12 text-sm-end text-start text-xs-bold space20">{{ lang.user.eas_reset }}:</div>
-        <div class="col-sm-9 col-xs-12">
+        <div class="col-sm-3 col-12 text-sm-end text-start text-xs-bold mb-4">{{ lang.user.eas_reset }}:</div>
+        <div class="col-sm-9 col-12">
           <button class="btn btn-sm d-block d-sm-inline btn-secondary" data-acl="{{ acl.eas_reset }}" data-action="delete_selected" data-text="{{ lang.user.eas_reset }}?" data-item="{{ mailcow_cc_username }}" data-id="eas_cache" data-api-url='delete/eas_cache' href="#">{{ lang.user.eas_reset_now }}</button>
           <p class="text-muted">{{ lang.user.eas_reset_help|raw }}</p>
         </div>
       </div>
       <div class="row">
-        <div class="col-sm-3 col-xs-12 text-sm-end text-start text-xs-bold space20">{{ lang.user.sogo_profile_reset }}:</div>
-        <div class="col-sm-9 col-xs-12">
+        <div class="col-sm-3 col-12 text-sm-end text-start text-xs-bold mb-4">{{ lang.user.sogo_profile_reset }}:</div>
+        <div class="col-sm-9 col-12">
           <button class="btn btn-sm d-block d-sm-inline btn-secondary" data-acl="{{ acl.sogo_profile_reset }}" data-action="delete_selected" data-text="{{ lang.user.sogo_profile_reset }}?" data-item="{{ mailcow_cc_username }}" data-id="sogo_profile" data-api-url='delete/sogo_profile' href="#">{{ lang.user.sogo_profile_reset_now }}</button>
           <p class="text-muted">{{ lang.user.sogo_profile_reset_help|raw }}</p>
         </div>

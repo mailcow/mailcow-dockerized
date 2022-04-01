@@ -72,7 +72,7 @@
       <div class="form-group">
         <label class="control-label col-sm-2" for="relayhost">{{ lang.edit.relayhost }}</label>
         <div class="col-sm-10">
-          <select data-acl="{{ acl.mailbox_relayhost }}" data-live-search="true" id="relayhost" name="relayhost" class="form-control space20">
+          <select data-acl="{{ acl.mailbox_relayhost }}" data-live-search="true" id="relayhost" name="relayhost" class="form-control mb-4">
             {% for rlyhost in rlyhosts %}
               <option
                 style="{% if rlyhost.active != '1' %}background: #ff4136; color: #fff{% endif %}"
@@ -85,7 +85,7 @@
               {{ lang.edit.none_inherit }}
             </option>
           </select>
-          <p class="visible-xs" style="margin: 0;padding: 0">&nbsp;</p>
+          <p class="d-block d-sm-none" style="margin: 0;padding: 0">&nbsp;</p>
           <small class="text-muted">{{ lang.edit.mailbox_relayhost_info }}</small>
         </div>
       </div>
