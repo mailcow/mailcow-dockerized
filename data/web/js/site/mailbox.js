@@ -61,7 +61,7 @@ $(document).ready(function() {
     var table_id = $(parent_ul).data('table-id');
     FooTable.get('#' + table_id).pageSize(new_size);
     //$(this).parent().addClass('active').siblings().removeClass('active')
-    heading = $(this).parents('.panel').find('.panel-heading')
+    heading = $(this).parents('.card').find('.card-header')
     var n_results = $(heading).children('.table-lines').text().split(' / ')[1];
     $(heading).children('.table-lines').text(function(){
       if (new_size > n_results) {
@@ -258,7 +258,7 @@ jQuery(function($){
         .tooltip();
     }
     $('.refresh_table').prop("disabled", false);
-    heading = ft.$el.parents('.panel').find('.panel-heading')
+    heading = ft.$el.parents('.card').find('.card-header')
     var ft_paging = ft.use(FooTable.Paging)
     $(heading).children('.table-lines').text(function(){
       var total_rows = ft_paging.totalRows;
@@ -321,22 +321,22 @@ jQuery(function($){
             item.chkbox = '<input type="checkbox" data-id="domain" name="multi_select" value="' + encodeURIComponent(item.domain_name) + '" />';
             item.action = '<div class="btn-group footable-actions">';
             if (role == "admin") {
-              item.action += '<a href="/edit/domain/' + encodeURIComponent(item.domain_name) + '" class="btn btn-xs btn-xs-third btn-default"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              item.action += '<a href="/edit/domain/' + encodeURIComponent(item.domain_name) + '" class="btn btn-xs btn-xs-third btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
                 '<a href="#" data-action="delete_selected" data-id="single-domain" data-api-url="delete/domain" data-item="' + encodeURIComponent(item.domain_name) + '" class="btn btn-xs btn-xs-third btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
-                 '<a href="#dnsInfoModal" class="btn btn-xs btn-xs-third btn-info" data-toggle="modal" data-domain="' + encodeURIComponent(item.domain_name) + '"><i class="bi bi-globe2"></i> DNS</a></div>';
+                 '<a href="#dnsInfoModal" class="btn btn-xs btn-xs-third btn-info" data-bs-toggle="modal" data-domain="' + encodeURIComponent(item.domain_name) + '"><i class="bi bi-globe2"></i> DNS</a></div>';
             }
             else {
-              item.action += '<a href="/edit/domain/' + encodeURIComponent(item.domain_name) + '" class="btn btn-xs btn-xs-half btn-default"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-              '<a href="#dnsInfoModal" class="btn btn-xs btn-xs-half btn-info" data-toggle="modal" data-domain="' + encodeURIComponent(item.domain_name) + '"><i class="bi bi-globe2"></i> DNS</a></div>';
+              item.action += '<a href="/edit/domain/' + encodeURIComponent(item.domain_name) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#dnsInfoModal" class="btn btn-xs btn-xs-half btn-info" data-bs-toggle="modal" data-domain="' + encodeURIComponent(item.domain_name) + '"><i class="bi bi-globe2"></i> DNS</a></div>';
             }
 
             if (item.backupmx == 1) {
               if (item.relay_unknown_only == 1) {
-                item.domain_name = '<div class="label label-info">Relay Non-Local</div> ' + item.domain_name;
+                item.domain_name = '<div class="badge fs-5 bg-info">Relay Non-Local</div> ' + item.domain_name;
               } else if (item.relay_all_recipients == 1) {
-                item.domain_name = '<div class="label label-info">Relay All</div> ' + item.domain_name;
+                item.domain_name = '<div class="badge fs-5 bg-info">Relay All</div> ' + item.domain_name;
               } else {
-                item.domain_name = '<div class="label label-info">Relay</div> ' + item.domain_name;
+                item.domain_name = '<div class="badge fs-5 bg-info">Relay</div> ' + item.domain_name;
               }
             }
           });
@@ -405,9 +405,9 @@ jQuery(function($){
         },
         "formatter": function(value){
           res = value.split("/");
-          return '<div class="label label-last-login">IMAP @ ' + unix_time_format(Number(res[0])) + '</div><br>' +
-            '<div class="label label-last-login">POP3 @ ' + unix_time_format(Number(res[1])) + '</div><br>' +
-            '<div class="label label-last-login">SMTP @ ' + unix_time_format(Number(res[2])) + '</div>';
+          return '<div class="badge fs-5 bg-last-login">IMAP @ ' + unix_time_format(Number(res[0])) + '</div><br>' +
+            '<div class="badge fs-5 bg-last-login">POP3 @ ' + unix_time_format(Number(res[1])) + '</div><br>' +
+            '<div class="badge fs-5 bg-last-login">SMTP @ ' + unix_time_format(Number(res[2])) + '</div>';
         }},
         {"name":"last_pw_change","filterable": false,"title":lang.last_pw_change,"breakpoints":"all"},
         {"name":"quarantine_notification","filterable": false,"title":lang.quarantine_notification,"breakpoints":"all"},
@@ -479,7 +479,7 @@ jQuery(function($){
               if (ALLOW_ADMIN_EMAIL_LOGIN) btnSize = 'btn-xs-quart';
 
             item.action = '<div class="btn-group footable-actions">' +
-              '<a href="/edit/mailbox/' + encodeURIComponent(item.username) + '" class="btn btn-xs ' + btnSize + ' btn-default"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="/edit/mailbox/' + encodeURIComponent(item.username) + '" class="btn btn-xs ' + btnSize + ' btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-mailbox" data-api-url="delete/mailbox" data-item="' + encodeURIComponent(item.username) + '" class="btn btn-xs ' + btnSize + ' btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '<a href="/index.php?duallogin=' + encodeURIComponent(item.username) + '" class="login_as btn btn-xs ' + btnSize + ' btn-success"><i class="bi bi-person-fill"></i> Login</a>';
               if (ALLOW_ADMIN_EMAIL_LOGIN) {
@@ -489,7 +489,7 @@ jQuery(function($){
             }
             else {
             item.action = '<div class="btn-group">' +
-              '<a href="/edit/mailbox/' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-xs-half btn-default"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="/edit/mailbox/' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-mailbox" data-api-url="delete/mailbox" data-item="' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
             }
@@ -559,14 +559,14 @@ jQuery(function($){
         success: function (data) {
           $.each(data, function (i, item) {
             if (item.multiple_bookings == '0') {
-              item.multiple_bookings = '<span id="active-script" class="label label-success">' + lang.booking_0_short + '</span>';
+              item.multiple_bookings = '<span id="active-script" class="badge fs-5 bg-success">' + lang.booking_0_short + '</span>';
             } else if (item.multiple_bookings == '-1') {
-              item.multiple_bookings = '<span id="active-script" class="label label-warning">' + lang.booking_lt0_short + '</span>';
+              item.multiple_bookings = '<span id="active-script" class="badge fs-5 bg-warning">' + lang.booking_lt0_short + '</span>';
             } else {
-              item.multiple_bookings = '<span id="active-script" class="label label-danger">' + lang.booking_custom_short + ' (' + item.multiple_bookings + ')</span>';
+              item.multiple_bookings = '<span id="active-script" class="badge fs-5 bg-danger">' + lang.booking_custom_short + ' (' + item.multiple_bookings + ')</span>';
             }
             item.action = '<div class="btn-group footable-actions">' +
-              '<a href="/edit/resource/' + encodeURIComponent(item.name) + '" class="btn btn-xs btn-xs-half btn-default"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="/edit/resource/' + encodeURIComponent(item.name) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-resource" data-api-url="delete/resource" data-item="' + item.name + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="resource" name="multi_select" value="' + encodeURIComponent(item.name) + '" />';
@@ -632,16 +632,16 @@ jQuery(function($){
         success: function (data) {
           $.each(data, function (i, item) {
             item.action = '<div class="btn-group footable-actions">' +
-              '<a href="/edit/bcc/' + item.id + '" class="btn btn-xs btn-xs-half btn-default"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="/edit/bcc/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-bcc" data-api-url="delete/bcc" data-item="' + item.id + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="bcc" name="multi_select" value="' + item.id + '" />';
             item.local_dest = escapeHtml(item.local_dest);
             item.bcc_dest = escapeHtml(item.bcc_dest);
             if (item.type == 'sender') {
-              item.type = '<span id="active-script" class="label label-success">' + lang.bcc_sender_map + '</span>';
+              item.type = '<span id="active-script" class="badge fs-5 bg-success">' + lang.bcc_sender_map + '</span>';
             } else {
-              item.type = '<span id="inactive-script" class="label label-warning">' + lang.bcc_rcpt_map + '</span>';
+              item.type = '<span id="inactive-script" class="badge fs-5 bg-warning">' + lang.bcc_rcpt_map + '</span>';
             }
           });
         }
@@ -702,7 +702,7 @@ jQuery(function($){
               item.recipient_map_old = escapeHtml(item.recipient_map_old);
               item.recipient_map_new = escapeHtml(item.recipient_map_new);
               item.action = '<div class="btn-group footable-actions">' +
-                '<a href="/edit/recipient_map/' + item.id + '" class="btn btn-xs btn-xs-half btn-default"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+                '<a href="/edit/recipient_map/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
                 '<a href="#" data-action="delete_selected" data-id="single-recipient_map" data-api-url="delete/recipient_map" data-item="' + item.id + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
                 '</div>';
               item.chkbox = '<input type="checkbox" data-id="recipient_map" name="multi_select" value="' + item.id + '" />';
@@ -772,7 +772,7 @@ jQuery(function($){
                 item.parameters = '<code>' + escapeHtml(item.parameters) + '</code>';
               }
               item.action = '<div class="btn-group footable-actions">' +
-                '<a href="/edit/tls_policy_map/' + item.id + '" class="btn btn-xs btn-xs-half btn-default"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+                '<a href="/edit/tls_policy_map/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
                 '<a href="#" data-action="delete_selected" data-id="single-tls-policy-map" data-api-url="delete/tls-policy-map" data-item="' + item.id + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
                 '</div>';
               item.chkbox = '<input type="checkbox" data-id="tls-policy-map" name="multi_select" value="' + item.id + '" />';
@@ -837,7 +837,7 @@ jQuery(function($){
         success: function (data) {
           $.each(data, function (i, item) {
             item.action = '<div class="btn-group footable-actions">' +
-              '<a href="/edit/alias/' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-default"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="/edit/alias/' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-alias" data-api-url="delete/alias" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="alias" name="multi_select" value="' + encodeURIComponent(item.id) + '" />';
@@ -855,7 +855,7 @@ jQuery(function($){
               item.private_comment = '-';
             }
             if (item.is_catch_all == 1) {
-              item.address = '<div class="label label-default">' + lang.catch_all + '</div> ' + escapeHtml(item.address);
+              item.address = '<div class="badge fs-5 bg-secondary">' + lang.catch_all + '</div> ' + escapeHtml(item.address);
             }
             else {
               item.address = escapeHtml(item.address);
@@ -864,13 +864,13 @@ jQuery(function($){
               item.goto = '⤷ <i class="bi bi-trash" style="font-size:12px"></i>';
             }
             else if (item.goto == "spam@localhost") {
-              item.goto = '<span class="label label-danger">' + lang.goto_spam + '</span>';
+              item.goto = '<span class="badge fs-5 bg-danger">' + lang.goto_spam + '</span>';
             }
             else if (item.goto == "ham@localhost") {
-              item.goto = '<span class="label label-success">' + lang.goto_ham + '</span>';
+              item.goto = '<span class="badge fs-5 bg-success">' + lang.goto_ham + '</span>';
             }
             if (item.in_primary_domain !== "") {
-              item.domain = '<i data-domainname="' + item.domain + '" class="bi bi-info-circle-fill alias-domain-info text-info" data-toggle="tooltip" title="' + lang.target_domain + ': ' + item.in_primary_domain + '"></i> ' + item.domain;
+              item.domain = '<i data-domainname="' + item.domain + '" class="bi bi-info-circle-fill alias-domain-info text-info" data-bs-toggle="tooltip" title="' + lang.target_domain + ': ' + item.in_primary_domain + '"></i> ' + item.domain;
             }
           });
         }
@@ -932,13 +932,13 @@ jQuery(function($){
         success: function (data) {
           $.each(data, function (i, item) {
             item.action = '<div class="btn-group footable-actions">' +
-              '<a href="/edit/aliasdomain/' + encodeURIComponent(item.alias_domain) + '" class="btn btn-xs btn-xs-third btn-default"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="/edit/aliasdomain/' + encodeURIComponent(item.alias_domain) + '" class="btn btn-xs btn-xs-third btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-alias-domain" data-api-url="delete/alias-domain" data-item="' + encodeURIComponent(item.alias_domain) + '" class="btn btn-xs btn-xs-third btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
-              '<a href="#dnsInfoModal" class="btn btn-xs btn-xs-third btn-info" data-toggle="modal" data-domain="' + encodeURIComponent(item.alias_domain) + '"><i class="bi bi-globe2"></i> DNS</a></div>' +
+              '<a href="#dnsInfoModal" class="btn btn-xs btn-xs-third btn-info" data-bs-toggle="modal" data-domain="' + encodeURIComponent(item.alias_domain) + '"><i class="bi bi-globe2"></i> DNS</a></div>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="alias-domain" name="multi_select" value="' + encodeURIComponent(item.alias_domain) + '" />';
             if(item.parent_is_backupmx == '1') {
-              item.target_domain = '<span><a href="/edit/domain/' + item.target_domain + '">' + item.target_domain + '</a> <div class="label label-warning">' + lang.alias_domain_backupmx + '</div></span>';
+              item.target_domain = '<span><a href="/edit/domain/' + item.target_domain + '">' + item.target_domain + '</a> <div class="badge fs-5 bg-warning">' + lang.alias_domain_backupmx + '</div></span>';
             } else {
               item.target_domain = '<span><a href="/edit/domain/' + item.target_domain + '">' + item.target_domain + '</a></span>';
             }
@@ -1004,7 +1004,7 @@ jQuery(function($){
         },
         success: function (data) {
           $.each(data, function (i, item) {
-            item.log = '<a href="#syncjobLogModal" data-toggle="modal" data-syncjob-id="' + encodeURIComponent(item.id) + '">' + lang.open_logs + '</a>'
+            item.log = '<a href="#syncjobLogModal" data-bs-toggle="modal" data-syncjob-id="' + encodeURIComponent(item.id) + '">' + lang.open_logs + '</a>'
             item.user2 = escapeHtml(item.user2);
             if (!item.exclude > 0) {
               item.exclude = '-';
@@ -1013,14 +1013,14 @@ jQuery(function($){
             }
             item.server_w_port = escapeHtml(item.user1) + '@' + item.host1 + ':' + item.port1;
             item.action = '<div class="btn-group footable-actions">' +
-              '<a href="/edit/syncjob/' + item.id + '" class="btn btn-xs btn-xs-half btn-default"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="/edit/syncjob/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-syncjob" data-api-url="delete/syncjob" data-item="' + item.id + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="syncjob" name="multi_select" value="' + item.id + '" />';
             if (item.is_running == 1) {
-              item.is_running = '<span id="active-script" class="label label-success">' + lang.running + '</span>';
+              item.is_running = '<span id="active-script" class="badge fs-5 bg-success">' + lang.running + '</span>';
             } else {
-              item.is_running = '<span id="inactive-script" class="label label-warning">' + lang.waiting + '</span>';
+              item.is_running = '<span id="inactive-script" class="badge fs-5 bg-warning">' + lang.waiting + '</span>';
             }
             if (!item.last_run > 0) {
               item.last_run = lang.waiting;
@@ -1096,14 +1096,14 @@ jQuery(function($){
         success: function (data) {
           $.each(data, function (i, item) {
             if (item.active == 1) {
-              item.active = '<span id="active-script" class="label label-success">' + lang.active + '</span>';
+              item.active = '<span id="active-script" class="badge fs-5 bg-success">' + lang.active + '</span>';
             } else {
-              item.active = '<span id="inactive-script" class="label label-warning">' + lang.inactive + '</span>';
+              item.active = '<span id="inactive-script" class="badge fs-5 bg-warning">' + lang.inactive + '</span>';
             }
             item.script_data = '<pre style="margin:0px">' + escapeHtml(item.script_data) + '</pre>'
-            item.filter_type = '<div class="label label-default">' + item.filter_type.charAt(0).toUpperCase() + item.filter_type.slice(1).toLowerCase() + '</div>'
+            item.filter_type = '<div class="badge fs-5 bg-secondary">' + item.filter_type.charAt(0).toUpperCase() + item.filter_type.slice(1).toLowerCase() + '</div>'
             item.action = '<div class="btn-group footable-actions">' +
-              '<a href="/edit/filter/' + item.id + '" class="btn btn-xs btn-xs-half btn-default"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="/edit/filter/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-filter" data-api-url="delete/filter" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="filter_item" name="multi_select" value="' + item.id + '" />'

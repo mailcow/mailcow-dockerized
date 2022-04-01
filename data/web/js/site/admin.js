@@ -64,7 +64,7 @@ jQuery(function($){
     eval(draw_table + '()');
   });
   function table_admin_ready(ft, name) {
-    heading = ft.$el.parents('.panel').find('.panel-heading')
+    heading = ft.$el.parents('.card').find('.card-header')
     var ft_paging = ft.use(FooTable.Paging)
     $(heading).children('.table-lines').text(function(){
       return ft_paging.totalRows;
@@ -282,8 +282,8 @@ jQuery(function($){
     if (table == 'relayhoststable') {
       $.each(data, function (i, item) {
         item.action = '<div class="btn-group footable-actions">' +
-          '<a href="#" data-toggle="modal" data-target="#testTransportModal" data-transport-id="' + encodeURI(item.id) + '" data-transport-type="sender-dependent" class="btn btn-xs btn-xs-third btn-default"><i class="bi bi-caret-right-fill"></i> Test</a>' +
-          '<a href="/edit/relayhost/' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-third btn-default"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+          '<a href="#" data-bs-toggle="modal" data-bs-target="#testTransportModal" data-transport-id="' + encodeURI(item.id) + '" data-transport-type="sender-dependent" class="btn btn-xs btn-xs-third btn-secondary"><i class="bi bi-caret-right-fill"></i> Test</a>' +
+          '<a href="/edit/relayhost/' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-third btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
           '<a href="#" data-action="delete_selected" data-id="single-rlyhost" data-api-url="delete/relayhost" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-third btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
           '</div>';
         if (item.used_by_mailboxes == '') { item.in_use_by = item.used_by_domains; }
@@ -294,14 +294,14 @@ jQuery(function($){
     } else if (table == 'transportstable') {
       $.each(data, function (i, item) {
         if (item.is_mx_based) {
-          item.destination = '<i class="bi bi-info-circle-fill text-info mx-info" data-toggle="tooltip" title="' + lang.is_mx_based + '"></i> <code>' + item.destination + '</code>';
+          item.destination = '<i class="bi bi-info-circle-fill text-info mx-info" data-bs-toggle="tooltip" title="' + lang.is_mx_based + '"></i> <code>' + item.destination + '</code>';
         }
         if (item.username) {
           item.username = '<i style="color:#' + intToRGB(hashCode(item.nexthop)) + ';" class="bi bi-square-fill"></i> ' + item.username;
         }
         item.action = '<div class="btn-group footable-actions">' +
-          '<a href="#" data-toggle="modal" data-target="#testTransportModal" data-transport-id="' + encodeURI(item.id) + '" data-transport-type="transport-map" class="btn btn-xs btn-xs-third btn-default"><i class="bi bi-caret-right-fill"></i> Test</a>' +
-          '<a href="/edit/transport/' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-third btn-default"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+          '<a href="#" data-bs-toggle="modal" data-bs-target="#testTransportModal" data-transport-id="' + encodeURI(item.id) + '" data-transport-type="transport-map" class="btn btn-xs btn-xs-third btn-secondary"><i class="bi bi-caret-right-fill"></i> Test</a>' +
+          '<a href="/edit/transport/' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-third btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
           '<a href="#" data-action="delete_selected" data-id="single-transport" data-api-url="delete/transport" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-third btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
           '</div>';
         item.chkbox = '<input type="checkbox" data-id="transports" name="multi_select" value="' + item.id + '" />';
@@ -314,7 +314,7 @@ jQuery(function($){
         });
         item.recipients = rcpts.join('<hr style="margin:1px!important">');
         item.action = '<div class="btn-group footable-actions">' +
-          '<a href="#" data-toggle="modal" data-target="#showQueuedMsg" data-queue-id="' + encodeURI(item.queue_id) + '" class="btn btn-xs btn-default">' + lang.queue_show_message + '</a>' +
+          '<a href="#" data-bs-toggle="modal" data-bs-target="#showQueuedMsg" data-queue-id="' + encodeURI(item.queue_id) + '" class="btn btn-xs btn-secondary">' + lang.queue_show_message + '</a>' +
           '</div>';
       });
     } else if (table == 'forwardinghoststable') {
@@ -327,7 +327,7 @@ jQuery(function($){
     } else if (table == 'oauth2clientstable') {
       $.each(data, function (i, item) {
         item.action = '<div class="btn-group footable-actions">' +
-          '<a href="/edit.php?oauth2client=' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-half btn-default"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+          '<a href="/edit.php?oauth2client=' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
           '<a href="#" data-action="delete_selected" data-id="single-oauth2-client" data-api-url="delete/oauth2-client" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
           '</div>';
         item.scope = "profile";
@@ -340,7 +340,7 @@ jQuery(function($){
         item.selected_domains = item.selected_domains.toString().replace(/,/g, "<br>");
         item.chkbox = '<input type="checkbox" data-id="domain_admins" name="multi_select" value="' + item.username + '" />';
         item.action = '<div class="btn-group footable-actions">' +
-          '<a href="/edit/domainadmin/' + encodeURI(item.username) + '" class="btn btn-xs btn-xs-third btn-default"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+          '<a href="/edit/domainadmin/' + encodeURI(item.username) + '" class="btn btn-xs btn-xs-third btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
           '<a href="#" data-action="delete_selected" data-id="single-domain-admin" data-api-url="delete/domain-admin" data-item="' + encodeURI(item.username) + '" class="btn btn-xs btn-xs-third btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
           '<a href="/index.php?duallogin=' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-xs-third btn-success"><i class="bi bi-person-fill"></i> Login</a>' +
           '</div>';
@@ -354,7 +354,7 @@ jQuery(function($){
         }
         item.chkbox = '<input type="checkbox" data-id="admins" name="multi_select" value="' + item.username + '" />';
         item.action = '<div class="btn-group footable-actions">' +
-          '<a href="/edit/admin/' + encodeURI(item.username) + '" class="btn btn-xs btn-xs-half btn-default"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+          '<a href="/edit/admin/' + encodeURI(item.username) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
           '<a href="#" data-action="delete_selected" data-id="single-admin" data-api-url="delete/admin" data-item="' + encodeURI(item.username) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
           '</div>';
       });
@@ -483,11 +483,11 @@ jQuery(function($){
     if (type == "app_link") {
     cols = '<td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="app" required></td>';
     cols += '<td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="href" required></td>';
-    cols += '<td><a href="#" role="button" class="btn btn-sm btn-xs-lg btn-default" type="button">' + lang.remove_row + '</a></td>';
+    cols += '<td><a href="#" role="button" class="btn btn-sm btn-xs-lg btn-secondary" type="button">' + lang.remove_row + '</a></td>';
     } else if (type == "f2b_regex") {
     cols = '<td><input style="text-align:center" class="input-sm input-xs-lg form-control" data-id="f2b_regex" type="text" value="+" disabled></td>';
     cols += '<td><input class="input-sm input-xs-lg form-control regex-input" data-id="f2b_regex" type="text" name="regex" required></td>';
-    cols += '<td><a href="#" role="button" class="btn btn-sm btn-xs-lg btn-default" type="button">' + lang.remove_row + '</a></td>';
+    cols += '<td><a href="#" role="button" class="btn btn-sm btn-xs-lg btn-secondary" type="button">' + lang.remove_row + '</a></td>';
     }
     row.append(cols);
     table_id.append(row);
