@@ -89,7 +89,7 @@
       </div>
       {% endif %}
       <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
+        <div class="offset-sm-2 col-sm-10">
           <div class="checkbox">
             <label><input type="checkbox" value="1" name="gal"{% if result.gal == '1' %} checked{% endif %}> {{ lang.edit.gal }}</label>
             <small class="text-muted">{{ lang.edit.gal_info|raw }}</small>
@@ -98,14 +98,14 @@
       </div>
       <hr>
       <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
+        <div class="offset-sm-2 col-sm-10">
           <div class="checkbox">
             <label><input type="checkbox" value="1" name="active"{% if result.active == '1' %} checked{% endif %}{% if mailcow_cc_role != 'admin' %} disabled{% endif %}> {{ lang.edit.active }}</label>
           </div>
         </div>
       </div>
       <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
+        <div class="offset-sm-2 col-sm-10">
           <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="editdomain" data-item="{{ domain }}" data-api-url='edit/domain' data-api-attr='{}' href="#">{{ lang.admin.save }}</button>
         </div>
       </div>
@@ -198,14 +198,14 @@
             </div>
           </div>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
               <div class="checkbox">
                 <label><input type="checkbox" value="1" name="active"{% if quota_notification_bcc.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
               </div>
             </div>
           </div>
           <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
               <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="quota_bcc" data-item="quota_bcc" data-api-url='edit/quota_notification_bcc' data-api-attr='{"domain":"{{ domain }}"}' href="#">{{ lang.edit.save }}</button>
             </div>
           </div>

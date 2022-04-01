@@ -7,7 +7,7 @@
       <p>{{ lang.admin.rspamd_global_filters_info }}</p>
       <div id="confirm_show_rspamd_global_filters"{% if show_rspamd_global_filters %} class="hidden"{% endif %}>
         <div class="form-group">
-          <div class="col-sm-offset-2 col-sm-10">
+          <div class="offset-sm-2 col-sm-10">
             <label>
               <input type="checkbox" id="show_rspamd_global_filters"> {{ lang.admin.rspamd_global_filters_agree }}
             </label>
@@ -35,7 +35,7 @@
             </div>
           </div>
           <div class="form-group">
-            <div class="col-sm-offset-3 col-sm-9">
+            <div class="offset-sm-3 col-sm-9">
               <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary validate_rspamd_regex" data-regex-map="{{ rspamd_regex_map.map }}" href="#">{{ lang.add.validate }}</button>
               <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success submit_rspamd_regex" data-action="edit_selected" data-id="{{ rspamd_regex_map.map }}" data-item="{{ rspamd_regex_map.map }}" data-api-url='edit/rspamd-map' data-api-attr='{}' href="#" disabled>{{ lang.edit.save }}</button>
             </div>

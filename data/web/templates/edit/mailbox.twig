@@ -208,7 +208,7 @@
       </div>
       <hr>
       <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
+        <div class="offset-sm-2 col-sm-10">
           <select name="active" class="form-control">
             <option value="1"{% if result.active == '1' %} selected{% endif %}>{{ lang.edit.active }}</option>
             <option value="2"{% if result.active == '2' %} selected{% endif %}>{{ lang.edit.disable_login }}</option>
@@ -217,7 +217,7 @@
         </div>
       </div>
       <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
+        <div class="offset-sm-2 col-sm-10">
           <div class="checkbox">
             <label><input type="checkbox" value="1" name="force_pw_update"{% if result.attributes.force_pw_update == '1' %} checked{% endif %}> {{ lang.edit.force_pw_update }}</label>
             <small class="text-muted">{{ lang.edit.force_pw_update_info|format(ui_texts.main_name) }}</small>
@@ -226,7 +226,7 @@
       </div>
       {% if not skip_sogo %}
       <div data-acl="{{ acl.sogo_access }}" class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
+        <div class="offset-sm-2 col-sm-10">
           <div class="checkbox">
             <label><input type="checkbox" value="1" name="sogo_access"{% if result.attributes.sogo_access == '1' %} checked{% endif %}> {{ lang.edit.sogo_access }}</label>
             <small class="text-muted">{{ lang.edit.sogo_access_info }}</small>
@@ -235,7 +235,7 @@
       </div>
       {% endif %}
       <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
+        <div class="offset-sm-2 col-sm-10">
           <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="editmailbox" data-item="{{ result.username }}" data-api-url='edit/mailbox' data-api-attr='{}' href="#">{{ lang.edit.save }}</button>
         </div>
       </div>

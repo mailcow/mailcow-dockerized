@@ -39,21 +39,21 @@
     </div>
   </div>
   <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
+    <div class="offset-sm-2 col-sm-10">
       <div class="checkbox">
         <label><input type="checkbox" value="1" name="active"{% if result.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
       </div>
     </div>
   </div>
   <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
+    <div class="offset-sm-2 col-sm-10">
       <div class="checkbox">
         <label><input type="checkbox" value="1" name="disable_tfa"> {{ lang.tfa.disable_tfa }}</label>
       </div>
     </div>
   </div>
   <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
+    <div class="offset-sm-2 col-sm-10">
       <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-api-reload-location="/admin" data-id="editdomainadmin" data-item="{{ domain_admin }}" data-api-url='edit/domain-admin' data-api-attr='{}' href="#">{{ lang.edit.save }}</button>
     </div>
   </div>
