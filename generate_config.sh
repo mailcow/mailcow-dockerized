@@ -144,14 +144,14 @@ DBROOT=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 | head -c 28)
 # Do _not_ use IP:PORT in HTTP(S)_BIND or HTTP(S)_PORT
 # IMPORTANT: Do not use port 8081, 9081 or 65510!
 # Example: HTTP_BIND=1.2.3.4
-# For IPv4 and IPv6 leave it empty: HTTP_BIND= & HTTPS_PORT=
+# For IPv4 and IPv6 leave it as it is (0.0.0.0): HTTP_BIND= & HTTPS_PORT=
 # For IPv6 see https://mailcow.github.io/mailcow-dockerized-docs/post_installation/firststeps-ip_bindings/
 
 HTTP_PORT=80
-HTTP_BIND=
+HTTP_BIND=0.0.0.0
 
 HTTPS_PORT=443
-HTTPS_BIND=
+HTTPS_BIND=0.0.0.0
 
 # ------------------------------
 # Other bindings
