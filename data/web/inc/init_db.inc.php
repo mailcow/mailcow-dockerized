@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "18012022_1020";
+    $db_version = "22032022_1330";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -864,7 +864,7 @@ function init_db_schema() {
       "sogo_sessions_folder" => array(
         "cols" => array(
           "c_id" => "VARCHAR(255) NOT NULL",
-          "c_value" => "VARCHAR(255) NOT NULL",
+          "c_value" => "VARCHAR(4096) NOT NULL",
           "c_creationdate" => "INT(11) NOT NULL",
           "c_lastseen" => "INT(11) NOT NULL"
         ),
