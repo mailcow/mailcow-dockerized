@@ -1,6 +1,15 @@
 <?php
 
+if (!isset($_GET['file']) ) {
+    http_response_code(404);
+    exit;
+}
 $pathinfo = pathinfo($_GET['file']);
+
+if (!array_key_exists('extension', $pathinfo)) {
+    http_response_code(404);
+    exit;
+}
 $extension = strtolower($pathinfo['extension']);
 
 $filepath = '/tmp/' . $pathinfo['basename'];

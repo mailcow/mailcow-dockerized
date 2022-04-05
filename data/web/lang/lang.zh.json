@@ -274,7 +274,7 @@
         "rsettings_preset_1": "为已认证用户关闭除DKIM和ratelimit规则外的所有规则",
         "rsettings_preset_2": "管理员(postmaster)想要垃圾邮件",
         "rsettings_preset_3": "只允许指定的发件人 (如只允许内部邮箱发送)",
-        "rspamd-com_settings": "自动生成设置名称，请看下方的示例预设。查看<a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd docs</a>以了解更多细节。",
+        "rspamd_com_settings": "自动生成设置名称，请看下方的示例预设。查看<a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd docs</a>以了解更多细节。",
         "rspamd_global_filters": "全局过滤规则",
         "rspamd_global_filters_agree": "我会小心谨慎的!",
         "rspamd_global_filters_info": "全局过滤规则包含了不同类型的全局黑名单和白名单。",
