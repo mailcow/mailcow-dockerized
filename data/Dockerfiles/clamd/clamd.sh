@@ -14,10 +14,10 @@ rm -rf /var/lib/clamav/clamav-*.tmp
 
 mkdir -p /run/clamav /var/lib/clamav
 
-#if [[ -s /etc/clamav/whitelist.ign2 ]]; then
-#  echo "Copying non-empty whitelist.ign2 to /var/lib/clamav/whitelist.ign2"
-#  cp /etc/clamav/whitelist.ign2 /var/lib/clamav/whitelist.ign2
-#fi
+if [[ -s /etc/clamav/whitelist.ign2 ]]; then
+  echo "Copying non-empty whitelist.ign2 to /var/lib/clamav/whitelist.ign2"
+  cp /etc/clamav/whitelist.ign2 /var/lib/clamav/whitelist.ign2
+fi
 
 if [[ ! -f /var/lib/clamav/whitelist.ign2 ]]; then
   echo "Creating /var/lib/clamav/whitelist.ign2"
