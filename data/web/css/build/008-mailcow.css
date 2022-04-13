@@ -172,9 +172,6 @@ legend {
   top: 0; right: 0; bottom: 0; left: 0;
   opacity: 0.7;
 }
-#top {
-  padding-top: 70px;
-}
 .bootstrap-select.btn-group .no-results {
   display: none;
 }
