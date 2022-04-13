@@ -8,22 +8,22 @@
       </div>
       <div class="modal-body">
         <form role="form" method="post">
-          <div class="form-group">
+          <div>
             <input type="text" class="form-control" name="key_id" placeholder="{{ lang.tfa.key_id }}" autocomplete="off" required>
           </div>
           <hr>
           <p class="text-muted">{{ lang.tfa.api_register|format(ui_texts.main_name)|raw }}</p>
-          <div class="form-group">
+          <div>
             <input type="text" class="form-control" name="yubico_id" placeholder="Yubico API ID" autocomplete="off" required>
           </div>
-          <div class="form-group">
+          <div>
             <input type="text" class="form-control" name="yubico_key" placeholder="Yubico API Key" autocomplete="off" required>
           </div>
           <hr>
-          <div class="form-group">
+          <div>
             <input type="password" class="form-control" name="confirm_password" placeholder="{{ lang.user.password_now }}" autocomplete="off" required>
           </div>
-          <div class="form-group">
+          <div>
             <div class="input-group">
               <span class="input-group-text" id="yubi-addon"><img alt="Yubicon Icon" src="/img/yubi.ico"></span>
               <input type="text" name="otp_token" class="form-control" placeholder="Touch Yubikey" aria-describedby="yubi-addon">
@@ -46,10 +46,10 @@
       </div>
       <div class="modal-body">
         <form role="form" method="post" id="webauthn_reg_form">
-          <div class="form-group">
+          <div>
             <input type="text" class="form-control" name="key_id" placeholder="{{ lang.tfa.key_id }}" autocomplete="off" required>
           </div>
-          <div class="form-group">
+          <div>
             <input type="password" class="form-control" name="confirm_password" placeholder="{{ lang.user.password_now }}" autocomplete="off" required>
           </div>
           <hr>
@@ -82,10 +82,10 @@
       </div>
       <div class="modal-body">
         <form role="form" method="post">
-          <div class="form-group">
+          <div>
             <input type="text" class="form-control" name="key_id" placeholder="{{ lang.tfa.key_id_totp }}" autocomplete="off" required>
           </div>
-          <div class="form-group">
+          <div>
             <input type="password" class="form-control" name="confirm_password" placeholder="{{ lang.user.password_now }}" autocomplete="off" required>
           </div>
           <hr>
@@ -144,7 +144,7 @@
       <div class="modal-body">
         {% if pending_tfa_method == 'yubi_otp' %}
         <form role="form" method="post">
-          <div class="form-group">
+          <div>
             <div class="input-group">
               <span class="input-group-text" id="yubi-addon"><img alt="Yubicon Icon" src="/img/yubi.ico"></span>
               <input type="text" name="token" class="form-control" autocomplete="off" placeholder="Touch Yubikey" aria-describedby="yubi-addon">
@@ -156,7 +156,7 @@
         {% endif %}
         {% if pending_tfa_method == 'totp' %}
         <form role="form" method="post">
-          <div class="form-group">
+          <div>
             <div class="input-group">
               <span class="input-group-text" id="tfa-addon"><i class="bi bi-shield-lock-fill"></i></span>
               <input type="number" min="000000" max="999999" name="token" class="form-control" placeholder="123456" autocomplete="one-time-code" aria-describedby="tfa-addon">

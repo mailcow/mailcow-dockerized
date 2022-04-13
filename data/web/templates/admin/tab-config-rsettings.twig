@@ -44,15 +44,15 @@
                   <div id="{{ rsetting.details.id }}" class="tab-pane">
                     <form class="form" data-id="rsettings" role="form" method="post">
                       <input type="hidden" name="active" value="0">
-                      <div class="form-group">
+                      <div>
                         <label for="rsettings_desc">{{ lang.admin.rsetting_desc }}:</label>
                         <input type="text" class="form-control" id="rsettings_desc" name="desc" value="{{ rsetting.details.desc }}">
                       </div>
-                      <div class="form-group">
+                      <div>
                         <label for="rsettings_content">{{ lang.admin.rsetting_content }}:</label>
                         <textarea class="form-control" id="rsettings_content" name="content" rows="10">{{ rsetting.details.content }}</textarea>
                       </div>
-                      <div class="form-group">
+                      <div>
                         <label>
                           <input type="checkbox" name="active" value="1" {% if rsetting.details.active %}checked{% endif %}> {{ lang.admin.active }}
                         </label>
