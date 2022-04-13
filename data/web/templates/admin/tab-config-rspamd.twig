@@ -5,31 +5,31 @@
     </div>
     <div class="card-body">
       <div class="row">
-        <div class="col-12 d-block d-sm-none">
-          <img class="img-responsive" src="/img/rspamd_logo.png" alt="Rspamd UI">
+        <div class="col-12 d-flex d-sm-none mb-4">
+          <img class="img-responsive mx-auto" src="/img/rspamd_logo.png" alt="Rspamd UI">
         </div>
         <div class="col-sm-9 col-12">
           <form class="form-horizontal" autocapitalize="none" data-id="admin" autocorrect="off" role="form" method="post">
-            <div class="row">
+            <div class="row mb-4">
               <div class="offset-sm-3 col-sm-9">
                 <label>
                   <a href="/rspamd/" target="_blank"><i class="bi bi-window"></i> Rspamd UI</a>
                 </label>
               </div>
             </div>
-            <div class="row">
-              <label class="control-label col-sm-3" for="rspamd_ui_pass">{{ lang.admin.password }}:</label>
+            <div class="row mb-2">
+              <label class="control-label col-sm-3 text-sm-end" for="rspamd_ui_pass">{{ lang.admin.password }}:</label>
               <div class="col-sm-9">
                 <input type="password" class="form-control" id="rspamd_ui_pass" name="rspamd_ui_pass" autocomplete="new-password" required>
               </div>
             </div>
-            <div class="row">
-              <label class="control-label col-sm-3" for="rspamd_ui_pass2">{{ lang.admin.password_repeat }}:</label>
+            <div class="row mb-4">
+              <label class="control-label col-sm-3 text-sm-end" for="rspamd_ui_pass2">{{ lang.admin.password_repeat }}:</label>
               <div class="col-sm-9">
                 <input type="password" class="form-control" id="rspamd_ui_pass2" name="rspamd_ui_pass2" autocomplete="new-password" required>
               </div>
             </div>
-            <div class="row">
+            <div class="row mb-4">
               <div class="offset-sm-3 col-sm-9">
                 <button type="submit" class="btn btn-sm d-block d-sm-inline btn-success" id="rspamd_ui" name="rspamd_ui" href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
               </div>

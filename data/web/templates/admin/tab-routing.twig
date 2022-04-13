@@ -1,5 +1,5 @@
 <div role="tabpanel" class="tab-pane fade" id="tab-routing" role="tabpanel" aria-labelledby="tab-routing">
-  <div class="card">
+  <div class="card mb-4">
     <div class="card-header">{{ lang.admin.relayhosts }}</div>
     <div class="card-body">
       <p style="margin-bottom:40px">{{ lang.admin.relayhosts_hint|raw }}</p>
@@ -23,15 +23,15 @@
       <div class="row">
         <div class="col-md-8">
           <form class="form" data-id="rlyhost" role="form" method="post">
-            <div>
+            <div class="mb-2">
               <label for="rlyhost_hostname">{{ lang.admin.host }}</label>
               <input class="form-control" id="rlyhost_hostname" name="hostname" placeholder='[0.0.0.0], [0.0.0.0]:25, host:25, host, [host]:25' required>
             </div>
-            <div>
+            <div class="mb-2">
               <label for="rlyhost_username">{{ lang.admin.username }}</label>
               <input class="form-control" id="rlyhost_username" name="username">
             </div>
-            <div>
+            <div class="mb-4">
               <label for="rlyhost_password">{{ lang.admin.password }}</label>
               <input class="form-control" id="rlyhost_password" name="password">
             </div>
@@ -42,7 +42,7 @@
     </div>
   </div>
 
-  <div class="card">
+  <div class="card mb-4">
     <div class="card-header">{{ lang.admin.transport_maps }}</div>
     <div class="card-body">
       <p style="margin-bottom:40px">{{ lang.admin.transports_hint|raw }}</p>
@@ -66,28 +66,28 @@
       <div class="row">
         <div class="col-md-8">
           <form class="form" data-id="transport" role="form" method="post">
-            <div>
+            <div class="mb-2">
               <label for="transport_destination">{{ lang.admin.destination }}</label>
               <input class="form-control" id="transport_destination" name="destination" placeholder='{{ lang.admin.transport_dest_format }}' required>
             </div>
-            <div>
+            <div class="mb-2">
               <label for="transport_nexthop">{{ lang.admin.nexthop }}</label>
               <input class="form-control" id="transport_nexthop" name="nexthop" placeholder='host:25, host, [host]:25, [0.0.0.0]:25' required>
             </div>
-            <div>
+            <div class="mb-2">
               <label for="transport_username">{{ lang.admin.username }}</label>
               <input class="form-control" id="transport_username" name="username">
             </div>
-            <div>
+            <div class="mb-4">
               <label for="transport_password">{{ lang.admin.password }}</label>
               <input class="form-control" id="transport_password" name="password">
             </div>
-            <div>
+            <div class="mb-2">
               <label>
                 <input type="checkbox" name="is_mx_based" value="1"> {{ lang.admin.lookup_mx|raw }}
               </label>
             </div>
-            <div>
+            <div class="mb-4">
               <label>
                 <input type="checkbox" name="active" value="1"> {{ lang.admin.active }}
               </label>

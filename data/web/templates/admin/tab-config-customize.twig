@@ -6,7 +6,7 @@
       <p class="text-muted">{{ lang.admin.logo_info }}</p>
       <form class="form-inline" role="form" method="post" enctype="multipart/form-data">
         <p>
-          <input type="file" name="main_logo" accept="image/gif, image/jpeg, image/pjpeg, image/x-png, image/png, image/svg+xml"><br>
+          <input class="mb-4" type="file" name="main_logo" accept="image/gif, image/jpeg, image/pjpeg, image/x-png, image/png, image/svg+xml"><br>
           <button name="submit_main_logo" type="submit" class="btn btn-sm d-block d-sm-inline btn-secondary"><i class="bi bi-upload"></i> {{ lang.admin.upload }}</button>
         </p>
       </form>
@@ -62,19 +62,19 @@
       <legend data-bs-target="#ui_texts" style="padding-top:20px" unselectable="on">{{ lang.admin.ui_texts }}</legend><hr />
       <div id="ui_texts">
         <form class="form" data-id="uitexts" role="form" method="post">
-          <div>
+          <div class="mb-2">
             <label for="uitests_title_name">{{ lang.admin.title_name }}:</label>
             <input type="text" class="form-control" id="uitests_title_name" name="title_name" placeholder="mailcow UI" value="{{ ui_texts.title_name|raw }}">
           </div>
-          <div>
+          <div class="mb-2">
             <label for="uitests_main_name">{{ lang.admin.main_name }}:</label>
             <input type="text" class="form-control" id="uitests_main_name" name="main_name" placeholder="mailcow UI" value="{{ ui_texts.main_name|raw }}">
           </div>
-          <div>
+          <div class="mb-2">
             <label for="uitests_apps_name">{{ lang.admin.apps_name }}:</label>
             <input type="text" class="form-control" id="uitests_apps_name" name="apps_name" placeholder="{{ lang.header.apps }}" value="{{ ui_texts.apps_name|raw }}">
           </div>
-          <div>
+          <div class="mb-4">
             <label for="help_text">{{ lang.admin.help_text }}:</label>
             <textarea class="form-control" id="help_text" name="help_text" rows="7">{{ ui_texts.help_text|raw }}</textarea>
           </div>
@@ -82,11 +82,15 @@
           <div>
             <p class="text-muted">{{ lang.admin.ui_header_announcement_help }}</p>
             <label for="ui_announcement_type">{{ lang.admin.ui_header_announcement }}:</label>
-            <p><select multiple data-width="100%" id="ui_announcement_type" name="ui_announcement_type" class="selectpicker show-tick" data-max-options="1" title="{{ lang.admin.ui_header_announcement_select }}">
-                <option {% if ui_texts.ui_announcement_type == 'info' %}selected{% endif %} value="info">{{ lang.admin.ui_header_announcement_type_info }}</option>
-                <option {% if ui_texts.ui_announcement_type == 'warning' %}selected{% endif %} value="warning">{{ lang.admin.ui_header_announcement_type_warning }}</option>
-                <option {% if ui_texts.ui_announcement_type == 'danger' %}selected{% endif %} value="danger">{{ lang.admin.ui_header_announcement_type_danger }}</option>
-              </select></p>
+            <div class="row">
+              <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+                <p><select multiple data-width="100%" id="ui_announcement_type" name="ui_announcement_type" class="selectpicker show-tick" data-max-options="1" title="{{ lang.admin.ui_header_announcement_select }}">
+                    <option {% if ui_texts.ui_announcement_type == 'info' %}selected{% endif %} value="info">{{ lang.admin.ui_header_announcement_type_info }}</option>
+                    <option {% if ui_texts.ui_announcement_type == 'warning' %}selected{% endif %} value="warning">{{ lang.admin.ui_header_announcement_type_warning }}</option>
+                    <option {% if ui_texts.ui_announcement_type == 'danger' %}selected{% endif %} value="danger">{{ lang.admin.ui_header_announcement_type_danger }}</option>
+                  </select></p>
+              </div>
+            </div>
             <p><textarea class="form-control" id="ui_announcement_text" name="ui_announcement_text" rows="7">{{ ui_texts.ui_announcement_text }}</textarea></p>
             <div class="checkbox">
               <label>
@@ -95,7 +99,7 @@
             </div>
           </div>
           <hr>
-          <div>
+          <div class="mb-4">
             <label for="ui_footer">{{ lang.admin.ui_footer }}:</label>
             <textarea class="form-control" id="ui_footer" name="ui_footer" rows="7">{{ ui_texts.ui_footer }}</textarea>
           </div>

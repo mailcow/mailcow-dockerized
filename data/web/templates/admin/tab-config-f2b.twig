@@ -3,26 +3,26 @@
     <div class="card-header">{{ lang.admin.f2b_parameters }}</div>
     <div class="card-body">
       <form class="form" data-id="f2b" role="form" method="post">
-        <div>
+        <div class="mb-4">
           <label for="f2b_ban_time">{{ lang.admin.f2b_ban_time }}:</label>
           <input type="number" class="form-control" id="f2b_ban_time" name="ban_time" value="{{ f2b_data.ban_time }}" required>
         </div>
-        <div>
+        <div class="mb-4">
           <label for="f2b_max_attempts">{{ lang.admin.f2b_max_attempts }}:</label>
           <input type="number" class="form-control" id="f2b_max_attempts" name="max_attempts" value="{{ f2b_data.max_attempts }}" required>
         </div>
-        <div>
+        <div class="mb-4">
           <label for="f2b_retry_window">{{ lang.admin.f2b_retry_window }}:</label>
           <input type="number" class="form-control" id="f2b_retry_window" name="retry_window" value="{{ f2b_data.retry_window }}" required>
         </div>
-        <div>
+        <div class="mb-4">
           <label for="f2b_netban_ipv4">{{ lang.admin.f2b_netban_ipv4 }}:</label>
           <div class="input-group">
             <span class="input-group-text">/</span>
             <input type="number" class="form-control" id="f2b_netban_ipv4" name="netban_ipv4" value="{{ f2b_data.netban_ipv4 }}" required>
           </div>
         </div>
-        <div>
+        <div class="mb-4">
           <label for="f2b_netban_ipv6">{{ lang.admin.f2b_netban_ipv6 }}:</label>
           <div class="input-group">
             <span class="input-group-text">/</span>
@@ -31,11 +31,11 @@
         </div>
         <hr>
         <p class="text-muted">{{ lang.admin.f2b_list_info|raw }}</p>
-        <div>
+        <div class="mb-2">
           <label for="f2b_whitelist">{{ lang.admin.f2b_whitelist }}:</label>
           <textarea class="form-control" id="f2b_whitelist" name="whitelist" rows="5">{{ f2b_data.whitelist }}</textarea>
         </div>
-        <div>
+        <div class="mb-4">
           <label for="f2b_blacklist">{{ lang.admin.f2b_blacklist }}:</label>
           <textarea class="form-control" id="f2b_blacklist" name="blacklist" rows="5">{{ f2b_data.blacklist }}</textarea>
         </div>

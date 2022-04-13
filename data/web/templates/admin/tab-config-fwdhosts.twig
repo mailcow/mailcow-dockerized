@@ -21,11 +21,11 @@
       <legend>{{ lang.admin.add_forwarding_host }}</legend><hr />
       <p class="text-muted">{{ lang.admin.forwarding_hosts_add_hint }}</p>
       <form class="form" data-id="fwdhost" role="form" method="post">
-        <div>
+        <div class="mb-2">
           <label for="fwdhost_hostname">{{ lang.admin.host }}</label>
           <input class="form-control" id="fwdhost_hostname" name="hostname" placeholder="example.org" required>
         </div>
-        <div>
+        <div class="mb-4">
           <select data-width="200px" class="form-control" id="filter_spam" name="filter_spam" title="{{ lang.user.spamfilter }}" required>
             <option value="1">{{ lang.admin.active }}</option>
             <option value="0">{{ lang.admin.inactive }}</option>

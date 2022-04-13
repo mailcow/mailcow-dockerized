@@ -9,18 +9,21 @@
       </div>
       {% for domain, domain_data in dkim_domains %}
         {% if domain_data.dkim %}
-          <div class="row collapse in dkim_key_valid">
+          <div class="row collapse show dkim_key_valid">
             <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="{{ domain }}"></div>
             <div class="col-md-3">
               <p>{{ lang.admin.domain }}: <strong>{{ domain }}</strong>
-              <p class="dkim-label"><span class="badge fs-5 bg-success">{{ lang.admin.dkim_key_valid }}</span></p>
-              <p class="dkim-label"><span class="badge fs-5 bg-primary">{{ lang.admin.dkim_domains_selector }} '{{ domain_data.dkim.dkim_selector }}'</span></p>
-              <p class="dkim-label"><span class="badge fs-5 bg-info">{{ domain_data.dkim.length }} bit</span></p>
+              <p class="dkim-label"><span class="badge fs-6 bg-success">{{ lang.admin.dkim_key_valid }}</span></p>
+              <p class="dkim-label"><span class="badge fs-6 bg-primary">{{ lang.admin.dkim_domains_selector }} '{{ domain_data.dkim.dkim_selector }}'</span></p>
+              <p class="dkim-label"><span class="badge fs-6 bg-info">{{ domain_data.dkim.length }} bit</span></p>
               </p>
             </div>
             <div class="col-md-8">
-              <pre>{{ domain_data.dkim.dkim_txt }}</pre>
-              <p data-bs-toggle="modal" data-bs-target="#showDKIMprivKey" id="dkim_priv" style="cursor:pointer;margin-top:-8pt" data-priv-key="{{ domain_data.dkim.privkey }}"><small><i class="bi bi-arrow-return-right"></i> {{ lang.admin.dkim_private_key }}</small></p>
+              <textarea class="form-control" rows="6" readonly>{{ domain_data.dkim.dkim_txt }}</textarea>
+              <small>
+                <i class="bi bi-arrow-return-right"></i> 
+                <a href="#" data-bs-toggle="modal" data-bs-target="#showDKIMprivKey" id="dkim_priv" data-priv-key="{{ domain_data.dkim.privkey }}"> {{ lang.admin.dkim_private_key }}</a>
+              </small>
             </div>
             <hr class="d-block d-md-none">
           </div>
@@ -28,7 +31,7 @@
           <div class="row collapse in dkim_key_missing">
             <div class="col-md-1"><input class="dkim_missing" type="checkbox" data-id="dkim" name="multi_select" value="{{ domain }}" disabled></div>
             <div class="col-md-3">
-              <p>{{ lang.admin.domain }}: <strong>{{ domain }}</strong><br><span class="badge fs-5 bg-danger">{{ lang.admin.dkim_key_missing }}</span></p>
+              <p>{{ lang.admin.domain }}: <strong>{{ domain }}</strong><br><span class="badge fs-6 bg-danger">{{ lang.admin.dkim_key_missing }}</span></p>
             </div>
             <div class="col-md-8"><pre>-</pre></div>
             <hr class="d-block d-md-none">
@@ -40,9 +43,9 @@
               <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="{{ alias_domain }}"></div>
               <div class="col-md-2 offset-md-1">
                 <p><small>↳ Alias-Domain: <strong>{{ alias_domain }}</strong></small>
-                <p class="dkim-label"><span class="badge fs-5 bg-success">{{ lang.admin.dkim_key_valid }}</span></p>
-                <p class="dkim-label"><span class="badge fs-5 bg-primary">Selector '{{ alias_domain_data.dkim.dkim_selector }}'</span></p>
-                <p class="dkim-label"><span class="badge fs-5 bg-info">{{ alias_domain_data.dkim.length }} bit</span></p>
+                <p class="dkim-label"><span class="badge fs-6 bg-success">{{ lang.admin.dkim_key_valid }}</span></p>
+                <p class="dkim-label"><span class="badge fs-6 bg-primary">Selector '{{ alias_domain_data.dkim.dkim_selector }}'</span></p>
+                <p class="dkim-label"><span class="badge fs-6 bg-info">{{ alias_domain_data.dkim.length }} bit</span></p>
                 </p>
               </div>
               <div class="col-md-8">
@@ -55,7 +58,7 @@
             <div class="row collapse in dkim_key_missing">
               <div class="col-md-1"><input class="dkim_missing" type="checkbox" data-id="dkim" name="multi_select" value="{{ alias_domain }}" disabled></div>
               <div class="col-md-2 offset-md-1">
-                <p><small>↳ Alias-Domain: <strong>{{ alias_domain }}</strong><br></small><span class="badge fs-5 bg-danger">{{ lang.admin.dkim_key_missing }}</span></p>
+                <p><small>↳ Alias-Domain: <strong>{{ alias_domain }}</strong><br></small><span class="badge fs-6 bg-danger">{{ lang.admin.dkim_key_missing }}</span></p>
               </div>
               <div class="col-md-8"><pre>-</pre></div>
               <hr class="d-block d-md-none">
@@ -68,9 +71,9 @@
           <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="{{ blind }}"></div>
           <div class="col-md-3">
             <p>{{ lang.admin.domain }}: <strong>{{ blind }}</strong>
-            <p class="dkim-label"><span class="badge fs-5 bg-warning">{{ lang.admin.dkim_key_unused }}</span></p>
-            <p class="dkim-label"><span class="badge fs-5 bg-primary">Selector '{{ data.dkim.dkim_selector }}'</span></p>
-            <p class="dkim-label"><span class="badge fs-5 bg-info">{{ data.dkim.length }} bit</span></p>
+            <p class="dkim-label"><span class="badge fs-6 bg-warning">{{ lang.admin.dkim_key_unused }}</span></p>
+            <p class="dkim-label"><span class="badge fs-6 bg-primary">Selector '{{ data.dkim.dkim_selector }}'</span></p>
+            <p class="dkim-label"><span class="badge fs-6 bg-info">{{ data.dkim.length }} bit</span></p>
             </p>
           </div>
           <div class="col-md-8">
@@ -90,20 +93,22 @@
 
       <legend style="margin-top:40px">{{ lang.admin.dkim_add_key }}</legend><hr />
       <form class="form" data-id="dkim" role="form" method="post">
-        <div>
+        <div class="mb-4">
           <label for="dkim_add_domains">{{ lang.admin.domain_s }}</label>
           <input class="form-control input-sm" id="dkim_add_domains" name="domains" placeholder="example.org, example.com" required>
           <small><i class="bi bi-arrow-return-right"></i> <a href="#" id="dkim_missing_keys">{{ lang.admin.dkim_domains_wo_keys }}</a></small>
         </div>
-        <div>
+        <div class="mb-2">
           <label for="dkim_selector">{{ lang.admin.dkim_domains_selector }}</label>
           <input class="form-control input-sm" id="dkim_selector" name="dkim_selector" value="dkim" required>
         </div>
-        <div>
-          <select data-style="btn btn-secondary btn-sm" class="form-control" id="key_size" name="key_size" title="{{ lang.admin.dkim_key_length }}" required>
-            <option data-subtext="bits">1024</option>
-            <option data-subtext="bits">2048</option>
-          </select>
+        <div class="row mb-4">
+          <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+            <select data-style="btn btn-secondary btn-sm" class="form-control" id="key_size" name="key_size" title="{{ lang.admin.dkim_key_length }}" required>
+              <option data-subtext="bits">1024</option>
+              <option data-subtext="bits">2048</option>
+            </select>
+          </div>
         </div>
         <button class="btn btn-sm d-block d-sm-inline btn-success" data-action="add_item" data-id="dkim" data-api-url='add/dkim' data-api-attr='{}' href="#"><i class="bi bi-plus-lg"></i> {{ lang.admin.add }}</button>
       </form>
@@ -114,19 +119,19 @@
       <hr />
       <div id="import_dkim" class="collapse">
         <form class="form" data-id="dkim_import" role="form" method="post">
-          <div>
+          <div class="mb-2">
             <label for="dkim_import_domain">{{ lang.admin.domain }}:</label>
             <input class="form-control input-sm" id="dkim_import_domain" name="domain" placeholder="example.org" required>
           </div>
-          <div>
+          <div class="mb-2">
             <label for="dkim_import_selector">{{ lang.admin.dkim_domains_selector }}:</label>
             <input class="form-control input-sm" id="dkim_import_selector" name="dkim_selector" value="dkim" required>
           </div>
-          <div>
+          <div class="mb-4">
             <label for="private_key_file">{{ lang.admin.private_key }}: (RSA PKCS#8)</label>
             <textarea class="form-control input-sm" rows="10" name="private_key_file" id="private_key_file" required placeholder="-----BEGIN RSA KEY-----"></textarea>
           </div>
-          <div>
+          <div class="mb-2">
             <label>
               <input type="checkbox" name="overwrite_existing" value="1"> {{ lang.admin.dkim_overwrite_key }}
             </label>
@@ -141,9 +146,9 @@
       <hr />
       <div id="duplicate_dkim" class="collapse">
         <form class="form-horizontal" data-id="dkim_duplicate" role="form" method="post">
-          <div class="row">
-            <label class="control-label col-sm-2" for="from_domain">{{ lang.admin.dkim_from }}:</label>
-            <div class="col-sm-10">
+          <div class="row mb-2">
+            <label class="control-label col-sm-2 text-sm-end" for="from_domain">{{ lang.admin.dkim_from }}:</label>
+            <div class="col-sm-10 col-md-6 col-lg-4 col-xl-3">
               <select data-style="btn btn-secondary btn-sm"
                       data-live-search="true"
                       data-id="dkim_duplicate"
@@ -155,9 +160,9 @@
               </select>
             </div>
           </div>
-          <div class="row">
-            <label class="control-label col-sm-2" for="to_domain">{{ lang.admin.dkim_to }}:</label>
-            <div class="col-sm-10">
+          <div class="row mb-4">
+            <label class="control-label col-sm-2 text-sm-end" for="to_domain">{{ lang.admin.dkim_to }}:</label>
+            <div class="col-sm-10 col-md-6 col-lg-4 col-xl-3">
               <select
                 data-live-search="true"
                 data-style="btn btn-secondary btn-sm"
