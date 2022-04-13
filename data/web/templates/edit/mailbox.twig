@@ -16,13 +16,13 @@
       <input type="hidden" value="0" name="force_pw_update">
       <input type="hidden" value="0" name="sogo_access">
       <input type="hidden" value="0" name="protocol_access">
-      <div class="form-group">
+      <div class="row">
         <label class="control-label col-sm-2" for="name">{{ lang.edit.full_name }}</label>
         <div class="col-sm-10">
           <input type="text" class="form-control" name="name" value="{{ result.name }}">
         </div>
       </div>
-      <div class="form-group">
+      <div class="row">
         <label class="control-label col-sm-2" for="quota">{{ lang.edit.quota_mb }}
           <br><span id="quotaBadge" class="badge">max. {{ (result.max_new_quota / 1048576) }} MiB</span>
         </label>
@@ -31,7 +31,7 @@
           <small class="text-muted">0 = ∞</small>
         </div>
       </div>
-      <div class="form-group">
+      <div class="row">
         <label class="control-label col-sm-2" for="sender_acl">{{ lang.edit.sender_acl }}</label>
         <div class="col-sm-10">
           <select data-live-search="true" data-width="100%" style="width:100%" id="editSelectSenderACL" name="sender_acl" size="10" multiple>
@@ -69,7 +69,7 @@
           <small class="text-muted">{{ lang.edit.sender_acl_info|raw }}</small>
         </div>
       </div>
-      <div class="form-group">
+      <div class="row">
         <label class="control-label col-sm-2" for="relayhost">{{ lang.edit.relayhost }}</label>
         <div class="col-sm-10">
           <select data-acl="{{ acl.mailbox_relayhost }}" data-live-search="true" id="relayhost" name="relayhost" class="form-control mb-4">
@@ -89,7 +89,7 @@
           <small class="text-muted">{{ lang.edit.mailbox_relayhost_info }}</small>
         </div>
       </div>
-      <div class="form-group">
+      <div class="row">
         <label class="control-label col-sm-2">{{ lang.user.quarantine_notification }}</label>
         <div class="col-sm-10">
           <div class="btn-group" data-acl="{{ acl.quarantine_notification }}">
@@ -121,7 +121,7 @@
           <p class="text-muted"><small>{{ lang.user.quarantine_notification_info }}</small></p>
         </div>
       </div>
-      <div class="form-group">
+      <div class="row">
         <label class="control-label col-sm-2">{{ lang.user.quarantine_category }}</label>
         <div class="col-sm-10">
           <div class="btn-group" data-acl="{{ acl.quarantine_category }}">
@@ -147,7 +147,7 @@
           <p class="text-muted"><small>{{ lang.user.quarantine_category_info }}</small></p>
         </div>
       </div>
-      <div class="form-group">
+      <div class="row">
         <label class="control-label col-sm-2" for="sender_acl">{{ lang.user.tls_policy }}</label>
         <div class="col-sm-10">
           <div class="btn-group" data-acl="{{ acl.tls_policy }}">
@@ -166,19 +166,19 @@
           </div>
         </div>
       </div>
-      <div class="form-group">
+      <div class="row">
         <label class="control-label col-sm-2" for="password">{{ lang.edit.password }} (<a href="#" class="generate_password">{{ lang.edit.generate }}</a>)</label>
         <div class="col-sm-10">
           <input type="password" data-pwgen-field="true" data-hibp="true" class="form-control" name="password" placeholder="{{ lang.edit.unchanged_if_empty }}" autocomplete="new-password">
         </div>
       </div>
-      <div class="form-group">
+      <div class="row">
         <label class="control-label col-sm-2" for="password2">{{ lang.edit.password_repeat }}</label>
         <div class="col-sm-10">
           <input type="password" data-pwgen-field="true" class="form-control" name="password2" autocomplete="new-password">
         </div>
       </div>
-      <div data-acl="{{ acl.extend_sender_acl }}" class="form-group">
+      <div data-acl="{{ acl.extend_sender_acl }}" class="row">
         <label class="control-label col-sm-2" for="extended_sender_acl">{{ lang.edit.extended_sender_acl }}</label>
         <div class="col-sm-10">
           {% if sender_acl_handles.external_sender_aliases %}
@@ -188,7 +188,7 @@
           <small class="text-muted">{{ lang.edit.extended_sender_acl_info|raw }}</small>
         </div>
       </div>
-      <div class="form-group">
+      <div class="row">
         <label class="control-label col-sm-2" for="protocol_access">{{ lang.edit.allowed_protocols }}</label>
         <div class="col-sm-10">
           <select data-acl="{{ acl.protocol_access }}" name="protocol_access" multiple class="form-control">
@@ -199,7 +199,7 @@
           </select>
         </div>
       </div>
-      <div hidden data-acl="{{ acl.smtp_ip_access }}" class="form-group">
+      <div hidden data-acl="{{ acl.smtp_ip_access }}" class="row">
         <label class="control-label col-sm-2" for="allow_from_smtp">{{ lang.edit.allow_from_smtp }}</label>
         <div class="col-sm-10">
           <input type="text" class="form-control" name="allow_from_smtp" value="{{ allow_from_smtp }}" placeholder="1.1.1.1, 10.2.0.0/24, ...">
@@ -207,7 +207,7 @@
         </div>
       </div>
       <hr>
-      <div class="form-group">
+      <div class="row">
         <div class="offset-sm-2 col-sm-10">
           <select name="active" class="form-control">
             <option value="1"{% if result.active == '1' %} selected{% endif %}>{{ lang.edit.active }}</option>
@@ -216,7 +216,7 @@
           </select>
         </div>
       </div>
-      <div class="form-group">
+      <div class="row">
         <div class="offset-sm-2 col-sm-10">
           <div class="checkbox">
             <label><input type="checkbox" value="1" name="force_pw_update"{% if result.attributes.force_pw_update == '1' %} checked{% endif %}> {{ lang.edit.force_pw_update }}</label>
@@ -225,7 +225,7 @@
         </div>
       </div>
       {% if not skip_sogo %}
-      <div data-acl="{{ acl.sogo_access }}" class="form-group">
+      <div data-acl="{{ acl.sogo_access }}" class="row">
         <div class="offset-sm-2 col-sm-10">
           <div class="checkbox">
             <label><input type="checkbox" value="1" name="sogo_access"{% if result.attributes.sogo_access == '1' %} checked{% endif %}> {{ lang.edit.sogo_access }}</label>
@@ -234,7 +234,7 @@
         </div>
       </div>
       {% endif %}
-      <div class="form-group">
+      <div class="row">
         <div class="offset-sm-2 col-sm-10">
           <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="editmailbox" data-item="{{ result.username }}" data-api-url='edit/mailbox' data-api-attr='{}' href="#">{{ lang.edit.save }}</button>
         </div>
@@ -253,34 +253,34 @@
         <div class="col-sm-10">
           <p class="text-muted">{{ lang.user.pushover_info|format(mailbox)|raw }}</p>
           <p class="text-muted">{{ lang.edit.pushover_vars|raw }}: <code>{SUBJECT}</code>, <code>{SENDER}</code></p>
-          <div class="form-group">
+          <div class="row">
             <div class="row">
               <div class="col-sm-6">
-                <div class="form-group">
+                <div class="row">
                   <label for="token">API Token/Key (Application)</label>
                   <input type="text" class="form-control" name="token" maxlength="30" value="{{ pushover_data.token }}" required>
                 </div>
               </div>
               <div class="col-sm-6">
-                <div class="form-group">
+                <div class="row">
                   <label for="key">User/Group Key</label>
                   <input type="text" class="form-control" name="key" maxlength="30" value="{{ pushover_data.key }}" required>
                 </div>
               </div>
               <div class="col-sm-6">
-                <div class="form-group">
+                <div class="row">
                   <label for="title">{{ lang.edit.pushover_title }}</label>
                   <input type="text" class="form-control" name="title" value="{{ pushover_data.title }}" placeholder="Mail">
                 </div>
               </div>
               <div class="col-sm-6">
-                <div class="form-group">
+                <div class="row">
                   <label for="text">{{ lang.edit.pushover_text }}</label>
                   <input type="text" class="form-control" name="text" value="{{ pushover_data.text }}" placeholder="You've got mail 📧">
                 </div>
               </div>
               <div class="col-sm-12">
-                <div class="form-group">
+                <div class="row">
                   <label for="text">{{ lang.edit.pushover_sender_array|raw }}</label>
                   <input type="text" class="form-control" name="senders" value="{{ pushover_data.senders }}" placeholder="sender1@example.com, sender2@example.com">
                 </div>
@@ -298,7 +298,7 @@
               </div>
               <div class="col-sm-12">
                 <div id="po_advanced" class="collapse">
-                  <div class="form-group">
+                  <div class="row">
                     <label for="text">{{ lang.edit.pushover_sender_regex }}</label>
                     <input type="text" class="form-control" name="senders_regex" value="{{ pushover_data.senders_regex }}" placeholder="/(.*@example\.org$|^foo@example\.com$)/i" regex="true">
                     <div class="checkbox">
@@ -328,14 +328,14 @@
           <p class="text-muted">ACL</p>
         </div>
         <div class="col-sm-10">
-          <div class="form-group">
+          <div class="row">
             <select id="user_acl" name="user_acl" size="10" multiple>
               {% for acl, val in user_acls %}
                 <option value="{{ acl }}"{% if val == 1 %} selected{% endif %}>{{ lang.acl[acl] }}</option>
               {% endfor %}
             </select>
           </div>
-          <div class="form-group">
+          <div class="row">
             <button class="btn btn-xs-lg d-block d-sm-inline btn-secondary" data-action="edit_selected" data-id="useracl" data-item="{{ mailbox }}" data-api-url='edit/user-acl' data-api-attr='{}' href="#">{{ lang.edit.save }}</button>
           </div>
         </div>
@@ -349,15 +349,15 @@
           <p class="text-muted">{{ lang.acl.ratelimit }}</p>
         </div>
         <div class="col-sm-10">
-          <div class="form-group">
+          <div class="row">
             <input name="rl_value" type="number" autocomplete="off" value="{{ rl.value }}" class="form-control" placeholder="{{ lang.ratelimit.disabled }}">
           </div>
-          <div class="form-group">
+          <div class="row">
             <select name="rl_frame" class="form-control">
               {% include 'mailbox/rl-frame.twig' %}
             </select>
           </div>
-          <div class="form-group">
+          <div class="row">
             <button class="btn btn-xs-lg d-block d-sm-inline btn-secondary" data-action="edit_selected" data-id="mboxratelimit" data-item="{{ mailbox }}" data-api-url='edit/rl-mbox' data-api-attr='{}' href="#">{{ lang.edit.save }}</button>
           </div>
           <p class="text-muted">{{ lang.edit.mbox_rl_info }}</p>

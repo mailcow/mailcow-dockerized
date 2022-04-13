@@ -6,13 +6,13 @@
       <form class="form" role="form" data-id="quota_notification" method="post">
         <div class="row">
           <div class="col-sm-6">
-            <div class="form-group">
+            <div>
               <label for="quota_notification_sender">{{ lang.admin.quota_notification_sender }}:</label>
               <input type="email" class="form-control" id="quota_notification_sender" name="sender" value="{{ qn_data.sender }}" placeholder="quota-warning@localhost">
             </div>
           </div>
           <div class="col-sm-6">
-            <div class="form-group">
+            <div>
               <label for="quota_notification_subject">{{ lang.admin.quota_notification_subject }}:</label>
               <input type="text" class="form-control" id="quota_notification_subject" name="subject" value="{{ qn_data.subject }}" placeholder="Quota warning">
             </div>
@@ -32,7 +32,7 @@
         </div>
         <div class="row">
           <div class="col-sm-10">
-            <div class="form-group">
+            <div>
               <br>
               <a type="button" class="btn btn-sm d-block d-sm-inline btn-success" data-action="edit_selected"
                  data-item="quota_notification"

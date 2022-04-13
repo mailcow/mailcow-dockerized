@@ -62,24 +62,24 @@
       <legend data-bs-target="#ui_texts" style="padding-top:20px" unselectable="on">{{ lang.admin.ui_texts }}</legend><hr />
       <div id="ui_texts">
         <form class="form" data-id="uitexts" role="form" method="post">
-          <div class="form-group">
+          <div>
             <label for="uitests_title_name">{{ lang.admin.title_name }}:</label>
             <input type="text" class="form-control" id="uitests_title_name" name="title_name" placeholder="mailcow UI" value="{{ ui_texts.title_name|raw }}">
           </div>
-          <div class="form-group">
+          <div>
             <label for="uitests_main_name">{{ lang.admin.main_name }}:</label>
             <input type="text" class="form-control" id="uitests_main_name" name="main_name" placeholder="mailcow UI" value="{{ ui_texts.main_name|raw }}">
           </div>
-          <div class="form-group">
+          <div>
             <label for="uitests_apps_name">{{ lang.admin.apps_name }}:</label>
             <input type="text" class="form-control" id="uitests_apps_name" name="apps_name" placeholder="{{ lang.header.apps }}" value="{{ ui_texts.apps_name|raw }}">
           </div>
-          <div class="form-group">
+          <div>
             <label for="help_text">{{ lang.admin.help_text }}:</label>
             <textarea class="form-control" id="help_text" name="help_text" rows="7">{{ ui_texts.help_text|raw }}</textarea>
           </div>
           <hr>
-          <div class="form-group">
+          <div>
             <p class="text-muted">{{ lang.admin.ui_header_announcement_help }}</p>
             <label for="ui_announcement_type">{{ lang.admin.ui_header_announcement }}:</label>
             <p><select multiple data-width="100%" id="ui_announcement_type" name="ui_announcement_type" class="selectpicker show-tick" data-max-options="1" title="{{ lang.admin.ui_header_announcement_select }}">
@@ -95,7 +95,7 @@
             </div>
           </div>
           <hr>
-          <div class="form-group">
+          <div>
             <label for="ui_footer">{{ lang.admin.ui_footer }}:</label>
             <textarea class="form-control" id="ui_footer" name="ui_footer" rows="7">{{ ui_texts.ui_footer }}</textarea>
           </div>

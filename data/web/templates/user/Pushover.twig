@@ -10,60 +10,58 @@
       <div class="col-sm-10">
         <p class="text-muted">{{ lang.user.pushover_info|format(mailcow_cc_username)|raw }}</p>
         <p class="text-muted">{{ lang.user.pushover_vars|raw }}: <code>{SUBJECT}</code>, <code>{SENDER}</code></p>
-        <div class="form-group">
-          <div class="row">
-            <div class="col-sm-6">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label for="token">API Token/Key (Application)</label>
+              <input type="text" class="form-control" name="token" maxlength="30" value="{{ pushover_data.token }}" required>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label for="key">User/Group Key</label>
+              <input type="text" class="form-control" name="key" maxlength="30" value="{{ pushover_data.key }}" required>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label for="title">{{ lang.user.pushover_title }}</label>
+              <input type="text" class="form-control" name="title" value="{{ pushover_data.title }}" placeholder="Mail">
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label for="text">{{ lang.user.pushover_text }}</label>
+              <input type="text" class="form-control" name="text" value="{{ pushover_data.text }}" placeholder="You've got mail 📧">
+            </div>
+          </div>
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label for="text">{{ lang.user.pushover_sender_array|raw }}</label>
+              <input type="text" class="form-control" name="senders" value="{{ pushover_data.senders }}" placeholder="sender1@example.com, sender2@example.com">
+            </div>
+          </div>
+          <div class="col-sm-12">
+            <div class="checkbox">
+              <label><input type="checkbox" value="1" name="active"{% if pushover_data.active == '1' %} checked{% endif %}> {{ lang.user.active }}</label>
+            </div>
+          </div>
+          <div class="col-sm-12">
+            <legend style="cursor:pointer;margin-top:10px" data-bs-target="#po_advanced" unselectable="on" data-bs-toggle="collapse">
+              <i style="font-size:10pt;" class="bi bi-plus-square"></i> {{ lang.user.advanced_settings }}
+            </legend>
+            <hr />
+          </div>
+          <div class="col-sm-12">
+            <div id="po_advanced" class="collapse">
               <div class="form-group">
-                <label for="token">API Token/Key (Application)</label>
-                <input type="text" class="form-control" name="token" maxlength="30" value="{{ pushover_data.token }}" required>
-              </div>
-            </div>
-            <div class="col-sm-6">
-              <div class="form-group">
-                <label for="key">User/Group Key</label>
-                <input type="text" class="form-control" name="key" maxlength="30" value="{{ pushover_data.key }}" required>
-              </div>
-            </div>
-            <div class="col-sm-6">
-              <div class="form-group">
-                <label for="title">{{ lang.user.pushover_title }}</label>
-                <input type="text" class="form-control" name="title" value="{{ pushover_data.title }}" placeholder="Mail">
-              </div>
-            </div>
-            <div class="col-sm-6">
-              <div class="form-group">
-                <label for="text">{{ lang.user.pushover_text }}</label>
-                <input type="text" class="form-control" name="text" value="{{ pushover_data.text }}" placeholder="You've got mail 📧">
-              </div>
-            </div>
-            <div class="col-sm-12">
-              <div class="form-group">
-                <label for="text">{{ lang.user.pushover_sender_array|raw }}</label>
-                <input type="text" class="form-control" name="senders" value="{{ pushover_data.senders }}" placeholder="sender1@example.com, sender2@example.com">
-              </div>
-            </div>
-            <div class="col-sm-12">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active"{% if pushover_data.active == '1' %} checked{% endif %}> {{ lang.user.active }}</label>
-              </div>
-            </div>
-            <div class="col-sm-12">
-              <legend style="cursor:pointer;margin-top:10px" data-bs-target="#po_advanced" unselectable="on" data-bs-toggle="collapse">
-                <i style="font-size:10pt;" class="bi bi-plus-square"></i> {{ lang.user.advanced_settings }}
-              </legend>
-              <hr />
-            </div>
-            <div class="col-sm-12">
-              <div id="po_advanced" class="collapse">
-                <div class="form-group">
-                  <label for="text">{{ lang.user.pushover_sender_regex }}</label>
-                  <input type="text" class="form-control" name="senders_regex" value="{{ pushover_data.senders_regex }}" placeholder="/(.*@example\.org$|^foo@example\.com$)/i" regex="true">
-                  <div class="checkbox">
-                    <label><input type="checkbox" value="1" name="evaluate_x_prio"{% if pushover_data.attributes.evaluate_x_prio == '1' %} checked{% endif %}> {{ lang.user.pushover_evaluate_x_prio|raw }}</label>
-                  </div>
-                  <div class="checkbox">
-                    <label><input type="checkbox" value="1" name="only_x_prio"{% if pushover_data.attributes.only_x_prio == '1' %} checked{% endif %}> {{ lang.user.pushover_only_x_prio|raw }}</label>
-                  </div>
+                <label for="text">{{ lang.user.pushover_sender_regex }}</label>
+                <input type="text" class="form-control" name="senders_regex" value="{{ pushover_data.senders_regex }}" placeholder="/(.*@example\.org$|^foo@example\.com$)/i" regex="true">
+                <div class="checkbox">
+                  <label><input type="checkbox" value="1" name="evaluate_x_prio"{% if pushover_data.attributes.evaluate_x_prio == '1' %} checked{% endif %}> {{ lang.user.pushover_evaluate_x_prio|raw }}</label>
+                </div>
+                <div class="checkbox">
+                  <label><input type="checkbox" value="1" name="only_x_prio"{% if pushover_data.attributes.only_x_prio == '1' %} checked{% endif %}> {{ lang.user.pushover_only_x_prio|raw }}</label>
                 </div>
               </div>
             </div>
