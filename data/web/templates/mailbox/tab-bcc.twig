@@ -1,6 +1,6 @@
 <div role="tabpanel" class="tab-pane fade" id="tab-bcc" role="tabpanel" aria-labelledby="tab-bcc">
-  <div class="card">
-    <div class="card-header">
+  <div class="card mb-4">
+    <div class="card-header d-flex">
       {{ lang.mailbox.bcc_maps }} <span class="badge bg-info table-lines"></span>
       <div class="btn-group ms-auto d-none d-sm-flex">
         <button class="btn btn-xs btn-success" href="#" data-acl="{{ acl.bcc_maps }}" data-bs-toggle="modal" data-bs-target="#addBCCModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_bcc_entry }}</button>
@@ -36,7 +36,7 @@
     </div>
   </div>
   <div class="card{% if mailcow_cc_role != 'admin' %} hidden{% endif %}">
-    <div class="card-header">
+    <div class="card-header d-flex">
       {{ lang.mailbox.recipient_maps }} <span class="badge bg-info table-lines"></span>
       <div class="btn-group ms-auto d-none d-sm-flex">
         <button class="btn btn-xs btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addRecipientMapModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_recipient_map_entry }}</button>
