@@ -1,5 +1,5 @@
 <div role="tabpanel" class="tab-pane fade show active" id="tab-config-admins" role="tabpanel" aria-labelledby="tab-config-admins">
-    <div class="card">
+    <div class="card mb-4">
       <div class="card-header bg-danger text-white">{{ lang.admin.admin_details }}</div>
       <div class="card-body">
         <div class="table-responsive">
@@ -135,33 +135,33 @@
                 </div>
                 <div class="card-body">
                   <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
-                    <div class="row">
+                    <div class="row mb-4">
                       <label class="control-label col-sm-3" for="allow_from_ro">{{ lang.admin.api_allow_from }}:</label>
                       <div class="col-sm-9">
                         <textarea class="form-control textarea-code" rows="7" name="allow_from" id="allow_from_ro" {% if api.ro.skip_ip_check %}disabled{% endif %} required>{{ api.ro.allow_from }}</textarea>
                       </div>
                     </div>
-                    <div class="row">
+                    <div class="row mb-2">
                       <div class="offset-sm-3 col-sm-9">
                         <label>
                           <input type="checkbox" name="skip_ip_check" id="skip_ip_check_ro" {% if api.ro.skip_ip_check %}checked{% endif %}> {{ lang.admin.api_skip_ip_check }}
                         </label>
                       </div>
                     </div>
-                    <div class="row">
+                    <div class="row mb-4">
                       <label class="control-label col-sm-3">{{ lang.admin.api_key }}:</label>
                       <div class="col-sm-9">
-                        <pre>{{ api.ro.api_key|default('-') }}</pre>
+                        <input type="text" class="form-control" value="{{ api.ro.api_key|default('-') }}" readonly />
                       </div>
                     </div>
-                    <div class="row">
+                    <div class="row mb-2">
                       <div class="offset-sm-3 col-sm-9">
                         <label>
                           <input type="checkbox" name="active" {% if api.ro.active %}checked{% endif %}> {{ lang.admin.activate_api }}
                         </label>
                       </div>
                     </div>
-                    <div class="row">
+                    <div class="row mb-2">
                       <div class="offset-sm-3 col-sm-9">
                         <div class="btn-group">
                           <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success" name="admin_api[ro]" type="submit" href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
@@ -180,33 +180,33 @@
                 </div>
                 <div class="card-body">
                   <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
-                    <div class="row">
+                    <div class="row mb-4">
                       <label class="control-label col-sm-3" for="allow_from_rw">{{ lang.admin.api_allow_from }}:</label>
                       <div class="col-sm-9">
                         <textarea class="form-control textarea-code" rows="7" name="allow_from" id="allow_from_rw" {% if api.rw.skip_ip_check %}disabled{% endif %} required>{{ api.rw.allow_from }}</textarea>
                       </div>
                     </div>
-                    <div class="row">
+                    <div class="row mb-2">
                       <div class="offset-sm-3 col-sm-9">
                         <label>
                           <input type="checkbox" name="skip_ip_check" id="skip_ip_check_rw" {% if api.rw.skip_ip_check %}checked{% endif %}> {{ lang.admin.api_skip_ip_check }}
                         </label>
                       </div>
                     </div>
-                    <div class="row">
+                    <div class="row mb-4">
                       <label class="control-label col-sm-3" for="admin_api_key">{{ lang.admin.api_key }}:</label>
                       <div class="col-sm-9">
-                        <pre>{{ api.rw.api_key|default('-') }}</pre>
+                        <input type="text" class="form-control" value="{{ api.rw.api_key|default('-') }}" readonly />
                       </div>
                     </div>
-                    <div class="row">
+                    <div class="row mb-2">
                       <div class="offset-sm-3 col-sm-9">
                         <label>
                           <input type="checkbox" name="active" {% if api.rw.active %}checked{% endif %}> {{ lang.admin.activate_api }}
                         </label>
                       </div>
                     </div>
-                    <div class="row">
+                    <div class="row mb-2">
                       <div class="offset-sm-3 col-sm-9">
                         <div class="btn-group">
                           <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success" name="admin_api[rw]" type="submit" href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
@@ -223,7 +223,7 @@
       </div>
     </div>
 
-  <div class="card">
+  <div class="card mb-4">
     <div class="card-header">{{ lang.admin.domain_admins }}</div>
     <div class="card-body">
       <div class="table-responsive">
