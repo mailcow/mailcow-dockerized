@@ -453,6 +453,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           if (empty($description)) {
             $description = $domain;
           }
+          $tags         = $_data['tags'];
           $aliases      = (int)$_data['aliases'];
           $mailboxes    = (int)$_data['mailboxes'];
           $defquota     = (int)$_data['defquota'];
@@ -545,10 +546,12 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
+
           $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE `external` = 1 AND `send_as` LIKE :domain");
           $stmt->execute(array(
             ':domain' => '%@' . $domain
           ));
+          // save domain
           $stmt = $pdo->prepare("INSERT INTO `domain` (`domain`, `description`, `aliases`, `mailboxes`, `defquota`, `maxquota`, `quota`, `backupmx`, `gal`, `active`, `relay_unknown_only`, `relay_all_recipients`)
             VALUES (:domain, :description, :aliases, :mailboxes, :defquota, :maxquota, :quota, :backupmx, :gal, :active, :relay_unknown_only, :relay_all_recipients)");
           $stmt->execute(array(
@@ -565,6 +568,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ':relay_unknown_only' => $relay_unknown_only,
             ':relay_all_recipients' => $relay_all_recipients
           ));
+          // save tags
+          foreach($tags as $tag){
+            $stmt = $pdo->prepare("INSERT INTO `tags_domain` (`domain`, `tag_name`) VALUES (:domain, :tag_name)");
+            $stmt->execute(array(
+              ':domain' => $domain,
+              ':tag_name' => $tag,
+            ));
+          }
+
           try {
             $redis->hSet('DOMAIN_MAP', $domain, 1);
           }
@@ -942,6 +954,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $password     = $_data['password'];
           $password2    = $_data['password2'];
           $name         = ltrim(rtrim($_data['name'], '>'), '<');
+          $tags         = $_data['tags'];
           $quota_m      = intval($_data['quota']);
           if ((!isset($_SESSION['acl']['unlimited_quota']) || $_SESSION['acl']['unlimited_quota'] != "1") && $quota_m === 0) {
             $_SESSION['return'][] = array(
@@ -1103,6 +1116,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $stmt->execute(array(
             ':username' => $username
           ));
+          // save tags
+          foreach($tags as $tag){
+            $stmt = $pdo->prepare("INSERT INTO `tags_mailbox` (`username`, `tag_name`) VALUES (:username, :tag_name)");
+            $stmt->execute(array(
+              ':username' => $username,
+              ':tag_name' => $tag,
+            ));
+          }
           $stmt = $pdo->prepare("INSERT INTO `quota2` (`username`, `bytes`, `messages`)
             VALUES (:username, '0', '0') ON DUPLICATE KEY UPDATE `bytes` = '0', `messages` = '0';");
           $stmt->execute(array(':username' => $username));
@@ -2146,6 +2167,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $gal                  = (isset($_data['gal'])) ? intval($_data['gal']) : $is_now['gal'];
                 $description          = (!empty($_data['description']) && isset($_SESSION['acl']['domain_desc']) && $_SESSION['acl']['domain_desc'] == "1") ? $_data['description'] : $is_now['description'];
                 (int)$relayhost       = (isset($_data['relayhost']) && isset($_SESSION['acl']['domain_relayhost']) && $_SESSION['acl']['domain_relayhost'] == "1") ? intval($_data['relayhost']) : intval($is_now['relayhost']);
+                $tags                 = (is_array($_data['tags']) ? $_data['tags'] : array());
               }
               else {
                 $_SESSION['return'][] = array(
@@ -2155,6 +2177,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 );
                 continue;
               }
+
               $stmt = $pdo->prepare("UPDATE `domain` SET
               `description` = :description,
               `gal` = :gal
@@ -2164,6 +2187,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':gal' => $gal,
                 ':domain' => $domain
               ));
+              // save tags, tag_name is unique
+              foreach($tags as $tag){
+                $stmt = $pdo->prepare("INSERT INTO `tags_domain` (`domain`, `tag_name`) VALUES (:domain, :tag_name)");
+                $stmt->execute(array(
+                  ':domain' => $domain,
+                  ':tag_name' => $tag,
+                ));
+              }
+
               $_SESSION['return'][] = array(
                 'type' => 'success',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -2185,6 +2217,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $maxquota             = (!empty($_data['maxquota'])) ? $_data['maxquota'] : ($is_now['max_quota_for_mbox'] / 1048576);
                 $quota                = (!empty($_data['quota'])) ? $_data['quota'] : ($is_now['max_quota_for_domain'] / 1048576);
                 $description          = (!empty($_data['description'])) ? $_data['description'] : $is_now['description'];
+                $tags                 = (is_array($_data['tags']) ? $_data['tags'] : array());
                 if ($relay_all_recipients == '1') {
                   $backupmx = '1';
                 }
@@ -2283,6 +2316,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 );
                 continue;
               }
+
               $stmt = $pdo->prepare("UPDATE `domain` SET
               `relay_all_recipients` = :relay_all_recipients,
               `relay_unknown_only` = :relay_unknown_only,
@@ -2312,6 +2346,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':description' => $description,
                 ':domain' => $domain
               ));
+              // save tags, tag_name is unique
+              foreach($tags as $tag){
+                $stmt = $pdo->prepare("INSERT INTO `tags_domain` (`domain`, `tag_name`) VALUES (:domain, :tag_name)");
+                $stmt->execute(array(
+                  ':domain' => $domain,
+                  ':tag_name' => $tag,
+                ));
+              }
+
               $_SESSION['return'][] = array(
                 'type' => 'success',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -2360,6 +2403,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $quota_b    = $quota_m * 1048576;
               $password   = (!empty($_data['password'])) ? $_data['password'] : null;
               $password2  = (!empty($_data['password2'])) ? $_data['password2'] : null;
+              $tags       = (is_array($_data['tags']) ? $_data['tags'] : array());
             }
             else {
               $_SESSION['return'][] = array(
@@ -2636,6 +2680,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               ':relayhost' => $relayhost,
               ':username' => $username
             ));
+            // save tags
+            foreach($tags as $tag){
+              $stmt = $pdo->prepare("INSERT INTO `tags_mailbox` (`username`, `tag_name`) VALUES (:username, :tag_name)");
+              $stmt->execute(array(
+                ':username' => $username,
+                ':tag_name' => $tag,
+              ));
+            }
+            
             $_SESSION['return'][] = array(
               'type' => 'success',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -2854,7 +2907,28 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           if (isset($_data) && !hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
             return false;
           }
+          elseif (isset($_extra) && isset($_data) && is_array($_extra)) {
+            // get by domain and tags
+            if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) return false;
+            $params = array_map('strtolower', $_extra);
+            array_unshift($params , $_data);
+
+            $sql = "SELECT `username` FROM `tags_mailbox` WHERE `domain` = ? AND ";
+            foreach ($tags as $key => $tag) {
+              $sql = $sql."`tag_name` = ?";
+              if ($key === array_key_last($array)) break;
+              $sql = $sql.' AND ';
+            }
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($params);
+
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            while($row = array_shift($rows)) {
+              $mailboxes[] = $row['username'];
+            }
+          }
           elseif (isset($_data) && hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
+            // get by domain
             $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE (`kind` = '' OR `kind` = NULL) AND `domain` = :domain");
             $stmt->execute(array(
               ':domain' => $_data,
@@ -2862,6 +2936,25 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
             while($row = array_shift($rows)) {
               $mailboxes[] = $row['username'];
+            }
+          }
+          elseif (isset($_extra) && is_array($_extra)) {
+            // get by tags
+            $tags = array_map('strtolower', $_extra);
+
+            $sql = "SELECT `username`, `domain` FROM `tags_mailbox` WHERE ";
+            foreach ($tags as $key => $tag) {
+              $sql = $sql."`tag_name` = ?";
+              if ($key === array_key_last($array)) break;
+              $sql = $sql.' AND ';
+            }
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($tags);
+
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            while($row = array_shift($rows)) {
+              if (hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $row['domain'])) 
+                $mailboxes[] = $row['username'];
             }
           }
           else {
@@ -3348,20 +3441,45 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           if ($_SESSION['mailcow_cc_role'] != "admin" && $_SESSION['mailcow_cc_role'] != "domainadmin") {
             return false;
           }
-          $stmt = $pdo->prepare("SELECT `domain` FROM `domain`
-            WHERE (`domain` IN (
-              SELECT `domain` from `domain_admins`
-                WHERE (`active`='1' AND `username` = :username))
-              )
-              OR 'admin'= :role");
-          $stmt->execute(array(
-            ':username' => $_SESSION['mailcow_cc_username'],
-            ':role' => $_SESSION['mailcow_cc_role'],
-          ));
-          $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-          while($row = array_shift($rows)) {
-            $domains[] = $row['domain'];
+
+          if (isset($_extra) && is_array($_extra)){
+            // get by tags
+            $tags = array_map('strtolower', $_extra);
+
+            $sql = "SELECT `domain` FROM `tags_domain` WHERE ";
+            foreach ($tags as $key => $tag) {
+              $sql = $sql."`tag_name` = ?";
+              if ($key === array_key_last($array)) break;
+              $sql = $sql.' AND ';
+            }
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($tags);
+
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            while($row = array_shift($rows)) {
+              if ($_SESSION['mailcow_cc_role'] == "admin")
+                $domains[] = $row['domain'];
+              elseif (hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $row['domain'])) 
+                $domains[] = $row['domain'];
+            }
+          } else {
+            // get all
+            $stmt = $pdo->prepare("SELECT `domain` FROM `domain`
+              WHERE (`domain` IN (
+                SELECT `domain` from `domain_admins`
+                  WHERE (`active`='1' AND `username` = :username))
+                )
+                OR 'admin'= :role");
+            $stmt->execute(array(
+              ':username' => $_SESSION['mailcow_cc_username'],
+              ':role' => $_SESSION['mailcow_cc_role'],
+            ));
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            while($row = array_shift($rows)) {
+              $domains[] = $row['domain'];
+            }
           }
+
           return $domains;
         break;
         case 'domain_details':
@@ -4340,6 +4458,86 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
               'msg' => array('resource_removed', htmlspecialchars($name))
             );
+          }
+        break;
+        case 'tags_domain':
+          if (!is_array($_data['domain'])) {
+            $domains = array();
+            $domains[] = $_data['domain'];
+          }
+          else {
+            $domains = $_data['domain'];
+          }
+          $tags = (is_array($_data['tags']) ? $_data['tags'] : array());
+
+          foreach ($domains as $domain) {
+            $domain = idn_to_ascii($domain, 0, INTL_IDNA_VARIANT_UTS46);
+            if (!is_valid_domain_name($domain)) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'domain_invalid'
+              );
+              continue;
+            }
+            if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'access_denied'
+              );
+              continue;
+            }
+
+            // delete tags
+            foreach($tags as $tag){
+              $stmt = $pdo->prepare("DELETE FROM `tags_domain` WHERE `domain` = :domain AND `tag_name` = :tag_name");
+              $stmt->execute(array(
+                ':domain' => $domain,
+                ':tag_name' => $tag,
+              ));
+            }
+          }
+        break;
+        case 'tags_mailbox':
+          if (!is_array($_data['username'])) {
+            $usernames = array();
+            $usernames[] = $_data['username'];
+          }
+          else {
+            $usernames = $_data['username'];
+          }
+          $tags = (is_array($_data['tags']) ? $_data['tags'] : array());
+
+          foreach ($usernames as $username) {
+            if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'access_denied'
+              );
+              continue;
+            }
+
+            $is_now = mailbox('get', 'mailbox_details', $username);
+            $domain     = $is_now['domain'];
+            if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'access_denied'
+              );
+              continue;
+            }
+
+            // delete tags
+            foreach($tags as $tag){
+              $stmt = $pdo->prepare("DELETE FROM `tags_mailbox` WHERE `username` = :username AND `tag_name` = :tag_name");
+              $stmt->execute(array(
+                ':username' => $username,
+                ':tag_name' => $tag,
+              ));
+            }
           }
         break;
       }
