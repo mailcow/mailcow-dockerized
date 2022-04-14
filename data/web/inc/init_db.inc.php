@@ -23,35 +23,35 @@ function init_db_schema() {
     }
 
     $views = array(
-    "grouped_mail_aliases" => "CREATE VIEW grouped_mail_aliases (username, aliases) AS
-      SELECT goto, IFNULL(GROUP_CONCAT(address ORDER BY address SEPARATOR ' '), '') AS address FROM alias
-      WHERE address!=goto
-      AND active = '1'
-      AND sogo_visible = '1'
-      AND address NOT LIKE '@%'
-      GROUP BY goto;",
-    // START
-    // Unused at the moment - we cannot allow to show a foreign mailbox as sender address in SOGo, as SOGo does not like this
-    // We need to create delegation in SOGo AND set a sender_acl in mailcow to allow to send as user X
-    "grouped_sender_acl" => "CREATE VIEW grouped_sender_acl (username, send_as_acl) AS
-      SELECT logged_in_as, IFNULL(GROUP_CONCAT(send_as SEPARATOR ' '), '') AS send_as_acl FROM sender_acl
-      WHERE send_as NOT LIKE '@%'
-      GROUP BY logged_in_as;",
-    // END 
-    "grouped_sender_acl_external" => "CREATE VIEW grouped_sender_acl_external (username, send_as_acl) AS
-      SELECT logged_in_as, IFNULL(GROUP_CONCAT(send_as SEPARATOR ' '), '') AS send_as_acl FROM sender_acl
-      WHERE send_as NOT LIKE '@%' AND external = '1'
-      GROUP BY logged_in_as;",
-    "grouped_domain_alias_address" => "CREATE VIEW grouped_domain_alias_address (username, ad_alias) AS
-      SELECT username, IFNULL(GROUP_CONCAT(local_part, '@', alias_domain SEPARATOR ' '), '') AS ad_alias FROM mailbox
-      LEFT OUTER JOIN alias_domain ON target_domain=domain
-      GROUP BY username;",
-    "sieve_before" => "CREATE VIEW sieve_before (id, username, script_name, script_data) AS
-      SELECT md5(script_data), username, script_name, script_data FROM sieve_filters
-      WHERE filter_type = 'prefilter';",
-    "sieve_after" => "CREATE VIEW sieve_after (id, username, script_name, script_data) AS
-      SELECT md5(script_data), username, script_name, script_data FROM sieve_filters
-      WHERE filter_type = 'postfilter';"
+      "grouped_mail_aliases" => "CREATE VIEW grouped_mail_aliases (username, aliases) AS
+        SELECT goto, IFNULL(GROUP_CONCAT(address ORDER BY address SEPARATOR ' '), '') AS address FROM alias
+        WHERE address!=goto
+        AND active = '1'
+        AND sogo_visible = '1'
+        AND address NOT LIKE '@%'
+        GROUP BY goto;",
+      // START
+      // Unused at the moment - we cannot allow to show a foreign mailbox as sender address in SOGo, as SOGo does not like this
+      // We need to create delegation in SOGo AND set a sender_acl in mailcow to allow to send as user X
+      "grouped_sender_acl" => "CREATE VIEW grouped_sender_acl (username, send_as_acl) AS
+        SELECT logged_in_as, IFNULL(GROUP_CONCAT(send_as SEPARATOR ' '), '') AS send_as_acl FROM sender_acl
+        WHERE send_as NOT LIKE '@%'
+        GROUP BY logged_in_as;",
+      // END 
+      "grouped_sender_acl_external" => "CREATE VIEW grouped_sender_acl_external (username, send_as_acl) AS
+        SELECT logged_in_as, IFNULL(GROUP_CONCAT(send_as SEPARATOR ' '), '') AS send_as_acl FROM sender_acl
+        WHERE send_as NOT LIKE '@%' AND external = '1'
+        GROUP BY logged_in_as;",
+      "grouped_domain_alias_address" => "CREATE VIEW grouped_domain_alias_address (username, ad_alias) AS
+        SELECT username, IFNULL(GROUP_CONCAT(local_part, '@', alias_domain SEPARATOR ' '), '') AS ad_alias FROM mailbox
+        LEFT OUTER JOIN alias_domain ON target_domain=domain
+        GROUP BY username;",
+      "sieve_before" => "CREATE VIEW sieve_before (id, username, script_name, script_data) AS
+        SELECT md5(script_data), username, script_name, script_data FROM sieve_filters
+        WHERE filter_type = 'prefilter';",
+      "sieve_after" => "CREATE VIEW sieve_after (id, username, script_name, script_data) AS
+        SELECT md5(script_data), username, script_name, script_data FROM sieve_filters
+        WHERE filter_type = 'postfilter';"
     );
 
     $tables = array(
@@ -251,6 +251,26 @@ function init_db_schema() {
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
+      "tags_domain" => array(
+        "cols" => array(
+          "tag_name" => "VARCHAR(255) NOT NULL",
+          "domain" => "VARCHAR(255) NOT NULL"
+        ),
+        "keys" => array(
+          "fkey" => array(
+            "fk_tags_domain" => array(
+              "col" => "domain",
+              "ref" => "domain.domain",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            ),
+            "unique" => array(
+              "tag_name" => array("tag_name")
+            )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
       "tls_policy_override" => array(
         "cols" => array(
           "id" => "INT NOT NULL AUTO_INCREMENT",
@@ -321,6 +341,26 @@ function init_db_schema() {
           "key" => array(
             "domain" => array("domain"),
             "kind" => array("kind")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "tags_mailbox" => array(
+        "cols" => array(
+          "tag_name" => "VARCHAR(255) NOT NULL",
+          "username" => "VARCHAR(255) NOT NULL"
+        ),
+        "keys" => array(
+          "fkey" => array(
+            "fk_tags_mailbox" => array(
+              "col" => "username",
+              "ref" => "mailbox.username",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            ),
+            "unique" => array(
+              "tag_name" => array("tag_name")
+            )
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
