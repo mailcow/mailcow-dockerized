@@ -165,7 +165,7 @@ $(document).ready(function() {
   // Log modal
   $('#dnsInfoModal').on('show.bs.modal', function(e) {
     var domain = $(e.relatedTarget).data('domain');
-    $('.dns-modal-body').html('<center><i class="bi bi-arrow-repeat icon-spin"></i></center>');
+    $('.dns-modal-body').html('<div class="spinner-border text-secondary" role="status"><span class="visually-hidden">Loading...</span></div>');
     $.ajax({
       url: '/inc/ajax/dns_diagnostics.php',
       data: { domain: domain },
