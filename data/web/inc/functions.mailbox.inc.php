@@ -453,7 +453,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           if (empty($description)) {
             $description = $domain;
           }
-          $tags         = $_data['tags'];
+          $tags         = explode(',', $_data['tags']);
           $aliases      = (int)$_data['aliases'];
           $mailboxes    = (int)$_data['mailboxes'];
           $defquota     = (int)$_data['defquota'];
@@ -2217,7 +2217,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $maxquota             = (!empty($_data['maxquota'])) ? $_data['maxquota'] : ($is_now['max_quota_for_mbox'] / 1048576);
                 $quota                = (!empty($_data['quota'])) ? $_data['quota'] : ($is_now['max_quota_for_domain'] / 1048576);
                 $description          = (!empty($_data['description'])) ? $_data['description'] : $is_now['description'];
-                $tags                 = (is_array($_data['tags']) ? $_data['tags'] : array());
+                $tags                 = explode(',', $_data['tags']);
+                $tags                 = (is_array($tags) ? $tags : array());
                 if ($relay_all_recipients == '1') {
                   $backupmx = '1';
                 }
@@ -3596,6 +3597,16 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $domain_admins = $stmt->fetch(PDO::FETCH_ASSOC);
               (isset($domain_admins['domain_admins'])) ? $domaindata['domain_admins'] = $domain_admins['domain_admins'] : $domaindata['domain_admins'] = "-";
           }
+          $stmt = $pdo->prepare("SELECT `tag_name`
+            FROM `tags_domain` WHERE `domain`= :domain");
+          $stmt->execute(array(
+            ':domain' => $_data
+          ));
+          $tags = $stmt->fetchAll(PDO::FETCH_ASSOC);
+          while ($tag = array_shift($tags)) {
+            $domaindata['tags'][] = $tag['tag_name'];
+          }
+
           return $domaindata;
         break;
         case 'mailbox_details':
@@ -4460,7 +4471,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
           }
         break;
-        case 'tags_domain':
+        case 'tag_domain':
           if (!is_array($_data['domain'])) {
             $domains = array();
             $domains[] = $_data['domain'];
@@ -4468,10 +4479,18 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           else {
             $domains = $_data['domain'];
           }
-          $tags = (is_array($_data['tags']) ? $_data['tags'] : array());
+          $tag = $_data['tag'];
 
-          foreach ($domains as $domain) {
-            $domain = idn_to_ascii($domain, 0, INTL_IDNA_VARIANT_UTS46);
+          
+          if ($_SESSION['mailcow_cc_role'] != "admin") {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              'msg' => 'access_denied'
+            );
+            return false;
+          }
+          foreach ($domains as $domain) {            
             if (!is_valid_domain_name($domain)) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
@@ -4480,22 +4499,16 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
-            if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
-              $_SESSION['return'][] = array(
-                'type' => 'danger',
-                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                'msg' => 'access_denied'
-              );
-              continue;
-            }
 
-            // delete tags
-            foreach($tags as $tag){
+            try {
+              // delete tag
               $stmt = $pdo->prepare("DELETE FROM `tags_domain` WHERE `domain` = :domain AND `tag_name` = :tag_name");
               $stmt->execute(array(
                 ':domain' => $domain,
                 ':tag_name' => $tag,
               ));
+            } catch (Exception $e){
+              die($e->getMessage());
             }
           }
         break;

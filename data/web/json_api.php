@@ -1577,6 +1577,9 @@ if (isset($_GET['query'])) {
         case "domain":
           process_delete_return(mailbox('delete', 'domain', array('domain' => $items)));
         break;
+        case "tag_domain":
+          process_delete_return(mailbox('delete', 'tag_domain', array('domain' => $items, 'tag' => $_POST['tag_name'])));
+        break;
         case "alias-domain":
           process_delete_return(mailbox('delete', 'alias_domain', array('alias_domain' => $items)));
         break;

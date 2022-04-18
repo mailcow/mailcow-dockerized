@@ -54,6 +54,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           'rl' => $rl,
           'rlyhosts' => $rlyhosts,
           'dkim' => dkim('details', $domain),
+          'domain_details' => $result,
         ];
     }
     elseif (isset($_GET['oauth2client']) &&

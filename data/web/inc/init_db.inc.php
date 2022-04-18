@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "22032022_1330";
+    $db_version = "22042022_1330";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -263,10 +263,10 @@ function init_db_schema() {
               "ref" => "domain.domain",
               "delete" => "CASCADE",
               "update" => "NO ACTION"
-            ),
-            "unique" => array(
-              "tag_name" => array("tag_name")
             )
+          ),
+          "unique" => array(
+            "tag_name" => array("tag_name")
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
@@ -357,10 +357,10 @@ function init_db_schema() {
               "ref" => "mailbox.username",
               "delete" => "CASCADE",
               "update" => "NO ACTION"
-            ),
-            "unique" => array(
-              "tag_name" => array("tag_name")
             )
+          ),
+          "unique" => array(
+            "tag_name" => array("tag_name")
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"

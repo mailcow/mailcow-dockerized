@@ -48,6 +48,36 @@ $(document).ready(function() {
       $(div).animate({ left: ((iter%2==0 ? distance : distance*-1))}, interval);
     }
     $(div).animate({ left: 0},interval);
+  } 
+  function undoHtmlChars (string) {
+    var htmlEscapeEntityMap = {
+      '&amp;': '&',
+      '&lt;': '<',
+      '&gt;': '>',
+      '&quot;': '"',
+      "&#39;": "'",
+      '&#x2F;': '/',
+      '&#x60;': '`',
+      '&#x3D;': '='
+    }; 
+    return String(string).replace(/&amp;|&lt;|&gt;|&quot;|&#39;|&#x2F|&#x60|&#x3D;/g, function (s) {
+      return htmlEscapeEntityMap[s];
+    });
+  }
+  function replaceHtmlChars (string) {
+    var htmlEscapeEntityMap = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;',
+      '/': '&#x2F;',
+      '`': '&#x60;',
+      '=': '&#x3D;'
+    }; 
+    return String(string).replace(/[&<>"'`=\/]/g, function (s) {
+      return htmlEscapeEntityMap[s];
+    });
   }
 
   // form cache
@@ -272,5 +302,60 @@ $(document).ready(function() {
           localStorage.setItem('lastTag', '#'+id);
         }
       }
+  });
+
+  // tag boxes
+  $('.tag-box .tag-add').click(function(){
+    addTag(this);
+  });
+  $(".tag-box .tag-input").keyup(function (e) {
+    if (e.which == 13) addTag(this);
+  });
+  function addTag(tagAddElem){
+    var tagboxElem = $(tagAddElem).parent();
+    var tagInputElem = $(tagboxElem).find(".tag-input")[0];
+    var tagInputHiddenElem = $(tagboxElem).find(".tag-input-hidden")[0];
+
+    var tag = replaceHtmlChars($(tagInputElem).val());
+    if ($(tagInputHiddenElem).val().includes(tag)) return;
+
+    $('<span class="badge badge-primary tag-badge">' + tag + '</span>').insertBefore('.tag-input').click(function(){
+      var del_tag = undoHtmlChars($(this).text());
+      var values = $(tagInputHiddenElem).val();
+      if (values.includes(del_tag + ',') || values.includes(',' + del_tag + ',')) del_tag = del_tag + ',';
+      else if (values.includes(',' + del_tag)) del_tag = ',' + del_tag;
+      $(tagInputHiddenElem).val(values.replace(del_tag, ''));
+      $(this).remove();
+    });
+
+    if ($(tagInputHiddenElem).val() !== '') tag = ',' + tag;
+    $(tagInputHiddenElem).val($(tagInputHiddenElem).val() + tag);
+    $(tagInputElem).val('');
+  }
+  $('.tag-badge.saved').click(function(){
+    var tagboxElem = $(this).parent();
+    var tagInputHiddenElem = $(tagboxElem).find(".tag-input-hidden")[0];
+
+    var del_tag = undoHtmlChars($(this).text());
+    var values = $(tagInputHiddenElem).val();
+    if (values.includes(del_tag + ',') || values.includes(',' + del_tag + ',')) del_tag = del_tag + ',';
+    else if (values.includes(',' + del_tag)) del_tag = ',' + del_tag;
+
+    
+    $.ajax({
+      url: "/api/v1/delete/tag_domain",
+      type: 'POST',
+      contentType : 'application/json',
+      data: JSON.stringify({
+        items: $(this).data('item'),
+        tag_name: del_tag
+      }),
+      success: function(res) {
+        console.log(res);
+      }
+    });
+
+    $(tagInputHiddenElem).val(values.replace(del_tag, ''));
+    $(this).remove();
   });
 });
