@@ -4502,6 +4502,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
 
             foreach($tags as $tag){
               // delete tag
+              $_SESSION['return'][] = array(
+                'type' => 'success',
+                'log' => array("tag" => $tag),
+                'msg' => array('tag_log')
+              );
               $stmt = $pdo->prepare("DELETE FROM `tags_domain` WHERE `domain` = :domain AND `tag_name` = :tag_name");
               $stmt->execute(array(
                 ':domain' => $domain,

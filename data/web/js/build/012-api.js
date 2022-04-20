@@ -357,9 +357,9 @@ $(document).ready(function() {
       $("#ItemsToDelete").empty();
       for (var i in data_array) {
         data_array[i] = decodeURIComponent(data_array[i]);
-        $("#ItemsToDelete").append("<li>" + replaceHtmlChars(data_array[i]) + "</li>");
+        $("#ItemsToDelete").append("<li>" + escapeHtml(data_array[i]) + "</li>");
       }
-    })
+    });
     $('#ConfirmDeleteModal').modal({
         backdrop: 'static',
         keyboard: false
