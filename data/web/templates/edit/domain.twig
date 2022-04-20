@@ -28,7 +28,7 @@
         <div class="col-sm-10">
           <div class="form-control tag-box">
             {% for tag in domain_details.tags %}
-              <span data-action='delete_selected' data-item="{{ tag }}" data-api-attr='{"domain": "{{ domain }}"' data-id="domain_tag_{{ tag }}" data-api-url='delete/tags_domain' class="badge badge-primary tag-badge">{{ tag }}</span>
+              <span data-action='delete_selected' data-item="{{ tag }}" data-api-attr='{"domain": "{{ domain }}"}' data-id="domain_tag_{{ tag }}" data-api-url='delete/tags_domain' class="badge badge-primary tag-badge">{{ tag }}</span>
             {% endfor %}
             <input type="text" class="tag-input">
             <span class="btn tag-add"><i class="bi bi-plus-lg"></i></span>
