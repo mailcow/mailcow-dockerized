@@ -80,11 +80,12 @@ if (isset($_GET['query'])) {
 
     // delete
     if ($action == 'delete') {
-      $_POST['items'] = $request;
+      $_POST['attr']  = json_encode($requestDecoded['attr']);
+      $_POST['items'] = json_encode($requestDecoded['items']);
     }
-
   }
   api_log($_POST);
+
 
   $request_incomplete = json_encode(array(
     'type' => 'error',
@@ -1518,6 +1519,7 @@ if (isset($_GET['query'])) {
       }
       else {
         $items = (array)json_decode($_POST['items'], true);
+        $attr = isset($_POST['attr']) ? (array)json_decode($_POST['attr'], true) : null;
       }
       // only allow POST requests to POST API endpoints
       if ($_SERVER['REQUEST_METHOD'] != 'POST') {
@@ -1577,8 +1579,8 @@ if (isset($_GET['query'])) {
         case "domain":
           process_delete_return(mailbox('delete', 'domain', array('domain' => $items)));
         break;
-        case "tag_domain":
-          process_delete_return(mailbox('delete', 'tag_domain', array('domain' => $items, 'tag' => $_POST['tag_name'])));
+        case "tags_domain": 
+          process_delete_return(mailbox('delete', 'tags_domain', array('tags' => $items, 'domain' => $attr["domain"])));
         break;
         case "alias-domain":
           process_delete_return(mailbox('delete', 'alias_domain', array('alias_domain' => $items)));

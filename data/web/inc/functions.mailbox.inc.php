@@ -453,7 +453,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           if (empty($description)) {
             $description = $domain;
           }
-          $tags         = explode(',', $_data['tags']);
+          $tags         = $_data['tags'];
           $aliases      = (int)$_data['aliases'];
           $mailboxes    = (int)$_data['mailboxes'];
           $defquota     = (int)$_data['defquota'];
@@ -4471,7 +4471,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
           }
         break;
-        case 'tag_domain':
+        case 'tags_domain':    
           if (!is_array($_data['domain'])) {
             $domains = array();
             $domains[] = $_data['domain'];
@@ -4479,7 +4479,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           else {
             $domains = $_data['domain'];
           }
-          $tag = $_data['tag'];
+          $tags = $_data['tags'];
+          if (!is_array($tags)) $tags = array();
 
           
           if ($_SESSION['mailcow_cc_role'] != "admin") {
@@ -4500,17 +4501,25 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               continue;
             }
 
-            try {
-              // delete tag
-              $stmt = $pdo->prepare("DELETE FROM `tags_domain` WHERE `domain` = :domain AND `tag_name` = :tag_name");
-              $stmt->execute(array(
-                ':domain' => $domain,
-                ':tag_name' => $tag,
-              ));
-            } catch (Exception $e){
-              die($e->getMessage());
+            foreach($tags as $tag){
+              try {
+                // delete tag
+                $stmt = $pdo->prepare("DELETE FROM `tags_domain` WHERE `domain` = :domain AND `tag_name` = :tag_name");
+                $stmt->execute(array(
+                  ':domain' => $domain,
+                  ':tag_name' => $tag,
+                ));
+              } catch (Exception $e){
+                die($e->getMessage());
+              }
             }
           }
+          $_SESSION['return'][] = array(
+            'type' => 'success',
+            'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+            'msg' => array('domain_tags_removed')
+          );
+          return true;
         break;
         case 'tags_mailbox':
           if (!is_array($_data['username'])) {

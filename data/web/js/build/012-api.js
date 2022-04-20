@@ -263,6 +263,12 @@ $(document).ready(function() {
       });
       if (!invalid) {
         var attr_to_merge = $(this).closest("form").serializeObject();
+        // parse possible JSON Strings
+        for (var [key, value] of Object.entries(attr_to_merge)) {
+          try {
+            attr_to_merge[key] = JSON.parse(attr_to_merge[key]);
+          } catch {}
+        }
         var api_attr = $.extend(api_attr, attr_to_merge)
       } else {
         return false;
@@ -329,6 +335,11 @@ $(document).ready(function() {
       multi_data[id].splice($.inArray($(this).data('item'), multi_data[id]), 1);
       multi_data[id].push($(this).data('item'));
     }
+    // If clicked element #delete_selected has data-api-attr attribute, it is added to "attr"
+    var data_attr = {};
+    if (typeof $(this).data('api-attr') !== 'undefined')
+      data_attr = $(this).data('api-attr');
+
     if (typeof $(this).data('text') !== 'undefined') {
       $("#DeleteText").empty();
       $("#DeleteText").text($(this).data('text'));
@@ -340,7 +351,7 @@ $(document).ready(function() {
       $("#ItemsToDelete").empty();
       for (var i in data_array) {
         data_array[i] = decodeURIComponent(data_array[i]);
-        $("#ItemsToDelete").append("<li>" + data_array[i] + "</li>");
+        $("#ItemsToDelete").append("<li>" + replaceHtmlChars(data_array[i]) + "</li>");
       }
     })
     $('#ConfirmDeleteModal').modal({
@@ -355,6 +366,7 @@ $(document).ready(function() {
           cache: false,
           data: {
             "items": JSON.stringify(data_array),
+            "attr": JSON.stringify(data_attr),
             "csrf_token": csrf_token
           },
           url: '/api/v1/' + api_url,

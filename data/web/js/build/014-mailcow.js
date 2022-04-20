@@ -49,36 +49,6 @@ $(document).ready(function() {
     }
     $(div).animate({ left: 0},interval);
   } 
-  function undoHtmlChars (string) {
-    var htmlEscapeEntityMap = {
-      '&amp;': '&',
-      '&lt;': '<',
-      '&gt;': '>',
-      '&quot;': '"',
-      "&#39;": "'",
-      '&#x2F;': '/',
-      '&#x60;': '`',
-      '&#x3D;': '='
-    }; 
-    return String(string).replace(/&amp;|&lt;|&gt;|&quot;|&#39;|&#x2F|&#x60|&#x3D;/g, function (s) {
-      return htmlEscapeEntityMap[s];
-    });
-  }
-  function replaceHtmlChars (string) {
-    var htmlEscapeEntityMap = {
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#39;',
-      '/': '&#x2F;',
-      '`': '&#x60;',
-      '=': '&#x3D;'
-    }; 
-    return String(string).replace(/[&<>"'`=\/]/g, function (s) {
-      return htmlEscapeEntityMap[s];
-    });
-  }
 
   // form cache
   $('[data-cached-form="true"]').formcache({key: $(this).data('id')});
@@ -314,48 +284,63 @@ $(document).ready(function() {
   function addTag(tagAddElem){
     var tagboxElem = $(tagAddElem).parent();
     var tagInputElem = $(tagboxElem).find(".tag-input")[0];
-    var tagInputHiddenElem = $(tagboxElem).find(".tag-input-hidden")[0];
+    var tagValuesElem = $(tagboxElem).find(".tag-values")[0];
 
     var tag = replaceHtmlChars($(tagInputElem).val());
-    if ($(tagInputHiddenElem).val().includes(tag)) return;
+    var value_tags = [];
+    try {
+      value_tags = JSON.parse($(tagValuesElem).val());
+    } catch {}
+    if (!Array.isArray(value_tags)) value_tags = [];
+    if (value_tags.includes(tag)) return;
 
     $('<span class="badge badge-primary tag-badge">' + tag + '</span>').insertBefore('.tag-input').click(function(){
       var del_tag = undoHtmlChars($(this).text());
-      var values = $(tagInputHiddenElem).val();
-      if (values.includes(del_tag + ',') || values.includes(',' + del_tag + ',')) del_tag = del_tag + ',';
-      else if (values.includes(',' + del_tag)) del_tag = ',' + del_tag;
-      $(tagInputHiddenElem).val(values.replace(del_tag, ''));
+      var del_tags = [];
+      try {
+        del_tags = JSON.parse($(tagValuesElem).val());
+      } catch {}
+      if (Array.isArray(del_tags)){
+        del_tags.splice(del_tags.indexOf(del_tag), 1);
+        $(tagValuesElem).val(JSON.stringify(del_tags));
+      }
       $(this).remove();
     });
 
-    if ($(tagInputHiddenElem).val() !== '') tag = ',' + tag;
-    $(tagInputHiddenElem).val($(tagInputHiddenElem).val() + tag);
+    value_tags.push($(tagInputElem).val());
+    $(tagValuesElem).val(JSON.stringify(value_tags));
     $(tagInputElem).val('');
   }
-  $('.tag-badge.saved').click(function(){
-    var tagboxElem = $(this).parent();
-    var tagInputHiddenElem = $(tagboxElem).find(".tag-input-hidden")[0];
-
-    var del_tag = undoHtmlChars($(this).text());
-    var values = $(tagInputHiddenElem).val();
-    if (values.includes(del_tag + ',') || values.includes(',' + del_tag + ',')) del_tag = del_tag + ',';
-    else if (values.includes(',' + del_tag)) del_tag = ',' + del_tag;
-
-    
-    $.ajax({
-      url: "/api/v1/delete/tag_domain",
-      type: 'POST',
-      contentType : 'application/json',
-      data: JSON.stringify({
-        items: $(this).data('item'),
-        tag_name: del_tag
-      }),
-      success: function(res) {
-        console.log(res);
-      }
-    });
-
-    $(tagInputHiddenElem).val(values.replace(del_tag, ''));
-    $(this).remove();
-  });
 });
+
+
+function undoHtmlChars (string) {
+  var htmlEscapeEntityMap = {
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&quot;': '"',
+    "&#39;": "'",
+    '&#x2F;': '/',
+    '&#x60;': '`',
+    '&#x3D;': '='
+  }; 
+  return String(string).replace(/&amp;|&lt;|&gt;|&quot;|&#39;|&#x2F|&#x60|&#x3D;/g, function (s) {
+    return htmlEscapeEntityMap[s];
+  });
+}
+function replaceHtmlChars (string) {
+  var htmlEscapeEntityMap = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+    '/': '&#x2F;',
+    '`': '&#x60;',
+    '=': '&#x3D;'
+  }; 
+  return String(string).replace(/[&<>"'`=\/]/g, function (s) {
+    return htmlEscapeEntityMap[s];
+  });
+}
