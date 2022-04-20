@@ -263,15 +263,16 @@ code {
   height: auto;
 }
 .tag-badge {
-  cursor: pointer;
   transition: 200ms linear;
   margin-top: 5px;
   margin-bottom: 5px;
   margin-left: 2px;
   margin-right: 2px;
 }
-.tag-box .badge:hover {
+.tag-badge.btn-badge {
   cursor: pointer;
+}
+.tag-badge.btn-badge:hover {
   filter: brightness(0.9);
 }
 .tag-input {

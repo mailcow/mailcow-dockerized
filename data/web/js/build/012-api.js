@@ -156,6 +156,12 @@ $(document).ready(function() {
       });
       if (!invalid) {
         var attr_to_merge = $(this).closest("form").serializeObject();
+        // parse possible JSON Strings
+        for (var [key, value] of Object.entries(attr_to_merge)) {
+          try {
+            attr_to_merge[key] = JSON.parse(attr_to_merge[key]);
+          } catch {}
+        }
         var api_attr = $.extend(api_attr, attr_to_merge)
       } else {
         return false;

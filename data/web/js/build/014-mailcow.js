@@ -286,7 +286,7 @@ $(document).ready(function() {
     var tagInputElem = $(tagboxElem).find(".tag-input")[0];
     var tagValuesElem = $(tagboxElem).find(".tag-values")[0];
 
-    var tag = replaceHtmlChars($(tagInputElem).val());
+    var tag = escapeHtml($(tagInputElem).val());
     var value_tags = [];
     try {
       value_tags = JSON.parse($(tagValuesElem).val());
@@ -294,8 +294,8 @@ $(document).ready(function() {
     if (!Array.isArray(value_tags)) value_tags = [];
     if (value_tags.includes(tag)) return;
 
-    $('<span class="badge badge-primary tag-badge">' + tag + '</span>').insertBefore('.tag-input').click(function(){
-      var del_tag = undoHtmlChars($(this).text());
+    $('<span class="badge badge-primary tag-badge btn-badge">' + tag + '</span>').insertBefore('.tag-input').click(function(){
+      var del_tag = unescapeHtml($(this).text());
       var del_tags = [];
       try {
         del_tags = JSON.parse($(tagValuesElem).val());
@@ -314,33 +314,12 @@ $(document).ready(function() {
 });
 
 
-function undoHtmlChars (string) {
-  var htmlEscapeEntityMap = {
-    '&amp;': '&',
-    '&lt;': '<',
-    '&gt;': '>',
-    '&quot;': '"',
-    "&#39;": "'",
-    '&#x2F;': '/',
-    '&#x60;': '`',
-    '&#x3D;': '='
-  }; 
+function unescapeHtml (string) {
+  var entityMap = {'&amp;': '&','&lt;': '<','&gt;': '>','&quot;': '"',"&#39;": "'",'&#x2F;': '/','&#x60;': '`','&#x3D;': '='}; 
   return String(string).replace(/&amp;|&lt;|&gt;|&quot;|&#39;|&#x2F|&#x60|&#x3D;/g, function (s) {
-    return htmlEscapeEntityMap[s];
+    return entityMap[s];
   });
 }
-function replaceHtmlChars (string) {
-  var htmlEscapeEntityMap = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;',
-    '/': '&#x2F;',
-    '`': '&#x60;',
-    '=': '&#x3D;'
-  }; 
-  return String(string).replace(/[&<>"'`=\/]/g, function (s) {
-    return htmlEscapeEntityMap[s];
-  });
-}
+
+// http://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery
+function escapeHtml(n){var entityMap={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;","/":"&#x2F;","`":"&#x60;","=":"&#x3D;"}; return String(n).replace(/[&<>"'`=\/]/g,function(n){return entityMap[n]})}
