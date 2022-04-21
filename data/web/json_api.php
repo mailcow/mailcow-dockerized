@@ -1588,6 +1588,8 @@ if (isset($_GET['query'])) {
         case "mailbox":
           process_delete_return(mailbox('delete', 'mailbox', array('username' => $items)));
         break;
+        case "tags_mailbox": 
+          process_delete_return(mailbox('delete', 'tags_mailbox', array('tags' => $items, 'mailbox' => $attr["mailbox"])));
         case "resource":
           process_delete_return(mailbox('delete', 'resource', array('name' => $items)));
         break;

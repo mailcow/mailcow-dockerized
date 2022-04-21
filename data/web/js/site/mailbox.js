@@ -423,6 +423,7 @@ jQuery(function($){
         },
         {"name":"messages","filterable": false,"title":lang.msg_num,"breakpoints":"xs sm md"},
         /* {"name":"rl","title":"RL","breakpoints":"all","style":{"width":"125px"}}, */
+        {"name":"tags","title":"Tags","style":{},"breakpoints":"xs sm md lg"},
         {"name":"active","filterable": false,"style":{"min-width":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':(0==value?'<i class="bi bi-x-lg"></i>':2==value&&'&#8212;');}},
         {"name":"action","filterable": false,"sortable": false,"style":{"min-width":"290px","text-align":"right"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
       ],
@@ -502,6 +503,13 @@ jQuery(function($){
               '<div class="progress-bar-mailbox progress-bar progress-bar-' + item.percent_class + '" role="progressbar" aria-valuenow="' + item.percent_in_use + '" aria-valuemin="0" aria-valuemax="100" ' +
               'style="min-width:2em;width:' + item.percent_in_use + '%">' + item.percent_in_use + '%' + '</div></div>';
             item.username = escapeHtml(item.username);
+            
+            if (Array.isArray(item.tags)){
+              var tags = '';
+              for (var i = 0; i < item.tags.length; i++)
+                tags += '<span class="badge badge-primary tag-badge">' + escapeHtml(item.tags[i]) + '</span>';
+              item.tags = tags;
+            }
           });
         }
       }),

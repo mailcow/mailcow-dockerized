@@ -4529,14 +4529,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           else {
             $usernames = $_data['username'];
           }
-          $tags = (is_array($_data['tags']) ? $_data['tags'] : array());
+          $tags = $_data['tags'];
+          if (!is_array($tags)) $tags = array();
 
           foreach ($usernames as $username) {
             if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                'msg' => 'access_denied'
+                'msg' => 'email invalid'
               );
               continue;
             }
@@ -4561,6 +4562,12 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               ));
             }
           }
+          $_SESSION['return'][] = array(
+            'type' => 'success',
+            'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+            'msg' => array('mailbox_tags_removed')
+          );
+          return true;
         break;
       }
     break;
