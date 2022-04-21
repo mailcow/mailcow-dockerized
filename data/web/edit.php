@@ -100,6 +100,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         'rlyhosts' => $rlyhosts,
         'sender_acl_handles' => mailbox('get', 'sender_acl_handles', $mailbox),
         'user_acls' => acl('get', 'user', $mailbox),
+        'mailbox_details' => $result
       ];
     }
     elseif (isset($_GET['relayhost']) && is_numeric($_GET["relayhost"]) && !empty($_GET["relayhost"])) {

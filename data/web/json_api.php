@@ -487,7 +487,11 @@ if (isset($_GET['query'])) {
           case "domain":
             switch ($object) {
               case "all":
-                $domains = mailbox('get', 'domains');
+                if (!isset($_GET['tags']))
+                  $domains = mailbox('get', 'domains');
+                else
+                  $domains = mailbox('get', 'domains', explode(',', $_GET['tags']));
+
                 if (!empty($domains)) {
                   foreach ($domains as $domain) {
                     if ($details = mailbox('get', 'domain_details', $domain)) {
@@ -961,15 +965,12 @@ if (isset($_GET['query'])) {
                 }
                 if (!empty($domains)) {
                   foreach ($domains as $domain) {
-                    $mailboxes = mailbox('get', 'mailboxes', $domain);
+                    if (isset($_GET['tags'])) $mailboxes = mailbox('get', 'mailboxes', $domain, explode(',', $_GET['tags']));
+                    else $mailboxes = mailbox('get', 'mailboxes', $domain);
                     if (!empty($mailboxes)) {
                       foreach ($mailboxes as $mailbox) {
-                        if ($details = mailbox('get', 'mailbox_details', $mailbox, $object)) {
-                          $data[] = $details;
-                        }
-                        else {
-                          continue;
-                        }
+                        if ($details = mailbox('get', 'mailbox_details', $mailbox, $object)) $data[] = $details;
+                        else continue;
                       }
                     }
                   }
@@ -1590,6 +1591,7 @@ if (isset($_GET['query'])) {
         break;
         case "tags_mailbox": 
           process_delete_return(mailbox('delete', 'tags_mailbox', array('tags' => $items, 'mailbox' => $attr["mailbox"])));
+        break;
         case "resource":
           process_delete_return(mailbox('delete', 'resource', array('name' => $items)));
         break;

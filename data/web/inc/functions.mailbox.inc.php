@@ -569,7 +569,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ':relay_all_recipients' => $relay_all_recipients
           ));
           // save tags
-          foreach($tags as $tag){
+          foreach($tags as $index => $tag){
+            if ($index > $GLOBALS['TAGGING_LIMIT']) {
+              $_SESSION['return'][] = array(
+                'type' => 'warning',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => array('tag_limit_exceeded', 'limit '.$GLOBALS['TAGGING_LIMIT'])
+              );
+              break;
+            }
             $stmt = $pdo->prepare("INSERT INTO `tags_domain` (`domain`, `tag_name`) VALUES (:domain, :tag_name)");
             $stmt->execute(array(
               ':domain' => $domain,
@@ -1117,7 +1125,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ':username' => $username
           ));
           // save tags
-          foreach($tags as $tag){
+          foreach($tags as $index => $tag){
+            if ($index > $GLOBALS['TAGGING_LIMIT']) {
+              $_SESSION['return'][] = array(
+                'type' => 'warning',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => array('tag_limit_exceeded', 'limit '.$GLOBALS['TAGGING_LIMIT'])
+              );
+              break;
+            }
             $stmt = $pdo->prepare("INSERT INTO `tags_mailbox` (`username`, `tag_name`) VALUES (:username, :tag_name)");
             $stmt->execute(array(
               ':username' => $username,
@@ -2188,7 +2204,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':domain' => $domain
               ));
               // save tags, tag_name is unique
-              foreach($tags as $tag){
+              foreach($tags as $index => $tag){
+                if ($index > $GLOBALS['TAGGING_LIMIT']) {
+                  $_SESSION['return'][] = array(
+                    'type' => 'warning',
+                    'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                    'msg' => array('tag_limit_exceeded', 'limit '.$GLOBALS['TAGGING_LIMIT'])
+                  );
+                  break;
+                }
                 $stmt = $pdo->prepare("INSERT INTO `tags_domain` (`domain`, `tag_name`) VALUES (:domain, :tag_name)");
                 $stmt->execute(array(
                   ':domain' => $domain,
@@ -2347,7 +2371,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':domain' => $domain
               ));
               // save tags, tag_name is unique
-              foreach($tags as $tag){
+              foreach($tags as $index => $tag){
+                if ($index > $GLOBALS['TAGGING_LIMIT']) {
+                  $_SESSION['return'][] = array(
+                    'type' => 'warning',
+                    'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                    'msg' => array('tag_limit_exceeded', 'limit '.$GLOBALS['TAGGING_LIMIT'])
+                  );
+                  break;
+                }
                 $stmt = $pdo->prepare("INSERT INTO `tags_domain` (`domain`, `tag_name`) VALUES (:domain, :tag_name)");
                 $stmt->execute(array(
                   ':domain' => $domain,
@@ -2681,7 +2713,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               ':username' => $username
             ));
             // save tags
-            foreach($tags as $tag){
+            foreach($tags as $index => $tag){
+              if ($index > $GLOBALS['TAGGING_LIMIT']) {
+                $_SESSION['return'][] = array(
+                  'type' => 'warning',
+                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                  'msg' => array('tag_limit_exceeded', 'limit '.$GLOBALS['TAGGING_LIMIT'])
+                );
+                break;
+              }
               $stmt = $pdo->prepare("INSERT INTO `tags_mailbox` (`username`, `tag_name`) VALUES (:username, :tag_name)");
               $stmt->execute(array(
                 ':username' => $username,
@@ -2907,20 +2947,20 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           if (isset($_data) && !hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
             return false;
           }
-          elseif (isset($_extra) && isset($_data) && is_array($_extra)) {
+          elseif (isset($_extra) && isset($_data)) {
+            $tags = is_array($_extra) ? $_extra : array();
             // get by domain and tags
             if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) return false;
-            $params = array_map('strtolower', $_extra);
-            array_unshift($params , $_data);
-
+            
             $sql = "SELECT `username` FROM `tags_mailbox` WHERE `domain` = ? AND ";
             foreach ($tags as $key => $tag) {
-              $sql = $sql."`tag_name` = ?";
-              if ($key === array_key_last($array)) break;
+              if ($key === array_key_first($params)) continue;
+              $sql = $sql."`tag_name` LIKE ?";
+              if ($key === array_key_last($params)) break;
               $sql = $sql.' AND ';
             }
             $stmt = $pdo->prepare($sql);
-            $stmt->execute($params);
+            $stmt->execute(array_unshift($params , $_data));
 
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
             while($row = array_shift($rows)) {
@@ -2938,13 +2978,13 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $mailboxes[] = $row['username'];
             }
           }
-          elseif (isset($_extra) && is_array($_extra)) {
+          elseif (isset($_extra)) {
             // get by tags
-            $tags = array_map('strtolower', $_extra);
+            $tags = is_array($_extra) ? $_extra : array();
 
             $sql = "SELECT `username`, `domain` FROM `tags_mailbox` WHERE ";
             foreach ($tags as $key => $tag) {
-              $sql = $sql."`tag_name` = ?";
+              $sql = $sql."`tag_name` LIKE ?";
               if ($key === array_key_last($array)) break;
               $sql = $sql.' AND ';
             }
@@ -3444,11 +3484,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
 
           if (isset($_extra) && is_array($_extra)){
             // get by tags
-            $tags = array_map('strtolower', $_extra);
+            $tags = is_array($_extra) ? $_extra : array();
 
             $sql = "SELECT `domain` FROM `tags_domain` WHERE ";
             foreach ($tags as $key => $tag) {
-              $sql = $sql."`tag_name` = ?";
+              $sql = $sql."`tag_name` LIKE ?";
               if ($key === array_key_last($array)) break;
               $sql = $sql.' AND ';
             }
@@ -3740,6 +3780,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $mailboxdata['rl_scope'] = 'domain';
             }
             $mailboxdata['is_relayed'] = $row['backupmx'];
+          }
+          $stmt = $pdo->prepare("SELECT `tag_name`
+            FROM `tags_mailbox` WHERE `username`= :username");
+          $stmt->execute(array(
+            ':username' => $_data
+          ));
+          $tags = $stmt->fetchAll(PDO::FETCH_ASSOC);
+          while ($tag = array_shift($tags)) {
+            $mailboxdata['tags'][] = $tag['tag_name'];
           }
 
           return $mailboxdata;
@@ -4514,20 +4563,20 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               ));
             }
           }
+
           $_SESSION['return'][] = array(
             'type' => 'success',
             'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-            'msg' => array('domain_tags_removed')
+            'msg' => array('domain_modified', $domain)
           );
-          return true;
         break;
         case 'tags_mailbox':
-          if (!is_array($_data['username'])) {
+          if (!is_array($_data['mailbox'])) {
             $usernames = array();
-            $usernames[] = $_data['username'];
+            $usernames[] = $_data['mailbox'];
           }
           else {
-            $usernames = $_data['username'];
+            $usernames = $_data['mailbox'];
           }
           $tags = $_data['tags'];
           if (!is_array($tags)) $tags = array();
@@ -4562,12 +4611,12 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               ));
             }
           }
+
           $_SESSION['return'][] = array(
             'type' => 'success',
             'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-            'msg' => array('mailbox_tags_removed')
+            'msg' => array('mailbox_modified', $username)
           );
-          return true;
         break;
       }
     break;

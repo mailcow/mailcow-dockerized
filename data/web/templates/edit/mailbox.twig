@@ -26,8 +26,8 @@
         <label class="control-label col-sm-2">{{ lang.add.tags }}</label>
         <div class="col-sm-10">
           <div class="form-control tag-box">
-            {% for tag in domain_details.tags %}
-              <span data-action='delete_selected' data-item="{{ tag }}" data-api-attr='{"mailbox": "{{ mailbox }}"}' data-id="mailbox_tag_{{ tag }}" data-api-url='delete/tags_mailbox' class="badge badge-primary tag-badge">{{ tag }}</span>
+            {% for tag in mailbox_details.tags %}
+              <span data-action='delete_selected' data-item="{{ tag }}" data-api-attr='{"mailbox": "{{ mailbox }}"}' data-id="mailbox_tag_{{ tag }}" data-api-url='delete/tags_mailbox' class="badge badge-primary tag-badge btn-badge">{{ tag }}</span>
             {% endfor %}
             <input type="text" class="tag-input">
             <span class="btn tag-add"><i class="bi bi-plus-lg"></i></span>
