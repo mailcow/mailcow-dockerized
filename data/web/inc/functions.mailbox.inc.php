@@ -2947,20 +2947,23 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           if (isset($_data) && !hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
             return false;
           }
-          elseif (isset($_extra) && isset($_data)) {
-            $tags = is_array($_extra) ? $_extra : array();
+          elseif (isset($_extra) && is_array($_extra) && isset($_data)) {
             // get by domain and tags
             if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) return false;
-            
-            $sql = "SELECT `username` FROM `tags_mailbox` WHERE `domain` = ? AND ";
+            $tags = is_array($_extra) ? $_extra : array();
+            // add % as prefix and suffix to every element for relative searching
+            $tags = array_map(function($x){ return '%'.$x.'%'; }, $tags);
+            // use SELECT DISTINCT to avoid duplicates
+            $sql = "SELECT DISTINCT `username` FROM `tags_mailbox` WHERE `username` LIKE ? AND ";
             foreach ($tags as $key => $tag) {
-              if ($key === array_key_first($params)) continue;
               $sql = $sql."`tag_name` LIKE ?";
-              if ($key === array_key_last($params)) break;
+              if ($key === array_key_last($tags)) break;
               $sql = $sql.' AND ';
             }
+            // prepend domain to array
+            array_unshift($tags , '%@'.$_data.'%');
             $stmt = $pdo->prepare($sql);
-            $stmt->execute(array_unshift($params , $_data));
+            $stmt->execute($tags);
 
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
             while($row = array_shift($rows)) {
@@ -2978,14 +2981,16 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $mailboxes[] = $row['username'];
             }
           }
-          elseif (isset($_extra)) {
+          elseif (isset($_extra) && is_array($_extra)) {
             // get by tags
             $tags = is_array($_extra) ? $_extra : array();
-
-            $sql = "SELECT `username`, `domain` FROM `tags_mailbox` WHERE ";
+            // add % as prefix and suffix to every element for relative searching
+            $tags = array_map(function($x){ return '%'.$x.'%'; }, $tags);
+            // use SELECT DISTINCT to avoid duplicates
+            $sql = "SELECT DISTINCT `username` FROM `tags_mailbox` WHERE ";
             foreach ($tags as $key => $tag) {
               $sql = $sql."`tag_name` LIKE ?";
-              if ($key === array_key_last($array)) break;
+              if ($key === array_key_last($tags)) break;
               $sql = $sql.' AND ';
             }
             $stmt = $pdo->prepare($sql);
@@ -3485,11 +3490,13 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           if (isset($_extra) && is_array($_extra)){
             // get by tags
             $tags = is_array($_extra) ? $_extra : array();
-
-            $sql = "SELECT `domain` FROM `tags_domain` WHERE ";
+            // add % as prefix and suffix to every element for relative searching
+            $tags = array_map(function($x){ return '%'.$x.'%'; }, $tags);
+            // use SELECT DISTINCT to avoid duplicates
+            $sql = "SELECT DISTINCT `domain` FROM `tags_domain` WHERE ";
             foreach ($tags as $key => $tag) {
               $sql = $sql."`tag_name` LIKE ?";
-              if ($key === array_key_last($array)) break;
+              if ($key === array_key_last($tags)) break;
               $sql = $sql.' AND ';
             }
             $stmt = $pdo->prepare($sql);

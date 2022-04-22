@@ -487,10 +487,11 @@ if (isset($_GET['query'])) {
           case "domain":
             switch ($object) {
               case "all":
-                if (!isset($_GET['tags']))
-                  $domains = mailbox('get', 'domains');
-                else
-                  $domains = mailbox('get', 'domains', explode(',', $_GET['tags']));
+                $tags = null;
+                if (isset($_GET['tags']) && $_GET['tags'] != '') 
+                  $tags = explode(',', $_GET['tags']);
+
+                $domains = mailbox('get', 'domains', null, $tags);
 
                 if (!empty($domains)) {
                   foreach ($domains as $domain) {
@@ -957,16 +958,16 @@ if (isset($_GET['query'])) {
             switch ($object) {
               case "all":
               case "reduced":
-                if (empty($extra)) {
-                  $domains = mailbox('get', 'domains');
-                }
-                else {
-                  $domains = explode(',', $extra);
-                }
+                $tags = null;
+                if (isset($_GET['tags']) && $_GET['tags'] != '') 
+                  $tags = explode(',', $_GET['tags']);
+
+                if (empty($extra)) $domains = mailbox('get', 'domains');
+                else $domains = explode(',', $extra);
+
                 if (!empty($domains)) {
                   foreach ($domains as $domain) {
-                    if (isset($_GET['tags'])) $mailboxes = mailbox('get', 'mailboxes', $domain, explode(',', $_GET['tags']));
-                    else $mailboxes = mailbox('get', 'mailboxes', $domain);
+                    $mailboxes = mailbox('get', 'mailboxes', $domain, $tags);
                     if (!empty($mailboxes)) {
                       foreach ($mailboxes as $mailbox) {
                         if ($details = mailbox('get', 'mailbox_details', $mailbox, $object)) $data[] = $details;
