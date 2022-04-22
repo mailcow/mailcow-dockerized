@@ -99,6 +99,7 @@
         "subscribeall": "Subscribe all folders",
         "syncjob": "Add sync job",
         "syncjob_hint": "Be aware that passwords need to be saved plain-text!",
+        "tags": "Tags",
         "target_address": "Goto addresses",
         "target_address_info": "<small>Full email address/es (comma-separated).</small>",
         "target_domain": "Target domain",
