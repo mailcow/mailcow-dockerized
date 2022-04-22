@@ -422,7 +422,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.46
+      image: mailcow/netfilter:1.47
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
