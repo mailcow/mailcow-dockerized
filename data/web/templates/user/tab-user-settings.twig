@@ -37,12 +37,16 @@
         <div class="col-sm-9 col-xs-12">
           <div class="btn-group" data-acl="{{ acl.tls_policy }}">
             <button type="button" class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default{% if get_tls_policy.tls_enforce_in == '1' %} active"{% endif %}"
+            role="switch"
+            aria-checked="{% if get_tls_policy.tls_enforce_in == '1' %}true{% else %}false{% endif %}"
             data-action="edit_selected"
             data-item="{{ mailcow_cc_username }}"
             data-id="tls_policy"
             data-api-url='edit/tls_policy'
             data-api-attr='{"tls_enforce_in": {% if get_tls_policy.tls_enforce_in == '1' %}0{% else %}1{% endif %} }'>{{ lang.user.tls_enforce_in }}</button>
             <button type="button" class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default{% if get_tls_policy.tls_enforce_out == '1' %} active"{% endif %}"
+            role="switch"
+            aria-checked="{% if get_tls_policy.tls_enforce_out == '1' %}true{% else %}false{% endif %}"
             data-action="edit_selected"
             data-item="{{ mailcow_cc_username }}"
             data-id="tls_policy"
