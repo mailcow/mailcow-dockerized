@@ -1476,6 +1476,7 @@ if (isset($_GET['query'])) {
                 echo json_encode(array(
                   'version' => $GLOBALS['MAILCOW_GIT_VERSION']
                 ));
+              break;
               }
             }
           break;
