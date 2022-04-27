@@ -99,37 +99,6 @@ $(document).ready(function() {
   });
   auto_fill_quota($('#addSelectDomain').val());
 
-  // Read bcc local dests
-  // Using ajax to not be a blocking moo
-  $.get("/api/v1/get/bcc-destination-options", function(data){
-    // Domains
-    var optgroup = "<optgroup label='" + lang.domains + "'>";
-    $.each(data.domains, function(index, domain){
-      optgroup += "<option value='" + domain + "'>" + domain + "</option>"
-    });
-    optgroup += "</optgroup>"
-    $('#bcc-local-dest').append(optgroup);
-    // Alias domains
-    var optgroup = "<optgroup label='" + lang.domain_aliases + "'>";
-    $.each(data.alias_domains, function(index, alias_domain){
-      optgroup += "<option value='" + alias_domain + "'>" + alias_domain + "</option>"
-    });
-    optgroup += "</optgroup>"
-    $('#bcc-local-dest').append(optgroup);
-    // Mailboxes and aliases
-    $.each(data.mailboxes, function(mailbox, aliases){
-      var optgroup = "<optgroup label='" + mailbox + "'>";
-      $.each(aliases, function(index, alias){
-        optgroup += "<option value='" + alias + "'>" + alias + "</option>"
-      });
-      optgroup += "</optgroup>"
-      $('#bcc-local-dest').append(optgroup);
-    });
-    // Finish
-    $('#bcc-local-dest').find('option:selected').remove();
-    $('#bcc-local-dest').selectpicker('refresh');
-  });
-
   $(".goto_checkbox").click(function( event ) {
    $("form[data-id='add_alias'] .goto_checkbox").not(this).prop('checked', false);
     if ($("form[data-id='add_alias'] .goto_checkbox:checked").length > 0) {
@@ -610,6 +579,37 @@ jQuery(function($){
     });
   }
   function draw_bcc_table() {
+  // Read bcc local dests
+  // Using ajax to not be a blocking moo
+  $.get("/api/v1/get/bcc-destination-options", function(data){
+    // Domains
+    var optgroup = "<optgroup label='" + lang.domains + "'>";
+    $.each(data.domains, function(index, domain){
+      optgroup += "<option value='" + domain + "'>" + domain + "</option>"
+    });
+    optgroup += "</optgroup>"
+    $('#bcc-local-dest').append(optgroup);
+    // Alias domains
+    var optgroup = "<optgroup label='" + lang.domain_aliases + "'>";
+    $.each(data.alias_domains, function(index, alias_domain){
+      optgroup += "<option value='" + alias_domain + "'>" + alias_domain + "</option>"
+    });
+    optgroup += "</optgroup>"
+    $('#bcc-local-dest').append(optgroup);
+    // Mailboxes and aliases
+    $.each(data.mailboxes, function(mailbox, aliases){
+      var optgroup = "<optgroup label='" + mailbox + "'>";
+      $.each(aliases, function(index, alias){
+        optgroup += "<option value='" + alias + "'>" + alias + "</option>"
+      });
+      optgroup += "</optgroup>"
+      $('#bcc-local-dest').append(optgroup);
+    });
+    // Finish
+    $('#bcc-local-dest').find('option:selected').remove();
+    $('#bcc-local-dest').selectpicker('refresh');
+  });
+
     ft_bcc_table = FooTable.init('#bcc_table', {
       "columns": [
         {"name":"chkbox","title":"","style":{"min-width":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
@@ -1147,15 +1147,33 @@ jQuery(function($){
     event.stopPropagation();
   })
 
-  draw_domain_table();
-  draw_mailbox_table();
-  draw_resource_table();
-  draw_alias_table();
-  draw_aliasdomain_table();
-  draw_sync_job_table();
-  draw_filter_table();
-  draw_bcc_table();
-  draw_recipient_map_table();
-  draw_tls_policy_table();
+  // detect element visibility changes
+  function onVisible(element, callback) {
+    $(element).ready(function() {
+      element_object = document.querySelector(element)
+      new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if(entry.intersectionRatio > 0) {
+            callback(element_object);
+            observer.disconnect();
+          }
+        });
+      }).observe(element_object);
+    });
+  }
+
+  // Load only if the tab is visible
+  onVisible("#tab-domains", () => draw_domain_table());
+  onVisible("#tab-mailboxes", () => draw_mailbox_table());
+  onVisible("#tab-resources", () => draw_resource_table());
+  onVisible("#tab-mbox-aliases", () => draw_alias_table());
+  onVisible("#tab-domain-aliases", () => draw_aliasdomain_table());
+  onVisible("#tab-syncjobs", () => draw_sync_job_table());
+  onVisible("#tab-filters", () => draw_filter_table());
+  onVisible("#tab-bcc", () => {
+    draw_bcc_table();
+    draw_recipient_map_table();
+  });
+  onVisible("#tab-tls-policy", () => draw_tls_policy_table());
 
 });
