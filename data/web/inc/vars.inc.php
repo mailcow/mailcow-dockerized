@@ -148,6 +148,9 @@ $ACCESS_TOKEN_LIFETIME = 86400;
 // Logout from mailcow after first OAuth2 session profile request
 $OAUTH2_FORGET_SESSION_AFTER_LOGIN = false;
 
+// Set a limit for mailbox and domain tagging
+$TAGGING_LIMIT = 25;
+
 // MAILBOX_DEFAULT_ATTRIBUTES define default attributes for new mailboxes
 // These settings will not change existing mailboxes
 

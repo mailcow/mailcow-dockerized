@@ -80,11 +80,12 @@ if (isset($_GET['query'])) {
 
     // delete
     if ($action == 'delete') {
-      $_POST['items'] = $request;
+      $_POST['attr']  = json_encode($requestDecoded['attr']);
+      $_POST['items'] = json_encode($requestDecoded['items']);
     }
-
   }
   api_log($_POST);
+
 
   $request_incomplete = json_encode(array(
     'type' => 'error',
@@ -486,7 +487,12 @@ if (isset($_GET['query'])) {
           case "domain":
             switch ($object) {
               case "all":
-                $domains = mailbox('get', 'domains');
+                $tags = null;
+                if (isset($_GET['tags']) && $_GET['tags'] != '') 
+                  $tags = explode(',', $_GET['tags']);
+
+                $domains = mailbox('get', 'domains', null, $tags);
+
                 if (!empty($domains)) {
                   foreach ($domains as $domain) {
                     if ($details = mailbox('get', 'domain_details', $domain)) {
@@ -952,23 +958,20 @@ if (isset($_GET['query'])) {
             switch ($object) {
               case "all":
               case "reduced":
-                if (empty($extra)) {
-                  $domains = mailbox('get', 'domains');
-                }
-                else {
-                  $domains = explode(',', $extra);
-                }
+                $tags = null;
+                if (isset($_GET['tags']) && $_GET['tags'] != '') 
+                  $tags = explode(',', $_GET['tags']);
+
+                if (empty($extra)) $domains = mailbox('get', 'domains');
+                else $domains = explode(',', $extra);
+
                 if (!empty($domains)) {
                   foreach ($domains as $domain) {
-                    $mailboxes = mailbox('get', 'mailboxes', $domain);
+                    $mailboxes = mailbox('get', 'mailboxes', $domain, $tags);
                     if (!empty($mailboxes)) {
                       foreach ($mailboxes as $mailbox) {
-                        if ($details = mailbox('get', 'mailbox_details', $mailbox, $object)) {
-                          $data[] = $details;
-                        }
-                        else {
-                          continue;
-                        }
+                        if ($details = mailbox('get', 'mailbox_details', $mailbox, $object)) $data[] = $details;
+                        else continue;
                       }
                     }
                   }
@@ -1518,6 +1521,7 @@ if (isset($_GET['query'])) {
       }
       else {
         $items = (array)json_decode($_POST['items'], true);
+        $attr = isset($_POST['attr']) ? (array)json_decode($_POST['attr'], true) : null;
       }
       // only allow POST requests to POST API endpoints
       if ($_SERVER['REQUEST_METHOD'] != 'POST') {
@@ -1577,11 +1581,17 @@ if (isset($_GET['query'])) {
         case "domain":
           process_delete_return(mailbox('delete', 'domain', array('domain' => $items)));
         break;
+        case "tags_domain": 
+          process_delete_return(mailbox('delete', 'tags_domain', array('tags' => $items, 'domain' => $attr["domain"])));
+        break;
         case "alias-domain":
           process_delete_return(mailbox('delete', 'alias_domain', array('alias_domain' => $items)));
         break;
         case "mailbox":
           process_delete_return(mailbox('delete', 'mailbox', array('username' => $items)));
+        break;
+        case "tags_mailbox": 
+          process_delete_return(mailbox('delete', 'tags_mailbox', array('tags' => $items, 'mailbox' => $attr["mailbox"])));
         break;
         case "resource":
           process_delete_return(mailbox('delete', 'resource', array('name' => $items)));

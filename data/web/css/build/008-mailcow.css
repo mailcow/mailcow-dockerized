@@ -256,3 +256,37 @@ code {
 .flag-icon {
   margin-right: 5px;
 }
+
+.tag-box {
+  display: flex;
+  flex-wrap: wrap;
+  height: auto;
+}
+.tag-badge {
+  transition: 200ms linear;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 2px;
+  margin-right: 2px;
+}
+.tag-badge.btn-badge {
+  cursor: pointer;
+}
+.tag-badge.btn-badge:hover {
+  filter: brightness(0.9);
+}
+.tag-input {
+  margin-left: 10px;
+  border: 0;
+  flex: 1;
+  height: 24px;
+  min-width: 150px;
+}
+.tag-input:focus {
+  outline: none;
+}
+.tag-add {
+  padding: 0 5px 0 5px;
+  align-items: center;
+  display: inline-flex;
+}
