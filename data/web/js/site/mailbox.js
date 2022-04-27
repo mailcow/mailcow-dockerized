@@ -1163,17 +1163,17 @@ jQuery(function($){
   }
 
   // Load only if the tab is visible
-  onVisible("#tab-domains", () => draw_domain_table());
-  onVisible("#tab-mailboxes", () => draw_mailbox_table());
-  onVisible("#tab-resources", () => draw_resource_table());
-  onVisible("#tab-mbox-aliases", () => draw_alias_table());
-  onVisible("#tab-domain-aliases", () => draw_aliasdomain_table());
-  onVisible("#tab-syncjobs", () => draw_sync_job_table());
-  onVisible("#tab-filters", () => draw_filter_table());
-  onVisible("#tab-bcc", () => {
+  onVisible("[id^=tab-domains]", () => draw_domain_table());
+  onVisible("[id^=tab-mailboxes]", () => draw_mailbox_table());
+  onVisible("[id^=tab-resources]", () => draw_resource_table());
+  onVisible("[id^=tab-mbox-aliases]", () => draw_alias_table());
+  onVisible("[id^=tab-domain-aliases]", () => draw_aliasdomain_table());
+  onVisible("[id^=tab-syncjobs]", () => draw_sync_job_table());
+  onVisible("[id^=tab-filters]", () => draw_filter_table());
+  onVisible("[id^=tab-bcc]", () => {
     draw_bcc_table();
     draw_recipient_map_table();
   });
-  onVisible("#tab-tls-policy", () => draw_tls_policy_table());
+  onVisible("[id^=tab-tls-policy]", () => draw_tls_policy_table());
 
 });
