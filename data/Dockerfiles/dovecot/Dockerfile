@@ -118,11 +118,11 @@ RUN  cd /tmp && wget https://oligarchy.co.uk/xapian/${XAPIAN}/xapian-core-${XAPI
   && ./configure --prefix=/opt \
   && make && make install 
 
-RUN cd /tmp && git clone https://github.com/grosjo/fts-xapian && cd fts-xapian \
-  && autoupdate \
-  && autoreconf -vi \
+RUN cd /tmp && git clone https://github.com/slusarz/dovecot-fts-flatcurve.git && cd dovecot-fts-flatcurve \
+  && ./autogen.sh \
   && ./configure --with-dovecot=/usr/lib/dovecot \
-  && make && make install
+  && make \
+  && make install
 
 RUN pip3 install mysql-connector-python html2text jinja2 redis \
   && apt-get autoremove --purge -y \
