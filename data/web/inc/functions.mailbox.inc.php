@@ -443,17 +443,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           if ($_SESSION['mailcow_cc_role'] != "admin") {
             $_SESSION['return'][] = array(
               'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_extra),
               'msg' => 'access_denied'
             );
             return false;
           }
           $domain       = idn_to_ascii(strtolower(trim($_data['domain'])), 0, INTL_IDNA_VARIANT_UTS46);
           $description  = $_data['description'];
-          if (empty($description)) {
-            $description = $domain;
-          }
-          $tags         = $_data['tags'];
+          if (empty($description)) $description = $domain;
+          $tags         = (array)$_data['tags'];
           $aliases      = (int)$_data['aliases'];
           $mailboxes    = (int)$_data['mailboxes'];
           $defquota     = (int)$_data['defquota'];
@@ -4578,12 +4576,12 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           );
         break;
         case 'tags_mailbox':
-          if (!is_array($_data['mailbox'])) {
+          if (!is_array($_data['username'])) {
             $usernames = array();
-            $usernames[] = $_data['mailbox'];
+            $usernames[] = $_data['username'];
           }
           else {
-            $usernames = $_data['mailbox'];
+            $usernames = $_data['username'];
           }
           $tags = $_data['tags'];
           if (!is_array($tags)) $tags = array();

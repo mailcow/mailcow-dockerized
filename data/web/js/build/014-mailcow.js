@@ -278,8 +278,11 @@ $(document).ready(function() {
   $('.tag-box .tag-add').click(function(){
     addTag(this);
   });
-  $(".tag-box .tag-input").keyup(function (e) {
-    if (e.which == 13) addTag(this);
+  $(".tag-box .tag-input").keydown(function (e) {
+    if (e.which == 13){
+      e.preventDefault();
+      addTag(this);
+    } 
   });
   function addTag(tagAddElem){
     var tagboxElem = $(tagAddElem).parent();
@@ -314,12 +317,6 @@ $(document).ready(function() {
 });
 
 
-function unescapeHtml (string) {
-  var entityMap = {'&amp;': '&','&lt;': '<','&gt;': '>','&quot;': '"',"&#39;": "'",'&#x2F;': '/','&#x60;': '`','&#x3D;': '='}; 
-  return String(string).replace(/&amp;|&lt;|&gt;|&quot;|&#39;|&#x2F|&#x60|&#x3D;/g, function (s) {
-    return entityMap[s];
-  });
-}
-
 // http://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery
 function escapeHtml(n){var entityMap={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;","/":"&#x2F;","`":"&#x60;","=":"&#x3D;"}; return String(n).replace(/[&<>"'`=\/]/g,function(n){return entityMap[n]})}
+function unescapeHtml(t){var n={"&amp;":"&","&lt;":"<","&gt;":">","&quot;":'"',"&#39;":"'","&#x2F;":"/","&#x60;":"`","&#x3D;":"="};return String(t).replace(/&amp;|&lt;|&gt;|&quot;|&#39;|&#x2F|&#x60|&#x3D;/g,function(t){return n[t]})}

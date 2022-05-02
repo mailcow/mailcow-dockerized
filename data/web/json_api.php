@@ -80,8 +80,7 @@ if (isset($_GET['query'])) {
 
     // delete
     if ($action == 'delete') {
-      $_POST['attr']  = json_encode($requestDecoded['attr']);
-      $_POST['items'] = json_encode($requestDecoded['items']);
+      $_POST['items'] = $request;
     }
   }
   api_log($_POST);
@@ -1521,7 +1520,6 @@ if (isset($_GET['query'])) {
       }
       else {
         $items = (array)json_decode($_POST['items'], true);
-        $attr = isset($_POST['attr']) ? (array)json_decode($_POST['attr'], true) : null;
       }
       // only allow POST requests to POST API endpoints
       if ($_SERVER['REQUEST_METHOD'] != 'POST') {
@@ -1579,19 +1577,25 @@ if (isset($_GET['query'])) {
           process_delete_return(dkim('delete', array('domains' => $items)));
         break;
         case "domain":
-          process_delete_return(mailbox('delete', 'domain', array('domain' => $items)));
-        break;
-        case "tags_domain": 
-          process_delete_return(mailbox('delete', 'tags_domain', array('tags' => $items, 'domain' => $attr["domain"])));
+          switch ($object){
+            case "tag":
+              process_delete_return(mailbox('delete', 'tags_domain', array('tags' => $items, 'domain' => $extra)));
+            break;
+            default:
+              process_delete_return(mailbox('delete', 'domain', array('domain' => $items)));
+          }
         break;
         case "alias-domain":
           process_delete_return(mailbox('delete', 'alias_domain', array('alias_domain' => $items)));
         break;
         case "mailbox":
-          process_delete_return(mailbox('delete', 'mailbox', array('username' => $items)));
-        break;
-        case "tags_mailbox": 
-          process_delete_return(mailbox('delete', 'tags_mailbox', array('tags' => $items, 'mailbox' => $attr["mailbox"])));
+          switch ($object){
+            case "tag":
+              process_delete_return(mailbox('delete', 'tags_mailbox', array('tags' => $items, 'username' => $extra)));
+            break;
+            default:
+              process_delete_return(mailbox('delete', 'mailbox', array('username' => $items)));
+          }
         break;
         case "resource":
           process_delete_return(mailbox('delete', 'resource', array('name' => $items)));

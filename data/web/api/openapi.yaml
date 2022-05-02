@@ -497,6 +497,7 @@ paths:
                           relay_all_recipients: "0"
                           rl_frame: s
                           rl_value: "10"
+                          tags: ["tag1", "tag2"]
                         - null
                       msg:
                         - domain_added
@@ -544,6 +545,7 @@ paths:
                 rl_frame: s
                 rl_value: "10"
                 restart_sogo: "10"
+                tags: ["tag1", "tag2"]
               properties:
                 active:
                   description: is domain active or not
@@ -2865,6 +2867,7 @@ paths:
                   quota: "10240"
                   relay_all_recipients: "0"
                   relayhost: "2"
+                  tags: ["tag3", "tag4"]
                 items: domain.tld
               properties:
                 attr:

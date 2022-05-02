@@ -341,10 +341,6 @@ $(document).ready(function() {
       multi_data[id].splice($.inArray($(this).data('item'), multi_data[id]), 1);
       multi_data[id].push($(this).data('item'));
     }
-    // If clicked element #delete_selected has data-api-attr attribute, it is added to "attr"
-    var data_attr = {};
-    if (typeof $(this).data('api-attr') !== 'undefined')
-      data_attr = $(this).data('api-attr');
 
     if (typeof $(this).data('text') !== 'undefined') {
       $("#DeleteText").empty();
@@ -372,7 +368,6 @@ $(document).ready(function() {
           cache: false,
           data: {
             "items": JSON.stringify(data_array),
-            "attr": JSON.stringify(data_attr),
             "csrf_token": csrf_token
           },
           url: '/api/v1/' + api_url,
