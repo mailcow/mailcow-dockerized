@@ -2720,6 +2720,140 @@ paths:
                   type: object
               type: object
       summary: Delete Transport Maps
+  "/api/v1/delete/mailbox/tag/{mailbox}":
+    post:
+      parameters:
+        - description: name of mailbox
+          in: path
+          name: mailbox
+          example: info@domain.tld
+          required: true
+          schema:
+            type: string
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - mailbox
+                        - delete
+                        - tags_mailbox
+                        - tags:
+                          - tag1
+                          - tag2
+                          mailbox: info@domain.tld
+                        - null
+                      msg:
+                        - mailbox_modified
+                        - info@domain.tld
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Mailboxes
+      description: You can delete one or more mailbox tags.
+      operationId: Delete mailbox tags
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                - tag1
+                - tag2
+              properties:
+                items:
+                  description: contains list of mailboxes you want to delete
+                  type: object
+              type: object
+      summary: Delete mailbox tags
+  "/api/v1/delete/domain/tag/{domain}":
+    post:
+      parameters:
+        - description: name of domain
+          in: path
+          name: domain
+          example: domain.tld
+          required: true
+          schema:
+            type: string
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - mailbox
+                        - delete
+                        - tags_domain
+                        - tags:
+                          - tag1
+                          - tag2
+                          domain: domain.tld
+                        - null
+                      msg:
+                        - domain_modified
+                        - domain.tld
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Domains
+      description: You can delete one or more domain tags.
+      operationId: Delete domain tags
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                - tag1
+                - tag2
+              properties:
+                items:
+                  description: contains list of domains you want to delete
+                  type: object
+              type: object
+      summary: Delete domain tags
   /api/v1/edit/alias:
     post:
       responses:
