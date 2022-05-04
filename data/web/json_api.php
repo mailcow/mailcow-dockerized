@@ -14,17 +14,20 @@ function api_log($_data) {
     if ($data == 'csrf_token') {
       continue;
     }
-    if ($value = json_decode($value, true)) {
-      unset($value["csrf_token"]);
+
+    $value = json_decode($value, true);     
+    if ($value) {
+      if (is_array($value)) unset($value["csrf_token"]);
       foreach ($value as $key => &$val) {
         if(preg_match("/pass/i", $key)) {
           $val = '*';
         }
       }
-      $value = json_encode($value);
+      $value = json_encode($value);  
     }
     $data_var[] = $data . "='" . $value . "'";
   }
+
   try {
     $log_line = array(
       'time' => time(),
@@ -41,7 +44,7 @@ function api_log($_data) {
       'msg' => 'Redis: '.$e
     );
     return false;
-  }
+  }     
 }
 
 if (isset($_GET['query'])) {
@@ -80,8 +83,7 @@ if (isset($_GET['query'])) {
 
     // delete
     if ($action == 'delete') {
-      $_POST['attr']  = json_encode($requestDecoded['attr']);
-      $_POST['items'] = json_encode($requestDecoded['items']);
+      $_POST['items'] = $request;
     }
   }
   api_log($_POST);
@@ -983,7 +985,17 @@ if (isset($_GET['query'])) {
               break;
 
               default:
-                $data = mailbox('get', 'mailbox_details', $object);
+                $tags = null;
+                if (isset($_GET['tags']) && $_GET['tags'] != '') 
+                  $tags = explode(',', $_GET['tags']);
+
+                $mailboxes = mailbox('get', 'mailboxes', $object, $tags);
+                if (!empty($mailboxes)) {
+                  foreach ($mailboxes as $mailbox) {
+                    if ($details = mailbox('get', 'mailbox_details', $mailbox)) $data[] = $details;
+                    else continue;
+                  }
+                }
                 process_get_return($data);
               break;
             }
@@ -1521,7 +1533,6 @@ if (isset($_GET['query'])) {
       }
       else {
         $items = (array)json_decode($_POST['items'], true);
-        $attr = isset($_POST['attr']) ? (array)json_decode($_POST['attr'], true) : null;
       }
       // only allow POST requests to POST API endpoints
       if ($_SERVER['REQUEST_METHOD'] != 'POST') {
@@ -1579,19 +1590,25 @@ if (isset($_GET['query'])) {
           process_delete_return(dkim('delete', array('domains' => $items)));
         break;
         case "domain":
-          process_delete_return(mailbox('delete', 'domain', array('domain' => $items)));
-        break;
-        case "tags_domain": 
-          process_delete_return(mailbox('delete', 'tags_domain', array('tags' => $items, 'domain' => $attr["domain"])));
+          switch ($object){
+            case "tag":
+              process_delete_return(mailbox('delete', 'tags_domain', array('tags' => $items, 'domain' => $extra)));
+            break;
+            default:
+              process_delete_return(mailbox('delete', 'domain', array('domain' => $items)));
+          }
         break;
         case "alias-domain":
           process_delete_return(mailbox('delete', 'alias_domain', array('alias_domain' => $items)));
         break;
         case "mailbox":
-          process_delete_return(mailbox('delete', 'mailbox', array('username' => $items)));
-        break;
-        case "tags_mailbox": 
-          process_delete_return(mailbox('delete', 'tags_mailbox', array('tags' => $items, 'mailbox' => $attr["mailbox"])));
+          switch ($object){
+            case "tag":
+              process_delete_return(mailbox('delete', 'tags_mailbox', array('tags' => $items, 'username' => $extra)));
+            break;
+            default:
+              process_delete_return(mailbox('delete', 'mailbox', array('username' => $items)));
+          }
         break;
         case "resource":
           process_delete_return(mailbox('delete', 'resource', array('name' => $items)));

@@ -272,6 +272,9 @@ code {
 .tag-badge.btn-badge {
   cursor: pointer;
 }
+.tag-badge .bi {
+  font-size: 12px;
+}
 .tag-badge.btn-badge:hover {
   filter: brightness(0.9);
 }
