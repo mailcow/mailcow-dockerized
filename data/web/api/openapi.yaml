@@ -5072,6 +5072,27 @@ paths:
         of used storage.
       operationId: Get vmail status
       summary: Get vmail status
+  /api/v1/get/status/version:
+    get:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    version: "2022-04"
+          description: OK
+          headers: {}
+      tags:
+        - Status
+      description: >-
+        Using this endpoint you can get the current running release of this
+        instance.
+      operationId: Get version status
+      summary: Get version status
   /api/v1/get/syncjobs/all/no_log:
     get:
       responses:

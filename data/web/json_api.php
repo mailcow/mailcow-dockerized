@@ -1472,6 +1472,11 @@ if (isset($_GET['query'])) {
                   'solr_documents' => $solr_documents
                 ));
               break;
+              case "version":
+                echo json_encode(array(
+                  'version' => $GLOBALS['MAILCOW_GIT_VERSION']
+                ));
+              break;
               }
             }
           break;
