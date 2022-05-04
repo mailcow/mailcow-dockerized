@@ -2949,19 +2949,20 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             // get by domain and tags
             if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) return false;
             $tags = is_array($_extra) ? $_extra : array();
-            // add % as prefix and suffix to every element for relative searching
-            $tags = array_map(function($x){ return '%'.$x.'%'; }, $tags);
-            // use SELECT DISTINCT to avoid duplicates
-            $sql = "SELECT DISTINCT `username` FROM `tags_mailbox` WHERE `username` LIKE ? AND ";
+            $sql = "";
             foreach ($tags as $key => $tag) {
-              $sql = $sql."`tag_name` LIKE ?";
+              $sql = $sql."SELECT DISTINCT `username` FROM `tags_mailbox` WHERE `username` LIKE ? AND `tag_name` LIKE ?"; // distinct, avoid duplicates
               if ($key === array_key_last($tags)) break;
-              $sql = $sql.' AND ';
+              $sql = $sql.' UNION DISTINCT '; // combine querys with union - distinct, avoid duplicates
             }
             // prepend domain to array
-            array_unshift($tags , '%@'.$_data.'%');
+            $params = array();
+            foreach ($tags as $key => $val){ 
+              array_push($params, '%'.$_data.'%');
+              array_push($params, '%'.$val.'%');
+            }
             $stmt = $pdo->prepare($sql);
-            $stmt->execute($tags);
+            $stmt->execute($params);
 
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
             while($row = array_shift($rows)) {
@@ -3490,12 +3491,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $tags = is_array($_extra) ? $_extra : array();
             // add % as prefix and suffix to every element for relative searching
             $tags = array_map(function($x){ return '%'.$x.'%'; }, $tags);
-            // use SELECT DISTINCT to avoid duplicates
-            $sql = "SELECT DISTINCT `domain` FROM `tags_domain` WHERE ";
+            $sql = "";
             foreach ($tags as $key => $tag) {
-              $sql = $sql."`tag_name` LIKE ?";
+              $sql = $sql."SELECT DISTINCT `domain` FROM `tags_domain` WHERE `tag_name` LIKE ?"; // distinct, avoid duplicates
               if ($key === array_key_last($tags)) break;
-              $sql = $sql.' AND ';
+              $sql = $sql.' UNION DISTINCT '; // combine querys with union - distinct, avoid duplicates
             }
             $stmt = $pdo->prepare($sql);
             $stmt->execute($tags);

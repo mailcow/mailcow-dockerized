@@ -14,17 +14,20 @@ function api_log($_data) {
     if ($data == 'csrf_token') {
       continue;
     }
-    if ($value = json_decode($value, true)) {
-      unset($value["csrf_token"]);
+
+    $value = json_decode($value, true);     
+    if ($value) {
+      if (is_array($value)) unset($value["csrf_token"]);
       foreach ($value as $key => &$val) {
         if(preg_match("/pass/i", $key)) {
           $val = '*';
         }
       }
-      $value = json_encode($value);
+      $value = json_encode($value);  
     }
     $data_var[] = $data . "='" . $value . "'";
   }
+
   try {
     $log_line = array(
       'time' => time(),
@@ -41,7 +44,7 @@ function api_log($_data) {
       'msg' => 'Redis: '.$e
     );
     return false;
-  }
+  }     
 }
 
 if (isset($_GET['query'])) {
@@ -982,7 +985,17 @@ if (isset($_GET['query'])) {
               break;
 
               default:
-                $data = mailbox('get', 'mailbox_details', $object);
+                $tags = null;
+                if (isset($_GET['tags']) && $_GET['tags'] != '') 
+                  $tags = explode(',', $_GET['tags']);
+
+                $mailboxes = mailbox('get', 'mailboxes', $object, $tags);
+                if (!empty($mailboxes)) {
+                  foreach ($mailboxes as $mailbox) {
+                    if ($details = mailbox('get', 'mailbox_details', $mailbox)) $data[] = $details;
+                    else continue;
+                  }
+                }
                 process_get_return($data);
               break;
             }

@@ -1012,6 +1012,7 @@ paths:
                           force_pw_update: "1"
                           tls_enforce_in: "1"
                           tls_enforce_out: "1"
+                          tags: ["tag1", "tag2"]
                         - null
                       msg:
                         - mailbox_added
@@ -1056,6 +1057,7 @@ paths:
                 force_pw_update: "1"
                 tls_enforce_in: "1"
                 tls_enforce_out: "1"
+                tags: ["tag1", "tag2"]
               properties:
                 active:
                   description: is mailbox active or not
@@ -3022,6 +3024,7 @@ paths:
                           sogo_access: "1"
                           username:
                             - info@domain.tld
+                          tags: ["tag3", "tag4"]
                         - null
                       msg:
                         - mailbox_modified
@@ -3069,6 +3072,7 @@ paths:
                     - domain3.tld
                     - "*"
                   sogo_access: "1"
+                  tags: ["tag3", "tag4"]
                 items:
                   - info@domain.tld
               properties:
@@ -3796,6 +3800,11 @@ paths:
               - all
               - mailcow.tld
             type: string
+        - description: comma seperated list of tags to filter by
+          example: "tag1,tag2"
+          in: query
+          name: tags
+          required: false
         - description: e.g. api-key-string
           example: api-key-string
           in: header
@@ -3834,6 +3843,7 @@ paths:
                       relay_all_recipients: "0"
                       relayhost: "0"
                       rl: false
+                      tags: ["tag1", "tag2"]
                     - active: "1"
                       aliases_in_domain: 0
                       aliases_left: 400
@@ -3856,6 +3866,7 @@ paths:
                       relay_all_recipients: "0"
                       relayhost: "0"
                       rl: false
+                      tags: ["tag3", "tag4"]
           description: OK
           headers: {}
       tags:
@@ -4348,6 +4359,11 @@ paths:
               - all
               - user@domain.tld
             type: string
+        - description: comma seperated list of tags to filter by
+          example: "tag1,tag2"
+          in: query
+          name: tags
+          required: false
         - description: e.g. api-key-string
           example: api-key-string
           in: header
@@ -4385,6 +4401,7 @@ paths:
                       rl: false
                       spam_aliases: 0
                       username: info@doman3.tld
+                      tags: ["tag1", "tag2"]
           description: OK
           headers: {}
       tags:
