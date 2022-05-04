@@ -331,7 +331,7 @@ jQuery(function($){
             if (Array.isArray(item.tags)){
               var tags = '';
               for (var i = 0; i < item.tags.length; i++)
-                tags += '<span class="badge badge-primary tag-badge">' + escapeHtml(item.tags[i]) + '</span>';
+                tags += '<span class="badge badge-primary tag-badge"><i class="bi bi-tag-fill"></i> ' + escapeHtml(item.tags[i]) + '</span>';
               item.tags = tags;
             }
 
@@ -507,7 +507,7 @@ jQuery(function($){
             if (Array.isArray(item.tags)){
               var tags = '';
               for (var i = 0; i < item.tags.length; i++)
-                tags += '<span class="badge badge-primary tag-badge">' + escapeHtml(item.tags[i]) + '</span>';
+                tags += '<span class="badge badge-primary tag-badge"><i class="bi bi-tag-fill"></i> ' + escapeHtml(item.tags[i]) + '</span>';
               item.tags = tags;
             }
           });

@@ -297,7 +297,7 @@ $(document).ready(function() {
     if (!Array.isArray(value_tags)) value_tags = [];
     if (value_tags.includes(tag)) return;
 
-    $('<span class="badge badge-primary tag-badge btn-badge">' + tag + '</span>').insertBefore('.tag-input').click(function(){
+    $('<span class="badge badge-primary tag-badge btn-badge"><i class="bi bi-tag-fill"></i> ' + tag + '</span>').insertBefore('.tag-input').click(function(){
       var del_tag = unescapeHtml($(this).text());
       var del_tags = [];
       try {

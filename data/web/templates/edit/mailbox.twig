@@ -27,7 +27,10 @@
         <div class="col-sm-10">
           <div class="form-control tag-box">
             {% for tag in mailbox_details.tags %}
-              <span data-action='delete_selected' data-item="{{ tag }}" data-id="mailbox_tag_{{ tag }}" data-api-url='delete/mailbox/tag/{{ mailbox }}' class="badge badge-primary tag-badge btn-badge">{{ tag }}</span>
+              <span data-action='delete_selected' data-item="{{ tag }}" data-id="mailbox_tag_{{ tag }}" data-api-url='delete/mailbox/tag/{{ mailbox }}' class="badge badge-primary tag-badge btn-badge">
+                <i class="bi bi-tag-fill"></i> 
+                {{ tag }}
+              </span>
             {% endfor %}
             <input type="text" class="tag-input">
             <span class="btn tag-add"><i class="bi bi-plus-lg"></i></span>
