@@ -2942,19 +2942,17 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
         break;
         case 'mailboxes':
           $mailboxes = array();
-          if (isset($_data) && !hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
-            return false;
-          }
-          elseif (isset($_extra) && is_array($_extra) && isset($_data)) {
+          if (isset($_extra) && is_array($_extra) && isset($_data)) {
             // get by domain and tags
-            if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) return false;
             $tags = is_array($_extra) ? $_extra : array();
+
             $sql = "";
             foreach ($tags as $key => $tag) {
               $sql = $sql."SELECT DISTINCT `username` FROM `tags_mailbox` WHERE `username` LIKE ? AND `tag_name` LIKE ?"; // distinct, avoid duplicates
               if ($key === array_key_last($tags)) break;
               $sql = $sql.' UNION DISTINCT '; // combine querys with union - distinct, avoid duplicates
             }
+
             // prepend domain to array
             $params = array();
             foreach ($tags as $key => $val){ 
@@ -2966,7 +2964,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
 
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
             while($row = array_shift($rows)) {
-              $mailboxes[] = $row['username'];
+              if (hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], explode('@', $row['username'])[1])) 
+                $mailboxes[] = $row['username'];
             }
           }
           elseif (isset($_data) && hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
@@ -2978,27 +2977,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
             while($row = array_shift($rows)) {
               $mailboxes[] = $row['username'];
-            }
-          }
-          elseif (isset($_extra) && is_array($_extra)) {
-            // get by tags
-            $tags = is_array($_extra) ? $_extra : array();
-            // add % as prefix and suffix to every element for relative searching
-            $tags = array_map(function($x){ return '%'.$x.'%'; }, $tags);
-            // use SELECT DISTINCT to avoid duplicates
-            $sql = "SELECT DISTINCT `username` FROM `tags_mailbox` WHERE ";
-            foreach ($tags as $key => $tag) {
-              $sql = $sql."`tag_name` LIKE ?";
-              if ($key === array_key_last($tags)) break;
-              $sql = $sql.' AND ';
-            }
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute($tags);
-
-            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            while($row = array_shift($rows)) {
-              if (hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $row['domain'])) 
-                $mailboxes[] = $row['username'];
             }
           }
           else {
@@ -4544,6 +4522,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
+
+          $wasModified = false;
           foreach ($domains as $domain) {            
             if (!is_valid_domain_name($domain)) {
               $_SESSION['return'][] = array(
@@ -4556,11 +4536,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
 
             foreach($tags as $tag){
               // delete tag
-              $_SESSION['return'][] = array(
-                'type' => 'success',
-                'log' => array("tag" => $tag),
-                'msg' => array('tag_log')
-              );
+              $wasModified = true;
               $stmt = $pdo->prepare("DELETE FROM `tags_domain` WHERE `domain` = :domain AND `tag_name` = :tag_name");
               $stmt->execute(array(
                 ':domain' => $domain,
@@ -4569,6 +4545,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             }
           }
 
+          if (!$wasModified) return false;
           $_SESSION['return'][] = array(
             'type' => 'success',
             'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -4586,6 +4563,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $tags = $_data['tags'];
           if (!is_array($tags)) $tags = array();
 
+          $wasModified = false;
           foreach ($usernames as $username) {
             if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
               $_SESSION['return'][] = array(
@@ -4609,6 +4587,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
 
             // delete tags
             foreach($tags as $tag){
+              $wasModified = true;
+              
               $stmt = $pdo->prepare("DELETE FROM `tags_mailbox` WHERE `username` = :username AND `tag_name` = :tag_name");
               $stmt->execute(array(
                 ':username' => $username,
@@ -4617,6 +4597,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             }
           }
 
+          if (!$wasModified) return false;
           $_SESSION['return'][] = array(
             'type' => 'success',
             'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
