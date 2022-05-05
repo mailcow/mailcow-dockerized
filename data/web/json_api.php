@@ -991,6 +991,7 @@ if (isset($_GET['query'])) {
 
                 if ($tags === null) {
                   $data = mailbox('get', 'mailbox_details', $object);
+                  process_get_return($data);
                 } else {
                   $mailboxes = mailbox('get', 'mailboxes', $object, $tags);
                   if (is_array($mailboxes)) {
@@ -999,8 +1000,8 @@ if (isset($_GET['query'])) {
                         $data[] = $details;
                     }
                   }
+                  process_get_return($data, false);
                 }
-                process_get_return($data);
               break;
             }
           break;
