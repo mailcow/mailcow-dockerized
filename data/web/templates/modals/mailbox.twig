@@ -31,6 +31,16 @@
             </div>
           </div>
           <div class="form-group">
+            <label class="control-label col-sm-2">{{ lang.add.tags }}</label>
+            <div class="col-sm-10">
+              <div class="form-control tag-box">
+                <input type="text" class="tag-input">
+                <span class="btn tag-add"><i class="bi bi-plus-lg"></i></span>
+                <input type="hidden" value="" name="tags" class="tag-values" />
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
             <label class="control-label col-sm-2" for="addInputQuota">{{ lang.add.quota_mb }}
               <br /><span id="quotaBadge" class="badge">max. - MiB</span>
             </label>
@@ -92,6 +102,16 @@
             <label class="control-label col-sm-2" for="description">{{ lang.add.description }}</label>
             <div class="col-sm-10">
               <input type="text" class="form-control" name="description">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2">{{ lang.add.tags }}</label>
+            <div class="col-sm-10">
+              <div class="form-control tag-box">
+                <input type="text" class="tag-input">
+                <span class="btn tag-add"><i class="bi bi-plus-lg"></i></span>
+                <input type="hidden" value="" name="tags" class="tag-values" />
+              </div>
             </div>
           </div>
           <div class="form-group">
@@ -188,11 +208,11 @@
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10 btn-group">
               {% if not skip_sogo %}
-              <button class="btn btn-xs-lg btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" data-action="add_item" data-id="add_domain" data-api-url='add/domain' data-api-attr='{}' href="#">{{ lang.add.add_domain_only }}</button>
-              <button class="btn btn-xs-lg btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" data-action="add_item" data-id="add_domain" data-api-url='add/domain' data-api-attr='{"restart_sogo":"1"}' href="#">{{ lang.add.add_domain_restart }}</button>
+              <button class="btn btn-xs-lg btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" data-action="add_item" data-id="add_domain" data-api-url='add/domain' data-api-attr='{"tags": []}' href="#">{{ lang.add.add_domain_only }}</button>
+              <button class="btn btn-xs-lg btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" data-action="add_item" data-id="add_domain" data-api-url='add/domain' data-api-attr='{"restart_sogo":"1", "tags": []}' href="#">{{ lang.add.add_domain_restart }}</button>
               <div class="clearfix visible-xs"></div>
               {% else %}
-              <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="add_item" data-id="add_domain" data-api-url='add/domain' data-api-attr='{}' href="#">{{ lang.add.add }}</button>
+              <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="add_item" data-id="add_domain" data-api-url='add/domain' data-api-attr='{"tags": []}' href="#">{{ lang.add.add }}</button>
               {% endif %}
             </div>
           </div>
