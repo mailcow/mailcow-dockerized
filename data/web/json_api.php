@@ -14,17 +14,20 @@ function api_log($_data) {
     if ($data == 'csrf_token') {
       continue;
     }
-    if ($value = json_decode($value, true)) {
-      unset($value["csrf_token"]);
+
+    $value = json_decode($value, true);     
+    if ($value) {
+      if (is_array($value)) unset($value["csrf_token"]);
       foreach ($value as $key => &$val) {
         if(preg_match("/pass/i", $key)) {
           $val = '*';
         }
       }
-      $value = json_encode($value);
+      $value = json_encode($value);  
     }
     $data_var[] = $data . "='" . $value . "'";
   }
+
   try {
     $log_line = array(
       'time' => time(),
@@ -41,7 +44,7 @@ function api_log($_data) {
       'msg' => 'Redis: '.$e
     );
     return false;
-  }
+  }     
 }
 
 if (isset($_GET['query'])) {
@@ -82,9 +85,9 @@ if (isset($_GET['query'])) {
     if ($action == 'delete') {
       $_POST['items'] = $request;
     }
-
   }
   api_log($_POST);
+
 
   $request_incomplete = json_encode(array(
     'type' => 'error',
@@ -486,7 +489,12 @@ if (isset($_GET['query'])) {
           case "domain":
             switch ($object) {
               case "all":
-                $domains = mailbox('get', 'domains');
+                $tags = null;
+                if (isset($_GET['tags']) && $_GET['tags'] != '') 
+                  $tags = explode(',', $_GET['tags']);
+
+                $domains = mailbox('get', 'domains', null, $tags);
+
                 if (!empty($domains)) {
                   foreach ($domains as $domain) {
                     if ($details = mailbox('get', 'domain_details', $domain)) {
@@ -952,23 +960,20 @@ if (isset($_GET['query'])) {
             switch ($object) {
               case "all":
               case "reduced":
-                if (empty($extra)) {
-                  $domains = mailbox('get', 'domains');
-                }
-                else {
-                  $domains = explode(',', $extra);
-                }
+                $tags = null;
+                if (isset($_GET['tags']) && $_GET['tags'] != '') 
+                  $tags = explode(',', $_GET['tags']);
+
+                if (empty($extra)) $domains = mailbox('get', 'domains');
+                else $domains = explode(',', $extra);
+
                 if (!empty($domains)) {
                   foreach ($domains as $domain) {
-                    $mailboxes = mailbox('get', 'mailboxes', $domain);
+                    $mailboxes = mailbox('get', 'mailboxes', $domain, $tags);
                     if (!empty($mailboxes)) {
                       foreach ($mailboxes as $mailbox) {
-                        if ($details = mailbox('get', 'mailbox_details', $mailbox, $object)) {
-                          $data[] = $details;
-                        }
-                        else {
-                          continue;
-                        }
+                        if ($details = mailbox('get', 'mailbox_details', $mailbox, $object)) $data[] = $details;
+                        else continue;
                       }
                     }
                   }
@@ -980,7 +985,17 @@ if (isset($_GET['query'])) {
               break;
 
               default:
-                $data = mailbox('get', 'mailbox_details', $object);
+                $tags = null;
+                if (isset($_GET['tags']) && $_GET['tags'] != '') 
+                  $tags = explode(',', $_GET['tags']);
+
+                $mailboxes = mailbox('get', 'mailboxes', $object, $tags);
+                if (!empty($mailboxes)) {
+                  foreach ($mailboxes as $mailbox) {
+                    if ($details = mailbox('get', 'mailbox_details', $mailbox)) $data[] = $details;
+                    else continue;
+                  }
+                }
                 process_get_return($data);
               break;
             }
@@ -1580,13 +1595,25 @@ if (isset($_GET['query'])) {
           process_delete_return(dkim('delete', array('domains' => $items)));
         break;
         case "domain":
-          process_delete_return(mailbox('delete', 'domain', array('domain' => $items)));
+          switch ($object){
+            case "tag":
+              process_delete_return(mailbox('delete', 'tags_domain', array('tags' => $items, 'domain' => $extra)));
+            break;
+            default:
+              process_delete_return(mailbox('delete', 'domain', array('domain' => $items)));
+          }
         break;
         case "alias-domain":
           process_delete_return(mailbox('delete', 'alias_domain', array('alias_domain' => $items)));
         break;
         case "mailbox":
-          process_delete_return(mailbox('delete', 'mailbox', array('username' => $items)));
+          switch ($object){
+            case "tag":
+              process_delete_return(mailbox('delete', 'tags_mailbox', array('tags' => $items, 'username' => $extra)));
+            break;
+            default:
+              process_delete_return(mailbox('delete', 'mailbox', array('username' => $items)));
+          }
         break;
         case "resource":
           process_delete_return(mailbox('delete', 'resource', array('name' => $items)));
