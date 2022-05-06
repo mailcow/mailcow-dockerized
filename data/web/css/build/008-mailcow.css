@@ -232,6 +232,9 @@ table.footable>tbody>tr.footable-empty>td {
   font-style:italic;
   font-size: 1rem;
 }
+table>tbody>tr>td>span.footable-toggle {
+  opacity: 0.75;
+}
 .navbar-nav > li {
   font-size: 1rem !important;
 }
@@ -293,3 +296,4 @@ code {
   align-items: center;
   display: inline-flex;
 }
+
