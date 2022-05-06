@@ -568,6 +568,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           ));
           // save tags
           foreach($tags as $index => $tag){
+            if (empty($tag)) continue;
             if ($index > $GLOBALS['TAGGING_LIMIT']) {
               $_SESSION['return'][] = array(
                 'type' => 'warning',
@@ -1124,6 +1125,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           ));
           // save tags
           foreach($tags as $index => $tag){
+            if (empty($tag)) continue;
             if ($index > $GLOBALS['TAGGING_LIMIT']) {
               $_SESSION['return'][] = array(
                 'type' => 'warning',
@@ -2201,8 +2203,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':gal' => $gal,
                 ':domain' => $domain
               ));
-              // save tags, tag_name is unique
+              // save tags
               foreach($tags as $index => $tag){
+                if (empty($tag)) continue;
                 if ($index > $GLOBALS['TAGGING_LIMIT']) {
                   $_SESSION['return'][] = array(
                     'type' => 'warning',
@@ -2368,8 +2371,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':description' => $description,
                 ':domain' => $domain
               ));
-              // save tags, tag_name is unique
+              // save tags
               foreach($tags as $index => $tag){
+                if (empty($tag)) continue;
                 if ($index > $GLOBALS['TAGGING_LIMIT']) {
                   $_SESSION['return'][] = array(
                     'type' => 'warning',
@@ -2712,6 +2716,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ));
             // save tags
             foreach($tags as $index => $tag){
+              if (empty($tag)) continue;
               if ($index > $GLOBALS['TAGGING_LIMIT']) {
                 $_SESSION['return'][] = array(
                   'type' => 'warning',
