@@ -290,6 +290,7 @@ $(document).ready(function() {
     var tagValuesElem = $(tagboxElem).find(".tag-values")[0];
 
     var tag = escapeHtml($(tagInputElem).val());
+    if (!tag) return;
     var value_tags = [];
     try {
       value_tags = JSON.parse($(tagValuesElem).val());
