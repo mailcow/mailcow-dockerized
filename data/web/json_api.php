@@ -989,14 +989,19 @@ if (isset($_GET['query'])) {
                 if (isset($_GET['tags']) && $_GET['tags'] != '') 
                   $tags = explode(',', $_GET['tags']);
 
-                $mailboxes = mailbox('get', 'mailboxes', $object, $tags);
-                if (!empty($mailboxes)) {
-                  foreach ($mailboxes as $mailbox) {
-                    if ($details = mailbox('get', 'mailbox_details', $mailbox)) $data[] = $details;
-                    else continue;
+                if ($tags === null) {
+                  $data = mailbox('get', 'mailbox_details', $object);
+                  process_get_return($data);
+                } else {
+                  $mailboxes = mailbox('get', 'mailboxes', $object, $tags);
+                  if (is_array($mailboxes)) {
+                    foreach ($mailboxes as $mailbox) {
+                      if ($details = mailbox('get', 'mailbox_details', $mailbox)) 
+                        $data[] = $details;
+                    }
                   }
+                  process_get_return($data, false);
                 }
-                process_get_return($data);
               break;
             }
           break;
