@@ -74,7 +74,13 @@ RUN groupadd -g 5000 vmail \
   libunicode-string-perl \
   liburi-perl \
   libwww-perl \
+  libstemmer-dev \
+  libexttextcat-dev \
+  libldap-dev \
+  libghc-bzlib-dev \
   lua-sql-mysql \
+  liblz4-dev \
+  libzstd-dev \
   lua-socket \
   mariadb-client \
   procps \
@@ -86,12 +92,15 @@ RUN groupadd -g 5000 vmail \
   syslog-ng-mod-redis \
   wget \
   git \
+  bison \
+  flex \
   build-essential \
   autoconf \
   automake \
   libtool \
   make \
   libxapian-dev \
+  default-libmysqlclient-dev \
   libicu-dev \
   zlib1g-dev \
   pkg-config \
@@ -99,30 +108,42 @@ RUN groupadd -g 5000 vmail \
   && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
   && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
   && chmod +x /usr/local/bin/gosu \
-  && gosu nobody true \
-  && apt-key adv --fetch-keys https://repo.dovecot.org/DOVECOT-REPO-GPG \
-  && echo "deb https://repo.dovecot.org/ce-${DOVECOT}/debian/bullseye bullseye main" > /etc/apt/sources.list.d/dovecot.list \
-  && apt-get update \
-  && apt-get -y --no-install-recommends install \
-  dovecot-lua \
-  dovecot-managesieved \
-  dovecot-sieve \
-  dovecot-lmtpd \
-  dovecot-ldap \
-  dovecot-mysql \
-  dovecot-core \
-  dovecot-pop3d \
-  dovecot-imapd \
-  dovecot-dev
+  && gosu nobody true
+#  && apt-key adv --fetch-keys https://repo.dovecot.org/DOVECOT-REPO-GPG \
+#  && echo "deb https://repo.dovecot.org/ce-${DOVECOT}/debian/bullseye bullseye main" > /etc/apt/sources.list.d/dovecot.list \
+#  && apt-get update \
+#  && apt-get -y --no-install-recommends install \
+#  dovecot-lua \
+#  dovecot-managesieved \
+#  dovecot-sieve \
+#  dovecot-lmtpd \
+#  dovecot-ldap \
+#  dovecot-mysql \
+#  dovecot-core \
+#  dovecot-pop3d \
+#  dovecot-imapd \
+#  dovecot-dev
+
+RUN cd /tmp && git clone https://github.com/dovecot/core.git dovecot && cd dovecot \
+  && ./autogen.sh \
+  && PANDOC=false ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --with-ssldir=/etc/ssl --enable-maintainer-mode --with-mysql --with-ldap --with-zstd --with-lz4 --with-ssl=openssl --with-notify=inotify --with-bzlib --with-zlib --enable-hardening --with-stemmer --with-textcat --with-icu \
+  && make && make install && make clean
+
+
+RUN cd /tmp && git clone https://github.com/dovecot/pigeonhole && cd pigeonhole \
+  && ./autogen.sh \
+  && ./configure --with-dovecot=/usr/lib/dovecot --with-managesieve\ 
+  && make && make install && make clean
+
 RUN  cd /tmp && wget https://oligarchy.co.uk/xapian/${XAPIAN}/xapian-core-${XAPIAN}.tar.xz && tar xf xapian-core-${XAPIAN}.tar.xz && cd xapian-core-${XAPIAN} \
   && ./configure --prefix=/opt \
-  && make && make install 
+  && make && make install && make clean
 
-RUN cd /tmp && git clone https://github.com/slusarz/dovecot-fts-flatcurve.git && cd dovecot-fts-flatcurve \
-  && ./autogen.sh \
-  && ./configure --with-dovecot=/usr/lib/dovecot \
-  && make \
-  && make install
+#RUN cd /tmp && git clone https://github.com/slusarz/dovecot-fts-flatcurve.git && cd dovecot-fts-flatcurve \
+#  && ./autogen.sh \
+#  && ./configure --with-dovecot=/usr/lib/dovecot \
+#  && make \
+#  && make install
 
 RUN pip3 install mysql-connector-python html2text jinja2 redis \
   && apt-get autoremove --purge -y \
