@@ -2,9 +2,8 @@
     <div class="card mb-4">
       <div class="card-header bg-danger text-white">{{ lang.admin.admin_details }}</div>
       <div class="card-body">
-        <div class="table-responsive">
-          <div id="adminstable"></div>
-        </div>
+        <table id="adminstable" class="table table-striped dt-responsive nowrap" style="width:100%">
+        </table>
         <div class="mass-actions-admin">
           <div class="btn-group">
             <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="admins" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
