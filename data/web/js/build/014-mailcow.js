@@ -252,4 +252,9 @@ $(document).ready(function() {
       })
     });
   })
+
+  // Jquery Datatables, enable responsive plugin
+  $.extend($.fn.dataTable.defaults, {
+    responsive: true
+  });
 });

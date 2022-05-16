@@ -71,33 +71,90 @@ jQuery(function($){
     })
   }
   function draw_domain_admins() {
-    ft_domainadmins = FooTable.init('#domainadminstable', {
-      "columns": [
-        {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
-        {"sorted": true,"name":"username","title":lang.username,"style":{"width":"250px"}},
-        {"name":"selected_domains","title":lang.admin_domains,"breakpoints":"xs sm"},
-        {"name":"tfa_active","title":"TFA", "filterable": false,"style":{"maxWidth":"80px","width":"80px"},"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
-        {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"250px","width":"250px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
-      ],
-      "rows": $.ajax({
-        dataType: 'json',
-        url: '/api/v1/get/domain-admin/all',
-        jsonp: false,
-        error: function () {
-          console.log('Cannot draw domain admin table');
-        },
-        success: function (data) {
-          return process_table_data(data, 'domainadminstable');
+    $('#domainadminstable').DataTable({
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/domain-admin/all",
+        dataSrc: function(json){
+          console.log(json);
+          return json;
         }
-      }),
-      "empty": lang.empty,
-      "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "state": {"enabled": true},
-      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table},
-      "sorting": {"enabled": true},
-      "toggleSelector": "table tbody span.footable-toggle"
+      },
+      columns: [
+          {
+            title: lang.username,
+            data: 'username',
+          },
+          {
+            title: "TFA",
+            data: 'tfa_active',
+            render: function (data, type) {
+              if(data == 1) return '<i class="bi bi-check-lg"></i>';
+              else return '<i class="bi bi-x-lg"></i>'
+            }
+          },
+          {
+            title: lang.admin_domains,
+            data: 'tfa_active',
+            render: function (data, type) {
+              return data;
+            }
+          },
+          {
+            title: lang.active,
+            data: 'active',
+            render: function (data, type) {
+              if(data == 1) return '<i class="bi bi-check-lg"></i>';
+              else return '<i class="bi bi-x-lg"></i>'
+            }
+          },
+          {
+            title: lang.action,
+            data: null,
+            render: function (data, type) {
+              return `<div class="btn-group">
+                <a href="/edit/admin/admin" class="btn btn-xs btn-xs-half btn-secondary">
+                  <i class="bi bi-pencil-fill"></i> Bearbeiten
+                </a>
+                <a href="#" data-action="delete_selected" data-id="single-admin" data-api-url="delete/admin" data-item="admin" class="btn btn-xs btn-xs-half btn-danger">
+                  <i class="bi bi-trash"></i> Entfernen
+                </a>
+              </div>`;
+            }
+          },
+      ]
     });
+
+    // ft_domainadmins = FooTable.init('#domainadminstable', {
+    //   "columns": [
+    //     {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
+    //     {"sorted": true,"name":"username","title":lang.username,"style":{"width":"250px"}},
+    //     {"name":"selected_domains","title":lang.admin_domains,"breakpoints":"xs sm"},
+    //     {"name":"tfa_active","title":"TFA", "filterable": false,"style":{"maxWidth":"80px","width":"80px"},"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
+    //     {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
+    //     {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"250px","width":"250px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
+    //   ],
+    //   "rows": $.ajax({
+    //     dataType: 'json',
+    //     url: '/api/v1/get/domain-admin/all',
+    //     jsonp: false,
+    //     error: function () {
+    //       console.log('Cannot draw domain admin table');
+    //     },
+    //     success: function (data) {
+    //       return process_table_data(data, 'domainadminstable');
+    //     }
+    //   }),
+    //   "empty": lang.empty,
+    //   "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
+    //   "state": {"enabled": true},
+    //   "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table},
+    //   "sorting": {"enabled": true},
+    //   "toggleSelector": "table tbody span.footable-toggle"
+    // });
   }
   function draw_oauth2_clients() {
     ft_oauth2clientstable = FooTable.init('#oauth2clientstable', {
@@ -127,10 +184,6 @@ jQuery(function($){
     });
   }
   function draw_admins() {
-    $.extend( $.fn.dataTable.defaults, {
-      responsive: true
-    });
-
     $('#adminstable').DataTable({
       processing: true,
       serverSide: false,
@@ -179,6 +232,7 @@ jQuery(function($){
           },
       ]
     });
+
     // ft_admins = FooTable.init('#adminstable', {
     //   "columns": [
     //     {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
@@ -414,7 +468,7 @@ jQuery(function($){
     return data
   };
   // // Initial table drawings
-  // draw_domain_admins();
+  draw_domain_admins();
   draw_admins();
   // draw_fwd_hosts();
   // draw_relayhosts();
