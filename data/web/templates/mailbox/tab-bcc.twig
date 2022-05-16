@@ -15,9 +15,7 @@
     </div>
     <p style="margin:10px" class="text-muted">{{ lang.mailbox.bcc_info|raw }}</p>
 {#    <div class="mass-actions-mailbox" data-actions-header="true"></div>#}
-    <div class="table-responsive">
-      <table class="table table-striped" id="bcc_table"></table>
-    </div>
+    <table id="bcc_table" class="table table-striped dt-responsive nowrap w-100"></table>
     <div class="mass-actions-mailbox">
       <div class="btn-group" data-acl="{{ acl.bcc_maps }}">
         <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="bcc" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
