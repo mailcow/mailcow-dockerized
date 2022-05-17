@@ -209,10 +209,17 @@ paths:
                         - app_passwd
                         - add
                         - active: "1"
-                          app_name: emclient
+                          username: info@domain.tld
+                          app_name: wordpress
                           app_passwd: keyleudecticidechothistishownsan31
                           app_passwd2: keyleudecticidechothistishownsan31
-                          username: hello@mailcow.email
+                          protocols:
+                            - imap_access
+                            - dav_access
+                            - smtp_access
+                            - eas_access
+                            - pop3_access
+                            - sieve_access
                       msg: app_passwd_added
                       type: success
               schema:
@@ -249,6 +256,13 @@ paths:
                 app_name: wordpress
                 app_passwd: keyleudecticidechothistishownsan31
                 app_passwd2: keyleudecticidechothistishownsan31
+                protocols:
+                  - imap_access
+                  - dav_access
+                  - smtp_access
+                  - eas_access
+                  - pop3_access
+                  - sieve_access
               properties:
                 active:
                   description: is alias active or not
