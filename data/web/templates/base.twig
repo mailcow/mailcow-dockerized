@@ -245,6 +245,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
         window.fetch("/api/v1/get/webauthn-tfa-get-args", {method:'GET',cache:'no-cache'}).then(response => {
             return response.json();
         }).then(json => {
+          console.log(json);
           if (json.success === false) throw new Error();
           if (json.type === "error") throw new Error(json.msg);
       
