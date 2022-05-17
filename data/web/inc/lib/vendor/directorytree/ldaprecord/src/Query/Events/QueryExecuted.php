@@ -9,14 +9,14 @@ class QueryExecuted
     /**
      * The LDAP filter that was used for the query.
      *
-     * @var string
+     * @var Builder
      */
     protected $query;
 
     /**
      * The number of milliseconds it took to execute the query.
      *
-     * @var float
+     * @var ?float
      */
     protected $time;
 

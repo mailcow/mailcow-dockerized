@@ -3,10 +3,39 @@
 namespace LdapRecord\Models\Concerns;
 
 use Closure;
+use LdapRecord\Events\NullDispatcher;
 use LdapRecord\Models\Events\Event;
 
 trait HasEvents
 {
+    /**
+     * Execute the callback without raising any events.
+     *
+     * @param Closure $callback
+     *
+     * @return mixed
+     */
+    protected static function withoutEvents(Closure $callback)
+    {
+        $container = static::getConnectionContainer();
+
+        $dispatcher = $container->getEventDispatcher();
+
+        if ($dispatcher) {
+            $container->setEventDispatcher(
+                new NullDispatcher($dispatcher)
+            );
+        }
+
+        try {
+            return $callback();
+        } finally {
+            if ($dispatcher) {
+                $container->setEventDispatcher($dispatcher);
+            }
+        }
+    }
+
     /**
      * Fires the specified model event.
      *

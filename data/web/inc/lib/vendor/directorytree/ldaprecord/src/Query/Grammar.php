@@ -506,9 +506,9 @@ class Grammar
      *
      * @param array $where
      *
-     * @throws UnexpectedValueException
-     *
      * @return string
+     *
+     * @throws UnexpectedValueException
      */
     protected function compileWhere(array $where)
     {
@@ -522,9 +522,9 @@ class Grammar
      *
      * @param string $operator
      *
-     * @throws UnexpectedValueException
-     *
      * @return string
+     *
+     * @throws UnexpectedValueException
      */
     protected function makeCompileMethod($operator)
     {

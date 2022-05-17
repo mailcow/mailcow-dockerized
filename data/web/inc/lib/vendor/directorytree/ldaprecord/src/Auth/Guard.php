@@ -54,10 +54,10 @@ class Guard
      * @param string $password
      * @param bool   $stayBound
      *
+     * @return bool
+     *
      * @throws UsernameRequiredException
      * @throws PasswordRequiredException
-     *
-     * @return bool
      */
     public function attempt($username, $password, $stayBound = false)
     {

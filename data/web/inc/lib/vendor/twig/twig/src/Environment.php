@@ -38,11 +38,11 @@ use Twig\TokenParser\TokenParserInterface;
  */
 class Environment
 {
-    public const VERSION = '3.3.2';
-    public const VERSION_ID = 30302;
+    public const VERSION = '3.3.8';
+    public const VERSION_ID = 30308;
     public const MAJOR_VERSION = 3;
     public const MINOR_VERSION = 3;
-    public const RELEASE_VERSION = 2;
+    public const RELEASE_VERSION = 8;
     public const EXTRA_VERSION = '';
 
     private $charset;
@@ -260,7 +260,7 @@ class Environment
     {
         $key = $this->getLoader()->getCacheKey($name).$this->optionsHash;
 
-        return $this->templateClassPrefix.hash('sha256', $key).(null === $index ? '' : '___'.$index);
+        return $this->templateClassPrefix.hash(\PHP_VERSION_ID < 80100 ? 'sha256' : 'xxh128', $key).(null === $index ? '' : '___'.$index);
     }
 
     /**
@@ -382,7 +382,7 @@ class Environment
      */
     public function createTemplate(string $template, string $name = null): TemplateWrapper
     {
-        $hash = hash('sha256', $template, false);
+        $hash = hash(\PHP_VERSION_ID < 80100 ? 'sha256' : 'xxh128', $template, false);
         if (null !== $name) {
             $name = sprintf('%s (string template %s)', $name, $hash);
         } else {
@@ -433,11 +433,20 @@ class Environment
             return $this->load($names);
         }
 
+        $count = \count($names);
         foreach ($names as $name) {
-            try {
-                return $this->load($name);
-            } catch (LoaderError $e) {
+            if ($name instanceof Template) {
+                return $name;
             }
+            if ($name instanceof TemplateWrapper) {
+                return $name;
+            }
+
+            if (1 !== $count && !$this->getLoader()->exists($name)) {
+                continue;
+            }
+
+            return $this->load($name);
         }
 
         throw new LoaderError(sprintf('Unable to find one of the following templates: "%s".', implode('", "', $names)));
@@ -548,6 +557,13 @@ class Environment
         $this->runtimeLoaders[] = $loader;
     }
 
+    /**
+     * @template TExtension of ExtensionInterface
+     *
+     * @param class-string<TExtension> $class
+     *
+     * @return TExtension
+     */
     public function getExtension(string $class): ExtensionInterface
     {
         return $this->extensionSet->getExtension($class);
@@ -556,9 +572,11 @@ class Environment
     /**
      * Returns the runtime implementation of a Twig element (filter/function/tag/test).
      *
-     * @param string $class A runtime class name
+     * @template TRuntime of object
      *
-     * @return object The runtime implementation
+     * @param class-string<TRuntime> $class A runtime class name
+     *
+     * @return TRuntime The runtime implementation
      *
      * @throws RuntimeError When the template cannot be found
      */

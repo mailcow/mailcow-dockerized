@@ -238,8 +238,11 @@ while (($#)); do
     --no-update-compose)
       NO_UPDATE_COMPOSE=y
     ;;
+    --skip-ping-check)
+      SKIP_PING_CHECK=y
+    ;;
     --help|-h)
-    echo './update.sh [-c|--check, --ours, --gc, --no-update-compose, --prefetch, --skip-start, -f|--force, -h|--help]
+    echo './update.sh [-c|--check, --ours, --gc, --no-update-compose, --prefetch, --skip-start, --skip-ping-check, -f|--force, -h|--help]
 
   -c|--check           -   Check for updates and exit (exit codes => 0: update available, 3: no updates)
   --ours               -   Use merge strategy option "ours" to solve conflicts in favor of non-mailcow code (local changes over remote changes), not recommended!
@@ -247,6 +250,7 @@ while (($#)); do
   --no-update-compose  -   Do not update docker-compose
   --prefetch           -   Only prefetch new images and exit (useful to prepare updates)
   --skip-start         -   Do not start mailcow after update
+  --skip-ping-check    -   Skip ICMP Check to public DNS resolvers (Use it only if you´ve blocked any ICMP Connections to your mailcow machine).
   -f|--force           -   Force update, do not ask questions
 '
     exit 1
@@ -533,12 +537,17 @@ elif [[ ${option} == "WATCHDOG_VERBOSE" ]]; then
   fi
 done
 
-echo -en "Checking internet connection... "
-if ! check_online_status; then
-  echo -e "\e[31mfailed\e[0m"
-  exit 1
+if [[( ${SKIP_PING_CHECK} == "y")]]; then
+echo -e "\e[32mSkipping Ping Check...\e[0m"
+
 else
-  echo -e "\e[32mOK\e[0m"
+   echo -en "Checking internet connection... "
+   if ! check_online_status; then
+      echo -e "\e[31mfailed\e[0m"
+      exit 1
+   else
+      echo -e "\e[32mOK\e[0m"
+   fi
 fi
 
 echo -e "\e[32mChecking for newer update script...\e[0m"
@@ -722,10 +731,9 @@ fi
 # Set app_info.inc.php
 mailcow_git_version=$(git describe --tags `git rev-list --tags --max-count=1`)
 if [ $? -eq 0 ]; then
-  mailcow_git_url=$(git config --get remote.origin.url)
   echo '<?php' > data/web/inc/app_info.inc.php
   echo '  $MAILCOW_GIT_VERSION="'$mailcow_git_version'";' >> data/web/inc/app_info.inc.php
-  echo '  $MAILCOW_GIT_URL="'$mailcow_git_url'";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_URL="https://github.com/mailcow/mailcow-dockerized";' >> data/web/inc/app_info.inc.php
   echo '?>' >> data/web/inc/app_info.inc.php
 else
   echo '<?php' > data/web/inc/app_info.inc.php

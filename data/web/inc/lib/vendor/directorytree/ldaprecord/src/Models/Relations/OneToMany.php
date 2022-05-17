@@ -49,7 +49,7 @@ abstract class OneToMany extends Relation
     /**
      * Set the relation to load with its parent.
      *
-     * @param OneToMany $relation
+     * @param Relation $relation
      *
      * @return $this
      */
