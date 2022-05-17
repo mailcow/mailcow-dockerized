@@ -5,10 +5,6 @@
       <div class="btn-group ms-auto d-none d-sm-flex">
         <button class="btn btn-xs btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addMailboxModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_mailbox }}</button>
         <button class="btn btn-xs btn-secondary refresh_table" data-draw="draw_mailbox_table" data-table="mailbox_table">{{ lang.admin.refresh }}</button>
-        <button type="button" class="btn btn-xs btn-secondary dropdown-toggle" data-bs-toggle="dropdown">{{ lang.mailbox.table_size }}</button>
-        <ul class="dropdown-menu" data-table-id="mailbox_table" role="menu">
-          {% include 'mailbox/page-size.twig' %}
-        </ul>
       </div>
     </div>
     <div class="mass-actions-mailbox d-none d-sm-flex" data-actions-header="true"></div>

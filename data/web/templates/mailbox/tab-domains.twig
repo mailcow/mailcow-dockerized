@@ -7,14 +7,10 @@
           <button class="btn btn-xs btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addDomainModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_domain }}</button>
         {% endif %}
         <button class="btn btn-xs btn-secondary refresh_table" data-draw="draw_domain_table" data-table="domain_table">{{ lang.admin.refresh }}</button>
-        <button type="button" class="btn btn-xs btn-secondary dropdown-toggle" data-bs-toggle="dropdown">{{ lang.mailbox.table_size }}</button>
-        <ul class="dropdown-menu" data-table-id="domain_table" role="menu">
-          {% include 'mailbox/page-size.twig' %}
-        </ul>
       </div>
     </div>
 {#    <div class="mass-actions-mailbox" data-actions-header="true"></div>#}
-    <table id="domain_table" class="table table-striped dt-responsive nowrap" style="width:100%"></table>
+    <table id="domain_table" class="table table-striped dt-responsive nowrap w-100"></table>
     <div class="mass-actions-mailbox">
       <div class="btn-group">
         <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="domain" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
