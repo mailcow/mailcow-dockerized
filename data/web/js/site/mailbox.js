@@ -54,22 +54,6 @@ $(document).ready(function() {
   //   }
   // });
   // Set paging
-  $('[data-page-size]').on('click', function(e){
-    e.preventDefault();
-    var new_size = $(this).data('page-size');
-    var parent_ul = $(this).closest('ul');
-    var table_id = $(parent_ul).data('table-id');
-    FooTable.get('#' + table_id).pageSize(new_size);
-    //$(this).parent().addClass('active').siblings().removeClass('active')
-    heading = $(this).parents('.card').find('.card-header')
-    var n_results = $(heading).children('.table-lines').text().split(' / ')[1];
-    $(heading).children('.table-lines').text(function(){
-      if (new_size > n_results) {
-        new_size = n_results;
-      }
-      return new_size + ' / ' + n_results;
-    })
-  });
   // Clone mailbox mass actions
   $("div").find("[data-actions-header='true'").each(function() {
     $(this).html($(this).nextAll('.mass-actions-mailbox:first').html());
@@ -242,9 +226,7 @@ jQuery(function($){
   $(".refresh_table").on('click', function(e) {
     e.preventDefault();
     var table_name = $(this).data('table');
-    $('#' + table_name).find("tr.footable-empty").remove();
-    draw_table = $(this).data('draw');
-    eval(draw_table + '()');
+    $('#' + table_name).DataTable().ajax.reload();
   });
   function table_mailbox_ready(ft, name) {
     if(is_dual) {
@@ -662,7 +644,7 @@ jQuery(function($){
       },
       columns: [
           {
-            title: "ID",
+            title: 'ID',
             data: 'id'
           },
           {
@@ -706,163 +688,152 @@ jQuery(function($){
     });
   }
   function draw_recipient_map_table() {
-    ft_recipient_map_table = FooTable.init('#recipient_map_table', {
-      "columns": [
-        {"name":"chkbox","title":"","style":{"min-width":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
-        {"sorted": true,"name":"id","title":"ID","style":{"min-width":"60px","width":"60px","text-align":"center"}},
-        {"name":"recipient_map_old","title":lang.recipient_map_old},
-        {"name":"recipient_map_new","title":lang.recipient_map_new},
-        {"name":"active","filterable": false,"style":{"min-width":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"180px","width":"180px"},"type":"html","title":(role == "admin" ? lang.action : ""),"breakpoints":"xs sm"}
-      ],
-      "empty": lang.empty,
-      "rows": $.ajax({
-        dataType: 'json',
-        url: '/api/v1/get/recipient_map/all',
-        jsonp: false,
-        error: function () {
-          console.log('Cannot draw recipient map table');
-        },
-        success: function (data) {
-          if (role == "admin") {
-            $.each(data, function (i, item) {
-              item.recipient_map_old = escapeHtml(item.recipient_map_old);
-              item.recipient_map_new = escapeHtml(item.recipient_map_new);
-              item.action = '<div class="btn-group footable-actions">' +
-                '<a href="/edit/recipient_map/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-                '<a href="#" data-action="delete_selected" data-id="single-recipient_map" data-api-url="delete/recipient_map" data-item="' + item.id + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
-                '</div>';
-              item.chkbox = '<input type="checkbox" data-id="recipient_map" name="multi_select" value="' + item.id + '" />';
-            });
-          }
-        }
-      }),
-      "paging": {
-        "enabled": true,
-        "limit": 5,
-        "size": pagination_size
-      },
-      "state": {
-        "enabled": true
-      },
-      "filtering": {
-        "enabled": true,
-        "delay": 1200,
-        "position": "left",
-        "connectors": false,
-        "placeholder": lang.filter_table
-      },
-      "sorting": {
-        "enabled": true
-      },
-      "on": {
-        "destroy.ft.table": function(e, ft){
-          $('.refresh_table').attr('disabled', 'true');
-        },
-        "ready.ft.table": function(e, ft){
-          table_mailbox_ready(ft, 'recipient_map_table');
-        },
-        "after.ft.filtering": function(e, ft){
-          table_mailbox_ready(ft, 'recipient_map_table');
+    $('#recipient_map_table').DataTable({
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/recipient_map/all",
+        dataSrc: function(json){
+          if (role !== "admin") return null;
+          
+          $.each(json, function (i, item) {
+            item.recipient_map_old = escapeHtml(item.recipient_map_old);
+            item.recipient_map_new = escapeHtml(item.recipient_map_new);
+            item.action = '<div class="btn-group footable-actions">' +
+              '<a href="/edit/recipient_map/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#" data-action="delete_selected" data-id="single-recipient_map" data-api-url="delete/recipient_map" data-item="' + item.id + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+              '</div>';
+            item.chkbox = '<input type="checkbox" data-id="recipient_map" name="multi_select" value="' + item.id + '" />';
+          });
+
+          console.log(json);
+          return json;
         }
       },
-      "toggleSelector": "table tbody span.footable-toggle"
+      columns: [
+          {
+            title: 'ID',
+            data: 'id'
+          },
+          {
+            title: lang.recipient_map_old,
+            data: 'recipient_map_old'
+          },
+          {
+            title: lang.recipient_map_new,
+            data: 'recipient_map_new'
+          },
+          {
+            title: lang.active,
+            data: 'active',
+            render: function (data, type) {
+              return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
+            }
+          },
+          {
+            title: lang.action,
+            data: null,
+            render: function (data, type) {
+              return `<div class="btn-group">
+                <a href="/edit/admin/admin" class="btn btn-xs btn-xs-half btn-secondary">
+                  <i class="bi bi-pencil-fill"></i> Bearbeiten
+                </a>
+                <a href="#" data-action="delete_selected" data-id="single-admin" data-api-url="delete/admin" data-item="admin" class="btn btn-xs btn-xs-half btn-danger">
+                  <i class="bi bi-trash"></i> Entfernen
+                </a>
+              </div>`;
+            }
+          },
+      ]
     });
   }
   function draw_tls_policy_table() {
-    ft_tls_policy_table = FooTable.init('#tls_policy_table', {
-      "columns": [
-        {"name":"chkbox","title":"","style":{"min-width":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
-        {"sorted": true,"name":"id","title":"ID","style":{"min-width":"60px","width":"60px","text-align":"center"}},
-        {"name":"dest","title":lang.tls_map_dest},
-        {"name":"policy","title":lang.tls_map_policy},
-        {"name":"parameters","title":lang.tls_map_parameters},
-        {"name":"active","filterable": false,"style":{"min-width":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"180px","width":"180px"},"type":"html","title":(role == "admin" ? lang.action : ""),"breakpoints":"xs sm"}
-      ],
-      "empty": lang.empty,
-      "rows": $.ajax({
-        dataType: 'json',
-        url: '/api/v1/get/tls-policy-map/all',
-        jsonp: false,
-        error: function () {
-          console.log('Cannot draw tls policy map table');
-        },
-        success: function (data) {
-          if (role == "admin") {
-            $.each(data, function (i, item) {
-              item.dest = escapeHtml(item.dest);
-              item.policy = '<b>' + escapeHtml(item.policy) + '</b>';
-              if (item.parameters == '') {
-                item.parameters = '<code>-</code>';
-              } else {
-                item.parameters = '<code>' + escapeHtml(item.parameters) + '</code>';
-              }
-              item.action = '<div class="btn-group footable-actions">' +
-                '<a href="/edit/tls_policy_map/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-                '<a href="#" data-action="delete_selected" data-id="single-tls-policy-map" data-api-url="delete/tls-policy-map" data-item="' + item.id + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
-                '</div>';
-              item.chkbox = '<input type="checkbox" data-id="tls-policy-map" name="multi_select" value="' + item.id + '" />';
-            });
-          }
-        }
-      }),
-      "paging": {
-        "enabled": true,
-        "limit": 5,
-        "size": pagination_size
-      },
-      "state": {
-        "enabled": true
-      },
-      "filtering": {
-        "enabled": true,
-        "delay": 1200,
-        "position": "left",
-        "connectors": false,
-        "placeholder": lang.filter_table
-      },
-      "sorting": {
-        "enabled": true
-      },
-      "on": {
-        "destroy.ft.table": function(e, ft){
-          $('.refresh_table').attr('disabled', 'true');
-        },
-        "ready.ft.table": function(e, ft){
-          table_mailbox_ready(ft, 'tls_policy_table');
-        },
-        "after.ft.filtering": function(e, ft){
-          table_mailbox_ready(ft, 'tls_policy_table');
+    $('#tls_policy_table').DataTable({
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/tls-policy-map/all",
+        dataSrc: function(json){
+          if (role !== "admin") return null;
+          
+          $.each(json, function (i, item) {
+            item.dest = escapeHtml(item.dest);
+            item.policy = '<b>' + escapeHtml(item.policy) + '</b>';
+            if (item.parameters == '') {
+              item.parameters = '<code>-</code>';
+            } else {
+              item.parameters = '<code>' + escapeHtml(item.parameters) + '</code>';
+            }
+            item.action = '<div class="btn-group footable-actions">' +
+              '<a href="/edit/tls_policy_map/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#" data-action="delete_selected" data-id="single-tls-policy-map" data-api-url="delete/tls-policy-map" data-item="' + item.id + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+              '</div>';
+            item.chkbox = '<input type="checkbox" data-id="tls-policy-map" name="multi_select" value="' + item.id + '" />';
+          });
+
+          console.log(json);
+          return json;
         }
       },
-      "toggleSelector": "table tbody span.footable-toggle"
+      columns: [
+          {
+            title: 'ID',
+            data: 'id'
+          },
+          {
+            title: lang.tls_map_dest,
+            data: 'dest'
+          },
+          {
+            title: lang.tls_map_policy,
+            data: 'policy'
+          },
+          {
+            title: lang.tls_map_parameters,
+            data: 'parameters'
+          },
+          {
+            title: lang.domain,
+            data: 'domain'
+          },
+          {
+            title: lang.active,
+            data: 'active',
+            render: function (data, type) {
+              return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';
+            }
+          },
+          {
+            title: lang.action,
+            data: null,
+            render: function (data, type) {
+              return `<div class="btn-group">
+                <a href="/edit/admin/admin" class="btn btn-xs btn-xs-half btn-secondary">
+                  <i class="bi bi-pencil-fill"></i> Bearbeiten
+                </a>
+                <a href="#" data-action="delete_selected" data-id="single-admin" data-api-url="delete/admin" data-item="admin" class="btn btn-xs btn-xs-half btn-danger">
+                  <i class="bi bi-trash"></i> Entfernen
+                </a>
+              </div>`;
+            }
+          },
+      ]
     });
   }
   function draw_alias_table() {
-    ft_alias_table = FooTable.init('#alias_table', {
-      "columns": [
-        {"name":"chkbox","title":"","style":{"min-width":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
-        {"name":"id","title":"ID","style":{"min-width":"60px","width":"60px","text-align":"center"}},
-        {"sorted": true,"name":"address","title":lang.alias,"style":{"width":"250px"}},
-        {"name":"goto","title":lang.target_address},
-        {"name":"domain","title":lang.domain,"breakpoints":"xs sm"},
-        {"name":"public_comment","title":lang.public_comment,"breakpoints":"all"},
-        {"name":"private_comment","title":lang.private_comment,"breakpoints":"all"},
-        {"name":"sogo_visible","title":lang.sogo_visible,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';},"breakpoints":"all"},
-        {"name":"active","filterable": false,"style":{"min-width":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
-      ],
-      "empty": lang.empty,
-      "rows": $.ajax({
-        dataType: 'json',
-        url: '/api/v1/get/alias/all',
-        jsonp: false,
-        error: function () {
-          console.log('Cannot draw alias table');
-        },
-        success: function (data) {
-          $.each(data, function (i, item) {
+    $('#alias_table').DataTable({
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/alias/all",
+        dataSrc: function(json){
+          $.each(json, function (i, item) {
             item.action = '<div class="btn-group footable-actions">' +
               '<a href="/edit/alias/' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-alias" data-api-url="delete/alias" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
@@ -900,64 +871,78 @@ jQuery(function($){
               item.domain = '<i data-domainname="' + item.domain + '" class="bi bi-info-circle-fill alias-domain-info text-info" data-bs-toggle="tooltip" title="' + lang.target_domain + ': ' + item.in_primary_domain + '"></i> ' + item.domain;
             }
           });
-        }
-      }),
-      "paging": {
-        "enabled": true,
-        "limit": 5,
-        "size": pagination_size
-      },
-      "state": {
-        "enabled": true
-      },
-      "filtering": {
-        "enabled": true,
-        "delay": 1200,
-        "position": "left",
-        "connectors": false,
-        "placeholder": lang.filter_table
-      },
-      "components": {
-        "filtering": FooTable.domainFilter
-      },
-      "sorting": {
-        "enabled": true
-      },
-      "on": {
-        "destroy.ft.table": function(e, ft){
-          $('.refresh_table').attr('disabled', 'true');
-        },
-        "ready.ft.table": function(e, ft){
-          table_mailbox_ready(ft, 'alias_table');
-          $('.alias-domain-info').tooltip();
-        },
-        "after.ft.filtering": function(e, ft){
-          table_mailbox_ready(ft, 'alias_table');
+
+          console.log(json);
+          return json;
         }
       },
-      "toggleSelector": "table tbody span.footable-toggle"
+      columns: [
+          {
+            title: 'ID',
+            data: 'id'
+          },
+          {
+            title: lang.alias,
+            data: 'address'
+          },
+          {
+            title: lang.target_address,
+            data: 'goto'
+          },
+          {
+            title: lang.bcc_destinations,
+            data: 'bcc_dest'
+          },
+          {
+            title: lang.domain,
+            data: 'domain'
+          },
+          {
+            title: lang.public_comment,
+            data: 'public_comment'
+          },
+          {
+            title: lang.private_comment,
+            data: 'private_comment'
+          },
+          {
+            title: lang.sogo_visible,
+            data: 'sogo_visible'
+          },
+          {
+            title: lang.active,
+            data: 'active',
+            render: function (data, type) {
+              return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';
+            }
+          },
+          {
+            title: lang.action,
+            data: null,
+            render: function (data, type) {
+              return `<div class="btn-group">
+                <a href="/edit/admin/admin" class="btn btn-xs btn-xs-half btn-secondary">
+                  <i class="bi bi-pencil-fill"></i> Bearbeiten
+                </a>
+                <a href="#" data-action="delete_selected" data-id="single-admin" data-api-url="delete/admin" data-item="admin" class="btn btn-xs btn-xs-half btn-danger">
+                  <i class="bi bi-trash"></i> Entfernen
+                </a>
+              </div>`;
+            }
+          },
+      ]
     });
   }
-
   function draw_aliasdomain_table() {
-    ft_aliasdomain_table = FooTable.init('#aliasdomain_table', {
-      "columns": [
-        {"name":"chkbox","title":"","style":{"min-width":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
-        {"sorted": true,"name":"alias_domain","title":lang.alias,"style":{"width":"250px"}},
-        {"name":"target_domain","title":lang.target_domain,"type":"html"},
-        {"name":"active","filterable": false,"style":{"min-width":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"250px","width":"250px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
-      ],
-      "empty": lang.empty,
-      "rows": $.ajax({
-        dataType: 'json',
-        url: '/api/v1/get/alias-domain/all',
-        jsonp: false,
-        error: function () {
-          console.log('Cannot draw alias domain table');
-        },
-        success: function (data) {
-          $.each(data, function (i, item) {
+    $('#aliasdomain_table').DataTable({
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/alias-domain/all",
+        dataSrc: function(json){
+          $.each(json, function (i, item) {
             item.action = '<div class="btn-group footable-actions">' +
               '<a href="/edit/aliasdomain/' + encodeURIComponent(item.alias_domain) + '" class="btn btn-xs btn-xs-third btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-alias-domain" data-api-url="delete/alias-domain" data-item="' + encodeURIComponent(item.alias_domain) + '" class="btn btn-xs btn-xs-third btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
@@ -970,67 +955,66 @@ jQuery(function($){
               item.target_domain = '<span><a href="/edit/domain/' + item.target_domain + '">' + item.target_domain + '</a></span>';
             }
           });
-        }
-      }),
-      "paging": {
-        "enabled": true,
-        "limit": 5,
-        "size": pagination_size
-      },
-      "state": {
-        "enabled": true
-      },
-      "filtering": {
-        "enabled": true,
-        "delay": 1200,
-        "position": "left",
-        "connectors": false,
-        "placeholder": lang.filter_table
-      },
-      "sorting": {
-        "enabled": true
-      },
-      "on": {
-        "destroy.ft.table": function(e, ft){
-          $('.refresh_table').attr('disabled', 'true');
-        },
-        "ready.ft.table": function(e, ft){
-          table_mailbox_ready(ft, 'aliasdomain_table');
-        },
-        "after.ft.filtering": function(e, ft){
-          table_mailbox_ready(ft, 'aliasdomain_table');
+
+          console.log(json);
+          return json;
         }
       },
-      "toggleSelector": "table tbody span.footable-toggle"
+      columns: [
+          {
+            title: lang.alias,
+            data: 'alias_domain'
+          },
+          {
+            title: lang.target_domain,
+            data: 'target_domain'
+          },
+          {
+            title: lang.bcc_local_dest,
+            data: 'local_dest'
+          },
+          {
+            title: lang.bcc_destinations,
+            data: 'bcc_dest'
+          },
+          {
+            title: lang.domain,
+            data: 'domain'
+          },
+          {
+            title: lang.active,
+            data: 'active',
+            render: function (data, type) {
+              return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';
+            }
+          },
+          {
+            title: lang.action,
+            data: null,
+            render: function (data, type) {
+              return `<div class="btn-group">
+                <a href="/edit/admin/admin" class="btn btn-xs btn-xs-half btn-secondary">
+                  <i class="bi bi-pencil-fill"></i> Bearbeiten
+                </a>
+                <a href="#" data-action="delete_selected" data-id="single-admin" data-api-url="delete/admin" data-item="admin" class="btn btn-xs btn-xs-half btn-danger">
+                  <i class="bi bi-trash"></i> Entfernen
+                </a>
+              </div>`;
+            }
+          },
+      ]
     });
   }
-
   function draw_sync_job_table() {
-    ft_syncjob_table = FooTable.init('#sync_job_table', {
-      "columns": [
-        {"name":"chkbox","title":"","style":{"min-width":"60px","width":"60px","text-align":"center"},"filterable": false,"sortable": false,"type":"html"},
-        {"sorted": true,"name":"id","title":"ID","style":{"min-width":"60px","width":"60px","text-align":"center"}},
-        {"name":"user2","title":lang.owner},
-        {"name":"server_w_port","title":"Server","breakpoints":"xs sm md","style":{"word-break":"break-all"}},
-        {"name":"exclude","title":lang.excludes,"breakpoints":"all"},
-        {"name":"mins_interval","title":lang.mins_interval,"breakpoints":"all"},
-        {"name":"last_run","title":lang.last_run,"breakpoints":"xs sm md"},
-        {"name":"exit_status","filterable": false,"title":lang.syncjob_last_run_result},
-        {"name":"log","title":"Log"},
-        {"name":"active","filterable": false,"style":{"min-width":"70px","width":"70px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
-        {"name":"is_running","filterable": false,"style":{"min-width":"120px","width":"100px"},"title":lang.status},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
-      ],
-      "empty": lang.empty,
-      "rows": $.ajax({
-        dataType: 'json',
-        url: '/api/v1/get/syncjobs/all/no_log',
-        jsonp: false,
-        error: function () {
-          console.log('Cannot draw sync job table');
-        },
-        success: function (data) {
-          $.each(data, function (i, item) {
+    $('#sync_job_table').DataTable({
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/syncjobs/all/no_log",
+        dataSrc: function(json){
+          $.each(json, function (i, item) {
             item.log = '<a href="#syncjobLogModal" data-bs-toggle="modal" data-syncjob-id="' + encodeURIComponent(item.id) + '">' + lang.open_logs + '</a>'
             item.user2 = escapeHtml(item.user2);
             if (!item.exclude > 0) {
@@ -1065,63 +1049,82 @@ jQuery(function($){
             }
             item.exit_status = item.success + ' ' + item.exit_status;
           });
-        }
-      }),
-      "paging": {
-        "enabled": true,
-        "limit": 5,
-        "size": pagination_size
-      },
-      "state": {
-        "enabled": true
-      },
-      "filtering": {
-        "enabled": true,
-        "delay": 1200,
-        "position": "left",
-        "connectors": false,
-        "placeholder": lang.filter_table
-      },
-      "sorting": {
-        "enabled": true
-      },
-      "on": {
-        "destroy.ft.table": function(e, ft){
-          $('.refresh_table').attr('disabled', 'true');
-        },
-        "ready.ft.table": function(e, ft){
-          table_mailbox_ready(ft, 'sync_job_table');
-        },
-        "after.ft.filtering": function(e, ft){
-          table_mailbox_ready(ft, 'sync_job_table');
+
+          console.log(json);
+          return json;
         }
       },
-      "toggleSelector": "table tbody span.footable-toggle"
+      columns: [
+          {
+            title: 'ID',
+            data: 'id'
+          },
+          {
+            title: lang.owner,
+            data: 'user2'
+          },
+          {
+            title: 'Server',
+            data: 'server_w_port'
+          },
+          {
+            title: lang.excludes,
+            data: 'exclude'
+          },
+          {
+            title: lang.mins_interval,
+            data: 'mins_interval'
+          },
+          {
+            title: lang.last_run,
+            data: 'last_run'
+          },
+          {
+            title: lang.syncjob_last_run_result,
+            data: 'exit_status'
+          },
+          {
+            title: lang.status,
+            data: 'is_running'
+          },
+          {
+            title: lang.active,
+            data: 'active',
+            render: function (data, type) {
+              return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';
+            }
+          },
+          {
+            title: 'Log',
+            data: 'log'
+          },
+          {
+            title: lang.action,
+            data: null,
+            render: function (data, type) {
+              return `<div class="btn-group">
+                <a href="/edit/admin/admin" class="btn btn-xs btn-xs-half btn-secondary">
+                  <i class="bi bi-pencil-fill"></i> Bearbeiten
+                </a>
+                <a href="#" data-action="delete_selected" data-id="single-admin" data-api-url="delete/admin" data-item="admin" class="btn btn-xs btn-xs-half btn-danger">
+                  <i class="bi bi-trash"></i> Entfernen
+                </a>
+              </div>`;
+            }
+          },
+      ]
     });
   }
-
   function draw_filter_table() {
-    ft_filter_table = FooTable.init('#filter_table', {
-      "columns": [
-        {"name":"chkbox","title":"","style":{"min-width":"60px","width":"60px","text-align":"center"},"filterable": false,"sortable": false,"type":"html"},
-        {"name":"id","title":"ID","style":{"min-width":"60px","width":"60px","text-align":"center"}},
-        {"name":"active","style":{"min-width":"80px","width":"80px"},"title":lang.active},
-        {"name":"filter_type","style":{"min-width":"80px","width":"80px"},"title":"Type"},
-        {"sorted": true,"name":"username","title":lang.owner,"style":{"min-width":"550px","width":"350px"}},
-        {"name":"script_desc","title":lang.description,"breakpoints":"xs"},
-        {"name":"script_data","title":"Script","breakpoints":"all"},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
-      ],
-      "empty": lang.empty,
-      "rows": $.ajax({
-        dataType: 'json',
-        url: '/api/v1/get/filters/all',
-        jsonp: false,
-        error: function () {
-          console.log('Cannot draw filter table');
-        },
-        success: function (data) {
-          $.each(data, function (i, item) {
+    $('#filter_table').DataTable({
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/filters/all",
+        dataSrc: function(json){
+          $.each(json, function (i, item) {
             if (item.active == 1) {
               item.active = '<span id="active-script" class="badge fs-5 bg-success">' + lang.active + '</span>';
             } else {
@@ -1135,38 +1138,51 @@ jQuery(function($){
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="filter_item" name="multi_select" value="' + item.id + '" />'
           });
-        }
-      }),
-      "paging": {
-        "enabled": true,
-        "limit": 5,
-        "size": pagination_size
-      },
-      "state": {
-        "enabled": true
-      },
-      "filtering": {
-        "enabled": true,
-        "delay": 1200,
-        "position": "left",
-        "connectors": false,
-        "placeholder": lang.filter_table
-      },
-      "sorting": {
-        "enabled": true
-      },
-      "on": {
-        "destroy.ft.table": function(e, ft){
-          $('.refresh_table').attr('disabled', 'true');
-        },
-        "ready.ft.table": function(e, ft){
-          table_mailbox_ready(ft, 'filter_table');
-        },
-        "after.ft.filtering": function(e, ft){
-          table_mailbox_ready(ft, 'filter_table');
+
+          console.log(json);
+          return json;
         }
       },
-      "toggleSelector": "table tbody span.footable-toggle"
+      columns: [
+          {
+            title: 'ID',
+            data: 'id'
+          },
+          {
+            title: lang.active,
+            data: 'active'
+          },
+          {
+            title: lang.filter_type,
+            data: 'Type'
+          },
+          {
+            title: lang.owner,
+            data: 'username'
+          },
+          {
+            title: lang.description,
+            data: 'script_desc'
+          },
+          {
+            title: 'Script',
+            data: 'script_data'
+          },
+          {
+            title: lang.action,
+            data: null,
+            render: function (data, type) {
+              return `<div class="btn-group">
+                <a href="/edit/admin/admin" class="btn btn-xs btn-xs-half btn-secondary">
+                  <i class="bi bi-pencil-fill"></i> Bearbeiten
+                </a>
+                <a href="#" data-action="delete_selected" data-id="single-admin" data-api-url="delete/admin" data-item="admin" class="btn btn-xs btn-xs-half btn-danger">
+                  <i class="bi bi-trash"></i> Entfernen
+                </a>
+              </div>`;
+            }
+          },
+      ]
     });
   };
 
@@ -1177,12 +1193,12 @@ jQuery(function($){
   draw_domain_table();
   draw_mailbox_table();
   draw_resource_table();
-  // draw_alias_table();
-  // draw_aliasdomain_table();
-  // draw_sync_job_table();
-  // draw_filter_table();
+  draw_alias_table();
+  draw_aliasdomain_table();
+  draw_sync_job_table();
+  draw_filter_table();
   draw_bcc_table();
-  // draw_recipient_map_table();
-  // draw_tls_policy_table();
+  draw_recipient_map_table();
+  draw_tls_policy_table();
 
 });

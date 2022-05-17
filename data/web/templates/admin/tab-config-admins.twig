@@ -1,9 +1,8 @@
 <div role="tabpanel" class="tab-pane fade show active" id="tab-config-admins" role="tabpanel" aria-labelledby="tab-config-admins">
     <div class="card mb-4">
       <div class="card-header bg-danger text-white">{{ lang.admin.admin_details }}</div>
+      <table id="adminstable" class="table table-striped dt-responsive nowrap w-100"></table>
       <div class="card-body">
-        <table id="adminstable" class="table table-striped dt-responsive nowrap" style="width:100%">
-        </table>
         <div class="mass-actions-admin">
           <div class="btn-group">
             <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="admins" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
@@ -224,9 +223,8 @@
 
   <div class="card mb-4">
     <div class="card-header">{{ lang.admin.domain_admins }}</div>
+    <table id="domainadminstable" class="table table-striped dt-responsive nowrap w-100"></table>
     <div class="card-body">
-      <table id="domainadminstable" class="table table-striped dt-responsive nowrap" style="width:100%">
-      </table>
       <div class="mass-actions-admin">
         <div class="btn-group">
           <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="domain_admins" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>

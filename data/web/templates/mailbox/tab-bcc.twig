@@ -5,12 +5,6 @@
       <div class="btn-group ms-auto d-none d-sm-flex">
         <button class="btn btn-xs btn-success" href="#" data-acl="{{ acl.bcc_maps }}" data-bs-toggle="modal" data-bs-target="#addBCCModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_bcc_entry }}</button>
         <button class="btn btn-xs btn-secondary refresh_table" data-draw="draw_bcc_table" data-table="bcc_table">{{ lang.admin.refresh }}</button>
-        <button type="button" class="btn btn-xs btn-secondary dropdown-toggle" data-bs-toggle="dropdown">{{ lang.mailbox.table_size }}
-         
-        </button>
-        <ul class="dropdown-menu" data-table-id="bcc_table" role="menu">
-          {% include 'mailbox/page-size.twig' %}
-        </ul>
       </div>
     </div>
     <p style="margin:10px" class="text-muted">{{ lang.mailbox.bcc_info|raw }}</p>
@@ -39,12 +33,6 @@
       <div class="btn-group ms-auto d-none d-sm-flex">
         <button class="btn btn-xs btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addRecipientMapModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_recipient_map_entry }}</button>
         <button class="btn btn-xs btn-secondary refresh_table" data-draw="draw_recipient_map_table" data-table="recipient_map_table">{{ lang.admin.refresh }}</button>
-        <button type="button" class="btn btn-xs btn-secondary dropdown-toggle" data-bs-toggle="dropdown">{{ lang.mailbox.table_size }}
-         
-        </button>
-        <ul class="dropdown-menu" data-table-id="recipient_map_table" role="menu">
-          {% include 'mailbox/page-size.twig' %}
-        </ul>
       </div>
     </div>
     <p style="margin:10px" class="text-muted">{{ lang.mailbox.recipient_map_info }}</p>
