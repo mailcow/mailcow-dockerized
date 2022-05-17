@@ -224,7 +224,7 @@
         "rsettings_insert_preset": "Insertar ejemplo preestablecido \"%s\"",
         "rsettings_preset_1": "Deshabilita todos menos DKIM y el límite de velocidad para usuarios autenticados",
         "rsettings_preset_2": "Postmaster quiere correo no deseado",
-        "rspamd-com_settings": "<a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Documentación de Rspamd</a>\r\n  - Se generará automáticamente un nombre de configuración, consulte los ajustes preestablecidos de ejemplo a continuación:",
+        "rspamd_com_settings": "<a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Documentación de Rspamd</a>\r\n  - Se generará automáticamente un nombre de configuración, consulte los ajustes preestablecidos de ejemplo a continuación:",
         "rspamd_settings_map": "Reglas de ajustes de rspamd",
         "save": "Guardar cambios",
         "search_domain_da": "Buscar dominios",

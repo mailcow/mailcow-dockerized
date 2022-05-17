@@ -204,11 +204,10 @@ legend {
   color: #959595;
   display: flex;
   flex-direction: column;
-  width: 100% !important;
-  padding: 0 !important;
 }
 .footer .version {
     margin-left: auto;
+	margin-top: 20px;
 }
 .slave-info {
   padding: 15px 0px 15px 15px;
@@ -232,6 +231,9 @@ legend {
 table.footable>tbody>tr.footable-empty>td {
   font-style:italic;
   font-size: 1rem;
+}
+table>tbody>tr>td>span.footable-toggle {
+  opacity: 0.75;
 }
 .navbar-nav > li {
   font-size: 1rem !important;
@@ -257,6 +259,7 @@ code {
 .flag-icon {
   margin-right: 5px;
 }
+
 .list-group-item.webauthn-authenticator-selection,
 .list-group-item.totp-authenticator-selection,
 .list-group-item.yubi_otp-authenticator-selection {
@@ -266,4 +269,41 @@ code {
   padding: 10px;
   background: #fbfbfb;
   border: 1px solid #ededed;
+}
+
+.tag-box {
+  display: flex;
+  flex-wrap: wrap;
+  height: auto;
+}
+.tag-badge {
+  transition: 200ms linear;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 2px;
+  margin-right: 2px;
+}
+.tag-badge.btn-badge {
+  cursor: pointer;
+}
+.tag-badge .bi {
+  font-size: 12px;
+}
+.tag-badge.btn-badge:hover {
+  filter: brightness(0.9);
+}
+.tag-input {
+  margin-left: 10px;
+  border: 0;
+  flex: 1;
+  height: 24px;
+  min-width: 150px;
+}
+.tag-input:focus {
+  outline: none;
+}
+.tag-add {
+  padding: 0 5px 0 5px;
+  align-items: center;
+  display: inline-flex;
 }

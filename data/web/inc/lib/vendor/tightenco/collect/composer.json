@@ -10,8 +10,8 @@
         }
     ],
     "require": {
-        "php": "^7.2|^8.0",
-        "symfony/var-dumper": "^3.4 || ^4.0 || ^5.0"
+        "php": "^7.3|^8.0",
+        "symfony/var-dumper": "^3.4 || ^4.0 || ^5.0 || ^6.0"
     },
     "require-dev": {
         "mockery/mockery": "^1.0",
@@ -33,7 +33,11 @@
             "tests/files/Support/HtmlString.php",
             "tests/files/Support/HigherOrderTapProxy.php",
             "tests/files/Support/Str.php",
-            "tests/files/Support/Stringable.php"
+            "tests/files/Support/Traits/Conditionable.php",
+            "tests/files/Support/Stringable.php",
+            "tests/files/Support/ItemNotFoundException.php",
+            "tests/files/Support/MultipleItemsFoundException.php",
+            "tests/Support/Concerns/CountsEnumerations.php"
         ]
     },
     "scripts": {

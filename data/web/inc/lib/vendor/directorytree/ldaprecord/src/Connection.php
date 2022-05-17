@@ -111,9 +111,9 @@ class Connection
      *
      * @param array $config
      *
-     * @throws Configuration\ConfigurationException
-     *
      * @return $this
+     *
+     * @throws Configuration\ConfigurationException
      */
     public function setConfiguration($config = [])
     {
@@ -241,10 +241,10 @@ class Connection
      * @param string|null $username
      * @param string|null $password
      *
+     * @return Connection
+     *
      * @throws Auth\BindException
      * @throws LdapRecordException
-     *
-     * @return Connection
      */
     public function connect($username = null, $password = null)
     {
@@ -274,10 +274,10 @@ class Connection
     /**
      * Reconnect to the LDAP server.
      *
+     * @return void
+     *
      * @throws Auth\BindException
      * @throws ConnectionException
-     *
-     * @return void
      */
     public function reconnect()
     {
@@ -385,9 +385,9 @@ class Connection
      *
      * @param Closure $operation
      *
-     * @throws LdapRecordException
-     *
      * @return mixed
+     *
+     * @throws LdapRecordException
      */
     protected function runOperationCallback(Closure $operation)
     {
@@ -442,9 +442,9 @@ class Connection
      * @param LdapRecordException $e
      * @param Closure             $operation
      *
-     * @throws LdapRecordException
-     *
      * @return mixed
+     *
+     * @throws LdapRecordException
      */
     protected function tryAgainIfCausedByLostConnection(LdapRecordException $e, Closure $operation)
     {
@@ -463,9 +463,9 @@ class Connection
      *
      * @param Closure $operation
      *
-     * @throws LdapRecordException
-     *
      * @return mixed
+     *
+     * @throws LdapRecordException
      */
     protected function retry(Closure $operation)
     {
@@ -486,9 +486,9 @@ class Connection
      * @param LdapRecordException $e
      * @param Closure             $operation
      *
-     * @throws LdapRecordException
-     *
      * @return mixed
+     *
+     * @throws LdapRecordException
      */
     protected function retryOnNextHost(LdapRecordException $e, Closure $operation)
     {

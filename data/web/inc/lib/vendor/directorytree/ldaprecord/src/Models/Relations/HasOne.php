@@ -27,9 +27,9 @@ class HasOne extends Relation
      *
      * @param Model|string $model
      *
-     * @throws \LdapRecord\LdapRecordException
-     *
      * @return Model|string
+     *
+     * @throws \LdapRecord\LdapRecordException
      */
     public function attach($model)
     {
@@ -45,9 +45,9 @@ class HasOne extends Relation
     /**
      * Detach the related model from the parent.
      *
-     * @throws \LdapRecord\LdapRecordException
-     *
      * @return void
+     *
+     * @throws \LdapRecord\LdapRecordException
      */
     public function detach()
     {

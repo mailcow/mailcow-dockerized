@@ -117,6 +117,7 @@ final class Connection implements ConnectionInterface
         return new Mailbox($this->resource, $name, $this->mailboxNames[$name]);
     }
 
+    #[\ReturnTypeWillChange]
     public function count()
     {
         $return = \imap_num_msg($this->resource->getStream());

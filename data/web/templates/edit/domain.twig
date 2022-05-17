@@ -24,6 +24,22 @@
         </div>
       </div>
       <div class="form-group">
+        <label class="control-label col-sm-2">{{ lang.add.tags }}</label>
+        <div class="col-sm-10">
+          <div class="form-control tag-box">
+            {% for tag in domain_details.tags %}
+              <span data-action='delete_selected' data-item="{{ tag|url_encode }}" data-id="domain_tag_{{ tag }}" data-api-url='delete/domain/tag/{{ domain }}' class="badge badge-primary tag-badge btn-badge">
+                <i class="bi bi-tag-fill"></i> 
+                {{ tag }}
+              </span>
+            {% endfor %}
+            <input type="text" class="tag-input">
+            <span class="btn tag-add"><i class="bi bi-plus-lg"></i></span>
+            <input type="hidden" value="" name="tags" class="tag-values" />
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
         <label class="control-label col-sm-2" for="relayhost">{{ lang.edit.relayhost }}</label>
         <div class="col-sm-10">
           <select data-acl="{{ acl.domain_relayhost }}" data-live-search="true" id="relayhost" name="relayhost" class="form-control">

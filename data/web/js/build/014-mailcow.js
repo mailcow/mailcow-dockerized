@@ -48,7 +48,7 @@ $(document).ready(function() {
       $(div).animate({ left: ((iter%2==0 ? distance : distance*-1))}, interval);
     }
     $(div).animate({ left: 0},interval);
-  }
+  } 
 
   // form cache
   $('[data-cached-form="true"]').formcache({key: $(this).data('id')});
@@ -273,4 +273,51 @@ $(document).ready(function() {
         }
       }
   });
+
+  // tag boxes
+  $('.tag-box .tag-add').click(function(){
+    addTag(this);
+  });
+  $(".tag-box .tag-input").keydown(function (e) {
+    if (e.which == 13){
+      e.preventDefault();
+      addTag(this);
+    } 
+  });
+  function addTag(tagAddElem){
+    var tagboxElem = $(tagAddElem).parent();
+    var tagInputElem = $(tagboxElem).find(".tag-input")[0];
+    var tagValuesElem = $(tagboxElem).find(".tag-values")[0];
+
+    var tag = escapeHtml($(tagInputElem).val());
+    if (!tag) return;
+    var value_tags = [];
+    try {
+      value_tags = JSON.parse($(tagValuesElem).val());
+    } catch {}
+    if (!Array.isArray(value_tags)) value_tags = [];
+    if (value_tags.includes(tag)) return;
+
+    $('<span class="badge badge-primary tag-badge btn-badge"><i class="bi bi-tag-fill"></i> ' + tag + '</span>').insertBefore('.tag-input').click(function(){
+      var del_tag = unescapeHtml($(this).text());
+      var del_tags = [];
+      try {
+        del_tags = JSON.parse($(tagValuesElem).val());
+      } catch {}
+      if (Array.isArray(del_tags)){
+        del_tags.splice(del_tags.indexOf(del_tag), 1);
+        $(tagValuesElem).val(JSON.stringify(del_tags));
+      }
+      $(this).remove();
+    });
+
+    value_tags.push($(tagInputElem).val());
+    $(tagValuesElem).val(JSON.stringify(value_tags));
+    $(tagInputElem).val('');
+  }
 });
+
+
+// http://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery
+function escapeHtml(n){var entityMap={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;","/":"&#x2F;","`":"&#x60;","=":"&#x3D;"}; return String(n).replace(/[&<>"'`=\/]/g,function(n){return entityMap[n]})}
+function unescapeHtml(t){var n={"&amp;":"&","&lt;":"<","&gt;":">","&quot;":'"',"&#39;":"'","&#x2F;":"/","&#x60;":"`","&#x3D;":"="};return String(t).replace(/&amp;|&lt;|&gt;|&quot;|&#39;|&#x2F|&#x60|&#x3D;/g,function(t){return n[t]})}

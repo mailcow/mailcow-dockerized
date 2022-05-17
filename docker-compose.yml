@@ -58,7 +58,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.44
+      image: mailcow/clamd:1.52
       restart: always
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -67,13 +67,14 @@ services:
         - SKIP_CLAMD=${SKIP_CLAMD:-n}
       volumes:
         - ./data/conf/clamav/:/etc/clamav/:Z
+        - clamd-db-vol-1:/var/lib/clamav:z
       networks:
         mailcow-network:
           aliases:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.80
+      image: mailcow/rspamd:1.90
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -165,7 +166,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.106
+      image: mailcow/sogo:1.108
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -212,7 +213,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.161
+      image: mailcow/dovecot:1.162
       depends_on:
         - mysql-mailcow
       dns:
@@ -421,7 +422,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.46
+      image: mailcow/netfilter:1.47
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -631,3 +632,4 @@ volumes:
   crypt-vol-1:
   sogo-web-vol-1:
   sogo-userdata-backup-vol-1:
+  clamd-db-vol-1:

@@ -53,14 +53,14 @@ class AccountControl
     /**
      * The account control flag values.
      *
-     * @var array
+     * @var array<int, int>
      */
     protected $values = [];
 
     /**
      * Constructor.
      *
-     * @param int $flag
+     * @param ?int $flag
      */
     public function __construct($flag = null)
     {
@@ -431,7 +431,7 @@ class AccountControl
     /**
      * Get the account control flag values.
      *
-     * @return array
+     * @return array<int, int>
      */
     public function getValues()
     {
@@ -441,7 +441,7 @@ class AccountControl
     /**
      * Set the account control values.
      *
-     * @param array $flags
+     * @param array<int, int> $flags
      *
      * @return void
      */

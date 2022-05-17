@@ -294,7 +294,7 @@
         "rsettings_preset_1": "Disable all but DKIM and rate limit for authenticated users",
         "rsettings_preset_2": "I postmaster vogliono lo spam",
         "rsettings_preset_3": "Consenti solo mittenti specifici per una casella di posta (ad esempio: utilizzo solo come casella di posta interna)",
-        "rspamd-com_settings": "A setting name will be auto-generated, please see the example presets below. For more details see <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd docs</a>",
+        "rspamd_com_settings": "A setting name will be auto-generated, please see the example presets below. For more details see <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd docs</a>",
         "rspamd_global_filters": "Global filter maps",
         "rspamd_global_filters_agree": "Starò attento!",
         "rspamd_global_filters_info": "Global filter maps contain different kind of global black and whitelists.",

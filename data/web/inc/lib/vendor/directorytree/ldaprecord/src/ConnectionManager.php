@@ -149,9 +149,9 @@ class ConnectionManager
      *
      * @param string|null $name
      *
-     * @throws ContainerException If the given connection does not exist.
-     *
      * @return Connection
+     *
+     * @throws ContainerException If the given connection does not exist.
      */
     public function get($name = null)
     {

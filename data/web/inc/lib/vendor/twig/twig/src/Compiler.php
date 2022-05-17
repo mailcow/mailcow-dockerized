@@ -209,6 +209,6 @@ class Compiler
 
     public function getVarName(): string
     {
-        return sprintf('__internal_%s', hash('sha256', __METHOD__.$this->varNameSalt++));
+        return sprintf('__internal_compile_%d', $this->varNameSalt++);
     }
 }
