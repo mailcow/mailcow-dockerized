@@ -260,6 +260,17 @@ code {
   margin-right: 5px;
 }
 
+.list-group-item.webauthn-authenticator-selection,
+.list-group-item.totp-authenticator-selection,
+.list-group-item.yubi_otp-authenticator-selection {
+  border-radius: 0px !important;
+}
+.pending-tfa-collapse {
+  padding: 10px;
+  background: #fbfbfb;
+  border: 1px solid #ededed;
+}
+
 .tag-box {
   display: flex;
   flex-wrap: wrap;
@@ -296,4 +307,3 @@ code {
   align-items: center;
   display: inline-flex;
 }
-
