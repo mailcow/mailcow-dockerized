@@ -452,7 +452,7 @@ if (isset($_GET['query'])) {
           }
         break;
         case "webauthn-tfa-get-args":
-          $stmt = $pdo->prepare("SELECT `keyHandle` FROM `tfa` WHERE username = :username");
+          $stmt = $pdo->prepare("SELECT `keyHandle` FROM `tfa` WHERE username = :username AND authmech = `webauthn`");
           $stmt->execute(array(':username' => $_SESSION['pending_mailcow_cc_username']));
           $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
           if (count($rows) == 0) {
