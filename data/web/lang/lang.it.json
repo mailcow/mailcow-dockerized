@@ -2,8 +2,8 @@
     "acl": {
         "alias_domains": "Aggiungi alias di dominio",
         "app_passwds": "Gestisci le password delle app",
-        "bcc_maps": "BCC maps",
-        "delimiter_action": "Delimiter action",
+        "bcc_maps": "Mappe CCN",
+        "delimiter_action": "Azione delimitatrice",
         "domain_desc": "Modifica la descrizione del dominio",
         "domain_relayhost": "Modifica relayhost per un dominio",
         "eas_reset": "Ripristina i dispositivi EAS",
@@ -106,7 +106,8 @@
         "validate": "Convalida",
         "validation_success": "Convalidato con successo",
         "bcc_dest_format": "Il destinatario in copia nascosta deve essere un singolo indirizzo email.<br>Se si vuole spedire una copia del messaggio a più destinatari, bisogna creare un alias ed utilizzarlo per questa opzione.",
-        "app_passwd_protocols": "Protocolli consentiti per la password dell'app"
+        "app_passwd_protocols": "Protocolli consentiti per la password dell'app",
+        "tags": "Tag"
     },
     "admin": {
         "access": "Accedi",
@@ -983,7 +984,7 @@
         "enter_qr_code": "Il codice TOTP se il tuo dispositivo non è in grado di acquisire i codici QR",
         "error_code": "Codice di errore",
         "init_webauthn": "Inizializzazione, attendere prego...",
-        "key_id": "Identificatore per il tuo YubiKey",
+        "key_id": "Identificatore per il tuo dispositivo",
         "key_id_totp": "Identificatore per la tua chiave",
         "none": "Disattivato",
         "reload_retry": "- (ricaricare la pagina se l'errore persiste)",
@@ -997,7 +998,9 @@
         "waiting_usb_auth": "<i>In attesa del device USB...</i><br /><br />Tocca ora il pulsante sul dispositivo WebAuthn USB.",
         "waiting_usb_register": "<i>In attesa del device USB...</i><br /><br />Inserisci la tua password qui sopra e conferma la tua registrazione WebAuthn toccando il pulsante del dispositivo WebAuthn USB.",
         "yubi_otp": "Autenticazione Yubico OTP",
-        "tfa_token_invalid": "Token TFA non valido"
+        "tfa_token_invalid": "Token TFA non valido",
+        "u2f_deprecated": "Sembra che la tua chiave sia stata registrata utilizzando il metodo U2F deprecato. Disattiveremo Two-Factor-Authenticaiton per te e cancelleremo la tua chiave.",
+        "u2f_deprecated_important": "Registra la tua chiave nel pannello di amministrazione con il nuovo metodo WebAuthn."
     },
     "user": {
         "action": "Azione",
