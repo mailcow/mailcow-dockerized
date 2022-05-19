@@ -63,13 +63,6 @@ jQuery(function($){
     draw_table = $(this).data('draw');
     eval(draw_table + '()');
   });
-  function table_admin_ready(ft, name) {
-    heading = ft.$el.parents('.card').find('.card-header')
-    var ft_paging = ft.use(FooTable.Paging)
-    $(heading).children('.table-lines').text(function(){
-      return ft_paging.totalRows;
-    })
-  }
   function draw_domain_admins() {
     $('#domainadminstable').DataTable({
       processing: true,
@@ -78,12 +71,23 @@ jQuery(function($){
       ajax: {
         type: "GET",
         url: "/api/v1/get/domain-admin/all",
-        dataSrc: function(json){
-          console.log(json);
-          return json;
+        dataSrc: function(data){
+          return process_table_data(data, 'domainadminstable');
         }
       },
       columns: [
+          {
+            // placeholder, so checkbox will not block child row toggle
+            title: '',
+            data: null,
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
+          },
+          {
+            title: '',
+            data: 'chkbox'
+          },
           {
             title: lang.username,
             data: 'username',
@@ -113,74 +117,57 @@ jQuery(function($){
           },
           {
             title: lang.action,
-            data: null,
-            render: function (data, type) {
-              return `<div class="btn-group">
-                <a href="/edit/admin/admin" class="btn btn-xs btn-xs-half btn-secondary">
-                  <i class="bi bi-pencil-fill"></i> Bearbeiten
-                </a>
-                <a href="#" data-action="delete_selected" data-id="single-admin" data-api-url="delete/admin" data-item="admin" class="btn btn-xs btn-xs-half btn-danger">
-                  <i class="bi bi-trash"></i> Entfernen
-                </a>
-              </div>`;
-            }
+            data: 'action'
           },
       ]
     });
-
-    // ft_domainadmins = FooTable.init('#domainadminstable', {
-    //   "columns": [
-    //     {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
-    //     {"sorted": true,"name":"username","title":lang.username,"style":{"width":"250px"}},
-    //     {"name":"selected_domains","title":lang.admin_domains,"breakpoints":"xs sm"},
-    //     {"name":"tfa_active","title":"TFA", "filterable": false,"style":{"maxWidth":"80px","width":"80px"},"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
-    //     {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
-    //     {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"250px","width":"250px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
-    //   ],
-    //   "rows": $.ajax({
-    //     dataType: 'json',
-    //     url: '/api/v1/get/domain-admin/all',
-    //     jsonp: false,
-    //     error: function () {
-    //       console.log('Cannot draw domain admin table');
-    //     },
-    //     success: function (data) {
-    //       return process_table_data(data, 'domainadminstable');
-    //     }
-    //   }),
-    //   "empty": lang.empty,
-    //   "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-    //   "state": {"enabled": true},
-    //   "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table},
-    //   "sorting": {"enabled": true},
-    //   "toggleSelector": "table tbody span.footable-toggle"
-    // });
   }
   function draw_oauth2_clients() {
-    ft_oauth2clientstable = FooTable.init('#oauth2clientstable', {
-      "columns": [
-        {"name":"chkbox","title":"","style":{"maxWidth":"40px","width":"40px"},"filterable": false,"sortable": false,"type":"html"},
-        {"name":"id","type":"text","title":"ID","style":{"width":"50px"}},
-        {"name":"client_id","type":"text","title":lang.oauth2_client_id,"style":{"width":"200px"}},
-        {"name":"client_secret","title":lang.oauth2_client_secret,"breakpoints":"xs sm md","style":{"width":"200px"}},
-        {"name":"redirect_uri","title":lang.oauth2_redirect_uri, "type": "text"},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
-      ],
-      "rows": $.ajax({
-        dataType: 'json',
-        url: '/api/v1/get/oauth2-client/all',
-        jsonp: false,
-        error: function () {
-          console.log('Cannot draw oauth2 clients table');
-        },
-        success: function (data) {
+    $('#oauth2clientstable').DataTable({
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/oauth2-client/all",
+        dataSrc: function(data){
           return process_table_data(data, 'oauth2clientstable');
         }
-      }),
-      "empty": lang.empty,
-      "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "sorting": {"enabled": true},
-      "toggleSelector": "table tbody span.footable-toggle"
+      },
+      columns: [
+          {
+            // placeholder, so checkbox will not block child row toggle
+            title: '',
+            data: null,
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
+          },
+          {
+            title: '',
+            data: 'chkbox'
+          },
+          {
+            title: 'ID',
+            data: 'id',
+          },
+          {
+            title: lang.oauth2_client_id,
+            data: 'client_id'
+          },
+          {
+            title: lang.oauth2_client_secret,
+            data: 'client_secret'
+          },
+          {
+            title: lang.oauth2_redirect_uri,
+            data: 'redirect_uri'
+          },
+          {
+            title: lang.action,
+            data: 'action'
+          },
+      ]
     });
   }
   function draw_admins() {
@@ -191,11 +178,23 @@ jQuery(function($){
       ajax: {
         type: "GET",
         url: "/api/v1/get/admin/all",
-        dataSrc: function(json){
-          return json;
+        dataSrc: function(data){
+          return process_table_data(data, 'adminstable');
         }
       },
       columns: [
+          {
+            // placeholder, so checkbox will not block child row toggle
+            title: '',
+            data: null,
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
+          },
+          {
+            title: '',
+            data: 'chkbox'
+          },
           {
             title: lang.username,
             data: 'username',
@@ -218,169 +217,220 @@ jQuery(function($){
           },
           {
             title: lang.action,
-            data: null,
-            render: function (data, type) {
-              return `<div class="btn-group">
-                <a href="/edit/admin/admin" class="btn btn-xs btn-xs-half btn-secondary">
-                  <i class="bi bi-pencil-fill"></i> Bearbeiten
-                </a>
-                <a href="#" data-action="delete_selected" data-id="single-admin" data-api-url="delete/admin" data-item="admin" class="btn btn-xs btn-xs-half btn-danger">
-                  <i class="bi bi-trash"></i> Entfernen
-                </a>
-              </div>`;
-            }
+            data: 'action'
           },
       ]
     });
-
-    // ft_admins = FooTable.init('#adminstable', {
-    //   "columns": [
-    //     {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
-    //     {"sorted": true,"name":"usr","title":lang.username,"style":{"width":"250px"}},
-    //     {"name":"tfa_active","title":"TFA", "filterable": false,"style":{"maxWidth":"80px","width":"80px"},"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
-    //     {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
-    //     {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"250px","width":"250px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
-    //   ],
-    //   "rows": $.ajax({
-    //     dataType: 'json',
-    //     url: '/api/v1/get/admin/all',
-    //     jsonp: false,
-    //     error: function () {
-    //       console.log('Cannot draw admin table');
-    //     },
-    //     success: function (data) {
-    //       return process_table_data(data, 'adminstable');
-    //     }
-    //   }),
-    //   "empty": lang.empty,
-    //   "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-    //   "filtering": {"enabled": false},
-    //   "state": {"enabled": true},
-    //   "sorting": {"enabled": true},
-    //   "toggleSelector": "table tbody span.footable-toggle"
-    // });
   }
   function draw_fwd_hosts() {
-    ft_forwardinghoststable = FooTable.init('#forwardinghoststable', {
-      "columns": [
-        {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
-        {"name":"host","type":"text","title":lang.host,"style":{"width":"250px"}},
-        {"name":"source","title":lang.source,"breakpoints":"xs sm"},
-        {"name":"keep_spam","title":lang.spamfilter, "type": "text","style":{"maxWidth":"80px","width":"80px"},"formatter": function(value){return 'yes'==value?'<i class="bi bi-x-lg"></i>':'no'==value&&'<i class="bi bi-check-lg"></i>';}},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
-      ],
-      "rows": $.ajax({
-        dataType: 'json',
-        url: '/api/v1/get/fwdhost/all',
-        jsonp: false,
-        error: function () {
-          console.log('Cannot draw forwarding hosts table');
-        },
-        success: function (data) {
+    $('#forwardinghoststable').DataTable({
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/fwdhost/all",
+        dataSrc: function(data){
           return process_table_data(data, 'forwardinghoststable');
         }
-      }),
-      "empty": lang.empty,
-      "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "sorting": {"enabled": true},
-      "toggleSelector": "table tbody span.footable-toggle"
+      },
+      columns: [
+          {
+            // placeholder, so checkbox will not block child row toggle
+            title: '',
+            data: null,
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
+          },
+          {
+            title: '',
+            data: 'chkbox'
+          },
+          {
+            title: lang.host,
+            data: 'host',
+          },
+          {
+            title: lang.source,
+            data: 'source'
+          },
+          {
+            title: lang.spamfilter,
+            data: 'keep_spam'
+          },
+          {
+            title: lang.action,
+            data: 'action'
+          },
+      ]
     });
   }
   function draw_relayhosts() {
-    ft_relayhoststable = FooTable.init('#relayhoststable', {
-      "columns": [
-        {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
-        {"name":"id","type":"text","title":"ID","style":{"width":"50px"}},
-        {"name":"hostname","type":"text","title":lang.host,"style":{"width":"250px"}},
-        {"name":"username","title":lang.username,"breakpoints":"xs sm"},
-        {"name":"in_use_by","title":lang.in_use_by,"style":{"min-width":"200px","width":"200px"}, "type": "text","breakpoints":"xs sm"},
-        {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"250px","width":"250px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
-      ],
-      "rows": $.ajax({
-        dataType: 'json',
-        url: '/api/v1/get/relayhost/all',
-        jsonp: false,
-        error: function () {
-          console.log('Cannot draw forwarding hosts table');
-        },
-        success: function (data) {
+    $('#relayhoststable').DataTable({
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/relayhost/all",
+        dataSrc: function(data){
           return process_table_data(data, 'relayhoststable');
         }
-      }),
-      "empty": lang.empty,
-      "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "sorting": {"enabled": true},
-      "toggleSelector": "table tbody span.footable-toggle"
+      },
+      columns: [
+          {
+            // placeholder, so checkbox will not block child row toggle
+            title: '',
+            data: null,
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
+          },
+          {
+            title: '',
+            data: 'chkbox'
+          },
+          {
+            title: 'ID',
+            data: 'id',
+          },
+          {
+            title: lang.host,
+            data: 'hostname'
+          },
+          {
+            title: lang.username,
+            data: 'username'
+          },
+          {
+            title: lang.in_use_by,
+            data: 'in_use_by'
+          },
+          {
+            title: lang.active,
+            data: 'active'
+          },
+          {
+            title: lang.action,
+            data: 'action'
+          },
+      ]
     });
   }
   function draw_transport_maps() {
-    ft_transportstable = FooTable.init('#transportstable', {
-      "columns": [
-        {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
-        {"name":"id","type":"text","title":"ID","style":{"width":"50px"}},
-        {"name":"destination","type":"text","title":lang.destination,"style":{"min-width":"300px","width":"300px"}},
-        {"name":"nexthop","type":"text","title":lang.nexthop,"style":{"min-width":"200px","width":"200px"}},
-        {"name":"username","title":lang.username,"breakpoints":"xs sm"},
-        {"name":"active","filterable": false,"style":{"maxWidth":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"250px","width":"250px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
-      ],
-      "rows": $.ajax({
-        dataType: 'json',
-        url: '/api/v1/get/transport/all',
-        jsonp: false,
-        error: function () {
-          console.log('Cannot draw transports table');
-        },
-        success: function (data) {
+    $('#transportstable').DataTable({
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/transport/all",
+        dataSrc: function(data){
           return process_table_data(data, 'transportstable');
         }
-      }),
-      "empty": lang.empty,
-      "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "sorting": {"enabled": true},
-      "toggleSelector": "table tbody span.footable-toggle",
-      "on": {
-        "ready.ft.table": function(e, ft){
-          $('.mx-info').tooltip();
-        }
-      }
+      },
+      columns: [
+          {
+            // placeholder, so checkbox will not block child row toggle
+            title: '',
+            data: null,
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
+          },
+          {
+            title: '',
+            data: 'chkbox'
+          },
+          {
+            title: 'ID',
+            data: 'id',
+          },
+          {
+            title: lang.destination,
+            data: 'destination'
+          },
+          {
+            title: lang.nexthop,
+            data: 'nexthop'
+          },
+          {
+            title: lang.username,
+            data: 'username'
+          },
+          {
+            title: lang.active,
+            data: 'active'
+          },
+          {
+            title: lang.action,
+            data: 'action'
+          },
+      ]
     });
   }
   function draw_queue() {
-    ft_queuetable = FooTable.init('#queuetable', {
-      "columns": [
-        {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
-        {"name":"queue_id","type":"text","title":"QID","style":{"width":"50px"}},
-        {"name":"queue_name","type":"text","title":"Queue","style":{"width":"120px"}},
-        {"name":"arrival_time","sorted": true,"direction": "DESC","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});},"title":lang.arrival_time,"style":{"width":"170px"}},
-        {"name":"message_size","style":{"whiteSpace":"nowrap"},"title":lang.message_size,"formatter": function(value){
-          return humanFileSize(value);
-        }},
-        {"name":"sender","title":lang.sender, "type": "text","breakpoints":"xs sm"},
-        {"name":"recipients","title":lang.recipients, "type": "text","style":{"word-break":"break-all","min-width":"300px"},"breakpoints":"xs sm md"},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","maxWidth":"220px","width":"220px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
-      ],
-      "rows": $.ajax({
-        dataType: 'json',
-        url: '/api/v1/get/mailq/all',
-        jsonp: false,
-        error: function () {
-          console.log('Cannot draw forwarding hosts table');
-        },
-        success: function (data) {
+    $('#queuetable').DataTable({
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/mailq/all",
+        dataSrc: function(data){
           return process_table_data(data, 'queuetable');
         }
-      }),
-      "empty": lang.empty,
-      "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "sorting": {"enabled": true},
-      "toggleSelector": "table tbody span.footable-toggle",
-      "on": {
-        "ready.ft.table": function(e, ft){
-          table_admin_ready(ft, 'queuetable');
-        }
-      }
+      },
+      columns: [
+          {
+            // placeholder, so checkbox will not block child row toggle
+            title: '',
+            data: null,
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
+          },
+          {
+            title: '',
+            data: 'chkbox'
+          },
+          {
+            title: 'QID',
+            data: 'queue_id',
+          },
+          {
+            title: 'Queue',
+            data: 'queue_name'
+          },
+          {
+            title: lang.arrival_time,
+            data: 'arrival_time',
+            render: function (data, type){
+              var date = new Date(data ? data * 1000 : 0); 
+              return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+            }
+          },
+          {
+            title: lang.message_size,
+            data: 'message_size',
+            render: function (data, type){
+              return humanFileSize(data);
+            }
+          },
+          {
+            title: lang.sender,
+            data: 'sender'
+          },
+          {
+            title: lang.recipients,
+            data: 'recipients'
+          },
+          {
+            title: lang.action,
+            data: 'action'
+          },
+      ]
     });
   }
 
@@ -467,14 +517,33 @@ jQuery(function($){
     }
     return data
   };
-  // // Initial table drawings
-  draw_domain_admins();
-  draw_admins();
-  // draw_fwd_hosts();
-  // draw_relayhosts();
-  // draw_oauth2_clients();
-  // draw_transport_maps();
-  // draw_queue();
+
+  // detect element visibility changes
+  function onVisible(element, callback) {
+    $(element).ready(function() {
+      element_object = document.querySelector(element)
+      new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if(entry.intersectionRatio > 0) {
+            callback(element_object);
+            observer.disconnect();
+          }
+        });
+      }).observe(element_object);
+    });
+  }
+  // Draw Table if tab is active
+  onVisible("[id^=tab-config-admins]", () => {
+    draw_admins();
+    draw_domain_admins();
+  });
+  onVisible("[id^=tab-config-oauth2]", () => draw_oauth2_clients());
+  onVisible("[id^=tab-config-fwdhosts]", () => draw_fwd_hosts());
+  onVisible("[id^=tab-routing]", () => {
+    draw_relayhosts();
+    draw_transport_maps();
+  });
+  onVisible("[id^=tab-mailq]", () => draw_queue());
 
 
   $('body').on('click', 'span.footable-toggle', function () {

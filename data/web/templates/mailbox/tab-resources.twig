@@ -7,24 +7,24 @@
         <button class="btn btn-xs btn-secondary refresh_table" data-draw="draw_resource_table" data-table="resource_table">{{ lang.admin.refresh }}</button>
       </div>
     </div>
-    <div class="card-body text-muted">
-      <p><span class="badge fs-5 bg-success">{{ lang.mailbox.booking_0_short }}</span> - {{ lang.mailbox.booking_null }}</p>
-      <p><span class="badge fs-5 bg-warning">{{ lang.mailbox.booking_lt0_short }}</span> - {{ lang.mailbox.booking_ltnull }}</p>
-      <p><span class="badge fs-5 bg-danger">{{ lang.mailbox.booking_custom_short }}</span> - {{ lang.mailbox.booking_custom }}</p>
-    </div>
-{#    <div class="mass-actions-mailbox" data-actions-header="true"></div>#}
-    <table id="resource_table" class="table table-striped dt-responsive nowrap w-100"></table>
-    <div class="mass-actions-mailbox">
-      <div class="btn-group">
-        <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="resource" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-        <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
-        <ul class="dropdown-menu">
-          <li><a class="dropdown-item" data-action="edit_selected" data-id="resource" data-api-url='edit/resource' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
-          <li><a class="dropdown-item" data-action="edit_selected" data-id="resource" data-api-url='edit/resource' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" data-action="delete_selected" data-id="resource" data-api-url='delete/resource' href="#">{{ lang.mailbox.remove }}</a></li>
-        </ul>
-        <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addResourceModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_resource }}</a>
+    <div class="card-body">
+      <p><span class="badge fs-5 bg-success text-muted">{{ lang.mailbox.booking_0_short }}</span> - {{ lang.mailbox.booking_null }}</p>
+      <p><span class="badge fs-5 bg-warning text-muted">{{ lang.mailbox.booking_lt0_short }}</span> - {{ lang.mailbox.booking_ltnull }}</p>
+      <p><span class="badge fs-5 bg-danger text-muted">{{ lang.mailbox.booking_custom_short }}</span> - {{ lang.mailbox.booking_custom }}</p>
+      {#<div class="mass-actions-mailbox" data-actions-header="true"></div>#}
+      <table id="resource_table" class="table table-striped dt-responsive nowrap w-100"></table>
+      <div class="mass-actions-mailbox">
+        <div class="btn-group">
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="resource" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="resource" data-api-url='edit/resource' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="resource" data-api-url='edit/resource' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-action="delete_selected" data-id="resource" data-api-url='delete/resource' href="#">{{ lang.mailbox.remove }}</a></li>
+          </ul>
+          <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addResourceModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_resource }}</a>
+        </div>
       </div>
     </div>
   </div>

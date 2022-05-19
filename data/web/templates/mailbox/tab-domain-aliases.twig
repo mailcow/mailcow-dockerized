@@ -7,19 +7,21 @@
         <button class="btn btn-xs btn-secondary refresh_table" data-draw="draw_aliasdomain_table" data-table="aliasdomain_table">{{ lang.admin.refresh }}</button>
       </div>
     </div>
-{#    <div class="mass-actions-mailbox" data-actions-header="true"></div>#}
-    <table id="aliasdomain_table" class="table table-striped dt-responsive nowrap w-100"></table>
-    <div class="mass-actions-mailbox">
-      <div class="btn-group">
-        <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="alias-domain" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-        <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
-        <ul class="dropdown-menu">
-          <li><a class="dropdown-item" data-action="edit_selected" data-id="alias-domain" data-api-url='edit/alias-domain' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
-          <li><a class="dropdown-item" data-action="edit_selected" data-id="alias-domain" data-api-url='edit/alias-domain' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" data-action="delete_selected" data-id="alias-domain" data-api-url='delete/alias-domain' href="#">{{ lang.mailbox.remove }}</a></li>
-        </ul>
-        <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-acl="{{ acl.alias_domains }}" data-bs-toggle="modal" data-bs-target="#addAliasDomainModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_domain_alias }}</a>
+    <div class="card-body">
+      {#<div class="mass-actions-mailbox" data-actions-header="true"></div>#}
+      <table id="aliasdomain_table" class="table table-striped dt-responsive nowrap w-100"></table>
+      <div class="mass-actions-mailbox">
+        <div class="btn-group">
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="alias-domain" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="alias-domain" data-api-url='edit/alias-domain' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="alias-domain" data-api-url='edit/alias-domain' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-action="delete_selected" data-id="alias-domain" data-api-url='delete/alias-domain' href="#">{{ lang.mailbox.remove }}</a></li>
+          </ul>
+          <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-acl="{{ acl.alias_domains }}" data-bs-toggle="modal" data-bs-target="#addAliasDomainModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_domain_alias }}</a>
+        </div>
       </div>
     </div>
   </div>

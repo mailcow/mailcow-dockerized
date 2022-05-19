@@ -7,20 +7,22 @@
         <button class="btn btn-xs btn-secondary refresh_table" data-draw="draw_tls_policy_table" data-table="tls_policy_table">{{ lang.admin.refresh }}</button>
       </div>
     </div>
-    <p style="margin:10px" class="text-muted">{{ lang.mailbox.tls_policy_maps_info|raw }}</p>
-{#    <div class="mass-actions-mailbox" data-actions-header="true"></div>#}
-    <table id="tls_policy_table" class="table table-striped dt-responsive nowrap w-100"></table>
-    <div class="mass-actions-mailbox">
-      <div class="btn-group">
-        <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="tls-policy-map" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-        <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
-        <ul class="dropdown-menu">
-          <li><a class="dropdown-item" data-action="edit_selected" data-id="tls-policy-map" data-api-url='edit/tls-policy-map' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
-          <li><a class="dropdown-item" data-action="edit_selected" data-id="tls-policy-map" data-api-url='edit/tls-policy-map' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" data-action="delete_selected" data-id="tls-policy-map" data-api-url='delete/tls-policy-map' href="#">{{ lang.mailbox.remove }}</a></li>
-        </ul>
-        <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addTLSPolicyMapAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_tls_policy_map }}</a>
+    <div class="card-body">
+      <p class="text-muted">{{ lang.mailbox.tls_policy_maps_info|raw }}</p>
+      {#<div class="mass-actions-mailbox" data-actions-header="true"></div>#}
+      <table id="tls_policy_table" class="table table-striped dt-responsive nowrap w-100"></table>
+      <div class="mass-actions-mailbox">
+        <div class="btn-group">
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="tls-policy-map" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="tls-policy-map" data-api-url='edit/tls-policy-map' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="tls-policy-map" data-api-url='edit/tls-policy-map' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-action="delete_selected" data-id="tls-policy-map" data-api-url='delete/tls-policy-map' href="#">{{ lang.mailbox.remove }}</a></li>
+          </ul>
+          <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addTLSPolicyMapAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_tls_policy_map }}</a>
+        </div>
       </div>
     </div>
   </div>

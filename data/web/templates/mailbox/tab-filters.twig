@@ -9,64 +9,64 @@
     </div>
     <div class="card-body">
       <p class="text-muted">{{ lang.mailbox.sieve_info|raw }}</p><br>
-    </div>
-{#    <div class="mass-actions-mailbox" data-actions-header="true"></div>#}
-    <table id="filter_table" class="table table-striped dt-responsive nowrap w-100"></table>
-    <div class="mass-actions-mailbox">
-      <div class="btn-group" data-acl="{{ acl.filters }}">
-        <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="filter_item" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-        <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
-        <ul class="dropdown-menu">
-          <li><a class="dropdown-item" data-action="edit_selected" data-id="filter_item" data-api-url='edit/filter' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
-          <li><a class="dropdown-item" data-action="edit_selected" data-id="filter_item" data-api-url='edit/filter' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" data-action="edit_selected" data-id="filter_item" data-api-url='edit/filter' data-api-attr='{"filter_type":"prefilter"}' href="#">{{ lang.mailbox.set_prefilter }}</a></li>
-          <li><a class="dropdown-item" data-action="edit_selected" data-id="filter_item" data-api-url='edit/filter' data-api-attr='{"filter_type":"postfilter"}' href="#">{{ lang.mailbox.set_postfilter }}</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" data-action="delete_selected" data-text="{{ lang.user.eas_reset }}?" data-id="filter_item" data-api-url='delete/filter' href="#">{{ lang.mailbox.remove }}</a></li>
-        </ul>
-        <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addFilterModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_filter }}</a>
+      {#<div class="mass-actions-mailbox" data-actions-header="true"></div>#}
+      <table id="filter_table" class="table table-striped dt-responsive nowrap w-100"></table>
+      <div class="mass-actions-mailbox">
+        <div class="btn-group" data-acl="{{ acl.filters }}">
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="filter_item" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="filter_item" data-api-url='edit/filter' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="filter_item" data-api-url='edit/filter' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="filter_item" data-api-url='edit/filter' data-api-attr='{"filter_type":"prefilter"}' href="#">{{ lang.mailbox.set_prefilter }}</a></li>
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="filter_item" data-api-url='edit/filter' data-api-attr='{"filter_type":"postfilter"}' href="#">{{ lang.mailbox.set_postfilter }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-action="delete_selected" data-text="{{ lang.user.eas_reset }}?" data-id="filter_item" data-api-url='delete/filter' href="#">{{ lang.mailbox.remove }}</a></li>
+          </ul>
+          <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addFilterModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_filter }}</a>
+        </div>
       </div>
-    </div>
-    <div class="card-body{% if mailcow_cc_role != 'admin' %} hidden{% endif %}">
-    <div class="row">
-      <div class="col-lg-6">
-        <h5>Global Prefilter</h5>
-        <form class="form-horizontal" data-cached-form="false" role="form" data-id="add_prefilter">
-          <div class="row">
-            <div class="col-sm-12">
-              <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code script_data" rows="10" name="script_data" required>{{ global_filters.prefilter }}</textarea>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-sm-10 add_filter_btns">
-              <div class="btn-group">
-                <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary validate_sieve" href="#">{{ lang.add.validate }}</button>
-                <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success add_sieve_script" data-action="add_item" data-id="add_prefilter" data-api-url='add/global-filter' data-api-attr='{"filter_type":"prefilter"}' href="#" disabled><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+      <div class="{% if mailcow_cc_role != 'admin' %}hidden{% endif %}">
+        <div class="row">
+          <div class="col-lg-6">
+            <h5>Global Prefilter</h5>
+            <form class="form-horizontal" data-cached-form="false" role="form" data-id="add_prefilter">
+              <div class="row">
+                <div class="col-sm-12">
+                  <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code script_data" rows="10" name="script_data" required>{{ global_filters.prefilter }}</textarea>
+                </div>
               </div>
-            </div>
-          </div>
-        </form>
-      </div>
-      <div class="col-lg-6">
-        <h5>Global Postfilter</h5>
-        <form class="form-horizontal" data-cached-form="false" role="form" data-id="add_postfilter">
-          <div class="row">
-            <div class="col-sm-12">
-              <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code script_data" rows="10" name="script_data" required>{{ global_filters.postfilter }}</textarea>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-sm-10 add_filter_btns">
-              <div class="btn-group">
-                <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary validate_sieve" href="#">{{ lang.add.validate }}</button>
-                <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success add_sieve_script" data-action="add_item" data-id="add_postfilter" data-api-url='add/global-filter' data-api-attr='{"filter_type":"postfilter"}' href="#" disabled><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+              <div class="row">
+                <div class="col-sm-10 add_filter_btns">
+                  <div class="btn-group">
+                    <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary validate_sieve" href="#">{{ lang.add.validate }}</button>
+                    <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success add_sieve_script" data-action="add_item" data-id="add_prefilter" data-api-url='add/global-filter' data-api-attr='{"filter_type":"prefilter"}' href="#" disabled><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+                  </div>
+                </div>
               </div>
-            </div>
+            </form>
           </div>
-        </form>
+          <div class="col-lg-6">
+            <h5>Global Postfilter</h5>
+            <form class="form-horizontal" data-cached-form="false" role="form" data-id="add_postfilter">
+              <div class="row">
+                <div class="col-sm-12">
+                  <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code script_data" rows="10" name="script_data" required>{{ global_filters.postfilter }}</textarea>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-10 add_filter_btns">
+                  <div class="btn-group">
+                    <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary validate_sieve" href="#">{{ lang.add.validate }}</button>
+                    <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success add_sieve_script" data-action="add_item" data-id="add_postfilter" data-api-url='add/global-filter' data-api-attr='{"filter_type":"postfilter"}' href="#" disabled><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
   </div>
 </div>
