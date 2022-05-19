@@ -10,7 +10,7 @@
     <div class="card-body">
       <p class="text-muted">{{ lang.mailbox.bcc_info|raw }}</p>
       {#<div class="mass-actions-mailbox" data-actions-header="true"></div>#}
-      <table id="bcc_table" class="table table-striped dt-responsive nowrap w-100"></table>
+      <table id="bcc_table" class="table table-striped dt-responsive w-100"></table>
       <div class="mass-actions-mailbox">
         <div class="btn-group" data-acl="{{ acl.bcc_maps }}">
           <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="bcc" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
@@ -40,7 +40,7 @@
     <div class="card-body">
       <p class="text-muted">{{ lang.mailbox.recipient_map_info }}</p>
       {#<div class="mass-actions-mailbox" data-actions-header="true"></div>#}
-      <table class="table table-striped" id="recipient_map_table"></table>
+      <table id="recipient_map_table" class="table table-striped dt-responsive w-100"></table>
       <div class="mass-actions-mailbox">
         <div class="btn-group">
           <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="recipient_map" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>

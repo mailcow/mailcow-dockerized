@@ -832,19 +832,35 @@ jQuery(function($){
       });
     }
   })
-  // Initial table drawings
-  draw_postfix_logs();
-  draw_autodiscover_logs();
-  draw_dovecot_logs();
-  draw_sogo_logs();
-  draw_watchdog_logs();
-  draw_acme_logs();
-  draw_api_logs();
-  draw_rl_logs();
-  draw_ui_logs();
-  draw_sasl_logs();
-  draw_netfilter_logs();
-  draw_rspamd_history();
+
+  // detect element visibility changes
+  function onVisible(element, callback) {
+    $(element).ready(function() {
+      element_object = document.querySelector(element)
+      new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if(entry.intersectionRatio > 0) {
+            callback(element_object);
+            observer.disconnect();
+          }
+        });
+      }).observe(element_object);
+    });
+  }
+  // Draw Table if tab is active
+  onVisible("[id^=tab-postfix-logs]", () => draw_postfix_logs());
+  onVisible("[id^=tab-dovecot-logs]", () => draw_dovecot_logs());
+  onVisible("[id^=tab-sogo-logs]", () => draw_sogo_logs());
+  onVisible("[id^=tab-watchdog-logs]", () => draw_watchdog_logs());
+  onVisible("[id^=tab-autodiscover-logs]", () => draw_autodiscover_logs());
+  onVisible("[id^=tab-acme-logs]", () => draw_acme_logs());
+  onVisible("[id^=tab-api-logs]", () => draw_api_logs());
+  onVisible("[id^=tab-api-rl]", () => draw_rl_logs());
+  onVisible("[id^=tab-ui]", () => draw_ui_logs());
+  onVisible("[id^=tab-sasl]", () => draw_sasl_logs());
+  onVisible("[id^=tab-netfilter-logs]", () => draw_netfilter_logs());
+  onVisible("[id^=tab-rspamd-history]", () => draw_rspamd_history());
+
   $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
     var target = $(e.target).attr("href");
     if (target == '#tab-rspamd-history') {

@@ -244,10 +244,17 @@ code {
 .dropdown-header {
   font-weight: 600;
 }
+
 .dataTables_info {
-  margin: 15px !important;
+  margin: 15px 0 !important;
   padding: 0px !important;
 }
 .dataTables_paginate, .dataTables_length, .dataTables_filter {
-  margin: 15px !important;
+  margin: 15px 0 !important;
+}
+.dtr-details {
+  width: 100%;
+}
+.dtr-title {
+  width: 20%;
 }
