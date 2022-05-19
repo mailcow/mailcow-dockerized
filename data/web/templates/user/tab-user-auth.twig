@@ -2,11 +2,14 @@
   <div class="panel panel-default">
     <div class="panel-heading">{{ lang.user.mailbox_general }}</div>
     <div class="panel-body">
+    {% if mailboxdata.attributes.force_pw_update == '1' %}
+        <div class="alert alert-danger">{{ lang.user.force_pw_update|raw }}</div>
+    {% endif %}
       {% if not skip_sogo %}
       <div class="row">
         <div class="hidden-xs col-md-3 col-xs-5 text-right"></div>
         <div class="col-md-3 col-xs-12">
-          {% if dual_login and allow_admin_email_login == 'n' %}
+          {% if dual_login and allow_admin_email_login == 'n' or mailboxdata.attributes.force_pw_update == '1' %}
             <button disabled class="btn btn-default btn-block btn-xs-lg">
               <i class="bi bi-inbox-fill"></i> {{ lang.user.open_webmail_sso }}
             </button>
@@ -115,9 +118,6 @@
       <hr>
       <div class="row">
         <div class="col-sm-offset-3 col-sm-9">
-          {% if mailboxdata.attributes.force_pw_update == '1' %}
-          <div class="alert alert-danger">{{ lang.user.force_pw_update|raw }}</div>
-          {% endif %}
           <p><a target="_blank" href="https://mailcow.github.io/mailcow-dockerized-docs/client/client/#{{ clientconfigstr }}">[{{ lang.user.client_configuration }}]</a></p>
           <p><a href="#userFilterModal" data-toggle="modal">[{{ lang.user.show_sieve_filters }}]</a></p>
           <hr>
