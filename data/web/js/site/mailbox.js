@@ -220,6 +220,9 @@ $(document).ready(function() {
 
 });
 jQuery(function($){
+  // http://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery
+  var entityMap={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;","/":"&#x2F;","`":"&#x60;","=":"&#x3D;"};
+  function escapeHtml(n){return String(n).replace(/[&<>"'`=\/]/g,function(n){return entityMap[n]})}
   // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
   function humanFileSize(i){if(Math.abs(i)<1024)return i+" B";var B=["KiB","MiB","GiB","TiB","PiB","EiB","ZiB","YiB"],e=-1;do{i/=1024,++e}while(Math.abs(i)>=1024&&e<B.length-1);return i.toFixed(1)+" "+B[e]}
   function unix_time_format(i){return""==i?'<i class="bi bi-x-lg"></i>':new Date(i?1e3*i:0).toLocaleDateString(void 0,{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"})}
@@ -228,26 +231,6 @@ jQuery(function($){
     var table_name = $(this).data('table');
     $('#' + table_name).DataTable().ajax.reload();
   });
-  function table_mailbox_ready(ft, name) {
-    if(is_dual) {
-      $('.login_as').data("toggle", "tooltip")
-        .attr("disabled", true)
-        .removeAttr("href")
-        .attr("title", "Dual login cannot be used twice")
-        .tooltip();
-    }
-    $('.refresh_table').prop("disabled", false);
-    heading = ft.$el.parents('.card').find('.card-header')
-    var ft_paging = ft.use(FooTable.Paging)
-    $(heading).children('.table-lines').text(function(){
-      var total_rows = ft_paging.totalRows;
-      var size = ft_paging.size;
-      if (size > total_rows) {
-        size = total_rows;
-      }
-      return size + ' / ' + total_rows;
-    })
-  }
   function draw_domain_table() {
     $('#domain_table').DataTable({
       processing: true,
@@ -257,6 +240,7 @@ jQuery(function($){
         type: "GET",
         url: "/api/v1/get/domain/all",
         dataSrc: function(json){
+          console.log(json);
           $.each(json, function(i, item) {
             item.aliases = item.aliases_in_domain + " / " + item.max_num_aliases_for_domain;
             item.mailboxes = item.mboxes_in_domain + " / " + item.max_num_mboxes_for_domain;
@@ -370,6 +354,7 @@ jQuery(function($){
   }
   function draw_mailbox_table() {
     $('#mailbox_table').DataTable({
+			responsive : true,
       processing: true,
       serverSide: false,
       language: lang_datatables,
@@ -452,6 +437,18 @@ jQuery(function($){
       },
       columns: [
           {
+            // placeholder, so checkbox will not block child row toggle
+            title: '',
+            data: null,
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
+          },
+          {
+            title: '',
+            data: 'chkbox'
+          },
+          {
             title: lang.username,
             data: 'username'
           },
@@ -520,7 +517,7 @@ jQuery(function($){
             title: lang.active,
             data: 'active',
             render: function (data, type) {
-              return 1==value?'<i class="bi bi-check-lg"></i>':(0==value?'<i class="bi bi-x-lg"></i>':2==value&&'&#8212;');
+              return 1==data?'<i class="bi bi-check-lg"></i>':(0==data?'<i class="bi bi-x-lg"></i>':2==data&&'&#8212;');
             }
           },
           {
@@ -571,6 +568,18 @@ jQuery(function($){
       },
       columns: [
           {
+            // placeholder, so checkbox will not block child row toggle
+            title: '',
+            data: null,
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
+          },
+          {
+            title: '',
+            data: 'chkbox'
+          },
+          {
             title: lang.description,
             data: 'description'
           },
@@ -599,17 +608,7 @@ jQuery(function($){
           },
           {
             title: lang.action,
-            data: null,
-            render: function (data, type) {
-              return `<div class="btn-group">
-                <a href="/edit/admin/admin" class="btn btn-xs btn-xs-half btn-secondary">
-                  <i class="bi bi-pencil-fill"></i> Bearbeiten
-                </a>
-                <a href="#" data-action="delete_selected" data-id="single-admin" data-api-url="delete/admin" data-item="admin" class="btn btn-xs btn-xs-half btn-danger">
-                  <i class="bi bi-trash"></i> Entfernen
-                </a>
-              </div>`;
-            }
+            data: 'action'
           },
       ]
     });
@@ -644,6 +643,18 @@ jQuery(function($){
       },
       columns: [
           {
+            // placeholder, so checkbox will not block child row toggle
+            title: '',
+            data: null,
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
+          },
+          {
+            title: '',
+            data: 'chkbox'
+          },
+          {
             title: 'ID',
             data: 'id'
           },
@@ -672,17 +683,7 @@ jQuery(function($){
           },
           {
             title: lang.action,
-            data: null,
-            render: function (data, type) {
-              return `<div class="btn-group">
-                <a href="/edit/admin/admin" class="btn btn-xs btn-xs-half btn-secondary">
-                  <i class="bi bi-pencil-fill"></i> Bearbeiten
-                </a>
-                <a href="#" data-action="delete_selected" data-id="single-admin" data-api-url="delete/admin" data-item="admin" class="btn btn-xs btn-xs-half btn-danger">
-                  <i class="bi bi-trash"></i> Entfernen
-                </a>
-              </div>`;
-            }
+            data: 'action'
           },
       ]
     });
@@ -714,6 +715,18 @@ jQuery(function($){
       },
       columns: [
           {
+            // placeholder, so checkbox will not block child row toggle
+            title: '',
+            data: null,
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
+          },
+          {
+            title: '',
+            data: 'chkbox'
+          },
+          {
             title: 'ID',
             data: 'id'
           },
@@ -734,17 +747,7 @@ jQuery(function($){
           },
           {
             title: lang.action,
-            data: null,
-            render: function (data, type) {
-              return `<div class="btn-group">
-                <a href="/edit/admin/admin" class="btn btn-xs btn-xs-half btn-secondary">
-                  <i class="bi bi-pencil-fill"></i> Bearbeiten
-                </a>
-                <a href="#" data-action="delete_selected" data-id="single-admin" data-api-url="delete/admin" data-item="admin" class="btn btn-xs btn-xs-half btn-danger">
-                  <i class="bi bi-trash"></i> Entfernen
-                </a>
-              </div>`;
-            }
+            data: 'action'
           },
       ]
     });
@@ -781,6 +784,18 @@ jQuery(function($){
       },
       columns: [
           {
+            // placeholder, so checkbox will not block child row toggle
+            title: '',
+            data: null,
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
+          },
+          {
+            title: '',
+            data: 'chkbox'
+          },
+          {
             title: 'ID',
             data: 'id'
           },
@@ -809,17 +824,7 @@ jQuery(function($){
           },
           {
             title: lang.action,
-            data: null,
-            render: function (data, type) {
-              return `<div class="btn-group">
-                <a href="/edit/admin/admin" class="btn btn-xs btn-xs-half btn-secondary">
-                  <i class="bi bi-pencil-fill"></i> Bearbeiten
-                </a>
-                <a href="#" data-action="delete_selected" data-id="single-admin" data-api-url="delete/admin" data-item="admin" class="btn btn-xs btn-xs-half btn-danger">
-                  <i class="bi bi-trash"></i> Entfernen
-                </a>
-              </div>`;
-            }
+            data: 'action'
           },
       ]
     });
@@ -878,6 +883,18 @@ jQuery(function($){
       },
       columns: [
           {
+            // placeholder, so checkbox will not block child row toggle
+            title: '',
+            data: null,
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
+          },
+          {
+            title: '',
+            data: 'chkbox'
+          },
+          {
             title: 'ID',
             data: 'id'
           },
@@ -918,17 +935,7 @@ jQuery(function($){
           },
           {
             title: lang.action,
-            data: null,
-            render: function (data, type) {
-              return `<div class="btn-group">
-                <a href="/edit/admin/admin" class="btn btn-xs btn-xs-half btn-secondary">
-                  <i class="bi bi-pencil-fill"></i> Bearbeiten
-                </a>
-                <a href="#" data-action="delete_selected" data-id="single-admin" data-api-url="delete/admin" data-item="admin" class="btn btn-xs btn-xs-half btn-danger">
-                  <i class="bi bi-trash"></i> Entfernen
-                </a>
-              </div>`;
-            }
+            data: 'action'
           },
       ]
     });
@@ -962,6 +969,18 @@ jQuery(function($){
       },
       columns: [
           {
+            // placeholder, so checkbox will not block child row toggle
+            title: '',
+            data: null,
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
+          },
+          {
+            title: '',
+            data: 'chkbox'
+          },
+          {
             title: lang.alias,
             data: 'alias_domain'
           },
@@ -990,17 +1009,7 @@ jQuery(function($){
           },
           {
             title: lang.action,
-            data: null,
-            render: function (data, type) {
-              return `<div class="btn-group">
-                <a href="/edit/admin/admin" class="btn btn-xs btn-xs-half btn-secondary">
-                  <i class="bi bi-pencil-fill"></i> Bearbeiten
-                </a>
-                <a href="#" data-action="delete_selected" data-id="single-admin" data-api-url="delete/admin" data-item="admin" class="btn btn-xs btn-xs-half btn-danger">
-                  <i class="bi bi-trash"></i> Entfernen
-                </a>
-              </div>`;
-            }
+            data: 'action'
           },
       ]
     });
@@ -1056,6 +1065,18 @@ jQuery(function($){
       },
       columns: [
           {
+            // placeholder, so checkbox will not block child row toggle
+            title: '',
+            data: null,
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
+          },
+          {
+            title: '',
+            data: 'chkbox'
+          },
+          {
             title: 'ID',
             data: 'id'
           },
@@ -1100,17 +1121,7 @@ jQuery(function($){
           },
           {
             title: lang.action,
-            data: null,
-            render: function (data, type) {
-              return `<div class="btn-group">
-                <a href="/edit/admin/admin" class="btn btn-xs btn-xs-half btn-secondary">
-                  <i class="bi bi-pencil-fill"></i> Bearbeiten
-                </a>
-                <a href="#" data-action="delete_selected" data-id="single-admin" data-api-url="delete/admin" data-item="admin" class="btn btn-xs btn-xs-half btn-danger">
-                  <i class="bi bi-trash"></i> Entfernen
-                </a>
-              </div>`;
-            }
+            data: 'action'
           },
       ]
     });
@@ -1145,6 +1156,18 @@ jQuery(function($){
       },
       columns: [
           {
+            // placeholder, so checkbox will not block child row toggle
+            title: '',
+            data: null,
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
+          },
+          {
+            title: '',
+            data: 'chkbox'
+          },
+          {
             title: 'ID',
             data: 'id'
           },
@@ -1170,17 +1193,7 @@ jQuery(function($){
           },
           {
             title: lang.action,
-            data: null,
-            render: function (data, type) {
-              return `<div class="btn-group">
-                <a href="/edit/admin/admin" class="btn btn-xs btn-xs-half btn-secondary">
-                  <i class="bi bi-pencil-fill"></i> Bearbeiten
-                </a>
-                <a href="#" data-action="delete_selected" data-id="single-admin" data-api-url="delete/admin" data-item="admin" class="btn btn-xs btn-xs-half btn-danger">
-                  <i class="bi bi-trash"></i> Entfernen
-                </a>
-              </div>`;
-            }
+            data: 'action'
           },
       ]
     });
@@ -1190,15 +1203,33 @@ jQuery(function($){
     event.stopPropagation();
   })
 
-  draw_domain_table();
-  draw_mailbox_table();
-  draw_resource_table();
-  draw_alias_table();
-  draw_aliasdomain_table();
-  draw_sync_job_table();
-  draw_filter_table();
-  draw_bcc_table();
-  draw_recipient_map_table();
-  draw_tls_policy_table();
+  // detect element visibility changes
+  function onVisible(element, callback) {
+    $(element).ready(function() {
+      element_object = document.querySelector(element)
+      new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if(entry.intersectionRatio > 0) {
+            callback(element_object);
+            observer.disconnect();
+          }
+        });
+      }).observe(element_object);
+    });
+  }
+
+  // Load only if the tab is visible
+  onVisible("[id^=tab-domains]", () => draw_domain_table());
+  onVisible("[id^=tab-mailboxes]", () => draw_mailbox_table());
+  onVisible("[id^=tab-resources]", () => draw_resource_table());
+  onVisible("[id^=tab-mbox-aliases]", () => draw_alias_table());
+  onVisible("[id^=tab-domain-aliases]", () => draw_aliasdomain_table());
+  onVisible("[id^=tab-syncjobs]", () => draw_sync_job_table());
+  onVisible("[id^=tab-filters]", () => draw_filter_table());
+  onVisible("[id^=tab-bcc]", () => {
+    draw_bcc_table();
+    draw_recipient_map_table();
+  });
+  onVisible("[id^=tab-tls-policy]", () => draw_tls_policy_table());
 
 });
