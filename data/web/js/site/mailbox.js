@@ -337,17 +337,7 @@ jQuery(function($){
           },
           {
             title: lang.action,
-            data: null,
-            render: function (data, type) {
-              return `<div class="btn-group">
-                <a href="/edit/admin/admin" class="btn btn-xs btn-xs-half btn-secondary">
-                  <i class="bi bi-pencil-fill"></i> Bearbeiten
-                </a>
-                <a href="#" data-action="delete_selected" data-id="single-admin" data-api-url="delete/admin" data-item="admin" class="btn btn-xs btn-xs-half btn-danger">
-                  <i class="bi bi-trash"></i> Entfernen
-                </a>
-              </div>`;
-            }
+            data: 'action'
           },
       ]
     });
@@ -522,17 +512,7 @@ jQuery(function($){
           },
           {
             title: lang.action,
-            data: null,
-            render: function (data, type) {
-              return `<div class="btn-group">
-                <a href="/edit/admin/admin" class="btn btn-xs btn-xs-half btn-secondary">
-                  <i class="bi bi-pencil-fill"></i> Bearbeiten
-                </a>
-                <a href="#" data-action="delete_selected" data-id="single-admin" data-api-url="delete/admin" data-item="admin" class="btn btn-xs btn-xs-half btn-danger">
-                  <i class="bi bi-trash"></i> Entfernen
-                </a>
-              </div>`;
-            }
+            data: 'action'
           },
       ]
     });
@@ -603,7 +583,7 @@ jQuery(function($){
             title: lang.active,
             data: 'active',
             render: function (data, type) {
-              return 1==value?'<i class="bi bi-check-lg"></i>':(0==value?'<i class="bi bi-x-lg"></i>':2==value&&'&#8212;');
+              return 1==data?'<i class="bi bi-check-lg"></i>':(0==data?'<i class="bi bi-x-lg"></i>':2==data&&'&#8212;');
             }
           },
           {
@@ -678,7 +658,7 @@ jQuery(function($){
             title: lang.active,
             data: 'active',
             render: function (data, type) {
-              return 1==value?'<i class="bi bi-check-lg"></i>':(0==value?'<i class="bi bi-x-lg"></i>':2==value&&'&#8212;');
+              return 1==data?'<i class="bi bi-check-lg"></i>':(0==data?'<i class="bi bi-x-lg"></i>':2==data&&'&#8212;');
             }
           },
           {
@@ -819,7 +799,7 @@ jQuery(function($){
             title: lang.active,
             data: 'active',
             render: function (data, type) {
-              return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';
+              return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
             }
           },
           {
@@ -930,7 +910,7 @@ jQuery(function($){
             title: lang.active,
             data: 'active',
             render: function (data, type) {
-              return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';
+              return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
             }
           },
           {
@@ -1004,7 +984,7 @@ jQuery(function($){
             title: lang.active,
             data: 'active',
             render: function (data, type) {
-              return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';
+              return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
             }
           },
           {
@@ -1112,7 +1092,7 @@ jQuery(function($){
             title: lang.active,
             data: 'active',
             render: function (data, type) {
-              return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';
+              return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
             }
           },
           {
