@@ -337,7 +337,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $enc1                 = $_data['enc1'];
           $custom_params        = (empty(trim($_data['custom_params']))) ? '' : trim($_data['custom_params']);
           // Workaround, fixme
-          if (stripos($custom_params, 'pipemess')) {
+          if (stripos($custom_params, 'pipemess') || stripos($custom_params, 'pipemes')) {
             $custom_params = '';
           }
           if (empty($subfolder2)) {
@@ -1746,7 +1746,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
-            if (stripos($custom_params, 'pipemess')) {
+            if (stripos($custom_params, 'pipemess') || stripos($custom_params, 'pipemes')) {
               $custom_params = '';
             }
             if (empty($subfolder2)) {
