@@ -22,8 +22,8 @@ services:
         - unbound-mailcow
       stop_grace_period: 45s
       volumes:
-        - mysql-vol-1:/var/lib/mysql/:Z
-        - mysql-socket-vol-1:/var/run/mysqld/:z
+        - mysql-vol-1:/var/lib/mysql/
+        - mysql-socket-vol-1:/var/run/mysqld/
         - ./data/conf/mysql/:/etc/mysql/conf.d/:ro,Z
       environment:
         - TZ=${TZ}
@@ -43,7 +43,7 @@ services:
     redis-mailcow:
       image: redis:6-alpine
       volumes:
-        - redis-vol-1:/data/:Z
+        - redis-vol-1:/data/
       restart: always
       ports:
         - "${REDIS_PORT:-127.0.0.1:7654}:6379"
@@ -67,7 +67,7 @@ services:
         - SKIP_CLAMD=${SKIP_CLAMD:-n}
       volumes:
         - ./data/conf/clamav/:/etc/clamav/:Z
-        - clamd-db-vol-1:/var/lib/clamav:z
+        - clamd-db-vol-1:/var/lib/clamav
       networks:
         mailcow-network:
           aliases:
@@ -113,8 +113,8 @@ services:
         - ./data/web:/web:z
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro,z
         - ./data/conf/rspamd/custom/:/rspamd_custom_maps:z
-        - rspamd-vol-1:/var/lib/rspamd:z
-        - mysql-socket-vol-1:/var/run/mysqld/:z
+        - rspamd-vol-1:/var/lib/rspamd
+        - mysql-socket-vol-1:/var/run/mysqld/
         - ./data/conf/sogo/:/etc/sogo/:z
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro,z
         - ./data/conf/phpfpm/sogo-sso/:/etc/sogo-sso/:z
@@ -192,9 +192,9 @@ services:
         - ./data/conf/sogo/custom-favicon.ico:/usr/lib/GNUstep/SOGo/WebServerResources/img/sogo.ico:z
         - ./data/conf/sogo/custom-theme.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/theme.js:z
         - ./data/conf/sogo/custom-sogo.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/custom-sogo.js:z
-        - mysql-socket-vol-1:/var/run/mysqld/:z
-        - sogo-web-vol-1:/sogo_web:z
-        - sogo-userdata-backup-vol-1:/sogo_backup:Z
+        - mysql-socket-vol-1:/var/run/mysqld/
+        - sogo-web-vol-1:/sogo_web
+        - sogo-userdata-backup-vol-1:/sogo_backup
       labels:
         ofelia.enabled: "true"
         ofelia.job-exec.sogo_sessions.schedule: "@every 1m"
@@ -226,13 +226,13 @@ services:
         - ./data/assets/ssl:/etc/ssl/mail/:ro,z
         - ./data/conf/sogo/:/etc/sogo/:z
         - ./data/conf/phpfpm/sogo-sso/:/etc/phpfpm/:z
-        - vmail-vol-1:/var/vmail:Z
-        - vmail-index-vol-1:/var/vmail_index:Z
-        - crypt-vol-1:/mail_crypt/:z
+        - vmail-vol-1:/var/vmail
+        - vmail-index-vol-1:/var/vmail_index
+        - crypt-vol-1:/mail_crypt/
         - ./data/conf/rspamd/custom/:/etc/rspamd/custom:z
         - ./data/assets/templates:/templates:z
-        - rspamd-vol-1:/var/lib/rspamd:z
-        - mysql-socket-vol-1:/var/run/mysqld/:z
+        - rspamd-vol-1:/var/lib/rspamd
+        - mysql-socket-vol-1:/var/run/mysqld/
       environment:
         - DOVECOT_MASTER_USER=${DOVECOT_MASTER_USER:-}
         - DOVECOT_MASTER_PASS=${DOVECOT_MASTER_PASS:-}
@@ -300,10 +300,10 @@ services:
         - ./data/hooks/postfix:/hooks:Z
         - ./data/conf/postfix:/opt/postfix/conf:z
         - ./data/assets/ssl:/etc/ssl/mail/:ro,z
-        - postfix-vol-1:/var/spool/postfix:z
-        - crypt-vol-1:/var/lib/zeyple:z
-        - rspamd-vol-1:/var/lib/rspamd:z
-        - mysql-socket-vol-1:/var/run/mysqld/:z
+        - postfix-vol-1:/var/spool/postfix
+        - crypt-vol-1:/var/lib/zeyple
+        - rspamd-vol-1:/var/lib/rspamd
+        - mysql-socket-vol-1:/var/run/mysqld/
       environment:
         - LOG_LINES=${LOG_LINES:-9999}
         - TZ=${TZ}
@@ -373,7 +373,7 @@ services:
         - ./data/assets/ssl/:/etc/ssl/mail/:ro,z
         - ./data/conf/nginx/:/etc/nginx/conf.d/:z
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro,z
-        - sogo-web-vol-1:/usr/lib/GNUstep/SOGo/:z
+        - sogo-web-vol-1:/usr/lib/GNUstep/SOGo/
       ports:
         - "${HTTPS_BIND:-:}:${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
         - "${HTTP_BIND:-:}:${HTTP_PORT:-80}:${HTTP_PORT:-80}"
@@ -414,7 +414,7 @@ services:
         - ./data/web/.well-known/acme-challenge:/var/www/acme:z
         - ./data/assets/ssl:/var/lib/acme/:z
         - ./data/assets/ssl-example:/var/lib/ssl-example/:ro,Z
-        - mysql-socket-vol-1:/var/run/mysqld/:z
+        - mysql-socket-vol-1:/var/run/mysqld/
       restart: always
       networks:
         mailcow-network:
@@ -451,9 +451,9 @@ services:
       tmpfs:
         - /tmp
       volumes:
-        - rspamd-vol-1:/var/lib/rspamd:z
-        - mysql-socket-vol-1:/var/run/mysqld/:z
-        - postfix-vol-1:/var/spool/postfix:z
+        - rspamd-vol-1:/var/lib/rspamd
+        - mysql-socket-vol-1:/var/run/mysqld/
+        - postfix-vol-1:/var/spool/postfix
         - ./data/assets/ssl:/etc/ssl/mail/:ro,z
       restart: always
       environment:
@@ -528,7 +528,7 @@ services:
       image: mailcow/solr:1.8.1
       restart: always
       volumes:
-        - solr-vol-1:/opt/solr/server/solr/dovecot-fts/data:Z
+        - solr-vol-1:/opt/solr/server/solr/dovecot-fts/data
       ports:
         - "${SOLR_PORT:-127.0.0.1:18983}:8983"
       environment:
