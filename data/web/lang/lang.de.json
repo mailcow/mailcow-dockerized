@@ -106,7 +106,8 @@
         "timeout2": "Timeout für Verbindung zum lokalen Host",
         "username": "Benutzername",
         "validate": "Validieren",
-        "validation_success": "Erfolgreich validiert"
+        "validation_success": "Erfolgreich validiert",
+        "tags": "Tags"
     },
     "admin": {
         "access": "Zugang",
