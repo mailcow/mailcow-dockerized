@@ -29,6 +29,10 @@ for bin in openssl curl docker git awk sha1sum; do
   if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
 done
 
+echo "checking docker compose version...";
+if docker --help | grep compose
+then
+    echo ''
 if docker-compose version --short | grep -m1 "^1" > /dev/null 2>&1
 then
     >&2 echo -e "\e[31mWARN: Your machine is using Docker-Compose v1!\e[0m"
@@ -39,8 +43,7 @@ then
     >&2 echo -e "\e[33mContinuing...\e[0m"
     sleep 3
 
-elif ! docker compose version --short | grep "^2" > /dev/null 2>&1
-then
+else
     >&2 echo -e "\e[31mCannot find Docker-Compose v1 or v2 on your System. Please install Docker-Compose v2 and re-run the Script.\e[0m"
     exit 1
 fi

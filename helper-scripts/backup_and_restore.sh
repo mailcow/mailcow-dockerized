@@ -76,7 +76,8 @@ else
   CMPS_PRJ=$(echo ${COMPOSE_PROJECT_NAME} | tr -cd "[0-9A-Za-z-_]")
 fi
 
-if docker compose version --short | grep "^2" > /dev/null 2>&1
+echo "checking docker compose version...";
+if docker --help | grep compose
 then
     COMPOSE_COMMAND="docker compose"
 elif docker-compose version --short | grep -m1 "^1" > /dev/null 2>&1

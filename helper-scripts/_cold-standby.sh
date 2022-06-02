@@ -85,7 +85,11 @@ function preflight_local_checks() {
   done
 
 
-  if docker-compose version --short | grep -m1 "^1" > /dev/null 2>&1
+  echo "checking docker compose version...";
+  if docker --help | grep compose
+  then
+    echo ''
+  elif docker-compose version --short | grep -m1 "^1" > /dev/null 2>&1
   then
      >&2 echo -e "\e[31mWARN: Your machine is using Docker-Compose v1!\e[0m"
      >&2 echo -e "\e[31mmailcow will drop the Docker-Compose v1 Support in December 2022\e[0m"
@@ -95,8 +99,7 @@ function preflight_local_checks() {
      >&2 echo -e "\e[33mContinuing...\e[0m"
      sleep 3
 
-  elif ! docker compose version --short | grep "^2" > /dev/null 2>&1
-  then
+  else
      >&2 echo -e "\e[31mCannot find Docker-Compose v1 or v2 on your System. Please install Docker-Compose v2 and re-run the Script.\e[0m"
      exit 1
   fi
@@ -139,11 +142,12 @@ function preflight_remote_checks() {
     fi
   done
 
+  echo "checking docker compose version on remote...";
   if ssh -q -o StrictHostKeyChecking=no \
       -i "${REMOTE_SSH_KEY}" \
       ${REMOTE_SSH_HOST} \
       -p ${REMOTE_SSH_PORT} \
-     -t 'docker compose version --short' | grep "^2" > /dev/null 2>&1
+     -t docker --help | grep compose
   then
      COMPOSE_COMMAND="docker compose"
   elif ssh -q -o StrictHostKeyChecking=no \

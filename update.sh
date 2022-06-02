@@ -44,7 +44,9 @@ for bin in curl docker git awk sha1sum; do
   if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
 done
 
-if docker compose version --short | grep "^2" > /dev/null 2>&1
+
+echo "checking docker compose version...";
+if docker --help | grep compose
 then
      COMPOSE_COMMAND="docker compose"
 
