@@ -40,10 +40,29 @@ PATH=$PATH:/opt/bin
 
 umask 0022
 
-for bin in curl docker-compose docker git awk sha1sum; do
+for bin in curl docker git awk sha1sum; do
   if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
 done
 
+if docker compose version --short | grep "^2" > /dev/null 2>&1 || docker-compose version --short | grep "^2" > /dev/null 2>&1 
+then
+     COMPOSE_COMMAND="docker compose"
+
+elif docker-compose version --short | grep -m1 "^1" > /dev/null 2>&1
+then
+    >&2 echo -e "\e[31mWARN: Your machine is using Docker-Compose v1!\e[0m"
+    >&2 echo -e "\e[31mmailcow will drop the Docker-Compose v1 Support in December 2022\e[0m"
+    >&2 echo -e "\e[31mPlease consider a upgrade to Docker-Compose v2.\e[0m"
+    >&2 echo
+    >&2 echo
+    >&2 echo -e "\e[33mContinuing...\e[0m"
+    sleep 3
+    COMPOSE_COMMAND="docker-compose"
+
+else
+    >&2 echo -e "\e[31mCannot find Docker-Compose v1 or v2 on your System. Please install Docker-Compose v2 and re-run the Script.\e[0m"
+    exit 1
+fi
 export LC_ALL=C
 DATE=$(date +%Y-%m-%d_%H_%M_%S)
 BRANCH=$(cd ${SCRIPT_DIR}; git rev-parse --abbrev-ref HEAD)
