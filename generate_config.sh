@@ -40,6 +40,7 @@ then
     sleep 3
 
 elif ! docker compose version --short | grep "^2" > /dev/null 2>&1
+then
     >&2 echo -e "\e[31mCannot find Docker-Compose v1 or v2 on your System. Please install Docker-Compose v2 and re-run the Script.\e[0m"
     exit 1
 fi
