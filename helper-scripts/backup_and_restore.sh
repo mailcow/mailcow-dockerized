@@ -76,6 +76,30 @@ else
   CMPS_PRJ=$(echo ${COMPOSE_PROJECT_NAME} | tr -cd "[0-9A-Za-z-_]")
 fi
 
+if docker compose version --short | grep "^2" > /dev/null 2>&1
+then
+    COMPOSE_COMMAND="docker compose"
+elif docker-compose version --short | grep -m1 "^1" > /dev/null 2>&1
+then
+    >&2 echo -e "\e[31mWARN: Your machine is using Docker-Compose v1!\e[0m"
+    >&2 echo -e "\e[31mmailcow will drop the Docker-Compose v1 Support in December 2022\e[0m"
+    >&2 echo -e "\e[31mPlease consider a upgrade to Docker-Compose v2.\e[0m"
+    >&2 echo
+    >&2 echo
+    >&2 echo -e "\e[33mContinuing...\e[0m"
+    sleep 3
+    COMPOSE_COMMAND="docker-compose"
+else
+    >&2 echo -e "\e[31mCannot find Docker-Compose v1 or v2 on your System. Please install Docker-Compose v2 and re-run the Script.\e[0m"
+    exit 1
+fi
+
+if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then
+  >&2 echo -e "\e[31mBusyBox grep detected on local system, please install GNU grep\e[0m"
+  exit 1
+fi
+
+
 function backup() {
   DATE=$(date +"%Y-%m-%d-%H-%M-%S")
   mkdir -p "${BACKUP_LOCATION}/mailcow-${DATE}"
@@ -226,7 +250,7 @@ function restore() {
           continue
         else
           echo "Stopping mailcow..."
-          docker-compose -f ${COMPOSE_FILE} --env-file ${ENV_FILE} down
+          ${COMPOSE_COMMAND} -f ${COMPOSE_FILE} --env-file ${ENV_FILE} down
         fi
         #docker stop $(docker ps -qf name=mysql-mailcow)
         if [[ -d "${RESTORE_LOCATION}/mysql" ]]; then
@@ -264,7 +288,7 @@ function restore() {
         sed -i --follow-symlinks "/DBROOT/c\DBROOT=${DBROOT}" ${SCRIPT_DIR}/../mailcow.conf
         source ${SCRIPT_DIR}/../mailcow.conf
         echo "Starting mailcow..."
-        docker-compose -f ${COMPOSE_FILE} --env-file ${ENV_FILE} up -d
+        ${COMPOSE_COMMAND} -f ${COMPOSE_FILE} --env-file ${ENV_FILE} up -d
         #docker start $(docker ps -aqf name=mysql-mailcow)
       fi
       ;;
