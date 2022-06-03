@@ -60,6 +60,8 @@ services:
     clamd-mailcow:
       image: mailcow/clamd:1.52
       restart: always
+      depends_on:
+        - unbound-mailcow
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
