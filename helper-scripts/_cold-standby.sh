@@ -298,7 +298,7 @@ if ! ssh -o StrictHostKeyChecking=no \
 fi
 echo "OK"
 
-  echo -e "\e[33mPulling images from remote...\e[0m"
+  echo -e "\e[33mPulling images on remote...\e[0m"
   echo -e "\e[33mProcess is NOT stuck! Please wait...\e[0m"
 
   if ! ssh -o StrictHostKeyChecking=no \
@@ -309,7 +309,7 @@ echo "OK"
       >&2 echo -e "\e[31m[ERR]\e[0m - Could not pull images on remote"
   fi
 
-echo -e "\033[1mForcing garbage cleanup on remote...\033[0m"
+echo -e "\033[1mExecuting update script and forcing garbage cleanup on remote...\033[0m"
 if ! ssh -o StrictHostKeyChecking=no \
   -i "${REMOTE_SSH_KEY}" \
   ${REMOTE_SSH_HOST} \

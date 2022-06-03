@@ -33,7 +33,7 @@ echo "checking docker compose version...";
 if docker --help | grep compose
 then
     echo ''
-if docker-compose version --short | grep -m1 "^1" > /dev/null 2>&1
+elif docker-compose version --short | grep -m1 "^1" > /dev/null 2>&1
 then
     >&2 echo -e "\e[31mWARN: Your machine is using Docker-Compose v1!\e[0m"
     >&2 echo -e "\e[31mmailcow will drop the Docker-Compose v1 Support in December 2022\e[0m"
