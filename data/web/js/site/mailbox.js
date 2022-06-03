@@ -1179,10 +1179,6 @@ jQuery(function($){
     });
   };
 
-  $('body').on('click', 'span.footable-toggle', function () {
-    event.stopPropagation();
-  })
-
   // detect element visibility changes
   function onVisible(element, callback) {
     $(element).ready(function() {
