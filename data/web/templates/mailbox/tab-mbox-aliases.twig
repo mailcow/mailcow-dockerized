@@ -1,13 +1,17 @@
 <div role="tabpanel" class="tab-pane fade" id="tab-mbox-aliases" role="tabpanel" aria-labelledby="tab-mbox-aliases">
-  <div class="card">
+  <div class="card mb-4">
     <div class="card-header d-flex">
-      {{ lang.mailbox.aliases }} <span class="badge bg-info table-lines"></span>
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-mbox-aliases" data-bs-toggle="collapse" aria-controls="collapse-tab-mbox-aliases">
+        {{ lang.mailbox.aliases }} <span class="badge bg-info table-lines"></span>
+      </button>
+      <span class="d-none d-md-block">{{ lang.mailbox.aliases }} <span class="badge bg-info table-lines"></span></span>
+
       <div class="btn-group ms-auto d-none d-sm-flex">
         <button class="btn btn-xs btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addAliasModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_alias }}</button>
         <button class="btn btn-xs btn-secondary refresh_table" data-draw="draw_alias_table" data-table="alias_table">{{ lang.admin.refresh }}</button>
       </div>
     </div>
-    <div class="card-body">
+    <div id="collapse-tab-mbox-aliases" class="card-body collapse" data-bs-parent="#mail-content">
       <p class="text-muted">{{ lang.mailbox.alias_domain_alias_hint|raw }}</p>
       <!-- <div class="mass-actions-mailbox" data-actions-header="true"></div> -->
       <table id="alias_table" class="table table-striped dt-responsive w-100"></table>

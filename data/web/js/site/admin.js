@@ -53,7 +53,7 @@ jQuery(function($){
   $("#show_rspamd_global_filters").click(function() {
     $.get("inc/ajax/show_rspamd_global_filters.php");
     $("#confirm_show_rspamd_global_filters").hide();
-    $("#rspamd_global_filters").removeClass("hidden");
+    $("#rspamd_global_filters").removeClass("d-none");
   });
   $("#super_delete").click(function() { return confirm(lang.queue_ays); });
   $(".refresh_table").on('click', function(e) {
@@ -533,17 +533,13 @@ jQuery(function($){
     });
   }
   // Draw Table if tab is active
-  onVisible("[id^=tab-config-admins]", () => {
-    draw_admins();
-    draw_domain_admins();
-  });
-  onVisible("[id^=tab-config-oauth2]", () => draw_oauth2_clients());
-  onVisible("[id^=tab-config-fwdhosts]", () => draw_fwd_hosts());
-  onVisible("[id^=tab-routing]", () => {
-    draw_relayhosts();
-    draw_transport_maps();
-  });
-  onVisible("[id^=tab-mailq]", () => draw_queue());
+  onVisible("[id^=collapse-tab-config-admins]", () => draw_admins());
+  onVisible("[id^=collapse-tab-config-dadmins]", () => draw_domain_admins());
+  onVisible("[id^=collapse-tab-config-oauth2]", () => draw_oauth2_clients());
+  onVisible("[id^=collapse-tab-config-fwdhosts]", () => draw_fwd_hosts());
+  onVisible("[id^=collapse-tab-routing]", () => draw_relayhosts());
+  onVisible("[id^=collapse-tab-maps]", () => draw_transport_maps());
+  onVisible("[id^=collapse-tab-mailq]", () => draw_queue());
 
 
   $('body').on('click', 'span.footable-toggle', function () {

@@ -1,9 +1,12 @@
 <div role="tabpanel" class="tab-pane fade" id="tab-mailbox-defaults" role="tabpanel" aria-labelledby="tab-mailbox-defaults">
-  <div class="card">
-    <div class="card-header">
-      {{ lang.mailbox.mailbox_defaults }}
+  <div class="card mb-4">
+    <div class="card-header d-flex">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-mailbox-defaults" data-bs-toggle="collapse" aria-controls="collapse-tab-mailbox-defaults">
+        {{ lang.mailbox.mailbox_defaults }} <span class="badge bg-info table-lines"></span>
+      </button>
+      <span class="d-none d-md-block">{{ lang.mailbox.mailbox_defaults }} <span class="badge bg-info table-lines"></span></span>
     </div>
-    <div class="card-body text-muted">
+    <div id="collapse-tab-mailbox-defaults" class="card-body collapse text-muted" data-bs-parent="#mail-content">
       {{ lang.mailbox.mailbox_defaults_info }}
     </div>
   </div>

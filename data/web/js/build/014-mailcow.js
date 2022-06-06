@@ -61,8 +61,8 @@ $(document).ready(function() {
   // remember last navigation pill
   (function () {
     'use strict';
-    if ($('a[data-bs-toggle="tab"]').length) {
-      $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+    if ($('button[data-bs-toggle="tab"]').length) {
+      $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
         if ($(this).data('dont-remember') == 1) {
           return true;
         }
@@ -71,7 +71,7 @@ $(document).ready(function() {
         if (id) {
           key += ':' + id;
         }
-        localStorage.setItem(key, $(e.target).attr('href'));
+        localStorage.setItem(key, $(e.target).attr('data-bs-target').substring(1));
       });
       $('[role="tablist"]').each(function (idx, elem) {
         var id = $(elem).attr('id');
@@ -81,7 +81,7 @@ $(document).ready(function() {
         }
         var lastTab = localStorage.getItem(key);
         if (lastTab) {
-          $('[href="' + lastTab + '"]').tab('show');
+          $("[id^=" + lastTab + "]").show();
         }
       });
     }

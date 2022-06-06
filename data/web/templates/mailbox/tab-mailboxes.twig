@@ -1,17 +1,21 @@
 <div role="tabpanel" class="tab-pane fade" id="tab-mailboxes" role="tabpanel" aria-labelledby="tab-mailboxes">
-  <div class="card">
+  <div class="card mb-4">
     <div class="card-header d-flex">
-      {{ lang.mailbox.mailboxes }} <span class="badge bg-info table-lines"></span>
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-mailboxes" data-bs-toggle="collapse" aria-controls="collapse-tab-mailboxes">
+        {{ lang.mailbox.mailboxes }} <span class="badge bg-info table-lines"></span>
+      </button>
+      <span class="d-none d-md-block">{{ lang.mailbox.mailboxes }} <span class="badge bg-info table-lines"></span></span>
+
       <div class="btn-group ms-auto d-none d-sm-flex">
         <button class="btn btn-xs btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addMailboxModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_mailbox }}</button>
         <button class="btn btn-xs btn-secondary refresh_table" data-draw="draw_mailbox_table" data-table="mailbox_table">{{ lang.admin.refresh }}</button>
       </div>
     </div>
-    <div class="card-body">
+    <div id="collapse-tab-mailboxes" class="card-body collapse" data-bs-parent="#mail-content">
       <div class="mass-actions-mailbox d-none d-sm-flex" data-actions-header="true"></div>
       <table id="mailbox_table" class="table table-striped dt-responsive w-100"></table>
       <div class="mass-actions-mailbox">
-        <div class="btn-group d-block d-md-none">
+        <div class="btn-group d-flex d-md-none">
           <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="mailbox" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
           <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
           <ul class="dropdown-menu">

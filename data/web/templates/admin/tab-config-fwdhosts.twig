@@ -1,7 +1,12 @@
 <div role="tabpanel" class="tab-pane fade" id="tab-config-fwdhosts" role="tabpanel" aria-labelledby="tab-config-fwdhosts">
-  <div class="card">
-    <div class="card-header">{{ lang.admin.forwarding_hosts }}</div>
-    <div class="card-body">
+  <div class="card mb-4">
+    <div class="card-header d-flex">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-config-fwdhosts" data-bs-toggle="collapse" aria-controls="ollapse-tab-config-fwdhosts">
+        {{ lang.admin.forwarding_hosts }}
+      </button>
+      <span class="d-none d-md-block">{{ lang.admin.forwarding_hosts }}</span>
+    </div>
+    <div id="collapse-tab-config-fwdhosts" class="card-body collapse" data-bs-parent="#admin-content">
       <p style="margin-bottom:40px">{{ lang.admin.forwarding_hosts_hint }}</p>
       <table id="forwardinghoststable" class="table table-striped dt-responsive w-100"></table>
       <div class="mass-actions-admin">

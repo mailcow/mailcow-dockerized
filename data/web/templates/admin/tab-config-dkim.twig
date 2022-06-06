@@ -1,7 +1,12 @@
 <div role="tabpanel" class="tab-pane fade" id="tab-config-dkim" role="tabpanel" aria-labelledby="tab-config-dkim">
-  <div class="card">
-    <div class="card-header">{{ lang.admin.dkim_keys }}</div>
-    <div class="card-body">
+  <div class="card mb-4">
+    <div class="card-header d-flex">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-config-dkim" data-bs-toggle="collapse" aria-controls="ollapse-tab-config-dkim">
+        {{ lang.admin.dkim_keys }}
+      </button>
+      <span class="d-none d-md-block">{{ lang.admin.dkim_keys }}</span>
+    </div>
+    <div id="collapse-tab-config-dkim" class="card-body collapse" data-bs-parent="#admin-content">
       <div class="btn-group" data-bs-toggle="button" style="margin-bottom: 20px;">
         <a class="btn btn-sm btn-xs-third d-block d-sm-inline btn-secondary active" href="#" data-bs-toggle="collapse" data-bs-target=".dkim_key_valid">{{ lang.admin.dkim_key_valid }}</a>
         <a class="btn btn-sm btn-xs-third d-block d-sm-inline btn-secondary active" href="#" data-bs-toggle="collapse" data-bs-target=".dkim_key_unused">{{ lang.admin.dkim_key_unused }}</a>

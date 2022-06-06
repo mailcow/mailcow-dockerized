@@ -1,7 +1,12 @@
 <div role="tabpanel" class="tab-pane fade" id="Syncjobs" role="tabpanel" aria-labelledby="Syncjobs">
-  <div class="card">
-    <div class="card-header">{{ lang.user.sync_jobs }}</div>
-    <div class="card-body">
+  <div class="card mb-4">
+    <div class="card-header d-flex">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-Syncjobs" data-bs-toggle="collapse" aria-controls="collapse-tab-Syncjobs">
+        {{ lang.user.sync_jobs }}
+      </button>
+      <span class="d-none d-md-block">{{ lang.user.sync_jobs }}
+    </div>
+    <div id="collapse-tab-Syncjobs" class="card-body collapse" data-bs-parent="#user-content">
       <table id="sync_job_table" class="table table-striped dt-responsive w-100"></table>
       <div class="mass-actions-user">
         <div class="btn-group" data-acl="{{ acl.syncjobs }}">

@@ -1,7 +1,12 @@
 <div role="tabpanel" class="tab-pane fade" id="tab-config-oauth2" role="tabpanel" aria-labelledby="tab-config-oauth2">
-  <div class="card">
-    <div class="card-header">{{ lang.admin.oauth2_apps }}</div>
-    <div class="card-body">
+  <div class="card mb-4">
+    <div class="card-header d-flex">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-config-oauth2" data-bs-toggle="collapse" aria-controls="ollapse-tab-config-oauth2">
+        {{ lang.admin.oauth2_apps }}
+      </button>
+      <span class="d-none d-md-block">{{ lang.admin.oauth2_apps }}</span>
+    </div>
+    <div id="collapse-tab-config-oauth2" class="card-body collapse" data-bs-parent="#admin-content">
       <p>{{ lang.admin.oauth2_info|raw }}</p>
       <table id="oauth2clientstable" class="table table-striped dt-responsive w-100"></table>
       <div class="mass-actions-admin">

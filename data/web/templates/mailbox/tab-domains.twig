@@ -1,7 +1,11 @@
 <div role="tabpanel" class="tab-pane fade show active" id="tab-domains" role="tabpanel" aria-labelledby="tab-domains">
-  <div class="card">
+  <div class="card mb-4">
     <div class="card-header d-flex">
-      {{ lang.mailbox.domains }} <span class="badge bg-info table-lines"></span>
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-domains" data-bs-toggle="collapse" aria-controls="collapse-tab-domains">
+        {{ lang.mailbox.domains }} <span class="badge bg-info table-lines"></span>
+      </button>
+      <span class="d-none d-md-block">{{ lang.mailbox.domains }} <span class="badge bg-info table-lines"></span></span>
+
       <div class="btn-group ms-auto d-none d-sm-flex">
         {% if mailcow_cc_role == 'admin' %}
           <button class="btn btn-xs btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addDomainModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_domain }}</button>
@@ -9,7 +13,7 @@
         <button class="btn btn-xs btn-secondary refresh_table" data-draw="draw_domain_table" data-table="domain_table">{{ lang.admin.refresh }}</button>
       </div>
     </div>
-    <div class="card-body">
+    <div id="collapse-tab-domains" class="card-body collapse show" data-bs-parent="#mail-content">
       {#<div class="mass-actions-mailbox" data-actions-header="true"></div>#}
       <table id="domain_table" class="table table-striped dt-responsive w-100"></table>
       <div class="mass-actions-mailbox">

@@ -1,13 +1,17 @@
 <div role="tabpanel" class="tab-pane fade" id="tab-bcc" role="tabpanel" aria-labelledby="tab-bcc">
   <div class="card mb-4">
     <div class="card-header d-flex">
-      {{ lang.mailbox.bcc_maps }} <span class="badge bg-info table-lines"></span>
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-bcc" data-bs-toggle="collapse" aria-controls="collapse-tab-bcc">
+        {{ lang.mailbox.bcc_maps }} <span class="badge bg-info table-lines"></span>
+      </button>
+      <span class="d-none d-md-block">{{ lang.mailbox.bcc_maps }} <span class="badge bg-info table-lines"></span></span>
+
       <div class="btn-group ms-auto d-none d-sm-flex">
         <button class="btn btn-xs btn-success" href="#" data-acl="{{ acl.bcc_maps }}" data-bs-toggle="modal" data-bs-target="#addBCCModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_bcc_entry }}</button>
         <button class="btn btn-xs btn-secondary refresh_table" data-draw="draw_bcc_table" data-table="bcc_table">{{ lang.admin.refresh }}</button>
       </div>
     </div>
-    <div class="card-body">
+    <div id="collapse-tab-bcc" class="card-body collapse" data-bs-parent="#mail-content">
       <p class="text-muted">{{ lang.mailbox.bcc_info|raw }}</p>
       {#<div class="mass-actions-mailbox" data-actions-header="true"></div>#}
       <table id="bcc_table" class="table table-striped dt-responsive w-100"></table>
@@ -29,15 +33,19 @@
       </div>
     </div>
   </div>
-  <div class="card{% if mailcow_cc_role != 'admin' %} hidden{% endif %}">
+  <div class="card mb-4{% if mailcow_cc_role != 'admin' %} d-none{% endif %}">
     <div class="card-header d-flex">
-      {{ lang.mailbox.recipient_maps }} <span class="badge bg-info table-lines"></span>
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-bcc-filters" data-bs-toggle="collapse" aria-controls="collapse-tab-bcc-filters">
+        {{ lang.mailbox.recipient_maps }} <span class="badge bg-info table-lines"></span>
+      </button>
+      <span class="d-none d-md-block">{{ lang.mailbox.recipient_maps }} <span class="badge bg-info table-lines"></span></span>
+
       <div class="btn-group ms-auto d-none d-sm-flex">
         <button class="btn btn-xs btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addRecipientMapModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_recipient_map_entry }}</button>
         <button class="btn btn-xs btn-secondary refresh_table" data-draw="draw_recipient_map_table" data-table="recipient_map_table">{{ lang.admin.refresh }}</button>
       </div>
     </div>
-    <div class="card-body">
+    <div id="collapse-tab-bcc-filters" class="card-body collapse" data-bs-parent="#mail-content">
       <p class="text-muted">{{ lang.mailbox.recipient_map_info }}</p>
       {#<div class="mass-actions-mailbox" data-actions-header="true"></div>#}
       <table id="recipient_map_table" class="table table-striped dt-responsive w-100"></table>
