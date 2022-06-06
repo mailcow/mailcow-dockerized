@@ -538,12 +538,12 @@ jQuery(function($){
   }
 
   // Load only if the tab is visible
-  onVisible("[id^=SpamAliases]", () => draw_tla_table());
-  onVisible("[id^=Spamfilter]", () => { 
-    draw_wl_policy_mailbox_table();
+  onVisible("[id^=collapse-tab-SpamAliases]", () => draw_tla_table());
+  onVisible("[id^=collapse-tab-Spamfilter]", () => {
     draw_bl_policy_mailbox_table();
+    draw_wl_policy_mailbox_table()
   });
-  onVisible("[id^=Syncjobs]", () => draw_sync_job_table());
-  onVisible("[id^=AppPasswds]", () => draw_app_passwd_table());
+  onVisible("[id^=collapse-tab-Syncjobs]", () => draw_sync_job_table());
+  onVisible("[id^=collapse-tab-AppPasswds]", () => draw_app_passwd_table());
   last_logins('get');
 });

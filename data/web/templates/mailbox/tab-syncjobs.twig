@@ -1,13 +1,17 @@
 <div role="tabpanel" class="tab-pane fade" id="tab-syncjobs"  role="tabpanel" aria-labelledby="tab-syncjobs">
-  <div class="card">
+  <div class="card mb-4">
     <div class="card-header d-flex">
-      {{ lang.mailbox.sync_jobs }} <span class="badge bg-info table-lines"></span>
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-syncjobs" data-bs-toggle="collapse" aria-controls="collapse-tab-syncjobs">
+        {{ lang.mailbox.sync_jobs }} <span class="badge bg-info table-lines"></span>
+      </button>
+      <span class="d-none d-md-block">{{ lang.mailbox.sync_jobs }} <span class="badge bg-info table-lines"></span></span>
+
       <div class="btn-group ms-auto d-none d-sm-flex">
         <button data-acl="{{ acl.syncjobs }}" class="btn btn-xs btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addSyncJobModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.user.create_syncjob }}</button>
         <button class="btn btn-xs btn-secondary refresh_table" data-draw="draw_sync_job_table" data-table="sync_job_table">{{ lang.admin.refresh }}</button>
       </div>
     </div>
-    <div class="card-body">
+    <div id="collapse-tab-syncjobs" class="card-body collapse" data-bs-parent="#mail-content">
       <!-- <div class="mass-actions-mailbox" data-actions-header="true"></div> -->
       <table id="sync_job_table" class="table table-striped dt-responsive w-100"></table>
       <div class="mass-actions-mailbox">

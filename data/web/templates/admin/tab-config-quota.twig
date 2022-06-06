@@ -1,7 +1,12 @@
 <div role="tabpanel" class="tab-pane fade" id="tab-config-quota" role="tabpanel" aria-labelledby="tab-config-quota">
-  <div class="card">
-    <div class="card-header">{{ lang.admin.quota_notifications }}</div>
-    <div class="card-body">
+  <div class="card mb-4">
+    <div class="card-header d-flex">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-config-quota" data-bs-toggle="collapse" aria-controls="ollapse-tab-config-quota">
+        {{ lang.admin.quota_notifications }}
+      </button>
+      <span class="d-none d-md-block">{{ lang.admin.quota_notifications }}</span>
+    </div>
+    <div id="collapse-tab-config-quota" class="card-body collapse" data-bs-parent="#admin-content">
       <p>{{ lang.admin.quota_notifications_info }}</p>
       <form class="form" role="form" data-id="quota_notification" method="post">
         <div class="row mb-4">
@@ -26,7 +31,7 @@
             <hr />
             <div id="quota_template" class="collapse">
               <!-- <small>{{ lang.admin.quota_notifications_vars }}</small><br><br>-->
-              <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code collapse in" rows="20" name="html_tmpl">{{ qn_data.html_tmpl|raw }}</textarea>
+              <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code" rows="20" name="html_tmpl">{{ qn_data.html_tmpl|raw }}</textarea>
             </div>
           </div>
         </div>

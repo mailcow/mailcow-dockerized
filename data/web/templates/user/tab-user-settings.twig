@@ -1,7 +1,12 @@
 <div role="tabpanel" class="tab-pane fade" id="tab-user-settings" role="tabpanel" aria-labelledby="tab-user-settings">
-  <div class="card">
-    <div class="card-header">{{ lang.user.mailbox_settings }}</div>
-    <div class="card-body">
+  <div class="card mb-4">
+    <div class="card-header d-flex">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-user-settings" data-bs-toggle="collapse" aria-controls="collapse-tab-user-settings">
+        {{ lang.user.mailbox_settings }}
+      </button>
+      <span class="d-none d-md-block">{{ lang.user.mailbox_settings }}
+    </div>
+    <div id="collapse-tab-user-settings" class="card-body collapse" data-bs-parent="#user-content">
       {# Show tagging options #}
       <div class="row">
         <div class="col-sm-3 col-12 text-sm-end text-start text-xs-bold mb-4">{{ lang.user.tag_handling }}:</div>

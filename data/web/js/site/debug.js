@@ -75,6 +75,7 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       language: lang_datatables,
+      order: [[0, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/autodiscover/100",
@@ -115,6 +116,7 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       language: lang_datatables,
+      order: [[0, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/postfix",
@@ -147,6 +149,7 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       language: lang_datatables,
+      order: [[0, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/watchdog",
@@ -183,6 +186,7 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       language: lang_datatables,
+      order: [[0, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/api",
@@ -223,6 +227,7 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       language: lang_datatables,
+      order: [[0, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/ratelimited",
@@ -295,6 +300,7 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       language: lang_datatables,
+      order: [[0, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/ui",
@@ -347,6 +353,7 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       language: lang_datatables,
+      order: [[0, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/sasl",
@@ -383,6 +390,7 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       language: lang_datatables,
+      order: [[0, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/acme",
@@ -411,6 +419,7 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       language: lang_datatables,
+      order: [[0, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/netfilter",
@@ -443,6 +452,7 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       language: lang_datatables,
+      order: [[0, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/sogo",
@@ -475,6 +485,7 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       language: lang_datatables,
+      order: [[0, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/dovecot",
@@ -507,11 +518,13 @@ jQuery(function($){
       url: '/api/v1/get/rspamd/actions',
       async: true,
       success: function(data){
+        console.log(data);
 
         var total = 0;
         $(data).map(function(){total += this[1];});
         var labels = $.makeArray($(data).map(function(){return this[0] + ' ' + Math.round(this[1]/total * 100) + '%';}));
         var values = $.makeArray($(data).map(function(){return this[1];}));
+        console.log(values);
 
         var graphdata = {
           labels: labels,
@@ -540,7 +553,7 @@ jQuery(function($){
           }
         };
         var chartcanvas = document.getElementById('rspamd_donut');
-        Chart.plugins.register('ChartDataLabels');
+        Chart.register('ChartDataLabels');
         if(typeof chart == 'undefined') {
           chart = new Chart(chartcanvas.getContext("2d"), {
             plugins: [ChartDataLabels],
@@ -859,12 +872,8 @@ jQuery(function($){
   onVisible("[id^=tab-ui]", () => draw_ui_logs());
   onVisible("[id^=tab-sasl]", () => draw_sasl_logs());
   onVisible("[id^=tab-netfilter-logs]", () => draw_netfilter_logs());
-  onVisible("[id^=tab-rspamd-history]", () => draw_rspamd_history());
-
-  $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
-    var target = $(e.target).attr("href");
-    if (target == '#tab-rspamd-history') {
-      rspamd_pie_graph();
-    }
+  onVisible("[id^=tab-rspamd-history]", () => {
+    rspamd_pie_graph();
+    draw_rspamd_history()
   });
 });

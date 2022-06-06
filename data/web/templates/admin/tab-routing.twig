@@ -1,7 +1,12 @@
 <div role="tabpanel" class="tab-pane fade" id="tab-routing" role="tabpanel" aria-labelledby="tab-routing">
   <div class="card mb-4">
-    <div class="card-header">{{ lang.admin.relayhosts }}</div>
-    <div class="card-body">
+    <div class="card-header d-flex">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-routing" data-bs-toggle="collapse" aria-controls="ollapse-tab-routing">
+        {{ lang.admin.relayhosts }}
+      </button>
+      <span class="d-none d-md-block">{{ lang.admin.relayhosts }}</span>
+    </div>
+    <div id="collapse-tab-routing" class="card-body collapse" data-bs-parent="#admin-content">
       <p style="margin-bottom:40px">{{ lang.admin.relayhosts_hint|raw }}</p>
       <table id="relayhoststable" class="table table-striped dt-responsive w-100"></table>
       <div class="mass-actions-admin">
@@ -41,8 +46,13 @@
   </div>
 
   <div class="card mb-4">
-    <div class="card-header">{{ lang.admin.transport_maps }}</div>
-    <div class="card-body">
+    <div class="card-header d-flex">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-maps" data-bs-toggle="collapse" aria-controls="ollapse-tab-maps">
+        {{ lang.admin.transport_maps }}
+      </button>
+      <span class="d-none d-md-block">{{ lang.admin.transport_maps }}</span>
+    </div>
+    <div id="collapse-tab-maps" class="card-body collapse" data-bs-parent="#admin-content">
       <p style="margin-bottom:40px">{{ lang.admin.transports_hint|raw }}</p>
       <table class="table table-striped table-condensed" id="transportstable"></table>
       <div class="mass-actions-admin">

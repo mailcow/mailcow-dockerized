@@ -1,7 +1,12 @@
 <div role="tabpanel" class="tab-pane fade" id="tab-config-quarantine" role="tabpanel" aria-labelledby="tab-config-quarantine">
-  <div class="card">
-    <div class="card-header">{{ lang.admin.quarantine }}</div>
-    <div class="card-body">
+  <div class="card mb-4">
+    <div class="card-header d-flex">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-config-quarantine" data-bs-toggle="collapse" aria-controls="ollapse-tab-config-quarantine">
+        {{ lang.admin.quarantine }}
+      </button>
+      <span class="d-none d-md-block">{{ lang.admin.quarantine }}</span>
+    </div>
+    <div id="collapse-tab-config-quarantine" class="card-body collapse" data-bs-parent="#admin-content">
       {% if not q_data.retention_size or not q_data.max_size %}
       <div class="alert alert-info">{{ lang.quarantine.disabled_by_config }}</div>
       {% endif %}

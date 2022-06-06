@@ -1,9 +1,12 @@
 <div role="tabpanel" class="tab-pane fade" id="tab-globalfilter-regex" role="tabpanel" aria-labelledby="tab-globalfilter-regex">
-  <div class="card">
-    <div class="card-header">
-      {{ lang.admin.rspamd_global_filters }}
+  <div class="card mb-4">
+    <div class="card-header d-flex">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-config-regex" data-bs-toggle="collapse" aria-controls="ollapse-tab-config-regex">
+        {{ lang.admin.rspamd_global_filters }}
+      </button>
+      <span class="d-none d-md-block">{{ lang.admin.rspamd_global_filters }}</span>
     </div>
-    <div class="card-body">
+    <div id="collapse-tab-config-regex" class="card-body collapse" data-bs-parent="#admin-content">
       <p>{{ lang.admin.rspamd_global_filters_info }}</p>
       <div id="confirm_show_rspamd_global_filters"{% if show_rspamd_global_filters %} class="d-none"{% endif %}>
         <div class="row">
@@ -36,8 +39,10 @@
           </div>
           <div class="row">
             <div class="offset-sm-3 col-sm-9">
-              <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary validate_rspamd_regex" data-regex-map="{{ rspamd_regex_map.map }}" href="#">{{ lang.add.validate }}</button>
-              <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success submit_rspamd_regex" data-action="edit_selected" data-id="{{ rspamd_regex_map.map }}" data-item="{{ rspamd_regex_map.map }}" data-api-url='edit/rspamd-map' data-api-attr='{}' href="#" disabled>{{ lang.edit.save }}</button>
+              <div class="btn-group">
+                <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary validate_rspamd_regex" data-regex-map="{{ rspamd_regex_map.map }}" href="#">{{ lang.add.validate }}</button>
+                <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success submit_rspamd_regex" data-action="edit_selected" data-id="{{ rspamd_regex_map.map }}" data-item="{{ rspamd_regex_map.map }}" data-api-url='edit/rspamd-map' data-api-attr='{}' href="#" disabled>{{ lang.edit.save }}</button>
+              </div>
             </div>
           </div>
         </form>

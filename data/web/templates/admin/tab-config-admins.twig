@@ -1,9 +1,14 @@
 <div role="tabpanel" class="tab-pane fade show active" id="tab-config-admins" role="tabpanel" aria-labelledby="tab-config-admins">
     <div class="card mb-4">
-      <div class="card-header bg-danger text-white">{{ lang.admin.admin_details }}</div>
-      <div class="card-body">
+      <div class="card-header bg-danger text-white d-flex">
+        <button class="btn d-md-none text-white flex-grow-1 text-start" data-bs-target="#collapse-tab-config-admins" data-bs-toggle="collapse" aria-controls="ollapse-tab-config-admins">
+          {{ lang.admin.admin_details }}
+        </button>
+        <span class="d-none d-md-block">{{ lang.admin.admin_details }}</span>
+      </div>
+      <div id="collapse-tab-config-admins" class="card-body collapse show" data-bs-parent="#admin-content">
         <table id="adminstable" class="table table-striped dt-responsive w-100"></table>
-        <div class="mass-actions-admin">
+        <div class="mass-actions-admin mb-4">
           <div class="btn-group">
             <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="admins" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
             <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
@@ -32,7 +37,7 @@
             <br>
           </div>
         </div>
-        <div class="row">
+        <div class="row mb-3">
           <div class="col-sm-3 col-5 text-end">{{ lang.tfa.set_tfa }}:</div>
           <div class="col-sm-9 col-7">
             <select data-style="btn btn-sm dropdown-toggle bs-placeholder btn-secondary" data-width="fit" id="selectTFA" class="selectpicker" title="{{ lang.tfa.select }}">
@@ -48,7 +53,7 @@
         <legend style="margin-top:20px">
           <i class="bi bi-shield-fill-check"></i>
           {{ lang.fido2.fido2_auth }}</legend><hr />
-        <div class="row">
+        <div class="row mb-3">
           <div class="col-sm-3 col-12 text-sm-end text-start mb-4">{{ lang.fido2.known_ids }}:</div>
           <div class="col-sm-9 col-12">
             <div class="table-responsive">
@@ -75,8 +80,8 @@
             </div>
           </div>
         </div>
-        <br>
-        <div class="row" id="status-fido2">
+
+        <div class="row mb-3" id="status-fido2">
           <div class="col-sm-3 col-5 text-end">{{ lang.fido2.register_status }}:</div>
           <div class="col-sm-9 col-7">
             <div id="fido2-alerts">-</div>
@@ -88,7 +93,7 @@
           <i style="font-size:10pt;" class="bi bi-plus-square"></i> {{ lang.admin.guid_and_license }}
         </legend>
         <hr />
-        <div id="license" class="collapse">
+        <div id="license" class="collapse mb-5">
           <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
             <div class="row">
               <label class="control-label col-sm-3" for="guid">{{ lang.admin.guid }}:</label>
@@ -127,7 +132,7 @@
               <p class="text-muted">{{ lang.admin.api_info|raw }}</p>
             </div>
             <div class="col-lg-6">
-              <div class="card">
+              <div class="card mb-3">
                 <div class="card-header">
                   <h4 class="card-title"><i class="bi bi-file-earmark-arrow-down"></i> {{ lang.admin.api_read_only }}</h4>
                 </div>
@@ -172,7 +177,7 @@
               </div>
             </div>
             <div class="col-lg-6">
-              <div class="card">
+              <div class="card mb-3">
                 <div class="card-header">
                   <h4 class="card-title"><i class="bi bi-file-earmark-diff"></i> {{ lang.admin.api_read_write }}</h4>
                 </div>
@@ -222,8 +227,13 @@
     </div>
 
   <div class="card mb-4">
-    <div class="card-header">{{ lang.admin.domain_admins }}</div>
-    <div class="card-body">
+    <div class="card-header d-flex">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-config-dadmins" data-bs-toggle="collapse" aria-controls="ollapse-tab-config-dadmins">
+        {{ lang.admin.domain_admins }}
+      </button>
+      <span class="d-none d-md-block">{{ lang.admin.domain_admins }}</span>
+    </div>
+    <div id="collapse-tab-config-dadmins" class="card-body collapse" data-bs-parent="#admin-content">
       <table id="domainadminstable" class="table table-striped dt-responsive w-100"></table>
       <div class="mass-actions-admin">
         <div class="btn-group">

@@ -1,11 +1,14 @@
 <div role="tabpanel" class="tab-pane fade" id="AppPasswds" role="tabpanel" aria-labelledby="AppPasswds">
-  <div class="card">
-    <div class="card-header">{{ lang.user.app_passwds }}</div>
-    <div class="card-body">
+  <div class="card mb-4">
+    <div class="card-header d-flex">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-AppPasswds" data-bs-toggle="collapse" aria-controls="collapse-tab-AppPasswds">
+        {{ lang.user.app_passwds }}
+      </button>
+      <span class="d-none d-md-block">{{ lang.user.app_passwds }}
+    </div>
+    <div id="collapse-tab-AppPasswds" class="card-body collapse" data-bs-parent="#user-content">
       <p>{{ lang.user.app_hint|raw }}</p>
-      <div class="table-responsive">
-        <table class="table table-striped" id="app_passwd_table"></table>
-      </div>
+      <table id="app_passwd_table" class="table table-striped dt-responsive w-100"></table>
       <div class="mass-actions-user">
         <div class="btn-group" data-acl="{{ acl.app_passwds }}">
           <div class="btn-group">

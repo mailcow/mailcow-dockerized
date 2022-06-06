@@ -1,0 +1,203 @@
+.btn-xs-lg>.lang-sm:after {
+  margin-left: 4px;
+}
+
+.bootstrap-select {
+  max-width: 350px;
+}
+
+.card-login .apps .btn {
+  width: auto;
+  float: left;
+  margin-right: 10px;
+  margin-top: auto;
+}
+.card-login .apps .btn:hover {
+  margin-top: 1px !important;
+  border-bottom-width: 3px;
+}
+
+.responsive-tabs .nav-tabs {
+  display: none;
+}
+
+.dataTables_paginate.paging_simple_numbers .pagination {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+@media (min-width: 768px) {
+  .responsive-tabs .nav-tabs {
+      display: flex;
+  }
+
+  .responsive-tabs .card .card-body.collapse {
+      display: block;
+  }
+}
+
+
+@media (max-width: 767px) {
+  .responsive-tabs .tab-pane {
+      display: block !important;
+      opacity: 1;
+  }
+
+  .card-login .apps .btn {
+    width: 100%;
+    float: none;
+    margin-bottom: 10px;
+  }
+
+  .card-login .apps .btn {
+    border-bottom-width: 4px;
+  }
+
+  .xs-show {
+    display: block !important;
+  }
+
+  .recent-login-success {
+    font-size: 14px;
+    margin-top: 10px !important;
+  }
+  .pull-xs-right {
+  float: right !important;
+  }
+  .pull-xs-right .dropdown-menu {
+    right: 0;
+    left: auto;
+  }
+  .text-xs-left {
+    text-align: left;
+  }
+  .text-xs-bold {
+    font-weight: bold;
+  }
+  .text-xs-bold .small {
+    font-weight: normal;
+    text-align: justify;
+  }
+  .btn.d-block {
+    width: 100%;
+    white-space: normal;
+  }
+  .btn.btn-xs-half,
+  .btn.d-block.btn-xs-half {
+    width: 50%;
+  }
+  .btn.btn-xs-third,
+  .btn.d-block.btn-xs-third {
+    width: 33.33%;
+  }
+  .btn.btn-xs-quart,
+  .btn.d-block.btn-xs-quart {
+    width: 25%;
+  }
+  .btn.d-block.btn-sm,
+  .btn-xs-lg {
+    padding: .5rem 1rem;
+    line-height: 20px;
+  }
+  .input-xs-lg {
+    height: 47px;
+    padding: 13px 16px;
+  }
+  .btn-group:not(.input-group-btn) {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .btn-group.nowrap {
+    flex-wrap: nowrap;
+  }
+  .btn-group.nowrap .dropdown-menu {
+    width: 100%;
+  }
+  .card-login .btn-group {
+    display: block;
+  }
+  .mass-actions-user .btn-group {
+    float: none;
+  }
+  div[class^='mass-actions'] .dropdown-menu,
+  .card-xs-lg .dropdown-menu,
+  .dropdown-menu.login {
+    width: 100%;
+  }
+  div[class^='mass-actions'] .btn-group .dropdown-menu {
+    top: 50%;
+  }
+  div[class^='mass-actions'] .btn-group .btn-group .dropdown-menu,
+  div.mass-actions-quarantine .btn-group .dropdown-menu,
+  .card-xs-lg .dropdown-menu {
+    top: 100%;
+  }
+  div[class^='mass-actions'] .dropdown-menu>li>a,
+  .card-xs-lg .dropdown-menu>li>a,
+  .dropdown-menu.login>li>a {
+    padding: 8px 20px;
+  }
+  div[class^='mass-actions'] .dropdown-header {
+    font-size: 14px;
+    font-weight: bold;
+  }
+  .top100 {
+    top: 100% !important;
+  }
+  .top33 {
+    top: 33% !important;
+  }
+  .footable-filtering .form {
+    width: 65%;
+  }
+  .btn-xs-lg>.lang-sm:after {
+    top: 1px;
+  }
+  .pagination {
+    margin-bottom: 5px;
+  }
+  .mass-actions-mailbox {
+    padding: 0;
+  }
+  .card-xs-lg .card-header {
+    height: 66px;
+    line-height: 47px;
+  }
+  .card-xs-lg .btn-group .btn {
+    padding-right: 5px;
+    padding-left: 5px;
+  }
+  .bootstrap-select:not([class*=col-]):not([class*=form-control]):not(.input-group-btn) {
+    width: 100%;
+  }
+  .btn-group:not(.bootstrap-select) {
+    width: auto !important;
+  }
+  .bootstrap-select {
+    max-width: 100%;
+  }
+  .bootstrap-select.btn-group.show-tick .dropdown-menu li a span.text {
+    margin-right: 14px;
+    white-space: normal;
+  }
+  .btn-group > .btn-group {
+    flex-basis: 100%;
+  }
+  .btn-group .btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn-group .btn i {
+    margin-right: 5px;
+  }
+  .card-login .btn-group .btn {
+    display: block !important;
+  }
+}
+
+@media (max-width: 350px) {
+  .mailcow-logo img {
+    max-width: 250px;
+  }
+}

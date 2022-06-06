@@ -1,12 +1,15 @@
 <div role="tabpanel" class="tab-pane fade" id="tab-mailq" role="tabpanel" aria-labelledby="tab-mailq">
-  <div class="card">
+  <div class="card mb-4">
     <div class="card-header d-flex">
-      {{ lang.admin.queue_manager }} <span class="badge bg-info table-lines"></span>
+      <button class="btn d-md-none flex-grow-1 text-start me-2" data-bs-target="#collapse-tab-mailq" data-bs-toggle="collapse" aria-controls="ollapse-tab-mailq">
+        {{ lang.admin.queue_manager }} <span class="badge bg-info table-lines"></span>
+      </button>
+      <span class="d-none d-md-block">{{ lang.admin.queue_manager }} <span class="badge bg-info table-lines"></span></span>
       <div class="btn-group ms-auto">
         <button class="btn btn-xs btn-secondary refresh_table" data-draw="draw_queue" data-table="queuetable">{{ lang.admin.refresh }}</button>
       </div>
     </div>
-    <div class="card-body">
+    <div id="collapse-tab-mailq" class="card-body collapse" data-bs-parent="#admin-content">
       <table id="queuetable" class="table table-striped dt-responsive w-100"></table>
       <div class="mass-actions-admin">
         <div class="btn-group">

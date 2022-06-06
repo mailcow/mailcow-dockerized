@@ -84,11 +84,13 @@
           <div class="card-body">
             <ul class="list-group">
               {% for container, container_info in containers %}
-                <li class="list-group-item">
-                  {{ container }} ({{ container_info.Config.Image }})
-                  <br class="d-block d-sm-none" />
-                  <small>({{ lang.debug.started_on }} <span class="parse_date">{{ container_info.State.StartedAtHR }}</span>)</small>
-                  <a href data-bs-toggle="modal" data-container="{{ container }}" data-bs-target="#RestartContainer" class="ms-auto btn btn-xs btn-secondary">{{ lang.debug.restart_container }}
+                <li class="list-group-item d-flex">
+                  <div>
+                    <span>{{ container }}</span>
+                    <span class="d-block d-md-inline">({{ container_info.Config.Image }})</span>
+                    <small class="d-block">({{ lang.debug.started_on }} <span class="parse_date">{{ container_info.State.StartedAtHR }}</span>)</small>
+                  </div>
+                  <a href data-bs-toggle="modal" data-container="{{ container }}" data-bs-target="#RestartContainer" class="ms-auto btn btn-xs btn-secondary d-flex align-items-center">{{ lang.debug.restart_container }}
                     <i class="ms-auto bi
                     {% if container_info.State.Running == 1 %}
                     bi-record-fill text-success
@@ -108,7 +110,7 @@
 
       <div role="tabpanel" class="tab-pane" id="tab-postfix-logs">
         <div class="card panel-xs-lg">
-          <div class="card-header d-flex">Postfix <span class="badge bg-info table-lines"></span>
+          <div class="card-header d-flex">Postfix
             <div class="btn-group ms-auto">
               <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="general_syslog" data-table="postfix_log" data-log-url="postfix" data-nrows="100">+ 100</button>
               <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="general_syslog" data-table="postfix_log" data-log-url="postfix" data-nrows="1000">+ 1000</button>
@@ -123,7 +125,7 @@
 
       <div role="tabpanel" class="tab-pane" id="tab-ui">
         <div class="card panel-xs-lg">
-          <div class="card-header d-flex"> Mailcow UI <span class="badge bg-info table-lines"></span>
+          <div class="card-header d-flex"> Mailcow UI
             <div class="btn-group ms-auto">
               <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="mailcow_ui" data-table="ui_logs" data-log-url="ui" data-nrows="1000">+ 1000</button>
               <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="mailcow_ui" data-table="ui_logs" data-log-url="ui" data-nrows="10000">+ 10000</button>
@@ -138,7 +140,7 @@
 
       <div role="tabpanel" class="tab-pane" id="tab-sasl">
         <div class="card panel-xs-lg">
-          <div class="card-header d-flex">SASL <span class="badge bg-info table-lines"></span>
+          <div class="card-header d-flex">SASL
             <div class="btn-group ms-auto">
               <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="sasl_log_table" data-table="sasl_logs" data-log-url="ui" data-nrows="1000">+ 1000</button>
               <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="sasl_log_table" data-table="sasl_logs" data-log-url="ui" data-nrows="10000">+ 10000</button>
@@ -153,7 +155,7 @@
 
       <div role="tabpanel" class="tab-pane" id="tab-dovecot-logs">
         <div class="card panel-xs-lg">
-          <div class="card-header d-flex">Dovecot <span class="badge bg-info table-lines"></span>
+          <div class="card-header d-flex">Dovecot
             <div class="btn-group ms-auto">
               <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="general_syslog" data-table="dovecot_log" data-log-url="dovecot" data-nrows="100">+ 100</button>
               <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="general_syslog" data-table="dovecot_log" data-log-url="dovecot" data-nrows="1000">+ 1000</button>
@@ -168,7 +170,7 @@
 
       <div role="tabpanel" class="tab-pane" id="tab-sogo-logs">
         <div class="card panel-xs-lg">
-          <div class="card-header d-flex">SOGo <span class="badge bg-info table-lines"></span>
+          <div class="card-header d-flex">SOGo
             <div class="btn-group ms-auto">
               <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="general_syslog" data-table="sogo_log" data-log-url="sogo" data-nrows="100">+ 100</button>
               <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="general_syslog" data-table="sogo_log" data-log-url="sogo" data-nrows="1000">+ 1000</button>
@@ -183,7 +185,7 @@
 
       <div role="tabpanel" class="tab-pane" id="tab-netfilter-logs">
         <div class="card panel-xs-lg">
-          <div class="card-header d-flex">Netfilter <span class="badge bg-info table-lines"></span>
+          <div class="card-header d-flex">Netfilter
             <div class="btn-group ms-auto">
               <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="general_syslog" data-table="netfilter_log" data-log-url="netfilter" data-nrows="100">+ 100</button>
               <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="general_syslog" data-table="netfilter_log" data-log-url="netfilter" data-nrows="1000">+ 1000</button>
@@ -198,7 +200,7 @@
 
       <div role="tabpanel" class="tab-pane" id="tab-rspamd-history">
         <div class="card panel-xs-lg">
-          <div class="card-header d-flex">Rspamd history <span class="badge bg-info table-lines"></span>
+          <div class="card-header d-flex">Rspamd history
             <div class="btn-group ms-auto">
               <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="rspamd_history" data-table="rspamd_history" data-log-url="rspamd-history" data-nrows="100">+ 100</button>
               <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="rspamd_history" data-table="rspamd_history" data-log-url="rspamd-history" data-nrows="1000">+ 1000</button>
@@ -218,7 +220,7 @@
 
       <div role="tabpanel" class="tab-pane" id="tab-autodiscover-logs">
         <div class="card panel-xs-lg">
-          <div class="card-header d-flex">Autodiscover <span class="badge bg-info table-lines"></span>
+          <div class="card-header d-flex">Autodiscover
             <div class="btn-group ms-auto">
               <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="autodiscover_log" data-table="autodiscover_log" data-log-url="autodiscover" data-nrows="100">+ 100</button>
               <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="autodiscover_log" data-table="autodiscover_log" data-log-url="autodiscover" data-nrows="1000">+ 1000</button>
@@ -233,7 +235,7 @@
 
       <div role="tabpanel" class="tab-pane" id="tab-watchdog-logs">
         <div class="card panel-xs-lg">
-          <div class="card-header d-flex">Watchdog <span class="badge bg-info table-lines"></span>
+          <div class="card-header d-flex">Watchdog
             <div class="btn-group ms-auto">
               <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="watchdog" data-table="watchdog_log" data-log-url="watchdog" data-nrows="100">+ 100</button>
               <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="watchdog" data-table="watchdog_log" data-log-url="watchdog" data-nrows="1000">+ 1000</button>
@@ -248,7 +250,7 @@
 
       <div role="tabpanel" class="tab-pane" id="tab-acme-logs">
         <div class="card panel-xs-lg">
-          <div class="card-header d-flex">ACME <span class="badge bg-info table-lines"></span>
+          <div class="card-header d-flex">ACME
             <div class="btn-group ms-auto">
               <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="general_syslog" data-table="acme_log" data-log-url="acme" data-nrows="100">+ 100</button>
               <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="general_syslog" data-table="acme_log" data-log-url="acme" data-nrows="1000">+ 1000</button>
@@ -263,7 +265,7 @@
 
       <div role="tabpanel" class="tab-pane" id="tab-api-logs">
         <div class="card panel-xs-lg">
-          <div class="card-header d-flex">API <span class="badge bg-info table-lines"></span>
+          <div class="card-header d-flex">API
             <div class="btn-group ms-auto">
               <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="apilog" data-table="api_log" data-log-url="api" data-nrows="100">+ 100</button>
               <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="apilog" data-table="api_log" data-log-url="api" data-nrows="1000">+ 1000</button>
@@ -278,7 +280,7 @@
 
       <div role="tabpanel" class="tab-pane" id="tab-api-rl">
         <div class="card panel-xs-lg">
-          <div class="card-header d-flex">Ratelimits <span class="badge bg-info table-lines"></span>
+          <div class="card-header d-flex">Ratelimits
             <div class="btn-group ms-auto">
               <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="rllog" data-table="rl_log" data-log-url="ratelimited" data-nrows="100">+ 100</button>
               <button class="btn btn-xs btn-xs-lg btn-secondary add_log_lines" data-post-process="rllog" data-table="rl_log" data-log-url="ratelimited" data-nrows="1000">+ 1000</button>
@@ -288,7 +290,6 @@
           <div class="card-body">
             <p class="text-muted">{{ lang.admin.hash_remove_info }}</p>
             <table id="rl_log" class="table table-striped dt-responsive w-100"></table>
-            <div class="table-responsive">
           </div>
         </div>
       </div>

@@ -1,7 +1,12 @@
 <div role="tabpanel" class="tab-pane fade" id="SpamAliases" role="tabpanel" aria-labelledby="SpamAliases">
-  <div class="card">
-    <div class="card-header">{{ lang.user.spam_aliases }}</div>
-    <div class="card-body">
+  <div class="card mb-4">
+    <div class="card-header d-flex">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-SpamAliases" data-bs-toggle="collapse" aria-controls="collapse-tab-SpamAliases">
+        {{ lang.user.spam_aliases }}
+      </button>
+      <span class="d-none d-md-block">{{ lang.user.spam_aliases }}
+    </div>
+    <div id="collapse-tab-SpamAliases" class="card-body collapse" data-bs-parent="#user-content">
       <div class="row">
         <div class="col-md-12 col-sm-12 col-12">
           <table id="tla_table" class="table table-striped dt-responsive w-100"></table>

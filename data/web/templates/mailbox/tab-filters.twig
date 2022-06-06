@@ -1,13 +1,17 @@
 <div role="tabpanel" class="tab-pane fade" id="tab-filters" role="tabpanel" aria-labelledby="tab-filters">
-  <div class="card">
+  <div class="card mb-4">
     <div class="card-header d-flex">
-      {{ lang.mailbox.filters }} <span class="badge bg-info table-lines"></span>
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-filters" data-bs-toggle="collapse" aria-controls="collapse-tab-filters">
+        {{ lang.mailbox.filters }} <span class="badge bg-info table-lines"></span>
+      </button>
+      <span class="d-none d-md-block">{{ lang.mailbox.filters }} <span class="badge bg-info table-lines"></span></span>
+
       <div class="btn-group ms-auto d-none d-sm-flex">
         <button class="btn btn-xs btn-success" href="#" data-acl="{{ acl.filters }}" data-bs-toggle="modal" data-bs-target="#addFilterModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_filter }}</button>
         <button class="btn btn-xs btn-secondary refresh_table" data-draw="draw_filter_table" data-table="filter_table">{{ lang.admin.refresh }}</button>
       </div>
     </div>
-    <div class="card-body">
+    <div id="collapse-tab-filters" class="card-body collapse" data-bs-parent="#mail-content">
       <p class="text-muted">{{ lang.mailbox.sieve_info|raw }}</p><br>
       {#<div class="mass-actions-mailbox" data-actions-header="true"></div>#}
       <table id="filter_table" class="table table-striped dt-responsive w-100"></table>
