@@ -61,18 +61,38 @@ $(document).ready(function() {
   // remember last navigation pill
   (function () {
     'use strict';
-    if ($('button[data-bs-toggle="tab"]').length) {
-      $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+      // remember desktop tabs
+      $('button[data-bs-toggle="tab"]').on('click', function (e) {
         if ($(this).data('dont-remember') == 1) {
           return true;
         }
-        var id = $(this).parents('[role="tablist"]').attr('id');
+        var id = $(this).attr('id');
         var key = 'lastTag';
         if (id) {
           key += ':' + id;
         }
-        localStorage.setItem(key, $(e.target).attr('data-bs-target').substring(1));
+
+        var tab_id = $(e.target).attr('data-bs-target').substring(1);
+        localStorage.setItem(key, tab_id);
       });
+      // remember mobile tabs
+      $('button[data-bs-target^="#collapse-tab-"]').on('click', function (e) {
+        // only remember tab if its being opened
+        if ($(this).hasClass('collapsed')) return false;
+        var tab_id = $(this).closest('div[role="tabpanel"]').attr('id');
+
+        if ($(this).data('dont-remember') == 1) {
+          return true;
+        }
+        var id = $(this).attr('id');
+        var key = 'lastTag';
+        if (id) {
+          key += ':' + id;
+        }
+
+        localStorage.setItem(key, tab_id);
+      });
+      // open last tab
       $('[role="tablist"]').each(function (idx, elem) {
         var id = $(elem).attr('id');
         var key = 'lastTag';
@@ -81,10 +101,11 @@ $(document).ready(function() {
         }
         var lastTab = localStorage.getItem(key);
         if (lastTab) {
-          $("[id^=" + lastTab + "]").show();
+          $('[data-bs-target="#' + lastTab + '"]').click();
+          var tab = $('[id^="' + lastTab + '"]');
+          $(tab).find('.card-body.collapse').collapse('show');
         }
       });
-    }
   })();
 
   // IE fix to hide scrollbars when table body is empty
