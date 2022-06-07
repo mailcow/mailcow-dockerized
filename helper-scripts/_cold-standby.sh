@@ -90,7 +90,7 @@ function preflight_local_checks() {
     echo -e "\e[32mFound Compose v2 on local machine!\e[0m"
   elif docker-compose version --short | grep -m1 "^2" > /dev/null 2>&1; then
   echo -e "\e[32mFound Compose v2!\e[0m"
-  COMPOSE_COMMAND="docker compose"  
+  COMPOSE_COMMAND="docker-compose"  
   elif docker-compose version --short | grep -m1 "^1" > /dev/null 2>&1; then
     echo -e "\e[33mWARN: Your machine is using Docker-Compose v1!\e[0m"
     echo -e "\e[33mmailcow will drop the Docker-Compose v1 Support in December 2022\e[0m"
@@ -150,6 +150,13 @@ function preflight_remote_checks() {
      -t 'docker compose' >/dev/null 2>&1; then
     echo -e "\e[32mFound Compose v2 on remote!\e[0m"
     COMPOSE_COMMAND="docker compose"
+  elif ssh -q -o StrictHostKeyChecking=no \
+      -i "${REMOTE_SSH_KEY}" \
+      ${REMOTE_SSH_HOST} \
+      -p ${REMOTE_SSH_PORT} \
+      -t 'docker-compose version --short' | grep -m1 "^2" > /dev/null 2>&1; then
+    echo -e "\e[32mFound Compose v2!\e[0m"
+    COMPOSE_COMMAND="docker-compose"
   elif ssh -q -o StrictHostKeyChecking=no \
       -i "${REMOTE_SSH_KEY}" \
       ${REMOTE_SSH_HOST} \
