@@ -421,7 +421,7 @@ if (isset($_GET['query'])) {
           // }
           $ids = NULL;
 
-          $getArgs = $WebAuthn->getGetArgs($ids, 30, true, true, true, true, $GLOBALS['FIDO2_UV_FLAG_LOGIN']);
+          $getArgs = $WebAuthn->getGetArgs($ids, 30, false, false, false, false, $GLOBALS['FIDO2_UV_FLAG_LOGIN']);
           print(json_encode($getArgs));
           $_SESSION['challenge'] = $WebAuthn->getChallenge();
           return;
@@ -469,7 +469,7 @@ if (isset($_GET['query'])) {
             $cids[] = base64_decode($row['keyHandle']);
           }
 
-          $getArgs = $WebAuthn->getGetArgs($cids, 30, true, true, true, true, $GLOBALS['WEBAUTHN_UV_FLAG_LOGIN']);
+          $getArgs = $WebAuthn->getGetArgs($cids, 30, false, false, false, false, $GLOBALS['WEBAUTHN_UV_FLAG_LOGIN']);
           $getArgs->publicKey->extensions = array('appid' => "https://".$getArgs->publicKey->rpId);
           print(json_encode($getArgs));
           $_SESSION['challenge'] = $WebAuthn->getChallenge();
