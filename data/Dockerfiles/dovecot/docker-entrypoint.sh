@@ -266,13 +266,13 @@ rm -rf /var/vmail/mailcow.local/*
 # create sni configuration
 echo "" > /etc/dovecot/sni.conf
 for cert_dir in /etc/ssl/mail/*/ ; do
-  if [[ ! -f ${cert_dir}domains ]] || [[ ! -f ${cert_dir}cert.pem ]] || [[ ! -f ${cert_dir}key.pem ]]; then
+  if [[ ! -f ${cert_dir}domains ]] || [[ ! -f ${cert_dir}fullchain.pem ]] || [[ ! -f ${cert_dir}key.pem ]]; then
     continue
   fi
   domains=($(cat ${cert_dir}domains))
   for domain in ${domains[@]}; do
     echo 'local_name '${domain}' {' >> /etc/dovecot/sni.conf;
-    echo '  ssl_cert = <'${cert_dir}'cert.pem' >> /etc/dovecot/sni.conf;
+    echo '  ssl_cert = <'${cert_dir}'fullchain.pem' >> /etc/dovecot/sni.conf;
     echo '  ssl_key = <'${cert_dir}'key.pem' >> /etc/dovecot/sni.conf;
     echo '}' >> /etc/dovecot/sni.conf;
   done

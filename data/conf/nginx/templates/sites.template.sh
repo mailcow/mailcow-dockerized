@@ -4,7 +4,7 @@ server {
   include /etc/nginx/conf.d/listen_plain.active;
   include /etc/nginx/conf.d/listen_ssl.active;
 
-  ssl_certificate /etc/ssl/mail/cert.pem;
+  ssl_certificate /etc/ssl/mail/fullchain.pem;
   ssl_certificate_key /etc/ssl/mail/key.pem;
 
   include /etc/nginx/conf.d/server_name.active;
@@ -13,7 +13,7 @@ server {
 }
 ';
 for cert_dir in /etc/ssl/mail/*/ ; do
-  if [[ ! -f ${cert_dir}domains ]] || [[ ! -f ${cert_dir}cert.pem ]] || [[ ! -f ${cert_dir}key.pem ]]; then
+  if [[ ! -f ${cert_dir}domains ]] || [[ ! -f ${cert_dir}fullchain.pem ]] || [[ ! -f ${cert_dir}key.pem ]]; then
     continue
   fi
   # do not create vhost for default-certificate. the cert is already in the default server listen
@@ -26,7 +26,7 @@ for cert_dir in /etc/ssl/mail/*/ ; do
 server {
   include /etc/nginx/conf.d/listen_ssl.active;
 
-  ssl_certificate '${cert_dir}'cert.pem;
+  ssl_certificate '${cert_dir}'fullchain.pem;
   ssl_certificate_key '${cert_dir}'key.pem;
 ';
   echo -n '

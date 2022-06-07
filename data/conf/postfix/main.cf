@@ -3,7 +3,7 @@
 # --------------------------------------------------------------------------
 biff = no
 append_dot_mydomain = no
-smtpd_tls_cert_file = /etc/ssl/mail/cert.pem
+smtpd_tls_cert_file = /etc/ssl/mail/fullchain.pem
 smtpd_tls_key_file = /etc/ssl/mail/key.pem
 tls_server_sni_maps = hash:/opt/postfix/conf/sni.map
 smtpd_tls_received_header = yes
@@ -104,7 +104,7 @@ relay_domains = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_relay_domain_map
 relay_recipient_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_relay_recipient_maps.cf
 sender_dependent_default_transport_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_sender_dependent_default_transport_maps.cf
 smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt
-smtp_tls_cert_file = /etc/ssl/mail/cert.pem
+smtp_tls_cert_file = /etc/ssl/mail/fullchain.pem
 smtp_tls_key_file = /etc/ssl/mail/key.pem
 smtp_tls_loglevel = 1
 smtp_dns_support_level = dnssec
