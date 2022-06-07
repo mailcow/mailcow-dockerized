@@ -95,7 +95,7 @@ services:
         - ./data/conf/rspamd/lua/:/etc/rspamd/lua/:ro,Z
         - ./data/conf/rspamd/rspamd.conf.local:/etc/rspamd/rspamd.conf.local:Z
         - ./data/conf/rspamd/rspamd.conf.override:/etc/rspamd/rspamd.conf.override:Z
-        - rspamd-vol-1:/var/lib/rspamd:z
+        - rspamd-vol-1:/var/lib/rspamd
       restart: always
       hostname: rspamd
       dns:
