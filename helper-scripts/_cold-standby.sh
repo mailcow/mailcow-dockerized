@@ -77,12 +77,32 @@ function preflight_local_checks() {
     exit 1
   fi
 
-  for bin in rsync docker-compose docker grep cut; do
+  for bin in rsync docker grep cut; do
     if [[ -z $(which ${bin}) ]]; then
       >&2 echo -e "\e[31mCannot find ${bin} in local PATH, exiting...\e[0m"
       exit 1
     fi
   done
+
+
+  echo "checking docker compose version...";
+  if docker --help | grep compose
+  then
+    echo ''
+  elif docker-compose version --short | grep -m1 "^1" > /dev/null 2>&1
+  then
+     >&2 echo -e "\e[31mWARN: Your machine is using Docker-Compose v1!\e[0m"
+     >&2 echo -e "\e[31mmailcow will drop the Docker-Compose v1 Support in December 2022\e[0m"
+     >&2 echo -e "\e[31mPlease consider a upgrade to Docker-Compose v2.\e[0m"
+     >&2 echo
+     >&2 echo
+     >&2 echo -e "\e[33mContinuing...\e[0m"
+     sleep 3
+
+  else
+     >&2 echo -e "\e[31mCannot find Docker-Compose v1 or v2 on your System. Please install Docker-Compose v2 and re-run the Script.\e[0m"
+     exit 1
+  fi
 
   if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then
     >&2 echo -e "\e[31mBusyBox grep detected on local system, please install GNU grep\e[0m"
@@ -111,7 +131,7 @@ function preflight_remote_checks() {
       exit 1
   fi
 
-  for bin in rsync docker-compose docker; do
+  for bin in rsync docker; do
     if ! ssh -o StrictHostKeyChecking=no \
       -i "${REMOTE_SSH_KEY}" \
       ${REMOTE_SSH_HOST} \
@@ -122,6 +142,32 @@ function preflight_remote_checks() {
     fi
   done
 
+  echo "checking docker compose version on remote...";
+  if ssh -q -o StrictHostKeyChecking=no \
+      -i "${REMOTE_SSH_KEY}" \
+      ${REMOTE_SSH_HOST} \
+      -p ${REMOTE_SSH_PORT} \
+     -t docker --help | grep compose
+  then
+     COMPOSE_COMMAND="docker compose"
+  elif ssh -q -o StrictHostKeyChecking=no \
+      -i "${REMOTE_SSH_KEY}" \
+      ${REMOTE_SSH_HOST} \
+      -p ${REMOTE_SSH_PORT} \
+      'docker-compose version --short' | grep -m1 "^1" > /dev/null 2>&1
+  then
+     >&2 echo -e "\e[31mWARN: The remote is using Docker-Compose v1!\e[0m"
+     >&2 echo -e "\e[31mmailcow will drop the Docker-Compose v1 Support in December 2022\e[0m"
+     >&2 echo -e "\e[31mPlease consider a upgrade to Docker-Compose v2 on remote.\e[0m"
+     >&2 echo
+     >&2 echo
+     >&2 echo -e "\e[33mContinuing...\e[0m"
+     sleep 3
+     COMPOSE_COMMAND="docker-compose"
+  else
+     >&2 echo -e "\e[31mCannot find Docker-Compose v1 or v2 on the Remote Machine! Please install Docker-Compose v2 on that and re-run the script.\e[0m"
+     exit 1
+  fi
 }
 
 preflight_local_checks
@@ -252,16 +298,18 @@ if ! ssh -o StrictHostKeyChecking=no \
 fi
 echo "OK"
 
-echo -e "\033[1mPulling images on remote...\033[0m"
-if ! ssh -o StrictHostKeyChecking=no \
-  -i "${REMOTE_SSH_KEY}" \
-  ${REMOTE_SSH_HOST} \
-  -p ${REMOTE_SSH_PORT} \
-  docker-compose -f "${SCRIPT_DIR}/../docker-compose.yml" pull --no-parallel 2>&1 ; then
-    >&2 echo -e "\e[31m[ERR]\e[0m - Could not pull images on remote"
-fi
+  echo -e "\e[33mPulling images on remote...\e[0m"
+  echo -e "\e[33mProcess is NOT stuck! Please wait...\e[0m"
 
-echo -e "\033[1mForcing garbage cleanup on remote...\033[0m"
+  if ! ssh -o StrictHostKeyChecking=no \
+    -i "${REMOTE_SSH_KEY}" \
+    ${REMOTE_SSH_HOST} \
+    -p ${REMOTE_SSH_PORT} \
+    $COMPOSE_COMMAND -f "${SCRIPT_DIR}/../docker-compose.yml" pull --no-parallel --quiet 2>&1 ; then
+      >&2 echo -e "\e[31m[ERR]\e[0m - Could not pull images on remote"
+  fi
+
+echo -e "\033[1mExecuting update script and forcing garbage cleanup on remote...\033[0m"
 if ! ssh -o StrictHostKeyChecking=no \
   -i "${REMOTE_SSH_KEY}" \
   ${REMOTE_SSH_HOST} \
