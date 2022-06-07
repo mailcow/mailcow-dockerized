@@ -86,22 +86,19 @@ function preflight_local_checks() {
 
 
   echo "checking docker compose version...";
-  if docker --help | grep compose
-  then
+  if docker --help | grep compose then
     echo ''
-  elif docker-compose version --short | grep -m1 "^1" > /dev/null 2>&1
-  then
-     >&2 echo -e "\e[31mWARN: Your machine is using Docker-Compose v1!\e[0m"
-     >&2 echo -e "\e[31mmailcow will drop the Docker-Compose v1 Support in December 2022\e[0m"
-     >&2 echo -e "\e[31mPlease consider a upgrade to Docker-Compose v2.\e[0m"
-     >&2 echo
-     >&2 echo
-     >&2 echo -e "\e[33mContinuing...\e[0m"
-     sleep 3
-
+  elif docker-compose version --short | grep -m1 "^1" > /dev/null 2>&1 then
+    >&2 echo -e "\e[31mWARN: Your machine is using Docker-Compose v1!\e[0m"
+    >&2 echo -e "\e[31mmailcow will drop the Docker-Compose v1 Support in December 2022\e[0m"
+    >&2 echo -e "\e[31mPlease consider a upgrade to Docker-Compose v2.\e[0m"
+    >&2 echo
+    >&2 echo
+    >&2 echo -e "\e[33mContinuing...\e[0m"
+    sleep 3
   else
-     >&2 echo -e "\e[31mCannot find Docker-Compose v1 or v2 on your System. Please install Docker-Compose v2 and re-run the Script.\e[0m"
-     exit 1
+    >&2 echo -e "\e[31mCannot find Docker-Compose v1 or v2 on your System. Please install Docker-Compose v2 and re-run the Script.\e[0m"
+    exit 1
   fi
 
   if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then
@@ -147,26 +144,24 @@ function preflight_remote_checks() {
       -i "${REMOTE_SSH_KEY}" \
       ${REMOTE_SSH_HOST} \
       -p ${REMOTE_SSH_PORT} \
-     -t docker --help | grep compose
-  then
-     COMPOSE_COMMAND="docker compose"
+     -t docker --help | grep compose then
+    COMPOSE_COMMAND="docker compose"
   elif ssh -q -o StrictHostKeyChecking=no \
       -i "${REMOTE_SSH_KEY}" \
       ${REMOTE_SSH_HOST} \
       -p ${REMOTE_SSH_PORT} \
-      'docker-compose version --short' | grep -m1 "^1" > /dev/null 2>&1
-  then
-     >&2 echo -e "\e[31mWARN: The remote is using Docker-Compose v1!\e[0m"
-     >&2 echo -e "\e[31mmailcow will drop the Docker-Compose v1 Support in December 2022\e[0m"
-     >&2 echo -e "\e[31mPlease consider a upgrade to Docker-Compose v2 on remote.\e[0m"
-     >&2 echo
-     >&2 echo
-     >&2 echo -e "\e[33mContinuing...\e[0m"
-     sleep 3
-     COMPOSE_COMMAND="docker-compose"
+      'docker-compose version --short' | grep -m1 "^1" > /dev/null 2>&1 then
+    >&2 echo -e "\e[31mWARN: The remote is using Docker-Compose v1!\e[0m"
+    >&2 echo -e "\e[31mmailcow will drop the Docker-Compose v1 Support in December 2022\e[0m"
+    >&2 echo -e "\e[31mPlease consider a upgrade to Docker-Compose v2 on remote.\e[0m"
+    >&2 echo
+    >&2 echo
+    >&2 echo -e "\e[33mContinuing...\e[0m"
+    sleep 3
+    COMPOSE_COMMAND="docker-compose"
   else
-     >&2 echo -e "\e[31mCannot find Docker-Compose v1 or v2 on the Remote Machine! Please install Docker-Compose v2 on that and re-run the script.\e[0m"
-     exit 1
+    >&2 echo -e "\e[31mCannot find Docker-Compose v1 or v2 on the Remote Machine! Please install Docker-Compose v2 on that and re-run the script.\e[0m"
+    exit 1
   fi
 }
 
