@@ -7,20 +7,20 @@
     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.debug.logs }}</a>
     <ul class="dropdown-menu">
       <li role="presentation"><span class="dropdown-header fs-6">{{ lang.debug.in_memory_logs }}</span></li>
-      <li role="presentation"><a class="dropdown-item" href="#tab-postfix-logs" aria-controls="tab-postfix-logs" role="tab" data-bs-toggle="tab">Postfix</a></li>
-      <li role="presentation"><a class="dropdown-item" href="#tab-dovecot-logs" aria-controls="tab-dovecot-logs" role="tab" data-bs-toggle="tab">Dovecot</a></li>
-      <li role="presentation"><a class="dropdown-item" href="#tab-sogo-logs" aria-controls="tab-sogo-logs" role="tab" data-bs-toggle="tab">SOGo</a></li>
-      <li role="presentation"><a class="dropdown-item" href="#tab-netfilter-logs" aria-controls="tab-netfilter-logs" role="tab" data-bs-toggle="tab">Netfilter</a></li>
-      <li role="presentation"><a class="dropdown-item" href="#tab-autodiscover-logs" aria-controls="tab-autodiscover-logs" role="tab" data-bs-toggle="tab">Autodiscover</a></li>
-      <li role="presentation"><a class="dropdown-item" href="#tab-watchdog-logs" aria-controls="tab-watchdog-logs" role="tab" data-bs-toggle="tab">Watchdog</a></li>
-      <li role="presentation"><a class="dropdown-item" href="#tab-acme-logs" aria-controls="tab-acme-logs" role="tab" data-bs-toggle="tab">ACME</a></li>
-      <li role="presentation"><a class="dropdown-item" href="#tab-api-logs" aria-controls="tab-api-logs" role="tab" data-bs-toggle="tab">API</a></li>
-      <li role="presentation"><a class="dropdown-item" href="#tab-api-rl" aria-controls="tab-api-rl" role="tab" data-bs-toggle="tab">Ratelimits</a></li>
+      <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-postfix-logs" aria-selected="false" aria-controls="tab-postfix-logs" role="tab" data-bs-toggle="tab">Postfix</button></li>
+      <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-dovecot-logs" aria-selected="false" aria-controls="tab-dovecot-logs" role="tab" data-bs-toggle="tab">Dovecot</button></li>
+      <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-sogo-logs" aria-selected="false" aria-controls="tab-sogo-logs" role="tab" data-bs-toggle="tab">SOGo</button></li>
+      <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-netfilter-logs" aria-selected="false" aria-controls="tab-netfilter-logs" role="tab" data-bs-toggle="tab">Netfilter</button></li>
+      <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-autodiscover-logs" aria-selected="false" aria-controls="tab-autodiscover-logs" role="tab" data-bs-toggle="tab">Autodiscover</button></li>
+      <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-watchdog-logs" aria-selected="false" aria-controls="tab-watchdog-logs" role="tab" data-bs-toggle="tab">Watchdog</button></li>
+      <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-acme-logs" aria-selected="false" aria-controls="tab-acme-logs" role="tab" data-bs-toggle="tab">ACME</button></li>
+      <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-api-logs" aria-selected="false" aria-controls="tab-api-logs" role="tab" data-bs-toggle="tab">API</button></li>
+      <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-api-rl" aria-selected="false" aria-controls="tab-api-rl" role="tab" data-bs-toggle="tab">Ratelimits</button></li>
       <li role="presentation"><span class="dropdown-header fs-6">{{ lang.debug.external_logs }}</span></li>
-      <li role="presentation"><a class="dropdown-item" href="#tab-rspamd-history" aria-controls="tab-rspamd-history" role="tab" data-bs-toggle="tab">Rspamd</a></li>
+      <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-rspamd-history" aria-selected="false" aria-controls="tab-rspamd-history" role="tab" data-bs-toggle="tab">Rspamd</button></li>
       <li role="presentation"><span class="dropdown-header fs-6">{{ lang.debug.static_logs }}</span></li>
-      <li role="presentation"><a class="dropdown-item" href="#tab-ui" aria-controls="tab-ui" role="tab" data-bs-toggle="tab">Mailcow UI</a></li>
-      <li role="presentation"><a class="dropdown-item" href="#tab-sasl" aria-controls="tab-sasl" role="tab" data-bs-toggle="tab">SASL</a></li>
+      <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-ui" aria-selected="false" aria-controls="tab-ui" role="tab" data-bs-toggle="tab">Mailcow UI</button></li>
+      <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-sasl" aria-selected="false" aria-controls="tab-sasl" role="tab" data-bs-toggle="tab">SASL</button></li>
     </ul>
   </li>
 </ul>

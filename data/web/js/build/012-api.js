@@ -318,7 +318,6 @@ $(document).ready(function() {
 
   // General API delete actions
   $(document).on('click', "[data-action='delete_selected']", function(e) {
-    console.log("delete");
     e.preventDefault();
     var id = $(this).data('id');
     // If clicked element #delete_selected has data-item attribute, it is added to "items"
@@ -337,7 +336,6 @@ $(document).ready(function() {
     if (typeof multi_data[id] == "undefined" || multi_data[id] == "") return;
     data_array = multi_data[id];
     api_url = $(this).data('api-url');
-    console.log("delete modal");
     $(document).on('show.bs.modal', '#ConfirmDeleteModal', function() {
       $("#ItemsToDelete").empty();
       for (var i in data_array) {
