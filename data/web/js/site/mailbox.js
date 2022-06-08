@@ -288,18 +288,21 @@ jQuery(function($){
           data: null,
           searchable: false,
           orderable: false,
-          defaultContent: ''
+          defaultContent: '',
+          responsivePriority: 1
         },
         {
           title: '',
           data: 'chkbox',
           searchable: false,
           orderable: false,
-          defaultContent: ''
+          defaultContent: '',
+          responsivePriority: 2
         },
         {
           title: lang.domain,
-          data: 'domain_name'
+          data: 'domain_name',
+          responsivePriority: 3
         },
         {
           title: lang.aliases,
@@ -307,7 +310,8 @@ jQuery(function($){
         },
         {
           title: lang.mailboxes,
-          data: 'mboxes_in_domain'
+          data: 'mboxes_in_domain',
+          responsivePriority: 4
         },
         {
           title: lang.domain_quota,
@@ -351,7 +355,8 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'text-md-end d-md-block dt-sm-head-hidden dt-body-right'
+          className: 'text-md-end dt-sm-head-hidden dt-body-right',
+          responsivePriority: 5
         },
       ]
     });
@@ -445,18 +450,21 @@ jQuery(function($){
             data: null,
             searchable: false,
             orderable: false,
-            defaultContent: ''
+            defaultContent: '',
+            responsivePriority: 1
           },
           {
             title: '',
             data: 'chkbox',
             searchable: false,
             orderable: false,
-            defaultContent: ''
+            defaultContent: '',
+            responsivePriority: 2
           },
           {
             title: lang.username,
-            data: 'username'
+            data: 'username',
+            responsivePriority: 3
           },
           {
             title: lang.fname,
@@ -469,6 +477,7 @@ jQuery(function($){
           {
             title: lang.domain_quota,
             data: 'quota',
+            responsivePriority: 4,
             render: function (data, type) {
               data = data.split("/");
               var of_q = (data[1] == 0 ? "∞" : humanFileSize(data[1]));
@@ -529,7 +538,8 @@ jQuery(function($){
           {
             title: lang.action,
             data: 'action',
-            className: 'text-md-end d-md-block dt-sm-head-hidden dt-body-right'
+            className: 'text-md-end dt-sm-head-hidden dt-body-right',
+            responsivePriority: 5
           },
       ]
     });
@@ -569,18 +579,21 @@ jQuery(function($){
             data: null,
             searchable: false,
             orderable: false,
-            defaultContent: ''
+            defaultContent: '',
+            responsivePriority: 1
           },
           {
             title: '',
             data: 'chkbox',
             searchable: false,
             orderable: false,
-            defaultContent: ''
+            defaultContent: '',
+            responsivePriority: 2
           },
           {
             title: lang.description,
-            data: 'description'
+            data: 'description',
+            responsivePriority: 3
           },
           {
             title: lang.alias,
@@ -592,7 +605,8 @@ jQuery(function($){
           },
           {
             title: lang.domain,
-            data: 'domain'
+            data: 'domain',
+            responsivePriority: 4
           },
           {
             title: lang.multiple_bookings,
@@ -608,7 +622,8 @@ jQuery(function($){
           {
             title: lang.action,
             data: 'action',
-            className: 'text-md-end d-md-block dt-sm-head-hidden dt-body-right'
+            className: 'text-md-end dt-sm-head-hidden dt-body-right',
+            responsivePriority: 5
           },
       ]
     });
@@ -647,18 +662,21 @@ jQuery(function($){
             data: null,
             searchable: false,
             orderable: false,
-            defaultContent: ''
+            defaultContent: '',
+            responsivePriority: 1
           },
           {
             title: '',
             data: 'chkbox',
             searchable: false,
             orderable: false,
-            defaultContent: ''
+            defaultContent: '',
+            responsivePriority: 2
           },
           {
             title: 'ID',
-            data: 'id'
+            data: 'id',
+            responsivePriority: 3
           },
           {
             title: lang.bcc_type,
@@ -674,7 +692,8 @@ jQuery(function($){
           },
           {
             title: lang.domain,
-            data: 'domain'
+            data: 'domain',
+            responsivePriority: 4
           },
           {
             title: lang.active,
@@ -686,7 +705,8 @@ jQuery(function($){
           {
             title: lang.action,
             data: 'action',
-            className: 'text-md-end d-md-block dt-sm-head-hidden dt-body-right'
+            className: 'text-md-end dt-sm-head-hidden dt-body-right',
+            responsivePriority: 5
           },
       ]
     });
@@ -722,18 +742,21 @@ jQuery(function($){
             data: null,
             searchable: false,
             orderable: false,
-            defaultContent: ''
+            defaultContent: '',
+            responsivePriority: 1
           },
           {
             title: '',
             data: 'chkbox',
             searchable: false,
             orderable: false,
-            defaultContent: ''
+            defaultContent: '',
+            responsivePriority: 2
           },
           {
             title: 'ID',
-            data: 'id'
+            data: 'id',
+            responsivePriority: 3
           },
           {
             title: lang.recipient_map_old,
@@ -753,7 +776,8 @@ jQuery(function($){
           {
             title: lang.action,
             data: 'action',
-            className: 'text-md-end d-md-block dt-sm-head-hidden dt-body-right'
+            className: 'text-md-end dt-sm-head-hidden dt-body-right',
+            responsivePriority: 4
           },
       ]
     });
@@ -794,18 +818,21 @@ jQuery(function($){
             data: null,
             searchable: false,
             orderable: false,
-            defaultContent: ''
+            defaultContent: '',
+            responsivePriority: 1
           },
           {
             title: '',
             data: 'chkbox',
             searchable: false,
             orderable: false,
-            defaultContent: ''
+            defaultContent: '',
+            responsivePriority: 2
           },
           {
             title: 'ID',
-            data: 'id'
+            data: 'id',
+            responsivePriority: 3
           },
           {
             title: lang.tls_map_dest,
@@ -821,7 +848,8 @@ jQuery(function($){
           },
           {
             title: lang.domain,
-            data: 'domain'
+            data: 'domain',
+            responsivePriority: 4
           },
           {
             title: lang.active,
@@ -833,7 +861,8 @@ jQuery(function($){
           {
             title: lang.action,
             data: 'action',
-            className: 'text-md-end d-md-block dt-sm-head-hidden dt-body-right'
+            className: 'text-md-end dt-sm-head-hidden dt-body-right',
+            responsivePriority: 5
           },
       ]
     });
@@ -896,22 +925,26 @@ jQuery(function($){
             data: null,
             searchable: false,
             orderable: false,
-            defaultContent: ''
+            defaultContent: '',
+            responsivePriority: 1
           },
           {
             title: '',
             data: 'chkbox',
             searchable: false,
             orderable: false,
-            defaultContent: ''
+            defaultContent: '',
+            responsivePriority: 2
           },
           {
             title: 'ID',
-            data: 'id'
+            data: 'id',
+            responsivePriority: 3
           },
           {
             title: lang.alias,
-            data: 'address'
+            data: 'address',
+            responsivePriority: 4
           },
           {
             title: lang.target_address,
@@ -947,7 +980,8 @@ jQuery(function($){
           {
             title: lang.action,
             data: 'action',
-            className: 'text-md-end d-md-block dt-sm-head-hidden dt-body-right'
+            className: 'text-md-end dt-sm-head-hidden dt-body-right',
+            responsivePriority: 5
           },
       ]
     });
@@ -985,22 +1019,26 @@ jQuery(function($){
             data: null,
             searchable: false,
             orderable: false,
-            defaultContent: ''
+            defaultContent: '',
+            responsivePriority: 1
           },
           {
             title: '',
             data: 'chkbox',
             searchable: false,
             orderable: false,
-            defaultContent: ''
+            defaultContent: '',
+            responsivePriority: 2
           },
           {
             title: lang.alias,
-            data: 'alias_domain'
+            data: 'alias_domain',
+            responsivePriority: 3
           },
           {
             title: lang.target_domain,
-            data: 'target_domain'
+            data: 'target_domain',
+            responsivePriority: 4
           },
           {
             title: lang.bcc_local_dest,
@@ -1024,7 +1062,8 @@ jQuery(function($){
           {
             title: lang.action,
             data: 'action',
-            className: 'text-md-end d-md-block dt-sm-head-hidden dt-body-right'
+            className: 'text-md-end dt-sm-head-hidden dt-body-right',
+            responsivePriority: 5
           },
       ]
     });
@@ -1084,22 +1123,26 @@ jQuery(function($){
             data: null,
             searchable: false,
             orderable: false,
-            defaultContent: ''
+            defaultContent: '',
+            responsivePriority: 1
           },
           {
             title: '',
             data: 'chkbox',
             searchable: false,
             orderable: false,
-            defaultContent: ''
+            defaultContent: '',
+            responsivePriority: 2
           },
           {
             title: 'ID',
-            data: 'id'
+            data: 'id',
+            responsivePriority: 3
           },
           {
             title: lang.owner,
-            data: 'user2'
+            data: 'user2',
+            responsivePriority: 4
           },
           {
             title: 'Server',
@@ -1139,7 +1182,8 @@ jQuery(function($){
           {
             title: lang.action,
             data: 'action',
-            className: 'text-md-end d-md-block dt-sm-head-hidden dt-body-right'
+            className: 'text-md-end dt-sm-head-hidden dt-body-right',
+            responsivePriority: 5
           },
       ]
     });
@@ -1178,26 +1222,30 @@ jQuery(function($){
             data: null,
             searchable: false,
             orderable: false,
-            defaultContent: ''
+            defaultContent: '',
+            responsivePriority: 1
           },
           {
             title: '',
             data: 'chkbox',
             searchable: false,
             orderable: false,
-            defaultContent: ''
+            defaultContent: '',
+            responsivePriority: 2
           },
           {
             title: 'ID',
-            data: 'id'
+            data: 'id',
+            responsivePriority: 3
           },
           {
             title: lang.active,
             data: 'active'
           },
           {
-            title: lang.filter_type,
-            data: 'Type'
+            title: 'Type',
+            data: 'filter_type',
+            responsivePriority: 4
           },
           {
             title: lang.owner,
@@ -1214,7 +1262,8 @@ jQuery(function($){
           {
             title: lang.action,
             data: 'action',
-            className: 'text-md-end d-md-block dt-sm-head-hidden dt-body-right'
+            className: 'text-md-end dt-sm-head-hidden dt-body-right',
+            responsivePriority: 5
           },
       ]
     });
