@@ -48,7 +48,7 @@ jQuery(function($){
               item.notified = '&#10006;';
             }
             if (acl_data.login_as === 1) {
-            item.action = '<div class="btn-group footable-actions">' +
+            item.action = '<div class="btn-group">' +
               '<a href="#" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-half btn-info show_qid_info"><i class="bi bi-box-arrow-up-right"></i> ' + lang.show_item + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="del-single-qitem" data-api-url="delete/qitem" data-item="' + encodeURI(item.id) + '" class="btn btn-xs  btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
