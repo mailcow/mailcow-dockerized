@@ -66,7 +66,7 @@ $(document).ready(function() {
         if ($(this).data('dont-remember') == 1) {
           return true;
         }
-        var id = $(this).attr('id');
+        var id = $(this).parents('[role="tablist"]').attr('id');
         var key = 'lastTag';
         if (id) {
           key += ':' + id;
@@ -84,7 +84,7 @@ $(document).ready(function() {
         if ($(this).data('dont-remember') == 1) {
           return true;
         }
-        var id = $(this).attr('id');
+        var id = $(this).parents('[role="tablist"]').attr('id');;
         var key = 'lastTag';
         if (id) {
           key += ':' + id;
