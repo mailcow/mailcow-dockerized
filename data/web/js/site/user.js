@@ -185,7 +185,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'text-md-end d-md-block dt-sm-head-hidden dt-body-right'
+          className: 'text-md-end dt-sm-head-hidden dt-body-right'
         }
       ]
     });
@@ -311,7 +311,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'text-md-end d-md-block dt-sm-head-hidden dt-body-right'
+          className: 'text-md-end dt-sm-head-hidden dt-body-right'
         }
       ]
     });
@@ -390,7 +390,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'text-md-end d-md-block dt-sm-head-hidden dt-body-right'
+          className: 'text-md-end dt-sm-head-hidden dt-body-right'
         }
       ]
     });
