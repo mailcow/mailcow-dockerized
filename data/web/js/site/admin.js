@@ -533,13 +533,13 @@ jQuery(function($){
     });
   }
   // Draw Table if tab is active
-  onVisible("[id^=collapse-tab-config-admins]", () => draw_admins());
-  onVisible("[id^=collapse-tab-config-dadmins]", () => draw_domain_admins());
-  onVisible("[id^=collapse-tab-config-oauth2]", () => draw_oauth2_clients());
-  onVisible("[id^=collapse-tab-config-fwdhosts]", () => draw_fwd_hosts());
-  onVisible("[id^=collapse-tab-routing]", () => draw_relayhosts());
-  onVisible("[id^=collapse-tab-maps]", () => draw_transport_maps());
-  onVisible("[id^=collapse-tab-mailq]", () => draw_queue());
+  onVisible("[id^=adminstable]", () => draw_admins());
+  onVisible("[id^=domainadminstable]", () => draw_domain_admins());
+  onVisible("[id^=oauth2clientstable]", () => draw_oauth2_clients());
+  onVisible("[id^=forwardinghoststable]", () => draw_fwd_hosts());
+  onVisible("[id^=relayhoststable]", () => draw_relayhosts());
+  onVisible("[id^=transportstable]", () => draw_transport_maps());
+  onVisible("[id^=queuetable]", () => draw_queue());
 
 
   $('body').on('click', 'span.footable-toggle', function () {

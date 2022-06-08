@@ -54,22 +54,6 @@ jQuery(function($){
     var table_name = $(this).data('table');
     $('#' + table_name).DataTable().ajax.reload();
   });
-  function table_log_ready(ft, name) {
-    heading = ft.$el.parents('.card').find('.card-header')
-    var ft_paging = ft.use(FooTable.Paging)
-    $('.refresh_table').prop("disabled", false);
-    $(heading).children('.table-lines').text(function(){
-      return ft_paging.totalRows;
-    })
-    if (current_page[name]) {
-      ft_paging.goto(parseInt(current_page[name]))
-    }
-  }
-  function table_log_paging(ft, name) {
-    var ft_paging = ft.use(FooTable.Paging)
-    current_page[name] = ft_paging.current;
-    localStorage.setItem('current_page', JSON.stringify(current_page));
-  }
   function draw_autodiscover_logs() {
     $('#autodiscover_log').DataTable({
       processing: true,
@@ -861,19 +845,17 @@ jQuery(function($){
     });
   }
   // Draw Table if tab is active
-  onVisible("[id^=tab-postfix-logs]", () => draw_postfix_logs());
-  onVisible("[id^=tab-dovecot-logs]", () => draw_dovecot_logs());
-  onVisible("[id^=tab-sogo-logs]", () => draw_sogo_logs());
-  onVisible("[id^=tab-watchdog-logs]", () => draw_watchdog_logs());
-  onVisible("[id^=tab-autodiscover-logs]", () => draw_autodiscover_logs());
-  onVisible("[id^=tab-acme-logs]", () => draw_acme_logs());
-  onVisible("[id^=tab-api-logs]", () => draw_api_logs());
-  onVisible("[id^=tab-api-rl]", () => draw_rl_logs());
-  onVisible("[id^=tab-ui]", () => draw_ui_logs());
-  onVisible("[id^=tab-sasl]", () => draw_sasl_logs());
-  onVisible("[id^=tab-netfilter-logs]", () => draw_netfilter_logs());
-  onVisible("[id^=tab-rspamd-history]", () => {
-    rspamd_pie_graph();
-    draw_rspamd_history()
-  });
+  onVisible("[id^=postfix_log]", () => draw_postfix_logs());
+  onVisible("[id^=dovecot_log]", () => draw_dovecot_logs());
+  onVisible("[id^=sogo_log]", () => draw_sogo_logs());
+  onVisible("[id^=watchdog_log]", () => draw_watchdog_logs());
+  onVisible("[id^=autodiscover_log]", () => draw_autodiscover_logs());
+  onVisible("[id^=acme_log]", () => draw_acme_logs());
+  onVisible("[id^=api_log]", () => draw_api_logs());
+  onVisible("[id^=rl_log]", () => draw_rl_logs());
+  onVisible("[id^=ui_logs]", () => draw_ui_logs());
+  onVisible("[id^=sasl_logs]", () => draw_sasl_logs());
+  onVisible("[id^=netfilter_log]", () => draw_netfilter_logs());
+  onVisible("[id^=rspamd_history]", () => draw_rspamd_history());
+  onVisible("[id^=rspamd_donut]", () => rspamd_pie_graph());
 });
