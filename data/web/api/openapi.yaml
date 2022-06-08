@@ -3227,8 +3227,13 @@ paths:
                 attr:
                   properties:
                     active:
-                      description: is mailbox active or not
-                      type: boolean
+                      description: |
+                        is mailbox active or not
+                        * `0` - Inactive
+                        * `1` - Active
+                        * `2` - Disallow login (incoming mail is still accepted)
+                      type: integer
+                      enum: [0, 1, 2]
                     force_pw_update:
                       description: force user to change password on next login
                       type: boolean
