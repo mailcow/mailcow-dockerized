@@ -1195,14 +1195,14 @@ jQuery(function($){
   }
 
   // Load only if the tab is visible
-  onVisible("[id^=collapse-tab-domains]", () => draw_domain_table());
-  onVisible("[id^=collapse-tab-mailboxes]", () => draw_mailbox_table());
-  onVisible("[id^=collapse-tab-resources]", () => draw_resource_table());
-  onVisible("[id^=collapse-tab-mbox-aliases]", () => draw_alias_table());
-  onVisible("[id^=collapse-tab-domain-aliases]", () => draw_aliasdomain_table());
-  onVisible("[id^=collapse-tab-syncjobs]", () => draw_sync_job_table());
-  onVisible("[id^=collapse-tab-filters]", () => draw_filter_table());
-  onVisible("[id^=collapse-tab-bcc]", () => draw_bcc_table());
-  onVisible("[id^=collapse-tab-bcc-filters]", () => draw_recipient_map_table());
-  onVisible("[id^=collapse-tab-tls-policy]", () => draw_tls_policy_table());
+  onVisible("[id^=domain_table]", () => draw_domain_table());
+  onVisible("[id^=mailbox_table]", () => draw_mailbox_table());
+  onVisible("[id^=resource_table]", () => draw_resource_table());
+  onVisible("[id^=alias_table]", () => draw_alias_table());
+  onVisible("[id^=aliasdomain_table]", () => draw_aliasdomain_table());
+  onVisible("[id^=sync_job_table]", () => draw_sync_job_table());
+  onVisible("[id^=filter_table]", () => draw_filter_table());
+  onVisible("[id^=bcc_table]", () => draw_bcc_table());
+  onVisible("[id^=recipient_map_table]", () => draw_recipient_map_table());
+  onVisible("[id^=tls_policy_table]", () => draw_tls_policy_table());
 });
