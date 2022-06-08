@@ -59,9 +59,7 @@ jQuery(function($){
   $(".refresh_table").on('click', function(e) {
     e.preventDefault();
     var table_name = $(this).data('table');
-    $('#' + table_name).find("tr.footable-empty").remove();
-    draw_table = $(this).data('draw');
-    eval(draw_table + '()');
+    $('#' + table_name).DataTable().ajax.reload();
   });
   function draw_domain_admins() {
     $('#domainadminstable').DataTable({
