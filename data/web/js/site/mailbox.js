@@ -240,7 +240,6 @@ jQuery(function($){
         type: "GET",
         url: "/api/v1/get/domain/all",
         dataSrc: function(json){
-          console.log(json);
           $.each(json, function(i, item) {
             item.aliases = item.aliases_in_domain + " / " + item.max_num_aliases_for_domain;
             item.mailboxes = item.mboxes_in_domain + " / " + item.max_num_mboxes_for_domain;
@@ -279,66 +278,80 @@ jQuery(function($){
             }
           });
 
-          console.log(json);
           return json;
         }
       },
       columns: [
-          {
-            title: lang.domain,
-            data: 'domain_name'
-          },
-          {
-            title: lang.aliases,
-            data: 'aliases_in_domain'
-          },
-          {
-            title: lang.mailboxes,
-            data: 'mboxes_in_domain'
-          },
-          {
-            title: lang.domain_quota,
-            data: 'quota',
-            render: function (data, type) {
-              data = data.split("/");
-              return humanFileSize(data[0]) + " / " + humanFileSize(data[1]);
-            }
-          },
-          {
-            title: lang.stats,
-            data: 'stats',
-            render: function (data, type) {
-              data = data.split("/");
-              return '<i class="bi bi-files"></i> ' + data[0] + ' / ' + humanFileSize(data[1]);
-            }
-          },
-          {
-            title: lang.mailbox_defquota,
-            data: 'def_quota_for_mbox'
-          },
-          {
-            title: lang.mailbox_quota,
-            data: 'max_quota_for_mbox'
-          },
-          {
-            title: 'RL',
-            data: 'rl'
-          },
-          {
-            title: lang.backup_mx,
-            data: 'backupmx',
-            redner: function (data, type){
-              return 1==value ? '<i class="bi bi-check-lg"></i>' : 0==value && '<i class="bi bi-x-lg"></i>';
-            }
-          },
-          {
-            title: lang.domain_admins,
-            data: 'domain_admins'
-          },
-          {
-            title: lang.action,
-            data: 'action'
-          },
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: ''
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: ''
+        },
+        {
+          title: lang.domain,
+          data: 'domain_name'
+        },
+        {
+          title: lang.aliases,
+          data: 'aliases_in_domain'
+        },
+        {
+          title: lang.mailboxes,
+          data: 'mboxes_in_domain'
+        },
+        {
+          title: lang.domain_quota,
+          data: 'quota',
+          render: function (data, type) {
+            data = data.split("/");
+            return humanFileSize(data[0]) + " / " + humanFileSize(data[1]);
+          }
+        },
+        {
+          title: lang.stats,
+          data: 'stats',
+          render: function (data, type) {
+            data = data.split("/");
+            return '<i class="bi bi-files"></i> ' + data[0] + ' / ' + humanFileSize(data[1]);
+          }
+        },
+        {
+          title: lang.mailbox_defquota,
+          data: 'def_quota_for_mbox'
+        },
+        {
+          title: lang.mailbox_quota,
+          data: 'max_quota_for_mbox'
+        },
+        {
+          title: 'RL',
+          data: 'rl'
+        },
+        {
+          title: lang.backup_mx,
+          data: 'backupmx',
+          redner: function (data, type){
+            return 1==value ? '<i class="bi bi-check-lg"></i>' : 0==value && '<i class="bi bi-x-lg"></i>';
+          }
+        },
+        {
+          title: lang.domain_admins,
+          data: 'domain_admins'
+        },
+        {
+          title: lang.action,
+          data: 'action'
+        },
       ]
     });
   }
@@ -421,7 +434,6 @@ jQuery(function($){
             item.username = escapeHtml(item.username);
           });
 
-          console.log(json);
           return json;
         }
       },
@@ -436,7 +448,10 @@ jQuery(function($){
           },
           {
             title: '',
-            data: 'chkbox'
+            data: 'chkbox',
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
           },
           {
             title: lang.username,
@@ -542,7 +557,6 @@ jQuery(function($){
             item.name = escapeHtml(item.name);
           });
 
-          console.log(json);
           return json;
         }
       },
@@ -557,7 +571,10 @@ jQuery(function($){
           },
           {
             title: '',
-            data: 'chkbox'
+            data: 'chkbox',
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
           },
           {
             title: lang.description,
@@ -617,7 +634,6 @@ jQuery(function($){
             }
           });
 
-          console.log(json);
           return json;
         }
       },
@@ -632,7 +648,10 @@ jQuery(function($){
           },
           {
             title: '',
-            data: 'chkbox'
+            data: 'chkbox',
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
           },
           {
             title: 'ID',
@@ -689,7 +708,6 @@ jQuery(function($){
             item.chkbox = '<input type="checkbox" data-id="recipient_map" name="multi_select" value="' + item.id + '" />';
           });
 
-          console.log(json);
           return json;
         }
       },
@@ -704,7 +722,10 @@ jQuery(function($){
           },
           {
             title: '',
-            data: 'chkbox'
+            data: 'chkbox',
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
           },
           {
             title: 'ID',
@@ -758,7 +779,6 @@ jQuery(function($){
             item.chkbox = '<input type="checkbox" data-id="tls-policy-map" name="multi_select" value="' + item.id + '" />';
           });
 
-          console.log(json);
           return json;
         }
       },
@@ -773,7 +793,10 @@ jQuery(function($){
           },
           {
             title: '',
-            data: 'chkbox'
+            data: 'chkbox',
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
           },
           {
             title: 'ID',
@@ -857,7 +880,6 @@ jQuery(function($){
             }
           });
 
-          console.log(json);
           return json;
         }
       },
@@ -872,7 +894,10 @@ jQuery(function($){
           },
           {
             title: '',
-            data: 'chkbox'
+            data: 'chkbox',
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
           },
           {
             title: 'ID',
@@ -943,7 +968,6 @@ jQuery(function($){
             }
           });
 
-          console.log(json);
           return json;
         }
       },
@@ -958,7 +982,10 @@ jQuery(function($){
           },
           {
             title: '',
-            data: 'chkbox'
+            data: 'chkbox',
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
           },
           {
             title: lang.alias,
@@ -1039,7 +1066,6 @@ jQuery(function($){
             item.exit_status = item.success + ' ' + item.exit_status;
           });
 
-          console.log(json);
           return json;
         }
       },
@@ -1054,7 +1080,10 @@ jQuery(function($){
           },
           {
             title: '',
-            data: 'chkbox'
+            data: 'chkbox',
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
           },
           {
             title: 'ID',
@@ -1130,7 +1159,6 @@ jQuery(function($){
             item.chkbox = '<input type="checkbox" data-id="filter_item" name="multi_select" value="' + item.id + '" />'
           });
 
-          console.log(json);
           return json;
         }
       },
@@ -1145,7 +1173,10 @@ jQuery(function($){
           },
           {
             title: '',
-            data: 'chkbox'
+            data: 'chkbox',
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
           },
           {
             title: 'ID',

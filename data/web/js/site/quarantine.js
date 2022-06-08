@@ -75,7 +75,10 @@ jQuery(function($){
           },
           {
             title: '',
-            data: 'chkbox'
+            data: 'chkbox',
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
           },
           {
             title: 'ID',

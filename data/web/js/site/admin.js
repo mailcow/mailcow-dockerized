@@ -86,7 +86,10 @@ jQuery(function($){
           },
           {
             title: '',
-            data: 'chkbox'
+            data: 'chkbox',
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
           },
           {
             title: lang.username,
@@ -145,7 +148,10 @@ jQuery(function($){
           },
           {
             title: '',
-            data: 'chkbox'
+            data: 'chkbox',
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
           },
           {
             title: 'ID',
@@ -193,7 +199,10 @@ jQuery(function($){
           },
           {
             title: '',
-            data: 'chkbox'
+            data: 'chkbox',
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
           },
           {
             title: lang.username,
@@ -245,7 +254,10 @@ jQuery(function($){
           },
           {
             title: '',
-            data: 'chkbox'
+            data: 'chkbox',
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
           },
           {
             title: lang.host,
@@ -289,7 +301,10 @@ jQuery(function($){
           },
           {
             title: '',
-            data: 'chkbox'
+            data: 'chkbox',
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
           },
           {
             title: 'ID',
@@ -341,7 +356,10 @@ jQuery(function($){
           },
           {
             title: '',
-            data: 'chkbox'
+            data: 'chkbox',
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
           },
           {
             title: 'ID',
@@ -393,7 +411,10 @@ jQuery(function($){
           },
           {
             title: '',
-            data: 'chkbox'
+            data: 'chkbox',
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
           },
           {
             title: 'QID',
