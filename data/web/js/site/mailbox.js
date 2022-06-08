@@ -256,7 +256,7 @@ jQuery(function($){
             item.def_quota_for_mbox = humanFileSize(item.def_quota_for_mbox);
             item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
             item.chkbox = '<input type="checkbox" data-id="domain" name="multi_select" value="' + encodeURIComponent(item.domain_name) + '" />';
-            item.action = '<div class="btn-group footable-actions">';
+            item.action = '<div class="btn-group">';
             if (role == "admin") {
               item.action += '<a href="/edit/domain/' + encodeURIComponent(item.domain_name) + '" class="btn btn-xs btn-xs-third btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
                 '<a href="#" data-action="delete_selected" data-id="single-domain" data-api-url="delete/domain" data-item="' + encodeURIComponent(item.domain_name) + '" class="btn btn-xs btn-xs-third btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
@@ -414,7 +414,7 @@ jQuery(function($){
               var btnSize = 'btn-xs-third';
               if (ALLOW_ADMIN_EMAIL_LOGIN) btnSize = 'btn-xs-quart';
 
-            item.action = '<div class="btn-group footable-actions">' +
+            item.action = '<div class="btn-group">' +
               '<a href="/edit/mailbox/' + encodeURIComponent(item.username) + '" class="btn btn-xs ' + btnSize + ' btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-mailbox" data-api-url="delete/mailbox" data-item="' + encodeURIComponent(item.username) + '" class="btn btn-xs ' + btnSize + ' btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '<a href="/index.php?duallogin=' + encodeURIComponent(item.username) + '" class="login_as btn btn-xs ' + btnSize + ' btn-success"><i class="bi bi-person-fill"></i> Login</a>';
@@ -551,7 +551,7 @@ jQuery(function($){
             } else {
               item.multiple_bookings = '<span id="active-script" class="badge fs-5 bg-danger">' + lang.booking_custom_short + ' (' + item.multiple_bookings + ')</span>';
             }
-            item.action = '<div class="btn-group footable-actions">' +
+            item.action = '<div class="btn-group">' +
               '<a href="/edit/resource/' + encodeURIComponent(item.name) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-resource" data-api-url="delete/resource" data-item="' + item.name + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
@@ -623,7 +623,7 @@ jQuery(function($){
         url: "/api/v1/get/bcc/all",
         dataSrc: function(json){
           $.each(json, function (i, item) {
-            item.action = '<div class="btn-group footable-actions">' +
+            item.action = '<div class="btn-group">' +
               '<a href="/edit/bcc/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-bcc" data-api-url="delete/bcc" data-item="' + item.id + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
@@ -705,7 +705,7 @@ jQuery(function($){
           $.each(json, function (i, item) {
             item.recipient_map_old = escapeHtml(item.recipient_map_old);
             item.recipient_map_new = escapeHtml(item.recipient_map_new);
-            item.action = '<div class="btn-group footable-actions">' +
+            item.action = '<div class="btn-group">' +
               '<a href="/edit/recipient_map/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-recipient_map" data-api-url="delete/recipient_map" data-item="' + item.id + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
@@ -777,7 +777,7 @@ jQuery(function($){
             } else {
               item.parameters = '<code>' + escapeHtml(item.parameters) + '</code>';
             }
-            item.action = '<div class="btn-group footable-actions">' +
+            item.action = '<div class="btn-group">' +
               '<a href="/edit/tls_policy_map/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-tls-policy-map" data-api-url="delete/tls-policy-map" data-item="' + item.id + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
@@ -848,7 +848,7 @@ jQuery(function($){
         url: "/api/v1/get/alias/all",
         dataSrc: function(json){
           $.each(json, function (i, item) {
-            item.action = '<div class="btn-group footable-actions">' +
+            item.action = '<div class="btn-group">' +
               '<a href="/edit/alias/' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-alias" data-api-url="delete/alias" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
@@ -962,7 +962,7 @@ jQuery(function($){
         url: "/api/v1/get/alias-domain/all",
         dataSrc: function(json){
           $.each(json, function (i, item) {
-            item.action = '<div class="btn-group footable-actions">' +
+            item.action = '<div class="btn-group">' +
               '<a href="/edit/aliasdomain/' + encodeURIComponent(item.alias_domain) + '" class="btn btn-xs btn-xs-third btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-alias-domain" data-api-url="delete/alias-domain" data-item="' + encodeURIComponent(item.alias_domain) + '" class="btn btn-xs btn-xs-third btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '<a href="#dnsInfoModal" class="btn btn-xs btn-xs-third btn-info" data-bs-toggle="modal" data-domain="' + encodeURIComponent(item.alias_domain) + '"><i class="bi bi-globe2"></i> DNS</a></div>' +
@@ -1047,7 +1047,7 @@ jQuery(function($){
               item.exclude  = '<code>' + item.exclude + '</code>';
             }
             item.server_w_port = escapeHtml(item.user1) + '@' + item.host1 + ':' + item.port1;
-            item.action = '<div class="btn-group footable-actions">' +
+            item.action = '<div class="btn-group">' +
               '<a href="/edit/syncjob/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-syncjob" data-api-url="delete/syncjob" data-item="' + item.id + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
@@ -1161,7 +1161,7 @@ jQuery(function($){
             }
             item.script_data = '<pre style="margin:0px">' + escapeHtml(item.script_data) + '</pre>'
             item.filter_type = '<div class="badge fs-5 bg-secondary">' + item.filter_type.charAt(0).toUpperCase() + item.filter_type.slice(1).toLowerCase() + '</div>'
-            item.action = '<div class="btn-group footable-actions">' +
+            item.action = '<div class="btn-group">' +
               '<a href="/edit/filter/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-filter" data-api-url="delete/filter" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
