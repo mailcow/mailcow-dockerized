@@ -194,6 +194,11 @@
   .card-login .btn-group .btn {
     display: block !important;
   }
+
+  .dt-sm-head-hidden .dtr-title {
+    display: none !important;
+  }
+
 }
 
 @media (max-width: 350px) {

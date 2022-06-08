@@ -350,7 +350,8 @@ jQuery(function($){
         },
         {
           title: lang.action,
-          data: 'action'
+          data: 'action',
+          className: 'text-md-end d-md-block dt-sm-head-hidden dt-body-right'
         },
       ]
     });
@@ -527,7 +528,8 @@ jQuery(function($){
           },
           {
             title: lang.action,
-            data: 'action'
+            data: 'action',
+            className: 'text-md-end d-md-block dt-sm-head-hidden dt-body-right'
           },
       ]
     });
@@ -605,7 +607,8 @@ jQuery(function($){
           },
           {
             title: lang.action,
-            data: 'action'
+            data: 'action',
+            className: 'text-md-end d-md-block dt-sm-head-hidden dt-body-right'
           },
       ]
     });
@@ -682,7 +685,8 @@ jQuery(function($){
           },
           {
             title: lang.action,
-            data: 'action'
+            data: 'action',
+            className: 'text-md-end d-md-block dt-sm-head-hidden dt-body-right'
           },
       ]
     });
@@ -748,7 +752,8 @@ jQuery(function($){
           },
           {
             title: lang.action,
-            data: 'action'
+            data: 'action',
+            className: 'text-md-end d-md-block dt-sm-head-hidden dt-body-right'
           },
       ]
     });
@@ -827,7 +832,8 @@ jQuery(function($){
           },
           {
             title: lang.action,
-            data: 'action'
+            data: 'action',
+            className: 'text-md-end d-md-block dt-sm-head-hidden dt-body-right'
           },
       ]
     });
@@ -940,7 +946,8 @@ jQuery(function($){
           },
           {
             title: lang.action,
-            data: 'action'
+            data: 'action',
+            className: 'text-md-end d-md-block dt-sm-head-hidden dt-body-right'
           },
       ]
     });
@@ -1016,7 +1023,8 @@ jQuery(function($){
           },
           {
             title: lang.action,
-            data: 'action'
+            data: 'action',
+            className: 'text-md-end d-md-block dt-sm-head-hidden dt-body-right'
           },
       ]
     });
@@ -1130,7 +1138,8 @@ jQuery(function($){
           },
           {
             title: lang.action,
-            data: 'action'
+            data: 'action',
+            className: 'text-md-end d-md-block dt-sm-head-hidden dt-body-right'
           },
       ]
     });
@@ -1204,7 +1213,8 @@ jQuery(function($){
           },
           {
             title: lang.action,
-            data: 'action'
+            data: 'action',
+            className: 'text-md-end d-md-block dt-sm-head-hidden dt-body-right'
           },
       ]
     });
