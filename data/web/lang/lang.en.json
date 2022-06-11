@@ -928,6 +928,7 @@
         "deleted_syncjob": "Deleted syncjob ID %s",
         "deleted_syncjobs": "Deleted syncjobs: %s",
         "dkim_added": "DKIM key %s has been saved",
+        "domain_add_dkim_available": "A DKIM key did already exist",
         "dkim_duplicated": "DKIM key for domain %s has been copied to %s",
         "dkim_removed": "DKIM key %s has been removed",
         "domain_added": "Added domain %s",
