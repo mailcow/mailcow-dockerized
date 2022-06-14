@@ -63,6 +63,12 @@
 .navbar-nav {
   margin: 0;
 }
+.navbar-nav .nav-link {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  margin: 0 10px;
+}
 .navbar-fixed-bottom .navbar-collapse, 
 .navbar-fixed-top .navbar-collapse {
   max-height: 1000px
@@ -169,6 +175,9 @@ legend {
 .bootstrap-select.btn-group .no-results {
   display: none;
 }
+.bootstrap-select>.dropdown-toggle.bs-placeholder.btn-secondary {
+  color: rgb(197, 197, 197) !important;
+}
 .haveibeenpwned {
   cursor: pointer;
   -webkit-user-select: none;  
@@ -214,7 +223,7 @@ legend {
 .btn-input-missing:active:hover,
 .btn-input-missing:active:focus {
   color: #000 !important;
-  background-color: #ff4136;
+  background-color: rgba(255, 65, 54, 0.2);
   border-color: #ff291c;
 }
 .navbar-nav > li {

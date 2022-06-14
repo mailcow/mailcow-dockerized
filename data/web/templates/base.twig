@@ -15,7 +15,7 @@
 <body>
 <div class="overlay"></div>
 {% block navbar %}
-<nav class="navbar navbar-expand-lg navbar-light bg-light navbar-fixed-top">
+<nav class="navbar navbar-expand-lg navbar-light bg-light navbar-fixed-top p-0">
   <div class="container-fluid">
     <a class="navbar-brand" href="/"><img alt="mailcow-logo" src="{{ logo|default('/img/cow_mailcow.svg') }}"></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,14 +53,14 @@
             {% endif %}
           </ul>
         </li>
-        <li class="nav-item"><a href="/quarantine" class="nav-link {% if is_uri('quarantine') %}active{% endif %}"><i class="bi bi-inbox-fill"></i> {{ lang.header.quarantine }}</a></li>
+        <li class="nav-item"><a href="/quarantine" class="nav-link {% if is_uri('quarantine') %}active{% endif %}"><i class="bi bi-inbox-fill me-2"></i> {{ lang.header.quarantine }}</a></li>
         {% endif %}
         {% if mailcow_cc_role == 'admin' and not skip_sogo %}
-        <li class="nav-item"><a href="#" class="nav-link" data-bs-toggle="modal" data-container="sogo-mailcow" data-bs-target="#RestartContainer"><i class="bi bi-arrow-repeat"></i> {{ lang.header.restart_sogo }}</a></li>
+        <li class="nav-item"><a href="#" class="nav-link" data-bs-toggle="modal" data-container="sogo-mailcow" data-bs-target="#RestartContainer"><i class="bi bi-arrow-repeat me-2"></i> {{ lang.header.restart_sogo }}</a></li>
         {% endif %}
         {% if mailcow_apps or app_links %}
         <li class="nav-item dropdown">
-          <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false"><i class="bi bi-link-45deg"></i> {{ ui_texts.apps_name|raw }}</a>
+          <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false"><i class="bi bi-link-45deg me-2"></i> {{ ui_texts.apps_name|raw }}</a>
           <ul class="dropdown-menu">
             {% for app in mailcow_apps %}
               {% if not skip_sogo or not is_uri('SOGo', app.link) %}
@@ -78,9 +78,9 @@
         </li>
         {% endif %}
         {% if not dual_login and mailcow_cc_username %}
-        <li class="logged-in-as" class="nav-item"><a href="#" onclick="logout.submit()" class="nav-link"><b class="username-lia">{{ mailcow_cc_username }}</b> <i class="bi bi-power"></i></a></li>
+        <li class="logged-in-as" class="nav-item"><a href="#" onclick="logout.submit()" class="nav-link"><b class="username-lia">{{ mailcow_cc_username }}</b> <i class="bi bi-power ms-2"></i></a></li>
         {% elseif dual_login %}
-        <li class="logged-in-as" class="nav-item"><a href="#" onclick="logout.submit()" class="nav-link"><b class="username-lia">{{ mailcow_cc_username }} <span class="text-info">({{ dual_login.username }})</span> </b><i class="bi bi-power"></i></a></li>
+        <li class="logged-in-as" class="nav-item"><a href="#" onclick="logout.submit()" class="nav-link"><b class="username-lia">{{ mailcow_cc_username }} <span class="text-info">({{ dual_login.username }})</span> </b><i class="bi bi-power ms-2"></i></a></li>
         {% endif %}
         {% if not is_master %}
         <li class="text-warning slave-info nav-item">[ slave ]</li>
