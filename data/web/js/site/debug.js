@@ -678,13 +678,13 @@ jQuery(function($){
         "value": scan_time
       };
       if (item.action === 'clean' || item.action === 'no action') {
-        item.action = "<div class='badge fs-5 bg-success'>" + item.action + "</div>";
+        item.action = "<div class='badge fs-6 bg-success'>" + item.action + "</div>";
       } else if (item.action === 'rewrite subject' || item.action === 'add header' || item.action === 'probable spam') {
-        item.action = "<div class='badge fs-5 bg-warning'>" + item.action + "</div>";
+        item.action = "<div class='badge fs-6 bg-warning'>" + item.action + "</div>";
       } else if (item.action === 'spam' || item.action === 'reject') {
-        item.action = "<div class='badge fs-5 bg-danger'>" + item.action + "</div>";
+        item.action = "<div class='badge fs-6 bg-danger'>" + item.action + "</div>";
       } else {
-        item.action = "<div class='badge fs-5 bg-info'>" + item.action + "</div>";
+        item.action = "<div class='badge fs-6 bg-info'>" + item.action + "</div>";
       }
       var score_content;
       if (item.score < item.required_score) {
@@ -711,13 +711,13 @@ jQuery(function($){
         }
         item.ua = '<span style="font-size:small">' + item.ua + '</span>';
         if (item.service == "activesync") {
-          item.service = '<span class="badge fs-5 bg-info">ActiveSync</span>';
+          item.service = '<span class="badge fs-6 bg-info">ActiveSync</span>';
         }
         else if (item.service == "imap") {
-          item.service = '<span class="badge fs-5 bg-success">IMAP, SMTP, Cal-/CardDAV</span>';
+          item.service = '<span class="badge fs-6 bg-success">IMAP, SMTP, Cal-/CardDAV</span>';
         }
         else {
-          item.service = '<span class="badge fs-5 bg-danger">' + escapeHtml(item.service) + '</span>';
+          item.service = '<span class="badge fs-6 bg-danger">' + escapeHtml(item.service) + '</span>';
         }
       });
     } else if (table == 'watchdog') {
@@ -725,13 +725,13 @@ jQuery(function($){
         if (item.message == null) {
           item.message = 'Health level: ' + item.lvl + '% (' + item.hpnow + '/' + item.hptotal + ')';
           if (item.hpdiff < 0) {
-            item.trend = '<span class="badge fs-5 bg-danger"><i class="bi bi-caret-down-fill"></i> ' + item.hpdiff + '</span>';
+            item.trend = '<span class="badge fs-6 bg-danger"><i class="bi bi-caret-down-fill"></i> ' + item.hpdiff + '</span>';
           }
           else if (item.hpdiff == 0) {
-            item.trend = '<span class="badge fs-5 bg-info"><i class="bi bi-caret-right-fill"></i> ' + item.hpdiff + '</span>';
+            item.trend = '<span class="badge fs-6 bg-info"><i class="bi bi-caret-right-fill"></i> ' + item.hpdiff + '</span>';
           }
           else {
-            item.trend = '<span class="badge fs-5 bg-success"><i class="bi bi-caret-up-fill"></i> ' + item.hpdiff + '</span>';
+            item.trend = '<span class="badge fs-6 bg-success"><i class="bi bi-caret-up-fill"></i> ' + item.hpdiff + '</span>';
           }
         }
         else {
@@ -745,13 +745,13 @@ jQuery(function($){
         item.user = escapeHtml(item.user);
         item.call = escapeHtml(item.call);
         item.task = '<code>' + item.task + '</code>';
-        item.type = '<span class="badge fs-5 bg-' + item.type + '">' + item.type + '</span>';
+        item.type = '<span class="badge fs-6 bg-' + item.type + '">' + item.type + '</span>';
       });
     } else if (table == 'sasl_log_table') {
       $.each(data, function (i, item) {
         if (item === null) { return true; }
         item.username = escapeHtml(item.username);
-        item.service = '<div class="badge fs-5 bg-secondary">' + item.service.toUpperCase() + '</div>';
+        item.service = '<div class="badge fs-6 bg-secondary">' + item.service.toUpperCase() + '</div>';
       });
     } else if (table == 'general_syslog') {
       $.each(data, function (i, item) {
@@ -770,20 +770,20 @@ jQuery(function($){
         var warning_class = ["warning", "warn"];
         var info_class = ["notice", "info", "debug"];
         if (jQuery.inArray(item.priority, danger_class) !== -1) {
-          item.priority = '<span class="badge fs-5 bg-danger">' + item.priority + '</span>';
+          item.priority = '<span class="badge fs-6 bg-danger">' + item.priority + '</span>';
         } else if (jQuery.inArray(item.priority, warning_class) !== -1) {
-          item.priority = '<span class="badge fs-5 bg-warning">' + item.priority + '</span>';
+          item.priority = '<span class="badge fs-6 bg-warning">' + item.priority + '</span>';
         } else if (jQuery.inArray(item.priority, info_class) !== -1) {
-          item.priority = '<span class="badge fs-5 bg-info">' + item.priority + '</span>';
+          item.priority = '<span class="badge fs-6 bg-info">' + item.priority + '</span>';
         }
       });
     } else if (table == 'apilog') {
       $.each(data, function (i, item) {
         if (item === null) { return true; }
         if (item.method == 'GET') {
-          item.method = '<span class="badge fs-5 bg-success">' + item.method + '</span>';
+          item.method = '<span class="badge fs-6 bg-success">' + item.method + '</span>';
         } else if (item.method == 'POST') {
-          item.method = '<span class="badge fs-5 bg-warning">' + item.method + '</span>';
+          item.method = '<span class="badge fs-6 bg-warning">' + item.method + '</span>';
         }
         item.data = escapeHtml(item.data);
       });
