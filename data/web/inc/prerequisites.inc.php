@@ -252,7 +252,7 @@ $css_minifier = new CSSminifierExtended();
 $css_dir = array_diff(scandir('/web/css/build'), array('..', '.'));
 // get customized ui data
 $UI_TEXTS = customize('get', 'ui_texts');
-$UI_THEME = "lumen"; // TODO: customize('get', 'ui_theme');
+$UI_THEME = customize('get', 'ui_theme');
 // minify bootstrap theme
 if (file_exists('/web/css/themes/'.$UI_THEME.'-bootstrap.css'))
   $css_minifier->add('/web/css/themes/'.$UI_THEME.'-bootstrap.css');
