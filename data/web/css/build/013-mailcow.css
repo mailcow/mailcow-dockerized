@@ -67,7 +67,7 @@
   height: 44px;
   display: flex;
   align-items: center;
-  margin: 0 10px;
+  padding: 0 10px !important;
 }
 .navbar-fixed-bottom .navbar-collapse, 
 .navbar-fixed-top .navbar-collapse {
@@ -267,6 +267,10 @@ code {
 .dtr-title {
   width: 20%;
 }
+table.dataTable>tbody>tr.child ul.dtr-details>li {
+  border-bottom: 1px solid rgba(239, 239, 239, 0.129);
+  padding: 0.5em 0;
+}
 
 .tag-box {
   display: flex;
@@ -291,7 +295,7 @@ code {
 }
 .tag-input {
   margin-left: 10px;
-  border: 0;
+  border: 0 !important;
   flex: 1;
   height: 24px;
   min-width: 150px;

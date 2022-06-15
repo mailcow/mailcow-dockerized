@@ -22,12 +22,12 @@
           <input type="text" class="form-control" name="name" value="{{ result.name }}">
         </div>
       </div>
-      <div class="form-group">
+      <div class="row">
         <label class="control-label col-sm-2">{{ lang.add.tags }}</label>
         <div class="col-sm-10">
           <div class="form-control tag-box">
             {% for tag in mailbox_details.tags %}
-              <span data-action='delete_selected' data-item="{{ tag }}" data-id="mailbox_tag_{{ tag }}" data-api-url='delete/mailbox/tag/{{ mailbox }}' class="badge badge-primary tag-badge btn-badge">
+              <span data-action='delete_selected' data-item="{{ tag }}" data-id="mailbox_tag_{{ tag }}" data-api-url='delete/mailbox/tag/{{ mailbox }}' class="badge bg-primary tag-badge btn-badge">
                 <i class="bi bi-tag-fill"></i> 
                 {{ tag }}
               </span>
@@ -38,7 +38,7 @@
           </div>
         </div>
       </div>
-      <div class="form-group">
+      <div class="row">
         <label class="control-label col-sm-2" for="quota">{{ lang.edit.quota_mb }}
           <br><span id="quotaBadge" class="badge">max. {{ (result.max_new_quota / 1048576) }} MiB</span>
         </label>
@@ -167,18 +167,18 @@
         <label class="control-label col-sm-2" for="sender_acl">{{ lang.user.tls_policy }}</label>
         <div class="col-sm-10">
           <div class="btn-group" data-acl="{{ acl.tls_policy }}">
-            <button type="button" class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary{% if get_tls_policy.tls_enforce_in == '1' %} active"{% endif %}">
-            data-action="edit_selected"
-            data-item="{{ mailbox }}"
-            data-id="tls_policy"
-            data-api-url='edit/tls_policy'
-            data-api-attr='{"tls_enforce_in": {% if get_tls_policy.tls_enforce_in == '1' %}0{% else %}1{% endif %} }'>{{ lang.user.tls_enforce_in }}</button>
-            <button type="button" class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary{% if get_tls_policy.tls_enforce_out == '1' %} active"{% endif %}">
-            data-action="edit_selected"
-            data-item="{{ mailbox }}"
-            data-id="tls_policy"
-            data-api-url='edit/tls_policy'
-            data-api-attr='{"tls_enforce_out": {% if get_tls_policy.tls_enforce_out == '1' %}0{% else %}1{% endif %} }'>{{ lang.user.tls_enforce_out }}</button>
+            <button type="button" class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary{% if get_tls_policy.tls_enforce_in == '1' %} active"{% endif %}"
+              data-action="edit_selected"
+              data-item="{{ mailbox }}"
+              data-id="tls_policy"
+              data-api-url='edit/tls_policy'
+              data-api-attr='{"tls_enforce_in": {% if get_tls_policy.tls_enforce_in == '1' %}0{% else %}1{% endif %} }'>{{ lang.user.tls_enforce_in }}</button>
+            <button type="button" class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary{% if get_tls_policy.tls_enforce_out == '1' %} active"{% endif %}"
+              data-action="edit_selected"
+              data-item="{{ mailbox }}"
+              data-id="tls_policy"
+              data-api-url='edit/tls_policy'
+              data-api-attr='{"tls_enforce_out": {% if get_tls_policy.tls_enforce_out == '1' %}0{% else %}1{% endif %} }'>{{ lang.user.tls_enforce_out }}</button>
           </div>
         </div>
       </div>

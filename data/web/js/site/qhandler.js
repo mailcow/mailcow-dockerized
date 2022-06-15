@@ -46,11 +46,11 @@ jQuery(function($){
       }
       if (typeof data.score !== 'undefined' && typeof data.action !== 'undefined') {
         if (data.action === "add header") {
-          $('#qid_detail_score').append('<span class="label-rspamd-action badge fs-5 bg-warning"><b>' + data.score + '</b> - ' + lang.junk_folder + '</span>');
+          $('#qid_detail_score').append('<span class="label-rspamd-action badge fs-6 bg-warning"><b>' + data.score + '</b> - ' + lang.junk_folder + '</span>');
         } else if (data.action === "reject") {
-          $('#qid_detail_score').append('<span class="label-rspamd-action badge fs-5 bg-danger"><b>' + data.score + '</b> - ' + lang.rejected + '</span>');
+          $('#qid_detail_score').append('<span class="label-rspamd-action badge fs-6 bg-danger"><b>' + data.score + '</b> - ' + lang.rejected + '</span>');
         } else if (data.action === "rewrite subject") {
-          $('#qid_detail_score').append('<span class="label-rspamd-action badge fs-5 bg-warning"><b>' + data.score + '</b> - ' + lang.rewrite_subject + '</span>');
+          $('#qid_detail_score').append('<span class="label-rspamd-action badge fs-6 bg-warning"><b>' + data.score + '</b> - ' + lang.rewrite_subject + '</span>');
         }
       }
       if (typeof data.recipients !== 'undefined') {
