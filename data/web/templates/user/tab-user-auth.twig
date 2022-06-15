@@ -1,7 +1,7 @@
 <div role="tabpanel" class="tab-pane active" id="tab-user-auth">
-  <div class="panel panel-default">
-    <div class="panel-heading">{{ lang.user.mailbox_general }}</div>
-    <div class="panel-body">
+  <div class="card">
+    <div class="card-header">{{ lang.user.mailbox_general }}</div>
+    <div class="card-body">
     {% if mailboxdata.attributes.force_pw_update == '1' %}
         <div class="alert alert-danger">{{ lang.user.force_pw_update|raw }}</div>
     {% endif %}
@@ -115,7 +115,7 @@
       </div>
       <hr>
       <div class="row">
-        <div class="col-sm-offset-3 col-sm-9">
+        <div class="offset-sm-3 col-sm-9">
           <p><a target="_blank" href="https://mailcow.github.io/mailcow-dockerized-docs/client/client/#{{ clientconfigstr }}">[{{ lang.user.client_configuration }}]</a></p>
           <p><a href="#userFilterModal" data-bs-toggle="modal">[{{ lang.user.show_sieve_filters }}]</a></p>
           <hr>

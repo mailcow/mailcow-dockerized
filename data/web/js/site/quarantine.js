@@ -31,16 +31,16 @@ jQuery(function($){
               item.score = '-';
             }
             if (item.virus_flag > 0) {
-              item.virus = '<span class="badge fs-5 bg-danger">' + lang.high_danger + '</span>';
+              item.virus = '<span class="badge fs-6 bg-danger">' + lang.high_danger + '</span>';
             } else {
-              item.virus = '<span class="badge fs-5 bg-secondary">' + lang.neutral_danger + '</span>';
+              item.virus = '<span class="badge fs-6 bg-secondary">' + lang.neutral_danger + '</span>';
             }
             if (item.action === "reject") {
-              item.rspamdaction = '<span class="badge fs-5 bg-danger">' + lang.rejected + '</span>';
+              item.rspamdaction = '<span class="badge fs-6 bg-danger">' + lang.rejected + '</span>';
             } else if (item.action === "add header") {
-              item.rspamdaction = '<span class="badge fs-5 bg-warning">' + lang.junk_folder + '</span>';
+              item.rspamdaction = '<span class="badge fs-6 bg-warning">' + lang.junk_folder + '</span>';
             } else if (item.action === "rewrite subject") {
-              item.rspamdaction = '<span class="badge fs-5 bg-warning">' + lang.rewrite_subject + '</span>';
+              item.rspamdaction = '<span class="badge fs-6 bg-warning">' + lang.rewrite_subject + '</span>';
             }
             if(item.notified > 0) {
               item.notified = '&#10004;';
@@ -192,11 +192,11 @@ jQuery(function($){
         }
         if (typeof data.score !== 'undefined' && typeof data.action !== 'undefined') {
           if (data.action == "add header") {
-            $('#qid_detail_score').append('<span class="label-rspamd-action badge fs-5 bg-warning"><b>' + data.score + '</b> - ' + lang.junk_folder + '</span>');
+            $('#qid_detail_score').append('<span class="label-rspamd-action badge fs-6 bg-warning"><b>' + data.score + '</b> - ' + lang.junk_folder + '</span>');
           } else if (data.action == "reject") {
-            $('#qid_detail_score').append('<span class="label-rspamd-action badge fs-5 bg-danger"><b>' + data.score + '</b> - ' + lang.rejected + '</span>');
+            $('#qid_detail_score').append('<span class="label-rspamd-action badge fs-6 bg-danger"><b>' + data.score + '</b> - ' + lang.rejected + '</span>');
           } else if (data.action == "rewrite subject") {
-            $('#qid_detail_score').append('<span class="label-rspamd-action badge fs-5 bg-warning"><b>' + data.score + '</b> - ' + lang.rewrite_subject + '</span>');
+            $('#qid_detail_score').append('<span class="label-rspamd-action badge fs-6 bg-warning"><b>' + data.score + '</b> - ' + lang.rewrite_subject + '</span>');
           }
         }
         if (typeof data.recipients !== 'undefined') {

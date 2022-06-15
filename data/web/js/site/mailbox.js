@@ -236,17 +236,19 @@ jQuery(function($){
             if (Array.isArray(item.tags)){
               var tags = '';
               for (var i = 0; i < item.tags.length; i++)
-                tags += '<span class="badge badge-primary tag-badge"><i class="bi bi-tag-fill"></i> ' + escapeHtml(item.tags[i]) + '</span>';
+                tags += '<span class="badge bg-primary tag-badge"><i class="bi bi-tag-fill"></i> ' + escapeHtml(item.tags[i]) + '</span>';
               item.tags = tags;
+            } else {
+              item.tags = '';
             }
 
             if (item.backupmx == 1) {
               if (item.relay_unknown_only == 1) {
-                item.domain_name = '<div class="badge fs-5 bg-info">Relay Non-Local</div> ' + item.domain_name;
+                item.domain_name = '<div class="badge fs-6 bg-info">Relay Non-Local</div> ' + item.domain_name;
               } else if (item.relay_all_recipients == 1) {
-                item.domain_name = '<div class="badge fs-5 bg-info">Relay All</div> ' + item.domain_name;
+                item.domain_name = '<div class="badge fs-6 bg-info">Relay All</div> ' + item.domain_name;
               } else {
-                item.domain_name = '<div class="badge fs-5 bg-info">Relay</div> ' + item.domain_name;
+                item.domain_name = '<div class="badge fs-6 bg-info">Relay</div> ' + item.domain_name;
               }
             }
           });
@@ -324,6 +326,17 @@ jQuery(function($){
         {
           title: lang.domain_admins,
           data: 'domain_admins'
+        },
+        {
+          title: 'Tags',
+          data: 'tags'
+        },
+        {
+          title: lang.active,
+          data: 'active',
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"></i>':(0==data?'<i class="bi bi-x-lg"></i>':2==data&&'&#8212;');
+          }
         },
         {
           title: lang.action,
@@ -415,8 +428,10 @@ jQuery(function($){
             if (Array.isArray(item.tags)){
               var tags = '';
               for (var i = 0; i < item.tags.length; i++)
-                tags += '<span class="badge badge-primary tag-badge"><i class="bi bi-tag-fill"></i> ' + escapeHtml(item.tags[i]) + '</span>';
+                tags += '<span class="badge bg-primary tag-badge"><i class="bi bi-tag-fill"></i> ' + escapeHtml(item.tags[i]) + '</span>';
               item.tags = tags;
+            } else {
+              item.tags = '';
             }
           });
 
@@ -509,6 +524,10 @@ jQuery(function($){
             data: 'messages'
           },
           {
+            title: 'Tags',
+            data: 'tags'
+          },
+          {
             title: lang.active,
             data: 'active',
             render: function (data, type) {
@@ -535,11 +554,11 @@ jQuery(function($){
         dataSrc: function(json){
           $.each(json, function (i, item) {
             if (item.multiple_bookings == '0') {
-              item.multiple_bookings = '<span id="active-script" class="badge fs-5 bg-success">' + lang.booking_0_short + '</span>';
+              item.multiple_bookings = '<span id="active-script" class="badge fs-6 bg-success">' + lang.booking_0_short + '</span>';
             } else if (item.multiple_bookings == '-1') {
-              item.multiple_bookings = '<span id="active-script" class="badge fs-5 bg-warning">' + lang.booking_lt0_short + '</span>';
+              item.multiple_bookings = '<span id="active-script" class="badge fs-6 bg-warning">' + lang.booking_lt0_short + '</span>';
             } else {
-              item.multiple_bookings = '<span id="active-script" class="badge fs-5 bg-danger">' + lang.booking_custom_short + ' (' + item.multiple_bookings + ')</span>';
+              item.multiple_bookings = '<span id="active-script" class="badge fs-6 bg-danger">' + lang.booking_custom_short + ' (' + item.multiple_bookings + ')</span>';
             }
             item.action = '<div class="btn-group">' +
               '<a href="/edit/resource/' + encodeURIComponent(item.name) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
@@ -627,9 +646,9 @@ jQuery(function($){
             item.local_dest = escapeHtml(item.local_dest);
             item.bcc_dest = escapeHtml(item.bcc_dest);
             if (item.type == 'sender') {
-              item.type = '<span id="active-script" class="badge fs-5 bg-success">' + lang.bcc_sender_map + '</span>';
+              item.type = '<span id="active-script" class="badge fs-6 bg-success">' + lang.bcc_sender_map + '</span>';
             } else {
-              item.type = '<span id="inactive-script" class="badge fs-5 bg-warning">' + lang.bcc_rcpt_map + '</span>';
+              item.type = '<span id="inactive-script" class="badge fs-6 bg-warning">' + lang.bcc_rcpt_map + '</span>';
             }
           });
 
@@ -877,7 +896,7 @@ jQuery(function($){
               item.private_comment = '-';
             }
             if (item.is_catch_all == 1) {
-              item.address = '<div class="badge fs-5 bg-secondary">' + lang.catch_all + '</div> ' + escapeHtml(item.address);
+              item.address = '<div class="badge fs-6 bg-secondary">' + lang.catch_all + '</div> ' + escapeHtml(item.address);
             }
             else {
               item.address = escapeHtml(item.address);
@@ -886,10 +905,10 @@ jQuery(function($){
               item.goto = '⤷ <i class="bi bi-trash" style="font-size:12px"></i>';
             }
             else if (item.goto == "spam@localhost") {
-              item.goto = '<span class="badge fs-5 bg-danger">' + lang.goto_spam + '</span>';
+              item.goto = '<span class="badge fs-6 bg-danger">' + lang.goto_spam + '</span>';
             }
             else if (item.goto == "ham@localhost") {
-              item.goto = '<span class="badge fs-5 bg-success">' + lang.goto_ham + '</span>';
+              item.goto = '<span class="badge fs-6 bg-success">' + lang.goto_ham + '</span>';
             }
             if (item.in_primary_domain !== "") {
               item.domain = '<i data-domainname="' + item.domain + '" class="bi bi-info-circle-fill alias-domain-info text-info" data-bs-toggle="tooltip" title="' + lang.target_domain + ': ' + item.in_primary_domain + '"></i> ' + item.domain;
@@ -984,7 +1003,7 @@ jQuery(function($){
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="alias-domain" name="multi_select" value="' + encodeURIComponent(item.alias_domain) + '" />';
             if(item.parent_is_backupmx == '1') {
-              item.target_domain = '<span><a href="/edit/domain/' + item.target_domain + '">' + item.target_domain + '</a> <div class="badge fs-5 bg-warning">' + lang.alias_domain_backupmx + '</div></span>';
+              item.target_domain = '<span><a href="/edit/domain/' + item.target_domain + '">' + item.target_domain + '</a> <div class="badge fs-6 bg-warning">' + lang.alias_domain_backupmx + '</div></span>';
             } else {
               item.target_domain = '<span><a href="/edit/domain/' + item.target_domain + '">' + item.target_domain + '</a></span>';
             }
@@ -1073,9 +1092,9 @@ jQuery(function($){
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="syncjob" name="multi_select" value="' + item.id + '" />';
             if (item.is_running == 1) {
-              item.is_running = '<span id="active-script" class="badge fs-5 bg-success">' + lang.running + '</span>';
+              item.is_running = '<span id="active-script" class="badge fs-6 bg-success">' + lang.running + '</span>';
             } else {
-              item.is_running = '<span id="inactive-script" class="badge fs-5 bg-warning">' + lang.waiting + '</span>';
+              item.is_running = '<span id="inactive-script" class="badge fs-6 bg-warning">' + lang.waiting + '</span>';
             }
             if (!item.last_run > 0) {
               item.last_run = lang.waiting;
@@ -1180,12 +1199,12 @@ jQuery(function($){
         dataSrc: function(json){
           $.each(json, function (i, item) {
             if (item.active == 1) {
-              item.active = '<span id="active-script" class="badge fs-5 bg-success">' + lang.active + '</span>';
+              item.active = '<span id="active-script" class="badge fs-6 bg-success">' + lang.active + '</span>';
             } else {
-              item.active = '<span id="inactive-script" class="badge fs-5 bg-warning">' + lang.inactive + '</span>';
+              item.active = '<span id="inactive-script" class="badge fs-6 bg-warning">' + lang.inactive + '</span>';
             }
             item.script_data = '<pre style="margin:0px">' + escapeHtml(item.script_data) + '</pre>'
-            item.filter_type = '<div class="badge fs-5 bg-secondary">' + item.filter_type.charAt(0).toUpperCase() + item.filter_type.slice(1).toLowerCase() + '</div>'
+            item.filter_type = '<div class="badge fs-6 bg-secondary">' + item.filter_type.charAt(0).toUpperCase() + item.filter_type.slice(1).toLowerCase() + '</div>'
             item.action = '<div class="btn-group">' +
               '<a href="/edit/filter/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-filter" data-api-url="delete/filter" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
