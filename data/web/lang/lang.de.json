@@ -88,7 +88,7 @@
         "relay_all": "Alle Empfänger-Adressen relayen",
         "relay_all_info": "↪ Wenn <b>nicht</b> alle Empfänger-Adressen relayt werden sollen, müssen \"blinde\" Mailboxen für jede Adresse, die relayt werden soll, erstellt werden.",
         "relay_domain": "Diese Domain relayen",
-        "relay_transport_info": "<div class=\"label label-info\">Info</div> Transport-Maps können erstellt werden, um individuelle Ziele für eine Relay-Domain zu definieren.",
+        "relay_transport_info": "<div class=\"badge fs-6 bg-info\">Info</div> Transport-Maps können erstellt werden, um individuelle Ziele für eine Relay-Domain zu definieren.",
         "relay_unknown_only": "Nur nicht-lokale Mailboxen relayen. Existente Mailboxen werden weiterhin lokal zugestellt.",
         "relayhost_wrapped_tls_info": "Bitte <b>keine</b> \"TLS-wrapped Ports\" verwenden (etwa SMTPS via Port 465/tcp).<br>\r\nDer Transport wird stattdessen STARTTLS anfordern, um TLS zu verwenden. TLS kann unter \"TLS Policy Maps\" erzwungen werden.",
         "select": "Bitte auswählen",
@@ -465,6 +465,30 @@
         "value_missing": "Bitte alle Felder ausfüllen",
         "yotp_verification_failed": "Yubico OTP-Verifizierung fehlgeschlagen: %s"
     },
+    "datatables": {
+      "decimal": "",
+      "emptyTable": "Keine Daten in der Tabelle vorhanden",
+      "info": "_START_ bis _END_ von _TOTAL_ Einträgen",
+      "infoEmpty": "0 bis 0 von 0 Einträgen",
+      "infoFiltered": "(gefiltert von _MAX_ Einträgen)",
+      "infoPostFix": "",
+      "thousands": ".",
+      "lengthMenu": "_MENU_ Einträge anzeigen",
+      "loadingRecords": "Wird geladen...",
+      "processing": "Bitte warten...",
+      "search": "Suchen",
+      "zeroRecords": "Keine Einträge vorhanden.",
+      "paginate": {
+        "first": "Erste",
+        "previous": "Zurück",
+        "next": "Nächste",
+        "last": "Letzte"
+      },
+      "aria": {
+        "sortAscending": ": aktivieren, um Spalte aufsteigend zu sortieren",
+        "sortDescending": ": aktivieren, um Spalte absteigend zu sortieren"
+      }
+    },
     "debug": {
         "chart_this_server": "Chart (dieser Server)",
         "containers_info": "Container-Information",
@@ -584,7 +608,7 @@
         "relay_all": "Alle Empfänger-Adressen relayen",
         "relay_all_info": "↪ Wenn <b>nicht</b> alle Empfänger-Adressen relayt werden sollen, müssen \"blinde\" Mailboxen für jede Adresse, die relayt werden soll, erstellen werden.",
         "relay_domain": "Diese Domain relayen",
-        "relay_transport_info": "<div class=\"label label-info\">Info</div> Transport Maps können erstellt werden, um individuelle Ziele für eine Relay Domain zu definieren.",
+        "relay_transport_info": "<div class=\"badge fs-6 bg-info\">Info</div> Transport Maps können erstellt werden, um individuelle Ziele für eine Relay Domain zu definieren.",
         "relay_unknown_only": "Nur nicht-lokale Mailboxen relayen. Existente Mailboxen werden weiterhin lokal zugestellt.",
         "relayhost": "Senderabhängige Transport Maps",
         "remove": "Entfernen",
@@ -592,7 +616,7 @@
         "save": "Änderungen speichern",
         "scope": "Scope",
         "sender_acl": "Darf Nachrichten versenden als",
-        "sender_acl_disabled": "<span class=\"label label-danger\">Absenderprüfung deaktiviert</span>",
+        "sender_acl_disabled": "<span class=\"badge fs-6 bg-danger\">Absenderprüfung deaktiviert</span>",
         "sender_acl_info": "Wird einem Mailbox-Benutzer A der Versand als Mailbox-Benutzer B gestattet, so erscheint der Absender <b>nicht</b> automatisch in SOGo zur Auswahl.<br>\r\n  In SOGo muss zusätzlich eine Delegation eingerichtet werden. Dieses Verhalten trifft nicht auf Alias-Adressen zu.",
         "sieve_desc": "Kurze Beschreibung",
         "sieve_type": "Filtertyp",
@@ -1103,7 +1127,7 @@
         "running": "Wird ausgeführt",
         "save": "Änderungen speichern",
         "save_changes": "Änderungen speichern",
-        "sender_acl_disabled": "<span class=\"label label-danger\">Absenderprüfung deaktiviert</span>",
+        "sender_acl_disabled": "<span class=\"badge fs-6 bg-danger\">Absenderprüfung deaktiviert</span>",
         "shared_aliases": "Geteilte Alias-Adressen",
         "shared_aliases_desc": "Geteilte Alias-Adressen werden nicht bei benutzerdefinierten Einstellungen, wie die des Spam-Filters oder der Verschlüsselungsrichtlinie, berücksichtigt. Entsprechende Spam-Filter können lediglich von einem Administrator vorgenommen werden.",
         "show_sieve_filters": "Zeige aktiven Filter des Benutzers",

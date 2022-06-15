@@ -53,6 +53,7 @@ $template_data = [
   'clamd_status' => $clamd_status,
   'containers' => $containers,
   'lang_admin' => json_encode($lang['admin']),
+  'lang_datatables' => json_encode($lang['datatables']),
 ];
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';

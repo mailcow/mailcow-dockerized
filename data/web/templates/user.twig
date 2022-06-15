@@ -1,34 +1,39 @@
 {% extends 'base.twig' %}
 
 {% block content %}
-<!-- Nav tabs -->
-<ul class="nav nav-tabs responsive-tabs" role="tablist">
-  <li class="dropdown active">
-    <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{ lang.user.mailbox }}<span class="caret"></span></a>
-    <ul class="dropdown-menu">
-      <li role="presentation" class="active" data-dont-remember="1"><a href="#tab-user-auth" aria-controls="tab-user-auth" role="tab" data-toggle="tab">{{ lang.user.mailbox_general }}</a></li>
-      <li role="presentation"><a href="#tab-user-details" aria-controls="tab-config-fwdhosts" role="tab" data-toggle="tab">{{ lang.user.mailbox_details }}</a></li>
-      <li role="presentation"><a href="#tab-user-settings" aria-controls="tab-config-f2b" role="tab" data-toggle="tab">{{ lang.user.mailbox_settings }}</a></li>
-    </ul>
-  </li>
-  <li role="presentation"><a href="#SpamAliases" aria-controls="SpamAliases" role="tab" data-toggle="tab">{{ lang.user.spam_aliases }}</a></li>
-  <li role="presentation"><a href="#Spamfilter" aria-controls="Spamfilter" role="tab" data-toggle="tab">{{ lang.user.spamfilter }}</a></li>
-  <li role="presentation"><a href="#Syncjobs" aria-controls="Syncjobs" role="tab" data-toggle="tab">{{ lang.user.sync_jobs }}</a></li>
-  <li role="presentation"><a href="#AppPasswds" aria-controls="AppPasswds" role="tab" data-toggle="tab">{{ lang.user.app_passwds }}</a></li>
-  <li role="presentation"><a href="#Pushover" aria-controls="Pushover" role="tab" data-toggle="tab">Pushover API</a></li>
-</ul>
-<hr>
+<div id="user-content" class="responsive-tabs">
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item dropdown" role="presentation">
+      <a class="nav-link dropdown-toggle active" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">{{ lang.user.mailbox }}</a>
+      <ul class="dropdown-menu">
+        <li><button class="dropdown-item active" role="tab" aria-selected="true" aria-controls="tab-user-auth" data-bs-toggle="tab" data-bs-target="#tab-user-auth">{{ lang.user.mailbox_general }}</button></li>
+        <li><button class="dropdown-item" role="tab" aria-selected="false" aria-controls="tab-config-fwdhosts" data-bs-toggle="tab" data-bs-target="#tab-user-details">{{ lang.user.mailbox_details }}</button></li>
+        <li><button class="dropdown-item" role="tab" aria-selected="false" aria-controls="tab-config-f2b" data-bs-toggle="tab" data-bs-target="#tab-user-settings">{{ lang.user.mailbox_settings }}</button></li>
+      </ul>
+    </li>
+    <li class="nav-item" role="presentation"><button class="nav-link" role="tab" aria-selected="false" aria-controls="SpamAliases" role="tab" data-bs-toggle="tab" data-bs-target="#SpamAliases">{{ lang.user.spam_aliases }}</button></li>
+    <li class="nav-item" role="presentation"><button class="nav-link" role="tab" aria-selected="false" aria-controls="Spamfilter" role="tab" data-bs-toggle="tab" data-bs-target="#Spamfilter">{{ lang.user.spamfilter }}</button></li>
+    <li class="nav-item" role="presentation"><button class="nav-link" role="tab" aria-selected="false" aria-controls="Syncjobs" role="tab" data-bs-toggle="tab" data-bs-target="#Syncjobs">{{ lang.user.sync_jobs }}</button></li>
+    <li class="nav-item" role="presentation"><button class="nav-link" role="tab" aria-selected="false" aria-controls="AppPasswds" role="tab" data-bs-toggle="tab" data-bs-target="#AppPasswds">{{ lang.user.app_passwds }}</button></li>
+    <li class="nav-item" role="presentation"><button class="nav-link" role="tab" aria-selected="false" aria-controls="Pushover" role="tab" data-bs-toggle="tab" data-bs-target="#Pushover">Pushover API</button></li>
+  </ul>
 
-<div class="tab-content">
-  {% include 'user/tab-user-auth.twig' %}
-  {% include 'user/tab-user-details.twig' %}
-  {% include 'user/tab-user-settings.twig' %}
-  {% include 'user/SpamAliases.twig' %}
-  {% include 'user/Spamfilter.twig' %}
-  {% include 'user/Syncjobs.twig' %}
-  {% include 'user/AppPasswds.twig' %}
-  {% include 'user/Pushover.twig' %}
+  <div class="row">
+    <div class="col-md-12">
+      <div class="tab-content" style="padding-top:20px">
+        {% include 'user/tab-user-auth.twig' %}
+        {% include 'user/tab-user-details.twig' %}
+        {% include 'user/tab-user-settings.twig' %}
+        {% include 'user/SpamAliases.twig' %}
+        {% include 'user/Spamfilter.twig' %}
+        {% include 'user/Syncjobs.twig' %}
+        {% include 'user/AppPasswds.twig' %}
+        {% include 'user/Pushover.twig' %}
+      </div>
+    </div>
+  </div>
+  <div style="margin-bottom:200px;"></div>
+  {% include 'user_domainadmin_common.twig' %}
 </div>
-<div style="margin-bottom:200px;"></div>
-{% include 'user_domainadmin_common.twig' %}
-{% endblock %}
+  {% endblock %}

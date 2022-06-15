@@ -355,11 +355,8 @@ $(document).ready(function() {
         data_array[i] = decodeURIComponent(data_array[i]);
         $("#ItemsToDelete").append("<li>" + escapeHtml(data_array[i]) + "</li>");
       }
-    });
-    $('#ConfirmDeleteModal').modal({
-        backdrop: 'static',
-        keyboard: false
-      })
+    })
+    $('#ConfirmDeleteModal').modal('show')
       .one('click', '#IsConfirmed', function(e) {
         if (is_active($('#IsConfirmed'))) { return false; }
         $.ajax({
