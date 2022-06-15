@@ -66,22 +66,14 @@ jQuery(function($){
     return re.test(email);
   }
   function draw_wl_policy_domain_table() {
-    ft_wl_policy_mailbox_table = FooTable.init('#wl_policy_domain_table', {
-      "columns": [
-        {"name":"chkbox","title":"","style":{"maxWidth":"40px","width":"40px"},"filterable": false,"sortable": false,"type":"html"},
-        {"name":"prefid","style":{"maxWidth":"40px","width":"40px"},"title":"ID","filterable": false,"sortable": false},
-        {"sorted": true,"name":"value","title":lang_user.spamfilter_table_rule},
-        {"name":"object","title":"Scope"}
-      ],
-      "empty": lang_user.empty,
-      "rows": $.ajax({
-        dataType: 'json',
+    $('#wl_policy_domain_table').DataTable({
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      ajax: {
+        type: "GET",
         url: '/api/v1/get/policy_wl_domain/' + table_for_domain,
-        jsonp: false,
-        error: function () {
-          console.log('Cannot draw mailbox policy wl table');
-        },
-        success: function (data) {
+        dataSrc: function(data){
           $.each(data, function (i, item) {
             if (!validateEmail(item.object)) {
               item.chkbox = '<input type="checkbox" data-id="policy_wl_domain" name="multi_select" value="' + item.prefid + '" />';
@@ -90,35 +82,50 @@ jQuery(function($){
               item.chkbox = '<input type="checkbox" disabled title="' + lang_user.spamfilter_table_domain_policy + '" />';
             }
           });
+
+          return data;
         }
-      }),
-      "paging": {
-        "enabled": true,
-        "limit": 5,
-        "size": pagination_size
       },
-      "sorting": {
-        "enabled": true
-      }
+      columns: [
+          {
+            // placeholder, so checkbox will not block child row toggle
+            title: '',
+            data: null,
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
+          },
+          {
+            title: '',
+            data: 'chkbox',
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
+          },
+          {
+            title: 'ID',
+            data: 'prefid',
+          },
+          {
+            title: lang_user.spamfilter_table_rule,
+            data: 'value'
+          },
+          {
+            title: 'Scope',
+            data: 'object'
+          }
+      ]
     });
   }
   function draw_bl_policy_domain_table() {
-    ft_bl_policy_mailbox_table = FooTable.init('#bl_policy_domain_table', {
-      "columns": [
-        {"name":"chkbox","title":"","style":{"maxWidth":"40px","width":"40px"},"filterable": false,"sortable": false,"type":"html"},
-        {"name":"prefid","style":{"maxWidth":"40px","width":"40px"},"title":"ID","filterable": false,"sortable": false},
-        {"sorted": true,"name":"value","title":lang_user.spamfilter_table_rule},
-        {"name":"object","title":"Scope"}
-      ],
-      "empty": lang_user.empty,
-      "rows": $.ajax({
-        dataType: 'json',
+    $('#bl_policy_domain_table').DataTable({
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      ajax: {
+        type: "GET",
         url: '/api/v1/get/policy_bl_domain/' + table_for_domain,
-        jsonp: false,
-        error: function () {
-          console.log('Cannot draw mailbox policy bl table');
-        },
-        success: function (data) {
+        dataSrc: function(data){
           $.each(data, function (i, item) {
             if (!validateEmail(item.object)) {
               item.chkbox = '<input type="checkbox" data-id="policy_bl_domain" name="multi_select" value="' + item.prefid + '" />';
@@ -127,18 +134,58 @@ jQuery(function($){
               item.chkbox = '<input type="checkbox" disabled tooltip="' + lang_user.spamfilter_table_domain_policy + '" />';
             }
           });
+
+          return data;
         }
-      }),
-      "paging": {
-        "enabled": true,
-        "limit": 5,
-        "size": pagination_size
       },
-      "sorting": {
-        "enabled": true
-      }
+      columns: [
+          {
+            // placeholder, so checkbox will not block child row toggle
+            title: '',
+            data: null,
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
+          },
+          {
+            title: '',
+            data: 'chkbox',
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
+          },
+          {
+            title: 'ID',
+            data: 'prefid',
+          },
+          {
+            title: lang_user.spamfilter_table_rule,
+            data: 'value'
+          },
+          {
+            title: 'Scope',
+            data: 'object'
+          }
+      ]
     });
   }
-  draw_wl_policy_domain_table();
-  draw_bl_policy_domain_table();
+
+  
+  // detect element visibility changes
+  function onVisible(element, callback) {
+    $(element).ready(function() {
+      element_object = document.querySelector(element)
+      new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if(entry.intersectionRatio > 0) {
+            callback(element_object);
+            observer.disconnect();
+          }
+        });
+      }).observe(element_object);
+    });
+  }
+  // Draw Table if tab is active
+  onVisible("[id^=wl_policy_domain_table]", () => draw_wl_policy_domain_table());
+  onVisible("[id^=bl_policy_domain_table]", () => draw_bl_policy_domain_table());
 });

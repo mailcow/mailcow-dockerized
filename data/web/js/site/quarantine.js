@@ -7,67 +7,20 @@ jQuery(function($){
   var entityMap={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;","/":"&#x2F;","`":"&#x60;","=":"&#x3D;"};
   function escapeHtml(n){return String(n).replace(/[&<>"'`=\/]/g,function(n){return entityMap[n]})}
   function humanFileSize(i){if(Math.abs(i)<1024)return i+" B";var B=["KiB","MiB","GiB","TiB","PiB","EiB","ZiB","YiB"],e=-1;do{i/=1024,++e}while(Math.abs(i)>=1024&&e<B.length-1);return i.toFixed(1)+" "+B[e]}
-  // Set paging
-  $('[data-page-size]').on('click', function(e){
-    e.preventDefault();
-    var new_size = $(this).data('page-size');
-    var parent_ul = $(this).closest('ul');
-    var table_id = $(parent_ul).data('table-id');
-    FooTable.get('#' + table_id).pageSize(new_size);
-    //$(this).parent().addClass('active').siblings().removeClass('active')
-    heading = $(this).parents('.panel').find('.panel-heading')
-    var n_results = $(heading).children('.table-lines').text().split(' / ')[1];
-    $(heading).children('.table-lines').text(function(){
-      if (new_size > n_results) {
-        new_size = n_results;
-      }
-      return new_size + ' / ' + n_results;
-    })
-  });
   $(".refresh_table").on('click', function(e) {
     e.preventDefault();
     var table_name = $(this).data('table');
-    $('#' + table_name).find("tr.footable-empty").remove();
-    draw_table = $(this).data('draw');
-    eval(draw_table + '()');
+    $('#' + table_name).DataTable().ajax.reload();
   });
-  function table_quarantine_ready(ft, name) {
-    $('.refresh_table').prop("disabled", false);
-    heading = ft.$el.parents('.panel').find('.panel-heading')
-    var ft_paging = ft.use(FooTable.Paging)
-    $(heading).children('.table-lines').text(function(){
-      var total_rows = ft_paging.totalRows;
-      var size = ft_paging.size;
-      if (size > total_rows) {
-        size = total_rows;
-      }
-      return size + ' / ' + total_rows;
-    })
-  }
   function draw_quarantine_table() {
-    ft_quarantinetable = FooTable.init('#quarantinetable', {
-      "columns": [
-        {"name":"chkbox","title":"","style":{"maxWidth":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
-        {"name":"id","type":"ID","filterable": false,"sorted": true,"direction":"DESC","title":"ID","style":{"width":"50px"}},
-        {"name":"qid","breakpoints":"all","type":"text","title":lang.qid,"style":{"width":"125px"}},
-        {"name":"sender","title":lang.sender},
-        {"name":"subject","title":lang.subj, "type": "text"},
-        {"name":"rspamdaction","title":lang.rspamd_result, "type": "html"},
-        {"name":"rcpt","title":lang.rcpt, "type": "text"},
-        {"name":"virus","title":lang.danger, "type": "text"},
-        {"name":"score","title": lang.spam_score, "type": "text"},
-        {"name":"notified","title":lang.notified, "type": "text"},
-        {"name":"created","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});},"title":lang.received,"style":{"width":"170px"}},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right"},"style":{"min-width":"250px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
-      ],
-      "rows": $.ajax({
-        dataType: 'json',
-        url: '/api/v1/get/quarantine/all',
-        jsonp: false,
-        error: function () {
-          console.log('Cannot draw quarantine table');
-        },
-        success: function (data) {
+    $('#quarantinetable').DataTable({
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/quarantine/all",
+        dataSrc: function(data){
           $.each(data, function (i, item) {
             if (item.subject === null) {
               item.subject = '';
@@ -78,16 +31,16 @@ jQuery(function($){
               item.score = '-';
             }
             if (item.virus_flag > 0) {
-              item.virus = '<span class="label label-danger">' + lang.high_danger + '</span>';
+              item.virus = '<span class="badge fs-5 bg-danger">' + lang.high_danger + '</span>';
             } else {
-              item.virus = '<span class="label label-default">' + lang.neutral_danger + '</span>';
+              item.virus = '<span class="badge fs-5 bg-secondary">' + lang.neutral_danger + '</span>';
             }
             if (item.action === "reject") {
-              item.rspamdaction = '<span class="label label-danger">' + lang.rejected + '</span>';
+              item.rspamdaction = '<span class="badge fs-5 bg-danger">' + lang.rejected + '</span>';
             } else if (item.action === "add header") {
-              item.rspamdaction = '<span class="label label-warning">' + lang.junk_folder + '</span>';
+              item.rspamdaction = '<span class="badge fs-5 bg-warning">' + lang.junk_folder + '</span>';
             } else if (item.action === "rewrite subject") {
-              item.rspamdaction = '<span class="label label-warning">' + lang.rewrite_subject + '</span>';
+              item.rspamdaction = '<span class="badge fs-5 bg-warning">' + lang.rewrite_subject + '</span>';
             }
             if(item.notified > 0) {
               item.notified = '&#10004;';
@@ -95,7 +48,7 @@ jQuery(function($){
               item.notified = '&#10006;';
             }
             if (acl_data.login_as === 1) {
-            item.action = '<div class="btn-group footable-actions">' +
+            item.action = '<div class="btn-group">' +
               '<a href="#" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-half btn-info show_qid_info"><i class="bi bi-box-arrow-up-right"></i> ' + lang.show_item + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="del-single-qitem" data-api-url="delete/qitem" data-item="' + encodeURI(item.id) + '" class="btn btn-xs  btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
@@ -107,25 +60,76 @@ jQuery(function($){
             }
             item.chkbox = '<input type="checkbox" data-id="qitems" name="multi_select" value="' + item.id + '" />';
           });
-        }
-      }),
-      "empty": lang.empty,
-      "paging": {"enabled": true,"limit": 5,"size": pagination_size},
-      "state": {"enabled": true},
-      "sorting": {"enabled": true},
-      "filtering": {"enabled": true,"position": "left","connectors": false,"placeholder": lang.filter_table},
-      "toggleSelector": "table tbody span.footable-toggle",
-      "on": {
-        "destroy.ft.table": function(e, ft){
-          $('.refresh_table').attr('disabled', 'true');
-        },
-        "ready.ft.table": function(e, ft){
-          table_quarantine_ready(ft, 'quarantinetable');
-        },
-        "after.ft.filtering": function(e, ft){
-          table_quarantine_ready(ft, 'quarantinetable');
+
+          return data;
         }
       },
+      columns: [
+          {
+            // placeholder, so checkbox will not block child row toggle
+            title: '',
+            data: null,
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
+          },
+          {
+            title: '',
+            data: 'chkbox',
+            searchable: false,
+            orderable: false,
+            defaultContent: ''
+          },
+          {
+            title: 'ID',
+            data: 'id',
+          },
+          {
+            title: lang.qid,
+            data: 'qid'
+          },
+          {
+            title: lang.sender,
+            data: 'sender'
+          },
+          {
+            title: lang.subj,
+            data: 'sender'
+          },
+          {
+            title: lang.rspamd_result,
+            data: 'rspamdaction'
+          },
+          {
+            title: lang.rcpt,
+            data: 'rcpt'
+          },
+          {
+            title: lang.danger,
+            data: 'virus'
+          },
+          {
+            title: lang.spam_score,
+            data: 'score'
+          },
+          {
+            title: lang.notified,
+            data: 'notified'
+          },
+          {
+            title: lang.received,
+            data: 'created',
+            render: function (data,type) {
+              var date = new Date(data ? data * 1000 : 0); 
+              return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+            }
+          },
+          {
+            title: lang.action,
+            data: 'action',
+            className: 'text-md-end dt-sm-head-hidden dt-body-right'
+          },
+      ]
     });
   }
 
@@ -175,9 +179,9 @@ jQuery(function($){
             if (value.score > 0) highlightClass = 'negative'
             else if (value.score < 0) highlightClass = 'positive'
             else highlightClass = 'neutral'
-            $('#qid_detail_symbols').append('<span data-toggle="tooltip" class="rspamd-symbol ' + highlightClass + '" title="' + (value.options ? value.options.join(', ') : '') + '">' + value.name + ' (<span class="score">' + value.score + '</span>)</span>');
+            $('#qid_detail_symbols').append('<span data-bs-toggle="tooltip" class="rspamd-symbol ' + highlightClass + '" title="' + (value.options ? value.options.join(', ') : '') + '">' + value.name + ' (<span class="score">' + value.score + '</span>)</span>');
           });
-          $('[data-toggle="tooltip"]').tooltip()
+          $('[data-bs-toggle="tooltip"]').tooltip()
         }
         if (typeof data.fuzzy_hashes === 'object' && data.fuzzy_hashes !== null && data.fuzzy_hashes.length !== 0) {
           $.each(data.fuzzy_hashes, function (index, value) {
@@ -188,11 +192,11 @@ jQuery(function($){
         }
         if (typeof data.score !== 'undefined' && typeof data.action !== 'undefined') {
           if (data.action == "add header") {
-            $('#qid_detail_score').append('<span class="label-rspamd-action label label-warning"><b>' + data.score + '</b> - ' + lang.junk_folder + '</span>');
+            $('#qid_detail_score').append('<span class="label-rspamd-action badge fs-5 bg-warning"><b>' + data.score + '</b> - ' + lang.junk_folder + '</span>');
           } else if (data.action == "reject") {
-            $('#qid_detail_score').append('<span class="label-rspamd-action label label-danger"><b>' + data.score + '</b> - ' + lang.rejected + '</span>');
+            $('#qid_detail_score').append('<span class="label-rspamd-action badge fs-5 bg-danger"><b>' + data.score + '</b> - ' + lang.rejected + '</span>');
           } else if (data.action == "rewrite subject") {
-            $('#qid_detail_score').append('<span class="label-rspamd-action label label-warning"><b>' + data.score + '</b> - ' + lang.rewrite_subject + '</span>');
+            $('#qid_detail_score').append('<span class="label-rspamd-action badge fs-5 bg-warning"><b>' + data.score + '</b> - ' + lang.rewrite_subject + '</span>');
           }
         }
         if (typeof data.recipients !== 'undefined') {

@@ -63,6 +63,12 @@
 .navbar-nav {
   margin: 0;
 }
+.navbar-nav .nav-link {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  margin: 0 10px;
+}
 .navbar-fixed-bottom .navbar-collapse, 
 .navbar-fixed-top .navbar-collapse {
   max-height: 1000px
@@ -74,6 +80,12 @@
 .btn .bi {
   display: inline-block;
   font-size: inherit;
+}
+.btn-group-xs > .btn, .btn-xs {
+  padding: .25rem .4rem;
+  font-size: .875rem;
+  line-height: 1rem;
+  border-radius: .2rem;
 }
 .icon-spin {
   animation-name: spin;
@@ -106,12 +118,6 @@
   }
 }
 pre{white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-o-pre-wrap;word-wrap:break-word;}
-.footable-sortable {
-  -webkit-user-select: none;  
-  -moz-user-select: none;    
-  -ms-user-select: none;      
-  user-select: none;
-}
 /* Fix modal moving content left */
 body.modal-open {
   overflow: inherit;
@@ -166,19 +172,11 @@ legend {
   top: 0; right: 0; bottom: 0; left: 0;
   opacity: 0.7;
 }
-#top {
-  padding-top: 70px;
-}
 .bootstrap-select.btn-group .no-results {
   display: none;
 }
-.dropdown-desc {
-  display: block;
-  padding: 3px 10px;
-  clear: both;
-  font-weight: bold;
-  color: #5a5a5a;
-  white-space: nowrap;
+.bootstrap-select>.dropdown-toggle.bs-placeholder.btn-secondary {
+  color: rgb(197, 197, 197) !important;
 }
 .haveibeenpwned {
   cursor: pointer;
@@ -206,7 +204,7 @@ legend {
   flex-direction: column;
 }
 .footer .version {
-    margin-left: auto;
+  margin-left: auto;
 	margin-top: 20px;
 }
 .slave-info {
@@ -225,15 +223,8 @@ legend {
 .btn-input-missing:active:hover,
 .btn-input-missing:active:focus {
   color: #000 !important;
-  background-color: #ff4136;
+  background-color: rgba(255, 65, 54, 0.2);
   border-color: #ff291c;
-}
-table.footable>tbody>tr.footable-empty>td {
-  font-style:italic;
-  font-size: 1rem;
-}
-table>tbody>tr>td>span.footable-toggle {
-  opacity: 0.75;
 }
 .navbar-nav > li {
   font-size: 1rem !important;
@@ -258,6 +249,23 @@ code {
 }
 .flag-icon {
   margin-right: 5px;
+}
+.dropdown-header {
+  font-weight: 600;
+}
+
+.dataTables_info {
+  margin: 15px 0 !important;
+  padding: 0px !important;
+}
+.dataTables_paginate, .dataTables_length, .dataTables_filter {
+  margin: 15px 0 !important;
+}
+.dtr-details {
+  width: 100%;
+}
+.dtr-title {
+  width: 20%;
 }
 
 .tag-box {
@@ -296,4 +304,3 @@ code {
   align-items: center;
   display: inline-flex;
 }
-

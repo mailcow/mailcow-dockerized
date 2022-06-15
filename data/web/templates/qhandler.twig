@@ -3,10 +3,10 @@
 {% block content %}
 <div class="row">
 {% if quick_release or quick_delete %}
-  <div class="col-md-offset-2 col-md-8">
-    <div class="panel panel-default">
-      <div class="panel-heading"><i class="bi bi-patch-exclamation-fill"></i> {{ lang.header.quarantine }}</div>
-      <div class="panel-body">
+  <div class="offset-md-2 col-md-8">
+    <div class="card">
+      <div class="card-header"><i class="bi bi-patch-exclamation-fill"></i> {{ lang.header.quarantine }}</div>
+      <div class="card-body">
         <legend>
           {% if quick_release %}
             {{ lang.quarantine.release }}
@@ -14,51 +14,52 @@
             {{ lang.quarantine.remove }}
           {% endif %}
         </legend>
+        <hr />
         <p>{{ lang.quarantine.qhandler_success }}</p>
       </div>
     </div>
   </div>
 {% else %}
 {% if is_action_release_delete and is_hash_present %}
-  <div class="col-md-offset-2 col-md-8">
-    <div class="panel panel-default">
-      <div class="panel-heading"><i class="bi bi-patch-exclamation-fill"></i> {{ lang.header.quarantine }}</div>
-      <div class="panel-body">
+  <div class="-offset-md-2 col-md-8">
+    <div class="card">
+      <div class="card-header"><i class="bi bi-patch-exclamation-fill"></i> {{ lang.header.quarantine }}</div>
+      <div class="card-body">
         {% if action == 'release' %}
-        <legend id="qtitle" data-hash="{{ hash }}">{{ lang.quarantine.release }}</legend>
+        <legend id="qtitle" data-hash="{{ hash }}">{{ lang.quarantine.release }}</legend><hr />
         {% endif %}
         {% if action == 'delete' %}
-        <legend id="qtitle" data-hash="{{ hash }}">{{ lang.quarantine.remove }}</legend>
+        <legend id="qtitle" data-hash="{{ hash }}">{{ lang.quarantine.remove }}</legend><hr />
         {% endif %}
         <div id="qid_error" style="display:none" class="alert alert-danger"></div>
-        <div class="form-group">
+        <div>
           <label for="qid_detail_symbols"><h4>{{ lang.quarantine.rspamd_result }}:</h4></label>
           <p>{{ lang.quarantine.spam_score }}: <span id="qid_detail_score"></span></p>
           <p id="qid_detail_symbols"></p>
         </div>
-        <div class="form-group">
+        <div>
           <label for="qid_detail_subj"><h4>{{ lang.quarantine.subj }}:</h4></label>
           <p id="qid_detail_subj"></p>
         </div>
-        <div class="form-group">
+        <div>
           <label for="qid_detail_hfrom"><h4>{{ lang.quarantine.sender_header }}:</h4></label>
           <p><span class="mail-address-item" id="qid_detail_hfrom"></span></p>
         </div>
-        <div class="form-group">
+        <div>
           <label for="qid_detail_efrom"><h4>{{ lang.quarantine.sender }}:</h4></label>
           <p><span class="mail-address-item" id="qid_detail_efrom"></span></p>
         </div>
-        <div class="form-group">
+        <div>
           <label for="qid_detail_recipients"><h4>{{ lang.quarantine.recipients }}:</h4></label>
           <p id="qid_detail_recipients"></p>
         </div>
-        <div class="form-group">
+        <div>
           <label for="qid_detail_fuzzy"><h4>Fuzzy Hashes:</h4></label>
           <p id="qid_detail_fuzzy"></p>
         </div>
         <div id="qactions">
           <form method="post" autofill="off">
-            <div class="form-group">
+            <div>
               {% if action == 'release' %}
               <button type="submit" class="btn btn-success" name="quick_release" value="{{ hash }}">{{ lang.quarantine.confirm }}</button>
               {% endif %}
