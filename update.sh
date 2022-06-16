@@ -40,8 +40,20 @@ PATH=$PATH:/opt/bin
 
 umask 0022
 
-for bin in curl docker docker-compose git awk sha1sum; do
-  if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
+for bin in curl docker git awk sha1sum; do
+  if [[ -z $(which ${bin}) ]]; then 
+  echo "Cannot find ${bin}, exiting..." 
+  exit 1;
+  elif [[ -z $(which docker-compose) ]]; then
+  echo "Cannot find docker-compose Standalone. Installing..."
+  sleep 3
+   if [[ -e /etc/alpine-release ]]; then
+    echo -e "\e[33mNot installing latest docker-compose, because you are using Alpine Linux without glibc support. Install docker-compose via apk!\e[0m"
+    exit 1
+   fi 
+  curl -#L https://github.com/docker/compose/releases/download/v$(curl -Ls https://www.servercow.de/docker-compose/latest.php)/docker-compose-$(uname -s)-$(uname -m) > /usr/local/bin/docker-compose
+  chmod +x /usr/local/bin/docker-compose  
+  fi
 done
 
 export LC_ALL=C
