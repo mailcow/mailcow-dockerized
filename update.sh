@@ -40,7 +40,7 @@ PATH=$PATH:/opt/bin
 
 umask 0022
 
-for bin in curl docker git awk sha1sum; do
+for bin in curl docker docker-compose git awk sha1sum; do
   if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
 done
 
