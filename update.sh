@@ -44,27 +44,6 @@ for bin in curl docker git awk sha1sum; do
   if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
 done
 
-
-echo "checking docker compose version...";
-if docker compose >/dev/null 2>&1; then
-  echo -e "\e[32mFound Compose v2!\e[0m"
-  COMPOSE_COMMAND="docker compose"
-elif docker-compose version --short | grep -m1 "^2" > /dev/null 2>&1; then
-  echo -e "\e[32mFound Compose v2!\e[0m"
-  COMPOSE_COMMAND="docker-compose"
-elif docker-compose version --short | grep -m1 "^1" > /dev/null 2>&1; then
-  echo -e "\e[33mWARN: Your machine is using Docker-Compose v1!\e[0m"
-  echo -e "\e[33mmailcow will drop the Docker-Compose v1 Support in December 2022\e[0m"
-  echo -e "\e[33mPlease consider a upgrade to Docker-Compose v2.\e[0m"
-  echo
-  echo
-  echo -e "\e[33mContinuing...\e[0m"
-  sleep 3
-  COMPOSE_COMMAND="docker-compose"
-else
-  echo -e "\e[31mCannot find Docker-Compose v1 or v2 on your System. Please install Docker-Compose v2 and re-run the Script.\e[0m"
-  exit 1
-fi
 export LC_ALL=C
 DATE=$(date +%Y-%m-%d_%H_%M_%S)
 BRANCH=$(cd ${SCRIPT_DIR}; git rev-parse --abbrev-ref HEAD)
@@ -218,6 +197,50 @@ migrate_docker_nat() {
   fi
 }
 
+update_compose(){
+if [[ ${NO_UPDATE_COMPOSE} == "y" ]]; then
+  echo -e "\e[33mNot fetching latest docker-compose, please check for updates manually!\e[0m"
+  return 0
+elif [[ -e /etc/alpine-release ]]; then
+  echo -e "\e[33mNot fetching latest docker-compose, because you are using Alpine Linux without glibc support. Please update docker-compose via apk!\e[0m"
+  return 0
+else
+  echo -e "\e[32mFetching new docker-compose version...\e[0m"
+  echo -e "\e[32mTrying to determine GLIBC version...\e[0m"
+  if ldd --version > /dev/null; then
+    GLIBC_V=$(ldd --version | grep -E '(GLIBC|GNU libc)' | rev | cut -d ' ' -f1 | rev | cut -d '.' -f2)
+    if [ ! -z "${GLIBC_V}" ] && [ ${GLIBC_V} -gt 27 ]; then
+      DC_DL_SUFFIX=
+    else
+      DC_DL_SUFFIX=legacy
+    fi
+  else
+    DC_DL_SUFFIX=legacy
+  fi
+  sleep 1
+  if [[ ! -z $(which pip) && $(pip list --local 2>&1 | grep -v DEPRECATION | grep -c docker-compose) == 1 ]]; then
+    true
+    #prevent breaking a working docker-compose installed with pip
+  elif [[ $(curl -sL -w "%{http_code}" https://www.servercow.de/docker-compose/latest.php?vers=${DC_DL_SUFFIX} -o /dev/null) == "200" ]]; then
+    LATEST_COMPOSE=$(curl -#L https://www.servercow.de/docker-compose/latest.php)
+    COMPOSE_VERSION=$(docker-compose version --short)
+    if [[ "$LATEST_COMPOSE" != "$COMPOSE_VERSION" ]]; then
+      COMPOSE_PATH=$(which docker-compose)
+      if [[ -w ${COMPOSE_PATH} ]]; then
+        curl -#L https://github.com/docker/compose/releases/download/v${LATEST_COMPOSE}/docker-compose-$(uname -s)-$(uname -m) > $COMPOSE_PATH
+        chmod +x $COMPOSE_PATH
+      else
+        echo -e "\e[33mWARNING: $COMPOSE_PATH is not writable, but new version $LATEST_COMPOSE is available (installed: $COMPOSE_VERSION)\e[0m"
+        return 1
+      fi
+    fi
+  else
+    echo -e "\e[33mCannot determine latest docker-compose version, skipping...\e[0m"
+    return 1
+  fi
+fi
+}
+
 while (($#)); do
   case "${1}" in
     --check|-c)
@@ -256,6 +279,9 @@ while (($#)); do
       echo -e "\e[32mRunning in forced mode...\e[0m"
       FORCE=y
     ;;
+    --no-update-compose)
+      NO_UPDATE_COMPOSE=y
+    ;;
     --skip-ping-check)
       SKIP_PING_CHECK=y
     ;;
@@ -265,6 +291,7 @@ while (($#)); do
   -c|--check           -   Check for updates and exit (exit codes => 0: update available, 3: no updates)
   --ours               -   Use merge strategy option "ours" to solve conflicts in favor of non-mailcow code (local changes over remote changes), not recommended!
   --gc                 -   Run garbage collector to delete old image tags
+  --no-update-compose  -   Do not update docker-compose  
   --prefetch           -   Only prefetch new images and exit (useful to prepare updates)
   --skip-start         -   Do not start mailcow after update
   --skip-ping-check    -   Skip ICMP Check to public DNS resolvers (Use it only if you´ve blocked any ICMP Connections to your mailcow machine).
@@ -281,7 +308,7 @@ source mailcow.conf
 DOTS=${MAILCOW_HOSTNAME//[^.]};
 if [ ${#DOTS} -lt 2 ]; then
   echo "MAILCOW_HOSTNAME (${MAILCOW_HOSTNAME}) is not a FQDN!"
-  echo "Please change it to a FQDN and run ${COMPOSE_COMMAND} down followed by ${COMPOSE_COMMAND} up -d"
+  echo "Please change it to a FQDN and run docker-compose down followed by docker-compose up -d"
   exit 1
 fi
 
@@ -571,6 +598,7 @@ echo -e "\e[32mChecking for newer update script...\e[0m"
 SHA1_1=$(sha1sum update.sh)
 git fetch origin #${BRANCH}
 git checkout origin/${BRANCH} update.sh
+git checkout origin/${BRANCH} docker-compose.yml
 SHA1_2=$(sha1sum update.sh)
 if [[ ${SHA1_1} != ${SHA1_2} ]]; then
   echo "update.sh changed, please run this script again, exiting."
@@ -594,14 +622,16 @@ if [ ! $FORCE ]; then
   migrate_docker_nat
 fi
 
+update_compose
+
 echo -e "\e[32mValidating docker-compose stack configuration...\e[0m"
-if ! ${COMPOSE_COMMAND} config -q; then
+if ! docker-compose config -q; then
   echo -e "\e[31m\nOh no, something went wrong. Please check the error message above.\e[0m"
   exit 1
 fi
 
 echo -e "\e[32mChecking for conflicting bridges...\e[0m"
-MAILCOW_BRIDGE=$(${COMPOSE_COMMAND} config | grep -i com.docker.network.bridge.name | cut -d':' -f2)
+MAILCOW_BRIDGE=$(docker-compose config | grep -i com.docker.network.bridge.name | cut -d':' -f2)
 while read NAT_ID; do
   iptables -t nat -D POSTROUTING $NAT_ID
 done < <(iptables -L -vn -t nat --line-numbers | grep $IPV4_NETWORK | grep -E 'MASQUERADE.*all' | grep -v ${MAILCOW_BRIDGE} | cut -d' ' -f1)
@@ -621,8 +651,8 @@ prefetch_images
 
 echo -e "\e[32mStopping mailcow...\e[0m"
 sleep 2
-MAILCOW_CONTAINERS=($(${COMPOSE_COMMAND} ps -q))
-${COMPOSE_COMMAND} down
+MAILCOW_CONTAINERS=($(docker-compose ps -q))
+docker-compose down
 echo -e "\e[32mChecking for remaining containers...\e[0m"
 sleep 2
 for container in "${MAILCOW_CONTAINERS[@]}"; do
@@ -659,16 +689,13 @@ elif [[ ${MERGE_RETURN} == 1 ]]; then
 elif [[ ${MERGE_RETURN} != 0 ]]; then
   echo -e "\e[31m\nOh no, something went wrong. Please check the error message above.\e[0m"
   echo
-  echo "Run ${COMPOSE_COMMAND} up -d to restart your stack without updates or try again after fixing the mentioned errors."
+  echo "Run docker-compose up -d to restart your stack without updates or try again after fixing the mentioned errors."
   exit 1
 fi
 
-echo -e "\e[33mNot fetching latest docker-compose, please check for updates manually!\e[0m"
-sleep 3
-
 echo -e "\e[32mFetching new images, if any...\e[0m"
 sleep 2
-${COMPOSE_COMMAND} pull
+docker-compose pull
 
 # Fix missing SSL, does not overwrite existing files
 [[ ! -d data/assets/ssl ]] && mkdir -p data/assets/ssl
@@ -723,11 +750,11 @@ else
 fi
 
 if [[ ${SKIP_START} == "y" ]]; then
-  echo -e "\e[33mNot starting mailcow, please run \"${COMPOSE_COMMAND} up -d --remove-orphans\" to start mailcow.\e[0m"
+  echo -e "\e[33mNot starting mailcow, please run \"docker-compose up -d --remove-orphans\" to start mailcow.\e[0m"
 else
   echo -e "\e[32mStarting mailcow...\e[0m"
   sleep 2
-  ${COMPOSE_COMMAND} up -d --remove-orphans
+  docker-compose up -d --remove-orphans
 fi
 
 echo -e "\e[32mCollecting garbage...\e[0m"
@@ -738,8 +765,8 @@ if [ -f "${SCRIPT_DIR}/post_update_hook.sh" ]; then
   bash "${SCRIPT_DIR}/post_update_hook.sh"
 fi
 
-#echo "In case you encounter any problem, hard-reset to a state before updating mailcow:"
-#echo
-#git reflog --color=always | grep "Before update on "
-#echo
-#echo "Use \"git reset --hard hash-on-the-left\" and run ${COMPOSE_COMMAND} up -d afterwards."
+# echo "In case you encounter any problem, hard-reset to a state before updating mailcow:"
+# echo
+# git reflog --color=always | grep "Before update on "
+# echo
+# echo "Use \"git reset --hard hash-on-the-left\" and run docker-compose up -d afterwards."
