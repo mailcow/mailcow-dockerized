@@ -77,32 +77,12 @@ function preflight_local_checks() {
     exit 1
   fi
 
-  for bin in rsync docker grep cut; do
+  for bin in rsync docker docker-compose grep cut; do
     if [[ -z $(which ${bin}) ]]; then
       >&2 echo -e "\e[31mCannot find ${bin} in local PATH, exiting...\e[0m"
       exit 1
     fi
   done
-
-
-  echo "checking docker compose version...";
-  if docker compose >/dev/null 2>&1; then
-    echo -e "\e[32mFound Compose v2 on local machine!\e[0m"
-  elif docker-compose version --short | grep -m1 "^2" > /dev/null 2>&1; then
-  echo -e "\e[32mFound Compose v2!\e[0m"
-  COMPOSE_COMMAND="docker-compose"  
-  elif docker-compose version --short | grep -m1 "^1" > /dev/null 2>&1; then
-    echo -e "\e[33mWARN: Your machine is using Docker-Compose v1!\e[0m"
-    echo -e "\e[33mmailcow will drop the Docker-Compose v1 Support in December 2022\e[0m"
-    echo -e "\e[33mPlease consider a upgrade to Docker-Compose v2.\e[0m"
-    echo
-    echo
-    echo -e "\e[33mContinuing...\e[0m"
-    sleep 3
-  else
-    echo -e "\e[31mCannot find Docker-Compose v1 or v2 on your System. Please install Docker-Compose v2 and re-run the Script.\e[0m"
-    exit 1
-  fi
 
   if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then
     echo -e "\e[31mBusyBox grep detected on local system, please install GNU grep\e[0m"
@@ -131,7 +111,7 @@ function preflight_remote_checks() {
       exit 1
   fi
 
-  for bin in rsync docker; do
+  for bin in rsync docker docker-compose; do
     if ! ssh -o StrictHostKeyChecking=no \
       -i "${REMOTE_SSH_KEY}" \
       ${REMOTE_SSH_HOST} \
@@ -141,39 +121,6 @@ function preflight_remote_checks() {
         exit 1
     fi
   done
-
-  echo "checking docker compose version on remote...";
-  if ssh -q -o StrictHostKeyChecking=no \
-      -i "${REMOTE_SSH_KEY}" \
-      ${REMOTE_SSH_HOST} \
-      -p ${REMOTE_SSH_PORT} \
-     -t 'docker compose' >/dev/null 2>&1; then
-    echo -e "\e[32mFound Compose v2 on remote!\e[0m"
-    COMPOSE_COMMAND="docker compose"
-  elif ssh -q -o StrictHostKeyChecking=no \
-      -i "${REMOTE_SSH_KEY}" \
-      ${REMOTE_SSH_HOST} \
-      -p ${REMOTE_SSH_PORT} \
-      -t 'docker-compose version --short' | grep -m1 "^2" > /dev/null 2>&1; then
-    echo -e "\e[32mFound Compose v2!\e[0m"
-    COMPOSE_COMMAND="docker-compose"
-  elif ssh -q -o StrictHostKeyChecking=no \
-      -i "${REMOTE_SSH_KEY}" \
-      ${REMOTE_SSH_HOST} \
-      -p ${REMOTE_SSH_PORT} \
-      -t 'docker-compose version --short' | grep -m1 "^1" > /dev/null 2>&1; then
-    echo -e "\e[33mWARN: The remote is using Docker-Compose v1!\e[0m"
-    echo -e "\e[33mmailcow will drop the Docker-Compose v1 Support in December 2022\e[0m"
-    echo -e "\e[33mPlease consider a upgrade to Docker-Compose v2 on remote.\e[0m"
-    echo
-    echo
-    echo -e "\e[33mContinuing...\e[0m"
-    sleep 3
-    COMPOSE_COMMAND="docker-compose"
-  else
-    echo -e "\e[31mCannot find Docker-Compose v1 or v2 on the Remote Machine! Please install Docker-Compose v2 on that and re-run the script.\e[0m"
-    exit 1
-  fi
 }
 
 preflight_local_checks
