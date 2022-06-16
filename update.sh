@@ -597,8 +597,7 @@ fi
 echo -e "\e[32mChecking for newer update script...\e[0m"
 SHA1_1=$(sha1sum update.sh)
 git fetch origin #${BRANCH}
-git checkout origin/${BRANCH} update.sh
-git checkout origin/${BRANCH} docker-compose.yml
+git checkout origin/${BRANCH} update.sh docker-compose.yml
 SHA1_2=$(sha1sum update.sh)
 if [[ ${SHA1_1} != ${SHA1_2} ]]; then
   echo "update.sh changed, please run this script again, exiting."
