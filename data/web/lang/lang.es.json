@@ -19,7 +19,8 @@
         "syncjobs": "Trabajos de sincronización",
         "tls_policy": "Póliza de TLS",
         "unlimited_quota": "Cuota ilimitada para buzones",
-        "app_passwds": "Gestionar las contraseñas de aplicaciones"
+        "app_passwds": "Gestionar las contraseñas de aplicaciones",
+        "domain_desc": "Cambiar descripción del dominio"
     },
     "add": {
         "activate_filter_warn": "Todos los demás filtros se desactivarán cuando este filtro se active.",
