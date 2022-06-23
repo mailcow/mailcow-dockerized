@@ -209,6 +209,26 @@ migrate_docker_nat() {
   fi
 }
 
+remove_obsolete_nginx_ports() {
+    # Removing obsolete docker-compose.override.yml
+    if [ -s docker-compose.override.* ]; then
+        if cat docker-compose.override.* | grep nginx-mailcow > /dev/null 2>&1; then
+          if cat docker-compose.override.* | grep -w [::] > /dev/null 2>&1; then
+            if cat docker-compose.override.* | grep -w 80:80 > /dev/null 2>&1 && cat docker-compose.override.* | grep -w 443:443 > /dev/null 2>&1 ; then
+              sed -i '/nginx-mailcow:$/,/^$/d' docker-compose.override.*
+                if [[ "$(cat docker-compose.override.yml | sed '/^\s*$/d' | wc -l)" == "2" ]]; then
+                  mv docker-compose.override.yml docker-compose.override.yml_backup
+                  echo -e "\e[31mRemoved obsolete NGINX IPv6 Bind from override File.\e[0m"
+                elif [[ "$(cat docker-compose.override.yaml | sed '/^\s*$/d' | wc -l)" == "2" ]]; then
+                  mv docker-compose.override.yaml docker-compose.override.yaml_backup
+                  echo -e "\e[31mRemoved obsolete NGINX IPv6 Bind from override File.\e[0m"
+                fi
+            fi
+          fi
+        fi
+    fi        
+}
+
 update_compose(){
 if [[ ${NO_UPDATE_COMPOSE} == "y" ]]; then
   echo -e "\e[33mNot fetching latest docker-compose, please check for updates manually!\e[0m"
@@ -634,6 +654,8 @@ if [ ! $FORCE ]; then
 fi
 
 update_compose
+
+remove_obsolete_nginx_ports
 
 echo -e "\e[32mValidating docker-compose stack configuration...\e[0m"
 if ! docker-compose config -q; then
