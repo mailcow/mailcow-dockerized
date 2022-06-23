@@ -19,10 +19,16 @@
   <div class="container-fluid">
     <a class="navbar-brand" href="/"><img alt="mailcow-logo" src="{{ logo|default('/img/cow_mailcow.svg') }}"></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
+      <i class="bi bi-list fs-3"></i>
     </button>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <div class="nav-link form-check form-switch my-auto d-flex align-items-center">
+            <label class="form-check-label"><i class="bi bi-moon-fill"></i></label>
+            <input class="form-check-input ms-2" type="checkbox" id="dark-mode-toggle">
+          </div>
+        </li>
         {% if mailcow_locale %}
         <li class="nav-item dropdown{% if available_languages|length == 1 %}lang-link-disabled{% endif %}">
           <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false"><span class="flag-icon flag-icon-{{ mailcow_locale }}"></span></a>
@@ -78,9 +84,9 @@
         </li>
         {% endif %}
         {% if not dual_login and mailcow_cc_username %}
-        <li class="logged-in-as" class="nav-item"><a href="#" onclick="logout.submit()" class="nav-link"><b class="username-lia">{{ mailcow_cc_username }}</b> <i class="bi bi-power ms-2"></i></a></li>
+        <li class="logged-in-as nav-item"><a href="#" onclick="logout.submit()" class="nav-link"><b class="username-lia">{{ mailcow_cc_username }}</b> <i class="bi bi-power ms-2"></i></a></li>
         {% elseif dual_login %}
-        <li class="logged-in-as" class="nav-item"><a href="#" onclick="logout.submit()" class="nav-link"><b class="username-lia">{{ mailcow_cc_username }} <span class="text-info">({{ dual_login.username }})</span> </b><i class="bi bi-power ms-2"></i></a></li>
+        <li class="logged-in-as nav-item"><a href="#" onclick="logout.submit()" class="nav-link"><b class="username-lia">{{ mailcow_cc_username }} <span class="text-info">({{ dual_login.username }})</span> </b><i class="bi bi-power ms-2"></i></a></li>
         {% endif %}
         {% if not is_master %}
         <li class="text-warning slave-info nav-item">[ slave ]</li>

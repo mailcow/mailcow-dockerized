@@ -67,14 +67,6 @@
       <legend data-bs-target="#ui_texts" style="padding-top:20px" unselectable="on">{{ lang.admin.ui_texts }}</legend><hr />
       <div id="ui_texts">
         <form class="form" data-id="uitexts" role="form" method="post">
-          <div class="mb-4 d-flex flex-column">
-            <label for="uitests_theme">{{ lang.admin.ui_theme }}:</label>
-            <select class="full-width-select" data-live-search="true" id="uitests_theme" name="ui_theme" required>
-              {% for theme in themes %}
-              <option>{{ theme }}</option>
-              {% endfor %}
-            </select>
-          </div>
           <div class="mb-2">
             <label for="uitests_title_name">{{ lang.admin.title_name }}:</label>
             <input type="text" class="form-control" id="uitests_title_name" name="title_name" placeholder="mailcow UI" value="{{ ui_texts.title_name|raw }}">

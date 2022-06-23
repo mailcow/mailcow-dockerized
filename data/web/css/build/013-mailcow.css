@@ -63,6 +63,10 @@
 .navbar-nav {
   margin: 0;
 }
+.navbar-nav .nav-item {
+  display: flex;
+  padding: 0 10px !important;
+}
 .navbar-nav .nav-link {
   height: 44px;
   display: flex;
