@@ -130,7 +130,6 @@ function ucl_rcpts($object, $type) {
       ':object' => $object
     ));
     $by_domain_aliases = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    array_filter($by_domain_aliases);
     while ($row = array_shift($by_domain_aliases)) {
       if (!empty($row['alias'])) {
         $local = parse_email($row['alias'])['local'];
@@ -149,7 +148,6 @@ function ucl_rcpts($object, $type) {
       WHERE `target_domain` = :object");
     $stmt->execute(array(':object' => $object));
     $alias_domains = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    array_filter($alias_domains);
     while ($row = array_shift($alias_domains)) {
       $rcpt[] = '/.*@' . $row['alias_domain'] . '/i';
     }
