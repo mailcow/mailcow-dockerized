@@ -56,7 +56,7 @@ function normalize_email($email) {
     $email = explode('@', $email);
     $email[0] = str_replace('.', '', $email[0]);
     $email = implode('@', $email);
-  } 
+  }
   $gm_alt = "@googlemail.com";
   if (substr_compare($email, $gm_alt, -strlen($gm_alt)) == 0) {
     $email = explode('@', $email);
@@ -97,15 +97,24 @@ function ucl_rcpts($object, $type) {
   global $pdo;
   $rcpt = array();
   if ($type == 'mailbox') {
+    $local = parse_email($object)['local'];
+    $domain = parse_email($object)['domain'];
+    if (!empty($local) && !empty($domain)) {
+      $rcpt[] = '/^' . str_replace('/', '\/', $local) . '[+].*' . str_replace('/', '\/', $domain) . '$/i';
+    }
+    $rcpt[] = str_replace('/', '\/', $object);
     // Standard aliases
     $stmt = $pdo->prepare("SELECT `address` FROM `alias`
-      WHERE `goto` = :object_goto
-        AND `address` NOT LIKE '@%'");
+      WHERE `goto` = :object_goto");
     $stmt->execute(array(
       ':object_goto' => $object
     ));
     $standard_aliases = $stmt->fetchAll(PDO::FETCH_ASSOC);
     while ($row = array_shift($standard_aliases)) {
+      if (str_starts_with($row['address'], '@')) {
+          $rcpt[] = str_replace('/', '\/', $row['address']);
+          continue;
+      }
       $local = parse_email($row['address'])['local'];
       $domain = parse_email($row['address'])['domain'];
       if (!empty($local) && !empty($domain)) {
