@@ -6,7 +6,13 @@
 <div class="row my-4">
   <div class="col-12 col-md-7 col-lg-6 col-xl-5 ms-auto me-auto">
     <div class="card">
-      <div class="card-header"><i class="bi bi-person-fill"></i> {{ lang.login.login }}</div>
+      <div class="card-header d-flex">
+        <i class="bi bi-person-fill"></i> {{ lang.login.login }}
+        <div class="ms-auto form-check form-switch my-auto d-flex align-items-center">
+          <label class="form-check-label"><i class="bi bi-moon-fill"></i></label>
+          <input class="form-check-input ms-2" type="checkbox" id="dark-mode-toggle">
+        </div>
+      </div>
       <div class="card-body">
         <div class="text-center mailcow-logo mb-4"><img src="{{ logo|default('/img/cow_mailcow.svg') }}" alt="mailcow"></div>
         {% if ui_texts.ui_announcement_text and ui_texts.ui_announcement_active %}

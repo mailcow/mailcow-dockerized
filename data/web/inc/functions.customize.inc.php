@@ -117,20 +117,6 @@ function customize($_action, $_item, $_data = null) {
           $ui_announcement_type = (in_array($_data['ui_announcement_type'], array('info', 'warning', 'danger'))) ? $_data['ui_announcement_type'] : false;
           $ui_announcement_active = (!empty($_data['ui_announcement_active']) ? 1 : 0);
 
-          // check theme
-          $theme = strtolower($_data['ui_theme']);
-          $themes = array_diff(scandir('/web/css/themes'), array('..', '.'));
-          $themes = array_filter((str_replace("-bootstrap.css", "", $themes)));
-          if (!in_array($theme, $themes)){
-            // err, theme not found
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_item, $_data),
-              'msg' => "Theme not found"
-            );
-            return false;
-          }
-
           try {
             $redis->set('TITLE_NAME', htmlspecialchars($title_name));
             $redis->set('MAIN_NAME', htmlspecialchars($main_name));
@@ -140,7 +126,6 @@ function customize($_action, $_item, $_data = null) {
             $redis->set('UI_ANNOUNCEMENT_TEXT', $ui_announcement_text);
             $redis->set('UI_ANNOUNCEMENT_TYPE', $ui_announcement_type);
             $redis->set('UI_ANNOUNCEMENT_ACTIVE', $ui_announcement_active);
-            $redis->set('UI_THEME', $theme);
           }
           catch (RedisException $e) {
             $_SESSION['return'][] = array(
@@ -234,19 +219,6 @@ function customize($_action, $_item, $_data = null) {
             $data['ui_announcement_type'] = ($ui_announcement_type = $redis->get('UI_ANNOUNCEMENT_TYPE')) ? $ui_announcement_type : false;
             $data['ui_announcement_active'] = ($redis->get('UI_ANNOUNCEMENT_ACTIVE') == 1) ? 1 : 0;
             return $data;
-          }
-          catch (RedisException $e) {
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_item, $_data),
-              'msg' => array('redis_error', $e)
-            );
-            return false;
-          }
-        break;
-        case 'ui_theme':
-          try {
-            return $redis->get('UI_THEME');
           }
           catch (RedisException $e) {
             $_SESSION['return'][] = array(

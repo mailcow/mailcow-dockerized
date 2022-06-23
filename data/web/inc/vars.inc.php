@@ -104,6 +104,11 @@ $AVAILABLE_LANGUAGES = array(
   'zh' => '中文 (Chinese)'
 );
 
+// default theme is lumen
+// additional themes can be found here: https://bootswatch.com/
+// copy them to data/web/css/themes/{THEME-NAME}-bootstrap.css
+$UI_THEME = "lumen";
+
 // Show DKIM private keys - false by default
 $SHOW_DKIM_PRIV_KEYS = false;
 
