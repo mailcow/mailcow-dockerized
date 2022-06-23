@@ -339,6 +339,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
 
           // validate custom params
           foreach (explode(' -', $custom_params) as $param){
+            if(empty($param)) continue;
+
             if (str_contains($param, ' ')) {
               // bad char
               $_SESSION['return'][] = array(
@@ -1792,6 +1794,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
 
             // validate custom params
             foreach (explode(' -', $custom_params) as $param){
+              if(empty($param)) continue;
+
               if (str_contains($param, ' ')) {
                 // bad char
                 $_SESSION['return'][] = array(
