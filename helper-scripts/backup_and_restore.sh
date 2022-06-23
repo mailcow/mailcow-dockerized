@@ -239,7 +239,7 @@ function restore() {
           continue
         else
           echo "Stopping mailcow..."
-          ${COMPOSE_COMMAND} -f ${COMPOSE_FILE} --env-file ${ENV_FILE} down
+          docker-compose -f ${COMPOSE_FILE} --env-file ${ENV_FILE} down
         fi
         #docker stop $(docker ps -qf name=mysql-mailcow)
         if [[ -d "${RESTORE_LOCATION}/mysql" ]]; then
@@ -277,7 +277,7 @@ function restore() {
         sed -i --follow-symlinks "/DBROOT/c\DBROOT=${DBROOT}" ${SCRIPT_DIR}/../mailcow.conf
         source ${SCRIPT_DIR}/../mailcow.conf
         echo "Starting mailcow..."
-        ${COMPOSE_COMMAND} -f ${COMPOSE_FILE} --env-file ${ENV_FILE} up -d
+        docker-compose -f ${COMPOSE_FILE} --env-file ${ENV_FILE} up -d
         #docker start $(docker ps -aqf name=mysql-mailcow)
       fi
       ;;
