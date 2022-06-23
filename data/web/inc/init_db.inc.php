@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "20052022_0938";
+    $db_version = "18062022_1153";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -440,7 +440,7 @@ function init_db_schema() {
           "spam_score" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "spam_policy" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "delimiter_action" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "syncjobs" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "syncjobs" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "eas_reset" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "sogo_profile_reset" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "pushover" => "TINYINT(1) NOT NULL DEFAULT '1'",
@@ -1228,8 +1228,17 @@ function init_db_schema() {
     }
     
     // Mitigate imapsync pipemess issue
-    $pdo->query("UPDATE `imapsync` SET `custom_params` = '' WHERE `custom_params` LIKE '%pipemess%' OR `custom_params` LIKE '%pipemes%';");
-    
+    $pdo->query("UPDATE `imapsync` SET `custom_params` = '' 
+      WHERE `custom_params` LIKE '%pipemess%' 
+        OR custom_params LIKE '%skipmess%' 
+        OR custom_params LIKE '%delete2foldersonly%' 
+        OR custom_params LIKE '%delete2foldersbutnot%' 
+        OR custom_params LIKE '%regexflag%' 
+        OR custom_params LIKE '%pipemess%' 
+        OR custom_params LIKE '%regextrans2%' 
+        OR custom_params LIKE '%maxlinelengthcmd%';");
+
+
     // Migrate webauthn tfa
     $stmt = $pdo->query("ALTER TABLE `tfa` MODIFY COLUMN `authmech` ENUM('yubi_otp', 'u2f', 'hotp', 'totp', 'webauthn')");
 
