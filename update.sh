@@ -629,7 +629,7 @@ fi
 echo -e "\e[32mChecking for newer update script...\e[0m"
 SHA1_1=$(sha1sum update.sh)
 git fetch origin #${BRANCH}
-git checkout origin/${BRANCH} update.sh docker-compose.yml
+git checkout origin/${BRANCH} update.sh
 SHA1_2=$(sha1sum update.sh)
 if [[ ${SHA1_1} != ${SHA1_2} ]]; then
   echo "update.sh changed, please run this script again, exiting."
@@ -658,6 +658,8 @@ update_compose
 remove_obsolete_nginx_ports
 
 echo -e "\e[32mValidating docker-compose stack configuration...\e[0m"
+sed -i 's/HTTPS_BIND:-:/HTTPS_BIND:-/g' docker-compose.yml
+sed -i 's/HTTP_BIND:-:/HTTP_BIND:-/g' docker-compose.yml
 if ! docker-compose config -q; then
   echo -e "\e[31m\nOh no, something went wrong. Please check the error message above.\e[0m"
   exit 1
