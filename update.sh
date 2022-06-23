@@ -211,23 +211,22 @@ migrate_docker_nat() {
 
 remove_obsolete_nginx_ports() {
     # Removing obsolete docker-compose.override.yml
-    if [ -s docker-compose.override.* ]; then
-        if cat docker-compose.override.* | grep nginx-mailcow > /dev/null 2>&1; then
-          if cat docker-compose.override.* | grep -w [::] > /dev/null 2>&1; then
-            if cat docker-compose.override.* | grep -w 80:80 > /dev/null 2>&1 && cat docker-compose.override.* | grep -w 443:443 > /dev/null 2>&1 ; then
-              sed -i '/nginx-mailcow:$/,/^$/d' docker-compose.override.*
-              echo -e "\e[32mRemoved obsolete NGINX IPv6 Bind from override File.\e[0m"
-                if [[ "$(cat docker-compose.override.yml | sed '/^\s*$/d' | wc -l)" == "2" ]]; then
-                  mv docker-compose.override.yml docker-compose.override.yml_backup
-                  echo -e "\e[31mdocker-compose.override.yml is empty. Renamed it to ensure mailcow is startable.\e[0m"
-                elif [[ "$(cat docker-compose.override.yaml | sed '/^\s*$/d' | wc -l)" == "2" ]]; then
-                  mv docker-compose.override.yaml docker-compose.override.yaml_backup
-                  echo -e "\e[31mdocker-compose.override.yml is empty. Renamed it to ensure mailcow is startable.\e[0m"
+    for override in docker-compose.override.yml docker-compose.override.yaml; do
+    if [ -s $override ] ; then
+        if cat $override | grep nginx-mailcow > /dev/null 2>&1; then
+          if cat $override | grep -w [::] > /dev/null 2>&1; then
+            if cat $override | grep -w 80:80 > /dev/null 2>&1 && cat $override | grep -w 443:443 > /dev/null 2>&1 ; then
+              sed -i '/nginx-mailcow:$/,/^$/d' $override
+              echo -e "\e[33mRemoved obsolete NGINX IPv6 Bind from override File.\e[0m"
+                if [[ "$(cat $override | sed '/^\s*$/d' | wc -l)" == "2" ]]; then
+                  mv $override ${override}_backup
+                  echo -e "\e[31m${override} is empty. Renamed it to ensure mailcow is startable.\e[0m"
                 fi
             fi
           fi
         fi
-    fi        
+    fi
+    done        
 }
 
 update_compose(){
