@@ -214,10 +214,14 @@ remove_obsolete_nginx_ports() {
     for override in docker-compose.override.yml docker-compose.override.yaml; do
     if [ -s $override ] ; then
         if cat $override | grep nginx-mailcow > /dev/null 2>&1; then
-          if cat $override | grep -w [::] > /dev/null 2>&1; then
+          if cat $override | grep -E '(\[::])' > /dev/null 2>&1; then
             if cat $override | grep -w 80:80 > /dev/null 2>&1 && cat $override | grep -w 443:443 > /dev/null 2>&1 ; then
+              echo -e "\e[33mBacking up ${override} to preserve custom changes...\e[0m"
+              echo -e "\e[33m!!! Manual Merge needed (if other overrides are set) !!!\e[0m"
+              sleep 3
+              cp $override ${override}_backup
               sed -i '/nginx-mailcow:$/,/^$/d' $override
-              echo -e "\e[33mRemoved obsolete NGINX IPv6 Bind from override File.\e[0m"
+              echo -e "\e[33mRemoved obsolete NGINX IPv6 Bind from original override File.\e[0m"
                 if [[ "$(cat $override | sed '/^\s*$/d' | wc -l)" == "2" ]]; then
                   mv $override ${override}_backup
                   echo -e "\e[31m${override} is empty. Renamed it to ensure mailcow is startable.\e[0m"
