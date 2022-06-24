@@ -89,9 +89,22 @@
                     <span>{{ container }}</span>
                     <span class="d-block d-md-inline">({{ container_info.Config.Image }})</span>
                     <small class="d-block">({{ lang.debug.started_on }} <span class="parse_date">{{ container_info.State.StartedAtHR }}</span>)</small>
+                    {% if container_info.State.Running == 1 %}
+                      <span class="badge fs-7 bg-success loader" style="min-width:100px">
+                        {{ lang.debug.container_running }}
+                        <span class="loader-dot">.</span>
+                        <span class="loader-dot">.</span>
+                        <span class="loader-dot">.</span>
+                      </span>
+                    {% elseif container_info.State %}
+                      <span class="badge fs-7 bg-danger" style="min-width:100px">
+                        {{ lang.debug.container_stopped }}
+                        <i class="bi-x ms-1"></i>
+                      </span>
+                    {% endif %}
                   </div>
                   <a href data-bs-toggle="modal" data-container="{{ container }}" data-bs-target="#RestartContainer" class="ms-auto btn btn-xs btn-secondary d-flex align-items-center">{{ lang.debug.restart_container }}
-                    <i class="ms-auto bi
+                    <i class="ms-1 bi
                     {% if container_info.State.Running == 1 %}
                     bi-record-fill text-success
                     {% elseif container_info.State %}
