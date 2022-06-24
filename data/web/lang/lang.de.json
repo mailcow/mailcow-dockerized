@@ -492,6 +492,8 @@
     "debug": {
         "chart_this_server": "Chart (dieser Server)",
         "containers_info": "Container-Information",
+        "container_running": "Läuft",
+        "container_stopped": "Angehalten",
         "disk_usage": "Festplattennutzung",
         "docs": "Dokumente",
         "external_logs": "Externe Logs",

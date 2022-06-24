@@ -121,6 +121,21 @@
     transform: rotate(359deg);
   }
 }
+@keyframes blink {
+  50% { 
+    color: transparent 
+  }
+}
+.loader-dot { 
+  animation: 1s blink infinite 
+}
+.loader-dot:nth-child(2) { 
+  animation-delay: 250ms 
+}
+.loader-dot:nth-child(3) { 
+  animation-delay: 500ms 
+}
+
 pre{white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-o-pre-wrap;word-wrap:break-word;}
 /* Fix modal moving content left */
 body.modal-open {
