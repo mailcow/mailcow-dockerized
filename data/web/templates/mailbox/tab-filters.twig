@@ -31,7 +31,7 @@
           <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addFilterModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_filter }}</a>
         </div>
       </div>
-      <div class="{% if mailcow_cc_role != 'admin' %}hidden{% endif %}">
+      <div class="mt-4 {% if mailcow_cc_role != 'admin' %}hidden{% endif %}">
         <div class="row">
           <div class="col-lg-6">
             <h5>Global Prefilter</h5>

@@ -17,13 +17,13 @@
       <input type="hidden" value="0" name="gal">
       <input type="hidden" value="0" name="relay_all_recipients">
       <input type="hidden" value="0" name="relay_unknown_only">
-      <div class="row" data-acl="{{ acl.domain_desc }}">
+      <div class="row mb-2" data-acl="{{ acl.domain_desc }}">
         <label class="control-label col-sm-2" for="description">{{ lang.edit.description }}</label>
         <div class="col-sm-10">
           <input type="text" class="form-control" name="description" value="{{ result.description }}">
         </div>
       </div>
-      <div class="row">
+      <div class="row mb-4">
         <label class="control-label col-sm-2">{{ lang.add.tags }}</label>
         <div class="col-sm-10">
           <div class="form-control tag-box">
@@ -39,7 +39,7 @@
           </div>
         </div>
       </div>
-      <div class="row">
+      <div class="row mb-2">
         <label class="control-label col-sm-2" for="relayhost">{{ lang.edit.relayhost }}</label>
         <div class="col-sm-10">
           <select data-acl="{{ acl.domain_relayhost }}" data-live-search="true" id="relayhost" name="relayhost" class="form-control">
@@ -58,37 +58,37 @@
         </div>
       </div>
       {% if mailcow_cc_role == 'admin' %}
-      <div class="row">
+      <div class="row mb-2">
         <label class="control-label col-sm-2" for="aliases">{{ lang.edit.max_aliases }}</label>
         <div class="col-sm-10">
           <input type="number" class="form-control" name="aliases" value="{{ result.max_num_aliases_for_domain }}">
         </div>
       </div>
-      <div class="row">
+      <div class="row mb-2">
         <label class="control-label col-sm-2" for="mailboxes">{{ lang.edit.max_mailboxes }}</label>
         <div class="col-sm-10">
           <input type="number" class="form-control" name="mailboxes" value="{{ result.max_num_mboxes_for_domain }}">
         </div>
       </div>
-      <div class="row">
+      <div class="row mb-2">
         <label class="control-label col-sm-2" for="defquota">{{ lang.edit.mailbox_quota_def }}</label>
         <div class="col-sm-10">
           <input type="number" class="form-control" name="defquota" value="{{ (result.def_quota_for_mbox / 1048576) }}">
         </div>
       </div>
-      <div class="row">
+      <div class="row mb-2">
         <label class="control-label col-sm-2" for="maxquota">{{ lang.edit.max_quota }}</label>
         <div class="col-sm-10">
           <input type="number" class="form-control" name="maxquota" value="{{ (result.max_quota_for_mbox / 1048576) }}">
         </div>
       </div>
-      <div class="row">
+      <div class="row mb-4">
         <label class="control-label col-sm-2" for="quota">{{ lang.edit.domain_quota }}</label>
         <div class="col-sm-10">
           <input type="number" class="form-control" name="quota" value="{{ (result.max_quota_for_domain / 1048576) }}">
         </div>
       </div>
-      <div class="row">
+      <div class="row mb-2">
         <label class="control-label col-sm-2">{{ lang.edit.backup_mx_options }}</label>
         <div class="col-sm-10">
           <div class="checkbox">
@@ -113,7 +113,7 @@
         </div>
       </div>
       <hr>
-      <div class="row">
+      <div class="row mb-2">
         <div class="offset-sm-2 col-sm-10">
           <div class="checkbox">
             <label><input type="checkbox" value="1" name="active"{% if result.active == '1' %} checked{% endif %}{% if mailcow_cc_role != 'admin' %} disabled{% endif %}> {{ lang.edit.active }}</label>
@@ -133,7 +133,7 @@
         <p>Domain: <strong>{{ result.domain_name }}</strong> ({{ dkim.dkim_selector }}._domainkey)</p>
       </div>
       <div class="col-12 col-sm-10">
-        <pre>{{ dkim.dkim_txt }}</pre>
+        <pre class="p-2">{{ dkim.dkim_txt }}</pre>
       </div>
     </div>
     {% endif %}
@@ -142,8 +142,8 @@
     <form data-id="domratelimit" class="form-inline well" method="post">
       <div class="row">
         <div class="col-12">
-          <label class="control-label">{{ lang.edit.ratelimit }}</label>
-          <input name="rl_value" type="number" value="{{ rl.value }}" autocomplete="off" class="form-control" placeholder="{{ lang.ratelimit.disabled }}">
+          <label class="control-label mb-2">{{ lang.edit.ratelimit }}</label>
+          <input name="rl_value" type="number" value="{{ rl.value }}" autocomplete="off" class="form-control mb-4" placeholder="{{ lang.ratelimit.disabled }}">
           <select name="rl_frame" class="form-control">
             {% include 'mailbox/rl-frame.twig' %}
           </select>
@@ -201,13 +201,13 @@
         <p>{{ lang.edit.quota_warning_bcc_info|raw }}</p>
         <form class="form-horizontal" data-id="quota_bcc">
           <input type="hidden" value="0" name="active">
-          <div class="row">
+          <div class="row mb-2">
             <label class="control-label col-sm-2" for="script_data">{{ lang.edit.target_address|raw }}:</label>
             <div class="col-sm-10">
               <textarea spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control" rows="10" id="bcc_rcpt" name="bcc_rcpt">{{ quota_notification_bcc.bcc_rcpts|join("\n") }}</textarea>
             </div>
           </div>
-          <div class="row">
+          <div class="row mb-4">
             <div class="offset-sm-2 col-sm-10">
               <div class="checkbox">
                 <label><input type="checkbox" value="1" name="active"{% if quota_notification_bcc.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
