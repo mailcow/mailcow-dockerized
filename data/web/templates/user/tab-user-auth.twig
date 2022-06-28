@@ -10,7 +10,7 @@
         <div class="hidden-xs col-md-3 col-xs-5 text-right"></div>
         <div class="col-md-3 col-xs-12">
           {% if dual_login and allow_admin_email_login == 'n' or mailboxdata.attributes.force_pw_update == '1' %}
-            <button disabled class="btn btn-default btn-block btn-xs-lg">
+            <button disabled class="btn btn-secondary btn-block btn-xs-lg">
               <i class="bi bi-inbox-fill"></i> {{ lang.user.open_webmail_sso }}
             </button>
           {% else %}

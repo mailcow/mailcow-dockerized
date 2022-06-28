@@ -662,7 +662,7 @@
     MENURIGHT: 'dropdown-menu-right',
     MENULEFT: 'dropdown-menu-left',
     // to-do: replace with more advanced template/customization options
-    BUTTONCLASS: 'btn-default',
+    BUTTONCLASS: 'btn-secondary',
     POPOVERHEADER: 'popover-title',
     ICONBASE: 'glyphicon',
     TICKICON: 'glyphicon-ok'

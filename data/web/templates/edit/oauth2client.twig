@@ -4,25 +4,25 @@
 {% if result %}
 <h4>OAuth2</h4>
 <form data-id="oauth2client" class="form-horizontal" role="form" method="post">
-  <div class="row">
+  <div class="row mb-2">
     <label class="control-label col-sm-2" for="client_id">{{ lang.edit.client_id }}</label>
     <div class="col-sm-10">
       <input type="text" class="form-control" name="client_id" id="client_id" value="{{ result.client_id }}" disabled>
     </div>
   </div>
-  <div class="row">
+  <div class="row mb-2">
     <label class="control-label col-sm-2" for="client_secret">{{ lang.edit.client_secret }}</label>
     <div class="col-sm-10">
       <input type="text" class="form-control" name="client_secret" id="client_secret" value="{{ result.client_secret }}" disabled>
     </div>
   </div>
-  <div class="row">
+  <div class="row mb-2">
     <label class="control-label col-sm-2" for="scope">{{ lang.edit.scope }}</label>
     <div class="col-sm-10">
       <input type="text" class="form-control" name="scope" id="scope" value="{{ result.scope }}" disabled>
     </div>
   </div>
-  <div class="row">
+  <div class="row mb-4">
     <label class="control-label col-sm-2" for="redirect_uri">{{ lang.edit.redirect_uri }}</label>
     <div class="col-sm-10">
       <input type="text" class="form-control" name="redirect_uri" id="redirect_uri" value="{{ result.redirect_uri }}">

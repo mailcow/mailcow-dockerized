@@ -327,3 +327,46 @@ table.dataTable>tbody>tr.child ul.dtr-details>li {
   align-items: center;
   display: inline-flex;
 }
+#dnstable {
+  overflow-x: auto!important;
+}
+.well {
+  border: 1px solid #dfdfdf;
+  background-color: #f9f9f9;
+  padding: 10px;
+}
+
+
+table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before:hover, 
+table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before:hover {
+  background-color: #cfcfcf;
+}
+table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before, 
+table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before {
+  background-color: #cfcfcf !important;
+  border: 1.5px solid #616161 !important;
+  border-radius: 5px !important;
+  color: #616161;
+  height: 1.25em;
+  width: 1.25em;
+  line-height: 1.25em;
+  border-radius: 0px;
+  box-shadow: none;
+  font-size: 14px;
+  transition: 0.5s all;
+}
+table.dataTable.dtr-inline.collapsed>tbody>tr.parent>td.dtr-control:before, 
+table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th.dtr-control:before {
+  background-color: #f0f0f0 !important;
+}
+table.dataTable.dtr-inline.collapsed>tbody>tr>td.child, 
+table.dataTable.dtr-inline.collapsed>tbody>tr>th.child, 
+table.dataTable.dtr-inline.collapsed>tbody>tr>td.dataTables_empty {
+  background-color: #fbfbfb;
+}
+table.dataTable.table-striped>tbody>tr>td {
+  vertical-align: middle;
+}
+table.dataTable.table-striped>tbody>tr>td>input[type="checkbox"] {
+  margin-top: 7px;
+}
