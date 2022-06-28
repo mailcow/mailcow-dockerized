@@ -322,15 +322,10 @@ $(document).ready(function() {
   }
 
   // Dark Mode Loader
-  // check if darkmode is preferred by OS
-  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) 
-    toggleDarkMode();
-  // check if darkmode is set by localStorage
-  if (JSON.parse(localStorage.getItem("darkmode")) === true)
-    toggleDarkMode();
-  // register dark mode toggle event listener
+  if ($('#dark-mode-theme').length)
+    $('#dark-mode-toggle').prop('checked', true);
+
   $('#dark-mode-toggle').click(toggleDarkMode);
-  // dark mode toggle funtion
   function toggleDarkMode(){
     if($('#dark-mode-theme').length){
       $('#dark-mode-theme').remove();
