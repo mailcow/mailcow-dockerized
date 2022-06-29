@@ -171,6 +171,7 @@ virtual_uid_maps = static:5000
 smtpd_milters = inet:rspamd:9900
 non_smtpd_milters = inet:rspamd:9900
 milter_mail_macros = i {mail_addr} {client_addr} {client_name} {auth_authen}
+myorigin = $mydomain
 mydestination = localhost.localdomain, localhost
 smtp_address_preference = any
 smtp_sender_dependent_authentication = yes
