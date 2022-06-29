@@ -829,7 +829,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':address' => '@'.$domain,
                 ':public_comment' => $public_comment,
                 ':private_comment' => $private_comment,
-                ':address' => '@'.$domain,
                 ':goto' => $goto,
                 ':domain' => $domain,
                 ':sogo_visible' => $sogo_visible,
