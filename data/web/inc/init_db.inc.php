@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "18062022_1153";
+    $db_version = "xx072022_yyzz";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -179,7 +179,8 @@ function init_db_schema() {
           "private_comment" => "TEXT",
           "public_comment" => "TEXT",
           "sogo_visible" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
+          "active" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "group_id" => "INT NOT NULL DEFAULT '0'"
         ),
         "keys" => array(
           "primary" => array(
@@ -190,6 +191,22 @@ function init_db_schema() {
           ),
           "key" => array(
             "domain" => array("domain")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "alias_group" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "name" => "VARCHAR(255) NOT NULL",
+          //"map_full" => "TINYINT(1) NOT NULL DEFAULT '1'" // if all incoming emails map to all outgoing
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "unique" => array(
+            "name" => array("name")
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
