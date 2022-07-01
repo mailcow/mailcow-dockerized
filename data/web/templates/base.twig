@@ -190,10 +190,10 @@ function recursiveBase64StrToArrayBuffer(obj) {
 
     // Confirm TFA modal
   {% if pending_tfa_method %}
-    $('#ConfirmTFAModal').modal({
+    new bootstrap.Modal(document.getElementById("ConfirmTFAModal"), {
       backdrop: 'static',
       keyboard: false
-    });
+    }).show();
 
     // validate WebAuthn tfa
     $('#start_webauthn_confirmation').click(function(){
