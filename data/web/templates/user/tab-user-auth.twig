@@ -1,10 +1,15 @@
-<div role="tabpanel" class="tab-pane active" id="tab-user-auth">
-  <div class="card">
-    <div class="card-header">{{ lang.user.mailbox_general }}</div>
-    <div class="card-body">
-    {% if mailboxdata.attributes.force_pw_update == '1' %}
-        <div class="alert alert-danger">{{ lang.user.force_pw_update|raw }}</div>
-    {% endif %}
+<div role="tabpanel" class="tab-pane fade active" id="tab-user-auth" role="tabpanel" aria-labelledby="tab-user-auth">
+  <div class="card mb-4">
+    <div class="card-header d-flex">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-user-auth" data-bs-toggle="collapse" aria-controls="collapse-tab-user-auth">
+        {{ lang.user.mailbox_general }}
+      </button>
+      <span class="d-none d-md-block">{{ lang.user.mailbox_general }}
+    </div>
+    <div id="collapse-tab-user-auth" class="card-body collapse" data-bs-parent="#user-content">
+      {% if mailboxdata.attributes.force_pw_update == '1' %}
+          <div class="alert alert-danger">{{ lang.user.force_pw_update|raw }}</div>
+      {% endif %}
       {% if not skip_sogo %}
       <div class="row">
         <div class="hidden-xs col-md-3 col-xs-5 text-right"></div>
@@ -25,11 +30,11 @@
         <div class="d-none d-sm-flex col-md-3 col-5 text-end"></div>
         <div class="col-md-9 col-12">
           <p class="text-muted text-muted-mt-0">{{ lang.user.direct_protocol_access|raw }}</p>
-          {% if mailboxdata.attributes.imap_access == 1 %}<div class="badge fs-6 bg-success">IMAP <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger">IMAP <i class="bi bi-x-lg"></i></div>{% endif %}
-          {% if mailboxdata.attributes.smtp_access == 1 %}<div class="badge fs-6 bg-success">SMTP <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger">SMTP <i class="bi bi-x-lg"></i></div>{% endif %}
-          {% if mailboxdata.attributes.sieve_access == 1 %}<div class="badge fs-6 bg-success">Sieve <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger">Sieve <i class="bi bi-x-lg"></i></div>{% endif %}
-          {% if mailboxdata.attributes.pop3_access == 1 %}<div class="badge fs-6 bg-success">POP3 <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger">POP3 <i class="bi bi-x-lg"></i></div>{% endif %}
-          {% if mailboxdata.attributes.sogo_access == 1 %}<div class="badge fs-6 bg-success">SOGo <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger">SOGo <i class="bi bi-x-lg"></i></div>{% endif %}
+          {% if mailboxdata.attributes.imap_access == 1 %}<div class="badge fs-6 bg-success mb-2">IMAP <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger">IMAP <i class="bi bi-x-lg"></i></div>{% endif %}
+          {% if mailboxdata.attributes.smtp_access == 1 %}<div class="badge fs-6 bg-success mb-2">SMTP <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger">SMTP <i class="bi bi-x-lg"></i></div>{% endif %}
+          {% if mailboxdata.attributes.sieve_access == 1 %}<div class="badge fs-6 bg-success mb-2">Sieve <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger">Sieve <i class="bi bi-x-lg"></i></div>{% endif %}
+          {% if mailboxdata.attributes.pop3_access == 1 %}<div class="badge fs-6 bg-success mb-2">POP3 <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger">POP3 <i class="bi bi-x-lg"></i></div>{% endif %}
+          {% if mailboxdata.attributes.sogo_access == 1 %}<div class="badge fs-6 bg-success mb-2">SOGo <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger">SOGo <i class="bi bi-x-lg"></i></div>{% endif %}
         </div>
       </div>
       <hr>
