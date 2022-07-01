@@ -92,10 +92,12 @@ jQuery(function($){
           {
             title: lang.username,
             data: 'username',
+            defaultContent: ''
           },
           {
             title: "TFA",
             data: 'tfa_active',
+            defaultContent: '',
             render: function (data, type) {
               if(data == 1) return '<i class="bi bi-check-lg"></i>';
               else return '<i class="bi bi-x-lg"></i>'
@@ -104,6 +106,7 @@ jQuery(function($){
           {
             title: lang.admin_domains,
             data: 'tfa_active',
+            defaultContent: '',
             render: function (data, type) {
               return data;
             }
@@ -111,6 +114,7 @@ jQuery(function($){
           {
             title: lang.active,
             data: 'active',
+            defaultContent: '',
             render: function (data, type) {
               if(data == 1) return '<i class="bi bi-check-lg"></i>';
               else return '<i class="bi bi-x-lg"></i>'
@@ -119,7 +123,8 @@ jQuery(function($){
           {
             title: lang.action,
             data: 'action',
-            className: 'text-md-end dt-sm-head-hidden dt-body-right'
+            className: 'text-md-end dt-sm-head-hidden dt-body-right',
+            defaultContent: ''
           },
       ],
       initComplete: function(settings, json){
@@ -158,23 +163,28 @@ jQuery(function($){
           {
             title: 'ID',
             data: 'id',
+            defaultContent: ''
           },
           {
             title: lang.oauth2_client_id,
-            data: 'client_id'
+            data: 'client_id',
+            defaultContent: ''
           },
           {
             title: lang.oauth2_client_secret,
-            data: 'client_secret'
+            data: 'client_secret',
+            defaultContent: ''
           },
           {
             title: lang.oauth2_redirect_uri,
-            data: 'redirect_uri'
+            data: 'redirect_uri',
+            defaultContent: ''
           },
           {
             title: lang.action,
             data: 'action',
-            className: 'text-md-end dt-sm-head-hidden dt-body-right'
+            className: 'text-md-end dt-sm-head-hidden dt-body-right',
+            defaultContent: ''
           },
       ]
     });
@@ -210,10 +220,12 @@ jQuery(function($){
           {
             title: lang.username,
             data: 'username',
+            defaultContent: ''
           },
           {
             title: "TFA",
             data: 'tfa_active',
+            defaultContent: '',
             render: function (data, type) {
               if(data == 1) return '<i class="bi bi-check-lg"></i>';
               else return '<i class="bi bi-x-lg"></i>'
@@ -222,6 +234,7 @@ jQuery(function($){
           {
             title: lang.active,
             data: 'active',
+            defaultContent: '',
             render: function (data, type) {
               if(data == 1) return '<i class="bi bi-check-lg"></i>';
               else return '<i class="bi bi-x-lg"></i>'
@@ -230,6 +243,7 @@ jQuery(function($){
           {
             title: lang.action,
             data: 'action',
+            defaultContent: '',
             className: 'text-md-end dt-sm-head-hidden dt-body-right'
           },
       ]
@@ -266,19 +280,23 @@ jQuery(function($){
           {
             title: lang.host,
             data: 'host',
+            defaultContent: ''
           },
           {
             title: lang.source,
-            data: 'source'
+            data: 'source',
+            defaultContent: ''
           },
           {
             title: lang.spamfilter,
-            data: 'keep_spam'
+            data: 'keep_spam',
+            defaultContent: ''
           },
           {
             title: lang.action,
             data: 'action',
-            className: 'text-md-end dt-sm-head-hidden dt-body-right'
+            className: 'text-md-end dt-sm-head-hidden dt-body-right',
+            defaultContent: ''
           },
       ]
     });
@@ -314,27 +332,33 @@ jQuery(function($){
           {
             title: 'ID',
             data: 'id',
+            defaultContent: ''
           },
           {
             title: lang.host,
-            data: 'hostname'
+            data: 'hostname',
+            defaultContent: ''
           },
           {
             title: lang.username,
-            data: 'username'
+            data: 'username',
+            defaultContent: ''
           },
           {
             title: lang.in_use_by,
-            data: 'in_use_by'
+            data: 'in_use_by',
+            defaultContent: ''
           },
           {
             title: lang.active,
-            data: 'active'
+            data: 'active',
+            defaultContent: ''
           },
           {
             title: lang.action,
             data: 'action',
-            className: 'text-md-end dt-sm-head-hidden dt-body-right'
+            className: 'text-md-end dt-sm-head-hidden dt-body-right',
+            defaultContent: ''
           },
       ]
     });
@@ -370,27 +394,33 @@ jQuery(function($){
           {
             title: 'ID',
             data: 'id',
+            defaultContent: ''
           },
           {
             title: lang.destination,
-            data: 'destination'
+            data: 'destination',
+            defaultContent: ''
           },
           {
             title: lang.nexthop,
-            data: 'nexthop'
+            data: 'nexthop',
+            defaultContent: ''
           },
           {
             title: lang.username,
-            data: 'username'
+            data: 'username',
+            defaultContent: ''
           },
           {
             title: lang.active,
-            data: 'active'
+            data: 'active',
+            defaultContent: ''
           },
           {
             title: lang.action,
             data: 'action',
-            className: 'text-md-end dt-sm-head-hidden dt-body-right'
+            className: 'text-md-end dt-sm-head-hidden dt-body-right',
+            defaultContent: ''
           },
       ]
     });
@@ -426,14 +456,17 @@ jQuery(function($){
           {
             title: 'QID',
             data: 'queue_id',
+            defaultContent: ''
           },
           {
             title: 'Queue',
-            data: 'queue_name'
+            data: 'queue_name',
+            defaultContent: ''
           },
           {
             title: lang.arrival_time,
             data: 'arrival_time',
+            defaultContent: '',
             render: function (data, type){
               var date = new Date(data ? data * 1000 : 0); 
               return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
@@ -442,22 +475,26 @@ jQuery(function($){
           {
             title: lang.message_size,
             data: 'message_size',
+            defaultContent: '',
             render: function (data, type){
               return humanFileSize(data);
             }
           },
           {
             title: lang.sender,
-            data: 'sender'
+            data: 'sender',
+            defaultContent: ''
           },
           {
             title: lang.recipients,
-            data: 'recipients'
+            data: 'recipients',
+            defaultContent: ''
           },
           {
             title: lang.action,
             data: 'action',
-            className: 'text-md-end dt-sm-head-hidden dt-body-right'
+            className: 'text-md-end dt-sm-head-hidden dt-body-right',
+            defaultContent: ''
           },
       ]
     });
@@ -549,8 +586,10 @@ jQuery(function($){
 
   // detect element visibility changes
   function onVisible(element, callback) {
-    $(element).ready(function() {
-      element_object = document.querySelector(element)
+    $(document).ready(function() {
+      element_object = document.querySelector(element);
+      if (element_object === null) return;
+
       new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
           if(entry.intersectionRatio > 0) {

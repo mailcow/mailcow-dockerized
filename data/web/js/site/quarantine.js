@@ -83,42 +83,52 @@ jQuery(function($){
           {
             title: 'ID',
             data: 'id',
+            defaultContent: ''
           },
           {
             title: lang.qid,
-            data: 'qid'
+            data: 'qid',
+            defaultContent: ''
           },
           {
             title: lang.sender,
-            data: 'sender'
+            data: 'sender',
+            defaultContent: ''
           },
           {
             title: lang.subj,
-            data: 'sender'
+            data: 'sender',
+            defaultContent: ''
           },
           {
             title: lang.rspamd_result,
-            data: 'rspamdaction'
+            data: 'rspamdaction',
+            defaultContent: ''
           },
           {
             title: lang.rcpt,
-            data: 'rcpt'
+            data: 'rcpt',
+            defaultContent: ''
           },
           {
             title: lang.danger,
-            data: 'virus'
+            data: 'virus',
+            defaultContent: ''
           },
           {
             title: lang.spam_score,
-            data: 'score'
+            data: 'score',
+            defaultContent: ''
           },
           {
             title: lang.notified,
-            data: 'notified'
+            data: 'notified',
+            defaultContent: ''
           },
           {
             title: lang.received,
             data: 'created',
+            defaultContent: '',
             render: function (data,type) {
               var date = new Date(data ? data * 1000 : 0); 
               return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
@@ -127,7 +137,8 @@ jQuery(function($){
           {
             title: lang.action,
             data: 'action',
-            className: 'text-md-end dt-sm-head-hidden dt-body-right'
+            className: 'text-md-end dt-sm-head-hidden dt-body-right',
+            defaultContent: ''
           },
       ]
     });
