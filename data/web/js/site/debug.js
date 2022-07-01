@@ -71,6 +71,7 @@ jQuery(function($){
         {
           title: lang.time,
           data: 'time',
+          defaultContent: '',
           render: function(data, type){
             var date = new Date(data ? data * 1000 : 0); 
             return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
@@ -78,19 +79,23 @@ jQuery(function($){
         },
         {
           title: 'User-Agent',
-          data: 'ua'
+          data: 'ua',
+          defaultContent: ''
         },
         {
           title: 'Username',
-          data: 'user'
+          data: 'user',
+          defaultContent: ''
         },
         {
           title: 'IP',
-          data: 'ip'
+          data: 'ip',
+          defaultContent: ''
         },
         {
           title: 'Service',
-          data: 'service'
+          data: 'service',
+          defaultContent: ''
         }
       ]
     });
@@ -112,6 +117,7 @@ jQuery(function($){
         {
           title: lang.time,
           data: 'time',
+          defaultContent: '',
           render: function(data, type){
             var date = new Date(data ? data * 1000 : 0); 
             return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
@@ -119,11 +125,13 @@ jQuery(function($){
         },
         {
           title: lang.priority,
-          data: 'priority'
+          data: 'priority',
+          defaultContent: ''
         },
         {
           title: lang.message,
-          data: 'message'
+          data: 'message',
+          defaultContent: ''
         }
       ]
     });
@@ -145,6 +153,7 @@ jQuery(function($){
         {
           title: lang.time,
           data: 'time',
+          defaultContent: '',
           render: function(data, type){
             var date = new Date(data ? data * 1000 : 0); 
             return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
@@ -152,15 +161,18 @@ jQuery(function($){
         },
         {
           title: 'Service',
-          data: 'service'
+          data: 'service',
+          defaultContent: ''
         },
         {
           title: 'Trend',
-          data: 'trend'
+          data: 'trend',
+          defaultContent: ''
         },
         {
           title: lang.message,
-          data: 'message'
+          data: 'message',
+          defaultContent: ''
         }
       ]
     });
@@ -182,6 +194,7 @@ jQuery(function($){
         {
           title: lang.time,
           data: 'time',
+          defaultContent: '',
           render: function(data, type){
             var date = new Date(data ? data * 1000 : 0); 
             return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
@@ -189,19 +202,23 @@ jQuery(function($){
         },
         {
           title: 'URI',
-          data: 'uri'
+          data: 'uri',
+          defaultContent: ''
         },
         {
           title: 'Method',
-          data: 'method'
+          data: 'method',
+          defaultContent: ''
         },
         {
           title: 'IP',
-          data: 'remote'
+          data: 'remote',
+          defaultContent: ''
         },
         {
           title: 'Data',
-          data: 'data'
+          data: 'data',
+          defaultContent: ''
         }
       ]
     });
@@ -222,11 +239,13 @@ jQuery(function($){
       columns: [
         {
           title: ' ',
-          data: 'indicator'
+          data: 'indicator',
+          defaultContent: ''
         },
         {
           title: lang.time,
           data: 'time',
+          defaultContent: '',
           render: function(data, type){
             var date = new Date(data ? data * 1000 : 0); 
             return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
@@ -234,47 +253,58 @@ jQuery(function($){
         },
         {
           title: lang.rate_name,
-          data: 'rl_name'
+          data: 'rl_name',
+          defaultContent: ''
         },
         {
           title: lang.sender,
-          data: 'from'
+          data: 'from',
+          defaultContent: ''
         },
         {
           title: lang.recipients,
-          data: 'rcpt'
+          data: 'rcpt',
+          defaultContent: ''
         },
         {
           title: lang.authed_user,
-          data: 'user'
+          data: 'user',
+          defaultContent: ''
         },
         {
           title: 'Msg ID',
-          data: 'message_id'
+          data: 'message_id',
+          defaultContent: ''
         },
         {
           title: 'Header From',
-          data: 'header_from'
+          data: 'header_from',
+          defaultContent: ''
         },
         {
           title: 'Subject',
-          data: 'header_subject'
+          data: 'header_subject',
+          defaultContent: ''
         },
         {
           title: 'Hash',
-          data: 'rl_hash'
+          data: 'rl_hash',
+          defaultContent: ''
         },
         {
           title: 'Rspamd QID',
-          data: 'qid'
+          data: 'qid',
+          defaultContent: ''
         },
         {
           title: 'IP',
-          data: 'ip'
+          data: 'ip',
+          defaultContent: ''
         },
         {
           title: lang.action,
-          data: 'action'
+          data: 'action',
+          defaultContent: ''
         }
       ]
     });
@@ -296,6 +326,7 @@ jQuery(function($){
         {
           title: lang.time,
           data: 'time',
+          defaultContent: '',
           render: function(data, type){
             var date = new Date(data ? data * 1000 : 0); 
             return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
@@ -303,31 +334,38 @@ jQuery(function($){
         },
         {
           title: 'Type',
-          data: 'type'
+          data: 'type',
+          defaultContent: ''
         },
         {
           title: 'Task',
-          data: 'task'
+          data: 'task',
+          defaultContent: ''
         },
         {
           title: 'User',
-          data: 'user'
+          data: 'user',
+          defaultContent: ''
         },
         {
           title: 'Role',
-          data: 'role'
+          data: 'role',
+          defaultContent: ''
         },
         {
           title: 'IP',
-          data: 'remote'
+          data: 'remote',
+          defaultContent: ''
         },
         {
           title: lang.message,
-          data: 'msg'
+          data: 'msg',
+          defaultContent: ''
         },
         {
           title: 'Call',
-          data: 'call'
+          data: 'call',
+          defaultContent: ''
         }
       ]
     });
@@ -348,19 +386,23 @@ jQuery(function($){
       columns: [
         {
           title: lang.username,
-          data: 'username'
+          data: 'username',
+          defaultContent: ''
         },
         {
           title: lang.service,
-          data: 'service'
+          data: 'service',
+          defaultContent: ''
         },
         {
           title: 'IP',
-          data: 'real_rip'
+          data: 'real_rip',
+          defaultContent: ''
         },
         {
           title: lang.login_time,
           data: 'datetime',
+          defaultContent: '',
           render: function(data, type){
             var date = new Date(data.replace(/-/g, "/")); 
             return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
@@ -386,6 +428,7 @@ jQuery(function($){
         {
           title: lang.time,
           data: 'time',
+          defaultContent: '',
           render: function(data, type){
             var date = new Date(data ? data * 1000 : 0); 
             return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
@@ -393,7 +436,8 @@ jQuery(function($){
         },
         {
           title: lang.message,
-          data: 'message'
+          data: 'message',
+          defaultContent: ''
         }
       ]
     });
@@ -415,6 +459,7 @@ jQuery(function($){
         {
           title: lang.time,
           data: 'time',
+          defaultContent: '',
           render: function(data, type){
             var date = new Date(data ? data * 1000 : 0); 
             return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
@@ -422,11 +467,13 @@ jQuery(function($){
         },
         {
           title: lang.priority,
-          data: 'priority'
+          data: 'priority',
+          defaultContent: ''
         },
         {
           title: lang.message,
-          data: 'message'
+          data: 'message',
+          defaultContent: ''
         }
       ]
     });
@@ -448,6 +495,7 @@ jQuery(function($){
         {
           title: lang.time,
           data: 'time',
+          defaultContent: '',
           render: function(data, type){
             var date = new Date(data ? data * 1000 : 0); 
             return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
@@ -455,11 +503,13 @@ jQuery(function($){
         },
         {
           title: lang.priority,
-          data: 'priority'
+          data: 'priority',
+          defaultContent: ''
         },
         {
           title: lang.message,
-          data: 'message'
+          data: 'message',
+          defaultContent: ''
         }
       ]
     });
@@ -481,6 +531,7 @@ jQuery(function($){
         {
           title: lang.time,
           data: 'time',
+          defaultContent: '',
           render: function(data, type){
             var date = new Date(data ? data * 1000 : 0); 
             return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
@@ -488,11 +539,13 @@ jQuery(function($){
         },
         {
           title: lang.priority,
-          data: 'priority'
+          data: 'priority',
+          defaultContent: ''
         },
         {
           title: lang.message,
-          data: 'message'
+          data: 'message',
+          defaultContent: ''
         }
       ]
     });
@@ -574,6 +627,7 @@ jQuery(function($){
         {
           title: lang.time,
           data: 'time',
+          defaultContent: '',
           render: function(data, type){
             var date = new Date(data ? data * 1000 : 0); 
             return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
@@ -581,51 +635,63 @@ jQuery(function($){
         },
         {
           title: 'IP address',
-          data: 'ip'
+          data: 'ip',
+          defaultContent: ''
         },
         {
           title: 'From',
-          data: 'sender_mime'
+          data: 'sender_mime',
+          defaultContent: ''
         },
         {
           title: 'To',
-          data: 'rcpt'
+          data: 'rcpt',
+          defaultContent: ''
         },
         {
           title: 'Subject',
-          data: 'subject'
+          data: 'subject',
+          defaultContent: ''
         },
         {
           title: 'Action',
-          data: 'action'
+          data: 'action',
+          defaultContent: ''
         },
         {
           title: 'Score',
-          data: 'score'
+          data: 'score',
+          defaultContent: ''
         },
         {
           title: 'Subject',
-          data: 'header_subject'
+          data: 'header_subject',
+          defaultContent: ''
         },
         {
           title: 'Symbols',
-          data: 'symbols'
+          data: 'symbols',
+          defaultContent: ''
         },
         {
           title: 'Msg size',
-          data: 'size'
+          data: 'size',
+          defaultContent: ''
         },
         {
           title: 'Scan Time',
-          data: 'scan_time'
+          data: 'scan_time',
+          defaultContent: ''
         },
         {
           title: 'ID',
-          data: 'message-id'
+          data: 'message-id',
+          defaultContent: ''
         },
         {
           title: 'Authenticated user',
-          data: 'user'
+          data: 'user',
+          defaultContent: ''
         }
       ]
     });
@@ -832,8 +898,10 @@ jQuery(function($){
 
   // detect element visibility changes
   function onVisible(element, callback) {
-    $(element).ready(function() {
-      element_object = document.querySelector(element)
+    $(document).ready(function() {
+      element_object = document.querySelector(element);
+      if (element_object === null) return;
+
       new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
           if(entry.intersectionRatio > 0) {

@@ -105,14 +105,17 @@ jQuery(function($){
           {
             title: 'ID',
             data: 'prefid',
+            defaultContent: ''
           },
           {
             title: lang_user.spamfilter_table_rule,
-            data: 'value'
+            data: 'value',
+            defaultContent: ''
           },
           {
             title: 'Scope',
-            data: 'object'
+            data: 'object',
+            defaultContent: ''
           }
       ]
     });
@@ -157,14 +160,17 @@ jQuery(function($){
           {
             title: 'ID',
             data: 'prefid',
+            defaultContent: ''
           },
           {
             title: lang_user.spamfilter_table_rule,
-            data: 'value'
+            data: 'value',
+            defaultContent: ''
           },
           {
             title: 'Scope',
-            data: 'object'
+            data: 'object',
+            defaultContent: ''
           }
       ]
     });
@@ -173,8 +179,10 @@ jQuery(function($){
   
   // detect element visibility changes
   function onVisible(element, callback) {
-    $(element).ready(function() {
-      element_object = document.querySelector(element)
+    $(document).ready(function() {
+      element_object = document.querySelector(element);
+      if (element_object === null) return;
+
       new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
           if(entry.intersectionRatio > 0) {

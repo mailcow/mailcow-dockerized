@@ -172,11 +172,13 @@ jQuery(function($){
         },
         {
           title: lang.alias,
-          data: 'address'
+          data: 'address',
+          defaultContent: ''
         },
         {
           title: lang.alias_valid_until,
           data: 'validity',
+          defaultContent: '',
           render: function (data, type) {
             var date = new Date(data ? data * 1000 : 0); 
             return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
@@ -185,7 +187,8 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'text-md-end dt-sm-head-hidden dt-body-right'
+          className: 'text-md-end dt-sm-head-hidden dt-body-right',
+          defaultContent: ''
         }
       ]
     });
@@ -263,55 +266,67 @@ jQuery(function($){
         },
         {
           title: 'ID',
-          data: 'id'
+          data: 'id',
+          defaultContent: ''
         },
         {
           title: 'Server',
-          data: 'server_w_port'
+          data: 'server_w_port',
+          defaultContent: ''
         },
         {
           title: lang.encryption,
-          data: 'enc1'
+          data: 'enc1',
+          defaultContent: ''
         },
         {
           title: lang.username,
-          data: 'user1'
+          data: 'user1',
+          defaultContent: ''
         },
         {
           title: lang.excludes,
-          data: 'exclude'
+          data: 'exclude',
+          defaultContent: ''
         },
         {
           title: lang.interval + " (min)",
-          data: 'mins_interval'
+          data: 'mins_interval',
+          defaultContent: ''
         },
         {
           title: lang.last_run,
-          data: 'last_run'
+          data: 'last_run',
+          defaultContent: ''
         },
         {
           title: lang.syncjob_last_run_result,
-          data: 'exit_status'
+          data: 'exit_status',
+          defaultContent: ''
         },
         {
           title: 'Log',
-          data: 'log'
+          data: 'log',
+          defaultContent: ''
         },
         {
           title: lang.active,
           data: 'active',
+          defaultContent: '',
           render: function (data, type) {
             return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>'
           }
         },
         {
           title: lang.status,
-          data: 'is_running'
+          data: 'is_running',
+          defaultContent: ''
         },
         {
           title: lang.action,
           data: 'action',
-          className: 'text-md-end dt-sm-head-hidden dt-body-right'
+          className: 'text-md-end dt-sm-head-hidden dt-body-right',
+          defaultContent: ''
         }
       ]
     });
@@ -370,19 +385,23 @@ jQuery(function($){
         },
         {
           title: 'ID',
-          data: 'id'
+          data: 'id',
+          defaultContent: ''
         },
         {
           title: lang.app_name,
-          data: 'name'
+          data: 'name',
+          defaultContent: ''
         },
         {
           title: lang.allowed_protocols,
-          data: 'protocols'
+          data: 'protocols',
+          defaultContent: ''
         },
         {
           title: lang.active,
           data: 'active',
+          defaultContent: '',
           render: function (data, type) {
             return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>'
           }
@@ -390,7 +409,8 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'text-md-end dt-sm-head-hidden dt-body-right'
+          className: 'text-md-end dt-sm-head-hidden dt-body-right',
+          defaultContent: ''
         }
       ]
     });
@@ -438,15 +458,18 @@ jQuery(function($){
         },
         {
           title: 'ID',
-          data: 'prefid'
+          data: 'prefid',
+          defaultContent: ''
         },
         {
           title: lang.spamfilter_table_rule,
-          data: 'name'
+          data: 'name',
+          defaultContent: ''
         },
         {
           title:'Scope',
-          data: 'object'
+          data: 'object',
+          defaultContent: ''
         }
       ]
     });
@@ -494,15 +517,18 @@ jQuery(function($){
         },
         {
           title: 'ID',
-          data: 'prefid'
+          data: 'prefid',
+          defaultContent: ''
         },
         {
           title: lang.spamfilter_table_rule,
-          data: 'name'
+          data: 'name',
+          defaultContent: ''
         },
         {
           title:'Scope',
-          data: 'object'
+          data: 'object',
+          defaultContent: ''
         }
       ]
     });
@@ -542,8 +568,10 @@ jQuery(function($){
 
   // detect element visibility changes
   function onVisible(element, callback) {
-    $(element).ready(function() {
-      element_object = document.querySelector(element)
+    $(document).ready(function() {
+      element_object = document.querySelector(element);
+      if (element_object === null) return;
+
       new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
           if(entry.intersectionRatio > 0) {

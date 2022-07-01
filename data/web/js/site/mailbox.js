@@ -277,20 +277,24 @@ jQuery(function($){
         {
           title: lang.domain,
           data: 'domain_name',
-          responsivePriority: 3
+          responsivePriority: 3,
+          defaultContent: ''
         },
         {
           title: lang.aliases,
-          data: 'aliases_in_domain'
+          data: 'aliases_in_domain',
+          defaultContent: ''
         },
         {
           title: lang.mailboxes,
           data: 'mboxes_in_domain',
-          responsivePriority: 4
+          responsivePriority: 4,
+          defaultContent: ''
         },
         {
           title: lang.domain_quota,
           data: 'quota',
+          defaultContent: '',
           render: function (data, type) {
             data = data.split("/");
             return humanFileSize(data[0]) + " / " + humanFileSize(data[1]);
@@ -299,6 +303,7 @@ jQuery(function($){
         {
           title: lang.stats,
           data: 'stats',
+          defaultContent: '',
           render: function (data, type) {
             data = data.split("/");
             return '<i class="bi bi-files"></i> ' + data[0] + ' / ' + humanFileSize(data[1]);
@@ -306,34 +311,41 @@ jQuery(function($){
         },
         {
           title: lang.mailbox_defquota,
-          data: 'def_quota_for_mbox'
+          data: 'def_quota_for_mbox',
+          defaultContent: ''
         },
         {
           title: lang.mailbox_quota,
-          data: 'max_quota_for_mbox'
+          data: 'max_quota_for_mbox',
+          defaultContent: ''
         },
         {
           title: 'RL',
-          data: 'rl'
+          data: 'rl',
+          defaultContent: ''
         },
         {
           title: lang.backup_mx,
           data: 'backupmx',
+          defaultContent: '',
           redner: function (data, type){
             return 1==value ? '<i class="bi bi-check-lg"></i>' : 0==value && '<i class="bi bi-x-lg"></i>';
           }
         },
         {
           title: lang.domain_admins,
-          data: 'domain_admins'
+          data: 'domain_admins',
+          defaultContent: ''
         },
         {
           title: 'Tags',
-          data: 'tags'
+          data: 'tags',
+          defaultContent: ''
         },
         {
           title: lang.active,
           data: 'active',
+          defaultContent: '',
           render: function (data, type) {
             return 1==data?'<i class="bi bi-check-lg"></i>':(0==data?'<i class="bi bi-x-lg"></i>':2==data&&'&#8212;');
           }
@@ -342,7 +354,8 @@ jQuery(function($){
           title: lang.action,
           data: 'action',
           className: 'text-md-end dt-sm-head-hidden dt-body-right',
-          responsivePriority: 5
+          responsivePriority: 5,
+          defaultContent: ''
         },
       ]
     });
@@ -459,20 +472,24 @@ jQuery(function($){
           {
             title: lang.username,
             data: 'username',
-            responsivePriority: 3
+            responsivePriority: 3,
+            defaultContent: ''
           },
           {
             title: lang.fname,
-            data: 'name'
+            data: 'name',
+            defaultContent: ''
           },
           {
             title: lang.domain,
-            data: 'domain'
+            data: 'domain',
+            defaultContent: ''
           },
           {
             title: lang.domain_quota,
             data: 'quota',
             responsivePriority: 4,
+            defaultContent: '',
             render: function (data, type) {
               data = data.split("/");
               var of_q = (data[1] == 0 ? "∞" : humanFileSize(data[1]));
@@ -481,55 +498,68 @@ jQuery(function($){
           },
           {
             title: lang.tls_enforce_in,
-            data: 'tls_enforce_in'
+            data: 'tls_enforce_in',
+            defaultContent: ''
           },
           {
             title: lang.tls_enforce_out,
-            data: 'tls_enforce_out'
+            data: 'tls_enforce_out',
+            defaultContent: ''
           },
           {
             title: 'SMTP',
-            data: 'smtp_access'
+            data: 'smtp_access',
+            defaultContent: ''
           },
           {
             title: 'IMAP',
-            data: 'imap_access'
+            data: 'imap_access',
+            defaultContent: ''
           },
           {
             title: 'POP3',
-            data: 'pop3_access'
+            data: 'pop3_access',
+            defaultContent: ''
           },
           {
             title: lang.last_mail_login,
-            data: 'last_mail_login'
+            data: 'last_mail_login',
+            defaultContent: ''
           },
           {
             title: lang.last_pw_change,
-            data: 'last_pw_change'
+            data: 'last_pw_change',
+            defaultContent: ''
           },
           {
             title: lang.quarantine_notification,
-            data: 'quarantine_notification'
+            data: 'quarantine_notification',
+            defaultContent: ''
           },
           {
             title: lang.quarantine_category,
-            data: 'quarantine_category'
+            data: 'quarantine_category',
+            defaultContent: ''
           },
           {
             title: lang.in_use,
-            data: 'in_use'
+            data: 'in_use',
+            defaultContent: ''
           },
           {
             title: lang.msg_num,
-            data: 'messages'
+            data: 'messages',
+            defaultContent: ''
           },
           {
             title: 'Tags',
-            data: 'tags'
+            data: 'tags',
+            defaultContent: ''
           },
           {
             title: lang.active,
             data: 'active',
+            defaultContent: '',
             render: function (data, type) {
               return 1==data?'<i class="bi bi-check-lg"></i>':(0==data?'<i class="bi bi-x-lg"></i>':2==data&&'&#8212;');
             }
@@ -538,7 +568,8 @@ jQuery(function($){
             title: lang.action,
             data: 'action',
             className: 'text-md-end dt-sm-head-hidden dt-body-right',
-            responsivePriority: 5
+            responsivePriority: 5,
+            defaultContent: ''
           },
       ]
     });
@@ -593,28 +624,34 @@ jQuery(function($){
           {
             title: lang.description,
             data: 'description',
-            responsivePriority: 3
+            responsivePriority: 3,
+            defaultContent: ''
           },
           {
             title: lang.alias,
-            data: 'name'
+            data: 'name',
+            defaultContent: ''
           },
           {
             title: lang.kind,
-            data: 'kind'
+            data: 'kind',
+            defaultContent: ''
           },
           {
             title: lang.domain,
             data: 'domain',
-            responsivePriority: 4
+            responsivePriority: 4,
+            defaultContent: ''
           },
           {
             title: lang.multiple_bookings,
-            data: 'multiple_bookings'
+            data: 'multiple_bookings',
+            defaultContent: ''
           },
           {
             title: lang.active,
             data: 'active',
+            defaultContent: '',
             render: function (data, type) {
               return 1==data?'<i class="bi bi-check-lg"></i>':(0==data?'<i class="bi bi-x-lg"></i>':2==data&&'&#8212;');
             }
@@ -623,7 +660,8 @@ jQuery(function($){
             title: lang.action,
             data: 'action',
             className: 'text-md-end dt-sm-head-hidden dt-body-right',
-            responsivePriority: 5
+            responsivePriority: 5,
+            defaultContent: ''
           },
       ]
     });
@@ -676,28 +714,34 @@ jQuery(function($){
           {
             title: 'ID',
             data: 'id',
-            responsivePriority: 3
+            responsivePriority: 3,
+            defaultContent: ''
           },
           {
             title: lang.bcc_type,
-            data: 'type'
+            data: 'type',
+            defaultContent: ''
           },
           {
             title: lang.bcc_local_dest,
-            data: 'local_dest'
+            data: 'local_dest',
+            defaultContent: ''
           },
           {
             title: lang.bcc_destinations,
-            data: 'bcc_dest'
+            data: 'bcc_dest',
+            defaultContent: ''
           },
           {
             title: lang.domain,
             data: 'domain',
-            responsivePriority: 4
+            responsivePriority: 4,
+            defaultContent: ''
           },
           {
             title: lang.active,
             data: 'active',
+            defaultContent: '',
             render: function (data, type) {
               return 1==data?'<i class="bi bi-check-lg"></i>':(0==data?'<i class="bi bi-x-lg"></i>':2==data&&'&#8212;');
             }
@@ -706,7 +750,8 @@ jQuery(function($){
             title: lang.action,
             data: 'action',
             className: 'text-md-end dt-sm-head-hidden dt-body-right',
-            responsivePriority: 5
+            responsivePriority: 5,
+            defaultContent: ''
           },
       ]
     });
@@ -756,19 +801,23 @@ jQuery(function($){
           {
             title: 'ID',
             data: 'id',
-            responsivePriority: 3
+            responsivePriority: 3,
+            defaultContent: ''
           },
           {
             title: lang.recipient_map_old,
-            data: 'recipient_map_old'
+            data: 'recipient_map_old',
+            defaultContent: ''
           },
           {
             title: lang.recipient_map_new,
-            data: 'recipient_map_new'
+            data: 'recipient_map_new',
+            defaultContent: ''
           },
           {
             title: lang.active,
             data: 'active',
+            defaultContent: '',
             render: function (data, type) {
               return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
             }
@@ -777,7 +826,8 @@ jQuery(function($){
             title: lang.action,
             data: 'action',
             className: 'text-md-end dt-sm-head-hidden dt-body-right',
-            responsivePriority: 4
+            responsivePriority: 4,
+            defaultContent: ''
           },
       ]
     });
@@ -832,28 +882,34 @@ jQuery(function($){
           {
             title: 'ID',
             data: 'id',
-            responsivePriority: 3
+            responsivePriority: 3,
+            defaultContent: ''
           },
           {
             title: lang.tls_map_dest,
-            data: 'dest'
+            data: 'dest',
+            defaultContent: ''
           },
           {
             title: lang.tls_map_policy,
-            data: 'policy'
+            data: 'policy',
+            defaultContent: ''
           },
           {
             title: lang.tls_map_parameters,
-            data: 'parameters'
+            data: 'parameters',
+            defaultContent: ''
           },
           {
             title: lang.domain,
             data: 'domain',
-            responsivePriority: 4
+            responsivePriority: 4,
+            defaultContent: ''
           },
           {
             title: lang.active,
             data: 'active',
+            defaultContent: '',
             render: function (data, type) {
               return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
             }
@@ -862,7 +918,8 @@ jQuery(function($){
             title: lang.action,
             data: 'action',
             className: 'text-md-end dt-sm-head-hidden dt-body-right',
-            responsivePriority: 5
+            responsivePriority: 5,
+            defaultContent: ''
           },
       ]
     });
@@ -939,40 +996,49 @@ jQuery(function($){
           {
             title: 'ID',
             data: 'id',
-            responsivePriority: 3
+            responsivePriority: 3,
+            defaultContent: ''
           },
           {
             title: lang.alias,
             data: 'address',
-            responsivePriority: 4
+            responsivePriority: 4,
+            defaultContent: ''
           },
           {
             title: lang.target_address,
-            data: 'goto'
+            data: 'goto',
+            defaultContent: ''
           },
           {
             title: lang.bcc_destinations,
-            data: 'bcc_dest'
+            data: 'bcc_dest',
+            defaultContent: ''
           },
           {
             title: lang.domain,
-            data: 'domain'
+            data: 'domain',
+            defaultContent: ''
           },
           {
             title: lang.public_comment,
-            data: 'public_comment'
+            data: 'public_comment',
+            defaultContent: ''
           },
           {
             title: lang.private_comment,
-            data: 'private_comment'
+            data: 'private_comment',
+            defaultContent: ''
           },
           {
             title: lang.sogo_visible,
-            data: 'sogo_visible'
+            data: 'sogo_visible',
+            defaultContent: ''
           },
           {
             title: lang.active,
             data: 'active',
+            defaultContent: '',
             render: function (data, type) {
               return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
             }
@@ -981,7 +1047,8 @@ jQuery(function($){
             title: lang.action,
             data: 'action',
             className: 'text-md-end dt-sm-head-hidden dt-body-right',
-            responsivePriority: 5
+            responsivePriority: 5,
+            defaultContent: ''
           },
       ]
     });
@@ -1033,28 +1100,34 @@ jQuery(function($){
           {
             title: lang.alias,
             data: 'alias_domain',
-            responsivePriority: 3
+            responsivePriority: 3,
+            defaultContent: ''
           },
           {
             title: lang.target_domain,
             data: 'target_domain',
-            responsivePriority: 4
+            responsivePriority: 4,
+            defaultContent: ''
           },
           {
             title: lang.bcc_local_dest,
-            data: 'local_dest'
+            data: 'local_dest',
+            defaultContent: ''
           },
           {
             title: lang.bcc_destinations,
-            data: 'bcc_dest'
+            data: 'bcc_dest',
+            defaultContent: ''
           },
           {
             title: lang.domain,
-            data: 'domain'
+            data: 'domain',
+            defaultContent: ''
           },
           {
             title: lang.active,
             data: 'active',
+            defaultContent: '',
             render: function (data, type) {
               return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
             }
@@ -1063,7 +1136,8 @@ jQuery(function($){
             title: lang.action,
             data: 'action',
             className: 'text-md-end dt-sm-head-hidden dt-body-right',
-            responsivePriority: 5
+            responsivePriority: 5,
+            defaultContent: ''
           },
       ]
     });
@@ -1137,53 +1211,64 @@ jQuery(function($){
           {
             title: 'ID',
             data: 'id',
-            responsivePriority: 3
+            responsivePriority: 3,
+            defaultContent: ''
           },
           {
             title: lang.owner,
             data: 'user2',
-            responsivePriority: 4
+            responsivePriority: 4,
+            defaultContent: ''
           },
           {
             title: 'Server',
-            data: 'server_w_port'
+            data: 'server_w_port',
+            defaultContent: ''
           },
           {
             title: lang.excludes,
-            data: 'exclude'
+            data: 'exclude',
+            defaultContent: ''
           },
           {
             title: lang.mins_interval,
-            data: 'mins_interval'
+            data: 'mins_interval',
+            defaultContent: ''
           },
           {
             title: lang.last_run,
-            data: 'last_run'
+            data: 'last_run',
+            defaultContent: ''
           },
           {
             title: lang.syncjob_last_run_result,
-            data: 'exit_status'
+            data: 'exit_status',
+            defaultContent: ''
           },
           {
             title: lang.status,
-            data: 'is_running'
+            data: 'is_running',
+            defaultContent: ''
           },
           {
             title: lang.active,
             data: 'active',
+            defaultContent: '',
             render: function (data, type) {
               return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
             }
           },
           {
             title: 'Log',
-            data: 'log'
+            data: 'log',
+            defaultContent: ''
           },
           {
             title: lang.action,
             data: 'action',
             className: 'text-md-end dt-sm-head-hidden dt-body-right',
-            responsivePriority: 5
+            responsivePriority: 5,
+            defaultContent: ''
           },
       ]
     });
@@ -1236,34 +1321,41 @@ jQuery(function($){
           {
             title: 'ID',
             data: 'id',
-            responsivePriority: 3
+            responsivePriority: 3,
+            defaultContent: ''
           },
           {
             title: lang.active,
-            data: 'active'
+            data: 'active',
+            defaultContent: ''
           },
           {
             title: 'Type',
             data: 'filter_type',
-            responsivePriority: 4
+            responsivePriority: 4,
+            defaultContent: ''
           },
           {
             title: lang.owner,
-            data: 'username'
+            data: 'username',
+            defaultContent: ''
           },
           {
             title: lang.description,
-            data: 'script_desc'
+            data: 'script_desc',
+            defaultContent: ''
           },
           {
             title: 'Script',
-            data: 'script_data'
+            data: 'script_data',
+            defaultContent: ''
           },
           {
             title: lang.action,
             data: 'action',
             className: 'text-md-end dt-sm-head-hidden dt-body-right',
-            responsivePriority: 5
+            responsivePriority: 5,
+            defaultContent: ''
           },
       ]
     });
@@ -1271,8 +1363,10 @@ jQuery(function($){
 
   // detect element visibility changes
   function onVisible(element, callback) {
-    $(element).ready(function() {
-      element_object = document.querySelector(element)
+    $(document).ready(function() {
+      element_object = document.querySelector(element);
+      if (element_object === null) return;
+
       new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
           if(entry.intersectionRatio > 0) {
