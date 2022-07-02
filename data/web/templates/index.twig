@@ -51,7 +51,7 @@
               {% for key, val in available_languages %}
                 <li{% if mailcow_locale == key %} class="active"{% endif %}>
                   <a href="?{{ query_string({'lang': key}) }}">
-                    <span class="flag-icon flag-icon-{{ key }}"></span>{{ val }}
+                    <span class="flag-icon flag-icon-{{ key[-2:] }}"></span>{{ val }}
                   </a>
                 </li>
               {% endfor %}

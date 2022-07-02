@@ -101,8 +101,8 @@ $AVAILABLE_LANGUAGES = array(
   'sk' => 'Slovenčina (Slovak)',
   'sv' => 'Svenska (Swedish)',
   'uk' => 'Українська (Ukrainian)',
-  'zh_Hans' => '简体中文 (Simplified Chinese)',
-  'zh_Hant' => '繁體中文 (Traditional Chinese)',
+  'zh-cn' => '简体中文 (Simplified Chinese)',
+  'zh-tw' => '繁體中文 (Traditional Chinese)',
 );
 
 // Change theme (default: lumen)

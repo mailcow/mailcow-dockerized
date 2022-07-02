@@ -194,7 +194,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
 // Set language
 if (!isset($_SESSION['mailcow_locale']) && !isset($_COOKIE['mailcow_locale'])) {
   if ($DETECT_LANGUAGE && isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-    $header_lang = strtolower(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2));
+    $header_lang = strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']);
     if (array_key_exists($header_lang, $AVAILABLE_LANGUAGES)) {
       $_SESSION['mailcow_locale'] = $header_lang;
     }
