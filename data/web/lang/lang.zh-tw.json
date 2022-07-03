@@ -572,21 +572,23 @@
         "cancel": "取消",
         "confirm_delete": "確認刪除",
         "delete_now": "立即刪除",
-        "delete_these_items": "請確認對以下對象 id 的更改",
-        "hibp_nok": "匹配到密碼！存在潛在的使用危險！",
-        "hibp_ok": "未匹配到密碼。",
-        "loading": "請等待...",
+        "delete_these_items": "請確認對以下 id 物件的更改",
+        "hibp_check": "透過 haveibeenpwned.com 進行檢查",
+        "hibp_nok": "找到了！這是一個有潛在危險的密碼！",
+        "hibp_ok": "沒有找到任何密碼。",
+        "loading": "請稍等...",
+        "nothing_selected": "未選擇任何項目",
         "restart_container": "重新啟動容器",
-        "restart_container_info": "<b>重要:</b> 可能需要一些時間以完整地重新啟動容器，請等待重新啟動完成。",
+        "restart_container_info": "<b>注意:</b> 平穩重新啟動可能需要一些時間，請稍等。",
         "restart_now": "立即重新啟動",
         "restarting_container": "容器重新啟動中，這可能需要一些時間"
     },
     "header": {
-        "administration": "組態和管理",
-        "apps": "應用",
+        "administration": "設定和管理",
+        "apps": "應用程式",
         "debug": "系統訊息",
         "mailboxes": "信箱設定",
-        "mailcow_settings": "組態",
+        "mailcow_settings": "設定",
         "quarantine": "隔離",
         "restart_netfilter": "重新啟動 netfilter",
         "restart_sogo": "重新啟動 SOGo",
@@ -594,13 +596,15 @@
     },
     "info": {
         "awaiting_tfa_confirmation": "等待 TFA 確認",
-        "no_action": "沒有可適用的操作",
-        "session_expires": "你的會話會在 15 秒後過期"
+        "no_action": "沒有適用的操作選項",
+        "session_expires": "連線階段將在 15 秒後到期"
     },
     "login": {
         "delayed": "請在 %s 秒後重新登入。",
+        "fido2_webauthn": "FIDO2/WebAuthn",
         "login": "登入",
-        "mobileconfig_info": "請用信箱使用者登入以下載 Apple 連接描述文件。",
+        "mobileconfig_info": "請使用信箱使用者登入以下載 Apple 連接描述文件。",
+        "other_logins": "金鑰登入",
         "password": "密碼",
         "username": "使用者名稱"
     },
@@ -741,13 +745,13 @@
         "yes": "&#10003;"
     },
     "oauth2": {
-        "access_denied": "請作為信箱所有者登入以使用 OAuth2 授權",
-        "authorize_app": "授權應用",
+        "access_denied": "請使用信箱使用者登入來進行 OAuth2 授權",
+        "authorize_app": "授權應用程式",
         "deny": "拒絕",
-        "permit": "授權應用",
+        "permit": "授權應用程式",
         "profile": "個人資料",
-        "profile_desc": "查看個人訊息: 使用者名稱，全面，創建時間，修改時間，啟用狀態",
-        "scope_ask_permission": "一個應用請求了以下權限"
+        "profile_desc": "查看個人資訊: 使用者名稱、全名，創建時間，修改時間，啟用狀態",
+        "scope_ask_permission": "應用程式請求了這些權限"
     },
     "quarantine": {
         "action": "操作",
@@ -800,11 +804,18 @@
         "text_plain_content": "內容 (text/plain)",
         "toggle_all": "選擇/取消所有"
     },
+    "ratelimit": {
+      "disabled": "停用",
+      "second": "訊息 / 秒",
+      "minute": "訊息 / 分鐘",
+      "hour": "訊息 / 小時",
+      "day": "訊息 / 天"
+    },
     "start": {
         "help": "顯示/隱藏 幫助面板",
-        "imap_smtp_server_auth_info": "請使用你的完整信箱地址並使用 PLAIN (明文) 認證方法。<br>\r\n你的登入數據會被服務端強制加密。",
-        "mailcow_apps_detail": "使用 mailcow 應用存取你的郵件、日曆、聯繫人和更多。",
-        "mailcow_panel_detail": "<b>域名管理員</b> 可以創建、修改或刪除信箱胡別名，更改分配給其的域名並讀取更多域名相關訊息。<br>\r\n<b>信箱使用者</b> 可以創建臨時別名 (垃圾郵件別名)，更改他們的密碼和垃圾過濾器設定。"
+        "imap_smtp_server_auth_info": "請使用完整的信箱地址及明文認證 (PLAIN) 來登入。<br>\r\n你的登入資訊會在伺服器端被加密。",
+        "mailcow_apps_detail": "使用 mailcow 應用程式來存取你的郵件、行事曆、聯絡資訊及其他更多功能。",
+        "mailcow_panel_detail": "<b>域名管理員</b> 可以創建、修改、刪除信箱別名，以及讀取並修改被指定他們名下的域名。<br>\r\n<b>信箱使用者</b> 可以創建臨時別名 (垃圾郵件別名)，更改密碼和垃圾郵件過濾器設定。"
     },
     "success": {
         "acl_saved": "已儲存對象 %s 的 ACL",
@@ -1030,15 +1041,16 @@
         "weeks": "週"
     },
     "warning": {
-        "cannot_delete_self": "不能刪除已登入使用者",
-        "domain_added_sogo_failed": "域名已添加但是重新啟動 Dovecot 失敗，請檢查紀錄。",
-        "dovecot_restart_failed": "Dovecot 重新啟動失敗，請檢查紀錄",
-        "fuzzy_learn_error": "模糊特徵學習失敗: %s",
-        "hash_not_found": "找不到特徵或已被刪除",
-        "ip_invalid": "跳過的非法 IP: %s",
-        "no_active_admin": "不能禁用最後一個啟用的管理員",
-        "quota_exceeded_scope": "域名配額超出: 此域名下現在只能創建無限容量的信箱。",
-        "session_token": "表單字段非法: 字段不匹配",
-        "session_ua": "表單字段非法: User-Agent 校驗錯誤"
+        "cannot_delete_self": "不能刪除已登入的使用者",
+        "domain_added_sogo_failed": "域名已添加但是 SOGo 重新啟動失敗，請檢查紀錄檔。",
+        "dovecot_restart_failed": "Dovecot 重新啟動失敗，請檢查紀錄檔",
+        "fuzzy_learn_error": "模糊雜湊學習失敗: %s",
+        "hash_not_found": "找不到雜湊碼或已被刪除",
+        "ip_invalid": "略過非法的 IP: %s",
+        "is_not_primary_alias": "略過非主要的別名 %s",
+        "no_active_admin": "不能停用唯一的管理員",
+        "quota_exceeded_scope": "域名配額已滿: 此域名現在只能創建無限容量的信箱。",
+        "session_token": "表單驗證失敗: 驗證碼錯誤",
+        "session_ua": "表單驗證失敗: User-Agent 校驗錯誤"
     }
 }
