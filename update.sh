@@ -40,8 +40,20 @@ PATH=$PATH:/opt/bin
 
 umask 0022
 
-for bin in curl docker-compose docker git awk sha1sum; do
-  if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
+for bin in curl docker git awk sha1sum; do
+  if [[ -z $(which ${bin}) ]]; then 
+  echo "Cannot find ${bin}, exiting..." 
+  exit 1;
+  elif [[ -z $(which docker-compose) ]]; then
+  echo "Cannot find docker-compose Standalone. Installing..."
+  sleep 3
+   if [[ -e /etc/alpine-release ]]; then
+    echo -e "\e[33mNot installing latest docker-compose, because you are using Alpine Linux without glibc support. Install docker-compose via apk!\e[0m"
+    exit 1
+   fi 
+  curl -#L https://github.com/docker/compose/releases/download/v$(curl -Ls https://www.servercow.de/docker-compose/latest.php)/docker-compose-$(uname -s)-$(uname -m) > /usr/local/bin/docker-compose
+  chmod +x /usr/local/bin/docker-compose  
+  fi
 done
 
 export LC_ALL=C
@@ -197,6 +209,74 @@ migrate_docker_nat() {
   fi
 }
 
+remove_obsolete_nginx_ports() {
+    # Removing obsolete docker-compose.override.yml
+    for override in docker-compose.override.yml docker-compose.override.yaml; do
+    if [ -s $override ] ; then
+        if cat $override | grep nginx-mailcow > /dev/null 2>&1; then
+          if cat $override | grep -E '(\[::])' > /dev/null 2>&1; then
+            if cat $override | grep -w 80:80 > /dev/null 2>&1 && cat $override | grep -w 443:443 > /dev/null 2>&1 ; then
+              echo -e "\e[33mBacking up ${override} to preserve custom changes...\e[0m"
+              echo -e "\e[33m!!! Manual Merge needed (if other overrides are set) !!!\e[0m"
+              sleep 3
+              cp $override ${override}_backup
+              sed -i '/nginx-mailcow:$/,/^$/d' $override
+              echo -e "\e[33mRemoved obsolete NGINX IPv6 Bind from original override File.\e[0m"
+                if [[ "$(cat $override | sed '/^\s*$/d' | wc -l)" == "2" ]]; then
+                  mv $override ${override}_backup
+                  echo -e "\e[31m${override} is empty. Renamed it to ensure mailcow is startable.\e[0m"
+                fi
+            fi
+          fi
+        fi
+    fi
+    done        
+}
+
+update_compose(){
+if [[ ${NO_UPDATE_COMPOSE} == "y" ]]; then
+  echo -e "\e[33mNot fetching latest docker-compose, please check for updates manually!\e[0m"
+  return 0
+elif [[ -e /etc/alpine-release ]]; then
+  echo -e "\e[33mNot fetching latest docker-compose, because you are using Alpine Linux without glibc support. Please update docker-compose via apk!\e[0m"
+  return 0
+else
+  echo -e "\e[32mFetching new docker-compose version...\e[0m"
+  echo -e "\e[32mTrying to determine GLIBC version...\e[0m"
+  if ldd --version > /dev/null; then
+    GLIBC_V=$(ldd --version | grep -E '(GLIBC|GNU libc)' | rev | cut -d ' ' -f1 | rev | cut -d '.' -f2)
+    if [ ! -z "${GLIBC_V}" ] && [ ${GLIBC_V} -gt 27 ]; then
+      DC_DL_SUFFIX=
+    else
+      DC_DL_SUFFIX=legacy
+    fi
+  else
+    DC_DL_SUFFIX=legacy
+  fi
+  sleep 1
+  if [[ ! -z $(which pip) && $(pip list --local 2>&1 | grep -v DEPRECATION | grep -c docker-compose) == 1 ]]; then
+    true
+    #prevent breaking a working docker-compose installed with pip
+  elif [[ $(curl -sL -w "%{http_code}" https://www.servercow.de/docker-compose/latest.php?vers=${DC_DL_SUFFIX} -o /dev/null) == "200" ]]; then
+    LATEST_COMPOSE=$(curl -#L https://www.servercow.de/docker-compose/latest.php)
+    COMPOSE_VERSION=$(docker-compose version --short)
+    if [[ "$LATEST_COMPOSE" != "$COMPOSE_VERSION" ]]; then
+      COMPOSE_PATH=$(which docker-compose)
+      if [[ -w ${COMPOSE_PATH} ]]; then
+        curl -#L https://github.com/docker/compose/releases/download/v${LATEST_COMPOSE}/docker-compose-$(uname -s)-$(uname -m) > $COMPOSE_PATH
+        chmod +x $COMPOSE_PATH
+      else
+        echo -e "\e[33mWARNING: $COMPOSE_PATH is not writable, but new version $LATEST_COMPOSE is available (installed: $COMPOSE_VERSION)\e[0m"
+        return 1
+      fi
+    fi
+  else
+    echo -e "\e[33mCannot determine latest docker-compose version, skipping...\e[0m"
+    return 1
+  fi
+fi
+}
+
 while (($#)); do
   case "${1}" in
     --check|-c)
@@ -247,7 +327,7 @@ while (($#)); do
   -c|--check           -   Check for updates and exit (exit codes => 0: update available, 3: no updates)
   --ours               -   Use merge strategy option "ours" to solve conflicts in favor of non-mailcow code (local changes over remote changes), not recommended!
   --gc                 -   Run garbage collector to delete old image tags
-  --no-update-compose  -   Do not update docker-compose
+  --no-update-compose  -   Do not update docker-compose  
   --prefetch           -   Only prefetch new images and exit (useful to prepare updates)
   --skip-start         -   Do not start mailcow after update
   --skip-ping-check    -   Skip ICMP Check to public DNS resolvers (Use it only if you´ve blocked any ICMP Connections to your mailcow machine).
@@ -577,7 +657,13 @@ if [ ! $FORCE ]; then
   migrate_docker_nat
 fi
 
+update_compose
+
+remove_obsolete_nginx_ports
+
 echo -e "\e[32mValidating docker-compose stack configuration...\e[0m"
+sed -i 's/HTTPS_BIND:-:/HTTPS_BIND:-/g' docker-compose.yml
+sed -i 's/HTTP_BIND:-:/HTTP_BIND:-/g' docker-compose.yml
 if ! docker-compose config -q; then
   echo -e "\e[31m\nOh no, something went wrong. Please check the error message above.\e[0m"
   exit 1
@@ -646,44 +732,6 @@ elif [[ ${MERGE_RETURN} != 0 ]]; then
   exit 1
 fi
 
-if [[ ${NO_UPDATE_COMPOSE} == "y" ]]; then
-  echo -e "\e[33mNot fetching latest docker-compose, please check for updates manually!\e[0m"
-elif [[ -e /etc/alpine-release ]]; then
-  echo -e "\e[33mNot fetching latest docker-compose, because you are using Alpine Linux without glibc support. Please update docker-compose via apk!\e[0m"
-else
-  echo -e "\e[32mFetching new docker-compose version...\e[0m"
-  echo -e "\e[32mTrying to determine GLIBC version...\e[0m"
-  if ldd --version > /dev/null; then
-    GLIBC_V=$(ldd --version | grep -E '(GLIBC|GNU libc)' | rev | cut -d ' ' -f1 | rev | cut -d '.' -f2)
-    if [ ! -z "${GLIBC_V}" ] && [ ${GLIBC_V} -gt 27 ]; then
-      DC_DL_SUFFIX=
-    else
-      DC_DL_SUFFIX=legacy
-    fi
-  else
-    DC_DL_SUFFIX=legacy
-  fi
-  sleep 1
-  if [[ ! -z $(which pip) && $(pip list --local 2>&1 | grep -v DEPRECATION | grep -c docker-compose) == 1 ]]; then
-    true
-    #prevent breaking a working docker-compose installed with pip
-  elif [[ $(curl -sL -w "%{http_code}" https://www.servercow.de/docker-compose/latest.php?vers=${DC_DL_SUFFIX} -o /dev/null) == "200" ]]; then
-    LATEST_COMPOSE=$(curl -#L https://www.servercow.de/docker-compose/latest.php)
-    COMPOSE_VERSION=$(docker-compose version --short)
-    if [[ "$LATEST_COMPOSE" != "$COMPOSE_VERSION" ]]; then
-      COMPOSE_PATH=$(which docker-compose)
-      if [[ -w ${COMPOSE_PATH} ]]; then
-        curl -#L https://github.com/docker/compose/releases/download/${LATEST_COMPOSE}/docker-compose-$(uname -s)-$(uname -m) > $COMPOSE_PATH
-        chmod +x $COMPOSE_PATH
-      else
-        echo -e "\e[33mWARNING: $COMPOSE_PATH is not writable, but new version $LATEST_COMPOSE is available (installed: $COMPOSE_VERSION)\e[0m"
-      fi
-    fi
-  else
-    echo -e "\e[33mCannot determine latest docker-compose version, skipping...\e[0m"
-  fi
-fi
-
 echo -e "\e[32mFetching new images, if any...\e[0m"
 sleep 2
 docker-compose pull
@@ -707,9 +755,6 @@ fi
 
 # Checking for old project name bug
 sed -i --follow-symlinks 's#COMPOSEPROJECT_NAME#COMPOSE_PROJECT_NAME#g' mailcow.conf
-# Checking old, wrong bindings
-sed -i --follow-symlinks 's/HTTP_BIND=0.0.0.0/HTTP_BIND=/g' mailcow.conf
-sed -i --follow-symlinks 's/HTTPS_BIND=0.0.0.0/HTTPS_BIND=/g' mailcow.conf
 
 # Fix Rspamd maps
 if [ -f data/conf/rspamd/custom/global_from_blacklist.map ]; then
@@ -759,8 +804,8 @@ if [ -f "${SCRIPT_DIR}/post_update_hook.sh" ]; then
   bash "${SCRIPT_DIR}/post_update_hook.sh"
 fi
 
-#echo "In case you encounter any problem, hard-reset to a state before updating mailcow:"
-#echo
-#git reflog --color=always | grep "Before update on "
-#echo
-#echo "Use \"git reset --hard hash-on-the-left\" and run docker-compose up -d afterwards."
+# echo "In case you encounter any problem, hard-reset to a state before updating mailcow:"
+# echo
+# git reflog --color=always | grep "Before update on "
+# echo
+# echo "Use \"git reset --hard hash-on-the-left\" and run docker-compose up -d afterwards."

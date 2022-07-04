@@ -25,7 +25,7 @@ if cp --help 2>&1 | grep -q -i "busybox"; then
   exit 1
 fi
 
-for bin in openssl curl docker-compose docker git awk sha1sum; do
+for bin in openssl curl docker docker-compose git awk sha1sum; do
   if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
 done
 
@@ -144,7 +144,7 @@ DBROOT=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 | head -c 28)
 # Do _not_ use IP:PORT in HTTP(S)_BIND or HTTP(S)_PORT
 # IMPORTANT: Do not use port 8081, 9081 or 65510!
 # Example: HTTP_BIND=1.2.3.4
-# For IPv4 and IPv6 leave it empty: HTTP_BIND= & HTTPS_PORT=
+# For IPv4 leave it as it is: HTTP_BIND= & HTTPS_PORT=
 # For IPv6 see https://mailcow.github.io/mailcow-dockerized-docs/post_installation/firststeps-ip_bindings/
 
 HTTP_PORT=80
