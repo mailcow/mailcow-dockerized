@@ -553,6 +553,7 @@ jQuery(function($){
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="resource" name="multi_select" value="' + encodeURIComponent(item.name) + '" />';
             item.name = escapeHtml(item.name);
+            item.description = escapeHtml(item.description);
           });
         }
       }),
@@ -1022,7 +1023,7 @@ jQuery(function($){
             if (!item.exclude > 0) {
               item.exclude = '-';
             } else {
-              item.exclude  = '<code>' + item.exclude + '</code>';
+              item.exclude  = '<code>' + escapeHtml(item.exclude) + '</code>';
             }
             item.server_w_port = escapeHtml(item.user1) + '@' + item.host1 + ':' + item.port1;
             item.action = '<div class="btn-group footable-actions">' +
