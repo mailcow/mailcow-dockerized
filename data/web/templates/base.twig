@@ -415,6 +415,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
             window.fetch("/api/v1/get/webauthn-tfa-registration/{{ mailcow_cc_username|url_encode(true)|default('null') }}", {method:'GET',cache:'no-cache'}).then(response => {
                 return response.json();
             }).then(json => {
+                console.log(json);
                 if (json.success === false) throw new Error(json.msg);
                 recursiveBase64StrToArrayBuffer(json);
 
