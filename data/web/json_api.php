@@ -430,8 +430,11 @@ if (isset($_GET['query'])) {
         case "webauthn-tfa-registration":
           if (isset($_SESSION["mailcow_cc_role"])) {
               // Exclude existing CredentialIds, if any
-              $stmt = $pdo->prepare("SELECT `keyHandle` FROM `tfa` WHERE username = :username");
-              $stmt->execute(array(':username' => $_SESSION['mailcow_cc_username']));
+              $stmt = $pdo->prepare("SELECT `keyHandle` FROM `tfa` WHERE username = :username AND authmech = :authmech");
+              $stmt->execute(array(
+                ':username' => $_SESSION['mailcow_cc_username'],
+                ':authmech' => 'webauthn'
+              ));
               $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
               while($row = array_shift($rows)) {
                 $excludeCredentialIds[] = base64_decode($row['keyHandle']);
