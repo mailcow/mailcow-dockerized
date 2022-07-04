@@ -17,10 +17,14 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         $alias = html_entity_decode(rawurldecode($_GET["alias"]));
         $result = mailbox('get', 'alias_details', $alias);
 
+        $alias_group_list = mailbox('get', 'alias_group_list');
+        array_unshift($alias_group_list, array('id' => 0, 'name' => "-"));
+
         $template = 'edit/alias.twig';
         $template_data = [
           'alias' => $alias,
           'goto' => (preg_match('/^(null|ham|spam)@localhost$/i', $result['goto'])) ? null : $result['goto'],
+          'alias_groups' => $alias_group_list
         ];
     }
     elseif (isset($_GET['domainadmin'])) {

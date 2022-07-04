@@ -837,6 +837,7 @@ jQuery(function($){
         {"name":"public_comment","title":lang.public_comment,"breakpoints":"all"},
         {"name":"private_comment","title":lang.private_comment,"breakpoints":"all"},
         {"name":"sogo_visible","title":lang.sogo_visible,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';},"breakpoints":"all"},
+        {"name":"group_id","title":lang.group_id},
         {"name":"active","filterable": false,"style":{"min-width":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"180px","width":"180px"},"type":"html","title":lang.action,"breakpoints":"xs sm"}
       ],
@@ -885,6 +886,11 @@ jQuery(function($){
             }
             if (item.in_primary_domain !== "") {
               item.domain = '<i data-domainname="' + item.domain + '" class="bi bi-info-circle-fill alias-domain-info text-info" data-toggle="tooltip" title="' + lang.target_domain + ': ' + item.in_primary_domain + '"></i> ' + item.domain;
+            }
+            if (item.group_id == null || item.group_id == 0) {
+              item.group_id = "-";
+            } else {
+              item.group_id = escapeHtml(item.group_id);
             }
           });
         }

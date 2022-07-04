@@ -666,6 +666,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
         case 'alias':
           $addresses  = array_map('trim', preg_split( "/( |,|;|\n)/", $_data['address']));
           $gotos      = array_map('trim', preg_split( "/( |,|;|\n)/", $_data['goto']));
+          $group_id = intval($_data['group_id']);
           $active = intval($_data['active']);
           $sogo_visible = intval($_data['sogo_visible']);
           $goto_null = intval($_data['goto_null']);
@@ -822,18 +823,18 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
-            $stmt = $pdo->prepare("INSERT INTO `alias` (`address`, `public_comment`, `private_comment`, `goto`, `domain`, `sogo_visible`, `active`)
-              VALUES (:address, :public_comment, :private_comment, :goto, :domain, :sogo_visible, :active)");
+            $stmt = $pdo->prepare("INSERT INTO `alias` (`address`, `public_comment`, `private_comment`, `goto`, `domain`, `sogo_visible`, `active`, `group_id`)
+              VALUES (:address, :public_comment, :private_comment, :goto, :domain, :sogo_visible, :active, :group_id)");
             if (!filter_var($address, FILTER_VALIDATE_EMAIL) === true) {
               $stmt->execute(array(
                 ':address' => '@'.$domain,
                 ':public_comment' => $public_comment,
                 ':private_comment' => $private_comment,
-                ':address' => '@'.$domain,
                 ':goto' => $goto,
                 ':domain' => $domain,
                 ':sogo_visible' => $sogo_visible,
-                ':active' => $active
+                ':active' => $active,
+                ':group_id' => $group_id
               ));
             }
             else {
@@ -844,7 +845,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':goto' => $goto,
                 ':domain' => $domain,
                 ':sogo_visible' => $sogo_visible,
-                ':active' => $active
+                ':active' => $active,
+                ':group_id' => $group_id
               ));
             }
             $id = $pdo->lastInsertId();
@@ -854,6 +856,31 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'msg' => array('alias_added', $address, $id)
             );
           }
+        break;
+        case 'alias_group':
+          // alias groups span multiple domains; they are only really useable by system-wide admins
+          if ($_SESSION['mailcow_cc_role'] != "admin") {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_extra),
+              'msg' => 'access_denied'
+            );
+            return false;
+          }
+          $name = $_data['name'];
+          //$map_full = intval($_data['map_full']);
+          $stmt = $pdo->prepare("INSERT INTO `alias_group` (`name`, `map_full`)
+            VALUES (:name, :map_full)");
+          $stmt->execute(array(
+            ':name' => $name,
+          //  ':map_full' => $map_full
+          ));
+          $id = $pdo->lastInsertId();
+          $_SESSION['return'][] = array(
+            'type' => 'success',
+            'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+            'msg' => array('alias_group_added', htmlspecialchars($name), $id)
+          );
         break;
         case 'alias_domain':
           $active = intval($_data['active']);
@@ -2035,6 +2062,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $private_comment = (isset($_data['private_comment'])) ? $_data['private_comment'] : $is_now['private_comment'];
               $goto = (!empty($_data['goto'])) ? $_data['goto'] : $is_now['goto'];
               $address = (!empty($_data['address'])) ? $_data['address'] : $is_now['address'];
+              $group_id = (isset($_data['group_id'])) ? intval($_data['group_id']) : 0;
             }
             else {
               $_SESSION['return'][] = array(
@@ -2080,7 +2108,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                   'address' => $missing_aliases['missing_alias'],
                   'goto' => $missing_aliases['goto'],
                   'sogo_visible' => 1,
-                  'active' => 1
+                  'active' => 1,
+                  'group_id' => $group_id
                 ));
               }
               $_SESSION['return'][] = array(
@@ -2211,7 +2240,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 `domain` = :domain,
                 `goto` = :goto,
                 `sogo_visible`= :sogo_visible,
-                `active`= :active
+                `active`= :active,
+                `group_id` = :group_id
                   WHERE `id` = :id");
               $stmt->execute(array(
                 ':address' => $address,
@@ -2221,6 +2251,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':goto' => $goto,
                 ':sogo_visible' => $sogo_visible,
                 ':active' => $active,
+                ':group_id' => $group_id,
                 ':id' => $is_now['id']
               ));
             }
@@ -2230,6 +2261,35 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'msg' => array('alias_modified', htmlspecialchars($address))
             );
           }
+        break;
+        case 'alias_group':
+          // alias groups span multiple domains; they are only really useable by system-wide admins
+          if ($_SESSION['mailcow_cc_role'] != "admin") {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_extra),
+              'msg' => 'access_denied'
+            );
+            return false;
+          }
+          $id = $_data['id'];
+          $name = $_data['name'];
+          //$map_full = intval($_data['map_full']);
+
+          $stmt = $pdo->prepare("UPDATE `alias_group` SET
+          `name` = :name/*,
+          `map_full` = :map_full*/
+            WHERE `id` = :id");
+          $stmt->execute(array(
+            ':name' => $name,
+            /*':map_full' => $map_full,*/
+            ':id' => $id
+          ));
+          $_SESSION['return'][] = array(
+            'type' => 'success',
+            'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+            'msg' => array('alias_group_modified', htmlspecialchars($name))
+          );
         break;
         case 'domain':
           if (!is_array($_data['domain'])) {
@@ -3453,6 +3513,23 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
           return $aliases;
         break;
+        case 'alias_group_list':
+          // alias groups span multiple domains; they are only really useable by system-wide admins
+          if ($_SESSION['mailcow_cc_role'] != "admin") {
+            return false;
+          }
+          $alias_group_list = array();
+          $stmt = $pdo->prepare("SELECT `id`, `name` FROM `alias_group`");
+          $stmt->execute();
+          $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+          while($row = array_shift($rows)) {
+            $alias_group_list[] = array(
+              'id' => $row['id'],
+              'name' => $row['name'],
+            );
+          }
+          return $alias_group_list;
+        break;
         case 'alias_details':
           $aliasdata = array();
           $stmt = $pdo->prepare("SELECT
@@ -3464,6 +3541,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             `private_comment`,
             `active`,
             `sogo_visible`,
+            `group_id`,
             `created`,
             `modified`
               FROM `alias`
@@ -3496,6 +3574,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $aliasdata['active_int'] = $row['active'];
           $aliasdata['sogo_visible'] = $row['sogo_visible'];
           $aliasdata['sogo_visible_int'] = $row['sogo_visible'];
+          $aliasdata['group_id'] = $row['group_id'];
           $aliasdata['created'] = $row['created'];
           $aliasdata['modified'] = $row['modified'];
           if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $aliasdata['domain'])) {
@@ -4252,6 +4331,30 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'type' => 'success',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
               'msg' => array('alias_removed', htmlspecialchars($alias_data['address']))
+            );
+          }
+        break;
+        case 'alias_group':
+          // alias groups span multiple domains; they are only really useable by system-wide admins
+          if ($_SESSION['mailcow_cc_role'] != "admin") {
+            return false;
+          }
+          if (!is_array($_data['id'])) {
+            $ids = array();
+            $ids[] = $_data['id'];
+          }
+          else {
+            $ids = $_data['id'];
+          }
+          foreach ($ids as $id) {
+            $stmt = $pdo->prepare("DELETE FROM `alias_group` WHERE `id` = :id");
+            $stmt->execute(array(
+              ':id' => $id
+            ));
+            $_SESSION['return'][] = array(
+              'type' => 'success',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              'msg' => array('alias_group_removed')
             );
           }
         break;

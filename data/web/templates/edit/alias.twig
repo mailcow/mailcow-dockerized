@@ -39,6 +39,17 @@
   </div>
   <hr>
   <div class="form-group">
+    <label class="control-label col-sm-2" for="group_id">{{ lang.edit.alias_group }}</label>
+    <div class="col-sm-10">
+      <select data-live-search="true" name="group_id" title="{{ lang.edit.select }}">
+        {% for alias_group in alias_groups %}
+          <option value="{{ alias_group.id }}" {% if result.group_id == alias_group.id %} selected{% endif %} >{{ alias_group.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+  <hr>
+  <div class="form-group">
     <label class="control-label col-sm-2" for="private_">{{ lang.edit.private_comment }}</label>
     <div class="col-sm-10">
       <input maxlength="160" class="form-control" type="text" name="private_comment" value="{{ result.private_comment }}" />
