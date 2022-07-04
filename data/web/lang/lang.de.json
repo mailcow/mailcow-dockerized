@@ -106,7 +106,8 @@
         "timeout2": "Timeout für Verbindung zum lokalen Host",
         "username": "Benutzername",
         "validate": "Validieren",
-        "validation_success": "Erfolgreich validiert"
+        "validation_success": "Erfolgreich validiert",
+        "tags": "Tags"
     },
     "admin": {
         "access": "Zugang",
@@ -920,6 +921,7 @@
         "deleted_syncjob": "Sync-Jobs-ID %s gelöscht",
         "deleted_syncjobs": "Sync-Jobs gelöscht: %s",
         "dkim_added": "DKIM-Key %s wurde hinzugefügt",
+        "domain_add_dkim_available": "Ein DKIM-Key existierte bereits",
         "dkim_duplicated": "DKIM-Key der Domain %s wurde auf Domain %s kopiert",
         "dkim_removed": "DKIM-Key %s wurde entfernt",
         "domain_added": "Domain %s wurde angelegt",
