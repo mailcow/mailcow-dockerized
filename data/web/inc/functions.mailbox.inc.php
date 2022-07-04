@@ -336,9 +336,36 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $mins_interval        = $_data['mins_interval'];
           $enc1                 = $_data['enc1'];
           $custom_params        = (empty(trim($_data['custom_params']))) ? '' : trim($_data['custom_params']);
-          // Workaround, fixme
-          if (strpos($custom_params, 'pipemess')) {
-            $custom_params = '';
+
+          // validate custom params
+          foreach (explode(' -', $custom_params) as $param){
+            if(empty($param)) continue;
+
+            if (str_contains($param, ' ')) {
+              // bad char
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'bad character SPACE'
+              );
+              return false;
+            }
+
+            // extract option
+            if (str_contains($param, '=')) $param = explode('=', $param)[0];
+            // remove first char if first char is -
+            if ($param[0] == '-') $param = ltrim($param, $param[0]);
+            
+            // check if param is whitelisted
+            if (!in_array(strtolower($param), $GLOBALS["IMAPSYNC_OPTIONS"]["whitelist"])){
+              // bad option
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'bad option '. $param
+              );
+              return false;
+            }
           }
           if (empty($subfolder2)) {
             $subfolder2 = "";
@@ -599,7 +626,16 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ratelimit('edit', 'domain', array('rl_value' => $_data['rl_value'], 'rl_frame' => $_data['rl_frame'], 'object' => $domain));
           }
           if (!empty($_data['key_size']) && !empty($_data['dkim_selector'])) {
-            dkim('add', array('key_size' => $_data['key_size'], 'dkim_selector' => $_data['dkim_selector'], 'domains' => $domain));
+            if (!empty($redis->hGet('DKIM_SELECTORS', $domain))) {
+              $_SESSION['return'][] = array(
+                'type' => 'success',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'domain_add_dkim_available'
+              );
+            }
+            else {
+              dkim('add', array('key_size' => $_data['key_size'], 'dkim_selector' => $_data['dkim_selector'], 'domains' => $domain));
+            }
           }
           if (!empty($restart_sogo)) {
             $restart_response = json_decode(docker('post', 'sogo-mailcow', 'restart'), true);
@@ -929,7 +965,16 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               ratelimit('edit', 'domain', array('rl_value' => $_data['rl_value'], 'rl_frame' => $_data['rl_frame'], 'object' => $alias_domain));
             }
             if (!empty($_data['key_size']) && !empty($_data['dkim_selector'])) {
-              dkim('add', array('key_size' => $_data['key_size'], 'dkim_selector' => $_data['dkim_selector'], 'domains' => $alias_domain));
+              if (!empty($redis->hGet('DKIM_SELECTORS', $alias_domain))) {
+                $_SESSION['return'][] = array(
+                  'type' => 'success',
+                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                  'msg' => 'domain_add_dkim_available'
+                );
+              }
+              else {
+                dkim('add', array('key_size' => $_data['key_size'], 'dkim_selector' => $_data['dkim_selector'], 'domains' => $alias_domain));
+              }
             }
             $_SESSION['return'][] = array(
               'type' => 'success',
@@ -1746,8 +1791,36 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
-            if (strpos($custom_params, 'pipemess')) {
-              $custom_params = '';
+
+            // validate custom params
+            foreach (explode(' -', $custom_params) as $param){
+              if(empty($param)) continue;
+
+              if (str_contains($param, ' ')) {
+                // bad char
+                $_SESSION['return'][] = array(
+                  'type' => 'danger',
+                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                  'msg' => 'bad character SPACE'
+                );
+                return false;
+              }
+  
+              // extract option
+              if (str_contains($param, '=')) $param = explode('=', $param)[0];
+              // remove first char if first char is -
+              if ($param[0] == '-') $param = ltrim($param, $param[0]);
+              
+              // check if param is whitelisted
+              if (!in_array(strtolower($param), $GLOBALS["IMAPSYNC_OPTIONS"]["whitelist"])){
+                // bad option
+                $_SESSION['return'][] = array(
+                  'type' => 'danger',
+                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                  'msg' => 'bad option '. $param
+                );
+                return false;
+              }
             }
             if (empty($subfolder2)) {
               $subfolder2 = "";
