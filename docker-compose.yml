@@ -58,7 +58,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.52
+      image: mailcow/clamd:1.53
       restart: always
       depends_on:
         - unbound-mailcow
