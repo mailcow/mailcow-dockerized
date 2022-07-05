@@ -435,11 +435,11 @@
       </div>
       <div class="modal-body">
         <p class="help-block">{{ lang.add.syncjob_hint }}</p>
-        <form class="form-horizontal" data-cached-form="true" role="form" data-id="add_syncjob">
+        <form class="form-horizontal" data-cached-form="false" role="form" data-id="add_syncjob">
           <div class="form-group">
             <label class="control-label col-sm-2" for="username">{{ lang.add.username }}</label>
             <div class="col-sm-10">
-              <select data-live-search="true" name="username" required>
+              <select data-live-search="true" name="username" title="{{ lang.add.select }}" required>
                 {% for mailbox in mailboxes %}
                   <option>{{ mailbox }}</option>
                 {% endfor %}
