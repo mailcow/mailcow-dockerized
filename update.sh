@@ -40,25 +40,7 @@ PATH=$PATH:/opt/bin
 
 umask 0022
 
-for bin in curl docker git awk sha1sum; do
-  if [[ -z $(which ${bin}) ]]; then 
-  echo "Cannot find ${bin}, exiting..." 
-  exit 1;
-  elif [[ -z $(which docker-compose) ]]; then
-  echo "Cannot find docker-compose Standalone. Installing..."
-  sleep 3
-   if [[ -e /etc/alpine-release ]]; then
-    echo -e "\e[33mNot installing latest docker-compose, because you are using Alpine Linux without glibc support. Install docker-compose via apk!\e[0m"
-    exit 1
-   fi 
-  curl -#L https://github.com/docker/compose/releases/download/v$(curl -Ls https://www.servercow.de/docker-compose/latest.php)/docker-compose-$(uname -s)-$(uname -m) > /usr/local/bin/docker-compose
-  chmod +x /usr/local/bin/docker-compose  
-  fi
-done
-
-export LC_ALL=C
-DATE=$(date +%Y-%m-%d_%H_%M_%S)
-BRANCH=$(cd ${SCRIPT_DIR}; git rev-parse --abbrev-ref HEAD)
+############## Begin Function Section ##############
 
 check_online_status() {
   CHECK_ONLINE_IPS=(1.1.1.1 9.9.9.9 8.8.8.8)
@@ -241,6 +223,13 @@ elif [[ -e /etc/alpine-release ]]; then
   echo -e "\e[33mNot fetching latest docker-compose, because you are using Alpine Linux without glibc support. Please update docker-compose via apk!\e[0m"
   return 0
 else
+  if [ ! $FORCE ]; then
+    read -r -p "Do you want to update your docker-compose Version? It will automatic upgrade your docker-compose installation (recommended)? [y/N] " updatecomposeresponse 
+    if [[ ! "${updatecomposeresponse}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+      echo "OK, not updating docker-compose."
+      return 0
+    fi
+  fi 
   echo -e "\e[32mFetching new docker-compose version...\e[0m"
   echo -e "\e[32mTrying to determine GLIBC version...\e[0m"
   if ldd --version > /dev/null; then
@@ -276,6 +265,38 @@ else
   fi
 fi
 }
+
+############## End Function Section ##############
+
+for bin in curl docker git awk sha1sum; do
+  if [[ -z $(which ${bin}) ]]; then 
+  echo "Cannot find ${bin}, exiting..." 
+  exit 1;
+  elif [[ -z $(which docker-compose) ]]; then
+  echo "Cannot find docker-compose Standalone. Please install it manually regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/"
+  sleep 3
+  exit 1;
+  fi  
+done
+
+## Check if docker-compose >= v2
+if ! docker-compose version --short | grep "^2." > /dev/null 2>&1; then
+  echo -e "\e[33mYour docker-compose Version is not up to date!\e[0m"
+  echo -e "\e[33mmailcow needs docker-compose >= 2.5!\e[0m"
+  echo -e "\e[33mYour current installed Version: $(docker-compose version --short)\e[0m"
+  sleep 3
+  update_compose
+  if [[ ! "${updatecomposeresponse}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+     echo -e "\e[31mmailcow does not work with docker-compose <= 2.X anymore!\e[0m"
+     echo -e "\e[31mPlease update your docker-compose manually, to run mailcow.\e[0m"
+     echo -e "\e[31mExiting...\e[0m"
+     exit 1
+  fi    
+fi
+
+export LC_ALL=C
+DATE=$(date +%Y-%m-%d_%H_%M_%S)
+BRANCH=$(cd ${SCRIPT_DIR}; git rev-parse --abbrev-ref HEAD)
 
 while (($#)); do
   case "${1}" in
@@ -657,7 +678,15 @@ if [ ! $FORCE ]; then
   migrate_docker_nat
 fi
 
-update_compose
+LATEST_COMPOSE=$(curl -#L https://www.servercow.de/docker-compose/latest.php)
+COMPOSE_VERSION=$(docker-compose version --short)
+if [[ "$LATEST_COMPOSE" != "$COMPOSE_VERSION" ]]; then
+  echo -e "\e[33mA new docker-compose Version is available: $LATEST_COMPOSE\e[0m"
+  echo -e "\e[33mYour Version is: $COMPOSE_VERSION\e[0m"
+  update_compose
+else
+  echo -e "\e[32mYour docker-compose Version is up to date! Not updating it...\e[0m" 
+fi
 
 remove_obsolete_nginx_ports
 
