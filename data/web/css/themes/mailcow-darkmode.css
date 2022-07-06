@@ -20,6 +20,9 @@ legend {
     background-color: #7a7a7a !important;
     border-color: #5c5c5c !important;
 }
+.btn-check:checked+.btn-secondary, .btn-check:active+.btn-secondary, .btn-secondary:active, .btn-secondary.active, .show>.btn-secondary.dropdown-toggle {
+    border-color: #7a7a7a !important;
+}
 .alert-secondary {
     color: #fff !important;
     background-color: #7a7a7a !important;
@@ -40,6 +43,9 @@ legend {
     background-color: #7a7a7a;
     border-color: #5c5c5c !important;
     color: #fff;
+}
+.btn-secondary:disabled, .btn-secondary.disabled {
+    border-color: #7a7a7a !important;
 }
 .modal-content {
     background-color: #383838;
@@ -151,21 +157,6 @@ input.form-control:disabled, textarea.form-disabled {
     color: #d1d1d1;
 }
 
-/* Update 2022-02-09 */
-/* Rspamd Settings */
-a.list-group-item, button.list-group-item {
-    color: #fafafa;
-    background-color: #28b62c;
-    border-color: #23a127;
-}
-
-a.list-group-item:focus, a.list-group-item:hover, button.list-group-item:focus, button.list-group-item:hover {
-    margin-top: 1px;
-    border-bottom-width: 3px;
-    background-color: #28b62c;
-    border-color: #23a127;
-    color: white;
-}
 
 .list-group-item {
     color: #ccc;
