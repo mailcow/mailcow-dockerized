@@ -232,6 +232,8 @@ $RSPAMD_MAPS = array(
 
 $IMAPSYNC_OPTIONS = array(
   'whitelist' => array(
+      'inet4',
+      'ssl1',
       'log',
       'showpasswords',   
       'nossl1',            
