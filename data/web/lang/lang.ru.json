@@ -648,7 +648,7 @@
         "apps": "Приложения",
         "debug": "Состояние сервера",
         "mailboxes": "Настройка почты",
-        "mailcow_settings": "Конфигурация",
+        "mailcow_config": "Конфигурация",
         "quarantine": "Карантин",
         "restart_netfilter": "Перезапустить netfilter",
         "restart_sogo": "Перезапустить SOGo",

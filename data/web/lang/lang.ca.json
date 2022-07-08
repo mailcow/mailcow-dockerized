@@ -270,7 +270,7 @@
         "administration": "Administració",
         "debug": "Debug",
         "mailboxes": "Bústies",
-        "mailcow_settings": "Configuració",
+        "mailcow_config": "Configuració",
         "quarantine": "Quarantena",
         "restart_sogo": "Reiniciar SOGo",
         "user_settings": "Preferències d'usuari"

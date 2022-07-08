@@ -651,7 +651,7 @@
         "apps": "App",
         "debug": "Informazioni di sistema",
         "mailboxes": "Caselle",
-        "mailcow_settings": "Configurazione",
+        "mailcow_config": "Configurazione",
         "quarantine": "Quarantena",
         "restart_netfilter": "Riavvia netfilter",
         "restart_sogo": "Riavvia SOGo",

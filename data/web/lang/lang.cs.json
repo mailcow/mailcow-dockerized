@@ -644,7 +644,7 @@
         "apps": "Aplikace",
         "debug": "Systémové informace",
         "mailboxes": "Nastavení mailů",
-        "mailcow_settings": "Nastavení",
+        "mailcow_config": "Nastavení",
         "quarantine": "Karanténa",
         "restart_netfilter": "Restartovat netfilter",
         "restart_sogo": "Restartovat SOGo",

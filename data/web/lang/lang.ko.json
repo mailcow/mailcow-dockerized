@@ -573,7 +573,7 @@
         "apps": "Apps",
         "debug": "System Information",
         "mailboxes": "Mail Setup",
-        "mailcow_settings": "Configuration",
+        "mailcow_config": "Configuration",
         "quarantine": "Quarantine",
         "restart_netfilter": "Restart netfilter",
         "restart_sogo": "Restart SOGo",

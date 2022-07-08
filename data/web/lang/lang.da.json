@@ -582,7 +582,7 @@
         "apps": "Apps",
         "debug": "Systemoplysninger",
         "mailboxes": "Mailopsætning",
-        "mailcow_settings": "Konfiguration",
+        "mailcow_config": "Konfiguration",
         "quarantine": "Karantæne",
         "restart_netfilter": "Genstart netfilter",
         "restart_sogo": "Genstart SOGo",

@@ -438,7 +438,7 @@
         "administration": "Administración",
         "debug": "Información del sistema",
         "mailboxes": "Buzones",
-        "mailcow_settings": "Configuración",
+        "mailcow_config": "Configuración",
         "quarantine": "Cuarentena",
         "restart_sogo": "Reiniciar SOGo",
         "user_settings": "Configuraciones de usuario"

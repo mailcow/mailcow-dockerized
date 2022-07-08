@@ -583,7 +583,7 @@
         "apps": "应用",
         "debug": "系统信息",
         "mailboxes": "邮箱设置",
-        "mailcow_settings": "配置",
+        "mailcow_config": "配置",
         "quarantine": "隔离",
         "restart_netfilter": "重启netfilter",
         "restart_sogo": "重启SOGo",

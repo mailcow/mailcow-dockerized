@@ -55,7 +55,7 @@
         "apps": "Appok",
         "debug": "Rendszer információ",
         "mailboxes": "Email beállítások",
-        "mailcow_settings": "Beállítások",
+        "mailcow_config": "Beállítások",
         "quarantine": "Karantén",
         "restart_netfilter": "Netfilter újraindítása",
         "restart_sogo": "SOGo újraindítása",

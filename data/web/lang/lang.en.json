@@ -675,9 +675,10 @@
     "header": {
         "administration": "Configuration & Details",
         "apps": "Apps",
-        "debug": "System Information",
+        "debug": "Information",
         "mailboxes": "Mail Setup",
-        "mailcow_settings": "Configuration",
+        "mailcow_system": "System",
+        "mailcow_config": "Configuration",
         "quarantine": "Quarantine",
         "restart_netfilter": "Restart netfilter",
         "restart_sogo": "Restart SOGo",
