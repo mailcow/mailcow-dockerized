@@ -205,7 +205,7 @@ remove_obsolete_nginx_ports() {
               sed -i '/nginx-mailcow:$/,/^$/d' $override
               echo -e "\e[33mRemoved obsolete NGINX IPv6 Bind from original override File.\e[0m"
                 if [[ "$(cat $override | sed '/^\s*$/d' | wc -l)" == "2" ]]; then
-                  mv $override ${override}_backup
+                  mv $override ${override}_empty
                   echo -e "\e[31m${override} is empty. Renamed it to ensure mailcow is startable.\e[0m"
                 fi
             fi
