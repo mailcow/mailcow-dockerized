@@ -242,8 +242,8 @@ legend {
 .btn-input-missing:active:hover,
 .btn-input-missing:active:focus {
   color: #000 !important;
-  background-color: rgba(255, 65, 54, 0.2);
-  border-color: #ff291c;
+  background-color: #ff2f24 !important;
+  border-color: #e21207 !important;
 }
 .navbar-nav > li {
   font-size: 1rem !important;
@@ -339,16 +339,17 @@ table.dataTable>tbody>tr.child ul.dtr-details>li {
 
 table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before:hover, 
 table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before:hover {
-  background-color: #cfcfcf;
+  background-color: #5e5e5e;
 }
 table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before, 
-table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before {
-  background-color: #cfcfcf !important;
+table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before,
+table.dataTable td.dt-control:before {
+  background-color: #979797 !important;
   border: 1.5px solid #616161 !important;
-  border-radius: 5px !important;
-  color: #616161;
-  height: 1.25em;
-  width: 1.25em;
+  border-radius: 2px !important;
+  color: #fff;
+  height: 1em;
+  width: 1em;
   line-height: 1.25em;
   border-radius: 0px;
   box-shadow: none;
@@ -356,8 +357,9 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before {
   transition: 0.5s all;
 }
 table.dataTable.dtr-inline.collapsed>tbody>tr.parent>td.dtr-control:before, 
-table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th.dtr-control:before {
-  background-color: #f0f0f0 !important;
+table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th.dtr-control:before,
+table.dataTable td.dt-control:before {
+  background-color: #979797 !important;
 }
 table.dataTable.dtr-inline.collapsed>tbody>tr>td.child, 
 table.dataTable.dtr-inline.collapsed>tbody>tr>th.child, 
@@ -369,4 +371,9 @@ table.dataTable.table-striped>tbody>tr>td {
 }
 table.dataTable.table-striped>tbody>tr>td>input[type="checkbox"] {
   margin-top: 7px;
+}
+
+
+.btn-check-label {
+  color: #555;
 }

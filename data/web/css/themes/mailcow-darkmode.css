@@ -312,3 +312,31 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>th.child,
 table.dataTable.dtr-inline.collapsed>tbody>tr>td.dataTables_empty {
   background-color: #444444;
 }
+
+.btn-check-label {
+  color: #fff;
+}
+.btn.btn-outline-secondary {
+  color: #fff !important;
+  border-color: #7a7a7a !important;  
+}
+.btn-check:checked+.btn-outline-secondary, .btn-check:active+.btn-outline-secondary, .btn-outline-secondary:active, .btn-outline-secondary.active, .btn-outline-secondary.dropdown-toggle.show {
+    background-color: #7a7a7a !important;
+}
+
+
+
+.btn-input-missing,
+.btn-input-missing:hover,
+.btn-input-missing:active,
+.btn-input-missing:focus,
+.btn-input-missing:active:hover,
+.btn-input-missing:active:focus {
+  color: #fff !important;
+  background-color: #ff2f24 !important;
+  border-color: #e21207 !important;
+}
+
+.inputMissingAttr {
+    border-color: #FF4136 !important;
+}
