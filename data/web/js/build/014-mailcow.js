@@ -322,18 +322,24 @@ $(document).ready(function() {
   }
 
   // Dark Mode Loader
-  if ($('#dark-mode-theme').length)
-    $('#dark-mode-toggle').prop('checked', true);
-
   $('#dark-mode-toggle').click(toggleDarkMode);
+  if ($('#dark-mode-theme').length) {
+    $('#dark-mode-toggle').prop('checked', true);
+    if ($('#rspamd_logo').length) $('#rspamd_logo').attr('src', '/img/rspamd_logo_light.png');
+    if ($('#rspamd_logo_sm').length) $('#rspamd_logo_sm').attr('src', '/img/rspamd_logo_light.png');
+  }
   function toggleDarkMode(){
     if($('#dark-mode-theme').length){
       $('#dark-mode-theme').remove();
       $('#dark-mode-toggle').prop('checked', false);
+      if ($('#rspamd_logo').length) $('#rspamd_logo').attr('src', '/img/rspamd_logo_dark.png');
+      if ($('#rspamd_logo_sm').length) $('#rspamd_logo_sm').attr('src', '/img/rspamd_logo_dark.png');
       localStorage.setItem('darkmode', 'false');
     }else{
       $('head').append('<link id="dark-mode-theme" rel="stylesheet" type="text/css" href="/css/themes/mailcow-darkmode.css">');
       $('#dark-mode-toggle').prop('checked', true);
+      if ($('#rspamd_logo').length) $('#rspamd_logo').attr('src', '/img/rspamd_logo_light.png');
+      if ($('#rspamd_logo_sm').length) $('#rspamd_logo_sm').attr('src', '/img/rspamd_logo_light.png');
       localStorage.setItem('darkmode', 'true');
     }
   }
