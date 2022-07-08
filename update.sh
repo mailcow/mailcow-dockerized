@@ -1,45 +1,5 @@
 #!/usr/bin/env bash
 
-# Check permissions
-if [ "$(id -u)" -ne "0" ]; then
-  echo "You need to be root"
-  exit 1
-fi
-
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-# Run pre-update-hook
-if [ -f "${SCRIPT_DIR}/pre_update_hook.sh" ]; then
-  bash "${SCRIPT_DIR}/pre_update_hook.sh"
-fi
-
-if [[ "$(uname -r)" =~ ^4\.15\.0-60 ]]; then
-  echo "DO NOT RUN mailcow ON THIS UBUNTU KERNEL!";
-  echo "Please update to 5.x or use another distribution."
-  exit 1
-fi
-
-if [[ "$(uname -r)" =~ ^4\.4\. ]]; then
-  if grep -q Ubuntu <<< $(uname -a); then
-    echo "DO NOT RUN mailcow ON THIS UBUNTU KERNEL!"
-    echo "Please update to linux-generic-hwe-16.04 by running \"apt-get install --install-recommends linux-generic-hwe-16.04\""
-    exit 1
-  fi
-  echo "mailcow on a 4.4.x kernel is not supported. It may or may not work, please upgrade your kernel or continue at your own risk."
-  read -p "Press any key to continue..." < /dev/tty
-fi
-
-# Exit on error and pipefail
-set -o pipefail
-
-# Setting high dc timeout
-export COMPOSE_HTTP_TIMEOUT=600
-
-# Add /opt/bin to PATH
-PATH=$PATH:/opt/bin
-
-umask 0022
-
 ############## Begin Function Section ##############
 
 check_online_status() {
@@ -267,6 +227,46 @@ fi
 }
 
 ############## End Function Section ##############
+
+# Check permissions
+if [ "$(id -u)" -ne "0" ]; then
+  echo "You need to be root"
+  exit 1
+fi
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Run pre-update-hook
+if [ -f "${SCRIPT_DIR}/pre_update_hook.sh" ]; then
+  bash "${SCRIPT_DIR}/pre_update_hook.sh"
+fi
+
+if [[ "$(uname -r)" =~ ^4\.15\.0-60 ]]; then
+  echo "DO NOT RUN mailcow ON THIS UBUNTU KERNEL!";
+  echo "Please update to 5.x or use another distribution."
+  exit 1
+fi
+
+if [[ "$(uname -r)" =~ ^4\.4\. ]]; then
+  if grep -q Ubuntu <<< $(uname -a); then
+    echo "DO NOT RUN mailcow ON THIS UBUNTU KERNEL!"
+    echo "Please update to linux-generic-hwe-16.04 by running \"apt-get install --install-recommends linux-generic-hwe-16.04\""
+    exit 1
+  fi
+  echo "mailcow on a 4.4.x kernel is not supported. It may or may not work, please upgrade your kernel or continue at your own risk."
+  read -p "Press any key to continue..." < /dev/tty
+fi
+
+# Exit on error and pipefail
+set -o pipefail
+
+# Setting high dc timeout
+export COMPOSE_HTTP_TIMEOUT=600
+
+# Add /opt/bin to PATH
+PATH=$PATH:/opt/bin
+
+umask 0022
 
 for bin in curl docker git awk sha1sum; do
   if [[ -z $(which ${bin}) ]]; then 
@@ -652,16 +652,16 @@ else
    fi
 fi
 
-echo -e "\e[32mChecking for newer update script...\e[0m"
-SHA1_1=$(sha1sum update.sh)
-git fetch origin #${BRANCH}
-git checkout origin/${BRANCH} update.sh
-SHA1_2=$(sha1sum update.sh)
-if [[ ${SHA1_1} != ${SHA1_2} ]]; then
-  echo "update.sh changed, please run this script again, exiting."
-  chmod +x update.sh
-  exit 2
-fi
+# echo -e "\e[32mChecking for newer update script...\e[0m"
+# SHA1_1=$(sha1sum update.sh)
+# git fetch origin #${BRANCH}
+# git checkout origin/${BRANCH} update.sh
+# SHA1_2=$(sha1sum update.sh)
+# if [[ ${SHA1_1} != ${SHA1_2} ]]; then
+#   echo "update.sh changed, please run this script again, exiting."
+#   chmod +x update.sh
+#   exit 2
+# fi
 
 if [[ -f mailcow.conf ]]; then
   source mailcow.conf
