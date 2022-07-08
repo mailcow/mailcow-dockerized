@@ -62,6 +62,12 @@ jQuery(function($){
     $('#' + table_name).DataTable().ajax.reload();
   });
   function draw_domain_admins() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#domainadminstable') ) {
+      $('#domainadminstable').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#domainadminstable').DataTable({
       processing: true,
       serverSide: false,
@@ -70,6 +76,7 @@ jQuery(function($){
         type: "GET",
         url: "/api/v1/get/domain-admin/all",
         dataSrc: function(data){
+          console.log(data);
           return process_table_data(data, 'domainadminstable');
         }
       },
@@ -95,20 +102,17 @@ jQuery(function($){
             defaultContent: ''
           },
           {
+            title: lang.admin_domains,
+            data: 'selected_domains',
+            defaultContent: '',
+          },
+          {
             title: "TFA",
             data: 'tfa_active',
             defaultContent: '',
             render: function (data, type) {
               if(data == 1) return '<i class="bi bi-check-lg"></i>';
               else return '<i class="bi bi-x-lg"></i>'
-            }
-          },
-          {
-            title: lang.admin_domains,
-            data: 'tfa_active',
-            defaultContent: '',
-            render: function (data, type) {
-              return data;
             }
           },
           {
@@ -128,11 +132,17 @@ jQuery(function($){
           },
       ],
       initComplete: function(settings, json){
-        console.log(settings.aoColumns);
+        console.log(settings);
       }
     });
   }
   function draw_oauth2_clients() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#oauth2clientstable') ) {
+      $('#oauth2clientstable').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#oauth2clientstable').DataTable({
       processing: true,
       serverSide: false,
@@ -190,6 +200,12 @@ jQuery(function($){
     });
   }
   function draw_admins() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#adminstable') ) {
+      $('#adminstable').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#adminstable').DataTable({
       processing: true,
       serverSide: false,
@@ -250,6 +266,12 @@ jQuery(function($){
     });
   }
   function draw_fwd_hosts() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#forwardinghoststable') ) {
+      $('#forwardinghoststable').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#forwardinghoststable').DataTable({
       processing: true,
       serverSide: false,
@@ -302,6 +324,12 @@ jQuery(function($){
     });
   }
   function draw_relayhosts() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#relayhoststable') ) {
+      $('#relayhoststable').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#relayhoststable').DataTable({
       processing: true,
       serverSide: false,
@@ -352,7 +380,11 @@ jQuery(function($){
           {
             title: lang.active,
             data: 'active',
-            defaultContent: ''
+            defaultContent: '',
+            render: function (data, type) {
+              if(data == 1) return '<i class="bi bi-check-lg"></i>';
+              else return '<i class="bi bi-x-lg"></i>'
+            }
           },
           {
             title: lang.action,
@@ -364,6 +396,12 @@ jQuery(function($){
     });
   }
   function draw_transport_maps() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#transportstable') ) {
+      $('#transportstable').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#transportstable').DataTable({
       processing: true,
       serverSide: false,
@@ -414,7 +452,11 @@ jQuery(function($){
           {
             title: lang.active,
             data: 'active',
-            defaultContent: ''
+            defaultContent: '',
+            render: function (data, type) {
+              if(data == 1) return '<i class="bi bi-check-lg"></i>';
+              else return '<i class="bi bi-x-lg"></i>'
+            }
           },
           {
             title: lang.action,
@@ -426,6 +468,12 @@ jQuery(function($){
     });
   }
   function draw_queue() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#queuetable') ) {
+      $('#queuetable').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#queuetable').DataTable({
       processing: true,
       serverSide: false,
@@ -594,7 +642,6 @@ jQuery(function($){
         entries.forEach(entry => {
           if(entry.intersectionRatio > 0) {
             callback(element_object);
-            observer.disconnect();
           }
         });
       }).observe(element_object);
@@ -687,7 +734,7 @@ jQuery(function($){
     e.preventDefault();
     prev = $('#test_transport').text();
     $(this).prop("disabled",true);
-    $(this).html('<i class="bi bi-arrow-repeat icon-spin"></i> ');
+    $(this).html('<div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div> ');
     $.ajax({
         type: 'GET',
         url: 'inc/ajax/transport_check.php',
