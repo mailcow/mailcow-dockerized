@@ -273,7 +273,8 @@ for bin in curl docker git awk sha1sum; do
   echo "Cannot find ${bin}, exiting..." 
   exit 1;
   elif [[ -z $(which docker-compose) ]]; then
-  echo "Cannot find docker-compose Standalone. Please install it manually regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/"
+  echo -e "\e[31mCannot find docker-compose Standalone.\e[0m" 
+  echo -e "\e[31mPlease install it manually regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
   sleep 3
   exit 1;
   fi  
