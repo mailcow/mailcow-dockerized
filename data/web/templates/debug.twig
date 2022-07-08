@@ -89,6 +89,19 @@
                     <span>{{ container }}</span>
                     <span class="d-block d-md-inline">({{ container_info.Config.Image }})</span>
                     <small class="d-block">({{ lang.debug.started_on }} <span class="parse_date">{{ container_info.State.StartedAtHR }}</span>)</small>
+                  </div>
+                  <div class="ms-auto">
+                    <a href data-bs-toggle="modal" data-container="{{ container }}" data-bs-target="#RestartContainer" class="btn btn-sm btn-secondary d-flex align-items-center mb-2" style="height: 30px;">{{ lang.debug.restart_container }}
+                      <i class="ms-1 bi
+                      {% if container_info.State.Running == 1 %}
+                      bi-record-fill text-success
+                      {% elseif container_info.State %}
+                      bi-record-fill text-danger
+                      {% else %}
+                      default
+                      {% endif %}
+                      "
+                      ></i></a>
                     {% if container_info.State.Running == 1 %}
                       <span class="badge fs-7 bg-success loader" style="min-width:100px">
                         {{ lang.debug.container_running }}
@@ -103,17 +116,6 @@
                       </span>
                     {% endif %}
                   </div>
-                  <a href data-bs-toggle="modal" data-container="{{ container }}" data-bs-target="#RestartContainer" class="ms-auto my-auto btn btn-xs btn-secondary d-flex align-items-center" style="height: 50px;">{{ lang.debug.restart_container }}
-                    <i class="ms-1 bi
-                    {% if container_info.State.Running == 1 %}
-                    bi-record-fill text-success
-                    {% elseif container_info.State %}
-                    bi-record-fill text-danger
-                    {% else %}
-                    default
-                    {% endif %}
-                    "
-                    ></i></a>
                 </li>
               {% endfor %}
             </ul>
