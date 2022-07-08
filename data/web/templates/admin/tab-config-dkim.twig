@@ -7,10 +7,15 @@
       <span class="d-none d-md-block">{{ lang.admin.dkim_keys }}</span>
     </div>
     <div id="collapse-tab-config-dkim" class="card-body collapse" data-bs-parent="#admin-content">
-      <div class="btn-group" data-bs-toggle="button" style="margin-bottom: 20px;">
-        <a class="btn btn-sm btn-xs-third d-block d-sm-inline btn-secondary active" href="#" data-bs-toggle="collapse" data-bs-target=".dkim_key_valid">{{ lang.admin.dkim_key_valid }}</a>
-        <a class="btn btn-sm btn-xs-third d-block d-sm-inline btn-secondary active" href="#" data-bs-toggle="collapse" data-bs-target=".dkim_key_unused">{{ lang.admin.dkim_key_unused }}</a>
-        <a class="btn btn-sm btn-xs-third d-block d-sm-inline btn-secondary active" href="#" data-bs-toggle="collapse" data-bs-target=".dkim_key_missing">{{ lang.admin.dkim_key_missing }}</a>
+      <div class="btn-group my-4" role="group">
+        <input type="checkbox" id="check-dkim_key_valid" class="btn-check" autocomplete="off" data-bs-toggle="collapse" data-bs-target=".dkim_key_valid" checked>
+        <label class="btn btn-outline-secondary btn-check-label" for="check-dkim_key_valid">{{ lang.admin.dkim_key_valid }}</label>
+
+        <input type="checkbox" id="check-dkim_key_unused" class="btn-check" autocomplete="off" data-bs-toggle="collapse" data-bs-target=".dkim_key_unused" checked>
+        <label class="btn btn-outline-secondary btn-check-label" for="check-dkim_key_unused">{{ lang.admin.dkim_key_unused }}</label>
+
+        <input type="checkbox" id="check-dkim_key_missing" class="btn-check" autocomplete="off" data-bs-toggle="collapse" data-bs-target=".dkim_key_missing" checked>
+        <label class="btn btn-outline-secondary btn-check-label" for="check-dkim_key_missing">{{ lang.admin.dkim_key_missing }}</label>
       </div>
       {% for domain, domain_data in dkim_domains %}
         {% if domain_data.dkim %}
