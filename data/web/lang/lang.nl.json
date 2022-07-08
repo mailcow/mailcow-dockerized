@@ -592,7 +592,7 @@
         "apps": "Apps",
         "debug": "Systeeminformatie",
         "mailboxes": "Mailconfiguratie",
-        "mailcow_settings": "Beheer",
+        "mailcow_config": "Beheer",
         "quarantine": "Quarantaine",
         "restart_netfilter": "Herstart netfilter",
         "restart_sogo": "Herstart SOGo",

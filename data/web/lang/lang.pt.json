@@ -137,7 +137,7 @@
     "header": {
         "administration": "Administração",
         "mailboxes": "Contas",
-        "mailcow_settings": "Configuração",
+        "mailcow_config": "Configuração",
         "user_settings": "Configurações do usuário"
     },
     "info": {

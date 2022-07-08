@@ -655,7 +655,7 @@
         "restart_netfilter": "Перезапустити netfilter",
         "restart_sogo": "Перезапустити SOGo",
         "user_settings": "Налаштування користувача",
-        "mailcow_settings": "Конфігурація"
+        "mailcow_config": "Конфігурація"
     },
     "info": {
         "no_action": "Дій не передбачено",

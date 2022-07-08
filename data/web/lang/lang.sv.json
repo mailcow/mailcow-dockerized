@@ -608,7 +608,7 @@
         "apps": "Applikationer",
         "debug": "Systeminformation",
         "mailboxes": "Ställ in mejl",
-        "mailcow_settings": "Konfiguration",
+        "mailcow_config": "Konfiguration",
         "quarantine": "Karantän",
         "restart_netfilter": "Starta om netfilter",
         "restart_sogo": "Starta om SOGo",

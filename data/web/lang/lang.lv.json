@@ -278,7 +278,7 @@
         "administration": "Administrēšana",
         "debug": "Atkļūdošana",
         "mailboxes": "Pastkastes",
-        "mailcow_settings": "Configurācija",
+        "mailcow_config": "Configurācija",
         "quarantine": "Karantīna",
         "restart_sogo": "Restartēt SOGo",
         "user_settings": "Lietotāja uzstādījumi"

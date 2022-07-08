@@ -675,9 +675,9 @@
     "header": {
         "administration": "Server-Konfiguration",
         "apps": "Apps",
-        "debug": "Systeminformation",
+        "debug": "Information",
         "mailboxes": "E-Mail-Setup",
-        "mailcow_settings": "Konfiguration",
+        "mailcow_config": "Konfiguration",
         "quarantine": "Quarantäne",
         "restart_netfilter": "Netfilter neustarten",
         "restart_sogo": "SOGo neustarten",

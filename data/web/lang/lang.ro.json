@@ -650,7 +650,7 @@
         "apps": "Aplicații",
         "debug": "Informații Sistem",
         "mailboxes": "Configurare Mail",
-        "mailcow_settings": "Configurație",
+        "mailcow_config": "Configurație",
         "quarantine": "Carantină",
         "restart_netfilter": "Repornire netfilter",
         "restart_sogo": "Repornire SOGo",

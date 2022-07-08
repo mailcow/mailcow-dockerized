@@ -599,7 +599,7 @@
         "apps": "Applications",
         "debug": "Information Système",
         "mailboxes": "Configuration du courrier",
-        "mailcow_settings": "Configuration",
+        "mailcow_config": "Configuration",
         "quarantine": "Quarantaine",
         "restart_netfilter": "Redémarrer Netfilter",
         "restart_sogo": "Redémarrer SOGo",

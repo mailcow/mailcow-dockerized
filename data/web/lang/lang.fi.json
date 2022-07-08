@@ -507,7 +507,7 @@
         "apps": "Sovellukset",
         "debug": "Järjestelmä tiedot",
         "mailboxes": "Verkkotunnuksien asetukset",
-        "mailcow_settings": "Kokoonpano",
+        "mailcow_config": "Kokoonpano",
         "quarantine": "Karanteeni",
         "restart_netfilter": "Uudelleen käynnistä netfilter",
         "restart_sogo": "Uudelleen käynnistä SOGo",

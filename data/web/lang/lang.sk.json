@@ -650,7 +650,7 @@
         "apps": "Aplikácie",
         "debug": "Systémové informácie",
         "mailboxes": "Nastavenie mailov",
-        "mailcow_settings": "Konfigurácia",
+        "mailcow_config": "Konfigurácia",
         "quarantine": "Karanténa",
         "restart_netfilter": "Reštartovať netfilter",
         "restart_sogo": "Reštart SOGo",
