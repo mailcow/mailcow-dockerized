@@ -112,6 +112,7 @@ $template_data = [
   'show_rspamd_global_filters' => @$_SESSION['show_rspamd_global_filters'],
   'lang_admin' => json_encode($lang['admin']),
   'lang_datatables' => json_encode($lang['datatables']),
+  'last_login' => last_login('get', $_SESSION['mailcow_cc_username'], 7, 0)['ui']['time']
 ];
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';

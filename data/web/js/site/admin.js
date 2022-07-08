@@ -56,6 +56,7 @@ jQuery(function($){
     $("#rspamd_global_filters").removeClass("d-none");
   });
   $("#super_delete").click(function() { return confirm(lang.queue_ays); });
+  
   $(".refresh_table").on('click', function(e) {
     e.preventDefault();
     var table_name = $(this).data('table');
@@ -793,5 +794,51 @@ jQuery(function($){
   $('#add_f2b_regex_row').click(function() {
       add_table_row($('#f2b_regex_table'), "f2b_regex");
   });
-});
 
+  // show whats new modal
+  if (mailcow_info.updatedAt > last_login){
+    var parsedSeenTimestamp = parseInt(localStorage.getItem("seenChangelog"));
+    if (!isNaN(parsedSeenTimestamp) && mailcow_info.updatedAt < parsedSeenTimestamp) {
+      console.log("changelog seen");
+      return;
+    }
+    $.ajax({
+      type: 'GET',
+      url: 'https://api.github.com/repos/' + mailcow_info.project_owner + '/' + mailcow_info.project_repo + '/releases/tags/' + mailcow_info.version_tag,
+      dataType: 'json',
+      success: function (data) { 
+        var md = window.markdownit();
+        var result = md.render(data.body);
+        result = parseGitHubLinks(result);
+
+        $('#showWhatsNew').find(".modal-body").html(`
+          <h3>` + data.name + `</h3>
+          <span class="mt-4">` + result + `</span>
+        `);
+
+        localStorage.setItem("seenChangelog", Math.floor(Date.now() / 1000).toString());
+      }
+    });
+
+    new bootstrap.Modal(document.getElementById("showWhatsNew"), {
+      backdrop: 'static',
+      keyboard: false
+    }).show();
+  }
+
+  function parseGitHubLinks(inputText) {
+    var replacedText, replacePattern1;
+  
+    replacePattern1 = /(\b(https?):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+    replacedText = inputText.replace(replacePattern1, (matched, index, original, input_string) => {
+        if (!matched.includes('github.com')) return matched;
+  
+        last_uri_path = matched.split('/');
+        last_uri_path = last_uri_path[last_uri_path.length - 1];
+        
+        return '<a href="' + matched + '" target="_blank">' + last_uri_path + '</a>';
+    });
+  
+    return replacedText;
+  }
+});
