@@ -55,6 +55,12 @@ jQuery(function($){
     $('#' + table_name).DataTable().ajax.reload();
   });
   function draw_autodiscover_logs() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#autodiscover_log') ) {
+      $('#autodiscover_log').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#autodiscover_log').DataTable({
       processing: true,
       serverSide: false,
@@ -101,6 +107,12 @@ jQuery(function($){
     });
   }
   function draw_postfix_logs() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#postfix_log') ) {
+      $('#postfix_log').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#postfix_log').DataTable({
       processing: true,
       serverSide: false,
@@ -137,6 +149,12 @@ jQuery(function($){
     });
   }
   function draw_watchdog_logs() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#watchdog_log') ) {
+      $('#watchdog_log').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#watchdog_log').DataTable({
       processing: true,
       serverSide: false,
@@ -178,6 +196,12 @@ jQuery(function($){
     });
   }
   function draw_api_logs() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#api_log') ) {
+      $('#api_log').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#api_log').DataTable({
       processing: true,
       serverSide: false,
@@ -224,6 +248,12 @@ jQuery(function($){
     });
   }
   function draw_rl_logs() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#rl_log') ) {
+      $('#rl_log').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#rl_log').DataTable({
       processing: true,
       serverSide: false,
@@ -310,6 +340,12 @@ jQuery(function($){
     });
   }
   function draw_ui_logs() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#ui_logs') ) {
+      $('#ui_logs').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#ui_logs').DataTable({
       processing: true,
       serverSide: false,
@@ -371,6 +407,12 @@ jQuery(function($){
     });
   }
   function draw_sasl_logs() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#sasl_logs') ) {
+      $('#sasl_logs').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#sasl_logs').DataTable({
       processing: true,
       serverSide: false,
@@ -412,6 +454,12 @@ jQuery(function($){
     });
   }
   function draw_acme_logs() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#acme_log') ) {
+      $('#acme_log').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#acme_log').DataTable({
       processing: true,
       serverSide: false,
@@ -443,6 +491,12 @@ jQuery(function($){
     });
   }
   function draw_netfilter_logs() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#netfilter_log') ) {
+      $('#netfilter_log').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#netfilter_log').DataTable({
       processing: true,
       serverSide: false,
@@ -479,6 +533,12 @@ jQuery(function($){
     });
   }
   function draw_sogo_logs() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#sogo_log') ) {
+      $('#sogo_log').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#sogo_log').DataTable({
       processing: true,
       serverSide: false,
@@ -515,6 +575,12 @@ jQuery(function($){
     });
   }
   function draw_dovecot_logs() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#dovecot_log') ) {
+      $('#dovecot_log').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#dovecot_log').DataTable({
       processing: true,
       serverSide: false,
@@ -612,6 +678,12 @@ jQuery(function($){
     });
   }
   function draw_rspamd_history() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#rspamd_history') ) {
+      $('#rspamd_history').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#rspamd_history').DataTable({
       processing: true,
       serverSide: false,
@@ -906,7 +978,6 @@ jQuery(function($){
         entries.forEach(entry => {
           if(entry.intersectionRatio > 0) {
             callback(element_object);
-            observer.disconnect();
           }
         });
       }).observe(element_object);

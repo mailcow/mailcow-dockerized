@@ -128,6 +128,12 @@ jQuery(function($){
   }
 
   function draw_tla_table() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#tla_table') ) {
+      $('#tla_table').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#tla_table').DataTable({
       processing: true,
       serverSide: false,
@@ -185,6 +191,15 @@ jQuery(function($){
           }
         },
         {
+          title: lang.created_on,
+          data: 'created',
+          defaultContent: '',
+          render: function (data, type) {
+            var date = new Date(data.replace(/-/g, "/"));
+            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          }
+        },
+        {
           title: lang.action,
           data: 'action',
           className: 'text-md-end dt-sm-head-hidden dt-body-right',
@@ -194,6 +209,12 @@ jQuery(function($){
     });
   }
   function draw_sync_job_table() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#sync_job_table') ) {
+      $('#sync_job_table').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#sync_job_table').DataTable({
       processing: true,
       serverSide: false,
@@ -267,7 +288,8 @@ jQuery(function($){
         {
           title: 'ID',
           data: 'id',
-          defaultContent: ''
+          defaultContent: '',
+          responsivePriority: 3
         },
         {
           title: 'Server',
@@ -275,23 +297,8 @@ jQuery(function($){
           defaultContent: ''
         },
         {
-          title: lang.encryption,
-          data: 'enc1',
-          defaultContent: ''
-        },
-        {
           title: lang.username,
           data: 'user1',
-          defaultContent: ''
-        },
-        {
-          title: lang.excludes,
-          data: 'exclude',
-          defaultContent: ''
-        },
-        {
-          title: lang.interval + " (min)",
-          data: 'mins_interval',
           defaultContent: ''
         },
         {
@@ -320,18 +327,41 @@ jQuery(function($){
         {
           title: lang.status,
           data: 'is_running',
+          defaultContent: '',
+          responsivePriority: 4
+        },
+        {
+          title: lang.encryption,
+          data: 'enc1',
+          defaultContent: ''
+        },
+        {
+          title: lang.excludes,
+          data: 'exclude',
+          defaultContent: ''
+        },
+        {
+          title: lang.interval + " (min)",
+          data: 'mins_interval',
           defaultContent: ''
         },
         {
           title: lang.action,
           data: 'action',
           className: 'text-md-end dt-sm-head-hidden dt-body-right',
-          defaultContent: ''
+          defaultContent: '',
+          responsivePriority: 5
         }
       ]
     });
   }
   function draw_app_passwd_table() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#app_passwd_table') ) {
+      $('#app_passwd_table').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#app_passwd_table').DataTable({
       processing: true,
       serverSide: false,
@@ -416,6 +446,12 @@ jQuery(function($){
     });
   }
   function draw_wl_policy_mailbox_table() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#wl_policy_mailbox_table') ) {
+      $('#wl_policy_mailbox_table').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#wl_policy_mailbox_table').DataTable({
       processing: true,
       serverSide: false,
@@ -463,7 +499,7 @@ jQuery(function($){
         },
         {
           title: lang.spamfilter_table_rule,
-          data: 'name',
+          data: 'value',
           defaultContent: ''
         },
         {
@@ -475,6 +511,12 @@ jQuery(function($){
     });
   }
   function draw_bl_policy_mailbox_table() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#bl_policy_mailbox_table') ) {
+      $('#bl_policy_mailbox_table').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#bl_policy_mailbox_table').DataTable({
       processing: true,
       serverSide: false,
@@ -522,7 +564,7 @@ jQuery(function($){
         },
         {
           title: lang.spamfilter_table_rule,
-          data: 'name',
+          data: 'value',
           defaultContent: ''
         },
         {
@@ -576,7 +618,6 @@ jQuery(function($){
         entries.forEach(entry => {
           if(entry.intersectionRatio > 0) {
             callback(element_object);
-            observer.disconnect();
           }
         });
       }).observe(element_object);

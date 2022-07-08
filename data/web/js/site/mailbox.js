@@ -186,19 +186,25 @@ $(document).ready(function() {
     $("#multiple_bookings").val($("#multiple_bookings_custom").val());
   });
 
-
 });
 jQuery(function($){
   // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
   function humanFileSize(i){if(Math.abs(i)<1024)return i+" B";var B=["KiB","MiB","GiB","TiB","PiB","EiB","ZiB","YiB"],e=-1;do{i/=1024,++e}while(Math.abs(i)>=1024&&e<B.length-1);return i.toFixed(1)+" "+B[e]}
-  function unix_time_format(i){return""==i?'<i class="bi bi-x-lg"></i>':new Date(i?1e3*i:0).toLocaleDateString(void 0,{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"})}
+  function unix_time_format(i){return""==i?'<i class="bi bi-x"></i>':new Date(i?1e3*i:0).toLocaleDateString(void 0,{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"})}
+  
   $(".refresh_table").on('click', function(e) {
     e.preventDefault();
     var table_name = $(this).data('table');
     $('#' + table_name).DataTable().ajax.reload();
   });
   function draw_domain_table() {
-    $('#domain_table').DataTable({
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#domain_table') ) {
+      $('#domain_table').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
+    var table = $('#domain_table').DataTable({
       processing: true,
       serverSide: false,
       language: lang_datatables,
@@ -282,12 +288,12 @@ jQuery(function($){
         },
         {
           title: lang.aliases,
-          data: 'aliases_in_domain',
+          data: 'aliases',
           defaultContent: ''
         },
         {
           title: lang.mailboxes,
-          data: 'mboxes_in_domain',
+          data: 'mailboxes',
           responsivePriority: 4,
           defaultContent: ''
         },
@@ -346,6 +352,7 @@ jQuery(function($){
           title: lang.active,
           data: 'active',
           defaultContent: '',
+          responsivePriority: 5,
           render: function (data, type) {
             return 1==data?'<i class="bi bi-check-lg"></i>':(0==data?'<i class="bi bi-x-lg"></i>':2==data&&'&#8212;');
           }
@@ -358,9 +365,15 @@ jQuery(function($){
           defaultContent: ''
         },
       ]
-    });
+    });  
   }
   function draw_mailbox_table() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#mailbox_table') ) {
+      $('#mailbox_table').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#mailbox_table').DataTable({
 			responsive : true,
       processing: true,
@@ -472,8 +485,42 @@ jQuery(function($){
           {
             title: lang.username,
             data: 'username',
-            responsivePriority: 3,
+            responsivePriority: 1,
             defaultContent: ''
+          },
+          {
+            title: lang.domain_quota,
+            data: 'quota',
+            responsivePriority: 2,
+            defaultContent: '',
+            render: function (data, type) {
+              data = data.split("/");
+              var of_q = (data[1] == 0 ? "∞" : humanFileSize(data[1]));
+              return humanFileSize(data[0]) + " / " + of_q;
+            }
+          },
+          {
+            title: lang.last_mail_login,
+            data: 'last_mail_login',
+            defaultContent: '',
+            responsivePriority: 3,
+            render: function (data, type) {
+              res = data.split("/");
+              return '<div class="badge bg-info mb-2">IMAP @ ' + unix_time_format(Number(res[0])) + '</div><br>' +
+                '<div class="badge bg-info mb-2">POP3 @ ' + unix_time_format(Number(res[1])) + '</div><br>' +
+                '<div class="badge bg-info">SMTP @ ' + unix_time_format(Number(res[2])) + '</div>';
+            }
+          },
+          {
+            title: lang.last_pw_change,
+            data: 'last_pw_change',
+            defaultContent: ''
+          },
+          {
+            title: lang.in_use,
+            data: 'in_use',
+            defaultContent: '',
+            responsivePriority: 4
           },
           {
             title: lang.fname,
@@ -484,17 +531,6 @@ jQuery(function($){
             title: lang.domain,
             data: 'domain',
             defaultContent: ''
-          },
-          {
-            title: lang.domain_quota,
-            data: 'quota',
-            responsivePriority: 4,
-            defaultContent: '',
-            render: function (data, type) {
-              data = data.split("/");
-              var of_q = (data[1] == 0 ? "∞" : humanFileSize(data[1]));
-              return humanFileSize(data[0]) + " / " + of_q;
-            }
           },
           {
             title: lang.tls_enforce_in,
@@ -522,16 +558,6 @@ jQuery(function($){
             defaultContent: ''
           },
           {
-            title: lang.last_mail_login,
-            data: 'last_mail_login',
-            defaultContent: ''
-          },
-          {
-            title: lang.last_pw_change,
-            data: 'last_pw_change',
-            defaultContent: ''
-          },
-          {
             title: lang.quarantine_notification,
             data: 'quarantine_notification',
             defaultContent: ''
@@ -542,14 +568,10 @@ jQuery(function($){
             defaultContent: ''
           },
           {
-            title: lang.in_use,
-            data: 'in_use',
-            defaultContent: ''
-          },
-          {
             title: lang.msg_num,
             data: 'messages',
-            defaultContent: ''
+            defaultContent: '',
+            responsivePriority: 5
           },
           {
             title: 'Tags',
@@ -560,6 +582,7 @@ jQuery(function($){
             title: lang.active,
             data: 'active',
             defaultContent: '',
+            responsivePriority: 6,
             render: function (data, type) {
               return 1==data?'<i class="bi bi-check-lg"></i>':(0==data?'<i class="bi bi-x-lg"></i>':2==data&&'&#8212;');
             }
@@ -575,6 +598,12 @@ jQuery(function($){
     });
   }
   function draw_resource_table() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#resource_table') ) {
+      $('#resource_table').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#resource_table').DataTable({
       processing: true,
       serverSide: false,
@@ -667,6 +696,40 @@ jQuery(function($){
     });
   }
   function draw_bcc_table() {
+    $.get("/api/v1/get/bcc-destination-options", function(data){
+      // Domains
+      var optgroup = "<optgroup label='" + lang.domains + "'>";
+      $.each(data.domains, function(index, domain){
+        optgroup += "<option value='" + domain + "'>" + domain + "</option>"
+      });
+      optgroup += "</optgroup>"
+      $('#bcc-local-dest').append(optgroup);
+      // Alias domains
+      var optgroup = "<optgroup label='" + lang.domain_aliases + "'>";
+      $.each(data.alias_domains, function(index, alias_domain){
+        optgroup += "<option value='" + alias_domain + "'>" + alias_domain + "</option>"
+      });
+      optgroup += "</optgroup>"
+      $('#bcc-local-dest').append(optgroup);
+      // Mailboxes and aliases
+      $.each(data.mailboxes, function(mailbox, aliases){
+        var optgroup = "<optgroup label='" + mailbox + "'>";
+        $.each(aliases, function(index, alias){
+          optgroup += "<option value='" + alias + "'>" + alias + "</option>"
+        });
+        optgroup += "</optgroup>"
+        $('#bcc-local-dest').append(optgroup);
+      });
+      // Finish
+      $('#bcc-local-dest').selectpicker('refresh');
+    });
+
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#bcc_table') ) {
+      $('#bcc_table').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+    
     $('#bcc_table').DataTable({
       processing: true,
       serverSide: false,
@@ -757,6 +820,12 @@ jQuery(function($){
     });
   }
   function draw_recipient_map_table() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#recipient_map_table') ) {
+      $('#recipient_map_table').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#recipient_map_table').DataTable({
       processing: true,
       serverSide: false,
@@ -833,6 +902,12 @@ jQuery(function($){
     });
   }
   function draw_tls_policy_table() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#tls_policy_table') ) {
+      $('#tls_policy_table').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#tls_policy_table').DataTable({
       processing: true,
       serverSide: false,
@@ -925,6 +1000,12 @@ jQuery(function($){
     });
   }
   function draw_alias_table() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#alias_table') ) {
+      $('#alias_table').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#alias_table').DataTable({
       processing: true,
       serverSide: false,
@@ -1011,14 +1092,23 @@ jQuery(function($){
             defaultContent: ''
           },
           {
+            title: lang.domain,
+            data: 'domain',
+            defaultContent: '',
+            responsivePriority: 5,
+          },
+          {
             title: lang.bcc_destinations,
             data: 'bcc_dest',
             defaultContent: ''
           },
           {
-            title: lang.domain,
-            data: 'domain',
-            defaultContent: ''
+            title: lang.sogo_visible,
+            data: 'sogo_visible',
+            defaultContent: '',
+            render: function(data, type){
+              return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
+            }
           },
           {
             title: lang.public_comment,
@@ -1031,14 +1121,10 @@ jQuery(function($){
             defaultContent: ''
           },
           {
-            title: lang.sogo_visible,
-            data: 'sogo_visible',
-            defaultContent: ''
-          },
-          {
             title: lang.active,
             data: 'active',
             defaultContent: '',
+            responsivePriority: 6,
             render: function (data, type) {
               return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
             }
@@ -1054,6 +1140,12 @@ jQuery(function($){
     });
   }
   function draw_aliasdomain_table() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#aliasdomain_table') ) {
+      $('#aliasdomain_table').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#aliasdomain_table').DataTable({
       processing: true,
       serverSide: false,
@@ -1110,21 +1202,6 @@ jQuery(function($){
             defaultContent: ''
           },
           {
-            title: lang.bcc_local_dest,
-            data: 'local_dest',
-            defaultContent: ''
-          },
-          {
-            title: lang.bcc_destinations,
-            data: 'bcc_dest',
-            defaultContent: ''
-          },
-          {
-            title: lang.domain,
-            data: 'domain',
-            defaultContent: ''
-          },
-          {
             title: lang.active,
             data: 'active',
             defaultContent: '',
@@ -1143,6 +1220,12 @@ jQuery(function($){
     });
   }
   function draw_sync_job_table() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#sync_job_table') ) {
+      $('#sync_job_table').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
     $('#sync_job_table').DataTable({
       processing: true,
       serverSide: false,
@@ -1226,16 +1309,6 @@ jQuery(function($){
             defaultContent: ''
           },
           {
-            title: lang.excludes,
-            data: 'exclude',
-            defaultContent: ''
-          },
-          {
-            title: lang.mins_interval,
-            data: 'mins_interval',
-            defaultContent: ''
-          },
-          {
             title: lang.last_run,
             data: 'last_run',
             defaultContent: ''
@@ -1246,8 +1319,8 @@ jQuery(function($){
             defaultContent: ''
           },
           {
-            title: lang.status,
-            data: 'is_running',
+            title: 'Log',
+            data: 'log',
             defaultContent: ''
           },
           {
@@ -1259,8 +1332,18 @@ jQuery(function($){
             }
           },
           {
-            title: 'Log',
-            data: 'log',
+            title: lang.status,
+            data: 'is_running',
+            defaultContent: ''
+          },
+          {
+            title: lang.excludes,
+            data: 'exclude',
+            defaultContent: ''
+          },
+          {
+            title: lang.mins_interval,
+            data: 'mins_interval',
             defaultContent: ''
           },
           {
@@ -1274,7 +1357,14 @@ jQuery(function($){
     });
   }
   function draw_filter_table() {
-    $('#filter_table').DataTable({
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#filter_table') ) {
+      $('#filter_table').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
+    var table = $('#filter_table').DataTable({
+      autoWidth: false,
       processing: true,
       serverSide: false,
       language: lang_datatables,
@@ -1321,12 +1411,13 @@ jQuery(function($){
           {
             title: 'ID',
             data: 'id',
-            responsivePriority: 3,
+            responsivePriority: 2,
             defaultContent: ''
           },
           {
             title: lang.active,
             data: 'active',
+            responsivePriority: 3,
             defaultContent: ''
           },
           {
@@ -1348,7 +1439,8 @@ jQuery(function($){
           {
             title: 'Script',
             data: 'script_data',
-            defaultContent: ''
+            defaultContent: '',
+            className: 'none'
           },
           {
             title: lang.action,
@@ -1371,7 +1463,6 @@ jQuery(function($){
         entries.forEach(entry => {
           if(entry.intersectionRatio > 0) {
             callback(element_object);
-            observer.disconnect();
           }
         });
       }).observe(element_object);
