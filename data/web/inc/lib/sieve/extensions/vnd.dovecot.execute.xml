@@ -3,13 +3,17 @@
 <extension name="vnd.dovecot.execute">
 
 	<test name="execute">
-		<parameter type="tag" name="pipe" regex="pipe" occurrence="optional"/>
+		<parameter type="tag" name="pipe" regex="(pipe|input)" occurrence="optional">
+			<parameter type="string" name="input-data" follows="input" />
+		</parameter>
 		<parameter type="string" name="program-name"/>
 		<parameter type="stringlist" name="arguments" occurrence="optional"/>
 	</test>
 
 	<command name="execute">
-		<parameter type="tag" name="pipe" regex="pipe" occurrence="optional"/>
+		<parameter type="tag" name="pipe" regex="(pipe|input)" occurrence="optional">
+			<parameter type="string" name="input-data" follows="input" />
+		</parameter>
 		<parameter type="string" name="program-name"/>
 		<parameter type="stringlist" name="arguments" occurrence="optional"/>
 	</command>

@@ -2,7 +2,7 @@
 
 <extension name="copy">
 
-	<tagged-argument extends="(fileinto|redirect)">
+	<tagged-argument extends="(fileinto|redirect|pipe)">
 		<parameter type="tag" name="copy" regex="copy" occurrence="optional" />
 	</tagged-argument>
 

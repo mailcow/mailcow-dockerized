@@ -18,4 +18,10 @@
 		<parameter type="stringlist" name="key list" />
 	</test>
 
+	<tagged-argument extends="execute">
+		<parameter type="tag" name="output" regex="output" occurrence="optional">
+			<parameter type="string" name="varname" />
+		</parameter>
+	</tagged-argument>
+
 </extension>

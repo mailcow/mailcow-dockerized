@@ -3,7 +3,16 @@
 <extension name="duplicate">
 
 	<test name="duplicate">
-
+		<parameter type="tag" name="header" regex="(header|uniqueid)" occurrence="optional">
+			<parameter type="string" name="value" />
+		</parameter>
+		<parameter type="tag" name="handle" regex="handle" occurrence="optional">
+			<parameter type="string" name="handle" />
+		</parameter>
+		<parameter type="tag" name="seconds" regex="seconds" occurrence="optional">
+			<parameter type="number" name="timeout" />
+		</parameter>
+		<parameter type="tag" name="last" regex="last" occurrence="optional" />
 	</test>
 
 </extension>
