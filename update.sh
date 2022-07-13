@@ -203,9 +203,9 @@ else
     DC_DL_SUFFIX=legacy
   fi
   sleep 1
-  if [[ -z $(which pip) && $(pip list --local 2>&1 | grep -v DEPRECATION | grep -c docker-compose) == 1 ]]; then
+  if [[ ! $(which pip) && $(pip list --local 2>&1 | grep -v DEPRECATION | grep -c docker-compose) == 1 ]]; then
     echo -e "\e[33mFound a docker-compose Version installed with pip!\e[0m"
-    echo -e "\e[33mPlease uninstall the pip Version of docker-compose since it doesn´t support Versions higher than 1.29.2.\e[0m"
+    echo -e "\e[31mPlease uninstall the pip Version of docker-compose since it doesn´t support Versions higher than 1.29.2.\e[0m"
     sleep 2
     echo -e "\e[33mExiting...\e[0m"
     exit 1
@@ -292,7 +292,7 @@ if ! docker-compose version --short | grep "^2." > /dev/null 2>&1; then
   sleep 3
   update_compose
   if [[ ! "${updatecomposeresponse}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-     echo -e "\e[31mmailcow does not work with docker-compose <= 2.X anymore!\e[0m"
+     echo -e "\e[31mmailcow does not work with docker-compose <= 2.X.X anymore!\e[0m"
      echo -e "\e[31mPlease update your docker-compose manually, to run mailcow.\e[0m"
      echo -e "\e[31mExiting...\e[0m"
      exit 1
