@@ -338,7 +338,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $custom_params        = (empty(trim($_data['custom_params']))) ? '' : trim($_data['custom_params']);
 
           // validate custom params
-          foreach (explode(' -', $custom_params) as $param){
+          foreach (explode('-', $custom_params) as $param){
             if(empty($param)) continue;
 
             if (str_contains(explode('=', $param)[0], ' ')) {
@@ -1793,7 +1793,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             }
 
             // validate custom params
-            foreach (explode(' -', $custom_params) as $param){
+            foreach (explode('-', $custom_params) as $param){
               if(empty($param)) continue;
 
               if (str_contains(explode('=', $param)[0], ' ')) {
