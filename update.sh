@@ -203,7 +203,7 @@ else
     DC_DL_SUFFIX=legacy
   fi
   sleep 1
-  if [[ ! $(which pip 2>&1) && $(pip list --local 2>&1 | grep -v DEPRECATION | grep -c docker-compose) == 1 ]]; then
+  if [[ $(which pip 2>&1) && $(pip list --local 2>&1 | grep -v DEPRECATION | grep -c docker-compose) == 1 || $(which pip3 2>&1) && $(pip3 list --local 2>&1 | grep -v DEPRECATION | grep -c docker-compose) == 1 ]]; then
     echo -e "\e[33mFound a docker-compose Version installed with pip!\e[0m"
     echo -e "\e[31mPlease uninstall the pip Version of docker-compose since it doesn´t support Versions higher than 1.29.2.\e[0m"
     sleep 2
@@ -656,16 +656,16 @@ else
    fi
 fi
 
-# echo -e "\e[32mChecking for newer update script...\e[0m"
-# SHA1_1=$(sha1sum update.sh)
-# git fetch origin #${BRANCH}
-# git checkout origin/${BRANCH} update.sh
-# SHA1_2=$(sha1sum update.sh)
-# if [[ ${SHA1_1} != ${SHA1_2} ]]; then
-#   echo "update.sh changed, please run this script again, exiting."
-#   chmod +x update.sh
-#   exit 2
-# fi
+echo -e "\e[32mChecking for newer update script...\e[0m"
+SHA1_1=$(sha1sum update.sh)
+git fetch origin #${BRANCH}
+git checkout origin/${BRANCH} update.sh
+SHA1_2=$(sha1sum update.sh)
+if [[ ${SHA1_1} != ${SHA1_2} ]]; then
+  echo "update.sh changed, please run this script again, exiting."
+  chmod +x update.sh
+  exit 2
+fi
 
 if [[ -f mailcow.conf ]]; then
   source mailcow.conf
