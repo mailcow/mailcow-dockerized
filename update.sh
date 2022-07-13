@@ -287,12 +287,12 @@ done
 ## Check if docker-compose >= v2
 if ! docker-compose version --short | grep "^2." > /dev/null 2>&1; then
   echo -e "\e[33mYour docker-compose Version is not up to date!\e[0m"
-  echo -e "\e[33mmailcow needs docker-compose >= 2.5!\e[0m"
+  echo -e "\e[33mmailcow needs docker-compose > 2.X.X!\e[0m"
   echo -e "\e[33mYour current installed Version: $(docker-compose version --short)\e[0m"
   sleep 3
   update_compose
   if [[ ! "${updatecomposeresponse}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-     echo -e "\e[31mmailcow does not work with docker-compose <= 2.X.X anymore!\e[0m"
+     echo -e "\e[31mmailcow does not work with docker-compose < 2.X.X anymore!\e[0m"
      echo -e "\e[31mPlease update your docker-compose manually, to run mailcow.\e[0m"
      echo -e "\e[31mExiting...\e[0m"
      exit 1
