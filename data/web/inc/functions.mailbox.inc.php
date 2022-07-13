@@ -341,7 +341,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           foreach (explode(' -', $custom_params) as $param){
             if(empty($param)) continue;
 
-            if (str_contains($param, ' ')) {
+            if (str_contains(explode('=', $param)[0], ' ')) {
               // bad char
               $_SESSION['return'][] = array(
                 'type' => 'danger',
@@ -1796,7 +1796,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             foreach (explode(' -', $custom_params) as $param){
               if(empty($param)) continue;
 
-              if (str_contains($param, ' ')) {
+              if (str_contains(explode('=', $param)[0], ' ')) {
                 // bad char
                 $_SESSION['return'][] = array(
                   'type' => 'danger',
