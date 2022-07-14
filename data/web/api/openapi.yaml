@@ -3087,7 +3087,7 @@ paths:
                     rl_value:
                       description: rate limit value
                       type: number
-                    type: object
+                  type: object
                 items:
                   description: contains list of domain names you want update
                   type: object
