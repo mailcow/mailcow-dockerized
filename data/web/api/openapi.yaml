@@ -2989,7 +2989,13 @@ paths:
           content:
             application/json:
               schema:
+                type: array
+                items: object
                 properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
                   msg:
                     type: string
                   type:
@@ -2998,7 +3004,6 @@ paths:
                       - danger
                       - error
                     type: string
-                type: object
           description: OK
           headers: {}
       tags:
