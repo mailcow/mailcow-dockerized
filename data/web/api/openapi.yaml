@@ -1998,7 +1998,9 @@ paths:
               properties:
                 items:
                   description: contains list of domains you want to delete
-                  type: object
+                  type: array
+                  items:
+                    type: string
               type: object
       summary: Delete domain
   /api/v1/delete/domain-admin:
