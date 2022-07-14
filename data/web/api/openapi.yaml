@@ -2987,7 +2987,7 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "200":
           content:
-            "*/*":
+            application/json:
               schema:
                 properties:
                   log:
