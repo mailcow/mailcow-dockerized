@@ -344,19 +344,33 @@ while (($#)); do
     --no-update-compose)
       NO_UPDATE_COMPOSE=y
     ;;
+    --update-compose)
+      LATEST_COMPOSE=$(curl -#L https://www.servercow.de/docker-compose/latest.php)
+      COMPOSE_VERSION=$(docker-compose version --short) 
+      if [[ "$LATEST_COMPOSE" != "$COMPOSE_VERSION" ]]; then
+        echo -e "\e[33mA new docker-compose Version is available: $LATEST_COMPOSE\e[0m"
+        echo -e "\e[33mYour Version is: $COMPOSE_VERSION\e[0m"
+        update_compose
+        echo -e "\e[32mYour docker-compose Version is now up to date!\e[0m" 
+      else
+      echo -e "\e[32mYour docker-compose Version is up to date! Not updating it...\e[0m" 
+      fi
+      exit 0
+    ;;
     --skip-ping-check)
       SKIP_PING_CHECK=y
     ;;
     --help|-h)
-    echo './update.sh [-c|--check, --ours, --gc, --no-update-compose, --prefetch, --skip-start, --skip-ping-check, -f|--force, -h|--help]
+    echo './update.sh [-c|--check, --ours, --gc, --no-update-compose, --update-compose, --prefetch, --skip-start, --skip-ping-check, -f|--force, -h|--help]
 
   -c|--check           -   Check for updates and exit (exit codes => 0: update available, 3: no updates)
   --ours               -   Use merge strategy option "ours" to solve conflicts in favor of non-mailcow code (local changes over remote changes), not recommended!
   --gc                 -   Run garbage collector to delete old image tags
-  --no-update-compose  -   Do not update docker-compose  
+  --no-update-compose  -   Skip the docker-compose Updates during the mailcow Update process
+  --update-compose     -   Only run the docker-compose Update process (don´t updates your mailcow itself)
   --prefetch           -   Only prefetch new images and exit (useful to prepare updates)
   --skip-start         -   Do not start mailcow after update
-  --skip-ping-check    -   Skip ICMP Check to public DNS resolvers (Use it only if you´ve blocked any ICMP Connections to your mailcow machine).
+  --skip-ping-check    -   Skip ICMP Check to public DNS resolvers (Use it only if you´ve blocked any ICMP Connections to your mailcow machine)
   -f|--force           -   Force update, do not ask questions
 '
     exit 1
