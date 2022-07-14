@@ -826,20 +826,20 @@ paths:
                 type: array
                 items:
                   type: object
-                properties:
-                  log:
-                    description: contains request object
-                    items: {}
-                    type: array
-                  msg:
-                    items: {}
-                    type: array
-                  type:
-                    enum:
-                      - success
-                      - danger
-                      - error
-                    type: string
+                  properties:
+                    log:
+                      description: contains request object
+                      items: {}
+                      type: array
+                    msg:
+                      items: {}
+                      type: array
+                    type:
+                      enum:
+                        - success
+                        - danger
+                        - error
+                      type: string
           description: OK
           headers: {}
       tags:
