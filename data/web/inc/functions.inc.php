@@ -1240,8 +1240,7 @@ function set_tfa($_data) {
         $yubico_modhex_id = substr($_data["otp_token"], 0, 12);
         $stmt = $pdo->prepare("DELETE FROM `tfa`
           WHERE `username` = :username
-            AND (`authmech` != 'yubi_otp')
-            OR (`authmech` = 'yubi_otp' AND `secret` LIKE :modhex)");
+            AND (`authmech` = 'yubi_otp' AND `secret` LIKE :modhex)");
         $stmt->execute(array(':username' => $username, ':modhex' => '%' . $yubico_modhex_id));
         $stmt = $pdo->prepare("INSERT INTO `tfa` (`key_id`, `username`, `authmech`, `active`, `secret`) VALUES
           (:key_id, :username, 'yubi_otp', '1', :secret)");
