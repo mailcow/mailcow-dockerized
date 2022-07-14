@@ -3953,6 +3953,8 @@ paths:
           in: query
           name: tags
           required: false
+          schema:
+            type: string
         - description: e.g. api-key-string
           example: api-key-string
           in: header
@@ -4512,6 +4514,8 @@ paths:
           in: query
           name: tags
           required: false
+          schema:
+            type: string
         - description: e.g. api-key-string
           example: api-key-string
           in: header

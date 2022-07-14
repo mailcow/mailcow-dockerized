@@ -76,13 +76,6 @@ else
   CMPS_PRJ=$(echo ${COMPOSE_PROJECT_NAME} | tr -cd "[0-9A-Za-z-_]")
 fi
 
-for bin in docker docker-compose; do
-  if [[ -z $(which ${bin}) ]]; then
-    >&2 echo -e "\e[31mCannot find ${bin} in local PATH, exiting...\e[0m"
-    exit 1
-  fi
-done
-
 if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then
   >&2 echo -e "\e[31mBusyBox grep detected on local system, please install GNU grep\e[0m"
   exit 1
@@ -94,6 +87,12 @@ function backup() {
   mkdir -p "${BACKUP_LOCATION}/mailcow-${DATE}"
   chmod 755 "${BACKUP_LOCATION}/mailcow-${DATE}"
   cp "${SCRIPT_DIR}/../mailcow.conf" "${BACKUP_LOCATION}/mailcow-${DATE}"
+  for bin in docker; do
+  if [[ -z $(which ${bin}) ]]; then
+    >&2 echo -e "\e[31mCannot find ${bin} in local PATH, exiting...\e[0m"
+    exit 1
+  fi
+  done
   while (( "$#" )); do
     case "$1" in
     vmail|all)
@@ -161,6 +160,12 @@ function backup() {
 }
 
 function restore() {
+  for bin in docker docker-compose; do
+  if [[ -z $(which ${bin}) ]]; then
+    >&2 echo -e "\e[31mCannot find ${bin} in local PATH, exiting...\e[0m"
+    exit 1
+  fi
+  done  
   echo
   echo "Stopping watchdog-mailcow..."
   docker stop $(docker ps -qf name=watchdog-mailcow)

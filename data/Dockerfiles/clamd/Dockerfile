@@ -8,8 +8,14 @@ RUN apk upgrade --no-cache \
   bind-tools \
   bash 
 
-COPY clamd.sh ./
+# init
+COPY clamd.sh /clamd.sh
 RUN chmod +x /sbin/tini
+
+# healthcheck
+COPY healthcheck.sh /healthcheck.sh
+RUN chmod +x /healthcheck.sh
+HEALTHCHECK --start-period=6m CMD "/healthcheck.sh"
 
 ENTRYPOINT []
 CMD ["/sbin/tini", "-g", "--", "/clamd.sh"]

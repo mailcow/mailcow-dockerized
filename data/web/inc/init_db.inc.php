@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "18062022_1153";
+    $db_version = "13072022_1700";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -739,7 +739,7 @@ function init_db_schema() {
           "authmech" => "ENUM('yubi_otp', 'u2f', 'hotp', 'totp', 'webauthn')",
           "secret" => "VARCHAR(255) DEFAULT NULL",
           "keyHandle" => "VARCHAR(255) DEFAULT NULL",
-          "publicKey" => "VARCHAR(255) DEFAULT NULL",
+          "publicKey" => "VARCHAR(4096) DEFAULT NULL",
           "counter" => "INT NOT NULL DEFAULT '0'",
           "certificate" => "TEXT",
           "active" => "TINYINT(1) NOT NULL DEFAULT '0'"
@@ -1227,7 +1227,7 @@ function init_db_schema() {
       $pdo->query($create);
     }
     
-    // Mitigate imapsync pipemess issue
+    // Mitigate imapsync argument injection issue
     $pdo->query("UPDATE `imapsync` SET `custom_params` = '' 
       WHERE `custom_params` LIKE '%pipemess%' 
         OR custom_params LIKE '%skipmess%' 
@@ -1237,8 +1237,7 @@ function init_db_schema() {
         OR custom_params LIKE '%pipemess%' 
         OR custom_params LIKE '%regextrans2%' 
         OR custom_params LIKE '%maxlinelengthcmd%';");
-
-
+    
     // Migrate webauthn tfa
     $stmt = $pdo->query("ALTER TABLE `tfa` MODIFY COLUMN `authmech` ENUM('yubi_otp', 'u2f', 'hotp', 'totp', 'webauthn')");
 

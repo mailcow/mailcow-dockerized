@@ -178,15 +178,22 @@ if (isset($_GET['query'])) {
               // parse post data
               $post = trim(file_get_contents('php://input'));
               if ($post) $post = json_decode($post);
-
-              // decode base64 strings
-              $clientDataJSON = base64_decode($post->clientDataJSON);
-              $attestationObject = base64_decode($post->attestationObject);             
               
               // process registration data from authenticator
               try {
+                // decode base64 strings
+                $clientDataJSON = base64_decode($post->clientDataJSON);
+                $attestationObject = base64_decode($post->attestationObject);   
+
                 // processCreate($clientDataJSON, $attestationObject, $challenge, $requireUserVerification=false, $requireUserPresent=true, $failIfRootMismatch=true)
                 $data = $WebAuthn->processCreate($clientDataJSON, $attestationObject, $_SESSION['challenge'], false, true);
+
+                // safe authenticator in mysql `tfa` table
+                $_data['tfa_method'] = $post->tfa_method;
+                $_data['key_id'] = $post->key_id;
+                $_data['confirm_password'] = $post->confirm_password;
+                $_data['registration'] = $data;
+                set_tfa($_data);
               }
               catch (Throwable $ex) {
                 // err
@@ -197,11 +204,6 @@ if (isset($_GET['query'])) {
                 exit;
               }
 
-              // safe authenticator in mysql `tfa` table
-              $_data['tfa_method'] = $post->tfa_method;
-              $_data['key_id'] = $post->key_id;
-              $_data['registration'] = $data;
-              set_tfa($_data);
 
               // send response
               $return = new stdClass();
@@ -419,7 +421,7 @@ if (isset($_GET['query'])) {
           // }
           $ids = NULL;
 
-          $getArgs = $WebAuthn->getGetArgs($ids, 30, true, true, true, true, $GLOBALS['FIDO2_UV_FLAG_LOGIN']);
+          $getArgs = $WebAuthn->getGetArgs($ids, 30, false, false, false, false, $GLOBALS['FIDO2_UV_FLAG_LOGIN']);
           print(json_encode($getArgs));
           $_SESSION['challenge'] = $WebAuthn->getChallenge();
           return;
@@ -428,8 +430,11 @@ if (isset($_GET['query'])) {
         case "webauthn-tfa-registration":
           if (isset($_SESSION["mailcow_cc_role"])) {
               // Exclude existing CredentialIds, if any
-              $stmt = $pdo->prepare("SELECT `keyHandle` FROM `tfa` WHERE username = :username");
-              $stmt->execute(array(':username' => $_SESSION['mailcow_cc_username']));
+              $stmt = $pdo->prepare("SELECT `keyHandle` FROM `tfa` WHERE username = :username AND authmech = :authmech");
+              $stmt->execute(array(
+                ':username' => $_SESSION['mailcow_cc_username'],
+                ':authmech' => 'webauthn'
+              ));
               $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
               while($row = array_shift($rows)) {
                 $excludeCredentialIds[] = base64_decode($row['keyHandle']);
@@ -450,20 +455,24 @@ if (isset($_GET['query'])) {
           }
         break;
         case "webauthn-tfa-get-args":
-          $stmt = $pdo->prepare("SELECT `keyHandle` FROM `tfa` WHERE username = :username");
-          $stmt->execute(array(':username' => $_SESSION['pending_mailcow_cc_username']));
+          $stmt = $pdo->prepare("SELECT `keyHandle` FROM `tfa` WHERE username = :username AND authmech = :authmech");
+          $stmt->execute(array(
+            ':username' => $_SESSION['pending_mailcow_cc_username'],
+            ':authmech' => 'webauthn'
+          ));
           $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-          while($row = array_shift($rows)) {
-            $cids[] = base64_decode($row['keyHandle']);
-          }
-          if (count($cids) == 0) {
+          if (count($rows) == 0) {
             print(json_encode(array(
                 'type' => 'error',
                 'msg' => 'Cannot find matching credentialIds'
             )));
+            exit;
+          }
+          while($row = array_shift($rows)) {
+            $cids[] = base64_decode($row['keyHandle']);
           }
 
-          $getArgs = $WebAuthn->getGetArgs($cids, 30, true, true, true, true, $GLOBALS['WEBAUTHN_UV_FLAG_LOGIN']);
+          $getArgs = $WebAuthn->getGetArgs($cids, 30, false, false, false, false, $GLOBALS['WEBAUTHN_UV_FLAG_LOGIN']);
           $getArgs->publicKey->extensions = array('appid' => "https://".$getArgs->publicKey->rpId);
           print(json_encode($getArgs));
           $_SESSION['challenge'] = $WebAuthn->getChallenge();

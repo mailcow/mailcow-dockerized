@@ -18,6 +18,10 @@
               <i class="bi bi-inbox-fill"></i> {{ lang.user.open_webmail_sso }}
             </a>
           {% endif %}
+          <div>
+            <hr>
+            <p><a href="#pwChangeModal" data-toggle="modal"><i class="bi bi-pencil-fill"></i> {{ lang.user.change_password }}</a></p>
+          </div>
         </div>
       </div>
       <hr>
@@ -43,8 +47,27 @@
             </div>
           </div>
           <p>{{ mailboxdata.quota_used|formatBytes(2) }} / {% if mailboxdata.quota == 0 %}∞{% else %}{{ mailboxdata.quota|formatBytes(2) }}{% endif %}<br>{{ mailboxdata.messages }} {{ lang.user.messages }}</p>
-          <hr>
-          <p><a href="#pwChangeModal" data-toggle="modal"><i class="bi bi-pencil-fill"></i> {{ lang.user.change_password }}</a></p>
+        </div>
+      </div>
+      <hr>
+      {# TFA #}
+      <div class="row">
+        <div class="col-sm-3 col-xs-5 text-right">{{ lang.tfa.tfa }}:</div>
+        <div class="col-sm-9 col-xs-7">
+          <p id="tfa_pretty">{{ tfa_data.pretty }}</p>
+          {% include 'tfa_keys.twig' %}
+          <br>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3 col-xs-5 text-right">{{ lang.tfa.set_tfa }}:</div>
+        <div class="col-sm-9 col-xs-7">
+          <select data-style="btn btn-sm dropdown-toggle bs-placeholder btn-default" data-width="fit" id="selectTFA" class="selectpicker" title="{{ lang.tfa.select }}">
+            <option value="yubi_otp">{{ lang.tfa.yubi_otp }}</option>
+            <option value="webauthn">{{ lang.tfa.webauthn }}</option>
+            <option value="totp">{{ lang.tfa.totp }}</option>
+            <option value="none">{{ lang.tfa.none }}</option>
+          </select>
         </div>
       </div>
       <hr>
