@@ -3090,7 +3090,9 @@ paths:
                   type: object
                 items:
                   description: contains list of domain names you want update
-                  type: object
+                  type: array
+                  items:
+                    type: string
               type: object
       summary: Update domain
   /api/v1/edit/fail2ban:
