@@ -582,7 +582,9 @@ paths:
                   description: Fully qualified domain name
                   type: string
                 gal:
-                  description: global address book or not
+                  description: >-
+                    is domain global address list active or not, it enables
+                    shared contacts accross domain in SOGo webmail
                   type: boolean
                 mailboxes:
                   description: limit count of mailboxes associated with this domain
@@ -3068,6 +3070,9 @@ paths:
                       description: >-
                         if not, them you have to create "dummy" mailbox for each
                         address to relay
+                      type: boolean
+                    relay_unknown_only:
+                      description: Relay non-existing mailboxes only. Existing mailboxes will be delivered locally.
                       type: boolean
                     relayhost:
                       description: id of relayhost
