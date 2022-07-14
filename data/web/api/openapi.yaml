@@ -2990,13 +2990,8 @@ paths:
             application/json:
               schema:
                 properties:
-                  log:
-                    description: contains request object
-                    items: {}
-                    type: array
                   msg:
-                    items: {}
-                    type: array
+                    type: string
                   type:
                     enum:
                       - success
