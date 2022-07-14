@@ -581,6 +581,9 @@ paths:
                 domain:
                   description: Fully qualified domain name
                   type: string
+                gal:
+                  description: global address book or not
+                  type: boolean
                 mailboxes:
                   description: limit count of mailboxes associated with this domain
                   type: number
