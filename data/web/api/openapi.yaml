@@ -2994,11 +2994,12 @@ paths:
                   type: object
                   properties:
                     log:
+                      type: array
                       description: contains request object
                       items: {}
-                      type: array
                     msg:
-                      type: string
+                      type: array
+                      items: {}
                     type:
                       enum:
                         - success
