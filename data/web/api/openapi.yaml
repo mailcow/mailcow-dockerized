@@ -1999,7 +1999,6 @@ paths:
                 type: array
                 items:
                   type: string
-              type: object
       summary: Delete domain
   /api/v1/delete/domain-admin:
     post:
